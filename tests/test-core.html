@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DigiPin Core Tests</title>
+    <style>
+        body { font-family: monospace; background: #111; color: #eee; padding: 20px; }
+        .pass { color: #4caf50; }
+        .fail { color: #f44336; font-weight: bold; }
+        .suite { color: #64b5f6; margin-top: 16px; font-size: 14px; }
+        #results { white-space: pre-wrap; line-height: 1.6; }
+        #summary { margin-top: 20px; padding: 10px; border-top: 1px solid #444; font-size: 16px; }
+    </style>
+</head>
+<body>
+<h2>DigiPin Core Unit Tests</h2>
+<div id="results"></div>
+<div id="summary"></div>
+
+<script src="../js/digipin.js"></script>
+<script src="../js/data-fetcher.js"></script>
+<script src="../js/disha.js"></script>
+<script>
+(() => {
+    const results = document.getElementById('results');
+    const summary = document.getElementById('summary');
+    let passed = 0, failed = 0, total = 0;
+
+    function log(msg, cls) {
+        const div = document.createElement('div');
+        div.className = cls || '';
+        div.textContent = msg;
+        results.appendChild(div);
+    }
+
+    function suite(name) {
+        log(`\n=== ${name} ===`, 'suite');
+    }
+
+    function assert(desc, condition) {
+        total++;
+        if (condition) {
+            passed++;
+            log(`  PASS  ${desc}`, 'pass');
+        } else {
+            failed++;
+            log(`  FAIL  ${desc}`, 'fail');
+        }
+    }
+
+    function assertClose(desc, actual, expected, tolerance = 0.001) {
+        assert(`${desc} (got ${actual}, expected ~${expected})`,
+            Math.abs(actual - expected) < tolerance);
+    }
+
+    function assertThrows(desc, fn) {
+        total++;
+        try {
+            fn();
+            failed++;
+            log(`  FAIL  ${desc} (did not throw)`, 'fail');
+        } catch {
+            passed++;
+            log(`  PASS  ${desc}`, 'pass');
+        }
+    }
+
+    // ===== DigiPin Encode/Decode =====
+    suite('DigiPin.encode()');
+
+    const indorePin = DigiPin.encode(22.7196, 75.8577);
+    assert('Encodes Indore to 10-char pin with dashes', indorePin.replace(/-/g, '').length === 10);
+    assert('Pin contains only valid chars (FCJKLM23456789PT-)',
+        /^[FCJKLM23456789PT-]+$/.test(indorePin));
+    assert('Pin has dashes at positions 3 and 7',
+        indorePin[3] === '-' && indorePin[7] === '-');
+
+    const delhiPin = DigiPin.encode(28.6139, 77.2090);
+    assert('Delhi pin is different from Indore', delhiPin !== indorePin);
+
+    const cornerPin = DigiPin.encode(2.5, 63.5);
+    assert('Bottom-left corner encodes without error', cornerPin.length > 0);
+
+    const topCornerPin = DigiPin.encode(38.4999, 99.4999);
+    assert('Top-right corner encodes without error', topCornerPin.length > 0);
+
+    suite('DigiPin.encode() — boundary errors');
+    assertThrows('Rejects latitude below 2.5', () => DigiPin.encode(2.0, 75.0));
+    assertThrows('Rejects latitude above 38.5', () => DigiPin.encode(39.0, 75.0));
+    assertThrows('Rejects longitude below 63.5', () => DigiPin.encode(22.0, 60.0));
+    assertThrows('Rejects longitude above 99.5', () => DigiPin.encode(22.0, 100.0));
+
+    suite('DigiPin.decode()');
+
+    const decoded = DigiPin.decode(indorePin);
+    assert('Returns lat/lng object', typeof decoded.lat === 'number' && typeof decoded.lng === 'number');
+    assert('Returns bounds object', decoded.bounds && typeof decoded.bounds.south === 'number');
+    assertClose('Decoded lat is near Indore (22.7196)', decoded.lat, 22.7196, 0.01);
+    assertClose('Decoded lng is near Indore (75.8577)', decoded.lng, 75.8577, 0.01);
+    assert('Bounds south < north', decoded.bounds.south < decoded.bounds.north);
+    assert('Bounds west < east', decoded.bounds.west < decoded.bounds.east);
+
+    suite('DigiPin round-trip encode→decode');
+
+    const testCoords = [
+        { lat: 22.7196, lng: 75.8577, name: 'Indore' },
+        { lat: 28.6139, lng: 77.2090, name: 'Delhi' },
+        { lat: 19.0760, lng: 72.8777, name: 'Mumbai' },
+        { lat: 13.0827, lng: 80.2707, name: 'Chennai' },
+        { lat: 12.9716, lng: 77.5946, name: 'Bengaluru' }
+    ];
+
+    testCoords.forEach(({ lat, lng, name }) => {
+        const pin = DigiPin.encode(lat, lng);
+        const back = DigiPin.decode(pin);
+        assertClose(`${name} round-trip lat`, back.lat, lat, 0.01);
+        assertClose(`${name} round-trip lng`, back.lng, lng, 0.01);
+    });
+
+    suite('DigiPin.decode() — error cases');
+    assertThrows('Rejects short pin', () => DigiPin.decode('ABC'));
+    assertThrows('Rejects invalid characters', () => DigiPin.decode('ABCDEFGHIJ'));
+
+    suite('DigiPin.getGridCells()');
+
+    const cells = DigiPin.getGridCells(
+        { south: 22.70, north: 22.74, west: 75.84, east: 75.88 }, 16
+    );
+    assert('Returns non-empty array at zoom 16', cells.length > 0);
+    assert('Each cell has code and bounds', cells[0].code && cells[0].bounds);
+    assert('No duplicate codes', new Set(cells.map(c => c.code)).size === cells.length);
+
+    const emptyCells = DigiPin.getGridCells(
+        { south: 22.70, north: 22.74, west: 75.84, east: 75.88 }, 5
+    );
+    assert('Returns empty at very low zoom', emptyCells.length === 0);
+
+    // ===== DataFetcher =====
+    suite('DataFetcher module');
+
+    assert('DataFetcher exists', typeof DataFetcher !== 'undefined');
+    assert('fetchAllFeatures is a function', typeof DataFetcher.fetchAllFeatures === 'function');
+    assert('CATEGORIES is defined', typeof DataFetcher.CATEGORIES === 'object');
+    assert('clearPersistentCache is exposed', typeof DataFetcher.clearPersistentCache === 'function');
+
+    const cats = DataFetcher.CATEGORIES;
+    const catKeys = Object.keys(cats);
+    assert('Has 10+ categories', catKeys.length >= 10);
+
+    catKeys.forEach(key => {
+        const cat = cats[key];
+        assert(`Category '${key}' has name and features`, cat.name && cat.features && cat.features.length > 0);
+    });
+
+    const totalFeatures = catKeys.reduce((sum, k) => sum + cats[k].features.length, 0);
+    assert(`Total features >= 100 (got ${totalFeatures})`, totalFeatures >= 100);
+
+    // ===== DISHA Context Builder =====
+    suite('DISHA module');
+
+    assert('DISHA exists', typeof DISHA !== 'undefined');
+    assert('buildContext is a function', typeof DISHA.buildContext === 'function');
+
+    // Build context with mock data
+    const mockCell = { code: '3MC-88P-XXXX', center: { lat: 22.72, lng: 75.86 } };
+    const mockData = {
+        address: { area: 'Vijay Nagar', city: 'Indore', state: 'Madhya Pradesh' },
+        environment: { temperature: 28, humidity: 50, aqi: 85 },
+        categories: {
+            food: { features: { restaurants: { count: 5 } } },
+            education: { features: { schools: { count: 3 } } }
+        },
+        scores: {
+            walkability: { label: 'Walkability', value: 72 },
+            safety: { label: 'Safety', value: 45 },
+            green: { label: 'Green', value: 30 }
+        },
+        raw: { totalElements: 50, featureTypesFound: 12 }
+    };
+
+    const ctx = DISHA.buildContext(mockCell, mockData);
+    assert('buildContext returns a string', typeof ctx === 'string');
+    assert('Context contains DigiPin code', ctx.includes('3MC-88P'));
+    assert('Context contains coordinates', ctx.includes('22.72'));
+    assert('Context contains address', ctx.includes('Vijay Nagar') || ctx.includes('Indore'));
+    assert('Context contains temperature', ctx.includes('28'));
+    assert('Context length > 100 chars', ctx.length > 100);
+    assert('Context contains scores section', ctx.includes('walkability') || ctx.includes('Walkability'));
+
+    // Test with empty data
+    const emptyCtx = DISHA.buildContext(mockCell, { address: {}, environment: {}, categories: {}, scores: {}, raw: {} });
+    assert('buildContext handles empty data without error', typeof emptyCtx === 'string');
+
+    // ===== Summary =====
+    const pct = total > 0 ? Math.round(100 * passed / total) : 0;
+    summary.className = failed === 0 ? 'pass' : 'fail';
+    summary.textContent = `\n${passed}/${total} passed (${pct}%) | ${failed} failed`;
+
+    document.title = failed === 0 ? `PASS (${total} tests)` : `FAIL (${failed}/${total})`;
+})();
+</script>
+</body>
+</html>
