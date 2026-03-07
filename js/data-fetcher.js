@@ -267,8 +267,7 @@ const DataFetcher = (() => {
         }
     };
 
-    // ===== LRU CACHE =====
-    // Map preserves insertion order; on access we delete+re-insert to move to end
+    // ===== LRU CACHE (in-memory) =====
     const _cache = new Map();
     const MAX_CACHE = 100;
     const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
@@ -284,19 +283,119 @@ const DataFetcher = (() => {
             _cache.delete(key);
             return null;
         }
-        // LRU: move to end
         _cache.delete(key);
         _cache.set(key, entry);
         return entry.data;
     }
 
     function _cacheSet(key, data) {
-        // Evict oldest (first) if at capacity
         if (_cache.size >= MAX_CACHE) {
             const oldest = _cache.keys().next().value;
             _cache.delete(oldest);
         }
         _cache.set(key, { data, time: Date.now() });
+        // Write-through to IndexedDB (async, non-blocking)
+        _idbSet(key, data).catch(() => {});
+    }
+
+    // ===== IndexedDB PERSISTENT CACHE =====
+    const IDB_NAME = 'digipin-cache';
+    const IDB_STORE = 'cells';
+    const IDB_VERSION = 1;
+    const IDB_TTL = 24 * 60 * 60 * 1000; // 24 hours
+    const IDB_MAX_ENTRIES = 500;
+    let _idb = null;
+
+    function _idbOpen() {
+        if (_idb) return Promise.resolve(_idb);
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+            req.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(IDB_STORE)) {
+                    db.createObjectStore(IDB_STORE, { keyPath: 'key' });
+                }
+            };
+            req.onsuccess = () => { _idb = req.result; resolve(_idb); };
+            req.onerror = () => reject(req.error);
+        });
+    }
+
+    async function _idbGet(key) {
+        const db = await _idbOpen();
+        return new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE, 'readonly');
+            const store = tx.objectStore(IDB_STORE);
+            const req = store.get(key);
+            req.onsuccess = () => {
+                const entry = req.result;
+                if (!entry) return resolve(null);
+                if (Date.now() - entry.time > IDB_TTL) {
+                    _idbDelete(key).catch(() => {});
+                    return resolve(null);
+                }
+                resolve(entry.data);
+            };
+            req.onerror = () => resolve(null);
+        });
+    }
+
+    async function _idbSet(key, data) {
+        const db = await _idbOpen();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(IDB_STORE, 'readwrite');
+            const store = tx.objectStore(IDB_STORE);
+            store.put({ key, data, time: Date.now() });
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+            // Periodic eviction: count and trim if over limit
+            const countReq = store.count();
+            countReq.onsuccess = () => {
+                if (countReq.result > IDB_MAX_ENTRIES) {
+                    _idbEvict(Math.floor(IDB_MAX_ENTRIES * 0.2)).catch(() => {});
+                }
+            };
+        });
+    }
+
+    async function _idbDelete(key) {
+        const db = await _idbOpen();
+        return new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE, 'readwrite');
+            tx.objectStore(IDB_STORE).delete(key);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+        });
+    }
+
+    async function _idbEvict(count) {
+        const db = await _idbOpen();
+        return new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE, 'readwrite');
+            const store = tx.objectStore(IDB_STORE);
+            const req = store.openCursor();
+            let deleted = 0;
+            req.onsuccess = (e) => {
+                const cursor = e.target.result;
+                if (cursor && deleted < count) {
+                    cursor.delete();
+                    deleted++;
+                    cursor.continue();
+                }
+            };
+            tx.oncomplete = () => resolve(deleted);
+            tx.onerror = () => resolve(0);
+        });
+    }
+
+    async function _idbClear() {
+        const db = await _idbOpen();
+        return new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE, 'readwrite');
+            tx.objectStore(IDB_STORE).clear();
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+        });
     }
 
     /**
@@ -424,6 +523,15 @@ const DataFetcher = (() => {
         const key = _cacheKey(lat, lng, radius);
         const cached = _cacheGet(key);
         if (cached) return cached;
+
+        // Check IndexedDB persistent cache (survives page reloads)
+        try {
+            const idbCached = await _idbGet(key);
+            if (idbCached) {
+                _cache.set(key, { data: idbCached, time: Date.now() }); // promote to LRU
+                return idbCached;
+            }
+        } catch { /* IndexedDB unavailable, continue to network */ }
 
         const result = {
             location: { lat, lng },
@@ -1482,6 +1590,7 @@ const DataFetcher = (() => {
         fetchElevation,
         fetchWorldPop,
         classifyElements,
+        clearPersistentCache: _idbClear,
         exportToJSON,
         exportToCSV,
         getRadiusForZoom
