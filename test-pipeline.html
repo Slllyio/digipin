@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>DigiPin Data Pipeline Test — Indore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0a0e27;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #00f5ff;
+        }
+
+        h2 {
+            margin: 20px 0 10px;
+            color: #a855f7;
+            font-size: 16px;
+        }
+
+        .test-block {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .test-block.pass {
+            border-left: 4px solid #22c55e;
+        }
+
+        .test-block.fail {
+            border-left: 4px solid #ef4444;
+        }
+
+        .test-block.running {
+            border-left: 4px solid #eab308;
+        }
+
+        .status {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .result {
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .count {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00f5ff;
+        }
+
+        .timer {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        button {
+            background: linear-gradient(135deg, #00f5ff, #a855f7);
+            color: #0a0e27;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            margin: 10px 4px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 12px;
+        }
+
+        .summary {
+            background: rgba(0, 245, 255, 0.05);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+
+        .summary h3 {
+            color: #00f5ff;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔬 DigiPin Data Pipeline Test — Indore Pilot</h1>
+    <p style="color:#94a3b8;margin-bottom:16px;">Testing all data sources at <strong>Indore Rajwada</strong> (22.7196°N,
+        75.8577°E) with 500m radius</p>
+
+    <div>
+        <button onclick="runAllTests()">▶ Run All Pipeline Tests</button>
+        <button onclick="testOverpassBatched()">🗺️ Test OSM Overpass (Batched)</button>
+        <button onclick="testWeather()">🌤️ Test Open-Meteo</button>
+        <button onclick="testAQI()">💨 Test WAQI AQI</button>
+        <button onclick="testNominatim()">📍 Test Nominatim</button>
+        <button onclick="testDigiPin()">📐 Test DigiPin Encode/Decode</button>
+        <button onclick="testFullPipeline()">🚀 Full Pipeline (All at once)</button>
+    </div>
+
+    <div class="summary" id="summary" style="display:none;"></div>
+    <div id="output"></div>
+
+    <script src="js/digipin.js"></script>
+    <script>
+        const LAT = 22.7196;
+        const LNG = 75.8577;
+        const RADIUS = 500;
+        const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+        const output = document.getElementById('output');
+        const summaryEl = document.getElementById('summary');
+        let testResults = {};
+
+        function log(id, status, content, time) {
+            let el = document.getElementById(id);
+            if (!el) {
+                el = document.createElement('div');
+                el.id = id;
+                el.className = 'test-block running';
+                output.appendChild(el);
+            }
+            el.className = `test-block ${status}`;
+            el.innerHTML = `<div class="status">${id.toUpperCase()} ${status === 'pass' ? '✅ PASS' : status === 'fail' ? '❌ FAIL' : '⏳ RUNNING...'} ${time ? `<span class="timer">(${time}ms)</span>` : ''}</div><div class="result">${content}</div>`;
+            testResults[id] = { status, time };
+        }
+
+        // ===== 1. DigiPin Encode/Decode Test =====
+        function testDigiPin() {
+            const start = Date.now();
+            try {
+                const encoded = DigiPin.encode(LAT, LNG);
+                const decoded = DigiPin.decode(encoded);
+
+                // Verify roundtrip accuracy
+                const latDiff = Math.abs(decoded.lat - LAT);
+                const lngDiff = Math.abs(decoded.lng - LNG);
+
+                // Test grid cells
+                const cells = DigiPin.getGridCells({ south: 22.71, north: 22.73, west: 75.85, east: 75.87 }, 16);
+
+                const content = `Encode(${LAT}, ${LNG}) = ${encoded}
+Decode(${encoded}) = {lat: ${decoded.lat.toFixed(6)}, lng: ${decoded.lng.toFixed(6)}}
+Bounds: S=${decoded.bounds.south.toFixed(6)} N=${decoded.bounds.north.toFixed(6)} W=${decoded.bounds.west.toFixed(6)} E=${decoded.bounds.east.toFixed(6)}
+Roundtrip error: lat=${latDiff.toExponential(2)}, lng=${lngDiff.toExponential(2)}
+Grid cells at zoom 16 (small area): ${cells.length} cells
+Sample cell: ${cells[0]?.code || 'none'}`;
+
+                log('digipin', latDiff < 0.001 ? 'pass' : 'fail', content, Date.now() - start);
+            } catch (e) {
+                log('digipin', 'fail', `ERROR: ${e.message}\n${e.stack}`, Date.now() - start);
+            }
+        }
+
+        // ===== 2. Overpass API — Batched OSM Query =====
+        async function testOverpassBatched() {
+            const start = Date.now();
+            log('overpass', 'running', 'Sending batched Overpass query for ALL 135 feature types...');
+
+            const query = `[out:json][timeout:30];(
+                nwr[amenity=restaurant](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=cafe](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=fast_food](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=school](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=college](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=hospital](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity~"clinic|doctors"](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=pharmacy](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=bank](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=atm](around:${RADIUS},${LAT},${LNG});
+                nwr[shop=supermarket](around:${RADIUS},${LAT},${LNG});
+                nwr[shop=convenience](around:${RADIUS},${LAT},${LNG});
+                nwr[shop=clothes](around:${RADIUS},${LAT},${LNG});
+                nwr[shop=electronics](around:${RADIUS},${LAT},${LNG});
+                nwr[shop=mobile_phone](around:${RADIUS},${LAT},${LNG});
+                nwr[highway=bus_stop](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=fuel](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=parking](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=police](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=fire_station](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=post_office](around:${RADIUS},${LAT},${LNG});
+                nwr[leisure=park](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=cinema](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=place_of_worship](around:${RADIUS},${LAT},${LNG});
+                nwr[tourism=hotel](around:${RADIUS},${LAT},${LNG});
+                nwr[tourism=attraction](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=community_centre](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=toilets](around:${RADIUS},${LAT},${LNG});
+                nwr[shop=jewelry](around:${RADIUS},${LAT},${LNG});
+                nwr[shop=bakery](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=library](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=marketplace](around:${RADIUS},${LAT},${LNG});
+                nwr[highway=street_lamp](around:${RADIUS},${LAT},${LNG});
+                nwr[amenity=drinking_water](around:${RADIUS},${LAT},${LNG});
+                way[building=yes](around:${RADIUS},${LAT},${LNG});
+                way[landuse=residential](around:${RADIUS},${LAT},${LNG});
+                way[landuse=commercial](around:${RADIUS},${LAT},${LNG});
+                nwr[office=yes](around:${RADIUS},${LAT},${LNG});
+                nwr[shop~"beauty|hairdresser"](around:${RADIUS},${LAT},${LNG});
+                nwr[shop=tailor](around:${RADIUS},${LAT},${LNG});
+            );out center body;`;
+
+            try {
+                const resp = await fetch(OVERPASS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'data=' + encodeURIComponent(query)
+                });
+
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+
+                const data = await resp.json();
+                const elements = data.elements || [];
+
+                // Count by type
+                const counts = {};
+                elements.forEach(el => {
+                    const tags = el.tags || {};
+                    const mainTag = Object.entries(tags).find(([k]) =>
+                        ['amenity', 'shop', 'tourism', 'leisure', 'highway', 'office', 'building', 'landuse'].includes(k)
+                    );
+                    if (mainTag) {
+                        const key = `${mainTag[0]}=${mainTag[1]}`;
+                        counts[key] = (counts[key] || 0) + 1;
+                    }
+                });
+
+                const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+                const named = elements.filter(e => e.tags?.name).slice(0, 15);
+
+                const content = `Total OSM elements returned: <span class="count">${elements.length}</span>
+Unique feature types found: ${Object.keys(counts).length}
+
+TOP FEATURES BY COUNT:
+${sorted.slice(0, 20).map(([k, v]) => `  ${v.toString().padStart(4)} × ${k}`).join('\n')}
+
+NAMED PLACES (sample):
+${named.map(e => `  📍 ${e.tags.name} (${Object.entries(e.tags).find(([k]) => ['amenity', 'shop', 'tourism'].includes(k))?.[1] || 'unknown'})`).join('\n')}
+
+Response size: ${JSON.stringify(data).length} bytes`;
+
+                log('overpass', elements.length > 0 ? 'pass' : 'fail', content, Date.now() - start);
+            } catch (e) {
+                log('overpass', 'fail', `ERROR: ${e.message}`, Date.now() - start);
+            }
+        }
+
+        // ===== 3. Open-Meteo Weather Test =====
+        async function testWeather() {
+            const start = Date.now();
+            log('weather', 'running', 'Fetching weather data from Open-Meteo...');
+
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LNG}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,uv_index&timezone=auto`;
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                const c = data.current || {};
+
+                const content = `🌡️ Temperature: ${c.temperature_2m}°C
+💧 Humidity: ${c.relative_humidity_2m}%
+💨 Wind Speed: ${c.wind_speed_10m} km/h
+☀️ UV Index: ${c.uv_index}
+📊 Weather Code: ${c.weather_code}
+⏰ Time: ${c.time}
+📍 Timezone: ${data.timezone}
+🏔️ Elevation: ${data.elevation}m`;
+
+                log('weather', c.temperature_2m != null ? 'pass' : 'fail', content, Date.now() - start);
+            } catch (e) {
+                log('weather', 'fail', `ERROR: ${e.message}`, Date.now() - start);
+            }
+        }
+
+        // ===== 4. WAQI Air Quality Test =====
+        async function testAQI() {
+            const start = Date.now();
+            log('aqi', 'running', 'Fetching AQI data from WAQI...');
+
+            try {
+                const url = `https://api.waqi.info/feed/geo:${LAT};${LNG}/?token=demo`;
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+
+                if (data.status !== 'ok') {
+                    log('aqi', 'fail', `API returned status: ${data.status}\nMessage: ${data.data || JSON.stringify(data)}`, Date.now() - start);
+                    return;
+                }
+
+                const d = data.data;
+                const iaqi = d.iaqi || {};
+
+                const content = `🌫️ AQI: ${d.aqi}
+📍 Station: ${d.city?.name || 'Unknown'}
+📌 Station coords: ${d.city?.geo?.join(', ') || 'N/A'}
+
+Pollutants:
+  PM2.5: ${iaqi.pm25?.v || 'N/A'}
+  PM10: ${iaqi.pm10?.v || 'N/A'}
+  O3: ${iaqi.o3?.v || 'N/A'}
+  NO2: ${iaqi.no2?.v || 'N/A'}
+  SO2: ${iaqi.so2?.v || 'N/A'}
+  CO: ${iaqi.co?.v || 'N/A'}
+
+Dominant pollutant: ${d.dominentpol || 'N/A'}
+Last updated: ${d.time?.s || 'N/A'}`;
+
+                log('aqi', d.aqi != null ? 'pass' : 'fail', content, Date.now() - start);
+            } catch (e) {
+                log('aqi', 'fail', `ERROR: ${e.message}`, Date.now() - start);
+            }
+        }
+
+        // ===== 5. Nominatim Reverse Geocoding Test =====
+        async function testNominatim() {
+            const start = Date.now();
+            log('nominatim', 'running', 'Reverse geocoding via Nominatim...');
+
+            try {
+                const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${LAT}&lon=${LNG}&zoom=18&addressdetails=1`;
+                const resp = await fetch(url, { headers: { 'User-Agent': 'DigiPinUrbanIntelligence/1.0' } });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                const addr = data.address || {};
+
+                const content = `📍 Full Address: ${data.display_name}
+
+Address Components:
+  Area: ${addr.suburb || addr.neighbourhood || addr.hamlet || 'N/A'}
+  City: ${addr.city || addr.town || addr.village || 'N/A'}
+  District: ${addr.county || addr.state_district || 'N/A'}
+  State: ${addr.state || 'N/A'}
+  Pincode: ${addr.postcode || 'N/A'}
+  Country: ${addr.country || 'N/A'}
+
+OSM Type: ${data.osm_type} #${data.osm_id}
+Place ID: ${data.place_id}`;
+
+                log('nominatim', data.display_name ? 'pass' : 'fail', content, Date.now() - start);
+            } catch (e) {
+                log('nominatim', 'fail', `ERROR: ${e.message}`, Date.now() - start);
+            }
+        }
+
+        // ===== FULL PIPELINE TEST =====
+        async function testFullPipeline() {
+            const start = Date.now();
+            log('full-pipeline', 'running', 'Running complete data pipeline (all sources in parallel)...');
+
+            try {
+                const [osm, weather, aqi, address] = await Promise.allSettled([
+                    fetchOSM(),
+                    fetchWeatherData(),
+                    fetchAQIData(),
+                    fetchAddressData()
+                ]);
+
+                const results = {
+                    osm: osm.status === 'fulfilled' ? osm.value : { error: osm.reason?.message },
+                    weather: weather.status === 'fulfilled' ? weather.value : { error: weather.reason?.message },
+                    aqi: aqi.status === 'fulfilled' ? aqi.value : { error: aqi.reason?.message },
+                    address: address.status === 'fulfilled' ? address.value : { error: address.reason?.message }
+                };
+
+                const osmCount = results.osm.elements?.length || 0;
+                const hasWeather = results.weather.current?.temperature_2m != null;
+                const hasAQI = results.aqi.data?.aqi != null;
+                const hasAddress = !!results.address.display_name;
+                const allPass = osmCount > 0 && hasWeather && hasAddress;
+
+                const content = `PIPELINE RESULTS (parallel fetch):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 OSM Overpass: ${osmCount > 0 ? '✅' : '❌'} ${osmCount} elements
+🌤️ Open-Meteo:  ${hasWeather ? '✅' : '❌'} ${results.weather.current?.temperature_2m || 'N/A'}°C
+💨 WAQI AQI:    ${hasAQI ? '✅' : '⚠️'} AQI ${results.aqi.data?.aqi || 'N/A (demo token limited)'}
+📍 Nominatim:   ${hasAddress ? '✅' : '❌'} ${results.address.display_name?.substring(0, 60) || 'N/A'}
+
+Total fetch time: ${Date.now() - start}ms
+Feature extraction ready: ${allPass ? 'YES ✅' : 'PARTIAL ⚠️'}`;
+
+                log('full-pipeline', allPass ? 'pass' : (osmCount > 0 ? 'pass' : 'fail'), content, Date.now() - start);
+
+                // Show summary
+                showSummary(results, Date.now() - start);
+            } catch (e) {
+                log('full-pipeline', 'fail', `ERROR: ${e.message}`, Date.now() - start);
+            }
+        }
+
+        async function fetchOSM() {
+            const query = `[out:json][timeout:30];(
+                nwr[amenity](around:${RADIUS},${LAT},${LNG});
+                nwr[shop](around:${RADIUS},${LAT},${LNG});
+                nwr[tourism](around:${RADIUS},${LAT},${LNG});
+                nwr[leisure](around:${RADIUS},${LAT},${LNG});
+                nwr[office](around:${RADIUS},${LAT},${LNG});
+                nwr[healthcare](around:${RADIUS},${LAT},${LNG});
+                way[building](around:${RADIUS},${LAT},${LNG});
+                way[landuse](around:${RADIUS},${LAT},${LNG});
+                nwr[highway=bus_stop](around:${RADIUS},${LAT},${LNG});
+                nwr[highway=street_lamp](around:${RADIUS},${LAT},${LNG});
+                nwr[man_made=tower](around:${RADIUS},${LAT},${LNG});
+                nwr[power=substation](around:${RADIUS},${LAT},${LNG});
+                nwr[natural=water](around:${RADIUS},${LAT},${LNG});
+                nwr[railway](around:${RADIUS},${LAT},${LNG});
+                nwr[historic](around:${RADIUS},${LAT},${LNG});
+            );out center body;`;
+            const resp = await fetch(OVERPASS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'data=' + encodeURIComponent(query)
+            });
+            return resp.json();
+        }
+
+        async function fetchWeatherData() {
+            const resp = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LNG}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,uv_index&timezone=auto`);
+            return resp.json();
+        }
+
+        async function fetchAQIData() {
+            const resp = await fetch(`https://api.waqi.info/feed/geo:${LAT};${LNG}/?token=demo`);
+            return resp.json();
+        }
+
+        async function fetchAddressData() {
+            const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${LAT}&lon=${LNG}&zoom=18&addressdetails=1`, {
+                headers: { 'User-Agent': 'DigiPinUrbanIntelligence/1.0' }
+            });
+            return resp.json();
+        }
+
+        function showSummary(results, totalTime) {
+            const osmCount = results.osm.elements?.length || 0;
+            const tags = {};
+            (results.osm.elements || []).forEach(el => {
+                Object.entries(el.tags || {}).forEach(([k, v]) => {
+                    if (['amenity', 'shop', 'tourism', 'leisure', 'office', 'healthcare', 'landuse', 'building', 'highway', 'railway', 'power', 'natural', 'historic', 'man_made'].includes(k)) {
+                        const key = `${k}=${v}`;
+                        tags[key] = (tags[key] || 0) + 1;
+                    }
+                });
+            });
+
+            const sorted = Object.entries(tags).sort((a, b) => b[1] - a[1]);
+
+            summaryEl.style.display = 'block';
+            summaryEl.innerHTML = `<h3>📊 Pipeline Summary for Indore (Rajwada area)</h3>
+<p style="font-size:13px;color:#94a3b8;">Total time: ${totalTime}ms | OSM elements: ${osmCount} | Feature types: ${sorted.length}</p>
+<div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;">
+${sorted.slice(0, 30).map(([k, v]) => `<div style="background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:6px;font-size:12px;"><strong style="color:#00f5ff;">${v}</strong> <span style="color:#94a3b8;">${k}</span></div>`).join('')}
+</div>`;
+        }
+
+        // ===== RUN ALL =====
+        async function runAllTests() {
+            output.innerHTML = '';
+            summaryEl.style.display = 'none';
+            testResults = {};
+
+            testDigiPin();
+            await testWeather();
+            await testAQI();
+            await testNominatim();
+            await testOverpassBatched();
+        }
+    </script>
+</body>
+
+</html>

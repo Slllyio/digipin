@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DigiPin Urban Intelligence Portal — 160+ urban features for every 4x4m grid cell in India. Powered by OpenStreetMap and India Post DigiPin system.">
+    <title>DigiPin Urban Intelligence — Indore Pilot</title>
+
+    <!-- Leaflet.js -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- PMTiles + Protomaps for Overture Buildings vector overlay -->
+    <script src="https://unpkg.com/pmtiles@4.4.0/dist/pmtiles.js"></script>
+    <script src="https://unpkg.com/protomaps-leaflet@5.1.0/dist/protomaps-leaflet.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00f5ff">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+</head>
+<body>
+
+    <!-- ===== MAP ===== -->
+    <div id="map" role="application" aria-label="Interactive DigiPin grid map of India"></div>
+
+    <!-- ===== TOP BAR ===== -->
+    <div id="top-bar" role="search" aria-label="Search for locations">
+        <div class="logo" aria-hidden="true">
+            <div class="logo-icon">DP</div>
+            <span class="logo-text">DigiPin Intelligence</span>
+        </div>
+        <select id="city-select" aria-label="Select city"></select>
+        <label for="search-input" class="sr-only">Search DigiPin code or place name</label>
+        <input type="text" id="search-input" placeholder="Search DigiPin code or place name (e.g. Rajwada, Indore)" autocomplete="off" aria-label="Search DigiPin code or place name">
+        <button id="search-btn" aria-label="Search">🔍</button>
+    </div>
+
+    <!-- ===== TOOLBAR ===== -->
+    <div id="toolbar" aria-label="Map tools">
+        <button class="toolbar-btn" id="btn-heatmap" title="Heatmap Overlay">
+            <span class="tb-icon">&#9632;</span>
+            <span class="tb-label">Heatmap</span>
+        </button>
+        <div id="heatmap-dropdown" class="toolbar-dropdown"></div>
+        <button class="toolbar-btn" id="btn-wards" title="Ward Boundaries">
+            <span class="tb-icon">&#9638;</span>
+            <span class="tb-label">Wards</span>
+        </button>
+        <button class="toolbar-btn" id="btn-lcz" title="Local Climate Zones Overlay">
+            <span class="tb-icon">&#127961;</span>
+            <span class="tb-label">LCZ</span>
+        </button>
+        <button class="toolbar-btn" id="btn-buildings" title="Overture Buildings Footprints">
+            <span class="tb-icon">&#127970;</span>
+            <span class="tb-label">Buildings</span>
+        </button>
+        <button class="toolbar-btn" id="btn-lulc" title="ISRO Bhuvan Land Use / Land Cover">
+            <span class="tb-icon">&#127758;</span>
+            <span class="tb-label">LULC</span>
+        </button>
+        <button class="toolbar-btn" id="btn-compare" title="Compare Cells">
+            <span class="tb-icon">&#8860;</span>
+            <span class="tb-label">Compare</span>
+            <span class="toolbar-badge" id="compare-badge" style="display:none">0</span>
+        </button>
+        <button class="toolbar-btn" id="btn-bookmarks" title="Bookmarks">
+            <span class="tb-icon">&#9733;</span>
+            <span class="tb-label">Saved</span>
+        </button>
+    </div>
+
+    <!-- ===== SIDEBAR — QUERIES ===== -->
+    <nav id="sidebar" aria-label="Urban planning queries">
+        <button id="sidebar-toggle" aria-label="Toggle sidebar" aria-expanded="true">←</button>
+        <div class="sidebar-content">
+            <div class="sidebar-title">🧠 Urban Queries</div>
+            <div id="query-list" role="list" aria-label="Available queries"></div>
+        </div>
+    </nav>
+
+    <!-- ===== DETAIL PANEL (floating, draggable, resizable) ===== -->
+    <aside id="detail-panel" class="floating-dialog" aria-label="Location details">
+        <div class="dialog-titlebar" data-dialog="detail-panel" id="panel-titlebar">
+            <div class="dialog-title-text" id="panel-title-text">Cell Details</div>
+            <button class="close-btn" onclick="Panel.close()" aria-label="Close detail panel">&#10005;</button>
+        </div>
+        <div class="dialog-body" id="panel-content"></div>
+        <div class="dialog-resize-handle" data-dialog="detail-panel"></div>
+    </aside>
+
+    <!-- ===== DISHA CHAT DIALOG (floating, draggable, resizable) ===== -->
+    <aside id="disha-panel" class="floating-dialog" aria-label="DISHA AI Assistant">
+        <div class="dialog-titlebar" data-dialog="disha-panel">
+            <div class="disha-title">
+                <span class="disha-logo" aria-hidden="true">D</span>
+                <span>DISHA</span>
+                <span class="disha-status" id="disha-status" title="Checking Ollama..." role="status">...</span>
+            </div>
+            <div class="disha-subtitle">Urban Intelligence Assistant</div>
+            <button class="close-btn" onclick="DISHAPanel.close()" aria-label="Close DISHA panel">&#10005;</button>
+        </div>
+        <div class="disha-body">
+            <div class="disha-messages" id="disha-messages" role="log" aria-live="polite" aria-label="Chat messages"></div>
+            <div class="disha-suggestions" id="disha-suggestions" aria-label="Suggested questions"></div>
+            <div class="disha-input-row">
+                <label for="disha-input" class="sr-only">Ask DISHA about this location</label>
+                <input type="text" id="disha-input" placeholder="Ask about this location..." disabled aria-label="Ask about this location">
+                <button id="disha-send" onclick="DISHAPanel.send()" disabled aria-label="Send message">-></button>
+                <button id="disha-stop" onclick="DISHA.cancel()" style="display:none" aria-label="Stop generation">||</button>
+            </div>
+        </div>
+        <div class="dialog-resize-handle" data-dialog="disha-panel"></div>
+    </aside>
+
+    <!-- ===== BUILDING INTELLIGENCE DIALOG (floating, draggable, resizable) ===== -->
+    <aside id="building-intel-dialog" class="floating-dialog" aria-label="Building Intelligence">
+        <div class="dialog-titlebar" data-dialog="building-intel-dialog">
+            <div class="dialog-title-text">&#127959;&#65039; Building Intelligence</div>
+            <button class="close-btn" onclick="BuildingIntelDialog.close()" aria-label="Close Building Intelligence">&#10005;</button>
+        </div>
+        <div class="dialog-body" id="building-intel-content"></div>
+        <div class="dialog-resize-handle" data-dialog="building-intel-dialog"></div>
+    </aside>
+
+    <!-- ===== INTELLIGENCE SCORES DIALOG ===== -->
+    <aside id="scores-dialog" class="floating-dialog" aria-label="Intelligence Scores">
+        <div class="dialog-titlebar" data-dialog="scores-dialog">
+            <div class="dialog-title-text">&#129504; Intelligence Scores</div>
+            <button class="close-btn" onclick="ScoresDialog.close()" aria-label="Close Intelligence Scores">&#10005;</button>
+        </div>
+        <div class="dialog-body" id="scores-dialog-content"></div>
+        <div class="dialog-resize-handle" data-dialog="scores-dialog"></div>
+    </aside>
+
+    <!-- ===== RESULTS PANEL ===== -->
+    <div id="results-panel" role="region" aria-label="Query results"></div>
+
+    <!-- ===== QUERY PROGRESS ===== -->
+    <div id="query-progress" role="status" aria-live="polite">
+        <div style="flex:1">
+            <div id="query-progress-text">Analyzing...</div>
+            <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:2px;margin-top:6px;overflow:hidden;">
+                <div id="query-progress-bar" style="width:0%" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== COMPARE PANEL ===== -->
+    <aside id="compare-panel" aria-label="Cell comparison">
+        <div class="compare-panel-header">
+            <h3>Cell Comparison</h3>
+            <button class="close-btn" onclick="Compare.closePanel()" aria-label="Close compare">&#10005;</button>
+        </div>
+        <canvas id="compare-radar"></canvas>
+        <div id="compare-content" class="compare-content"></div>
+        <div class="compare-actions">
+            <button class="compare-clear-btn" onclick="Compare.clearAll()">Clear All Pins</button>
+        </div>
+    </aside>
+
+    <!-- ===== BOOKMARKS PANEL ===== -->
+    <aside id="bookmarks-panel" aria-label="Saved bookmarks">
+        <div class="bm-panel-header">
+            <h3>&#9733; Bookmarks</h3>
+            <button class="close-btn" onclick="Bookmarks.closePanel()" aria-label="Close bookmarks">&#10005;</button>
+        </div>
+        <div id="bookmarks-list" class="bm-list"></div>
+    </aside>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="js/digipin.js"></script>
+    <script src="js/data-fetcher.js"></script>
+    <script src="js/building-intelligence.js"></script>
+    <script src="js/overture-buildings.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/panel.js"></script>
+    <script src="js/query-engine.js"></script>
+    <script src="js/disha.js"></script>
+    <script src="js/disha-panel.js"></script>
+    <script src="js/compare.js"></script>
+    <script src="js/isochrone.js"></script>
+    <script src="js/report.js"></script>
+    <script src="js/heatmap-overlay.js"></script>
+    <script src="js/bookmarks.js"></script>
+    <script src="js/city-selector.js"></script>
+    <script src="js/ward-overlay.js"></script>
+    <script src="js/floating-dialogs.js"></script>
+    <script src="js/building-intel-dialog.js"></script>
+    <script src="js/scores-dialog.js"></script>
+    <script src="js/training-data-gen.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

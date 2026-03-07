@@ -1,0 +1,507 @@
+/**
+ * DISHA Chat Panel — Urban Intelligence UI Controller
+ * Manages the interactive chat interface with intent routing,
+ * city scanning, rich data cards, and streaming responses
+ */
+
+const DISHAPanel = (() => {
+    let _currentCell = null;
+    let _currentData = null;
+    let _currentContext = '';
+    let _isStreaming = false;
+    let _isCityScanning = false;
+
+    // ===== INIT =====
+    async function init() {
+        const statusEl = document.getElementById('disha-status');
+        const inputEl = document.getElementById('disha-input');
+
+        const result = await DISHA.checkConnection();
+
+        if (result.connected) {
+            statusEl.textContent = 'LIVE';
+            statusEl.classList.add('connected');
+            statusEl.title = `Connected to Ollama (${result.models.join(', ')})`;
+        } else {
+            statusEl.textContent = 'OFF';
+            statusEl.classList.add('offline');
+            statusEl.title = result.reason;
+        }
+
+        inputEl.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                send();
+            }
+        });
+    }
+
+    // ===== OPEN =====
+    function open(cell, data) {
+        _currentCell = cell;
+        _currentData = data;
+        _currentContext = DISHA.buildContext(cell, data);
+
+        const panelEl = document.getElementById('disha-panel');
+        const messagesEl = document.getElementById('disha-messages');
+        const inputEl = document.getElementById('disha-input');
+        const sendBtn = document.getElementById('disha-send');
+        const suggestionsEl = document.getElementById('disha-suggestions');
+
+        panelEl.classList.add('open');
+        while (messagesEl.firstChild) messagesEl.removeChild(messagesEl.firstChild);
+        inputEl.disabled = false;
+        sendBtn.disabled = false;
+
+        // Clear conversation history for new cell
+        DISHA.clearHistory();
+
+        // Count data sources loaded
+        const dataSources = [];
+        if (_currentData.environment?.temperature != null) dataSources.push('Weather');
+        if (_currentData.environment?.aqi != null) dataSources.push('AQI');
+        if (_currentData.environment?.solar) dataSources.push('Solar');
+        if (_currentData.buildingIntel) dataSources.push('Buildings');
+        if (_currentData.context?.iudx) dataSources.push('IUDX');
+        if (_currentData.context?.iudxCatalogue) dataSources.push('IUDX Catalogue');
+        if (_currentData.context?.cepi) dataSources.push('CEPI');
+        if (_currentData.context?.postOffices) dataSources.push('Post Offices');
+        if (_currentData.context?.healthFacilities) dataSources.push('Health');
+        if (_currentData.context?.wikipedia) dataSources.push('Wikipedia');
+        if (_currentData.environment?.populationDensity) dataSources.push('Population');
+        if (_currentData.environment?.elevation) dataSources.push('Elevation');
+
+        const featureCount = _currentData.raw?.featureTypesFound || 0;
+        const scoreCount = Object.values(_currentData.scores || {}).filter(s => s && s.value > 0).length;
+
+        // Welcome message with data summary
+        addMessage('disha', `Urban Intelligence loaded for DigiPin **${cell.code}**\n\n` +
+            `${dataSources.length} data sources active: ${dataSources.join(', ')}\n` +
+            `${featureCount} feature types | ${scoreCount} intelligence scores\n\n` +
+            `Ask me anything — from "Is this safe to live?" to "Where should I open a restaurant in this area?"\n` +
+            `I can also scan the city for optimal locations.`
+        );
+
+        // Smart suggestions
+        const suggestions = DISHA.getSuggestions(data);
+        while (suggestionsEl.firstChild) suggestionsEl.removeChild(suggestionsEl.firstChild);
+        suggestionsEl.style.display = '';
+        suggestions.forEach(s => {
+            const btn = document.createElement('button');
+            btn.className = 'disha-suggestion';
+            btn.textContent = s;
+            btn.addEventListener('click', () => askSuggestion(s));
+            suggestionsEl.appendChild(btn);
+        });
+
+        inputEl.focus();
+    }
+
+    function close() {
+        document.getElementById('disha-panel').classList.remove('open');
+        DISHA.cancel();
+        _isStreaming = false;
+        _isCityScanning = false;
+    }
+
+    // ===== SEND =====
+    async function send() {
+        const inputEl = document.getElementById('disha-input');
+        const question = inputEl.value.trim();
+        if (!question || _isStreaming || _isCityScanning) return;
+
+        inputEl.value = '';
+        addMessage('user', question);
+
+        document.getElementById('disha-suggestions').style.display = 'none';
+
+        if (!DISHA.isConnected()) {
+            const summary = DISHA.offlineSummary(_currentCell, _currentData);
+            addMessage('disha', summary);
+            return;
+        }
+
+        // Intent routing — detect if this needs a city scan
+        const intent = DISHA.detectIntent(question);
+
+        if (intent === 'city_scan') {
+            await handleCityScan(question);
+        } else {
+            await streamResponse(question);
+        }
+    }
+
+    function askSuggestion(question) {
+        document.getElementById('disha-input').value = question;
+        send();
+    }
+
+    // ===== CITY SCAN FLOW =====
+    async function handleCityScan(question) {
+        _isCityScanning = true;
+        const sendBtn = document.getElementById('disha-send');
+        const inputEl = document.getElementById('disha-input');
+        sendBtn.style.display = 'none';
+        inputEl.disabled = true;
+
+        // Show scanning status
+        const statusMsg = addMessage('disha', '');
+        const statusContent = statusMsg.querySelector('.disha-msg-content');
+
+        const scanIndicator = document.createElement('div');
+        scanIndicator.className = 'disha-scan-status';
+        const spinner = document.createElement('span');
+        spinner.className = 'disha-scan-spinner';
+        spinner.textContent = '\u25CE';
+        const scanText = document.createElement('span');
+        scanText.textContent = 'Initiating city scan...';
+        scanIndicator.appendChild(spinner);
+        scanIndicator.appendChild(scanText);
+        statusContent.appendChild(scanIndicator);
+
+        try {
+            const results = await DISHA.cityScan(question, (status) => {
+                scanText.textContent = status;
+            });
+
+            if (!results || results.length === 0) {
+                applyFormattedResponse(statusContent, 'City scan returned no results. Try zooming into a city area first.');
+                resetInputState();
+                _isCityScanning = false;
+                return;
+            }
+
+            // Show scan results as a data card
+            scanText.textContent = `Scan complete! Found top ${results.length} locations. Analyzing with AI...`;
+
+            // Build city scan context and feed to LLM
+            const cityScanContext = DISHA.buildCityScanContext(results, question);
+
+            // Remove the status message and stream AI response
+            statusMsg.remove();
+            _isCityScanning = false;
+
+            // Add scan results card
+            addScanResultsCard(results, question);
+
+            // Now stream the LLM analysis of scan results
+            await streamResponse(question, cityScanContext);
+        } catch (err) {
+            applyFormattedResponse(statusContent, `Scan error: ${err.message}`);
+            resetInputState();
+            _isCityScanning = false;
+        }
+    }
+
+    // Add a visual card showing scan results before the LLM analysis
+    function addScanResultsCard(results, question) {
+        const messagesEl = document.getElementById('disha-messages');
+        const card = document.createElement('div');
+        card.className = 'disha-msg disha-msg-disha';
+
+        const content = document.createElement('div');
+        content.className = 'disha-msg-content';
+
+        // Header
+        const header = document.createElement('div');
+        header.className = 'disha-scan-header';
+        header.textContent = 'City Scan Results';
+        content.appendChild(header);
+
+        // Results list
+        results.forEach((r, i) => {
+            const row = document.createElement('div');
+            row.className = 'disha-scan-row';
+            row.style.cursor = 'pointer';
+            row.addEventListener('click', () => {
+                if (typeof MapModule !== 'undefined') {
+                    MapModule.flyTo(r.lat, r.lng, 17);
+                }
+            });
+
+            const rank = document.createElement('span');
+            rank.className = 'disha-scan-rank';
+            rank.textContent = `#${i + 1}`;
+
+            const info = document.createElement('span');
+            info.className = 'disha-scan-info';
+
+            const name = document.createElement('div');
+            name.className = 'disha-scan-name';
+            name.textContent = `${r.code} ${r.area ? '(' + r.area + ')' : ''}`;
+
+            const score = document.createElement('div');
+            score.className = 'disha-scan-score';
+
+            const bar = document.createElement('div');
+            bar.className = 'disha-scan-bar';
+            const fill = document.createElement('div');
+            fill.className = 'disha-scan-bar-fill';
+            fill.style.width = Math.min(100, r.score) + '%';
+            fill.style.background = r.score > 70 ? 'var(--accent-green, #00ff88)' :
+                                    r.score > 40 ? 'var(--accent-cyan, #00f5ff)' :
+                                    'var(--accent-orange, #ff9500)';
+            bar.appendChild(fill);
+
+            const scoreText = document.createElement('span');
+            scoreText.textContent = r.score.toFixed(1);
+            score.appendChild(bar);
+            score.appendChild(scoreText);
+
+            info.appendChild(name);
+            info.appendChild(score);
+
+            row.appendChild(rank);
+            row.appendChild(info);
+            content.appendChild(row);
+        });
+
+        const hint = document.createElement('div');
+        hint.className = 'disha-scan-hint';
+        hint.textContent = 'Click a result to fly to that location on the map';
+        content.appendChild(hint);
+
+        card.appendChild(content);
+        messagesEl.appendChild(card);
+        scrollToBottom();
+    }
+
+    // ===== STREAM RESPONSE =====
+    async function streamResponse(question, cityScanContext) {
+        _isStreaming = true;
+        const sendBtn = document.getElementById('disha-send');
+        const stopBtn = document.getElementById('disha-stop');
+        const inputEl = document.getElementById('disha-input');
+
+        sendBtn.style.display = 'none';
+        stopBtn.style.display = 'inline-flex';
+        inputEl.disabled = true;
+
+        const messageEl = addMessage('disha', '');
+        const contentEl = messageEl.querySelector('.disha-msg-content');
+        let fullResponse = '';
+
+        await DISHA.ask(
+            _currentContext,
+            question,
+            (token) => {
+                fullResponse += token;
+                contentEl.textContent = fullResponse;
+                scrollToBottom();
+            },
+            () => {
+                _isStreaming = false;
+                applyFormattedResponse(contentEl, fullResponse);
+                resetInputState();
+            },
+            (err) => {
+                _isStreaming = false;
+                contentEl.textContent = `Error: ${err.message}`;
+                contentEl.classList.add('disha-error');
+                resetInputState();
+            },
+            cityScanContext || null
+        );
+    }
+
+    function resetInputState() {
+        const sendBtn = document.getElementById('disha-send');
+        const stopBtn = document.getElementById('disha-stop');
+        const inputEl = document.getElementById('disha-input');
+
+        sendBtn.style.display = 'inline-flex';
+        stopBtn.style.display = 'none';
+        inputEl.disabled = false;
+        inputEl.focus();
+    }
+
+    // ===== MESSAGE RENDERING =====
+    function addMessage(role, text) {
+        const messagesEl = document.getElementById('disha-messages');
+        const div = document.createElement('div');
+        div.className = `disha-msg disha-msg-${role}`;
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'disha-msg-content';
+
+        if (role === 'user') {
+            contentDiv.textContent = text;
+        } else {
+            applyFormattedResponse(contentDiv, text);
+        }
+
+        div.appendChild(contentDiv);
+        messagesEl.appendChild(div);
+        scrollToBottom();
+        return div;
+    }
+
+    function scrollToBottom() {
+        const el = document.getElementById('disha-messages');
+        el.scrollTop = el.scrollHeight;
+    }
+
+    /**
+     * Format LLM response into styled DOM elements.
+     * Handles: **bold**, bullets, score citations, verdicts, tables
+     */
+    function applyFormattedResponse(el, text) {
+        while (el.firstChild) el.removeChild(el.firstChild);
+
+        if (!text) {
+            const thinking = document.createElement('span');
+            thinking.className = 'disha-thinking';
+            thinking.textContent = 'Thinking...';
+            el.appendChild(thinking);
+            return;
+        }
+
+        const lines = text.split('\n');
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+            if (!trimmed) {
+                el.appendChild(document.createElement('br'));
+                return;
+            }
+
+            // Verdict line
+            const verdictMatch = trimmed.match(/^\*?\*?Verdict:?\*?\*?\s*(.+)/i);
+            if (verdictMatch) {
+                const verdict = verdictMatch[1].trim().replace(/\*+/g, '');
+                const span = document.createElement('span');
+                span.className = 'disha-verdict ' + getVerdictClass(verdict);
+                span.textContent = verdict;
+                el.appendChild(span);
+                el.appendChild(document.createElement('br'));
+                return;
+            }
+
+            // Score badge detection: find patterns like score=XX or XX/100
+            const scorePattern = /(\w+)=(\d+)(?:\/100)?/g;
+
+            // Bullet lines
+            if (trimmed.startsWith('-') || trimmed.startsWith('*') || trimmed.startsWith('\u2022')) {
+                const bullet = document.createElement('div');
+                bullet.className = 'disha-bullet';
+
+                const icon = document.createElement('span');
+                icon.className = 'disha-bullet-icon';
+                icon.textContent = '\u25B8';
+                bullet.appendChild(icon);
+
+                const content = document.createElement('span');
+                const bulletText = trimmed.replace(/^[-*\u2022]\s*/, '');
+                appendRichText(content, bulletText, scorePattern);
+                bullet.appendChild(content);
+
+                el.appendChild(bullet);
+                return;
+            }
+
+            // Numbered list (1. 2. 3. or #1 #2 #3)
+            const numMatch = trimmed.match(/^(?:(\d+)\.|#(\d+))\s+(.+)/);
+            if (numMatch) {
+                const bullet = document.createElement('div');
+                bullet.className = 'disha-bullet disha-numbered';
+
+                const icon = document.createElement('span');
+                icon.className = 'disha-bullet-icon disha-num-icon';
+                icon.textContent = (numMatch[1] || numMatch[2]);
+                bullet.appendChild(icon);
+
+                const content = document.createElement('span');
+                appendRichText(content, numMatch[3], scorePattern);
+                bullet.appendChild(content);
+
+                el.appendChild(bullet);
+                return;
+            }
+
+            // Table row (|col1|col2|col3|)
+            if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+                const cells = trimmed.split('|').filter(c => c.trim());
+                // Skip separator rows (|---|---|)
+                if (cells.every(c => /^[\s-:]+$/.test(c))) return;
+
+                const row = document.createElement('div');
+                row.className = 'disha-table-row';
+                cells.forEach(cellText => {
+                    const cell = document.createElement('span');
+                    cell.className = 'disha-table-cell';
+                    appendRichText(cell, cellText.trim(), scorePattern);
+                    row.appendChild(cell);
+                });
+                el.appendChild(row);
+                return;
+            }
+
+            // Regular line
+            const p = document.createElement('div');
+            p.style.marginTop = '3px';
+            appendRichText(p, trimmed, scorePattern);
+            el.appendChild(p);
+        });
+    }
+
+    /**
+     * Append text with **bold**, score=XX badges, and DigiPin code highlighting
+     */
+    function appendRichText(parent, text, _scorePattern) {
+        // Split on bold markers first
+        const parts = text.split(/(\*\*[^*]+\*\*)/g);
+        parts.forEach(part => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+                const strong = document.createElement('strong');
+                strong.textContent = part.slice(2, -2);
+                parent.appendChild(strong);
+            } else if (part) {
+                // Look for score citations like safety=72
+                const scoreParts = part.split(/(\w+=\d+(?:\/100)?)/g);
+                scoreParts.forEach(sp => {
+                    const scoreMatch = sp.match(/^(\w+)=(\d+)(\/100)?$/);
+                    if (scoreMatch) {
+                        const badge = document.createElement('span');
+                        const val = parseInt(scoreMatch[2]);
+                        badge.className = 'disha-score-badge ' +
+                            (val >= 70 ? 'badge-good' : val >= 40 ? 'badge-moderate' : 'badge-poor');
+                        badge.textContent = sp;
+                        badge.title = `${scoreMatch[1]}: ${val}/100`;
+                        parent.appendChild(badge);
+                    } else if (sp) {
+                        // Check for DigiPin codes (10 chars from valid set)
+                        const dpParts = sp.split(/([23456789CFJKLMPT]{10})/g);
+                        dpParts.forEach(dp => {
+                            const validChars = new Set('23456789CFJKLMPT'.split(''));
+                            if (dp.length === 10 && [...dp].every(c => validChars.has(c))) {
+                                const link = document.createElement('span');
+                                link.className = 'disha-digipin-link';
+                                link.textContent = dp;
+                                link.title = 'Click to navigate';
+                                link.style.cursor = 'pointer';
+                                link.addEventListener('click', () => {
+                                    try {
+                                        const decoded = DigiPin.decode(dp);
+                                        MapModule.flyTo(decoded.lat, decoded.lng, 17);
+                                    } catch { /* ignore invalid */ }
+                                });
+                                parent.appendChild(link);
+                            } else if (dp) {
+                                parent.appendChild(document.createTextNode(dp));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    function getVerdictClass(verdict) {
+        const v = verdict.toLowerCase();
+        if (v.includes('excellent') || v.includes('good') || v.includes('outstanding')) return 'disha-verdict-good';
+        if (v.includes('moderate') || v.includes('acceptable') || v.includes('average')) return 'disha-verdict-moderate';
+        return 'disha-verdict-poor';
+    }
+
+    return { init, open, close, send, askSuggestion };
+})();

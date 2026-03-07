@@ -1,0 +1,22 @@
+# Screenshots (dev artifacts)
+*.png
+
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# Training data (large files, not for git)
+training-data/digipin-*.json
+training-data/disha-qlora-output/
+
+# OS files
+desktop.ini
+Thumbs.db
+.DS_Store
+
+# Editor
+.vscode/
+*.swp
+*.swo
+
+# Node (if ever added)
+node_modules/
