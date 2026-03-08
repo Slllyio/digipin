@@ -33,6 +33,11 @@ const DISHAPanel = (() => {
         if (gearBtn) {
             gearBtn.addEventListener('click', toggleSettings);
         }
+
+        // Prune expired cache entries on startup
+        if (typeof DISHACache !== 'undefined') {
+            DISHACache.prune();
+        }
     }
 
     function updateStatusBadge(result) {
@@ -542,9 +547,17 @@ const DISHAPanel = (() => {
                 contentEl.textContent = fullResponse;
                 scrollToBottom();
             },
-            () => {
+            (meta) => {
                 _isStreaming = false;
                 applyFormattedResponse(contentEl, fullResponse);
+                // Show cached indicator if response was from cache
+                if (meta && meta.cached) {
+                    const badge = document.createElement('span');
+                    badge.className = 'disha-cached-badge';
+                    badge.textContent = 'cached';
+                    badge.title = 'This response was served from cache';
+                    contentEl.appendChild(badge);
+                }
                 resetInputState();
             },
             (err) => {

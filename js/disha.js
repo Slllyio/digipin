@@ -16,6 +16,7 @@
 const DISHA = (() => {
     let _abortController = null;
     let _conversationHistory = [];   // multi-turn memory
+    let _currentCellCode = null;     // tracks current cell for cache keys
     const MAX_HISTORY = 6;           // keep last 6 exchanges (12 messages)
 
     const SYSTEM_PROMPT = `You are DISHA (Digital Intelligence for Spatial & Human Analysis), an expert Urban Intelligence advisor for India's DigiPin system.
@@ -319,6 +320,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
 
     // Build context filtered by question intent (smart filtering)
     function buildFilteredContext(cell, data, question) {
+        _currentCellCode = cell.code; // track for cache keying
         const contextType = detectContextType(question);
         const sections = INTENT_SECTIONS[contextType];
         return buildContext(cell, data, sections);
@@ -420,7 +422,8 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return 'best_residential';
     }
 
-    // ===== CITY-LEVEL SCAN =====
+    // ===== CITY-LEVEL SCAN (optimized) =====
+    // Batches of 8, cell caching, faster processing
     async function cityScan(question, onStatus) {
         if (typeof MapModule === 'undefined') return null;
 
@@ -451,12 +454,29 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         const results = [];
         let done = 0;
 
-        for (let batch = 0; batch < points.length; batch += 4) {
-            const chunk = points.slice(batch, batch + 4);
+        const hasCache = typeof DISHACache !== 'undefined';
+        const BATCH_SIZE = 8; // 2x larger batches for faster scanning
+
+        for (let batch = 0; batch < points.length; batch += BATCH_SIZE) {
+            const chunk = points.slice(batch, batch + BATCH_SIZE);
             const batchResults = await Promise.allSettled(
                 chunk.map(async pt => {
                     const code = typeof DigiPin !== 'undefined' ? DigiPin.encode(pt.lat, pt.lng) : 'N/A';
-                    const data = await DataFetcher.fetchAllFeatures(pt.lat, pt.lng, 400);
+
+                    // Check cell cache first
+                    let data = null;
+                    if (hasCache) {
+                        data = await DISHACache.getCellData(pt.lat, pt.lng);
+                    }
+
+                    if (!data) {
+                        data = await DataFetcher.fetchAllFeatures(pt.lat, pt.lng, 400);
+                        // Cache for future scans
+                        if (hasCache) {
+                            DISHACache.putCellData(pt.lat, pt.lng, data);
+                        }
+                    }
+
                     const score = QueryEngine.computeQueryScore(data.scores, weights);
                     const addr = data.address || {};
                     const area = addr.area || addr.city || '';
@@ -471,8 +491,8 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
 
             if (onStatus) onStatus(`Scanning city... ${done}/${points.length}`);
 
-            if (batch + 4 < points.length) {
-                await new Promise(r => setTimeout(r, 200));
+            if (batch + BATCH_SIZE < points.length) {
+                await new Promise(r => setTimeout(r, 100)); // shorter delay with larger batches
             }
         }
 
@@ -561,12 +581,40 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return prompt;
     }
 
-    // ===== STREAMING (via DISHAProviders) =====
+    // ===== STREAMING (via DISHAProviders, with cache) =====
     async function ask(context, question, onToken, onDone, onError, cityScanContext) {
         if (_abortController) {
             _abortController.abort();
         }
         _abortController = new AbortController();
+
+        // Determine context type for cache key
+        const contextType = detectContextType(question);
+
+        // Check cache first (skip for city scans — they have unique scan data)
+        if (!cityScanContext && _currentCellCode && typeof DISHACache !== 'undefined') {
+            const cached = await DISHACache.getResponse(_currentCellCode, contextType, question);
+            if (cached) {
+                addToHistory('user', question);
+                addToHistory('assistant', cached.response);
+                // Simulate streaming for cached response (fast typewriter)
+                const words = cached.response.split(' ');
+                let i = 0;
+                const chunkSize = 3;
+                const interval = setInterval(() => {
+                    if (i >= words.length) {
+                        clearInterval(interval);
+                        if (onDone) onDone({ cached: true });
+                        _abortController = null;
+                        return;
+                    }
+                    const chunk = words.slice(i, i + chunkSize).join(' ') + (i + chunkSize < words.length ? ' ' : '');
+                    onToken(chunk);
+                    i += chunkSize;
+                }, 20);
+                return;
+            }
+        }
 
         addToHistory('user', question);
 
@@ -577,44 +625,45 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         }
 
         try {
-            let fullResponse;
-
             if (provider.type === 'ollama') {
-                // Ollama: single prompt with context + history + question
                 const prompt = assemblePrompt(context, question, cityScanContext);
-                fullResponse = await DISHAProviders.stream({
+                await DISHAProviders.stream({
                     system: SYSTEM_PROMPT,
                     prompt,
                     onToken,
                     onDone: (resp) => {
                         addToHistory('assistant', resp);
+                        // Cache the response
+                        if (!cityScanContext && _currentCellCode && typeof DISHACache !== 'undefined') {
+                            DISHACache.putResponse(_currentCellCode, contextType, question, resp, provider.id);
+                        }
                         if (onDone) onDone({});
                     },
                     onError,
                     signal: _abortController.signal
                 });
             } else {
-                // OpenAI-compatible: structured messages with location data in system
                 let systemContent = SYSTEM_PROMPT + '\n\n[LOCATION DATA]\n' + context;
                 if (cityScanContext) {
                     systemContent += '\n\n' + cityScanContext;
                 }
 
-                // Build messages: history + current question
                 const historyMessages = getHistoryAsMessages();
-                // Remove the last entry (the one we just added above)
                 historyMessages.pop();
                 const messages = [
                     ...historyMessages,
                     { role: 'user', content: question }
                 ];
 
-                fullResponse = await DISHAProviders.stream({
+                await DISHAProviders.stream({
                     system: systemContent,
                     messages,
                     onToken,
                     onDone: (resp) => {
                         addToHistory('assistant', resp);
+                        if (!cityScanContext && _currentCellCode && typeof DISHACache !== 'undefined') {
+                            DISHACache.putResponse(_currentCellCode, contextType, question, resp, provider.id);
+                        }
                         if (onDone) onDone({});
                     },
                     onError,
