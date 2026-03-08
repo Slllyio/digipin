@@ -2063,20 +2063,18 @@ body {
     justify-content: center;
 }
 
-/* Heatmap dropdown */
+/* Toolbar dropdowns — use fixed position to escape overflow:auto clipping */
 .toolbar-dropdown {
     display: none;
-    position: absolute;
-    top: 0;
-    right: 100%;
-    margin-right: 6px;
+    position: fixed;
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
     padding: 4px;
     min-width: 140px;
-    z-index: 910;
+    z-index: 2000;
     box-shadow: var(--shadow-glow);
+    pointer-events: auto;
 }
 
 .toolbar-dropdown.open {
@@ -2790,42 +2788,87 @@ body {
 
 /* ===== DIGITAL TWIN LAYERS DROPDOWN ===== */
 .dt-layers-menu {
-    min-width: 230px;
-    max-height: 480px;
+    min-width: 260px;
+    max-height: 70vh;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(255,255,255,0.1) transparent;
+    padding: 2px;
 }
 
-.dt-group-header {
+/* Collapsible group */
+.dt-layer-group {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.dt-layer-group:last-child {
+    border-bottom: none;
+}
+
+.dt-group-header-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--accent-cyan);
     font-size: 9px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.2px;
-    color: var(--accent-cyan);
-    padding: 8px 12px 4px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    opacity: 0.7;
+    padding: 8px 10px 6px;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: var(--transition);
+    font-family: 'Inter', sans-serif;
 }
-.dt-group-header:first-child {
-    border-top: none;
-    padding-top: 6px;
+.dt-group-header-btn:hover {
+    opacity: 1;
+    background: rgba(0, 245, 255, 0.04);
+}
+.dt-group-title {
+    flex: 1;
+    text-align: left;
+}
+.dt-group-count {
+    font-size: 8px;
+    background: rgba(0, 245, 255, 0.15);
+    color: var(--accent-cyan);
+    border-radius: 8px;
+    padding: 1px 6px;
+    margin-right: 6px;
+}
+.dt-group-chevron {
+    font-size: 10px;
+    transition: transform 0.2s ease;
+}
+.dt-group-header-btn.expanded .dt-group-chevron {
+    transform: rotate(180deg);
 }
 
+/* Group content — collapsed by default */
+.dt-group-content {
+    display: none;
+}
+.dt-group-content.open {
+    display: block;
+}
+
+/* Layer item */
 .dt-layer-item {
-    display: flex !important;
+    display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 10px 6px 16px !important;
+    padding: 5px 10px 5px 16px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border-radius: 4px;
+    margin: 1px 4px;
 }
-
 .dt-layer-item:hover {
-    background: rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.05);
 }
-
-.dt-layer-item.active {
-    background: rgba(0, 245, 255, 0.08);
-    color: var(--accent-cyan);
+.dt-sub-item {
+    padding-left: 24px;
 }
 
 .dt-layer-icon {
@@ -2838,6 +2881,51 @@ body {
 .dt-layer-name {
     flex: 1;
     font-size: 11px;
+    color: var(--text-secondary);
+}
+.dt-layer-item:hover .dt-layer-name {
+    color: var(--text-primary);
+}
+
+/* Toggle switch */
+.dt-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 28px;
+    height: 14px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.dt-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+.dt-toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.1);
+    border-radius: 7px;
+    transition: background 0.2s ease;
+}
+.dt-toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    left: 2px;
+    top: 2px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 50%;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+.dt-toggle-switch input:checked + .dt-toggle-slider {
+    background: rgba(0, 245, 255, 0.3);
+}
+.dt-toggle-switch input:checked + .dt-toggle-slider::before {
+    transform: translateX(14px);
+    background: var(--accent-cyan);
 }
 
 .dt-layer-status {

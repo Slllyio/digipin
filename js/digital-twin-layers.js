@@ -449,6 +449,72 @@ const DigitalTwinLayers = (() => {
             }
         },
 
+        osm_roads: {
+            name: 'Road Network (OSM)',
+            icon: '\u{1F6E3}',
+            file: 'vectors/osm_roads_indore.geojson',
+            group: 'Local Data',
+            type: 'line',
+            paint: {
+                'line-color': [
+                    'match', ['get', 'highway'],
+                    'motorway',     '#f97316',
+                    'trunk',        '#fb923c',
+                    'primary',      '#eab308',
+                    'secondary',    '#a3e635',
+                    'tertiary',     '#67e8f9',
+                    'residential',  '#94a3b8',
+                    'service',      '#64748b',
+                    'track',        '#78716c',
+                    'footway',      '#a78bfa',
+                    'cycleway',     '#34d399',
+                    'path',         '#d4d4d8',
+                    '#6b7280'
+                ],
+                'line-width': [
+                    'match', ['get', 'highway'],
+                    'motorway', 3,
+                    'trunk', 2.5,
+                    'primary', 2.5,
+                    'secondary', 2,
+                    'tertiary', 1.5,
+                    'residential', 1,
+                    0.8
+                ],
+                'line-opacity': 0.8
+            },
+            minZoom: 10,
+            tooltip: f => {
+                const p = f.properties || {};
+                const parts = [];
+                if (p.name) parts.push(p.name);
+                if (p.highway) parts.push(p.highway.replace(/_/g, ' '));
+                if (p.surface) parts.push(p.surface);
+                return parts.join(' | ') || 'Road';
+            }
+        },
+        osm_water: {
+            name: 'Water Bodies (OSM)',
+            icon: '\u{1F4A7}',
+            file: 'vectors/osm_water_indore.geojson',
+            group: 'Environment',
+            type: 'fill',
+            paint: {
+                'fill-color': '#0ea5e9',
+                'fill-opacity': 0.5,
+                'fill-outline-color': '#0284c7'
+            },
+            minZoom: 10,
+            tooltip: f => {
+                const p = f.properties || {};
+                const parts = [];
+                if (p.name) parts.push(p.name);
+                if (p.waterway) parts.push(p.waterway);
+                if (p.natural) parts.push(p.natural);
+                return parts.join(' | ') || 'Water body';
+            }
+        },
+
         // ── Sensors (Live API) ──
         sensor_weather: {
             name: 'Weather Station',

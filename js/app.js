@@ -313,7 +313,12 @@ const App = (() => {
             });
 
             heatmapBtn.addEventListener('click', () => {
-                heatmapDrop.classList.toggle('open');
+                const isOpen = heatmapDrop.classList.toggle('open');
+                if (isOpen) {
+                    const rect = heatmapBtn.getBoundingClientRect();
+                    heatmapDrop.style.top = rect.top + 'px';
+                    heatmapDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
+                }
             });
 
             // Close dropdown on outside click
@@ -487,77 +492,232 @@ const App = (() => {
             });
         }
 
-        // Digital Twin Layers toggle + dropdown (grouped by category)
+        // Roads toggle — cycles: Off → Color-coded → Minimal → Off
+        const roadsBtn = document.getElementById('btn-roads');
+        if (roadsBtn) {
+            let roadMode = 'off'; // off | color | minimal
+            roadsBtn.addEventListener('click', async () => {
+                const map = MapModule.getMap();
+                try {
+                    if (roadMode === 'off') {
+                        // Turn on color-coded roads (Overture)
+                        await DigitalTwinLayers.toggle('overture_roads', map);
+                        roadMode = 'color';
+                        roadsBtn.classList.add('active');
+                        roadsBtn.querySelector('.tb-label').textContent = 'Color';
+                        showToast('Roads Overlay', 'Overture road network — color-coded by class.', 'info');
+                    } else if (roadMode === 'color') {
+                        // Switch to minimal (single-color) — toggle off color, toggle on OSM roads
+                        await DigitalTwinLayers.toggle('overture_roads', map);
+                        await DigitalTwinLayers.toggle('osm_roads', map);
+                        roadMode = 'minimal';
+                        roadsBtn.querySelector('.tb-label').textContent = 'Minimal';
+                        showToast('Roads Overlay', 'OSM road network — minimal outline mode.', 'info');
+                    } else {
+                        // Turn off
+                        if (DigitalTwinLayers.isVisible('osm_roads')) {
+                            await DigitalTwinLayers.toggle('osm_roads', map);
+                        }
+                        if (DigitalTwinLayers.isVisible('overture_roads')) {
+                            await DigitalTwinLayers.toggle('overture_roads', map);
+                        }
+                        roadMode = 'off';
+                        roadsBtn.classList.remove('active');
+                        roadsBtn.querySelector('.tb-label').textContent = 'Roads';
+                    }
+                } catch (err) {
+                    showToast('Roads Error', err.message, 'error');
+                }
+            });
+        }
+
+        // ═══ Unified Layers Panel — ALL layers in one expandable dropdown ═══
         const dtLayersBtn = document.getElementById('btn-dt-layers');
         const dtLayersDrop = document.getElementById('dt-layers-dropdown');
         if (dtLayersBtn && dtLayersDrop) {
             const layerDefs = DigitalTwinLayers.getLayerDefs();
 
-            // Group layers by category and render with section headers
-            let lastGroup = null;
-            layerDefs.forEach(ld => {
-                if (ld.group !== lastGroup) {
-                    lastGroup = ld.group;
-                    const header = document.createElement('div');
-                    header.className = 'dt-group-header';
-                    header.textContent = ld.group;
-                    dtLayersDrop.appendChild(header);
+            // Quick overlays: toolbar-level features exposed in the layers panel
+            const QUICK_OVERLAYS = [
+                { key: '_wards', name: 'Ward Boundaries', icon: '\u25A6', group: 'Quick Overlays' },
+                { key: '_lcz', name: 'Local Climate Zones', icon: '\uD83C\uDFD9', group: 'Quick Overlays' },
+                { key: '_lulc', name: 'ISRO Bhuvan LULC', icon: '\uD83C\uDF0E', group: 'Quick Overlays' },
+            ];
+
+            // Heatmap options as individual entries in Quick Overlays
+            const heatmapEntries = HeatmapOverlay.getOptions().map(opt => ({
+                key: '_heat_' + opt.key, name: 'Heatmap: ' + opt.label, icon: '\u25A0', group: 'Quick Overlays', _heatKey: opt.key
+            }));
+
+            const ALL_ENTRIES = [...QUICK_OVERLAYS, ...heatmapEntries, ...layerDefs];
+
+            // Group entries by group name preserving insertion order
+            const groupOrder = [];
+            const groupMap = {};
+            ALL_ENTRIES.forEach(entry => {
+                if (!groupMap[entry.group]) {
+                    groupMap[entry.group] = [];
+                    groupOrder.push(entry.group);
+                }
+                groupMap[entry.group].push(entry);
+            });
+
+            // Render collapsible groups
+            groupOrder.forEach((groupName, gIdx) => {
+                const entries = groupMap[groupName];
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'dt-layer-group';
+
+                // Collapsible group header
+                const headerBtn = document.createElement('button');
+                headerBtn.className = 'dt-group-header-btn';
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'dt-group-title';
+                titleSpan.textContent = groupName;
+                const countSpan = document.createElement('span');
+                countSpan.className = 'dt-group-count';
+                countSpan.textContent = String(entries.length);
+                const chevSpan = document.createElement('span');
+                chevSpan.className = 'dt-group-chevron';
+                chevSpan.textContent = '\u25BE';
+                headerBtn.appendChild(titleSpan);
+                headerBtn.appendChild(countSpan);
+                headerBtn.appendChild(chevSpan);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'dt-group-content';
+                // First two groups expanded by default
+                if (gIdx < 2) {
+                    contentDiv.classList.add('open');
+                    headerBtn.classList.add('expanded');
                 }
 
-                const item = document.createElement('button');
-                item.className = 'dropdown-item dt-layer-item';
-                item.dataset.layerKey = ld.key;
-
-                const icon = document.createElement('span');
-                icon.className = 'dt-layer-icon';
-                icon.textContent = ld.icon;
-
-                const name = document.createElement('span');
-                name.className = 'dt-layer-name';
-                name.textContent = ld.name;
-
-                const status = document.createElement('span');
-                status.className = 'dt-layer-status';
-
-                item.appendChild(icon);
-                item.appendChild(name);
-                item.appendChild(status);
-
-                item.addEventListener('click', async () => {
-                    const map = MapModule.getMap();
-                    status.textContent = '\u23F3';
-                    try {
-                        // Mutual exclusion: turning on 3D buildings turns off 2D and vice versa
-                        const counterpart = ld.key === 'google_buildings' ? 'google_buildings_flat'
-                            : ld.key === 'google_buildings_flat' ? 'google_buildings' : null;
-                        if (counterpart && DigitalTwinLayers.isVisible(counterpart)) {
-                            await DigitalTwinLayers.toggle(counterpart, map);
-                            const counterItem = dtLayersDrop.querySelector(`[data-layer-key="${counterpart}"]`);
-                            if (counterItem) {
-                                counterItem.classList.remove('active');
-                                counterItem.querySelector('.dt-layer-status').textContent = '';
-                            }
-                        }
-
-                        const isOn = await DigitalTwinLayers.toggle(ld.key, map);
-                        item.classList.toggle('active', isOn);
-                        status.textContent = isOn ? '\u2713' : '';
-                        if (isOn) {
-                            const count = DigitalTwinLayers.getFeatureCount(ld.key);
-                            const label = count > 1 ? `${count.toLocaleString()} features` : 'Tile layer active';
-                            showToast('Layer Loaded', `${ld.icon} ${ld.name} \u2014 ${label}`, 'success');
-                        }
-                    } catch (err) {
-                        status.textContent = '\u2717';
-                        showToast('Layer Unavailable', `${ld.name}: ${err.message}`, 'error');
-                    }
+                headerBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isOpen = contentDiv.classList.toggle('open');
+                    headerBtn.classList.toggle('expanded', isOpen);
                 });
 
-                dtLayersDrop.appendChild(item);
+                // Render each layer item with toggle switch
+                entries.forEach(ld => {
+                    const item = document.createElement('div');
+                    item.className = 'dt-layer-item';
+                    item.dataset.layerKey = ld.key;
+
+                    const iconEl = document.createElement('span');
+                    iconEl.className = 'dt-layer-icon';
+                    iconEl.textContent = ld.icon;
+
+                    const nameEl = document.createElement('span');
+                    nameEl.className = 'dt-layer-name';
+                    nameEl.textContent = ld.name;
+
+                    // Toggle switch
+                    const toggleLabel = document.createElement('label');
+                    toggleLabel.className = 'dt-toggle-switch';
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.tabIndex = -1;
+                    const sliderSpan = document.createElement('span');
+                    sliderSpan.className = 'dt-toggle-slider';
+                    toggleLabel.appendChild(checkbox);
+                    toggleLabel.appendChild(sliderSpan);
+
+                    item.appendChild(iconEl);
+                    item.appendChild(nameEl);
+                    item.appendChild(toggleLabel);
+
+                    // Click handler by layer type
+                    if (ld._heatKey) {
+                        // Heatmap option
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (HeatmapOverlay.getActive() === ld._heatKey) {
+                                HeatmapOverlay.clear();
+                                checkbox.checked = false;
+                            } else {
+                                HeatmapOverlay.show(ld._heatKey);
+                                // Uncheck other heatmap toggles
+                                dtLayersDrop.querySelectorAll('[data-layer-key^="_heat_"] input[type=checkbox]').forEach(c => { c.checked = false; });
+                                checkbox.checked = true;
+                            }
+                        });
+                    } else if (ld.key === '_wards') {
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (WardOverlay.isVisible()) {
+                                WardOverlay.clear();
+                                checkbox.checked = false;
+                                wardsBtn?.classList.remove('active');
+                            } else {
+                                WardOverlay.show();
+                                checkbox.checked = true;
+                                wardsBtn?.classList.add('active');
+                            }
+                        });
+                    } else if (ld.key === '_lcz') {
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            lczBtn?.click();
+                            setTimeout(() => { checkbox.checked = lczActive; }, 100);
+                        });
+                    } else if (ld.key === '_lulc') {
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            lulcBtn?.click();
+                            setTimeout(() => { checkbox.checked = lulcActive; }, 100);
+                        });
+                    } else {
+                        // DigitalTwinLayers toggle
+                        item.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const m = MapModule.getMap();
+                            try {
+                                // Mutual exclusion for buildings
+                                const counterpart = ld.key === 'google_buildings' ? 'google_buildings_flat'
+                                    : ld.key === 'google_buildings_flat' ? 'google_buildings' : null;
+                                if (counterpart && DigitalTwinLayers.isVisible(counterpart)) {
+                                    await DigitalTwinLayers.toggle(counterpart, m);
+                                    const cCb = dtLayersDrop.querySelector('[data-layer-key="' + counterpart + '"] input[type=checkbox]');
+                                    if (cCb) cCb.checked = false;
+                                }
+
+                                const isOn = await DigitalTwinLayers.toggle(ld.key, m);
+                                checkbox.checked = isOn;
+                                if (isOn) {
+                                    const count = DigitalTwinLayers.getFeatureCount(ld.key);
+                                    const label = count > 1 ? count.toLocaleString() + ' features' : 'Tile layer active';
+                                    showToast('Layer Loaded', ld.icon + ' ' + ld.name + ' \u2014 ' + label, 'success');
+                                }
+                            } catch (err) {
+                                checkbox.checked = false;
+                                showToast('Layer Unavailable', ld.name + ': ' + err.message, 'error');
+                            }
+                        });
+                    }
+
+                    contentDiv.appendChild(item);
+                });
+
+                groupDiv.appendChild(headerBtn);
+                groupDiv.appendChild(contentDiv);
+                dtLayersDrop.appendChild(groupDiv);
             });
 
             dtLayersBtn.addEventListener('click', () => {
-                dtLayersDrop.classList.toggle('open');
+                const isOpen = dtLayersDrop.classList.toggle('open');
+                if (isOpen) {
+                    const rect = dtLayersBtn.getBoundingClientRect();
+                    dtLayersDrop.style.top = rect.top + 'px';
+                    dtLayersDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
+                    // Clamp bottom edge within viewport
+                    requestAnimationFrame(() => {
+                        const dropRect = dtLayersDrop.getBoundingClientRect();
+                        if (dropRect.bottom > window.innerHeight - 8) {
+                            dtLayersDrop.style.top = Math.max(8, window.innerHeight - dropRect.height - 8) + 'px';
+                        }
+                    });
+                }
             });
 
             document.addEventListener('click', (e) => {
