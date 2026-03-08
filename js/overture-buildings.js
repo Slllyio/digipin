@@ -1,108 +1,120 @@
 /**
- * Overture Buildings Overlay — 2.3B+ building footprints via PMTiles
+ * Overture Buildings Overlay — 2.3B+ building footprints via MapLibre PMTiles
  *
  * Renders individual building polygons from the Overture Maps Foundation
- * directly in the browser using protomaps-leaflet + pmtiles.js.
- * No server needed — S3 PMTiles accessed via HTTP range requests.
+ * directly in the browser via native MapLibre vector tiles + 3D fill-extrusion.
  *
  * Features:
- *  - Height-coded building coloring (low=blue, mid=orange, high=red)
- *  - Click-to-inspect per-building attributes (height, class, floors)
- *  - Zoom-dependent rendering (visible at zoom >= 13)
+ *  - Native 3D Extrusion
+ *  - Height-coded building coloring
+ *  - Click-to-inspect per-building attributes
  *  - Stats aggregation for visible buildings
  */
 
 const OvertureBuildings = (() => {
     const PMTILES_URL = 'https://overturemaps-tiles-us-west-2-beta.s3.amazonaws.com/2024-08-20/buildings.pmtiles';
+    const LAYER_ID = 'overture-buildings-layer';
+    const TETHER_LAYER_ID = 'overture-tethers-layer';
+    const SOURCE_ID = 'overture-buildings-source';
 
-    let _layer = null;
     let _active = false;
     let _map = null;
     let _infoPopup = null;
 
-    // Height-based color palette for building footprints
-    function heightColor(height) {
-        if (height == null || height <= 0) return 'rgba(100, 149, 237, 0.45)'; // cornflower — unknown
-        if (height < 6)   return 'rgba(65, 105, 225, 0.5)';   // royal blue — low (1-2 floors)
-        if (height < 15)  return 'rgba(34, 139, 34, 0.55)';   // forest green — mid (3-5 floors)
-        if (height < 30)  return 'rgba(255, 165, 0, 0.6)';    // orange — mid-high (6-10 floors)
-        if (height < 60)  return 'rgba(255, 69, 0, 0.65)';    // orangered — high (10-20 floors)
-        return 'rgba(220, 20, 60, 0.75)';                      // crimson — very high (20+ floors)
-    }
-
-    // Class-based color for buildings without height
-    function classColor(cls) {
-        const colors = {
-            'residential':   'rgba(100, 149, 237, 0.4)',
-            'commercial':    'rgba(255, 165, 0, 0.5)',
-            'industrial':    'rgba(169, 169, 169, 0.5)',
-            'transportation':'rgba(147, 112, 219, 0.4)',
-            'education':     'rgba(60, 179, 113, 0.5)',
-            'medical':       'rgba(220, 20, 60, 0.5)',
-            'entertainment': 'rgba(255, 105, 180, 0.5)',
-            'religious':     'rgba(218, 165, 32, 0.5)',
-            'government':    'rgba(70, 130, 180, 0.5)',
-            'agricultural':  'rgba(107, 142, 35, 0.4)',
-        };
-        return colors[cls] || 'rgba(100, 149, 237, 0.35)';
-    }
-
     /**
-     * Custom symbolizer that colors buildings by height or class
+     * Create the native MapLibre PMTiles source and fill-extrusion layer
      */
-    class BuildingSymbolizer {
-        draw(context, geom, z, feature) {
-            const height = feature.props.height;
-            const cls = feature.props.class;
+    function initLayer(map) {
+        if (map.getSource(SOURCE_ID)) return; // Already initialized
 
-            context.fillStyle = height > 0 ? heightColor(height) : classColor(cls);
-            context.strokeStyle = 'rgba(50, 50, 50, 0.3)';
-            context.lineWidth = 0.5;
-
-            context.beginPath();
-            for (const poly of geom) {
-                for (let p = 0; p < poly.length; p++) {
-                    const pt = poly[p];
-                    if (p === 0) context.moveTo(pt.x, pt.y);
-                    else context.lineTo(pt.x, pt.y);
-                }
-                context.closePath();
-            }
-            context.fill();
-
-            // Only draw outlines at higher zoom for performance
-            if (z >= 15) {
-                context.stroke();
-            }
-        }
-    }
-
-    /**
-     * Create and return the protomaps-leaflet layer
-     */
-    function createLayer() {
-        if (typeof protomapsL === 'undefined' || typeof pmtiles === 'undefined') {
-            console.warn('OvertureBuildings: protomaps-leaflet or pmtiles not loaded');
-            return null;
-        }
-
-        const paintRules = [
-            {
-                dataLayer: 'building',
-                symbolizer: new BuildingSymbolizer(),
-                minzoom: 13
-            }
-        ];
-
-        const layer = protomapsL.leafletLayer({
-            url: PMTILES_URL,
-            paintRules: paintRules,
-            labelRules: [],
-            maxDataZoom: 14,
-            attribution: 'Buildings &copy; <a href="https://overturemaps.org">Overture Maps</a>'
+        map.addSource(SOURCE_ID, {
+            type: 'vector',
+            url: `pmtiles://${PMTILES_URL}`
         });
 
-        return layer;
+        // 1. Add the Holographic Tethers (base goes from 0 to the bottom of the floating building)
+        map.addLayer({
+            id: TETHER_LAYER_ID,
+            type: 'fill-extrusion',
+            source: SOURCE_ID,
+            'source-layer': 'building',
+            minzoom: 13,
+            paint: {
+                'fill-extrusion-color': '#00f0ff',
+                'fill-extrusion-base': 0,
+                'fill-extrusion-height': [
+                    '+',
+                    ['coalesce', ['get', 'min_height'], 0],
+                    100
+                ],
+                // Add artificial transparency for the hologram effect
+                'fill-extrusion-opacity': 0.15
+            },
+            layout: {
+                'visibility': 'none'
+            }
+        });
+
+        // 2. Add the actual floating Overture buildings on top of the tethers
+        map.addLayer({
+            id: LAYER_ID,
+            type: 'fill-extrusion',
+            source: SOURCE_ID,
+            'source-layer': 'building',
+            minzoom: 13,
+            paint: {
+                // Vibrant solid colors inspired by the user's reference image
+                'fill-extrusion-color': [
+                    'match',
+                    ['get', 'class'],
+                    'commercial', '#0085CA', // Bright blue
+                    'industrial', '#0085CA',
+                    'retail', '#0085CA',
+                    'residential', '#E32A22', // Bright red
+                    'education', '#E32A22',
+                    'medical', '#0085CA',
+                    'government', '#0085CA',
+                    'transportation', '#5C2D91',
+                    '#E32A22' // Default red
+                ],
+                // Generous default heights so buildings pop in 3D
+                // Ground base with 100m offset (float above ground)
+                'fill-extrusion-base': [
+                    '+',
+                    ['coalesce', ['get', 'min_height'], 0],
+                    100
+                ],
+                // Height must also be offset by 100m so the building itself doesn't shrink
+                'fill-extrusion-height': [
+                    '+',
+                    [
+                        'coalesce',
+                        ['get', 'height'],
+                        ['*', ['get', 'num_floors'], 3.6],
+                        ['case', 
+                            ['==', ['get', 'class'], 'commercial'], 35, 
+                            ['==', ['get', 'class'], 'industrial'], 25, 
+                            ['==', ['get', 'class'], 'residential'], 12, 
+                            15
+                        ]
+                    ],
+                    100
+                ],
+                // Solid opacity and add artificial edge shading through MapLibre light
+                'fill-extrusion-opacity': 0.8
+            },
+            layout: {
+                'visibility': 'none'
+            }
+        });
+
+        map.on('click', LAYER_ID, onMapClick);
+        map.on('mouseenter', LAYER_ID, () => {
+            if (_active) map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', LAYER_ID, () => {
+            if (_active) map.getCanvas().style.cursor = '';
+        });
     }
 
     /**
@@ -110,144 +122,91 @@ const OvertureBuildings = (() => {
      */
     function toggle(map) {
         _map = map;
+        initLayer(map);
 
-        if (_active && _layer) {
-            map.removeLayer(_layer);
-            _layer = null;
-            _active = false;
-            removeClickHandler();
-            return false;
-        }
-
-        _layer = createLayer();
-        if (!_layer) return false;
-
-        _layer.addTo(map);
-        _active = true;
-        addClickHandler();
-
-        return true;
-    }
-
-    /**
-     * Click handler — query building features under cursor
-     */
-    function addClickHandler() {
-        if (!_map) return;
-        _map.on('click', onMapClick);
-    }
-
-    function removeClickHandler() {
-        if (!_map) return;
-        _map.off('click', onMapClick);
-        if (_infoPopup) {
-            _map.closePopup(_infoPopup);
+        _active = !_active;
+        map.setLayoutProperty(LAYER_ID, 'visibility', _active ? 'visible' : 'none');
+        map.setLayoutProperty(TETHER_LAYER_ID, 'visibility', _active ? 'visible' : 'none');
+        
+        if (!_active && _infoPopup) {
+            _infoPopup.remove();
             _infoPopup = null;
         }
+
+        return _active;
     }
 
     function onMapClick(e) {
-        if (!_active || !_layer) return;
+        if (!_active) return;
 
-        const zoom = _map.getZoom();
-        if (zoom < 13) return;
+        const features = e.features;
+        if (!features || features.length === 0) return;
 
-        // Query rendered features at click point
-        const features = queryFeaturesAt(e.latlng);
-        if (features.length === 0) return;
+        const f = features[0];
+        const props = f.properties || {};
 
-        const f = features[0]; // closest building
-        const props = f.props || {};
+        let html = '<div class="overture-popup" style="font-family:Inter,sans-serif; min-width:180px;">';
+        html += '<div class="overture-popup-title"><strong>Building Details</strong></div><hr>';
 
-        let html = '<div class="overture-popup">';
-        html += '<div class="overture-popup-title">Building Details</div>';
+        if (props.class) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Class:</span> <b>${props.class}</b></div>`;
+        if (props.subtype) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtype:</span> <b>${props.subtype}</b></div>`;
+        if (props.height > 0) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Height:</span> <b>${props.height.toFixed(1)}m</b></div>`;
+        if (props.num_floors > 0) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Floors:</span> <b>${props.num_floors}</b></div>`;
+        if (props.min_height > 0) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Min Height:</span> <b>${props.min_height.toFixed(1)}m</b></div>`;
+        if (props.roof_shape) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Roof:</span> <b>${props.roof_shape}</b></div>`;
 
-        if (props.class) html += `<div class="overture-popup-row"><span>Class:</span><span>${props.class}</span></div>`;
-        if (props.subtype) html += `<div class="overture-popup-row"><span>Subtype:</span><span>${props.subtype}</span></div>`;
-        if (props.height > 0) html += `<div class="overture-popup-row"><span>Height:</span><span>${props.height.toFixed(1)}m</span></div>`;
-        if (props.num_floors > 0) html += `<div class="overture-popup-row"><span>Floors:</span><span>${props.num_floors}</span></div>`;
-        if (props.min_height > 0) html += `<div class="overture-popup-row"><span>Min Height:</span><span>${props.min_height.toFixed(1)}m</span></div>`;
-        if (props.facade_color) html += `<div class="overture-popup-row"><span>Facade:</span><span>${props.facade_color}</span></div>`;
-        if (props.roof_shape) html += `<div class="overture-popup-row"><span>Roof:</span><span>${props.roof_shape}</span></div>`;
-        if (props.has_parts !== undefined) html += `<div class="overture-popup-row"><span>Has Parts:</span><span>${props.has_parts ? 'Yes' : 'No'}</span></div>`;
-
-        // Show estimated floors if height available but no num_floors
         if (props.height > 0 && !props.num_floors) {
             const estFloors = Math.round(props.height / 3.2);
-            html += `<div class="overture-popup-row muted"><span>Est. Floors:</span><span>~${estFloors}</span></div>`;
+            html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#888;"><span>Est. Floors:</span> <span>~${estFloors}</span></div>`;
         }
 
-        // If no detailed props, show what we have
         if (!props.class && !props.height) {
-            html += '<div class="overture-popup-row muted"><span>Minimal data available</span></div>';
+            html += '<div style="color:#888; text-align:center; padding-top:10px;">Minimal data available</div>';
         }
 
         html += '</div>';
 
-        _infoPopup = L.popup({ className: 'overture-building-popup', maxWidth: 250 })
-            .setLatLng(e.latlng)
-            .setContent(html)
-            .openOn(_map);
-    }
-
-    /**
-     * Query features rendered at a point.
-     * protomaps-leaflet renders to canvas, so we check the tile data directly.
-     */
-    function queryFeaturesAt(latlng) {
-        if (!_layer || !_layer.paintRules) return [];
-
-        // Access the internal tile cache of the protomaps layer
-        try {
-            const tileSize = 256;
-            const zoom = _map.getZoom();
-            const point = _map.project(latlng, zoom);
-            const tileX = Math.floor(point.x / tileSize);
-            const tileY = Math.floor(point.y / tileSize);
-
-            // Try to get features from protomaps internal cache
-            const key = `${zoom}:${tileX}:${tileY}`;
-            const tileData = _layer._tiles?.[key]?.el?._data;
-
-            if (tileData && tileData.building) {
-                return tileData.building.slice(0, 5); // return top features
-            }
-        } catch {
-            // Feature querying not available — expected for canvas-based rendering
-        }
-
-        return [];
+        if (_infoPopup) _infoPopup.remove();
+        
+        _infoPopup = new maplibregl.Popup({ className: 'overture-building-popup', maxWidth: '250px' })
+            .setLngLat(e.lngLat)
+            .setHTML(html)
+            .addTo(_map);
     }
 
     /**
      * Get aggregate stats for visible buildings in current viewport
      */
     function getVisibleStats() {
-        if (!_active || !_layer) return null;
+        if (!_active || !_map) return null;
 
         try {
-            const tiles = _layer._tiles || {};
+            const features = _map.queryRenderedFeatures({ layers: [LAYER_ID] });
+            if (!features || features.length === 0) return null;
+
             let totalBuildings = 0;
             let withHeight = 0;
             let withFloors = 0;
             let totalHeight = 0;
             const classes = {};
+            const processedIds = new Set(); // Prevent duplicates
 
-            for (const tile of Object.values(tiles)) {
-                const data = tile?.el?._data;
-                if (!data || !data.building) continue;
+            // Overture buildings in PMTiles don't always have a standard 'id'. 
+            // We use geometry string as a simple deduplication heuristic for rendered features.
+            for (const f of features) {
+                const geomKey = f.geometry.coordinates[0]?.[0]?.join(',') || Math.random().toString();
+                if (processedIds.has(geomKey)) continue;
+                processedIds.add(geomKey);
 
-                for (const f of data.building) {
-                    totalBuildings++;
-                    const p = f.props || {};
+                totalBuildings++;
+                const p = f.properties || {};
 
-                    if (p.height > 0) {
-                        withHeight++;
-                        totalHeight += p.height;
-                    }
-                    if (p.num_floors > 0) withFloors++;
-                    if (p.class) classes[p.class] = (classes[p.class] || 0) + 1;
+                if (p.height > 0) {
+                    withHeight++;
+                    totalHeight += p.height;
                 }
+                if (p.num_floors > 0) withFloors++;
+                if (p.class) classes[p.class] = (classes[p.class] || 0) + 1;
             }
 
             return {
@@ -257,13 +216,13 @@ const OvertureBuildings = (() => {
                 avgHeight: withHeight > 0 ? +(totalHeight / withHeight).toFixed(1) : null,
                 classes
             };
-        } catch {
+        } catch (e) {
+            console.warn('Overture stats error:', e);
             return null;
         }
     }
 
     function isActive() { return _active; }
-    function getLayer() { return _layer; }
 
-    return { toggle, isActive, getLayer, getVisibleStats };
+    return { toggle, isActive, getVisibleStats };
 })();

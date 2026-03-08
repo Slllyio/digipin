@@ -340,60 +340,185 @@ const App = (() => {
 
         // LCZ Overlay toggle
         const lczBtn = document.getElementById('btn-lcz');
-        let lczLayer = null;
+        let lczActive = false;
         if (lczBtn) {
             lczBtn.addEventListener('click', () => {
                 const map = MapModule.getMap();
-                if (lczLayer) {
-                    map.removeLayer(lczLayer);
-                    lczLayer = null;
+                lczActive = !lczActive;
+                if (!lczActive) {
+                    if (map.getLayer('lcz-layer')) map.setLayoutProperty('lcz-layer', 'visibility', 'none');
                     lczBtn.classList.remove('active');
                 } else {
-                    lczLayer = BuildingIntelligence.getLCZTileLayer();
-                    if (lczLayer) {
-                        lczLayer.addTo(map);
+                    const url = BuildingIntelligence.getLCZURL();
+                    if (url) {
+                        if (!map.getSource('lcz-tms')) {
+                            map.addSource('lcz-tms', {
+                                type: 'raster',
+                                tiles: [url],
+                                tileSize: 256,
+                                attribution: 'LCZ &copy; <a href="https://lcz-generator.rub.de">RUB/WUDAPT</a>'
+                            });
+                        }
+                        // Insert layer below grid lines so we can still see the grid
+                        let beforeId = map.getLayer('digipin-grid-line') ? 'digipin-grid-line' : undefined;
+                        if (!map.getLayer('lcz-layer')) {
+                            map.addLayer({
+                                id: 'lcz-layer',
+                                type: 'raster',
+                                source: 'lcz-tms',
+                                paint: { 'raster-opacity': 0.5 }
+                            }, beforeId);
+                        } else {
+                            map.setLayoutProperty('lcz-layer', 'visibility', 'visible');
+                        }
                         lczBtn.classList.add('active');
                     }
                 }
             });
         }
 
-        // Overture Buildings toggle
+        // Google Open Buildings toggle (528K Indore footprints via PMTiles)
         const buildingsBtn = document.getElementById('btn-buildings');
         if (buildingsBtn) {
-            buildingsBtn.addEventListener('click', () => {
+            buildingsBtn.addEventListener('click', async () => {
                 const map = MapModule.getMap();
-                const isOn = OvertureBuildings.toggle(map);
-                buildingsBtn.classList.toggle('active', isOn);
-                if (isOn) {
-                    showToast('Buildings Overlay', 'Overture Maps — 2.3B footprints. Zoom to 13+ to see buildings.', 'info');
+                try {
+                    const isOn = await DigitalTwinLayers.toggle('google_buildings', map);
+                    buildingsBtn.classList.toggle('active', isOn);
+                    if (isOn) {
+                        showToast('Google Open Buildings', '528K ML-detected footprints — 3D extrusion by area.', 'info');
+                    }
+                } catch (err) {
+                    showToast('Buildings Error', err.message, 'error');
                 }
             });
         }
 
-        // Bhuvan LULC Overlay toggle (ISRO Land Use / Land Cover via WMS — no auth needed)
+        // 3D Buildings toggle
+        const btn3d = document.getElementById('btn-3d');
+        if (btn3d) {
+            let is3d = false;
+            btn3d.addEventListener('click', () => {
+                const map = MapModule.getMap();
+                is3d = !is3d;
+                btn3d.classList.toggle('active', is3d);
+                if (is3d) {
+                    map.easeTo({ pitch: 60, duration: 1000 });
+                    if (!DigitalTwinLayers.isVisible('google_buildings')) {
+                        DigitalTwinLayers.toggle('google_buildings', map).then(isOn => {
+                            document.getElementById('btn-buildings')?.classList.toggle('active', isOn);
+                        });
+                    }
+                    showToast('3D Mode', 'Map pitched. Tilt/rotate using right-click + drag.', 'success');
+                } else {
+                    map.easeTo({ pitch: 0, bearing: 0, duration: 1000 });
+                    showToast('2D Mode', 'Returned to top-down view.', 'info');
+                }
+            });
+        }
+
+        // Bhuvan LULC Overlay toggle (ISRO Land Use / Land Cover via WMS)
         const lulcBtn = document.getElementById('btn-lulc');
-        let lulcLayer = null;
+        let lulcActive = false;
         if (lulcBtn) {
             lulcBtn.addEventListener('click', () => {
                 const map = MapModule.getMap();
-                if (lulcLayer) {
-                    map.removeLayer(lulcLayer);
-                    lulcLayer = null;
+                lulcActive = !lulcActive;
+                if (!lulcActive) {
+                    if (map.getLayer('bhuvan-lulc-layer')) map.setLayoutProperty('bhuvan-lulc-layer', 'visibility', 'none');
                     lulcBtn.classList.remove('active');
                 } else {
-                    // Bhuvan GeoServer WMS — LULC 50K (2011-12 cycle)
-                    // Loaded as <img> tiles, bypassing CORS
-                    lulcLayer = L.tileLayer.wms('https://bhuvan-vec2.nrsc.gov.in/bhuvan/wms', {
-                        layers: 'lulc:lulc50k_1112',
-                        format: 'image/png',
-                        transparent: true,
-                        opacity: 0.5,
-                        attribution: 'LULC &copy; ISRO/NRSC Bhuvan'
-                    });
-                    lulcLayer.addTo(map);
+                    if (!map.getSource('bhuvan-lulc')) {
+                        map.addSource('bhuvan-lulc', {
+                            type: 'raster',
+                            tiles: [
+                                'https://bhuvan-vec2.nrsc.gov.in/bhuvan/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&LAYERS=lulc:lulc50k_1112&SRS=EPSG:3857&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}'
+                            ],
+                            tileSize: 256,
+                            attribution: 'LULC &copy; ISRO/NRSC Bhuvan'
+                        });
+                    }
+                    let beforeId = map.getLayer('digipin-grid-line') ? 'digipin-grid-line' : undefined;
+                    if (!map.getLayer('bhuvan-lulc-layer')) {
+                        map.addLayer({
+                            id: 'bhuvan-lulc-layer',
+                            type: 'raster',
+                            source: 'bhuvan-lulc',
+                            paint: { 'raster-opacity': 0.5 }
+                        }, beforeId);
+                    } else {
+                        map.setLayoutProperty('bhuvan-lulc-layer', 'visibility', 'visible');
+                    }
                     lulcBtn.classList.add('active');
                     showToast('LULC Overlay', 'ISRO Bhuvan — Land Use/Land Cover (54 classes, 1:50K)', 'info');
+                }
+            });
+        }
+
+        // Digital Twin Layers toggle + dropdown (grouped by category)
+        const dtLayersBtn = document.getElementById('btn-dt-layers');
+        const dtLayersDrop = document.getElementById('dt-layers-dropdown');
+        if (dtLayersBtn && dtLayersDrop) {
+            const layerDefs = DigitalTwinLayers.getLayerDefs();
+
+            // Group layers by category and render with section headers
+            let lastGroup = null;
+            layerDefs.forEach(ld => {
+                if (ld.group !== lastGroup) {
+                    lastGroup = ld.group;
+                    const header = document.createElement('div');
+                    header.className = 'dt-group-header';
+                    header.textContent = ld.group;
+                    dtLayersDrop.appendChild(header);
+                }
+
+                const item = document.createElement('button');
+                item.className = 'dropdown-item dt-layer-item';
+                item.dataset.layerKey = ld.key;
+
+                const icon = document.createElement('span');
+                icon.className = 'dt-layer-icon';
+                icon.textContent = ld.icon;
+
+                const name = document.createElement('span');
+                name.className = 'dt-layer-name';
+                name.textContent = ld.name;
+
+                const status = document.createElement('span');
+                status.className = 'dt-layer-status';
+
+                item.appendChild(icon);
+                item.appendChild(name);
+                item.appendChild(status);
+
+                item.addEventListener('click', async () => {
+                    const map = MapModule.getMap();
+                    status.textContent = '\u23F3';
+                    try {
+                        const isOn = await DigitalTwinLayers.toggle(ld.key, map);
+                        item.classList.toggle('active', isOn);
+                        status.textContent = isOn ? '\u2713' : '';
+                        if (isOn) {
+                            const count = DigitalTwinLayers.getFeatureCount(ld.key);
+                            const label = count > 1 ? `${count.toLocaleString()} features` : 'Tile layer active';
+                            showToast('Layer Loaded', `${ld.icon} ${ld.name} \u2014 ${label}`, 'success');
+                        }
+                    } catch (err) {
+                        status.textContent = '\u2717';
+                        showToast('Layer Unavailable', `${ld.name}: ${err.message}`, 'error');
+                    }
+                });
+
+                dtLayersDrop.appendChild(item);
+            });
+
+            dtLayersBtn.addEventListener('click', () => {
+                dtLayersDrop.classList.toggle('open');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!dtLayersBtn.contains(e.target) && !dtLayersDrop.contains(e.target)) {
+                    dtLayersDrop.classList.remove('open');
                 }
             });
         }

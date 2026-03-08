@@ -1,61 +1,189 @@
 /**
- * Interactive Map Module — Leaflet.js + DigiPin Grid Overlay
+ * Interactive Map Module — MapLibre GL JS + DigiPin Grid Overlay
  * Pilot City: Indore (22.7196°N, 75.8577°E)
  */
 
 const MapModule = (() => {
-    let map, gridLayer, selectedCell, heatmapLayer;
+    let map;
     let _gridDebounceTimer = null;
+    let selectedCellId = null;
+    let hoveredCellId = null;
+    let currentCells = new Map(); // Store cell data by ID
+
     const INDORE = { lat: 22.7196, lng: 75.8577 };
     const INITIAL_ZOOM = 13;
 
     function init() {
-        map = L.map('map', {
-            center: [INDORE.lat, INDORE.lng],
+        // Add PMTiles protocol globally
+        if (typeof maplibregl !== 'undefined' && typeof pmtiles !== 'undefined') {
+            const protocol = new pmtiles.Protocol();
+            maplibregl.addProtocol('pmtiles', protocol.tile);
+        }
+
+        map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+            center: [INDORE.lng, INDORE.lat], // MapLibre uses [lng, lat]
             zoom: INITIAL_ZOOM,
-            zoomControl: false,
+            pitch: 0,
+            bearing: 0,
             attributionControl: false
         });
 
-        // Dark CartoDB tiles
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            maxZoom: 20,
-            subdomains: 'abcd'
-        }).addTo(map);
+        // Controls
+        map.addControl(new maplibregl.NavigationControl({
+            visualizePitch: true
+        }), 'bottom-right');
+        
+        map.addControl(new maplibregl.ScaleControl({
+            maxWidth: 100,
+            unit: 'metric'
+        }), 'bottom-left');
 
-        // Custom zoom control position
-        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        map.addControl(new maplibregl.AttributionControl({
+            compact: false,
+            customAttribution: '&copy; DigiPin by India Post | &copy; Overture Maps | &copy; CARTO'
+        }), 'bottom-left');
 
-        // Attribution
-        L.control.attribution({ position: 'bottomleft', prefix: false })
-            .addAttribution('&copy; <a href="https://openstreetmap.org">OSM</a> | &copy; <a href="https://carto.com">CARTO</a> | DigiPin by India Post')
-            .addTo(map);
+        map.on('load', () => {
+            setupGridLayers();
+            setupHeatmapLayers();
+            updateGrid();
 
-        // Grid overlay layer group
-        gridLayer = L.layerGroup().addTo(map);
-
-        // Debounced grid updates to prevent jank during rapid pan/zoom
-        const debouncedUpdate = () => {
-            clearTimeout(_gridDebounceTimer);
-            _gridDebounceTimer = setTimeout(updateGrid, 150);
-        };
-        map.on('moveend', debouncedUpdate);
-        map.on('zoomend', debouncedUpdate);
-
-        // Initial grid render
-        setTimeout(updateGrid, 500);
-
-        // Scale control
-        L.control.scale({ position: 'bottomleft', imperial: false }).addTo(map);
+            // Debounced updates
+            const debouncedUpdate = () => {
+                clearTimeout(_gridDebounceTimer);
+                _gridDebounceTimer = setTimeout(updateGrid, 150);
+            };
+            map.on('moveend', debouncedUpdate);
+            map.on('zoomend', debouncedUpdate);
+        });
 
         return map;
     }
 
+    function setupGridLayers() {
+        // Source for grid polygons
+        map.addSource('digipin-grid', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] }
+        });
+
+        // Fill layer
+        map.addLayer({
+            id: 'digipin-grid-fill',
+            type: 'fill',
+            source: 'digipin-grid',
+            paint: {
+                'fill-color': ['case', ['boolean', ['feature-state', 'selected'], false], '#a855f7', '#00f5ff'],
+                'fill-opacity': [
+                    'case',
+                    ['boolean', ['feature-state', 'selected'], false], 0.25,
+                    ['boolean', ['feature-state', 'hover'], false], 0.15,
+                    0.05
+                ]
+            }
+        });
+
+        // Outline layer
+        map.addLayer({
+            id: 'digipin-grid-line',
+            type: 'line',
+            source: 'digipin-grid',
+            paint: {
+                'line-color': ['case', ['boolean', ['feature-state', 'selected'], false], '#a855f7', '#00f5ff'],
+                'line-width': [
+                    'case',
+                    ['boolean', ['feature-state', 'selected'], false], 3,
+                    ['boolean', ['feature-state', 'hover'], false], 2,
+                    1
+                ],
+                'line-opacity': [
+                    'case',
+                    ['boolean', ['feature-state', 'selected'], false], 1.0,
+                    ['boolean', ['feature-state', 'hover'], false], 0.8,
+                    0.4
+                ]
+            }
+        });
+
+        // Hover events
+        map.on('mousemove', 'digipin-grid-fill', (e) => {
+            if (e.features.length > 0) {
+                if (hoveredCellId !== null && hoveredCellId !== e.features[0].id) {
+                    map.setFeatureState({ source: 'digipin-grid', id: hoveredCellId }, { hover: false });
+                }
+                hoveredCellId = e.features[0].id;
+                map.setFeatureState({ source: 'digipin-grid', id: hoveredCellId }, { hover: true });
+                map.getCanvas().style.cursor = 'pointer';
+            }
+        });
+
+        map.on('mouseleave', 'digipin-grid-fill', () => {
+            if (hoveredCellId !== null) {
+                map.setFeatureState({ source: 'digipin-grid', id: hoveredCellId }, { hover: false });
+            }
+            hoveredCellId = null;
+            map.getCanvas().style.cursor = '';
+        });
+
+        // Click event
+        map.on('click', 'digipin-grid-fill', (e) => {
+            if (e.features.length > 0) {
+                const feature = e.features[0];
+                const cellData = currentCells.get(feature.id);
+                if (cellData) selectCell(cellData);
+            }
+        });
+    }
+
+    function setupHeatmapLayers() {
+        map.addSource('heatmap-source', {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] }
+        });
+
+        map.addLayer({
+            id: 'heatmap-circles',
+            type: 'circle',
+            source: 'heatmap-source',
+            paint: {
+                'circle-radius': ['get', 'radius'],
+                'circle-color': ['get', 'color'],
+                'circle-opacity': ['get', 'opacity'],
+                'circle-stroke-width': 2,
+                'circle-stroke-color': ['get', 'color'],
+                'circle-stroke-opacity': ['get', 'opacity']
+            }
+        });
+
+        map.on('click', 'heatmap-circles', (e) => {
+            if (e.features.length > 0) {
+                const props = e.features[0].properties;
+                new maplibregl.Popup({ closeButton: false, className: 'dt-popup' })
+                    .setLngLat(e.lngLat)
+                    .setHTML(`<div style="text-align:center;font-family:Inter,sans-serif;">
+                        <strong>#${props.rank}</strong> — ${props.code}<br>
+                        <strong>Score: </strong><strong>${props.score}</strong>
+                    </div>`)
+                    .addTo(map);
+            }
+        });
+
+        map.on('mouseenter', 'heatmap-circles', () => map.getCanvas().style.cursor = 'pointer');
+        map.on('mouseleave', 'heatmap-circles', () => map.getCanvas().style.cursor = '');
+    }
+
     function updateGrid() {
         const zoom = map.getZoom();
-        gridLayer.clearLayers();
-
-        if (zoom < 8) return; // Too zoomed out
+        
+        if (zoom < 8) {
+            // clear grid
+            if (map.getSource('digipin-grid')) {
+                map.getSource('digipin-grid').setData({ type: 'FeatureCollection', features: [] });
+            }
+            return;
+        }
 
         const bounds = map.getBounds();
         const mapBounds = {
@@ -66,125 +194,105 @@ const MapModule = (() => {
         };
 
         const cells = DigiPin.getGridCells(mapBounds, zoom);
+        
+        const features = [];
+        currentCells.clear();
 
-        cells.forEach(cell => {
-            const rect = L.rectangle(
-                [[cell.bounds.south, cell.bounds.west], [cell.bounds.north, cell.bounds.east]],
-                {
-                    color: '#00f5ff',
-                    weight: 1,
-                    opacity: 0.4,
-                    fillColor: '#00f5ff',
-                    fillOpacity: 0.05,
-                    className: 'digipin-cell'
-                }
-            );
+        cells.forEach((cell, index) => {
+            // Create a unique numeric integer ID for feature state
+            const numericId = parseInt(cell.code.replace(/[^0-9]/g, ''), 10) || index + 1;
+            
+            currentCells.set(numericId, Object.assign({}, cell, { id: numericId }));
 
-            rect.on('mouseover', function () {
-                if (this !== selectedCell) {
-                    this.setStyle({ fillOpacity: 0.15, opacity: 0.8, weight: 2 });
+            features.push({
+                type: 'Feature',
+                id: numericId,
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [[
+                        [cell.bounds.west, cell.bounds.north],
+                        [cell.bounds.east, cell.bounds.north],
+                        [cell.bounds.east, cell.bounds.south],
+                        [cell.bounds.west, cell.bounds.south],
+                        [cell.bounds.west, cell.bounds.north]
+                    ]]
+                },
+                properties: {
+                    code: cell.code
                 }
             });
-
-            rect.on('mouseout', function () {
-                if (this !== selectedCell) {
-                    this.setStyle({ fillOpacity: 0.05, opacity: 0.4, weight: 1 });
-                }
-            });
-
-            rect.on('click', () => selectCell(cell, rect));
-
-            // Add DigiPin label at sufficient zoom
-            if (zoom >= 14) {
-                const label = L.tooltip({
-                    permanent: true,
-                    direction: 'center',
-                    className: 'digipin-label',
-                    offset: [0, 0]
-                }).setContent(cell.code);
-                rect.bindTooltip(label);
-            }
-
-            gridLayer.addLayer(rect);
         });
+
+        if (map.getSource('digipin-grid')) {
+            map.getSource('digipin-grid').setData({
+                type: 'FeatureCollection',
+                features: features
+            });
+        }
     }
 
-    async function selectCell(cell, rect) {
+    async function selectCell(cellData) {
         // Deselect previous
-        if (selectedCell) {
-            selectedCell.setStyle({ fillOpacity: 0.05, opacity: 0.4, weight: 1, color: '#00f5ff', fillColor: '#00f5ff' });
+        if (selectedCellId !== null) {
+            map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: false });
         }
 
-        selectedCell = rect;
-        rect.setStyle({
-            fillOpacity: 0.25,
-            opacity: 1,
-            weight: 3,
-            color: '#a855f7',
-            fillColor: '#a855f7'
-        });
+        selectedCellId = cellData.id;
+        map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: true });
 
-        // Show panel with loading state
-        Panel.show(cell);
+        // Show panel
+        Panel.show(cellData);
 
         // Fetch data
         try {
-            const data = await DataFetcher.fetchAllFeatures(cell.center.lat, cell.center.lng, 500);
-            Panel.update(cell, data);
+            const data = await DataFetcher.fetchAllFeatures(cellData.center.lat, cellData.center.lng, 500);
+            Panel.update(cellData, data);
         } catch (err) {
             console.error('Data fetch error:', err);
-            Panel.showError(cell, err.message);
+            Panel.showError(cellData, err.message);
         }
     }
 
-    /**
-     * Navigate to a location
-     */
     function flyTo(lat, lng, zoom = 16) {
-        map.flyTo([lat, lng], zoom, { duration: 1.5 });
+        map.flyTo({ center: [lng, lat], zoom: zoom, duration: 1500 });
     }
 
-    /**
-     * Show heatmap overlay for query results
-     */
     function showHeatmap(results) {
-        clearHeatmap();
-        heatmapLayer = L.layerGroup().addTo(map);
-
-        results.forEach((r, idx) => {
+        const features = results.map((r, idx) => {
             const intensity = 1 - (idx / results.length);
             const color = interpolateColor('#a855f7', '#00f5ff', intensity);
-
-            const circle = L.circleMarker([r.lat, r.lng], {
-                radius: 8 + intensity * 12,
-                color: color,
-                fillColor: color,
-                fillOpacity: 0.4 + intensity * 0.3,
-                weight: 2
-            });
-
-            // Safe popup: code comes from our encoder, score is numeric — but use textContent pattern
-            const popupDiv = document.createElement('div');
-            popupDiv.style.cssText = 'text-align:center;font-family:Inter,sans-serif;';
-            const rank = document.createElement('strong');
-            rank.textContent = `#${idx + 1}`;
-            popupDiv.appendChild(rank);
-            popupDiv.appendChild(document.createTextNode(` \u2014 ${r.code}`));
-            popupDiv.appendChild(document.createElement('br'));
-            const scoreLabel = document.createElement('strong');
-            scoreLabel.textContent = r.score.toFixed(1);
-            popupDiv.appendChild(document.createTextNode('Score: '));
-            popupDiv.appendChild(scoreLabel);
-            circle.bindPopup(popupDiv);
-
-            heatmapLayer.addLayer(circle);
+            
+            return {
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [r.lng, r.lat]
+                },
+                properties: {
+                    rank: idx + 1,
+                    code: r.code,
+                    score: parseFloat(r.score.toFixed(1)),
+                    radius: 8 + Math.round(intensity * 12),
+                    color: color,
+                    opacity: 0.4 + intensity * 0.3
+                }
+            };
         });
+
+        if (map.getSource('heatmap-source')) {
+            map.getSource('heatmap-source').setData({
+                type: 'FeatureCollection',
+                features: features
+            });
+        }
     }
 
     function clearHeatmap() {
-        if (heatmapLayer) {
-            map.removeLayer(heatmapLayer);
-            heatmapLayer = null;
+        if (map.getSource('heatmap-source')) {
+            map.getSource('heatmap-source').setData({
+                type: 'FeatureCollection',
+                features: []
+            });
         }
     }
 

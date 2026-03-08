@@ -4,7 +4,7 @@
 
 const Panel = (() => {
     let panelEl, contentEl, titleEl, currentCell, currentData;
-    let _featureMarkers = null; // Leaflet layer group for feature location markers
+    let _featureMarkers = []; // Array of maplibregl.Marker
 
     /** Escape HTML to prevent XSS from external API data */
     function esc(str) {
@@ -332,37 +332,43 @@ const Panel = (() => {
             const items = JSON.parse(itemsStr);
             if (!items.length) return;
             const map = MapModule.getMap();
-            _featureMarkers = L.layerGroup().addTo(map);
+            
+            // Clear existing markers
+            clearFeatureMarkers();
+            
             const label = card.querySelector('.feature-label')?.textContent || '';
+            const bounds = new maplibregl.LngLatBounds();
+            
             items.forEach((item, i) => {
                 if (!item.lat || !item.lng) return;
-                const marker = L.marker([item.lat, item.lng], {
-                    icon: L.divIcon({
-                        className: 'feature-map-marker',
-                        html: `<div class="fmm-dot">${i + 1}</div>`,
-                        iconSize: [24, 24],
-                        iconAnchor: [12, 12]
-                    })
-                });
-                marker.bindPopup(
-                    `<div style="font-family:Inter,sans-serif;font-size:12px"><strong>${esc(item.name || 'Unnamed')}</strong><br><span style="color:#94a3b8;font-size:10px">${esc(label)}</span></div>`,
-                    { className: 'feature-marker-popup' }
-                );
-                _featureMarkers.addLayer(marker);
+                
+                const el = document.createElement('div');
+                el.className = 'feature-map-marker';
+                el.innerHTML = `<div class="fmm-dot" style="background:#2563eb;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,0.3);">${i + 1}</div>`;
+                
+                const popupHTML = `<div style="font-family:Inter,sans-serif;font-size:12px"><strong>${esc(item.name || 'Unnamed')}</strong><br><span style="color:#94a3b8;font-size:10px">${esc(label)}</span></div>`;
+                const popup = new maplibregl.Popup({ offset: 15, className: 'feature-marker-popup' }).setHTML(popupHTML);
+                
+                const marker = new maplibregl.Marker({ element: el })
+                    .setLngLat([item.lng, item.lat])
+                    .setPopup(popup)
+                    .addTo(map);
+                    
+                _featureMarkers.push(marker);
+                bounds.extend([item.lng, item.lat]);
             });
-            // Fit map to show all markers + current cell
-            if (items.length > 0) {
-                const bounds = _featureMarkers.getBounds();
-                if (bounds.isValid()) map.fitBounds(bounds.pad(0.3));
+            
+            // Fit map to show all markers
+            if (items.length > 0 && !bounds.isEmpty()) {
+                map.fitBounds(bounds, { padding: 50 });
             }
         } catch (e) { /* invalid JSON — skip */ }
     }
 
     function clearFeatureMarkers() {
-        if (_featureMarkers) {
-            _featureMarkers.clearLayers();
-            MapModule.getMap().removeLayer(_featureMarkers);
-            _featureMarkers = null;
+        if (_featureMarkers && _featureMarkers.length > 0) {
+            _featureMarkers.forEach(m => m.remove());
+            _featureMarkers = [];
         }
     }
 

@@ -1,10 +1,17 @@
 /**
  * Ward Boundary Overlay — Fetches administrative boundaries from Overpass
+ * Migrated to MapLibre GL JS Native Vector Layers
  */
 const WardOverlay = (() => {
-    let _layer = null;
+    let _active = false;
     let _loading = false;
+    let _map = null;
+    let _popup = null;
     const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+
+    const SOURCE_ID = 'ward-overlay-source';
+    const FILL_LAYER_ID = 'ward-overlay-fill';
+    const LINE_LAYER_ID = 'ward-overlay-line';
 
     /**
      * Fetch and display ward boundaries for the current map view
@@ -13,9 +20,10 @@ const WardOverlay = (() => {
         if (_loading) return;
         clear();
         _loading = true;
+        _active = true;
 
-        const map = MapModule.getMap();
-        const bounds = map.getBounds();
+        _map = MapModule.getMap();
+        const bounds = _map.getBounds();
         const bbox = `${bounds.getSouth()},${bounds.getWest()},${bounds.getNorth()},${bounds.getEast()}`;
 
         // Query admin boundaries (level 9 = ward, level 8 = sub-district)
@@ -36,9 +44,10 @@ out geom;`;
             if (!resp.ok) throw new Error(`Overpass returned ${resp.status}`);
 
             const data = await resp.json();
-            _layer = L.layerGroup().addTo(map);
-
+            
+            const features = [];
             let count = 0;
+
             (data.elements || []).forEach(el => {
                 if (!el.members) return;
 
@@ -48,53 +57,98 @@ out geom;`;
                     .filter(m => m.geometry);
 
                 outerWays.forEach(way => {
-                    const coords = way.geometry.map(pt => [pt.lat, pt.lon]);
+                    // Overpass returns lat/lon, GeoJSON needs lon/lat
+                    const coords = way.geometry.map(pt => [pt.lon, pt.lat]);
                     if (coords.length < 3) return;
 
+                    // Ensure ring is closed
+                    if (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1]) {
+                        coords.push([...coords[0]]);
+                    }
+
                     const name = el.tags?.name || el.tags?.['name:en'] || `Ward ${el.id}`;
-                    L.polygon(coords, {
-                        color: '#a855f7',
-                        fillColor: '#a855f7',
-                        fillOpacity: 0.05,
-                        weight: 2,
-                        dashArray: '4 3'
-                    }).bindPopup(createPopup(name, el.tags)).addTo(_layer);
+                    features.push({
+                        type: 'Feature',
+                        geometry: { type: 'Polygon', coordinates: [coords] },
+                        properties: { name, admin_level: el.tags?.admin_level }
+                    });
                     count++;
                 });
             });
 
+            if (!_active) return; // User cleared while loading
+
+            const geojson = { type: 'FeatureCollection', features };
+
+            if (!_map.getSource(SOURCE_ID)) {
+                _map.addSource(SOURCE_ID, { type: 'geojson', data: geojson });
+                
+                _map.addLayer({
+                    id: FILL_LAYER_ID,
+                    type: 'fill',
+                    source: SOURCE_ID,
+                    paint: {
+                        'fill-color': '#a855f7',
+                        'fill-opacity': 0.05
+                    }
+                });
+
+                _map.addLayer({
+                    id: LINE_LAYER_ID,
+                    type: 'line',
+                    source: SOURCE_ID,
+                    paint: {
+                        'line-color': '#a855f7',
+                        'line-width': 2,
+                        'line-dasharray': [4, 3]
+                    }
+                });
+
+                _map.on('click', FILL_LAYER_ID, (e) => {
+                    const props = e.features[0].properties;
+                    let html = `<div style="font-family:Inter,sans-serif;"><strong>${props.name}</strong>`;
+                    if (props.admin_level) html += `<br><span style="font-size:11px;">Admin Level: ${props.admin_level}</span>`;
+                    html += `</div>`;
+
+                    if (_popup) _popup.remove();
+                    _popup = new maplibregl.Popup()
+                        .setLngLat(e.lngLat)
+                        .setHTML(html)
+                        .addTo(_map);
+                });
+
+                _map.on('mouseenter', FILL_LAYER_ID, () => {
+                    _map.getCanvas().style.cursor = 'pointer';
+                });
+                _map.on('mouseleave', FILL_LAYER_ID, () => {
+                    _map.getCanvas().style.cursor = '';
+                });
+
+            } else {
+                _map.getSource(SOURCE_ID).setData(geojson);
+            }
+
             App.showToast('Wards Loaded', `${count} boundary segments displayed`, 'success');
         } catch (err) {
             App.showToast('Ward Fetch Failed', err.message, 'error');
+            _active = false;
         } finally {
             _loading = false;
         }
     }
 
-    function createPopup(name, tags) {
-        const div = document.createElement('div');
-        div.style.fontFamily = 'Inter, sans-serif';
-        const title = document.createElement('strong');
-        title.textContent = name;
-        div.appendChild(title);
-        if (tags?.['admin_level']) {
-            div.appendChild(document.createElement('br'));
-            const level = document.createElement('span');
-            level.textContent = `Admin Level: ${tags['admin_level']}`;
-            level.style.fontSize = '11px';
-            div.appendChild(level);
-        }
-        return div;
-    }
-
     function clear() {
-        if (_layer) {
-            MapModule.getMap().removeLayer(_layer);
-            _layer = null;
+        _active = false;
+        if (_popup) {
+            _popup.remove();
+            _popup = null;
+        }
+        if (_map && _map.getSource(SOURCE_ID)) {
+            _map.getSource(SOURCE_ID).setData({ type: 'FeatureCollection', features: [] });
         }
     }
 
-    function isVisible() { return !!_layer; }
+    function isVisible() { return _active; }
 
     return { show, clear, isVisible };
 })();

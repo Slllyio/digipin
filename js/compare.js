@@ -17,13 +17,25 @@ const Compare = (() => {
         }
 
         const color = COLORS[_pinned.length];
-        const marker = L.circleMarker([cell.center.lat, cell.center.lng], {
-            radius: 10, color, fillColor: color, fillOpacity: 0.6, weight: 3
-        }).addTo(MapModule.getMap());
+        const el = document.createElement('div');
+        el.style.width = '20px';
+        el.style.height = '20px';
+        el.style.backgroundColor = color;
+        el.style.border = `3px solid ${color}`;
+        el.style.borderWidth = '3px';
+        el.style.opacity = '0.6';
+        el.style.borderRadius = '50%';
 
         const popupDiv = document.createElement('div');
+        popupDiv.style.fontFamily = 'Inter, sans-serif';
         popupDiv.textContent = `Pin ${_pinned.length + 1}: ${cell.code}`;
-        marker.bindPopup(popupDiv);
+        
+        const popup = new maplibregl.Popup({ offset: 15 }).setDOMContent(popupDiv);
+
+        const marker = new maplibregl.Marker({ element: el })
+            .setLngLat([cell.center.lng, cell.center.lat])
+            .setPopup(popup)
+            .addTo(MapModule.getMap());
 
         _pinned.push({ cell, data, marker });
         updateBadge();
@@ -33,13 +45,13 @@ const Compare = (() => {
     function unpin(code) {
         const idx = _pinned.findIndex(p => p.cell.code === code);
         if (idx === -1) return;
-        MapModule.getMap().removeLayer(_pinned[idx].marker);
+        _pinned[idx].marker.remove();
         _pinned.splice(idx, 1);
         updateBadge();
     }
 
     function clearAll() {
-        _pinned.forEach(p => MapModule.getMap().removeLayer(p.marker));
+        _pinned.forEach(p => p.marker.remove());
         _pinned = [];
         updateBadge();
         closePanel();

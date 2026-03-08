@@ -560,16 +560,10 @@ out tags center;`;
     }
 
     /**
-     * Get LCZ tile layer for Leaflet overlay
+     * Get LCZ TMS URL for MapLibre
      */
-    function getLCZTileLayer() {
-        if (!window.L) return null;
-        return L.tileLayer(`${LCZ_TMS}/{z}/{x}/{y}.png`, {
-            attribution: 'LCZ &copy; <a href="https://lcz-generator.rub.de">RUB/WUDAPT</a>',
-            opacity: 0.5,
-            maxZoom: 16,
-            minZoom: 5
-        });
+    function getLCZURL() {
+        return `${LCZ_TMS}/{z}/{x}/{y}.png`;
     }
 
     function getEmptyBuildingData() {
@@ -585,5 +579,5 @@ out tags center;`;
     /** LCZ class lookup */
     function getLCZClasses() { return LCZ_CLASSES; }
 
-    return { fetch, getLCZTileLayer, getLCZClasses, LCZ_CLASSES };
+    return { fetch, getLCZURL, getLCZClasses, LCZ_CLASSES };
 })();

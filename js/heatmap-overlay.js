@@ -1,10 +1,15 @@
 /**
  * Heatmap Score Overlay — Color grid cells by a selected intelligence score
+ * Migrated to MapLibre Native Vector Overlays
  */
 const HeatmapOverlay = (() => {
-    let _layer = null;
     let _activeScore = null;
     let _abortController = null;
+    let _map = null;
+    let _features = [];
+    
+    const SOURCE_ID = 'heatmap-overlay-source';
+    const LAYER_ID = 'heatmap-overlay-layer';
 
     const SCORE_OPTIONS = [
         { key: 'livability', label: 'Livability' },
@@ -22,10 +27,28 @@ const HeatmapOverlay = (() => {
     async function show(scoreKey) {
         clear();
         _activeScore = scoreKey;
-        _layer = L.layerGroup().addTo(MapModule.getMap());
+        _map = MapModule.getMap();
+        _features = [];
 
-        const map = MapModule.getMap();
-        const bounds = map.getBounds();
+        if (!_map.getSource(SOURCE_ID)) {
+            _map.addSource(SOURCE_ID, {
+                type: 'geojson',
+                data: { type: 'FeatureCollection', features: [] }
+            });
+            _map.addLayer({
+                id: LAYER_ID,
+                type: 'fill-extrusion',
+                source: SOURCE_ID,
+                paint: {
+                    'fill-extrusion-color': ['get', 'color'],
+                    'fill-extrusion-height': ['get', 'height'],
+                    'fill-extrusion-base': 0,
+                    'fill-extrusion-opacity': 0.8
+                }
+            });
+        }
+
+        const bounds = _map.getBounds();
         const gridSize = 6;
         const latStep = (bounds.getNorth() - bounds.getSouth()) / gridSize;
         const lngStep = (bounds.getEast() - bounds.getWest()) / gridSize;
@@ -52,6 +75,9 @@ const HeatmapOverlay = (() => {
                 chunk.map(pt => DataFetcher.fetchAllFeatures(pt.lat, pt.lng, 400))
             );
 
+            // True if we added new polygons
+            let addedNew = false;
+
             results.forEach((r, idx) => {
                 if (r.status !== 'fulfilled' || _abortController.signal.aborted) return;
                 const pt = chunk[idx];
@@ -59,24 +85,48 @@ const HeatmapOverlay = (() => {
                 if (val == null) return;
 
                 const color = val >= 70 ? '#22c55e' : val >= 40 ? '#eab308' : val >= 20 ? '#f97316' : '#ef4444';
-                L.rectangle(
-                    [[pt.lat - pt.latStep / 2, pt.lng - pt.lngStep / 2],
-                     [pt.lat + pt.latStep / 2, pt.lng + pt.lngStep / 2]],
-                    { color: 'transparent', fillColor: color, fillOpacity: 0.25, weight: 0 }
-                ).addTo(_layer);
+                
+                // GeoJSON Polygon coordinates
+                const coords = [
+                    [
+                        [pt.lng - pt.lngStep / 2, pt.lat - pt.latStep / 2],
+                        [pt.lng + pt.lngStep / 2, pt.lat - pt.latStep / 2],
+                        [pt.lng + pt.lngStep / 2, pt.lat + pt.latStep / 2],
+                        [pt.lng - pt.lngStep / 2, pt.lat + pt.latStep / 2],
+                        [pt.lng - pt.lngStep / 2, pt.lat - pt.latStep / 2]
+                    ]
+                ];
+
+                const height = val * 5; // e.g., score 80 becomes 400m tall
+
+                _features.push({
+                    type: 'Feature',
+                    geometry: { type: 'Polygon', coordinates: coords },
+                    properties: { color, height, score: val }
+                });
+                addedNew = true;
             });
+
+            if (addedNew && !_abortController.signal.aborted && _map) {
+                _map.getSource(SOURCE_ID).setData({ type: 'FeatureCollection', features: _features });
+            }
 
             if (batch + 6 < points.length) {
                 await new Promise(r => setTimeout(r, 200));
             }
         }
 
-        App.showToast('Heatmap Ready', `${scoreKey} overlay applied`, 'success');
+        if (!_abortController.signal.aborted) {
+            App.showToast('3D Heatmap Ready', `${scoreKey} overlay applied. Pitch the map to see height!`, 'success');
+        }
     }
 
     function clear() {
         if (_abortController) { _abortController.abort(); _abortController = null; }
-        if (_layer) { MapModule.getMap().removeLayer(_layer); _layer = null; }
+        if (_map && _map.getSource(SOURCE_ID)) {
+            _map.getSource(SOURCE_ID).setData({ type: 'FeatureCollection', features: [] });
+        }
+        _features = [];
         _activeScore = null;
     }
 

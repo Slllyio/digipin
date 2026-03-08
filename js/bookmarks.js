@@ -4,11 +4,10 @@
 const Bookmarks = (() => {
     const STORAGE_KEY = 'digipin_bookmarks';
     let _bookmarks = [];
-    let _markers = L.layerGroup();
+    let _markers = [];
 
     function init() {
         _bookmarks = load();
-        _markers.addTo(MapModule.getMap());
         renderMarkers();
     }
 
@@ -53,30 +52,38 @@ const Bookmarks = (() => {
     function getAll() { return _bookmarks; }
 
     function renderMarkers() {
-        _markers.clearLayers();
+        const map = MapModule.getMap();
+        if (!map) return;
+        
+        _markers.forEach(m => m.remove());
+        _markers = [];
+        
         _bookmarks.forEach(bm => {
-            const marker = L.marker([bm.lat, bm.lng], {
-                icon: L.divIcon({
-                    className: 'bookmark-marker',
-                    html: '<div class="bm-icon">&#9733;</div>',
-                    iconSize: [24, 24],
-                    iconAnchor: [12, 12]
-                })
-            });
-            const popup = document.createElement('div');
-            popup.style.fontFamily = 'Inter, sans-serif';
+            const el = document.createElement('div');
+            el.className = 'bookmark-marker';
+            el.innerHTML = '<div class="bm-icon" style="background:#eab308;color:#000;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:16px;">&#9733;</div>';
+
+            const popupEl = document.createElement('div');
+            popupEl.style.fontFamily = 'Inter, sans-serif';
             const codeEl = document.createElement('strong');
             codeEl.textContent = bm.code;
-            popup.appendChild(codeEl);
+            popupEl.appendChild(codeEl);
             if (bm.note) {
-                popup.appendChild(document.createElement('br'));
+                popupEl.appendChild(document.createElement('br'));
                 const noteEl = document.createElement('span');
                 noteEl.textContent = bm.note;
                 noteEl.style.fontSize = '11px';
-                popup.appendChild(noteEl);
+                popupEl.appendChild(noteEl);
             }
-            marker.bindPopup(popup);
-            _markers.addLayer(marker);
+            
+            const popup = new maplibregl.Popup({ offset: 15 }).setDOMContent(popupEl);
+
+            const marker = new maplibregl.Marker({ element: el })
+                .setLngLat([bm.lng, bm.lat])
+                .setPopup(popup)
+                .addTo(map);
+
+            _markers.push(marker);
         });
     }
 
