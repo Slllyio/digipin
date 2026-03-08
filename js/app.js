@@ -377,16 +377,42 @@ const App = (() => {
             });
         }
 
-        // Google Open Buildings toggle (528K Indore footprints via PMTiles)
+        // Google Open Buildings toggle — cycles: Off → 3D → 2D → Off
         const buildingsBtn = document.getElementById('btn-buildings');
         if (buildingsBtn) {
+            let buildingMode = 'off'; // off | 3d | 2d
             buildingsBtn.addEventListener('click', async () => {
                 const map = MapModule.getMap();
                 try {
-                    const isOn = await DigitalTwinLayers.toggle('google_buildings', map);
-                    buildingsBtn.classList.toggle('active', isOn);
-                    if (isOn) {
-                        showToast('Google Open Buildings', '528K ML-detected footprints — 3D extrusion by area.', 'info');
+                    if (buildingMode === 'off') {
+                        // Turn on 3D
+                        await DigitalTwinLayers.toggle('google_buildings', map);
+                        buildingMode = '3d';
+                        buildingsBtn.classList.add('active');
+                        buildingsBtn.querySelector('.tb-label').textContent = '3D';
+                        showToast('Google Open Buildings', '528K footprints — 3D extrusion mode.', 'info');
+                    } else if (buildingMode === '3d') {
+                        // Switch to 2D flat
+                        await DigitalTwinLayers.toggle('google_buildings', map); // turn off 3D
+                        await DigitalTwinLayers.toggle('google_buildings_flat', map); // turn on 2D
+                        buildingMode = '2d';
+                        buildingsBtn.querySelector('.tb-label').textContent = '2D';
+                        showToast('Google Open Buildings', '528K footprints — flat 2D mode.', 'info');
+                    } else {
+                        // Turn off — ensure both layers are hidden
+                        if (DigitalTwinLayers.isVisible('google_buildings_flat')) {
+                            await DigitalTwinLayers.toggle('google_buildings_flat', map);
+                        }
+                        if (DigitalTwinLayers.isVisible('google_buildings')) {
+                            await DigitalTwinLayers.toggle('google_buildings', map);
+                        }
+                        // Defensive: force map-level visibility off
+                        ['dt-layer-google_buildings', 'dt-layer-google_buildings_flat', 'dt-tether-google_buildings'].forEach(id => {
+                            if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
+                        });
+                        buildingMode = 'off';
+                        buildingsBtn.classList.remove('active');
+                        buildingsBtn.querySelector('.tb-label').textContent = 'Buildings';
                     }
                 } catch (err) {
                     showToast('Buildings Error', err.message, 'error');
@@ -394,22 +420,28 @@ const App = (() => {
             });
         }
 
-        // 3D Buildings toggle
+        // 3D Mode toggle — pitches map and auto-enables 3D buildings
         const btn3d = document.getElementById('btn-3d');
         if (btn3d) {
             let is3d = false;
-            btn3d.addEventListener('click', () => {
+            btn3d.addEventListener('click', async () => {
                 const map = MapModule.getMap();
                 is3d = !is3d;
                 btn3d.classList.toggle('active', is3d);
                 if (is3d) {
                     map.easeTo({ pitch: 60, duration: 1000 });
-                    if (!DigitalTwinLayers.isVisible('google_buildings')) {
-                        DigitalTwinLayers.toggle('google_buildings', map).then(isOn => {
-                            document.getElementById('btn-buildings')?.classList.toggle('active', isOn);
-                        });
+                    // Auto-enable 3D buildings if no buildings layer is active
+                    if (!DigitalTwinLayers.isVisible('google_buildings') && !DigitalTwinLayers.isVisible('google_buildings_flat')) {
+                        try {
+                            await DigitalTwinLayers.toggle('google_buildings', map);
+                            const bBtn = document.getElementById('btn-buildings');
+                            if (bBtn) {
+                                bBtn.classList.add('active');
+                                bBtn.querySelector('.tb-label').textContent = '3D';
+                            }
+                        } catch { /* silent */ }
                     }
-                    showToast('3D Mode', 'Map pitched. Tilt/rotate using right-click + drag.', 'success');
+                    showToast('3D Mode', 'Map pitched to 60\u00b0. Right-click + drag to rotate.', 'success');
                 } else {
                     map.easeTo({ pitch: 0, bearing: 0, duration: 1000 });
                     showToast('2D Mode', 'Returned to top-down view.', 'info');
@@ -495,6 +527,18 @@ const App = (() => {
                     const map = MapModule.getMap();
                     status.textContent = '\u23F3';
                     try {
+                        // Mutual exclusion: turning on 3D buildings turns off 2D and vice versa
+                        const counterpart = ld.key === 'google_buildings' ? 'google_buildings_flat'
+                            : ld.key === 'google_buildings_flat' ? 'google_buildings' : null;
+                        if (counterpart && DigitalTwinLayers.isVisible(counterpart)) {
+                            await DigitalTwinLayers.toggle(counterpart, map);
+                            const counterItem = dtLayersDrop.querySelector(`[data-layer-key="${counterpart}"]`);
+                            if (counterItem) {
+                                counterItem.classList.remove('active');
+                                counterItem.querySelector('.dt-layer-status').textContent = '';
+                            }
+                        }
+
                         const isOn = await DigitalTwinLayers.toggle(ld.key, map);
                         item.classList.toggle('active', isOn);
                         status.textContent = isOn ? '\u2713' : '';

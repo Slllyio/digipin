@@ -220,22 +220,9 @@ const DigitalTwinLayers = (() => {
             tooltip: () => 'Bhuvan WMS: Water Bodies'
         },
 
-        // ── GeoJSON / Local Data ──
-        city_boundary: {
-            name: 'Indore City Boundary',
-            icon: '\u{1F3D9}',
-            file: null,
-            group: 'Boundaries',
-            type: 'fill',
-            paint: {
-                'fill-color': '#e879f9',
-                'fill-opacity': 0.05
-            },
-            minZoom: 8,
-            tooltip: () => 'Indore Municipal Boundary'
-        },
+        // ── Buildings ──
         google_buildings: {
-            name: 'Google Open Buildings',
+            name: 'Google Open Buildings (3D)',
             icon: '\u{1F3E2}',
             group: 'Buildings',
             isPMTiles: true,
@@ -251,8 +238,6 @@ const DigitalTwinLayers = (() => {
                     0.85, '#22d3ee',
                     0.95, '#a78bfa'
                 ],
-                // Height derived from building area: sqrt(area) as proxy for floors
-                // Small house ~50m² → ~7m, Large building ~500m² → ~22m
                 'fill-extrusion-height': [
                     '*',
                     ['sqrt', ['to-number', ['get', 'area_in_meters'], 50]],
@@ -269,6 +254,202 @@ const DigitalTwinLayers = (() => {
                 return `Conf: ${conf.toFixed(2)} | ${area.toFixed(0)}m\u00b2`;
             }
         },
+        google_buildings_flat: {
+            name: 'Google Open Buildings (2D)',
+            icon: '\u{1F4D0}',
+            group: 'Buildings',
+            isPMTiles: true,
+            pmtilesUrl: `${DATA_BASE}/vectors/google_open_buildings_indore.pmtiles`,
+            sourceLayer: 'building',
+            type: 'fill',
+            paint: {
+                'fill-color': [
+                    'interpolate', ['linear'],
+                    ['to-number', ['get', 'confidence'], 0.7],
+                    0.65, '#f97316',
+                    0.75, '#facc15',
+                    0.85, '#22d3ee',
+                    0.95, '#a78bfa'
+                ],
+                'fill-opacity': 0.5,
+                'fill-outline-color': '#ffffff'
+            },
+            minZoom: 10,
+            tooltip: f => {
+                const p = f.properties || {};
+                const conf = parseFloat(p.confidence) || 0;
+                const area = parseFloat(p.area_in_meters) || 0;
+                return `Conf: ${conf.toFixed(2)} | ${area.toFixed(0)}m\u00b2`;
+            }
+        },
+
+        // ── Boundaries ──
+        city_boundary: {
+            name: 'Indore City Boundary',
+            icon: '\u{1F3D9}',
+            file: null,
+            group: 'Boundaries',
+            type: 'fill',
+            paint: {
+                'fill-color': '#e879f9',
+                'fill-opacity': 0.05
+            },
+            minZoom: 8,
+            tooltip: () => 'Indore Municipal Boundary'
+        },
+        osm_admin: {
+            name: 'Admin Zones (OSM)',
+            icon: '\u{1F5FA}',
+            file: 'vectors/osm_admin_boundaries_indore.geojson',
+            group: 'Boundaries',
+            type: 'fill',
+            paint: {
+                'fill-color': '#818cf8',
+                'fill-opacity': 0.08,
+                'fill-outline-color': '#a78bfa'
+            },
+            minZoom: 10,
+            tooltip: f => {
+                const p = f.properties || {};
+                return p.name || `Admin level ${p.admin_level || '?'}`;
+            }
+        },
+
+        // ── Environment ──
+        osm_green_spaces: {
+            name: 'Green Spaces (OSM)',
+            icon: '\u{1F333}',
+            file: 'vectors/osm_green_spaces_indore.geojson',
+            group: 'Environment',
+            type: 'fill',
+            paint: {
+                'fill-color': '#22c55e',
+                'fill-opacity': 0.45,
+                'fill-outline-color': '#16a34a'
+            },
+            minZoom: 10,
+            tooltip: f => {
+                const p = f.properties || {};
+                return p.name || p.natural || 'Green space';
+            }
+        },
+
+        // ── Local Infrastructure (OSM) ──
+        osm_pois: {
+            name: 'Points of Interest',
+            icon: '\u{1F4CD}',
+            file: 'vectors/osm_pois_indore.geojson',
+            group: 'Local Data',
+            type: 'circle',
+            paint: {
+                'circle-radius': [
+                    'interpolate', ['linear'], ['zoom'],
+                    10, 2, 14, 5, 18, 8
+                ],
+                'circle-color': [
+                    'match', ['get', 'amenity'],
+                    'hospital',     '#ef4444',
+                    'clinic',       '#f87171',
+                    'pharmacy',     '#fb923c',
+                    'police',       '#3b82f6',
+                    'fire_station', '#dc2626',
+                    'school',       '#8b5cf6',
+                    'college',      '#7c3aed',
+                    'university',   '#6d28d9',
+                    'bank',         '#eab308',
+                    'atm',          '#facc15',
+                    'restaurant',   '#f97316',
+                    'fast_food',    '#fb923c',
+                    'cafe',         '#a16207',
+                    'fuel',         '#64748b',
+                    'place_of_worship', '#a78bfa',
+                    'townhall',     '#14b8a6',
+                    '#6b7280'
+                ],
+                'circle-stroke-width': 1,
+                'circle-stroke-color': '#ffffff',
+                'circle-opacity': 0.85
+            },
+            minZoom: 12,
+            tooltip: f => {
+                const p = f.properties || {};
+                const parts = [];
+                if (p.name) parts.push(p.name);
+                if (p.amenity) parts.push(p.amenity.replace(/_/g, ' '));
+                return parts.join(' | ') || 'POI';
+            }
+        },
+        osm_shops: {
+            name: 'Shops & Markets',
+            icon: '\u{1F6CD}',
+            file: 'vectors/osm_shops_indore.geojson',
+            group: 'Local Data',
+            type: 'circle',
+            paint: {
+                'circle-radius': [
+                    'interpolate', ['linear'], ['zoom'],
+                    12, 3, 16, 6
+                ],
+                'circle-color': '#f59e0b',
+                'circle-stroke-width': 1,
+                'circle-stroke-color': '#ffffff',
+                'circle-opacity': 0.8
+            },
+            minZoom: 13,
+            tooltip: f => {
+                const p = f.properties || {};
+                const parts = [];
+                if (p.name) parts.push(p.name);
+                if (p.shop) parts.push(p.shop.replace(/_/g, ' '));
+                return parts.join(' | ') || 'Shop';
+            }
+        },
+        osm_railways: {
+            name: 'Railway Stations',
+            icon: '\u{1F682}',
+            file: 'vectors/osm_railways_indore.geojson',
+            group: 'Local Data',
+            type: 'circle',
+            paint: {
+                'circle-radius': [
+                    'interpolate', ['linear'], ['zoom'],
+                    10, 4, 14, 8
+                ],
+                'circle-color': '#06b6d4',
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#ffffff',
+                'circle-opacity': 0.9
+            },
+            minZoom: 10,
+            tooltip: f => {
+                const p = f.properties || {};
+                return p.name || p.railway || 'Railway';
+            }
+        },
+        osm_utilities: {
+            name: 'Power Infrastructure',
+            icon: '\u{26A1}',
+            file: 'vectors/osm_utilities_indore.geojson',
+            group: 'Local Data',
+            type: 'circle',
+            paint: {
+                'circle-radius': [
+                    'interpolate', ['linear'], ['zoom'],
+                    10, 1.5, 14, 3, 18, 5
+                ],
+                'circle-color': '#facc15',
+                'circle-stroke-width': 0.5,
+                'circle-stroke-color': '#ca8a04',
+                'circle-opacity': 0.6
+            },
+            minZoom: 13,
+            tooltip: f => {
+                const p = f.properties || {};
+                return p.power ? `Power: ${p.power}` : 'Utility';
+            }
+        },
+
+        // ── Sensors (Live API) ──
         sensor_weather: {
             name: 'Weather Station',
             icon: '\u{1F321}',
@@ -276,13 +457,19 @@ const DigitalTwinLayers = (() => {
             group: 'Sensors',
             type: 'circle',
             paint: {
-                'circle-radius': 8,
+                'circle-radius': 10,
                 'circle-color': '#fbbf24',
                 'circle-stroke-width': 2,
                 'circle-stroke-color': '#ffffff'
             },
             minZoom: 8,
-            tooltip: () => 'Open-Meteo Weather'
+            tooltip: f => {
+                const p = f.properties || {};
+                if (p.temperature_2m != null) {
+                    return `${p.temperature_2m}\u00b0C | ${p.relative_humidity_2m || '?'}% RH | Wind ${p.wind_speed_10m || '?'} km/h`;
+                }
+                return 'Open-Meteo Weather';
+            }
         },
         sensor_aqi: {
             name: 'Air Quality',
@@ -291,22 +478,40 @@ const DigitalTwinLayers = (() => {
             group: 'Sensors',
             type: 'circle',
             paint: {
-                'circle-radius': 8,
+                'circle-radius': 10,
                 'circle-color': '#ef4444',
                 'circle-stroke-width': 2,
                 'circle-stroke-color': '#ffffff'
             },
             minZoom: 8,
-            tooltip: () => 'Open-Meteo AQI'
+            tooltip: f => {
+                const p = f.properties || {};
+                if (p.pm2_5 != null) {
+                    return `PM2.5: ${p.pm2_5} | PM10: ${p.pm10 || '?'} | AQI: ${p.european_aqi || '?'}`;
+                }
+                return 'Open-Meteo AQI';
+            }
         },
-        worldcover_lulc: {
-            name: 'ESA WorldCover 10m',
-            icon: '\u{1F30D}',
-            file: 'rasters/worldcover_10m_indore.tif',
-            group: 'Raster',
-            isRaster: true,
-            minZoom: 10,
-            tooltip: () => 'ESA WorldCover LULC 2021'
+        sensor_solar: {
+            name: 'Solar Radiation',
+            icon: '\u{2600}',
+            file: null,
+            group: 'Sensors',
+            type: 'circle',
+            paint: {
+                'circle-radius': 10,
+                'circle-color': '#f97316',
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#ffffff'
+            },
+            minZoom: 8,
+            tooltip: f => {
+                const p = f.properties || {};
+                if (p.shortwave_radiation != null) {
+                    return `GHI: ${p.shortwave_radiation} W/m\u00b2 | Direct: ${p.direct_radiation || '?'} W/m\u00b2`;
+                }
+                return 'Open-Meteo Solar';
+            }
         }
     };
 
@@ -342,7 +547,7 @@ const DigitalTwinLayers = (() => {
             return CITY_BOUNDARY_GEOJSON;
         }
 
-        if (key === 'sensor_weather' || key === 'sensor_aqi') {
+        if (key === 'sensor_weather' || key === 'sensor_aqi' || key === 'sensor_solar') {
             const data = await _loadSensorData(key);
             _cache.set(key, data);
             return data;
@@ -361,18 +566,22 @@ const DigitalTwinLayers = (() => {
 
     async function _loadSensorData(key) {
         const CENTER = { lat: 22.7196, lon: 75.8577 };
-        const sensorType = key === 'sensor_weather' ? 'weather' : 'aqi';
 
         try {
             let metrics = {};
-            if (sensorType === 'weather') {
+            if (key === 'sensor_weather') {
                 const params = 'current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,weather_code';
                 const resp = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${CENTER.lat}&longitude=${CENTER.lon}&${params}&timezone=Asia/Kolkata`);
                 const data = await resp.json();
                 metrics = data.current || {};
-            } else {
+            } else if (key === 'sensor_aqi') {
                 const params = 'current=pm2_5,pm10,european_aqi,uv_index';
                 const resp = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${CENTER.lat}&longitude=${CENTER.lon}&${params}&timezone=Asia/Kolkata`);
+                const data = await resp.json();
+                metrics = data.current || {};
+            } else if (key === 'sensor_solar') {
+                const params = 'current=shortwave_radiation,direct_radiation,diffuse_radiation,direct_normal_irradiance';
+                const resp = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${CENTER.lat}&longitude=${CENTER.lon}&${params}&timezone=Asia/Kolkata`);
                 const data = await resp.json();
                 metrics = data.current || {};
             }
@@ -382,7 +591,7 @@ const DigitalTwinLayers = (() => {
                 features: [{
                     type: 'Feature',
                     geometry: { type: 'Point', coordinates: [CENTER.lon, CENTER.lat] },
-                    properties: { sensor_type: sensorType, ...metrics }
+                    properties: { sensor_type: key.replace('sensor_', ''), ...metrics }
                 }]
             };
         } catch {
