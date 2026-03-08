@@ -7,8 +7,10 @@ const MapModule = (() => {
     let map;
     let _gridDebounceTimer = null;
     let selectedCellId = null;
+    let selectedCellCode = null; // DigiPin code of selected cell (persists across grid updates)
     let hoveredCellId = null;
     let currentCells = new Map(); // Store cell data by ID
+    let codeToCellId = new Map(); // DigiPin code -> numeric feature ID
 
     const INDORE = { lat: 22.7196, lng: 75.8577 };
     const INITIAL_ZOOM = 13;
@@ -197,16 +199,18 @@ const MapModule = (() => {
         
         const features = [];
         currentCells.clear();
+        codeToCellId.clear();
 
         cells.forEach((cell, index) => {
-            // Create a unique numeric integer ID for feature state
-            const numericId = parseInt(cell.code.replace(/[^0-9]/g, ''), 10) || index + 1;
-            
-            currentCells.set(numericId, Object.assign({}, cell, { id: numericId }));
+            // Use sequential index as feature ID — guaranteed unique per render
+            const featureId = index + 1;
+
+            currentCells.set(featureId, Object.assign({}, cell, { id: featureId }));
+            codeToCellId.set(cell.code, featureId);
 
             features.push({
                 type: 'Feature',
-                id: numericId,
+                id: featureId,
                 geometry: {
                     type: 'Polygon',
                     coordinates: [[
@@ -228,16 +232,27 @@ const MapModule = (() => {
                 type: 'FeatureCollection',
                 features: features
             });
+
+            // Re-apply selection if the selected cell is still in the new grid
+            if (selectedCellCode && codeToCellId.has(selectedCellCode)) {
+                const newId = codeToCellId.get(selectedCellCode);
+                selectedCellId = newId;
+                map.setFeatureState({ source: 'digipin-grid', id: newId }, { selected: true });
+            } else if (selectedCellCode && !codeToCellId.has(selectedCellCode)) {
+                // Selected cell scrolled out of view — clear tracked ID but keep code
+                selectedCellId = null;
+            }
         }
     }
 
     async function selectCell(cellData) {
         // Deselect previous
         if (selectedCellId !== null) {
-            map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: false });
+            try { map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: false }); } catch { /* grid may have regenerated */ }
         }
 
         selectedCellId = cellData.id;
+        selectedCellCode = cellData.code;
         map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: true });
 
         // Show panel
