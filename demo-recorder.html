@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DigiPin Demo Recorder</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0a0a1a;
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  h1 {
+    font-size: 28px;
+    background: linear-gradient(135deg, #00e5ff, #7c4dff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #888; margin-bottom: 30px; font-size: 14px; }
+  .controls {
+    display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap;
+  }
+  button {
+    padding: 10px 20px;
+    border: 1px solid #333;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  button:hover { background: #2a2a4e; border-color: #7c4dff; }
+  button.primary {
+    background: linear-gradient(135deg, #7c4dff, #448aff);
+    border: none; color: #fff; font-weight: 600;
+  }
+  button.primary:hover { opacity: 0.9; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .scene-list {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .scene {
+    background: #1a1a2e;
+    border: 1px solid #2a2a4e;
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex; align-items: center; gap: 16px;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .scene.active { border-color: #7c4dff; background: #1e1e3a; }
+  .scene.done { border-color: #00c853; }
+  .scene-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #2a2a4e;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; flex-shrink: 0;
+  }
+  .scene.active .scene-num { background: #7c4dff; color: #fff; }
+  .scene.done .scene-num { background: #00c853; color: #fff; }
+  .scene-info { flex: 1; }
+  .scene-title { font-weight: 600; font-size: 15px; }
+  .scene-desc { font-size: 12px; color: #888; margin-top: 2px; }
+  .scene-time { font-size: 12px; color: #666; font-family: monospace; }
+  .scene-status { font-size: 18px; }
+
+  .narration-box {
+    background: #111128;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 30px;
+    display: none;
+  }
+  .narration-box.visible { display: block; }
+  .narration-label { color: #7c4dff; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .narration-text {
+    font-size: 16px; line-height: 1.6;
+    color: #ccc; font-style: italic;
+  }
+  .actions-label { color: #00e5ff; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 8px; }
+  .actions-list { font-size: 13px; color: #aaa; line-height: 1.8; padding-left: 20px; }
+
+  .teleprompter {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.95);
+    border-top: 2px solid #7c4dff;
+    padding: 20px 40px;
+    font-size: 22px;
+    line-height: 1.5;
+    color: #fff;
+    text-align: center;
+    display: none;
+    z-index: 9999;
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+  .teleprompter.visible { display: block; }
+  .teleprompter .scene-label {
+    font-size: 12px; color: #7c4dff; text-transform: uppercase;
+    letter-spacing: 2px; margin-bottom: 8px;
+  }
+
+  .progress-bar {
+    width: 100%; height: 4px; background: #1a1a2e;
+    border-radius: 2px; margin: 20px 0 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7c4dff, #00e5ff);
+    border-radius: 2px;
+    transition: width 0.5s;
+    width: 0%;
+  }
+  .progress-text { font-size: 12px; color: #666; text-align: right; }
+
+  kbd {
+    background: #2a2a4e; padding: 2px 8px; border-radius: 4px;
+    font-size: 12px; border: 1px solid #444;
+  }
+  .shortcuts { margin-top: 20px; font-size: 13px; color: #666; }
+  .shortcuts span { margin-right: 20px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>DigiPin Demo Recorder</h1>
+  <p class="subtitle">Guided walkthrough controller — follow scenes in order, use teleprompter for narration</p>
+
+  <div class="controls">
+    <button class="primary" id="btn-start">Start Walkthrough</button>
+    <button id="btn-prev" disabled>Previous</button>
+    <button id="btn-next" disabled>Next Scene</button>
+    <button id="btn-teleprompter">Teleprompter: OFF</button>
+    <button id="btn-open-app">Open Dashboard</button>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+  <div class="progress-text" id="progress-text">0 / 16 scenes</div>
+
+  <div class="scene-list" id="scene-list"></div>
+
+  <div class="narration-box" id="narration-box">
+    <div class="narration-label">Narration Script</div>
+    <div class="narration-text" id="narration-text"></div>
+    <div class="actions-label">On-Screen Actions</div>
+    <ol class="actions-list" id="actions-list"></ol>
+  </div>
+
+  <div class="shortcuts">
+    <span><kbd>&rarr;</kbd> Next scene</span>
+    <span><kbd>&larr;</kbd> Previous scene</span>
+    <span><kbd>T</kbd> Toggle teleprompter</span>
+    <span><kbd>Space</kbd> Mark scene done</span>
+  </div>
+</div>
+
+<div class="teleprompter" id="teleprompter">
+  <div class="scene-label" id="tele-label"></div>
+  <div id="tele-text"></div>
+</div>
+
+<script>
+const scenes = [
+  {
+    title: "Opening & Overview",
+    time: "0:00 \u2013 0:30",
+    desc: "Dashboard loads, show grid cells, top bar, sidebar",
+    narration: "Welcome to DigiPin Urban Intelligence \u2014 India's first hyper-local urban analytics platform. DigiPin divides every square meter of Indian cities into uniquely addressable grid cells, each enriched with over 160 real-time data features. Let's explore what this platform can do.",
+    actions: [
+      "Let dashboard load fully (wait for grid to render)",
+      "Slowly pan the map to show grid cells",
+      "Brief pause on the logo 'DigiPin Intelligence'"
+    ]
+  },
+  {
+    title: "City Selector",
+    time: "0:30 \u2013 0:50",
+    desc: "Switch cities \u2014 fly to Bengaluru and back",
+    narration: "The platform covers 12 major Indian cities. Select any city \u2014 the map instantly flies to its center. Each city has full coverage with all 160+ urban features pre-indexed.",
+    actions: [
+      "Click city dropdown",
+      "Hover over a few options (Pune, Jaipur)",
+      "Click 'Bengaluru' \u2014 map animates",
+      "Show the toast notification",
+      "Switch back to 'Indore' for rest of demo"
+    ]
+  },
+  {
+    title: "Search \u2014 DigiPin Code & Place Name",
+    time: "0:50 \u2013 1:20",
+    desc: "Search by code and by place name",
+    narration: "Search works two ways. Enter a DigiPin code \u2014 like '3MC-88P-JL2J' \u2014 and the map flies directly to that exact cell. Or search by place name \u2014 type 'Rajwada' \u2014 and it geocodes the location and shows the matching DigiPin.",
+    actions: [
+      "Click search input",
+      "Type a valid DigiPin code, press Enter",
+      "Show map flying to the cell + toast",
+      "Clear search, type 'Rajwada', press Enter",
+      "Show map flying to location + toast with DigiPin"
+    ]
+  },
+  {
+    title: "Grid Cell Selection & Detail Panel",
+    time: "1:20 \u2013 2:30",
+    desc: "Click cell, show scores, features, categories",
+    narration: "Click any grid cell to unlock its intelligence profile. The detail panel shows the cell's DigiPin code, GPS coordinates, and reverse-geocoded address. Below that, over 30 intelligence scores \u2014 livability, safety, green index, walkability, healthcare access, food diversity. Each score is computed from real-time OSM, government, and sensor data. Scroll down to see feature categories \u2014 food & dining, education, healthcare, transport, shopping \u2014 each with exact counts of nearby amenities.",
+    actions: [
+      "Click a grid cell (choose a busy area)",
+      "Panel opens \u2014 pause on DigiPin code + coordinates",
+      "Slowly scroll to show intelligence scores",
+      "Pause on a high score (e.g., Food Diversity: 85)",
+      "Scroll to feature categories",
+      "Expand 'Food & Dining' to show individual counts",
+      "Expand 'Healthcare' to show hospitals, clinics count"
+    ]
+  },
+  {
+    title: "Scores Dialog \u2014 Radar Chart",
+    time: "2:30 \u2013 3:00",
+    desc: "Open radar chart visualization of all scores",
+    narration: "The Scores dialog visualizes all intelligence dimensions as an interactive radar chart. This gives you an instant visual fingerprint of any location \u2014 you can immediately see if a cell excels in connectivity but lacks green space, or has high commercial activity but low safety scores.",
+    actions: [
+      "Click 'Scores' button in detail panel",
+      "Scores dialog opens with radar chart",
+      "Hover over chart axes to show values",
+      "Scroll down to see all scores listed",
+      "Close dialog"
+    ]
+  },
+  {
+    title: "Building Intelligence",
+    time: "3:00 \u2013 3:40",
+    desc: "Show LCZ, building metrics, height distribution",
+    narration: "Building Intelligence aggregates structural data from Google Open Buildings and Overture Maps. It shows the Local Climate Zone classification \u2014 like 'Compact Midrise' \u2014 along with key metrics: building count, average height, floor count, ground coverage, FSI, and development potential scores.",
+    actions: [
+      "Click 'Building Intelligence' button",
+      "Dialog opens \u2014 pause on LCZ badge",
+      "Show key metrics grid",
+      "Scroll to development metrics",
+      "Close dialog"
+    ]
+  },
+  {
+    title: "3D Buildings & Roads",
+    time: "3:40 \u2013 4:30",
+    desc: "3D building extrusions, color-coded roads",
+    narration: "The Buildings layer renders over 528,000 Overture Maps footprints. In 3D mode, buildings are extruded by their actual height \u2014 commercial in blue, residential in red, institutional in purple. The Roads layer visualizes the entire road network color-coded by class \u2014 orange motorways, yellow primary roads, cyan tertiary streets, gray residential lanes.",
+    actions: [
+      "Click Buildings button \u2192 '3D' mode",
+      "Click 3D toggle \u2192 map pitches to 60 degrees",
+      "Right-click drag to rotate \u2014 show buildings from angle",
+      "Zoom into a dense area \u2014 show height variation",
+      "Toggle to '2D' mode briefly",
+      "Click Roads button \u2192 'Color' mode",
+      "Show the color-coded road network",
+      "Zoom to show different road classes"
+    ]
+  },
+  {
+    title: "Data Overlays \u2014 LCZ, LULC, Wards",
+    time: "4:30 \u2013 5:20",
+    desc: "Toggle climate zones, land use, ward boundaries",
+    narration: "Three powerful overlay layers add context. Local Climate Zones classify urban morphology into 17 types \u2014 compact highrise, open lowrise, dense trees, water bodies. ISRO Bhuvan's Land Use Land Cover layer classifies 54 land types from India's own satellite program. Ward Boundaries show administrative divisions from OpenStreetMap.",
+    actions: [
+      "Click LCZ button \u2192 raster appears",
+      "Pan to show different zone colors",
+      "Turn off LCZ, turn on LULC",
+      "Show different land use colors",
+      "Turn off LULC, turn on Wards",
+      "Click a ward polygon \u2192 show name popup",
+      "Turn off Wards"
+    ]
+  },
+  {
+    title: "Layers Panel \u2014 Overture Maps",
+    time: "5:20 \u2013 6:00",
+    desc: "Toggle water bodies, land use, places/POI",
+    narration: "The Layers panel organizes all overlays into collapsible groups. Under Overture Maps, toggle Water Bodies to see every river, lake, and pond. Land Use shows 11 zoning classes. Places and POI scatter color-coded markers for every point of interest by category.",
+    actions: [
+      "Click Layers button",
+      "Panel opens \u2014 show expandable groups",
+      "Expand 'Overture Maps' group",
+      "Toggle 'Water Bodies' \u2192 blue polygons appear",
+      "Toggle 'Land Use' \u2192 colored zones appear",
+      "Toggle 'Places/POI' \u2192 markers scatter",
+      "Toggle each off, close panel"
+    ]
+  },
+  {
+    title: "Heatmap Analysis",
+    time: "6:00 \u2013 6:40",
+    desc: "3D heatmap columns for livability, safety",
+    narration: "The 3D Heatmap engine samples 36 points across the visible area, computes the selected score for each, and renders them as extruded columns. Taller columns mean higher scores. Select Livability, Safety, Walkability, or any of the 10 available metrics. Spot the best and worst micro-zones at a glance.",
+    actions: [
+      "Click Heatmap button",
+      "Select 'Livability' from dropdown",
+      "Wait for 3D columns to render",
+      "Tilt map to show column heights",
+      "Pan to show variation across area",
+      "Switch to 'Safety' heatmap",
+      "Show different distribution",
+      "Clear heatmap"
+    ]
+  },
+  {
+    title: "Urban Queries Engine",
+    time: "6:40 \u2013 7:40",
+    desc: "Run 'Best Mall Location' \u2014 progress, results, heatmap",
+    narration: "The Urban Query Engine offers 52 pre-configured spatial queries in 7 sectors \u2014 Commercial, Residential, Infrastructure, Public Services, Tourism, Environment, and Real Estate. Let's run 'Best Mall Location.' The engine analyzes 25 sample points, fetches all 160+ features for each, applies weighted scoring \u2014 and ranks the top 10 locations.",
+    actions: [
+      "Expand sidebar (if collapsed)",
+      "Scroll through query sectors",
+      "Click 'Commercial & Business' sector",
+      "Click 'Best Mall Location' query",
+      "Show progress bar filling 0% to 100%",
+      "Results panel appears \u2014 pause on top 3",
+      "Click result #1 \u2192 map flies to location",
+      "Show 3D heatmap overlay of results",
+      "Close results panel"
+    ]
+  },
+  {
+    title: "Compare & Pin",
+    time: "7:40 \u2013 8:20",
+    desc: "Pin 3 cells, radar chart comparison, score table",
+    narration: "The Compare feature lets you evaluate up to 3 locations side by side. Pin cells from their detail panels \u2014 each gets a color-coded marker. Open the Compare panel to see a multi-axis radar chart and a detailed score-by-score comparison table. Invaluable for site selection and investment decisions.",
+    actions: [
+      "Click a cell \u2192 open detail panel",
+      "Click 'Pin for Compare' \u2192 marker appears, badge '1'",
+      "Pin a second cell \u2192 badge '2'",
+      "Pin a third cell \u2192 badge '3'",
+      "Click Compare button",
+      "Compare panel opens \u2014 show radar chart",
+      "Scroll to comparison table",
+      "Point out score differences",
+      "Close compare panel"
+    ]
+  },
+  {
+    title: "Walkability & Isochrone",
+    time: "8:20 \u2013 8:50",
+    desc: "5/10/15 min walking radius rings",
+    narration: "The Walkability Radius uses OpenRouteService to compute actual walking isochrones \u2014 not simple circles, but real route-based zones. Green for 5 minutes, yellow for 10, red for 15. This accounts for actual road networks, not crow-fly distance.",
+    actions: [
+      "Open a cell's detail panel",
+      "Click 'Walkability Radius'",
+      "Isochrone rings render \u2014 zoom to show all 3",
+      "Click a ring \u2192 popup shows '10 min walk'",
+      "Zoom in to show street-level detail of ring boundary"
+    ]
+  },
+  {
+    title: "Bookmarks & Reports",
+    time: "8:50 \u2013 9:20",
+    desc: "Save bookmark, generate PDF report",
+    narration: "Save any location as a Bookmark with a personal note. Bookmarks persist in your browser. The Report Generator creates a print-ready intelligence profile \u2014 complete with all scores, feature counts, and environmental data. Save as PDF from your browser's print dialog.",
+    actions: [
+      "Click 'Save Bookmark' \u2192 enter a note \u2192 save",
+      "Click Bookmarks button \u2192 show saved list",
+      "Close bookmarks",
+      "Click 'Generate Report' \u2192 new tab opens",
+      "Show the formatted report",
+      "Brief pause on report layout"
+    ]
+  },
+  {
+    title: "DISHA AI Assistant",
+    time: "9:20 \u2013 9:50",
+    desc: "Ask AI about the selected location",
+    narration: "DISHA is the platform's AI assistant, powered by a local Qwen2.5 language model. It has full context of the selected cell \u2014 all 160+ features, scores, and building data. Ask natural questions like 'Is this a good location for a cafe?' \u2014 DISHA provides data-grounded analysis in real-time.",
+    actions: [
+      "Click 'Ask DISHA' from detail panel",
+      "DISHA panel opens \u2014 show green status indicator",
+      "Type: 'Is this area good for a restaurant?'",
+      "Show streaming response appearing word by word",
+      "Briefly show another question"
+    ]
+  },
+  {
+    title: "Closing",
+    time: "9:50 \u2013 10:10",
+    desc: "Zoom out, show credits, end card",
+    narration: "DigiPin Urban Intelligence transforms raw geospatial data into actionable urban insights. 12 cities, 160+ features, 30+ intelligence scores, 52 analytical queries, 3D building visualization, real-time AI assistance \u2014 all running in your browser. Built on open data from OpenStreetMap, Overture Maps, ISRO Bhuvan, and Google Open Buildings. Thank you for watching.",
+    actions: [
+      "Zoom out slowly to show city-wide grid",
+      "Pan gently across the city",
+      "Fade to closing card with project name + credits"
+    ]
+  }
+];
+
+let currentScene = -1;
+let teleprompterOn = false;
+
+function createSceneElement(scene, index) {
+  const div = document.createElement('div');
+  div.className = 'scene';
+  div.id = 'scene-' + index;
+  div.addEventListener('click', function() { goToScene(index); });
+
+  const num = document.createElement('div');
+  num.className = 'scene-num';
+  num.textContent = index + 1;
+
+  const info = document.createElement('div');
+  info.className = 'scene-info';
+  const title = document.createElement('div');
+  title.className = 'scene-title';
+  title.textContent = scene.title;
+  const desc = document.createElement('div');
+  desc.className = 'scene-desc';
+  desc.textContent = scene.desc;
+  info.appendChild(title);
+  info.appendChild(desc);
+
+  const time = document.createElement('div');
+  time.className = 'scene-time';
+  time.textContent = scene.time;
+
+  const status = document.createElement('div');
+  status.className = 'scene-status';
+
+  div.appendChild(num);
+  div.appendChild(info);
+  div.appendChild(time);
+  div.appendChild(status);
+  return div;
+}
+
+function renderScenes() {
+  const list = document.getElementById('scene-list');
+  list.textContent = '';
+  scenes.forEach(function(s, i) {
+    list.appendChild(createSceneElement(s, i));
+  });
+}
+
+function updateProgress() {
+  const done = document.querySelectorAll('.scene.done').length;
+  const pct = (done / scenes.length) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = done + ' / ' + scenes.length + ' scenes';
+}
+
+function goToScene(i) {
+  if (i < 0 || i >= scenes.length) return;
+  document.querySelectorAll('.scene').forEach(function(el) { el.classList.remove('active'); });
+  currentScene = i;
+  var el = document.getElementById('scene-' + i);
+  el.classList.add('active');
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  var s = scenes[i];
+  var box = document.getElementById('narration-box');
+  box.classList.add('visible');
+  document.getElementById('narration-text').textContent = s.narration;
+
+  var actionsList = document.getElementById('actions-list');
+  actionsList.textContent = '';
+  s.actions.forEach(function(a) {
+    var li = document.createElement('li');
+    li.textContent = a;
+    actionsList.appendChild(li);
+  });
+
+  document.getElementById('btn-prev').disabled = i === 0;
+  document.getElementById('btn-next').disabled = i === scenes.length - 1;
+
+  if (teleprompterOn) {
+    document.getElementById('tele-label').textContent = 'Scene ' + (i + 1) + ': ' + s.title;
+    document.getElementById('tele-text').textContent = s.narration;
+  }
+}
+
+function nextScene() {
+  if (currentScene >= 0) {
+    var sceneEl = document.getElementById('scene-' + currentScene);
+    sceneEl.classList.add('done');
+    sceneEl.querySelector('.scene-status').textContent = '\u2713';
+  }
+  updateProgress();
+  if (currentScene < scenes.length - 1) goToScene(currentScene + 1);
+}
+
+function prevScene() {
+  if (currentScene > 0) goToScene(currentScene - 1);
+}
+
+function startDemo() {
+  document.getElementById('btn-start').textContent = 'Restart';
+  document.querySelectorAll('.scene').forEach(function(el) {
+    el.classList.remove('done', 'active');
+    el.querySelector('.scene-status').textContent = '';
+  });
+  currentScene = -1;
+  updateProgress();
+  nextScene();
+}
+
+function toggleTeleprompter() {
+  teleprompterOn = !teleprompterOn;
+  var tele = document.getElementById('teleprompter');
+  var btn = document.getElementById('btn-teleprompter');
+  if (teleprompterOn) {
+    tele.classList.add('visible');
+    btn.textContent = 'Teleprompter: ON';
+    btn.style.borderColor = '#00e5ff';
+    if (currentScene >= 0) {
+      var s = scenes[currentScene];
+      document.getElementById('tele-label').textContent = 'Scene ' + (currentScene + 1) + ': ' + s.title;
+      document.getElementById('tele-text').textContent = s.narration;
+    }
+  } else {
+    tele.classList.remove('visible');
+    btn.textContent = 'Teleprompter: OFF';
+    btn.style.borderColor = '#333';
+  }
+}
+
+document.getElementById('btn-start').addEventListener('click', startDemo);
+document.getElementById('btn-prev').addEventListener('click', prevScene);
+document.getElementById('btn-next').addEventListener('click', nextScene);
+document.getElementById('btn-teleprompter').addEventListener('click', toggleTeleprompter);
+document.getElementById('btn-open-app').addEventListener('click', function() {
+  window.open('index.html', '_blank');
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight') nextScene();
+  else if (e.key === 'ArrowLeft') prevScene();
+  else if (e.key === 't' || e.key === 'T') toggleTeleprompter();
+  else if (e.key === ' ') { e.preventDefault(); nextScene(); }
+});
+
+renderScenes();
+</script>
+</body>
+</html>
