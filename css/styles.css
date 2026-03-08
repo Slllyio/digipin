@@ -1971,6 +1971,135 @@ body {
     box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
 }
 
+/* ===== DISHA PROVIDER SETTINGS ===== */
+
+.disha-gear-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: var(--transition);
+    line-height: 1;
+    margin-left: auto;
+}
+
+.disha-gear-btn:hover {
+    color: var(--accent-cyan);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.disha-status.cloud {
+    background: rgba(168, 85, 247, 0.15);
+    color: var(--accent-purple);
+}
+
+.disha-settings {
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.disha-settings-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.disha-settings-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.disha-settings-row label {
+    font-size: 11px;
+    color: var(--text-muted);
+    min-width: 80px;
+    flex-shrink: 0;
+}
+
+.disha-settings-row select,
+.disha-settings-row input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 12px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: var(--transition);
+}
+
+.disha-settings-row select:focus,
+.disha-settings-row input:focus {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 2px rgba(0, 245, 255, 0.1);
+}
+
+.disha-settings-row select option {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.disha-settings-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.disha-settings-btn-action {
+    padding: 4px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: var(--transition);
+}
+
+.disha-settings-btn-action:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-cyan);
+    color: var(--text-primary);
+}
+
+.disha-settings-btn-action.disha-save {
+    background: rgba(0, 245, 255, 0.1);
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+}
+
+.disha-settings-btn-action.disha-save:hover {
+    background: rgba(0, 245, 255, 0.2);
+}
+
+.disha-settings-status {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: auto;
+}
+
+.disha-settings-status.status-ok {
+    color: var(--accent-green);
+}
+
+.disha-settings-status.status-err {
+    color: var(--accent-red);
+}
+
 /* ===== CITY SELECTOR ===== */
 #city-select {
     background: rgba(255, 255, 255, 0.05);
