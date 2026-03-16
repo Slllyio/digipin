@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DigiPin Urban Intelligence — Guna Twin City. 160+ urban features for every 4x4m grid cell. Powered by OpenStreetMap and India Post DigiPin system.">
+    <title>DigiPin Urban Intelligence — Guna Twin City</title>
+
+    <!-- MapLibre GL JS -->
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css" />
+    <script src="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js"></script>
+
+    <!-- PMTiles v3 — IIFE global build for MapLibre addProtocol -->
+    <script src="https://unpkg.com/pmtiles@3.0.7/dist/pmtiles.js"></script>
+
+    <!-- GeoRaster for COG/GeoTIFF rendering -->
+    <script src="https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js"></script>
+
+    <!-- Custom Styles (shared with parent) -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+</head>
+<body>
+
+    <!-- ===== MAP ===== -->
+    <div id="map" role="application" aria-label="Interactive DigiPin grid map of Guna"></div>
+
+    <!-- ===== TOP BAR ===== -->
+    <div id="top-bar" role="search" aria-label="Search for locations">
+        <div class="logo" aria-hidden="true">
+            <div class="logo-icon">DP</div>
+            <span class="logo-text">DigiPin — Guna</span>
+        </div>
+        <select id="city-select" aria-label="Select city"></select>
+        <label for="search-input" class="sr-only">Search DigiPin code or place name</label>
+        <input type="text" id="search-input" placeholder="Search DigiPin code or place name (e.g. Guna Fort)" autocomplete="off" aria-label="Search DigiPin code or place name">
+        <button id="search-btn" aria-label="Search">🔍</button>
+    </div>
+
+    <!-- ===== TOOLBAR ===== -->
+    <div id="toolbar" aria-label="Map tools">
+        <button class="toolbar-btn" id="btn-heatmap" title="Heatmap Overlay">
+            <span class="tb-icon">&#9632;</span>
+            <span class="tb-label">Heatmap</span>
+        </button>
+        <button class="toolbar-btn" id="btn-wards" title="Ward Boundaries">
+            <span class="tb-icon">&#9638;</span>
+            <span class="tb-label">Wards</span>
+        </button>
+        <button class="toolbar-btn" id="btn-lcz" title="Local Climate Zones Overlay">
+            <span class="tb-icon">&#127961;</span>
+            <span class="tb-label">LCZ</span>
+        </button>
+        <button class="toolbar-btn" id="btn-buildings" title="Buildings Overlay">
+            <span class="tb-icon">&#127970;</span>
+            <span class="tb-label">Buildings</span>
+        </button>
+        <button class="toolbar-btn" id="btn-3d" title="Toggle 3D View">
+            <span class="tb-icon">&#9650;</span>
+            <span class="tb-label">3D</span>
+        </button>
+        <button class="toolbar-btn" id="btn-lulc" title="Land Use Land Cover">
+            <span class="tb-icon">&#127758;</span>
+            <span class="tb-label">LULC</span>
+        </button>
+        <button class="toolbar-btn" id="btn-roads" title="Road Network">
+            <span class="tb-icon">&#128739;</span>
+            <span class="tb-label">Roads</span>
+        </button>
+        <button class="toolbar-btn" id="btn-dt-layers" title="Digital Twin Layers">
+            <span class="tb-icon">&#128203;</span>
+            <span class="tb-label">Layers</span>
+        </button>
+        <button class="toolbar-btn" id="btn-compare" title="Compare Pinned Cells">
+            <span class="tb-icon">&#128200;</span>
+            <span class="tb-label">Compare</span>
+        </button>
+        <button class="toolbar-btn" id="btn-bookmarks" title="Saved Bookmarks">
+            <span class="tb-icon">&#9733;</span>
+            <span class="tb-label">Marks</span>
+        </button>
+    </div>
+
+    <!-- ===== DETAIL PANEL ===== -->
+    <aside id="detail-panel" aria-label="Grid cell details">
+        <div class="panel-header">
+            <div>
+                <h2 id="panel-title">Select a cell</h2>
+                <div id="panel-address" class="panel-address"></div>
+            </div>
+            <button class="close-btn" id="close-panel" aria-label="Close panel">&#10005;</button>
+        </div>
+        <div id="panel-content" class="panel-content"></div>
+    </aside>
+
+    <!-- ===== QUERY ENGINE ===== -->
+    <div id="query-progress" role="status" aria-live="polite">
+        <div style="flex:1">
+            <div id="query-progress-text">Analyzing...</div>
+            <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:2px;margin-top:6px;overflow:hidden;">
+                <div id="query-progress-bar" style="width:0%" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== COMPARE PANEL ===== -->
+    <aside id="compare-panel" aria-label="Cell comparison">
+        <div class="compare-panel-header">
+            <h3>Cell Comparison</h3>
+            <button class="close-btn" onclick="Compare.closePanel()" aria-label="Close compare">&#10005;</button>
+        </div>
+        <canvas id="compare-radar"></canvas>
+        <div id="compare-content" class="compare-content"></div>
+        <div class="compare-actions">
+            <button class="compare-clear-btn" onclick="Compare.clearAll()">Clear All Pins</button>
+        </div>
+    </aside>
+
+    <!-- ===== BOOKMARKS PANEL ===== -->
+    <aside id="bookmarks-panel" aria-label="Saved bookmarks">
+        <div class="bm-panel-header">
+            <h3>&#9733; Bookmarks</h3>
+            <button class="close-btn" onclick="Bookmarks.closePanel()" aria-label="Close bookmarks">&#10005;</button>
+        </div>
+        <div id="bookmarks-list" class="bm-list"></div>
+    </aside>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <!-- Shared modules from parent (no city-specific data) -->
+    <script src="../js/digipin.js"></script>
+    <script src="../js/data-fetcher.js"></script>
+    <script src="../js/building-intelligence.js"></script>
+    <script src="../js/overture-buildings.js"></script>
+
+    <!-- Guna-specific overrides (map center, data paths) -->
+    <script src="js/guna-config.js"></script>
+    <script src="js/map.js"></script>
+
+    <!-- Shared modules -->
+    <script src="../js/panel.js"></script>
+    <script src="../js/query-engine.js"></script>
+    <script src="../js/disha-cache.js"></script>
+    <script src="../js/disha-providers.js"></script>
+    <script src="../js/disha.js"></script>
+    <script src="../js/disha-panel.js"></script>
+    <script src="../js/compare.js"></script>
+    <script src="../js/isochrone.js"></script>
+    <script src="../js/report.js"></script>
+    <script src="../js/heatmap-overlay.js"></script>
+    <script src="../js/bookmarks.js"></script>
+
+    <!-- Guna-specific overrides -->
+    <script src="js/city-selector.js"></script>
+
+    <!-- Shared modules -->
+    <script src="../js/ward-overlay.js"></script>
+    <script src="../js/floating-dialogs.js"></script>
+    <script src="../js/building-intel-dialog.js"></script>
+    <script src="../js/scores-dialog.js"></script>
+
+    <!-- Guna-specific data layers -->
+    <script src="js/digital-twin-layers.js"></script>
+
+    <!-- Shared app init -->
+    <script src="../js/app.js"></script>
+
+    <!-- Dropdowns placed outside #toolbar to escape overflow:auto clipping -->
+    <div id="heatmap-dropdown" class="toolbar-dropdown"></div>
+    <div id="dt-layers-dropdown" class="toolbar-dropdown dt-layers-menu"></div>
+
+</body>
+</html>

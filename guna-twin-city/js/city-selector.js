@@ -1,10 +1,10 @@
 /**
- * Multi-City Support — City selector with pre-configured centers
+ * Multi-City Support — City selector with Guna as default
  */
 const CitySelector = (() => {
     const CITIES = [
-        { id: 'indore', name: 'Indore', lat: 22.7196, lng: 75.8577, zoom: 13, state: 'MP' },
         { id: 'guna', name: 'Guna', lat: 24.6354, lng: 77.3126, zoom: 13, state: 'MP' },
+        { id: 'indore', name: 'Indore', lat: 22.7196, lng: 75.8577, zoom: 13, state: 'MP' },
         { id: 'bhopal', name: 'Bhopal', lat: 23.2599, lng: 77.4126, zoom: 13, state: 'MP' },
         { id: 'pune', name: 'Pune', lat: 18.5204, lng: 73.8567, zoom: 13, state: 'MH' },
         { id: 'jaipur', name: 'Jaipur', lat: 26.9124, lng: 75.7873, zoom: 13, state: 'RJ' },
@@ -18,7 +18,7 @@ const CitySelector = (() => {
         { id: 'kolkata', name: 'Kolkata', lat: 22.5726, lng: 88.3639, zoom: 13, state: 'WB' },
     ];
 
-    let _current = CITIES[0];
+    let _current = CITIES[0]; // Guna is default
 
     function init() {
         const select = document.getElementById('city-select');
