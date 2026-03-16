@@ -26,6 +26,6 @@
     "playwright": "^1.58.2"
   },
   "devDependencies": {
-    "webpack-cli": "^5.0.0"
+    "webpack-cli": "^5.1.4"
   }
 }
