@@ -439,6 +439,9 @@ def detect_encroachments(hydro, water):
         bh = (max(lats) - min(lats)) * 111000
         area_m2 = bw * bh
 
+        # Simplify building ring for map rendering (lat,lon pairs)
+        bldg_ring = [[round(c[1], 6), round(c[0], 6)] for c in ring]
+
         entry = {
             "lat": round(clat, 6),
             "lon": round(clon, 6),
@@ -447,6 +450,7 @@ def detect_encroachments(hydro, water):
             "water_type": nearest_type,
             "flood_depth_m": round(flood_depth, 2),
             "area_m2": round(area_m2, 1),
+            "ring": bldg_ring,
         }
 
         if min_dist <= BUFFER_CRITICAL:
@@ -746,12 +750,6 @@ def generate_precise_map(hydro, water, encroachments_data, infra):
     log.info("Generating precise flood map...")
 
     # Prepare data — limit sizes for browser performance
-    channels_json = json.dumps(hydro["channels"][:500])
-    inundation_json = json.dumps(hydro["inundation"][:1000])
-    depressions_json = json.dumps(hydro["depressions"][:100])
-    jrc_json = json.dumps(water["jrc_zones"][:500])
-    encroach_json = json.dumps(encroachments_data["encroachments"][:500])
-    risk_bldg_json = json.dumps(encroachments_data["risk_buildings"][:300])
     enc_stats_json = json.dumps(encroachments_data["stats"])
 
     # Flatten all infra into one list with category
@@ -760,20 +758,113 @@ def generate_precise_map(hydro, water, encroachments_data, infra):
         for item in items:
             item["category"] = category
             all_infra.append(item)
-    infra_json = json.dumps(all_infra)
 
-    # Water bodies
-    wb_json = json.dumps([{"lat": w["lat"], "lon": w["lon"], "area_m2": w["area_m2"]}
-                          for w in water["water_bodies"]])
+    # ── Build GeoJSON features for MapLibre ──
+
+    def point_feature(lat, lon, props):
+        return {"type": "Feature", "geometry": {"type": "Point", "coordinates": [lon, lat]},
+                "properties": props}
+
+    def polygon_feature(ring_latlon, props):
+        """ring_latlon is [[lat,lon],...] — convert to GeoJSON [lon,lat]."""
+        coords = [[c[1], c[0]] for c in ring_latlon]
+        return {"type": "Feature", "geometry": {"type": "Polygon", "coordinates": [coords]},
+                "properties": props}
+
+    def line_feature(coords_latlon, props):
+        """coords_latlon is [[lat,lon],...] — convert to GeoJSON [lon,lat]."""
+        coords = [[c[1], c[0]] for c in coords_latlon]
+        return {"type": "Feature", "geometry": {"type": "LineString", "coordinates": coords},
+                "properties": props}
+
+    # Waterway lines (rivers, streams, drains)
+    ww_features = []
+    for wl in water["waterway_lines"]:
+        if len(wl["coords"]) >= 2:
+            ww_features.append(line_feature(wl["coords"], {
+                "name": wl["name"], "type": wl["type"],
+                "weight": 5 if wl["type"] == "river" else 3 if wl["type"] == "stream" else 2,
+            }))
+
+    # Water body polygons
+    wb_features = []
+    for w in water["water_bodies"]:
+        if w["ring"] and len(w["ring"]) > 2:
+            wb_features.append(polygon_feature(w["ring"], {"area_m2": w["area_m2"]}))
+
+    # DEM channels
+    ch_features = [point_feature(ch["lat"], ch["lon"], {
+        "accum": ch["accum"], "elev_m": ch["elev_m"],
+        "slope_pct": round(ch["slope"] * 100, 1),
+        "radius": min(2 + ch["accum"] / 100, 8),
+    }) for ch in hydro["channels"][:500] if ch["accum"] >= 30]
+
+    # Inundation
+    inun_features = [point_feature(p["lat"], p["lon"], {
+        "depth_m": p["depth_m"], "elev_m": p["elev_m"], "accum": p["accum"],
+    }) for p in hydro["inundation"][:1000]]
+
+    # Encroachment buildings (polygons where available)
+    enc_features = []
+    for e in encroachments_data["encroachments"][:500]:
+        props = {k: v for k, v in e.items() if k != "ring"}
+        if e.get("ring") and len(e["ring"]) > 2:
+            enc_features.append(polygon_feature(e["ring"], props))
+        else:
+            enc_features.append(point_feature(e["lat"], e["lon"], props))
+
+    # Risk buildings (polygons where available)
+    risk_features = []
+    for b in encroachments_data["risk_buildings"][:300]:
+        props = {k: v for k, v in b.items() if k != "ring"}
+        if b.get("ring") and len(b["ring"]) > 2:
+            risk_features.append(polygon_feature(b["ring"], props))
+        else:
+            risk_features.append(point_feature(b["lat"], b["lon"], props))
+
+    # Infrastructure points
+    infra_features = [point_feature(inf["lat"], inf["lon"], {
+        "type": inf["type"], "priority": inf.get("priority", ""),
+        "category": inf["category"], "reason": inf.get("reason", ""),
+    }) for inf in all_infra]
+
+    # Depressions
+    dep_features = [point_feature(d["lat"], d["lon"], {
+        "depth_m": d["depth_m"], "elev_m": d["elev_m"], "accum": d["accum"],
+    }) for d in hydro["depressions"][:100]]
+
+    # JRC historical
+    jrc_features = [point_feature(z["lat"], z["lon"], {
+        "occurrence_pct": z["occurrence_pct"],
+    }) for z in water["jrc_zones"][:500]]
+
+    def fc(features):
+        return json.dumps({"type": "FeatureCollection", "features": features})
+
+    ww_geojson = fc(ww_features)
+    wb_geojson = fc(wb_features)
+    ch_geojson = fc(ch_features)
+    inun_geojson = fc(inun_features)
+    enc_geojson = fc(enc_features)
+    risk_geojson = fc(risk_features)
+    infra_geojson = fc(infra_features)
+    dep_geojson = fc(dep_features)
+    jrc_geojson = fc(jrc_features)
+
+    # Panel data (simple arrays for sidebar lists)
+    encroach_list_json = json.dumps([{k: v for k, v in e.items() if k != "ring"}
+                                     for e in encroachments_data["encroachments"][:500]])
+    infra_list_json = json.dumps(all_infra)
+    inun_list_json = json.dumps(hydro["inundation"][:50])
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guna Flood Precise Analysis -- Pin-Pointed Risk Map</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<title>Guna Flood Precise Analysis -- 3D Terrain Risk Map</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"/>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <style>
 * {{ margin:0; padding:0; box-sizing:border-box; }}
 body {{ font-family:'Segoe UI',system-ui,sans-serif; background:#0a0e17; color:#e0e0e0; display:flex; height:100vh; }}
@@ -805,13 +896,39 @@ h1 {{ font-size:17px; color:#ff6b35; }}
 .legend-row {{ display:flex; align-items:center; gap:6px; padding:2px 0; }}
 .legend-dot {{ width:12px; height:12px; border-radius:50%; flex-shrink:0; }}
 .legend-line {{ width:20px; height:3px; flex-shrink:0; border-radius:1px; }}
+#layer-toggles {{ background:#0d2137; border:1px solid #1b2838; border-radius:8px; padding:10px; margin-bottom:12px; }}
+#layer-toggles label {{ display:flex; align-items:center; gap:6px; font-size:11px; padding:2px 0; cursor:pointer; }}
+#layer-toggles input {{ accent-color:#ff6b35; }}
+.view-btns {{ display:flex; gap:4px; margin-bottom:10px; }}
+.view-btn {{ padding:4px 10px; font-size:10px; border-radius:5px; cursor:pointer; background:#1b2838; color:#aaa; border:1px solid #333; }}
+.view-btn:hover {{ background:#ff6b35; color:#fff; }}
+.maplibregl-popup-content {{ background:#0d1117!important; color:#e0e0e0!important; border:1px solid #ff6b35!important; border-radius:8px!important; padding:10px!important; font-size:12px!important; max-width:280px!important; }}
+.maplibregl-popup-tip {{ border-top-color:#ff6b35!important; }}
+.maplibregl-popup-close-button {{ color:#ff6b35!important; font-size:16px!important; }}
 </style>
 </head>
 <body>
 <div id="map"></div>
 <div id="panel">
-<h1>Guna Flood -- Precise Analysis</h1>
-<div class="sub">Pin-pointed encroachments, infrastructure, flood depths</div>
+<h1>Guna Flood -- 3D Terrain Analysis</h1>
+<div class="sub">3D terrain + drains, streams, building footprints, infrastructure</div>
+<div class="view-btns">
+  <div class="view-btn" onclick="flyTo3D()">3D Terrain</div>
+  <div class="view-btn" onclick="flyToTop()">Top Down</div>
+  <div class="view-btn" onclick="flyToCity()">City Center</div>
+</div>
+<div id="layer-toggles">
+  <div class="card-title">LAYERS</div>
+  <label><input type="checkbox" checked data-layers="ww-lines"> Waterways (OSM)</label>
+  <label><input type="checkbox" checked data-layers="wb-fill,wb-outline"> Water Bodies</label>
+  <label><input type="checkbox" checked data-layers="ch-circles"> DEM Channels</label>
+  <label><input type="checkbox" checked data-layers="inun-circles"> Flood Depth</label>
+  <label><input type="checkbox" checked data-layers="enc-fill,enc-outline"> Encroachments</label>
+  <label><input type="checkbox" data-layers="risk-fill,risk-outline"> Buildings at Risk</label>
+  <label><input type="checkbox" checked data-layers="infra-symbols"> Infrastructure</label>
+  <label><input type="checkbox" data-layers="jrc-circles"> JRC History</label>
+  <label><input type="checkbox" data-layers="dep-circles"> Depressions</label>
+</div>
 <div class="tabs" id="tabs"></div>
 <div class="section active" id="sec-summary"></div>
 <div class="section" id="sec-encroach"></div>
@@ -819,20 +936,35 @@ h1 {{ font-size:17px; color:#ff6b35; }}
 <div class="section" id="sec-depth"></div>
 </div>
 <script>
-const channels = {channels_json};
-const inundation = {inundation_json};
-const depressions = {depressions_json};
-const jrcZones = {jrc_json};
-const encroachments = {encroach_json};
-const riskBldgs = {risk_bldg_json};
 const encStats = {enc_stats_json};
-const infrastructure = {infra_json};
-const waterBodies = {wb_json};
+const encroachList = {encroach_list_json};
+const infraList = {infra_list_json};
+const inunList = {inun_list_json};
 
-const map = L.map('map',{{ center:[{CENTER_LAT},{CENTER_LON}], zoom:13 }});
-L.tileLayer('https://{{s}}.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}@2x.png',{{
-  attribution:'&copy; CARTO &copy; OSM', maxZoom:19
-}}).addTo(map);
+const map = new maplibregl.Map({{
+  container: 'map',
+  style: {{
+    version: 8,
+    sources: {{
+      'carto-dark': {{
+        type: 'raster',
+        tiles: ['https://a.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}@2x.png'],
+        tileSize: 256, attribution: '&copy; CARTO &copy; OSM'
+      }},
+      'terrain-dem': {{
+        type: 'raster-dem',
+        tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{{z}}/{{x}}/{{y}}.png'],
+        encoding: 'terrarium', tileSize: 256, maxzoom: 15
+      }}
+    }},
+    layers: [{{ id:'carto', type:'raster', source:'carto-dark' }}],
+    terrain: {{ source:'terrain-dem', exaggeration: 1.8 }},
+    sky: {{}}
+  }},
+  center: [{CENTER_LON}, {CENTER_LAT}],
+  zoom: 12.5, pitch: 55, bearing: -20, maxPitch: 85
+}});
+map.addControl(new maplibregl.NavigationControl(), 'top-left');
 
 function depthColor(d) {{
   if (d >= 2.0) return '#7b1fa2';
@@ -840,145 +972,112 @@ function depthColor(d) {{
   if (d >= 0.5) return '#ff9800';
   return '#ffeb3b';
 }}
+function flyTo3D() {{ map.easeTo({{ pitch:60, bearing:-30, zoom:13, duration:1500 }}); }}
+function flyToTop() {{ map.easeTo({{ pitch:0, bearing:0, zoom:13, duration:1500 }}); }}
+function flyToCity() {{ map.flyTo({{ center:[{CENTER_LON},{CENTER_LAT}], zoom:14, pitch:55, bearing:10, duration:2000 }}); }}
 
-function infraIcon(cat) {{
-  switch(cat) {{
-    case 'retention_ponds': return ['#2196f3','RP'];
-    case 'culverts': return ['#ff9800','CU'];
-    case 'river_gauges': return ['#00bcd4','RG'];
-    case 'rain_gauges': return ['#4caf50','AW'];
-    case 'pumping_stations': return ['#9c27b0','PS'];
-    case 'embankments': return ['#795548','EM'];
-    case 'drain_upgrades': return ['#ff5722','DR'];
-    default: return ['#888','??'];
-  }}
-}}
+map.on('load', function() {{
+  map.addSource('waterways', {{ type:'geojson', data: {ww_geojson} }});
+  map.addLayer({{ id:'ww-lines', type:'line', source:'waterways',
+    paint: {{ 'line-color':['match',['get','type'],'river','#1e88e5','stream','#42a5f5','drain','#80d8ff','canal','#0097a7','#42a5f5'],
+              'line-width':['get','weight'], 'line-opacity':0.9 }} }});
 
-// ── Layers ──
-const channelLayer = L.layerGroup();
-const inundationLayer = L.layerGroup().addTo(map);
-const encroachLayer = L.layerGroup().addTo(map);
-const infraLayer = L.layerGroup().addTo(map);
-const riskBldgLayer = L.layerGroup();
-const jrcLayer = L.layerGroup();
-const depLayer = L.layerGroup();
-const wbLayer = L.layerGroup().addTo(map);
+  map.addSource('waterbodies', {{ type:'geojson', data: {wb_geojson} }});
+  map.addLayer({{ id:'wb-fill', type:'fill', source:'waterbodies',
+    paint: {{ 'fill-color':'#1565c0', 'fill-opacity':0.4 }} }});
+  map.addLayer({{ id:'wb-outline', type:'line', source:'waterbodies',
+    paint: {{ 'line-color':'#42a5f5', 'line-width':2, 'line-opacity':0.8 }} }});
 
-// Channels (DEM-derived nalas)
-channels.forEach(function(ch) {{
-  if (ch.accum < 30) return;
-  const r = Math.min(2 + ch.accum / 100, 8);
-  const opacity = Math.min(0.3 + ch.accum / 500, 0.8);
-  L.circleMarker([ch.lat,ch.lon],{{
-    radius:r, color:'#2196f3', weight:0, fillColor:'#2196f3', fillOpacity:opacity
-  }}).addTo(channelLayer).bindPopup(
-    '<b>DEM-Derived Channel</b><br>Flow accumulation: '+ch.accum.toFixed(0)+
-    ' cells<br>Elevation: '+ch.elev_m+'m<br>Slope: '+(ch.slope*100).toFixed(1)+'%'
-  );
+  map.addSource('channels', {{ type:'geojson', data: {ch_geojson} }});
+  map.addLayer({{ id:'ch-circles', type:'circle', source:'channels',
+    paint: {{ 'circle-radius':['min',['+',2,['/',['get','accum'],100]],8],
+              'circle-color':'#00bcd4', 'circle-opacity':['min',['+',0.3,['/',['get','accum'],500]],0.8] }} }});
+
+  map.addSource('inundation', {{ type:'geojson', data: {inun_geojson} }});
+  map.addLayer({{ id:'inun-circles', type:'circle', source:'inundation',
+    paint: {{ 'circle-radius':['min',['+',3,['*',['get','depth_m'],3]],12],
+              'circle-color':['interpolate',['linear'],['get','depth_m'],0.3,'#ffeb3b',0.5,'#ff9800',1.0,'#ff1744',2.0,'#7b1fa2'],
+              'circle-opacity':0.6 }} }});
+
+  map.addSource('encroachments', {{ type:'geojson', data: {enc_geojson} }});
+  map.addLayer({{ id:'enc-fill', type:'fill', source:'encroachments',
+    filter:['==',['geometry-type'],'Polygon'],
+    paint: {{ 'fill-color':['match',['get','risk'],'critical','#ff1744','#ff9800'], 'fill-opacity':0.6 }} }});
+  map.addLayer({{ id:'enc-outline', type:'line', source:'encroachments',
+    filter:['==',['geometry-type'],'Polygon'],
+    paint: {{ 'line-color':['match',['get','risk'],'critical','#ff1744','#ff9800'], 'line-width':2 }} }});
+
+  map.addSource('risk-bldgs', {{ type:'geojson', data: {risk_geojson} }});
+  map.addLayer({{ id:'risk-fill', type:'fill', source:'risk-bldgs',
+    filter:['==',['geometry-type'],'Polygon'],
+    paint: {{ 'fill-color':'#ffeb3b', 'fill-opacity':0.3 }}, layout:{{ visibility:'none' }} }});
+  map.addLayer({{ id:'risk-outline', type:'line', source:'risk-bldgs',
+    filter:['==',['geometry-type'],'Polygon'],
+    paint: {{ 'line-color':'#ffeb3b', 'line-width':1 }}, layout:{{ visibility:'none' }} }});
+
+  map.addSource('infrastructure', {{ type:'geojson', data: {infra_geojson} }});
+  map.addLayer({{ id:'infra-symbols', type:'symbol', source:'infrastructure',
+    layout: {{ 'text-field':['match',['get','category'],'retention_ponds','RP','culverts','CU','river_gauges','RG','rain_gauges','AW','pumping_stations','PS','embankments','EM','drain_upgrades','DR','??'],
+               'text-size':11, 'text-allow-overlap':true }},
+    paint: {{ 'text-color':['match',['get','category'],'retention_ponds','#2196f3','culverts','#ff9800','river_gauges','#00bcd4','rain_gauges','#4caf50','pumping_stations','#9c27b0','embankments','#795548','drain_upgrades','#ff5722','#888'],
+              'text-halo-color':'#000', 'text-halo-width':2 }} }});
+
+  map.addSource('jrc', {{ type:'geojson', data: {jrc_geojson} }});
+  map.addLayer({{ id:'jrc-circles', type:'circle', source:'jrc',
+    paint: {{ 'circle-radius':2, 'circle-color':'#00bcd4', 'circle-opacity':0.3 }}, layout:{{ visibility:'none' }} }});
+
+  map.addSource('depressions', {{ type:'geojson', data: {dep_geojson} }});
+  map.addLayer({{ id:'dep-circles', type:'circle', source:'depressions',
+    paint: {{ 'circle-radius':5, 'circle-color':'#9c27b0', 'circle-opacity':0.6, 'circle-stroke-width':2, 'circle-stroke-color':'#ce93d8' }},
+    layout:{{ visibility:'none' }} }});
+
+  // Click popups
+  ['ww-lines','wb-fill','ch-circles','inun-circles','enc-fill','risk-fill','infra-symbols','dep-circles'].forEach(function(lid) {{
+    map.on('click', lid, function(e) {{
+      const p = e.features[0].properties;
+      let h = '';
+      if (lid==='ww-lines') h='<b>'+(p.name||'Unnamed')+'</b><br>Type: '+p.type;
+      else if (lid==='wb-fill') h='<b>Water Body</b><br>Area: '+p.area_m2+' m2';
+      else if (lid==='ch-circles') h='<b>DEM Channel</b><br>Accum: '+Math.round(p.accum)+' | Elev: '+p.elev_m+'m | Slope: '+p.slope_pct+'%';
+      else if (lid==='inun-circles') h='<b>Flood: '+p.depth_m+'m</b><br>Elev: '+p.elev_m+'m | Accum: '+Math.round(p.accum);
+      else if (lid==='enc-fill') h='<b>'+p.action+'</b><br>'+p.dist_m+'m from '+p.water_type+'<br>Flood: '+p.flood_depth_m+'m | Area: '+p.area_m2+' m2';
+      else if (lid==='risk-fill') h='<b>'+p.action+'</b><br>Dist: '+p.dist_m+'m | Flood: '+p.flood_depth_m+'m';
+      else if (lid==='infra-symbols') h='<b>'+p.type+'</b><br>['+p.priority+'] '+p.reason;
+      else if (lid==='dep-circles') h='<b>Depression</b><br>Depth: '+p.depth_m+'m | Elev: '+p.elev_m+'m';
+      new maplibregl.Popup().setLngLat(e.lngLat).setHTML(h).addTo(map);
+    }});
+    map.on('mouseenter', lid, function() {{ map.getCanvas().style.cursor='pointer'; }});
+    map.on('mouseleave', lid, function() {{ map.getCanvas().style.cursor=''; }});
+  }});
 }});
 
-// Inundation (flood depth)
-inundation.forEach(function(p) {{
-  const r = Math.min(3 + p.depth_m * 3, 12);
-  L.circleMarker([p.lat,p.lon],{{
-    radius:r, color:depthColor(p.depth_m), weight:1, fillColor:depthColor(p.depth_m), fillOpacity:0.5
-  }}).addTo(inundationLayer).bindPopup(
-    '<b>Flood Depth: '+p.depth_m+'m</b><br>Elevation: '+p.elev_m+'m<br>Flow accumulation: '+p.accum.toFixed(0)
-  );
+// Layer toggles
+document.querySelectorAll('#layer-toggles input').forEach(function(cb) {{
+  cb.addEventListener('change', function() {{
+    this.dataset.layers.split(',').forEach(function(lid) {{
+      if (map.getLayer(lid)) map.setLayoutProperty(lid, 'visibility', cb.checked ? 'visible' : 'none');
+    }});
+  }});
 }});
-
-// Encroachments
-encroachments.forEach(function(e) {{
-  const color = e.risk === 'critical' ? '#ff1744' : '#ff9800';
-  const r = e.risk === 'critical' ? 5 : 4;
-  L.circleMarker([e.lat,e.lon],{{
-    radius:r, color:color, weight:2, fillColor:color, fillOpacity:0.7
-  }}).addTo(encroachLayer).bindPopup(
-    '<b>'+e.action+'</b><br>Distance to water: '+e.dist_m+'m<br>'+
-    'Nearest: '+e.water_type+' ('+e.nearest_water+')<br>'+
-    'Flood depth: '+e.flood_depth_m+'m<br>Area: '+e.area_m2+' m2'
-  );
-}});
-
-// Risk buildings
-riskBldgs.forEach(function(b) {{
-  L.circleMarker([b.lat,b.lon],{{
-    radius:3, color:'#ffeb3b', weight:1, fillColor:'#ffeb3b', fillOpacity:0.4
-  }}).addTo(riskBldgLayer).bindPopup(
-    '<b>'+b.action+'</b><br>Distance: '+b.dist_m+'m<br>Flood depth: '+b.flood_depth_m+'m'
-  );
-}});
-
-// Infrastructure
-infrastructure.forEach(function(inf) {{
-  const ic = infraIcon(inf.category);
-  L.marker([inf.lat,inf.lon],{{ icon:L.divIcon({{
-    className:'',
-    html:'<div style="background:'+ic[0]+';color:#fff;font-size:8px;font-weight:700;padding:2px 4px;border-radius:4px;border:1px solid #fff;white-space:nowrap">'+ic[1]+'</div>',
-    iconSize:[22,16], iconAnchor:[11,8]
-  }}) }}).addTo(infraLayer).bindPopup(
-    '<b>'+inf.type+'</b><br>['+inf.priority+']<br>'+inf.reason
-  );
-}});
-
-// JRC historical
-jrcZones.forEach(function(z) {{
-  L.circleMarker([z.lat,z.lon],{{
-    radius:2, color:'#00bcd4', weight:0, fillColor:'#00bcd4', fillOpacity:0.3
-  }}).addTo(jrcLayer);
-}});
-
-// Depressions
-depressions.forEach(function(d) {{
-  L.circleMarker([d.lat,d.lon],{{
-    radius:5, color:'#9c27b0', weight:2, fillColor:'#9c27b0', fillOpacity:0.5
-  }}).addTo(depLayer).bindPopup(
-    '<b>Depression</b><br>Depth: '+d.depth_m+'m<br>Elev: '+d.elev_m+'m<br>Accum: '+d.accum.toFixed(0)
-  );
-}});
-
-// Water bodies
-waterBodies.forEach(function(w) {{
-  const r = Math.max(8, Math.min(Math.sqrt(w.area_m2)/100, 30));
-  L.circle([w.lat,w.lon],{{
-    radius:r*10, color:'#1565c0', weight:1, fillColor:'#1565c0', fillOpacity:0.3
-  }}).addTo(wbLayer);
-}});
-
-L.control.layers(null,{{
-  'Flood Depth': inundationLayer,
-  'Encroachments': encroachLayer,
-  'Infrastructure': infraLayer,
-  'DEM Channels': channelLayer,
-  'Risk Buildings': riskBldgLayer,
-  'JRC History': jrcLayer,
-  'Depressions': depLayer,
-  'Water Bodies': wbLayer,
-}},{{ collapsed:true }}).addTo(map);
 
 // ── Panel tabs ──
 (function(){{
   const tabs = document.getElementById('tabs');
-  const names = ['Summary','Encroachments','Infrastructure','Flood Depth'];
-  const ids = ['sec-summary','sec-encroach','sec-infra','sec-depth'];
-  names.forEach(function(n,i){{
+  ['Summary','Encroachments','Infrastructure','Flood Depth'].forEach(function(n,i){{
+    const ids = ['sec-summary','sec-encroach','sec-infra','sec-depth'];
     const t = document.createElement('div');
-    t.className = 'tab'+(i===0?' active':'');
-    t.textContent = n;
+    t.className = 'tab'+(i===0?' active':''); t.textContent = n;
     t.addEventListener('click',function(){{
       document.querySelectorAll('.tab').forEach(function(x){{x.classList.remove('active')}});
       document.querySelectorAll('.section').forEach(function(x){{x.classList.remove('active')}});
-      t.classList.add('active');
-      document.getElementById(ids[i]).classList.add('active');
-    }});
-    tabs.appendChild(t);
+      t.classList.add('active'); document.getElementById(ids[i]).classList.add('active');
+    }}); tabs.appendChild(t);
   }});
 }})();
 
 // ── Summary tab ──
 (function(){{
   const sec = document.getElementById('sec-summary');
-
   function addCard(title, rows) {{
     const card = document.createElement('div'); card.className='card';
     const ct = document.createElement('div'); ct.className='card-title'; ct.textContent=title;
@@ -991,45 +1090,24 @@ L.control.layers(null,{{
     }});
     sec.appendChild(card);
   }}
-
   addCard('ENCROACHMENT SUMMARY',[
-    ['Buildings to REMOVE (<30m)',encStats.critical_encroachments,'red'],
-    ['Buildings to FLOOD-PROOF (<60m)',encStats.high_risk_encroachments,'orange'],
-    ['Buildings to MONITOR (<100m)',encStats.moderate_risk_buildings,''],
+    ['Buildings to REMOVE (<30m)', encStats.critical_encroachments, 'red'],
+    ['Buildings to FLOOD-PROOF (<60m)', encStats.high_risk_encroachments, 'orange'],
+    ['Buildings to MONITOR (<100m)', encStats.moderate_risk_buildings, ''],
   ]);
-
-  // Count infra by category
   const cats = {{}};
-  infrastructure.forEach(function(inf){{ cats[inf.category]=(cats[inf.category]||0)+1; }});
-  const infraRows = Object.entries(cats).map(function(e){{ return [e[0].replace(/_/g,' '),e[1],'blue']; }});
-  addCard('INFRASTRUCTURE TO BUILD', infraRows);
+  infraList.forEach(function(inf){{ cats[inf.category]=(cats[inf.category]||0)+1; }});
+  addCard('INFRASTRUCTURE TO BUILD', Object.entries(cats).map(function(e){{ return [e[0].replace(/_/g,' '),e[1],'blue']; }}));
 
-  addCard('FLOOD DEPTH (328mm event)',[
-    ['Cells > 0.3m depth', inundation.length,'orange'],
-    ['Max flood depth', inundation.length>0 ? inundation[0].depth_m+'m' : '0m','red'],
-    ['Depressions detected', depressions.length,''],
-    ['DEM channels', channels.filter(function(c){{return c.accum>=30}}).length,'blue'],
-  ]);
-
-  // Legend
   const legend = document.createElement('div'); legend.className='card legend';
-  const lt = document.createElement('div'); lt.className='card-title'; lt.textContent='MAP LEGEND';
-  legend.appendChild(lt);
-  const items = [
-    ['dot','#ff1744','Encroachment: REMOVE (<30m)'],
-    ['dot','#ff9800','Encroachment: FLOOD-PROOF (<60m)'],
-    ['dot','#ffeb3b','Risk building: MONITOR'],
-    ['dot','#7b1fa2','Flood depth >= 2m'],
-    ['dot','#ff1744','Flood depth 1-2m'],
-    ['dot','#ff9800','Flood depth 0.5-1m'],
-    ['dot','#ffeb3b','Flood depth 0.3-0.5m'],
-    ['dot','#2196f3','DEM-derived channel (nala)'],
-    ['dot','#9c27b0','Topographic depression'],
-    ['dot','#1565c0','Water body'],
-  ];
-  items.forEach(function(item){{
+  const lt = document.createElement('div'); lt.className='card-title'; lt.textContent='MAP LEGEND'; legend.appendChild(lt);
+  [['line','#1e88e5','River (OSM)'],['line','#42a5f5','Stream/Drain (OSM)'],['dot','#1565c0','Water body'],
+   ['dot','#00bcd4','DEM channel (nala)'],['dot','#ff1744','REMOVE (<30m)'],['dot','#ff9800','FLOOD-PROOF (<60m)'],
+   ['dot','#ffeb3b','MONITOR (<100m)'],['dot','#7b1fa2','Flood >=2m'],['dot','#ff1744','Flood 1-2m'],
+   ['dot','#ff9800','Flood 0.5-1m'],['dot','#9c27b0','Depression']
+  ].forEach(function(item){{
     const r = document.createElement('div'); r.className='legend-row';
-    const d = document.createElement('div'); d.className='legend-dot'; d.style.backgroundColor=item[1];
+    const d = document.createElement('div'); d.className=item[0]==='line'?'legend-line':'legend-dot'; d.style.backgroundColor=item[1];
     const t = document.createElement('span'); t.textContent=item[2];
     r.appendChild(d); r.appendChild(t); legend.appendChild(r);
   }});
@@ -1040,32 +1118,19 @@ L.control.layers(null,{{
 (function(){{
   const sec = document.getElementById('sec-encroach');
   const title = document.createElement('div'); title.className='card-title';
-  title.textContent = 'BUILDINGS TO REMOVE/RELOCATE ('+encroachments.filter(function(e){{return e.risk==='critical'}}).length+' critical)';
+  title.textContent = 'BUILDINGS TO ACT ON ('+encroachList.filter(function(e){{return e.risk==='critical'}}).length+' critical)';
   sec.appendChild(title);
-
-  encroachments.slice(0,100).forEach(function(e){{
+  encroachList.forEach(function(e){{
     const item = document.createElement('div');
-    item.className = 'enc-item' + (e.risk==='high'?' high':'');
-    item.style.cursor = 'pointer';
-
-    const badge = document.createElement('span');
-    badge.className = 'action ' + e.risk;
-    badge.textContent = e.action;
+    item.className = 'enc-item'+(e.risk==='high'?' high':''); item.style.cursor='pointer';
+    const badge = document.createElement('span'); badge.className='action '+e.risk; badge.textContent=e.action;
     item.appendChild(badge);
-
     const info = document.createElement('div');
-    info.textContent = e.dist_m+'m from '+e.water_type+' | Flood depth: '+e.flood_depth_m+'m | Area: '+e.area_m2+' m2';
+    info.textContent = e.dist_m+'m from '+e.water_type+' | Flood: '+e.flood_depth_m+'m | '+e.area_m2+' m2';
     item.appendChild(info);
-
-    const coords = document.createElement('div');
-    coords.style.cssText = 'font-size:9px;color:#666;margin-top:2px';
-    coords.textContent = e.lat.toFixed(5)+', '+e.lon.toFixed(5);
-    item.appendChild(coords);
-
-    item.addEventListener('click', function(){{
-      map.setView([e.lat, e.lon], 17);
-    }});
-
+    const coords = document.createElement('div'); coords.style.cssText='font-size:9px;color:#666;margin-top:2px';
+    coords.textContent = e.lat.toFixed(5)+', '+e.lon.toFixed(5); item.appendChild(coords);
+    item.addEventListener('click', function(){{ map.flyTo({{ center:[e.lon,e.lat], zoom:17, pitch:55, duration:1500 }}); }});
     sec.appendChild(item);
   }});
 }})();
@@ -1073,43 +1138,21 @@ L.control.layers(null,{{
 // ── Infrastructure tab ──
 (function(){{
   const sec = document.getElementById('sec-infra');
-
   const categories = ['retention_ponds','culverts','pumping_stations','river_gauges','rain_gauges','embankments','drain_upgrades'];
   const catNames = ['Retention Ponds','Culverts','Pumping Stations','River Gauges','Rain Gauges (AWS)','Embankments','Drain Upgrades'];
-
   categories.forEach(function(cat, ci){{
-    const items = infrastructure.filter(function(inf){{ return inf.category === cat; }});
-    if (items.length === 0) return;
-
-    const heading = document.createElement('div');
-    heading.className = 'card-title';
-    heading.textContent = catNames[ci] + ' (' + items.length + ')';
-    heading.style.marginTop = '12px';
-    sec.appendChild(heading);
-
+    const items = infraList.filter(function(inf){{ return inf.category === cat; }});
+    if (!items.length) return;
+    const heading = document.createElement('div'); heading.className='card-title';
+    heading.textContent = catNames[ci]+' ('+items.length+')'; heading.style.marginTop='12px'; sec.appendChild(heading);
     items.forEach(function(inf){{
-      const item = document.createElement('div');
-      item.className = 'infra-item';
-      item.style.cursor = 'pointer';
-
-      const tag = document.createElement('span');
-      tag.className = 'tag ' + inf.priority;
-      tag.textContent = inf.priority + ' - ' + inf.type;
-      item.appendChild(tag);
-
-      const reason = document.createElement('div');
-      reason.textContent = inf.reason;
-      item.appendChild(reason);
-
-      const coords = document.createElement('div');
-      coords.style.cssText = 'font-size:9px;color:#666;margin-top:2px';
-      coords.textContent = inf.lat.toFixed(5) + ', ' + inf.lon.toFixed(5);
-      item.appendChild(coords);
-
-      item.addEventListener('click', function(){{
-        map.setView([inf.lat, inf.lon], 16);
-      }});
-
+      const item = document.createElement('div'); item.className='infra-item'; item.style.cursor='pointer';
+      const tag = document.createElement('span'); tag.className='tag '+(inf.priority||'');
+      tag.textContent = (inf.priority||'')+' - '+inf.type; item.appendChild(tag);
+      const reason = document.createElement('div'); reason.textContent = inf.reason||''; item.appendChild(reason);
+      const coords = document.createElement('div'); coords.style.cssText='font-size:9px;color:#666;margin-top:2px';
+      coords.textContent = inf.lat.toFixed(5)+', '+inf.lon.toFixed(5); item.appendChild(coords);
+      item.addEventListener('click', function(){{ map.flyTo({{ center:[inf.lon,inf.lat], zoom:16, pitch:55, duration:1500 }}); }});
       sec.appendChild(item);
     }});
   }});
@@ -1118,42 +1161,20 @@ L.control.layers(null,{{
 // ── Flood Depth tab ──
 (function(){{
   const sec = document.getElementById('sec-depth');
-
-  const title = document.createElement('div'); title.className='card-title';
-  title.textContent = 'DEEPEST INUNDATION ZONES';
+  const title = document.createElement('div'); title.className='card-title'; title.textContent='DEEPEST INUNDATION ZONES';
   sec.appendChild(title);
-
-  const note = document.createElement('div');
-  note.style.cssText = 'font-size:10px;color:#888;margin-bottom:8px';
-  note.textContent = 'SCS-CN + D8 flow routing simulation for 328mm/24hr event. Click any entry to fly to location.';
-  sec.appendChild(note);
-
-  inundation.slice(0,50).forEach(function(p){{
-    const item = document.createElement('div');
-    item.className = 'card';
-    item.style.cursor = 'pointer';
-    item.style.padding = '8px';
-
-    const depth = document.createElement('div');
-    depth.style.cssText = 'font-size:13px;font-weight:700;color:'+depthColor(p.depth_m);
-    depth.textContent = p.depth_m + 'm flood depth';
-    item.appendChild(depth);
-
-    const info = document.createElement('div');
-    info.style.cssText = 'font-size:10px;color:#888';
-    info.textContent = 'Elevation: '+p.elev_m+'m | Upstream: '+p.accum.toFixed(0)+' cells | '+p.lat.toFixed(5)+', '+p.lon.toFixed(5);
+  const note = document.createElement('div'); note.style.cssText='font-size:10px;color:#888;margin-bottom:8px';
+  note.textContent = 'SCS-CN + D8 flow routing for 328mm/24hr. Click to fly.'; sec.appendChild(note);
+  inunList.forEach(function(p){{
+    const item = document.createElement('div'); item.className='card'; item.style.cursor='pointer'; item.style.padding='8px';
+    const depth = document.createElement('div'); depth.style.cssText='font-size:13px;font-weight:700;color:'+depthColor(p.depth_m);
+    depth.textContent = p.depth_m+'m flood depth'; item.appendChild(depth);
+    const info = document.createElement('div'); info.style.cssText='font-size:10px;color:#888';
+    info.textContent = 'Elev: '+p.elev_m+'m | Upstream: '+p.accum.toFixed(0)+' | '+p.lat.toFixed(5)+', '+p.lon.toFixed(5);
     item.appendChild(info);
-
-    const bar = document.createElement('div');
-    bar.className = 'depth-bar';
-    bar.style.backgroundColor = depthColor(p.depth_m);
-    bar.style.width = Math.min(p.depth_m / 5 * 100, 100) + '%';
-    item.appendChild(bar);
-
-    item.addEventListener('click', function(){{
-      map.setView([p.lat, p.lon], 16);
-    }});
-
+    const bar = document.createElement('div'); bar.className='depth-bar'; bar.style.backgroundColor=depthColor(p.depth_m);
+    bar.style.width = Math.min(p.depth_m/5*100,100)+'%'; item.appendChild(bar);
+    item.addEventListener('click', function(){{ map.flyTo({{ center:[p.lon,p.lat], zoom:16, pitch:55, duration:1500 }}); }});
     sec.appendChild(item);
   }});
 }})();
