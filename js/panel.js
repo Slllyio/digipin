@@ -387,5 +387,8 @@ const Panel = (() => {
         });
     }
 
-    return { init, show, update, showError, close, switchTab, copyCode };
+    function getCurrentCell() { return currentCell; }
+    function getCurrentData() { return currentData; }
+
+    return { init, show, update, showError, close, switchTab, copyCode, getCurrentCell, getCurrentData };
 })();
