@@ -311,6 +311,32 @@ OVERPASS_QUERIES = {
     "transport": '[out:json][timeout:{timeout}];(node["amenity"="bus_station"]({bbox});way["amenity"="bus_station"]({bbox});node["public_transport"="station"]({bbox});way["public_transport"="station"]({bbox}););out center;',
 }
 
+# Single combined query to avoid rate-limiting (used as primary strategy)
+OVERPASS_COMBINED_QUERY = """[out:json][timeout:{timeout}];
+(
+  node["amenity"="place_of_worship"]({bbox});
+  way["amenity"="place_of_worship"]({bbox});
+  node["amenity"="marketplace"]({bbox});
+  way["amenity"="marketplace"]({bbox});
+  node["shop"="supermarket"]({bbox});
+  way["shop"="supermarket"]({bbox});
+  node["amenity"="school"]({bbox});
+  way["amenity"="school"]({bbox});
+  node["amenity"="hospital"]({bbox});
+  way["amenity"="hospital"]({bbox});
+  node["amenity"="clinic"]({bbox});
+  way["amenity"="clinic"]({bbox});
+  node["amenity"="police"]({bbox});
+  way["amenity"="police"]({bbox});
+  node["amenity"="fire_station"]({bbox});
+  way["amenity"="fire_station"]({bbox});
+  node["amenity"="bus_station"]({bbox});
+  way["amenity"="bus_station"]({bbox});
+  node["public_transport"="station"]({bbox});
+  way["public_transport"="station"]({bbox});
+);
+out center;"""
+
 RELIGION_CATEGORY_MAP = {
     "hindu": "worship_hindu",
     "muslim": "worship_muslim",
@@ -357,21 +383,47 @@ def classify_worship(tags):
     return RELIGION_CATEGORY_MAP.get(religion, "worship_other")
 
 
+def _classify_element(tags):
+    """Classify an Overpass element into a category based on its tags."""
+    amenity = tags.get("amenity", "")
+    if amenity == "place_of_worship":
+        return classify_worship(tags), True
+    if amenity == "marketplace":
+        return "market", False
+    if amenity == "school":
+        return "school", False
+    if amenity in ("hospital", "clinic"):
+        return "hospital", False
+    if amenity == "police":
+        return "police", False
+    if amenity == "fire_station":
+        return "fire_station", False
+    if amenity == "bus_station":
+        return "transport", False
+    if tags.get("public_transport") == "station":
+        return "transport", False
+    if tags.get("shop") == "supermarket":
+        return "market", False
+    return None, False
+
+
 def download_infrastructure(bbox, output_path):
-    """Query Overpass for sensitive infrastructure, write GeoJSON."""
+    """Query Overpass for sensitive infrastructure, write GeoJSON.
+
+    Uses a single combined query to avoid rate-limiting. Falls back to
+    individual queries if the combined one fails.
+    """
     features = []
     counts = {}
 
-    for cat_key, query_tpl in OVERPASS_QUERIES.items():
-        log.info("Querying Overpass for: %s", cat_key)
-        try:
-            result = query_overpass(query_tpl, bbox)
-        except (urllib.error.URLError, urllib.error.HTTPError, OSError) as exc:
-            log.error("Overpass query failed for %s: %s", cat_key, exc)
-            continue
-
+    # --- Strategy 1: single combined query ---
+    log.info("Querying Overpass with single combined query...")
+    combined_ok = False
+    try:
+        result = query_overpass(OVERPASS_COMBINED_QUERY, bbox, timeout=90)
         elements = result.get("elements", [])
-        log.info("  Received %d elements for %s", len(elements), cat_key)
+        log.info("  Combined query returned %d elements", len(elements))
+        combined_ok = True
 
         for elem in elements:
             tags = elem.get("tags", {})
@@ -379,32 +431,74 @@ def download_infrastructure(bbox, output_path):
             if lon == 0 and lat == 0:
                 continue
 
+            category, is_worship = _classify_element(tags)
+            if category is None:
+                continue
+
             osm_id = elem.get("id", 0)
             name = tags.get("name", tags.get("name:en", ""))
-
-            if cat_key == "worship":
-                category = classify_worship(tags)
-            else:
-                category = cat_key
 
             props = {
                 "category": category,
                 "name": name,
                 "osm_id": osm_id,
             }
-            if cat_key == "worship":
+            if is_worship:
                 props["religion"] = tags.get("religion", "")
 
             feature = {
                 "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [lon, lat],
-                },
+                "geometry": {"type": "Point", "coordinates": [lon, lat]},
                 "properties": props,
             }
             features.append(feature)
             counts[category] = counts.get(category, 0) + 1
+
+    except (urllib.error.URLError, urllib.error.HTTPError, OSError) as exc:
+        log.warning("Combined query failed (%s), falling back to individual queries...", exc)
+
+    # --- Strategy 2: individual queries (fallback) ---
+    if not combined_ok:
+        for cat_key, query_tpl in OVERPASS_QUERIES.items():
+            log.info("Querying Overpass for: %s", cat_key)
+            try:
+                result = query_overpass(query_tpl, bbox)
+            except (urllib.error.URLError, urllib.error.HTTPError, OSError) as exc:
+                log.error("Overpass query failed for %s: %s", cat_key, exc)
+                continue
+
+            elements = result.get("elements", [])
+            log.info("  Received %d elements for %s", len(elements), cat_key)
+
+            for elem in elements:
+                tags = elem.get("tags", {})
+                lon, lat = element_to_point(elem)
+                if lon == 0 and lat == 0:
+                    continue
+
+                osm_id = elem.get("id", 0)
+                name = tags.get("name", tags.get("name:en", ""))
+
+                if cat_key == "worship":
+                    category = classify_worship(tags)
+                else:
+                    category = cat_key
+
+                props = {
+                    "category": category,
+                    "name": name,
+                    "osm_id": osm_id,
+                }
+                if cat_key == "worship":
+                    props["religion"] = tags.get("religion", "")
+
+                feature = {
+                    "type": "Feature",
+                    "geometry": {"type": "Point", "coordinates": [lon, lat]},
+                    "properties": props,
+                }
+                features.append(feature)
+                counts[category] = counts.get(category, 0) + 1
 
     geojson = {
         "type": "FeatureCollection",
