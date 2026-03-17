@@ -98,7 +98,7 @@ const StrategicTwin = (() => {
             _panel.appendChild(header);
             _panel.appendChild(_el('div', { id: 'ward-dash-content', className: 'panel-content', style: { padding: '8px 12px', maxHeight: '70vh', overflowY: 'auto' } }));
             document.body.appendChild(_panel);
-            if (typeof FloatingDialogs !== 'undefined') FloatingDialogs.register(_panel);
+            if (typeof FloatingDialogs !== 'undefined') FloatingDialogs.bringToFront(_panel);
         }
 
         function _renderLoading() {
@@ -518,7 +518,7 @@ const StrategicTwin = (() => {
             _panel.appendChild(header);
             _panel.appendChild(_el('div', { id: 'flood-warn-content', className: 'panel-content', style: { padding: '8px 12px', maxHeight: '60vh', overflowY: 'auto' } }));
             document.body.appendChild(_panel);
-            if (typeof FloatingDialogs !== 'undefined') FloatingDialogs.register(_panel);
+            if (typeof FloatingDialogs !== 'undefined') FloatingDialogs.bringToFront(_panel);
         }
 
         async function _fetchForecast() {
@@ -645,7 +645,7 @@ const StrategicTwin = (() => {
             _panel.appendChild(header);
             _panel.appendChild(_el('div', { id: 'scenario-content', className: 'panel-content', style: { padding: '8px 12px', maxHeight: '70vh', overflowY: 'auto' } }));
             document.body.appendChild(_panel);
-            if (typeof FloatingDialogs !== 'undefined') FloatingDialogs.register(_panel);
+            if (typeof FloatingDialogs !== 'undefined') FloatingDialogs.bringToFront(_panel);
         }
 
         function _render(cell, data) {
@@ -861,7 +861,7 @@ const StrategicTwin = (() => {
             _panel.appendChild(header);
             _panel.appendChild(_el('div', { id: 'emergency-content', className: 'panel-content', style: { padding: '8px 12px', maxHeight: '70vh', overflowY: 'auto' } }));
             document.body.appendChild(_panel);
-            if (typeof FloatingDialogs !== 'undefined') FloatingDialogs.register(_panel);
+            if (typeof FloatingDialogs !== 'undefined') FloatingDialogs.bringToFront(_panel);
         }
 
         function close() { if (_panel) _panel.classList.remove('open'); clearZone(); }
