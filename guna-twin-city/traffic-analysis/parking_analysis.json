@@ -1,0 +1,202 @@
+{
+  "pressure_scores": [],
+  "classified": {
+    "supply_count": 0,
+    "demand_count": 11,
+    "road_count": 0,
+    "bus_stop_count": 0,
+    "fuel_count": 0
+  },
+  "supply": [],
+  "demand_generators": [
+    {
+      "id": 7013919327,
+      "type": "node",
+      "lat": 24.6485542,
+      "lon": 77.3029885,
+      "tags": {
+        "addr:district": "Guna",
+        "addr:full": "Choudram Ka Bagicha",
+        "addr:postcode": "473001",
+        "addr:state": "Madhya Pradesh",
+        "amenity": "hospital",
+        "name": "Ashirwad Hospital",
+        "source": "OpenGovernmentData"
+      },
+      "name": "Ashirwad Hospital",
+      "category": "hospital"
+    },
+    {
+      "id": 7016272718,
+      "type": "node",
+      "lat": 24.6475352,
+      "lon": 77.3052965,
+      "tags": {
+        "addr:district": "Guna",
+        "addr:full": "Opposite To District Hospital, Dubey Colony,Laxmi Ganj",
+        "addr:postcode": "473001",
+        "addr:state": "Madhya Pradesh",
+        "amenity": "hospital",
+        "name": "Sahyog Hospital and Research Centre Pvt. Ltd.",
+        "source": "OpenGovernmentData"
+      },
+      "name": "Sahyog Hospital and Research Centre Pvt. Ltd.",
+      "category": "hospital"
+    },
+    {
+      "id": 7288957728,
+      "type": "node",
+      "lat": 24.6466739,
+      "lon": 77.3079143,
+      "tags": {
+        "addr:district": "Guna",
+        "addr:full": "Sadar Bazar, Mathkari Colony, Choudhary Mohalla, Guna",
+        "addr:postcode": "473001",
+        "addr:state": "Madhya Pradesh",
+        "amenity": "hospital",
+        "name": "Dist. Hospital, Guna",
+        "source": "OpenGovernmentData"
+      },
+      "name": "Dist. Hospital, Guna",
+      "category": "hospital"
+    },
+    {
+      "id": 7288957747,
+      "type": "node",
+      "lat": 24.6394293,
+      "lon": 77.2963768,
+      "tags": {
+        "addr:district": "Guna",
+        "addr:full": "Near Preeti Apartment, Soni Colony, Guna",
+        "addr:postcode": "473001",
+        "addr:state": "Madhya Pradesh",
+        "amenity": "hospital",
+        "name": "Unique Eye Care Hospital",
+        "source": "OpenGovernmentData"
+      },
+      "name": "Unique Eye Care Hospital",
+      "category": "hospital"
+    },
+    {
+      "id": 7288957750,
+      "type": "node",
+      "lat": 24.6315973,
+      "lon": 77.2921325,
+      "tags": {
+        "addr:district": "Guna",
+        "addr:full": "Porwal Colony, Vindhyachal Colony, Model Town Colony, Guna",
+        "addr:postcode": "473249",
+        "addr:state": "Madhya Pradesh",
+        "amenity": "hospital",
+        "name": "Lions Eye Hospital",
+        "source": "OpenGovernmentData"
+      },
+      "name": "Lions Eye Hospital",
+      "category": "hospital"
+    },
+    {
+      "id": 7288957774,
+      "type": "node",
+      "lat": 24.6340169,
+      "lon": 77.3071983,
+      "tags": {
+        "addr:district": "Guna",
+        "addr:full": "Krisnani Nagar, Guna",
+        "addr:postcode": "473001",
+        "addr:state": "Madhya Pradesh",
+        "amenity": "hospital",
+        "name": "Balaji Hospital And Research Center",
+        "source": "OpenGovernmentData"
+      },
+      "name": "Balaji Hospital And Research Center",
+      "category": "hospital"
+    },
+    {
+      "id": 7288957791,
+      "type": "node",
+      "lat": 24.658904,
+      "lon": 77.32311,
+      "tags": {
+        "addr:district": "Guna",
+        "addr:full": "Dalvi Nagar Colony Road, New City Colony, Guna",
+        "addr:postcode": "473001",
+        "addr:state": "Madhya Pradesh",
+        "amenity": "hospital",
+        "name": "Minakshi Hospital",
+        "source": "OpenGovernmentData"
+      },
+      "name": "Minakshi Hospital",
+      "category": "hospital"
+    },
+    {
+      "id": 7288957794,
+      "type": "node",
+      "lat": 24.6310499,
+      "lon": 77.296138,
+      "tags": {
+        "addr:district": "Guna",
+        "addr:full": "Diversion Road, Porwal Colony, Vindhyachal Colony, Model Town Colony, Guna",
+        "addr:postcode": "473001",
+        "addr:state": "Madhya Pradesh",
+        "amenity": "hospital",
+        "name": "Ram Hitech Hospital",
+        "source": "OpenGovernmentData"
+      },
+      "name": "Ram Hitech Hospital",
+      "category": "hospital"
+    },
+    {
+      "id": 7288957812,
+      "type": "node",
+      "lat": 24.647089,
+      "lon": 77.3102462,
+      "tags": {
+        "addr:district": "Guna",
+        "addr:full": "Sadar Bazar, Choudhary Mohalla",
+        "addr:postcode": "473001",
+        "addr:state": "Madhya Pradesh",
+        "amenity": "hospital",
+        "name": "care Hospital",
+        "source": "OpenGovernmentData"
+      },
+      "name": "care Hospital",
+      "category": "hospital"
+    },
+    {
+      "id": 7288957815,
+      "type": "node",
+      "lat": 24.6404289,
+      "lon": 77.2979655,
+      "tags": {
+        "addr:district": "Guna",
+        "addr:full": "Bhargava Colony, Gaushala Mahaveerpura, Guna",
+        "addr:postcode": "473001",
+        "addr:state": "Madhya Pradesh",
+        "amenity": "hospital",
+        "name": "Mahakal Hospital Guna",
+        "source": "OpenGovernmentData"
+      },
+      "name": "Mahakal Hospital Guna",
+      "category": "hospital"
+    },
+    {
+      "id": 7288957818,
+      "type": "node",
+      "lat": 24.6328432,
+      "lon": 77.2875573,
+      "tags": {
+        "addr:district": "Guna",
+        "addr:full": "Gaushala Mahaveerpura, Guna",
+        "addr:postcode": "473249",
+        "addr:state": "Madhya Pradesh",
+        "amenity": "hospital",
+        "name": "Siddhi Vinayak Hospital",
+        "source": "OpenGovernmentData"
+      },
+      "name": "Siddhi Vinayak Hospital",
+      "category": "hospital"
+    }
+  ],
+  "bus_stops": [],
+  "fuel_stations": []
+}
