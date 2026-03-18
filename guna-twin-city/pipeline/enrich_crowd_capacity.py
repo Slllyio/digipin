@@ -312,16 +312,32 @@ OVERPASS_QUERIES = {
 }
 
 # Single combined query to avoid rate-limiting (used as primary strategy)
+# Expanded to catch building=temple/mosque/church, religion=* nodes, shops, etc.
 OVERPASS_COMBINED_QUERY = """[out:json][timeout:{timeout}];
 (
   node["amenity"="place_of_worship"]({bbox});
   way["amenity"="place_of_worship"]({bbox});
+  node["building"="temple"]({bbox});
+  way["building"="temple"]({bbox});
+  node["building"="mosque"]({bbox});
+  way["building"="mosque"]({bbox});
+  node["building"="church"]({bbox});
+  way["building"="church"]({bbox});
+  node["religion"]({bbox});
+  way["religion"]({bbox});
   node["amenity"="marketplace"]({bbox});
   way["amenity"="marketplace"]({bbox});
   node["shop"="supermarket"]({bbox});
   way["shop"="supermarket"]({bbox});
+  node["shop"="mall"]({bbox});
+  way["shop"="mall"]({bbox});
+  node["shop"="general"]({bbox});
   node["amenity"="school"]({bbox});
   way["amenity"="school"]({bbox});
+  node["amenity"="college"]({bbox});
+  way["amenity"="college"]({bbox});
+  node["amenity"="university"]({bbox});
+  way["amenity"="university"]({bbox});
   node["amenity"="hospital"]({bbox});
   way["amenity"="hospital"]({bbox});
   node["amenity"="clinic"]({bbox});
@@ -334,8 +350,40 @@ OVERPASS_COMBINED_QUERY = """[out:json][timeout:{timeout}];
   way["amenity"="bus_station"]({bbox});
   node["public_transport"="station"]({bbox});
   way["public_transport"="station"]({bbox});
+  node["amenity"="fuel"]({bbox});
+  way["amenity"="fuel"]({bbox});
 );
 out center;"""
+
+# Known Guna infrastructure — handcoded from satellite imagery & local knowledge
+# Used as fallback when OSM coverage is sparse
+KNOWN_GUNA_INFRA = [
+    # Police stations
+    {"name": "Kotwali Police Station", "category": "police", "lat": 24.6372, "lon": 77.3115},
+    {"name": "City Kotwali", "category": "police", "lat": 24.6415, "lon": 77.3185},
+    {"name": "Cantt Police Station", "category": "police", "lat": 24.6280, "lon": 77.3050},
+    {"name": "Madan Mahal Police Station", "category": "police", "lat": 24.6330, "lon": 77.3200},
+    # Major temples
+    {"name": "Bajrang Garhi Temple", "category": "worship_hindu", "lat": 24.6420, "lon": 77.3140, "religion": "hindu"},
+    {"name": "Shri Ram Mandir (Kharaganj)", "category": "worship_hindu", "lat": 24.6390, "lon": 77.3095, "religion": "hindu"},
+    {"name": "Ganesh Mandir", "category": "worship_hindu", "lat": 24.6355, "lon": 77.3130, "religion": "hindu"},
+    {"name": "Shiv Temple (Jawahar Chowk)", "category": "worship_hindu", "lat": 24.6380, "lon": 77.3165, "religion": "hindu"},
+    # Mosques
+    {"name": "Jama Masjid", "category": "worship_muslim", "lat": 24.6385, "lon": 77.3108, "religion": "muslim"},
+    {"name": "Kharaganj Mosque", "category": "worship_muslim", "lat": 24.6395, "lon": 77.3088, "religion": "muslim"},
+    # Schools
+    {"name": "Govt. Excellence School", "category": "school", "lat": 24.6405, "lon": 77.3155},
+    {"name": "Kendriya Vidyalaya", "category": "school", "lat": 24.6295, "lon": 77.3035},
+    {"name": "Saraswati Shishu Mandir", "category": "school", "lat": 24.6365, "lon": 77.3145},
+    # Markets
+    {"name": "Kharaganj Market", "category": "market", "lat": 24.6392, "lon": 77.3098},
+    {"name": "Bada Bazaar", "category": "market", "lat": 24.6375, "lon": 77.3125},
+    {"name": "Sabzi Mandi", "category": "market", "lat": 24.6345, "lon": 77.3110},
+    # Fire station
+    {"name": "Fire Station Guna", "category": "fire_station", "lat": 24.6410, "lon": 77.3170},
+    # Sensitive zones (communally sensitive — April 2025 Kharaganj incident)
+    {"name": "Kharaganj Chowk (sensitive)", "category": "market", "lat": 24.6393, "lon": 77.3093},
+]
 
 RELIGION_CATEGORY_MAP = {
     "hindu": "worship_hindu",
@@ -386,11 +434,14 @@ def classify_worship(tags):
 def _classify_element(tags):
     """Classify an Overpass element into a category based on its tags."""
     amenity = tags.get("amenity", "")
+    building = tags.get("building", "")
     if amenity == "place_of_worship":
+        return classify_worship(tags), True
+    if building in ("temple", "mosque", "church") or tags.get("religion"):
         return classify_worship(tags), True
     if amenity == "marketplace":
         return "market", False
-    if amenity == "school":
+    if amenity in ("school", "college", "university"):
         return "school", False
     if amenity in ("hospital", "clinic"):
         return "hospital", False
@@ -402,8 +453,10 @@ def _classify_element(tags):
         return "transport", False
     if tags.get("public_transport") == "station":
         return "transport", False
-    if tags.get("shop") == "supermarket":
+    if tags.get("shop") in ("supermarket", "mall", "general"):
         return "market", False
+    if amenity == "fuel":
+        return "transport", False
     return None, False
 
 
@@ -499,6 +552,38 @@ def download_infrastructure(bbox, output_path):
                 }
                 features.append(feature)
                 counts[category] = counts.get(category, 0) + 1
+
+    # --- Strategy 3: merge known hardcoded infrastructure ---
+    # De-duplicate by proximity (within ~50m of an existing OSM feature)
+    existing_coords = set()
+    for f in features:
+        c = f["geometry"]["coordinates"]
+        existing_coords.add((round(c[0], 4), round(c[1], 4)))
+
+    added_known = 0
+    for known in KNOWN_GUNA_INFRA:
+        key = (round(known["lon"], 4), round(known["lat"], 4))
+        if key in existing_coords:
+            continue
+        props = {
+            "category": known["category"],
+            "name": known["name"],
+            "osm_id": 0,
+            "source": "local_knowledge",
+        }
+        if "religion" in known:
+            props["religion"] = known["religion"]
+        features.append({
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [known["lon"], known["lat"]]},
+            "properties": props,
+        })
+        counts[known["category"]] = counts.get(known["category"], 0) + 1
+        existing_coords.add(key)
+        added_known += 1
+
+    if added_known > 0:
+        log.info("Added %d known infrastructure features (local knowledge)", added_known)
 
     geojson = {
         "type": "FeatureCollection",
