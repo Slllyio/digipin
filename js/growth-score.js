@@ -98,7 +98,42 @@ const GrowthScore = (() => {
         };
     }
 
-    return { bueSubScore, denSubScore, capSubScore, normLog, composite, HORIZON_WEIGHTS };
+    /** Ordinary least squares trend on a uniformly-spaced series.
+     *  Returns { slope, intercept, r_squared } or null if too short. */
+    function linearTrend(values) {
+        if (!values || values.length < 3) return null;
+        const n = values.length;
+        const xs = values.map((_, i) => i);
+        const meanX = xs.reduce((a, b) => a + b, 0) / n;
+        const meanY = values.reduce((a, b) => a + b, 0) / n;
+        let num = 0, den = 0, totSS = 0;
+        for (let i = 0; i < n; i++) {
+            num += (xs[i] - meanX) * (values[i] - meanY);
+            den += (xs[i] - meanX) ** 2;
+            totSS += (values[i] - meanY) ** 2;
+        }
+        const slope = den === 0 ? 0 : num / den;
+        const intercept = meanY - slope * meanX;
+        let resSS = 0;
+        for (let i = 0; i < n; i++) {
+            const pred = slope * xs[i] + intercept;
+            resSS += (values[i] - pred) ** 2;
+        }
+        const r_squared = totSS === 0 ? 1 : Math.max(0, Math.min(1, 1 - resSS / totSS));
+        return { slope, intercept, r_squared };
+    }
+
+    /** Per-horizon confidence band (±value). */
+    function confidenceBand(horizon, r_squared) {
+        if (horizon === 'nowcast') return 5;
+        if (horizon === 'year_2') return 10;
+        // year_5: tight when trend is stable, wide when noisy. Floor at ±10.
+        const r2 = (r_squared == null || r_squared < 0) ? 0 : r_squared;
+        return Math.max(10, Math.round(25 * (1 - r2)));
+    }
+
+    return { bueSubScore, denSubScore, capSubScore, normLog,
+             composite, HORIZON_WEIGHTS, linearTrend, confidenceBand };
 })();
 
 if (typeof window !== 'undefined') window.GrowthScore = GrowthScore;

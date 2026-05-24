@@ -137,3 +137,44 @@ describe('GrowthScore.composite()', () => {
         expect(c.composite).toBeNull();
     });
 });
+
+describe('GrowthScore.linearTrend()', () => {
+    it('returns slope=1 + r²=1 for a perfect line y=x', () => {
+        const t = globalThis.GrowthScore.linearTrend([0, 1, 2, 3, 4, 5, 6, 7]);
+        expect(t.slope).toBeCloseTo(1, 5);
+        expect(t.r_squared).toBeCloseTo(1, 5);
+    });
+
+    it('returns slope=0 for a flat series', () => {
+        const t = globalThis.GrowthScore.linearTrend([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]);
+        expect(t.slope).toBeCloseTo(0, 5);
+    });
+
+    it('returns null for series shorter than 3', () => {
+        expect(globalThis.GrowthScore.linearTrend([0.5, 0.5])).toBeNull();
+    });
+});
+
+describe('GrowthScore.confidenceBand()', () => {
+    it('returns 5 for nowcast regardless of r²', () => {
+        expect(globalThis.GrowthScore.confidenceBand('nowcast', 0.0)).toBe(5);
+        expect(globalThis.GrowthScore.confidenceBand('nowcast', 1.0)).toBe(5);
+    });
+
+    it('returns 10 for year_2 regardless of r²', () => {
+        expect(globalThis.GrowthScore.confidenceBand('year_2', 0.5)).toBe(10);
+    });
+
+    it('returns ±10 (floor) for year_5 with r²=1', () => {
+        expect(globalThis.GrowthScore.confidenceBand('year_5', 1.0)).toBe(10);
+    });
+
+    it('returns ±25 for year_5 with r²=0', () => {
+        expect(globalThis.GrowthScore.confidenceBand('year_5', 0.0)).toBe(25);
+    });
+
+    it('returns floor ±10 for negative or null r²', () => {
+        expect(globalThis.GrowthScore.confidenceBand('year_5', null)).toBe(25);
+        expect(globalThis.GrowthScore.confidenceBand('year_5', -0.2)).toBe(25);
+    });
+});
