@@ -3,10 +3,11 @@
 | Field | Value |
 |---|---|
 | **Spec date** | 2026-05-24 |
-| **Status** | Approved — ready for implementation planning |
+| **Status** | Design approved — has prerequisites (see §11) before implementation begins |
 | **Audience** | Future maintainers + spec reviewer subagent |
 | **Author** | Brainstormed via `/superpowers:brainstorming` skill |
 | **Feature working name** | DigiPin Growth Pulse (panel: "Growth Forecast", toolbar: "Growth") |
+| **Prerequisites** | 1) GEE service account verified (§11.1) · 2) Flood-widget visual pattern landed on `main` OR alternative styling approved (§11.2) |
 
 ## 1. Summary
 
@@ -97,6 +98,50 @@ Once-per-deploy (Python pipeline, runs locally or in GH Actions cron)
 
 **Why this split**: a planner expects the forecast to load fast. Doing the GEE export work in the browser would not. Pre-computing as Cloud-Optimized GeoTIFFs lets the browser do only the pixel lookup at click time, served via HTTP-range requests using `georaster.browser.bundle.min.js` (already loaded for the flood DEM in PR #10).
 
+### 4.1 Result schema
+
+The orchestrator populates `result.realtime.growth` with this exact shape (JSDoc / TypeScript-style for unambiguous implementation):
+
+```javascript
+result.realtime.growth = {
+    // 0-100, the active-horizon composite chosen by widget toggle (defaults to "nowcast")
+    active_horizon: "nowcast" | "year_2" | "year_5",
+
+    horizons: {
+        nowcast: {
+            composite: number,            // 0-100; or null if all sub-scores are null
+            confidence_band: number,      // always 5 for nowcast
+            sub_scores: {
+                bue: { value: number|null, direction: "▲"|"▶"|"▽", driver: string },
+                den: { value: number|null, direction: "▲"|"▶"|"▽", driver: string },
+                cap: { value: number|null, direction: "▲"|"▶"|"▽", driver: string }
+            },
+            // Effective weights after re-normalisation (sum to 1.0; if a sub_score is null its weight redistributes)
+            effective_weights: { bue: number, den: number, cap: number },
+        },
+        year_2: { /* same shape; confidence_band = 10 */ },
+        year_5: {
+            /* same shape; confidence_band = per-cell value from 5-year r² formula */
+            r_squared: number,            // 0-1, source of the band width
+        },
+    },
+
+    // Per-source availability for telemetry + disclosure
+    sources: {
+        buildings_temporal: "ok" | "stale" | "missing",
+        viirs:              "ok" | "stale" | "missing",
+        ghsl_pop:           "ok" | "missing",
+        rera_mp:            "ok" | "stale" | "missing" | "out_of_state",
+        osm:                "ok" | "missing",
+    },
+
+    // Filled in by the orchestrator at fetch time, used by the panel for the "as of" timestamp
+    generated_at_iso: string,
+};
+```
+
+When every source returns `missing`, `result.realtime.growth = null` (not an empty object) — the widget treats this as the unavailable-data case described in §8.2.
+
 ## 5. Score model
 
 Three dimension sub-scores, each clamped 0–100:
@@ -175,18 +220,32 @@ GEE service account from the existing `van-suraksha-alert` GCP project is reused
 
 ### Browser data access
 
+The browser never calls the RERA scraper directly. It reads the **pre-built static `latest.json`** that the existing scraper framework writes (same pattern as `data/realtime/ndma_sachet/latest.json` from PR #5):
+
 ```javascript
-// 1. Find COG tile containing cell (tile math from flood-inundation.js)
-// 2. ONE HTTP-range fetch per COG returns all bands for the relevant pixel
-const buildings = await getValuesAtPoint(cog_buildings_temporal, lat, lng);
-//   → [p_2016, p_2017, ..., p_2023]   building_presence per year
-const heights   = await getValuesAtPoint(cog_heights, lat, lng);
-const viirs     = await getValuesAtPoint(cog_viirs, lat, lng);
-const pop       = await getValuesAtPoint(cog_ghsl_pop, lat, lng);
-// 4 parallel byte-range requests, ~200-300 ms total on a normal connection
+// 1. Four parallel COG range fetches (tile math from flood-inundation.js)
+const [buildings, heights, viirs, pop] = await Promise.all([
+    getValuesAtPoint(cog_buildings_temporal, lat, lng),  // → [p_2016, ..., p_2023]
+    getValuesAtPoint(cog_heights, lat, lng),             // → [h_2016, ..., h_2023]
+    getValuesAtPoint(cog_viirs, lat, lng),               // → [v_2016, ..., v_2024]
+    getValuesAtPoint(cog_ghsl_pop, lat, lng),            // → scalar
+]);
+
+// 2. RERA: load the state's static GeoJSON snapshot, point-in-radius filter client-side
+const reraSnapshot = await fetch('data/realtime/rera_mp/latest.json', { cache: 'no-store' });
+const reraProjects = reraSnapshot.records.filter(p =>
+    haversine_km(p.lat, p.lng, cellLat, cellLng) <= 2.0
+);
+
+// 3. OSM construction signals: re-use the count already in result.categories.landuse.features.construction
+// (no extra fetch — data-fetcher.js already populated it during the main cell fetch)
 ```
 
-Total hosted payload: **~175 MB** in `data/growth/`. Under GH Pages' 1 GB cap. Phase 2: move to Cloudflare R2 to align with `DIGITAL_TWIN_ARCHITECTURE.md`.
+The RERA file is `~5 MB` for MP-only v1, fetched once with a 5-minute in-memory TTL (matches the realtime-alerts.js pattern). Browser-side filtering is fast (a few hundred polygons, distance check is O(n)).
+
+**Cell outside any RERA-supported state**: `sources.rera_mp = "out_of_state"`, CAP sub-score = null, composite re-weights remaining dimensions.
+
+Total hosted payload: **~175 MB** in `data/growth/` + `~5 MB` in `data/realtime/rera_mp/`. Under GH Pages' 1 GB cap. Phase 2: move to Cloudflare R2 to align with `DIGITAL_TWIN_ARCHITECTURE.md`.
 
 ## 7. UI / UX
 
@@ -270,12 +329,16 @@ The 5-year band is **per-cell, not fixed**: `band_5yr = 25 · (1 - r²_clamped)`
 
 | Failure mode | Detection | Graceful behaviour |
 |---|---|---|
-| GEE auth expires / quota exceeded | Pipeline build fails | CI alerts maintainer; portal continues with last-good COGs |
-| COG fetch fails (CORS, network, missing tile) | `getValuesAtPoint()` rejects | `result.realtime.growth = null`; widget shows "Growth data unavailable" |
-| RERA scraper SSL fails | `requests.get(verify=False)` already in source | Source skips gracefully; latest.json contains last successful scrape |
-| Degenerate r² (identical or single year of data) | NaN/inf in trend | Defaults: composite_5yr = nowcast, band = ±25, tooltip discloses |
-| Cell outside India coverage | Pixel-out-of-bounds on tile fetch | Widget shows "Outside coverage area — currently India only" |
-| Single dimension sub-score null | `null` returned by sub-score | Composite re-weights remaining dimensions; missing shown as `—` |
+| GEE auth expires / quota exceeded | Pipeline build fails | CI alerts maintainer; portal continues serving last-good COGs (they're static artifacts; freshness disclosed via `sources.X = "stale"` in the result) |
+| Single COG fetch fails (CORS, network, missing tile) | `getValuesAtPoint()` rejects | That source set to `"missing"`; composite re-weights remaining sub-scores. **No retry within the click** — user can re-click the cell to retry (treated as a fresh fetch) |
+| **All four COG fetches fail simultaneously** | All sources report `"missing"` AND no RERA AND no OSM signal | `result.realtime.growth = null`. Widget renders "Growth data unavailable for this cell" with a "Try again" link that re-triggers the cell fetch. No error toast (would be noisy on slow networks) |
+| RERA scraper SSL fails | `requests.get(verify=False)` already in source (PR #6 pattern) | Source skips gracefully; latest.json contains last successful scrape; `sources.rera_mp = "stale"` |
+| RERA snapshot is older than 14 days | Browser checks `generated_at_iso` in the JSON envelope | `sources.rera_mp = "stale"`, CAP still computed but flagged in disclosure tooltip |
+| Degenerate r² (identical or single year of data) | NaN/inf in trend regression | Defaults: composite_5yr = nowcast, band = ±25 floor, tooltip discloses "insufficient temporal data" |
+| Cell outside India coverage | Pixel-out-of-bounds on tile fetch (returns `null` from georaster) | Widget shows "Outside coverage area — currently India only" |
+| Cell inside India but outside RERA state coverage | `sources.rera_mp = "out_of_state"` | CAP sub-score null, composite re-weights; UI shows `Capital: — (no RERA data for state)` |
+| Single dimension sub-score null | `null` returned by sub-score | Composite re-weights remaining dimensions; missing shown as `—` in breakdown |
+| Source slow (any single fetch > 80 ms × 3 consecutive cells) | Per-source rolling latency tracking in `realtime-growth.js` | Source auto-disabled for the rest of the session; logged to console; user gets remaining sub-scores |
 
 ### 8.3 Testing strategy
 
@@ -340,7 +403,57 @@ If any source exceeds its budget for 3 consecutive cell clicks, the source is au
 - **Confidence-band rendering on the map heatmap** — currently uses opacity; future could use a hatched pattern for high-uncertainty cells
 - **Time-series sparkline for BUE** — show the 8-year building-presence trajectory inside the panel widget alongside the composite score
 
-## 10. References
+## 11. Implementation prerequisites
+
+These are **load-bearing checks** that must pass before the implementation plan is committed. Each blocks a different layer of the design.
+
+### 11.1 GEE service account verification
+
+**What**: confirm that the `enetra@van-suraksha-alert.iam.gserviceaccount.com` service account (reused per Section 6) is:
+
+- Active in the `van-suraksha-alert` GCP project
+- Authorised for Earth Engine API access (`https://www.googleapis.com/auth/earthengine`)
+- Has sufficient EE quota for the export jobs (a one-time India bbox export of Open Buildings Temporal + VIIRS is on the order of 2-4 GB of compute, well within free-tier limits but should be confirmed)
+- Has the full private-key JSON available outside this repo and ready to be set as the GitHub Actions secret `GEE_SERVICE_ACCOUNT_JSON`
+
+**Verification step** (run locally before kicking off the implementation plan):
+
+```sh
+export GOOGLE_APPLICATION_CREDENTIALS=~/.gee/digipin-credentials.json
+python -c "
+import ee
+ee.Initialize()
+print('asset:', ee.ImageCollection('GOOGLE/Research/open-buildings-temporal/v1').first().getInfo()['id'])
+"
+```
+
+If this prints an asset ID, prerequisite met. If it errors, the implementation pause until the account is provisioned or a fresh `digipin-portal` GCP project is created (see Section 6 alternative).
+
+### 11.2 Flood-widget visual pattern availability
+
+**What**: Sections 7 and 7.5 reference the "flood-widget visual language" as a reuse target — that pattern lives in `js/flood-animation.js`, `js/flood-inundation.js`, `js/flood-scs.js`, and `css/styles.css` (the `.flood-widget__*` block), all currently on branch `agents/flood-scs-slider` (PR #11), not yet merged to `main`.
+
+**Resolution paths** (pick one before implementation):
+
+1. **Wait for PR #11 to merge** (PRs #8 → #9 → #10 → #11 are stacked; merging the chain makes the pattern available on main)
+2. **Re-implement the visual pattern from scratch** in `css/styles.css` as part of the growth-widget PR. Adds ~100 LOC of CSS but unblocks the implementation immediately
+3. **Adopt a simpler dark glass-morphism style** that doesn't require the flood-widget primitives. Lowest fidelity but ships fastest
+
+Default recommendation: **wait for PR #11** — keeps the visual language consistent across forecast features. If PR #11 is blocked for any reason, fall back to path 2.
+
+### 11.3 RERA Madhya Pradesh portal access
+
+**What**: confirm that `rera.mp.gov.in` is still serving the project list with the same SSL legacy-renegotiation issue identified during earlier probing. The scraper relies on `verify=False` in `requests.get()`; if the portal upgrades its certificate chain, this becomes unnecessary; if it changes its HTML structure, the parser needs updating.
+
+**Verification step**:
+
+```sh
+curl -k -A "Mozilla/5.0" https://rera.mp.gov.in/ | head -50
+```
+
+Confirm: HTML returned (not a JavaScript shell), project-listing path discoverable. If the portal has changed materially, treat the 1-2 year horizon as **degraded** for v1 — populate CAP from OSM construction signals alone and disclose explicitly in the methods panel.
+
+## 12. References
 
 - Brainstorm session: this file's commit history
 - Open Buildings Temporal V1: <https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_Research_open-buildings-temporal_v1>
