@@ -1324,7 +1324,14 @@ from ..lib.http import PoliteClient
 log = logging.getLogger("scrapers.rera_mp")
 
 SOURCE_ID = "rera_mp"
-LISTING_URL = "https://rera.mp.gov.in/Project/Allproject"
+# Note: Phase 0b probe (2026-05-24) found the portal:
+#   - moved to www.rera.mp.gov.in (rera.mp.gov.in 301-redirects there)
+#   - has a valid cert now (no more legacy renegotiation, default verify=True is fine)
+#   - exposes the project listing at /projects/, not /Project/Allproject
+# The implementer subagent should still run the live probe in Task 11 Step 5
+# to confirm the table element id (the parser assumes id="projectTable" but
+# the portal may use a different element — adjust accordingly).
+LISTING_URL = "https://www.rera.mp.gov.in/projects/"
 
 
 @dataclass
@@ -2010,7 +2017,7 @@ if (typeof window !== 'undefined') window.GrowthWidget = GrowthWidget;
 
 - [ ] **Step 2: Append CSS**
 
-Append to `css/styles.css` (mirrors `.flood-widget`):
+Append to `css/styles.css` — defined as a **self-contained block** since PR #11's flood-widget files have not landed on `main` (verified during Phase 0c). When the flood-widget eventually lands, a follow-up PR can refactor the two widget blocks to share a common base class. The visual variables (colors, glass-morphism background, padding) are duplicated here intentionally:
 
 ```css
 /* Growth Forecast widget */
