@@ -16,18 +16,16 @@
 
 These three checks gate the rest of the plan. Run them first; only proceed when all pass.
 
-### Task 0a: Verify GEE service account access
+### Task 0a: Verify GEE access — **RESOLVED 2026-05-24**
+
+**Status:** Cached OAuth credentials at `~/.config/earthengine/credentials` work when EE is initialised with `project='van-suraksha-alert'`. No service account JSON download needed for local development. Service account is still required for CI (see Step 4 below).
 
 **Files:**
 - Read: `docs/superpowers/specs/2026-05-24-urban-growth-forecast-design.md` §11.1
 
-- [ ] **Step 1: Confirm the credentials file is present**
+- [ ] **Step 1: ~~Confirm the credentials file is present~~ — OBSOLETE**
 
-```sh
-ls -la ~/.gee/digipin-credentials.json
-```
-
-Expected: file exists with mode 600. If absent, fetch the JSON for `enetra@van-suraksha-alert.iam.gserviceaccount.com` from your password manager / 1Password and save it locally. **Do not commit it.**
+Original check expected `~/.gee/digipin-credentials.json` from a downloaded service-account JSON. **Phase 0a discovered** that cached OAuth credentials (created by an earlier `earthengine authenticate` on this machine) already exist at `~/.config/earthengine/credentials` and work for asset access — no manual JSON download required. Skip this step.
 
 - [ ] **Step 2: Install earthengine-api in a temp venv**
 
@@ -39,13 +37,12 @@ pip install --quiet earthengine-api
 
 Expected: pip succeeds with no errors.
 
-- [ ] **Step 3: Smoke-test EE auth + asset access**
+- [ ] **Step 3: Smoke-test EE auth + asset access (VERIFIED 2026-05-24)**
 
 ```sh
-export GOOGLE_APPLICATION_CREDENTIALS=~/.gee/digipin-credentials.json
-python -c "
+PYTHONIOENCODING=utf-8 python -c "
 import ee
-ee.Initialize()
+ee.Initialize(project='van-suraksha-alert')
 img = ee.ImageCollection('GOOGLE/Research/open-buildings-temporal/v1').first()
 info = img.getInfo()
 print('asset:', info['id'])
@@ -53,21 +50,26 @@ print('bands:', [b['id'] for b in info['bands']])
 "
 ```
 
-Expected output (asset ID will vary, but should print without traceback):
+Confirmed-working output (run during Phase 0a on 2026-05-24):
 ```
-asset: GOOGLE/Research/open-buildings-temporal/v1/...
+asset: GOOGLE/Research/open-buildings-temporal/v1/01_EPSG_32723_2016_06_30
 bands: ['building_fractional_count', 'building_height', 'building_presence']
 ```
 
-If this fails with `EEException: Cannot access asset` or `Earth Engine client library not initialised`, **STOP** — the account isn't provisioned. Either ask the user to enable EE for the project, or create a fresh `digipin-portal` GCP project + service account.
+**Critical kwarg:** `project='van-suraksha-alert'`. Without it, EE defaults to a different project (`delta-guild-367407` on this machine) which isn't registered for Earth Engine and the call fails with `EEException: Project X is not registered to use Earth Engine`. The pipeline's `_init_ee()` reads `GEE_PROJECT` env var (defaulting to `van-suraksha-alert`) for portability.
 
-- [ ] **Step 4: Add the credentials path to GitHub Actions secrets (manual)**
+**Cross-platform note:** Set `PYTHONIOENCODING=utf-8` when running on Windows — the default cp1252 codec chokes on unicode checkmarks. The pipeline scripts themselves only emit ASCII via `logging`.
 
-```sh
-gh secret set GEE_SERVICE_ACCOUNT_JSON < ~/.gee/digipin-credentials.json
-```
+- [ ] **Step 4: Add the credentials path to GitHub Actions secrets — DEFERRED to CI-enablement PR**
 
-Expected: `✓ Set secret GEE_SERVICE_ACCOUNT_JSON for Slllyio/digipin`
+GitHub Actions can't use cached OAuth credentials (those live in `~/.config/earthengine/credentials` on a developer's machine and aren't portable). When CI auto-refresh of the COGs is wired up (Phase 2 follow-up), the maintainer should:
+
+1. Create a service account in the `van-suraksha-alert` GCP project's IAM panel with the `Earth Engine Resource Viewer` role
+2. Download its JSON key (do not commit)
+3. `gh secret set GEE_SERVICE_ACCOUNT_JSON < /path/to/key.json`
+4. Add `gh secret set GEE_PROJECT --body "van-suraksha-alert"` so the project hint is also available in CI
+
+For v1 (local pipeline runs by the maintainer), Step 3's cached OAuth path is enough — skip this step.
 
 ### Task 0b: Verify RERA Madhya Pradesh portal access
 
@@ -872,17 +874,25 @@ SCALE_M = 4   # GEE export scale; matches DigiPin grain
 
 
 def _init_ee():
-    """Initialise Earth Engine using the credentials at $GOOGLE_APPLICATION_CREDENTIALS."""
+    """Initialise Earth Engine — service account in CI, cached OAuth in dev.
+
+    Phase 0a confirmed (2026-05-24) that:
+      - OAuth credentials cached at ~/.config/earthengine/credentials work
+      - The GCP project must be passed explicitly via the `project` kwarg
+        (defaults like `delta-guild-367407` aren't EE-registered and error
+        with 'Project X is not registered to use Earth Engine')
+    """
     import ee
+    project = os.environ.get("GEE_PROJECT", "van-suraksha-alert")
     cred_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-    if not cred_path or not Path(cred_path).is_file():
-        raise RuntimeError(
-            "GOOGLE_APPLICATION_CREDENTIALS env var must point to a service account JSON. "
-            "See spec §11.1."
-        )
-    credentials = ee.ServiceAccountCredentials(None, cred_path)
-    ee.Initialize(credentials)
-    log.info("Earth Engine initialised with service account from %s", cred_path)
+    if cred_path and Path(cred_path).is_file():
+        credentials = ee.ServiceAccountCredentials(None, cred_path)
+        ee.Initialize(credentials, project=project)
+        log.info("Earth Engine initialised via service account, project=%s", project)
+        return
+    # Fall back to cached OAuth credentials (from `earthengine authenticate`)
+    ee.Initialize(project=project)
+    log.info("Earth Engine initialised via cached OAuth, project=%s", project)
 
 
 def _build_image():
@@ -1033,12 +1043,14 @@ SCALE_M = 100
 
 
 def _init_ee():
+    """Same dual-path init as extract_buildings_temporal._init_ee()."""
     import ee
+    project = os.environ.get("GEE_PROJECT", "van-suraksha-alert")
     cred = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-    if not cred:
-        raise RuntimeError("GOOGLE_APPLICATION_CREDENTIALS not set")
-    credentials = ee.ServiceAccountCredentials(None, cred)
-    ee.Initialize(credentials)
+    if cred and Path(cred).is_file():
+        ee.Initialize(ee.ServiceAccountCredentials(None, cred), project=project)
+    else:
+        ee.Initialize(project=project)
 
 
 def _build_image():
