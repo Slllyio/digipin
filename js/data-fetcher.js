@@ -581,7 +581,7 @@ const DataFetcher = (() => {
         const cityName = result.address.city || result.address.area || 'Indore';
 
         // Fire remaining requests in parallel (including building intelligence + new sources)
-        const [osmData, weatherData, aqiData, wikiData, elevData, popData, buildingData, openMeteoAqi, solarData, bhoondhiData, ogdHealthData, iudxData, iudxCatalogueData, cepiData, postOfficeData] = await Promise.allSettled([
+        const [osmData, weatherData, aqiData, wikiData, elevData, popData, buildingData, openMeteoAqi, solarData, bhoondhiData, ogdHealthData, iudxData, iudxCatalogueData, cepiData, postOfficeData, precipData] = await Promise.allSettled([
             fetchOSMData(lat, lng, radius),
             fetchWeather(lat, lng),
             fetchAQI(lat, lng, cityName),
@@ -596,7 +596,8 @@ const DataFetcher = (() => {
             fetchIUDX(lat, lng),
             fetchIUDXCatalogue(cityName),
             fetchCEPI(cityName, result.address.state),
-            fetchNearbyPostOffices(lat, lng, result.address.district)
+            fetchNearbyPostOffices(lat, lng, result.address.district),
+            fetchHistoricalPrecipitation(lat, lng)
         ]);
 
         // === OSM POI data ===
@@ -643,6 +644,11 @@ const DataFetcher = (() => {
         // === Elevation (for flood risk) ===
         if (elevData.status === 'fulfilled' && elevData.value != null) {
             result.environment.elevation = elevData.value;
+        }
+
+        // === Annual precipitation (for flood risk) ===
+        if (precipData.status === 'fulfilled' && precipData.value != null) {
+            result.environment.precipitation = precipData.value;
         }
 
         // === WorldPop population density ===
@@ -945,6 +951,35 @@ const DataFetcher = (() => {
                 surrounding: avgSurrounding,
                 relative: centerElev - avgSurrounding,
                 isLowLying: centerElev < avgSurrounding - 2
+            };
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * Fetch the previous 365 days of daily precipitation from Open-Meteo's
+     * archive API (free, no key) and return the annual total in mm.
+     * Used as input to the flood_risk score. The window ends 7 days ago
+     * to account for archive ingestion lag.
+     */
+    async function fetchHistoricalPrecipitation(lat, lng) {
+        try {
+            const end = new Date();
+            end.setUTCDate(end.getUTCDate() - 7);
+            const start = new Date(end);
+            start.setUTCFullYear(start.getUTCFullYear() - 1);
+            const fmt = (d) => d.toISOString().slice(0, 10);
+            const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lng}&start_date=${fmt(start)}&end_date=${fmt(end)}&daily=precipitation_sum&timezone=Asia%2FKolkata`;
+            const data = await fetchWithRetry(url);
+            const sums = (data.daily?.precipitation_sum || []).filter(v => v != null);
+            if (sums.length === 0) return null;
+            const totalMm = sums.reduce((a, b) => a + b, 0);
+            return {
+                annualMm: Math.round(totalMm),
+                daysCovered: sums.length,
+                periodStart: fmt(start),
+                periodEnd: fmt(end)
             };
         } catch {
             return null;
@@ -1332,6 +1367,43 @@ const DataFetcher = (() => {
     }
 
     /**
+     * Flood risk score (0-100, HIGHER = safer).
+     * Inputs: elevation object from fetchElevation, precipitation object
+     * from fetchHistoricalPrecipitation. Both may be null when sources fail.
+     *
+     * Baseline 50 at the Indian-context anchor of ~400m elevation, ~800mm/yr
+     * rainfall, flat terrain. Each 100m gain adds ~8, each 200mm above baseline
+     * subtracts ~10, and the local relative-elevation signal (whether the cell
+     * sits in a basin vs on a ridge) is weighted strongest because that is the
+     * single most predictive feature for urban waterlogging.
+     *
+     * Returns null when both elevation and precipitation are missing — score
+     * is meaningless without at least one terrain or hydrology signal.
+     */
+    function floodRiskScore(elevation, precipitation) {
+        if (elevation == null && precipitation == null) return null;
+        let score = 50;
+
+        if (elevation && typeof elevation === 'object') {
+            const centerM = elevation.center;
+            if (typeof centerM === 'number') {
+                score += 0.08 * (centerM - 400);
+            }
+            if (typeof elevation.relative === 'number') {
+                // Strong signal — sitting in a 5m+ basin vs on a 5m+ ridge.
+                score += Math.max(-25, Math.min(15, elevation.relative * 2));
+            }
+            if (elevation.isLowLying) score -= 15;
+        }
+
+        if (precipitation && typeof precipitation.annualMm === 'number') {
+            score -= 0.05 * (precipitation.annualMm - 800);
+        }
+
+        return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    /**
      * Compute 20 intelligence scores (0-100) using log-scale normalization
      * Max values calibrated for 500m radius in dense Indian cities
      */
@@ -1441,6 +1513,13 @@ const DataFetcher = (() => {
                 return {
                     label: 'Religious Diversity',
                     value: religiousDiversityScore(worship?.subTypes, worship?.count || 0)
+                };
+            })(),
+            flood_risk: (() => {
+                const env = data.environment || {};
+                return {
+                    label: 'Flood Safety (higher = safer)',
+                    value: floodRiskScore(env.elevation, env.precipitation)
                 };
             })(),
             public_service: {
