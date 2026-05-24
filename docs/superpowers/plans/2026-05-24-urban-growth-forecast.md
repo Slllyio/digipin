@@ -1177,10 +1177,57 @@ if __name__ == "__main__":
     main()
 ```
 
-- [ ] **Step 2: Commit**
+- [ ] **Step 2: Write a minimal smoke test (mock urlopen + rasterio)**
+
+Create `pipeline/growth/tests/test_download_ghsl_pop.py`:
+
+```python
+"""Smoke test for the GHSL downloader.
+
+Doesn't actually hit jeodpp.jrc.ec.europa.eu (it's a 500 MB download).
+Verifies module imports and that key constants are sane.
+"""
+
+import importlib
+
+
+def test_module_imports():
+    mod = importlib.import_module("pipeline.growth.download_ghsl_pop")
+    assert hasattr(mod, "main")
+    assert hasattr(mod, "GHSL_URL")
+    assert hasattr(mod, "INDIA_BBOX")
+    assert hasattr(mod, "OUTPUT_PATH")
+
+
+def test_url_targets_2025_epoch():
+    from pipeline.growth.download_ghsl_pop import GHSL_URL
+    assert "E2025" in GHSL_URL or "2025" in GHSL_URL
+
+
+def test_output_path_in_data_growth():
+    from pipeline.growth.download_ghsl_pop import OUTPUT_PATH
+    assert str(OUTPUT_PATH).replace("\\", "/").endswith("data/growth/ghsl_pop_2025.tif")
+
+
+def test_india_bbox_sane():
+    from pipeline.growth.download_ghsl_pop import INDIA_BBOX
+    west, south, east, north = INDIA_BBOX
+    assert west < east and south < north
+    assert 60 < west < 80 and 5 < south < 15
+```
+
+- [ ] **Step 3: Run smoke test**
 
 ```sh
-git add pipeline/growth/download_ghsl_pop.py
+pytest pipeline/growth/tests/test_download_ghsl_pop.py -v
+```
+
+Expected: PASS, 4 tests.
+
+- [ ] **Step 4: Commit**
+
+```sh
+git add pipeline/growth/download_ghsl_pop.py pipeline/growth/tests/test_download_ghsl_pop.py
 git commit -m "feat(growth): GHSL population grid downloader (one-off, 100m clip to India)"
 ```
 
@@ -1711,7 +1758,13 @@ These must load **before** `js/data-fetcher.js` (which calls them).
 
 - [ ] **Step 2: Hook growth into the orchestrator**
 
-In `js/data-fetcher.js`, find the existing `result.realtime = result.realtime || {};` block (added by PR #5/#6). Append:
+Locate the injection point with a grep:
+
+```sh
+grep -n "result.realtime = result.realtime || {}" js/data-fetcher.js
+```
+
+Expected: one match, likely near the end of `fetchAllFeatures()` (the function that owns the per-cell fetch). Immediately after the existing `if (typeof RealtimeIMD !== 'undefined')` or `RealtimeQuakes` block, append this new block:
 
 ```javascript
 if (typeof RealtimeGrowth !== 'undefined') {
@@ -1757,10 +1810,87 @@ git commit -m "feat(growth): wire RealtimeGrowth into cell-fetch orchestrator"
 
 **Files:**
 - Create: `js/growth-widget.js`
+- Create: `tests/growth-widget.test.js`
 - Modify: `css/styles.css`
 - Modify: `js/panel.js`
 
-- [ ] **Step 1: Write the widget module**
+- [ ] **Step 1: Write the failing widget test first (TDD discipline)**
+
+Create `tests/growth-widget.test.js`:
+
+```javascript
+import { describe, it, expect, beforeEach } from 'vitest';
+import { readFileSync } from 'fs';
+import path from 'path';
+import vm from 'vm';
+
+const ctx = { globalThis, window: globalThis, document: undefined };
+// Minimal DOM
+import { JSDOM } from 'jsdom';
+const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+ctx.document = dom.window.document;
+ctx.window.document = dom.window.document;
+globalThis.document = dom.window.document;
+
+const widgetCode = readFileSync(path.join(process.cwd(), 'js/growth-widget.js'), 'utf-8');
+vm.runInNewContext(widgetCode, ctx);
+
+describe('GrowthWidget.attachTo()', () => {
+    let container;
+    beforeEach(() => {
+        container = document.createElement('div');
+        document.body.appendChild(container);
+    });
+
+    it('renders the "unavailable" state when growth is null', () => {
+        globalThis.GrowthWidget.attachTo(container, null, { code: 'X1' });
+        expect(container.innerHTML).toContain('Growth data unavailable');
+    });
+
+    it('renders 3 horizon buttons and a composite when growth is present', () => {
+        const growth = {
+            active_horizon: 'nowcast',
+            horizons: {
+                nowcast: { composite: 72, confidence_band: 5,
+                           sub_scores: { bue: {value:80, direction:'▲', driver:''},
+                                          den: {value:60, direction:'▶', driver:''},
+                                          cap: {value:75, direction:'▲', driver:''} },
+                           effective_weights: {bue:0.4, den:0.3, cap:0.3} },
+                year_2:  { composite: 65, confidence_band: 10, sub_scores: {bue:{value:80,direction:'▲',driver:''},den:{value:60,direction:'▶',driver:''},cap:{value:55,direction:'▶',driver:''}}, effective_weights: {bue:0.2,den:0.2,cap:0.6} },
+                year_5:  { composite: 85, confidence_band: 18, sub_scores: {bue:{value:80,direction:'▲',driver:''},den:{value:60,direction:'▶',driver:''},cap:{value:75,direction:'▲',driver:''}}, effective_weights: {bue:0.4,den:0.3,cap:0.3} },
+            },
+            sources: {}, generated_at_iso: '2026-05-24T12:00:00Z',
+        };
+        globalThis.GrowthWidget.attachTo(container, growth, { code: 'X1' });
+        expect(container.querySelectorAll('[data-h]').length).toBe(3);
+        expect(container.textContent).toContain('72');
+        expect(container.textContent).toContain('±5');
+    });
+
+    it('is idempotent — calling twice replaces, not duplicates', () => {
+        const growth = { active_horizon: 'nowcast', horizons: {
+            nowcast: { composite: 50, confidence_band: 5,
+                       sub_scores: { bue:{value:50,direction:'▶',driver:''}, den:{value:50,direction:'▶',driver:''}, cap:{value:50,direction:'▶',driver:''} },
+                       effective_weights: {bue:0.4, den:0.3, cap:0.3} },
+            year_2:  { composite: 50, confidence_band: 10, sub_scores: { bue:{value:50,direction:'▶',driver:''}, den:{value:50,direction:'▶',driver:''}, cap:{value:50,direction:'▶',driver:''} }, effective_weights: {bue:0.2,den:0.2,cap:0.6} },
+            year_5:  { composite: 50, confidence_band: 25, sub_scores: { bue:{value:50,direction:'▶',driver:''}, den:{value:50,direction:'▶',driver:''}, cap:{value:50,direction:'▶',driver:''} }, effective_weights: {bue:0.4,den:0.3,cap:0.3} },
+        }, sources:{}, generated_at_iso:'' };
+        globalThis.GrowthWidget.attachTo(container, growth, { code: 'X1' });
+        globalThis.GrowthWidget.attachTo(container, growth, { code: 'X1' });
+        expect(container.querySelectorAll('[data-growth-widget]').length).toBe(1);
+    });
+});
+```
+
+- [ ] **Step 2: Run, confirm failure**
+
+```sh
+npx vitest run tests/growth-widget.test.js
+```
+
+Expected: failures with `GrowthWidget is not defined`.
+
+- [ ] **Step 3: Write the widget module (DOM structure only — no event wiring yet)**
 
 ```javascript
 /**
