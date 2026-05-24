@@ -694,6 +694,17 @@ const DataFetcher = (() => {
         // === Compute intelligence scores ===
         result.scores = computeScores(result);
 
+        // === Real-time flood forecast (Open-Meteo GloFAS) — best-effort ===
+        // Fetched here so DISHA gets it in the LLM context; the panel widget
+        // reads the same cached result via RealtimeFlood.getForecast().
+        result.realtime = result.realtime || {};
+        if (typeof RealtimeFlood !== 'undefined') {
+            try {
+                const flood = await RealtimeFlood.getForecast(lat, lng);
+                if (flood) result.realtime.flood = flood;
+            } catch { /* flood is nice-to-have, never fail the whole fetch */ }
+        }
+
         // Merge building intelligence scores into main scores
         if (result.buildingIntel?.scores) {
             Object.assign(result.scores, result.buildingIntel.scores);
