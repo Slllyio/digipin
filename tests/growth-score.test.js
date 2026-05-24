@@ -100,3 +100,40 @@ describe('GrowthScore.capSubScore()', () => {
         expect(near).toBeGreaterThan(far);
     });
 });
+
+describe('GrowthScore.composite()', () => {
+    const sub = { bue: 80, den: 60, cap: 40 };
+
+    it('applies nowcast weights 0.4/0.3/0.3', () => {
+        const c = globalThis.GrowthScore.composite(sub, 'nowcast');
+        // 0.4*80 + 0.3*60 + 0.3*40 = 32 + 18 + 12 = 62
+        expect(c.composite).toBe(62);
+        expect(c.effective_weights).toEqual({ bue: 0.4, den: 0.3, cap: 0.3 });
+    });
+
+    it('applies 1-2 year weights 0.2/0.2/0.6', () => {
+        const c = globalThis.GrowthScore.composite(sub, 'year_2');
+        // 0.2*80 + 0.2*60 + 0.6*40 = 16 + 12 + 24 = 52
+        expect(c.composite).toBe(52);
+    });
+
+    it('re-weights remaining when cap is null', () => {
+        const c = globalThis.GrowthScore.composite(
+            { bue: 80, den: 60, cap: null },
+            'nowcast'
+        );
+        // Original weights 0.4 + 0.3 = 0.7; normalised: bue=0.571, den=0.429
+        // 0.571*80 + 0.429*60 = 45.7 + 25.7 = 71.4 → 71
+        expect(c.composite).toBe(71);
+        expect(c.effective_weights.cap).toBe(0);
+        expect(c.effective_weights.bue + c.effective_weights.den).toBeCloseTo(1, 5);
+    });
+
+    it('returns composite=null when all sub-scores are null', () => {
+        const c = globalThis.GrowthScore.composite(
+            { bue: null, den: null, cap: null },
+            'nowcast'
+        );
+        expect(c.composite).toBeNull();
+    });
+});
