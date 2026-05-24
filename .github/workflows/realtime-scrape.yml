@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        source: [ndma_sachet]
+        source: [ndma_sachet, imd_warnings, imd_cityforecast]
     steps:
       - uses: actions/checkout@v4
 
@@ -37,6 +37,13 @@ jobs:
       - run: pip install -r scrapers/requirements.txt
 
       - name: Run scraper — ${{ matrix.source }}
+        env:
+          # IMD sources skip gracefully when these are unset, so this is
+          # safe even before secrets are configured. Register at
+          # https://api.imd.gov.in/ then add IMD_API_KEY + IMD_API_TOKEN
+          # to repo Settings → Secrets and variables → Actions.
+          IMD_API_KEY: ${{ secrets.IMD_API_KEY }}
+          IMD_API_TOKEN: ${{ secrets.IMD_API_TOKEN }}
         run: python -m scrapers.cli ${{ matrix.source }}
 
       - name: Commit refreshed snapshots

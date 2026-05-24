@@ -75,10 +75,44 @@ HTTP and overlays active alerts on the map / DISHA context.
   issued by Indian state meteorological centres and aggregated by NDMA
 - **Format**: RSS 2.0 wrapping CAP 1.2 entries
 - **URL**: <https://sachet.ndma.gov.in/cap_public_website/rss/rss_india.xml>
+- **Auth**: none
 - **Update frequency**: continuous (new alerts appear within minutes
   of issuance)
 - **Coverage**: nationwide, district-level granularity in the
   free-text area field
+
+### `imd_warnings` — IMD 5-day district color-coded warnings
+
+- **What**: 5-day forward warnings (green / yellow / orange / red)
+  for selected Indian districts. Indore is in the default set.
+- **Endpoint**: `https://api.imd.gov.in/api/v1/districtwarning?id=<district_id>`
+- **Auth**: **required** — `X-API-Key` + `Authorization: Bearer <jwt>`.
+  Register at <https://api.imd.gov.in/> (free), then set:
+  ```sh
+  export IMD_API_KEY=...
+  export IMD_API_TOKEN=...
+  ```
+  Without these the scraper logs a warning, skips, and exits cleanly —
+  so the cron keeps refreshing the other sources.
+- **Update frequency**: daily (forecast is issued morning + evening)
+- **Coverage**: every IMD-listed district; default set in
+  `DEFAULT_DISTRICTS` covers Indore + 9 metros. Expand by inspecting
+  the dropdowns at <https://mausam.imd.gov.in/>.
+- **Stale doc warning**: the public API reference page advertises
+  "no auth" but live probing on 2026-05-24 returned `401 API key missing`.
+  The docstring captures the discrepancy verbatim.
+
+### `imd_cityforecast` — IMD 7-day city forecast
+
+- **What**: 7-day forecast per city (max/min temp, humidity, rainfall,
+  sunrise / sunset, weather description)
+- **Endpoint**: `https://api.imd.gov.in/api/v1/cityforecast?id=<city_id>`
+- **Auth**: same as `imd_warnings` (`IMD_API_KEY` + `IMD_API_TOKEN`)
+- **Update frequency**: 12 hours
+- **Coverage**: every IMD-listed city; default set covers Indore +
+  major metros. The city IDs come from the dropdown at
+  <https://city.imd.gov.in/citywx/city_weather.php> — re-verify them
+  after registration since IMD occasionally renumbers.
 
 ## Adding a new source
 

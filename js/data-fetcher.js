@@ -694,22 +694,39 @@ const DataFetcher = (() => {
         // === Compute intelligence scores ===
         result.scores = computeScores(result);
 
-        // === Real-time alerts (NDMA SACHET) — best-effort, non-blocking ===
-        // Source: data/realtime/ndma_sachet/latest.json (cron-refreshed).
-        // Filtered by state/city substring — polygon-aware spatial filtering
-        // is a follow-up tracked in scrapers/README.md.
+        // === Real-time signals — best-effort, never fail the cell fetch ===
+        // Sources: NDMA SACHET CAP alerts, IMD district warnings, IMD city
+        // forecast. All refreshed by .github/workflows/realtime-scrape.yml
+        // and read from data/realtime/<source>/latest.json.
+        result.realtime = {};
+        const stateName = result.address?.state || '';
+        const cityName  = result.address?.city || result.address?.area || '';
+        const districtName = result.address?.district || '';
+
         if (typeof RealtimeAlerts !== 'undefined') {
             try {
-                const stateName = result.address?.state || '';
-                const cityName  = result.address?.city || result.address?.area || '';
                 const scoped = await RealtimeAlerts.getForLocation(stateName, cityName);
                 const severe = RealtimeAlerts.filterBySeverity(scoped, 'Severe');
-                result.realtime = {
+                result.realtime.sachet = {
                     alerts: scoped,
                     severeCount: severe.length,
                     summary: RealtimeAlerts.summary(scoped)
                 };
-            } catch { /* alerts are nice-to-have, never fail the whole fetch */ }
+            } catch { /* skip */ }
+        }
+
+        if (typeof RealtimeIMD !== 'undefined') {
+            try {
+                const [imdWarnings, imdForecast] = await Promise.all([
+                    RealtimeIMD.getWarningsForLocation(districtName, cityName),
+                    RealtimeIMD.getForecastForLocation(districtName, cityName),
+                ]);
+                result.realtime.imd = {
+                    warnings: imdWarnings,
+                    forecast: imdForecast,
+                    worstColor: RealtimeIMD.worstColor(imdWarnings),
+                };
+            } catch { /* skip */ }
         }
 
         // Merge building intelligence scores into main scores
