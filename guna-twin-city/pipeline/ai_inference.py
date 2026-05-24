@@ -342,7 +342,7 @@ class LULCClassifier:
 
                 weights = ResNet50_Weights.SENTINEL2_ALL_MOCO
                 model = resnet50(weights=weights)
-                model.set_to_inference_mode = lambda: None  # placeholder
+                model.eval()
                 for param in model.parameters():
                     param.requires_grad = False
                 if self.device == "cuda" and torch.cuda.is_available():
