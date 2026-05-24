@@ -58,15 +58,55 @@ const FloodAnimation = (() => {
                     Show inundation on map
                 </button>
             </div>
+            <div class="flood-widget__sim" data-flood-sim hidden>
+                <label class="flood-widget__sim-label">
+                    What-if extra rainfall:
+                    <span class="flood-widget__sim-value" data-flood-rain>+0 mm/day</span>
+                </label>
+                <input type="range" class="flood-widget__sim-range" data-flood-rain-input
+                       min="0" max="200" step="5" value="0">
+                <div class="flood-widget__sim-readout" data-flood-rain-readout>
+                    SCS Curve Number (CN=80): runoff 0 mm · extra depth 0.00 m
+                </div>
+            </div>
             <div class="flood-widget__source">Source: ${forecast.source}</div>
             <div class="flood-widget__disclaimer">
-                Inundation uses AWS Terrarium DEM (~9 m/px). Hydraulic modelling
-                is simplified — depths scale linearly with forecast discharge ratio.
+                Inundation uses AWS Terrarium DEM (~9 m/px). What-if simulation uses
+                SCS Curve Number for rainfall→runoff; depth-of-flood is a transparent
+                linear scale (0.02 m per mm runoff), not a full hydraulic model.
             </div>
         `;
         containerEl.appendChild(wrap);
 
         const mapBtn = wrap.querySelector('[data-flood-action="toggle-map"]');
+        const simBlock = wrap.querySelector('[data-flood-sim]');
+        const rangeEl  = wrap.querySelector('[data-flood-rain-input]');
+        const valueEl  = wrap.querySelector('[data-flood-rain]');
+        const readoutEl = wrap.querySelector('[data-flood-rain-readout]');
+
+        function updateSim(rainfallMm) {
+            if (!valueEl || !readoutEl) return;
+            valueEl.textContent = `+${rainfallMm} mm/day`;
+            let extraDepth = 0;
+            if (typeof FloodSCS !== 'undefined') {
+                const result = FloodSCS.rainfallToExtraDepth(rainfallMm);
+                extraDepth = result.extra_depth_m;
+                readoutEl.textContent =
+                    `SCS Curve Number (CN=${result.cn}): ` +
+                    `runoff ${result.runoff_mm.toFixed(1)} mm · ` +
+                    `extra depth ${extraDepth.toFixed(2)} m`;
+            }
+            if (typeof FloodInundation !== 'undefined') {
+                FloodInundation.perturb(extraDepth);
+            }
+        }
+
+        if (rangeEl) {
+            rangeEl.addEventListener('input', (e) => {
+                updateSim(parseFloat(e.target.value) || 0);
+            });
+        }
+
         if (mapBtn && typeof FloodInundation !== 'undefined') {
             let isShowing = false;
             mapBtn.addEventListener('click', () => {
@@ -74,14 +114,19 @@ const FloodAnimation = (() => {
                 if (isShowing) {
                     mapBtn.textContent = 'Hide inundation on map';
                     mapBtn.classList.add('flood-widget__btn--active');
+                    if (simBlock) simBlock.hidden = false;
                     const cellForMap = cell || {
                         code: `temp:${forecast.location.lat},${forecast.location.lng}`,
                         center: forecast.location,
                     };
-                    FloodInundation.attach(cellForMap, forecast);
+                    FloodInundation.attach(cellForMap, forecast).then(() => {
+                        // Apply current slider value once tile loads.
+                        if (rangeEl) updateSim(parseFloat(rangeEl.value) || 0);
+                    });
                 } else {
                     mapBtn.textContent = 'Show inundation on map';
                     mapBtn.classList.remove('flood-widget__btn--active');
+                    if (simBlock) simBlock.hidden = true;
                     FloodInundation.detach();
                 }
             });
