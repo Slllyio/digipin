@@ -65,3 +65,38 @@ describe('GrowthScore.denSubScore()', () => {
         expect(s).toBeNull();
     });
 });
+
+describe('GrowthScore.capSubScore()', () => {
+    const projects = [
+        // [project_value_rupees, age_years, distance_km]
+        { value: 100_000_000, age_yrs: 1, distance_km: 0.5 },
+        { value: 250_000_000, age_yrs: 2, distance_km: 1.0 },
+        { value: 50_000_000,  age_yrs: 3, distance_km: 2.0 },
+    ];
+
+    it('returns 0 for empty project list', () => {
+        const s = globalThis.GrowthScore.capSubScore({ rera_projects: [] });
+        expect(s).toBe(0);
+    });
+
+    it('returns null when rera_projects is undefined (out-of-state)', () => {
+        const s = globalThis.GrowthScore.capSubScore({ rera_projects: null });
+        expect(s).toBeNull();
+    });
+
+    it('produces a positive score for nearby recent projects', () => {
+        const s = globalThis.GrowthScore.capSubScore({ rera_projects: projects });
+        expect(s).toBeGreaterThan(20);
+        expect(s).toBeLessThanOrEqual(100);
+    });
+
+    it('weights closer/newer projects more than far/old ones', () => {
+        const near = globalThis.GrowthScore.capSubScore({
+            rera_projects: [{ value: 100_000_000, age_yrs: 0.5, distance_km: 0.3 }]
+        });
+        const far = globalThis.GrowthScore.capSubScore({
+            rera_projects: [{ value: 100_000_000, age_yrs: 5, distance_km: 1.8 }]
+        });
+        expect(near).toBeGreaterThan(far);
+    });
+});

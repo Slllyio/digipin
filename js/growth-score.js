@@ -43,7 +43,27 @@ const GrowthScore = (() => {
         return Math.max(0, Math.min(100, 50 + popTerm + commTerm));
     }
 
-    return { bueSubScore, denSubScore };
+    /** Log-scale normaliser: maps 0..anchor to 0..100 smoothly.
+     *  Same shape as the normLog used in data-fetcher.js. */
+    function normLog(val, anchor) {
+        if (val <= 0) return 0;
+        return Math.min(100, Math.round((Math.log(1 + val) / Math.log(1 + anchor)) * 100));
+    }
+
+    /** Capital Flow (CAP).
+     *  rera_projects: Array<{ value, age_yrs, distance_km }>  | null
+     *  null = source unavailable (out of state). Empty array = no projects nearby. */
+    function capSubScore({ rera_projects }) {
+        if (rera_projects == null) return null;
+        if (rera_projects.length === 0) return 0;
+        const weightedSum = rera_projects.reduce((acc, p) => {
+            const w = Math.exp(-p.age_yrs / 2) * Math.exp(-p.distance_km / 1.5);
+            return acc + (p.value || 0) * w;
+        }, 0);
+        return normLog(weightedSum, 500_000_000);
+    }
+
+    return { bueSubScore, denSubScore, capSubScore, normLog };
 })();
 
 if (typeof window !== 'undefined') window.GrowthScore = GrowthScore;
