@@ -468,7 +468,7 @@ const DataFetcher = (() => {
 
         Object.values(CATEGORIES).forEach(cat => {
             cat.features.forEach(f => {
-                results[f.key] = { count: 0, names: [], items: [] };
+                results[f.key] = { count: 0, names: [], items: [], subTypes: {} };
             });
         });
 
@@ -491,6 +491,10 @@ const DataFetcher = (() => {
                                 lng: center.lon || center.lng,
                                 type: el.type
                             });
+                        }
+                        if (f.key === 'worship' && tags.religion) {
+                            const r = String(tags.religion).toLowerCase();
+                            results[f.key].subTypes[r] = (results[f.key].subTypes[r] || 0) + 1;
                         }
                     }
                 });
@@ -862,27 +866,33 @@ const DataFetcher = (() => {
      */
     async function fetchWikipedia(lat, lng) {
         try {
-            const searchUrl = `${WIKIPEDIA_URL}?action=query&list=geosearch&gscoord=${lat}|${lng}&gsradius=1000&gslimit=1&format=json&origin=*`;
+            const searchUrl = `${WIKIPEDIA_URL}?action=query&list=geosearch&gscoord=${lat}|${lng}&gsradius=5000&gslimit=3&format=json&origin=*`;
             const searchData = await fetchWithRetry(searchUrl);
             const pages = searchData.query?.geosearch;
             if (!pages || pages.length === 0) return null;
 
-            const pageId = pages[0].pageid;
-            const dist = pages[0].dist;
-
-            const propUrl = `${WIKIPEDIA_URL}?action=query&prop=extracts&exintro=1&explaintext=1&pageids=${pageId}&format=json&origin=*`;
+            const pageIds = pages.map(p => p.pageid).join('|');
+            const propUrl = `${WIKIPEDIA_URL}?action=query&prop=extracts&exintro=1&explaintext=1&pageids=${pageIds}&format=json&origin=*`;
             const propData = await fetchWithRetry(propUrl);
-            const extract = propData.query?.pages[pageId]?.extract;
+            const propPages = propData.query?.pages || {};
 
-            if (extract) {
-                return {
-                    title: pages[0].title,
-                    distanceToCenter: dist,
-                    summary: extract.substring(0, 300) + (extract.length > 300 ? '...' : ''),
-                    url: `https://en.wikipedia.org/?curid=${pageId}`
-                };
-            }
-            return null;
+            const nearest = pages[0];
+            const nearestExtract = propPages[nearest.pageid]?.extract;
+            if (!nearestExtract) return null;
+
+            const nearby = pages.slice(1).map(p => ({
+                title: p.title,
+                distance: p.dist,
+                url: `https://en.wikipedia.org/?curid=${p.pageid}`
+            }));
+
+            return {
+                title: nearest.title,
+                distanceToCenter: nearest.dist,
+                summary: nearestExtract.substring(0, 300) + (nearestExtract.length > 300 ? '...' : ''),
+                url: `https://en.wikipedia.org/?curid=${nearest.pageid}`,
+                nearby
+            };
         } catch {
             return null;
         }
@@ -1274,6 +1284,34 @@ const DataFetcher = (() => {
     }
 
     /**
+     * Religious diversity from a {religion: count} distribution.
+     * Blends Shannon evenness (how balanced the mix is) with richness
+     * (how many distinct religions are present, saturating at 4).
+     * Falls back to a discounted log of total count when OSM has no
+     * religion= tags, so the score does not collapse to zero in
+     * under-tagged areas.
+     */
+    function religiousDiversityScore(subTypes, totalCount) {
+        const counts = Object.values(subTypes || {}).filter(c => c > 0);
+        const taggedTotal = counts.reduce((a, b) => a + b, 0);
+        if (taggedTotal === 0) {
+            // No religion= tags survived classification; weak fallback from raw count.
+            return Math.round(normLog(totalCount, 20) * 0.5);
+        }
+        const richnessFactor = Math.min(counts.length / 4, 1);
+        if (counts.length === 1) {
+            // Single religion: evenness undefined; lean on richness + presence only.
+            return Math.round(100 * (0.4 * richnessFactor) * Math.min(1, taggedTotal / 3));
+        }
+        const H = counts.reduce((acc, c) => {
+            const p = c / taggedTotal;
+            return acc - p * Math.log(p);
+        }, 0);
+        const evenness = H / Math.log(counts.length);
+        return Math.round(100 * (0.6 * evenness + 0.4 * richnessFactor));
+    }
+
+    /**
      * Compute 20 intelligence scores (0-100) using log-scale normalization
      * Max values calibrated for 500m radius in dense Indian cities
      */
@@ -1378,10 +1416,13 @@ const DataFetcher = (() => {
                     get('food', 'bakery') + get('food', 'bars') + get('food', 'ice_cream') +
                     get('food', 'confectionery') + get('food', 'butcher'), 40)
             },
-            religious_diversity: {
-                label: 'Religious Diversity',
-                value: normLog(get('entertainment', 'worship'), 20)
-            },
+            religious_diversity: (() => {
+                const worship = cats['entertainment']?.features?.['worship'];
+                return {
+                    label: 'Religious Diversity',
+                    value: religiousDiversityScore(worship?.subTypes, worship?.count || 0)
+                };
+            })(),
             public_service: {
                 label: 'Public Service Access',
                 value: normLog(
