@@ -131,6 +131,46 @@ HTTP and overlays active alerts on the map / DISHA context.
   renegotiation issue that breaks modern clients — RISEQ is on a
   sibling subdomain with a working cert
 
+### `usgs_earthquakes` — USGS global M4.5+ earthquakes (past 24h)
+
+- **What**: every M4.5+ earthquake on the planet in the last 24 hours.
+  Complements `ncs_earthquakes` (India-centric, fixed window of 150
+  events) with a denser global view filtered to user-relevant magnitudes
+- **URL**: <https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson>
+- **Auth**: **none**
+- **Format**: GeoJSON FeatureCollection
+- **Update frequency**: 1 minute
+- **Why M4.5 floor**: the `all_day` feed is ~10MB of mostly tiny events;
+  M4.5+ is the threshold where the portal actually wants to surface
+  the event to a user
+
+### `gdacs_disasters` — GDACS global disaster alerts
+
+- **What**: current global disasters across types — earthquake, tropical
+  cyclone, flood, volcano, drought, wildfire — with the international
+  alert score (Green/Orange/Red) used by UN-OCHA and the World Bank
+- **URL**: <https://www.gdacs.org/xml/rss.xml>
+- **Auth**: **none**
+- **Format**: RSS 2.0 with GDACS extensions
+- **Update frequency**: continuous; alerts appear within minutes of
+  trigger
+- **Why this matters for DigiPin**: fills the flood-awareness gap (CWC
+  is a JS SPA we couldn't scrape — GDACS picks up the same events from
+  satellite + ground sensor fusion). Also gives international event
+  awareness — a Bay of Bengal cyclone tracked by JTWC appears here
+  before reaching IMD's domestic feed
+
+### `imd_nowcast` — IMD district nowcast (next 3 hours)
+
+- **What**: real-time weather category 1-19 per district with color
+  severity and consolidated message. Covers the full acute-weather
+  spectrum from clear sky through extreme thunderstorms
+- **Endpoint**: `https://api.imd.gov.in/api/v1/districtnowcast?id=<district_id>`
+- **Auth**: same as `imd_warnings` (`IMD_API_KEY` + `IMD_API_TOKEN`)
+- **Update frequency**: every 3 hours (nowcast definition)
+- **Districts**: reuses `DEFAULT_DISTRICTS` from `imd_warnings` for
+  consistency (Indore + 9 metros)
+
 ### `openaq_india` — OpenAQ v3 station-level AQI for India
 
 - **What**: every air-quality monitoring station in India known to
