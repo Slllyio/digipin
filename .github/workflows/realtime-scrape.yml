@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        source: [ndma_sachet, imd_warnings, imd_cityforecast]
+        source: [ndma_sachet, imd_warnings, imd_cityforecast, ncs_earthquakes, openaq_india]
     steps:
       - uses: actions/checkout@v4
 
@@ -38,12 +38,12 @@ jobs:
 
       - name: Run scraper — ${{ matrix.source }}
         env:
-          # IMD sources skip gracefully when these are unset, so this is
-          # safe even before secrets are configured. Register at
-          # https://api.imd.gov.in/ then add IMD_API_KEY + IMD_API_TOKEN
-          # to repo Settings → Secrets and variables → Actions.
-          IMD_API_KEY: ${{ secrets.IMD_API_KEY }}
-          IMD_API_TOKEN: ${{ secrets.IMD_API_TOKEN }}
+          # Sources that need keys all skip gracefully when unset, so this
+          # workflow is safe to enable before secrets are configured.
+          # Register each provider and add to Settings → Secrets → Actions.
+          IMD_API_KEY: ${{ secrets.IMD_API_KEY }}         # api.imd.gov.in
+          IMD_API_TOKEN: ${{ secrets.IMD_API_TOKEN }}     # api.imd.gov.in
+          OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}   # explore.openaq.org
         run: python -m scrapers.cli ${{ matrix.source }}
 
       - name: Commit refreshed snapshots

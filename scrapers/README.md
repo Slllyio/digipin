@@ -114,6 +114,41 @@ HTTP and overlays active alerts on the map / DISHA context.
   <https://city.imd.gov.in/citywx/city_weather.php> — re-verify them
   after registration since IMD occasionally renumbers.
 
+### `ncs_earthquakes` — National Center for Seismology recent earthquakes
+
+- **What**: 150 most recent earthquakes monitored by India's national
+  seismic network (160+ stations). Magnitude / origin time / lat /
+  long / depth / region / location / review status
+- **URL**: <https://riseq.seismo.gov.in/>
+- **Auth**: **none**
+- **Update frequency**: continuous; new events appear within minutes
+  of detection
+- **Coverage**: global, with denser coverage in / around the Indian
+  subcontinent. Verified live: 117 of 150 recent events were
+  in-or-near India on the test run
+- **Implementation note**: scrapes the `<table id="eqdatalist">` from
+  the RISEQ HTML. The parent `seismo.gov.in` domain has an SSL legacy
+  renegotiation issue that breaks modern clients — RISEQ is on a
+  sibling subdomain with a working cert
+
+### `openaq_india` — OpenAQ v3 station-level AQI for India
+
+- **What**: every air-quality monitoring station in India known to
+  OpenAQ (typically 300-700 stations, denser than the CPCB-only feed
+  we already use). Latest reading per pollutant per station
+- **Endpoint**: `https://api.openaq.org/v3/locations?iso=IN`
+- **Auth**: **required** — \`X-API-Key\`. Register free at
+  <https://explore.openaq.org/register>, then:
+  \`\`\`sh
+  export OPENAQ_API_KEY=...
+  \`\`\`
+- **Update frequency**: depends on upstream — CPCB stations update
+  hourly; independent monitors vary
+- **Why both this and CPCB**: OpenAQ aggregates CPCB *and* independent
+  monitors (research, embassies, citizen networks). In Tier 2/3 cities
+  where CPCB has 1-2 stations, OpenAQ may expose 5-10 once those
+  independents are included
+
 ## Adding a new source
 
 1. Create `scrapers/sources/<name>.py` following the convention.

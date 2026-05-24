@@ -695,13 +695,13 @@ const DataFetcher = (() => {
         result.scores = computeScores(result);
 
         // === Real-time signals — best-effort, never fail the cell fetch ===
-        // Sources: NDMA SACHET CAP alerts, IMD district warnings, IMD city
-        // forecast. All refreshed by .github/workflows/realtime-scrape.yml
-        // and read from data/realtime/<source>/latest.json.
+        // Sources: NDMA SACHET CAP alerts, IMD warnings + forecast, NCS
+        // earthquakes. All refreshed by the GH Actions cron and read from
+        // data/realtime/<source>/latest.json.
         result.realtime = {};
         const stateName = result.address?.state || '';
-        const cityName  = result.address?.city || result.address?.area || '';
         const districtName = result.address?.district || '';
+        // cityName is already declared above (line ~564). Reuse it.
 
         if (typeof RealtimeAlerts !== 'undefined') {
             try {
@@ -725,6 +725,17 @@ const DataFetcher = (() => {
                     warnings: imdWarnings,
                     forecast: imdForecast,
                     worstColor: RealtimeIMD.worstColor(imdWarnings),
+                };
+            } catch { /* skip */ }
+        }
+
+        if (typeof RealtimeQuakes !== 'undefined') {
+            try {
+                const nearby = await RealtimeQuakes.getNearby(lat, lng, 200);
+                result.realtime.quakes = {
+                    nearby,
+                    largest_nearby: nearby[0] || null,
+                    count_within_200km: nearby.length,
                 };
             } catch { /* skip */ }
         }
