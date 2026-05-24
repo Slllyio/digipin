@@ -17,6 +17,19 @@
  *  - WorldPop: Population density estimate (100m grid)
  *  - Bhoonidhi (ISRO): Satellite imagery availability for the area
  *  - OGD India: Health facility data enrichment
+ *
+ * CONFIGURATION (window.DIGIPIN_CONFIG):
+ *  Set this object before loading the script to customise behaviour.
+ *
+ *  waqiToken (string) — WAQI API token from https://aqicn.org/data-platform/token/
+ *    Default: 'demo'  (city-name endpoint, city-center AQI only)
+ *    Real token:      uses geo endpoint feed/geo:{lat};{lng}/?token={token}
+ *                     which returns the nearest monitoring station to the cell.
+ *    Example:
+ *      window.DIGIPIN_CONFIG = { waqiToken: 'your-token-here' };
+ *
+ *  CPCB is the primary AQI source; WAQI is the first fallback.
+ *  Even with a demo token the pipeline gives useful results via CPCB + Open-Meteo.
  */
 
 const DataFetcher = (() => {
@@ -744,10 +757,12 @@ const DataFetcher = (() => {
 
     /**
      * AQI: Primary — CPCB via data.gov.in
-     * Fallback — WAQI demo token
-     * cityName is passed in to avoid duplicate Nominatim call
+     * Fallback — WAQI. Uses geo endpoint when a real token is configured
+     * via window.DIGIPIN_CONFIG.waqiToken; otherwise falls back to the
+     * city-name endpoint (the demo token cannot do geo).
+     * cityName is passed in to avoid duplicate Nominatim call.
      */
-    async function fetchAQI(_lat, _lng, cityName = 'Indore') {
+    async function fetchAQI(lat, lng, cityName = 'Indore') {
         // Try CPCB first
         try {
             const cpcbResult = await fetchCPCB_AQI(cityName);
@@ -755,8 +770,13 @@ const DataFetcher = (() => {
         } catch { /* fall through */ }
 
         // Fallback: WAQI
+        const waqiToken = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG?.waqiToken) || 'demo';
+        const usingRealToken = waqiToken && waqiToken !== 'demo';
+        const url = usingRealToken
+            ? `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${encodeURIComponent(waqiToken)}`
+            : `https://api.waqi.info/feed/${encodeURIComponent(cityName)}/?token=demo`;
+
         try {
-            const url = `https://api.waqi.info/feed/${encodeURIComponent(cityName)}/?token=demo`;
             const data = await fetchWithRetry(url);
             if (data.status !== 'ok') return {};
 
@@ -770,7 +790,7 @@ const DataFetcher = (() => {
                 so2: d.iaqi?.so2?.v,
                 aqiStation: d.city?.name,
                 aqiDominant: d.dominentpol,
-                aqiSource: 'WAQI'
+                aqiSource: usingRealToken ? 'WAQI (geo)' : 'WAQI (city)'
             };
         } catch {
             return {};
