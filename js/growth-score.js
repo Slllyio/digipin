@@ -32,7 +32,18 @@ const GrowthScore = (() => {
         return Math.max(0, Math.min(100, score));
     }
 
-    return { bueSubScore };
+    /** Densification (DEN).
+     *  Inputs:
+     *    ghsl_pop_5yr_pct:       number  GHSL pop grid delta 2020→2025 (%)
+     *    osm_commercial_density: number  POI density per km² */
+    function denSubScore({ ghsl_pop_5yr_pct, osm_commercial_density }) {
+        if (ghsl_pop_5yr_pct == null) return null;
+        const popTerm = 25 * Math.tanh(ghsl_pop_5yr_pct / 15);
+        const commTerm = Math.min(15, (osm_commercial_density || 0) / 8);
+        return Math.max(0, Math.min(100, 50 + popTerm + commTerm));
+    }
+
+    return { bueSubScore, denSubScore };
 })();
 
 if (typeof window !== 'undefined') window.GrowthScore = GrowthScore;

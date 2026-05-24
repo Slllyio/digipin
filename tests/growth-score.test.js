@@ -39,3 +39,29 @@ describe('GrowthScore.bueSubScore()', () => {
         expect(s).toBeNull();
     });
 });
+
+describe('GrowthScore.denSubScore()', () => {
+    it('returns 50 for zero population growth and zero commercial', () => {
+        const s = globalThis.GrowthScore.denSubScore({
+            ghsl_pop_5yr_pct: 0,
+            osm_commercial_density: 0,
+        });
+        expect(s).toBe(50);
+    });
+
+    it('saturates near the upper bound for +30% population growth', () => {
+        const s = globalThis.GrowthScore.denSubScore({
+            ghsl_pop_5yr_pct: 30,
+            osm_commercial_density: 80,
+        });
+        expect(s).toBeGreaterThan(80);
+    });
+
+    it('returns null when ghsl_pop_5yr_pct is missing', () => {
+        const s = globalThis.GrowthScore.denSubScore({
+            ghsl_pop_5yr_pct: null,
+            osm_commercial_density: 10,
+        });
+        expect(s).toBeNull();
+    });
+});
