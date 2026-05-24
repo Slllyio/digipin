@@ -580,13 +580,24 @@ const DataFetcher = (() => {
         // Extract city name for AQI queries (shared — no duplicate Nominatim call)
         const cityName = result.address.city || result.address.area || 'Indore';
 
+        // Per-source memoization for the slow / shared-input fetches.
+        // Adjacent DigiPin cells (4x4m) often share the same upstream data
+        // (weather station, elevation tile, Wikipedia geosearch radius), so
+        // this is a meaningful win on top of the existing result-level cache.
+        const cache = (typeof DataFetcherCache !== 'undefined') ? DataFetcherCache : null;
+        const memo = (name, ttlMs, factory) => cache
+            ? cache.memoize(cache.keyFor(name, lat, lng), ttlMs, factory)
+            : factory();
+        const HOUR = 60 * 60 * 1000;
+        const DAY = 24 * HOUR;
+
         // Fire remaining requests in parallel (including building intelligence + new sources)
         const [osmData, weatherData, aqiData, wikiData, elevData, popData, buildingData, openMeteoAqi, solarData, bhoondhiData, ogdHealthData, iudxData, iudxCatalogueData, cepiData, postOfficeData, precipData] = await Promise.allSettled([
             fetchOSMData(lat, lng, radius),
-            fetchWeather(lat, lng),
-            fetchAQI(lat, lng, cityName),
-            fetchWikipedia(lat, lng),
-            fetchElevation(lat, lng),
+            memo('weather', 1 * HOUR, () => fetchWeather(lat, lng)),
+            memo('aqi', 1 * HOUR, () => fetchAQI(lat, lng, cityName)),
+            memo('wiki', 30 * DAY, () => fetchWikipedia(lat, lng)),
+            memo('elev', 30 * DAY, () => fetchElevation(lat, lng)),
             fetchWorldPop(lat, lng),
             typeof BuildingIntelligence !== 'undefined' ? BuildingIntelligence.fetch(lat, lng, radius) : Promise.resolve(null),
             fetchOpenMeteoAQI(lat, lng),
@@ -597,7 +608,7 @@ const DataFetcher = (() => {
             fetchIUDXCatalogue(cityName),
             fetchCEPI(cityName, result.address.state),
             fetchNearbyPostOffices(lat, lng, result.address.district),
-            fetchHistoricalPrecipitation(lat, lng)
+            memo('precip', 7 * DAY, () => fetchHistoricalPrecipitation(lat, lng))
         ]);
 
         // === OSM POI data ===
