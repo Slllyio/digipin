@@ -1,63 +1,89 @@
-"""Download GHSL GHS-POP 2025 epoch population grid (100m resolution) for India.
+"""Export GHSL GHS-POP 2020 epoch population grid (100m) for India via GEE.
 
-GHSL is CC-BY 4.0 from EU JRC. No auth, no GEE needed — direct HTTPS GET.
+GHSL (Global Human Settlement Layer) is published by EU JRC as CC-BY 4.0
+and mirrored on Google Earth Engine at `JRC/GHSL/P2023A/GHS_POP/<YEAR>`.
 
-Source: https://ghsl.jrc.ec.europa.eu/datasets.php?ds=pop
-We download the 100m global mosaic and clip to India bbox using rasterio.
+Why GEE rather than the direct EU JRC HTTPS endpoint:
+  - The original spec referenced jeodpp.jrc.ec.europa.eu/ftp/.../GHS_POP_E2025...
+    but that URL moved to the human-settlement.emergency.copernicus.eu
+    download wizard in the R2025A release — the new path is dynamic and
+    not stable for scripting.
+  - GEE auth already verified in Phase 0a (cached OAuth +
+    project='van-suraksha-alert'). Reusing > re-inventing a direct download.
 
-Output: data/growth/ghsl_pop_2025.tif
+Why epoch 2020 (not 2025 as the spec originally said):
+  GHSL on GEE goes 1975-2020 in 5-year intervals. The 2025 projection
+  released by EU JRC in late 2025 is not yet on GEE. We use 2020 — the
+  most recent available — which is sufficient for the DEN sub-score
+  (5-year change 2015 -> 2020). When 2025 lands on GEE, change YEAR
+  below and re-run.
+
+Output: data/growth/ghsl_pop_2020.tif (single-band COG, ~30 MB at 100m)
 """
 
 from __future__ import annotations
 
 import logging
-import shutil
+import os
+import sys
+import time
 from pathlib import Path
-from urllib.request import urlopen
-
-import rasterio
-from rasterio.windows import from_bounds
 
 log = logging.getLogger("pipeline.growth.ghsl")
 
-GHSL_URL = (
-    "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/GHSL/"
-    "GHS_POP_GLOBE_R2023A/GHS_POP_E2025_GLOBE_R2023A_4326_3ss/V1-0/"
-    "GHS_POP_E2025_GLOBE_R2023A_4326_3ss_V1_0.tif"
-)
 INDIA_BBOX = (68.0, 6.5, 97.5, 35.5)
-OUTPUT_PATH = Path("data/growth/ghsl_pop_2025.tif")
+YEAR = 2020   # latest GHSL epoch on GEE as of 2026-05; bump to 2025 once published
+ASSET_ID_PREFIX = "JRC/GHSL/P2023A/GHS_POP"
+OUTPUT_PATH = Path("data/growth/ghsl_pop_2020.tif")
+SCALE_M = 100   # GHSL native resolution
+
+
+def _init_ee():
+    """Same dual-path init as extract_buildings_temporal._init_ee()."""
+    import ee
+    project = os.environ.get("GEE_PROJECT", "van-suraksha-alert")
+    cred = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    if cred and Path(cred).is_file():
+        ee.Initialize(ee.ServiceAccountCredentials(None, cred), project=project)
+    else:
+        ee.Initialize(project=project)
+
+
+def _build_image():
+    import ee
+    region = ee.Geometry.Rectangle(INDIA_BBOX, "EPSG:4326", False)
+    image = ee.Image(f"{ASSET_ID_PREFIX}/{YEAR}").rename(f"pop_{YEAR}").clip(region)
+    return image, region
 
 
 def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+    _init_ee()
+    import ee
+
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-    tmp_path = OUTPUT_PATH.with_suffix(".global.tif")
-    if not tmp_path.exists():
-        log.info("Downloading GHSL global mosaic (~500 MB, may take 5-10 min) ...")
-        with urlopen(GHSL_URL) as resp, tmp_path.open("wb") as f:
-            shutil.copyfileobj(resp, f)
-    else:
-        log.info("Reusing cached global mosaic at %s", tmp_path)
-
-    log.info("Clipping to India bbox %s ...", INDIA_BBOX)
-    with rasterio.open(tmp_path) as src:
-        window = from_bounds(*INDIA_BBOX, transform=src.transform)
-        data = src.read(window=window)
-        transform = src.window_transform(window)
-        profile = src.profile.copy()
-        profile.update({
-            "height": data.shape[1],
-            "width": data.shape[2],
-            "transform": transform,
-            "compress": "deflate",
-            "tiled": True,
-        })
-        with rasterio.open(OUTPUT_PATH, "w", **profile) as dst:
-            dst.write(data)
-
-    log.info("Wrote %s (%.1f MB)", OUTPUT_PATH, OUTPUT_PATH.stat().st_size / 1e6)
+    image, region = _build_image()
+    log.info("Starting GHSL %d epoch export ...", YEAR)
+    task = ee.batch.Export.image.toDrive(
+        image=image,
+        description=f"digipin_ghsl_pop_{YEAR}",
+        folder="DigiPin",
+        fileNamePrefix=f"ghsl_pop_{YEAR}",
+        region=region,
+        scale=SCALE_M,
+        maxPixels=1e13,
+        fileFormat="GeoTIFF",
+        formatOptions={"cloudOptimized": True},
+    )
+    task.start()
+    while task.active():
+        log.info("Export status: %s", task.status())
+        time.sleep(60)
+    final = task.status()
+    if final.get("state") != "COMPLETED":
+        log.error("Export failed: %s", final)
+        sys.exit(1)
+    log.info("Done. Download from Google Drive folder 'DigiPin' and move to %s", OUTPUT_PATH)
 
 
 if __name__ == "__main__":
