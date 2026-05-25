@@ -35,3 +35,5 @@ loadGlobalScript('js/data-fetcher.js', ['DataFetcher']);
 loadGlobalScript('js/growth-score.js', ['GrowthScore']);
 loadGlobalScript('js/realtime-growth.js', ['RealtimeGrowth']);
 loadGlobalScript('js/growth-widget.js', ['GrowthWidget']);
+loadGlobalScript('js/heat-score.js', ['HeatScore']);
+loadGlobalScript('js/heat-widget.js', ['HeatWidget']);
