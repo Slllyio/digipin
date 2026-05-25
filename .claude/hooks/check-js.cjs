@@ -33,6 +33,13 @@ if (!fs.existsSync(filePath)) {
     process.exit(0);   // file was deleted by the tool call
 }
 
+// Skip ESM test files — `node --check` can't parse `import` against the
+// project's CJS-typed package.json. Vitest runs them as ESM directly.
+const normalised = filePath.replace(/\\/g, '/');
+if (/\/tests\//.test(normalised) || /\.test\.js$/.test(normalised) || /\.spec\.js$/.test(normalised)) {
+    process.exit(0);
+}
+
 try {
     execSync(`node --check "${filePath}"`, { stdio: 'pipe' });
     console.log(`[hook check-js] OK ${filePath}`);

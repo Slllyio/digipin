@@ -55,15 +55,20 @@ const RealtimeGrowth = (() => {
     }
 
     async function _loadReraSnapshot() {
-        if (_reraCache && Date.now() - _reraFetchedAt < RERA_TTL_MS) return _reraCache;
+        // RERA scraper is deferred (spec Phase 3). The snapshot file does
+        // not exist yet — cache the negative result so we don't 404 on
+        // every cell click until then.
+        if (Date.now() - _reraFetchedAt < RERA_TTL_MS) return _reraCache;
         try {
             const r = await fetch(RERA_SNAPSHOT, { cache: 'no-store' });
-            if (!r.ok) return null;
+            _reraFetchedAt = Date.now();
+            if (!r.ok) { _reraCache = null; return null; }
             const data = await r.json();
             _reraCache = data;
-            _reraFetchedAt = Date.now();
             return data;
         } catch {
+            _reraFetchedAt = Date.now();
+            _reraCache = null;
             return null;
         }
     }

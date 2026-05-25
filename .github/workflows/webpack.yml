@@ -17,12 +17,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Reject unresolved merge-conflict markers
+      run: |
+        if git grep -nE '^(<{7}|={7}|>{7}) ' -- ':!node_modules' ':!*.lock' ; then
+          echo "::error::Unresolved Git conflict markers detected — see lines above."
+          exit 1
+        fi
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Build
-      run: |
-        npm install
-        npx webpack
+    - name: Install dependencies
+      run: npm install
+      # No webpack step — this is a static PWA with no bundler. The
+      # template workflow used to call `npx webpack` against a non-
+      # existent ./src directory, which always failed.
