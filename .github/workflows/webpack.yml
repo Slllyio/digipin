@@ -31,6 +31,26 @@ jobs:
 
     - name: Install dependencies
       run: npm install
-      # No webpack step — this is a static PWA with no bundler. The
-      # template workflow used to call `npx webpack` against a non-
-      # existent ./src directory, which always failed.
+      # No webpack step — this is a static PWA with no bundler.
+
+    - name: Vitest (frontend unit + regression)
+      run: npx vitest run
+
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install test deps
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-test.txt
+        pip install -r scrapers/requirements.txt
+
+    - name: Pytest (scrapers + smoke)
+      run: pytest -q

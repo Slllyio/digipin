@@ -196,6 +196,62 @@ HTTP and overlays active alerts on the map / DISHA context.
 3. Run `python -m scrapers.cli <name>` to verify.
 4. Wire the frontend in `js/realtime-alerts.js` if you want UI
    visibility (optional — the JSONL is useful on its own for analytics).
+5. Add a quality contract — see "Data quality" below.
+
+## Data quality
+
+Every snapshot the scrapers commit is validated against a JSON Schema
+contract before it's allowed into the portal. This gives us four of the
+six [classical data-quality dimensions](https://en.wikipedia.org/wiki/Data_quality)
+— completeness, uniqueness, validity, timeliness — at the cost of a
+single tiny dep (`jsonschema`).
+
+The framework lives in [`scrapers/lib/quality.py`](lib/quality.py) and
+is exercised by [`scrapers/sources/tests/test_snapshot_quality.py`](sources/tests/test_snapshot_quality.py).
+
+### Coverage
+
+| Source | Schema | In SOURCES table |
+|---|---|---|
+| `ndma_sachet` | ✅ | ✅ |
+| `ncs_earthquakes` | ✅ | ✅ |
+| `imd_warnings` | TODO | — |
+| `imd_cityforecast` | TODO | — |
+| `imd_nowcast` | TODO | — |
+| `usgs_earthquakes` | TODO | — |
+| `gdacs_disasters` | TODO | — |
+| `openaq_india` | TODO | — |
+
+### Adding a contract for a source
+
+1. **Draft the schema.** Inspect `data/realtime/<source>/latest.json`
+   and write `scrapers/sources/schemas/<source>.schema.json` (Draft
+   2020-12). Required fields go in `properties.records.items.required`;
+   constrain enums + numeric ranges where the domain supports it.
+2. **Declare the source in the test table.** Add a row to `SOURCES` in
+   `scrapers/sources/tests/test_snapshot_quality.py`:
+   ```python
+   SOURCES = [
+       ...,
+       ("<source>", "id", None),   # (source_id, primary_key, max_staleness_seconds)
+   ]
+   ```
+   `max_staleness_seconds=None` skips timeliness; otherwise the test
+   fails if `generated_at_iso` is older than the configured window.
+3. **Run the harness.**
+   ```sh
+   PYTHONIOENCODING=utf-8 python -m pytest scrapers/sources/tests/test_snapshot_quality.py -v
+   ```
+4. **Fix the snapshot, not the schema.** If validation fails for the
+   *real* data, the bug is upstream — either widen the scraper, fix a
+   parser, or drop the offending records. Don't loosen the contract
+   just to make the test green.
+
+### Reverse coverage
+
+`test_every_schema_has_a_source_row` makes it impossible to ship a
+schema file without also declaring the source — guards against the
+"I added a schema and forgot to actually validate against it" mistake.
 
 ## Politeness rules
 
