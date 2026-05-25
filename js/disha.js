@@ -91,6 +91,15 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         lines.push(`=== LOCATION: DigiPin ${cell.code} ===`);
         lines.push(`Coordinates: ${cell.center.lat.toFixed(5)}N, ${cell.center.lng.toFixed(5)}E`);
 
+        // --- Temporal Context (enables time-aware reasoning: rush hour, after-dark, weekend) ---
+        const nowIST = new Date().toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata',
+            weekday: 'long',
+            year: 'numeric', month: 'short', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', hour12: false
+        });
+        lines.push(`Time (IST): ${nowIST}`);
+
         // --- Address ---
         const addr = data.address || {};
         if (addr.area || addr.city) {
