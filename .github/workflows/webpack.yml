@@ -24,6 +24,13 @@ jobs:
           exit 1
         fi
 
+    - name: Reject orphaned js/*.js modules
+      run: python scripts/check-orphan-js.py
+      # 2026-05-25 live-smoke pass found 8 js/*.js files committed but never
+      # loaded by any <script> tag — entire features (NDMA alerts, IMD,
+      # quakes, flood) shipped dark. This guard makes that class of bug
+      # impossible to re-introduce without an explicit allowlist marker.
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
