@@ -60,7 +60,8 @@ const FloodAnimation = (() => {
             </div>
             <div class="flood-widget__source">Source: ${forecast.source}</div>
             <div class="flood-widget__disclaimer">
-                Inundation polygon is demo-grade — terrain-biased but not survey-accurate.
+                Inundation uses AWS Terrarium DEM (~9 m/px). Hydraulic modelling
+                is simplified — depths scale linearly with forecast discharge ratio.
             </div>
         `;
         containerEl.appendChild(wrap);
