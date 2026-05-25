@@ -216,14 +216,28 @@
 
     <!-- ===== SCRIPTS ===== -->
     <script defer src="js/digipin.js"></script>
+    <!-- IndexedDB persistent cache layer (used by data-fetcher) -->
+    <script defer src="js/data-fetcher-cache.js"></script>
+    <!-- Growth feature trio + realtime orchestrator -->
     <script defer src="js/growth-score.js"></script>
     <script defer src="js/realtime-growth.js"></script>
     <script defer src="js/growth-widget.js"></script>
     <script defer src="js/growth-overlay.js"></script>
+    <!-- Heat feature trio + realtime orchestrator -->
     <script defer src="js/heat-score.js"></script>
     <script defer src="js/realtime-heat.js"></script>
     <script defer src="js/heat-widget.js"></script>
     <script defer src="js/heat-overlay.js"></script>
+    <!-- Flood feature trio (SCS-CN runoff + DEM tiles + animation) -->
+    <script defer src="js/flood-scs.js"></script>
+    <script defer src="js/flood-inundation.js"></script>
+    <script defer src="js/flood-animation.js"></script>
+    <!-- Real-time scraper consumers — must load before data-fetcher.js
+         which uses `if (typeof RealtimeX !== 'undefined') ...` checks -->
+    <script defer src="js/realtime-alerts.js"></script>
+    <script defer src="js/realtime-imd.js"></script>
+    <script defer src="js/realtime-quakes.js"></script>
+    <script defer src="js/realtime-flood.js"></script>
     <script defer src="js/data-fetcher.js"></script>
     <script defer src="js/building-intelligence.js"></script>
     <script defer src="js/overture-buildings.js"></script>
