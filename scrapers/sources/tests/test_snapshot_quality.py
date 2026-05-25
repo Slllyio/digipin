@@ -31,6 +31,10 @@ SOURCES = [
     # source              pk     stale-seconds
     ("ndma_sachet",      "id",   None),
     ("ncs_earthquakes",  "id",   None),
+    ("imd_warnings",     "id",   None),
+    ("usgs_earthquakes", "id",   None),
+    ("gdacs_disasters",  "id",   None),
+    ("openaq_india",     "id",   None),
     # NOTE: add more sources as schemas land. See scrapers/lib/quality.py
     # docstring for the pattern. New schemas go in scrapers/sources/schemas/.
 ]
