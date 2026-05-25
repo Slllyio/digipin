@@ -75,10 +75,79 @@ HTTP and overlays active alerts on the map / DISHA context.
   issued by Indian state meteorological centres and aggregated by NDMA
 - **Format**: RSS 2.0 wrapping CAP 1.2 entries
 - **URL**: <https://sachet.ndma.gov.in/cap_public_website/rss/rss_india.xml>
+- **Auth**: none
 - **Update frequency**: continuous (new alerts appear within minutes
   of issuance)
 - **Coverage**: nationwide, district-level granularity in the
   free-text area field
+
+### `imd_warnings` — IMD 5-day district color-coded warnings
+
+- **What**: 5-day forward warnings (green / yellow / orange / red)
+  for selected Indian districts. Indore is in the default set.
+- **Endpoint**: `https://api.imd.gov.in/api/v1/districtwarning?id=<district_id>`
+- **Auth**: **required** — `X-API-Key` + `Authorization: Bearer <jwt>`.
+  Register at <https://api.imd.gov.in/> (free), then set:
+  ```sh
+  export IMD_API_KEY=...
+  export IMD_API_TOKEN=...
+  ```
+  Without these the scraper logs a warning, skips, and exits cleanly —
+  so the cron keeps refreshing the other sources.
+- **Update frequency**: daily (forecast is issued morning + evening)
+- **Coverage**: every IMD-listed district; default set in
+  `DEFAULT_DISTRICTS` covers Indore + 9 metros. Expand by inspecting
+  the dropdowns at <https://mausam.imd.gov.in/>.
+- **Stale doc warning**: the public API reference page advertises
+  "no auth" but live probing on 2026-05-24 returned `401 API key missing`.
+  The docstring captures the discrepancy verbatim.
+
+### `imd_cityforecast` — IMD 7-day city forecast
+
+- **What**: 7-day forecast per city (max/min temp, humidity, rainfall,
+  sunrise / sunset, weather description)
+- **Endpoint**: `https://api.imd.gov.in/api/v1/cityforecast?id=<city_id>`
+- **Auth**: same as `imd_warnings` (`IMD_API_KEY` + `IMD_API_TOKEN`)
+- **Update frequency**: 12 hours
+- **Coverage**: every IMD-listed city; default set covers Indore +
+  major metros. The city IDs come from the dropdown at
+  <https://city.imd.gov.in/citywx/city_weather.php> — re-verify them
+  after registration since IMD occasionally renumbers.
+
+### `ncs_earthquakes` — National Center for Seismology recent earthquakes
+
+- **What**: 150 most recent earthquakes monitored by India's national
+  seismic network (160+ stations). Magnitude / origin time / lat /
+  long / depth / region / location / review status
+- **URL**: <https://riseq.seismo.gov.in/>
+- **Auth**: **none**
+- **Update frequency**: continuous; new events appear within minutes
+  of detection
+- **Coverage**: global, with denser coverage in / around the Indian
+  subcontinent. Verified live: 117 of 150 recent events were
+  in-or-near India on the test run
+- **Implementation note**: scrapes the `<table id="eqdatalist">` from
+  the RISEQ HTML. The parent `seismo.gov.in` domain has an SSL legacy
+  renegotiation issue that breaks modern clients — RISEQ is on a
+  sibling subdomain with a working cert
+
+### `openaq_india` — OpenAQ v3 station-level AQI for India
+
+- **What**: every air-quality monitoring station in India known to
+  OpenAQ (typically 300-700 stations, denser than the CPCB-only feed
+  we already use). Latest reading per pollutant per station
+- **Endpoint**: `https://api.openaq.org/v3/locations?iso=IN`
+- **Auth**: **required** — \`X-API-Key\`. Register free at
+  <https://explore.openaq.org/register>, then:
+  \`\`\`sh
+  export OPENAQ_API_KEY=...
+  \`\`\`
+- **Update frequency**: depends on upstream — CPCB stations update
+  hourly; independent monitors vary
+- **Why both this and CPCB**: OpenAQ aggregates CPCB *and* independent
+  monitors (research, embassies, citizen networks). In Tier 2/3 cities
+  where CPCB has 1-2 stations, OpenAQ may expose 5-10 once those
+  independents are included
 
 ## Adding a new source
 
