@@ -157,6 +157,16 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
             lines.push(scoreParts.join(', '));
         }
 
+        // --- Growth Forecast (composite + horizons) ---
+        const growth = data.realtime?.growth;
+        if (growth) {
+            const now = growth.horizons.nowcast;
+            const y5  = growth.horizons.year_5;
+            lines.push(`\n=== GROWTH FORECAST (composite 0-100) ===`);
+            lines.push(`Nowcast: composite=${now.composite} conf=±${now.confidence_band}  BUE=${now.sub_scores.bue.value} DEN=${now.sub_scores.den.value} CAP=${now.sub_scores.cap.value}`);
+            lines.push(`5-year:  composite=${y5.composite} conf=±${y5.confidence_band}  trend: linear extrapolation`);
+        }
+
         // --- Top Features (sparse) ---
         const featureParts = [];
         Object.values(data.categories || {}).forEach(cat => {
