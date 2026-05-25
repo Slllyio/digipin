@@ -12,12 +12,18 @@
  */
 
 import { chromium } from 'playwright';
-import { existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync, unlinkSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 const BASE_URL = 'http://localhost:5500';
 const VIDEO_DIR = join(process.cwd(), 'video-output');
 const VIEWPORT = { width: 1920, height: 1080 };
+
+// ════════════════════════════════════════════════════════════
+// NARRATION TIMING TRACKER
+// ════════════════════════════════════════════════════════════
+let recordingStartMs = 0;
+const narrationLog = [];
 
 // Timing constants (ms) — generous for cinematic pacing
 const T = {
@@ -107,7 +113,7 @@ async function injectOverlaySystem(page) {
 
     /* Scene title card */
     .scene-card {
-      position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+      position: absolute; bottom: 110px; left: 50%; transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.88); border: 1px solid rgba(0,229,255,0.35);
       border-radius: 16px; padding: 22px 44px; text-align: center;
       opacity: 0; transition: opacity 0.8s ease;
@@ -210,6 +216,33 @@ async function injectOverlaySystem(page) {
       border: 6px solid transparent; border-right-color: rgba(0,229,255,0.35);
     }
 
+    /* Subtitle / narration bar */
+    .subtitle-bar {
+      position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+      width: 75%; max-width: 1200px; min-height: 52px;
+      background: rgba(0, 0, 0, 0.88); border: 1px solid rgba(0,229,255,0.2);
+      border-radius: 12px; padding: 14px 28px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.5), 0 0 40px rgba(124,77,255,0.08);
+      display: flex; align-items: center; gap: 14px;
+      opacity: 0; transition: opacity 0.6s ease;
+      pointer-events: none; z-index: 100000;
+    }
+    .subtitle-bar.visible { opacity: 1; }
+    .subtitle-icon {
+      width: 28px; height: 28px; flex-shrink: 0;
+      border-radius: 50%; background: linear-gradient(135deg, #7c4dff, #00e5ff);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: #fff; font-weight: 700;
+    }
+    .subtitle-text {
+      font-size: 17px; line-height: 1.5; color: #e8e8e8;
+      font-weight: 400; letter-spacing: 0.3px;
+    }
+    .subtitle-text .highlight {
+      color: #00e5ff; font-weight: 600;
+    }
+
     /* Progress bar */
     .video-progress {
       position: absolute; bottom: 0; left: 0; width: 100%; height: 4px;
@@ -246,8 +279,18 @@ async function injectOverlaySystem(page) {
     progressFill.className = 'video-progress-fill'; progressFill.id = 'video-progress-fill';
     progress.appendChild(progressFill);
 
+    const subtitleBar = document.createElement('div');
+    subtitleBar.className = 'subtitle-bar'; subtitleBar.id = 'subtitle-bar';
+    const subtitleIcon = document.createElement('div');
+    subtitleIcon.className = 'subtitle-icon'; subtitleIcon.textContent = '▶';
+    const subtitleText = document.createElement('div');
+    subtitleText.className = 'subtitle-text'; subtitleText.id = 'subtitle-text';
+    subtitleBar.appendChild(subtitleIcon);
+    subtitleBar.appendChild(subtitleText);
+
     overlay.appendChild(card);
     overlay.appendChild(cursor);
+    overlay.appendChild(subtitleBar);
     overlay.appendChild(progress);
     document.body.appendChild(overlay);
   });
@@ -393,6 +436,38 @@ async function setProgress(page, pct) {
   }, pct);
 }
 
+/** Show narration subtitle at bottom of screen and log timing */
+async function showSubtitle(page, text, durationMs = 0) {
+  const elapsedMs = Date.now() - recordingStartMs;
+  // Estimate TTS duration: ~2.5 words/sec + 0.8s buffer
+  const wordCount = text.split(/\s+/).length;
+  const estimatedAudioMs = Math.ceil((wordCount / 2.5) * 1000) + 800;
+  narrationLog.push({ time_ms: elapsedMs, text, estimated_duration_ms: estimatedAudioMs });
+
+  await page.evaluate((text) => {
+    const bar = document.getElementById('subtitle-bar');
+    const el = document.getElementById('subtitle-text');
+    if (bar && el) {
+      el.textContent = text;
+      bar.classList.add('visible');
+    }
+  }, text);
+
+  // Auto-pause for narration duration (whichever is longer: explicit or estimated)
+  const effectivePause = Math.max(durationMs, estimatedAudioMs);
+  if (effectivePause > 0) {
+    await pause(page, effectivePause);
+  }
+}
+
+/** Hide the narration subtitle */
+async function hideSubtitle(page) {
+  await page.evaluate(() => {
+    const bar = document.getElementById('subtitle-bar');
+    if (bar) bar.classList.remove('visible');
+  });
+}
+
 /** Close ALL floating dialogs, dropdowns, and panels */
 async function closeAllDialogs(page) {
   await page.evaluate(() => {
@@ -492,6 +567,7 @@ async function main() {
   });
 
   const page = await context.newPage();
+  recordingStartMs = Date.now(); // Start tracking narration timing
 
   // Enforce viewport size throughout (Windows can resize)
   await page.setViewportSize(VIEWPORT);
@@ -522,6 +598,9 @@ async function main() {
   await pause(page, T.INTRO);
   await hideFullOverlay(page);
   await pause(page, T.TRANSITION);
+  await showSubtitle(page, 'Welcome to DigiPin — India\'s first hyper-local urban intelligence platform, built on open data.');
+  await pause(page, 4000);
+  await hideSubtitle(page);
   await setProgress(page, 2);
   console.log('  ✓ Intro complete');
 
@@ -534,6 +613,7 @@ async function main() {
 
     // Ensure map is visible
     await ensureMapReady(page);
+    await showSubtitle(page, 'The map is divided into DigiPin grid cells. Each cell captures 160+ features about its urban environment.');
     await pause(page, T.MAP_PAN);
 
     // Slow cinematic pan to showcase grid cells
@@ -541,10 +621,12 @@ async function main() {
     await pause(page, T.OBSERVE);
     await showBadge(page, '160+', 'Features Per Cell', 100, 150);
     await showAnnotation(page, 'Each grid cell = unique urban fingerprint', 180, 210, 3500);
+    await showSubtitle(page, 'Every cell is a unique urban fingerprint — buildings, roads, green cover, amenities, walkability, and more.');
     await pause(page, T.OBSERVE);
 
     // Pan back
     await smoothMapDrag(page, 720, 400, 960, 540, 50);
+    await hideSubtitle(page);
     await pause(page, T.MAP_PAN);
     await setProgress(page, 7);
     console.log('  ✓ Scene 1 done');
@@ -558,6 +640,7 @@ async function main() {
     await showSceneCard(page, 'SCENE 02', 'City Selector', '12 major Indian cities with full data coverage');
 
     // Click and select Bengaluru
+    await showSubtitle(page, 'Switch between 12 major Indian cities instantly. Each city has pre-loaded data coverage.');
     await animatedClick(page, '#city-select');
     await pause(page, T.ACTION_GAP);
     await page.selectOption('#city-select', 'bengaluru');
@@ -573,9 +656,11 @@ async function main() {
 
     await showBadge(page, '12', 'Cities Covered', 100, 150);
     await showAnnotation(page, 'Bengaluru — map flies to city center', 200, 210, 3000);
+    await showSubtitle(page, 'Flying to Bengaluru — the map smoothly transitions with full grid cell coverage.');
     await pause(page, T.OBSERVE);
 
     // Switch back to Indore for remaining demo
+    await showSubtitle(page, 'Returning to Indore for the rest of the demo.');
     await page.selectOption('#city-select', 'indore');
     await pause(page, T.MAP_FLY);
     await waitForCondition(page, () => {
@@ -596,6 +681,7 @@ async function main() {
     await showSceneCard(page, 'SCENE 03', 'Smart Search', 'Search by place name or DigiPin code');
 
     // Search by place name
+    await showSubtitle(page, 'Search by place name — type any landmark and the map flies to it using Nominatim geocoding.');
     await typeWithEffect(page, '#search-input', 'Rajwada, Indore', 55);
     await pause(page, 400);
     await animatedClick(page, '#search-btn');
@@ -610,6 +696,7 @@ async function main() {
     await pause(page, T.OBSERVE);
 
     // Clear and search by DigiPin code
+    await showSubtitle(page, 'You can also search by DigiPin code — a 10-character code that maps to a specific grid cell.');
     await page.fill('#search-input', '');
     await pause(page, 300);
     await typeWithEffect(page, '#search-input', '3MC88PJL2J', 80);
@@ -623,6 +710,7 @@ async function main() {
     }, 6000);
     await showAnnotation(page, 'DigiPin 3MC-88P-JL2J → exact cell lookup', 450, 60, 3500);
     await pause(page, T.OBSERVE);
+    await hideSubtitle(page);
     await setProgress(page, 18);
     console.log('  ✓ Scene 3 done');
   } catch (e) { console.error('  ✗ Scene 3:', e.message); }
@@ -653,6 +741,7 @@ async function main() {
     const panelLoaded = await waitForPanelData(page, 15000);
 
     if (panelLoaded) {
+      await showSubtitle(page, 'Click any cell to reveal its intelligence profile — 30+ scores covering livability, safety, connectivity, and more.');
       await showAnnotation(page, 'Full intelligence profile loaded', 30, 180, 3000);
       await pause(page, T.OBSERVE);
 
@@ -667,6 +756,7 @@ async function main() {
       await pause(page, T.OBSERVE);
 
       // Show a badge for score count
+      await showSubtitle(page, 'Scrolling through the scores — each dimension rated 0-100 using open data from OSM, Overture, and ISRO.');
       await showBadge(page, '30+', 'Intelligence Scores', 1400, 200);
       await pause(page, T.OBSERVE);
 
@@ -677,6 +767,7 @@ async function main() {
       });
       await pause(page, 1000);
     }
+    await hideSubtitle(page);
     await setProgress(page, 26);
     console.log('  ✓ Scene 4 done');
   } catch (e) { console.error('  ✗ Scene 4:', e.message); }
@@ -688,6 +779,7 @@ async function main() {
     console.log('  [5/16] Scores Radar Chart...');
     await showSceneCard(page, 'SCENE 05', 'Intelligence Radar Chart', 'Visual fingerprint of location quality');
 
+    await showSubtitle(page, 'The radar chart visualizes all quality dimensions at a glance — a visual fingerprint of location quality.');
     const scoresReady = await waitForReady(page, '#open-scores-btn', 5000);
     if (scoresReady) {
       await animatedClick(page, '#open-scores-btn');
@@ -706,6 +798,7 @@ async function main() {
       });
       await pause(page, T.ACTION_GAP);
     }
+    await hideSubtitle(page);
     await setProgress(page, 33);
     console.log('  ✓ Scene 5 done');
   } catch (e) { console.error('  ✗ Scene 5:', e.message); }
@@ -717,6 +810,7 @@ async function main() {
     console.log('  [6/16] Building Intelligence...');
     await showSceneCard(page, 'SCENE 06', 'Building Intelligence', 'LCZ classification & structural metrics');
 
+    await showSubtitle(page, 'Building Intelligence shows structural metrics — count, height, coverage, and Local Climate Zone classification.');
     const biReady = await waitForReady(page, '#open-building-intel-btn', 5000);
     if (biReady) {
       await animatedClick(page, '#open-building-intel-btn');
@@ -738,6 +832,7 @@ async function main() {
       });
       await pause(page, T.ACTION_GAP);
     }
+    await hideSubtitle(page);
     await setProgress(page, 39);
     console.log('  ✓ Scene 6 done');
   } catch (e) { console.error('  ✗ Scene 6:', e.message); }
@@ -751,6 +846,7 @@ async function main() {
     await showSceneCard(page, 'SCENE 07', '3D Buildings & Roads', '528K Overture footprints + color-coded road network');
 
     await ensureMapReady(page);
+    await showSubtitle(page, '528K building footprints from Overture Maps — now rendering as a 3D layer on the map.');
 
     // Enable Buildings layer
     await animatedClick(page, '#btn-buildings');
@@ -784,10 +880,12 @@ async function main() {
     await page.mouse.up({ button: 'right' });
     await pause(page, T.OBSERVE);
 
+    await showSubtitle(page, 'Buildings extruded by actual height and color-coded by type. Rotating the view for a cinematic perspective.');
     await showAnnotation(page, 'Buildings extruded by actual height — color by type', 600, 200, 4000);
     await pause(page, T.OBSERVE_LONG);
 
     // Show Roads overlay (color mode)
+    await showSubtitle(page, 'Adding the road network — color-coded by classification: motorway, primary, secondary, residential.');
     await animatedClick(page, '#btn-roads');
     await pause(page, 2000);
     await waitForCondition(page, () => {
@@ -799,6 +897,7 @@ async function main() {
     await pause(page, T.OBSERVE_LONG);
 
     // Reset: turn off 3D, roads, buildings
+    await hideSubtitle(page);
     await animatedClick(page, '#btn-3d');
     await pause(page, 2000);
     await animatedClick(page, '#btn-roads');
@@ -825,6 +924,7 @@ async function main() {
     await ensureMapReady(page);
 
     // LCZ
+    await showSubtitle(page, 'Local Climate Zones — 17 classes that classify urban morphology: compact highrise, open lowrise, dense trees, water.');
     await animatedClick(page, '#btn-lcz');
     await pause(page, 2000);
     await waitForCondition(page, () => {
@@ -837,6 +937,7 @@ async function main() {
     await pause(page, 1000);
 
     // LULC
+    await showSubtitle(page, 'ISRO Bhuvan Land Use Land Cover — 54 land types from India\'s own satellite program at 1:50K scale.');
     await animatedClick(page, '#btn-lulc');
     await pause(page, 2000);
     await waitForCondition(page, () => {
@@ -849,6 +950,7 @@ async function main() {
     await pause(page, 1000);
 
     // Wards
+    await showSubtitle(page, 'Ward boundaries from OpenStreetMap — showing administrative divisions for governance and planning.');
     await animatedClick(page, '#btn-wards');
     await pause(page, 2000);
     await waitForCondition(page, () => {
@@ -858,6 +960,7 @@ async function main() {
     await showAnnotation(page, 'Administrative ward boundaries from OpenStreetMap', 500, 100, 4000);
     await pause(page, T.OBSERVE_LONG);
     await animatedClick(page, '#btn-wards');
+    await hideSubtitle(page);
     await pause(page, 1000);
 
     await setProgress(page, 56);
@@ -872,6 +975,7 @@ async function main() {
     await closeAllDialogs(page);
     await showSceneCard(page, 'SCENE 09', 'Digital Twin Layers', 'Overture Maps: water, land use, places & POI');
 
+    await showSubtitle(page, 'Digital Twin layers from Overture Maps Foundation — water bodies, land use, places of interest.');
     await animatedClick(page, '#btn-dt-layers');
     await waitForReady(page, '#dt-layers-dropdown.open', 3000);
     await pause(page, T.OBSERVE);
@@ -909,6 +1013,7 @@ async function main() {
     }
 
     // Close layers panel
+    await hideSubtitle(page);
     await animatedClick(page, '#btn-dt-layers');
     await pause(page, T.ACTION_GAP);
     await setProgress(page, 62);
@@ -923,6 +1028,7 @@ async function main() {
     await closeAllDialogs(page);
     await showSceneCard(page, 'SCENE 10', '3D Heatmap Analysis', 'Spatial distribution of 10 urban quality metrics');
 
+    await showSubtitle(page, '3D Heatmap — visualize the spatial distribution of any quality metric across the city.');
     await animatedClick(page, '#btn-heatmap');
     await waitForReady(page, '#heatmap-dropdown.open', 3000);
     await pause(page, T.ACTION_GAP);
@@ -936,6 +1042,7 @@ async function main() {
 
     if (metricClicked) {
       console.log(`    Running heatmap: ${metricClicked}`);
+      await showSubtitle(page, `Computing ${metricClicked} across 36 sample points. Each column height represents the score at that location.`);
       await showAnnotation(page, `Computing ${metricClicked} across 36 sample points...`, 400, 100, 5000);
 
       // Wait for heatmap to complete (it samples 36 points)
@@ -953,6 +1060,7 @@ async function main() {
         const map = MapModule.getMap();
         return map && !map.isMoving();
       }, 5000);
+      await showSubtitle(page, 'Tilting into 3D view — taller columns indicate higher scores. Instantly spot the best and worst zones.');
       await showAnnotation(page, 'Taller columns = higher scores — spot the best zones', 500, 200, 4000);
       await pause(page, T.OBSERVE_LONG);
 
@@ -968,6 +1076,7 @@ async function main() {
       });
       await pause(page, 1000);
     }
+    await hideSubtitle(page);
     await setProgress(page, 68);
     console.log('  ✓ Scene 10 done');
   } catch (e) { console.error('  ✗ Scene 10:', e.message); }
@@ -990,6 +1099,7 @@ async function main() {
       await pause(page, T.ACTION_GAP);
     }
 
+    await showSubtitle(page, '52 pre-built analytical queries across 7 sectors — Commercial, Residential, Infrastructure, Green, Safety, and more.');
     await showBadge(page, '52', 'Urban Queries', 50, 150);
     await showAnnotation(page, '7 sectors: Commercial, Residential, Infrastructure...', 50, 220, 4000);
     await pause(page, T.OBSERVE_LONG);
@@ -1024,6 +1134,7 @@ async function main() {
       });
       await pause(page, 500);
 
+      await showSubtitle(page, 'Running a query — the engine samples 25 points, scores each with 160+ features, and ranks the top locations.');
       await animatedClick(page, '.query-card');
       await showAnnotation(page, 'Analyzing 25 sample points with 160+ features each...', 350, 100, 6000);
 
@@ -1046,6 +1157,7 @@ async function main() {
       });
       await pause(page, T.ACTION_GAP);
     }
+    await hideSubtitle(page);
     await setProgress(page, 78);
     console.log('  ✓ Scene 11 done');
   } catch (e) { console.error('  ✗ Scene 11:', e.message); }
@@ -1060,6 +1172,7 @@ async function main() {
     await showSceneCard(page, 'SCENE 12', 'Compare Locations', 'Pin up to 3 cells for side-by-side analysis');
 
     // Pin cell #1
+    await showSubtitle(page, 'Pin up to 3 locations for side-by-side comparison. Selecting the first cell now.');
     await page.mouse.click(700, 450);
     await waitForPanelData(page, 12000);
     await pause(page, T.OBSERVE);
@@ -1084,6 +1197,7 @@ async function main() {
     await animatedClick(page, '#btn-compare');
     await pause(page, T.OBSERVE);
 
+    await showSubtitle(page, 'Compare panel shows radar charts and detailed scores side by side — instant location comparison.');
     await showAnnotation(page, 'Side-by-side radar chart + detailed score comparison', 1100, 180, 4000);
     await pause(page, T.OBSERVE_LONG);
 
@@ -1100,6 +1214,7 @@ async function main() {
       if (cp) cp.classList.remove('open');
     });
     await pause(page, T.ACTION_GAP);
+    await hideSubtitle(page);
     await setProgress(page, 84);
     console.log('  ✓ Scene 12 done');
   } catch (e) { console.error('  ✗ Scene 12:', e.message); }
@@ -1117,6 +1232,7 @@ async function main() {
     await waitForPanelData(page, 12000);
     await pause(page, 1000);
 
+    await showSubtitle(page, 'Walkability isochrone — powered by OpenRouteService. See how far you can walk in 5, 10, and 15 minutes.');
     const isoReady = await waitForReady(page, '#btn-isochrone', 5000);
     if (isoReady) {
       await animatedClick(page, '#btn-isochrone');
@@ -1128,10 +1244,12 @@ async function main() {
       }, 12000);
       await pause(page, T.OBSERVE);
 
+      await showSubtitle(page, 'Green = 5 min walk, Yellow = 10 min, Red = 15 min. Essential for urban planning and real estate analysis.');
       await showAnnotation(page, 'Green=5min · Yellow=10min · Red=15min walk', 500, 200, 4500);
       await showBadge(page, '3', 'Walking Zones', 100, 150);
       await pause(page, T.OBSERVE_LONG);
     }
+    await hideSubtitle(page);
     await setProgress(page, 89);
     console.log('  ✓ Scene 13 done');
   } catch (e) { console.error('  ✗ Scene 13:', e.message); }
@@ -1151,6 +1269,7 @@ async function main() {
     await showSceneCard(page, 'SCENE 14', 'Bookmarks & Reports', 'Save locations · Generate PDF intelligence reports');
 
     // Bookmark the current cell
+    await showSubtitle(page, 'Bookmark any location to save it for later. All bookmarks persist in your browser.');
     const bmReady = await waitForReady(page, '#btn-bookmark-cell', 5000);
     if (bmReady) {
       await animatedClick(page, '#btn-bookmark-cell');
@@ -1185,6 +1304,7 @@ async function main() {
           c.classList.add('visible');
         }, { x: rBox.x + rBox.width / 2, y: rBox.y + rBox.height / 2 });
         await pause(page, 800);
+        await showSubtitle(page, 'Generate Report creates a print-ready PDF with all intelligence scores for any location.');
         await showAnnotation(page, 'Generate Report → print-ready PDF with all scores',
           rBox.x + rBox.width + 20, rBox.y, 3500);
         await pause(page, T.OBSERVE);
@@ -1192,6 +1312,7 @@ async function main() {
       }
     }
 
+    await hideSubtitle(page);
     await setProgress(page, 93);
     console.log('  ✓ Scene 14 done');
   } catch (e) { console.error('  ✗ Scene 14:', e.message); }
@@ -1209,6 +1330,7 @@ async function main() {
 
     await showSceneCard(page, 'SCENE 15', 'DISHA AI Assistant', 'Local LLM with full location context');
 
+    await showSubtitle(page, 'DISHA — the AI assistant. Ask natural questions about any location, powered by a local LLM with full data context.');
     const dishaReady = await waitForReady(page, '#ask-disha-btn', 5000);
     if (dishaReady) {
       await animatedClick(page, '#ask-disha-btn');
@@ -1232,6 +1354,7 @@ async function main() {
       });
 
       if (inputEnabled) {
+        await showSubtitle(page, 'Asking: "Is this area good for a restaurant?" — DISHA analyzes all 160+ features to give a contextual answer.');
         await typeWithEffect(page, '#disha-input', 'Is this area good for a restaurant?', 45);
         await pause(page, 1000);
         await animatedClick(page, '#disha-send');
@@ -1251,6 +1374,7 @@ async function main() {
       await showAnnotation(page, 'DISHA AI — ask natural questions about any location', 700, 200, 4000);
       await pause(page, T.OBSERVE);
     }
+    await hideSubtitle(page);
     await setProgress(page, 97);
     console.log('  ✓ Scene 15 done');
   } catch (e) { console.error('  ✗ Scene 15:', e.message); }
@@ -1264,6 +1388,7 @@ async function main() {
     await ensureMapReady(page);
 
     // Panoramic zoom out
+    await showSubtitle(page, 'DigiPin — built entirely on open data: OpenStreetMap, Overture Maps, ISRO Bhuvan, Google Open Buildings.');
     await page.evaluate(() => {
       const map = MapModule.getMap();
       map.easeTo({ zoom: 12, pitch: 0, bearing: 0, duration: 3500 });
@@ -1273,6 +1398,7 @@ async function main() {
     // Gentle pan
     await smoothMapDrag(page, 960, 540, 860, 480, 60);
     await pause(page, T.OBSERVE);
+    await hideSubtitle(page);
 
     // Show outro with data sources
     await showFullOverlay(page, 'outro');
@@ -1285,6 +1411,12 @@ async function main() {
   // ═══════════════════════════════════════
   // FINALIZE
   // ═══════════════════════════════════════
+
+  // Write narration timing log for audio merge
+  const logPath = join(VIDEO_DIR, 'narration-log.json');
+  writeFileSync(logPath, JSON.stringify(narrationLog, null, 2));
+  console.log(`\n  ✓ Narration log: ${logPath} (${narrationLog.length} entries)`);
+
   console.log('\n  Closing browser and finalizing video...');
   const videoPath = await page.video()?.path();
   await page.close();

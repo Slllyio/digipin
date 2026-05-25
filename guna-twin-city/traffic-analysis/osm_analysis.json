@@ -1,0 +1,150 @@
+{
+  "timestamp": "2026-03-16T11:43:28.557180",
+  "total_segments": 8470,
+  "total_length_km": 3297.11,
+  "city_core_segments": 3340,
+  "one_way_segments": 159,
+  "city_one_way_segments": 63,
+  "high_connectivity_intersections": 12,
+  "top_intersections": [
+    {
+      "lat": 24.6451,
+      "lng": 77.3076,
+      "degree": 7
+    },
+    {
+      "lat": 24.6387,
+      "lng": 77.3044,
+      "degree": 5
+    },
+    {
+      "lat": 24.6627,
+      "lng": 77.3273,
+      "degree": 4
+    },
+    {
+      "lat": 24.6443,
+      "lng": 77.3279,
+      "degree": 4
+    },
+    {
+      "lat": 24.6447,
+      "lng": 77.3256,
+      "degree": 4
+    },
+    {
+      "lat": 24.6619,
+      "lng": 77.2958,
+      "degree": 4
+    },
+    {
+      "lat": 24.6378,
+      "lng": 77.3208,
+      "degree": 4
+    },
+    {
+      "lat": 24.6943,
+      "lng": 77.322,
+      "degree": 4
+    },
+    {
+      "lat": 24.6369,
+      "lng": 77.3044,
+      "degree": 4
+    },
+    {
+      "lat": 24.6722,
+      "lng": 77.3341,
+      "degree": 4
+    },
+    {
+      "lat": 24.6608,
+      "lng": 77.3318,
+      "degree": 4
+    },
+    {
+      "lat": 24.648,
+      "lng": 77.3179,
+      "degree": 4
+    }
+  ],
+  "classification": {
+    "residential": {
+      "count": 5218,
+      "length_km": 1256.76,
+      "one_way": 15
+    },
+    "unclassified": {
+      "count": 1315,
+      "length_km": 880.46,
+      "one_way": 22
+    },
+    "track": {
+      "count": 423,
+      "length_km": 298.68,
+      "one_way": 0
+    },
+    "tertiary": {
+      "count": 436,
+      "length_km": 298.41,
+      "one_way": 8
+    },
+    "primary": {
+      "count": 70,
+      "length_km": 196.32,
+      "one_way": 11
+    },
+    "trunk": {
+      "count": 89,
+      "length_km": 148.35,
+      "one_way": 62
+    },
+    "service": {
+      "count": 699,
+      "length_km": 115.62,
+      "one_way": 18
+    },
+    "secondary": {
+      "count": 194,
+      "length_km": 101.17,
+      "one_way": 12
+    },
+    "trunk_link": {
+      "count": 25,
+      "length_km": 1.34,
+      "one_way": 11
+    },
+    "primary_link": {
+      "count": 1,
+      "length_km": 0.01,
+      "one_way": 0
+    }
+  },
+  "candidate_oneway_roads": [
+    {
+      "name": "SH54 (primary)",
+      "segments": 6,
+      "length_km": 30.87
+    },
+    {
+      "name": "Unnamed (tertiary)",
+      "segments": 29,
+      "length_km": 21.17
+    },
+    {
+      "name": "SH10 (primary)",
+      "segments": 14,
+      "length_km": 9.52
+    },
+    {
+      "name": "MD0701 (secondary)",
+      "segments": 4,
+      "length_km": 7.73
+    },
+    {
+      "name": "Unnamed (secondary)",
+      "segments": 15,
+      "length_km": 6.14
+    }
+  ]
+}

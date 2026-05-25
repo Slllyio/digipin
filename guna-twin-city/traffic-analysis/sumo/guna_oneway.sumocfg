@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <input>
+        <net-file value="guna_oneway.net.xml"/>
+        <route-files value="guna_oneway.rou.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="3600"/>
+        <step-length value="1.0"/>
+    </time>
+    <output>
+        <tripinfo-output value="tripinfo_oneway.xml"/>
+        <statistic-output value="stats_oneway.xml"/>
+    </output>
+    <report>
+        <verbose value="false"/>
+        <no-step-log value="true"/>
+    </report>
+</configuration>

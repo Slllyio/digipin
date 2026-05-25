@@ -1,7 +1,7 @@
 /**
  * DISHA Chat Panel — Urban Intelligence UI Controller
- * Manages the interactive chat interface with intent routing,
- * city scanning, rich data cards, and streaming responses
+ * Manages the interactive chat interface with multi-provider support,
+ * settings configuration, intent routing, city scanning, and streaming responses
  */
 
 const DISHAPanel = (() => {
@@ -10,6 +10,7 @@ const DISHAPanel = (() => {
     let _currentContext = '';
     let _isStreaming = false;
     let _isCityScanning = false;
+    let _settingsOpen = false;
 
     // ===== INIT =====
     async function init() {
@@ -18,15 +19,7 @@ const DISHAPanel = (() => {
 
         const result = await DISHA.checkConnection();
 
-        if (result.connected) {
-            statusEl.textContent = 'LIVE';
-            statusEl.classList.add('connected');
-            statusEl.title = `Connected to Ollama (${result.models.join(', ')})`;
-        } else {
-            statusEl.textContent = 'OFF';
-            statusEl.classList.add('offline');
-            statusEl.title = result.reason;
-        }
+        updateStatusBadge(result);
 
         inputEl.addEventListener('keydown', e => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -34,6 +27,277 @@ const DISHAPanel = (() => {
                 send();
             }
         });
+
+        // Settings gear click
+        const gearBtn = document.getElementById('disha-settings-btn');
+        if (gearBtn) {
+            gearBtn.addEventListener('click', toggleSettings);
+        }
+
+        // Prune expired cache entries on startup
+        if (typeof DISHACache !== 'undefined') {
+            DISHACache.prune();
+        }
+    }
+
+    function updateStatusBadge(result) {
+        const statusEl = document.getElementById('disha-status');
+        statusEl.classList.remove('connected', 'offline', 'cloud');
+
+        if (result.connected) {
+            const isCloud = result.providerId && result.providerId !== 'ollama';
+            statusEl.textContent = isCloud ? result.providerId.toUpperCase() : 'LIVE';
+            statusEl.classList.add(isCloud ? 'cloud' : 'connected');
+            statusEl.title = `${result.provider} — ${result.reason}`;
+        } else {
+            statusEl.textContent = 'OFF';
+            statusEl.classList.add('offline');
+            statusEl.title = result.reason;
+        }
+    }
+
+    // ===== SETTINGS =====
+    function toggleSettings() {
+        _settingsOpen = !_settingsOpen;
+        let settingsEl = document.getElementById('disha-settings');
+
+        if (_settingsOpen) {
+            if (!settingsEl) {
+                settingsEl = buildSettingsUI();
+                const body = document.querySelector('.disha-body');
+                body.insertBefore(settingsEl, body.firstChild);
+            }
+            settingsEl.style.display = '';
+            populateSettings();
+        } else if (settingsEl) {
+            settingsEl.style.display = 'none';
+        }
+    }
+
+    // Build settings UI with safe DOM methods (no innerHTML)
+    function buildSettingsUI() {
+        const div = document.createElement('div');
+        div.id = 'disha-settings';
+        div.className = 'disha-settings';
+
+        // Title
+        const title = document.createElement('div');
+        title.className = 'disha-settings-title';
+        title.textContent = 'AI Provider Settings';
+        div.appendChild(title);
+
+        // Provider select row
+        div.appendChild(buildSelectRow(
+            'disha-provider-select', 'Provider',
+            [
+                { value: 'auto', label: 'Auto-detect' },
+                { value: 'ollama', label: 'Ollama (Local)' },
+                { value: 'groq', label: 'Groq Cloud (Free)' },
+                { value: 'custom', label: 'Custom API' }
+            ]
+        ));
+
+        // API Key row (hidden by default)
+        const keyRow = buildInputRow('disha-api-key', 'API Key', 'Enter API key...', 'password');
+        keyRow.id = 'disha-key-row';
+        keyRow.className = 'disha-settings-row disha-key-row';
+        keyRow.style.display = 'none';
+        div.appendChild(keyRow);
+
+        // Custom URL row (hidden by default)
+        const urlRow = buildInputRow('disha-custom-url', 'Endpoint URL', 'https://api.example.com/v1', 'text');
+        urlRow.id = 'disha-custom-url-row';
+        urlRow.className = 'disha-settings-row disha-custom-row';
+        urlRow.style.display = 'none';
+        div.appendChild(urlRow);
+
+        // Custom Model row (hidden by default)
+        const modelRow = buildInputRow('disha-custom-model', 'Model', 'e.g. llama-3.3-70b', 'text');
+        modelRow.id = 'disha-custom-model-row';
+        modelRow.className = 'disha-settings-row disha-custom-row';
+        modelRow.style.display = 'none';
+        div.appendChild(modelRow);
+
+        // Actions row
+        const actions = document.createElement('div');
+        actions.className = 'disha-settings-actions';
+
+        const testBtn = document.createElement('button');
+        testBtn.id = 'disha-test-btn';
+        testBtn.className = 'disha-settings-btn-action';
+        testBtn.textContent = 'Test';
+        testBtn.addEventListener('click', testProvider);
+        actions.appendChild(testBtn);
+
+        const saveBtn = document.createElement('button');
+        saveBtn.id = 'disha-save-btn';
+        saveBtn.className = 'disha-settings-btn-action disha-save';
+        saveBtn.textContent = 'Save';
+        saveBtn.addEventListener('click', saveSettings);
+        actions.appendChild(saveBtn);
+
+        const statusSpan = document.createElement('span');
+        statusSpan.id = 'disha-settings-status';
+        statusSpan.className = 'disha-settings-status';
+        actions.appendChild(statusSpan);
+
+        div.appendChild(actions);
+
+        // Provider select change listener
+        const selectEl = div.querySelector('#disha-provider-select');
+        selectEl.addEventListener('change', () => updateSettingsVisibility(selectEl.value));
+
+        return div;
+    }
+
+    function buildSelectRow(id, labelText, options) {
+        const row = document.createElement('div');
+        row.className = 'disha-settings-row';
+
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.textContent = labelText;
+        row.appendChild(label);
+
+        const select = document.createElement('select');
+        select.id = id;
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.label;
+            select.appendChild(option);
+        });
+        row.appendChild(select);
+
+        return row;
+    }
+
+    function buildInputRow(id, labelText, placeholder, type) {
+        const row = document.createElement('div');
+        row.className = 'disha-settings-row';
+
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.textContent = labelText;
+        row.appendChild(label);
+
+        const input = document.createElement('input');
+        input.type = type;
+        input.id = id;
+        input.placeholder = placeholder;
+        input.autocomplete = 'off';
+        row.appendChild(input);
+
+        return row;
+    }
+
+    function populateSettings() {
+        const config = DISHAProviders.getConfig();
+        const selectEl = document.getElementById('disha-provider-select');
+        const keyEl = document.getElementById('disha-api-key');
+        const urlEl = document.getElementById('disha-custom-url');
+        const modelEl = document.getElementById('disha-custom-model');
+
+        selectEl.value = config.preferred || 'auto';
+
+        const activeId = selectEl.value === 'groq' ? 'groq' : 'custom';
+        keyEl.value = config.keys[activeId] || '';
+
+        urlEl.value = config.custom?.baseUrl || '';
+        modelEl.value = config.custom?.model || '';
+
+        updateSettingsVisibility(selectEl.value);
+
+        document.getElementById('disha-settings-status').textContent = '';
+    }
+
+    function updateSettingsVisibility(provider) {
+        const keyRow = document.getElementById('disha-key-row');
+        const customUrlRow = document.getElementById('disha-custom-url-row');
+        const customModelRow = document.getElementById('disha-custom-model-row');
+
+        const needsKey = provider === 'groq' || provider === 'custom';
+        const isCustom = provider === 'custom';
+
+        keyRow.style.display = needsKey ? '' : 'none';
+        customUrlRow.style.display = isCustom ? '' : 'none';
+        customModelRow.style.display = isCustom ? '' : 'none';
+    }
+
+    async function testProvider() {
+        const statusEl = document.getElementById('disha-settings-status');
+        statusEl.textContent = 'Testing...';
+        statusEl.className = 'disha-settings-status';
+
+        const selectEl = document.getElementById('disha-provider-select');
+        const provider = selectEl.value;
+
+        if (provider === 'auto' || provider === 'ollama') {
+            const check = await DISHAProviders.checkOllama();
+            statusEl.textContent = check.ok ? 'Ollama connected!' : check.reason;
+            statusEl.classList.add(check.ok ? 'status-ok' : 'status-err');
+            return;
+        }
+
+        const keyEl = document.getElementById('disha-api-key');
+        const key = keyEl.value.trim();
+        if (!key) {
+            statusEl.textContent = 'Enter an API key first';
+            statusEl.classList.add('status-err');
+            return;
+        }
+
+        const baseUrl = provider === 'groq'
+            ? 'https://api.groq.com/openai/v1'
+            : document.getElementById('disha-custom-url').value.trim();
+
+        if (!baseUrl) {
+            statusEl.textContent = 'Enter an endpoint URL';
+            statusEl.classList.add('status-err');
+            return;
+        }
+
+        const check = await DISHAProviders.checkOpenAI(baseUrl, key);
+        statusEl.textContent = check.ok ? 'Connected!' : check.reason;
+        statusEl.classList.add(check.ok ? 'status-ok' : 'status-err');
+    }
+
+    async function saveSettings() {
+        const selectEl = document.getElementById('disha-provider-select');
+        const keyEl = document.getElementById('disha-api-key');
+        const urlEl = document.getElementById('disha-custom-url');
+        const modelEl = document.getElementById('disha-custom-model');
+        const statusEl = document.getElementById('disha-settings-status');
+
+        const provider = selectEl.value;
+        const config = DISHAProviders.getConfig();
+
+        config.preferred = provider;
+
+        if (provider === 'groq') {
+            config.keys.groq = keyEl.value.trim();
+        } else if (provider === 'custom') {
+            config.keys.custom = keyEl.value.trim();
+            config.custom = {
+                baseUrl: urlEl.value.trim().replace(/\/+$/, ''),
+                model: modelEl.value.trim()
+            };
+        }
+
+        DISHAProviders.saveConfig(config);
+
+        // Re-detect provider with new config
+        const result = await DISHA.checkConnection();
+        updateStatusBadge(result);
+
+        statusEl.textContent = 'Saved!';
+        statusEl.className = 'disha-settings-status status-ok';
+
+        setTimeout(() => {
+            _settingsOpen = false;
+            const settingsEl = document.getElementById('disha-settings');
+            if (settingsEl) settingsEl.style.display = 'none';
+        }, 1000);
     }
 
     // ===== OPEN =====
@@ -53,7 +317,6 @@ const DISHAPanel = (() => {
         inputEl.disabled = false;
         sendBtn.disabled = false;
 
-        // Clear conversation history for new cell
         DISHA.clearHistory();
 
         // Count data sources loaded
@@ -74,15 +337,17 @@ const DISHAPanel = (() => {
         const featureCount = _currentData.raw?.featureTypesFound || 0;
         const scoreCount = Object.values(_currentData.scores || {}).filter(s => s && s.value > 0).length;
 
-        // Welcome message with data summary
+        const provider = DISHAProviders.getActive();
+        const providerLabel = provider ? provider.name : 'Offline';
+
         addMessage('disha', `Urban Intelligence loaded for DigiPin **${cell.code}**\n\n` +
             `${dataSources.length} data sources active: ${dataSources.join(', ')}\n` +
-            `${featureCount} feature types | ${scoreCount} intelligence scores\n\n` +
-            `Ask me anything — from "Is this safe to live?" to "Where should I open a restaurant in this area?"\n` +
+            `${featureCount} feature types | ${scoreCount} intelligence scores\n` +
+            `AI: ${providerLabel}\n\n` +
+            `Ask me anything — from "Is this safe to live?" to "Where should I open a restaurant?"\n` +
             `I can also scan the city for optimal locations.`
         );
 
-        // Smart suggestions
         const suggestions = DISHA.getSuggestions(data);
         while (suggestionsEl.firstChild) suggestionsEl.removeChild(suggestionsEl.firstChild);
         suggestionsEl.style.display = '';
@@ -121,7 +386,9 @@ const DISHAPanel = (() => {
             return;
         }
 
-        // Intent routing — detect if this needs a city scan
+        // Smart context: filter by question type instead of sending everything
+        _currentContext = DISHA.buildFilteredContext(_currentCell, _currentData, question);
+
         const intent = DISHA.detectIntent(question);
 
         if (intent === 'city_scan') {
@@ -144,7 +411,6 @@ const DISHAPanel = (() => {
         sendBtn.style.display = 'none';
         inputEl.disabled = true;
 
-        // Show scanning status
         const statusMsg = addMessage('disha', '');
         const statusContent = statusMsg.querySelector('.disha-msg-content');
 
@@ -171,20 +437,15 @@ const DISHAPanel = (() => {
                 return;
             }
 
-            // Show scan results as a data card
             scanText.textContent = `Scan complete! Found top ${results.length} locations. Analyzing with AI...`;
 
-            // Build city scan context and feed to LLM
             const cityScanContext = DISHA.buildCityScanContext(results, question);
 
-            // Remove the status message and stream AI response
             statusMsg.remove();
             _isCityScanning = false;
 
-            // Add scan results card
             addScanResultsCard(results, question);
 
-            // Now stream the LLM analysis of scan results
             await streamResponse(question, cityScanContext);
         } catch (err) {
             applyFormattedResponse(statusContent, `Scan error: ${err.message}`);
@@ -193,7 +454,6 @@ const DISHAPanel = (() => {
         }
     }
 
-    // Add a visual card showing scan results before the LLM analysis
     function addScanResultsCard(results, question) {
         const messagesEl = document.getElementById('disha-messages');
         const card = document.createElement('div');
@@ -202,13 +462,11 @@ const DISHAPanel = (() => {
         const content = document.createElement('div');
         content.className = 'disha-msg-content';
 
-        // Header
         const header = document.createElement('div');
         header.className = 'disha-scan-header';
         header.textContent = 'City Scan Results';
         content.appendChild(header);
 
-        // Results list
         results.forEach((r, i) => {
             const row = document.createElement('div');
             row.className = 'disha-scan-row';
@@ -289,9 +547,17 @@ const DISHAPanel = (() => {
                 contentEl.textContent = fullResponse;
                 scrollToBottom();
             },
-            () => {
+            (meta) => {
                 _isStreaming = false;
                 applyFormattedResponse(contentEl, fullResponse);
+                // Show cached indicator if response was from cache
+                if (meta && meta.cached) {
+                    const badge = document.createElement('span');
+                    badge.className = 'disha-cached-badge';
+                    badge.textContent = 'cached';
+                    badge.title = 'This response was served from cache';
+                    contentEl.appendChild(badge);
+                }
                 resetInputState();
             },
             (err) => {
@@ -377,7 +643,6 @@ const DISHAPanel = (() => {
                 return;
             }
 
-            // Score badge detection: find patterns like score=XX or XX/100
             const scorePattern = /(\w+)=(\d+)(?:\/100)?/g;
 
             // Bullet lines
@@ -399,7 +664,7 @@ const DISHAPanel = (() => {
                 return;
             }
 
-            // Numbered list (1. 2. 3. or #1 #2 #3)
+            // Numbered list
             const numMatch = trimmed.match(/^(?:(\d+)\.|#(\d+))\s+(.+)/);
             if (numMatch) {
                 const bullet = document.createElement('div');
@@ -418,10 +683,9 @@ const DISHAPanel = (() => {
                 return;
             }
 
-            // Table row (|col1|col2|col3|)
+            // Table row
             if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
                 const cells = trimmed.split('|').filter(c => c.trim());
-                // Skip separator rows (|---|---|)
                 if (cells.every(c => /^[\s-:]+$/.test(c))) return;
 
                 const row = document.createElement('div');
@@ -444,11 +708,7 @@ const DISHAPanel = (() => {
         });
     }
 
-    /**
-     * Append text with **bold**, score=XX badges, and DigiPin code highlighting
-     */
     function appendRichText(parent, text, _scorePattern) {
-        // Split on bold markers first
         const parts = text.split(/(\*\*[^*]+\*\*)/g);
         parts.forEach(part => {
             if (part.startsWith('**') && part.endsWith('**')) {
@@ -456,7 +716,6 @@ const DISHAPanel = (() => {
                 strong.textContent = part.slice(2, -2);
                 parent.appendChild(strong);
             } else if (part) {
-                // Look for score citations like safety=72
                 const scoreParts = part.split(/(\w+=\d+(?:\/100)?)/g);
                 scoreParts.forEach(sp => {
                     const scoreMatch = sp.match(/^(\w+)=(\d+)(\/100)?$/);
@@ -469,7 +728,6 @@ const DISHAPanel = (() => {
                         badge.title = `${scoreMatch[1]}: ${val}/100`;
                         parent.appendChild(badge);
                     } else if (sp) {
-                        // Check for DigiPin codes (10 chars from valid set)
                         const dpParts = sp.split(/([23456789CFJKLMPT]{10})/g);
                         dpParts.forEach(dp => {
                             const validChars = new Set('23456789CFJKLMPT'.split(''));

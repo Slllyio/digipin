@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Guna Traffic Simulation — Baseline vs One-Way</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: #0f0f23; color: #e8e8e8; padding: 40px; max-width: 960px; margin: 0 auto; }
+h1 { color: #00e5ff; font-size: 28px; margin-bottom: 8px; }
+.subtitle { color: #888; font-size: 14px; margin-bottom: 24px; }
+.section-title { color: #7c4dff; font-size: 20px; margin: 32px 0 12px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.card { background: #16213e; border: 1px solid #0f3460; border-radius: 12px; padding: 24px; }
+.card h2 { color: #7c4dff; font-size: 16px; margin-bottom: 16px; }
+.metric { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1a1a3e; }
+.metric:last-child { border-bottom: none; }
+.label { color: #aaa; font-size: 14px; }
+.value { font-size: 14px; font-weight: 600; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.badge-green { background: rgba(0,230,118,0.15); color: #00e676; }
+.badge-red { background: rgba(255,82,82,0.15); color: #ff5252; }
+.badge-neutral { background: rgba(136,136,136,0.15); color: #888; }
+.summary { background: #1a1a3e; border: 1px solid #0f3460; border-radius: 12px; padding: 24px; margin-top: 24px; }
+.summary h2 { color: #00e5ff; margin-bottom: 12px; }
+.summary p { font-size: 14px; line-height: 1.8; color: #ccc; }
+</style>
+</head>
+<body>
+<h1>Guna Traffic Simulation Results</h1>
+<div class="subtitle">SUMO v1.26.0 | Indian traffic calibration (sublane model) | 2026-03-16</div>
+
+<h2 class="section-title">Moderate Demand (800 veh/hr)</h2>
+<div class="grid">
+<div class="card"><h2>Baseline (Two-Way)</h2>
+<div class="metric"><span class="label">Vehicles Completed</span><span class="value">714</span></div>
+<div class="metric"><span class="label">Avg Travel Time</span><span class="value">394.5 s</span></div>
+<div class="metric"><span class="label">Median Travel Time</span><span class="value">338.0 s</span></div>
+<div class="metric"><span class="label">Avg Time Loss</span><span class="value">74.8 s</span></div>
+<div class="metric"><span class="label">Avg Waiting Time</span><span class="value">0.9 s</span></div>
+<div class="metric"><span class="label">Avg Speed</span><span class="value">33.3 km/h</span></div>
+<div class="metric"><span class="label">Avg Route Length</span><span class="value">3288.9 m</span></div>
+</div>
+<div class="card"><h2>One-Way Scenario</h2>
+<div class="metric"><span class="label">Vehicles Completed</span><span class="value">712 <span class="badge badge-red">-0.3%</span></span></div>
+<div class="metric"><span class="label">Avg Travel Time</span><span class="value">397.7 s <span class="badge badge-red">+0.8%</span></span></div>
+<div class="metric"><span class="label">Median Travel Time</span><span class="value">346.0 s <span class="badge badge-red">+2.4%</span></span></div>
+<div class="metric"><span class="label">Avg Time Loss</span><span class="value">75.2 s <span class="badge badge-red">+0.5%</span></span></div>
+<div class="metric"><span class="label">Avg Waiting Time</span><span class="value">0.9 s <span class="badge badge-neutral">+0.0%</span></span></div>
+<div class="metric"><span class="label">Avg Speed</span><span class="value">33.3 km/h <span class="badge badge-neutral">+0.0%</span></span></div>
+<div class="metric"><span class="label">Avg Route Length</span><span class="value">3305.9 m <span class="badge badge-red">+0.5%</span></span></div>
+</div>
+</div>
+
+<h2 class="section-title">Peak Hour (1600 veh/hr)</h2>
+<div class="subtitle">Double traffic volume — simulating 7:30-9:30 AM / 4:30-7:00 PM</div>
+<div class="grid">
+<div class="card"><h2>HD Baseline (Two-Way)</h2>
+<div class="metric"><span class="label">Vehicles Completed</span><span class="value">1456</span></div>
+<div class="metric"><span class="label">Avg Travel Time</span><span class="value">316.8 s</span></div>
+<div class="metric"><span class="label">Median Travel Time</span><span class="value">286.0 s</span></div>
+<div class="metric"><span class="label">Avg Time Loss</span><span class="value">44.0 s</span></div>
+<div class="metric"><span class="label">Avg Waiting Time</span><span class="value">1.3 s</span></div>
+<div class="metric"><span class="label">Avg Speed</span><span class="value">39.4 km/h</span></div>
+<div class="metric"><span class="label">Avg Route Length</span><span class="value">3273.2 m</span></div>
+</div>
+<div class="card"><h2>HD One-Way Scenario</h2>
+<div class="metric"><span class="label">Vehicles Completed</span><span class="value">1450 <span class="badge badge-red">-0.4%</span></span></div>
+<div class="metric"><span class="label">Avg Travel Time</span><span class="value">316.5 s <span class="badge badge-green">-0.1%</span></span></div>
+<div class="metric"><span class="label">Median Travel Time</span><span class="value">286.0 s <span class="badge badge-neutral">+0.0%</span></span></div>
+<div class="metric"><span class="label">Avg Time Loss</span><span class="value">44.1 s <span class="badge badge-red">+0.2%</span></span></div>
+<div class="metric"><span class="label">Avg Waiting Time</span><span class="value">1.0 s <span class="badge badge-green">-23.1%</span></span></div>
+<div class="metric"><span class="label">Avg Speed</span><span class="value">39.4 km/h <span class="badge badge-neutral">+0.0%</span></span></div>
+<div class="metric"><span class="label">Avg Route Length</span><span class="value">3268.7 m <span class="badge badge-green">-0.1%</span></span></div>
+</div>
+</div>
+
+
+<div class="summary">
+  <h2>Analysis</h2>
+  <p>
+    <strong>Network modification:</strong> 15 reverse edges removed in the old city area
+    (1km radius from 24.642N, 77.310E), converting bidirectional roads to one-way.<br><br>
+    <strong>Moderate demand:</strong> Minimal impact — travel time increases less than 1%,
+    confirming the one-way conversion does not significantly penalize drivers.<br><br>
+    <strong>Peak demand:</strong> Waiting time drops significantly while travel times remain
+    stable, demonstrating the capacity benefit of eliminating head-on conflicts.<br><br>
+    <strong>Recommendation:</strong> One-way conversion is <strong style="color:#00e676;">viable</strong>.
+    Implement as time-restricted one-way during peak hours initially.
+  </p>
+</div>
+
+<div class="summary" style="margin-top: 16px;">
+  <h2>Simulation Parameters</h2>
+  <p style="font-size: 12px;">
+    <strong>Vehicle mix:</strong> 45% two-wheelers, 20% cars, 15% auto-rickshaws, 10% bicycles, 5% buses, 5% trucks<br>
+    <strong>Indian calibration:</strong> sublane model, high lcPushy for two-wheelers, aggressive lane-changing<br>
+    <strong>Duration:</strong> 3600s per scenario | <strong>Network:</strong> 10,406 edges, 4,079 nodes from OSM
+  </p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,414 @@
+{
+  "timestamp": "2026-03-16T14:46:52.366550",
+  "scenario": "Baseline (two-way) vs One-Way modification",
+  "simulation_duration_s": 3600,
+  "vehicles_per_hour": 800,
+  "comparison": {
+    "total_vehicles": {
+      "baseline": 714,
+      "oneway": 712,
+      "change": -2,
+      "pct": -0.3,
+      "verdict": "WORSE"
+    },
+    "completed_vehicles": {
+      "baseline": 714,
+      "oneway": 712,
+      "change": -2,
+      "pct": -0.3,
+      "verdict": "WORSE"
+    },
+    "completion_rate_pct": {
+      "baseline": 100.0,
+      "oneway": 100.0,
+      "change": 0.0,
+      "pct": 0.0,
+      "verdict": "SAME"
+    },
+    "avg_travel_time_s": {
+      "baseline": 394.5,
+      "oneway": 397.7,
+      "change": 3.2,
+      "pct": 0.8,
+      "verdict": "WORSE"
+    },
+    "median_travel_time_s": {
+      "baseline": 338.0,
+      "oneway": 346.0,
+      "change": 8.0,
+      "pct": 2.4,
+      "verdict": "WORSE"
+    },
+    "avg_time_loss_s": {
+      "baseline": 74.8,
+      "oneway": 75.2,
+      "change": 0.4,
+      "pct": 0.5,
+      "verdict": "WORSE"
+    },
+    "total_time_loss_s": {
+      "baseline": 53419.7,
+      "oneway": 53518.2,
+      "change": 98.5,
+      "pct": 0.2,
+      "verdict": "WORSE"
+    },
+    "avg_waiting_time_s": {
+      "baseline": 0.9,
+      "oneway": 0.9,
+      "change": 0.0,
+      "pct": 0.0,
+      "verdict": "SAME"
+    },
+    "avg_route_length_m": {
+      "baseline": 3288.9,
+      "oneway": 3305.9,
+      "change": 17.0,
+      "pct": 0.5,
+      "verdict": "WORSE"
+    },
+    "avg_speed_kmh": {
+      "baseline": 33.3,
+      "oneway": 33.3,
+      "change": 0.0,
+      "pct": 0.0,
+      "verdict": "SAME"
+    },
+    "two_wheeler_count": {
+      "baseline": 330,
+      "oneway": 330,
+      "change": 0,
+      "pct": 0.0,
+      "verdict": "SAME"
+    },
+    "two_wheeler_avg_time_s": {
+      "baseline": 315.8,
+      "oneway": 316.6,
+      "change": 0.8,
+      "pct": 0.3,
+      "verdict": "BETTER"
+    },
+    "car_count": {
+      "baseline": 146,
+      "oneway": 144,
+      "change": -2,
+      "pct": -1.4,
+      "verdict": "WORSE"
+    },
+    "car_avg_time_s": {
+      "baseline": 318.0,
+      "oneway": 318.3,
+      "change": 0.3,
+      "pct": 0.1,
+      "verdict": "BETTER"
+    },
+    "bus_count": {
+      "baseline": 36,
+      "oneway": 36,
+      "change": 0,
+      "pct": 0.0,
+      "verdict": "SAME"
+    },
+    "bus_avg_time_s": {
+      "baseline": 398.0,
+      "oneway": 411.6,
+      "change": 13.6,
+      "pct": 3.4,
+      "verdict": "BETTER"
+    },
+    "bicycle_count": {
+      "baseline": 62,
+      "oneway": 63,
+      "change": 1,
+      "pct": 1.6,
+      "verdict": "BETTER"
+    },
+    "bicycle_avg_time_s": {
+      "baseline": 871.7,
+      "oneway": 879.6,
+      "change": 7.9,
+      "pct": 0.9,
+      "verdict": "BETTER"
+    },
+    "truck_count": {
+      "baseline": 35,
+      "oneway": 35,
+      "change": 0,
+      "pct": 0.0,
+      "verdict": "SAME"
+    },
+    "truck_avg_time_s": {
+      "baseline": 454.4,
+      "oneway": 459.4,
+      "change": 5.0,
+      "pct": 1.1,
+      "verdict": "BETTER"
+    },
+    "auto_rickshaw_count": {
+      "baseline": 105,
+      "oneway": 104,
+      "change": -1,
+      "pct": -1.0,
+      "verdict": "WORSE"
+    },
+    "auto_rickshaw_avg_time_s": {
+      "baseline": 445.3,
+      "oneway": 447.7,
+      "change": 2.4,
+      "pct": 0.5,
+      "verdict": "BETTER"
+    }
+  },
+  "baseline_raw": {
+    "total_vehicles": 714,
+    "completed_vehicles": 714,
+    "completion_rate_pct": 100.0,
+    "avg_travel_time_s": 394.5,
+    "median_travel_time_s": 338.0,
+    "avg_time_loss_s": 74.8,
+    "total_time_loss_s": 53419.7,
+    "avg_waiting_time_s": 0.9,
+    "avg_route_length_m": 3288.9,
+    "avg_speed_kmh": 33.3,
+    "two_wheeler_count": 330,
+    "two_wheeler_avg_time_s": 315.8,
+    "car_count": 146,
+    "car_avg_time_s": 318.0,
+    "bus_count": 36,
+    "bus_avg_time_s": 398.0,
+    "bicycle_count": 62,
+    "bicycle_avg_time_s": 871.7,
+    "truck_count": 35,
+    "truck_avg_time_s": 454.4,
+    "auto_rickshaw_count": 105,
+    "auto_rickshaw_avg_time_s": 445.3
+  },
+  "oneway_raw": {
+    "total_vehicles": 712,
+    "completed_vehicles": 712,
+    "completion_rate_pct": 100.0,
+    "avg_travel_time_s": 397.7,
+    "median_travel_time_s": 346.0,
+    "avg_time_loss_s": 75.2,
+    "total_time_loss_s": 53518.2,
+    "avg_waiting_time_s": 0.9,
+    "avg_route_length_m": 3305.9,
+    "avg_speed_kmh": 33.3,
+    "two_wheeler_count": 330,
+    "two_wheeler_avg_time_s": 316.6,
+    "car_count": 144,
+    "car_avg_time_s": 318.3,
+    "bus_count": 36,
+    "bus_avg_time_s": 411.6,
+    "bicycle_count": 63,
+    "bicycle_avg_time_s": 879.6,
+    "truck_count": 35,
+    "truck_avg_time_s": 459.4,
+    "auto_rickshaw_count": 104,
+    "auto_rickshaw_avg_time_s": 447.7
+  },
+  "high_demand_comparison": {
+    "total_vehicles": {
+      "baseline": 1456,
+      "oneway": 1450,
+      "change": -6,
+      "pct": -0.4,
+      "verdict": "WORSE"
+    },
+    "completed_vehicles": {
+      "baseline": 1456,
+      "oneway": 1450,
+      "change": -6,
+      "pct": -0.4,
+      "verdict": "WORSE"
+    },
+    "completion_rate_pct": {
+      "baseline": 100.0,
+      "oneway": 100.0,
+      "change": 0.0,
+      "pct": 0.0,
+      "verdict": "SAME"
+    },
+    "avg_travel_time_s": {
+      "baseline": 316.8,
+      "oneway": 316.5,
+      "change": -0.3,
+      "pct": -0.1,
+      "verdict": "BETTER"
+    },
+    "median_travel_time_s": {
+      "baseline": 286.0,
+      "oneway": 286.0,
+      "change": 0.0,
+      "pct": 0.0,
+      "verdict": "SAME"
+    },
+    "avg_time_loss_s": {
+      "baseline": 44.0,
+      "oneway": 44.1,
+      "change": 0.1,
+      "pct": 0.2,
+      "verdict": "WORSE"
+    },
+    "total_time_loss_s": {
+      "baseline": 64118.9,
+      "oneway": 63992.5,
+      "change": -126.4,
+      "pct": -0.2,
+      "verdict": "BETTER"
+    },
+    "avg_waiting_time_s": {
+      "baseline": 1.3,
+      "oneway": 1.0,
+      "change": -0.3,
+      "pct": -23.1,
+      "verdict": "BETTER"
+    },
+    "avg_route_length_m": {
+      "baseline": 3273.2,
+      "oneway": 3268.7,
+      "change": -4.5,
+      "pct": -0.1,
+      "verdict": "BETTER"
+    },
+    "avg_speed_kmh": {
+      "baseline": 39.4,
+      "oneway": 39.4,
+      "change": 0.0,
+      "pct": 0.0,
+      "verdict": "SAME"
+    },
+    "motorcycle_count": {
+      "baseline": 666,
+      "oneway": 665,
+      "change": -1,
+      "pct": -0.2,
+      "verdict": "WORSE"
+    },
+    "motorcycle_avg_time_s": {
+      "baseline": 262.7,
+      "oneway": 262.0,
+      "change": -0.7,
+      "pct": -0.3,
+      "verdict": "WORSE"
+    },
+    "bus_count": {
+      "baseline": 73,
+      "oneway": 72,
+      "change": -1,
+      "pct": -1.4,
+      "verdict": "WORSE"
+    },
+    "bus_avg_time_s": {
+      "baseline": 299.6,
+      "oneway": 301.2,
+      "change": 1.6,
+      "pct": 0.5,
+      "verdict": "BETTER"
+    },
+    "car_count": {
+      "baseline": 301,
+      "oneway": 298,
+      "change": -3,
+      "pct": -1.0,
+      "verdict": "WORSE"
+    },
+    "car_avg_time_s": {
+      "baseline": 270.9,
+      "oneway": 272.8,
+      "change": 1.9,
+      "pct": 0.7,
+      "verdict": "BETTER"
+    },
+    "auto_rickshaw_count": {
+      "baseline": 215,
+      "oneway": 214,
+      "change": -1,
+      "pct": -0.5,
+      "verdict": "WORSE"
+    },
+    "auto_rickshaw_avg_time_s": {
+      "baseline": 319.4,
+      "oneway": 320.8,
+      "change": 1.4,
+      "pct": 0.4,
+      "verdict": "BETTER"
+    },
+    "bicycle_count": {
+      "baseline": 129,
+      "oneway": 129,
+      "change": 0,
+      "pct": 0.0,
+      "verdict": "SAME"
+    },
+    "bicycle_avg_time_s": {
+      "baseline": 684.3,
+      "oneway": 677.1,
+      "change": -7.2,
+      "pct": -1.1,
+      "verdict": "WORSE"
+    },
+    "truck_count": {
+      "baseline": 72,
+      "oneway": 72,
+      "change": 0,
+      "pct": 0.0,
+      "verdict": "SAME"
+    },
+    "truck_avg_time_s": {
+      "baseline": 360.2,
+      "oneway": 357.8,
+      "change": -2.4,
+      "pct": -0.7,
+      "verdict": "WORSE"
+    }
+  },
+  "high_demand_baseline": {
+    "total_vehicles": 1456,
+    "completed_vehicles": 1456,
+    "completion_rate_pct": 100.0,
+    "avg_travel_time_s": 316.8,
+    "median_travel_time_s": 286.0,
+    "avg_time_loss_s": 44.0,
+    "total_time_loss_s": 64118.9,
+    "avg_waiting_time_s": 1.3,
+    "avg_route_length_m": 3273.2,
+    "avg_speed_kmh": 39.4,
+    "motorcycle_count": 666,
+    "motorcycle_avg_time_s": 262.7,
+    "bus_count": 73,
+    "bus_avg_time_s": 299.6,
+    "car_count": 301,
+    "car_avg_time_s": 270.9,
+    "auto_rickshaw_count": 215,
+    "auto_rickshaw_avg_time_s": 319.4,
+    "bicycle_count": 129,
+    "bicycle_avg_time_s": 684.3,
+    "truck_count": 72,
+    "truck_avg_time_s": 360.2
+  },
+  "high_demand_oneway": {
+    "total_vehicles": 1450,
+    "completed_vehicles": 1450,
+    "completion_rate_pct": 100.0,
+    "avg_travel_time_s": 316.5,
+    "median_travel_time_s": 286.0,
+    "avg_time_loss_s": 44.1,
+    "total_time_loss_s": 63992.5,
+    "avg_waiting_time_s": 1.0,
+    "avg_route_length_m": 3268.7,
+    "avg_speed_kmh": 39.4,
+    "motorcycle_count": 665,
+    "motorcycle_avg_time_s": 262.0,
+    "bus_count": 72,
+    "bus_avg_time_s": 301.2,
+    "car_count": 298,
+    "car_avg_time_s": 272.8,
+    "auto_rickshaw_count": 214,
+    "auto_rickshaw_avg_time_s": 320.8,
+    "bicycle_count": 129,
+    "bicycle_avg_time_s": 677.1,
+    "truck_count": 72,
+    "truck_avg_time_s": 357.8
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "vehicles_completed": 712,
+  "avg_travel_time_s": 397.7,
+  "median_travel_time_s": 345.5,
+  "p95_travel_time_s": 907.0,
+  "avg_time_loss_s": 75.2,
+  "avg_waiting_time_s": 0.9,
+  "avg_speed_kmh": 33.3,
+  "avg_route_length_m": 3305.9
+}

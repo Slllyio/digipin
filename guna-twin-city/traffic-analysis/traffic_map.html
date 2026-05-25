@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guna Traffic Analysis Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Inter, sans-serif; background: #1a1a2e; color: #e8e8e8; }
+        #map { position: absolute; top: 0; left: 0; right: 350px; bottom: 0; }
+        #sidebar { position: absolute; top: 0; right: 0; width: 350px; bottom: 0;
+                   background: #16213e; overflow-y: auto; padding: 20px; border-left: 2px solid #0f3460; }
+        h1 { font-size: 18px; color: #00e5ff; margin-bottom: 4px; }
+        h2 { font-size: 14px; color: #7c4dff; margin: 16px 0 8px; border-bottom: 1px solid #0f3460; padding-bottom: 4px; }
+        .subtitle { font-size: 12px; color: #888; margin-bottom: 16px; }
+        .stat { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+        .stat-label { color: #aaa; }
+        .stat-value { color: #00e5ff; font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+        th { background: #0f3460; color: #00e5ff; padding: 6px 4px; text-align: left; }
+        td { padding: 4px; border-bottom: 1px solid #1a1a3e; }
+        .legend { margin-top: 16px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 12px; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .legend-line { width: 24px; height: 4px; border-radius: 2px; flex-shrink: 0; }
+        .custom-label .label-text {
+            background: rgba(0,0,0,0.75); color: #fff; font-size: 11px;
+            padding: 2px 6px; border-radius: 4px; white-space: nowrap;
+            border: 1px solid rgba(0,229,255,0.3);
+        }
+        .bottleneck-callout { background: #1a1a3e; border: 1px solid #ff1744; border-radius: 8px;
+                              padding: 10px; margin: 8px 0; font-size: 12px; }
+        .bottleneck-callout strong { color: #ff1744; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="sidebar">
+        <h1>Guna Traffic Analysis</h1>
+        <div class="subtitle">Road network bottlenecks & one-way proposals</div>
+
+        <h2>Key Statistics</h2>
+        <div class="stat"><span class="stat-label">Total road segments</span><span class="stat-value">8470</span></div>
+        <div class="stat"><span class="stat-label">Total road length</span><span class="stat-value">3297.11 km</span></div>
+        <div class="stat"><span class="stat-label">City-core segments</span><span class="stat-value">3340</span></div>
+        <div class="stat"><span class="stat-label">One-way segments</span><span class="stat-value">159</span></div>
+        <div class="stat"><span class="stat-label">City one-way segments</span><span class="stat-value">63</span></div>
+        <div class="stat"><span class="stat-label">High-traffic intersections</span><span class="stat-value">12</span></div>
+
+        <div class="bottleneck-callout">
+            <strong>Primary Bottleneck:</strong> [24.6451, 77.3076]<br>
+            7 roads converge at a single point. This intersection needs grade separation or a multi-arm roundabout.
+        </div>
+
+        <h2>Road Classification</h2>
+        <table>
+            <tr><th>Type</th><th>Segs</th><th>km</th><th>1-Way</th></tr>
+            <tr><td>residential</td><td>5218</td><td>1256.76</td><td>15</td></tr><tr><td>unclassified</td><td>1315</td><td>880.46</td><td>22</td></tr><tr><td>track</td><td>423</td><td>298.68</td><td>0</td></tr><tr><td>tertiary</td><td>436</td><td>298.41</td><td>8</td></tr><tr><td>primary</td><td>70</td><td>196.32</td><td>11</td></tr><tr><td>trunk</td><td>89</td><td>148.35</td><td>62</td></tr><tr><td>service</td><td>699</td><td>115.62</td><td>18</td></tr><tr><td>secondary</td><td>194</td><td>101.17</td><td>12</td></tr><tr><td>trunk_link</td><td>25</td><td>1.34</td><td>11</td></tr><tr><td>primary_link</td><td>1</td><td>0.01</td><td>0</td></tr>
+        </table>
+
+        <h2>Legend</h2>
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#ff1744"></div> Critical intersection (6+ roads)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ff9100"></div> Major intersection (5 roads)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ffd600"></div> Intersection (4 roads)</div>
+            <div class="legend-item"><div class="legend-line" style="background:#00e676"></div> Proposed one-way (north/outbound)</div>
+            <div class="legend-item"><div class="legend-line" style="background:#ff5252"></div> Proposed one-way (south/return)</div>
+            <div class="legend-item"><div class="legend-line" style="background:#448aff"></div> Station-Bus Stand link</div>
+            <div class="legend-item"><div class="legend-line" style="background:#ffab40"></div> Bus Stand-Station return</div>
+        </div>
+
+        <h2>One-Way Proposals</h2>
+        <p style="font-size:12px;color:#aaa;margin-bottom:8px;">Dashed lines on map show proposed one-way corridors. Each pair has a forward and return route.</p>
+        <div style="font-size:12px;">
+            <strong style="color:#00e676;">Corridor A:</strong> Market area one-way pair (1.5 km each)<br>
+            <strong style="color:#448aff;">Corridor B:</strong> Station-Bus Stand link (1 km each)<br>
+        </div>
+
+        <h2>Data Sources</h2>
+        <p style="font-size:11px;color:#666;">
+            OpenStreetMap (8,470 segments) | NHAI NH-46 data | MoRTH traffic census |
+            Google Routes API (when configured) | Mappls/MapMyIndia
+        </p>
+    </div>
+
+    <script>
+        var map = L.map('map').setView([24.6354, 77.3126], 14);
+
+        // Dark tile layer
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png', {
+            attribution: '&copy; CARTO &copy; OSM contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Layer groups
+        var intersectionLayer = L.layerGroup().addTo(map);
+        var corridorLayer = L.layerGroup().addTo(map);
+        var labelLayer = L.layerGroup().addTo(map);
+
+        // Add intersection markers
+        
+        L.circleMarker([24.6451, 77.3076], {
+            radius: 22,
+            fillColor: '#ff1744',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #1</b><br>7 connecting roads<br>Lat: 24.6451, Lng: 77.3076');
+        
+        L.circleMarker([24.6387, 77.3044], {
+            radius: 18,
+            fillColor: '#ff9100',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #2</b><br>5 connecting roads<br>Lat: 24.6387, Lng: 77.3044');
+        
+        L.circleMarker([24.6627, 77.3273], {
+            radius: 16,
+            fillColor: '#ffd600',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #3</b><br>4 connecting roads<br>Lat: 24.6627, Lng: 77.3273');
+        
+        L.circleMarker([24.6443, 77.3279], {
+            radius: 16,
+            fillColor: '#ffd600',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #4</b><br>4 connecting roads<br>Lat: 24.6443, Lng: 77.3279');
+        
+        L.circleMarker([24.6447, 77.3256], {
+            radius: 16,
+            fillColor: '#ffd600',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #5</b><br>4 connecting roads<br>Lat: 24.6447, Lng: 77.3256');
+        
+        L.circleMarker([24.6619, 77.2958], {
+            radius: 16,
+            fillColor: '#ffd600',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #6</b><br>4 connecting roads<br>Lat: 24.6619, Lng: 77.2958');
+        
+        L.circleMarker([24.6378, 77.3208], {
+            radius: 16,
+            fillColor: '#ffd600',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #7</b><br>4 connecting roads<br>Lat: 24.6378, Lng: 77.3208');
+        
+        L.circleMarker([24.6943, 77.322], {
+            radius: 16,
+            fillColor: '#ffd600',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #8</b><br>4 connecting roads<br>Lat: 24.6943, Lng: 77.322');
+        
+        L.circleMarker([24.6369, 77.3044], {
+            radius: 16,
+            fillColor: '#ffd600',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #9</b><br>4 connecting roads<br>Lat: 24.6369, Lng: 77.3044');
+        
+        L.circleMarker([24.6722, 77.3341], {
+            radius: 16,
+            fillColor: '#ffd600',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #10</b><br>4 connecting roads<br>Lat: 24.6722, Lng: 77.3341');
+        
+        L.circleMarker([24.6608, 77.3318], {
+            radius: 16,
+            fillColor: '#ffd600',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #11</b><br>4 connecting roads<br>Lat: 24.6608, Lng: 77.3318');
+        
+        L.circleMarker([24.648, 77.3179], {
+            radius: 16,
+            fillColor: '#ffd600',
+            color: '#fff',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.7
+        }).addTo(intersectionLayer).bindPopup('<b>Intersection #12</b><br>4 connecting roads<br>Lat: 24.648, Lng: 77.3179');
+        
+
+        // Add corridor proposals
+        
+        L.polyline([[24.642, 77.308], [24.645, 77.308], [24.648, 77.307], [24.651, 77.307]], {
+            color: '#00e676',
+            weight: 6,
+            opacity: 0.8,
+            dashArray: '12, 8'
+        }).addTo(corridorLayer).bindPopup('<b>Corridor A: Market Area (Northbound)</b><br>Direction: Northbound');
+
+        // Arrow markers
+        var coords_6405 = [[24.642, 77.308], [24.645, 77.308], [24.648, 77.307], [24.651, 77.307]];
+        for (var i = 0; i < coords_6405.length - 1; i++) {
+            var mid = [(coords_6405[i][0] + coords_6405[i+1][0])/2,
+                       (coords_6405[i][1] + coords_6405[i+1][1])/2];
+            L.circleMarker(mid, {
+                radius: 4,
+                fillColor: '#00e676',
+                color: '#00e676',
+                weight: 1,
+                fillOpacity: 1
+            }).addTo(corridorLayer);
+        }
+        
+        L.polyline([[24.651, 77.31], [24.648, 77.31], [24.645, 77.311], [24.642, 77.311]], {
+            color: '#ff5252',
+            weight: 6,
+            opacity: 0.8,
+            dashArray: '12, 8'
+        }).addTo(corridorLayer).bindPopup('<b>Corridor A: Market Area (Southbound)</b><br>Direction: Southbound');
+
+        // Arrow markers
+        var coords_9016 = [[24.651, 77.31], [24.648, 77.31], [24.645, 77.311], [24.642, 77.311]];
+        for (var i = 0; i < coords_9016.length - 1; i++) {
+            var mid = [(coords_9016[i][0] + coords_9016[i+1][0])/2,
+                       (coords_9016[i][1] + coords_9016[i+1][1])/2];
+            L.circleMarker(mid, {
+                radius: 4,
+                fillColor: '#ff5252',
+                color: '#ff5252',
+                weight: 1,
+                fillOpacity: 1
+            }).addTo(corridorLayer);
+        }
+        
+        L.polyline([[24.633, 77.312], [24.636, 77.313], [24.639, 77.314], [24.64, 77.315]], {
+            color: '#448aff',
+            weight: 6,
+            opacity: 0.8,
+            dashArray: '12, 8'
+        }).addTo(corridorLayer).bindPopup('<b>Corridor B: Station to Bus Stand</b><br>Direction: Station -> Bus Stand');
+
+        // Arrow markers
+        var coords_7784 = [[24.633, 77.312], [24.636, 77.313], [24.639, 77.314], [24.64, 77.315]];
+        for (var i = 0; i < coords_7784.length - 1; i++) {
+            var mid = [(coords_7784[i][0] + coords_7784[i+1][0])/2,
+                       (coords_7784[i][1] + coords_7784[i+1][1])/2];
+            L.circleMarker(mid, {
+                radius: 4,
+                fillColor: '#448aff',
+                color: '#448aff',
+                weight: 1,
+                fillOpacity: 1
+            }).addTo(corridorLayer);
+        }
+        
+        L.polyline([[24.64, 77.316], [24.637, 77.315], [24.635, 77.314], [24.633, 77.313]], {
+            color: '#ffab40',
+            weight: 6,
+            opacity: 0.8,
+            dashArray: '12, 8'
+        }).addTo(corridorLayer).bindPopup('<b>Corridor B: Bus Stand to Station</b><br>Direction: Bus Stand -> Station');
+
+        // Arrow markers
+        var coords_3251 = [[24.64, 77.316], [24.637, 77.315], [24.635, 77.314], [24.633, 77.313]];
+        for (var i = 0; i < coords_3251.length - 1; i++) {
+            var mid = [(coords_3251[i][0] + coords_3251[i+1][0])/2,
+                       (coords_3251[i][1] + coords_3251[i+1][1])/2];
+            L.circleMarker(mid, {
+                radius: 4,
+                fillColor: '#ffab40',
+                color: '#ffab40',
+                weight: 1,
+                fillOpacity: 1
+            }).addTo(corridorLayer);
+        }
+        
+
+        // Add location labels
+        
+        L.marker([24.6451, 77.3076], {
+            icon: L.divIcon({
+                className: 'custom-label',
+                html: '<div class="label-text">Primary Bottleneck (7 roads converge)</div>',
+                iconSize: [120, 30],
+                iconAnchor: [60, 15]
+            })
+        }).addTo(labelLayer);
+        
+        L.marker([24.6387, 77.3044], {
+            icon: L.divIcon({
+                className: 'custom-label',
+                html: '<div class="label-text">Secondary Bottleneck (5 roads converge)</div>',
+                iconSize: [120, 30],
+                iconAnchor: [60, 15]
+            })
+        }).addTo(labelLayer);
+        
+        L.marker([24.648, 77.318], {
+            icon: L.divIcon({
+                className: 'custom-label',
+                html: '<div class="label-text">SH-10/SH-54 Junction</div>',
+                iconSize: [120, 30],
+                iconAnchor: [60, 15]
+            })
+        }).addTo(labelLayer);
+        
+        L.marker([24.633, 77.312], {
+            icon: L.divIcon({
+                className: 'custom-label',
+                html: '<div class="label-text">Railway Station</div>',
+                iconSize: [120, 30],
+                iconAnchor: [60, 15]
+            })
+        }).addTo(labelLayer);
+        
+        L.marker([24.64, 77.315], {
+            icon: L.divIcon({
+                className: 'custom-label',
+                html: '<div class="label-text">Bus Stand Area</div>',
+                iconSize: [120, 30],
+                iconAnchor: [60, 15]
+            })
+        }).addTo(labelLayer);
+        
+        L.marker([24.685, 77.34], {
+            icon: L.divIcon({
+                className: 'custom-label',
+                html: '<div class="label-text">NH-46 North Entry</div>',
+                iconSize: [120, 30],
+                iconAnchor: [60, 15]
+            })
+        }).addTo(labelLayer);
+        
+        L.marker([24.6, 77.295], {
+            icon: L.divIcon({
+                className: 'custom-label',
+                html: '<div class="label-text">NH-46 South Exit</div>',
+                iconSize: [120, 30],
+                iconAnchor: [60, 15]
+            })
+        }).addTo(labelLayer);
+        
+
+        // Layer control
+        L.control.layers(null, {
+            'Bottleneck Intersections': intersectionLayer,
+            'One-Way Proposals': corridorLayer,
+            'Labels': labelLayer
+        }).addTo(map);
+    </script>
+</body>
+</html>

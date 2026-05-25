@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Guna Traffic Solutions -- Congestion & Parking Analysis</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: #0a0a1a; color: #e0e0e0; }
+#map { position: absolute; top: 0; left: 0; right: 420px; bottom: 0; }
+#panel { position: absolute; top: 0; right: 0; width: 420px; bottom: 0;
+         background: #0d1b2a; overflow-y: auto; padding: 20px;
+         border-left: 2px solid #1b2838; }
+h1 { font-size: 18px; color: #00e5ff; margin-bottom: 4px; }
+h2 { font-size: 14px; color: #7c4dff; margin: 16px 0 8px; border-bottom: 1px solid #1b2838;
+     padding-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.sub { font-size: 12px; color: #666; margin-bottom: 16px; }
+.stat { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+.stat-label { color: #aaa; }
+.stat-val { color: #00e5ff; font-weight: 600; }
+.section { background: #0d2137; border: 1px solid rgba(0,229,255,0.15); border-radius: 10px;
+           padding: 14px; margin: 10px 0; }
+.hotspot-item { padding: 6px 0; border-bottom: 1px solid #1b2838; font-size: 12px; cursor: pointer; }
+.hotspot-item:hover { background: rgba(0,229,255,0.05); }
+.hotspot-rank { color: #ff5252; font-weight: 700; width: 24px; display: inline-block; }
+.hotspot-name { color: #e0e0e0; }
+.hotspot-score { float: right; color: #ff9800; font-weight: 600; }
+.legend { margin-top: 8px; }
+.leg { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 12px; }
+.leg-box { width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; }
+.leg-line { width: 24px; height: 4px; border-radius: 2px; flex-shrink: 0; }
+.note { font-size: 11px; color: #666; margin-top: 8px; line-height: 1.6; }
+.tab-bar { display: flex; gap: 4px; margin: 12px 0; }
+.tab { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
+       cursor: pointer; border: 1px solid #1b2838; background: #0d1b2a; color: #888; }
+.tab.active { background: rgba(0,229,255,0.1); color: #00e5ff; border-color: #00e5ff; }
+#click-info { font-size: 12px; color: #ccc; margin-top: 8px; padding: 10px;
+              background: rgba(0,0,0,0.3); border-radius: 8px; min-height: 40px; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="panel">
+    <h1>Guna Traffic Solutions</h1>
+    <div class="sub">Congestion Hotspots + Parking Pressure Analysis</div>
+    <div class="tab-bar" id="tab-bar"></div>
+    <div id="tab-congestion"></div>
+    <div id="tab-parking" style="display:none"></div>
+    <h2>Click Details</h2>
+    <div id="click-info">Click any element on the map for details.</div>
+</div>
+
+<script>
+var map = L.map('map').setView([24.6354, 77.3126], 14);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png', {
+    attribution: '&copy; CARTO &copy; OSM', maxZoom: 19
+}).addTo(map);
+
+var hotspots = [{"edge_id": "207633243#1", "name": "207633243#1", "congestion_score": 138.4, "avg_speed_kmh": 24.9, "speed_limit_kmh": 100.0, "speed_ratio": 0.25, "total_vehicles": 267, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.2, "avg_occupancy": 1.95, "length_m": 0.2, "lanes": 2, "coords": [[24.644697357369967, 77.30972389232936], [24.644698062260094, 77.30972207817615]]}, {"edge_id": "910337107#1", "name": "910337107#1", "congestion_score": 135.7, "avg_speed_kmh": 24.0, "speed_limit_kmh": 100.0, "speed_ratio": 0.24, "total_vehicles": 109, "total_waiting_s": 13.0, "wait_per_vehicle_s": 0.1, "timeloss_per_vehicle_s": 1.1, "avg_occupancy": 1.82, "length_m": 8.4, "lanes": 1, "coords": [[24.650667698452402, 77.31176667014282], [24.650635041832803, 77.31184162607903]]}, {"edge_id": "207633243#5", "name": "207633243#5", "congestion_score": 129.5, "avg_speed_kmh": 26.4, "speed_limit_kmh": 100.0, "speed_ratio": 0.26, "total_vehicles": 256, "total_waiting_s": 2.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.4, "avg_occupancy": 1.75, "length_m": 4.2, "lanes": 2, "coords": [[24.6449788611535, 77.30985855188142], [24.644970497659514, 77.3098770643047]]}, {"edge_id": "100497124#1", "name": "100497124#1", "congestion_score": 122.8, "avg_speed_kmh": 33.1, "speed_limit_kmh": 100.0, "speed_ratio": 0.33, "total_vehicles": 149, "total_waiting_s": 4.5, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.5, "avg_occupancy": 1.71, "length_m": 12.6, "lanes": 1, "coords": [[24.650780296051213, 77.31149456404731], [24.650733868741458, 77.31160798356905]]}, {"edge_id": "207633243#4", "name": "207633243#4", "congestion_score": 121.4, "avg_speed_kmh": 28.4, "speed_limit_kmh": 100.0, "speed_ratio": 0.28, "total_vehicles": 249, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.1, "avg_occupancy": 1.6, "length_m": 0.2, "lanes": 2, "coords": [[24.644975281185626, 77.30975379646117], [24.64497579379615, 77.30975568240515]]}, {"edge_id": "100497101#12", "name": "100497101#12", "congestion_score": 118.5, "avg_speed_kmh": 30.0, "speed_limit_kmh": 100.0, "speed_ratio": 0.3, "total_vehicles": 115, "total_waiting_s": 34.5, "wait_per_vehicle_s": 0.3, "timeloss_per_vehicle_s": 2.0, "avg_occupancy": 1.46, "length_m": 39.0, "lanes": 1, "coords": [[24.64539980959273, 77.30977711495086], [24.645047879088796, 77.30977577408547]]}, {"edge_id": "-910337107#0", "name": "-910337107#0", "congestion_score": 116.3, "avg_speed_kmh": 32.3, "speed_limit_kmh": 100.0, "speed_ratio": 0.32, "total_vehicles": 147, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.6, "avg_occupancy": 1.53, "length_m": 12.4, "lanes": 1, "coords": [[24.650760209765174, 77.31162081485648], [24.65080579148943, 77.31150955264131]]}, {"edge_id": "909983407#6", "name": "909983407#6", "congestion_score": 112.8, "avg_speed_kmh": 30.8, "speed_limit_kmh": 100.0, "speed_ratio": 0.31, "total_vehicles": 120, "total_waiting_s": 19.5, "wait_per_vehicle_s": 0.2, "timeloss_per_vehicle_s": 1.6, "avg_occupancy": 1.36, "length_m": 32.7, "lanes": 1, "coords": [[24.65176906290134, 77.32005637893683], [24.652030324097257, 77.3202063999949]]}, {"edge_id": "207633243#3", "name": "207633243#3", "congestion_score": 111.2, "avg_speed_kmh": 31.4, "speed_limit_kmh": 100.0, "speed_ratio": 0.31, "total_vehicles": 247, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.4, "avg_occupancy": 1.39, "length_m": 10.3, "lanes": 2, "coords": [[24.644831988040558, 77.30963891466116], [24.64487049308511, 77.30964145034379], [24.644919592142188, 77.30966827931405]]}, {"edge_id": "207633243#7", "name": "207633243#7", "congestion_score": 109.6, "avg_speed_kmh": 31.0, "speed_limit_kmh": 100.0, "speed_ratio": 0.31, "total_vehicles": 241, "total_waiting_s": 0.5, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.7, "avg_occupancy": 1.33, "length_m": 19.6, "lanes": 2, "coords": [[24.644803560264496, 77.30997320007496], [24.644764086180313, 77.30996323919405], [24.64471159272266, 77.30991940974006], [24.644680259232764, 77.30985552569828], [24.644680017003797, 77.30985073121178]]}, {"edge_id": "909592093#4", "name": "909592093#4", "congestion_score": 107.0, "avg_speed_kmh": 34.4, "speed_limit_kmh": 100.0, "speed_ratio": 0.34, "total_vehicles": 135, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.1, "avg_occupancy": 1.36, "length_m": 0.2, "lanes": 1, "coords": [[24.64882419327974, 77.31609670847469], [24.648823353710725, 77.31609847077547]]}, {"edge_id": "910337106", "name": "910337106", "congestion_score": 106.9, "avg_speed_kmh": 34.3, "speed_limit_kmh": 100.0, "speed_ratio": 0.34, "total_vehicles": 117, "total_waiting_s": 55.5, "wait_per_vehicle_s": 0.5, "timeloss_per_vehicle_s": 2.6, "avg_occupancy": 1.22, "length_m": 63.1, "lanes": 1, "coords": [[24.648223100398752, 77.31736739919074], [24.64805103566398, 77.31779563077923], [24.647994309139158, 77.31793858350433]]}, {"edge_id": "765326089#2", "name": "765326089#2", "congestion_score": 104.8, "avg_speed_kmh": 31.8, "speed_limit_kmh": 100.0, "speed_ratio": 0.32, "total_vehicles": 173, "total_waiting_s": 170.5, "wait_per_vehicle_s": 1.0, "timeloss_per_vehicle_s": 3.1, "avg_occupancy": 1.06, "length_m": 77.8, "lanes": 2, "coords": [[24.643943832096706, 77.3097076558044], [24.644640648746627, 77.3098045261439]]}, {"edge_id": "207633243#2", "name": "207633243#2", "congestion_score": 102.7, "avg_speed_kmh": 28.9, "speed_limit_kmh": 100.0, "speed_ratio": 0.29, "total_vehicles": 177, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.1, "avg_occupancy": 1.14, "length_m": 0.2, "lanes": 2, "coords": [[24.644732504681684, 77.30967767582315], [24.644733878793847, 77.30967636780169]]}, {"edge_id": "-100497101#12", "name": "-100497101#12", "congestion_score": 99.1, "avg_speed_kmh": 35.5, "speed_limit_kmh": 100.0, "speed_ratio": 0.35, "total_vehicles": 108, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 1.2, "avg_occupancy": 1.14, "length_m": 39.0, "lanes": 1, "coords": [[24.64504784458694, 77.3098073778574], [24.645399775084094, 77.30980871881145]]}, {"edge_id": "909595038#0", "name": "909595038#0", "congestion_score": 88.3, "avg_speed_kmh": 22.5, "speed_limit_kmh": 50.0, "speed_ratio": 0.45, "total_vehicles": 87, "total_waiting_s": 6.5, "wait_per_vehicle_s": 0.1, "timeloss_per_vehicle_s": 0.8, "avg_occupancy": 1.4, "length_m": 6.8, "lanes": 1, "coords": [[24.65225198958706, 77.30715646018], [24.652264597626534, 77.30715837110084], [24.652313302295433, 77.30716094577302]]}, {"edge_id": "909592093#0", "name": "909592093#0", "congestion_score": 87.5, "avg_speed_kmh": 39.5, "speed_limit_kmh": 100.0, "speed_ratio": 0.4, "total_vehicles": 109, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.4, "avg_occupancy": 0.96, "length_m": 12.1, "lanes": 1, "coords": [[24.650605645220814, 77.31196869280483], [24.65057514107255, 77.31207973863631], [24.650573738824107, 77.31208287337536]]}, {"edge_id": "909592093#5", "name": "909592093#5", "congestion_score": 86.1, "avg_speed_kmh": 44.0, "speed_limit_kmh": 100.0, "speed_ratio": 0.44, "total_vehicles": 120, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.3, "avg_occupancy": 1.02, "length_m": 17.3, "lanes": 1, "coords": [[24.648771787465474, 77.31621712517484], [24.64873937210564, 77.3162938609527], [24.648701461140874, 77.31636990264957]]}, {"edge_id": "100497101#10", "name": "100497101#10", "congestion_score": 85.6, "avg_speed_kmh": 45.0, "speed_limit_kmh": 100.0, "speed_ratio": 0.45, "total_vehicles": 122, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 1.2, "avg_occupancy": 0.99, "length_m": 112.5, "lanes": 1, "coords": [[24.646971364798116, 77.30981779087578], [24.645955869207214, 77.30979376806614]]}, {"edge_id": "909028766#0", "name": "909028766#0", "congestion_score": 85.1, "avg_speed_kmh": 43.2, "speed_limit_kmh": 100.0, "speed_ratio": 0.43, "total_vehicles": 122, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 1.6, "avg_occupancy": 0.93, "length_m": 134.1, "lanes": 1, "coords": [[24.652137310484964, 77.3202226011159], [24.65219498729629, 77.32024035964108], [24.65248507593415, 77.32041748369228], [24.653205895937543, 77.32084130178806]]}, {"edge_id": "909028766#1", "name": "909028766#1", "congestion_score": 84.0, "avg_speed_kmh": 43.1, "speed_limit_kmh": 100.0, "speed_ratio": 0.43, "total_vehicles": 120, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.6, "avg_occupancy": 0.94, "length_m": 43.5, "lanes": 1, "coords": [[24.653281562197204, 77.32088655524622], [24.65346389083438, 77.32099817988399], [24.6536238605953, 77.32109635356932]]}, {"edge_id": "-100497101#10", "name": "-100497101#10", "congestion_score": 82.7, "avg_speed_kmh": 45.5, "speed_limit_kmh": 100.0, "speed_ratio": 0.46, "total_vehicles": 111, "total_waiting_s": 4.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.9, "avg_occupancy": 0.94, "length_m": 112.5, "lanes": 1, "coords": [[24.645955293235918, 77.3098253621017], [24.646970788803095, 77.30984938516623]]}, {"edge_id": "909983407#3", "name": "909983407#3", "congestion_score": 82.2, "avg_speed_kmh": 41.9, "speed_limit_kmh": 100.0, "speed_ratio": 0.42, "total_vehicles": 116, "total_waiting_s": 4.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.3, "avg_occupancy": 0.88, "length_m": 21.1, "lanes": 1, "coords": [[24.651339528535303, 77.31980803470601], [24.651506799703526, 77.31990693262678]]}, {"edge_id": "207633243#6", "name": "207633243#6", "congestion_score": 81.4, "avg_speed_kmh": 33.3, "speed_limit_kmh": 100.0, "speed_ratio": 0.33, "total_vehicles": 125, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.3, "avg_occupancy": 0.69, "length_m": 3.4, "lanes": 2, "coords": [[24.644908810562978, 77.30995271778339], [24.644893230852237, 77.30996502341617], [24.644882497010826, 77.30996744310414]]}, {"edge_id": "100497101#11", "name": "100497101#11", "congestion_score": 79.9, "avg_speed_kmh": 46.2, "speed_limit_kmh": 100.0, "speed_ratio": 0.46, "total_vehicles": 116, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.3, "avg_occupancy": 0.91, "length_m": 32.9, "lanes": 1, "coords": [[24.645825852481078, 77.30978999257226], [24.645528761644357, 77.3097796856163]]}, {"edge_id": "909592093#7", "name": "909592093#7", "congestion_score": 78.7, "avg_speed_kmh": 47.7, "speed_limit_kmh": 100.0, "speed_ratio": 0.48, "total_vehicles": 118, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.3, "avg_occupancy": 0.91, "length_m": 22.9, "lanes": 1, "coords": [[24.648381006141307, 77.31710799245711], [24.648297637866055, 77.31729865175977], [24.64828916055571, 77.31730985330896]]}, {"edge_id": "-765326089#2", "name": "-765326089#2", "congestion_score": 77.8, "avg_speed_kmh": 38.3, "speed_limit_kmh": 100.0, "speed_ratio": 0.38, "total_vehicles": 147, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 1.3, "avg_occupancy": 0.66, "length_m": 77.8, "lanes": 2, "coords": [[24.644647930976365, 77.30974184659846], [24.643951115779185, 77.3096448778595]]}, {"edge_id": "-100497101#11", "name": "-100497101#11", "congestion_score": 77.6, "avg_speed_kmh": 47.3, "speed_limit_kmh": 100.0, "speed_ratio": 0.47, "total_vehicles": 108, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.1, "avg_occupancy": 0.88, "length_m": 32.9, "lanes": 1, "coords": [[24.645527824717938, 77.30981127290168], [24.64582491554704, 77.30982157993202]]}, {"edge_id": "-765326089#0", "name": "-765326089#0", "congestion_score": 77.0, "avg_speed_kmh": 43.0, "speed_limit_kmh": 100.0, "speed_ratio": 0.43, "total_vehicles": 147, "total_waiting_s": 1.5, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 4.6, "avg_occupancy": 0.6, "length_m": 641.2, "lanes": 2, "coords": [[24.643646987327962, 77.30957562912316], [24.64343384224553, 77.30952143713894], [24.642686202819974, 77.30932778639213], [24.642180287703145, 77.30922292726291], [24.64141631646356, 77.30909929825229], [24.640255597480085, 77.30893607941205], [24.640107367447953, 77.30888688661882], [24.63994455363552, 77.30878518181486], [24.63976621053211, 77.30871894270598], [24.63946777242769, 77.3086729137408], [24.638780255938677, 77.30860807692765], [24.638160775785163, 77.30847141093626], [24.637979337280107, 77.30841568365295]]}, {"edge_id": "909592093#6", "name": "909592093#6", "congestion_score": 76.7, "avg_speed_kmh": 48.4, "speed_limit_kmh": 100.0, "speed_ratio": 0.48, "total_vehicles": 116, "total_waiting_s": 0.0, "wait_per_vehicle_s": 0.0, "timeloss_per_vehicle_s": 0.6, "avg_occupancy": 0.86, "length_m": 63.9, "lanes": 1, "coords": [[24.648662620744986, 77.3164535321487], [24.648417323172268, 77.3170241192442]]}];
+var supply = [];
+var demandGen = [{"id": 7013919327, "type": "node", "lat": 24.6485542, "lon": 77.3029885, "tags": {"addr:district": "Guna", "addr:full": "Choudram Ka Bagicha", "addr:postcode": "473001", "addr:state": "Madhya Pradesh", "amenity": "hospital", "name": "Ashirwad Hospital", "source": "OpenGovernmentData"}, "name": "Ashirwad Hospital", "category": "hospital"}, {"id": 7016272718, "type": "node", "lat": 24.6475352, "lon": 77.3052965, "tags": {"addr:district": "Guna", "addr:full": "Opposite To District Hospital, Dubey Colony,Laxmi Ganj", "addr:postcode": "473001", "addr:state": "Madhya Pradesh", "amenity": "hospital", "name": "Sahyog Hospital and Research Centre Pvt. Ltd.", "source": "OpenGovernmentData"}, "name": "Sahyog Hospital and Research Centre Pvt. Ltd.", "category": "hospital"}, {"id": 7288957728, "type": "node", "lat": 24.6466739, "lon": 77.3079143, "tags": {"addr:district": "Guna", "addr:full": "Sadar Bazar, Mathkari Colony, Choudhary Mohalla, Guna", "addr:postcode": "473001", "addr:state": "Madhya Pradesh", "amenity": "hospital", "name": "Dist. Hospital, Guna", "source": "OpenGovernmentData"}, "name": "Dist. Hospital, Guna", "category": "hospital"}, {"id": 7288957747, "type": "node", "lat": 24.6394293, "lon": 77.2963768, "tags": {"addr:district": "Guna", "addr:full": "Near Preeti Apartment, Soni Colony, Guna", "addr:postcode": "473001", "addr:state": "Madhya Pradesh", "amenity": "hospital", "name": "Unique Eye Care Hospital", "source": "OpenGovernmentData"}, "name": "Unique Eye Care Hospital", "category": "hospital"}, {"id": 7288957750, "type": "node", "lat": 24.6315973, "lon": 77.2921325, "tags": {"addr:district": "Guna", "addr:full": "Porwal Colony, Vindhyachal Colony, Model Town Colony, Guna", "addr:postcode": "473249", "addr:state": "Madhya Pradesh", "amenity": "hospital", "name": "Lions Eye Hospital", "source": "OpenGovernmentData"}, "name": "Lions Eye Hospital", "category": "hospital"}, {"id": 7288957774, "type": "node", "lat": 24.6340169, "lon": 77.3071983, "tags": {"addr:district": "Guna", "addr:full": "Krisnani Nagar, Guna", "addr:postcode": "473001", "addr:state": "Madhya Pradesh", "amenity": "hospital", "name": "Balaji Hospital And Research Center", "source": "OpenGovernmentData"}, "name": "Balaji Hospital And Research Center", "category": "hospital"}, {"id": 7288957791, "type": "node", "lat": 24.658904, "lon": 77.32311, "tags": {"addr:district": "Guna", "addr:full": "Dalvi Nagar Colony Road, New City Colony, Guna", "addr:postcode": "473001", "addr:state": "Madhya Pradesh", "amenity": "hospital", "name": "Minakshi Hospital", "source": "OpenGovernmentData"}, "name": "Minakshi Hospital", "category": "hospital"}, {"id": 7288957794, "type": "node", "lat": 24.6310499, "lon": 77.296138, "tags": {"addr:district": "Guna", "addr:full": "Diversion Road, Porwal Colony, Vindhyachal Colony, Model Town Colony, Guna", "addr:postcode": "473001", "addr:state": "Madhya Pradesh", "amenity": "hospital", "name": "Ram Hitech Hospital", "source": "OpenGovernmentData"}, "name": "Ram Hitech Hospital", "category": "hospital"}, {"id": 7288957812, "type": "node", "lat": 24.647089, "lon": 77.3102462, "tags": {"addr:district": "Guna", "addr:full": "Sadar Bazar, Choudhary Mohalla", "addr:postcode": "473001", "addr:state": "Madhya Pradesh", "amenity": "hospital", "name": "care Hospital", "source": "OpenGovernmentData"}, "name": "care Hospital", "category": "hospital"}, {"id": 7288957815, "type": "node", "lat": 24.6404289, "lon": 77.2979655, "tags": {"addr:district": "Guna", "addr:full": "Bhargava Colony, Gaushala Mahaveerpura, Guna", "addr:postcode": "473001", "addr:state": "Madhya Pradesh", "amenity": "hospital", "name": "Mahakal Hospital Guna", "source": "OpenGovernmentData"}, "name": "Mahakal Hospital Guna", "category": "hospital"}, {"id": 7288957818, "type": "node", "lat": 24.6328432, "lon": 77.2875573, "tags": {"addr:district": "Guna", "addr:full": "Gaushala Mahaveerpura, Guna", "addr:postcode": "473249", "addr:state": "Madhya Pradesh", "amenity": "hospital", "name": "Siddhi Vinayak Hospital", "source": "OpenGovernmentData"}, "name": "Siddhi Vinayak Hospital", "category": "hospital"}];
+var pressureZones = [];
+var busStops = [];
+
+var congestionLayer = L.layerGroup().addTo(map);
+var parkingSupplyLayer = L.layerGroup();
+var parkingDemandLayer = L.layerGroup();
+var parkingPressureLayer = L.layerGroup();
+var busStopLayer = L.layerGroup();
+
+/* ── Safe DOM helper ── */
+function setInfo(lines) {
+    var el = document.getElementById('click-info');
+    el.textContent = '';
+    lines.forEach(function(line, i) {
+        if (i > 0) el.appendChild(document.createElement('br'));
+        var span = document.createElement('span');
+        span.textContent = line;
+        if (i === 0) { span.style.fontWeight = '700'; span.style.color = '#00e5ff'; }
+        el.appendChild(span);
+    });
+}
+
+function buildListItem(rank, name, score, clickFn) {
+    var div = document.createElement('div');
+    div.className = 'hotspot-item';
+    var r = document.createElement('span'); r.className = 'hotspot-rank'; r.textContent = '#' + rank;
+    var n = document.createElement('span'); n.className = 'hotspot-name'; n.textContent = name.substring(0,30);
+    var s = document.createElement('span'); s.className = 'hotspot-score'; s.textContent = score;
+    div.appendChild(r); div.appendChild(n); div.appendChild(s);
+    div.addEventListener('click', clickFn);
+    return div;
+}
+
+function addStat(parent, label, valId) {
+    var row = document.createElement('div'); row.className = 'stat';
+    var l = document.createElement('span'); l.className = 'stat-label'; l.textContent = label;
+    var v = document.createElement('span'); v.className = 'stat-val'; v.id = valId; v.textContent = '--';
+    row.appendChild(l); row.appendChild(v);
+    parent.appendChild(row);
+}
+
+function addLegend(parent, items) {
+    var lg = document.createElement('div'); lg.className = 'legend';
+    items.forEach(function(item) {
+        var row = document.createElement('div'); row.className = 'leg';
+        var box = document.createElement('div');
+        box.className = item.isLine ? 'leg-line' : 'leg-box';
+        box.style.background = item.color;
+        if (item.extra) { for (var k in item.extra) box.style[k] = item.extra[k]; }
+        var txt = document.createElement('span'); txt.textContent = item.label;
+        row.appendChild(box); row.appendChild(txt);
+        lg.appendChild(row);
+    });
+    parent.appendChild(lg);
+}
+
+/* ── Build tab bar ── */
+(function() {
+    var bar = document.getElementById('tab-bar');
+    ['Congestion', 'Parking'].forEach(function(name) {
+        var btn = document.createElement('div');
+        btn.className = 'tab' + (name === 'Congestion' ? ' active' : '');
+        btn.textContent = name;
+        btn.addEventListener('click', function() {
+            showTab(name.toLowerCase());
+            bar.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+            btn.classList.add('active');
+        });
+        bar.appendChild(btn);
+    });
+})();
+
+/* ── Build congestion panel ── */
+(function() {
+    var panel = document.getElementById('tab-congestion');
+    var h = document.createElement('h2'); h.textContent = 'Congestion Hotspots'; panel.appendChild(h);
+    var sec = document.createElement('div'); sec.className = 'section';
+    addStat(sec, 'Hotspot edges analyzed', 's-hotspots');
+    addStat(sec, 'Worst avg speed', 's-worst-speed');
+    addStat(sec, 'Max wait/vehicle', 's-max-wait');
+    panel.appendChild(sec);
+    var h2 = document.createElement('h2'); h2.textContent = 'Top Bottleneck Streets'; panel.appendChild(h2);
+    var list = document.createElement('div'); list.id = 'hotspot-list'; panel.appendChild(list);
+    var h3 = document.createElement('h2'); h3.textContent = 'Legend'; panel.appendChild(h3);
+    addLegend(panel, [
+        {color:'#ff1744',isLine:true,label:'Critical (score > 40)'},
+        {color:'#ff9100',isLine:true,label:'Severe (20-40)'},
+        {color:'#ffd600',isLine:true,label:'Moderate (10-20)'},
+        {color:'#00e676',isLine:true,label:'Low (< 10)'}
+    ]);
+})();
+
+/* ── Build parking panel ── */
+(function() {
+    var panel = document.getElementById('tab-parking');
+    var h = document.createElement('h2'); h.textContent = 'Parking Supply'; panel.appendChild(h);
+    var sec = document.createElement('div'); sec.className = 'section';
+    addStat(sec, 'Parking areas', 's-parking');
+    addStat(sec, 'Demand generators', 's-demand');
+    addStat(sec, 'Bus stops (no-park)', 's-bus');
+    panel.appendChild(sec);
+    var h2 = document.createElement('h2'); h2.textContent = 'Highest Pressure Zones'; panel.appendChild(h2);
+    var list = document.createElement('div'); list.id = 'pressure-list'; panel.appendChild(list);
+    var h3 = document.createElement('h2'); h3.textContent = 'Legend'; panel.appendChild(h3);
+    addLegend(panel, [
+        {color:'#2196f3',isLine:false,label:'Parking supply (lot/area)'},
+        {color:'#ff5252',isLine:false,label:'Demand generator (hospital/school/temple)'},
+        {color:'#ff9800',isLine:true,label:'High parking pressure road'},
+        {color:'#ffd600',isLine:false,label:'Bus stop (no-parking zone)',extra:{width:'10px',height:'10px',borderRadius:'50%'}}
+    ]);
+})();
+
+function congestionColor(score) {
+    if (score > 40) return '#ff1744';
+    if (score > 20) return '#ff9100';
+    if (score > 10) return '#ffd600';
+    return '#00e676';
+}
+
+/* ── Congestion hotspots on map ── */
+hotspots.forEach(function(h, i) {
+    if (!h.coords || h.coords.length < 2) return;
+    var color = congestionColor(h.congestion_score);
+    var w = h.congestion_score > 40 ? 7 : h.congestion_score > 20 ? 5 : 3;
+    var line = L.polyline(h.coords, { color: color, weight: w, opacity: 0.85 }).addTo(congestionLayer);
+    line.on('click', function() {
+        setInfo([
+            h.name,
+            'Congestion score: ' + h.congestion_score,
+            'Speed: ' + h.avg_speed_kmh + ' / ' + h.speed_limit_kmh + ' km/h',
+            'Vehicles: ' + h.total_vehicles,
+            'Wait/veh: ' + h.wait_per_vehicle_s + 's',
+            'Time loss/veh: ' + h.timeloss_per_vehicle_s + 's',
+            'Lanes: ' + h.lanes + ' | Length: ' + h.length_m + 'm'
+        ]);
+    });
+    if (i < 10) {
+        var mid = h.coords[Math.floor(h.coords.length / 2)];
+        L.marker(mid, {icon: L.divIcon({
+            className: '',
+            html: '<div style="background:' + color + ';color:#000;font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;white-space:nowrap">' + (i+1) + '. ' + h.name.substring(0,20) + '</div>',
+            iconSize: [80, 14], iconAnchor: [40, 7]
+        })}).addTo(congestionLayer);
+    }
+});
+
+document.getElementById('s-hotspots').textContent = hotspots.length;
+if (hotspots.length > 0) {
+    var ws = Math.min.apply(null, hotspots.map(function(h) { return h.avg_speed_kmh; }));
+    var mw = Math.max.apply(null, hotspots.map(function(h) { return h.wait_per_vehicle_s; }));
+    document.getElementById('s-worst-speed').textContent = ws.toFixed(1) + ' km/h';
+    document.getElementById('s-max-wait').textContent = mw.toFixed(1) + 's';
+}
+
+var listEl = document.getElementById('hotspot-list');
+hotspots.slice(0, 20).forEach(function(h, i) {
+    listEl.appendChild(buildListItem(i+1, h.name, h.congestion_score, function() {
+        if (h.coords && h.coords.length > 0) map.setView(h.coords[0], 16);
+    }));
+});
+
+/* ── Parking supply on map ── */
+supply.forEach(function(s) {
+    if (!s.lat || !s.lon) return;
+    L.circleMarker([s.lat, s.lon], {
+        radius: 8, fillColor: '#2196f3', fillOpacity: 0.8, color: '#fff', weight: 1
+    }).addTo(parkingSupplyLayer).on('click', function() {
+        setInfo(['Parking: ' + (s.name || s.category),
+                 'Type: ' + s.category, 'Capacity: ' + s.capacity,
+                 'Access: ' + s.access, 'Fee: ' + s.fee]);
+    });
+});
+
+/* ── Demand generators ── */
+demandGen.forEach(function(d) {
+    if (!d.lat || !d.lon) return;
+    var icon = d.category === 'hospital' ? '+' : d.category === 'school' ? 'S' :
+               d.category === 'place_of_worship' ? 'T' : d.category === 'marketplace' ? 'M' : 'D';
+    L.marker([d.lat, d.lon], {icon: L.divIcon({
+        className: '',
+        html: '<div style="background:#ff5252;color:#fff;font-size:10px;font-weight:700;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff">' + icon + '</div>',
+        iconSize: [20, 20], iconAnchor: [10, 10]
+    })}).addTo(parkingDemandLayer).on('click', function() {
+        setInfo([d.name || d.category, 'Type: ' + d.category,
+                 'Generates parking demand in surrounding area']);
+    });
+});
+
+/* ── Parking pressure roads ── */
+pressureZones.forEach(function(p) {
+    if (p.coords && p.coords.length >= 2) {
+        var color = p.pressure_score > 30 ? '#ff1744' : p.pressure_score > 15 ? '#ff9800' : '#ffd600';
+        L.polyline(p.coords, { color: color, weight: 5, opacity: 0.7, dashArray: '10,6' })
+         .addTo(parkingPressureLayer).on('click', function() {
+            setInfo([p.road_name, 'Parking pressure: ' + p.pressure_score,
+                     'Demand nearby: ' + p.nearby_demand, 'Supply nearby: ' + p.nearby_supply,
+                     'Bus stops nearby: ' + p.nearby_bus_stops]);
+        });
+    }
+    L.circleMarker([p.lat, p.lon], {
+        radius: 6, fillColor: '#ff9800', fillOpacity: 0.7, color: '#fff', weight: 1
+    }).addTo(parkingPressureLayer);
+});
+
+/* ── Bus stops ── */
+busStops.forEach(function(b) {
+    if (!b.lat || !b.lon) return;
+    L.circleMarker([b.lat, b.lon], {
+        radius: 5, fillColor: '#ffd600', fillOpacity: 0.8, color: '#000', weight: 1
+    }).addTo(busStopLayer).on('click', function() {
+        setInfo(['Bus Stop', b.name || 'Unnamed', 'No-parking zone (100m radius)']);
+    });
+});
+
+document.getElementById('s-parking').textContent = supply.length;
+document.getElementById('s-demand').textContent = demandGen.length;
+document.getElementById('s-bus').textContent = busStops.length;
+
+var pListEl = document.getElementById('pressure-list');
+pressureZones.slice(0, 15).forEach(function(p, i) {
+    pListEl.appendChild(buildListItem(i+1, p.road_name, p.pressure_score, function() {
+        map.setView([p.lat, p.lon], 16);
+    }));
+});
+
+L.control.layers(null, {
+    'Congestion Hotspots': congestionLayer,
+    'Parking Supply': parkingSupplyLayer,
+    'Demand Generators': parkingDemandLayer,
+    'Parking Pressure': parkingPressureLayer,
+    'Bus Stops': busStopLayer
+}).addTo(map);
+
+function showTab(tab) {
+    document.getElementById('tab-congestion').style.display = tab === 'congestion' ? 'block' : 'none';
+    document.getElementById('tab-parking').style.display = tab === 'parking' ? 'block' : 'none';
+    if (tab === 'congestion') {
+        map.addLayer(congestionLayer);
+        map.removeLayer(parkingSupplyLayer); map.removeLayer(parkingDemandLayer);
+        map.removeLayer(parkingPressureLayer); map.removeLayer(busStopLayer);
+    } else {
+        map.removeLayer(congestionLayer);
+        map.addLayer(parkingSupplyLayer); map.addLayer(parkingDemandLayer);
+        map.addLayer(parkingPressureLayer); map.addLayer(busStopLayer);
+    }
+}
+</script>
+</body>
+</html>
