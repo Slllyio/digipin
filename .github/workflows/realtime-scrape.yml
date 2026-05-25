@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        source: [ndma_sachet, imd_warnings, imd_cityforecast, ncs_earthquakes, openaq_india]
+        source: [ndma_sachet, imd_warnings, imd_cityforecast, imd_nowcast, ncs_earthquakes, usgs_earthquakes, gdacs_disasters, openaq_india]
     steps:
       - uses: actions/checkout@v4
 
