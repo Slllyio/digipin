@@ -18,7 +18,9 @@
  */
 
 const RealtimeHeat = (() => {
-    const COG_LST = 'data/heat/modis_lst_2016-2024.tif';
+    // Region-tagged file matches pipeline/_lib/regions.py output.
+    // Default is INDORE_PILOT; swap suffix to _india_full for nationwide.
+    const COG_LST = 'data/heat/modis_lst_2016-2024_indore_pilot.tif';
     const YEARS = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
     // 8-point ring at ~10 km radius around the target cell, in degrees-ish.
     // 0.09° ≈ 10 km in latitude; longitude correction applied at sample time.
@@ -51,12 +53,14 @@ const RealtimeHeat = (() => {
     function _readBandsAt(gr, lat, lng) {
         if (!gr) return null;
         try {
-            const [px, py] = gr.toCanvasCoords([lng, lat]);
-            const x = Math.floor(px), y = Math.floor(py);
-            if (x < 0 || y < 0 || x >= gr.width || y >= gr.height) return null;
+            // Compute pixel coords from the georaster's bbox + pixel size.
+            // (The older `gr.toCanvasCoords([lng, lat])` API was removed.)
+            const col = Math.floor((lng - gr.xmin) / gr.pixelWidth);
+            const row = Math.floor((gr.ymax - lat) / gr.pixelHeight);
+            if (col < 0 || row < 0 || col >= gr.width || row >= gr.height) return null;
             const out = new Array(gr.values.length);
             for (let b = 0; b < gr.values.length; b++) {
-                out[b] = gr.values[b][y][x];
+                out[b] = gr.values[b][row][col];
             }
             return out;
         } catch (e) {

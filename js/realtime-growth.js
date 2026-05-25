@@ -12,9 +12,13 @@
  */
 
 const RealtimeGrowth = (() => {
-    const COG_BUILDINGS  = 'data/growth/buildings_temporal_2016-2023.tif';
-    const COG_VIIRS      = 'data/growth/viirs_2016-2024.tif';
-    const COG_GHSL       = 'data/growth/ghsl_pop_2025.tif';
+    // Region-tagged file names match pipeline/_lib/regions.py output.
+    // Default region is INDORE_PILOT; for nationwide deployment, swap
+    // the suffix to `_india_full` and re-run the pipeline with
+    // DIGIPIN_REGION=india_full set.
+    const COG_BUILDINGS  = 'data/growth/buildings_temporal_2016-2023_indore_pilot.tif';
+    const COG_VIIRS      = 'data/growth/viirs_2016-2024_indore_pilot.tif';
+    const COG_GHSL       = 'data/growth/ghsl_pop_2020_indore_pilot.tif';
     const RERA_SNAPSHOT  = 'data/realtime/rera_mp/latest.json';
     const RERA_RADIUS_KM = 2.0;
     const RERA_TTL_MS    = 5 * 60 * 1000;
@@ -32,20 +36,36 @@ const RealtimeGrowth = (() => {
         return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
     }
 
+    // Cache parsed georasters across calls — the COG fetch+parse is
+    // the slow bit, so amortise it across the whole session.
+    const _grCache = new Map();   // url -> Promise<georaster>
+
     async function _readCog(url, lat, lng) {
         // Uses georaster.browser.bundle.min.js loaded by index.html.
         // Returns Array<number> (one value per band) or null on failure.
         try {
             if (typeof parseGeoraster !== 'function') return null;
-            const resp = await fetch(url, { cache: 'force-cache' });
-            if (!resp.ok) return null;
-            const buf = await resp.arrayBuffer();
-            const gr = await parseGeoraster(buf);
-            const [px, py] = gr.toCanvasCoords([lng, lat]);
-            if (px < 0 || py < 0 || px >= gr.width || py >= gr.height) return null;
+            let grPromise = _grCache.get(url);
+            if (!grPromise) {
+                grPromise = (async () => {
+                    const resp = await fetch(url, { cache: 'force-cache' });
+                    if (!resp.ok) return null;
+                    const buf = await resp.arrayBuffer();
+                    return parseGeoraster(buf);
+                })();
+                _grCache.set(url, grPromise);
+            }
+            const gr = await grPromise;
+            if (!gr) return null;
+            // Manual pixel coordinate computation — the georaster.js API
+            // doesn't expose toCanvasCoords on the parsed object; use
+            // the bounding box + pixel size directly.
+            const col = Math.floor((lng - gr.xmin) / gr.pixelWidth);
+            const row = Math.floor((gr.ymax - lat) / gr.pixelHeight);
+            if (col < 0 || row < 0 || col >= gr.width || row >= gr.height) return null;
             const out = [];
             for (let b = 0; b < gr.values.length; b++) {
-                out.push(gr.values[b][py][px]);
+                out.push(gr.values[b][row][col]);
             }
             return out;
         } catch (e) {

@@ -44,6 +44,12 @@ const Panel = (() => {
             HeatWidget.attachTo(contentEl, data?.realtime?.heat || null, cell);
         }
 
+        // Bharatlas containment — fills in pincode + admin chain from
+        // pre-loaded PMTiles. Retried a few times because tile loading
+        // is async; without the retry the first cell-click after page
+        // load sometimes gets empty results.
+        _attachBharatlasContainment(cell);
+
         const dishaBtn = document.getElementById('ask-disha-btn');
         if (dishaBtn) {
             dishaBtn.addEventListener('click', () => {
@@ -168,6 +174,7 @@ const Panel = (() => {
                 </div>
                 <div class="coords">${cell.center.lat.toFixed(6)}&deg;N, ${cell.center.lng.toFixed(6)}&deg;E</div>
                 ${addr.fullAddress ? `<div class="address">${esc(addr.area || addr.city)}, ${esc(addr.district)}, ${esc(addr.state)} ${addr.pincode ? '- ' + esc(addr.pincode) : ''}</div>` : ''}
+                <div class="bharatlas-containment" id="bharatlas-containment-${cell.code.replace(/[^A-Za-z0-9]/g,'')}" data-lat="${cell.center.lat}" data-lng="${cell.center.lng}"></div>
             </div>`;
 
         // Environment card — numeric values are safe, but weatherDesc comes from our lookup so esc() for defense-in-depth
@@ -397,6 +404,41 @@ const Panel = (() => {
 
     function getCurrentCell() { return currentCell; }
     function getCurrentData() { return currentData; }
+
+    /**
+     * Populate the .bharatlas-containment div with the polygon-level
+     * containment chain (pincode + state + district + sub-district).
+     * Retries up to ~3s because PMTiles for the visible viewport may
+     * still be loading the first time a cell is clicked.
+     */
+    function _attachBharatlasContainment(cell) {
+        if (typeof Bharatlas === 'undefined') return;
+        const slug = cell.code.replace(/[^A-Za-z0-9]/g, '');
+        const el = document.getElementById('bharatlas-containment-' + slug);
+        if (!el) return;
+        let attempt = 0;
+        const maxAttempts = 12;   // 12 × 250ms = 3s budget
+        const tryLookup = () => {
+            const r = Bharatlas.lookup(cell.center.lat, cell.center.lng);
+            if (!r) return;
+            const items = [];
+            const pin   = r.datagov_pincodes?.primary;
+            const tehs  = r.lgd_subdistricts?.primary;
+            const dist  = r.lgd_districts?.primary;
+            const state = r.lgd_states?.primary;
+            if (pin)   items.push(`<span class="bh-chip"><span class="bh-lbl">PIN</span>${esc(pin)}</span>`);
+            if (tehs)  items.push(`<span class="bh-chip"><span class="bh-lbl">Tehsil</span>${esc(tehs)}</span>`);
+            if (dist)  items.push(`<span class="bh-chip"><span class="bh-lbl">District</span>${esc(dist)}</span>`);
+            if (state) items.push(`<span class="bh-chip"><span class="bh-lbl">State</span>${esc(state)}</span>`);
+            if (items.length > 0) {
+                el.innerHTML = `<div class="bh-row">${items.join('')}</div><div class="bh-source">via <a href="https://bharatlas.com" target="_blank" rel="noopener noreferrer">bharatlas</a> · LGD · data.gov.in</div>`;
+                return;   // success
+            }
+            attempt++;
+            if (attempt < maxAttempts) setTimeout(tryLookup, 250);
+        };
+        tryLookup();
+    }
 
     return { init, show, update, showError, close, switchTab, copyCode, getCurrentCell, getCurrentData };
 })();
