@@ -1,0 +1,4 @@
+# Append-only logs grow unbounded under cron — keep only the snapshot.
+*.jsonl
+*.csv
+seen_ids.txt
