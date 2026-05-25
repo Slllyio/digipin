@@ -3003,3 +3003,26 @@ body {
 .growth-widget__methods-body { padding: 6px 0; line-height: 1.4; }
 .growth-widget--unavailable { opacity: 0.7; }
 .growth-widget__msg { color: #cbd5e1; font-size: 11px; }
+
+/* Urban Heat Island widget — mirrors .growth-widget glass-morphism with a heat-themed accent */
+.heat-widget {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 10px;
+    padding: 12px;
+    margin: 10px 0;
+}
+.heat-widget__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.heat-widget__title { color: #cbd5e1; font-size: 12px; font-weight: 600; }
+.heat-widget__badge { color: #fff; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+.heat-widget__composite { color: #e2e8f0; font-size: 13px; margin-bottom: 6px; }
+.heat-widget__conf { color: #94a3b8; font-size: 11px; margin-left: 6px; }
+.heat-widget__why { color: #cbd5e1; font-size: 11px; }
+.heat-widget__why-title { color: #94a3b8; font-size: 10px; margin: 6px 0 4px; }
+.heat-widget__row { display: flex; gap: 8px; font-variant-numeric: tabular-nums; }
+.heat-widget__dim { width: 80px; }
+.heat-widget__val { color: #e2e8f0; }
+.heat-widget__methods { margin-top: 8px; color: #94a3b8; font-size: 10px; }
+.heat-widget__methods-body { padding: 6px 0; line-height: 1.4; }
+.heat-widget--unavailable { opacity: 0.7; }
+.heat-widget__msg { color: #cbd5e1; font-size: 11px; }
