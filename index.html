@@ -91,6 +91,10 @@
             <span class="tb-icon">&#128200;</span>
             <span class="tb-label">Growth</span>
         </button>
+        <button class="toolbar-btn" id="btn-heat" title="Urban Heat Island">
+            <span class="tb-icon">&#127777;&#65039;</span>
+            <span class="tb-label">Heat</span>
+        </button>
     </div>
 
     <!-- ===== SIDEBAR — QUERIES ===== -->
@@ -200,6 +204,10 @@
     <script src="js/realtime-growth.js"></script>
     <script src="js/growth-widget.js"></script>
     <script src="js/growth-overlay.js"></script>
+    <script src="js/heat-score.js"></script>
+    <script src="js/realtime-heat.js"></script>
+    <script src="js/heat-widget.js"></script>
+    <script src="js/heat-overlay.js"></script>
     <script src="js/data-fetcher.js"></script>
     <script src="js/building-intelligence.js"></script>
     <script src="js/overture-buildings.js"></script>
@@ -224,6 +232,9 @@
     <script>
     document.getElementById('btn-growth')?.addEventListener('click', () => {
         if (typeof GrowthOverlay !== 'undefined') GrowthOverlay.toggle();
+    });
+    document.getElementById('btn-heat')?.addEventListener('click', () => {
+        if (typeof HeatOverlay !== 'undefined') HeatOverlay.toggle();
     });
     </script>
 
