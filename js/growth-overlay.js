@@ -12,7 +12,7 @@ const GrowthOverlay = (() => {
     const SOURCE_ID = 'growth-overlay-src';
     const LAYER_ID  = 'growth-overlay-fill';
     const GRID_SIZE = 8;
-    const PROBE_URL = 'data/growth/buildings_temporal_2016-2023.tif';
+    const PROBE_URL = 'data/growth/buildings_temporal_2016-2023_indore_pilot.tif';
     let _active = false;
     let _horizon = 'nowcast';
     let _dataAvailable = null;   // tri-state: null|true|false

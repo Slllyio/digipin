@@ -1,0 +1,598 @@
+{
+  "mirrored_at": "2026-05-25T19:20:48Z",
+  "catalog_version": 1,
+  "catalog_generated": "2026-05-24T14:45:15.055293+00:00",
+  "formats": [
+    "pmtiles"
+  ],
+  "total_bytes": 1428736139,
+  "layer_count": 59,
+  "layers": [
+    {
+      "id": "lgd_states",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 3520986,
+      "rows": 36,
+      "source": "LGD",
+      "licence": "CC0-1.0 / CC-BY-4.0"
+    },
+    {
+      "id": "soi_states",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 4826221,
+      "rows": 40,
+      "source": "SOI",
+      "licence": "CC0-1.0 / CC-BY-4.0"
+    },
+    {
+      "id": "bhuvan_states",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 1147038,
+      "rows": 37,
+      "source": "Bhuvan",
+      "licence": "CC0-1.0 / CC-BY-4.0"
+    },
+    {
+      "id": "lgd_districts",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 12690364,
+      "rows": 785,
+      "source": "LGD",
+      "licence": "CC0-1.0 / CC-BY-4.0"
+    },
+    {
+      "id": "soi_districts",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 10128284,
+      "rows": 742,
+      "source": "SOI",
+      "licence": "CC0-1.0 / CC-BY-4.0"
+    },
+    {
+      "id": "bhuvan_districts",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 15114633,
+      "rows": 663,
+      "source": "Bhuvan",
+      "licence": "CC0-1.0 / CC-BY-4.0"
+    },
+    {
+      "id": "lgd_subdistricts",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 34118385,
+      "rows": 6471,
+      "source": "LGD",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "soi_subdistricts",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 22449178,
+      "rows": 4723,
+      "source": "SOI",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "lgd_blocks",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 36758638,
+      "rows": 7146,
+      "source": "LGD",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "bhuvan_blocks",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 39341155,
+      "rows": 6393,
+      "source": "Bhuvan",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "pmgsy_blocks",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 37787333,
+      "rows": 6637,
+      "source": "PMGSY",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "lgd_panchayats",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 189994168,
+      "rows": 319287,
+      "source": "LGD",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "lgd_villages",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 269837981,
+      "rows": 584615,
+      "source": "LGD",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "soi_village_points",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 60575972,
+      "rows": 576430,
+      "source": "SOI",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "lgd_parliament",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 10788391,
+      "rows": 543,
+      "source": "LGD",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "lgd_assembly",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 24419884,
+      "rows": 4177,
+      "source": "LGD",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "datagov_pincodes",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 20897963,
+      "rows": 19312,
+      "source": "data.gov.in",
+      "licence": "GODL-India"
+    },
+    {
+      "id": "bharatviz_pincodes",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 2362790,
+      "rows": 63864,
+      "source": "bharatviz",
+      "licence": "MIT"
+    },
+    {
+      "id": "gs_wildlife",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 9352459,
+      "rows": 665,
+      "source": "GatiShakti",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "bm_eco_zones",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 1102704,
+      "rows": 249,
+      "source": "Bharatmaps",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "soi_forests",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 47142540,
+      "rows": 57963,
+      "source": "SOI",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "bp_ramsar",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 911010,
+      "rows": 99,
+      "source": "Bharatmaps",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "bp_wetlands",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 373581813,
+      "rows": 207483,
+      "source": "Bharatmaps",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "wris_basin",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 1644733,
+      "rows": 25,
+      "source": "CWC",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "wris_subbasin",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 7783257,
+      "rows": 99,
+      "source": "CWC",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "wris_rivers",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 84360087,
+      "rows": 30546,
+      "source": "CWC",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "wards_bengaluru_gba",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 789655,
+      "rows": 369,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "corporation_bengaluru",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 20745,
+      "rows": 5,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_bengaluru_bbmp_2022",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 256845,
+      "rows": 243,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "bda_jurisdiction",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 905,
+      "rows": 1,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "bda_layouts",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 83377,
+      "rows": 149,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_chennai",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 214930,
+      "rows": 200,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_hyderabad",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 50706,
+      "rows": 145,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_mumbai",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 85246,
+      "rows": 24,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "electoral_wards_mumbai_2017",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 290460,
+      "rows": 227,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_kolkata",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 122240,
+      "rows": 141,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_pune",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 52045,
+      "rows": 58,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_ahmedabad",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 38253,
+      "rows": 48,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_jaipur",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 55708,
+      "rows": 150,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_gurugram",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 23148,
+      "rows": 35,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_kochi",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 77451,
+      "rows": 74,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_bhubaneshwar",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 268512,
+      "rows": 67,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_vizag",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 96542,
+      "rows": 98,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "wards_thane",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 46219,
+      "rows": 47,
+      "source": "OpenCity",
+      "licence": "ODbL-1.0"
+    },
+    {
+      "id": "india_boundary",
+      "formats_fetched": [],
+      "bytes_total": 0,
+      "rows": 1,
+      "source": "LGD",
+      "licence": "CC0-1.0 / CC-BY-4.0"
+    },
+    {
+      "id": "india_flood_inventory",
+      "formats_fetched": [],
+      "bytes_total": 0,
+      "rows": 1006,
+      "source": "IndiaFloodInventory",
+      "licence": "CC-BY-4.0"
+    },
+    {
+      "id": "gb_adm1",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 2790851,
+      "rows": 36,
+      "source": "geoBoundaries",
+      "licence": "CC-BY-4.0"
+    },
+    {
+      "id": "gb_adm2",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 4159480,
+      "rows": 735,
+      "source": "geoBoundaries",
+      "licence": "CC-BY-4.0"
+    },
+    {
+      "id": "gb_adm3",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 8181807,
+      "rows": 6824,
+      "source": "geoBoundaries",
+      "licence": "CC-BY-4.0"
+    },
+    {
+      "id": "gb_adm4",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 8466404,
+      "rows": 7143,
+      "source": "geoBoundaries",
+      "licence": "CC-BY-4.0"
+    },
+    {
+      "id": "high_courts",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 2763952,
+      "rows": 25,
+      "source": "LGD",
+      "licence": "CC0-1.0 / CC-BY-4.0"
+    },
+    {
+      "id": "ngt_zones",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 1818382,
+      "rows": 5,
+      "source": "LGD",
+      "licence": "CC0-1.0 / CC-BY-4.0"
+    },
+    {
+      "id": "nclt_benches",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 2225450,
+      "rows": 15,
+      "source": "LGD",
+      "licence": "CC0-1.0 / CC-BY-4.0"
+    },
+    {
+      "id": "seismic_zones",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 1240690,
+      "rows": 173,
+      "source": "data.gov.in",
+      "licence": "GODL-India"
+    },
+    {
+      "id": "bm_dams",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 548024,
+      "rows": 5608,
+      "source": "Bharatmaps",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "wris_dams",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 590429,
+      "rows": 5600,
+      "source": "CWC",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "wris_reservoirs",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 20337795,
+      "rows": 6141,
+      "source": "CWC",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "gs_highways",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 39946793,
+      "rows": 10317,
+      "source": "GatiShakti",
+      "licence": "CC0-1.0"
+    },
+    {
+      "id": "nic_health",
+      "formats_fetched": [
+        "pmtiles"
+      ],
+      "bytes_total": 10455128,
+      "rows": 147957,
+      "source": "NIC-Health",
+      "licence": "GODL-India"
+    }
+  ]
+}

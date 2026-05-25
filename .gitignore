@@ -49,6 +49,17 @@ data/bharatlas/*
 !data/bharatlas/MANIFEST.json
 !data/bharatlas/README.md
 
+# GEE-derived COGs for the Indore pilot — small enough (~3 MB total)
+# to commit. The growth/heat overlays require these to render. Regenerate
+# with `python pipeline/extract_indore_cogs.py`. India-wide versions
+# (DIGIPIN_REGION=india_full) stay gitignored.
+!data/growth/
+!data/heat/
+data/growth/*
+data/heat/*
+!data/growth/*_indore_pilot.tif
+!data/heat/*_indore_pilot.tif
+
 # SUMO simulation data (large XML files)
 guna-twin-city/traffic-analysis/sumo/*.xml
 

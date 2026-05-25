@@ -9,7 +9,7 @@ const HeatOverlay = (() => {
     const SOURCE_ID = 'heat-overlay-src';
     const LAYER_ID  = 'heat-overlay-fill';
     const GRID_SIZE = 8;
-    const PROBE_URL = 'data/heat/modis_lst_2016-2024.tif';
+    const PROBE_URL = 'data/heat/modis_lst_2016-2024_indore_pilot.tif';
     let _active = false;
     let _dataAvailable = null;
     let _refreshTimer = null;
@@ -87,7 +87,9 @@ const HeatOverlay = (() => {
             try {
                 const signals = await RealtimeHeat.fetchCell(c.lat, c.lng);
                 const scored = RealtimeHeat.scoreCell(signals);
-                if (scored && scored.composite != null) score = scored.composite;
+                // RealtimeHeat.scoreCell returns { uhi_score, anomaly_c, ... }
+                // — the uhi_score field is the 0-100 composite for the overlay.
+                if (scored && scored.uhi_score != null) score = scored.uhi_score;
             } catch { /* leave score null */ }
             return {
                 type: 'Feature',
