@@ -691,6 +691,25 @@ const DataFetcher = (() => {
             result.context.postOffices = postOfficeData.value;
         }
 
+        // === Realtime layers (urban growth forecast, future: IMD, quakes, etc.) ===
+        result.realtime = result.realtime || {};
+        if (typeof RealtimeGrowth !== 'undefined') {
+            try {
+                const osmConstruction =
+                    (result.categories?.landuse?.features?.construction?.count) || 0;
+                const osmCommercial =
+                    (result.categories?.shops?.features?.commercial?.count) || 0;
+                const signals = await RealtimeGrowth.fetchCell(lat, lng, {
+                    osm_construction_count: osmConstruction,
+                    osm_commercial_density: osmCommercial,
+                });
+                const growth = RealtimeGrowth.scoreCell(signals);
+                if (growth) result.realtime.growth = growth;
+            } catch (e) {
+                console.warn('[orchestrator] growth fetch skipped:', e);
+            }
+        }
+
         // === Compute intelligence scores ===
         result.scores = computeScores(result);
 
