@@ -36,25 +36,8 @@ const Panel = (() => {
         contentEl.innerHTML = buildFullHTML(cell, data);
         currentData = data;
 
-        // Flood forecast widget. Inundation overlay is detached when the
-        // panel reloads — otherwise a stale polygon would sit on the map
-        // while the new cell's widget renders.
-        if (typeof FloodInundation !== 'undefined') {
-            FloodInundation.detach();
-        }
-        if (typeof FloodAnimation !== 'undefined') {
-            const renderFlood = (forecast) => {
-                if (!forecast) return;
-                if (cell.code !== currentCell?.code) return;
-                FloodAnimation.attachTo(contentEl, forecast, cell);
-            };
-            if (data?.realtime?.flood) {
-                renderFlood(data.realtime.flood);
-            } else if (typeof RealtimeFlood !== 'undefined') {
-                RealtimeFlood.getForecast(cell.center.lat, cell.center.lng)
-                    .then(renderFlood)
-                    .catch(() => { /* nice-to-have */ });
-            }
+        if (typeof GrowthWidget !== 'undefined') {
+            GrowthWidget.attachTo(contentEl, data?.realtime?.growth || null, cell);
         }
 
         const dishaBtn = document.getElementById('ask-disha-btn');

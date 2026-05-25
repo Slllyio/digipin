@@ -87,6 +87,10 @@
             <span class="tb-icon">&#9733;</span>
             <span class="tb-label">Saved</span>
         </button>
+        <button class="toolbar-btn" id="btn-growth" title="Urban Growth Forecast">
+            <span class="tb-icon">&#128200;</span>
+            <span class="tb-label">Growth</span>
+        </button>
     </div>
 
     <!-- ===== SIDEBAR — QUERIES ===== -->
@@ -200,6 +204,10 @@
     <script src="js/flood-scs.js"></script>
     <script src="js/flood-inundation.js"></script>
     <script src="js/flood-animation.js"></script>
+    <script src="js/growth-score.js"></script>
+    <script src="js/realtime-growth.js"></script>
+    <script src="js/growth-widget.js"></script>
+    <script src="js/growth-overlay.js"></script>
     <script src="js/data-fetcher.js"></script>
     <script src="js/building-intelligence.js"></script>
     <script src="js/overture-buildings.js"></script>
@@ -221,6 +229,11 @@
     <script src="js/digital-twin-layers.js"></script>
     <script src="js/training-data-gen.js"></script>
     <script src="js/app.js"></script>
+    <script>
+    document.getElementById('btn-growth')?.addEventListener('click', () => {
+        if (typeof GrowthOverlay !== 'undefined') GrowthOverlay.toggle();
+    });
+    </script>
 
     <!-- Dropdowns placed outside #toolbar to escape overflow:auto clipping -->
     <div id="heatmap-dropdown" class="toolbar-dropdown"></div>
