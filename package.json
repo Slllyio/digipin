@@ -8,7 +8,9 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,8 @@
     "playwright": "^1.58.2"
   },
   "devDependencies": {
+    "jsdom": "^24.0.0",
+    "vitest": "^2.0.0",
     "webpack-cli": "^5.1.4"
   }
 }

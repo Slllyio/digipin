@@ -3118,3 +3118,56 @@ body {
     font-weight: 500;
     text-align: right;
 }
+
+/* Growth Forecast widget */
+.growth-widget {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    border-radius: 10px;
+    padding: 12px;
+    margin: 10px 0;
+}
+.growth-widget__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.growth-widget__title { color: #cbd5e1; font-size: 12px; font-weight: 600; }
+.growth-widget__badge { color: #fff; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+.growth-widget__horizons { display: flex; gap: 4px; margin-bottom: 8px; }
+.growth-widget__h { flex: 1; background: rgba(15,23,42,0.65); border: 1px solid rgba(59,130,246,0.25); color: #cbd5e1; font-size: 10px; padding: 4px 6px; cursor: pointer; border-radius: 6px; }
+.growth-widget__h.is-active { background: rgba(59,130,246,0.45); color: #fff; }
+.growth-widget__composite { color: #e2e8f0; font-size: 13px; margin-bottom: 6px; }
+.growth-widget__conf { color: #94a3b8; font-size: 11px; margin-left: 6px; }
+.growth-widget__why { color: #cbd5e1; font-size: 11px; }
+.growth-widget__why-title { color: #94a3b8; font-size: 10px; margin: 6px 0 4px; }
+.growth-widget__row { display: flex; gap: 8px; font-variant-numeric: tabular-nums; }
+.growth-widget__dim { width: 70px; }
+.growth-widget__dir { width: 18px; }
+.growth-widget__val { color: #e2e8f0; }
+.growth-widget__methods { margin-top: 8px; color: #94a3b8; font-size: 10px; }
+.growth-widget__methods-body { padding: 6px 0; line-height: 1.4; }
+.growth-widget--unavailable { opacity: 0.7; }
+.growth-widget__msg { color: #cbd5e1; font-size: 11px; }
+<<<<<<< HEAD
+
+/* Urban Heat Island widget — mirrors .growth-widget glass-morphism with a heat-themed accent */
+.heat-widget {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 10px;
+    padding: 12px;
+    margin: 10px 0;
+}
+.heat-widget__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.heat-widget__title { color: #cbd5e1; font-size: 12px; font-weight: 600; }
+.heat-widget__badge { color: #fff; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+.heat-widget__composite { color: #e2e8f0; font-size: 13px; margin-bottom: 6px; }
+.heat-widget__conf { color: #94a3b8; font-size: 11px; margin-left: 6px; }
+.heat-widget__why { color: #cbd5e1; font-size: 11px; }
+.heat-widget__why-title { color: #94a3b8; font-size: 10px; margin: 6px 0 4px; }
+.heat-widget__row { display: flex; gap: 8px; font-variant-numeric: tabular-nums; }
+.heat-widget__dim { width: 80px; }
+.heat-widget__val { color: #e2e8f0; }
+.heat-widget__methods { margin-top: 8px; color: #94a3b8; font-size: 10px; }
+.heat-widget__methods-body { padding: 6px 0; line-height: 1.4; }
+.heat-widget--unavailable { opacity: 0.7; }
+.heat-widget__msg { color: #cbd5e1; font-size: 11px; }
+=======
+>>>>>>> origin/main

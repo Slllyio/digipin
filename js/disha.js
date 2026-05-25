@@ -162,6 +162,15 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         lines.push(`=== LOCATION: DigiPin ${cell.code} ===`);
         lines.push(`Coordinates: ${cell.center.lat.toFixed(5)}N, ${cell.center.lng.toFixed(5)}E`);
 
+        // --- Temporal Context (enables time-aware reasoning: rush hour, after-dark, weekend) ---
+        const nowIST = new Date().toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata',
+            weekday: 'long',
+            year: 'numeric', month: 'short', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', hour12: false
+        });
+        lines.push(`Time (IST): ${nowIST}`);
+
         // --- Address ---
         if (include('address')) {
             const addr = data.address || {};
@@ -241,6 +250,16 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
                 lines.push(`\n=== INTELLIGENCE SCORES (0-100) ===`);
                 lines.push(scoreParts.join(', '));
             }
+        }
+
+        // --- Growth Forecast (composite + horizons) ---
+        const growth = data.realtime?.growth;
+        if (growth) {
+            const now = growth.horizons.nowcast;
+            const y5  = growth.horizons.year_5;
+            lines.push(`\n=== GROWTH FORECAST (composite 0-100) ===`);
+            lines.push(`Nowcast: composite=${now.composite} conf=±${now.confidence_band}  BUE=${now.sub_scores.bue.value} DEN=${now.sub_scores.den.value} CAP=${now.sub_scores.cap.value}`);
+            lines.push(`5-year:  composite=${y5.composite} conf=±${y5.confidence_band}  trend: linear extrapolation`);
         }
 
         // --- Top Features (sparse) ---
