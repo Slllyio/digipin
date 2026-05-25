@@ -60,8 +60,12 @@ const BuildingIntelDialog = (() => {
         }
 
         // LCZ Classification badge
+        // CSS sanitization: esc() only HTML-encodes — it does NOT prevent
+        // CSS injection if a malicious lcz.color contains `;` or `}`.
+        // Allowlist 3- or 6-digit hex; fall back to a safe default.
+        const safeColor = /^#[0-9a-f]{3,6}$/i.test(String(lcz?.color || '')) ? lcz.color : '#94a3b8';
         if (lcz && lcz.className) {
-            html += `<div class="lcz-badge" style="border-left: 4px solid ${esc(lcz.color)}">
+            html += `<div class="lcz-badge" style="border-left: 4px solid ${safeColor}">
                 <div class="lcz-class">${esc(lcz.className)}</div>
                 <div class="lcz-detail">${esc(lcz.type === 'built' ? 'Built-up' : 'Natural')}${lcz.density ? ' &bull; ' + esc(lcz.density) + ' density' : ''}${lcz.height ? ' &bull; ' + esc(lcz.height) + '-rise' : ''}</div>
             </div>`;

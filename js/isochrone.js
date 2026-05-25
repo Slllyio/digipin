@@ -108,10 +108,16 @@ const Isochrone = (() => {
                 // Interaction
                 _map.on('click', FILL_LAYER, (e) => {
                     const props = e.features[0].properties;
+                    // GeoJSON props originate from external services
+                    // (Overpass / Open-Source Routing Machine) — escape
+                    // before interpolating into setHTML.
+                    const esc = (v) => String(v == null ? '' : v)
+                        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                     if (_popup) _popup.remove();
                     _popup = new maplibregl.Popup()
                         .setLngLat(e.lngLat)
-                        .setHTML(`<div style="font-family:Inter,sans-serif;font-weight:bold;">${props.label}</div>`)
+                        .setHTML(`<div style="font-family:Inter,sans-serif;font-weight:bold;">${esc(props.label)}</div>`)
                         .addTo(_map);
                 });
 

@@ -6,15 +6,30 @@
     <meta name="description" content="DigiPin Urban Intelligence Portal — 160+ urban features for every 4x4m grid cell in India. Powered by OpenStreetMap and India Post DigiPin system.">
     <title>DigiPin Urban Intelligence — Indore Pilot</title>
 
+    <!-- Content Security Policy — restrict script execution to same-origin
+         + the four pinned CDN files below (covered by their SRI hashes).
+         If a CDN compromise serves modified content, the integrity check
+         fails and the script never executes. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: blob: https:; font-src 'self' https://unpkg.com data:; connect-src 'self' https: wss: data: blob:; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
+
     <!-- MapLibre GL JS -->
-    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css" />
-    <script src="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js"></script>
+    <link rel="stylesheet"
+          href="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css"
+          integrity="sha384-m6tadjb5ohv1Fw3GJynIWn5c1scKfW7kxSXuDrhlq1gdXPn7I7UL0sSKDfCUErOb"
+          crossorigin="anonymous" />
+    <script src="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js"
+            integrity="sha384-3w1F5OvxlTQbswBbpJFQNorFWnAG1Q1PXQ1vYDhq38n+mse5l7ig3gCDHBEQ3GAN"
+            crossorigin="anonymous"></script>
 
     <!-- PMTiles v3 — IIFE global build for MapLibre addProtocol -->
-    <script src="https://unpkg.com/pmtiles@3.0.7/dist/pmtiles.js"></script>
+    <script src="https://unpkg.com/pmtiles@3.0.7/dist/pmtiles.js"
+            integrity="sha384-MjejsnWXHmuz93aE35YWLh5AbS/6ceRB3Vb+ukOwqFzJRTpQ8vvbkLbNV7I0QK4f"
+            crossorigin="anonymous"></script>
 
     <!-- GeoRaster for COG/GeoTIFF rendering -->
-    <script src="https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js"></script>
+    <script src="https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js"
+            integrity="sha384-k/E847ELHPuDVPWoArQHQe5LUD8YSFwxlUaH63fF618o/Y0Gnu4FQ1xjuL280spp"
+            crossorigin="anonymous"></script>
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="css/styles.css">

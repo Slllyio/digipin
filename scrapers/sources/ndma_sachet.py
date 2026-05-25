@@ -17,7 +17,11 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass, field
-from xml.etree import ElementTree as ET
+
+# defusedxml guards against XML bomb (billion laughs) + XXE attacks on
+# untrusted external feeds. Stdlib xml.etree is vulnerable; the
+# drop-in replacement keeps the same API.
+import defusedxml.ElementTree as ET
 
 from ..lib.http import PoliteClient
 
