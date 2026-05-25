@@ -1247,6 +1247,18 @@ git commit -m "feat(growth): GHSL population grid downloader (one-off, 100m clip
 
 ## Phase 3 — RERA Madhya Pradesh scraper
 
+**STATUS: DEFERRED to follow-up PR (decision date 2026-05-25).** During execution we discovered the scraper framework from PR #5/#6/#7 (`scrapers/lib/http.py`, `scrapers/cli.py`, the 8 existing sources) is not yet on `main` — those PRs are stacked and pending merge. Cherry-picking the entire framework onto `agents/urban-growth-forecast` would create duplicate-history conflicts when PR #5 eventually merges.
+
+**Graceful behaviour without Phase 3:** the browser fetcher in Task 13 already handles missing RERA via the spec §8.2 cascade: `data/realtime/rera_mp/latest.json` returns 404 → `sources.rera_mp = 'missing'` → CAP sub-score = null → composite re-weights without the CAP dimension. The feature ships in v1 without the 1-2 year CAP signal; the score remains useful via BUE + DEN.
+
+**Follow-up plan:**
+1. Wait for PRs #5/#6/#7 to merge into `main`
+2. Open a separate PR `agents/urban-growth-rera` from the merged main
+3. Implement Tasks 11 and 12 there with the framework available
+4. The growth feature on main auto-upgrades the moment the RERA snapshot exists at the expected path — no code change to the browser required
+
+---
+
 Plugs into the existing PR #5 scraper framework. One new file in `scrapers/sources/` + workflow matrix entry + README section.
 
 ### Task 11: `scrapers/sources/rera_mp.py`
