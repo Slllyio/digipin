@@ -37,3 +37,4 @@ loadGlobalScript('js/realtime-growth.js', ['RealtimeGrowth']);
 loadGlobalScript('js/growth-widget.js', ['GrowthWidget']);
 loadGlobalScript('js/heat-score.js', ['HeatScore']);
 loadGlobalScript('js/heat-widget.js', ['HeatWidget']);
+loadGlobalScript('js/flood-scs.js', ['FloodSCS']);
