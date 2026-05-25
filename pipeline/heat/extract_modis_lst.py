@@ -32,10 +32,12 @@ from pathlib import Path
 
 log = logging.getLogger("pipeline.heat.modis_lst")
 
-INDIA_BBOX = (68.0, 6.5, 97.5, 35.5)
+from pipeline._lib.regions import get_default_bbox, get_default_region_name
+
+INDIA_BBOX = get_default_bbox()   # defaults to Indore pilot; see pipeline/_lib/regions.py
 YEARS = list(range(2016, 2025))     # 9 years, matches VIIRS coverage
 ASSET_ID = "MODIS/061/MOD11A1"
-OUTPUT_PATH = Path("data/heat/modis_lst_2016-2024.tif")
+OUTPUT_PATH = Path(f"data/heat/modis_lst_2016-2024_{get_default_region_name()}.tif")
 SCALE_M = 1000   # MODIS LST native resolution
 
 

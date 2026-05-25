@@ -34,11 +34,16 @@ def test_year_is_supported_ghsl_epoch():
 def test_output_path_matches_year():
     from pipeline.growth.download_ghsl_pop import OUTPUT_PATH, YEAR
     path = str(OUTPUT_PATH).replace("\\", "/")
-    assert path.endswith(f"data/growth/ghsl_pop_{YEAR}.tif")
+    # Output path includes a region tag (Week 3 perf scoping) so the
+    # same year can ship multiple regions side-by-side.
+    assert f"ghsl_pop_{YEAR}_" in path
+    assert path.endswith(".tif")
 
 
 def test_india_bbox_sane():
+    # INDIA_BBOX is region-aware (defaults to Indore pilot). See
+    # pipeline._lib.regions.get_default_bbox.
     from pipeline.growth.download_ghsl_pop import INDIA_BBOX
     west, south, east, north = INDIA_BBOX
     assert west < east and south < north
-    assert 60 < west < 80 and 5 < south < 15
+    assert 60 < west < 98 and 5 < south < 36
