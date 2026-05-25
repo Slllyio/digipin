@@ -52,6 +52,12 @@ const MapModule = (() => {
             setupHeatmapLayers();
             updateGrid();
 
+            // Bharatlas init — pre-attaches invisible lookup PMTiles
+            // (states, districts, sub-districts, pincodes) so the cell
+            // detail panel can resolve admin/postal containment without
+            // hitting Overpass.
+            if (typeof Bharatlas !== 'undefined') Bharatlas.init(map);
+
             // Debounced updates
             const debouncedUpdate = () => {
                 clearTimeout(_gridDebounceTimer);

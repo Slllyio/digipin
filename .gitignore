@@ -41,6 +41,14 @@ data/realtime/*/*
 !data/realtime/*/latest.json
 !data/realtime/*/README.md
 
+# Bharatlas mirror — keep the index files in git, leave the GB of
+# PMTiles/parquet locally only (run pipeline/bharatlas/fetch_all.py).
+!data/bharatlas/
+data/bharatlas/*
+!data/bharatlas/catalog.json
+!data/bharatlas/MANIFEST.json
+!data/bharatlas/README.md
+
 # SUMO simulation data (large XML files)
 guna-twin-city/traffic-analysis/sumo/*.xml
 

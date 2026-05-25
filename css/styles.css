@@ -3168,3 +3168,31 @@ body {
 .heat-widget__methods-body { padding: 6px 0; line-height: 1.4; }
 .heat-widget--unavailable { opacity: 0.7; }
 .heat-widget__msg { color: #cbd5e1; font-size: 11px; }
+
+/* Bharatlas administrative + postal containment chips (panel header) */
+.bharatlas-containment { margin-top: 6px; }
+.bharatlas-containment .bh-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.bharatlas-containment .bh-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 999px;
+    padding: 3px 10px;
+    color: #e2e8f0;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+.bharatlas-containment .bh-lbl {
+    color: #94a3b8;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.bharatlas-containment .bh-source {
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 10px;
+}
+.bharatlas-containment .bh-source a { color: #38bdf8; text-decoration: none; }
+.bharatlas-containment .bh-source a:hover { text-decoration: underline; }
