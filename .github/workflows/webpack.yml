@@ -17,6 +17,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Reject unresolved merge-conflict markers
+      run: |
+        if git grep -nE '^(<{7}|={7}|>{7}) ' -- ':!node_modules' ':!*.lock' ; then
+          echo "::error::Unresolved Git conflict markers detected — see lines above."
+          exit 1
+        fi
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:

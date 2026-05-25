@@ -760,7 +760,10 @@ const DataFetcher = (() => {
         // === Real-time signals — best-effort, never fail the cell fetch ===
         // Sources: NDMA SACHET CAP alerts, IMD warnings + forecast, NCS
         // earthquakes, Open-Meteo flood forecast. All best-effort.
-        result.realtime = {};
+        // NOTE: preserve any realtime keys already written upstream
+        // (growth, heat) — earlier the unconditional reset to {} silently
+        // erased those scores for every alert-bearing cell.
+        result.realtime = result.realtime || {};
         const stateName = result.address?.state || '';
         const districtName = result.address?.district || '';
         // cityName is already declared above (line ~564). Reuse it.
@@ -1788,7 +1791,7 @@ const DataFetcher = (() => {
     function exportToCSV(data, filename = 'digipin_features.csv') {
         let csv = 'Category,Feature Key,Feature Name,Count\n';
         for (const [, cat] of Object.entries(data.categories)) {
-            for (const [, feat] of Object.entries(cat.features)) {
+            for (const [featKey, feat] of Object.entries(cat.features)) {
                 if (feat.count > 0) {
                     csv += `"${cat.name}","${featKey}","${feat.label}",${feat.count}\n`;
                 }

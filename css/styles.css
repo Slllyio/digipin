@@ -3145,7 +3145,6 @@ body {
 .growth-widget__methods-body { padding: 6px 0; line-height: 1.4; }
 .growth-widget--unavailable { opacity: 0.7; }
 .growth-widget__msg { color: #cbd5e1; font-size: 11px; }
-<<<<<<< HEAD
 
 /* Urban Heat Island widget — mirrors .growth-widget glass-morphism with a heat-themed accent */
 .heat-widget {
@@ -3169,5 +3168,3 @@ body {
 .heat-widget__methods-body { padding: 6px 0; line-height: 1.4; }
 .heat-widget--unavailable { opacity: 0.7; }
 .heat-widget__msg { color: #cbd5e1; font-size: 11px; }
-=======
->>>>>>> origin/main
