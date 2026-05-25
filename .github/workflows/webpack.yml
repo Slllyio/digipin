@@ -29,7 +29,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Build
-      run: |
-        npm install
-        npx webpack
+    - name: Install dependencies
+      run: npm install
+      # No webpack step — this is a static PWA with no bundler. The
+      # template workflow used to call `npx webpack` against a non-
+      # existent ./src directory, which always failed.
