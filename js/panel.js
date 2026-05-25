@@ -40,6 +40,10 @@ const Panel = (() => {
             GrowthWidget.attachTo(contentEl, data?.realtime?.growth || null, cell);
         }
 
+        if (typeof HeatWidget !== 'undefined') {
+            HeatWidget.attachTo(contentEl, data?.realtime?.heat || null, cell);
+        }
+
         const dishaBtn = document.getElementById('ask-disha-btn');
         if (dishaBtn) {
             dishaBtn.addEventListener('click', () => {

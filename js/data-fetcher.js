@@ -744,6 +744,16 @@ const DataFetcher = (() => {
             }
         }
 
+        if (typeof RealtimeHeat !== 'undefined') {
+            try {
+                const heatSignals = await RealtimeHeat.fetchCell(lat, lng);
+                const heat = RealtimeHeat.scoreCell(heatSignals);
+                if (heat) result.realtime.heat = heat;
+            } catch (e) {
+                console.warn('[orchestrator] heat fetch skipped:', e);
+            }
+        }
+
         // === Compute intelligence scores ===
         result.scores = computeScores(result);
 
