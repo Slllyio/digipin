@@ -36,14 +36,17 @@ const Panel = (() => {
         contentEl.innerHTML = buildFullHTML(cell, data);
         currentData = data;
 
-        // Flood forecast widget — reads result.realtime.flood populated
-        // by the orchestrator (or falls back to an on-demand fetch if
-        // the orchestrator skipped it). FloodAnimation handles the canvas.
+        // Flood forecast widget. Inundation overlay is detached when the
+        // panel reloads — otherwise a stale polygon would sit on the map
+        // while the new cell's widget renders.
+        if (typeof FloodInundation !== 'undefined') {
+            FloodInundation.detach();
+        }
         if (typeof FloodAnimation !== 'undefined') {
             const renderFlood = (forecast) => {
                 if (!forecast) return;
                 if (cell.code !== currentCell?.code) return;
-                FloodAnimation.attachTo(contentEl, forecast);
+                FloodAnimation.attachTo(contentEl, forecast, cell);
             };
             if (data?.realtime?.flood) {
                 renderFlood(data.realtime.flood);

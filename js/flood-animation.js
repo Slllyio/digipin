@@ -30,7 +30,7 @@ const FloodAnimation = (() => {
 
     function _easeOutQuad(t) { return t * (2 - t); }
 
-    function attachTo(containerEl, forecast) {
+    function attachTo(containerEl, forecast, cell) {
         if (!containerEl || !forecast || !forecast.days?.length) return;
 
         // Remove any previous widget in this container (idempotent).
@@ -53,9 +53,38 @@ const FloodAnimation = (() => {
                 ${forecast.peak_day.max.toFixed(2)} m³/s
                 (×${forecast.peak_ratio.toFixed(1)})
             </div>
+            <div class="flood-widget__actions">
+                <button type="button" class="flood-widget__btn" data-flood-action="toggle-map">
+                    Show inundation on map
+                </button>
+            </div>
             <div class="flood-widget__source">Source: ${forecast.source}</div>
+            <div class="flood-widget__disclaimer">
+                Inundation polygon is demo-grade — terrain-biased but not survey-accurate.
+            </div>
         `;
         containerEl.appendChild(wrap);
+
+        const mapBtn = wrap.querySelector('[data-flood-action="toggle-map"]');
+        if (mapBtn && typeof FloodInundation !== 'undefined') {
+            let isShowing = false;
+            mapBtn.addEventListener('click', () => {
+                isShowing = !isShowing;
+                if (isShowing) {
+                    mapBtn.textContent = 'Hide inundation on map';
+                    mapBtn.classList.add('flood-widget__btn--active');
+                    const cellForMap = cell || {
+                        code: `temp:${forecast.location.lat},${forecast.location.lng}`,
+                        center: forecast.location,
+                    };
+                    FloodInundation.attach(cellForMap, forecast);
+                } else {
+                    mapBtn.textContent = 'Show inundation on map';
+                    mapBtn.classList.remove('flood-widget__btn--active');
+                    FloodInundation.detach();
+                }
+            });
+        }
 
         const canvas = wrap.querySelector('canvas');
         const ctx = canvas.getContext('2d');
