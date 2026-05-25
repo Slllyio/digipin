@@ -45,3 +45,6 @@ data/realtime/*/*
 building-blocks/
 iD/
 cesium-demo.html
+
+# Personal Claude Code permission allowlist — local-only
+.claude/settings.local.json

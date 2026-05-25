@@ -17,6 +17,19 @@
  *  - WorldPop: Population density estimate (100m grid)
  *  - Bhoonidhi (ISRO): Satellite imagery availability for the area
  *  - OGD India: Health facility data enrichment
+ *
+ * CONFIGURATION (window.DIGIPIN_CONFIG):
+ *  Set this object before loading the script to customise behaviour.
+ *
+ *  waqiToken (string) — WAQI API token from https://aqicn.org/data-platform/token/
+ *    Default: 'demo'  (city-name endpoint, city-center AQI only)
+ *    Real token:      uses geo endpoint feed/geo:{lat};{lng}/?token={token}
+ *                     which returns the nearest monitoring station to the cell.
+ *    Example:
+ *      window.DIGIPIN_CONFIG = { waqiToken: 'your-token-here' };
+ *
+ *  CPCB is the primary AQI source; WAQI is the first fallback.
+ *  Even with a demo token the pipeline gives useful results via CPCB + Open-Meteo.
  */
 
 const DataFetcher = (() => {
@@ -468,7 +481,7 @@ const DataFetcher = (() => {
 
         Object.values(CATEGORIES).forEach(cat => {
             cat.features.forEach(f => {
-                results[f.key] = { count: 0, names: [], items: [] };
+                results[f.key] = { count: 0, names: [], items: [], subTypes: {} };
             });
         });
 
@@ -491,6 +504,10 @@ const DataFetcher = (() => {
                                 lng: center.lon || center.lng,
                                 type: el.type
                             });
+                        }
+                        if (f.key === 'worship' && tags.religion) {
+                            const r = String(tags.religion).toLowerCase();
+                            results[f.key].subTypes[r] = (results[f.key].subTypes[r] || 0) + 1;
                         }
                     }
                 });
@@ -563,13 +580,24 @@ const DataFetcher = (() => {
         // Extract city name for AQI queries (shared — no duplicate Nominatim call)
         const cityName = result.address.city || result.address.area || 'Indore';
 
+        // Per-source memoization for the slow / shared-input fetches.
+        // Adjacent DigiPin cells (4x4m) often share the same upstream data
+        // (weather station, elevation tile, Wikipedia geosearch radius), so
+        // this is a meaningful win on top of the existing result-level cache.
+        const cache = (typeof DataFetcherCache !== 'undefined') ? DataFetcherCache : null;
+        const memo = (name, ttlMs, factory) => cache
+            ? cache.memoize(cache.keyFor(name, lat, lng), ttlMs, factory)
+            : factory();
+        const HOUR = 60 * 60 * 1000;
+        const DAY = 24 * HOUR;
+
         // Fire remaining requests in parallel (including building intelligence + new sources)
-        const [osmData, weatherData, aqiData, wikiData, elevData, popData, buildingData, openMeteoAqi, solarData, bhoondhiData, ogdHealthData, iudxData, iudxCatalogueData, cepiData, postOfficeData] = await Promise.allSettled([
+        const [osmData, weatherData, aqiData, wikiData, elevData, popData, buildingData, openMeteoAqi, solarData, bhoondhiData, ogdHealthData, iudxData, iudxCatalogueData, cepiData, postOfficeData, precipData] = await Promise.allSettled([
             fetchOSMData(lat, lng, radius),
-            fetchWeather(lat, lng),
-            fetchAQI(lat, lng, cityName),
-            fetchWikipedia(lat, lng),
-            fetchElevation(lat, lng),
+            memo('weather', 1 * HOUR, () => fetchWeather(lat, lng)),
+            memo('aqi', 1 * HOUR, () => fetchAQI(lat, lng, cityName)),
+            memo('wiki', 30 * DAY, () => fetchWikipedia(lat, lng)),
+            memo('elev', 30 * DAY, () => fetchElevation(lat, lng)),
             fetchWorldPop(lat, lng),
             typeof BuildingIntelligence !== 'undefined' ? BuildingIntelligence.fetch(lat, lng, radius) : Promise.resolve(null),
             fetchOpenMeteoAQI(lat, lng),
@@ -579,7 +607,8 @@ const DataFetcher = (() => {
             fetchIUDX(lat, lng),
             fetchIUDXCatalogue(cityName),
             fetchCEPI(cityName, result.address.state),
-            fetchNearbyPostOffices(lat, lng, result.address.district)
+            fetchNearbyPostOffices(lat, lng, result.address.district),
+            memo('precip', 7 * DAY, () => fetchHistoricalPrecipitation(lat, lng))
         ]);
 
         // === OSM POI data ===
@@ -626,6 +655,11 @@ const DataFetcher = (() => {
         // === Elevation (for flood risk) ===
         if (elevData.status === 'fulfilled' && elevData.value != null) {
             result.environment.elevation = elevData.value;
+        }
+
+        // === Annual precipitation (for flood risk) ===
+        if (precipData.status === 'fulfilled' && precipData.value != null) {
+            result.environment.precipitation = precipData.value;
         }
 
         // === WorldPop population density ===
@@ -786,10 +820,12 @@ const DataFetcher = (() => {
 
     /**
      * AQI: Primary — CPCB via data.gov.in
-     * Fallback — WAQI demo token
-     * cityName is passed in to avoid duplicate Nominatim call
+     * Fallback — WAQI. Uses geo endpoint when a real token is configured
+     * via window.DIGIPIN_CONFIG.waqiToken; otherwise falls back to the
+     * city-name endpoint (the demo token cannot do geo).
+     * cityName is passed in to avoid duplicate Nominatim call.
      */
-    async function fetchAQI(_lat, _lng, cityName = 'Indore') {
+    async function fetchAQI(lat, lng, cityName = 'Indore') {
         // Try CPCB first
         try {
             const cpcbResult = await fetchCPCB_AQI(cityName);
@@ -797,8 +833,13 @@ const DataFetcher = (() => {
         } catch { /* fall through */ }
 
         // Fallback: WAQI
+        const waqiToken = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG?.waqiToken) || 'demo';
+        const usingRealToken = waqiToken && waqiToken !== 'demo';
+        const url = usingRealToken
+            ? `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${encodeURIComponent(waqiToken)}`
+            : `https://api.waqi.info/feed/${encodeURIComponent(cityName)}/?token=demo`;
+
         try {
-            const url = `https://api.waqi.info/feed/${encodeURIComponent(cityName)}/?token=demo`;
             const data = await fetchWithRetry(url);
             if (data.status !== 'ok') return {};
 
@@ -812,7 +853,7 @@ const DataFetcher = (() => {
                 so2: d.iaqi?.so2?.v,
                 aqiStation: d.city?.name,
                 aqiDominant: d.dominentpol,
-                aqiSource: 'WAQI'
+                aqiSource: usingRealToken ? 'WAQI (geo)' : 'WAQI (city)'
             };
         } catch {
             return {};
@@ -908,27 +949,33 @@ const DataFetcher = (() => {
      */
     async function fetchWikipedia(lat, lng) {
         try {
-            const searchUrl = `${WIKIPEDIA_URL}?action=query&list=geosearch&gscoord=${lat}|${lng}&gsradius=1000&gslimit=1&format=json&origin=*`;
+            const searchUrl = `${WIKIPEDIA_URL}?action=query&list=geosearch&gscoord=${lat}|${lng}&gsradius=5000&gslimit=3&format=json&origin=*`;
             const searchData = await fetchWithRetry(searchUrl);
             const pages = searchData.query?.geosearch;
             if (!pages || pages.length === 0) return null;
 
-            const pageId = pages[0].pageid;
-            const dist = pages[0].dist;
-
-            const propUrl = `${WIKIPEDIA_URL}?action=query&prop=extracts&exintro=1&explaintext=1&pageids=${pageId}&format=json&origin=*`;
+            const pageIds = pages.map(p => p.pageid).join('|');
+            const propUrl = `${WIKIPEDIA_URL}?action=query&prop=extracts&exintro=1&explaintext=1&pageids=${pageIds}&format=json&origin=*`;
             const propData = await fetchWithRetry(propUrl);
-            const extract = propData.query?.pages[pageId]?.extract;
+            const propPages = propData.query?.pages || {};
 
-            if (extract) {
-                return {
-                    title: pages[0].title,
-                    distanceToCenter: dist,
-                    summary: extract.substring(0, 300) + (extract.length > 300 ? '...' : ''),
-                    url: `https://en.wikipedia.org/?curid=${pageId}`
-                };
-            }
-            return null;
+            const nearest = pages[0];
+            const nearestExtract = propPages[nearest.pageid]?.extract;
+            if (!nearestExtract) return null;
+
+            const nearby = pages.slice(1).map(p => ({
+                title: p.title,
+                distance: p.dist,
+                url: `https://en.wikipedia.org/?curid=${p.pageid}`
+            }));
+
+            return {
+                title: nearest.title,
+                distanceToCenter: nearest.dist,
+                summary: nearestExtract.substring(0, 300) + (nearestExtract.length > 300 ? '...' : ''),
+                url: `https://en.wikipedia.org/?curid=${nearest.pageid}`,
+                nearby
+            };
         } catch {
             return null;
         }
@@ -961,6 +1008,35 @@ const DataFetcher = (() => {
                 surrounding: avgSurrounding,
                 relative: centerElev - avgSurrounding,
                 isLowLying: centerElev < avgSurrounding - 2
+            };
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * Fetch the previous 365 days of daily precipitation from Open-Meteo's
+     * archive API (free, no key) and return the annual total in mm.
+     * Used as input to the flood_risk score. The window ends 7 days ago
+     * to account for archive ingestion lag.
+     */
+    async function fetchHistoricalPrecipitation(lat, lng) {
+        try {
+            const end = new Date();
+            end.setUTCDate(end.getUTCDate() - 7);
+            const start = new Date(end);
+            start.setUTCFullYear(start.getUTCFullYear() - 1);
+            const fmt = (d) => d.toISOString().slice(0, 10);
+            const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lng}&start_date=${fmt(start)}&end_date=${fmt(end)}&daily=precipitation_sum&timezone=Asia%2FKolkata`;
+            const data = await fetchWithRetry(url);
+            const sums = (data.daily?.precipitation_sum || []).filter(v => v != null);
+            if (sums.length === 0) return null;
+            const totalMm = sums.reduce((a, b) => a + b, 0);
+            return {
+                annualMm: Math.round(totalMm),
+                daysCovered: sums.length,
+                periodStart: fmt(start),
+                periodEnd: fmt(end)
             };
         } catch {
             return null;
@@ -1320,6 +1396,71 @@ const DataFetcher = (() => {
     }
 
     /**
+     * Religious diversity from a {religion: count} distribution.
+     * Blends Shannon evenness (how balanced the mix is) with richness
+     * (how many distinct religions are present, saturating at 4).
+     * Falls back to a discounted log of total count when OSM has no
+     * religion= tags, so the score does not collapse to zero in
+     * under-tagged areas.
+     */
+    function religiousDiversityScore(subTypes, totalCount) {
+        const counts = Object.values(subTypes || {}).filter(c => c > 0);
+        const taggedTotal = counts.reduce((a, b) => a + b, 0);
+        if (taggedTotal === 0) {
+            // No religion= tags survived classification; weak fallback from raw count.
+            return Math.round(normLog(totalCount, 20) * 0.5);
+        }
+        const richnessFactor = Math.min(counts.length / 4, 1);
+        if (counts.length === 1) {
+            // Single religion: evenness undefined; lean on richness + presence only.
+            return Math.round(100 * (0.4 * richnessFactor) * Math.min(1, taggedTotal / 3));
+        }
+        const H = counts.reduce((acc, c) => {
+            const p = c / taggedTotal;
+            return acc - p * Math.log(p);
+        }, 0);
+        const evenness = H / Math.log(counts.length);
+        return Math.round(100 * (0.6 * evenness + 0.4 * richnessFactor));
+    }
+
+    /**
+     * Flood risk score (0-100, HIGHER = safer).
+     * Inputs: elevation object from fetchElevation, precipitation object
+     * from fetchHistoricalPrecipitation. Both may be null when sources fail.
+     *
+     * Baseline 50 at the Indian-context anchor of ~400m elevation, ~800mm/yr
+     * rainfall, flat terrain. Each 100m gain adds ~8, each 200mm above baseline
+     * subtracts ~10, and the local relative-elevation signal (whether the cell
+     * sits in a basin vs on a ridge) is weighted strongest because that is the
+     * single most predictive feature for urban waterlogging.
+     *
+     * Returns null when both elevation and precipitation are missing — score
+     * is meaningless without at least one terrain or hydrology signal.
+     */
+    function floodRiskScore(elevation, precipitation) {
+        if (elevation == null && precipitation == null) return null;
+        let score = 50;
+
+        if (elevation && typeof elevation === 'object') {
+            const centerM = elevation.center;
+            if (typeof centerM === 'number') {
+                score += 0.08 * (centerM - 400);
+            }
+            if (typeof elevation.relative === 'number') {
+                // Strong signal — sitting in a 5m+ basin vs on a 5m+ ridge.
+                score += Math.max(-25, Math.min(15, elevation.relative * 2));
+            }
+            if (elevation.isLowLying) score -= 15;
+        }
+
+        if (precipitation && typeof precipitation.annualMm === 'number') {
+            score -= 0.05 * (precipitation.annualMm - 800);
+        }
+
+        return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    /**
      * Compute 20 intelligence scores (0-100) using log-scale normalization
      * Max values calibrated for 500m radius in dense Indian cities
      */
@@ -1424,10 +1565,20 @@ const DataFetcher = (() => {
                     get('food', 'bakery') + get('food', 'bars') + get('food', 'ice_cream') +
                     get('food', 'confectionery') + get('food', 'butcher'), 40)
             },
-            religious_diversity: {
-                label: 'Religious Diversity',
-                value: normLog(get('entertainment', 'worship'), 20)
-            },
+            religious_diversity: (() => {
+                const worship = cats['entertainment']?.features?.['worship'];
+                return {
+                    label: 'Religious Diversity',
+                    value: religiousDiversityScore(worship?.subTypes, worship?.count || 0)
+                };
+            })(),
+            flood_risk: (() => {
+                const env = data.environment || {};
+                return {
+                    label: 'Flood Safety (higher = safer)',
+                    value: floodRiskScore(env.elevation, env.precipitation)
+                };
+            })(),
             public_service: {
                 label: 'Public Service Access',
                 value: normLog(
