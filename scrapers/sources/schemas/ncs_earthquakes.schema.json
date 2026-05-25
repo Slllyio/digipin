@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Slllyio/digipin/scrapers/sources/schemas/ncs_earthquakes.schema.json",
+  "title": "NCS earthquakes snapshot",
+  "description": "Contract for data/realtime/ncs_earthquakes/latest.json — recent earthquakes scraped from riseq.seismo.gov.in",
+  "type": "object",
+  "required": ["count", "records"],
+  "properties": {
+    "generated_at_iso": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp (Z-suffixed) when the snapshot was written. Stamped by scrapers/lib/storage.py:write_latest_snapshot()."
+    },
+    "count": { "type": "integer", "minimum": 0 },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "magnitude", "origin_time", "latitude", "longitude", "depth_km"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Composite key: origin_time|lat,lng"
+          },
+          "magnitude": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "Richter magnitude — physically bounded [0, ~10]"
+          },
+          "origin_time": {
+            "type": "string",
+            "minLength": 1,
+            "description": "IST per NCS convention, format 'YYYY-MM-DD HH:MM:SS'"
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          },
+          "depth_km": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 800,
+            "description": "Earthquake depth — bounded by deepest recorded subduction events (~750 km)"
+          },
+          "region": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "review_status": {
+            "type": "string",
+            "enum": ["Reviewed", "Automatic"]
+          }
+        }
+      }
+    }
+  }
+}
