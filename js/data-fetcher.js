@@ -730,8 +730,7 @@ const DataFetcher = (() => {
 
         // === Real-time signals — best-effort, never fail the cell fetch ===
         // Sources: NDMA SACHET CAP alerts, IMD warnings + forecast, NCS
-        // earthquakes. All refreshed by the GH Actions cron and read from
-        // data/realtime/<source>/latest.json.
+        // earthquakes, Open-Meteo flood forecast. All best-effort.
         result.realtime = {};
         const stateName = result.address?.state || '';
         const districtName = result.address?.district || '';
@@ -771,6 +770,13 @@ const DataFetcher = (() => {
                     largest_nearby: nearby[0] || null,
                     count_within_200km: nearby.length,
                 };
+            } catch { /* skip */ }
+        }
+
+        if (typeof RealtimeFlood !== 'undefined') {
+            try {
+                const flood = await RealtimeFlood.getForecast(lat, lng);
+                if (flood) result.realtime.flood = flood;
             } catch { /* skip */ }
         }
 

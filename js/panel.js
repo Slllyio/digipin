@@ -36,6 +36,24 @@ const Panel = (() => {
         contentEl.innerHTML = buildFullHTML(cell, data);
         currentData = data;
 
+        // Flood forecast widget — reads result.realtime.flood populated
+        // by the orchestrator (or falls back to an on-demand fetch if
+        // the orchestrator skipped it). FloodAnimation handles the canvas.
+        if (typeof FloodAnimation !== 'undefined') {
+            const renderFlood = (forecast) => {
+                if (!forecast) return;
+                if (cell.code !== currentCell?.code) return;
+                FloodAnimation.attachTo(contentEl, forecast);
+            };
+            if (data?.realtime?.flood) {
+                renderFlood(data.realtime.flood);
+            } else if (typeof RealtimeFlood !== 'undefined') {
+                RealtimeFlood.getForecast(cell.center.lat, cell.center.lng)
+                    .then(renderFlood)
+                    .catch(() => { /* nice-to-have */ });
+            }
+        }
+
         const dishaBtn = document.getElementById('ask-disha-btn');
         if (dishaBtn) {
             dishaBtn.addEventListener('click', () => {
