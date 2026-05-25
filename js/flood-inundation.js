@@ -41,6 +41,9 @@ const FloodInundation = (() => {
     let _frameCanvases = [];
     let _frameIdx = 0;
     let _liveCanvas = null;
+    // Cache the decoded DEM + cell elevation + forecast so we can rebuild
+    // frames on perturb() without re-fetching the tile.
+    let _state = null;   // { elev, cellElev, forecast }
 
     // ---------- tile math ----------
     function _lngToTileX(lng, zoom) {
@@ -211,11 +214,8 @@ const FloodInundation = (() => {
         const px = _cellPixelInTile(lat, lng, tileX, tileY, ZOOM);
         const cellElev = elev[px.y * TILE_SIZE + px.x];
 
-        _frameCanvases = forecast.days.map(day => {
-            const ratio = day.discharge / forecast.baseline_m3s;
-            const depth = Math.max(0, (ratio - 1) * DEPTH_PER_RATIO);
-            return _buildFrameCanvas(elev, cellElev, depth, day.risk_color);
-        });
+        _state = { elev, cellElev, forecast };
+        _rebuildFrames(0);
         _frameIdx = 0;
 
         const bounds = _tileBounds(tileX, tileY, ZOOM);
@@ -228,6 +228,29 @@ const FloodInundation = (() => {
         }, FRAME_MS);
     }
 
+    /** Rebuild all 7 frame canvases from cached DEM + forecast,
+     *  applying an additional uniform depth (metres) on top of the
+     *  GloFAS-derived base depth. Used by the rainfall slider. */
+    function _rebuildFrames(extraDepthM) {
+        if (!_state) return;
+        const { elev, cellElev, forecast } = _state;
+        _frameCanvases = forecast.days.map(day => {
+            const ratio = day.discharge / forecast.baseline_m3s;
+            const baseDepth = Math.max(0, (ratio - 1) * DEPTH_PER_RATIO);
+            const totalDepth = baseDepth + Math.max(0, extraDepthM || 0);
+            return _buildFrameCanvas(elev, cellElev, totalDepth, day.risk_color);
+        });
+    }
+
+    /** Apply an additional flood depth (metres) on top of the
+     *  forecast-derived depth, and re-render. Called by the rainfall
+     *  slider. Idempotent; safe to call rapidly during slider drag. */
+    function perturb(extraDepthM) {
+        if (!_state || !_liveCanvas) return;
+        _rebuildFrames(extraDepthM);
+        _drawFrame(_frameIdx);   // immediate visual response on current day
+    }
+
     function detach() {
         if (_animTimer) {
             clearInterval(_animTimer);
@@ -236,6 +259,7 @@ const FloodInundation = (() => {
         _attachedCellCode = null;
         _frameCanvases = [];
         _frameIdx = 0;
+        _state = null;
 
         if (typeof MapModule !== 'undefined') {
             const map = MapModule.getMap();
@@ -250,7 +274,7 @@ const FloodInundation = (() => {
         }
     }
 
-    return { attach, detach };
+    return { attach, detach, perturb };
 })();
 
 if (typeof window !== 'undefined') {
