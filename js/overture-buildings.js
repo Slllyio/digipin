@@ -145,15 +145,22 @@ const OvertureBuildings = (() => {
         const f = features[0];
         const props = f.properties || {};
 
+        // PMTiles feature properties are externally-sourced (Overture
+        // releases) — treat as untrusted and HTML-escape before any
+        // string-into-HTML interpolation.
+        const esc = (v) => String(v == null ? '' : v)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
         let html = '<div class="overture-popup" style="font-family:Inter,sans-serif; min-width:180px;">';
         html += '<div class="overture-popup-title"><strong>Building Details</strong></div><hr>';
 
-        if (props.class) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Class:</span> <b>${props.class}</b></div>`;
-        if (props.subtype) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtype:</span> <b>${props.subtype}</b></div>`;
+        if (props.class) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Class:</span> <b>${esc(props.class)}</b></div>`;
+        if (props.subtype) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtype:</span> <b>${esc(props.subtype)}</b></div>`;
         if (props.height > 0) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Height:</span> <b>${props.height.toFixed(1)}m</b></div>`;
-        if (props.num_floors > 0) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Floors:</span> <b>${props.num_floors}</b></div>`;
+        if (props.num_floors > 0) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Floors:</span> <b>${esc(props.num_floors)}</b></div>`;
         if (props.min_height > 0) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Min Height:</span> <b>${props.min_height.toFixed(1)}m</b></div>`;
-        if (props.roof_shape) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Roof:</span> <b>${props.roof_shape}</b></div>`;
+        if (props.roof_shape) html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Roof:</span> <b>${esc(props.roof_shape)}</b></div>`;
 
         if (props.height > 0 && !props.num_floors) {
             const estFloors = Math.round(props.height / 3.2);

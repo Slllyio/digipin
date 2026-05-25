@@ -106,8 +106,13 @@ out geom;`;
 
                 _map.on('click', FILL_LAYER_ID, (e) => {
                     const props = e.features[0].properties;
-                    let html = `<div style="font-family:Inter,sans-serif;"><strong>${props.name}</strong>`;
-                    if (props.admin_level) html += `<br><span style="font-size:11px;">Admin Level: ${props.admin_level}</span>`;
+                    // GeoJSON props come from external admin-boundary
+                    // sources — escape before interpolating into setHTML.
+                    const esc = (v) => String(v == null ? '' : v)
+                        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                    let html = `<div style="font-family:Inter,sans-serif;"><strong>${esc(props.name)}</strong>`;
+                    if (props.admin_level) html += `<br><span style="font-size:11px;">Admin Level: ${esc(props.admin_level)}</span>`;
                     html += `</div>`;
 
                     if (_popup) _popup.remove();
