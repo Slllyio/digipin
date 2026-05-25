@@ -17,8 +17,10 @@
 const BuildingIntelligence = (() => {
     const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 
-    // LCZ TMS tile endpoint (100m resolution, global coverage)
-    const LCZ_TMS = 'https://lcz-generator.rub.de/tms/global-map-tiles/latest';
+    // LCZ TMS tile endpoint (100m resolution, global coverage).
+    // The `latest` alias is a 302 to `v3` — hitting v3 directly saves
+    // one roundtrip per tile (~51 tiles per viewport).
+    const LCZ_TMS = 'https://lcz-generator.rub.de/tms/global-map-tiles/v3';
 
     // LCZ class definitions — urban morphology at 100m
     const LCZ_CLASSES = {

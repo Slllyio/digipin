@@ -302,15 +302,31 @@ const DISHAPanel = (() => {
 
     // ===== OPEN =====
     function open(cell, data) {
-        _currentCell = cell;
-        _currentData = data;
-        _currentContext = DISHA.buildContext(cell, data);
-
         const panelEl = document.getElementById('disha-panel');
         const messagesEl = document.getElementById('disha-messages');
         const inputEl = document.getElementById('disha-input');
         const sendBtn = document.getElementById('disha-send');
         const suggestionsEl = document.getElementById('disha-suggestions');
+
+        // Guard: opening without a cell is a UX path (e.g. user clicked
+        // a DISHA-launcher button before clicking the map). Show a
+        // friendly empty state instead of crashing on cell.code below.
+        if (!cell || !cell.code) {
+            panelEl.classList.add('open');
+            while (messagesEl.firstChild) messagesEl.removeChild(messagesEl.firstChild);
+            inputEl.disabled = true;
+            sendBtn.disabled = true;
+            inputEl.placeholder = 'Click a DigiPin cell on the map first…';
+            const hint = document.createElement('div');
+            hint.className = 'disha-message disha-system';
+            hint.textContent = 'Click any cell on the map to load location context, then ask me about it.';
+            messagesEl.appendChild(hint);
+            return;
+        }
+
+        _currentCell = cell;
+        _currentData = data;
+        _currentContext = DISHA.buildContext(cell, data);
 
         panelEl.classList.add('open');
         while (messagesEl.firstChild) messagesEl.removeChild(messagesEl.firstChild);
