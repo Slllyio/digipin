@@ -16,11 +16,14 @@ def test_module_imports():
 
 def test_india_bbox_is_sensible():
     from pipeline.growth.extract_buildings_temporal import INDIA_BBOX
-    # west, south, east, north
-    assert INDIA_BBOX[0] < INDIA_BBOX[2]    # west < east
-    assert INDIA_BBOX[1] < INDIA_BBOX[3]    # south < north
-    assert 60 < INDIA_BBOX[0] < 80          # India is in this lng range
-    assert 5 < INDIA_BBOX[1] < 15           # southern tip
+    # INDIA_BBOX is region-aware (defaults to Indore pilot via
+    # pipeline._lib.regions.get_default_bbox). Sanity-check: ordering
+    # is correct AND coordinates fall inside the Indian subcontinent.
+    west, south, east, north = INDIA_BBOX
+    assert west < east
+    assert south < north
+    assert 60 < west < 98       # within Indian lng span
+    assert 5 < south < 36       # within Indian lat span
 
 
 def test_year_range():
