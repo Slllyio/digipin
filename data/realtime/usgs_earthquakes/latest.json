@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-05-25T20:44:06Z",
-  "count": 8,
+  "generated_at_iso": "2026-05-26T00:15:50Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us6000t04u",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-05-25T22:03:42.214000+00:00",
+      "latitude": -4.0414,
+      "longitude": 134.0191,
+      "depth_km": 10.0,
+      "place": "181 km WSW of Nabire, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t04u",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000t04s",
+      "magnitude": 6.9,
+      "origin_time_utc": "2026-05-25T21:52:20.043000+00:00",
+      "latitude": -22.3883,
+      "longitude": -68.6422,
+      "depth_km": 109.0,
+      "place": "29 km ENE of Calama, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t04s",
+      "tsunami": 0,
+      "significance": 757
+    },
+    {
+      "id": "us6000t04f",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-05-25T20:39:20.664000+00:00",
+      "latitude": 1.1115,
+      "longitude": 126.0911,
+      "depth_km": 31.057,
+      "place": "113 km ESE of Bitung, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t04f",
+      "tsunami": 0,
+      "significance": 482
+    },
     {
       "id": "us6000t02k",
       "magnitude": 4.9,
