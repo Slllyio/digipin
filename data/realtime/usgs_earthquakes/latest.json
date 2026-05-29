@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-05-29T05:57:50Z",
-  "count": 7,
+  "generated_at_iso": "2026-05-29T13:33:05Z",
+  "count": 9,
   "records": [
+    {
+      "id": "us7000sp99",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-05-29T12:25:53.648000+00:00",
+      "latitude": -13.758,
+      "longitude": -72.4559,
+      "depth_km": 99.854,
+      "place": "13 km NNE of Palpacachi, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp99",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000sp8m",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-05-29T08:54:14.809000+00:00",
+      "latitude": 0.6186,
+      "longitude": 100.052,
+      "depth_km": 170.419,
+      "place": "108 km NNW of Bukittinggi, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp8m",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000sp8f",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-05-29T08:15:11.417000+00:00",
+      "latitude": 41.6125,
+      "longitude": 73.9414,
+      "depth_km": 10.0,
+      "place": "24 km NNW of Kazarman, Kyrgyzstan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp8f",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000sp82",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-05-29T06:55:52.924000+00:00",
+      "latitude": 42.2295,
+      "longitude": 88.3187,
+      "depth_km": 10.0,
+      "place": "106 km SW of Turpan, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp82",
+      "tsunami": 0,
+      "significance": 432
+    },
     {
       "id": "us7000sp7p",
       "magnitude": 5.1,
@@ -61,30 +109,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp42",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us7000sp29",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-05-28T12:35:40.163000+00:00",
-      "latitude": -6.5891,
-      "longitude": 132.0189,
-      "depth_km": 10.0,
-      "place": "133 km SW of Tual, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp29",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000sp1m",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-05-28T09:41:10.963000+00:00",
-      "latitude": -20.0493,
-      "longitude": 168.2222,
-      "depth_km": 10.0,
-      "place": "124 km WSW of Isangel, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp1m",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
