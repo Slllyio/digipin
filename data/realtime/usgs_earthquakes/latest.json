@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-05-29T17:01:50Z",
-  "count": 11,
+  "generated_at_iso": "2026-05-29T22:51:51Z",
+  "count": 13,
   "records": [
+    {
+      "id": "us7000spfj",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-05-29T21:21:44.016000+00:00",
+      "latitude": 0.9071,
+      "longitude": -29.1814,
+      "depth_km": 10.0,
+      "place": "central Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spfj",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000spdj",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-05-29T16:47:49.386000+00:00",
+      "latitude": -24.9835,
+      "longitude": 179.7888,
+      "depth_km": 499.352,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spdj",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000spd9",
       "magnitude": 5.2,
@@ -49,6 +73,30 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp99",
       "tsunami": 0,
       "significance": 354
+    },
+    {
+      "id": "us7000sp8u",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-05-29T10:04:04.832000+00:00",
+      "latitude": 1.0041,
+      "longitude": 126.1429,
+      "depth_km": 59.378,
+      "place": "122 km ESE of Bitung, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp8u",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000sp8n",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-05-29T09:08:47.514000+00:00",
+      "latitude": -8.1696,
+      "longitude": -73.9355,
+      "depth_km": 197.29,
+      "place": "70 km ENE of San Fernando, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp8n",
+      "tsunami": 0,
+      "significance": 312
     },
     {
       "id": "us7000sp8m",
@@ -107,30 +155,6 @@
       "depth_km": 27.75,
       "place": "73 km SE of Sinabang, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp6y",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000sp6e",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-05-28T20:59:11.905000+00:00",
-      "latitude": -8.0054,
-      "longitude": 109.0459,
-      "depth_km": 81.1,
-      "place": "31 km S of Cilacap, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp6e",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000sp4x",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-05-28T17:57:19.445000+00:00",
-      "latitude": 12.4385,
-      "longitude": 143.5219,
-      "depth_km": 36.098,
-      "place": "154 km SW of Merizo Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp4x",
       "tsunami": 0,
       "significance": 340
     }
