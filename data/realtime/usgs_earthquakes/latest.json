@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-05-29T01:31:34Z",
+  "generated_at_iso": "2026-05-29T05:57:50Z",
   "count": 7,
   "records": [
+    {
+      "id": "us7000sp7p",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-05-29T05:32:39.548000+00:00",
+      "latitude": -18.4158,
+      "longitude": -71.4602,
+      "depth_km": 10.0,
+      "place": "86 km S of Pacocha, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp7p",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000sp6y",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-05-29T01:10:59.180000+00:00",
+      "latitude": 2.0401,
+      "longitude": 96.8764,
+      "depth_km": 27.75,
+      "place": "73 km SE of Sinabang, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp6y",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000sp4x",
       "magnitude": 4.7,
@@ -61,30 +85,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp1m",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us7000snzw",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-05-28T02:37:50.460000+00:00",
-      "latitude": 33.1393,
-      "longitude": 96.1517,
-      "depth_km": 10.0,
-      "place": "242 km NNW of Qamdo, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000snzw",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000snzn",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-05-28T01:46:18.726000+00:00",
-      "latitude": -10.451,
-      "longitude": 124.473,
-      "depth_km": 10.0,
-      "place": "68 km SSE of Soe, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000snzn",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
