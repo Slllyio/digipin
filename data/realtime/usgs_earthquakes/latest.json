@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-05-30T07:25:46Z",
-  "count": 16,
+  "generated_at_iso": "2026-05-30T19:13:24Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us7000spjc",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-05-30T14:34:14.372000+00:00",
+      "latitude": 43.0767,
+      "longitude": 143.7857,
+      "depth_km": 116.722,
+      "place": "26 km SE of Ashoro, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spjc",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000spj5",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-05-30T14:21:09.256000+00:00",
+      "latitude": 16.3879,
+      "longitude": 119.2212,
+      "depth_km": 10.0,
+      "place": "63 km W of Catuday, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spj5",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000spit",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-05-30T13:15:09.763000+00:00",
+      "latitude": 6.018,
+      "longitude": 126.6311,
+      "depth_km": 10.0,
+      "place": "62 km SE of Pondaguitan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spit",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000spie",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-05-30T11:06:52.334000+00:00",
+      "latitude": 13.8975,
+      "longitude": 51.7816,
+      "depth_km": 10.0,
+      "place": "195 km NNW of Kilmia, Yemen",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spie",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000spid",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-05-30T11:06:11.345000+00:00",
+      "latitude": 12.0087,
+      "longitude": -88.2604,
+      "depth_km": 10.0,
+      "place": "119 km SW of Jiquilillo, Nicaragua",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spid",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us7000spha",
       "magnitude": 4.5,
@@ -85,114 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spfj",
       "tsunami": 0,
       "significance": 416
-    },
-    {
-      "id": "us7000spdj",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-05-29T16:47:49.386000+00:00",
-      "latitude": -24.9835,
-      "longitude": 179.7888,
-      "depth_km": 499.352,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spdj",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000spd9",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-05-29T16:05:58.630000+00:00",
-      "latitude": 50.0568,
-      "longitude": 159.5123,
-      "depth_km": 10.0,
-      "place": "250 km ESE of Severo-Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spd9",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000spb8",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-05-29T14:34:43.967000+00:00",
-      "latitude": -3.5004,
-      "longitude": 122.3461,
-      "depth_km": 10.0,
-      "place": "56 km NNW of Kendari, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spb8",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000spar",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-05-29T13:37:13.312000+00:00",
-      "latitude": 43.923,
-      "longitude": 147.967,
-      "depth_km": 35.0,
-      "place": "101 km E of Shikotan, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spar",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000sp99",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-05-29T12:25:53.648000+00:00",
-      "latitude": -13.758,
-      "longitude": -72.4559,
-      "depth_km": 99.854,
-      "place": "13 km NNE of Palpacachi, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp99",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000sp8u",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-05-29T10:04:04.832000+00:00",
-      "latitude": 1.0041,
-      "longitude": 126.1429,
-      "depth_km": 59.378,
-      "place": "122 km ESE of Bitung, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp8u",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000sp8n",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-05-29T09:08:47.514000+00:00",
-      "latitude": -8.1696,
-      "longitude": -73.9355,
-      "depth_km": 197.29,
-      "place": "70 km ENE of San Fernando, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp8n",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000sp8m",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-05-29T08:54:14.809000+00:00",
-      "latitude": 0.6186,
-      "longitude": 100.052,
-      "depth_km": 170.419,
-      "place": "108 km NNW of Bukittinggi, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp8m",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000sp8f",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-05-29T08:15:11.417000+00:00",
-      "latitude": 41.6125,
-      "longitude": 73.9414,
-      "depth_km": 10.0,
-      "place": "24 km NNW of Kazarman, Kyrgyzstan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sp8f",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
