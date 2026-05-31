@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-05-31T06:17:40Z",
+  "generated_at_iso": "2026-05-31T16:07:02Z",
   "count": 11,
   "records": [
+    {
+      "id": "us7000spp6",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-05-31T15:03:32.196000+00:00",
+      "latitude": 7.5655,
+      "longitude": 91.8273,
+      "depth_km": 10.0,
+      "place": "Nicobar Islands, India region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spp6",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000spp3",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-05-31T14:26:39.572000+00:00",
+      "latitude": 27.4636,
+      "longitude": 139.8402,
+      "depth_km": 508.465,
+      "place": "Bonin Islands, Japan region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spp3",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000spnj",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-05-31T12:37:12.170000+00:00",
+      "latitude": -21.3934,
+      "longitude": -66.6399,
+      "depth_km": 226.05,
+      "place": "66 km SW of Atocha, Bolivia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spnj",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000spn5",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-05-31T10:51:46.961000+00:00",
+      "latitude": 12.0691,
+      "longitude": -88.2835,
+      "depth_km": 10.0,
+      "place": "117 km SW of Jiquilillo, Nicaragua",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spn5",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000spmd",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-05-31T05:50:06.141000+00:00",
+      "latitude": -31.0098,
+      "longitude": -65.6553,
+      "depth_km": 181.915,
+      "place": "48 km S of Castro Barros, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spmd",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000splv",
       "magnitude": 5.0,
@@ -60,7 +120,7 @@
       "place": "137 km SSE of Oistins, Barbados",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spkc",
       "tsunami": 0,
-      "significance": 490
+      "significance": 492
     },
     {
       "id": "us7000spkb",
@@ -73,66 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spkb",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us7000spjc",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-05-30T14:34:14.372000+00:00",
-      "latitude": 43.0767,
-      "longitude": 143.7857,
-      "depth_km": 116.722,
-      "place": "26 km SE of Ashoro, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spjc",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000spj5",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-05-30T14:21:09.256000+00:00",
-      "latitude": 16.3879,
-      "longitude": 119.2212,
-      "depth_km": 10.0,
-      "place": "63 km W of Catuday, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spj5",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000spit",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-05-30T13:15:09.763000+00:00",
-      "latitude": 6.018,
-      "longitude": 126.6311,
-      "depth_km": 10.0,
-      "place": "62 km SE of Pondaguitan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spit",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000spie",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-05-30T11:06:52.334000+00:00",
-      "latitude": 13.8975,
-      "longitude": 51.7816,
-      "depth_km": 10.0,
-      "place": "195 km NNW of Kilmia, Yemen",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spie",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000spid",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-05-30T11:06:11.345000+00:00",
-      "latitude": 12.0087,
-      "longitude": -88.2604,
-      "depth_km": 10.0,
-      "place": "119 km SW of Jiquilillo, Nicaragua",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spid",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
