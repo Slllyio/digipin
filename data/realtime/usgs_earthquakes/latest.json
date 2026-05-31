@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-05-31T16:07:02Z",
-  "count": 11,
+  "generated_at_iso": "2026-05-31T20:59:34Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us7000sppz",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-05-31T19:46:48.141000+00:00",
+      "latitude": 26.468,
+      "longitude": 143.6635,
+      "depth_km": 10.0,
+      "place": "Bonin Islands, Japan region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sppz",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000sppt",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-05-31T19:15:39.818000+00:00",
+      "latitude": -30.5996,
+      "longitude": -179.0432,
+      "depth_km": 98.548,
+      "place": "Kermadec Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sppt",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000sppi",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-05-31T17:14:01.231000+00:00",
+      "latitude": 11.2068,
+      "longitude": -86.632,
+      "depth_km": 35.0,
+      "place": "65 km SSW of Masachapa, Nicaragua",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sppi",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000spp6",
       "magnitude": 4.6,
