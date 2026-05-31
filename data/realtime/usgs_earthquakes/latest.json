@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-05-30T19:13:24Z",
-  "count": 12,
+  "generated_at_iso": "2026-05-31T06:17:40Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us7000splv",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-05-31T03:57:05.760000+00:00",
+      "latitude": -24.0984,
+      "longitude": -179.7084,
+      "depth_km": 486.212,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000splv",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000splm",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-05-31T02:48:01.280000+00:00",
+      "latitude": -17.3616,
+      "longitude": 167.751,
+      "depth_km": 35.0,
+      "place": "72 km NW of Port-Vila, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000splm",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000spl8",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-05-31T00:54:00.462000+00:00",
+      "latitude": 62.1963,
+      "longitude": -26.4033,
+      "depth_km": 10.0,
+      "place": "271 km SW of Grindavík, Iceland",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spl8",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000spkp",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-05-30T22:45:51.647000+00:00",
+      "latitude": -7.2968,
+      "longitude": 147.4544,
+      "depth_km": 68.854,
+      "place": "81 km SE of Lae, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spkp",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000spkc",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-05-30T21:27:25.699000+00:00",
+      "latitude": 11.9084,
+      "longitude": -59.1029,
+      "depth_km": 35.0,
+      "place": "137 km SSE of Oistins, Barbados",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spkc",
+      "tsunami": 0,
+      "significance": 490
+    },
+    {
+      "id": "us7000spkb",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-05-30T21:15:59.807000+00:00",
+      "latitude": 38.3564,
+      "longitude": 73.8219,
+      "depth_km": 131.794,
+      "place": "24 km NNW of Murghob, Tajikistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spkb",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000spjc",
       "magnitude": 4.5,
@@ -61,90 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spid",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us7000spha",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-05-30T05:48:47.991000+00:00",
-      "latitude": -21.5931,
-      "longitude": -69.9976,
-      "depth_km": 48.474,
-      "place": "58 km NNE of Tocopilla, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spha",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000sphm",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-05-30T05:48:13.574000+00:00",
-      "latitude": 6.1379,
-      "longitude": 126.802,
-      "depth_km": 10.0,
-      "place": "73 km ESE of Pondaguitan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sphm",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000spgb",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-05-30T00:38:14.852000+00:00",
-      "latitude": -59.1715,
-      "longitude": -26.3858,
-      "depth_km": 95.738,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spgb",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000spga",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-05-30T00:31:42.149000+00:00",
-      "latitude": 11.2287,
-      "longitude": -62.2793,
-      "depth_km": 134.269,
-      "place": "72 km N of Güiria, Venezuela",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spga",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000spg0",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-05-29T23:17:03.497000+00:00",
-      "latitude": -2.9833,
-      "longitude": 147.7323,
-      "depth_km": 10.0,
-      "place": "116 km SSE of Lorengau, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spg0",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000spft",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-05-29T22:56:30.843000+00:00",
-      "latitude": -41.7609,
-      "longitude": 174.4175,
-      "depth_km": 16.892,
-      "place": "46 km ESE of Witherlea, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spft",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000spfj",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-05-29T21:21:44.016000+00:00",
-      "latitude": 0.9071,
-      "longitude": -29.1814,
-      "depth_km": 10.0,
-      "place": "central Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000spfj",
-      "tsunami": 0,
-      "significance": 416
     }
   ]
 }
