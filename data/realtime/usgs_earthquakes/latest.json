@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-06-04T15:15:33Z",
-  "count": 16,
+  "generated_at_iso": "2026-06-04T23:36:31Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us7000sqr7",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-04T22:34:17.795000+00:00",
+      "latitude": -7.2717,
+      "longitude": 129.4683,
+      "depth_km": 121.363,
+      "place": "Kepulauan Babar, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqr7",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000sqnn",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-04T17:50:48.831000+00:00",
+      "latitude": 51.2898,
+      "longitude": -176.2203,
+      "depth_km": 44.253,
+      "place": "71 km SSE of Adak, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqnn",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000sqnl",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-06-04T17:44:45.356000+00:00",
+      "latitude": 39.8257,
+      "longitude": 143.615,
+      "depth_km": 10.0,
+      "place": "144 km E of Miyako, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqnl",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000sqnh",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-06-04T17:34:22.725000+00:00",
+      "latitude": 0.0633,
+      "longitude": 123.9377,
+      "depth_km": 99.482,
+      "place": "70 km SW of Modisi, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqnh",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000sqn7",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-06-04T17:13:29.407000+00:00",
+      "latitude": 51.5997,
+      "longitude": 159.5224,
+      "depth_km": 34.671,
+      "place": "166 km SSE of Vilyuchinsk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqn7",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000sqlk",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-06-04T16:19:39.611000+00:00",
+      "latitude": 44.5328,
+      "longitude": 80.6008,
+      "depth_km": 10.0,
+      "place": "57 km NNW of Huocheng, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqlk",
+      "tsunami": 0,
+      "significance": 372
+    },
     {
       "id": "us7000sqim",
       "magnitude": 4.8,
@@ -73,126 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqgm",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us7000sqfv",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-06-03T23:19:13.149000+00:00",
-      "latitude": -22.4163,
-      "longitude": -179.5741,
-      "depth_km": 588.158,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqfv",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000sqfs",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-06-03T23:16:11.113000+00:00",
-      "latitude": 35.8863,
-      "longitude": 5.8945,
-      "depth_km": 10.0,
-      "place": "12 km NW of Draa Klalouche, Algeria",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqfs",
-      "tsunami": 0,
-      "significance": 341
-    },
-    {
-      "id": "us7000sqf7",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-06-03T22:00:03.443000+00:00",
-      "latitude": -20.3362,
-      "longitude": -173.9309,
-      "depth_km": 10.0,
-      "place": "72 km SE of Pangai, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqf7",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000sqec",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-03T20:03:22.356000+00:00",
-      "latitude": 51.5486,
-      "longitude": 159.7685,
-      "depth_km": 35.0,
-      "place": "179 km SSE of Vilyuchinsk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqec",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000sqdu",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-06-03T19:19:18.721000+00:00",
-      "latitude": 83.8038,
-      "longitude": -2.5209,
-      "depth_km": 10.0,
-      "place": "north of Svalbard",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqdu",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000sqdn",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-06-03T19:02:45.875000+00:00",
-      "latitude": 29.7153,
-      "longitude": 129.4691,
-      "depth_km": 161.24,
-      "place": "110 km SW of Kurio, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqdn",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000sqdb",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-06-03T18:09:22.099000+00:00",
-      "latitude": 51.4846,
-      "longitude": 159.6419,
-      "depth_km": 25.672,
-      "place": "181 km SSE of Vilyuchinsk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqdb",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000sqcw",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-06-03T17:23:30.992000+00:00",
-      "latitude": 51.2954,
-      "longitude": 159.6858,
-      "depth_km": 10.0,
-      "place": "202 km SSE of Vilyuchinsk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqcw",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000sqcu",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-06-03T17:21:24.203000+00:00",
-      "latitude": -8.2012,
-      "longitude": -74.2436,
-      "depth_km": 139.126,
-      "place": "39 km NE of San Fernando, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqcu",
-      "tsunami": 0,
-      "significance": 417
-    },
-    {
-      "id": "us7000sqcf",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-06-03T16:55:35.320000+00:00",
-      "latitude": -8.0365,
-      "longitude": 120.1585,
-      "depth_km": 178.883,
-      "place": "58 km NNE of Labuan Bajo, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqcf",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
