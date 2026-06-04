@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-06-04T08:56:12Z",
-  "count": 20,
+  "generated_at_iso": "2026-06-04T11:55:42Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us7000sqim",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-06-04T11:02:07.473000+00:00",
+      "latitude": 49.6178,
+      "longitude": -28.4604,
+      "depth_km": 10.0,
+      "place": "northern Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqim",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000sqi3",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-06-04T09:00:09.987000+00:00",
+      "latitude": -8.2783,
+      "longitude": -79.535,
+      "depth_km": 78.782,
+      "place": "48 km SW of Santiago de Cao, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqi3",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000sqh1",
       "magnitude": 4.5,
@@ -203,42 +227,6 @@
       "depth_km": 10.0,
       "place": "Izu Islands, Japan region",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sq9k",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000sq93",
-      "magnitude": 5.7,
-      "origin_time_utc": "2026-06-03T10:53:54.074000+00:00",
-      "latitude": 41.8967,
-      "longitude": -126.1861,
-      "depth_km": 10.0,
-      "place": "154 km WSW of Pistol River, Oregon",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sq93",
-      "tsunami": 0,
-      "significance": 515
-    },
-    {
-      "id": "us7000sq90",
-      "magnitude": 5.6,
-      "origin_time_utc": "2026-06-03T10:20:37.618000+00:00",
-      "latitude": -20.4457,
-      "longitude": 173.0405,
-      "depth_km": 10.0,
-      "place": "Vanuatu region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sq90",
-      "tsunami": 0,
-      "significance": 482
-    },
-    {
-      "id": "us7000sq8p",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-06-03T09:18:19.459000+00:00",
-      "latitude": 50.9824,
-      "longitude": 157.2585,
-      "depth_km": 62.18,
-      "place": "77 km SE of Ozernovskiy, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sq8p",
       "tsunami": 0,
       "significance": 326
     }
