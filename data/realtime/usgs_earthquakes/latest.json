@@ -1,7 +1,91 @@
 {
-  "generated_at_iso": "2026-06-03T19:01:43Z",
-  "count": 14,
+  "generated_at_iso": "2026-06-04T00:00:04Z",
+  "count": 20,
   "records": [
+    {
+      "id": "us7000sqfv",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-06-03T23:19:13.149000+00:00",
+      "latitude": -22.4163,
+      "longitude": -179.5741,
+      "depth_km": 588.158,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqfv",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000sqfs",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-06-03T23:16:11.113000+00:00",
+      "latitude": 35.8863,
+      "longitude": 5.8945,
+      "depth_km": 10.0,
+      "place": "12 km NW of Draa Klalouche, Algeria",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqfs",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000sqf7",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-06-03T22:00:03.347000+00:00",
+      "latitude": -20.2843,
+      "longitude": -173.8881,
+      "depth_km": 10.0,
+      "place": "71 km SE of Pangai, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqf7",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000sqec",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-03T20:03:22.356000+00:00",
+      "latitude": 51.5486,
+      "longitude": 159.7685,
+      "depth_km": 35.0,
+      "place": "179 km SSE of Vilyuchinsk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqec",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000sqdu",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-06-03T19:19:18.721000+00:00",
+      "latitude": 83.8038,
+      "longitude": -2.5209,
+      "depth_km": 10.0,
+      "place": "north of Svalbard",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqdu",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000sqdn",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-06-03T19:02:45.875000+00:00",
+      "latitude": 29.7153,
+      "longitude": 129.4691,
+      "depth_km": 161.24,
+      "place": "110 km SW of Kurio, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqdn",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000sqdb",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-06-03T18:09:22.099000+00:00",
+      "latitude": 51.4846,
+      "longitude": 159.6419,
+      "depth_km": 25.672,
+      "place": "181 km SSE of Vilyuchinsk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqdb",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000sqcw",
       "magnitude": 5.2,
@@ -24,7 +108,7 @@
       "place": "39 km NE of San Fernando, Peru",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqcu",
       "tsunami": 0,
-      "significance": 416
+      "significance": 417
     },
     {
       "id": "us7000sqcf",
@@ -39,20 +123,8 @@
       "significance": 369
     },
     {
-      "id": "nc75370191",
-      "magnitude": 4.47,
-      "origin_time_utc": "2026-06-03T13:11:33.830000+00:00",
-      "latitude": 40.3621673583984,
-      "longitude": -125.045669555664,
-      "depth_km": 0.469999998807907,
-      "place": "65 km W of Petrolia, CA",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75370191",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
       "id": "nc75370186",
-      "magnitude": 5.08,
+      "magnitude": 5.1,
       "origin_time_utc": "2026-06-03T12:45:36.790000+00:00",
       "latitude": 40.3646666666667,
       "longitude": -125.017833333333,
@@ -60,7 +132,7 @@
       "place": "62 km W of Petrolia, CA",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75370186",
       "tsunami": 0,
-      "significance": 447
+      "significance": 453
     },
     {
       "id": "us7000sq9k",
@@ -84,7 +156,7 @@
       "place": "154 km WSW of Pistol River, Oregon",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sq93",
       "tsunami": 0,
-      "significance": 512
+      "significance": 515
     },
     {
       "id": "us7000sq90",
@@ -144,7 +216,7 @@
       "place": "6 km WNW of Kahaluu-Keauhou, Hawaii",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/hv74975297",
       "tsunami": 0,
-      "significance": 721
+      "significance": 725
     },
     {
       "id": "us7000sq6g",
