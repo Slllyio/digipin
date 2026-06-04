@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-06-04T11:55:42Z",
-  "count": 19,
+  "generated_at_iso": "2026-06-04T15:15:33Z",
+  "count": 16,
   "records": [
     {
       "id": "us7000sqim",
@@ -193,42 +193,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqcf",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "nc75370191",
-      "magnitude": 4.45,
-      "origin_time_utc": "2026-06-03T13:11:35.310000+00:00",
-      "latitude": 40.3643333333333,
-      "longitude": -125.035666666667,
-      "depth_km": 10.0,
-      "place": "64 km W of Petrolia, CA",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75370191",
-      "tsunami": 0,
-      "significance": 310
-    },
-    {
-      "id": "nc75370186",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-06-03T12:45:36.790000+00:00",
-      "latitude": 40.3646666666667,
-      "longitude": -125.017833333333,
-      "depth_km": 10.0,
-      "place": "62 km W of Petrolia, CA",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75370186",
-      "tsunami": 0,
-      "significance": 455
-    },
-    {
-      "id": "us7000sq9k",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-06-03T12:29:44.696000+00:00",
-      "latitude": 29.2221,
-      "longitude": 142.1149,
-      "depth_km": 10.0,
-      "place": "Izu Islands, Japan region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sq9k",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
