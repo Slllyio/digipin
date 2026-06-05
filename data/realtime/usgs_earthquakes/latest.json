@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-06-05T20:24:23Z",
-  "count": 14,
+  "generated_at_iso": "2026-06-05T21:56:05Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us7000sqzx",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-06-05T20:58:09.553000+00:00",
+      "latitude": -61.8467,
+      "longitude": 161.168,
+      "depth_km": 10.0,
+      "place": "Balleny Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqzx",
+      "tsunami": 0,
+      "significance": 482
+    },
+    {
+      "id": "us7000sqzv",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-06-05T20:55:05.129000+00:00",
+      "latitude": 16.7782,
+      "longitude": -98.5044,
+      "depth_km": 47.928,
+      "place": "0 km SSW of Quetzalapa, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqzv",
+      "tsunami": 0,
+      "significance": 404
+    },
     {
       "id": "us7000sqyt",
       "magnitude": 4.8,
@@ -24,7 +48,7 @@
       "place": "37 km WSW of Kyelang, India",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqxa",
       "tsunami": 0,
-      "significance": 415
+      "significance": 416
     },
     {
       "id": "us7000sqvk",
@@ -49,6 +73,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqvg",
       "tsunami": 0,
       "significance": 354
+    },
+    {
+      "id": "us7000sqvc",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-06-05T14:47:21.362000+00:00",
+      "latitude": 5.3746,
+      "longitude": 126.0008,
+      "depth_km": 111.167,
+      "place": "59 km E of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sqvc",
+      "tsunami": 0,
+      "significance": 326
     },
     {
       "id": "us7000sqv3",
