@@ -211,16 +211,24 @@ is exercised by [`scrapers/sources/tests/test_snapshot_quality.py`](sources/test
 
 ### Coverage
 
+All 8 sources now ship a schema contract and are wired into the
+`SOURCES` table, so every committed snapshot is validated in CI.
+
 | Source | Schema | In SOURCES table |
 |---|---|---|
 | `ndma_sachet` | ✅ | ✅ |
 | `ncs_earthquakes` | ✅ | ✅ |
-| `imd_warnings` | TODO | — |
-| `imd_cityforecast` | TODO | — |
-| `imd_nowcast` | TODO | — |
-| `usgs_earthquakes` | TODO | — |
-| `gdacs_disasters` | TODO | — |
-| `openaq_india` | TODO | — |
+| `imd_warnings` | ✅ | ✅ |
+| `imd_cityforecast` | ✅ | ✅ |
+| `imd_nowcast` | ✅ | ✅ |
+| `usgs_earthquakes` | ✅ | ✅ |
+| `gdacs_disasters` | ✅ | ✅ |
+| `openaq_india` | ✅ | ✅ |
+
+> `imd_cityforecast` and `imd_nowcast` commit empty snapshots until
+> `IMD_API_KEY` / `IMD_API_TOKEN` are configured (they skip gracefully
+> without keys). Their contracts validate the empty snapshot today and
+> the full record shape once the keys are added.
 
 ### Adding a contract for a source
 

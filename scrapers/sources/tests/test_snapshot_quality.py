@@ -32,6 +32,8 @@ SOURCES = [
     ("ndma_sachet",      "id",   None),
     ("ncs_earthquakes",  "id",   None),
     ("imd_warnings",     "id",   None),
+    ("imd_cityforecast", "id",   None),
+    ("imd_nowcast",      "id",   None),
     ("usgs_earthquakes", "id",   None),
     ("gdacs_disasters",  "id",   None),
     ("openaq_india",     "id",   None),
