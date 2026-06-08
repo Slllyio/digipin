@@ -28,8 +28,17 @@
  *    Example:
  *      window.DIGIPIN_CONFIG = { waqiToken: 'your-token-here' };
  *
+ *  ogdApiKey (string) — data.gov.in (OGD) API key for hospital / CEPI / pincode
+ *    enrichment. Defaults to data.gov.in's shared public sample key (rate-limited).
+ *    Register a free key at https://data.gov.in/ for higher quota:
+ *      window.DIGIPIN_CONFIG = { ogdApiKey: 'your-key-here' };
+ *
  *  CPCB is the primary AQI source; WAQI is the first fallback.
  *  Even with a demo token the pipeline gives useful results via CPCB + Open-Meteo.
+ *
+ *  SECURITY NOTE: This is a keyless static PWA — it cannot hide a real secret.
+ *  Only public / shared-sample credentials live in this file. Any genuinely
+ *  private key must be fronted by a backend proxy, never shipped to the browser.
  */
 
 const DataFetcher = (() => {
@@ -43,16 +52,23 @@ const DataFetcher = (() => {
     const OPEN_METEO_AQI_URL = 'https://air-quality-api.open-meteo.com/v1/air-quality';
     const OPEN_METEO_SOLAR_URL = 'https://api.open-meteo.com/v1/forecast';
     // const BHOONIDHI_API = 'https://bhoonidhi-api.nrsc.gov.in'; // CORS-blocked, disabled
-    const OGD_API_KEY = '579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b';
+    // data.gov.in (OGD) key. This is the platform's shared *public sample* key,
+    // documented openly at https://data.gov.in/help/how-use-datasets-apis — it is
+    // rate-limited and low-sensitivity, not a private credential. Override it with
+    // your own registered key via window.DIGIPIN_CONFIG.ogdApiKey for higher quota.
+    const OGD_API_KEY = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG?.ogdApiKey)
+        || '579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b';
     const OGD_HOSPITAL_RESOURCE = '0c534d1d8b4e3c3b0219254f563741a6';
     const OGD_CEPI_RESOURCE = '0579cf1f-7e3b-4b15-b29a-87cf7b7c7a08';
     const OGD_PINCODE_RESOURCE = '5c2f62fe-5afa-4119-a499-fec9d604d5bd';
     let _cepiCache = null; // loaded once (only 43 records)
 
-    // IUDX (India Urban Data Exchange) — Smart City data for Indore
-    const IUDX_AUTH_URL = 'https://cos.iudx.org.in/auth/v1/token';
-    const IUDX_CLIENT_ID = '333f2eed-1ae5-4ba0-b188-85ff2124bae3';
-    const IUDX_CLIENT_SECRET = 'cffdcb8f5e52e192b9108bfefbc31fd19568259f';
+    // IUDX (India Urban Data Exchange) — Smart City data for Indore.
+    // Both endpoints used below are public/no-auth: the open S3 sample bucket and
+    // the IUDX catalogue search API (via CORS proxy, see fetchIUDXCatalogue). No
+    // client_id/secret is needed or stored here — a static PWA cannot keep a secret
+    // anyway. If a future feature needs the authenticated Resource Server, proxy it
+    // through a backend and inject the token at request time, never in client source.
     const IUDX_S3_BASE = 'https://fs-sample-file-bucket.s3.ap-south-1.amazonaws.com/public-access/indore';
     const IUDX_DATASETS = [
         { key: 'busStops',    label: 'Bus Stops (BRTS/City)',  icon: '🚌', file: 'indore-stops-info.json' },
