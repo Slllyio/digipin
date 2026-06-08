@@ -109,58 +109,64 @@ const QueryEngine = (() => {
         if (isRunning) return;
         isRunning = true;
 
-        const query = findQuery(queryId);
-        if (!query) { isRunning = false; return; }
+        // try/finally guarantees isRunning is cleared even if a synchronous
+        // step throws (getMap/getBounds/showHeatmap). Without it, one throw
+        // would wedge the flag and make runQuery a permanent no-op.
+        try {
+            const query = findQuery(queryId);
+            if (!query) return;
 
-        const map = MapModule.getMap();
-        const bounds = map.getBounds();
-        const results = [];
+            const map = MapModule.getMap();
+            const bounds = map.getBounds();
+            const results = [];
 
-        const gridSize = 5;
-        const latStep = (bounds.getNorth() - bounds.getSouth()) / gridSize;
-        const lngStep = (bounds.getEast() - bounds.getWest()) / gridSize;
+            const gridSize = 5;
+            const latStep = (bounds.getNorth() - bounds.getSouth()) / gridSize;
+            const lngStep = (bounds.getEast() - bounds.getWest()) / gridSize;
 
-        const points = [];
-        for (let i = 0; i < gridSize; i++) {
-            for (let j = 0; j < gridSize; j++) {
-                points.push({
-                    lat: bounds.getSouth() + latStep * (i + 0.5),
-                    lng: bounds.getWest() + lngStep * (j + 0.5)
+            const points = [];
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    points.push({
+                        lat: bounds.getSouth() + latStep * (i + 0.5),
+                        lng: bounds.getWest() + lngStep * (j + 0.5)
+                    });
+                }
+            }
+
+            const total = points.length;
+            let done = 0;
+
+            for (let batch = 0; batch < total; batch += CONCURRENCY) {
+                const chunk = points.slice(batch, batch + CONCURRENCY);
+
+                const batchResults = await Promise.allSettled(
+                    chunk.map(async (pt) => {
+                        const code = DigiPin.encode(pt.lat, pt.lng);
+                        const data = await DataFetcher.fetchAllFeatures(pt.lat, pt.lng, 400);
+                        const score = computeQueryScore(data.scores, query.weights);
+                        return { lat: pt.lat, lng: pt.lng, code, score, data };
+                    })
+                );
+
+                batchResults.forEach(r => {
+                    if (r.status === 'fulfilled') results.push(r.value);
+                    done++;
+                    if (onProgress) onProgress(done, total);
                 });
+
+                if (batch + CONCURRENCY < total) {
+                    await new Promise(r => setTimeout(r, 300));
+                }
             }
+
+            results.sort((a, b) => b.score - a.score);
+            MapModule.showHeatmap(results.slice(0, 10));
+
+            return results;
+        } finally {
+            isRunning = false;
         }
-
-        const total = points.length;
-        let done = 0;
-
-        for (let batch = 0; batch < total; batch += CONCURRENCY) {
-            const chunk = points.slice(batch, batch + CONCURRENCY);
-
-            const batchResults = await Promise.allSettled(
-                chunk.map(async (pt) => {
-                    const code = DigiPin.encode(pt.lat, pt.lng);
-                    const data = await DataFetcher.fetchAllFeatures(pt.lat, pt.lng, 400);
-                    const score = computeQueryScore(data.scores, query.weights);
-                    return { lat: pt.lat, lng: pt.lng, code, score, data };
-                })
-            );
-
-            batchResults.forEach(r => {
-                if (r.status === 'fulfilled') results.push(r.value);
-                done++;
-                if (onProgress) onProgress(done, total);
-            });
-
-            if (batch + CONCURRENCY < total) {
-                await new Promise(r => setTimeout(r, 300));
-            }
-        }
-
-        results.sort((a, b) => b.score - a.score);
-        MapModule.showHeatmap(results.slice(0, 10));
-
-        isRunning = false;
-        return results;
     }
 
     function findQuery(queryId) {

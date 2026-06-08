@@ -20,16 +20,19 @@ const GrowthScore = (() => {
         const n = buildings_temporal.length;
         const last = buildings_temporal[n - 1];
         const prev = buildings_temporal[n - 2];
+        // COG no-data cells can surface as NaN; a NaN here would propagate to a
+        // NaN composite that the consumer's `== null` check wouldn't catch.
+        if (!Number.isFinite(last) || !Number.isFinite(prev)) return null;
         const yoyPct = prev > 0 ? ((last - prev) / prev) * 100 : 0;
-        const heightYoy = heights && heights.length >= 2
-            ? (heights[heights.length - 1] - heights[heights.length - 2])
-            : 0;
+        const h1 = heights && heights.length >= 2 ? heights[heights.length - 1] : null;
+        const h0 = heights && heights.length >= 2 ? heights[heights.length - 2] : null;
+        const heightYoy = (Number.isFinite(h1) && Number.isFinite(h0)) ? (h1 - h0) : 0;
         const osmBoost = Math.min(10, (osm_construction_count || 0) * 2);
         const score = 50
             + 25 * Math.tanh(yoyPct / 8)
             + 15 * Math.tanh(heightYoy)
             + osmBoost;
-        return Math.max(0, Math.min(100, score));
+        return Number.isFinite(score) ? Math.max(0, Math.min(100, score)) : null;
     }
 
     /** Densification (DEN).
@@ -37,7 +40,7 @@ const GrowthScore = (() => {
      *    ghsl_pop_5yr_pct:       number  GHSL pop grid delta 2020→2025 (%)
      *    osm_commercial_density: number  POI density per km² */
     function denSubScore({ ghsl_pop_5yr_pct, osm_commercial_density }) {
-        if (ghsl_pop_5yr_pct == null) return null;
+        if (ghsl_pop_5yr_pct == null || !Number.isFinite(ghsl_pop_5yr_pct)) return null;
         const popTerm = 25 * Math.tanh(ghsl_pop_5yr_pct / 15);
         const commTerm = Math.min(15, (osm_commercial_density || 0) / 8);
         return Math.max(0, Math.min(100, 50 + popTerm + commTerm));

@@ -430,18 +430,38 @@ const DataFetcher = (() => {
     /**
      * Utility: Fetch with exponential backoff retry
      */
-    async function fetchWithRetry(url, options = {}, retries = 3, backoff = 1000) {
+    // Per-attempt timeout (ms). The public APIs (Overpass, Nominatim,
+    // open-elevation) routinely hang rather than error under load, which would
+    // otherwise stall the whole cell fetch on a single `await fetch`. Aborting
+    // lets the retry/backoff loop and each caller's fallback kick in so the app
+    // degrades gracefully instead of freezing.
+    const FETCH_TIMEOUT_MS = 15000;
+
+    async function fetchWithRetry(url, options = {}, retries = 3, backoff = 1000, timeout = FETCH_TIMEOUT_MS) {
         let lastError;
         for (let i = 0; i < retries; i++) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(new Error(`timeout after ${timeout}ms`)), timeout);
+            // Forward a caller-supplied abort signal so external cancellation
+            // (e.g. navigating away mid-query) still propagates to the fetch.
+            if (options.signal) {
+                if (options.signal.aborted) controller.abort(options.signal.reason);
+                else options.signal.addEventListener('abort',
+                    () => controller.abort(options.signal.reason), { once: true });
+            }
             try {
-                const resp = await fetch(url, options);
+                const resp = await fetch(url, { ...options, signal: controller.signal });
                 if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                 return await resp.json();
             } catch (err) {
                 lastError = err;
+                // Honour a caller-initiated abort immediately — don't burn retries.
+                if (options.signal?.aborted) throw err;
                 if (i < retries - 1) {
                     await new Promise(res => setTimeout(res, backoff * Math.pow(2, i)));
                 }
+            } finally {
+                clearTimeout(timer);
             }
         }
         throw lastError;
@@ -949,32 +969,38 @@ const DataFetcher = (() => {
         };
     }
 
-    /** AQI sub-index for PM2.5 (Indian NAQI standard) */
+    /** AQI sub-index for PM2.5 (Indian NAQI standard).
+     *  Bands are contiguous (each cLow touches the previous cHigh) so any
+     *  fractional concentration in a former gap (e.g. 30.5, 60.7) still maps
+     *  to a sub-index instead of falling through to null. */
     function computeAQI_PM25(c) {
+        if (c == null || !Number.isFinite(c) || c < 0) return null;
         const bp = [
-            [0, 30, 0, 50], [31, 60, 51, 100], [61, 90, 101, 200],
-            [91, 120, 201, 300], [121, 250, 301, 400], [251, 500, 401, 500]
+            [0, 30, 0, 50], [30, 60, 51, 100], [60, 90, 101, 200],
+            [90, 120, 201, 300], [120, 250, 301, 400], [250, 500, 401, 500]
         ];
         for (const [cLow, cHigh, iLow, iHigh] of bp) {
             if (c >= cLow && c <= cHigh) {
                 return Math.round(((iHigh - iLow) / (cHigh - cLow)) * (c - cLow) + iLow);
             }
         }
-        return c > 250 ? 500 : null;
+        return c > 500 ? 500 : null;   // above-scale readings cap at 500
     }
 
-    /** AQI sub-index for PM10 (Indian NAQI standard) */
+    /** AQI sub-index for PM10 (Indian NAQI standard). Contiguous bands — see
+     *  computeAQI_PM25 for the gap-closing rationale. */
     function computeAQI_PM10(c) {
+        if (c == null || !Number.isFinite(c) || c < 0) return null;
         const bp = [
-            [0, 50, 0, 50], [51, 100, 51, 100], [101, 250, 101, 200],
-            [251, 350, 201, 300], [351, 430, 301, 400], [431, 600, 401, 500]
+            [0, 50, 0, 50], [50, 100, 51, 100], [100, 250, 101, 200],
+            [250, 350, 201, 300], [350, 430, 301, 400], [430, 600, 401, 500]
         ];
         for (const [cLow, cHigh, iLow, iHigh] of bp) {
             if (c >= cLow && c <= cHigh) {
                 return Math.round(((iHigh - iLow) / (cHigh - cLow)) * (c - cLow) + iLow);
             }
         }
-        return c > 430 ? 500 : null;
+        return c > 600 ? 500 : null;   // above-scale readings cap at 500
     }
 
     async function fetchAddress(lat, lng) {
@@ -1841,6 +1867,8 @@ const DataFetcher = (() => {
         fetchElevation,
         fetchWorldPop,
         classifyElements,
+        computeAQI_PM25,
+        computeAQI_PM10,
         clearPersistentCache: _idbClear,
         exportToJSON,
         exportToCSV,

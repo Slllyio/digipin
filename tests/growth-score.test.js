@@ -38,6 +38,24 @@ describe('GrowthScore.bueSubScore()', () => {
         });
         expect(s).toBeNull();
     });
+
+    it('returns null (not NaN) when the last temporal band is no-data NaN', () => {
+        const s = globalThis.GrowthScore.bueSubScore({
+            buildings_temporal: [0.5, 0.5, 0.5, NaN],   // COG no-data cell
+            heights: [3, 3, 3, 3],
+            osm_construction_count: 2,
+        });
+        expect(s).toBeNull();
+    });
+
+    it('ignores NaN heights instead of poisoning the score', () => {
+        const s = globalThis.GrowthScore.bueSubScore({
+            buildings_temporal: [0.5, 0.5, 0.5, 0.5],   // flat → 50 anchor
+            heights: [3, 3, 3, NaN],
+            osm_construction_count: 0,
+        });
+        expect(s).toBe(50);
+    });
 });
 
 describe('GrowthScore.denSubScore()', () => {
@@ -60,6 +78,14 @@ describe('GrowthScore.denSubScore()', () => {
     it('returns null when ghsl_pop_5yr_pct is missing', () => {
         const s = globalThis.GrowthScore.denSubScore({
             ghsl_pop_5yr_pct: null,
+            osm_commercial_density: 10,
+        });
+        expect(s).toBeNull();
+    });
+
+    it('returns null (not NaN) when ghsl_pop_5yr_pct is no-data NaN', () => {
+        const s = globalThis.GrowthScore.denSubScore({
+            ghsl_pop_5yr_pct: NaN,
             osm_commercial_density: 10,
         });
         expect(s).toBeNull();
