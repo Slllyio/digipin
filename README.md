@@ -141,13 +141,13 @@ all CDN scripts.
 | `docs/` | architecture + design notes |
 | `training-data/`, `Modelfile` | DISHA fine-tuning (QLoRA) + Ollama persona |
 | `tests/`, `pytest.ini`, `vitest.config.js` | test suites |
+| `extras/` | demo & presentation tooling (video recorder, PPT generator, slide viewer) — **not part of the PWA**; see `extras/README.md` |
 | `guna-twin-city/` | a separate prototype digital-twin for Guna (self-contained sub-project; not part of the main PWA) |
 
-> The video / slide-deck tooling at the repo root (`record-video.mjs`,
-> `build-final-video.py`, `generate-ppt.py`, `demo-recorder.html`,
-> `presentation.html`) is **demo/marketing material**, not part of the running
-> product. A future cleanup should move these and `guna-twin-city/` out of the
-> product tree.
+> The demo / slide-deck tooling now lives under `extras/` so the product tree
+> (`index.html`, `js/`, `css/`) stays focused. `guna-twin-city/` is kept in place
+> because it loads the main app's modules via `../js/...`; relocating it would
+> break those relative paths, so it remains a clearly-labelled sibling for now.
 
 ## License
 
