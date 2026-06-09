@@ -181,6 +181,39 @@ describe('GrowthScore.linearTrend()', () => {
     });
 });
 
+describe('GrowthScore.emergingClass()', () => {
+    const ec = (l, s, o) => globalThis.GrowthScore.emergingClass(l, s, o);
+
+    it('returns null when level is unknown', () => {
+        expect(ec(null, 1)).toBeNull();
+        expect(ec(NaN, 1)).toBeNull();
+    });
+
+    it('classifies hot cells by trend direction', () => {
+        expect(ec(80, 3).category).toBe('intensifying');   // high + rising
+        expect(ec(80, -3).category).toBe('diminishing');   // high + falling
+        expect(ec(80, 0).category).toBe('persistent');     // high + flat
+    });
+
+    it('classifies cool cells by trend direction', () => {
+        expect(ec(30, 3).category).toBe('emerging');       // low but rising → forming
+        expect(ec(30, -3).category).toBe('cooling');       // low + falling
+        expect(ec(30, 0).category).toBe('stable');         // low + flat
+    });
+
+    it('treats a non-finite slope as flat', () => {
+        expect(ec(80, NaN).category).toBe('persistent');
+        expect(ec(30, undefined).category).toBe('stable');
+    });
+
+    it('honours custom thresholds and yields a colour + label', () => {
+        const r = ec(50, 2, { hotLevel: 40, slopeEps: 1 });
+        expect(r.category).toBe('intensifying');
+        expect(r.color).toMatch(/^#[0-9a-f]{6}$/i);
+        expect(r.label).toBeTruthy();
+    });
+});
+
 describe('GrowthScore.confidenceBand()', () => {
     it('returns 5 for nowcast regardless of r²', () => {
         expect(globalThis.GrowthScore.confidenceBand('nowcast', 0.0)).toBe(5);

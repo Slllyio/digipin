@@ -126,6 +126,34 @@ const GrowthScore = (() => {
         return { slope, intercept, r_squared };
     }
 
+    /** Emerging-hotspot taxonomy (a per-cell simplification of the Getis-Ord
+     *  space-time hotspot classes). Combines the current LEVEL of a metric with
+     *  its temporal TREND (slope from linearTrend) into a category.
+     *
+     *  Powers map type #4 once the Growth temporal COGs are hosted (see
+     *  docs/GROWTH_FORECAST.md) — the inputs are exactly what scoreCell already
+     *  derives per cell. Pure + side-effect-free.
+     *
+     *  @param level  number|null  current metric level 0..100 (e.g. growth composite)
+     *  @param slope  number|null  trend slope (per period) from linearTrend
+     *  @returns { category, color, label } or null when level is unknown. */
+    function emergingClass(level, slope, opts = {}) {
+        if (level == null || !Number.isFinite(level)) return null;
+        const hotLevel = opts.hotLevel != null ? opts.hotLevel : 60;
+        const eps = opts.slopeEps != null ? opts.slopeEps : 0.5;
+        const s = Number.isFinite(slope) ? slope : 0;
+        const hot = level >= hotLevel;
+        const rising = s > eps;
+        const falling = s < -eps;
+
+        if (hot && rising)   return { category: 'intensifying', color: '#b2182b', label: 'Intensifying Hotspot' };
+        if (hot && falling)  return { category: 'diminishing',  color: '#ef8a62', label: 'Diminishing Hotspot' };
+        if (hot)             return { category: 'persistent',   color: '#d6604d', label: 'Persistent Hotspot' };
+        if (rising)          return { category: 'emerging',     color: '#fddbc7', label: 'Emerging (new) Hotspot' };
+        if (falling)         return { category: 'cooling',      color: '#67a9cf', label: 'Cooling' };
+        return { category: 'stable', color: '#f7f7f7', label: 'Stable / no pattern' };
+    }
+
     /** Per-horizon confidence band (±value). */
     function confidenceBand(horizon, r_squared) {
         if (horizon === 'nowcast') return 5;
@@ -136,7 +164,7 @@ const GrowthScore = (() => {
     }
 
     return { bueSubScore, denSubScore, capSubScore, normLog,
-             composite, HORIZON_WEIGHTS, linearTrend, confidenceBand };
+             composite, HORIZON_WEIGHTS, linearTrend, confidenceBand, emergingClass };
 })();
 
 if (typeof window !== 'undefined') window.GrowthScore = GrowthScore;
