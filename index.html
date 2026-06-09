@@ -283,23 +283,26 @@
     <script defer src="js/kde-overlay.js"></script>
     <script defer src="js/app.js"></script>
     <script>
-    document.getElementById('btn-growth')?.addEventListener('click', () => {
-        if (typeof GrowthOverlay !== 'undefined') GrowthOverlay.toggle();
-    });
-    document.getElementById('btn-heat')?.addEventListener('click', () => {
-        if (typeof HeatOverlay !== 'undefined') HeatOverlay.toggle();
-    });
-    document.getElementById('btn-ndvi')?.addEventListener('click', () => {
-        if (typeof NDVIOverlay !== 'undefined') NDVIOverlay.toggle();
-    });
-    document.getElementById('btn-bivariate')?.addEventListener('click', () => {
-        if (typeof BivariateOverlay !== 'undefined') BivariateOverlay.toggle();
-    });
-    document.getElementById('btn-viewshed')?.addEventListener('click', () => {
-        if (typeof Viewshed !== 'undefined') Viewshed.toggle();
-    });
-    document.getElementById('btn-kde')?.addEventListener('click', () => {
-        if (typeof KDEOverlay !== 'undefined') KDEOverlay.toggle();
+    // Wire the toggle-overlay toolbar buttons: flip the overlay, then reflect
+    // the on/off state via the .active class (styling) and aria-pressed (so
+    // screen readers announce "pressed"/"not pressed").
+    [
+        ['btn-growth',    () => window.GrowthOverlay],
+        ['btn-heat',      () => window.HeatOverlay],
+        ['btn-ndvi',      () => window.NDVIOverlay],
+        ['btn-bivariate', () => window.BivariateOverlay],
+        ['btn-viewshed',  () => window.Viewshed],
+        ['btn-kde',       () => window.KDEOverlay],
+    ].forEach(([id, getMod]) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.setAttribute('aria-pressed', 'false');
+        btn.addEventListener('click', () => {
+            const mod = getMod();
+            if (mod && typeof mod.toggle === 'function') mod.toggle();
+            const on = btn.classList.toggle('active');
+            btn.setAttribute('aria-pressed', String(on));
+        });
     });
     </script>
 

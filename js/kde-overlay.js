@@ -60,31 +60,43 @@ const KDEOverlay = (() => {
         return sum;
     }
 
-    // ---------- colour ramp (transparent → blue → cyan → yellow → red) ----------
-    function _ramp(t) {
-        // t in [0,1]; alpha fades in over the low end so empty areas stay clear.
-        const stops = [
-            [0.00, [13, 27, 62, 0]],
-            [0.20, [33, 102, 172, 90]],
-            [0.45, [103, 169, 207, 150]],
-            [0.65, [253, 219, 99, 190]],
-            [0.85, [244, 109, 67, 210]],
-            [1.00, [178, 24, 43, 230]],
-        ];
-        for (let i = 1; i < stops.length; i++) {
-            if (t <= stops[i][0]) {
-                const [t0, c0] = stops[i - 1];
-                const [t1, c1] = stops[i];
-                const f = (t - t0) / (t1 - t0 || 1);
-                return [
+    // ---------- colour ramp: viridis (perceptually-uniform, colourblind-safe) ----------
+    // Replaces the old blue→cyan→yellow→red "jet" ramp, which is not safe for
+    // red-green colour-vision deficiency. Viridis is monotonic in luminance, so
+    // it also reads correctly in greyscale.
+    const VIRIDIS = [
+        [0.00, [68, 1, 84]],     // dark purple
+        [0.25, [59, 82, 139]],
+        [0.50, [33, 144, 141]],
+        [0.75, [94, 201, 98]],
+        [1.00, [253, 231, 37]],  // yellow
+    ];
+
+    /** Map density t∈[0,1] to [r,g,b,a]. Alpha rises linearly with t so empty
+     *  areas stay clear and hotspots read as opaque. Pure + testable. */
+    function ramp(t) {
+        const tt = Math.max(0, Math.min(1, t));
+        const a = t <= 0 ? 0 : Math.round(220 * tt);
+        let rgb = VIRIDIS[VIRIDIS.length - 1][1];
+        for (let i = 1; i < VIRIDIS.length; i++) {
+            if (tt <= VIRIDIS[i][0]) {
+                const [t0, c0] = VIRIDIS[i - 1];
+                const [t1, c1] = VIRIDIS[i];
+                const f = (tt - t0) / (t1 - t0 || 1);
+                rgb = [
                     Math.round(c0[0] + (c1[0] - c0[0]) * f),
                     Math.round(c0[1] + (c1[1] - c0[1]) * f),
                     Math.round(c0[2] + (c1[2] - c0[2]) * f),
-                    Math.round(c0[3] + (c1[3] - c0[3]) * f),
                 ];
+                break;
             }
         }
-        return stops[stops.length - 1][1];
+        return [rgb[0], rgb[1], rgb[2], a];
+    }
+
+    /** CSS gradient string for the legend bar (viridis, opaque). */
+    function _rampCss() {
+        return VIRIDIS.map(([t, c]) => `rgb(${c[0]},${c[1]},${c[2]}) ${Math.round(t * 100)}%`).join(', ');
     }
 
     function _paint(samples) {
@@ -107,7 +119,7 @@ const KDEOverlay = (() => {
         }
         const inv = max > 0 ? 1 / max : 0;
         for (let i = 0; i < dens.length; i++) {
-            const [r, g, b, a] = _ramp(dens[i] * inv);
+            const [r, g, b, a] = ramp(dens[i] * inv);
             const o = i * 4;
             px[o] = r; px[o + 1] = g; px[o + 2] = b; px[o + 3] = a;
         }
@@ -194,9 +206,36 @@ const KDEOverlay = (() => {
             paint: { 'raster-opacity': 0.75, 'raster-resampling': 'linear' },
         });
 
+        _renderLegend();
+
         if (typeof App !== 'undefined') {
             App.showToast('Hotspot Ready', `${_labelFor(_scoreKey)} kernel-density surface (${samples.length} cells).`, 'success');
         }
+    }
+
+    const LEGEND_ID = 'kde-legend';
+    function _renderLegend() {
+        let el = document.getElementById(LEGEND_ID);
+        if (!el) {
+            el = document.createElement('div');
+            el.id = LEGEND_ID;
+            el.setAttribute('role', 'img');
+            el.style.cssText = 'position:absolute;bottom:24px;left:24px;z-index:5;background:rgba(10,14,39,0.92);'
+                + 'border:1px solid rgba(0,245,255,0.25);border-radius:10px;padding:10px 12px;color:#cfe;'
+                + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.4);';
+            document.body.appendChild(el);
+        }
+        el.setAttribute('aria-label', `Kernel-density hotspot of ${_labelFor(_scoreKey)}: dark purple = low, yellow = high`);
+        el.innerHTML = `
+            <div style="font-weight:600;margin-bottom:6px;color:#00f5ff;">Hotspot — ${_labelFor(_scoreKey)}</div>
+            <div style="width:160px;height:12px;border-radius:3px;background:linear-gradient(to right, ${_rampCss()});"></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#9bd;margin-top:3px;">
+                <span>Low</span><span>High</span>
+            </div>`;
+    }
+    function _removeLegend() {
+        const el = document.getElementById(LEGEND_ID);
+        if (el) el.remove();
     }
 
     function setScore(key) { _scoreKey = key; if (_active) _run(); }
@@ -212,6 +251,7 @@ const KDEOverlay = (() => {
     function detach() {
         _active = false;
         if (_abort) { _abort.abort(); _abort = null; }
+        _removeLegend();
         if (_map) {
             if (_map.getLayer(LAYER_ID)) _map.removeLayer(LAYER_ID);
             if (_map.getSource(SOURCE_ID)) _map.removeSource(SOURCE_ID);
@@ -221,7 +261,7 @@ const KDEOverlay = (() => {
 
     function toggle() { if (_active) detach(); else attach(); }
 
-    return { attach, detach, toggle, setScore, gaussian, kdeAt, getScoreOptions: () => SCORE_OPTIONS.slice() };
+    return { attach, detach, toggle, setScore, gaussian, kdeAt, ramp, getScoreOptions: () => SCORE_OPTIONS.slice() };
 })();
 
 if (typeof window !== 'undefined') window.KDEOverlay = KDEOverlay;

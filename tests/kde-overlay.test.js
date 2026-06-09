@@ -48,3 +48,32 @@ describe('KDEOverlay.kdeAt()', () => {
         expect(kdeAt(0.5, 0.5, [], bw)).toBe(0);
     });
 });
+
+describe('KDEOverlay.ramp() — viridis, colourblind-safe', () => {
+    const { ramp } = globalThis.KDEOverlay;
+
+    it('is fully transparent at zero density and opaque-ish at the top', () => {
+        expect(ramp(0)[3]).toBe(0);            // empty stays clear
+        expect(ramp(1)[3]).toBeGreaterThan(150);
+    });
+
+    it('alpha increases monotonically with density', () => {
+        const a = [0.1, 0.3, 0.6, 0.9, 1].map(t => ramp(t)[3]);
+        for (let i = 1; i < a.length; i++) expect(a[i]).toBeGreaterThanOrEqual(a[i - 1]);
+    });
+
+    it('hits viridis endpoints (dark purple → yellow) and stays in 0-255', () => {
+        const lo = ramp(0.001), hi = ramp(1);
+        expect(lo.slice(0, 3)).toEqual([68, 1, 84]);     // dark purple
+        expect(hi.slice(0, 3)).toEqual([253, 231, 37]);  // yellow
+        for (const t of [0, 0.25, 0.5, 0.75, 1]) {
+            for (const c of ramp(t)) { expect(c).toBeGreaterThanOrEqual(0); expect(c).toBeLessThanOrEqual(255); }
+        }
+    });
+
+    it('clamps out-of-range input', () => {
+        expect(ramp(-1).slice(0, 3)).toEqual([68, 1, 84]);
+        expect(ramp(2).slice(0, 3)).toEqual([253, 231, 37]);
+        expect(ramp(-1)[3]).toBe(0);
+    });
+});

@@ -146,6 +146,8 @@ const BivariateOverlay = (() => {
         if (!el) {
             el = document.createElement('div');
             el.id = LEGEND_ID;
+            el.setAttribute('role', 'group');
+            el.setAttribute('aria-label', 'Bivariate map legend and axis selectors');
             el.style.cssText = 'position:absolute;bottom:24px;left:24px;z-index:5;background:rgba(10,14,39,0.92);'
                 + 'border:1px solid rgba(0,245,255,0.25);border-radius:10px;padding:12px 14px;color:#cfe;'
                 + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.4);';
