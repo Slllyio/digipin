@@ -59,6 +59,14 @@ describe('data proxy worker', () => {
         expect(calledUrl.searchParams.get('format')).toBe('json');
     });
 
+    it('injects the OpenChargeMap key from env', async () => {
+        const up = 'https://api.openchargemap.io/v3/poi/?latitude=22.7&longitude=75.8&key=demo';
+        await handleRequest(req('https://proxy/?url=' + encodeURIComponent(up)),
+            { OCM_API_KEY: 'ocm-secret' });
+        const calledUrl = new URL(fetchSpy.mock.calls[0][0]);
+        expect(calledUrl.searchParams.get('key')).toBe('ocm-secret');
+    });
+
     it('injects the WAQI token from env', async () => {
         const up = 'https://api.waqi.info/feed/here/?token=demo';
         await handleRequest(req('https://proxy/?url=' + encodeURIComponent(up)),

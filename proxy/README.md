@@ -29,6 +29,7 @@ It is **not an open proxy**: only hosts in the `UPSTREAMS` allowlist
 |------|-------------|--------------|
 | `api.data.gov.in` | CORS + key | `OGD_API_KEY` |
 | `api.waqi.info` | key | `WAQI_TOKEN` |
+| `api.openchargemap.io` | key | `OCM_API_KEY` |
 | `cos.iudx.org.in` | CORS | — |
 | `bhoonidhi-api.nrsc.gov.in` | CORS | — |
 | `api.open-elevation.com` | reliability | — |

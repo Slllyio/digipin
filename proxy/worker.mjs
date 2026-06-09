@@ -22,6 +22,7 @@
 const UPSTREAMS = {
     'api.data.gov.in': { keyParam: 'api-key', envKey: 'OGD_API_KEY' },
     'api.waqi.info': { keyParam: 'token', envKey: 'WAQI_TOKEN' },
+    'api.openchargemap.io': { keyParam: 'key', envKey: 'OCM_API_KEY' },
     'cos.iudx.org.in': {},
     'bhoonidhi-api.nrsc.gov.in': {},
     'api.open-elevation.com': {},

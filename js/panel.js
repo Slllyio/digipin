@@ -232,6 +232,19 @@ const Panel = (() => {
             </div>`;
         }
 
+        // EV Charging (OpenChargeMap)
+        const ev = data.context?.evCharging;
+        if (ev && ev.count > 0) {
+            const fast = ev.fastCount > 0 ? `<span class="data-badge badge-cyan">${esc(ev.fastCount)} fast</span>` : '';
+            html += `<div class="data-card">
+                <div class="data-card-title">&#128267; EV Charging <span class="data-badge badge-dim">${esc(ev.count)} within 8km</span> ${fast}</div>
+                <div class="health-list">${ev.stations.map(s =>
+                    `<div class="health-item"><span class="health-name">${esc(s.name)}</span>${s.maxPowerKW != null ? `<span class="health-type">${esc(s.maxPowerKW)} kW</span>` : ''}${s.distanceKm != null ? `<span class="health-beds">${esc(s.distanceKm)} km</span>` : ''}</div>`
+                ).join('')}</div>
+                ${ev.operators.length > 0 ? `<div class="data-card-sub">Operators: ${esc(ev.operators.join(', '))}</div>` : ''}
+            </div>`;
+        }
+
         // IUDX Smart City Data
         const iudx = data.context?.iudx;
         if (iudx) {

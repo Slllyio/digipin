@@ -33,6 +33,10 @@
  *    Register a free key at https://data.gov.in/ for higher quota:
  *      window.DIGIPIN_CONFIG = { ogdApiKey: 'your-key-here' };
  *
+ *  ocmApiKey (string) — OpenChargeMap key for EV-charging discovery. Optional;
+ *    prefer injecting it server-side via the proxy (OCM_API_KEY). Free key at
+ *    https://openchargemap.org/site/develop/api .
+ *
  *  CPCB is the primary AQI source; WAQI is the first fallback.
  *  Even with a demo token the pipeline gives useful results via CPCB + Open-Meteo.
  *
@@ -62,6 +66,11 @@ const DataFetcher = (() => {
     const OGD_CEPI_RESOURCE = '0579cf1f-7e3b-4b15-b29a-87cf7b7c7a08';
     const OGD_PINCODE_RESOURCE = '5c2f62fe-5afa-4119-a499-fec9d604d5bd';
     let _cepiCache = null; // loaded once (only 43 records)
+
+    // OpenChargeMap (EV charging registry). Optional key via
+    // window.DIGIPIN_CONFIG.ocmApiKey, or injected server-side by the proxy
+    // (OCM_API_KEY). Keyless still works (rate-limited) when neither is set.
+    const OCM_API_KEY = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG?.ocmApiKey) || '';
 
     // Optional serverless proxy for the upstreams the browser can't reach
     // directly (CORS-blocked or key-requiring). Configure with
@@ -668,7 +677,7 @@ const DataFetcher = (() => {
         const DAY = 24 * HOUR;
 
         // Fire remaining requests in parallel (including building intelligence + new sources)
-        const [osmData, weatherData, aqiData, wikiData, elevData, popData, buildingData, openMeteoAqi, solarData, bhoondhiData, ogdHealthData, iudxData, iudxCatalogueData, cepiData, postOfficeData, precipData] = await Promise.allSettled([
+        const [osmData, weatherData, aqiData, wikiData, elevData, popData, buildingData, openMeteoAqi, solarData, bhoondhiData, ogdHealthData, iudxData, iudxCatalogueData, cepiData, postOfficeData, precipData, evChargingData] = await Promise.allSettled([
             fetchOSMData(lat, lng, radius),
             memo('weather', 1 * HOUR, () => fetchWeather(lat, lng)),
             memo('aqi', 1 * HOUR, () => fetchAQI(lat, lng, cityName)),
@@ -684,7 +693,8 @@ const DataFetcher = (() => {
             fetchIUDXCatalogue(cityName),
             fetchCEPI(cityName, result.address.state),
             fetchNearbyPostOffices(lat, lng, result.address.district),
-            memo('precip', 7 * DAY, () => fetchHistoricalPrecipitation(lat, lng))
+            memo('precip', 7 * DAY, () => fetchHistoricalPrecipitation(lat, lng)),
+            memo('ev', 7 * DAY, () => fetchEVCharging(lat, lng))
         ]);
 
         // === OSM POI data ===
@@ -779,6 +789,11 @@ const DataFetcher = (() => {
         // === OGD Health Facilities ===
         if (ogdHealthData.status === 'fulfilled' && ogdHealthData.value) {
             result.context.healthFacilities = ogdHealthData.value;
+        }
+
+        // === EV Charging (OpenChargeMap) ===
+        if (evChargingData.status === 'fulfilled' && evChargingData.value) {
+            result.context.evCharging = evChargingData.value;
         }
 
         // === IUDX Smart City Data ===
@@ -1496,6 +1511,61 @@ const DataFetcher = (() => {
         } catch { return null; }
     }
 
+    /**
+     * Collapse one OpenChargeMap POI into a flat, defensively-typed station.
+     * Pure — every upstream field is optional, so guard each access.
+     */
+    function parseOCMStation(poi) {
+        if (!poi || typeof poi !== 'object') return null;
+        const addr = poi.AddressInfo || {};
+        const conns = Array.isArray(poi.Connections) ? poi.Connections : [];
+        const powers = conns
+            .map(c => (c && typeof c.PowerKW === 'number' ? c.PowerKW : null))
+            .filter(p => p != null);
+        const types = [...new Set(
+            conns.map(c => c && c.ConnectionType && c.ConnectionType.Title).filter(Boolean)
+        )];
+        const summedQty = conns.reduce(
+            (s, c) => s + (c && typeof c.Quantity === 'number' ? c.Quantity : 0), 0);
+        return {
+            name: addr.Title || 'Charging station',
+            town: addr.Town || null,
+            distanceKm: typeof addr.Distance === 'number' ? Math.round(addr.Distance * 10) / 10 : null,
+            operator: (poi.OperatorInfo && poi.OperatorInfo.Title) || null,
+            points: typeof poi.NumberOfPoints === 'number' ? poi.NumberOfPoints : (summedQty || null),
+            maxPowerKW: powers.length ? Math.max(...powers) : null,
+            connectionTypes: types,
+            isOperational: poi.StatusType ? poi.StatusType.IsOperational !== false : null,
+        };
+    }
+
+    /**
+     * EV charging access — nearby OpenChargeMap stations. Contextual layer
+     * (shown in the panel), not part of the composite score. CORS/key-gated, so
+     * routed through the proxy when configured.
+     */
+    async function fetchEVCharging(lat, lng) {
+        try {
+            const key = OCM_API_KEY ? `&key=${encodeURIComponent(OCM_API_KEY)}` : '';
+            const url = viaProxy(`https://api.openchargemap.io/v3/poi/?output=json&latitude=${lat}&longitude=${lng}&distance=8&distanceunit=KM&maxresults=25&compact=true&verbose=false${key}`);
+            const data = await fetchWithRetry(url);
+            if (!Array.isArray(data) || data.length === 0) return null;
+
+            const stations = data.map(parseOCMStation).filter(Boolean)
+                .sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity));
+            if (stations.length === 0) return null;
+
+            return {
+                count: stations.length,
+                nearestKm: stations[0].distanceKm,
+                fastCount: stations.filter(s => s.maxPowerKW != null && s.maxPowerKW >= 50).length,
+                totalPoints: stations.reduce((sum, s) => sum + (s.points || 0), 0),
+                operators: [...new Set(stations.map(s => s.operator).filter(Boolean))].slice(0, 4),
+                stations: stations.slice(0, 5),
+            };
+        } catch { return null; }
+    }
+
     function getWeatherDescription(code) {
         const d = {
             0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
@@ -1860,6 +1930,8 @@ const DataFetcher = (() => {
         fetchIUDXCatalogue,
         fetchCEPI,
         fetchNearbyPostOffices,
+        fetchEVCharging,
+        parseOCMStation,
         fetchAddress,
         fetchWikipedia,
         fetchElevation,
