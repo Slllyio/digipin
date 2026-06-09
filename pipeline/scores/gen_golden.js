@@ -141,6 +141,86 @@ const MODELS = {
     },
   },
 
+  classify: {
+    // OSM tag -> feature classification (the FeatureCounter's parity anchor).
+    // Two layers: match_table pins the entire CATEGORIES match table textually
+    // (catches transcription errors in the Python port mechanically), and
+    // classify_elements pins the matching semantics (regex branches, falsy tag
+    // values never match, multi-match, worship religion lowercasing).
+    file: 'js/data-fetcher.js',
+    global: 'DataFetcher',
+    deps: [['js/digipin.js', 'DigiPin']],
+    inputs: (G) => {
+      const el = (tags) => ({ type: 'node', lat: 22.7, lon: 75.8, tags });
+      const way = (tags) => ({ type: 'way', center: { lat: 22.7, lon: 75.8 }, tags });
+      // Strip names/items — irrelevant to scoring; counts + subTypes are the contract.
+      const strip = (res) => Object.fromEntries(
+        Object.entries(res).map(([k, v]) => [k, { count: v.count, subTypes: v.subTypes }]));
+
+      const CASES = [
+        // 1 — common string matchers, accumulation, multi-match (restaurant+bakery)
+        [
+          el({ amenity: 'restaurant' }), el({ amenity: 'restaurant', name: 'Guru Kripa' }),
+          el({ amenity: 'cafe' }), el({ amenity: 'school' }), el({ amenity: 'hospital' }),
+          el({ amenity: 'bank' }), el({ amenity: 'atm' }), el({ shop: 'bakery' }),
+          el({ amenity: 'restaurant', shop: 'bakery' }),
+          el({ highway: 'bus_stop' }), el({ leisure: 'park' }), el({ station: 'subway' }),
+          way({ building: 'yes' }), way({ landuse: 'residential' }),
+        ],
+        // 2 — every regex alternation branch (each building value also hits buildings_total)
+        [
+          el({ amenity: 'bar' }), el({ amenity: 'pub' }),
+          el({ amenity: 'clinic' }), el({ amenity: 'doctors' }),
+          el({ shop: 'hardware' }), el({ shop: 'doityourself' }),
+          el({ railway: 'station' }), el({ railway: 'halt' }),
+          el({ amenity: 'recycling' }), el({ amenity: 'waste_disposal' }),
+          el({ historic: 'monument' }), el({ historic: 'memorial' }),
+          way({ building: 'residential' }), way({ building: 'house' }),
+          way({ building: 'apartments' }), way({ building: 'detached' }),
+          way({ building: 'commercial' }), way({ building: 'office' }), way({ building: 'retail' }),
+          way({ landuse: 'brownfield' }), way({ landuse: 'greenfield' }),
+          way({ landuse: 'farmland' }), way({ landuse: 'orchard' }), way({ landuse: 'vineyard' }),
+          el({ man_made: 'tower' }), el({ man_made: 'mast' }),
+          el({ power: 'substation' }), el({ power: 'line' }), el({ power: 'pole' }),
+          el({ man_made: 'water_tower' }), el({ man_made: 'storage_tank' }),
+          way({ highway: 'primary' }), way({ highway: 'secondary' }), way({ highway: 'tertiary' }),
+          way({ highway: 'residential' }), way({ highway: 'trunk' }),
+          way({ highway: 'footway' }), way({ highway: 'path' }), way({ highway: 'pedestrian' }),
+          way({ highway: 'cycleway' }),
+          way({ waterway: 'river' }), way({ waterway: 'stream' }), way({ waterway: 'canal' }),
+          el({ office: 'yes' }), el({ office: 'company' }),
+          el({ shop: 'beauty' }), el({ shop: 'hairdresser' }),
+          el({ shop: 'laundry' }), el({ shop: 'dry_cleaning' }),
+          // regex non-matches: outside the alternations
+          way({ highway: 'motorway' }), way({ waterway: 'drain' }), el({ man_made: 'pier' }),
+        ],
+        // 3 — falsy/edge semantics + worship subTypes (case-normalized)
+        [
+          el({}), { type: 'node', lat: 22.7, lon: 75.8 },
+          way({ building: '' }),                       // empty value must NOT match /.*/
+          el({ amenity: 'definitely_not_a_feature' }),
+          el({ amenity: 'place_of_worship' }),         // worship, no religion subtype
+          el({ amenity: 'place_of_worship', religion: 'Hindu' }),
+          el({ amenity: 'place_of_worship', religion: 'MUSLIM' }),
+          el({ amenity: 'place_of_worship', religion: 'hindu' }),
+        ],
+      ];
+
+      return {
+        match_table: {
+          call: () => Object.entries(G.CATEGORIES).flatMap(([catKey, cat]) =>
+            cat.features.map((f) => [catKey, f.key, Object.fromEntries(
+              Object.entries(f.match).map(([k, v]) => [k, String(v)]))])),
+          args: [[]],
+        },
+        classify_elements: {
+          call: (a) => strip(G.classifyElements(...a)),
+          args: CASES.map((els) => [els]),
+        },
+      };
+    },
+  },
+
   heat: {
     file: 'js/heat-score.js',
     global: 'HeatScore',
