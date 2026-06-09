@@ -12,22 +12,31 @@ const App = (() => {
             document.getElementById('toolbar')?.classList.add('hidden');
         }
 
-        MapModule.init();
-        Panel.init();
-        DISHAPanel.init();
-        BuildingIntelDialog.init();
-        ScoresDialog.init();
-        FloatingDialogs.init();
-        CitySelector.init();
-        Bookmarks.init();
-        initSearch();
-        initQueryPanel();
-        initSidebar();
-        initToolbar();
-        registerServiceWorker();
+        // Run each step in isolation: one widget throwing must not skip the
+        // rest of init (e.g. a dialog bug shouldn't block the toolbar or the
+        // service-worker registration that provides offline support).
+        const step = (name, fn) => {
+            try { fn(); } catch (e) { console.error(`[init] ${name} failed:`, e); }
+        };
 
-        const city = CitySelector.getCurrent();
-        showToast('Welcome to DigiPin Urban Intelligence', `${city.name}, ${city.state} \u2022 160+ Features \u2022 Click any grid cell`, 'info');
+        step('MapModule', () => MapModule.init());
+        step('Panel', () => Panel.init());
+        step('DISHAPanel', () => DISHAPanel.init());
+        step('BuildingIntelDialog', () => BuildingIntelDialog.init());
+        step('ScoresDialog', () => ScoresDialog.init());
+        step('FloatingDialogs', () => FloatingDialogs.init());
+        step('CitySelector', () => CitySelector.init());
+        step('Bookmarks', () => Bookmarks.init());
+        step('search', () => initSearch());
+        step('queryPanel', () => initQueryPanel());
+        step('sidebar', () => initSidebar());
+        step('toolbar', () => initToolbar());
+        step('serviceWorker', () => registerServiceWorker());
+
+        step('welcome', () => {
+            const city = CitySelector.getCurrent();
+            showToast('Welcome to DigiPin Urban Intelligence', `${city.name}, ${city.state} \u2022 160+ Features \u2022 Click any grid cell`, 'info');
+        });
     }
 
     function initSearch() {
