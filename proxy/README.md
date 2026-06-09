@@ -36,12 +36,33 @@ It is **not an open proxy**: only hosts in the `UPSTREAMS` allowlist
 
 ## Deploy (Cloudflare Workers)
 
+### Automatic (CI)
+
+`.github/workflows/deploy-proxy.yml` deploys this worker automatically whenever
+`worker.mjs` or `wrangler.toml` changes on `main` (the worker unit tests gate
+the deploy). To enable it, add two repository secrets under
+**Settings → Secrets and variables → Actions**:
+
+| Secret | What |
+|--------|------|
+| `CLOUDFLARE_API_TOKEN` | a token with the "Edit Workers" permission |
+| `CLOUDFLARE_ACCOUNT_ID` | your Cloudflare account id |
+
+Until those are set the workflow is a safe no-op (runs tests, emits a notice).
+
+### Manual / first-time
+
 ```bash
 cd proxy
 npx wrangler deploy
 npx wrangler secret put OGD_API_KEY    # data.gov.in key
 npx wrangler secret put WAQI_TOKEN      # aqicn.org / WAQI token
 ```
+
+The upstream keys (`OGD_API_KEY`, `WAQI_TOKEN`) are **not** managed by CI:
+Cloudflare secrets persist across code deploys, so set them once with
+`wrangler secret put`. The worker degrades gracefully when they're absent
+(it simply doesn't inject a key).
 
 Then point the app at it (e.g. in `index.html` before the app scripts):
 
