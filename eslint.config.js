@@ -88,7 +88,7 @@ module.exports = [
 
   // Playwright smoke spec + CommonJS root config files (require/module.exports).
   {
-    files: ['tests/playwright/smoke.spec.js', 'eslint.config.js', 'playwright.config.js'],
+    files: ['tests/playwright/smoke.spec.js', 'eslint.config.js', 'playwright.config.js', 'pipeline/scores/gen_golden.js'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'commonjs',

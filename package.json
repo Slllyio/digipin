@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "golden:scores": "node pipeline/scores/gen_golden.js"
   },
   "repository": {
     "type": "git",
