@@ -14,7 +14,6 @@ const DISHAPanel = (() => {
 
     // ===== INIT =====
     async function init() {
-        const statusEl = document.getElementById('disha-status');
         const inputEl = document.getElementById('disha-input');
 
         const result = await DISHA.checkConnection();

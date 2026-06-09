@@ -35,7 +35,8 @@ const APP_GLOBALS = {
 
 const RELAXED_RULES = {
   'no-redeclare': 'off',                                  // IIFE const shadows its own global
-  'no-unused-vars': ['warn', { args: 'none', caughtErrors: 'none', varsIgnorePattern: '^[A-Z]' }],
+  // PascalCase = a cross-file module global; leading _ = intentionally unused.
+  'no-unused-vars': ['warn', { args: 'none', caughtErrors: 'none', varsIgnorePattern: '^[A-Z_]' }],
   'no-empty': ['warn', { allowEmptyCatch: true }],
   'no-constant-condition': ['error', { checkLoops: false }], // while(true) stream readers
 };

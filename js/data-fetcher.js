@@ -1530,43 +1530,6 @@ const DataFetcher = (() => {
     }
 
     /**
-     * Flood risk score (0-100, HIGHER = safer).
-     * Inputs: elevation object from fetchElevation, precipitation object
-     * from fetchHistoricalPrecipitation. Both may be null when sources fail.
-     *
-     * Baseline 50 at the Indian-context anchor of ~400m elevation, ~800mm/yr
-     * rainfall, flat terrain. Each 100m gain adds ~8, each 200mm above baseline
-     * subtracts ~10, and the local relative-elevation signal (whether the cell
-     * sits in a basin vs on a ridge) is weighted strongest because that is the
-     * single most predictive feature for urban waterlogging.
-     *
-     * Returns null when both elevation and precipitation are missing — score
-     * is meaningless without at least one terrain or hydrology signal.
-     */
-    function floodRiskScore(elevation, precipitation) {
-        if (elevation == null && precipitation == null) return null;
-        let score = 50;
-
-        if (elevation && typeof elevation === 'object') {
-            const centerM = elevation.center;
-            if (typeof centerM === 'number') {
-                score += 0.08 * (centerM - 400);
-            }
-            if (typeof elevation.relative === 'number') {
-                // Strong signal — sitting in a 5m+ basin vs on a 5m+ ridge.
-                score += Math.max(-25, Math.min(15, elevation.relative * 2));
-            }
-            if (elevation.isLowLying) score -= 15;
-        }
-
-        if (precipitation && typeof precipitation.annualMm === 'number') {
-            score -= 0.05 * (precipitation.annualMm - 800);
-        }
-
-        return Math.max(0, Math.min(100, Math.round(score)));
-    }
-
-    /**
      * Compute 20 intelligence scores (0-100) using log-scale normalization
      * Max values calibrated for 500m radius in dense Indian cities
      */

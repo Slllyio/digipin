@@ -215,7 +215,7 @@ const DISHAProviders = (() => {
     // ===== STREAMING: OLLAMA =====
 
     async function streamOllama(params) {
-        const { system, prompt, onToken, onDone, onError, signal } = params;
+        const { system, prompt, onToken, onDone, signal } = params;  // onError handled by the stream() wrapper
 
         const resp = await fetch(`${_activeProvider.baseUrl}/api/generate`, {
             method: 'POST',
@@ -273,7 +273,7 @@ const DISHAProviders = (() => {
     // ===== STREAMING: OPENAI-COMPATIBLE (SSE) =====
 
     async function streamOpenAI(params) {
-        const { system, messages, onToken, onDone, onError, signal } = params;
+        const { system, messages, onToken, onDone, signal } = params;  // onError handled by the stream() wrapper
         const apiKey = getApiKey();
 
         const resp = await fetch(`${_activeProvider.baseUrl}/chat/completions`, {
