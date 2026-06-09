@@ -14,7 +14,14 @@ const vm = require('vm');
 
 const root = path.resolve(__dirname, '..', '..');
 
+// `const X = (() => {...})()` modules can only be evaluated once in a shared
+// context (a second eval redeclares the const), so loading is idempotent —
+// e.g. js/digipin.js is both the composite model's dep and its own model.
+const loaded = new Set();
+
 function loadGlobal(relPath, name) {
+  if (loaded.has(relPath)) return;
+  loaded.add(relPath);
   let code = fs.readFileSync(path.join(root, relPath), 'utf-8');
   code += `\nif (typeof ${name} !== 'undefined') globalThis.${name} = ${name};`;
   vm.runInThisContext(code, { filename: relPath });
@@ -168,6 +175,28 @@ const MODELS = {
         ],
       },
     }),
+  },
+
+  digipin: {
+    file: 'js/digipin.js',
+    global: 'DigiPin',
+    inputs: (G) => {
+      const coords = [[22.7196, 75.8577], [28.6139, 77.2090], [19.0760, 72.8777], [13.0827, 80.2707]];
+      const pins = coords.map(([la, lo]) => G.encode(la, lo));
+      const strip = (p) => p.replace(/-/g, '');
+      return {
+        encode: {
+          call: (a) => G.encode(...a),
+          args: [...coords.map((c) => [...c]), [2.5, 63.5], [38.5, 99.5]],   // + SW / NE corners
+        },
+        decode: { call: (a) => G.decode(...a), args: pins.map((p) => [p]) },
+        decode_partial: {
+          call: (a) => G.decodePartial(...a),
+          args: [['FC9'], [strip(pins[0]).substring(0, 5)], [strip(pins[1]).substring(0, 8)]],
+        },
+        format_pin: { call: (a) => G.format(...a), args: [['FC9'], ['FC98K2'], ['FC98K2P3T7'], ['F']] },
+      };
+    },
   },
 };
 
