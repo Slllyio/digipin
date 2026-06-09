@@ -1,0 +1,12 @@
+# Deps for the precomputed-scores spine (osm_classify / count_features /
+# env_sampler / build_tile). Installed by the CI python-tests job so the
+# counter + sampler tests actually run, and by the precompute-scores workflow.
+osmium>=4.0        # streaming OSM .pbf reader (feature counter)
+rasterio>=1.3      # population / DEM sampling (env sampler)
+numpy>=1.26
+shapely>=2.0
+
+# Tiler deps (used by build_tile -> geojson_to_pmtiles at build time only):
+geopandas>=0.14
+mapbox-vector-tile>=2.0
+pmtiles>=3.2
