@@ -40,6 +40,8 @@ loadGlobalScript('js/heat-widget.js', ['HeatWidget']);
 loadGlobalScript('js/realtime-flood.js', ['RealtimeFlood']);
 loadGlobalScript('js/realtime-alerts.js', ['RealtimeAlerts']);
 loadGlobalScript('js/realtime-quakes.js', ['RealtimeQuakes']);
+loadGlobalScript('js/realtime-imd.js', ['RealtimeIMD']);
+loadGlobalScript('js/realtime-heat.js', ['RealtimeHeat']);
 loadGlobalScript('js/bivariate-overlay.js', ['BivariateOverlay']);
 loadGlobalScript('js/ndvi-overlay.js', ['NDVIOverlay']);
 loadGlobalScript('js/viewshed.js', ['Viewshed']);
