@@ -12,6 +12,15 @@ name: Precompute scores (Indore)
 # OSM-driven scores are already meaningful without them.
 
 on:
+  # Auto-build when the scoring code lands on main (e.g. merging the spine PR):
+  # path-filtered to code only, so the job's own data/scores/ commit cannot
+  # retrigger it (GITHUB_TOKEN pushes also don't recurse — belt and braces).
+  push:
+    branches: [main]
+    paths:
+      - 'pipeline/scores/**'
+      - 'pipeline/_lib/**'
+      - '.github/workflows/precompute-scores.yml'
   schedule:
     - cron: "17 2 3 * *"     # 02:17 UTC on the 3rd of each month
   workflow_dispatch:
@@ -25,6 +34,10 @@ on:
 
 permissions:
   contents: write
+
+concurrency:
+  group: precompute-scores
+  cancel-in-progress: false
 
 jobs:
   build:

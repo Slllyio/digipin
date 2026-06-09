@@ -3,6 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # Redeploy after the precompute job commits a fresh tile (its GITHUB_TOKEN
+  # push doesn't trigger the push event above), so new scores reach Pages.
+  workflow_run:
+    workflows: ["Precompute scores (Indore)"]
+    types: [completed]
 
 permissions:
   contents: read
