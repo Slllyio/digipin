@@ -39,6 +39,13 @@ const DataFetcherCache = (() => {
         if (!raw) return null;
         try {
             const entry = JSON.parse(raw);
+            // Guard against valid-JSON-but-non-object slots (e.g. a key
+            // collision): without this, entry.value is undefined and memoize
+            // would treat that undefined as a cache hit and skip the factory.
+            if (!entry || typeof entry !== 'object') {
+                safeRemove(PREFIX + key);
+                return null;
+            }
             if (typeof entry.expiresAt === 'number' && entry.expiresAt < Date.now()) {
                 safeRemove(PREFIX + key);
                 return null;
