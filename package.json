@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -29,7 +30,10 @@
     "playwright": "^1.58.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@playwright/test": "^1.58.2",
+    "eslint": "^9.39.4",
+    "globals": "^17.6.0",
     "jsdom": "^24.0.0",
     "vitest": "^2.0.0",
     "webpack-cli": "^5.1.4"

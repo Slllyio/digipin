@@ -1678,13 +1678,6 @@ const DataFetcher = (() => {
                     value: religiousDiversityScore(worship?.subTypes, worship?.count || 0)
                 };
             })(),
-            flood_risk: (() => {
-                const env = data.environment || {};
-                return {
-                    label: 'Flood Safety (higher = safer)',
-                    value: floodRiskScore(env.elevation, env.precipitation)
-                };
-            })(),
             public_service: {
                 label: 'Public Service Access',
                 value: normLog(
