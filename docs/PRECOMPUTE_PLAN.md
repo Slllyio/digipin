@@ -38,7 +38,11 @@ grid** and keep the 4×4 m DigiPin code as the addressing scheme:
 
 ### Phase 0 — Pilot tile (1 city, proves the pipeline) — ~1–2 days
 1. Pick Indore. Generate the analysis grid (level-8 DigiPin cells over the city
-   bbox).
+   bbox). **✅ Done** — `pipeline/_lib/grid.py` (`cells_for_bbox`,
+   `count_cells_for_bbox`) enumerates DIGIPIN cells exactly via integer index
+   ranges. Sanity: the Indore pilot bbox is 2,209 cells at level 6 (~244 m) /
+   33,489 at level 7 (~61 m) — confirming level 6–7 as the practical analysis
+   resolution.
 2. For each cell, run the **existing** `DataFetcher` scoring logic server-side
    (port `js/*-score.js` math to Python, or run headless) against a **bulk
    Overpass extract** (one `.osm.pbf` for MP via Geofabrik, queried locally with
