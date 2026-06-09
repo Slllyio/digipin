@@ -106,6 +106,14 @@ jobs:
     - name: ESLint
       run: npx eslint .
 
+    - name: Verify golden score fixtures are up to date
+      # The JS *-score.js models are the source of truth; the Python ports are
+      # pinned to these fixtures. Fail if the JS changed without regenerating.
+      run: |
+        npm run golden:scores
+        git diff --exit-code -- pipeline/scores/golden \
+          || { echo "::error::golden fixtures are stale — run 'npm run golden:scores' and commit"; exit 1; }
+
   lighthouse:
     runs-on: ubuntu-latest
     # Informational PWA / performance audit. Non-blocking: it pulls live CDN
