@@ -17,9 +17,7 @@ Usage:
 
 import argparse
 import json
-import logging
 import math
-import sys
 import time
 from pathlib import Path
 
@@ -29,12 +27,9 @@ from pmtiles.tile import Compression, TileType, zxy_to_tileid
 from pmtiles.writer import Writer as PMTilesWriter
 from shapely.geometry import box, mapping
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-log = logging.getLogger("geojson_to_pmtiles")
+from _lib.io import setup_logging
+
+log = setup_logging("geojson_to_pmtiles")
 
 # Tile coordinate system constants
 EXTENT = 4096  # MVT tile extent (standard)

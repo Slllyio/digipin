@@ -14,25 +14,17 @@ Requires: pip install requests geopandas shapely
 
 import argparse
 import json
-import logging
-import sys
 import time
-from pathlib import Path
 
 import requests
 from shapely.geometry import box
 
 from config import BBOX
+from _lib.io import data_dir, setup_logging
 
-OUT_DIR = Path(__file__).parent.parent / "data" / "vectors"
-OUT_DIR.mkdir(parents=True, exist_ok=True)
+OUT_DIR = data_dir("vectors")
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-log = logging.getLogger("vectors")
+log = setup_logging("vectors")
 
 OVERPASS_URL = "https://overpass-api.de/api/interpreter"
 BBOX_STR = f"{BBOX['south']},{BBOX['west']},{BBOX['north']},{BBOX['east']}"
