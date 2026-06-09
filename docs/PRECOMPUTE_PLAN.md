@@ -43,10 +43,15 @@ grid** and keep the 4×4 m DigiPin code as the addressing scheme:
    ranges. Sanity: the Indore pilot bbox is 2,209 cells at level 6 (~244 m) /
    33,489 at level 7 (~61 m) — confirming level 6–7 as the practical analysis
    resolution.
-2. For each cell, run the **existing** `DataFetcher` scoring logic server-side
-   (port `js/*-score.js` math to Python, or run headless) against a **bulk
-   Overpass extract** (one `.osm.pbf` for MP via Geofabrik, queried locally with
-   `osmium`/DuckDB — no rate limits).
+2. For each cell, run the scoring logic server-side against a **bulk Overpass
+   extract** (one `.osm.pbf` for MP via Geofabrik, queried locally with
+   `osmium`/DuckDB — no rate limits). **✅ Orchestrator done** —
+   `pipeline/scores/score_grid.py` enumerates the grid, runs the parity-pinned
+   `composite.py` scorers, and emits one flat (Parquet-ready) record per cell.
+   The score math is fully ported and tested; the **only remaining piece is the
+   feature counter** — the `osmium`/DuckDB adapter that turns a `.osm.pbf` into
+   the per-cell `{categories, environment}` dict (a documented, stubbed seam,
+   pending the extract download).
 3. Write `indore_scores.parquet` (cell_code, 30 scores, feature counts).
 4. Convert to PMTiles (`tippecanoe`) keyed by cell geometry.
 5. Frontend: add a `PrecomputedScores` source that reads the PMTiles; overlays
