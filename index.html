@@ -122,6 +122,10 @@
             <span class="tb-icon">&#128065;</span>
             <span class="tb-label">Viewshed</span>
         </button>
+        <button class="toolbar-btn" id="btn-kde" title="Hotspot — kernel-density surface of a score">
+            <span class="tb-icon">&#128293;</span>
+            <span class="tb-label">Hotspot</span>
+        </button>
     </div>
 
     <!-- ===== SIDEBAR — QUERIES ===== -->
@@ -276,6 +280,7 @@
     <script defer src="js/bivariate-overlay.js"></script>
     <script defer src="js/ndvi-overlay.js"></script>
     <script defer src="js/viewshed.js"></script>
+    <script defer src="js/kde-overlay.js"></script>
     <script defer src="js/app.js"></script>
     <script>
     document.getElementById('btn-growth')?.addEventListener('click', () => {
@@ -292,6 +297,9 @@
     });
     document.getElementById('btn-viewshed')?.addEventListener('click', () => {
         if (typeof Viewshed !== 'undefined') Viewshed.toggle();
+    });
+    document.getElementById('btn-kde')?.addEventListener('click', () => {
+        if (typeof KDEOverlay !== 'undefined') KDEOverlay.toggle();
     });
     </script>
 
