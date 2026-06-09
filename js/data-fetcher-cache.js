@@ -23,6 +23,8 @@
 const DataFetcherCache = (() => {
     const PREFIX = 'digipin:df:';
     const MAX_ENTRY_BYTES = 500 * 1024;
+    // key -> in-flight factory promise, for concurrent-miss coalescing.
+    const _inflight = new Map();
 
     function safeGet(key) {
         try { return localStorage.getItem(key); } catch { return null; }
@@ -83,9 +85,24 @@ const DataFetcherCache = (() => {
             }
             return hit;
         }
-        const value = await factory();
-        set(key, value, ttlMs);
-        return value;
+        // In-flight de-duplication: if an identical key is already being
+        // fetched (e.g. rapid clicks across adjacent cells that round to the
+        // same key), share that promise instead of firing a second network
+        // request. The result-level cache only helps once the first call has
+        // resolved; this closes the concurrent-miss window.
+        if (_inflight.has(key)) return _inflight.get(key);
+
+        const promise = (async () => {
+            const value = await factory();
+            set(key, value, ttlMs);
+            return value;
+        })();
+        _inflight.set(key, promise);
+        try {
+            return await promise;
+        } finally {
+            _inflight.delete(key);
+        }
     }
 
     function keyFor(name, lat, lng, extra) {

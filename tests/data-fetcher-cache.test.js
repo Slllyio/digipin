@@ -100,4 +100,34 @@ describe('DataFetcherCache.memoize()', () => {
         expect(second).toBe('ok');
         expect(calls).toBe(2);
     });
+
+    it('coalesces concurrent calls for the same key onto one factory run', async () => {
+        let calls = 0;
+        let resolve;
+        const factory = () => { calls++; return new Promise(r => { resolve = r; }); };
+        const p1 = Cache.memoize('k', 60_000, factory);
+        const p2 = Cache.memoize('k', 60_000, factory); // same key, still in flight
+        resolve({ v: 1 });
+        const [a, b] = await Promise.all([p1, p2]);
+        expect(calls).toBe(1);          // only one network request
+        expect(a).toEqual({ v: 1 });
+        expect(b).toEqual({ v: 1 });    // second caller shared the result
+    });
+
+    it('clears the in-flight entry so a later call refetches', async () => {
+        let calls = 0;
+        const factory = async () => { calls++; return calls; };
+        await Cache.memoize('seq', -1000, factory); // expired ttl -> not cached
+        await Cache.memoize('seq', -1000, factory); // in-flight cleared -> runs again
+        expect(calls).toBe(2);
+    });
+
+    it('does not leak a shared rejection (each later call can retry)', async () => {
+        let calls = 0;
+        const factory = async () => { calls++; throw new Error('boom'); };
+        await expect(Cache.memoize('e', 60_000, factory)).rejects.toThrow('boom');
+        // in-flight entry removed on rejection, so a retry actually re-runs
+        await expect(Cache.memoize('e', 60_000, factory)).rejects.toThrow('boom');
+        expect(calls).toBe(2);
+    });
 });
