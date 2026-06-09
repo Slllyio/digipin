@@ -581,5 +581,10 @@ out tags center;`;
     /** LCZ class lookup */
     function getLCZClasses() { return LCZ_CLASSES; }
 
-    return { fetch, getLCZURL, getLCZClasses, LCZ_CLASSES };
+    return {
+        fetch, getLCZURL, getLCZClasses, LCZ_CLASSES,
+        // Pure scoring internals — exposed for unit testing the real-estate
+        // query inputs (these scores get merged into DataFetcher scores).
+        computeShannon, computeMetrics, computeBuildingScores,
+    };
 })();
