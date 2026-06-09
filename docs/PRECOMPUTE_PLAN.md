@@ -45,23 +45,34 @@ grid** and keep the 4×4 m DigiPin code as the addressing scheme:
    resolution.
 2. For each cell, run the scoring logic server-side against a **bulk Overpass
    extract** (one `.osm.pbf` for MP via Geofabrik, queried locally with
-   `osmium`/DuckDB — no rate limits). **✅ Orchestrator done** —
-   `pipeline/scores/score_grid.py` enumerates the grid, runs the parity-pinned
-   `composite.py` scorers, and emits one flat (Parquet-ready) record per cell.
-   The score math is fully ported and tested; the **only remaining piece is the
-   feature counter** — the `osmium`/DuckDB adapter that turns a `.osm.pbf` into
-   the per-cell `{categories, environment}` dict (a documented, stubbed seam,
-   pending the extract download).
-3. Write `indore_scores.parquet` (cell_code, 30 scores, feature counts).
+   `osmium` — no rate limits). **✅ Done** — the feature counter is implemented:
+   `pipeline/scores/osm_classify.py` (parity-pinned port of the JS tag→feature
+   classifier, `golden/classify.json`) + `pipeline/scores/count_features.py`
+   (pyosmium streaming bins + a 400 m disc kernel replicating the app's
+   `(around:400)` semantics). `score_grid.py` runs the parity-pinned
+   `composite.py` scorers over it. Population/elevation come from
+   `pipeline/scores/env_sampler.py` (GHSL pop + GLO-30 DEM).
+3. Write the scored tile. **✅ Done** — `pipeline/scores/build_tile.py` emits
+   compact JSON shards (`data/scores/<region>/<prefix>.json`) + a
+   `coverage.json` manifest in one pass; `smoke_check.py` gates it.
 4. Convert to PMTiles keyed by cell geometry. **✅ Path wired** —
-   `score_grid.score_grid_geojson()` emits the cell-polygon FeatureCollection
-   that the repo's existing pure-Python `pipeline/geojson_to_pmtiles.py` already
-   tiles (no `tippecanoe` dependency needed).
-5. Frontend: add a `PrecomputedScores` source that reads the PMTiles; overlays
-   prefer it and fall back to live `fetchAllFeatures` when a cell is absent.
+   `score_grid.score_grid_geojson()` → the pure-Python
+   `pipeline/geojson_to_pmtiles.py` (no `tippecanoe`); `build_tile --pmtiles`
+   emits it (the JSON shards are what the app reads; PMTiles is for a future
+   choropleth layer).
+5. Frontend. **✅ Done** — `js/precomputed-scores.js` reads the shards and
+   returns `result.scores` in the exact contract consumers use;
+   `heatmap-overlay.js` paints the whole viewport from one shard read and falls
+   back to live `fetchAllFeatures` when a cell is absent.
+6. Automation. **✅ Done** — `.github/workflows/precompute-scores.yml`
+   regenerates the tile monthly/on-dispatch (Geofabrik → `osmium extract` →
+   `build_tile` → `smoke_check` → commit).
 
 **Exit criterion:** Indore overlays render from the tile with zero live calls,
-matching the live scores within rounding.
+matching the live scores within rounding. **Remaining:** run the workflow once to
+land the first real `data/scores/` tile (the dev sandbox can't reach Geofabrik;
+CI can), and the M2 live-vs-precomputed spot check to quantify the
+relations/quantization deltas.
 
 ### Phase 1 — Tier-1 cities — ~2–3 days
 - Generalise Phase 0 to a city list (the existing `city-selector` set).
