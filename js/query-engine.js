@@ -178,13 +178,18 @@ const QueryEngine = (() => {
     }
 
     function computeQueryScore(scores, weights) {
+        if (!scores || !weights) return 0;
         let total = 0;
         let weightSum = 0;
 
         for (const [key, weight] of Object.entries(weights)) {
-            const score = scores[key];
-            if (score && score.value !== undefined) {
-                total += score.value * weight;
+            const value = scores[key]?.value;
+            // Only finite values count. Skipping missing keys and null/NaN
+            // values (a) prevents one bad upstream score from poisoning the
+            // whole ranking with NaN, and (b) re-normalises over the scores
+            // that are actually available rather than diluting with zeros.
+            if (Number.isFinite(value)) {
+                total += value * weight;
                 weightSum += Math.abs(weight);
             }
         }
