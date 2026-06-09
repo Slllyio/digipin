@@ -32,6 +32,7 @@ function loadGlobalScript(relPath, exposeNames) {
 
 loadGlobalScript('js/digipin.js', ['DigiPin']);
 loadGlobalScript('js/data-fetcher.js', ['DataFetcher']);
+loadGlobalScript('js/precomputed-scores.js', ['PrecomputedScores']);
 loadGlobalScript('js/growth-score.js', ['GrowthScore']);
 loadGlobalScript('js/realtime-growth.js', ['RealtimeGrowth']);
 loadGlobalScript('js/growth-widget.js', ['GrowthWidget']);

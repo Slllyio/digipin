@@ -106,7 +106,8 @@ def build(
     for prefix, obj in shards.items():
         (region_dir / f"{prefix}.json").write_text(json.dumps(obj, separators=(",", ":")))
 
-    _write_coverage(out, region, level, bbox, fields, radius_m, shard_prefix_len)
+    _write_coverage(out, region, level, bbox, fields, radius_m, shard_prefix_len,
+                    sorted(shards.keys()))
 
     if pmtiles:
         _write_pmtiles(out, region, geo_features)
@@ -115,7 +116,7 @@ def build(
             "shards": len(shards), "fields": len(fields)}
 
 
-def _write_coverage(out: Path, region, level, bbox, fields, radius_m, shard_prefix_len):
+def _write_coverage(out: Path, region, level, bbox, fields, radius_m, shard_prefix_len, shard_prefixes):
     path = out / "coverage.json"
     try:
         cov = json.loads(path.read_text())
@@ -126,7 +127,7 @@ def _write_coverage(out: Path, region, level, bbox, fields, radius_m, shard_pref
     cov["fields"] = fields
     cov["radiusM"] = radius_m
     entry = {"name": region, "level": level, "shardPrefixLen": shard_prefix_len,
-             "bbox": bbox, "path": f"data/scores/{region}/"}
+             "shards": shard_prefixes, "bbox": bbox, "path": f"data/scores/{region}/"}
     cov["regions"] = [r for r in cov.get("regions", []) if r.get("name") != region] + [entry]
     path.write_text(json.dumps(cov, indent=2) + "\n")
 

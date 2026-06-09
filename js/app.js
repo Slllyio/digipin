@@ -20,6 +20,12 @@ const App = (() => {
         };
 
         step('MapModule', () => MapModule.init());
+        // Kick off precomputed-score coverage load (async, non-blocking). When
+        // data/scores/coverage.json is absent it stays disabled and the app uses
+        // the live path unchanged.
+        step('PrecomputedScores', () => {
+            if (typeof PrecomputedScores !== 'undefined') PrecomputedScores.init();
+        });
         step('Panel', () => Panel.init());
         step('DISHAPanel', () => DISHAPanel.init());
         step('BuildingIntelDialog', () => BuildingIntelDialog.init());
