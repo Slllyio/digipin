@@ -50,20 +50,29 @@ const DISHAProviders = (() => {
 
     // ===== CONFIG =====
 
+    // Coerce any parsed payload into a well-shaped config. A corrupt or legacy
+    // localStorage value (a number, array, or object missing keys/custom) must
+    // not crash provider resolution, which reads .keys[...] and .custom.baseUrl.
+    function normalizeConfig(parsed) {
+        const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
+        const p = isObj(parsed) ? parsed : {};
+        const custom = isObj(p.custom) ? p.custom : {};
+        return {
+            preferred: typeof p.preferred === 'string' ? p.preferred : 'auto',
+            keys: isObj(p.keys) ? p.keys : {},
+            custom: { baseUrl: custom.baseUrl || '', model: custom.model || '' },
+        };
+    }
+
     function loadConfig() {
         if (_config) return _config;
+        let parsed = null;
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) _config = JSON.parse(saved);
+            if (saved) parsed = JSON.parse(saved);
         } catch { /* ignore parse errors */ }
 
-        if (!_config) {
-            _config = {
-                preferred: 'auto',    // 'auto' | 'ollama' | 'groq' | 'custom'
-                keys: {},             // { groq: 'gsk_...', custom: '...' }
-                custom: { baseUrl: '', model: '' }
-            };
-        }
+        _config = normalizeConfig(parsed);
         return _config;
     }
 
@@ -380,6 +389,7 @@ const DISHAProviders = (() => {
         loadConfig,
         saveConfig,
         getConfig,
+        normalizeConfig,
         detectProvider,
         checkOllama,
         checkOpenAI,
