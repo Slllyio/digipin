@@ -54,3 +54,45 @@ describe('DataFetcher AQI sub-index (contiguous NAQI bands)', () => {
         expect(pm25(NaN)).toBeNull();
     });
 });
+
+describe('DataFetcher request coalescing (_coalesce)', () => {
+    const { _coalesce } = globalThis.DataFetcher;
+
+    it('funnels concurrent same-key calls onto one factory invocation', async () => {
+        const inflight = new Map();
+        let calls = 0;
+        const factory = () => { calls++; return new Promise(r => setTimeout(() => r('v'), 10)); };
+        const [a, b, c] = await Promise.all([
+            _coalesce(inflight, 'k', factory),
+            _coalesce(inflight, 'k', factory),
+            _coalesce(inflight, 'k', factory),
+        ]);
+        expect(calls).toBe(1);                 // 3 callers, 1 network fetch
+        expect([a, b, c]).toEqual(['v', 'v', 'v']);
+        expect(inflight.size).toBe(0);         // cleaned up after settle
+    });
+
+    it('re-invokes after the in-flight settles (it coalesces, it does not cache)', async () => {
+        const inflight = new Map();
+        let calls = 0;
+        const factory = () => { calls++; return Promise.resolve('v'); };
+        await _coalesce(inflight, 'k', factory);
+        await _coalesce(inflight, 'k', factory);
+        expect(calls).toBe(2);
+    });
+
+    it('keeps distinct keys independent', async () => {
+        const inflight = new Map();
+        let calls = 0;
+        const factory = () => { calls++; return Promise.resolve('v'); };
+        await Promise.all([_coalesce(inflight, 'a', factory), _coalesce(inflight, 'b', factory)]);
+        expect(calls).toBe(2);
+    });
+
+    it('propagates rejection to all callers and clears the in-flight entry', async () => {
+        const inflight = new Map();
+        const failing = _coalesce(inflight, 'k', () => Promise.reject(new Error('boom')));
+        await expect(failing).rejects.toThrow('boom');
+        expect(inflight.size).toBe(0);
+    });
+});

@@ -572,7 +572,33 @@ const DataFetcher = (() => {
      * @param {number} radius - Search radius in meters (default 500)
      * @param {object} [sharedAddress] - Pre-fetched address to avoid duplicate Nominatim calls
      */
+    // ===== REQUEST COALESCING =====
+    // Overlays fire many concurrent fetchAllFeatures() calls, and rapid
+    // re-toggles / bivariate axis changes re-request the same cells before the
+    // first completes. The LRU/IndexedDB cache only populates *after* a fetch
+    // finishes, so without coalescing each identical (lat,lng,radius) in flight
+    // does a full duplicate network fetch. _coalesce funnels them onto one
+    // promise; the cache then serves everyone once it resolves.
+    const _inflight = new Map();
+
+    /** Funnel concurrent calls for the same key onto a single in-flight promise.
+     *  Pure + testable: pass any Map, a key, and a factory. No caching of its
+     *  own — the entry is removed once the promise settles. */
+    function _coalesce(inflight, key, factory) {
+        if (inflight.has(key)) return inflight.get(key);
+        const p = Promise.resolve().then(factory).finally(() => inflight.delete(key));
+        inflight.set(key, p);
+        return p;
+    }
+
     async function fetchAllFeatures(lat, lng, radius = 500, sharedAddress = null) {
+        const key = _cacheKey(lat, lng, radius);
+        const cached = _cacheGet(key);
+        if (cached) return cached;
+        return _coalesce(_inflight, key, () => _doFetchAllFeatures(lat, lng, radius, sharedAddress));
+    }
+
+    async function _doFetchAllFeatures(lat, lng, radius = 500, sharedAddress = null) {
         const key = _cacheKey(lat, lng, radius);
         const cached = _cacheGet(key);
         if (cached) return cached;
@@ -1869,6 +1895,7 @@ const DataFetcher = (() => {
         classifyElements,
         computeAQI_PM25,
         computeAQI_PM10,
+        _coalesce,
         clearPersistentCache: _idbClear,
         exportToJSON,
         exportToCSV,
