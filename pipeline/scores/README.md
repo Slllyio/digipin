@@ -44,13 +44,15 @@ pytest pipeline/scores      # confirms the Python port still matches
 | Growth forecast | `js/growth-score.js` | `growth.py` | 43 |
 | Urban heat island | `js/heat-score.js` | `heat.py` | 14 |
 | Composite intelligence (~24 scores) | `js/data-fetcher.js` (`computeScores`) | `composite.py` | 4 fixtures |
+| SCS curve-number flood | `js/flood-scs.js` | `flood_scs.py` | 14 |
 
 The **DIGIPIN addressing scheme** is also ported, via the same harness:
 `js/digipin.js` → `pipeline/_lib/digipin.py` (encode / decode / decode_partial /
 format), pinned by `golden/digipin.json`. This is the cell-enumeration
 primitive the analysis grid is built from.
 
-All three live score models plus the addressing scheme are now ported. The next
+The OSM-derived, growth, heat, and SCS-flood score models plus the addressing
+scheme are now ported. The next
 step is **Phase 0 step 1**: enumerate the Indore analysis grid (truncated DIGIPIN
 cells over the pilot bbox) and run these scorers over a bulk OSM extract — no
 per-click Overpass calls. The `composite.py` input shape is exactly what a local

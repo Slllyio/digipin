@@ -177,6 +177,25 @@ const MODELS = {
     }),
   },
 
+  flood_scs: {
+    file: 'js/flood-scs.js',
+    global: 'FloodSCS',
+    inputs: (G) => ({
+      runoff_mm: {
+        call: (a) => G.runoffMm(...a),
+        args: [[50], [100], [150, 90], [30, 80], [5, 80], [0], [100, 98], [80, 30]],
+      },
+      depth_from_runoff: {
+        call: (a) => G.depthFromRunoff(...a),
+        args: [[10], [0], [25, 0.05]],
+      },
+      rainfall_to_extra_depth: {
+        call: (a) => G.rainfallToExtraDepth(...a),
+        args: [[100], [150, 90, 0.03], [5]],
+      },
+    }),
+  },
+
   digipin: {
     file: 'js/digipin.js',
     global: 'DigiPin',
