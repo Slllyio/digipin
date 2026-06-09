@@ -2586,10 +2586,24 @@ body {
     }
 
     #toolbar {
+        /* Span the viewport width and wrap, so all 16 icon buttons stay
+           on-screen. Previously a single right-anchored row overflowed the
+           left edge and the leftmost tools were unreachable. */
         top: auto;
         bottom: 16px;
         right: 8px;
+        left: 8px;
         flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px;
+        max-height: 42vh;
+        overflow-y: auto;
+    }
+
+    .toolbar-btn {
+        /* Icon-only on mobile — pad for a ~40px touch target. */
+        padding: 9px 11px;
     }
 
     .tb-label {
