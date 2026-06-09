@@ -831,8 +831,8 @@ const DigitalTwinLayers = (() => {
         if (!def.tooltip) return;
 
         const f = e.features[0];
-        const html = def.tooltip(f);
-        if (!html) return;
+        const text = def.tooltip(f);
+        if (!text) return;
 
         if (!_hoverPopup) {
             _hoverPopup = new maplibregl.Popup({
@@ -842,7 +842,9 @@ const DigitalTwinLayers = (() => {
             });
         }
 
-        _hoverPopup.setLngLat(e.lngLat).setHTML(html).addTo(_map);
+        // tooltip() returns plain text built from external Overture props
+        // (names, class, subclass) — setText escapes it; setHTML would not.
+        _hoverPopup.setLngLat(e.lngLat).setText(text).addTo(_map);
     }
 
     function onMouseLeave() {
@@ -875,11 +877,16 @@ const DigitalTwinLayers = (() => {
         const entries = Object.entries(displayProps).slice(0, 12);
         if (entries.length === 0) return;
 
+        // Overture props (incl. the building name) are external data — escape
+        // both key and value before interpolating into setHTML.
+        const esc = (s) => String(s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         let html = '<div class="dt-popup" style="font-family:Inter,sans-serif; min-width:180px;">';
         entries.forEach(([k, v]) => {
             html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; border-bottom:1px solid #eee; padding-bottom:2px;">
-                <span style="color:#555; text-transform:capitalize; margin-right:8px;">${k.replace(/_/g, ' ')}</span>
-                <span style="font-weight:bold; text-align:right;">${String(v).slice(0, 60)}</span>
+                <span style="color:#555; text-transform:capitalize; margin-right:8px;">${esc(k.replace(/_/g, ' '))}</span>
+                <span style="font-weight:bold; text-align:right;">${esc(String(v).slice(0, 60))}</span>
             </div>`;
         });
         html += '</div>';
