@@ -88,6 +88,52 @@ const MODELS = {
     }),
   },
 
+  composite: {
+    file: 'js/data-fetcher.js',
+    global: 'DataFetcher',
+    deps: [['js/digipin.js', 'DigiPin']],   // data-fetcher.js is loaded after digipin.js in index.html
+    inputs: (G) => {
+      const f = (cat) => ({ features: cat });   // wrap {feat: {count}} as a category
+      const c = (n) => ({ count: n });
+      const FIXTURES = [
+        {},                                     // empty — every score from zero counts
+        {                                       // rich mixed-use urban cell, multi-religion, WorldPop present
+          categories: {
+            food: f({ restaurants: c(10), cafes: c(5), fast_food: c(3), bakery: c(2), bars: c(1), ice_cream: c(1), butcher: c(1) }),
+            shopping: f({ convenience: c(6), supermarket: c(2), mall: c(1), marketplace: c(1), department: c(1), electronics: c(2), mobile: c(3) }),
+            transport: f({ bus_stop: c(8), metro: c(1), railway: c(1), parking: c(4), bicycle_rental: c(2), fuel: c(2), ev_charging: c(1) }),
+            leisure: f({ parks: c(3), garden: c(2), playground: c(1), gym: c(2), sports_centre: c(1) }),
+            infrastructure: f({ footpath: c(5), water_body: c(1), roads: c(40), street_lamps: c(30), cell_tower: c(3), power: c(2), bridge: c(1), river: c(1) }),
+            government: f({ toilets: c(2), police: c(1), fire: c(1), post_office: c(1), govt_office: c(2), community: c(1), social: c(1) }),
+            healthcare: f({ hospitals: c(2), clinics: c(4), pharmacies: c(6), lab: c(1), dentists: c(2), nursing_home: c(1) }),
+            education: f({ schools: c(5), colleges: c(2), universities: c(1), libraries: c(1), kindergartens: c(3) }),
+            entertainment: f({ cinema: c(1), nightclub: c(1), museum: c(1), theatre: c(1), worship: { count: 7, subTypes: { hindu: 4, muslim: 2, christian: 1 } } }),
+            business: f({ offices: c(5), coworking: c(2), estate_agent: c(3), it_company: c(2) }),
+            accommodation: f({ hotel: c(2), attraction: c(1), guest_house: c(1) }),
+            landuse: f({ construction: c(2), vacant: c(1), buildings_total: c(50), industrial_area: c(1), res_buildings: c(20), residential_area: c(3) }),
+          },
+          environment: { populationDensity: { personsPerHectare: 120 }, elevation: { isLowLying: false, relative: 2, center: 450 } },
+        },
+        {                                       // low-lying, single-religion, no WorldPop (building-density fallback)
+          categories: {
+            entertainment: f({ worship: { count: 3, subTypes: { hindu: 3 } } }),
+            infrastructure: f({ river: c(2), water_body: c(1) }),
+            landuse: f({ industrial_area: c(2), buildings_total: c(10), res_buildings: c(5), residential_area: c(1) }),
+            shopping: f({ convenience: c(2) }),
+          },
+          environment: { elevation: { isLowLying: true, relative: -3 } },
+        },
+        {                                       // worship count but no religion tags (fallback) + ridge (relative > 5)
+          categories: { entertainment: f({ worship: { count: 5, subTypes: {} } }) },
+          environment: { elevation: { isLowLying: false, relative: 8 } },
+        },
+      ];
+      return {
+        compute_scores: { call: (a) => G.computeScores(...a), args: FIXTURES.map((d) => [d]) },
+      };
+    },
+  },
+
   heat: {
     file: 'js/heat-score.js',
     global: 'HeatScore',
@@ -129,6 +175,7 @@ const outDir = path.join(__dirname, 'golden');
 fs.mkdirSync(outDir, { recursive: true });
 
 for (const [model, spec] of Object.entries(MODELS)) {
+  for (const [depFile, depName] of spec.deps || []) loadGlobal(depFile, depName);
   loadGlobal(spec.file, spec.global);
   const G = globalThis[spec.global];
   const inputs = spec.inputs(G);

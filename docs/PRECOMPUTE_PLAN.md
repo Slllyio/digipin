@@ -92,9 +92,16 @@ to the browser; no server.
 Phase 0, step 2 — port the score math to a Python module reused by the pipeline,
 with golden-file parity tests against the JS. Everything else builds on that.
 
-### ✅ Started — `pipeline/scores/`
-The parity harness and the first two ports are done — **Growth forecast**
-(`growth.py`) and **Urban heat island** (`heat.py`) — pinned by 57 golden-file
-parity cases generated from the JS (`npm run golden:scores`). See
-[`pipeline/scores/README.md`](../pipeline/scores/README.md) for the pattern the
-remaining model (the `data-fetcher.js` composites) follows.
+### ✅ Done — score porting (`pipeline/scores/`)
+All three live score models are ported and pinned to the JS by golden-file
+parity tests (`npm run golden:scores`, enforced fresh in CI):
+
+- **Growth forecast** — `growth.py` (`js/growth-score.js`)
+- **Urban heat island** — `heat.py` (`js/heat-score.js`)
+- **Composite intelligence** (~24 scores) — `composite.py`
+  (`DataFetcher.computeScores` in `js/data-fetcher.js`)
+
+See [`pipeline/scores/README.md`](../pipeline/scores/README.md). The remaining
+Phase 0 work is **step 1**: generate the Indore analysis grid and run these
+scorers over a bulk OSM extract. `composite.py`'s input shape is exactly what a
+local `osmium`/DuckDB feature-count query produces per cell.

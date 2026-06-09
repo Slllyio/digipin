@@ -43,6 +43,9 @@ pytest pipeline/scores      # confirms the Python port still matches
 |---|---|---|---|
 | Growth forecast | `js/growth-score.js` | `growth.py` | 43 |
 | Urban heat island | `js/heat-score.js` | `heat.py` | 14 |
+| Composite intelligence (~24 scores) | `js/data-fetcher.js` (`computeScores`) | `composite.py` | 4 fixtures |
 
-Next candidate: the composite intelligence scores in `data-fetcher.js` (these
-need the OSM feature-count input shape modelled first).
+All three live score models are now ported. The next step is **Phase 0 step 1**:
+generate the Indore analysis grid and run these scorers over a bulk OSM extract
+(no per-click Overpass calls). The `composite.py` input shape is exactly what a
+local `osmium`/DuckDB feature-count query needs to produce per cell.

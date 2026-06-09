@@ -1892,6 +1892,7 @@ const DataFetcher = (() => {
         clearPersistentCache: _idbClear,
         exportToJSON,
         exportToCSV,
-        getRadiusForZoom
+        getRadiusForZoom,
+        computeScores
     };
 })();
