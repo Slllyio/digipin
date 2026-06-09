@@ -44,3 +44,4 @@ loadGlobalScript('js/bivariate-overlay.js', ['BivariateOverlay']);
 loadGlobalScript('js/ndvi-overlay.js', ['NDVIOverlay']);
 loadGlobalScript('js/viewshed.js', ['Viewshed']);
 loadGlobalScript('js/kde-overlay.js', ['KDEOverlay']);
+loadGlobalScript('js/accessibility-overlay.js', ['AccessibilityOverlay']);

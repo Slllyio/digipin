@@ -9,7 +9,7 @@
 // CommonJS form — package.json is "type": "commonjs".
 const { test, expect } = require('@playwright/test');
 
-const NEW_OVERLAY_BUTTONS = ['btn-ndvi', 'btn-bivariate', 'btn-viewshed', 'btn-kde'];
+const NEW_OVERLAY_BUTTONS = ['btn-ndvi', 'btn-bivariate', 'btn-viewshed', 'btn-kde', 'btn-access'];
 
 test.describe('App boot smoke', () => {
   let pageErrors;

@@ -126,6 +126,10 @@
             <span class="tb-icon">&#128293;</span>
             <span class="tb-label">Hotspot</span>
         </button>
+        <button class="toolbar-btn" id="btn-access" title="Accessibility — service-area coverage gaps">
+            <span class="tb-icon">&#9855;</span>
+            <span class="tb-label">Access</span>
+        </button>
     </div>
 
     <!-- ===== SIDEBAR — QUERIES ===== -->
@@ -281,6 +285,7 @@
     <script defer src="js/ndvi-overlay.js"></script>
     <script defer src="js/viewshed.js"></script>
     <script defer src="js/kde-overlay.js"></script>
+    <script defer src="js/accessibility-overlay.js"></script>
     <script defer src="js/app.js"></script>
     <script>
     // Wire the toggle-overlay toolbar buttons: flip the overlay, then reflect
@@ -293,6 +298,7 @@
         ['btn-bivariate', () => window.BivariateOverlay],
         ['btn-viewshed',  () => window.Viewshed],
         ['btn-kde',       () => window.KDEOverlay],
+        ['btn-access',    () => window.AccessibilityOverlay],
     ].forEach(([id, getMod]) => {
         const btn = document.getElementById(id);
         if (!btn) return;
