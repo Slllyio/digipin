@@ -64,10 +64,8 @@ jobs:
 
   e2e-smoke:
     runs-on: ubuntu-latest
-    # Non-blocking for now: the dev sandbox can't reach the MapLibre / Carto
-    # basemap CDNs, so this browser smoke can only be verified here in CI.
-    # Flip `continue-on-error` off once it's proven green.
-    continue-on-error: true
+    # Proven green on CI (the dev sandbox can't reach the MapLibre / Carto CDNs,
+    # so this can only run here) — now blocking like the other jobs.
     steps:
     - uses: actions/checkout@v4
 
