@@ -53,7 +53,10 @@ grid** and keep the 4×4 m DigiPin code as the addressing scheme:
    the per-cell `{categories, environment}` dict (a documented, stubbed seam,
    pending the extract download).
 3. Write `indore_scores.parquet` (cell_code, 30 scores, feature counts).
-4. Convert to PMTiles (`tippecanoe`) keyed by cell geometry.
+4. Convert to PMTiles keyed by cell geometry. **✅ Path wired** —
+   `score_grid.score_grid_geojson()` emits the cell-polygon FeatureCollection
+   that the repo's existing pure-Python `pipeline/geojson_to_pmtiles.py` already
+   tiles (no `tippecanoe` dependency needed).
 5. Frontend: add a `PrecomputedScores` source that reads the PMTiles; overlays
    prefer it and fall back to live `fetchAllFeatures` when a cell is absent.
 

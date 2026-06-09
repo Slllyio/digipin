@@ -29,6 +29,13 @@ def empty_feature_counter(cell: dict) -> dict:
     return {}
 
 
+def _iter_scored(bbox, level, count_features, max_cells):
+    """Yield (cell, {score_id: value}) for each cell — shared by the emitters."""
+    for cell in grid.cells_for_bbox(bbox, level, max_cells=max_cells):
+        scores = composite.compute_scores(count_features(cell))
+        yield cell, {sid: sc["value"] for sid, sc in scores.items()}
+
+
 def score_grid(
     bbox: dict,
     level: int,
@@ -41,18 +48,40 @@ def score_grid(
     composite intelligence scores flattened to their integer values.
     """
     rows = []
-    for cell in grid.cells_for_bbox(bbox, level, max_cells=max_cells):
-        data = count_features(cell)
-        scores = composite.compute_scores(data)
-        row = {
-            "code": cell["code"],
-            "lat": cell["center"]["lat"],
-            "lng": cell["center"]["lng"],
-        }
-        for score_id, score in scores.items():
-            row[score_id] = score["value"]
+    for cell, values in _iter_scored(bbox, level, count_features, max_cells):
+        row = {"code": cell["code"], "lat": cell["center"]["lat"], "lng": cell["center"]["lng"]}
+        row.update(values)
         rows.append(row)
     return rows
+
+
+def score_grid_geojson(
+    bbox: dict,
+    level: int,
+    count_features: FeatureCounter = empty_feature_counter,
+    max_cells: Optional[int] = None,
+) -> dict:
+    """Return a GeoJSON FeatureCollection of cell polygons with score properties.
+
+    One Polygon Feature per cell (the cell's bounds rectangle), properties =
+    {"code", <score_id>: value, ...}. This is the shape ``geojson_to_pmtiles.py``
+    consumes, so a scored grid tiles directly into a PMTiles choropleth.
+    """
+    features = []
+    for cell, values in _iter_scored(bbox, level, count_features, max_cells):
+        b = cell["bounds"]
+        ring = [
+            [b["west"], b["south"]], [b["east"], b["south"]],
+            [b["east"], b["north"]], [b["west"], b["north"]], [b["west"], b["south"]],
+        ]
+        props = {"code": cell["code"]}
+        props.update(values)
+        features.append({
+            "type": "Feature",
+            "geometry": {"type": "Polygon", "coordinates": [ring]},
+            "properties": props,
+        })
+    return {"type": "FeatureCollection", "features": features}
 
 
 def score_field_names() -> list:

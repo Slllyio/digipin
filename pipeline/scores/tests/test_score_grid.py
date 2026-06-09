@@ -63,3 +63,36 @@ def test_score_field_names_are_stable_and_complete():
     names = score_grid.score_field_names()
     assert "livability" in names and "flood_risk" in names and "walkability" in names
     assert len(names) == len(set(names))
+
+
+def test_geojson_is_a_valid_feature_collection_of_cell_polygons():
+    import json
+
+    from pipeline._lib import grid
+
+    fc = score_grid.score_grid_geojson(BBOX, LEVEL)
+    assert fc["type"] == "FeatureCollection"
+    assert len(fc["features"]) == len(grid.cells_for_bbox(BBOX, LEVEL))
+    json.dumps(fc)  # must be serialisable
+
+    expected_cols = set(score_grid.score_field_names())
+    for feat in fc["features"]:
+        assert feat["type"] == "Feature"
+        assert feat["geometry"]["type"] == "Polygon"
+        ring = feat["geometry"]["coordinates"][0]
+        assert len(ring) == 5 and ring[0] == ring[-1]      # closed rectangle
+        props = feat["properties"]
+        assert "code" in props
+        assert expected_cols <= set(props)
+
+
+def test_geojson_polygon_matches_the_cell_bounds():
+    from pipeline._lib import grid
+
+    cells = {c["code"]: c for c in grid.cells_for_bbox(BBOX, LEVEL)}
+    for feat in score_grid.score_grid_geojson(BBOX, LEVEL)["features"]:
+        b = cells[feat["properties"]["code"]]["bounds"]
+        lons = [pt[0] for pt in feat["geometry"]["coordinates"][0]]
+        lats = [pt[1] for pt in feat["geometry"]["coordinates"][0]]
+        assert min(lons) == b["west"] and max(lons) == b["east"]
+        assert min(lats) == b["south"] and max(lats) == b["north"]
