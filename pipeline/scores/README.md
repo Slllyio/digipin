@@ -42,6 +42,7 @@ pytest pipeline/scores      # confirms the Python port still matches
 | Model | JS source | Python | Parity cases |
 |---|---|---|---|
 | Growth forecast | `js/growth-score.js` | `growth.py` | 43 |
+| Urban heat island | `js/heat-score.js` | `heat.py` | 14 |
 
-Next candidates: `heat-score.js`, then the composite intelligence scores in
-`data-fetcher.js` (these need the OSM feature-count input shape modelled first).
+Next candidate: the composite intelligence scores in `data-fetcher.js` (these
+need the OSM feature-count input shape modelled first).

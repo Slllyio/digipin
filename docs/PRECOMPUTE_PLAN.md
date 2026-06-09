@@ -93,8 +93,8 @@ Phase 0, step 2 — port the score math to a Python module reused by the pipelin
 with golden-file parity tests against the JS. Everything else builds on that.
 
 ### ✅ Started — `pipeline/scores/`
-The parity harness and the **first port (the Growth forecast model)** are done:
-`js/growth-score.js` → `pipeline/scores/growth.py`, pinned by 43 golden-file
+The parity harness and the first two ports are done — **Growth forecast**
+(`growth.py`) and **Urban heat island** (`heat.py`) — pinned by 57 golden-file
 parity cases generated from the JS (`npm run golden:scores`). See
 [`pipeline/scores/README.md`](../pipeline/scores/README.md) for the pattern the
-remaining models (`heat-score.js`, then the `data-fetcher.js` composites) follow.
+remaining model (the `data-fetcher.js` composites) follows.
