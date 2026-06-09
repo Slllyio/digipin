@@ -97,4 +97,15 @@ module.exports = [
     },
     rules: { ...js.configs.recommended.rules, ...RELAXED_RULES },
   },
+
+  // Serverless data proxy — ESM edge worker + its Vitest test.
+  {
+    files: ['proxy/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...globals.serviceworker, ...globals.node, ...globals.vitest },
+    },
+    rules: { ...js.configs.recommended.rules, ...RELAXED_RULES },
+  },
 ];

@@ -63,6 +63,20 @@ const DataFetcher = (() => {
     const OGD_PINCODE_RESOURCE = '5c2f62fe-5afa-4119-a499-fec9d604d5bd';
     let _cepiCache = null; // loaded once (only 43 records)
 
+    // Optional serverless proxy for the upstreams the browser can't reach
+    // directly (CORS-blocked or key-requiring). Configure with
+    // window.DIGIPIN_CONFIG.proxyBase = 'https://<worker>.workers.dev' — see
+    // proxy/README.md. Read at call time so config set after this script loads
+    // still applies. When unset, requests go direct (behaviour unchanged); for
+    // the CORS-only IUDX call, `corsFallback` keeps the legacy allorigins route
+    // so nothing regresses without a configured proxy.
+    function viaProxy(url, { corsFallback = false } = {}) {
+        const base = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG?.proxyBase) || '';
+        if (base) return `${base}/?url=${encodeURIComponent(url)}`;
+        if (corsFallback) return `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        return url;
+    }
+
     // IUDX (India Urban Data Exchange) — Smart City data for Indore.
     // Both endpoints used below are public/no-auth: the open S3 sample bucket and
     // the IUDX catalogue search API (via CORS proxy, see fetchIUDXCatalogue). No
@@ -935,9 +949,10 @@ const DataFetcher = (() => {
         // Fallback: WAQI
         const waqiToken = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG?.waqiToken) || 'demo';
         const usingRealToken = waqiToken && waqiToken !== 'demo';
-        const url = usingRealToken
+        const rawUrl = usingRealToken
             ? `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${encodeURIComponent(waqiToken)}`
             : `https://api.waqi.info/feed/${encodeURIComponent(cityName)}/?token=demo`;
+        const url = viaProxy(rawUrl);
 
         try {
             const data = await fetchWithRetry(url);
@@ -965,7 +980,7 @@ const DataFetcher = (() => {
      * Now takes cityName directly instead of calling Nominatim again
      */
     async function fetchCPCB_AQI(cityName) {
-        const url = `https://api.data.gov.in/resource/${CPCB_AQI_RESOURCE}?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json&limit=5&filters[city]=${encodeURIComponent(cityName)}`;
+        const url = viaProxy(`https://api.data.gov.in/resource/${CPCB_AQI_RESOURCE}?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json&limit=5&filters[city]=${encodeURIComponent(cityName)}`);
 
         const data = await fetchWithRetry(url);
         const records = data.records || [];
@@ -1297,7 +1312,9 @@ const DataFetcher = (() => {
     /**
      * IUDX Catalogue API — Discover available datasets for a city.
      * Uses cos.iudx.org.in/iudx/cat/v1/search (no auth needed).
-     * Routed via allorigins proxy to bypass CORS restrictions from browser.
+     * CORS-blocked from the browser, so routed via the configured data proxy
+     * (window.DIGIPIN_CONFIG.proxyBase), falling back to the public allorigins
+     * proxy when none is configured. See proxy/README.md.
      * Returns dataset metadata: names, descriptions, resource types, providers.
      */
     async function fetchIUDXCatalogue(cityName) {
@@ -1306,8 +1323,7 @@ const DataFetcher = (() => {
             if (_iudxCatalogueCache[city]) return _iudxCatalogueCache[city];
 
             const catUrl = `https://cos.iudx.org.in/iudx/cat/v1/search?property=[type]&value=[[iudx:Resource]]&q=${encodeURIComponent(city)}&limit=50`;
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(catUrl)}`;
-            const resp = await fetch(proxyUrl);
+            const resp = await fetch(viaProxy(catUrl, { corsFallback: true }));
             if (!resp.ok) return null;
             const data = await resp.json();
             const results = data.results || [];
@@ -1364,7 +1380,7 @@ const DataFetcher = (() => {
      */
     async function fetchOGDHealthFacilities(lat, lng, state) {
         try {
-            const url = `https://api.data.gov.in/resource/${OGD_HOSPITAL_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=10&filters[state]=${encodeURIComponent(state || 'Madhya Pradesh')}`;
+            const url = viaProxy(`https://api.data.gov.in/resource/${OGD_HOSPITAL_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=10&filters[state]=${encodeURIComponent(state || 'Madhya Pradesh')}`);
             const data = await fetchWithRetry(url);
             const records = data.records || [];
             if (records.length === 0) return null;
@@ -1398,7 +1414,7 @@ const DataFetcher = (() => {
     async function fetchCEPI(cityName, state) {
         try {
             if (!_cepiCache) {
-                const url = `https://api.data.gov.in/resource/${OGD_CEPI_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=50`;
+                const url = viaProxy(`https://api.data.gov.in/resource/${OGD_CEPI_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=50`);
                 const data = await fetchWithRetry(url);
                 _cepiCache = data.records || [];
             }
@@ -1435,7 +1451,7 @@ const DataFetcher = (() => {
     async function fetchNearbyPostOffices(lat, lng, district) {
         try {
             const dist = district || 'Indore';
-            const url = `https://api.data.gov.in/resource/${OGD_PINCODE_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=50&filters[district]=${encodeURIComponent(dist.toUpperCase())}`;
+            const url = viaProxy(`https://api.data.gov.in/resource/${OGD_PINCODE_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=50&filters[district]=${encodeURIComponent(dist.toUpperCase())}`);
             const data = await fetchWithRetry(url);
             const records = data.records || [];
             if (records.length === 0) return null;
@@ -1856,6 +1872,7 @@ const DataFetcher = (() => {
         exportToJSON,
         exportToCSV,
         getRadiusForZoom,
-        computeScores
+        computeScores,
+        viaProxy
     };
 })();
