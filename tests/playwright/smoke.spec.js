@@ -10,10 +10,6 @@
 const { test, expect } = require('@playwright/test');
 
 const NEW_OVERLAY_BUTTONS = ['btn-ndvi', 'btn-bivariate', 'btn-viewshed', 'btn-kde'];
-const CORE_GLOBALS = [
-  'DigiPin', 'DataFetcher', 'MapModule', 'App',
-  'BivariateOverlay', 'NDVIOverlay', 'Viewshed', 'KDEOverlay',
-];
 
 test.describe('App boot smoke', () => {
   let pageErrors;
@@ -32,11 +28,20 @@ test.describe('App boot smoke', () => {
       await expect(page.locator(`#${id}`)).toBeVisible();
     }
 
-    const defined = await page.evaluate(
-      (names) => names.map((n) => typeof window[n] !== 'undefined'),
-      CORE_GLOBALS,
-    );
-    const missing = CORE_GLOBALS.filter((_, i) => !defined[i]);
+    // The core modules are top-level `const` globals (lexical bindings), NOT
+    // window properties, and the page CSP forbids eval — so reference each by
+    // name statically. `typeof <undeclared>` is safe (yields 'undefined').
+    const types = await page.evaluate(() => ({
+      DigiPin: typeof DigiPin,
+      DataFetcher: typeof DataFetcher,
+      MapModule: typeof MapModule,
+      App: typeof App,
+      BivariateOverlay: typeof BivariateOverlay,
+      NDVIOverlay: typeof NDVIOverlay,
+      Viewshed: typeof Viewshed,
+      KDEOverlay: typeof KDEOverlay,
+    }));
+    const missing = Object.entries(types).filter(([, t]) => t === 'undefined').map(([k]) => k);
     expect(missing, `undefined globals: ${missing.join(', ')}`).toEqual([]);
 
     expect(pageErrors, pageErrors.join('\n')).toEqual([]);
