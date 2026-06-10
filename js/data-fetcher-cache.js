@@ -94,13 +94,19 @@ const DataFetcherCache = (() => {
     /** Fetch via factory, store, and de-dup concurrent calls for the same key. */
     function _refresh(key, ttlMs, factory) {
         if (_inflight.has(key)) return _inflight.get(key);
+        // Clean up inside the async body's finally — NOT via promise.finally(),
+        // which would spawn a second, unhandled rejection branch on failure even
+        // though callers handle the returned promise.
         const promise = (async () => {
-            const value = await factory();
-            set(key, value, ttlMs);
-            return value;
+            try {
+                const value = await factory();
+                set(key, value, ttlMs);
+                return value;
+            } finally {
+                _inflight.delete(key);
+            }
         })();
         _inflight.set(key, promise);
-        promise.finally(() => _inflight.delete(key));
         return promise;
     }
 
