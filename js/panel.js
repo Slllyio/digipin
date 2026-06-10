@@ -17,6 +17,31 @@ const Panel = (() => {
             .replace(/'/g, '&#039;');
     }
 
+    // Honest data coverage: show which sources loaded vs failed, so a missing
+    // card reads as "AQI unavailable" rather than a silent gap. Driven by
+    // result.sourceStatus from DataFetcher.fetchAllFeatures.
+    const _SOURCE_LABELS = {
+        osm: 'OSM', weather: 'Weather', aqi: 'Air Quality', elevation: 'Elevation',
+        population: 'Population', wikipedia: 'Wikipedia', solar: 'Solar',
+        health: 'Health', iudx: 'IUDX', evCharging: 'EV',
+    };
+
+    function buildSourceStatusHTML(data) {
+        const st = data && data.sourceStatus;
+        if (!st) return '';
+        const entries = Object.entries(_SOURCE_LABELS).filter(([k]) => k in st);
+        if (entries.length === 0) return '';
+        const okCount = entries.filter(([k]) => st[k] === 'ok').length;
+        const chips = entries.map(([k, label]) => {
+            const ok = st[k] === 'ok';
+            return `<span class="src-chip ${ok ? 'src-ok' : 'src-off'}" title="${esc(label)}: ${ok ? 'loaded' : 'unavailable'}">${esc(label)}</span>`;
+        }).join('');
+        return `<div class="source-status">
+            <div class="source-status-head">Data coverage <span class="data-badge badge-dim">${okCount}/${entries.length} sources</span></div>
+            <div class="source-chips">${chips}</div>
+        </div>`;
+    }
+
     function init() {
         panelEl = document.getElementById('detail-panel');
         contentEl = document.getElementById('panel-content');
@@ -169,6 +194,8 @@ const Panel = (() => {
                 <div class="coords">${cell.center.lat.toFixed(6)}&deg;N, ${cell.center.lng.toFixed(6)}&deg;E</div>
                 ${addr.fullAddress ? `<div class="address">${esc(addr.area || addr.city)}, ${esc(addr.district)}, ${esc(addr.state)} ${addr.pincode ? '- ' + esc(addr.pincode) : ''}</div>` : ''}
             </div>`;
+
+        html += buildSourceStatusHTML(data);
 
         // Environment card — numeric values are safe, but weatherDesc comes from our lookup so esc() for defense-in-depth
         html += `<div class="env-card">

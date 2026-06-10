@@ -917,8 +917,32 @@ const DataFetcher = (() => {
             result.scores.real_estate_growth.value = Math.min(100, Math.round(existing * 0.7 + devBoost));
         }
 
+        // Per-source health, so the UI can show what loaded vs what failed
+        // instead of silently hiding missing cards. A source is 'ok' when its
+        // fetch settled with non-null data, 'unavailable' otherwise (rejected,
+        // timed out, or returned null after an internal error).
+        const _aqiOk = sourceState(aqiData) === 'ok' || sourceState(openMeteoAqi) === 'ok';
+        result.sourceStatus = {
+            osm: sourceState(osmData),
+            weather: sourceState(weatherData),
+            aqi: _aqiOk ? 'ok' : 'unavailable',
+            elevation: sourceState(elevData),
+            population: sourceState(popData),
+            wikipedia: sourceState(wikiData),
+            solar: sourceState(solarData),
+            health: sourceState(ogdHealthData),
+            iudx: sourceState(iudxData),
+            evCharging: sourceState(evChargingData),
+        };
+
         _cacheSet(key, result);
         return result;
+    }
+
+    /** Map one Promise.allSettled outcome to 'ok' | 'unavailable'. Pure. */
+    function sourceState(settled) {
+        return (settled && settled.status === 'fulfilled' && settled.value != null)
+            ? 'ok' : 'unavailable';
     }
 
     async function fetchOSMData(lat, lng, radius) {
@@ -1945,6 +1969,7 @@ const DataFetcher = (() => {
         exportToCSV,
         getRadiusForZoom,
         computeScores,
-        viaProxy
+        viaProxy,
+        sourceState
     };
 })();
