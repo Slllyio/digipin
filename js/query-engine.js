@@ -120,6 +120,26 @@ const QueryEngine = (() => {
             const bounds = map.getBounds();
             const results = [];
 
+            // Precomputed fast path: rank every real DIGIPIN cell in view from
+            // static tiles in one shard read, instead of sampling 25 points live
+            // (~250 upstream calls). Falls through to live sampling on a miss.
+            if (typeof PrecomputedScores !== 'undefined' && PrecomputedScores.isEnabled()) {
+                const vb = { south: bounds.getSouth(), west: bounds.getWest(),
+                    north: bounds.getNorth(), east: bounds.getEast() };
+                const cells = await PrecomputedScores.lookupViewport(vb);
+                if (cells && cells.length) {
+                    const ranked = cells.map(c => ({
+                        lat: c.center.lat, lng: c.center.lng, code: c.code,
+                        score: computeQueryScore(c.scores, query.weights),
+                        data: { scores: c.scores },
+                    }));
+                    ranked.sort((a, b) => b.score - a.score);
+                    if (onProgress) onProgress(cells.length, cells.length);
+                    MapModule.showHeatmap(ranked.slice(0, 10));
+                    return ranked;
+                }
+            }
+
             const gridSize = 5;
             const latStep = (bounds.getNorth() - bounds.getSouth()) / gridSize;
             const lngStep = (bounds.getEast() - bounds.getWest()) / gridSize;

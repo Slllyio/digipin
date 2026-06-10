@@ -68,6 +68,21 @@ self.addEventListener('fetch', event => {
         return;
     }
 
+    // Precomputed-score manifest: network-first so a monthly tile refresh is
+    // picked up promptly (falls back to cache offline). The score *shards*
+    // themselves fall through to the cache-first + background-revalidate handler
+    // below — instant and offline-capable, refreshed in the background.
+    if (url.pathname.endsWith('/data/scores/coverage.json')) {
+        event.respondWith(
+            fetch(event.request).then(response => {
+                const clone = response.clone();
+                caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                return response;
+            }).catch(() => caches.match(event.request))
+        );
+        return;
+    }
+
     // Cache-first for static assets
     event.respondWith(
         caches.match(event.request).then(cached => {
