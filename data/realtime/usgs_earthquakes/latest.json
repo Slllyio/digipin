@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-06-10T16:14:16Z",
-  "count": 23,
+  "generated_at_iso": "2026-06-10T21:17:22Z",
+  "count": 16,
   "records": [
+    {
+      "id": "us7000ss28",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-06-10T16:30:55.456000+00:00",
+      "latitude": 1.8646,
+      "longitude": 98.9699,
+      "depth_km": 127.676,
+      "place": "25 km ENE of Sibolga, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ss28",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000ss21",
       "magnitude": 4.6,
@@ -84,7 +96,7 @@
       "place": "23 km E of Pāpa‘ikou, Hawaii",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/hv74978947",
       "tsunami": 0,
-      "significance": 706
+      "significance": 724
     },
     {
       "id": "us7000srzd",
@@ -181,102 +193,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srwv",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us7000srvv",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-06-09T19:49:03.951000+00:00",
-      "latitude": 52.3674,
-      "longitude": 160.7499,
-      "depth_km": 10.0,
-      "place": "163 km ESE of Petropavlovsk-Kamchatsky, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srvv",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000srvn",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-06-09T19:36:10.562000+00:00",
-      "latitude": -41.5157,
-      "longitude": 84.9096,
-      "depth_km": 10.0,
-      "place": "southeast Indian Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srvn",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000srvk",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-06-09T19:25:35.189000+00:00",
-      "latitude": 44.8123,
-      "longitude": 149.2865,
-      "depth_km": 56.076,
-      "place": "120 km ESE of Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srvk",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000srun",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-06-09T18:09:52.935000+00:00",
-      "latitude": 5.766,
-      "longitude": 125.1164,
-      "depth_km": 35.0,
-      "place": "8 km SW of Taluya, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srun",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000srul",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-09T17:51:42.066000+00:00",
-      "latitude": 4.9069,
-      "longitude": 127.5632,
-      "depth_km": 35.0,
-      "place": "222 km SE of Pondaguitan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srul",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000sruf",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-06-09T17:40:37.238000+00:00",
-      "latitude": 4.8395,
-      "longitude": 125.2852,
-      "depth_km": 36.209,
-      "place": "65 km SSW of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sruf",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000sru0",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-06-09T16:49:24.753000+00:00",
-      "latitude": 5.5352,
-      "longitude": 125.3855,
-      "depth_km": 59.19,
-      "place": "4 km SSW of Bukid, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sru0",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000srub",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-06-09T16:48:51.184000+00:00",
-      "latitude": 18.5538,
-      "longitude": 146.57,
-      "depth_km": 51.723,
-      "place": "Pagan region, Northern Mariana Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srub",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
