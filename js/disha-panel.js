@@ -419,6 +419,17 @@ const DISHAPanel = (() => {
     }
 
     // ===== CITY SCAN FLOW =====
+    // Current map viewport as a plain {south,west,north,east} for Text2Map's
+    // precomputed-grid lookup. Empty object if the map isn't ready (Text2Map
+    // then degrades to the live sampler).
+    function _cityScanBounds() {
+        if (typeof MapModule === 'undefined' || !MapModule.getMap) return {};
+        const map = MapModule.getMap();
+        if (!map || !map.getBounds) return {};
+        const b = map.getBounds();
+        return { south: b.getSouth(), west: b.getWest(), north: b.getNorth(), east: b.getEast() };
+    }
+
     async function handleCityScan(question) {
         _isCityScanning = true;
         const sendBtn = document.getElementById('disha-send');
@@ -441,9 +452,27 @@ const DISHAPanel = (() => {
         statusContent.appendChild(scanIndicator);
 
         try {
-            const results = await DISHA.cityScan(question, (status) => {
-                scanText.textContent = status;
-            });
+            // Text2Map: parse the question into a weighting (LLM-required, with a
+            // keyword fallback) and rank the precomputed DIGIPIN grid instantly.
+            // Falls back internally to the live sampler when the viewport isn't
+            // covered. Older path (DISHA.cityScan) kept if Text2Map is absent.
+            let results, label = null;
+            if (typeof Text2Map !== 'undefined') {
+                scanText.textContent = 'Understanding your question...';
+                const bounds = _cityScanBounds();
+                const out = await Text2Map.run(question, bounds, (status) => {
+                    scanText.textContent = status;
+                });
+                results = out ? out.results : null;
+                label = out?.parsed?.label || null;
+                if (out && out.mode === 'precomputed') {
+                    scanText.textContent = 'Ranking the live grid...';
+                }
+            } else {
+                results = await DISHA.cityScan(question, (status) => {
+                    scanText.textContent = status;
+                });
+            }
 
             if (!results || results.length === 0) {
                 applyFormattedResponse(statusContent, 'City scan returned no results. Try zooming into a city area first.');
@@ -452,7 +481,7 @@ const DISHAPanel = (() => {
                 return;
             }
 
-            scanText.textContent = `Scan complete! Found top ${results.length} locations. Analyzing with AI...`;
+            scanText.textContent = `Found top ${results.length}${label ? ' for "' + label + '"' : ''}. Analyzing with AI...`;
 
             const cityScanContext = DISHA.buildCityScanContext(results, question);
 
