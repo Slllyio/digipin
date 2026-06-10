@@ -71,7 +71,25 @@ def check(out_dir, region: str = "indore_pilot", landmark: dict | None = None) -
             raise SmokeFailure(
                 f"landmark {landmark['code']} {landmark['field']}={got} < {landmark.get('min', 1)}")
 
-    return {"region": region, "cells": len(rows), "distinct": len(seen_distinct), "fields": n}
+    # If a PMTiles choropleth was emitted, verify it parses — a broken tiler
+    # must not ship. Optional: skipped when the file or the pmtiles lib is absent.
+    pm = out_dir / region / "scores.pmtiles"
+    pmtiles_ok = None
+    if pm.exists():
+        try:
+            from pmtiles.reader import MmapSource, Reader
+        except ImportError:
+            pmtiles_ok = "unchecked (pmtiles lib absent)"
+        else:
+            try:
+                with open(pm, "rb") as f:
+                    Reader(MmapSource(f)).header()
+                pmtiles_ok = True
+            except Exception as e:  # noqa: BLE001
+                raise SmokeFailure(f"scores.pmtiles is not a valid archive: {e}")
+
+    return {"region": region, "cells": len(rows), "distinct": len(seen_distinct),
+            "fields": n, "pmtiles": pmtiles_ok}
 
 
 def main(argv=None):

@@ -106,6 +106,23 @@ def test_build_pmtiles_produces_valid_archive(tmp_path, fixture_osm):
         assert "scores" in [layer.get("id") for layer in (vl or [])]
 
 
+def test_smoke_check_validates_pmtiles(tmp_path, fixture_osm):
+    pytest.importorskip("geopandas")
+    pytest.importorskip("pmtiles")
+    out = tmp_path / "scores"
+    build_tile.build("indore_pilot", level=5, out_dir=str(out), pbf=fixture_osm, pmtiles=True)
+    assert smoke_check.check(out, region="indore_pilot")["pmtiles"] is True
+
+
+def test_smoke_check_rejects_corrupt_pmtiles(tmp_path, fixture_osm):
+    pytest.importorskip("pmtiles")
+    out = tmp_path / "scores"
+    build_tile.build("indore_pilot", level=5, out_dir=str(out), pbf=fixture_osm, pmtiles=True)
+    (out / "indore_pilot" / "scores.pmtiles").write_bytes(b"not a pmtiles archive")
+    with pytest.raises(smoke_check.SmokeFailure, match="not a valid archive"):
+        smoke_check.check(out, region="indore_pilot")
+
+
 def test_unknown_region_raises(tmp_path):
     with pytest.raises(ValueError, match="unknown region"):
         build_tile.build("atlantis", level=5, out_dir=str(tmp_path))
