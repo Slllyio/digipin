@@ -521,36 +521,32 @@ body {
     opacity: 0.85;
 }
 
-.alert-banner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+.hazard-strip {
     margin: 10px 0 4px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    font-size: 12px;
-    background: rgba(234, 179, 8, 0.12);
-    border: 1px solid rgba(234, 179, 8, 0.35);
-    color: #eab308;
 }
-.alert-banner.alert-severe {
-    background: rgba(239, 68, 68, 0.12);
-    border-color: rgba(239, 68, 68, 0.4);
-    color: #ef4444;
-}
-.alert-banner-text {
+.hazard-head {
+    font-size: 11px;
     font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
 }
-.alert-fresh {
-    font-size: 10px;
-    opacity: 0.8;
+.hazard-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.haz-chip {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid transparent;
     white-space: nowrap;
 }
-.alert-fresh.is-stale {
-    color: var(--text-secondary);
-    font-style: italic;
-}
+.haz-red { background: rgba(239, 68, 68, 0.14); border-color: rgba(239, 68, 68, 0.4); color: #ef4444; }
+.haz-orange { background: rgba(249, 115, 22, 0.14); border-color: rgba(249, 115, 22, 0.4); color: #f97316; }
+.haz-yellow { background: rgba(234, 179, 8, 0.14); border-color: rgba(234, 179, 8, 0.4); color: #eab308; }
+.haz-green { background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.35); color: #22c55e; }
 
 .source-status {
     margin: 10px 0 4px;
