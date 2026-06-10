@@ -89,6 +89,41 @@ const BivariateOverlay = (() => {
         _abort = myAbort;
         const myFeatures = [];
         _features = myFeatures;
+
+        // Precomputed fast path: classify every real DIGIPIN cell in view from
+        // one shard read instead of sampling 36 points live. Falls through to
+        // live sampling on a miss.
+        if (typeof PrecomputedScores !== 'undefined' && PrecomputedScores.isEnabled()) {
+            const vb = { south: bounds.getSouth(), west: bounds.getWest(),
+                north: bounds.getNorth(), east: bounds.getEast() };
+            const cells = await PrecomputedScores.lookupViewport(vb);
+            if (myAbort.signal.aborted) return;
+            if (cells && cells.length) {
+                cells.forEach(c => {
+                    const x = c.scores[_keyX] && c.scores[_keyX].value;
+                    const y = c.scores[_keyY] && c.scores[_keyY].value;
+                    const cls = classify(x, y);
+                    if (cls.idx == null) return;
+                    const b = c.bounds;
+                    myFeatures.push({
+                        type: 'Feature',
+                        geometry: { type: 'Polygon', coordinates: [[
+                            [b.west, b.south], [b.east, b.south], [b.east, b.north],
+                            [b.west, b.north], [b.west, b.south],
+                        ]] },
+                        properties: { color: cls.color, x, y, idx: cls.idx },
+                    });
+                });
+                if (!myAbort.signal.aborted && _map.getSource(SOURCE_ID)) {
+                    _map.getSource(SOURCE_ID).setData({ type: 'FeatureCollection', features: myFeatures });
+                }
+                if (typeof App !== 'undefined') {
+                    App.showToast('Bivariate Map', `${_labelFor(_keyX)} × ${_labelFor(_keyY)} from precomputed tiles — instant.`, 'success');
+                }
+                return;
+            }
+        }
+
         const points = [];
         for (let i = 0; i < gridSize; i++) {
             for (let j = 0; j < gridSize; j++) {
