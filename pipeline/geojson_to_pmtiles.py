@@ -96,7 +96,7 @@ def build_mvt_tile(features_in_tile, tile_bbox, layer_name="building"):
     lng_min, lat_min, lng_max, lat_max = tile_bbox
     tile_data = mvt.encode(
         [{"name": layer_name, "features": mvt_features}],
-        quantize_bounds=[lng_min, lat_min, lng_max, lat_max],
+        default_options={"quantize_bounds": [lng_min, lat_min, lng_max, lat_max]},
     )
     return tile_data
 
