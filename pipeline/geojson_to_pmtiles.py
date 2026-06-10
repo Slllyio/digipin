@@ -27,7 +27,12 @@ from pmtiles.tile import Compression, TileType, zxy_to_tileid
 from pmtiles.writer import Writer as PMTilesWriter
 from shapely.geometry import box, mapping
 
-from _lib.io import setup_logging
+# Dual import: bare when run as a script from pipeline/, package-qualified when
+# imported as pipeline.geojson_to_pmtiles (e.g. by build_tile).
+try:
+    from _lib.io import setup_logging
+except ModuleNotFoundError:  # pragma: no cover - import-context shim
+    from pipeline._lib.io import setup_logging
 
 log = setup_logging("geojson_to_pmtiles")
 

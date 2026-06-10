@@ -81,6 +81,31 @@ def test_smoke_check_landmark_assertion(tmp_path, fixture_osm):
     assert summary["cells"] > 0
 
 
+def test_build_pmtiles_produces_valid_archive(tmp_path, fixture_osm):
+    # Guards the dual-import in geojson_to_pmtiles (build_tile imports it as a
+    # package module) and the whole shards+tiler pass.
+    pytest.importorskip("geopandas")
+    pytest.importorskip("pmtiles")
+    import json as _json
+    from pmtiles.reader import MmapSource, Reader
+
+    out = tmp_path / "scores"
+    build_tile.build("indore_pilot", level=5, out_dir=str(out), pbf=fixture_osm, pmtiles=True)
+
+    pm = out / "indore_pilot" / "scores.pmtiles"
+    assert pm.exists() and pm.stat().st_size > 0
+    assert not (out / "indore_pilot" / "_scores.geojson").exists()  # temp cleaned up
+
+    with open(pm, "rb") as f:
+        reader = Reader(MmapSource(f))
+        header = reader.header()
+        assert header["min_zoom"] <= header["max_zoom"]
+        vl = reader.metadata().get("vector_layers")
+        if isinstance(vl, str):
+            vl = _json.loads(vl)
+        assert "scores" in [layer.get("id") for layer in (vl or [])]
+
+
 def test_unknown_region_raises(tmp_path):
     with pytest.raises(ValueError, match="unknown region"):
         build_tile.build("atlantis", level=5, out_dir=str(tmp_path))
