@@ -73,6 +73,9 @@ const ScoresDialog = (() => {
         });
         html += `</div>`;
 
+        // Trust/auditability: link to the exact formulas + data vintages.
+        html += `<a class="sd-methodology" href="docs/METHODOLOGY.md" target="_blank" rel="noopener">How these scores are computed &rarr;</a>`;
+
         return html;
     }
 

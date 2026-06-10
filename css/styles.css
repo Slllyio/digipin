@@ -1494,6 +1494,18 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.sd-methodology {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-bottom: 1px dotted currentColor;
+}
+.sd-methodology:hover {
+    color: var(--accent, #22c55e);
+}
+
 .sd-scores-grid {
     display: flex;
     flex-direction: column;
