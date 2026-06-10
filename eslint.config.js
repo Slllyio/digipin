@@ -28,7 +28,7 @@ const APP_GLOBALS = {
   RealtimeAlerts: 'readonly', RealtimeIMD: 'readonly', RealtimeQuakes: 'readonly',
   BivariateOverlay: 'readonly', NDVIOverlay: 'readonly', Viewshed: 'readonly',
   KDEOverlay: 'readonly', AccessibilityOverlay: 'readonly',
-  PrecomputedScores: 'readonly',
+  PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly',
   DIGIPIN_CONFIG: 'readonly',
   // third-party libraries loaded from CDN
   maplibregl: 'readonly', pmtiles: 'readonly', parseGeoraster: 'readonly', GeoRaster: 'readonly',

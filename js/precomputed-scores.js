@@ -69,6 +69,9 @@ const PrecomputedScores = (() => {
 
     function isEnabled() { return _enabled; }
 
+    /** Coverage regions (for layers that render the tile, e.g. the choropleth). */
+    function getRegions() { return _enabled ? _coverage.regions : []; }
+
     function _inBbox(b, lat, lng) {
         return lat >= b.south && lat <= b.north && lng >= b.west && lng <= b.east;
     }
@@ -164,7 +167,7 @@ const PrecomputedScores = (() => {
             .map(c => ({ code: c.code, bounds: c.bounds, center: c.center, scores: _rehydrate(c.values) }));
     }
 
-    return { init, isEnabled, hasCoverage, regionFor, lookup, lookupViewport };
+    return { init, isEnabled, getRegions, hasCoverage, regionFor, lookup, lookupViewport };
 })();
 
 if (typeof window !== 'undefined') {

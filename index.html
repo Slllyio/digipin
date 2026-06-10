@@ -150,6 +150,10 @@
             <span class="tb-icon">&#9855;</span>
             <span class="tb-label">Access</span>
         </button>
+        <button class="toolbar-btn" id="btn-choropleth" title="Score grid — instant choropleth from precomputed tiles (livability)">
+            <span class="tb-icon">&#129518;</span>
+            <span class="tb-label">Grid</span>
+        </button>
     </div>
 
     <!-- ===== SIDEBAR — QUERIES ===== -->
@@ -280,6 +284,7 @@
     <script defer src="js/realtime-flood.js"></script>
     <script defer src="js/data-fetcher.js"></script>
     <script defer src="js/precomputed-scores.js"></script>
+    <script defer src="js/score-choropleth.js"></script>
     <script defer src="js/building-intelligence.js"></script>
     <script defer src="js/overture-buildings.js"></script>
     <script defer src="js/map.js"></script>
@@ -320,6 +325,7 @@
         ['btn-viewshed',  () => window.Viewshed],
         ['btn-kde',       () => window.KDEOverlay],
         ['btn-access',    () => window.AccessibilityOverlay],
+        ['btn-choropleth', () => window.ScoreChoropleth],
     ].forEach(([id, getMod]) => {
         const btn = document.getElementById(id);
         if (!btn) return;
