@@ -83,11 +83,11 @@ jobs:
             echo "::notice::GLO-30 DEM unavailable — building OSM-only (flood-risk uses baseline)."
           fi
 
-      - name: Build scored tile
+      - name: Build scored tile (JSON shards + PMTiles choropleth)
         run: |
           python -m pipeline.scores.build_tile \
             --region "$REGION" --level "$LEVEL" \
-            --pbf indore.osm.pbf $DEM_ARG --out data/scores
+            --pbf indore.osm.pbf $DEM_ARG --pmtiles --out data/scores
 
       - name: Smoke check (gates the commit)
         run: python -m pipeline.scores.smoke_check data/scores --region "$REGION"
