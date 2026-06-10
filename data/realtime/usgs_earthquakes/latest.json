@@ -1,18 +1,90 @@
 {
-  "generated_at_iso": "2026-06-10T08:47:56Z",
-  "count": 22,
+  "generated_at_iso": "2026-06-10T16:14:16Z",
+  "count": 23,
   "records": [
     {
+      "id": "us7000ss21",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-06-10T15:23:08.309000+00:00",
+      "latitude": 52.2406,
+      "longitude": 160.666,
+      "depth_km": 10.0,
+      "place": "165 km SE of Petropavlovsk-Kamchatsky, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ss21",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000ss1g",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-06-10T13:45:26.037000+00:00",
+      "latitude": 52.5396,
+      "longitude": 160.7735,
+      "depth_km": 10.0,
+      "place": "156 km ESE of Petropavlovsk-Kamchatsky, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ss1g",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000ss0c",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-06-10T11:10:40.128000+00:00",
+      "latitude": 21.6436,
+      "longitude": 145.9058,
+      "depth_km": 10.0,
+      "place": "Mariana Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ss0c",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000ss0f",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-06-10T11:07:56.613000+00:00",
+      "latitude": 5.4152,
+      "longitude": 125.2355,
+      "depth_km": 36.458,
+      "place": "21 km SW of Balangonan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ss0f",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000ss03",
+      "magnitude": 5.7,
+      "origin_time_utc": "2026-06-10T10:34:17.371000+00:00",
+      "latitude": 43.6289,
+      "longitude": 135.6736,
+      "depth_km": 343.313,
+      "place": "33 km ESE of Ol’ga, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ss03",
+      "tsunami": 0,
+      "significance": 500
+    },
+    {
+      "id": "us7000srzt",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-06-10T09:13:42.703000+00:00",
+      "latitude": 5.6757,
+      "longitude": 125.3874,
+      "depth_km": 61.705,
+      "place": "7 km NW of Nuing, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srzt",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
       "id": "hv74978947",
-      "magnitude": 4.87,
-      "origin_time_utc": "2026-06-10T08:37:40.640000+00:00",
-      "latitude": 19.7773342132568,
-      "longitude": -154.880493164062,
-      "depth_km": 37.8400001525879,
-      "place": "22 km E of Pāpa‘ikou, Hawaii",
+      "magnitude": 4.71,
+      "origin_time_utc": "2026-06-10T08:37:40.490000+00:00",
+      "latitude": 19.7843333333333,
+      "longitude": -154.866166666667,
+      "depth_km": 39.18,
+      "place": "23 km E of Pāpa‘ikou, Hawaii",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/hv74978947",
       "tsunami": 0,
-      "significance": 380
+      "significance": 706
     },
     {
       "id": "us7000srzd",
@@ -48,7 +120,7 @@
       "place": "11 km WSW of Sardinal, Costa Rica",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sry7",
       "tsunami": 0,
-      "significance": 435
+      "significance": 439
     },
     {
       "id": "us7000sry1",
@@ -205,66 +277,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srub",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us7000srqm",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-06-09T12:55:05.541000+00:00",
-      "latitude": 5.1489,
-      "longitude": 125.4513,
-      "depth_km": 54.666,
-      "place": "28 km S of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srqm",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000srq8",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-06-09T11:17:38.741000+00:00",
-      "latitude": -1.3003,
-      "longitude": -14.8752,
-      "depth_km": 10.0,
-      "place": "north of Ascension Island",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srq8",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000srpu",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-06-09T10:07:29.185000+00:00",
-      "latitude": 5.6881,
-      "longitude": 124.825,
-      "depth_km": 35.0,
-      "place": "21 km SSW of Lumatil, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srpu",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us7000srpr",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-06-09T09:24:58.682000+00:00",
-      "latitude": 8.769,
-      "longitude": 125.685,
-      "depth_km": 10.0,
-      "place": "6 km SSW of Sibagat, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srpr",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000srpn",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-06-09T09:03:58.471000+00:00",
-      "latitude": -10.262,
-      "longitude": 118.5847,
-      "depth_km": 24.483,
-      "place": "116 km SW of Tambolaka, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000srpn",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
