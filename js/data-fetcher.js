@@ -670,8 +670,11 @@ const DataFetcher = (() => {
         // (weather station, elevation tile, Wikipedia geosearch radius), so
         // this is a meaningful win on top of the existing result-level cache.
         const cache = (typeof DataFetcherCache !== 'undefined') ? DataFetcherCache : null;
+        // staleWhileRevalidate: a repeat visit past the TTL gets last reading
+        // instantly (no spinner) while a fresh one loads in the background —
+        // these sources change slowly relative to their TTLs.
         const memo = (name, ttlMs, factory) => cache
-            ? cache.memoize(cache.keyFor(name, lat, lng), ttlMs, factory)
+            ? cache.memoize(cache.keyFor(name, lat, lng), ttlMs, factory, { staleWhileRevalidate: true })
             : factory();
         const HOUR = 60 * 60 * 1000;
         const DAY = 24 * HOUR;

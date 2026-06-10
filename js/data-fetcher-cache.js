@@ -36,7 +36,8 @@ const DataFetcherCache = (() => {
         try { localStorage.removeItem(key); } catch { /* ignore */ }
     }
 
-    function get(key) {
+    /** Parse a slot without evicting: { value, expired } or null (corrupt/absent). */
+    function _read(key) {
         const raw = safeGet(PREFIX + key);
         if (!raw) return null;
         try {
@@ -48,15 +49,28 @@ const DataFetcherCache = (() => {
                 safeRemove(PREFIX + key);
                 return null;
             }
-            if (typeof entry.expiresAt === 'number' && entry.expiresAt < Date.now()) {
-                safeRemove(PREFIX + key);
-                return null;
-            }
-            return entry.value;
+            const expired = typeof entry.expiresAt === 'number' && entry.expiresAt < Date.now();
+            return { value: entry.value, expired };
         } catch {
             safeRemove(PREFIX + key);
             return null;
         }
+    }
+
+    function get(key) {
+        const entry = _read(key);
+        if (!entry) return null;
+        if (entry.expired) {
+            safeRemove(PREFIX + key);
+            return null;
+        }
+        return entry.value;
+    }
+
+    /** The last cached value even if expired (does not evict). For SWR. */
+    function peekStale(key) {
+        const entry = _read(key);
+        return entry ? entry.value : null;
     }
 
     function set(key, value, ttlMs) {
@@ -77,32 +91,49 @@ const DataFetcherCache = (() => {
         } catch { /* ignore */ }
     }
 
-    async function memoize(key, ttlMs, factory) {
-        const hit = get(key);
-        if (hit !== null) {
-            if (typeof console !== 'undefined' && console.debug) {
-                console.debug('[DataFetcherCache] HIT', key);
-            }
-            return hit;
-        }
-        // In-flight de-duplication: if an identical key is already being
-        // fetched (e.g. rapid clicks across adjacent cells that round to the
-        // same key), share that promise instead of firing a second network
-        // request. The result-level cache only helps once the first call has
-        // resolved; this closes the concurrent-miss window.
+    /** Fetch via factory, store, and de-dup concurrent calls for the same key. */
+    function _refresh(key, ttlMs, factory) {
         if (_inflight.has(key)) return _inflight.get(key);
-
         const promise = (async () => {
             const value = await factory();
             set(key, value, ttlMs);
             return value;
         })();
         _inflight.set(key, promise);
-        try {
-            return await promise;
-        } finally {
-            _inflight.delete(key);
+        promise.finally(() => _inflight.delete(key));
+        return promise;
+    }
+
+    /**
+     * @param {object} [opts]
+     * @param {boolean} [opts.staleWhileRevalidate] return the expired value
+     *   immediately (if any) and refresh in the background — instant repeat
+     *   visits at the cost of one slightly-stale render.
+     */
+    async function memoize(key, ttlMs, factory, opts) {
+        const entry = _read(key);   // read without evicting
+        if (entry && !entry.expired) {
+            if (typeof console !== 'undefined' && console.debug) {
+                console.debug('[DataFetcherCache] HIT', key);
+            }
+            return entry.value;
         }
+
+        // Stale-while-revalidate: serve the expired value now, refresh in the
+        // background (deduped). A failed refresh keeps the stale value until the
+        // next attempt; swallow its rejection so it isn't unhandled.
+        if (opts && opts.staleWhileRevalidate && entry && entry.expired && entry.value != null) {
+            _refresh(key, ttlMs, factory).catch(() => {});
+            return entry.value;
+        }
+
+        if (entry && entry.expired) safeRemove(PREFIX + key);
+
+        // In-flight de-duplication: rapid clicks across adjacent cells that
+        // round to the same key share one request instead of each firing a
+        // duplicate network call before the first resolves.
+        if (_inflight.has(key)) return _inflight.get(key);
+        return _refresh(key, ttlMs, factory);
     }
 
     function keyFor(name, lat, lng, extra) {
@@ -112,7 +143,7 @@ const DataFetcherCache = (() => {
         return extra ? `${base}:${extra}` : base;
     }
 
-    return { get, set, clear, memoize, keyFor };
+    return { get, set, clear, memoize, keyFor, peekStale };
 })();
 
 if (typeof window !== 'undefined') {

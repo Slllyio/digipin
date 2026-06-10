@@ -72,6 +72,48 @@ describe('DataFetcherCache.keyFor()', () => {
     });
 });
 
+describe('DataFetcherCache.peekStale()', () => {
+    it('returns the value even when expired, without evicting', () => {
+        Cache.set('s', 'v', -1000);          // already expired
+        expect(Cache.peekStale('s')).toBe('v');
+        expect(Cache.peekStale('s')).toBe('v');   // peeking doesn't evict
+        expect(Cache.get('s')).toBeNull();        // get still evicts expired
+    });
+    it('returns null for an absent key', () => {
+        expect(Cache.peekStale('nope')).toBeNull();
+    });
+});
+
+describe('DataFetcherCache.memoize() stale-while-revalidate', () => {
+    it('serves the stale value immediately and refreshes in the background', async () => {
+        Cache.set('k', 'old', -1000);        // expired
+        let calls = 0;
+        const factory = async () => { calls++; return 'new'; };
+        const first = await Cache.memoize('k', 60_000, factory, { staleWhileRevalidate: true });
+        expect(first).toBe('old');            // stale served now
+        await new Promise(r => setTimeout(r, 0));   // let the bg refresh settle
+        expect(calls).toBe(1);
+        expect(Cache.get('k')).toBe('new');   // cache updated for next time
+    });
+
+    it('fetches fresh when there is no stale value to serve', async () => {
+        let calls = 0;
+        const v = await Cache.memoize('fresh', 60_000,
+            async () => { calls++; return 'v'; }, { staleWhileRevalidate: true });
+        expect(v).toBe('v');
+        expect(calls).toBe(1);
+    });
+
+    it('keeps the stale value when the background refresh fails', async () => {
+        Cache.set('k', 'old', -1000);
+        const first = await Cache.memoize('k', 60_000,
+            async () => { throw new Error('boom'); }, { staleWhileRevalidate: true });
+        expect(first).toBe('old');
+        await new Promise(r => setTimeout(r, 0));   // refresh rejects, swallowed
+        expect(Cache.peekStale('k')).toBe('old');   // stale still there
+    });
+});
+
 describe('DataFetcherCache.memoize()', () => {
     it('calls the factory once, then serves from cache', async () => {
         let calls = 0;
