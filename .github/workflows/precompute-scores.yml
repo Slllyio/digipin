@@ -6,10 +6,11 @@ name: Precompute scores (Indore)
 # gates the commit, so bad data never ships, and the result is committed back to
 # the branch for Pages to serve atomically with the code.
 #
-# v1 is OSM-only (no population/elevation rasters): the GHSL population COG needs
-# a one-time GEE export hosted as an asset, and the GLO-30 DEM can be wired once
-# that is in place. Both are optional inputs to build_tile (--pop/--dem); the
-# OSM-driven scores are already meaningful without them.
+# Elevation comes from the public Copernicus GLO-30 DEM (no auth) so flood-risk
+# uses real terrain; if that download fails the tile builds OSM-only. Population
+# (GHSL GHS-POP) still needs a one-time GEE export hosted as an asset, then
+# --pop wires it in; until then population_proxy uses its building-density
+# fallback. Both are optional inputs to build_tile (--pop/--dem).
 
 on:
   # Auto-build when the scoring code lands on main (e.g. merging the spine PR):
@@ -68,11 +69,25 @@ jobs:
       - name: Clip to the Indore pilot bbox (buffered ~1 km)
         run: osmium extract -b 75.59,22.49,76.01,22.91 central.osm.pbf -o indore.osm.pbf
 
+      - name: Download Copernicus GLO-30 DEM tile (public, no auth)
+        # The single N22/E075 tile covers the whole Indore pilot bbox. Optional:
+        # on any failure we build OSM-only (flood-risk falls back to its baseline)
+        # rather than failing the whole tile.
+        run: |
+          curl -sSL --retry 2 -o glo30.tif \
+            "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N22_00_E075_00_DEM/Copernicus_DSM_COG_10_N22_00_E075_00_DEM.tif" || true
+          if [ -s glo30.tif ]; then
+            echo "DEM_ARG=--dem glo30.tif" >> "$GITHUB_ENV"
+            echo "DEM tile downloaded ($(du -h glo30.tif | cut -f1))."
+          else
+            echo "::notice::GLO-30 DEM unavailable — building OSM-only (flood-risk uses baseline)."
+          fi
+
       - name: Build scored tile
         run: |
           python -m pipeline.scores.build_tile \
             --region "$REGION" --level "$LEVEL" \
-            --pbf indore.osm.pbf --out data/scores
+            --pbf indore.osm.pbf $DEM_ARG --out data/scores
 
       - name: Smoke check (gates the commit)
         run: python -m pipeline.scores.smoke_check data/scores --region "$REGION"
