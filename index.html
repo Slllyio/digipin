@@ -12,6 +12,26 @@
          fails and the script never executes. -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://unpkg.com https://fonts.gstatic.com data:; connect-src 'self' https: wss: data: blob: http://localhost:11434; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
 
+    <!--
+      Optional runtime configuration. Uncomment and fill in to enable:
+        proxyBase          — serverless data proxy URL (proxy/README.md): routes
+                             CORS/key-gated APIs reliably; injects keys server-side.
+        ogdApiKey/waqiToken/ocmApiKey — only needed for direct (no-proxy) use.
+        precomputedScores  — set false to force the live path even when tiles exist.
+        scoresBase         — override data/scores/ base (e.g. a future R2 bucket).
+      Precomputed score tiles are read automatically from data/scores/ when present.
+    -->
+    <!--
+    <script>
+      window.DIGIPIN_CONFIG = {
+        // proxyBase: 'https://digipin-data-proxy.<you>.workers.dev',
+        // ogdApiKey: '', waqiToken: '', ocmApiKey: '',
+        // precomputedScores: true,
+        // scoresBase: 'data/scores/',
+      };
+    </script>
+    -->
+
     <!-- MapLibre GL JS -->
     <link rel="stylesheet"
           href="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css"
