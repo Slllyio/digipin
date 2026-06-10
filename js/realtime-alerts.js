@@ -25,6 +25,7 @@ const RealtimeAlerts = (() => {
     let _cache = null;
     let _fetchedAt = 0;
     let _inflight = null;
+    let _generatedAt = null;   // when the snapshot was scraped (generated_at_iso)
 
     async function _load() {
         if (_inflight) return _inflight;
@@ -33,6 +34,7 @@ const RealtimeAlerts = (() => {
                 const resp = await fetch(FEED_PATH, { cache: 'no-store' });
                 if (!resp.ok) return [];
                 const data = await resp.json();
+                _generatedAt = data.generated_at_iso || null;
                 _cache = Array.isArray(data.records) ? data.records : [];
                 _fetchedAt = Date.now();
                 return _cache;
@@ -85,7 +87,22 @@ const RealtimeAlerts = (() => {
         return { total: alerts.length, byCategory, bySeverity };
     }
 
-    return { getAlerts, filterBySeverity, filterByText, getForLocation, summary };
+    function getGeneratedAt() { return _generatedAt; }
+
+    /** Pure: how old a snapshot is. {ageMs, stale, label} or null for bad input. */
+    function staleness(generatedIso, maxAgeMs = 2 * 60 * 60 * 1000) {
+        if (!generatedIso) return null;
+        const t = Date.parse(generatedIso);
+        if (Number.isNaN(t)) return null;
+        const ageMs = Math.max(0, Date.now() - t);
+        const mins = Math.round(ageMs / 60000);
+        const label = mins < 60 ? `${mins} min ago`
+            : mins < 1440 ? `${Math.round(mins / 60)} h ago`
+                : `${Math.round(mins / 1440)} d ago`;
+        return { ageMs, stale: ageMs > maxAgeMs, label };
+    }
+
+    return { getAlerts, filterBySeverity, filterByText, getForLocation, summary, getGeneratedAt, staleness };
 })();
 
 if (typeof window !== 'undefined') {

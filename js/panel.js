@@ -26,6 +26,29 @@ const Panel = (() => {
         health: 'Health', iudx: 'IUDX', evCharging: 'EV',
     };
 
+    // Live hazard alerts (NDMA SACHET, scoped to the location). Previously
+    // fetched but never shown; now surfaced with a freshness chip so users can
+    // judge how current they are.
+    function buildAlertsBanner(data) {
+        const s = data && data.realtime && data.realtime.sachet;
+        if (!s || !s.alerts || s.alerts.length === 0) return '';
+        const total = (s.summary && s.summary.total) || s.alerts.length;
+        const severe = s.severeCount > 0;
+        let chip = '';
+        if (typeof RealtimeAlerts !== 'undefined' && RealtimeAlerts.staleness) {
+            const f = RealtimeAlerts.staleness(s.generatedAt);
+            if (f) {
+                chip = `<span class="alert-fresh ${f.stale ? 'is-stale' : ''}">${esc(f.label)}${f.stale ? ' · may be stale' : ''}</span>`;
+            }
+        }
+        const label = severe
+            ? `${esc(s.severeCount)} severe of ${esc(total)} active alert${total === 1 ? '' : 's'}`
+            : `${esc(total)} active alert${total === 1 ? '' : 's'}`;
+        return `<div class="alert-banner ${severe ? 'alert-severe' : ''}">
+            <span class="alert-banner-text">&#9888;&#65039; ${label}</span>${chip}
+        </div>`;
+    }
+
     function buildSourceStatusHTML(data) {
         const st = data && data.sourceStatus;
         if (!st) return '';
@@ -195,6 +218,7 @@ const Panel = (() => {
                 ${addr.fullAddress ? `<div class="address">${esc(addr.area || addr.city)}, ${esc(addr.district)}, ${esc(addr.state)} ${addr.pincode ? '- ' + esc(addr.pincode) : ''}</div>` : ''}
             </div>`;
 
+        html += buildAlertsBanner(data);
         html += buildSourceStatusHTML(data);
 
         // Environment card — numeric values are safe, but weatherDesc comes from our lookup so esc() for defense-in-depth

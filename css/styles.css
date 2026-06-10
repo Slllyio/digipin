@@ -521,6 +521,37 @@ body {
     opacity: 0.85;
 }
 
+.alert-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 10px 0 4px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    background: rgba(234, 179, 8, 0.12);
+    border: 1px solid rgba(234, 179, 8, 0.35);
+    color: #eab308;
+}
+.alert-banner.alert-severe {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #ef4444;
+}
+.alert-banner-text {
+    font-weight: 600;
+}
+.alert-fresh {
+    font-size: 10px;
+    opacity: 0.8;
+    white-space: nowrap;
+}
+.alert-fresh.is-stale {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
 .source-status {
     margin: 10px 0 4px;
 }

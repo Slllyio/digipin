@@ -869,7 +869,8 @@ const DataFetcher = (() => {
                 result.realtime.sachet = {
                     alerts: scoped,
                     severeCount: severe.length,
-                    summary: RealtimeAlerts.summary(scoped)
+                    summary: RealtimeAlerts.summary(scoped),
+                    generatedAt: RealtimeAlerts.getGeneratedAt ? RealtimeAlerts.getGeneratedAt() : null
                 };
             } catch { /* skip */ }
         }
