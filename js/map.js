@@ -251,9 +251,13 @@ const MapModule = (() => {
             try { map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: false }); } catch { /* grid may have regenerated */ }
         }
 
-        selectedCellId = cellData.id;
+        selectedCellId = cellData.id != null ? cellData.id : null;
         selectedCellCode = cellData.code;
-        map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: true });
+        // Highlight only when the cell is an actually-rendered grid feature
+        // (deep-linked cells may sit outside the current grid render).
+        if (selectedCellId != null) {
+            try { map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: true }); } catch { /* not rendered */ }
+        }
 
         // Show panel
         Panel.show(cellData);
@@ -321,5 +325,33 @@ const MapModule = (() => {
 
     function getMap() { return map; }
 
-    return { init, flyTo, showHeatmap, clearHeatmap, getMap, updateGrid };
+    function getSelectedCode() { return selectedCellCode; }
+
+    /**
+     * Deep-link into a DIGIPIN cell by code: fly to it, then (once the grid has
+     * re-rendered) select it — opening the panel and fetching data. The feature
+     * highlight is best-effort (the cell may render at a different precision than
+     * the code's length); the panel + data load are the guaranteed outcome.
+     */
+    function selectByCode(code) {
+        if (!map || !code) return;
+        const clean = code.replace(/-/g, '').toUpperCase();
+        let decoded;
+        try { decoded = DigiPin.decodePartial(clean); } catch { return; }
+        const zoom = Math.min(18, 8 + clean.length);
+        flyTo(decoded.lat, decoded.lng, zoom);
+        map.once('idle', () => {
+            const formatted = DigiPin.format(clean);
+            const fid = codeToCellId.has(formatted) ? codeToCellId.get(formatted)
+                : (codeToCellId.has(clean) ? codeToCellId.get(clean) : null);
+            selectCell({
+                id: fid,
+                code: formatted,
+                center: { lat: decoded.lat, lng: decoded.lng },
+                bounds: decoded.bounds,
+            });
+        });
+    }
+
+    return { init, flyTo, showHeatmap, clearHeatmap, getMap, updateGrid, selectByCode, getSelectedCode };
 })();

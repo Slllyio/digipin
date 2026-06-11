@@ -104,7 +104,9 @@ const ScoreChoropleth = (() => {
 
     function isActive() { return _active; }
 
-    return { show, clear, toggle, isActive, setScore, colorExpr, pmtilesUrl };
+    function getScoreKey() { return _scoreKey; }
+
+    return { show, clear, toggle, isActive, setScore, getScoreKey, colorExpr, pmtilesUrl };
 })();
 
 if (typeof window !== 'undefined') {

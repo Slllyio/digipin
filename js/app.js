@@ -37,6 +37,10 @@ const App = (() => {
         step('queryPanel', () => initQueryPanel());
         step('sidebar', () => initSidebar());
         step('toolbar', () => initToolbar());
+        // Deep-link state: wire the Share button + apply any ?cell/?ll/?score/?q.
+        step('URLState', () => {
+            if (typeof URLState !== 'undefined') URLState.init();
+        });
         step('serviceWorker', () => registerServiceWorker());
 
         step('welcome', () => {

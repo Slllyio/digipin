@@ -29,6 +29,7 @@ const APP_GLOBALS = {
   BivariateOverlay: 'readonly', NDVIOverlay: 'readonly', Viewshed: 'readonly',
   KDEOverlay: 'readonly', AccessibilityOverlay: 'readonly',
   PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly', Text2Map: 'readonly',
+  URLState: 'readonly',
   DIGIPIN_CONFIG: 'readonly',
   // third-party libraries loaded from CDN
   maplibregl: 'readonly', pmtiles: 'readonly', parseGeoraster: 'readonly', GeoRaster: 'readonly',

@@ -55,5 +55,6 @@ loadGlobalScript('js/accessibility-overlay.js', ['AccessibilityOverlay']);
 loadGlobalScript('js/query-engine.js', ['QueryEngine']);
 loadGlobalScript('js/disha.js', ['DISHA']);
 loadGlobalScript('js/text2map.js', ['Text2Map']);
+loadGlobalScript('js/url-state.js', ['URLState']);
 loadGlobalScript('js/bookmarks.js', ['Bookmarks']);
 loadGlobalScript('js/building-intelligence.js', ['BuildingIntelligence']);
