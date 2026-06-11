@@ -33,6 +33,9 @@ const App = (() => {
         step('FloatingDialogs', () => FloatingDialogs.init());
         step('CitySelector', () => CitySelector.init());
         step('Bookmarks', () => Bookmarks.init());
+        step('SavedViews', () => {
+            if (typeof SavedViews !== 'undefined') SavedViews.init();
+        });
         step('search', () => initSearch());
         step('queryPanel', () => initQueryPanel());
         step('sidebar', () => initSidebar());
@@ -756,6 +759,12 @@ const App = (() => {
         const bmBtn = document.getElementById('btn-bookmarks');
         if (bmBtn) {
             bmBtn.addEventListener('click', () => Bookmarks.openPanel());
+        }
+
+        // Saved Views & templates
+        const svBtn = document.getElementById('btn-saved-views');
+        if (svBtn) {
+            svBtn.addEventListener('click', () => SavedViews.openPanel());
         }
     }
 

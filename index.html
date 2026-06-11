@@ -123,6 +123,10 @@
             <span class="tb-icon">&#9733;</span>
             <span class="tb-label">Saved</span>
         </button>
+        <button class="toolbar-btn" id="btn-saved-views" title="Saved Views &amp; Templates">
+            <span class="tb-icon">&#128193;</span>
+            <span class="tb-label">Views</span>
+        </button>
         <button class="toolbar-btn" id="btn-growth" title="Urban Growth Forecast">
             <span class="tb-icon">&#128200;</span>
             <span class="tb-label">Growth</span>
@@ -256,6 +260,15 @@
         <div id="bookmarks-list" class="bm-list"></div>
     </aside>
 
+    <!-- ===== SAVED VIEWS PANEL ===== -->
+    <aside id="saved-views-panel" aria-label="Saved views and templates">
+        <div class="bm-panel-header">
+            <h3>&#128193; Saved Views</h3>
+            <button class="close-btn" onclick="SavedViews.closePanel()" aria-label="Close saved views">&#10005;</button>
+        </div>
+        <div id="saved-views-list" class="bm-list"></div>
+    </aside>
+
     <!-- ===== TOAST CONTAINER ===== -->
     <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
 
@@ -315,6 +328,7 @@
     <script defer src="js/kde-overlay.js"></script>
     <script defer src="js/accessibility-overlay.js"></script>
     <script defer src="js/url-state.js"></script>
+    <script defer src="js/saved-views.js"></script>
     <script defer src="js/app.js"></script>
     <script>
     // Wire the toggle-overlay toolbar buttons: flip the overlay, then reflect

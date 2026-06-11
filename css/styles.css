@@ -2513,7 +2513,8 @@ body {
 }
 
 /* ===== BOOKMARKS PANEL ===== */
-#bookmarks-panel {
+#bookmarks-panel,
+#saved-views-panel {
     position: fixed;
     top: 0;
     right: -380px;
@@ -2528,8 +2529,34 @@ body {
     box-shadow: -5px 0 30px rgba(0, 0, 0, 0.3);
 }
 
-#bookmarks-panel.open {
+#bookmarks-panel.open,
+#saved-views-panel.open {
     right: 0;
+}
+
+.sv-save-btn {
+    display: block;
+    width: 100%;
+    margin: 12px 0;
+    padding: 10px;
+    font-size: 13px;
+    cursor: pointer;
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: var(--accent-purple);
+    border-radius: 8px;
+}
+
+.sv-save-btn:hover {
+    background: rgba(168, 85, 247, 0.22);
+}
+
+.sv-templates-header {
+    margin: 14px 0 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
 }
 
 .bm-panel-header {
@@ -2708,7 +2735,8 @@ body {
     }
 
     #compare-panel,
-    #bookmarks-panel {
+    #bookmarks-panel,
+    #saved-views-panel {
         width: 100%;
         right: -100%;
     }
