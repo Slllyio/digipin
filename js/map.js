@@ -24,7 +24,10 @@ const MapModule = (() => {
 
         map = new maplibregl.Map({
             container: 'map',
-            style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+            // Basemap follows the active theme (dark-matter / positron). A theme
+            // change reloads the app, so picking the style at init is enough.
+            style: (typeof Theme !== 'undefined') ? Theme.mapStyleUrl()
+                : 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
             center: [INDORE.lng, INDORE.lat], // MapLibre uses [lng, lat]
             zoom: INITIAL_ZOOM,
             pitch: 0,
@@ -65,6 +68,11 @@ const MapModule = (() => {
     }
 
     function setupGridLayers() {
+        // Grid colours follow the active theme (neon cyan/purple on dark,
+        // coral/violet on paper-light). Theme switches reload, so init-time is enough.
+        const gc = (typeof Theme !== 'undefined') ? Theme.gridColors()
+            : { base: '#00f5ff', selected: '#a855f7' };
+
         // Source for grid polygons
         map.addSource('digipin-grid', {
             type: 'geojson',
@@ -77,7 +85,7 @@ const MapModule = (() => {
             type: 'fill',
             source: 'digipin-grid',
             paint: {
-                'fill-color': ['case', ['boolean', ['feature-state', 'selected'], false], '#a855f7', '#00f5ff'],
+                'fill-color': ['case', ['boolean', ['feature-state', 'selected'], false], gc.selected, gc.base],
                 'fill-opacity': [
                     'case',
                     ['boolean', ['feature-state', 'selected'], false], 0.25,
@@ -93,7 +101,7 @@ const MapModule = (() => {
             type: 'line',
             source: 'digipin-grid',
             paint: {
-                'line-color': ['case', ['boolean', ['feature-state', 'selected'], false], '#a855f7', '#00f5ff'],
+                'line-color': ['case', ['boolean', ['feature-state', 'selected'], false], gc.selected, gc.base],
                 'line-width': [
                     'case',
                     ['boolean', ['feature-state', 'selected'], false], 3,
@@ -277,9 +285,11 @@ const MapModule = (() => {
     }
 
     function showHeatmap(results) {
+        const gc = (typeof Theme !== 'undefined') ? Theme.gridColors()
+            : { base: '#00f5ff', selected: '#a855f7' };
         const features = results.map((r, idx) => {
             const intensity = 1 - (idx / results.length);
-            const color = interpolateColor('#a855f7', '#00f5ff', intensity);
+            const color = interpolateColor(gc.selected, gc.base, intensity);
             
             return {
                 type: 'Feature',

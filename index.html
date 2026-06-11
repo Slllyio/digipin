@@ -52,6 +52,15 @@
             crossorigin="anonymous"></script>
 
     <!-- Custom Styles -->
+    <!-- Theme pre-paint: apply the persisted theme before first paint so a
+         light-theme user never sees a dark flash. Runtime API: js/theme.js. -->
+    <script>
+        try {
+            if (localStorage.getItem('digipin_theme') === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        } catch (e) { /* storage blocked — default dark */ }
+    </script>
     <link rel="stylesheet" href="css/styles.css">
 
     <!-- PWA Manifest -->
@@ -77,6 +86,7 @@
         <input type="text" id="search-input" placeholder="Search DigiPin code or place name (e.g. Rajwada, Indore)" autocomplete="off" aria-label="Search DigiPin code or place name">
         <button id="search-btn" aria-label="Search">🔍</button>
         <button id="share-btn" aria-label="Copy shareable link" title="Copy a shareable link to this view">🔗</button>
+        <button id="theme-toggle-btn" aria-label="Switch theme" title="Switch theme">☀️</button>
     </div>
 
     <!-- ===== TOOLBAR ===== -->
@@ -301,6 +311,7 @@
     <script defer src="js/score-choropleth.js"></script>
     <script defer src="js/building-intelligence.js"></script>
     <script defer src="js/overture-buildings.js"></script>
+    <script defer src="js/theme.js"></script>
     <script defer src="js/map.js"></script>
     <script defer src="js/panel.js"></script>
     <script defer src="js/query-engine.js"></script>

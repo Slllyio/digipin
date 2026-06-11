@@ -19,6 +19,10 @@ const App = (() => {
             try { fn(); } catch (e) { console.error(`[init] ${name} failed:`, e); }
         };
 
+        // Theme first: MapModule.init reads Theme for the basemap + grid colours.
+        step('Theme', () => {
+            if (typeof Theme !== 'undefined') Theme.init();
+        });
         step('MapModule', () => MapModule.init());
         // Kick off precomputed-score coverage load (async, non-blocking). When
         // data/scores/coverage.json is absent it stays disabled and the app uses
