@@ -318,7 +318,8 @@ const DISHAPanel = (() => {
             inputEl.placeholder = 'Click a DigiPin cell on the map first…';
             const hint = document.createElement('div');
             hint.className = 'disha-message disha-system';
-            hint.textContent = 'Click any cell on the map to load location context, then ask me about it.';
+            hint.textContent = 'Click any DIGIPIN cell to load India-native location intelligence — then ask in plain English. ' +
+                'City-wide questions ("family-friendly area near good schools, low flood risk") rank DIGIPIN cells instantly. Free and auditable.';
             messagesEl.appendChild(hint);
             return;
         }
@@ -360,7 +361,7 @@ const DISHAPanel = (() => {
             `${featureCount} feature types | ${scoreCount} intelligence scores\n` +
             `AI: ${providerLabel}\n\n` +
             `Ask me anything — from "Is this safe to live?" to "Where should I open a restaurant?"\n` +
-            `I can also scan the city for optimal locations.`
+            `Ask a plain-English question and I'll rank DIGIPIN cells across the city for it — India-native, free, and auditable.`
         );
 
         const suggestions = DISHA.getSuggestions(data);

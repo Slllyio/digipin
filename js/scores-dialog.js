@@ -73,7 +73,8 @@ const ScoresDialog = (() => {
         });
         html += `</div>`;
 
-        // Trust/auditability: link to the exact formulas + data vintages.
+        // Trust/auditability: India-native framing + link to exact formulas.
+        html += `<div class="sd-trust">Computed from Indian civic &amp; OpenStreetMap data on the government DIGIPIN grid — every score is open and auditable.</div>`;
         html += `<a class="sd-methodology" href="docs/METHODOLOGY.md" target="_blank" rel="noopener">How these scores are computed &rarr;</a>`;
 
         return html;

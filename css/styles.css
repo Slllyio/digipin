@@ -1521,9 +1521,15 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.sd-trust {
+    margin-top: 14px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
 .sd-methodology {
     display: inline-block;
-    margin-top: 12px;
+    margin-top: 8px;
     font-size: 11px;
     color: var(--text-secondary);
     text-decoration: none;

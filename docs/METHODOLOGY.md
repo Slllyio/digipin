@@ -1,5 +1,11 @@
 # How DigiPin scores work — methodology
 
+DigiPin is India-native by design: it scores locations on the **government
+DIGIPIN grid** using Indian civic and OpenStreetMap data, runs entirely in the
+browser on free, static infrastructure, and exposes every formula for audit. It
+is not a closed Western GIS product — there are no per-seat licences and nothing
+is hidden behind a server.
+
 This document explains exactly how every intelligence score is computed, what
 data feeds it, how fresh that data is, and where the method has limits. It is the
 authoritative reference for anyone who wants to audit or reproduce a number. The
