@@ -1944,6 +1944,81 @@ const DataFetcher = (() => {
         URL.revokeObjectURL(url);
     }
 
+    // ===== GEOJSON EXPORT =====
+    // DIGIPIN cells are real rectangles, so they export cleanly as GeoJSON
+    // polygons for QGIS / geojson.io / government workflows — the interop lever.
+
+    // Flatten a scores object — accepts both {id:{label,value}} (live/precomputed)
+    // and an already-flat {id:value} — into plain {id:value} feature properties.
+    function _flattenScores(scores) {
+        const out = {};
+        if (!scores || typeof scores !== 'object') return out;
+        for (const [id, s] of Object.entries(scores)) {
+            out[id] = (s && typeof s === 'object' && 'value' in s) ? s.value : s;
+        }
+        return out;
+    }
+
+    // A GeoJSON Polygon Feature for one DIGIPIN cell. The ring is closed and
+    // wound counter-clockwise (RFC 7946 right-hand rule). decodePartial handles
+    // both full 10-char and truncated (precomputed level-N) codes.
+    function cellToFeature(code, scores, extraProps) {
+        const b = DigiPin.decodePartial(code).bounds;
+        const ring = [
+            [b.west, b.south], [b.east, b.south],
+            [b.east, b.north], [b.west, b.north],
+            [b.west, b.south],
+        ];
+        const props = { digipin: DigiPin.format(code) };
+        if (extraProps) {
+            for (const [k, v] of Object.entries(extraProps)) {
+                if (v !== undefined && v !== null) props[k] = v;
+            }
+        }
+        Object.assign(props, _flattenScores(scores));
+        return { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: props };
+    }
+
+    // Wrap features in a FeatureCollection.
+    function buildFeatureCollection(features) {
+        return { type: 'FeatureCollection', features: features || [] };
+    }
+
+    // One full-cell data object ({code, scores}) → single-feature collection.
+    function cellToGeoJSON(data) {
+        const code = data.code || data.digipin;
+        return buildFeatureCollection(code ? [cellToFeature(code, data.scores)] : []);
+    }
+
+    // Text2Map / city-scan ranked rows ({code, score, area, scores}) → collection.
+    function rankedToGeoJSON(results) {
+        return buildFeatureCollection((results || [])
+            .filter(r => r && r.code)
+            .map(r => cellToFeature(r.code, r.scores, {
+                score: typeof r.score === 'number' ? Math.round(r.score * 10) / 10 : undefined,
+                area: r.area || undefined,
+            })));
+    }
+
+    function _downloadGeoJSON(fc, filename) {
+        const blob = new Blob([JSON.stringify(fc, null, 2)], { type: 'application/geo+json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function exportToGeoJSON(data, filename = 'digipin_cell.geojson') {
+        _downloadGeoJSON(cellToGeoJSON(data), filename);
+    }
+
+    function exportRankedToGeoJSON(results, filename = 'digipin_ranked.geojson') {
+        _downloadGeoJSON(rankedToGeoJSON(results), filename);
+    }
+
+
     return {
         fetchAllFeatures,
         CATEGORIES,
@@ -1971,6 +2046,12 @@ const DataFetcher = (() => {
         clearPersistentCache: _idbClear,
         exportToJSON,
         exportToCSV,
+        cellToFeature,
+        buildFeatureCollection,
+        cellToGeoJSON,
+        rankedToGeoJSON,
+        exportToGeoJSON,
+        exportRankedToGeoJSON,
         getRadiusForZoom,
         computeScores,
         viaProxy,

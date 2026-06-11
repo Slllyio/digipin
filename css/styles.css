@@ -1928,6 +1928,23 @@ body {
     margin-top: 6px;
 }
 
+.disha-scan-export {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    color: var(--accent-purple);
+    border-radius: 6px;
+}
+
+.disha-scan-export:hover {
+    background: rgba(168, 85, 247, 0.2);
+}
+
 /* Suggestions */
 .disha-suggestions {
     padding: 4px 16px 6px;

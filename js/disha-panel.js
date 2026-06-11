@@ -563,6 +563,16 @@ const DISHAPanel = (() => {
         hint.textContent = 'Click a result to fly to that location on the map';
         content.appendChild(hint);
 
+        // Export the ranked cells as GeoJSON (QGIS / geojson.io / gov workflows).
+        if (typeof DataFetcher !== 'undefined' && DataFetcher.exportRankedToGeoJSON) {
+            const geo = document.createElement('button');
+            geo.className = 'disha-scan-export';
+            geo.textContent = 'Download GeoJSON';
+            geo.title = 'Export these ranked DIGIPIN cells as GeoJSON';
+            geo.addEventListener('click', () => DataFetcher.exportRankedToGeoJSON(results, 'digipin_ranked.geojson'));
+            content.appendChild(geo);
+        }
+
         card.appendChild(content);
         messagesEl.appendChild(card);
         scrollToBottom();

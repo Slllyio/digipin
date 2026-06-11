@@ -238,6 +238,7 @@ const Panel = (() => {
                     <button class="copy-btn" onclick="Panel.copyCode('${code}')" title="Copy DigiPin">&#128203;</button>
                     <button class="export-btn" id="export-json-btn" title="Export to JSON">JSON</button>
                     <button class="export-btn" id="export-csv-btn" title="Export to CSV">CSV</button>
+                    <button class="export-btn" id="export-geojson-btn" title="Export cell as GeoJSON (QGIS / geojson.io)">GeoJSON</button>
                 </div>
                 <div class="panel-actions">
                     <button class="action-btn" id="btn-pin-compare" title="Pin for Compare">&#128204; Pin</button>
@@ -413,8 +414,10 @@ const Panel = (() => {
         setTimeout(() => {
             const btnJson = document.getElementById('export-json-btn');
             const btnCsv = document.getElementById('export-csv-btn');
+            const btnGeo = document.getElementById('export-geojson-btn');
             if (btnJson) btnJson.onclick = () => DataFetcher.exportToJSON(data, `digipin_${cell.code}.json`);
             if (btnCsv) btnCsv.onclick = () => DataFetcher.exportToCSV(data, `digipin_${cell.code}_features.csv`);
+            if (btnGeo) btnGeo.onclick = () => DataFetcher.exportToGeoJSON({ code: cell.code, scores: data.scores }, `digipin_${cell.code}.geojson`);
         }, 50);
 
         return html;
