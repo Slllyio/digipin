@@ -3332,6 +3332,30 @@ body {
     display: block;
 }
 
+/* Layers-panel filter box + hide utility (LayersPanel.filterMatch). */
+.dt-layer-search {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 6px;
+    padding: 7px 10px;
+    background: var(--wash-05);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+}
+.dt-layer-search:focus {
+    border-color: var(--accent-cyan);
+}
+.dt-layer-search::placeholder {
+    color: var(--text-muted);
+}
+.dt-hidden {
+    display: none !important;
+}
+
 /* Layer item */
 .dt-layer-item {
     display: flex;

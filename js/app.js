@@ -595,6 +595,33 @@ const App = (() => {
                 groupMap[entry.group].push(entry);
             });
 
+            // Search box — type-filter the ~30 layer rows (LayersPanel.filterMatch).
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.className = 'dt-layer-search';
+            searchInput.placeholder = 'Filter layers…';
+            searchInput.setAttribute('aria-label', 'Filter layers');
+            searchInput.addEventListener('click', (e) => e.stopPropagation());
+            searchInput.addEventListener('input', () => {
+                const q = searchInput.value;
+                dtLayersDrop.querySelectorAll('.dt-layer-group').forEach(group => {
+                    let anyVisible = false;
+                    group.querySelectorAll('.dt-layer-item').forEach(item => {
+                        const name = item.querySelector('.dt-layer-name')?.textContent || '';
+                        const show = LayersPanel.filterMatch(name, q);
+                        item.classList.toggle('dt-hidden', !show);
+                        if (show) anyVisible = true;
+                    });
+                    group.classList.toggle('dt-hidden', !anyVisible);
+                    // While filtering, force-open matching groups so hits are visible.
+                    if (q.trim()) {
+                        group.querySelector('.dt-group-content')?.classList.toggle('open', anyVisible);
+                        group.querySelector('.dt-group-header-btn')?.classList.toggle('expanded', anyVisible);
+                    }
+                });
+            });
+            dtLayersDrop.appendChild(searchInput);
+
             // Render collapsible groups
             groupOrder.forEach((groupName, gIdx) => {
                 const entries = groupMap[groupName];

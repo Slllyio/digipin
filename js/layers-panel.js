@@ -55,6 +55,18 @@ const LayersPanel = (() => {
         return lbl ? lbl.textContent : null;
     }
 
+    /**
+     * Filter predicate for the Layers-panel search box: case-insensitive,
+     * whitespace-tokenised AND-match (every typed word must appear somewhere
+     * in the layer name). An empty query matches everything.
+     */
+    function filterMatch(name, query) {
+        const q = (query || '').trim().toLowerCase();
+        if (!q) return true;
+        const hay = String(name || '').toLowerCase();
+        return q.split(/\s+/).every(tok => hay.includes(tok));
+    }
+
     /** Fire the (hidden) button's own handler; returns the resulting state.
      *  The synthetic click is NON-bubbling: the button's listeners still fire
      *  (target phase), but the event can't reach the document-level
@@ -66,7 +78,7 @@ const LayersPanel = (() => {
         return isActive(btnId);
     }
 
-    return { entries, isActive, stateLabel, drive, ANALYTICS, GROUP };
+    return { entries, isActive, stateLabel, drive, filterMatch, ANALYTICS, GROUP };
 })();
 
 if (typeof window !== 'undefined') {

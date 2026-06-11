@@ -40,6 +40,26 @@ describe('LayersPanel registry contract', () => {
     });
 });
 
+describe('LayersPanel.filterMatch()', () => {
+    it('empty query matches everything', () => {
+        expect(LP.filterMatch('NDVI Vegetation', '')).toBe(true);
+        expect(LP.filterMatch('NDVI Vegetation', '   ')).toBe(true);
+    });
+    it('is case-insensitive substring match', () => {
+        expect(LP.filterMatch('Urban Heat Island', 'heat')).toBe(true);
+        expect(LP.filterMatch('Urban Heat Island', 'HEAT')).toBe(true);
+        expect(LP.filterMatch('Urban Heat Island', 'flood')).toBe(false);
+    });
+    it('AND-matches every whitespace token', () => {
+        expect(LP.filterMatch('Score Grid (instant)', 'score grid')).toBe(true);
+        expect(LP.filterMatch('Score Grid (instant)', 'score map')).toBe(false);
+    });
+    it('tolerates null/undefined name', () => {
+        expect(LP.filterMatch(null, 'x')).toBe(false);
+        expect(LP.filterMatch(undefined, '')).toBe(true);
+    });
+});
+
 describe('LayersPanel.drive()/isActive()/stateLabel()', () => {
     function fakeButton(id) {
         const btn = document.createElement('button');
