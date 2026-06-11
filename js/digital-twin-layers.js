@@ -19,6 +19,14 @@ const DigitalTwinLayers = (() => {
     let _hoverPopup = null;
     let _clickPopup = null;
 
+    // Theme-aware paint: a layer def may carry a `paintLight` variant tuned for
+    // the Aino-style paper theme (pale shaded buildings, soft sage greens). When
+    // the light theme is active and a variant exists, use it; else the default.
+    function _paintFor(def) {
+        const light = typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';
+        return (light && def.paintLight) ? def.paintLight : def.paint;
+    }
+
     // ─── Layer Definitions ─────────────────────────────────────────
     const LAYER_DEFS = {
         // ── Overture Maps PMTiles (vector tiles, no download needed) ──
@@ -124,6 +132,21 @@ const DigitalTwinLayers = (() => {
                 ],
                 'fill-opacity': 0.3,
                 'fill-outline-color': '#9ca3af'
+            },
+            // Paper theme: greens become soft sage canopy; everything else is a
+            // muted warm-paper wash so vegetation reads as the only colour.
+            paintLight: {
+                'fill-color': [
+                    'match', ['get', 'class'],
+                    'park',          '#bcd3a6',
+                    'forest',        '#a6c48c',
+                    'recreation',    '#c4d8b2',
+                    'farmland',      '#d8dcb0',
+                    'cemetery',      '#cdd3bd',
+                    '#e6e0d5'
+                ],
+                'fill-opacity': 0.5,
+                'fill-outline-color': '#c2bbac'
             },
             minZoom: 10,
             tooltip: f => {
@@ -246,6 +269,25 @@ const DigitalTwinLayers = (() => {
                 'fill-extrusion-base': 0,
                 'fill-extrusion-opacity': 0.75
             },
+            // Paper theme: soft warm-grey extrusions, larger footprints a touch
+            // deeper (pseudo ambient occlusion); MapLibre's vertical gradient
+            // (on by default) adds the gentle top-to-bottom shading Aino has.
+            paintLight: {
+                'fill-extrusion-color': [
+                    'interpolate', ['linear'],
+                    ['to-number', ['get', 'area_in_meters'], 80],
+                    0, '#efeae2',
+                    150, '#e4ddd2',
+                    600, '#d6cdbe',
+                    2000, '#c8bdac'
+                ],
+                'fill-extrusion-height': [
+                    '*', ['sqrt', ['to-number', ['get', 'area_in_meters'], 50]], 3
+                ],
+                'fill-extrusion-base': 0,
+                'fill-extrusion-opacity': 0.95,
+                'fill-extrusion-vertical-gradient': true
+            },
             minZoom: 10,
             tooltip: f => {
                 const p = f.properties || {};
@@ -273,6 +315,12 @@ const DigitalTwinLayers = (() => {
                 ],
                 'fill-opacity': 0.5,
                 'fill-outline-color': '#ffffff'
+            },
+            // Paper theme: flat pale building footprints with a soft ink outline.
+            paintLight: {
+                'fill-color': '#e7e1d6',
+                'fill-opacity': 0.85,
+                'fill-outline-color': '#b9b0a0'
             },
             minZoom: 10,
             tooltip: f => {
@@ -326,6 +374,12 @@ const DigitalTwinLayers = (() => {
                 'fill-color': '#22c55e',
                 'fill-opacity': 0.45,
                 'fill-outline-color': '#16a34a'
+            },
+            // Paper theme: soft sage canopy (Aino's muted greens, not saturated).
+            paintLight: {
+                'fill-color': '#bcd3a6',
+                'fill-opacity': 0.6,
+                'fill-outline-color': '#9bbb80'
             },
             minZoom: 10,
             tooltip: f => {
@@ -699,7 +753,7 @@ const DigitalTwinLayers = (() => {
                 type: def.type,
                 source: sourceId,
                 'source-layer': def.sourceLayer,
-                paint: def.paint,
+                paint: _paintFor(def),
                 minzoom: def.minZoom || 0,
                 layout: { visibility: 'visible' }
             });
@@ -778,7 +832,7 @@ const DigitalTwinLayers = (() => {
                 id: baseLayerId,
                 type: def.type,
                 source: sourceId,
-                paint: def.paint,
+                paint: _paintFor(def),
                 minzoom: def.minZoom || 0,
                 layout: { visibility: 'visible' }
             });
@@ -1019,6 +1073,7 @@ const DigitalTwinLayers = (() => {
         isVisible,
         getFeatureCount,
         clearAll,
+        paintFor: _paintFor,
         LAYER_DEFS
     };
 })();
