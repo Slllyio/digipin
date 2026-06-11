@@ -72,4 +72,20 @@ describe('LayersPanel.drive()/isActive()/stateLabel()', () => {
         expect(LP.isActive('btn-not-real')).toBe(false);
         expect(LP.stateLabel('btn-not-real')).toBeNull();
     });
+
+    it('drives with a NON-bubbling click — the document never sees it', () => {
+        // Regression: a bubbled synthetic click reaches the dropdown's
+        // document-level outside-click handler and closes the Layers panel
+        // mid-toggle (caught by e2e-smoke in CI).
+        fakeButton('btn-roads');
+        let reachedDocument = false;
+        const spy = () => { reachedDocument = true; };
+        document.addEventListener('click', spy);
+        try {
+            expect(LP.drive('btn-roads')).toBe(true); // handler still fires
+            expect(reachedDocument).toBe(false);      // …but never bubbles up
+        } finally {
+            document.removeEventListener('click', spy);
+        }
+    });
 });

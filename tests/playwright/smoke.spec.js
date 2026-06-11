@@ -67,10 +67,20 @@ test.describe('App boot smoke', () => {
     await page.click('#btn-dt-layers');
     await expect(page.locator('#dt-layers-dropdown')).toBeVisible();
 
+    // Defensive: if anything closes the dropdown mid-loop, reopen it rather
+    // than time out — this test's contract is "no uncaught errors".
+    const ensureOpen = async () => {
+      if (!(await page.locator('#dt-layers-dropdown').isVisible())) {
+        await page.click('#btn-dt-layers');
+      }
+    };
+
     for (const id of PANEL_OVERLAYS) {
       const row = page.locator(`[data-layer-key="_btn_${id}"]`);
+      await ensureOpen();
       await row.click();                   // attach (starts sampling / DEM / raster)
       await page.waitForTimeout(800);
+      await ensureOpen();
       await row.click();                   // detach (cleanup)
       await page.waitForTimeout(200);
     }

@@ -55,11 +55,14 @@ const LayersPanel = (() => {
         return lbl ? lbl.textContent : null;
     }
 
-    /** Fire the (hidden) button's own handler; returns the resulting state. */
+    /** Fire the (hidden) button's own handler; returns the resulting state.
+     *  The synthetic click is NON-bubbling: the button's listeners still fire
+     *  (target phase), but the event can't reach the document-level
+     *  outside-click handler that would close the Layers panel mid-toggle. */
     function drive(btnId) {
         if (typeof document === 'undefined') return false;
         const btn = document.getElementById(btnId);
-        if (btn) btn.click();
+        if (btn) btn.dispatchEvent(new MouseEvent('click', { bubbles: false }));
         return isActive(btnId);
     }
 

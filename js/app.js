@@ -691,13 +691,15 @@ const App = (() => {
                     } else if (ld.key === '_lcz') {
                         item.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            lczBtn?.click();
+                            // Non-bubbling: keep the panel open (a bubbled
+                            // synthetic click would hit the outside-click closer).
+                            lczBtn?.dispatchEvent(new MouseEvent('click', { bubbles: false }));
                             setTimeout(() => { checkbox.checked = lczActive; }, 100);
                         });
                     } else if (ld.key === '_lulc') {
                         item.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            lulcBtn?.click();
+                            lulcBtn?.dispatchEvent(new MouseEvent('click', { bubbles: false }));
                             setTimeout(() => { checkbox.checked = lulcActive; }, 100);
                         });
                     } else if (ld._btnId) {
