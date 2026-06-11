@@ -236,9 +236,7 @@ const Panel = (() => {
                 <div class="digipin-code-section">
                     <div class="digipin-code">${code}</div>
                     <button class="copy-btn" onclick="Panel.copyCode('${code}')" title="Copy DigiPin">&#128203;</button>
-                    <button class="export-btn" id="export-json-btn" title="Export to JSON">JSON</button>
-                    <button class="export-btn" id="export-csv-btn" title="Export to CSV">CSV</button>
-                    <button class="export-btn" id="export-geojson-btn" title="Export cell as GeoJSON (QGIS / geojson.io)">GeoJSON</button>
+                    <button class="export-btn" id="export-open-btn" title="Export this cell (GeoJSON / JSON / CSV)">⭳ Export</button>
                 </div>
                 <div class="panel-actions">
                     <button class="action-btn" id="btn-pin-compare" title="Pin for Compare">&#128204; Pin</button>
@@ -410,14 +408,16 @@ const Panel = (() => {
         });
         html += `</div>`;
 
-        // Attach event listeners for export buttons after DOM insertion
+        // Attach the export action after DOM insertion — opens the format
+        // dialog (GeoJSON/JSON/CSV with content counts; js/export-dialog.js).
         setTimeout(() => {
-            const btnJson = document.getElementById('export-json-btn');
-            const btnCsv = document.getElementById('export-csv-btn');
-            const btnGeo = document.getElementById('export-geojson-btn');
-            if (btnJson) btnJson.onclick = () => DataFetcher.exportToJSON(data, `digipin_${cell.code}.json`);
-            if (btnCsv) btnCsv.onclick = () => DataFetcher.exportToCSV(data, `digipin_${cell.code}_features.csv`);
-            if (btnGeo) btnGeo.onclick = () => DataFetcher.exportToGeoJSON({ code: cell.code, scores: data.scores }, `digipin_${cell.code}.geojson`);
+            const btnExport = document.getElementById('export-open-btn');
+            if (btnExport) {
+                btnExport.onclick = () => {
+                    if (typeof ExportDialog !== 'undefined') ExportDialog.open(cell, data);
+                    else DataFetcher.exportToJSON(data, `digipin_${cell.code}.json`);
+                };
+            }
         }, 50);
 
         return html;

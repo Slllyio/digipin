@@ -58,5 +58,7 @@ loadGlobalScript('js/text2map.js', ['Text2Map']);
 loadGlobalScript('js/url-state.js', ['URLState']);
 loadGlobalScript('js/theme.js', ['Theme']);
 loadGlobalScript('js/saved-views.js', ['SavedViews']);
+loadGlobalScript('js/layers-panel.js', ['LayersPanel']);
+loadGlobalScript('js/export-dialog.js', ['ExportDialog']);
 loadGlobalScript('js/bookmarks.js', ['Bookmarks']);
 loadGlobalScript('js/building-intelligence.js', ['BuildingIntelligence']);

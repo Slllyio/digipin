@@ -504,6 +504,105 @@ body {
     color: var(--accent-cyan);
 }
 
+/* ===== EXPORT DIALOG (format tabs + content counts) ===== */
+#export-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.export-dialog {
+    position: relative;
+    width: 340px;
+    max-width: calc(100vw - 32px);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-glow), 0 20px 60px rgba(0, 0, 0, 0.4);
+    padding: 20px;
+}
+
+.ed-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+.ed-sub { font-size: 11px; color: var(--text-muted); margin: 2px 0 14px; font-family: 'JetBrains Mono', monospace; }
+
+.ed-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+}
+.ed-close:hover { color: var(--text-primary); }
+
+.ed-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--wash-05);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+    margin-bottom: 12px;
+}
+.ed-tab {
+    flex: 1;
+    padding: 6px 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.ed-tab.active {
+    background: var(--bg-card);
+    color: var(--accent-cyan);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.ed-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.5; }
+.ed-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-primary);
+    padding: 5px 0;
+}
+.ed-tick { color: var(--accent-green); font-weight: 700; }
+
+.ed-filename {
+    margin: 12px 0;
+    padding: 7px 10px;
+    background: var(--wash-05);
+    border: 1px dashed var(--border-color);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.ed-export-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--gradient-main);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.ed-export-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+
 .close-btn {
     position: absolute;
     top: 0;
@@ -2357,6 +2456,23 @@ body {
     background: rgba(0, 245, 255, 0.1);
     border-color: var(--accent-cyan);
     color: var(--accent-cyan);
+}
+
+/* Toolbar collapse — every individual layer toggle lives in the unified
+   Layers panel (btn-dt-layers) as a row with a visibility switch. The buttons
+   stay in the DOM (hidden) because the panel drives them programmatically
+   (their click handlers own the toggle logic — see js/layers-panel.js). */
+#btn-heatmap, #btn-wards, #btn-lcz, #btn-buildings, #btn-3d, #btn-lulc,
+#btn-roads, #btn-growth, #btn-heat, #btn-ndvi, #btn-bivariate,
+#btn-viewshed, #btn-kde, #btn-access, #btn-choropleth {
+    display: none;
+}
+
+/* The Layers button is now the primary map-tool entry point. */
+#btn-dt-layers {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: var(--gradient-subtle);
 }
 
 .tb-icon {

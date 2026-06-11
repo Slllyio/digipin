@@ -30,6 +30,7 @@ const APP_GLOBALS = {
   KDEOverlay: 'readonly', AccessibilityOverlay: 'readonly',
   PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly', Text2Map: 'readonly',
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly',
+  LayersPanel: 'readonly', ExportDialog: 'readonly',
   DIGIPIN_CONFIG: 'readonly',
   // third-party libraries loaded from CDN
   maplibregl: 'readonly', pmtiles: 'readonly', parseGeoraster: 'readonly', GeoRaster: 'readonly',

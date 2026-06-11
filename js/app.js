@@ -575,7 +575,14 @@ const App = (() => {
                 key: '_heat_' + opt.key, name: 'Heatmap: ' + opt.label, icon: '\u25A0', group: 'Quick Overlays', _heatKey: opt.key
             }));
 
-            const ALL_ENTRIES = [...QUICK_OVERLAYS, ...heatmapEntries, ...layerDefs];
+            const ALL_ENTRIES = [
+                ...QUICK_OVERLAYS,
+                ...heatmapEntries,
+                // Analytics overlays (NDVI, bivariate, viewshed, KDE, growth…)
+                // folded in from their toolbar buttons — see js/layers-panel.js.
+                ...((typeof LayersPanel !== 'undefined') ? LayersPanel.entries() : []),
+                ...layerDefs,
+            ];
 
             // Group entries by group name preserving insertion order
             const groupOrder = [];
@@ -692,6 +699,22 @@ const App = (() => {
                             e.stopPropagation();
                             lulcBtn?.click();
                             setTimeout(() => { checkbox.checked = lulcActive; }, 100);
+                        });
+                    } else if (ld._btnId) {
+                        // Analytics overlay — drive its (hidden) toolbar button
+                        // so the bespoke toggle logic + multi-state cycles are
+                        // reused, never duplicated (see js/layers-panel.js).
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            LayersPanel.drive(ld._btnId);
+                            setTimeout(() => {
+                                const on = LayersPanel.isActive(ld._btnId);
+                                checkbox.checked = on;
+                                if (ld._stateful) {
+                                    const mode = LayersPanel.stateLabel(ld._btnId);
+                                    nameEl.textContent = on && mode ? `${ld.name} · ${mode}` : ld.name;
+                                }
+                            }, 100);
                         });
                     } else {
                         // DigitalTwinLayers toggle
