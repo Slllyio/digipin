@@ -83,7 +83,51 @@ def load_dem_and_compute_hydrology():
         y = transform[5] + c * transform[3] + r * transform[4]
         return float(x), float(y)
 
-    # D8 flow direction
+    # ── Priority-Flood pit-filling ──
+    # Fill all local depressions so water can flow continuously to grid edges.
+    # Standard hydrological preprocessing — without this, D8 flow direction
+    # stops at every local pit, producing fragmented drainage paths.
+    import heapq
+
+    log.info("  Pit-filling DEM (Priority-Flood)...")
+    filled = dem.copy()
+    visited = np.zeros((rows, cols), dtype=bool)
+    pq = []  # priority queue: (elevation, row, col)
+
+    # Seed the boundary cells (they can drain off the grid)
+    for r in range(rows):
+        for c in range(cols):
+            if np.isnan(dem[r, c]):
+                visited[r, c] = True
+                continue
+            if r == 0 or r == rows - 1 or c == 0 or c == cols - 1:
+                heapq.heappush(pq, (dem[r, c], r, c))
+                visited[r, c] = True
+
+    d8_offsets = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    pits_filled = 0
+
+    while pq:
+        elev, r, c = heapq.heappop(pq)
+        for dr, dc in d8_offsets:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < rows and 0 <= nc < cols and not visited[nr, nc]:
+                visited[nr, nc] = True
+                if filled[nr, nc] < elev:
+                    pits_filled += 1
+                    filled[nr, nc] = elev  # raise pit cell to pour point level
+                heapq.heappush(pq, (filled[nr, nc], nr, nc))
+
+    log.info("  Pits filled: %d cells raised (%.1f%% of grid)",
+             pits_filled, 100.0 * pits_filled / (rows * cols))
+    # Use the filled DEM for flow routing, but keep the ORIGINAL terrain for
+    # depression detection: pit-filling removes every local minimum by
+    # construction, so retention-pond siting must look at the true, un-filled
+    # DEM or it finds zero natural depressions.
+    dem_raw = dem
+    dem = filled
+
+    # D8 flow direction (on pit-filled DEM)
     d8 = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
     d8_dist = [math.sqrt(2), 1, math.sqrt(2), 1, 1, math.sqrt(2), 1, math.sqrt(2)]
 
@@ -107,7 +151,42 @@ def load_dem_and_compute_hydrology():
             flow_dir[r, c] = max_dir
             slope[r, c] = max(max_drop, 0)
 
-    # Flow accumulation (sort by descending elevation)
+    no_flow_before = int(np.sum((flow_dir == -1) & valid))
+
+    # ── Resolve flat areas ──
+    # After pit-filling, some cells are at the same elevation as neighbors (flat).
+    # D8 can't find a downhill direction. Fix: point flat cells toward the
+    # neighbor with the LOWEST elevation (breaking ties by distance to edge).
+    # Run multiple passes since resolving one flat cell can unblock others.
+    for pass_num in range(5):
+        changed = 0
+        for r in range(1, rows - 1):
+            for c in range(1, cols - 1):
+                if flow_dir[r, c] != -1 or np.isnan(dem[r, c]):
+                    continue
+                # Try to find a neighbor that already has a flow direction
+                # (i.e., it can drain). Among those, pick the lowest elevation.
+                best_dir = -1
+                best_elev = float('inf')
+                for i, (dr, dc) in enumerate(d8):
+                    nr, nc = r + dr, c + dc
+                    if 0 <= nr < rows and 0 <= nc < cols and not np.isnan(dem[nr, nc]):
+                        if dem[nr, nc] <= dem[r, c] and (flow_dir[nr, nc] >= 0 or
+                                nr == 0 or nr == rows-1 or nc == 0 or nc == cols-1):
+                            if dem[nr, nc] < best_elev:
+                                best_elev = dem[nr, nc]
+                                best_dir = i
+                if best_dir >= 0:
+                    flow_dir[r, c] = best_dir
+                    changed += 1
+        if changed == 0:
+            break
+
+    no_flow_after = int(np.sum((flow_dir == -1) & valid))
+    log.info("  Flat cells resolved: %d -> %d (fixed %d)",
+             no_flow_before, no_flow_after, no_flow_before - no_flow_after)
+
+    # Flow accumulation (sort by descending elevation, uses resolved flow_dir)
     flow_accum = np.ones((rows, cols), dtype=np.float64)
     flow_accum[~valid] = 0
 
@@ -127,8 +206,9 @@ def load_dem_and_compute_hydrology():
             flow_accum[nr, nc] += flow_accum[r, c]
 
     # ── Derive drainage channels ──
-    # Threshold: cells draining >50 upstream cells (~4.5 km2 at 90m) = significant channel
-    channel_threshold = 50
+    # Threshold: cells draining >20 upstream cells (~1.6 km2 at 90m)
+    # Lower threshold captures smaller urban nalas/drains in flat city areas
+    channel_threshold = 20
     channel_mask = flow_accum >= channel_threshold
     channel_cells = np.argwhere(channel_mask)
 
@@ -146,6 +226,186 @@ def load_dem_and_compute_hydrology():
             "elev_m": float(dem[r, c]),
             "slope": float(slope[r, c]),
         })
+
+    # ── Extract TOP 3 MAIN RIVERS with full continuity ──
+    # Strategy: find the 3 highest-accumulation PEAK cells (where flow concentrates
+    # most). For each peak, trace DOWNSTREAM to the grid boundary AND trace UPSTREAM
+    # following the highest-accum tributary at each junction. Concatenate both halves
+    # to get one fully continuous line: source → peak → boundary.
+
+    # ── Accumulation-Ridge Tracing ──
+    # Instead of following flow_dir (which cycles in flat areas), trace along
+    # the "accumulation ridge" — the continuous path of high flow_accum values.
+    # From any starting cell, move to the D8 neighbor with the HIGHEST accum
+    # (downstream direction) or the highest accum that's LOWER than current
+    # (upstream direction). This bypasses flat-area flow direction issues.
+
+    ch_set = set()
+    for r, c in channel_cells:
+        ch_set.add((int(r), int(c)))
+
+    def trace_accum_downstream(start_rc, seen_global):
+        """Trace downstream following decreasing elevation (downhill to outlet).
+        At each step, pick the neighbor with the lowest elevation. This follows
+        the natural water flow direction without relying on flow_dir."""
+        coords = []
+        r, c = start_rc
+        seen = set()
+        while True:
+            if (r, c) in seen or (r, c) in seen_global:
+                break
+            seen.add((r, c))
+            lon, lat = rc_to_lonlat(r, c)
+            coords.append((lat, lon))
+            cur_elev = dem[r, c]
+            # Find neighbor with lowest elevation (steepest descent)
+            best_nb = None
+            best_elev = cur_elev + 0.001  # must be lower or equal
+            for dr, dc in d8:
+                nr, nc = r + dr, c + dc
+                if (0 <= nr < rows and 0 <= nc < cols and
+                        not np.isnan(dem[nr, nc]) and (nr, nc) not in seen and
+                        (nr, nc) not in seen_global):
+                    if dem[nr, nc] < best_elev:
+                        best_elev = dem[nr, nc]
+                        best_nb = (nr, nc)
+            # If no lower neighbor, try equal elevation (flat after pit-filling)
+            if best_nb is None:
+                for dr, dc in d8:
+                    nr, nc = r + dr, c + dc
+                    if (0 <= nr < rows and 0 <= nc < cols and
+                            not np.isnan(dem[nr, nc]) and (nr, nc) not in seen and
+                            (nr, nc) not in seen_global and dem[nr, nc] <= cur_elev):
+                        # Among equal-elevation cells, prefer higher accum (main channel)
+                        if best_nb is None or flow_accum[nr, nc] > flow_accum[best_nb[0], best_nb[1]]:
+                            best_nb = (nr, nc)
+            if best_nb is None:
+                break
+            r, c = best_nb
+        return coords, seen
+
+    def trace_accum_upstream(start_rc, seen_global):
+        """Trace upstream along accumulation ridge (toward lower accum)."""
+        coords = []
+        r, c = start_rc
+        seen = set()
+        while True:
+            if (r, c) in seen or (r, c) in seen_global:
+                break
+            seen.add((r, c))
+            lon, lat = rc_to_lonlat(r, c)
+            coords.append((lat, lon))
+            cur_accum = flow_accum[r, c]
+            # Find D8 neighbor with highest accum that's LOWER than current
+            best_nb = None
+            best_acc = 0
+            for dr, dc in d8:
+                nr, nc = r + dr, c + dc
+                if (0 <= nr < rows and 0 <= nc < cols and
+                        not np.isnan(dem[nr, nc]) and (nr, nc) not in seen and
+                        (nr, nc) not in seen_global):
+                    nb_acc = flow_accum[nr, nc]
+                    if nb_acc < cur_accum and nb_acc > best_acc:
+                        best_acc = nb_acc
+                        best_nb = (nr, nc)
+            if best_nb is None or best_acc < 3:
+                break
+            r, c = best_nb
+        coords.reverse()
+        return coords, seen
+
+    # Find seed cells: highest-accumulation channel cells near the city
+    city_bbox = BBOX_CITY
+    CITY_BUFFER = 0.05  # ~5.5km buffer
+
+    city_channel_cells = []
+    for r, c in channel_cells:
+        lon_p, lat_p = rc_to_lonlat(int(r), int(c))
+        if (city_bbox["south"] - CITY_BUFFER <= lat_p <= city_bbox["north"] + CITY_BUFFER and
+                city_bbox["west"] - CITY_BUFFER <= lon_p <= city_bbox["east"] + CITY_BUFFER):
+            city_channel_cells.append(((int(r), int(c)), float(flow_accum[r, c])))
+
+    city_channel_cells.sort(key=lambda x: -x[1])
+    log.info("  Channel cells near city: %d (top accum: %.0f)",
+             len(city_channel_cells), city_channel_cells[0][1] if city_channel_cells else 0)
+
+    # Pick top 3 spatially distinct seeds (>2km apart)
+    MIN_PEAK_DIST_DEG = 0.02
+    selected_peaks = []
+    for rc, accum_val in city_channel_cells:
+        lon_p, lat_p = rc_to_lonlat(rc[0], rc[1])
+        too_close = False
+        for prev_rc, _ in selected_peaks:
+            prev_lon, prev_lat = rc_to_lonlat(prev_rc[0], prev_rc[1])
+            if math.sqrt((lat_p - prev_lat)**2 + (lon_p - prev_lon)**2) < MIN_PEAK_DIST_DEG:
+                too_close = True
+                break
+        if not too_close:
+            selected_peaks.append((rc, accum_val))
+        if len(selected_peaks) >= 3:
+            break
+
+    log.info("  Selected %d seed cells for river tracing", len(selected_peaks))
+
+    used_cells = set()
+    traced_lines = []
+    river_names = ["Main Nala 1", "Main Nala 2", "Main Nala 3"]
+
+    for i, (seed_rc, accum) in enumerate(selected_peaks):
+        lon_s, lat_s = rc_to_lonlat(seed_rc[0], seed_rc[1])
+        log.info("    River %d: seed at (%.4f, %.4f), accum=%.0f", i+1, lat_s, lon_s, accum)
+
+        # Trace upstream (toward source)
+        up_coords, up_seen = trace_accum_upstream(seed_rc, used_cells)
+        # Trace downstream (toward outlet) — exclude upstream cells but NOT the seed
+        down_exclude = (used_cells | up_seen) - {seed_rc}
+        down_coords, down_seen = trace_accum_downstream(seed_rc, down_exclude)
+
+        # Concatenate: upstream + downstream (skip first=seed already in upstream)
+        if len(down_coords) > 1:
+            full_coords = up_coords + down_coords[1:]
+        else:
+            full_coords = up_coords
+
+        if len(full_coords) >= 3:
+            traced_lines.append({
+                "coords": full_coords,
+                "accum": accum,
+                "name": river_names[i] if i < len(river_names) else f"Nala {i+1}",
+                "river_idx": i,
+            })
+            used_cells.update(up_seen)
+            used_cells.update(down_seen)
+            log.info("    River %d: %d points (up=%d, down=%d), continuous",
+                     i+1, len(full_coords), len(up_coords), len(down_coords))
+
+    # ── SMOOTH: reduce jagged 90-degree grid artifacts ──
+    def smooth_line(coords, tolerance_deg=0.0004):
+        """Simplify polyline keeping shape but removing grid zigzag."""
+        if len(coords) <= 3:
+            return coords
+        result = [coords[0]]
+        for i in range(1, len(coords) - 1):
+            prev = result[-1]
+            nxt = coords[i + 1]
+            curr = coords[i]
+            dx = nxt[1] - prev[1]
+            dy = nxt[0] - prev[0]
+            length = math.sqrt(dx * dx + dy * dy)
+            if length < 1e-10:
+                result.append(curr)
+                continue
+            dist = abs(dy * (prev[1] - curr[1]) - dx * (prev[0] - curr[0])) / length
+            if dist > tolerance_deg:
+                result.append(curr)
+        result.append(coords[-1])
+        return result
+
+    for t in traced_lines:
+        t["coords"] = smooth_line(t["coords"])
+
+    log.info("  Main rivers traced: %d (fully continuous, source to outlet)",
+             len(traced_lines))
 
     # ── Fill-spill flood depth simulation ──
     log.info("  Running fill-spill flood depth simulation (328mm)...")
@@ -188,19 +448,46 @@ def load_dem_and_compute_hydrology():
         if 0 <= nr < rows and 0 <= nc < cols:
             accum_runoff[nr, nc] += accum_runoff[r, c]
 
-    # Water depth = accumulated runoff / cell area (converted to meters)
-    # accumulated is in mm * number_of_cells, so depth_m = accum_runoff * cell_area / cell_area / 1000
-    # Actually: each cell's runoff in mm. Accumulated = sum of upstream mm values
-    # Volume per cell = runoff_mm / 1000 * cell_area_m2 (m3)
-    # At a depression, all upstream volume arrives, depth = total_volume / cell_area
-    water_depth_m = accum_runoff / 1000.0 * cell_area_m2 / cell_area_m2
-    # This simplifies to accum_runoff / 1000.0 but we need to account for concentration
-    # Better model: depth = accum_runoff_mm * n_upstream_cells / 1000 * (upstream_area / local_area)
-    # Simplified: depth_m = accum_runoff / 1000 (treating it as mm that ponds)
-    water_depth_m = accum_runoff / 1000.0
+    # ── Volume-limited fill-spill standing depth ──
+    # Water only STANDS in closed depressions (where pit-filling raised the DEM:
+    # filled > dem_raw). Their FULL-POOL depth is `filled - dem_raw`, but a single
+    # storm rarely fills a basin to the brim. So for each closed depression we
+    # compare the runoff VOLUME reaching it against its storage capacity and fill
+    # it only that fraction full — yielding realistic depths with a real gradient,
+    # instead of every basin pegged at the clip ceiling.
+    from scipy import ndimage
 
-    # Cap at realistic depth (max 5m for this event)
-    water_depth_m = np.clip(water_depth_m, 0, 5.0)
+    cap = np.clip(filled - dem_raw, 0.0, None)   # full-pool depth per cell (m)
+    cap[~valid] = 0.0
+    sink_mask = cap > 0.05                        # genuine closed-sink cells
+
+    # Runoff routed to each cell (m); peak value within a sink ≈ its catchment inflow
+    inflow_m = accum_runoff / 1000.0
+
+    water_depth_m = np.zeros_like(dem_raw)
+    structure = np.ones((3, 3), dtype=bool)       # 8-connectivity
+    labels, n_sinks = ndimage.label(sink_mask, structure=structure)
+    if n_sinks > 0:
+        idx = range(1, n_sinks + 1)
+        # Capacity volume and peak inflow volume per sink (m3)
+        cap_vol = np.asarray(ndimage.sum(cap * cell_area_m2, labels, idx))
+        inflow_vol = np.asarray(ndimage.maximum(inflow_m * cell_area_m2, labels, idx))
+        # Fill fraction: how full this storm leaves each sink (0..1)
+        fill_frac = np.clip(inflow_vol / np.maximum(cap_vol, 1e-9), 0.0, 1.0)
+        ff_map = np.zeros_like(dem_raw)
+        lab = labels[sink_mask]
+        ff_map[sink_mask] = fill_frac[lab - 1]
+        # Standing depth = full-pool depth scaled by how full the sink is
+        water_depth_m = cap * ff_map
+        log.info("  Closed sinks: %d (mean fill %.0f%%)",
+                 n_sinks, 100.0 * float(np.mean(fill_frac)))
+
+    # Thin sheet-flooding allowance on near-flat cells (pluvial ponding even where
+    # there is no closed depression).
+    flat_sheet = np.where((slope < 0.003) & valid, 0.15, 0.0)
+    water_depth_m = np.maximum(water_depth_m, flat_sheet)
+    water_depth_m = np.clip(water_depth_m, 0.0, 5.0)
+    water_depth_m[~valid] = 0.0
 
     # Find significant inundation zones (depth > 0.3m)
     inundation_mask = water_depth_m > 0.3
@@ -225,20 +512,21 @@ def load_dem_and_compute_hydrology():
     inundation_points.sort(key=lambda x: -x["depth_m"])
 
     # ── Depression detection (true local minima) ──
+    # Scan the RAW (un-filled) DEM — the filled DEM has no local minima.
     depressions = []
     for r in range(2, rows - 2):
         for c in range(2, cols - 2):
-            if np.isnan(dem[r, c]):
+            if np.isnan(dem_raw[r, c]):
                 continue
-            center = dem[r, c]
+            center = dem_raw[r, c]
             is_min = True
             for dr in range(-2, 3):
                 for dc in range(-2, 3):
                     if dr == 0 and dc == 0:
                         continue
                     nr, nc = r + dr, c + dc
-                    if 0 <= nr < rows and 0 <= nc < cols and not np.isnan(dem[nr, nc]):
-                        if dem[nr, nc] <= center:
+                    if 0 <= nr < rows and 0 <= nc < cols and not np.isnan(dem_raw[nr, nc]):
+                        if dem_raw[nr, nc] <= center:
                             is_min = False
                             break
                 if not is_min:
@@ -261,6 +549,7 @@ def load_dem_and_compute_hydrology():
         "flow_accum": flow_accum, "slope": slope,
         "water_depth": water_depth_m,
         "channels": channels,
+        "traced_lines": traced_lines,
         "inundation": inundation_points,
         "depressions": depressions,
         "rc_to_lonlat": rc_to_lonlat,
@@ -783,7 +1072,7 @@ def generate_precise_map(hydro, water, encroachments_data, infra):
         if len(wl["coords"]) >= 2:
             ww_features.append(line_feature(wl["coords"], {
                 "name": wl["name"], "type": wl["type"],
-                "weight": 5 if wl["type"] == "river" else 3 if wl["type"] == "stream" else 2,
+                "weight": 6 if wl["type"] == "river" else 4 if wl["type"] == "stream" else 3,
             }))
 
     # Water body polygons
@@ -792,12 +1081,19 @@ def generate_precise_map(hydro, water, encroachments_data, infra):
         if w["ring"] and len(w["ring"]) > 2:
             wb_features.append(polygon_feature(w["ring"], {"area_m2": w["area_m2"]}))
 
-    # DEM channels
-    ch_features = [point_feature(ch["lat"], ch["lon"], {
-        "accum": ch["accum"], "elev_m": ch["elev_m"],
-        "slope_pct": round(ch["slope"] * 100, 1),
-        "radius": min(2 + ch["accum"] / 100, 8),
-    }) for ch in hydro["channels"][:500] if ch["accum"] >= 30]
+    # Main river/nala polylines (3 continuous trunk lines)
+    river_colors = ["#00e5ff", "#ff6d00", "#76ff03"]
+    ch_features = []
+    for tl in hydro["traced_lines"]:
+        if len(tl["coords"]) >= 2:
+            idx = tl.get("river_idx", 0)
+            ch_features.append(line_feature(tl["coords"], {
+                "accum": tl["accum"],
+                "name": tl.get("name", f"Nala {idx+1}"),
+                "river_idx": idx,
+                "color": river_colors[idx % len(river_colors)],
+                "weight": 5,
+            }))
 
     # Inundation
     inun_features = [point_feature(p["lat"], p["lon"], {
@@ -823,9 +1119,13 @@ def generate_precise_map(hydro, water, encroachments_data, infra):
             risk_features.append(point_feature(b["lat"], b["lon"], props))
 
     # Infrastructure points
+    _infra_labels = {"retention_ponds": "RP", "culverts": "CU", "river_gauges": "RG",
+                      "rain_gauges": "AW", "pumping_stations": "PS", "embankments": "EM",
+                      "drain_upgrades": "DR"}
     infra_features = [point_feature(inf["lat"], inf["lon"], {
         "type": inf["type"], "priority": inf.get("priority", ""),
         "category": inf["category"], "reason": inf.get("reason", ""),
+        "label": _infra_labels.get(inf["category"], "?"),
     }) for inf in all_infra]
 
     # Depressions
@@ -921,7 +1221,7 @@ h1 {{ font-size:17px; color:#ff6b35; }}
   <div class="card-title">LAYERS</div>
   <label><input type="checkbox" checked data-layers="ww-lines"> Waterways (OSM)</label>
   <label><input type="checkbox" checked data-layers="wb-fill,wb-outline"> Water Bodies</label>
-  <label><input type="checkbox" checked data-layers="ch-circles"> DEM Channels</label>
+  <label><input type="checkbox" checked data-layers="ch-circles,ch-labels"> Main Rivers/Nalas</label>
   <label><input type="checkbox" checked data-layers="inun-circles"> Flood Depth</label>
   <label><input type="checkbox" checked data-layers="enc-fill,enc-outline"> Encroachments</label>
   <label><input type="checkbox" data-layers="risk-fill,risk-outline"> Buildings at Risk</label>
@@ -957,6 +1257,7 @@ const map = new maplibregl.Map({{
         encoding: 'terrarium', tileSize: 256, maxzoom: 15
       }}
     }},
+    glyphs: 'https://demotiles.maplibre.org/font/{{fontstack}}/{{range}}.pbf',
     layers: [{{ id:'carto', type:'raster', source:'carto-dark' }}],
     terrain: {{ source:'terrain-dem', exaggeration: 1.8 }},
     sky: {{}}
@@ -977,21 +1278,32 @@ function flyToTop() {{ map.easeTo({{ pitch:0, bearing:0, zoom:13, duration:1500 
 function flyToCity() {{ map.flyTo({{ center:[{CENTER_LON},{CENTER_LAT}], zoom:14, pitch:55, bearing:10, duration:2000 }}); }}
 
 map.on('load', function() {{
+  // Main river/nala lines (3 continuous trunk lines with distinct colors)
+  map.addSource('channels', {{ type:'geojson', data: {ch_geojson} }});
+  map.addLayer({{ id:'ch-circles', type:'line', source:'channels',
+    paint: {{ 'line-width': 5,
+              'line-color': ['get', 'color'],
+              'line-opacity': 0.9 }} }});
+  // River name labels along the lines
+  map.addLayer({{ id:'ch-labels', type:'symbol', source:'channels',
+    layout: {{ 'symbol-placement':'line', 'text-field':['get','name'],
+               'text-size':13, 'text-font':['Open Sans Regular','Arial Unicode MS Regular'],
+               'text-offset':[0, 1.2], 'text-anchor':'top',
+               'symbol-spacing': 300 }},
+    paint: {{ 'text-color': ['get','color'], 'text-halo-color':'#000', 'text-halo-width':2 }} }});
+
+  // Water body fills
+  map.addSource('waterbodies', {{ type:'geojson', data: {wb_geojson} }});
+  map.addLayer({{ id:'wb-fill', type:'fill', source:'waterbodies',
+    paint: {{ 'fill-color':'#1565c0', 'fill-opacity':0.45 }} }});
+  map.addLayer({{ id:'wb-outline', type:'line', source:'waterbodies',
+    paint: {{ 'line-color':'#42a5f5', 'line-width':2.5, 'line-opacity':0.9 }} }});
+
+  // OSM waterways ON TOP (prominent, authoritative data)
   map.addSource('waterways', {{ type:'geojson', data: {ww_geojson} }});
   map.addLayer({{ id:'ww-lines', type:'line', source:'waterways',
     paint: {{ 'line-color':['match',['get','type'],'river','#1e88e5','stream','#42a5f5','drain','#80d8ff','canal','#0097a7','#42a5f5'],
-              'line-width':['get','weight'], 'line-opacity':0.9 }} }});
-
-  map.addSource('waterbodies', {{ type:'geojson', data: {wb_geojson} }});
-  map.addLayer({{ id:'wb-fill', type:'fill', source:'waterbodies',
-    paint: {{ 'fill-color':'#1565c0', 'fill-opacity':0.4 }} }});
-  map.addLayer({{ id:'wb-outline', type:'line', source:'waterbodies',
-    paint: {{ 'line-color':'#42a5f5', 'line-width':2, 'line-opacity':0.8 }} }});
-
-  map.addSource('channels', {{ type:'geojson', data: {ch_geojson} }});
-  map.addLayer({{ id:'ch-circles', type:'circle', source:'channels',
-    paint: {{ 'circle-radius':['min',['+',2,['/',['get','accum'],100]],8],
-              'circle-color':'#00bcd4', 'circle-opacity':['min',['+',0.3,['/',['get','accum'],500]],0.8] }} }});
+              'line-width':['get','weight'], 'line-opacity':0.95 }} }});
 
   map.addSource('inundation', {{ type:'geojson', data: {inun_geojson} }});
   map.addLayer({{ id:'inun-circles', type:'circle', source:'inundation',
@@ -1017,7 +1329,7 @@ map.on('load', function() {{
 
   map.addSource('infrastructure', {{ type:'geojson', data: {infra_geojson} }});
   map.addLayer({{ id:'infra-symbols', type:'symbol', source:'infrastructure',
-    layout: {{ 'text-field':['match',['get','category'],'retention_ponds','RP','culverts','CU','river_gauges','RG','rain_gauges','AW','pumping_stations','PS','embankments','EM','drain_upgrades','DR','??'],
+    layout: {{ 'text-field':['get','label'],
                'text-size':11, 'text-allow-overlap':true }},
     paint: {{ 'text-color':['match',['get','category'],'retention_ponds','#2196f3','culverts','#ff9800','river_gauges','#00bcd4','rain_gauges','#4caf50','pumping_stations','#9c27b0','embankments','#795548','drain_upgrades','#ff5722','#888'],
               'text-halo-color':'#000', 'text-halo-width':2 }} }});
@@ -1038,7 +1350,7 @@ map.on('load', function() {{
       let h = '';
       if (lid==='ww-lines') h='<b>'+(p.name||'Unnamed')+'</b><br>Type: '+p.type;
       else if (lid==='wb-fill') h='<b>Water Body</b><br>Area: '+p.area_m2+' m2';
-      else if (lid==='ch-circles') h='<b>DEM Channel</b><br>Accum: '+Math.round(p.accum)+' | Elev: '+p.elev_m+'m | Slope: '+p.slope_pct+'%';
+      else if (lid==='ch-circles') h='<b>DEM Drain/Nala</b><br>Flow accumulation: '+Math.round(p.accum)+' cells upstream';
       else if (lid==='inun-circles') h='<b>Flood: '+p.depth_m+'m</b><br>Elev: '+p.elev_m+'m | Accum: '+Math.round(p.accum);
       else if (lid==='enc-fill') h='<b>'+p.action+'</b><br>'+p.dist_m+'m from '+p.water_type+'<br>Flood: '+p.flood_depth_m+'m | Area: '+p.area_m2+' m2';
       else if (lid==='risk-fill') h='<b>'+p.action+'</b><br>Dist: '+p.dist_m+'m | Flood: '+p.flood_depth_m+'m';
