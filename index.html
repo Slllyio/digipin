@@ -110,6 +110,22 @@
             <span class="tb-icon">&#127777;&#65039;</span>
             <span class="tb-label">Heat</span>
         </button>
+        <button class="toolbar-btn" id="btn-ndvi" title="NDVI Vegetation Health (NASA GIBS / MODIS)">
+            <span class="tb-icon">&#127807;</span>
+            <span class="tb-label">NDVI</span>
+        </button>
+        <button class="toolbar-btn" id="btn-bivariate" title="Bivariate Map — two scores in one 3&times;3 palette">
+            <span class="tb-icon">&#127912;</span>
+            <span class="tb-label">Bivariate</span>
+        </button>
+        <button class="toolbar-btn" id="btn-viewshed" title="Viewshed — line-of-sight from map centre (DEM)">
+            <span class="tb-icon">&#128065;</span>
+            <span class="tb-label">Viewshed</span>
+        </button>
+        <button class="toolbar-btn" id="btn-kde" title="Hotspot — kernel-density surface of a score">
+            <span class="tb-icon">&#128293;</span>
+            <span class="tb-label">Hotspot</span>
+        </button>
     </div>
 
     <!-- ===== SIDEBAR — QUERIES ===== -->
@@ -260,6 +276,11 @@
     <script defer src="js/scores-dialog.js"></script>
     <script defer src="js/digital-twin-layers.js"></script>
     <script defer src="js/training-data-gen.js"></script>
+    <!-- "Must-have map types" overlays: bivariate choropleth, NDVI vegetation, viewshed -->
+    <script defer src="js/bivariate-overlay.js"></script>
+    <script defer src="js/ndvi-overlay.js"></script>
+    <script defer src="js/viewshed.js"></script>
+    <script defer src="js/kde-overlay.js"></script>
     <script defer src="js/app.js"></script>
     <script>
     document.getElementById('btn-growth')?.addEventListener('click', () => {
@@ -267,6 +288,18 @@
     });
     document.getElementById('btn-heat')?.addEventListener('click', () => {
         if (typeof HeatOverlay !== 'undefined') HeatOverlay.toggle();
+    });
+    document.getElementById('btn-ndvi')?.addEventListener('click', () => {
+        if (typeof NDVIOverlay !== 'undefined') NDVIOverlay.toggle();
+    });
+    document.getElementById('btn-bivariate')?.addEventListener('click', () => {
+        if (typeof BivariateOverlay !== 'undefined') BivariateOverlay.toggle();
+    });
+    document.getElementById('btn-viewshed')?.addEventListener('click', () => {
+        if (typeof Viewshed !== 'undefined') Viewshed.toggle();
+    });
+    document.getElementById('btn-kde')?.addEventListener('click', () => {
+        if (typeof KDEOverlay !== 'undefined') KDEOverlay.toggle();
     });
     </script>
 
