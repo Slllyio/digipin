@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "gee": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "google-earth-engine-mcp"],
+      "env": {}
+    },
+    "gis-mcp": {
+      "command": "C:/Users/S.C.C/.local/bin/gis-mcp.exe",
+      "args": []
+    },
+    "weather": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "mcp-weather-free"],
+      "env": {}
+    }
+  }
+}
