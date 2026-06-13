@@ -154,6 +154,9 @@ body {
     gap: 8px;
     padding: 0 8px;
     white-space: nowrap;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
 }
 
 .logo-icon {
