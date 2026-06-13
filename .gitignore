@@ -1,5 +1,8 @@
 # Screenshots (dev artifacts)
 *.png
+# …except committed product assets (landing hero, etc.)
+!assets/
+!assets/**
 
 # Playwright MCP artifacts
 .playwright-mcp/
