@@ -24,7 +24,7 @@ test.describe('App boot smoke', () => {
   });
 
   test('boots: map canvas, collapsed toolbar, and core globals present', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/app.html');
     // MapLibre creates its canvas once the library loads from the CDN.
     await page.waitForSelector('.maplibregl-canvas', { timeout: 30_000 });
 
@@ -60,7 +60,7 @@ test.describe('App boot smoke', () => {
   });
 
   test('toggling each analytics overlay via the Layers panel raises no uncaught error', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/app.html');
     await page.waitForSelector('.maplibregl-canvas', { timeout: 30_000 });
 
     // Open the unified Layers panel (Analytics group is expanded by default).

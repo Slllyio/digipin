@@ -2,13 +2,15 @@
  * Service Worker — Offline cache for DigiPin portal
  * Caches static assets; API calls use network-first strategy
  */
-const CACHE_NAME = 'digipin-v4';
+const CACHE_NAME = 'digipin-v5';
 
 // Same-origin app shell. The remaining js/*.js modules are picked up by the
 // runtime cache-first handler on first online load.
 const LOCAL_ASSETS = [
-    './',
+    './',                 // landing page (index.html)
     './index.html',
+    './app.html',         // the live map app shell
+    './css/landing.css',
     './css/styles.css',
     './js/digipin.js',
     './js/data-fetcher.js',
@@ -30,7 +32,7 @@ const LOCAL_ASSETS = [
 // Third-party libraries the map actually depends on. The app uses MapLibre GL
 // (not Leaflet), and the cross-origin fetch handler below is network-first and
 // never caches these — so precaching them here is what makes the map usable
-// offline. Versions must match the <script>/<link> tags in index.html.
+// offline. Versions must match the <script>/<link> tags in app.html.
 const CDN_ASSETS = [
     'https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css',
     'https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js',
