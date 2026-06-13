@@ -135,6 +135,28 @@ def _write_summary(
     return path
 
 
+def _get_torch_device(device_name: str):
+    """Return a torch device object for the given device name."""
+    import torch
+
+    if device_name == "cuda":
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if device_name == "directml":
+        try:
+            import torch_directml
+            return torch_directml.device()
+        except ImportError:
+            log.warning("torch-directml not installed, falling back to CPU")
+            return torch.device("cpu")
+    return torch.device("cpu")
+
+
+def _to_device(tensor_or_model, device_name: str):
+    """Move a tensor or model to the specified device."""
+    device = _get_torch_device(device_name)
+    return tensor_or_model.to(device)
+
+
 def _collect_tifs(input_path: Path) -> list[Path]:
     """Gather .tif/.tiff files from a file or directory."""
     if input_path.is_file():
@@ -345,8 +367,8 @@ class LULCClassifier:
                 model.set_to_inference_mode = lambda: None  # placeholder
                 for param in model.parameters():
                     param.requires_grad = False
-                if self.device == "cuda" and torch.cuda.is_available():
-                    model = model.cuda()
+                if self.device != "cpu":
+                    model = _to_device(model, self.device)
                 self._model = model
                 self._backend = "torch"
                 log.info("BigEarthNet ResNet50 loaded (torchgeo).")
@@ -377,8 +399,8 @@ class LULCClassifier:
 
             for param in model.parameters():
                 param.requires_grad = False
-            if self.device == "cuda" and torch.cuda.is_available():
-                model = model.cuda()
+            if self.device != "cpu":
+                model = _to_device(model, self.device)
             self._model = model
             self._backend = "torch"
             return True
@@ -433,8 +455,8 @@ class LULCClassifier:
             if batch.shape[1] > 3:
                 batch = batch[:, :3, :, :]
             tensor = torch.from_numpy(batch)
-            if self.device == "cuda" and torch.cuda.is_available():
-                tensor = tensor.cuda()
+            if self.device != "cpu":
+                tensor = _to_device(tensor, self.device)
             with torch.no_grad():
                 out = self._model(tensor)
                 preds = out.argmax(dim=1).cpu().numpy()
@@ -613,8 +635,8 @@ class FloodSegmenter:
                 )
             for param in self._model.parameters():
                 param.requires_grad = False
-            if self.device == "cuda" and torch.cuda.is_available():
-                self._model = self._model.cuda()
+            if self.device != "cpu":
+                self._model = _to_device(self._model, self.device)
             log.info("Prithvi model loaded via transformers.")
             return
         except Exception as exc:
@@ -1346,9 +1368,9 @@ def _add_common_args(parser: argparse.ArgumentParser) -> None:
     """Add --device and --output flags shared by all subcommands."""
     parser.add_argument(
         "--device",
-        choices=["cpu", "cuda"],
-        default="cpu",
-        help="Inference device (default: cpu)",
+        choices=["cpu", "cuda", "directml"],
+        default="auto",
+        help="Inference device: cpu, cuda, directml, or auto (default: auto-detect)",
     )
     parser.add_argument(
         "--output",
@@ -1429,6 +1451,18 @@ def main() -> None:
     args = parser.parse_args()
     task = args.task
     device = args.device
+
+    # Auto-detect best available device
+    if device == "auto":
+        import torch
+        if torch.cuda.is_available():
+            device = "cuda"
+        else:
+            try:
+                import torch_directml
+                device = "directml"
+            except ImportError:
+                device = "cpu"
 
     log.info("=" * 60)
     log.info("DigiPin AI Inference -- task=%s, device=%s", task, device)

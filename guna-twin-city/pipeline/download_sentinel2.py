@@ -28,6 +28,7 @@ try:
     import pystac_client
     import rasterio
     from rasterio.mask import mask as rio_mask
+    from rasterio.warp import transform_geom
     from rasterio.windows import from_bounds
     from shapely.geometry import box
 except ImportError as e:
@@ -145,8 +146,22 @@ def download_and_crop_band(item, band_key: str, out_dir: Path) -> Path:
     log.info("Downloading %s from %s ...", band_key, href[:80] + "...")
 
     with rasterio.open(href) as src:
-        # Crop to AOI using windowed read for efficiency
-        out_image, out_transform = rio_mask(src, AOI_GEOM, crop=True, all_touched=True)
+        # Reproject AOI from WGS84 to raster CRS if needed
+        raster_crs = src.crs
+        if raster_crs and "4326" not in str(raster_crs):
+            try:
+                from pyproj import Transformer
+                transformer = Transformer.from_crs("EPSG:4326", raster_crs, always_xy=True)
+                west, south, east, north = BBOX_TUPLE
+                coords = [(west, south), (east, south), (east, north), (west, north), (west, south)]
+                projected_coords = [transformer.transform(x, y) for x, y in coords]
+                reprojected = [{"type": "Polygon", "coordinates": [projected_coords]}]
+            except Exception as proj_err:
+                log.warning("pyproj reprojection failed (%s), trying rasterio...", proj_err)
+                reprojected = [transform_geom("EPSG:4326", raster_crs, g) for g in AOI_GEOM]
+        else:
+            reprojected = AOI_GEOM
+        out_image, out_transform = rio_mask(src, reprojected, crop=True, all_touched=True)
         profile = src.profile.copy()
         profile.update({
             "driver": "GTiff",
