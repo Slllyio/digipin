@@ -7,7 +7,7 @@ import path from 'path';
 const LP = globalThis.LayersPanel;
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const indexHtml = readFileSync(path.join(rootDir, 'index.html'), 'utf-8');
+const indexHtml = readFileSync(path.join(rootDir, 'app.html'), 'utf-8');
 
 afterEach(() => { document.body.innerHTML = ''; });
 
