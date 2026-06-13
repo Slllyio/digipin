@@ -21,24 +21,17 @@ import argparse
 import gzip
 import io
 import json
-import logging
-import sys
 import time
 from pathlib import Path
 
 import requests
 
 from config import BBOX_CITY, INDORE_BOUNDARY
+from _lib.io import data_dir, setup_logging
 
-OUT_DIR = Path(__file__).parent.parent / "data" / "vectors"
-OUT_DIR.mkdir(parents=True, exist_ok=True)
+OUT_DIR = data_dir("vectors")
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-log = logging.getLogger("google_buildings")
+log = setup_logging("google_buildings")
 
 # S2 cell token for Indore at level 4 (computed via s2sphere)
 S2_CELL = "397"

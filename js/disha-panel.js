@@ -14,7 +14,6 @@ const DISHAPanel = (() => {
 
     // ===== INIT =====
     async function init() {
-        const statusEl = document.getElementById('disha-status');
         const inputEl = document.getElementById('disha-input');
 
         const result = await DISHA.checkConnection();
@@ -319,7 +318,8 @@ const DISHAPanel = (() => {
             inputEl.placeholder = 'Click a DigiPin cell on the map first…';
             const hint = document.createElement('div');
             hint.className = 'disha-message disha-system';
-            hint.textContent = 'Click any cell on the map to load location context, then ask me about it.';
+            hint.textContent = 'Click any DIGIPIN cell to load India-native location intelligence — then ask in plain English. ' +
+                'City-wide questions ("family-friendly area near good schools, low flood risk") rank DIGIPIN cells instantly. Free and auditable.';
             messagesEl.appendChild(hint);
             return;
         }
@@ -361,7 +361,7 @@ const DISHAPanel = (() => {
             `${featureCount} feature types | ${scoreCount} intelligence scores\n` +
             `AI: ${providerLabel}\n\n` +
             `Ask me anything — from "Is this safe to live?" to "Where should I open a restaurant?"\n` +
-            `I can also scan the city for optimal locations.`
+            `Ask a plain-English question and I'll rank DIGIPIN cells across the city for it — India-native, free, and auditable.`
         );
 
         const suggestions = DISHA.getSuggestions(data);
@@ -420,6 +420,17 @@ const DISHAPanel = (() => {
     }
 
     // ===== CITY SCAN FLOW =====
+    // Current map viewport as a plain {south,west,north,east} for Text2Map's
+    // precomputed-grid lookup. Empty object if the map isn't ready (Text2Map
+    // then degrades to the live sampler).
+    function _cityScanBounds() {
+        if (typeof MapModule === 'undefined' || !MapModule.getMap) return {};
+        const map = MapModule.getMap();
+        if (!map || !map.getBounds) return {};
+        const b = map.getBounds();
+        return { south: b.getSouth(), west: b.getWest(), north: b.getNorth(), east: b.getEast() };
+    }
+
     async function handleCityScan(question) {
         _isCityScanning = true;
         const sendBtn = document.getElementById('disha-send');
@@ -442,9 +453,27 @@ const DISHAPanel = (() => {
         statusContent.appendChild(scanIndicator);
 
         try {
-            const results = await DISHA.cityScan(question, (status) => {
-                scanText.textContent = status;
-            });
+            // Text2Map: parse the question into a weighting (LLM-required, with a
+            // keyword fallback) and rank the precomputed DIGIPIN grid instantly.
+            // Falls back internally to the live sampler when the viewport isn't
+            // covered. Older path (DISHA.cityScan) kept if Text2Map is absent.
+            let results, label = null;
+            if (typeof Text2Map !== 'undefined') {
+                scanText.textContent = 'Understanding your question...';
+                const bounds = _cityScanBounds();
+                const out = await Text2Map.run(question, bounds, (status) => {
+                    scanText.textContent = status;
+                });
+                results = out ? out.results : null;
+                label = out?.parsed?.label || null;
+                if (out && out.mode === 'precomputed') {
+                    scanText.textContent = 'Ranking the live grid...';
+                }
+            } else {
+                results = await DISHA.cityScan(question, (status) => {
+                    scanText.textContent = status;
+                });
+            }
 
             if (!results || results.length === 0) {
                 applyFormattedResponse(statusContent, 'City scan returned no results. Try zooming into a city area first.');
@@ -453,7 +482,7 @@ const DISHAPanel = (() => {
                 return;
             }
 
-            scanText.textContent = `Scan complete! Found top ${results.length} locations. Analyzing with AI...`;
+            scanText.textContent = `Found top ${results.length}${label ? ' for "' + label + '"' : ''}. Analyzing with AI...`;
 
             const cityScanContext = DISHA.buildCityScanContext(results, question);
 
@@ -534,6 +563,16 @@ const DISHAPanel = (() => {
         hint.className = 'disha-scan-hint';
         hint.textContent = 'Click a result to fly to that location on the map';
         content.appendChild(hint);
+
+        // Export the ranked cells as GeoJSON (QGIS / geojson.io / gov workflows).
+        if (typeof DataFetcher !== 'undefined' && DataFetcher.exportRankedToGeoJSON) {
+            const geo = document.createElement('button');
+            geo.className = 'disha-scan-export';
+            geo.textContent = 'Download GeoJSON';
+            geo.title = 'Export these ranked DIGIPIN cells as GeoJSON';
+            geo.addEventListener('click', () => DataFetcher.exportRankedToGeoJSON(results, 'digipin_ranked.geojson'));
+            content.appendChild(geo);
+        }
 
         card.appendChild(content);
         messagesEl.appendChild(card);

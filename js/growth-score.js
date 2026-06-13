@@ -20,16 +20,19 @@ const GrowthScore = (() => {
         const n = buildings_temporal.length;
         const last = buildings_temporal[n - 1];
         const prev = buildings_temporal[n - 2];
+        // COG no-data cells can surface as NaN; a NaN here would propagate to a
+        // NaN composite that the consumer's `== null` check wouldn't catch.
+        if (!Number.isFinite(last) || !Number.isFinite(prev)) return null;
         const yoyPct = prev > 0 ? ((last - prev) / prev) * 100 : 0;
-        const heightYoy = heights && heights.length >= 2
-            ? (heights[heights.length - 1] - heights[heights.length - 2])
-            : 0;
+        const h1 = heights && heights.length >= 2 ? heights[heights.length - 1] : null;
+        const h0 = heights && heights.length >= 2 ? heights[heights.length - 2] : null;
+        const heightYoy = (Number.isFinite(h1) && Number.isFinite(h0)) ? (h1 - h0) : 0;
         const osmBoost = Math.min(10, (osm_construction_count || 0) * 2);
         const score = 50
             + 25 * Math.tanh(yoyPct / 8)
             + 15 * Math.tanh(heightYoy)
             + osmBoost;
-        return Math.max(0, Math.min(100, score));
+        return Number.isFinite(score) ? Math.max(0, Math.min(100, score)) : null;
     }
 
     /** Densification (DEN).
@@ -37,7 +40,7 @@ const GrowthScore = (() => {
      *    ghsl_pop_5yr_pct:       number  GHSL pop grid delta 2020→2025 (%)
      *    osm_commercial_density: number  POI density per km² */
     function denSubScore({ ghsl_pop_5yr_pct, osm_commercial_density }) {
-        if (ghsl_pop_5yr_pct == null) return null;
+        if (ghsl_pop_5yr_pct == null || !Number.isFinite(ghsl_pop_5yr_pct)) return null;
         const popTerm = 25 * Math.tanh(ghsl_pop_5yr_pct / 15);
         const commTerm = Math.min(15, (osm_commercial_density || 0) / 8);
         return Math.max(0, Math.min(100, 50 + popTerm + commTerm));
@@ -123,6 +126,34 @@ const GrowthScore = (() => {
         return { slope, intercept, r_squared };
     }
 
+    /** Emerging-hotspot taxonomy (a per-cell simplification of the Getis-Ord
+     *  space-time hotspot classes). Combines the current LEVEL of a metric with
+     *  its temporal TREND (slope from linearTrend) into a category.
+     *
+     *  Powers map type #4 once the Growth temporal COGs are hosted (see
+     *  docs/GROWTH_FORECAST.md) — the inputs are exactly what scoreCell already
+     *  derives per cell. Pure + side-effect-free.
+     *
+     *  @param level  number|null  current metric level 0..100 (e.g. growth composite)
+     *  @param slope  number|null  trend slope (per period) from linearTrend
+     *  @returns { category, color, label } or null when level is unknown. */
+    function emergingClass(level, slope, opts = {}) {
+        if (level == null || !Number.isFinite(level)) return null;
+        const hotLevel = opts.hotLevel != null ? opts.hotLevel : 60;
+        const eps = opts.slopeEps != null ? opts.slopeEps : 0.5;
+        const s = Number.isFinite(slope) ? slope : 0;
+        const hot = level >= hotLevel;
+        const rising = s > eps;
+        const falling = s < -eps;
+
+        if (hot && rising)   return { category: 'intensifying', color: '#b2182b', label: 'Intensifying Hotspot' };
+        if (hot && falling)  return { category: 'diminishing',  color: '#ef8a62', label: 'Diminishing Hotspot' };
+        if (hot)             return { category: 'persistent',   color: '#d6604d', label: 'Persistent Hotspot' };
+        if (rising)          return { category: 'emerging',     color: '#fddbc7', label: 'Emerging (new) Hotspot' };
+        if (falling)         return { category: 'cooling',      color: '#67a9cf', label: 'Cooling' };
+        return { category: 'stable', color: '#f7f7f7', label: 'Stable / no pattern' };
+    }
+
     /** Per-horizon confidence band (±value). */
     function confidenceBand(horizon, r_squared) {
         if (horizon === 'nowcast') return 5;
@@ -133,7 +164,7 @@ const GrowthScore = (() => {
     }
 
     return { bueSubScore, denSubScore, capSubScore, normLog,
-             composite, HORIZON_WEIGHTS, linearTrend, confidenceBand };
+             composite, HORIZON_WEIGHTS, linearTrend, confidenceBand, emergingClass };
 })();
 
 if (typeof window !== 'undefined') window.GrowthScore = GrowthScore;

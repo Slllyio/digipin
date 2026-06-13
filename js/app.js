@@ -12,22 +12,48 @@ const App = (() => {
             document.getElementById('toolbar')?.classList.add('hidden');
         }
 
-        MapModule.init();
-        Panel.init();
-        DISHAPanel.init();
-        BuildingIntelDialog.init();
-        ScoresDialog.init();
-        FloatingDialogs.init();
-        CitySelector.init();
-        Bookmarks.init();
-        initSearch();
-        initQueryPanel();
-        initSidebar();
-        initToolbar();
-        registerServiceWorker();
+        // Run each step in isolation: one widget throwing must not skip the
+        // rest of init (e.g. a dialog bug shouldn't block the toolbar or the
+        // service-worker registration that provides offline support).
+        const step = (name, fn) => {
+            try { fn(); } catch (e) { console.error(`[init] ${name} failed:`, e); }
+        };
 
-        const city = CitySelector.getCurrent();
-        showToast('Welcome to DigiPin Urban Intelligence', `${city.name}, ${city.state} \u2022 160+ Features \u2022 Click any grid cell`, 'info');
+        // Theme first: MapModule.init reads Theme for the basemap + grid colours.
+        step('Theme', () => {
+            if (typeof Theme !== 'undefined') Theme.init();
+        });
+        step('MapModule', () => MapModule.init());
+        // Kick off precomputed-score coverage load (async, non-blocking). When
+        // data/scores/coverage.json is absent it stays disabled and the app uses
+        // the live path unchanged.
+        step('PrecomputedScores', () => {
+            if (typeof PrecomputedScores !== 'undefined') PrecomputedScores.init();
+        });
+        step('Panel', () => Panel.init());
+        step('DISHAPanel', () => DISHAPanel.init());
+        step('BuildingIntelDialog', () => BuildingIntelDialog.init());
+        step('ScoresDialog', () => ScoresDialog.init());
+        step('FloatingDialogs', () => FloatingDialogs.init());
+        step('CitySelector', () => CitySelector.init());
+        step('Bookmarks', () => Bookmarks.init());
+        step('SavedViews', () => {
+            if (typeof SavedViews !== 'undefined') SavedViews.init();
+        });
+        step('search', () => initSearch());
+        step('queryPanel', () => initQueryPanel());
+        step('sidebar', () => initSidebar());
+        step('toolbar', () => initToolbar());
+        // Deep-link state: wire the Share button + apply any ?cell/?ll/?score/?q.
+        step('URLState', () => {
+            if (typeof URLState !== 'undefined') URLState.init();
+        });
+        step('serviceWorker', () => registerServiceWorker());
+
+        step('welcome', () => {
+            const city = CitySelector.getCurrent();
+            showToast('Welcome to DigiPin Urban Intelligence', `${city.name}, ${city.state} \u2022 160+ Features \u2022 Click any grid cell`, 'info');
+        });
     }
 
     function initSearch() {
@@ -549,7 +575,14 @@ const App = (() => {
                 key: '_heat_' + opt.key, name: 'Heatmap: ' + opt.label, icon: '\u25A0', group: 'Quick Overlays', _heatKey: opt.key
             }));
 
-            const ALL_ENTRIES = [...QUICK_OVERLAYS, ...heatmapEntries, ...layerDefs];
+            const ALL_ENTRIES = [
+                ...QUICK_OVERLAYS,
+                ...heatmapEntries,
+                // Analytics overlays (NDVI, bivariate, viewshed, KDE, growth…)
+                // folded in from their toolbar buttons — see js/layers-panel.js.
+                ...((typeof LayersPanel !== 'undefined') ? LayersPanel.entries() : []),
+                ...layerDefs,
+            ];
 
             // Group entries by group name preserving insertion order
             const groupOrder = [];
@@ -561,6 +594,33 @@ const App = (() => {
                 }
                 groupMap[entry.group].push(entry);
             });
+
+            // Search box — type-filter the ~30 layer rows (LayersPanel.filterMatch).
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.className = 'dt-layer-search';
+            searchInput.placeholder = 'Filter layers…';
+            searchInput.setAttribute('aria-label', 'Filter layers');
+            searchInput.addEventListener('click', (e) => e.stopPropagation());
+            searchInput.addEventListener('input', () => {
+                const q = searchInput.value;
+                dtLayersDrop.querySelectorAll('.dt-layer-group').forEach(group => {
+                    let anyVisible = false;
+                    group.querySelectorAll('.dt-layer-item').forEach(item => {
+                        const name = item.querySelector('.dt-layer-name')?.textContent || '';
+                        const show = LayersPanel.filterMatch(name, q);
+                        item.classList.toggle('dt-hidden', !show);
+                        if (show) anyVisible = true;
+                    });
+                    group.classList.toggle('dt-hidden', !anyVisible);
+                    // While filtering, force-open matching groups so hits are visible.
+                    if (q.trim()) {
+                        group.querySelector('.dt-group-content')?.classList.toggle('open', anyVisible);
+                        group.querySelector('.dt-group-header-btn')?.classList.toggle('expanded', anyVisible);
+                    }
+                });
+            });
+            dtLayersDrop.appendChild(searchInput);
 
             // Render collapsible groups
             groupOrder.forEach((groupName, gIdx) => {
@@ -658,14 +718,32 @@ const App = (() => {
                     } else if (ld.key === '_lcz') {
                         item.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            lczBtn?.click();
+                            // Non-bubbling: keep the panel open (a bubbled
+                            // synthetic click would hit the outside-click closer).
+                            lczBtn?.dispatchEvent(new MouseEvent('click', { bubbles: false }));
                             setTimeout(() => { checkbox.checked = lczActive; }, 100);
                         });
                     } else if (ld.key === '_lulc') {
                         item.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            lulcBtn?.click();
+                            lulcBtn?.dispatchEvent(new MouseEvent('click', { bubbles: false }));
                             setTimeout(() => { checkbox.checked = lulcActive; }, 100);
+                        });
+                    } else if (ld._btnId) {
+                        // Analytics overlay — drive its (hidden) toolbar button
+                        // so the bespoke toggle logic + multi-state cycles are
+                        // reused, never duplicated (see js/layers-panel.js).
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            LayersPanel.drive(ld._btnId);
+                            setTimeout(() => {
+                                const on = LayersPanel.isActive(ld._btnId);
+                                checkbox.checked = on;
+                                if (ld._stateful) {
+                                    const mode = LayersPanel.stateLabel(ld._btnId);
+                                    nameEl.textContent = on && mode ? `${ld.name} · ${mode}` : ld.name;
+                                }
+                            }, 100);
                         });
                     } else {
                         // DigitalTwinLayers toggle
@@ -737,6 +815,12 @@ const App = (() => {
         const bmBtn = document.getElementById('btn-bookmarks');
         if (bmBtn) {
             bmBtn.addEventListener('click', () => Bookmarks.openPanel());
+        }
+
+        // Saved Views & templates
+        const svBtn = document.getElementById('btn-saved-views');
+        if (svBtn) {
+            svBtn.addEventListener('click', () => SavedViews.openPanel());
         }
     }
 

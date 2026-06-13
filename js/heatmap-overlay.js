@@ -49,6 +49,35 @@ const HeatmapOverlay = (() => {
         }
 
         const bounds = _map.getBounds();
+
+        // Precomputed fast path: if static score tiles cover this viewport, paint
+        // every real DIGIPIN cell from one shard read instead of sampling 36
+        // points live (~250 upstream calls). Falls through to live on a miss.
+        if (typeof PrecomputedScores !== 'undefined' && PrecomputedScores.isEnabled()) {
+            const vb = { south: bounds.getSouth(), west: bounds.getWest(),
+                north: bounds.getNorth(), east: bounds.getEast() };
+            const cells = await PrecomputedScores.lookupViewport(vb);
+            if (cells && cells.length) {
+                _features = cells.map(c => {
+                    const val = c.scores[scoreKey] && c.scores[scoreKey].value;
+                    if (val == null) return null;
+                    const color = val >= 70 ? '#22c55e' : val >= 40 ? '#eab308' : val >= 20 ? '#f97316' : '#ef4444';
+                    const b = c.bounds;
+                    return {
+                        type: 'Feature',
+                        geometry: { type: 'Polygon', coordinates: [[
+                            [b.west, b.south], [b.east, b.south], [b.east, b.north],
+                            [b.west, b.north], [b.west, b.south],
+                        ]] },
+                        properties: { color, height: val * 5, score: val },
+                    };
+                }).filter(Boolean);
+                _map.getSource(SOURCE_ID).setData({ type: 'FeatureCollection', features: _features });
+                App.showToast('3D Heatmap Ready', `${scoreKey} from precomputed tiles — instant.`, 'success');
+                return;
+            }
+        }
+
         const gridSize = 6;
         const latStep = (bounds.getNorth() - bounds.getSouth()) / gridSize;
         const lngStep = (bounds.getEast() - bounds.getWest()) / gridSize;

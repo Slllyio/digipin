@@ -17,6 +17,85 @@ const Panel = (() => {
             .replace(/'/g, '&#039;');
     }
 
+    // Honest data coverage: show which sources loaded vs failed, so a missing
+    // card reads as "AQI unavailable" rather than a silent gap. Driven by
+    // result.sourceStatus from DataFetcher.fetchAllFeatures.
+    const _SOURCE_LABELS = {
+        osm: 'OSM', weather: 'Weather', aqi: 'Air Quality', elevation: 'Elevation',
+        population: 'Population', wikipedia: 'Wikipedia', solar: 'Solar',
+        health: 'Health', iudx: 'IUDX', evCharging: 'EV',
+    };
+
+    // Live hazards layer (NDMA SACHET alerts, IMD warnings, nearby earthquakes,
+    // GloFAS flood forecast). All four were fetched per click but never shown;
+    // this consolidates them into one strip of severity-coloured chips, with a
+    // freshness label on the snapshot-backed alert feed.
+    const _HAZ_CLASS = { red: 'haz-red', orange: 'haz-orange', yellow: 'haz-yellow', green: 'haz-green' };
+
+    function _hazChip(color, icon, text) {
+        return `<span class="haz-chip ${_HAZ_CLASS[color] || 'haz-yellow'}">${icon} ${text}</span>`;
+    }
+
+    function buildHazardsHTML(data) {
+        const rt = (data && data.realtime) || {};
+        const chips = [];
+
+        const s = rt.sachet;
+        if (s && s.alerts && s.alerts.length) {
+            const total = (s.summary && s.summary.total) || s.alerts.length;
+            const severe = s.severeCount > 0;
+            let fresh = '';
+            if (typeof RealtimeAlerts !== 'undefined' && RealtimeAlerts.staleness) {
+                const f = RealtimeAlerts.staleness(s.generatedAt);
+                if (f) fresh = ` &middot; ${esc(f.label)}${f.stale ? ' (stale)' : ''}`;
+            }
+            chips.push(_hazChip(severe ? 'red' : 'yellow', '&#9888;&#65039;',
+                `${severe ? esc(s.severeCount) + ' severe / ' : ''}${esc(total)} alert${total === 1 ? '' : 's'}${fresh}`));
+        }
+
+        const imd = rt.imd;
+        if (imd && imd.warnings && imd.warnings.length) {
+            chips.push(_hazChip(imd.worstColor || 'yellow', '&#127783;&#65039;',
+                `IMD ${esc(imd.worstColor || '')} &middot; ${esc(imd.warnings.length)} warning${imd.warnings.length === 1 ? '' : 's'}`));
+        }
+
+        const q = rt.quakes;
+        if (q && q.count_within_200km > 0 && q.largest_nearby) {
+            const m = q.largest_nearby.magnitude;
+            const d = Math.round(q.largest_nearby.distance_km || 0);
+            chips.push(_hazChip(m >= 5 ? 'orange' : 'green', '&#127757;',
+                `M${esc(m)} quake &middot; ${esc(d)} km`));
+        }
+
+        const fl = rt.flood;
+        const lvl = fl && fl.overall_risk && fl.overall_risk.level;
+        if (lvl && !/^(low|normal|none)$/i.test(lvl)) {
+            chips.push(_hazChip((fl.overall_risk.color) || 'orange', '&#127754;', `Flood: ${esc(lvl)}`));
+        }
+
+        if (chips.length === 0) return '';
+        return `<div class="hazard-strip">
+            <div class="hazard-head">Live hazards</div>
+            <div class="hazard-chips">${chips.join('')}</div>
+        </div>`;
+    }
+
+    function buildSourceStatusHTML(data) {
+        const st = data && data.sourceStatus;
+        if (!st) return '';
+        const entries = Object.entries(_SOURCE_LABELS).filter(([k]) => k in st);
+        if (entries.length === 0) return '';
+        const okCount = entries.filter(([k]) => st[k] === 'ok').length;
+        const chips = entries.map(([k, label]) => {
+            const ok = st[k] === 'ok';
+            return `<span class="src-chip ${ok ? 'src-ok' : 'src-off'}" title="${esc(label)}: ${ok ? 'loaded' : 'unavailable'}">${esc(label)}</span>`;
+        }).join('');
+        return `<div class="source-status">
+            <div class="source-status-head">Data coverage <span class="data-badge badge-dim">${okCount}/${entries.length} sources</span></div>
+            <div class="source-chips">${chips}</div>
+        </div>`;
+    }
+
     function init() {
         panelEl = document.getElementById('detail-panel');
         contentEl = document.getElementById('panel-content');
@@ -157,8 +236,7 @@ const Panel = (() => {
                 <div class="digipin-code-section">
                     <div class="digipin-code">${code}</div>
                     <button class="copy-btn" onclick="Panel.copyCode('${code}')" title="Copy DigiPin">&#128203;</button>
-                    <button class="export-btn" id="export-json-btn" title="Export to JSON">JSON</button>
-                    <button class="export-btn" id="export-csv-btn" title="Export to CSV">CSV</button>
+                    <button class="export-btn" id="export-open-btn" title="Export this cell (GeoJSON / JSON / CSV)">⭳ Export</button>
                 </div>
                 <div class="panel-actions">
                     <button class="action-btn" id="btn-pin-compare" title="Pin for Compare">&#128204; Pin</button>
@@ -169,6 +247,9 @@ const Panel = (() => {
                 <div class="coords">${cell.center.lat.toFixed(6)}&deg;N, ${cell.center.lng.toFixed(6)}&deg;E</div>
                 ${addr.fullAddress ? `<div class="address">${esc(addr.area || addr.city)}, ${esc(addr.district)}, ${esc(addr.state)} ${addr.pincode ? '- ' + esc(addr.pincode) : ''}</div>` : ''}
             </div>`;
+
+        html += buildHazardsHTML(data);
+        html += buildSourceStatusHTML(data);
 
         // Environment card — numeric values are safe, but weatherDesc comes from our lookup so esc() for defense-in-depth
         html += `<div class="env-card">
@@ -229,6 +310,19 @@ const Panel = (() => {
                 <div class="health-list">${health.nearbyFacilities.map(f =>
                     `<div class="health-item"><span class="health-name">${esc(f.name)}</span>${f.type ? `<span class="health-type">${esc(f.type)}</span>` : ''}${f.beds !== 'N/A' ? `<span class="health-beds">${esc(f.beds)} beds</span>` : ''}</div>`
                 ).join('')}</div>
+            </div>`;
+        }
+
+        // EV Charging (OpenChargeMap)
+        const ev = data.context?.evCharging;
+        if (ev && ev.count > 0) {
+            const fast = ev.fastCount > 0 ? `<span class="data-badge badge-cyan">${esc(ev.fastCount)} fast</span>` : '';
+            html += `<div class="data-card">
+                <div class="data-card-title">&#128267; EV Charging <span class="data-badge badge-dim">${esc(ev.count)} within 8km</span> ${fast}</div>
+                <div class="health-list">${ev.stations.map(s =>
+                    `<div class="health-item"><span class="health-name">${esc(s.name)}</span>${s.maxPowerKW != null ? `<span class="health-type">${esc(s.maxPowerKW)} kW</span>` : ''}${s.distanceKm != null ? `<span class="health-beds">${esc(s.distanceKm)} km</span>` : ''}</div>`
+                ).join('')}</div>
+                ${ev.operators.length > 0 ? `<div class="data-card-sub">Operators: ${esc(ev.operators.join(', '))}</div>` : ''}
             </div>`;
         }
 
@@ -314,12 +408,16 @@ const Panel = (() => {
         });
         html += `</div>`;
 
-        // Attach event listeners for export buttons after DOM insertion
+        // Attach the export action after DOM insertion — opens the format
+        // dialog (GeoJSON/JSON/CSV with content counts; js/export-dialog.js).
         setTimeout(() => {
-            const btnJson = document.getElementById('export-json-btn');
-            const btnCsv = document.getElementById('export-csv-btn');
-            if (btnJson) btnJson.onclick = () => DataFetcher.exportToJSON(data, `digipin_${cell.code}.json`);
-            if (btnCsv) btnCsv.onclick = () => DataFetcher.exportToCSV(data, `digipin_${cell.code}_features.csv`);
+            const btnExport = document.getElementById('export-open-btn');
+            if (btnExport) {
+                btnExport.onclick = () => {
+                    if (typeof ExportDialog !== 'undefined') ExportDialog.open(cell, data);
+                    else DataFetcher.exportToJSON(data, `digipin_${cell.code}.json`);
+                };
+            }
         }, 50);
 
         return html;

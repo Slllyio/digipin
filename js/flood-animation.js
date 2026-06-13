@@ -84,6 +84,13 @@ const FloodAnimation = (() => {
         const valueEl  = wrap.querySelector('[data-flood-rain]');
         const readoutEl = wrap.querySelector('[data-flood-rain-readout]');
 
+        // Coalesce the expensive on-map frame rebuild to one per animation
+        // frame: 'input' fires dozens of times per second during a slider drag,
+        // and each perturb() rebuilds every animation frame. The cheap text
+        // readout still updates on every event so the UI stays responsive.
+        let perturbRaf = null;
+        let pendingDepth = 0;
+
         function updateSim(rainfallMm) {
             if (!valueEl || !readoutEl) return;
             valueEl.textContent = `+${rainfallMm} mm/day`;
@@ -97,7 +104,16 @@ const FloodAnimation = (() => {
                     `extra depth ${extraDepth.toFixed(2)} m`;
             }
             if (typeof FloodInundation !== 'undefined') {
-                FloodInundation.perturb(extraDepth);
+                pendingDepth = extraDepth;
+                if (perturbRaf == null) {
+                    const raf = (typeof requestAnimationFrame !== 'undefined')
+                        ? requestAnimationFrame
+                        : (cb) => setTimeout(cb, 16);
+                    perturbRaf = raf(() => {
+                        perturbRaf = null;
+                        FloodInundation.perturb(pendingDepth);
+                    });
+                }
             }
         }
 

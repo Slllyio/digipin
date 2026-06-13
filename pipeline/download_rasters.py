@@ -14,8 +14,6 @@ Optional: pip install earthaccess (for NASA datasets)
 """
 
 import argparse
-import logging
-import sys
 import time
 from pathlib import Path
 
@@ -26,18 +24,13 @@ from rasterio.mask import mask as rio_mask
 from shapely.geometry import box
 
 from config import BBOX, fix_proj
+from _lib.io import data_dir, setup_logging
 
 fix_proj()
 
-OUT_DIR = Path(__file__).parent.parent / "data" / "rasters"
-OUT_DIR.mkdir(parents=True, exist_ok=True)
+OUT_DIR = data_dir("rasters")
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-log = logging.getLogger("rasters")
+log = setup_logging("rasters")
 
 AOI = box(BBOX["west"], BBOX["south"], BBOX["east"], BBOX["north"])
 AOI_GEOM = [AOI.__geo_interface__]

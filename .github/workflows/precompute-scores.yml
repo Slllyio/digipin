@@ -1,0 +1,105 @@
+name: Precompute scores (Indore)
+
+# Regenerates the precomputed score tile the app reads (data/scores/) from a
+# fresh OSM extract, so cells render instantly with zero per-click upstream
+# calls. Runs monthly and on demand. Mirrors realtime-scrape.yml: a smoke check
+# gates the commit, so bad data never ships, and the result is committed back to
+# the branch for Pages to serve atomically with the code.
+#
+# Elevation comes from the public Copernicus GLO-30 DEM (no auth) so flood-risk
+# uses real terrain; if that download fails the tile builds OSM-only. Population
+# (GHSL GHS-POP) still needs a one-time GEE export hosted as an asset, then
+# --pop wires it in; until then population_proxy uses its building-density
+# fallback. Both are optional inputs to build_tile (--pop/--dem).
+
+on:
+  # Auto-build when the scoring code lands on main (e.g. merging the spine PR):
+  # path-filtered to code only, so the job's own data/scores/ commit cannot
+  # retrigger it (GITHUB_TOKEN pushes also don't recurse — belt and braces).
+  push:
+    branches: [main]
+    paths:
+      - 'pipeline/scores/**'
+      - 'pipeline/_lib/**'
+      - '.github/workflows/precompute-scores.yml'
+  schedule:
+    - cron: "17 2 3 * *"     # 02:17 UTC on the 3rd of each month
+  workflow_dispatch:
+    inputs:
+      region:
+        description: "Region name (pipeline/_lib/regions.py)"
+        default: indore_pilot
+      level:
+        description: "DIGIPIN level (6 ~244m, 7 ~61m)"
+        default: "6"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: precompute-scores
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: .
+      REGION: ${{ github.event.inputs.region || 'indore_pilot' }}
+      LEVEL: ${{ github.event.inputs.level || '6' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install osmium-tool
+        run: sudo apt-get update && sudo apt-get install -y osmium-tool
+
+      - name: Install pipeline deps
+        run: pip install -r pipeline/scores/requirements.txt
+
+      - name: Download Geofabrik central-zone extract (incl. Madhya Pradesh)
+        run: curl -sSL --retry 3 -o central.osm.pbf
+             https://download.geofabrik.de/asia/india/central-zone-latest.osm.pbf
+
+      - name: Clip to the Indore pilot bbox (buffered ~1 km)
+        run: osmium extract -b 75.59,22.49,76.01,22.91 central.osm.pbf -o indore.osm.pbf
+
+      - name: Download Copernicus GLO-30 DEM tile (public, no auth)
+        # The single N22/E075 tile covers the whole Indore pilot bbox. Optional:
+        # on any failure we build OSM-only (flood-risk falls back to its baseline)
+        # rather than failing the whole tile.
+        run: |
+          curl -sSL --retry 2 -o glo30.tif \
+            "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N22_00_E075_00_DEM/Copernicus_DSM_COG_10_N22_00_E075_00_DEM.tif" || true
+          if [ -s glo30.tif ]; then
+            echo "DEM_ARG=--dem glo30.tif" >> "$GITHUB_ENV"
+            echo "DEM tile downloaded ($(du -h glo30.tif | cut -f1))."
+          else
+            echo "::notice::GLO-30 DEM unavailable — building OSM-only (flood-risk uses baseline)."
+          fi
+
+      - name: Build scored tile (JSON shards + PMTiles choropleth)
+        run: |
+          python -m pipeline.scores.build_tile \
+            --region "$REGION" --level "$LEVEL" \
+            --pbf indore.osm.pbf $DEM_ARG --pmtiles --out data/scores
+
+      - name: Smoke check (gates the commit)
+        run: python -m pipeline.scores.smoke_check data/scores --region "$REGION"
+
+      - name: Commit refreshed tile
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/scores/
+          if ! git diff --staged --quiet; then
+            git commit -m "chore(scores): refresh $REGION tile (level $LEVEL)"
+            git push
+          else
+            echo "No changes to commit."
+          fi

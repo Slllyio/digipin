@@ -158,7 +158,7 @@ def merge_video_audio(narrations, bgm_path=None):
     """
     if not INPUT_VIDEO.exists():
         print(f"\n  [ERROR] Video not found: {INPUT_VIDEO}")
-        print("  Run 'node record-video.mjs' first to record the video.")
+        print("  Run 'node extras/record-video.mjs' first to record the video.")
         sys.exit(1)
 
     video_duration_ms = get_video_duration_ms(INPUT_VIDEO)
@@ -350,7 +350,7 @@ async def main():
     # Load narration log
     if not NARRATION_LOG.exists():
         print(f"\n  [ERROR] Narration log not found: {NARRATION_LOG}")
-        print("  Run 'node record-video.mjs' first to record the video.")
+        print("  Run 'node extras/record-video.mjs' first to record the video.")
         sys.exit(1)
 
     with open(NARRATION_LOG) as f:

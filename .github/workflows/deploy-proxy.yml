@@ -1,0 +1,62 @@
+name: Deploy data proxy (Cloudflare Worker)
+
+# Auto-deploys proxy/worker.mjs to Cloudflare Workers when the worker code or
+# its config changes on main. The worker unit tests gate the deploy, so a broken
+# worker never ships.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   — token with "Edit Workers" permission
+#   CLOUDFLARE_ACCOUNT_ID  — your Cloudflare account id
+#
+# Upstream API keys (OGD_API_KEY, WAQI_TOKEN) are NOT managed here: Cloudflare
+# secrets persist across code deploys, so set them once with
+# `wrangler secret put` (see proxy/README.md). The worker degrades gracefully
+# when they're absent (it just doesn't inject a key).
+#
+# Until CLOUDFLARE_API_TOKEN is configured this workflow is a safe no-op: it runs
+# the tests and emits a notice instead of failing.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'proxy/worker.mjs'
+      - 'proxy/wrangler.toml'
+      - '.github/workflows/deploy-proxy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Worker unit tests (gate deploy)
+        run: npx vitest run proxy/worker.test.mjs
+
+      - name: Deploy to Cloudflare Workers
+        if: env.CF_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: proxy
+
+      - name: Cloudflare not configured
+        if: env.CF_TOKEN == ''
+        run: |
+          echo "::notice::CLOUDFLARE_API_TOKEN not set — skipping worker deploy."
+          echo "Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID under"
+          echo "Settings → Secrets and variables → Actions to enable auto-deploy."
