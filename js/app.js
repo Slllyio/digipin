@@ -54,6 +54,13 @@ const App = (() => {
             const city = CitySelector.getCurrent();
             showToast('Welcome to DigiPin Urban Intelligence', `${city.name}, ${city.state} \u2022 160+ Features \u2022 Click any grid cell`, 'info');
         });
+
+        // First-run onboarding: a once-per-visitor card explaining the two
+        // headline interactions. Self-gates on localStorage (no-op on return
+        // visits), so it's safe to call unconditionally.
+        step('Onboarding', () => {
+            if (typeof Onboarding !== 'undefined') Onboarding.init();
+        });
     }
 
     function initSearch() {
