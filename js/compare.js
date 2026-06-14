@@ -3,7 +3,11 @@
  */
 const Compare = (() => {
     const MAX_PINS = 3;
-    const COLORS = ['#00f5ff', '#a855f7', '#ec4899'];
+    // Pin colours follow the active theme (a theme switch reloads, so resolving
+    // once at module load is enough): neon on dark, ink-coral on paper.
+    const COLORS = (typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light')
+        ? ['#c2410c', '#7c3aed', '#be185d']
+        : ['#00f5ff', '#a855f7', '#ec4899'];
     let _pinned = []; // { cell, data, marker }
 
     function pin(cell, data) {

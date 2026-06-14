@@ -67,3 +67,35 @@ describe('Theme.mapStyleUrl() / gridColors()', () => {
         expect(T.mapStyleUrl()).toContain('dark-matter');
     });
 });
+
+describe('Theme.palette() — JS-surface colours', () => {
+    it('returns coral-ink paper colours for light', () => {
+        const p = T.palette('light');
+        expect(p.primary).toBe('#c2410c');
+        expect(p.ink).toBe('#1c1917');
+        expect(p.inkOnPrimary).toBe('#ffffff');   // readable label on coral
+        expect(p.surfaceSolid).toBe('#ffffff');
+    });
+
+    it('returns neon-on-navy colours for dark', () => {
+        const p = T.palette('dark');
+        expect(p.primary).toBe('#00f5ff');
+        expect(p.ink).toBe('#e2e8f0');
+        expect(p.inkOnPrimary).toBe('#0a0e27');   // dark ink on cyan, not white
+    });
+
+    it('every theme exposes the full semantic key set', () => {
+        const keys = ['primary', 'primarySoft', 'secondary', 'ink', 'sub', 'surface', 'surfaceSolid', 'border', 'inkOnPrimary'];
+        for (const theme of T.THEMES) {
+            for (const k of keys) expect(T.palette(theme)[k], `${theme}.${k}`).toBeTruthy();
+        }
+    });
+
+    it('follows the persisted theme with no argument', () => {
+        T.set('light');
+        expect(T.palette().primary).toBe('#c2410c');
+        T.set('dark');
+        expect(T.palette().primary).toBe('#00f5ff');
+    });
+});
+

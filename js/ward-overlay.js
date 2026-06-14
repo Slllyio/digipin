@@ -82,13 +82,16 @@ out geom;`;
 
             if (!_map.getSource(SOURCE_ID)) {
                 _map.addSource(SOURCE_ID, { type: 'geojson', data: geojson });
-                
+
+                // Ward boundary colour follows the active theme (added once; a
+                // theme switch reloads): violet on dark, deep-violet on paper.
+                const wardColor = (typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light') ? '#7c3aed' : '#a855f7';
                 _map.addLayer({
                     id: FILL_LAYER_ID,
                     type: 'fill',
                     source: SOURCE_ID,
                     paint: {
-                        'fill-color': '#a855f7',
+                        'fill-color': wardColor,
                         'fill-opacity': 0.05
                     }
                 });
@@ -98,7 +101,7 @@ out geom;`;
                     type: 'line',
                     source: SOURCE_ID,
                     paint: {
-                        'line-color': '#a855f7',
+                        'line-color': wardColor,
                         'line-width': 2,
                         'line-dasharray': [4, 3]
                     }

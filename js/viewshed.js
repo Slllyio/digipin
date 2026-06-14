@@ -130,13 +130,20 @@ const Viewshed = (() => {
         return elev;
     }
 
+    // Visible-cell fill, theme-aware: cyan on dark, coral on the paper theme.
+    function _fillRGB() {
+        const light = typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';
+        return light ? [194, 65, 12] : [34, 211, 238];
+    }
+
     function _paint(mask) {
         const ctx = _canvas.getContext('2d');
         const img = ctx.createImageData(TILE_SIZE, TILE_SIZE);
         const px = img.data;
+        const [r, g, b] = _fillRGB();
         for (let i = 0; i < mask.length; i++) {
             const o = i * 4;
-            if (mask[i] === 1) { px[o] = 34; px[o + 1] = 211; px[o + 2] = 238; px[o + 3] = 120; } // cyan = visible
+            if (mask[i] === 1) { px[o] = r; px[o + 1] = g; px[o + 2] = b; px[o + 3] = 120; } // visible
             else { px[o + 3] = 0; }
         }
         ctx.putImageData(img, 0, 0);
