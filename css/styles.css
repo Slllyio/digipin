@@ -525,6 +525,61 @@ body {
     justify-content: center;
 }
 
+/* ===== ONBOARDING (first-run) ===== */
+/* Layout + animation only — themed colours are set inline from Theme.palette()
+   in js/onboarding.js so the primary button keeps readable ink-on-primary. */
+#onboarding-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 2200;          /* above floating dialogs (1200+) and dropdowns (2000) */
+    background: var(--scrim);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    animation: dialog-appear 0.2s ease;
+}
+
+.onboarding-card {
+    width: 380px;
+    max-width: 100%;
+    border: 1px solid;
+    border-radius: var(--radius);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+    padding: 28px 26px 22px;
+    text-align: center;
+}
+
+.onboarding-icon { font-size: 40px; line-height: 1; margin-bottom: 14px; }
+.onboarding-title { font-size: 20px; font-weight: 700; margin: 0 0 10px; }
+.onboarding-body { font-size: 14px; line-height: 1.5; margin: 0 0 20px; }
+
+.onboarding-dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
+.onboarding-dot { width: 8px; height: 8px; border-radius: 50%; transition: var(--transition); }
+.onboarding-dot.active { transform: scale(1.25); }
+
+.onboarding-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.onboarding-skip {
+    background: none;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 10px 8px;
+}
+.onboarding-next {
+    flex: 1;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 18px;
+    cursor: pointer;
+    transition: transform .12s ease, filter .12s ease;
+}
+.onboarding-next:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
 .export-dialog {
     position: relative;
     width: 340px;
