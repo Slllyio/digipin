@@ -65,7 +65,8 @@ const Compare = (() => {
         const badge = document.getElementById('compare-badge');
         if (badge) {
             badge.textContent = String(_pinned.length);
-            badge.style.display = _pinned.length > 0 ? '' : 'none';
+            // Always visible — muted at 0 (advertises Compare), accent when pinned.
+            badge.classList.toggle('toolbar-badge--empty', _pinned.length === 0);
         }
     }
 

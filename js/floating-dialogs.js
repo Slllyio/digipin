@@ -42,6 +42,29 @@ const FloatingDialogs = (() => {
         dialog.style.zIndex = _topZ;
     }
 
+    // ── Escape-to-close registry ────────────────────────────────────────────
+    // Components register a closable descriptor { isOpen, close, priority }.
+    // Escape closes exactly ONE open surface — the highest-priority one — so a
+    // user peels back layers (dropdown → dialog → panel) one press at a time.
+    // We call each component's own close() so its `.open` state stays
+    // consistent; we never poke at inline styles.
+    const _closables = [];
+
+    function registerClosable(c) {
+        if (c && typeof c.isOpen === 'function' && typeof c.close === 'function') {
+            _closables.push({ isOpen: c.isOpen, close: c.close, priority: c.priority || 0 });
+        }
+    }
+
+    /** Close the top-most open registered surface. Returns true if one closed. */
+    function closeTopmost() {
+        const open = _closables.filter(c => { try { return c.isOpen(); } catch { return false; } });
+        if (!open.length) return false;
+        open.sort((a, b) => b.priority - a.priority);
+        try { open[0].close(); } catch { /* a component's close threw — ignore */ }
+        return true;
+    }
+
     function attachDrag(handle, dialog) {
         let dragging = false, startX, startY, startLeft, startTop, pointerId;
 
@@ -125,9 +148,14 @@ const FloatingDialogs = (() => {
         document.querySelectorAll('.floating-dialog').forEach(dialog => {
             dialog.addEventListener('pointerdown', () => bringToFront(dialog));
         });
+
+        // One global Escape handler peels back the top-most open surface.
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && closeTopmost()) e.preventDefault();
+        });
     }
 
-    return { init, bringToFront, clampPosition, clampSize };
+    return { init, bringToFront, clampPosition, clampSize, registerClosable, closeTopmost };
 })();
 
 if (typeof window !== 'undefined') {

@@ -55,6 +55,32 @@ const App = (() => {
             showToast('Welcome to DigiPin Urban Intelligence', `${city.name}, ${city.state} \u2022 160+ Features \u2022 Click any grid cell`, 'info');
         });
 
+        // Global Escape-to-close: register every dialog/panel/dropdown with
+        // FloatingDialogs so one Escape press peels back the top-most open
+        // surface, calling each component's own close() (keeping `.open`
+        // state consistent). Priority: dropdown > dialog > side panel > detail.
+        step('EscapeToClose', () => {
+            if (typeof FloatingDialogs === 'undefined' || !FloatingDialogs.registerClosable) return;
+            const hasOpen = (id) => {
+                const el = document.getElementById(id);
+                return !!el && el.classList.contains('open');
+            };
+            const removeOpen = (id) => document.getElementById(id)?.classList.remove('open');
+            const reg = (id, close, priority) =>
+                FloatingDialogs.registerClosable({ isOpen: () => hasOpen(id), close, priority });
+
+            reg('dt-layers-dropdown', () => removeOpen('dt-layers-dropdown'), 40);
+            reg('heatmap-dropdown', () => removeOpen('heatmap-dropdown'), 40);
+            reg('building-intel-dialog', () => BuildingIntelDialog.close(), 30);
+            reg('scores-dialog', () => ScoresDialog.close(), 30);
+            reg('disha-panel', () => DISHAPanel.close(), 20);
+            reg('compare-panel', () => Compare.closePanel(), 20);
+            reg('bookmarks-panel', () => Bookmarks.closePanel(), 20);
+            reg('saved-views-panel', () => SavedViews.closePanel(), 20);
+            reg('detail-panel', () => Panel.close(), 10);
+            reg('results-panel', () => removeOpen('results-panel'), 10);
+        });
+
         // First-run onboarding: a once-per-visitor card explaining the two
         // headline interactions. Self-gates on localStorage (no-op on return
         // visits), so it's safe to call unconditionally.

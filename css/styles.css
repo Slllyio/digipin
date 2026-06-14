@@ -2565,6 +2565,14 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: var(--transition);
+}
+
+/* Empty state: keep the badge visible (it advertises the Compare feature) but
+   muted, so it reads as "0 pinned" rather than an active count. */
+.toolbar-badge--empty {
+    background: var(--wash-20);
+    color: var(--text-muted);
 }
 
 /* Toolbar dropdowns — use fixed position to escape overflow:auto clipping */
