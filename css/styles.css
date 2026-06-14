@@ -1269,7 +1269,7 @@ body {
     bottom: -400px;
     left: 50%;
     transform: translateX(-50%);
-    width: 500px;
+    width: min(500px, 95vw);   /* never wider than the viewport on phones */
     max-height: 350px;
     z-index: 1050;
     background: var(--bg-glass);
@@ -1500,6 +1500,7 @@ body {
     cursor: move;
     flex-shrink: 0;
     user-select: none;
+    touch-action: none;   /* let pointer-drag own the gesture; don't scroll the page */
 }
 
 .dialog-titlebar .close-btn {
@@ -1546,6 +1547,7 @@ body {
     cursor: nwse-resize;
     background: linear-gradient(135deg, transparent 50%, var(--accent-soft) 50%);
     border-radius: 0 0 12px 0;
+    touch-action: none;   /* pointer-resize owns the gesture on touch */
 }
 
 .dialog-resize-handle:hover {
@@ -2950,6 +2952,46 @@ body {
     }
 }
 
+/* ===== PHONE (≤480px) ===== */
+@media (max-width: 480px) {
+    /* Top bar: drop the city picker (single-city pilot) and tighten spacing so
+       the search field keeps a usable width instead of collapsing to a sliver. */
+    #top-bar {
+        width: 96%;
+        gap: 6px;
+        padding: 6px 10px;
+    }
+
+    #city-select {
+        display: none;
+    }
+
+    #search-input {
+        min-width: 0;          /* allow the flex item to shrink with the bar… */
+        flex: 1 1 60px;        /* …but never below a tappable 60px */
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    /* Detail panel covers less of the map so the cell stays visible. */
+    #detail-panel {
+        height: 45vh;
+    }
+
+    /* Layers menu never wider than the viewport. */
+    .dt-layers-menu {
+        min-width: min(260px, 88vw);
+        max-width: 92vw;
+    }
+
+    /* Thin scrollbars reclaim horizontal space on small screens. */
+    #detail-panel,
+    #results-panel,
+    .dialog-body {
+        scrollbar-width: thin;
+    }
+}
+
 /* ===== BUILDING INTELLIGENCE CARD ===== */
 .bi-card {
     margin: 8px 0;
@@ -2982,11 +3024,11 @@ body {
 .bi-form-tag {
     display: inline-block;
     padding: 3px 10px;
-    background: rgba(0,245,255,0.1);
-    border: 1px solid rgba(0,245,255,0.2);
+    background: var(--accent-softer);
+    border: 1px solid var(--accent-soft);
     border-radius: 12px;
     font-size: 11px;
-    color: #00f5ff;
+    color: var(--accent-cyan);
     margin-bottom: 10px;
 }
 

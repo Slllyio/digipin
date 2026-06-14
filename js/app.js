@@ -786,13 +786,19 @@ const App = (() => {
                 const isOpen = dtLayersDrop.classList.toggle('open');
                 if (isOpen) {
                     const rect = dtLayersBtn.getBoundingClientRect();
+                    dtLayersDrop.style.left = 'auto';
                     dtLayersDrop.style.top = rect.top + 'px';
                     dtLayersDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
-                    // Clamp bottom edge within viewport
+                    // Clamp within the viewport (phones: the toolbar wraps and the
+                    // right-anchored menu can spill off the top/left edge).
                     requestAnimationFrame(() => {
                         const dropRect = dtLayersDrop.getBoundingClientRect();
                         if (dropRect.bottom > window.innerHeight - 8) {
                             dtLayersDrop.style.top = Math.max(8, window.innerHeight - dropRect.height - 8) + 'px';
+                        }
+                        if (dropRect.left < 8) {
+                            dtLayersDrop.style.right = 'auto';
+                            dtLayersDrop.style.left = '8px';
                         }
                     });
                 }

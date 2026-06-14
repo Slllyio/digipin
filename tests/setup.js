@@ -63,3 +63,4 @@ loadGlobalScript('js/layers-panel.js', ['LayersPanel']);
 loadGlobalScript('js/export-dialog.js', ['ExportDialog']);
 loadGlobalScript('js/bookmarks.js', ['Bookmarks']);
 loadGlobalScript('js/building-intelligence.js', ['BuildingIntelligence']);
+loadGlobalScript('js/floating-dialogs.js', ['FloatingDialogs']);

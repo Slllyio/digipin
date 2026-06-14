@@ -67,7 +67,8 @@ a { color: inherit; text-decoration: none; }
 .hero-body {
     position: relative; z-index: 2;
     margin-top: auto;
-    padding: 0 clamp(20px, 5vw, 64px) clamp(32px, 5vh, 60px);
+    /* Clear the iOS home-bar / gesture inset on phones. */
+    padding: 0 clamp(20px, 5vw, 64px) max(clamp(32px, 5vh, 60px), env(safe-area-inset-bottom));
     max-width: 920px;
 }
 .eyebrow {
@@ -105,7 +106,7 @@ a { color: inherit; text-decoration: none; }
 /* Aino-style floating call-out cards */
 .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 12px; max-width: 860px;
 }
 .card {
