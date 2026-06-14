@@ -31,6 +31,25 @@ const Theme = (() => {
         light: { base: '#c2410c', selected: '#7c3aed' },
     };
 
+    // Semantic colours for JS-built surfaces (overlay legends, MapLibre popups,
+    // canvas charts, pin markers) that can't read CSS variables. Mirrors the
+    // CSS token system: `primary` == --accent-cyan, `ink`/`sub` == text, etc.
+    // A theme switch reloads the page, so reading this at render time is enough.
+    const PALETTE = {
+        dark: {
+            primary: '#00f5ff', primarySoft: 'rgba(0,245,255,0.22)',
+            secondary: '#a855f7', ink: '#e2e8f0', sub: '#94a3b8',
+            surface: 'rgba(10,14,39,0.92)', surfaceSolid: '#111638',
+            border: 'rgba(255,255,255,0.12)', inkOnPrimary: '#0a0e27',
+        },
+        light: {
+            primary: '#c2410c', primarySoft: 'rgba(194,65,12,0.20)',
+            secondary: '#7c3aed', ink: '#1c1917', sub: '#57534e',
+            surface: 'rgba(246,245,241,0.96)', surfaceSolid: '#ffffff',
+            border: 'rgba(28,25,23,0.12)', inkOnPrimary: '#ffffff',
+        },
+    };
+
     function normalize(value) {
         return THEMES.includes(value) ? value : 'dark';
     }
@@ -66,6 +85,11 @@ const Theme = (() => {
         return GRID_COLORS[normalize(theme !== undefined ? theme : get())];
     }
 
+    /** Semantic colours for JS-built surfaces (legends, popups, canvas, pins). */
+    function palette(theme) {
+        return PALETTE[normalize(theme !== undefined ? theme : get())];
+    }
+
     /** Flip theme and reload (preserving the view via URL state). */
     function toggle() {
         const next = get() === 'dark' ? 'light' : 'dark';
@@ -91,7 +115,7 @@ const Theme = (() => {
         }
     }
 
-    return { init, get, set, apply, normalize, toggle, mapStyleUrl, gridColors, THEMES };
+    return { init, get, set, apply, normalize, toggle, mapStyleUrl, gridColors, palette, THEMES };
 })();
 
 if (typeof window !== 'undefined') {

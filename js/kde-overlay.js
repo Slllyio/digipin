@@ -214,22 +214,27 @@ const KDEOverlay = (() => {
     }
 
     const LEGEND_ID = 'kde-legend';
+    function _palette() {
+        if (typeof Theme !== 'undefined' && Theme.palette) return Theme.palette();
+        return { primary: '#00f5ff', sub: '#9bd', ink: '#cfe', surface: 'rgba(10,14,39,0.92)', border: 'rgba(255,255,255,0.12)' };
+    }
     function _renderLegend() {
         let el = document.getElementById(LEGEND_ID);
         if (!el) {
             el = document.createElement('div');
             el.id = LEGEND_ID;
             el.setAttribute('role', 'img');
-            el.style.cssText = 'position:absolute;bottom:24px;left:24px;z-index:5;background:rgba(10,14,39,0.92);'
-                + 'border:1px solid rgba(0,245,255,0.25);border-radius:10px;padding:10px 12px;color:#cfe;'
-                + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.4);';
             document.body.appendChild(el);
         }
+        const pal = _palette();
+        el.style.cssText = `position:absolute;bottom:24px;left:24px;z-index:5;background:${pal.surface};`
+            + `border:1px solid ${pal.border};border-radius:10px;padding:10px 12px;color:${pal.ink};`
+            + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.32);backdrop-filter:blur(8px);';
         el.setAttribute('aria-label', `Kernel-density hotspot of ${_labelFor(_scoreKey)}: dark purple = low, yellow = high`);
         el.innerHTML = `
-            <div style="font-weight:600;margin-bottom:6px;color:#00f5ff;">Hotspot — ${_labelFor(_scoreKey)}</div>
+            <div style="font-weight:600;margin-bottom:6px;color:${pal.primary};">Hotspot — ${_labelFor(_scoreKey)}</div>
             <div style="width:160px;height:12px;border-radius:3px;background:linear-gradient(to right, ${_rampCss()});"></div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:#9bd;margin-top:3px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:${pal.sub};margin-top:3px;">
                 <span>Low</span><span>High</span>
             </div>`;
     }

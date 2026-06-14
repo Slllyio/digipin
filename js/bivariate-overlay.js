@@ -18,6 +18,14 @@ const BivariateOverlay = (() => {
     // Bin thresholds on the 0–100 score scale: low [0,T1) / med [T1,T2) / high [T2,100].
     const T1 = 40, T2 = 70;
 
+    // Theme-aware colours for the inline-styled legend (Theme switch reloads, so
+    // reading at render time is enough). Falls back to dark if Theme is absent.
+    function _palette() {
+        if (typeof Theme !== 'undefined' && Theme.palette) return Theme.palette();
+        return { primary: '#00f5ff', sub: '#9bd', ink: '#cfe',
+            surface: 'rgba(10,14,39,0.92)', surfaceSolid: '#0a0e27', border: 'rgba(255,255,255,0.12)' };
+    }
+
     // Classic Joshua-Stevens bivariate palette. PALETTE[yBin][xBin].
     const PALETTE = [
         ['#e8e8e8', '#ace4e4', '#5ac8c8'],  // y-low
@@ -183,11 +191,13 @@ const BivariateOverlay = (() => {
             el.id = LEGEND_ID;
             el.setAttribute('role', 'group');
             el.setAttribute('aria-label', 'Bivariate map legend and axis selectors');
-            el.style.cssText = 'position:absolute;bottom:24px;left:24px;z-index:5;background:rgba(10,14,39,0.92);'
-                + 'border:1px solid rgba(0,245,255,0.25);border-radius:10px;padding:12px 14px;color:#cfe;'
-                + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.4);';
             document.body.appendChild(el);
         }
+        const pal = _palette();
+        el.style.cssText = `position:absolute;bottom:24px;left:24px;z-index:5;background:${pal.surface};`
+            + `border:1px solid ${pal.border};border-radius:10px;padding:12px 14px;color:${pal.ink};`
+            + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.32);backdrop-filter:blur(8px);';
+        const sel = `background:${pal.surfaceSolid};color:${pal.ink};border:1px solid ${pal.border};border-radius:4px;`;
         const opts = SCORE_OPTIONS.map(o => `<option value="${o.key}">${o.label}</option>`).join('');
         // 3×3 swatch grid (rows top=high Y → bottom=low Y so it reads like an axis).
         let grid = '<div style="display:grid;grid-template-columns:repeat(3,16px);gap:2px;">';
@@ -198,14 +208,14 @@ const BivariateOverlay = (() => {
         }
         grid += '</div>';
         el.innerHTML = `
-            <div style="font-weight:600;margin-bottom:8px;color:#00f5ff;">Bivariate Map</div>
+            <div style="font-weight:600;margin-bottom:8px;color:${pal.primary};">Bivariate Map</div>
             <div style="display:flex;align-items:flex-end;gap:8px;">
-                <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;color:#9bd;">${_labelFor(_keyY)} →</div>
+                <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:11px;color:${pal.sub};">${_labelFor(_keyY)} →</div>
                 ${grid}
             </div>
-            <div style="text-align:center;font-size:11px;color:#9bd;margin:4px 0 10px 22px;">${_labelFor(_keyX)} →</div>
-            <label style="display:block;margin-bottom:4px;">X &nbsp;<select id="biv-x" style="background:#0a0e27;color:#cfe;border:1px solid #245;border-radius:4px;">${opts}</select></label>
-            <label style="display:block;">Y &nbsp;<select id="biv-y" style="background:#0a0e27;color:#cfe;border:1px solid #245;border-radius:4px;">${opts}</select></label>`;
+            <div style="text-align:center;font-size:11px;color:${pal.sub};margin:4px 0 10px 22px;">${_labelFor(_keyX)} →</div>
+            <label style="display:block;margin-bottom:4px;">X &nbsp;<select id="biv-x" style="${sel}">${opts}</select></label>
+            <label style="display:block;">Y &nbsp;<select id="biv-y" style="${sel}">${opts}</select></label>`;
         el.querySelector('#biv-x').value = _keyX;
         el.querySelector('#biv-y').value = _keyY;
         el.querySelector('#biv-x').onchange = (e) => { _keyX = e.target.value; _renderLegend(); _restart(); };

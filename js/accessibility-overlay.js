@@ -159,6 +159,10 @@ const AccessibilityOverlay = (() => {
         }
     }
 
+    function _palette() {
+        if (typeof Theme !== 'undefined' && Theme.palette) return Theme.palette();
+        return { primary: '#00f5ff', sub: '#9bd', ink: '#cfe', surface: 'rgba(10,14,39,0.92)', surfaceSolid: '#0a0e27', border: 'rgba(255,255,255,0.12)' };
+    }
     function _renderLegend() {
         let el = document.getElementById(LEGEND_ID);
         if (!el) {
@@ -166,19 +170,21 @@ const AccessibilityOverlay = (() => {
             el.id = LEGEND_ID;
             el.setAttribute('role', 'group');
             el.setAttribute('aria-label', 'Accessibility coverage legend and amenity selector');
-            el.style.cssText = 'position:absolute;bottom:24px;left:24px;z-index:5;background:rgba(10,14,39,0.92);'
-                + 'border:1px solid rgba(0,245,255,0.25);border-radius:10px;padding:10px 12px;color:#cfe;'
-                + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.4);';
             document.body.appendChild(el);
         }
+        const pal = _palette();
+        el.style.cssText = `position:absolute;bottom:24px;left:24px;z-index:5;background:${pal.surface};`
+            + `border:1px solid ${pal.border};border-radius:10px;padding:10px 12px;color:${pal.ink};`
+            + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.32);backdrop-filter:blur(8px);';
+        const sel = `background:${pal.surfaceSolid};color:${pal.ink};border:1px solid ${pal.border};border-radius:4px;`;
         const opts = AMENITY_OPTIONS.map(o => `<option value="${o.key}">${o.label}</option>`).join('');
         const rows = BANDS.map(b => `<div style="display:flex;align-items:center;gap:6px;margin:2px 0;">`
             + `<span style="width:14px;height:14px;border-radius:3px;background:${b.color};"></span>`
-            + `<span>${b.level} <span style="color:#9bd;">${b.hint}</span></span></div>`).join('');
+            + `<span>${b.level} <span style="color:${pal.sub};">${b.hint}</span></span></div>`).join('');
         el.innerHTML = `
-            <div style="font-weight:600;margin-bottom:6px;color:#00f5ff;">Accessibility</div>
+            <div style="font-weight:600;margin-bottom:6px;color:${pal.primary};">Accessibility</div>
             <label style="display:block;margin-bottom:8px;">Amenity
-                <select id="access-sel" style="background:#0a0e27;color:#cfe;border:1px solid #245;border-radius:4px;">${opts}</select>
+                <select id="access-sel" style="${sel}">${opts}</select>
             </label>
             ${rows}`;
         el.querySelector('#access-sel').value = _amenity;
