@@ -56,3 +56,36 @@ describe('FloatingDialogs.clampSize()', () => {
         expect(height).toBeLessThanOrEqual(VH);
     });
 });
+
+describe('FloatingDialogs Escape-to-close registry', () => {
+    // _closables is a module singleton that accumulates across tests, so each
+    // closable here defaults to closed (isOpen → its own flag) and resets — only
+    // the surface a given test marks open participates.
+    it('closes the highest-priority open surface and reports it closed', () => {
+        const log = [];
+        let panelOpen = false, dropdownOpen = false;
+        FD.registerClosable({ isOpen: () => panelOpen, close: () => { panelOpen = false; log.push('panel'); }, priority: 10 });
+        FD.registerClosable({ isOpen: () => dropdownOpen, close: () => { dropdownOpen = false; log.push('dropdown'); }, priority: 40 });
+
+        panelOpen = true; dropdownOpen = true;
+        expect(FD.closeTopmost()).toBe(true);
+        expect(log).toEqual(['dropdown']);    // priority 40 beats 10
+        expect(dropdownOpen).toBe(false);
+        expect(panelOpen).toBe(true);         // only ONE surface closes per press
+
+        // A second press now closes the panel.
+        expect(FD.closeTopmost()).toBe(true);
+        expect(log).toEqual(['dropdown', 'panel']);
+        panelOpen = false;
+    });
+
+    it('returns false when nothing is open', () => {
+        expect(FD.closeTopmost()).toBe(false);
+    });
+
+    it('ignores malformed descriptors', () => {
+        expect(() => FD.registerClosable(null)).not.toThrow();
+        expect(() => FD.registerClosable({ isOpen: () => true })).not.toThrow(); // no close()
+        expect(FD.closeTopmost()).toBe(false); // the bad descriptor was not registered
+    });
+});
