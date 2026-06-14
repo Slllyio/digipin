@@ -21,6 +21,12 @@ test.describe('App boot smoke', () => {
   test.beforeEach(async ({ page }) => {
     pageErrors = [];
     page.on('pageerror', (err) => pageErrors.push(String(err && err.message || err)));
+    // Suppress the first-run onboarding modal — it's a full-screen overlay that
+    // would intercept toolbar clicks. Seeding the "seen" flag mirrors a return
+    // visit and keeps this smoke test focused on the map/overlays.
+    await page.addInitScript(() => {
+      try { localStorage.setItem('digipin_onboarded', 'done'); } catch { /* storage blocked */ }
+    });
   });
 
   test('boots: map canvas, collapsed toolbar, and core globals present', async ({ page }) => {
