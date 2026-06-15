@@ -9,7 +9,10 @@ const { defineConfig, devices } = require('@playwright/test');
 
 module.exports = defineConfig({
   testDir: './tests/playwright',
-  testMatch: /smoke\.spec\.js/,
+  // Deterministic specs only — smoke + the offline/workflow guards. The older
+  // realtime-panels / growth-widget specs depend on live upstream data and are
+  // kept for local use, so they're excluded.
+  testMatch: /(smoke|workflows|offline)\.spec\.js/,
   timeout: 60_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
