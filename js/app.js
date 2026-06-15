@@ -864,9 +864,21 @@ const App = (() => {
     }
 
     function registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(() => {});
-        }
+        if (!('serviceWorker' in navigator)) return;
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+            // When a new SW is found and finishes installing while an old one is
+            // still controlling the page, the fresh app shell is cached but not
+            // yet live — nudge the user to refresh rather than serve stale code.
+            reg.addEventListener('updatefound', () => {
+                const sw = reg.installing;
+                if (!sw) return;
+                sw.addEventListener('statechange', () => {
+                    if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+                        showToast('Update ready', 'Refresh to load the latest DigiPin', 'info');
+                    }
+                });
+            });
+        }).catch(() => { /* SW unsupported or registration blocked — app still works online */ });
     }
 
     function showToast(title, message, type = 'info') {
