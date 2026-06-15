@@ -225,6 +225,21 @@ const Text2Map = (() => {
             const llm = await parseWithLLM(question);
             if (llm) return llm;
         }
+        // Optional neural-semantic tier: returns null until its model has warmed
+        // up in the background (and on any failure), so it never blocks or breaks
+        // — the lexicon answers instantly meanwhile.
+        if (typeof Text2MapEmbeddings !== 'undefined') {
+            try {
+                const ids = validScoreIds();
+                const labelFor = (id) => {
+                    const s = (typeof DataFetcher !== 'undefined' && DataFetcher.computeScores)
+                        ? DataFetcher.computeScores({})[id] : null;
+                    return (s && s.label) || id;
+                };
+                const emb = await Text2MapEmbeddings.rank(question, ids, labelFor);
+                if (emb) return emb;
+            } catch { /* embeddings tier is best-effort — fall through */ }
+        }
         // Offline/no-provider: the concept lexicon understands paraphrases and
         // compound intents; the single-match canned query is the last resort.
         return parseWithLexicon(question) || parseWithKeywords(question);

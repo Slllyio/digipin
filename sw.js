@@ -44,6 +44,7 @@ const LOCAL_ASSETS = [
     './js/disha-cache.js',
     './js/disha-providers.js',
     './js/disha.js',
+    './js/text2map-embeddings.js',
     './js/text2map.js',
     './js/disha-panel.js',
     './js/compare.js',

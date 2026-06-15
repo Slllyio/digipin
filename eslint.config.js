@@ -28,7 +28,7 @@ const APP_GLOBALS = {
   RealtimeAlerts: 'readonly', RealtimeIMD: 'readonly', RealtimeQuakes: 'readonly',
   BivariateOverlay: 'readonly', NDVIOverlay: 'readonly', Viewshed: 'readonly',
   KDEOverlay: 'readonly', AccessibilityOverlay: 'readonly',
-  PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly', Text2Map: 'readonly',
+  PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly', Text2Map: 'readonly', Text2MapEmbeddings: 'readonly',
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly',
   LayersPanel: 'readonly', ExportDialog: 'readonly', Onboarding: 'readonly',
   DIGIPIN_CONFIG: 'readonly',

@@ -66,3 +66,4 @@ loadGlobalScript('js/bookmarks.js', ['Bookmarks']);
 loadGlobalScript('js/building-intelligence.js', ['BuildingIntelligence']);
 loadGlobalScript('js/floating-dialogs.js', ['FloatingDialogs']);
 loadGlobalScript('js/onboarding.js', ['Onboarding']);
+loadGlobalScript('js/text2map-embeddings.js', ['Text2MapEmbeddings']);
