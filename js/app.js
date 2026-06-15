@@ -16,7 +16,13 @@ const App = (() => {
         // rest of init (e.g. a dialog bug shouldn't block the toolbar or the
         // service-worker registration that provides offline support).
         const step = (name, fn) => {
-            try { fn(); } catch (e) { console.error(`[init] ${name} failed:`, e); }
+            try { fn(); } catch (e) {
+                console.error(`[init] ${name} failed:`, e);
+                // Surface it (not just to the console) so a broken widget is
+                // visible — the rest of init still runs, so it's a warning.
+                try { showToast(`${name} unavailable`, 'This part failed to load; the rest of the app still works.', 'warning'); }
+                catch { /* toast itself unavailable this early — console.error already logged it */ }
+            }
         };
 
         // Theme first: MapModule.init reads Theme for the basemap + grid colours.
@@ -121,8 +127,11 @@ const App = (() => {
             } else {
                 setSearching(true);
                 try {
+                    // Cap the geocoder request \u2014 a slow/unreachable Nominatim
+                    // would otherwise leave the search button spinning forever.
                     const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=1`, {
-                        headers: { 'User-Agent': 'DigiPinUrbanIntelligence/1.0' }
+                        headers: { 'User-Agent': 'DigiPinUrbanIntelligence/1.0' },
+                        signal: AbortSignal.timeout(8000)
                     });
                     const results = await resp.json();
                     if (results.length > 0) {
@@ -134,7 +143,10 @@ const App = (() => {
                         showToast('Not Found', 'No results for "' + query + '"', 'error');
                     }
                 } catch (e) {
-                    showToast('Search Error', e.message, 'error');
+                    const msg = (e && (e.name === 'TimeoutError' || e.name === 'AbortError'))
+                        ? 'Search timed out \u2014 please try again.'
+                        : (e && e.message) || 'Search failed.';
+                    showToast('Search Error', msg, 'error');
                 } finally {
                     setSearching(false);
                 }
