@@ -72,8 +72,11 @@
 </head>
 <body>
 
+    <!-- Keyboard/screen-reader skip link — first focusable element. -->
+    <a href="#map" class="skip-link">Skip to map</a>
+
     <!-- ===== MAP ===== -->
-    <div id="map" role="application" aria-label="Interactive DigiPin grid map of India"></div>
+    <div id="map" role="application" aria-label="Interactive DigiPin grid map of India" tabindex="-1"></div>
 
     <!-- ===== TOP BAR ===== -->
     <div id="top-bar" role="search" aria-label="Search for locations">
@@ -176,7 +179,7 @@
         <button id="sidebar-toggle" aria-label="Toggle sidebar" aria-expanded="true">←</button>
         <div class="sidebar-content">
             <div class="sidebar-title">🧠 Urban Queries</div>
-            <div id="query-list" role="list" aria-label="Available queries"></div>
+            <div id="query-list" role="group" aria-label="Available queries"></div>
         </div>
     </nav>
 

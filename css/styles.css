@@ -1,6 +1,29 @@
 /* DigiPin Urban Intelligence — themable: Premium Dark (default) + Paper Light */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
+/* Skip link — off-screen until focused, then drops in at top-left. Neutral
+   card colours so it reads in both themes. */
+.skip-link {
+    position: fixed;
+    top: -64px;
+    left: 12px;
+    z-index: 3000;
+    padding: 10px 16px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--accent-cyan);
+    border-radius: 0 0 8px 8px;
+    font-weight: 700;
+    text-decoration: none;
+    backdrop-filter: blur(8px);
+    transition: top 0.15s ease;
+}
+.skip-link:focus {
+    top: 0;
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 2px;
+}
+
 :root {
     --bg-primary: #0a0e27;
     --bg-secondary: #111638;
