@@ -121,6 +121,86 @@ const Text2Map = (() => {
         return validateWeights(parseModelJSON(raw), ids);
     }
 
+    /**
+     * Concept lexicon — maps natural-language ideas to weightings over the real
+     * score vocabulary. Unlike the single-match regex fallback, EVERY matched
+     * concept contributes, so compound/paraphrased questions ("family area with
+     * good schools and low flood risk") combine cleanly. Fully offline + audit-
+     * able (no model). Weights follow the same conventions the LLM path uses
+     * (-1..1; note noise_estimate is a *quietness* score — higher = quieter —
+     * and flood_risk is *risk* — higher = worse).
+     */
+    const LEXICON = [
+        { re: /\bfamil(?:y|ies)\b|\bkids?\b|\bchild(?:ren)?\b|raising|parenting/, label: 'Family-friendly',
+          w: { education_score: 0.7, safety: 0.6, green: 0.4, healthcare_access: 0.4, noise_estimate: 0.3, flood_risk: -0.3 } },
+        { re: /young professional|professionals|nightlife|vibrant|trendy|happening|buzzing|lively|singles?\b/, label: 'Young-professional',
+          w: { entertainment_score: 0.7, commercial: 0.6, digital_readiness: 0.5, connectivity: 0.5, food_diversity: 0.4 } },
+        { re: /quiet|peaceful|calm|serene|tranquil|low noise|less noise/, label: 'Quiet',
+          w: { noise_estimate: 0.8, green: 0.4 } },
+        { re: /school|education|college|universit|campus|student/, label: 'Good schools',
+          w: { education_score: 0.9 } },
+        { re: /health|hospital|medical|clinic|pharmac|doctor/, label: 'Healthcare access',
+          w: { healthcare_access: 0.9 } },
+        { re: /flood|waterlog|water[- ]?log|drainage|inundation|flood[- ]?safe|flood[- ]?free|low[- ]?lying/, label: 'Flood-safe',
+          w: { flood_risk: -0.9 } },
+        { re: /\bsafe(?:ty)?\b|secure|security|low crime|crime[- ]?free|dangerous/, label: 'Safe',
+          w: { safety: 0.9 } },
+        { re: /\bgreen\b|parks?\b|nature|trees?\b|greenery|open space|garden/, label: 'Green',
+          w: { green: 0.9 } },
+        { re: /walkab|pedestrian|on foot|stroll|\bwalk\b/, label: 'Walkable',
+          w: { walkability: 0.9 } },
+        { re: /transit|metro|\bbus\b|public transport|commut|well[- ]?connected|connectivity/, label: 'Well-connected',
+          w: { connectivity: 0.8, public_service: 0.4 } },
+        { re: /shop|retail|market|\bmall\b|commercial|\bbusiness\b/, label: 'Commercial',
+          w: { commercial: 0.8, food_diversity: 0.3 } },
+        { re: /\bfood\b|restaurant|dining|cafe|eatery|cuisine|foodie/, label: 'Food & dining',
+          w: { food_diversity: 0.8, entertainment_score: 0.4 } },
+        { re: /invest|property|real[- ]?estate|appreciat|capital growth|\broi\b|returns?/, label: 'Investment',
+          w: { investment: 0.7, real_estate_growth: 0.7, development_potential: 0.5 } },
+        { re: /it hub|\btech\b|technology|startup|start-up|co[- ]?working|coworking|digital|software/, label: 'IT / tech hub',
+          w: { digital_readiness: 0.7, commercial: 0.5, connectivity: 0.5 } },
+        { re: /luxur|premium|upscale|high[- ]?end|posh|elite|plush/, label: 'Upscale',
+          w: { real_estate_growth: 0.5, investment: 0.5, material_quality: 0.6, noise_estimate: 0.3 } },
+        { re: /touris|heritage|sightsee|landmark|attraction/, label: 'Tourism',
+          w: { tourism: 0.9 } },
+        { re: /senior|elderly|retire|old age/, label: 'Senior-friendly',
+          w: { healthcare_access: 0.6, safety: 0.5, green: 0.4, noise_estimate: 0.4 } },
+        { re: /livab|liveab|comfortable|quality of life|good place to live|settle/, label: 'Livable',
+          w: { livability: 0.9 } },
+        { re: /clean air|air quality|pollution|\baqi\b|fresh air|breathe/, label: 'Cleaner air',
+          w: { green: 0.6, noise_estimate: 0.3 } },
+        { re: /\bdense\b|density|bustling|\bbusy\b|crowded|central/, label: 'Central / dense',
+          w: { urban_compactness: 0.6, population_proxy: 0.4, commercial: 0.4 } },
+        { re: /affordable|budget|cheap|low[- ]?cost|economical/, label: 'Affordable',
+          w: { real_estate_growth: -0.3, investment: -0.2 } },
+    ];
+
+    /** Accumulate weights from every matched concept; clamp to [-1,1]. Returns a
+     *  {weights, primaryScore, label, source:'lexicon'} or null on no match. */
+    function parseWithLexicon(question) {
+        if (typeof question !== 'string' || !question.trim()) return null;
+        const q = question.toLowerCase();
+        const allow = new Set(validScoreIds());
+        const weights = {};
+        const labels = [];
+
+        for (const entry of LEXICON) {
+            if (!entry.re.test(q)) continue;
+            labels.push(entry.label);
+            for (const [id, w] of Object.entries(entry.w)) {
+                if (allow.size && !allow.has(id)) continue;   // self-heal if a score id is renamed
+                weights[id] = Math.max(-1, Math.min(1, (weights[id] || 0) + w));
+            }
+        }
+
+        const keys = Object.keys(weights);
+        if (!keys.length) return null;
+
+        const primaryScore = keys.reduce((a, b) => (Math.abs(weights[b]) > Math.abs(weights[a]) ? b : a));
+        const label = labels.slice(0, 3).join(' + ') || 'Custom ranking';
+        return { weights, primaryScore, label, source: 'lexicon' };
+    }
+
     /** Fallback parser: map the question to a canned SECTORS query's weights. */
     function parseWithKeywords(question) {
         if (typeof DISHA === 'undefined' || typeof QueryEngine === 'undefined') return null;
@@ -145,12 +225,17 @@ const Text2Map = (() => {
             const llm = await parseWithLLM(question);
             if (llm) return llm;
         }
-        return parseWithKeywords(question);
+        // Offline/no-provider: the concept lexicon understands paraphrases and
+        // compound intents; the single-match canned query is the last resort.
+        return parseWithLexicon(question) || parseWithKeywords(question);
     }
 
-    /** True when natural-language parsing is available (a provider is connected). */
+    /** True when natural-language parsing is available. The lexicon parses NL
+     *  offline, so this is always true once the score vocabulary is loaded; a
+     *  connected provider just upgrades the quality. */
     function canParseNaturally() {
-        return typeof DISHAProviders !== 'undefined' && DISHAProviders.isConnected();
+        return (typeof DISHAProviders !== 'undefined' && DISHAProviders.isConnected())
+            || validScoreIds().length > 0;
     }
 
     /**
@@ -198,6 +283,7 @@ const Text2Map = (() => {
         run,
         parse,
         parseWithLLM,
+        parseWithLexicon,
         parseWithKeywords,
         parseModelJSON,
         validateWeights,
