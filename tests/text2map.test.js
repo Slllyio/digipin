@@ -122,19 +122,67 @@ describe('Text2Map.parse() — LLM-required primary, keyword fallback', () => {
         expect(out.source).toBe('llm');
     });
 
-    it('falls back to keywords when no provider is connected', async () => {
+    it('falls back to the lexicon when no provider is connected', async () => {
         DISHAProviders.isConnected = () => false;
         DISHAProviders.stream = vi.fn();
         const out = await T.parse('family area with schools');
-        expect(out.source).toBe('keyword');
+        expect(out.source).toBe('lexicon');
         expect(DISHAProviders.stream).not.toHaveBeenCalled();
     });
 
-    it('falls back to keywords when the LLM reply is unusable', async () => {
+    it('falls back to the lexicon when the LLM reply is unusable', async () => {
         DISHAProviders.isConnected = () => true;
         DISHAProviders.stream = vi.fn(async () => 'sorry');
         const out = await T.parse('family area with schools');
+        expect(out.source).toBe('lexicon');
+    });
+
+    it('falls back to the canned keyword query when the lexicon matches nothing', async () => {
+        DISHAProviders.isConnected = () => false;
+        // No lexicon concept matches → single-match keyword default still answers.
+        const out = await T.parse('zzz qqq');
         expect(out.source).toBe('keyword');
+    });
+});
+
+describe('Text2Map.parseWithLexicon() — offline concept matching', () => {
+    it('combines weights from every matched concept (compound intent)', () => {
+        const out = T.parseWithLexicon('family-friendly area near good schools with low flood risk');
+        expect(out.source).toBe('lexicon');
+        expect(out.weights.education_score).toBeGreaterThan(0);   // schools + family
+        expect(out.weights.flood_risk).toBeLessThan(0);          // "low flood risk" → avoid risk
+        expect(out.label).toMatch(/Family|schools|Flood/i);
+    });
+
+    it('resolves paraphrases the old single-regex missed', () => {
+        // "young professionals / nightlife" never matched the legacy regex.
+        const out = T.parseWithLexicon('lively area for young professionals with good nightlife');
+        expect(out).not.toBeNull();
+        expect(out.weights.entertainment_score).toBeGreaterThan(0);
+        expect(out.weights.commercial).toBeGreaterThan(0);
+    });
+
+    it('points quietness and flood weights in the correct direction', () => {
+        const quiet = T.parseWithLexicon('a quiet peaceful neighbourhood');
+        expect(quiet.weights.noise_estimate).toBeGreaterThan(0);  // higher = quieter
+        const flood = T.parseWithLexicon('flood-safe location');
+        expect(flood.weights.flood_risk).toBeLessThan(0);         // higher = riskier
+    });
+
+    it('only emits ids in the live score vocabulary, clamped to [-1,1]', () => {
+        const allow = new Set(T.validScoreIds());
+        const out = T.parseWithLexicon('investment property with great schools, parks, transit and food');
+        for (const [id, w] of Object.entries(out.weights)) {
+            expect(allow.has(id), `unknown score id ${id}`).toBe(true);
+            expect(w).toBeGreaterThanOrEqual(-1);
+            expect(w).toBeLessThanOrEqual(1);
+        }
+        expect(out.weights[out.primaryScore]).toBeDefined();
+    });
+
+    it('returns null on an empty or concept-free question', () => {
+        expect(T.parseWithLexicon('')).toBeNull();
+        expect(T.parseWithLexicon('zzz qqq')).toBeNull();
     });
 });
 
