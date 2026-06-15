@@ -52,3 +52,49 @@ def test_unknown_region_raises(monkeypatch):
     importlib.reload(regions)
     with pytest.raises(ValueError, match="unknown DIGIPIN_REGION"):
         regions.get_default_bbox()
+
+
+# ── Phase 1 multi-city registry ──────────────────────────────────────────────
+
+def test_every_city_pilot_has_a_bbox_and_extract():
+    assert "indore_pilot" in regions.CITY_PILOTS
+    for city in regions.CITY_PILOTS:
+        w, s, e, n = regions.bbox_for(city)
+        assert w < e and s < n, f"{city} bbox not ordered"
+        url = regions.geofabrik_url(city)
+        assert url.startswith("https://download.geofabrik.de/asia/india/")
+        assert url.endswith("-latest.osm.pbf")
+
+
+def test_known_city_centroids_fall_in_their_bbox():
+    centroids = {
+        "bhopal": (77.41, 23.25), "pune": (73.86, 18.52), "mumbai": (72.88, 19.08),
+        "bengaluru": (77.59, 12.97), "hyderabad": (78.47, 17.39),
+        "chennai": (80.27, 13.08), "delhi": (77.21, 28.61),
+    }
+    for city, (lon, lat) in centroids.items():
+        w, s, e, n = regions.bbox_for(city)
+        assert w <= lon <= e and s <= lat <= n, f"{city} centroid outside bbox"
+
+
+def test_clip_bbox_buffers_the_region():
+    # ~1 km (0.01°) buffer on every side; matches the Indore value the workflow
+    # used to hardcode (75.59,22.49,76.01,22.91).
+    assert regions.clip_bbox_str("indore_pilot") == "75.5900,22.4900,76.0100,22.9100"
+
+
+def test_dem_tiles_cover_the_bbox_corners():
+    # Delhi spans the 77°E meridian → two 1°×1° GLO-30 tiles.
+    tiles = regions.dem_tiles_for("delhi")
+    assert (28, 76) in tiles and (28, 77) in tiles
+    # Indore's core sits in N22/E075; the ~1 km buffer nudges its east edge
+    # past 76°E, so edge cells also need N22/E076 — both are returned.
+    assert regions.dem_tiles_for("indore_pilot") == [(22, 75), (22, 76)]
+    for url in regions.dem_tile_urls("delhi"):
+        assert url.startswith("https://copernicus-dem-30m.s3.amazonaws.com/")
+        assert url.endswith(".tif")
+
+
+def test_geofabrik_url_rejects_national_fallback():
+    with pytest.raises(ValueError, match="no Geofabrik extract"):
+        regions.geofabrik_url("india_full")

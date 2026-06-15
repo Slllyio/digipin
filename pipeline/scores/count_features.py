@@ -15,8 +15,9 @@ Two stages, matching docs/PRECOMPUTE_PLAN.md:
    ``(around:400,lat,lng)`` disc semantics — a cell-rectangle count (~6 ha) would
    deflate every ``norm_log`` score calibrated for a ~50 ha disc.
 
-Known v1 gap: relations (multipolygon parks/rivers/landuse) are not counted —
-nodes + ways only. Measured, not assumed, by scripts/spot_check_parity.py.
+Multipolygon relations (parks/rivers/landuse mapped as relations, not closed
+ways) are assembled via pyosmium's area handler and counted by outer-ring bbox
+centre; areas built from closed ways are skipped to avoid double-counting.
 """
 from __future__ import annotations
 
@@ -67,9 +68,17 @@ def _add(bins: Bins, lat: float, lon: float, tags: dict) -> None:
 
 
 def build_bins(pbf_path: str, fine_level: int = FINE_LEVEL) -> Bins:
-    """Stream the extract once, binning classified nodes + ways at ``fine_level``."""
+    """Stream the extract once, binning classified nodes, ways and multipolygon
+    relations at ``fine_level``.
+
+    Multipolygon relations (parks/lakes/landuse mapped as relations rather than
+    closed ways) are assembled via pyosmium's area handler and counted by their
+    outer-ring bbox centre — matching the way representative point. Areas built
+    *from a closed way* are skipped here because that way is already counted in
+    the way branch, so nothing is double-counted.
+    """
     bins = Bins(fine_level)
-    fp = osmium.FileProcessor(pbf_path).with_locations()
+    fp = osmium.FileProcessor(pbf_path).with_locations().with_areas()
     for o in fp:
         if o.is_node():
             loc = o.location
@@ -83,8 +92,21 @@ def build_bins(pbf_path: str, fine_level: int = FINE_LEVEL) -> Bins:
                 continue
             lat = (min(lats) + max(lats)) / 2.0   # node-bbox centre (out center)
             lon = (min(lons) + max(lons)) / 2.0
+        elif o.is_area():
+            if o.from_way():
+                continue  # the closed way is already counted in the way branch
+            lats, lons = [], []
+            for ring in o.outer_rings():
+                for nd in ring:
+                    if nd.location.valid():
+                        lats.append(nd.location.lat)
+                        lons.append(nd.location.lon)
+            if not lats:
+                continue
+            lat = (min(lats) + max(lats)) / 2.0   # outer-ring bbox centre
+            lon = (min(lons) + max(lons)) / 2.0
         else:
-            continue  # relations: v1 gap (measured by the spot check)
+            continue  # bare relation object — counted via its assembled area
         tags = dict(o.tags)
         if tags:
             _add(bins, lat, lon, tags)

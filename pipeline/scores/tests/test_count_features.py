@@ -102,3 +102,53 @@ def test_env_sampler_is_merged(fixture_pbf):
     counter = count_features.make_feature_counter(bins, radius_m=400.0, env_sampler=sampler)
     data = counter(_cell(_LAT, _LON))
     assert data["environment"]["populationDensity"]["personsPerHectare"] == 150
+
+
+# ── Multipolygon relations (Phase 1 #4) ──────────────────────────────────────
+
+def _square_nodes(base_id, lat, lon, d=0.0005):
+    return (
+        f'<node id="{base_id}" lat="{lat - d}" lon="{lon - d}"/>'
+        f'<node id="{base_id + 1}" lat="{lat - d}" lon="{lon + d}"/>'
+        f'<node id="{base_id + 2}" lat="{lat + d}" lon="{lon + d}"/>'
+        f'<node id="{base_id + 3}" lat="{lat + d}" lon="{lon - d}"/>'
+    )
+
+
+def _park_relation_osm(tmp_path):
+    # A park mapped as a MULTIPOLYGON RELATION (untagged outer way + tagged
+    # relation) centred on (_LAT, _LON) — the v1 gap this fixture exercises.
+    nodes = _square_nodes(20, _LAT, _LON)
+    ways = '<way id="200"><nd ref="20"/><nd ref="21"/><nd ref="22"/><nd ref="23"/><nd ref="20"/></way>'
+    rels = ('<relation id="300">'
+            '<member type="way" ref="200" role="outer"/>'
+            '<tag k="type" v="multipolygon"/><tag k="leisure" v="park"/>'
+            '</relation>')
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n<osm version="0.6" generator="test">\n'
+           + nodes + ways + rels + '\n</osm>\n')
+    p = tmp_path / "park_rel.osm"
+    p.write_text(xml)
+    return str(p)
+
+
+def test_multipolygon_relation_is_counted(tmp_path):
+    bins = count_features.build_bins(_park_relation_osm(tmp_path))
+    counter = count_features.make_feature_counter(bins, radius_m=400.0)
+    parks = counter(_cell(_LAT, _LON))["categories"]["leisure"]["features"]["parks"]
+    assert parks["count"] == 1, "multipolygon-relation park should be counted once"
+
+
+def test_closed_way_park_is_not_double_counted(tmp_path):
+    # Same park, but mapped as a TAGGED CLOSED WAY. The area handler also yields
+    # it as a from_way area; that must be skipped so it counts once, not twice.
+    nodes = _square_nodes(20, _LAT, _LON)
+    ways = ('<way id="200"><nd ref="20"/><nd ref="21"/><nd ref="22"/><nd ref="23"/><nd ref="20"/>'
+            '<tag k="leisure" v="park"/></way>')
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n<osm version="0.6" generator="test">\n'
+           + nodes + ways + '\n</osm>\n')
+    p = tmp_path / "park_way.osm"
+    p.write_text(xml)
+    bins = count_features.build_bins(str(p))
+    counter = count_features.make_feature_counter(bins, radius_m=400.0)
+    parks = counter(_cell(_LAT, _LON))["categories"]["leisure"]["features"]["parks"]
+    assert parks["count"] == 1, "closed-way park must not be double-counted via its area"
