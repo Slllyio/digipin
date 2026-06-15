@@ -340,14 +340,23 @@ const DataFetcher = (() => {
         return entry.data;
     }
 
+    let _idbWarned = false;
     function _cacheSet(key, data) {
         if (_cache.size >= MAX_CACHE) {
             const oldest = _cache.keys().next().value;
             _cache.delete(oldest);
         }
         _cache.set(key, { data, time: Date.now() });
-        // Write-through to IndexedDB (async, non-blocking)
-        _idbSet(key, data).catch(() => {});
+        // Write-through to IndexedDB (async, non-blocking). If persistence
+        // fails (storage full / blocked / private mode), the in-memory cache
+        // still works — warn once so the degraded offline support is visible
+        // instead of silently swallowed.
+        _idbSet(key, data).catch((e) => {
+            if (!_idbWarned) {
+                _idbWarned = true;
+                console.warn('[DataFetcher] offline cache persistence unavailable; continuing in-memory only:', e && e.message);
+            }
+        });
     }
 
     // ===== IndexedDB PERSISTENT CACHE =====

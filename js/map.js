@@ -117,19 +117,29 @@ const MapModule = (() => {
             }
         });
 
-        // Hover events
-        map.on('mousemove', 'digipin-grid-fill', (e) => {
-            if (e.features.length > 0) {
-                if (hoveredCellId !== null && hoveredCellId !== e.features[0].id) {
-                    map.setFeatureState({ source: 'digipin-grid', id: hoveredCellId }, { hover: false });
-                }
-                hoveredCellId = e.features[0].id;
-                map.setFeatureState({ source: 'digipin-grid', id: hoveredCellId }, { hover: true });
-                map.getCanvas().style.cursor = 'pointer';
+        // Hover events — mousemove fires 60+×/sec; coalesce to one
+        // setFeatureState per animation frame so fast drags don't thrash.
+        let _hoverRaf = null, _pendingHoverId = null;
+        const _applyHover = () => {
+            _hoverRaf = null;
+            const id = _pendingHoverId;
+            if (id == null) return;
+            if (hoveredCellId !== null && hoveredCellId !== id) {
+                map.setFeatureState({ source: 'digipin-grid', id: hoveredCellId }, { hover: false });
             }
+            hoveredCellId = id;
+            map.setFeatureState({ source: 'digipin-grid', id }, { hover: true });
+            map.getCanvas().style.cursor = 'pointer';
+        };
+        map.on('mousemove', 'digipin-grid-fill', (e) => {
+            if (e.features.length === 0) return;
+            _pendingHoverId = e.features[0].id;
+            if (_hoverRaf == null) _hoverRaf = requestAnimationFrame(_applyHover);
         });
 
         map.on('mouseleave', 'digipin-grid-fill', () => {
+            if (_hoverRaf != null) { cancelAnimationFrame(_hoverRaf); _hoverRaf = null; }
+            _pendingHoverId = null;
             if (hoveredCellId !== null) {
                 map.setFeatureState({ source: 'digipin-grid', id: hoveredCellId }, { hover: false });
             }
