@@ -5,6 +5,7 @@
 const Panel = (() => {
     let panelEl, contentEl, titleEl, currentCell, currentData;
     let _featureMarkers = []; // Array of maplibregl.Marker
+    let _restoreFocus = null; // element to return focus to when the panel closes
 
     /** Escape HTML to prevent XSS from external API data */
     function esc(str) {
@@ -105,9 +106,17 @@ const Panel = (() => {
     function show(cell) {
         currentCell = cell;
         titleEl.textContent = cell.code;
+        // Remember where focus was (the map/skip-link/etc.) so close() can
+        // return it — and move focus into the panel so keyboard & screen-reader
+        // users land on the new content (preventScroll avoids a visual jump;
+        // programmatic focus doesn't trigger a :focus-visible ring for mouse users).
+        const active = (typeof document !== 'undefined') ? document.activeElement : null;
+        if (active instanceof HTMLElement && active !== panelEl) _restoreFocus = active;
         panelEl.classList.add('open');
         if (typeof FloatingDialogs !== 'undefined') FloatingDialogs.bringToFront(panelEl);
         contentEl.innerHTML = buildLoadingHTML(cell);
+        if (!panelEl.hasAttribute('tabindex')) panelEl.setAttribute('tabindex', '-1');
+        try { panelEl.focus({ preventScroll: true }); } catch { /* older browsers */ }
     }
 
     function update(cell, data) {
@@ -203,6 +212,11 @@ const Panel = (() => {
         panelEl.classList.remove('open');
         currentCell = null;
         clearFeatureMarkers();
+        // Return focus to wherever it was before the panel opened.
+        if (_restoreFocus && typeof document !== 'undefined' && document.contains(_restoreFocus)) {
+            try { _restoreFocus.focus({ preventScroll: true }); } catch { /* noop */ }
+        }
+        _restoreFocus = null;
     }
 
     function buildLoadingHTML(cell) {
