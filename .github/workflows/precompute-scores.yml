@@ -1,16 +1,22 @@
-name: Precompute scores (Indore)
+name: Precompute scores
 
-# Regenerates the precomputed score tile the app reads (data/scores/) from a
+# Regenerates a precomputed score tile the app reads (data/scores/) from a
 # fresh OSM extract, so cells render instantly with zero per-click upstream
 # calls. Runs monthly and on demand. Mirrors realtime-scrape.yml: a smoke check
 # gates the commit, so bad data never ships, and the result is committed back to
 # the branch for Pages to serve atomically with the code.
 #
+# Region-driven: every per-region input (Geofabrik extract, clip bbox, DEM
+# tiles) is resolved from pipeline/_lib/regions.py via its small CLI, so
+# building a NEW city is just `workflow_dispatch` with that region name — no
+# YAML edits. See docs/PRECOMPUTE_PHASE1.md for the city list + the remaining
+# infra (parallel matrix + R2 hosting) needed for a full multi-city rollout.
+#
 # Elevation comes from the public Copernicus GLO-30 DEM (no auth) so flood-risk
-# uses real terrain; if that download fails the tile builds OSM-only. Population
-# (GHSL GHS-POP) still needs a one-time GEE export hosted as an asset, then
-# --pop wires it in; until then population_proxy uses its building-density
-# fallback. Both are optional inputs to build_tile (--pop/--dem).
+# uses real terrain (multiple 1°×1° tiles are mosaicked with gdalbuildvrt); if
+# the download fails the tile builds OSM-only. Population (GHSL GHS-POP) still
+# needs a one-time GEE export hosted as an asset, then --pop wires it in; until
+# then population_proxy uses its building-density fallback.
 
 on:
   # Auto-build when the scoring code lands on main (e.g. merging the spine PR):
@@ -27,7 +33,7 @@ on:
   workflow_dispatch:
     inputs:
       region:
-        description: "Region name (pipeline/_lib/regions.py)"
+        description: "Region (indore_pilot, bhopal, pune, mumbai, bengaluru, hyderabad, chennai, delhi)"
         default: indore_pilot
       level:
         description: "DIGIPIN level (6 ~244m, 7 ~61m)"
@@ -56,38 +62,52 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Install osmium-tool
-        run: sudo apt-get update && sudo apt-get install -y osmium-tool
+      - name: Install osmium-tool + GDAL (DEM mosaic)
+        run: sudo apt-get update && sudo apt-get install -y osmium-tool gdal-bin
 
       - name: Install pipeline deps
         run: pip install -r pipeline/scores/requirements.txt
 
-      - name: Download Geofabrik central-zone extract (incl. Madhya Pradesh)
-        run: curl -sSL --retry 3 -o central.osm.pbf
-             https://download.geofabrik.de/asia/india/central-zone-latest.osm.pbf
-
-      - name: Clip to the Indore pilot bbox (buffered ~1 km)
-        run: osmium extract -b 75.59,22.49,76.01,22.91 central.osm.pbf -o indore.osm.pbf
-
-      - name: Download Copernicus GLO-30 DEM tile (public, no auth)
-        # The single N22/E075 tile covers the whole Indore pilot bbox. Optional:
-        # on any failure we build OSM-only (flood-risk falls back to its baseline)
-        # rather than failing the whole tile.
+      - name: Download + clip the region's Geofabrik extract
+        # Extract URL and clip bbox both come from the region registry, so this
+        # step is identical for every city — only $REGION changes.
         run: |
-          curl -sSL --retry 2 -o glo30.tif \
-            "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N22_00_E075_00_DEM/Copernicus_DSM_COG_10_N22_00_E075_00_DEM.tif" || true
-          if [ -s glo30.tif ]; then
-            echo "DEM_ARG=--dem glo30.tif" >> "$GITHUB_ENV"
-            echo "DEM tile downloaded ($(du -h glo30.tif | cut -f1))."
-          else
+          EXTRACT_URL=$(python -m pipeline._lib.regions geofabrik-url "$REGION")
+          CLIP=$(python -m pipeline._lib.regions clip-bbox "$REGION")
+          echo "Extract: $EXTRACT_URL"
+          echo "Clip bbox: $CLIP"
+          curl -sSL --retry 3 -o zone.osm.pbf "$EXTRACT_URL"
+          osmium extract -b "$CLIP" zone.osm.pbf -o region.osm.pbf
+
+      - name: Download + mosaic Copernicus GLO-30 DEM tiles (public, no auth)
+        # One or more 1°×1° tiles cover a region's bbox; mosaic to a single VRT
+        # rasterio can read. Optional: on any failure we build OSM-only (flood-
+        # risk falls back to its baseline) rather than failing the whole tile.
+        run: |
+          DEM_TIFS=()
+          while read -r url; do
+            [ -z "$url" ] && continue
+            f="dem_$(basename "$url")"
+            if curl -sSL --retry 2 -o "$f" "$url" && [ -s "$f" ]; then
+              DEM_TIFS+=("$f")
+            fi
+          done < <(python -m pipeline._lib.regions dem-urls "$REGION")
+          if [ "${#DEM_TIFS[@]}" -eq 0 ]; then
             echo "::notice::GLO-30 DEM unavailable — building OSM-only (flood-risk uses baseline)."
+          elif [ "${#DEM_TIFS[@]}" -eq 1 ]; then
+            echo "DEM_ARG=--dem ${DEM_TIFS[0]}" >> "$GITHUB_ENV"
+            echo "DEM: 1 tile (${DEM_TIFS[0]})."
+          else
+            gdalbuildvrt dem_mosaic.vrt "${DEM_TIFS[@]}"
+            echo "DEM_ARG=--dem dem_mosaic.vrt" >> "$GITHUB_ENV"
+            echo "DEM: mosaicked ${#DEM_TIFS[@]} tiles."
           fi
 
       - name: Build scored tile (JSON shards + PMTiles choropleth)
         run: |
           python -m pipeline.scores.build_tile \
             --region "$REGION" --level "$LEVEL" \
-            --pbf indore.osm.pbf $DEM_ARG --pmtiles --out data/scores
+            --pbf region.osm.pbf $DEM_ARG --pmtiles --out data/scores
 
       - name: Smoke check (gates the commit)
         run: python -m pipeline.scores.smoke_check data/scores --region "$REGION"
