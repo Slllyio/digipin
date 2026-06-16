@@ -74,7 +74,7 @@ describe('Theme.palette() — JS-surface colours', () => {
         expect(p.primary).toBe('#c2410c');
         expect(p.ink).toBe('#1c1917');
         expect(p.inkOnPrimary).toBe('#ffffff');   // readable label on coral
-        expect(p.surfaceSolid).toBe('#ffffff');
+        expect(p.surfaceSolid).toBe('#faf8f3');   // warm paper, not sterile white
     });
 
     it('returns neon-on-navy colours for dark', () => {
@@ -85,7 +85,8 @@ describe('Theme.palette() — JS-surface colours', () => {
     });
 
     it('every theme exposes the full semantic key set', () => {
-        const keys = ['primary', 'primarySoft', 'secondary', 'ink', 'sub', 'surface', 'surfaceSolid', 'border', 'inkOnPrimary'];
+        const keys = ['primary', 'primarySoft', 'secondary', 'ink', 'sub', 'surface', 'surfaceSolid', 'border', 'inkOnPrimary',
+            'success', 'warn', 'danger', 'chartGrid', 'chartAxis', 'chartLabel', 'chartTick', 'dotStroke'];
         for (const theme of T.THEMES) {
             for (const k of keys) expect(T.palette(theme)[k], `${theme}.${k}`).toBeTruthy();
         }
@@ -96,6 +97,37 @@ describe('Theme.palette() — JS-surface colours', () => {
         expect(T.palette().primary).toBe('#c2410c');
         T.set('dark');
         expect(T.palette().primary).toBe('#00f5ff');
+    });
+});
+
+describe('Theme.scoreColor()', () => {
+    it('maps score bands to theme status colours', () => {
+        expect(T.scoreColor(85, 'dark')).toBe('#22c55e');
+        expect(T.scoreColor(55, 'dark')).toBe('#eab308');
+        expect(T.scoreColor(10, 'dark')).toBe('#ef4444');
+        expect(T.scoreColor(85, 'light')).toBe('#15803d');
+        expect(T.scoreColor(10, 'light')).toBe('#b91c1c');
+    });
+});
+
+describe('Theme.scale() — overlay ramps', () => {
+    it('returns a copy of the per-theme ramp; dark == overlay originals', () => {
+        expect(T.scale('growth', 'dark')).toEqual(['#b2182b', '#ef8a62', '#fddbc7', '#67a9cf']);
+        expect(T.scale('accessibility', 'dark')[2]).toBe('#fee08b');
+        expect(T.scale('bivariate', 'dark')).toHaveLength(9);
+    });
+
+    it('light ramps deepen the pale stops that wash out on Positron', () => {
+        expect(T.scale('growth', 'light')[2]).not.toBe('#fddbc7');       // emerging deepened
+        expect(T.scale('accessibility', 'light')[2]).not.toBe('#fee08b'); // fair deepened
+        expect(T.scale('bivariate', 'light')[0]).not.toBe('#e8e8e8');     // low corner deepened
+    });
+
+    it('returns a fresh copy (mutation-safe) and undefined for unknown names', () => {
+        const a = T.scale('growth', 'dark');
+        a[0] = 'x';
+        expect(T.scale('growth', 'dark')[0]).toBe('#b2182b');
+        expect(T.scale('nope', 'dark')).toBeUndefined();
     });
 });
 

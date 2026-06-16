@@ -61,6 +61,15 @@
     --accent-soft: rgba(0, 245, 255, 0.12);
     --accent-softer: rgba(0, 245, 255, 0.06);
     --scrim: rgba(0, 0, 0, 0.45);
+    /* RGB channels for alpha-composited accents, so hardcoded rgba() spots
+       flip by theme via rgb(var(--x-rgb) / a). Dark values = current pixels. */
+    --accent-primary-rgb: 0 245 255;
+    --accent-purple-rgb: 168 85 247;
+    --ink-rgb: 0 0 0;
+    --danger-rgb: 220 38 38;
+    /* Per-theme shadows (dark = current look; light softens in the light block) */
+    --shadow-modal: 0 24px 70px rgba(0, 0, 0, 0.45);
+    --btn-glow: var(--shadow-glow);
     --radius: 12px;
     --radius-sm: 8px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -73,9 +82,10 @@
    <html data-theme="light"> (set pre-paint from localStorage; see Theme). */
 html[data-theme="light"] {
     --bg-primary: #f6f5f1;
-    --bg-secondary: #ffffff;
-    --bg-card: rgba(255, 255, 255, 0.92);
-    --bg-glass: rgba(255, 255, 255, 0.88);
+    /* Warm-paper surfaces (taupe-tinted) to match the Aino landing, not sterile white */
+    --bg-secondary: #faf8f3;
+    --bg-card: rgba(250, 248, 243, 0.92);
+    --bg-glass: rgba(250, 248, 243, 0.85);
     --wash-02: rgba(28, 25, 23, 0.025);
     --wash-03: rgba(28, 25, 23, 0.035);
     --wash-04: rgba(28, 25, 23, 0.045);
@@ -106,6 +116,16 @@ html[data-theme="light"] {
     --accent-soft: rgba(194, 65, 12, 0.12);
     --accent-softer: rgba(194, 65, 12, 0.06);
     --scrim: rgba(28, 25, 23, 0.28);
+    /* RGB channels (coral primary, violet secondary, warm ink, deep red) */
+    --accent-primary-rgb: 194 65 12;
+    --accent-purple-rgb: 124 58 237;
+    --ink-rgb: 28 25 23;
+    --danger-rgb: 185 28 28;
+    /* Softer, warm shadows + a coral button glow (the Aino consultancy look) */
+    --shadow-modal: 0 16px 50px rgba(28, 25, 23, 0.16);
+    --btn-glow: 0 6px 20px rgba(194, 65, 12, 0.28);
+    /* Slightly warmer corner radius (landing parity) */
+    --radius: 14px;
 }
 
 * {

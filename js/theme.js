@@ -44,12 +44,43 @@ const Theme = (() => {
             secondary: '#a855f7', ink: '#e2e8f0', sub: '#94a3b8',
             surface: 'rgba(10,14,39,0.92)', surfaceSolid: '#111638',
             border: 'rgba(255,255,255,0.12)', inkOnPrimary: '#0a0e27',
+            // status colours (mirror CSS --accent-green/yellow/red)
+            success: '#22c55e', warn: '#eab308', danger: '#ef4444',
+            // canvas-chart chrome (grid/axis/labels were hardcoded white)
+            chartGrid: 'rgba(255,255,255,0.08)', chartAxis: 'rgba(255,255,255,0.16)',
+            chartLabel: 'rgba(255,255,255,0.6)', chartTick: 'rgba(255,255,255,0.4)',
+            dotStroke: '#0a0e27',
         },
         light: {
             primary: '#c2410c', primarySoft: 'rgba(194,65,12,0.20)',
             secondary: '#7c3aed', ink: '#1c1917', sub: '#57534e',
-            surface: 'rgba(246,245,241,0.96)', surfaceSolid: '#ffffff',
+            surface: 'rgba(246,245,241,0.96)', surfaceSolid: '#faf8f3',
             border: 'rgba(28,25,23,0.12)', inkOnPrimary: '#ffffff',
+            success: '#15803d', warn: '#a16207', danger: '#b91c1c',
+            chartGrid: 'rgba(28,25,23,0.08)', chartAxis: 'rgba(28,25,23,0.16)',
+            chartLabel: 'rgba(28,25,23,0.55)', chartTick: 'rgba(28,25,23,0.4)',
+            dotStroke: '#faf8f3',
+        },
+    };
+
+    // Per-theme data ramps for the overlays whose dark-tuned palettes wash out
+    // on the light Positron basemap. Dark arrays == the overlays' current
+    // colours (no change); light arrays deepen the pale stops so they read on
+    // white. Bivariate is row-major (yBin*3 + xBin) of the 3x3 grid.
+    const SCALES = {
+        growth: {
+            dark:  ['#b2182b', '#ef8a62', '#fddbc7', '#67a9cf'],
+            light: ['#b2182b', '#e8765a', '#f4a582', '#4393c3'],
+        },
+        accessibility: {
+            dark:  ['#1a9850', '#91cf60', '#fee08b', '#d73027'],
+            light: ['#1a9850', '#7fb348', '#d9a015', '#c4302b'],
+        },
+        bivariate: {
+            dark:  ['#e8e8e8', '#ace4e4', '#5ac8c8', '#dfb0d6', '#a5add3',
+                    '#5698b9', '#be64ac', '#8c62aa', '#3b4994'],
+            light: ['#cfc7ba', '#86cfc9', '#3aa8a8', '#c98fbf', '#8f8fbf',
+                    '#4f87ad', '#a84f96', '#74508f', '#2e3a78'],
         },
     };
 
@@ -97,6 +128,18 @@ const Theme = (() => {
         return PALETTE[normalize(theme !== undefined ? theme : get())];
     }
 
+    /** Per-theme data ramp (copy) for an overlay; undefined for unknown names. */
+    function scale(name, theme) {
+        const s = SCALES[name];
+        return s ? s[normalize(theme !== undefined ? theme : get())].slice() : undefined;
+    }
+
+    /** Theme-aware score colour: success ≥70, warn ≥40, else danger. */
+    function scoreColor(value, theme) {
+        const p = palette(theme);
+        return value >= 70 ? p.success : value >= 40 ? p.warn : p.danger;
+    }
+
     /** Flip theme and reload (preserving the view via URL state). */
     function toggle() {
         const next = get() === 'dark' ? 'light' : 'dark';
@@ -122,7 +165,8 @@ const Theme = (() => {
         }
     }
 
-    return { init, get, set, apply, normalize, toggle, mapStyleUrl, gridColors, palette, THEMES };
+    return { init, get, set, apply, normalize, toggle, mapStyleUrl, gridColors,
+        palette, scale, scoreColor, THEMES };
 })();
 
 if (typeof window !== 'undefined') {
