@@ -1,14 +1,16 @@
 /**
- * Theme — dark (default) / paper-light theme switching.
+ * Theme — paper-light (default) / dark theme switching.
  *
  * Two complete looks over one token system (css/styles.css):
+ *   - "light" — Aino-style warm-paper consultancy look (DEFAULT): ink text,
+ *               coral primary accent, light Positron basemap.
  *   - "dark"  — the original premium dark / neon control-room theme.
- *   - "light" — Aino-style warm-paper consultancy look: ink text, coral
- *               primary accent, light Positron basemap.
  *
- * The choice persists in localStorage and is applied as
- * <html data-theme="light"> *pre-paint* by an inline snippet in index.html
- * (so there is no dark flash); this module is the runtime API around that.
+ * Paper-light is the default (matching the landing page) so the landing→app
+ * hand-off stays cohesive; an explicit "dark" choice flips it. The choice
+ * persists in localStorage and is applied as <html data-theme="light">
+ * *pre-paint* by an inline snippet in app.html / index.html (so there is no
+ * flash); this module is the runtime API around that.
  *
  * Switching themes reloads the page: MapLibre's setStyle() drops every custom
  * source/layer (grid, choropleth, overlays), so a clean re-init against the
@@ -18,6 +20,7 @@
 const Theme = (() => {
     const STORAGE_KEY = 'digipin_theme';
     const THEMES = ['dark', 'light'];
+    const DEFAULT_THEME = 'light';   // Aino paper-light is the default look
 
     const BASEMAPS = {
         dark: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
@@ -51,21 +54,25 @@ const Theme = (() => {
     };
 
     function normalize(value) {
-        return THEMES.includes(value) ? value : 'dark';
+        return THEMES.includes(value) ? value : DEFAULT_THEME;
     }
 
     function get() {
         try { return normalize(localStorage.getItem(STORAGE_KEY)); }
-        catch { return 'dark'; }
+        catch { return DEFAULT_THEME; }
     }
 
     function apply(theme) {
         if (typeof document === 'undefined') return;
-        if (normalize(theme) === 'light') {
+        const isLight = normalize(theme) === 'light';
+        if (isLight) {
             document.documentElement.setAttribute('data-theme', 'light');
         } else {
             document.documentElement.removeAttribute('data-theme');
         }
+        // Keep the mobile browser chrome (status bar) in sync: paper vs navy.
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', isLight ? '#f6f5f1' : '#0a0e27');
     }
 
     function set(theme) {

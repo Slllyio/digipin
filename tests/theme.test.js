@@ -11,28 +11,28 @@ beforeEach(() => {
 });
 
 describe('Theme.normalize()', () => {
-    it('accepts only known themes, defaulting to dark', () => {
+    it('accepts only known themes, defaulting to light (Aino paper)', () => {
         expect(T.normalize('light')).toBe('light');
         expect(T.normalize('dark')).toBe('dark');
-        expect(T.normalize('neon')).toBe('dark');
-        expect(T.normalize(null)).toBe('dark');
+        expect(T.normalize('neon')).toBe('light');
+        expect(T.normalize(null)).toBe('light');
     });
 });
 
 describe('Theme.get()/set()', () => {
-    it('defaults to dark with empty storage', () => {
-        expect(T.get()).toBe('dark');
+    it('defaults to light (paper) with empty storage', () => {
+        expect(T.get()).toBe('light');
     });
 
     it('persists and round-trips a theme choice', () => {
-        expect(T.set('light')).toBe('light');
-        expect(T.get()).toBe('light');
-        expect(localStorage.getItem('digipin_theme')).toBe('light');
+        expect(T.set('dark')).toBe('dark');
+        expect(T.get()).toBe('dark');
+        expect(localStorage.getItem('digipin_theme')).toBe('dark');
     });
 
-    it('normalizes corrupt stored values to dark', () => {
+    it('normalizes corrupt stored values to light', () => {
         localStorage.setItem('digipin_theme', 'hotdog');
-        expect(T.get()).toBe('dark');
+        expect(T.get()).toBe('light');
     });
 });
 
