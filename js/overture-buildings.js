@@ -21,6 +21,67 @@ const OvertureBuildings = (() => {
     let _map = null;
     let _infoPopup = null;
 
+    /** True when the Aino paper-light theme is active. */
+    function isLight() {
+        return typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';
+    }
+
+    // Real building height (metres), independent of theme: prefer the tagged
+    // height, else floors * 3.6m, else a class-based default.
+    const REAL_HEIGHT = [
+        'coalesce',
+        ['get', 'height'],
+        ['*', ['get', 'num_floors'], 3.6],
+        ['case',
+            ['==', ['get', 'class'], 'commercial'], 35,
+            ['==', ['get', 'class'], 'industrial'], 25,
+            ['==', ['get', 'class'], 'residential'], 12,
+            15
+        ]
+    ];
+
+    // Dark theme: vibrant solid class colours, floated 100m for the
+    // holographic look (paired with the tether layer below).
+    const PAINT_DARK = {
+        'fill-extrusion-color': [
+            'match',
+            ['get', 'class'],
+            'commercial', '#0085CA', // Bright blue
+            'industrial', '#0085CA',
+            'retail', '#0085CA',
+            'residential', '#E32A22', // Bright red
+            'education', '#E32A22',
+            'medical', '#0085CA',
+            'government', '#0085CA',
+            'transportation', '#5C2D91',
+            '#E32A22' // Default red
+        ],
+        // Ground base with 100m offset (float above ground)
+        'fill-extrusion-base': ['+', ['coalesce', ['get', 'min_height'], 0], 100],
+        // Height must also be offset by 100m so the building itself doesn't shrink
+        'fill-extrusion-height': ['+', REAL_HEIGHT, 100],
+        'fill-extrusion-opacity': 0.8
+    };
+
+    // Aino (aino.world) light: a white architectural massing model — cool
+    // near-white volumes deepening to light grey by height (pseudo ambient
+    // occlusion), grounded (not floating, no tethers). MapLibre's vertical
+    // gradient + the directional map light (set on attach) supply the model
+    // shading, mirroring the Google Open Buildings treatment.
+    const PAINT_LIGHT = {
+        'fill-extrusion-color': [
+            'interpolate', ['linear'], REAL_HEIGHT,
+            0, '#f3f5f7',
+            15, '#e9edf0',
+            40, '#dce1e6',
+            120, '#ccd2d9'
+        ],
+        'fill-extrusion-base': ['coalesce', ['get', 'min_height'], 0],
+        'fill-extrusion-height': REAL_HEIGHT,
+        'fill-extrusion-opacity': 0.96,
+        'fill-extrusion-vertical-gradient': true
+    };
+
     /**
      * Create the native MapLibre PMTiles source and fill-extrusion layer
      */
@@ -32,7 +93,9 @@ const OvertureBuildings = (() => {
             url: `pmtiles://${PMTILES_URL}`
         });
 
-        // 1. Add the Holographic Tethers (base goes from 0 to the bottom of the floating building)
+        // 1. Add the Holographic Tethers (base goes from 0 to the bottom of the
+        // floating building). Dark-theme only — the grounded Aino massing model
+        // has no float to tether, so it stays hidden under the light theme.
         map.addLayer({
             id: TETHER_LAYER_ID,
             type: 'fill-extrusion',
@@ -55,54 +118,15 @@ const OvertureBuildings = (() => {
             }
         });
 
-        // 2. Add the actual floating Overture buildings on top of the tethers
+        // 2. Add the Overture buildings: a grounded white massing model under
+        // the Aino light theme, or the floating neon volumes under dark.
         map.addLayer({
             id: LAYER_ID,
             type: 'fill-extrusion',
             source: SOURCE_ID,
             'source-layer': 'building',
             minzoom: 13,
-            paint: {
-                // Vibrant solid colors inspired by the user's reference image
-                'fill-extrusion-color': [
-                    'match',
-                    ['get', 'class'],
-                    'commercial', '#0085CA', // Bright blue
-                    'industrial', '#0085CA',
-                    'retail', '#0085CA',
-                    'residential', '#E32A22', // Bright red
-                    'education', '#E32A22',
-                    'medical', '#0085CA',
-                    'government', '#0085CA',
-                    'transportation', '#5C2D91',
-                    '#E32A22' // Default red
-                ],
-                // Generous default heights so buildings pop in 3D
-                // Ground base with 100m offset (float above ground)
-                'fill-extrusion-base': [
-                    '+',
-                    ['coalesce', ['get', 'min_height'], 0],
-                    100
-                ],
-                // Height must also be offset by 100m so the building itself doesn't shrink
-                'fill-extrusion-height': [
-                    '+',
-                    [
-                        'coalesce',
-                        ['get', 'height'],
-                        ['*', ['get', 'num_floors'], 3.6],
-                        ['case', 
-                            ['==', ['get', 'class'], 'commercial'], 35, 
-                            ['==', ['get', 'class'], 'industrial'], 25, 
-                            ['==', ['get', 'class'], 'residential'], 12, 
-                            15
-                        ]
-                    ],
-                    100
-                ],
-                // Solid opacity and add artificial edge shading through MapLibre light
-                'fill-extrusion-opacity': 0.8
-            },
+            paint: isLight() ? PAINT_LIGHT : PAINT_DARK,
             layout: {
                 'visibility': 'none'
             }
@@ -125,9 +149,26 @@ const OvertureBuildings = (() => {
         initLayer(map);
 
         _active = !_active;
+        const light = isLight();
         map.setLayoutProperty(LAYER_ID, 'visibility', _active ? 'visible' : 'none');
-        map.setLayoutProperty(TETHER_LAYER_ID, 'visibility', _active ? 'visible' : 'none');
-        
+        // Holographic tethers are a dark-theme device; the grounded Aino
+        // massing model has nothing to float, so leave them hidden on light.
+        map.setLayoutProperty(TETHER_LAYER_ID, 'visibility', (_active && !light) ? 'visible' : 'none');
+
+        // Aino light: give the white volumes a fixed directional "sun" so they
+        // read with a consistent lit/shadow side (anchor:'map' keeps the light
+        // tied to geography as you rotate). map.setLight is a *global* map
+        // property, deliberately identical to DigitalTwinLayers' light (same
+        // position/intensity), so the two building overlays share one lit model
+        // and never fight. It is set-only (never reset on hide) — matching
+        // DigitalTwinLayers — so toggling either overlay off leaves the shared
+        // light in place rather than clearing the other's shading.
+        if (_active && light) {
+            try {
+                map.setLight({ anchor: 'map', position: [1.4, 210, 38], color: '#ffffff', intensity: 0.45 });
+            } catch { /* older MapLibre without setLight — vertical gradient still applies */ }
+        }
+
         if (!_active && _infoPopup) {
             _infoPopup.remove();
             _infoPopup = null;

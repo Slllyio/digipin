@@ -64,6 +64,7 @@ loadGlobalScript('js/layers-panel.js', ['LayersPanel']);
 loadGlobalScript('js/export-dialog.js', ['ExportDialog']);
 loadGlobalScript('js/bookmarks.js', ['Bookmarks']);
 loadGlobalScript('js/building-intelligence.js', ['BuildingIntelligence']);
+loadGlobalScript('js/overture-buildings.js', ['OvertureBuildings']);
 loadGlobalScript('js/floating-dialogs.js', ['FloatingDialogs']);
 loadGlobalScript('js/onboarding.js', ['Onboarding']);
 loadGlobalScript('js/text2map-embeddings.js', ['Text2MapEmbeddings']);
