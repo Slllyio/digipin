@@ -30,9 +30,10 @@ describe('DigitalTwinLayers paper-theme paints', () => {
         Theme.set('light');
         const b = DTL.LAYER_DEFS.google_buildings;
         expect(DTL.paintFor(b)).toBe(b.paintLight);
-        // pale warm extrusion, not the neon confidence ramp
+        // Aino cool-white massing model, not the neon confidence ramp
         expect(JSON.stringify(b.paintLight)).toContain('vertical-gradient');
-        expect(JSON.stringify(b.paint)).not.toContain('#efeae2');
+        expect(JSON.stringify(b.paintLight)).toContain('#f3f5f7');
+        expect(JSON.stringify(b.paint)).toContain('#a78bfa'); // dark stays neon
     });
 
     it('falls back to default paint when a layer has no light variant', () => {
