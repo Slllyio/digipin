@@ -58,12 +58,20 @@ const BivariateOverlay = (() => {
 
     /** Pure classifier. Returns { xBin, yBin, idx, color }.
      *  null score on either axis → transparent (idx null). */
+    /** Active 3x3 palette as a flat row-major array; light deepens the pale
+     *  low corner so the classes read on the Positron basemap. */
+    function _flat() {
+        return (typeof Theme !== 'undefined' && Theme.scale && Theme.scale('bivariate'))
+            || PALETTE.reduce((a, row) => a.concat(row), []);
+    }
+
     function classify(x, y) {
         if (x == null || y == null || !Number.isFinite(x) || !Number.isFinite(y)) {
             return { xBin: null, yBin: null, idx: null, color: 'rgba(0,0,0,0)' };
         }
         const xBin = _bin(x), yBin = _bin(y);
-        return { xBin, yBin, idx: yBin * 3 + xBin, color: PALETTE[yBin][xBin] };
+        const idx = yBin * 3 + xBin;
+        return { xBin, yBin, idx, color: _flat()[idx] };
     }
 
     function _labelFor(key) {
@@ -77,7 +85,9 @@ const BivariateOverlay = (() => {
                 id: LAYER_ID,
                 type: 'fill',
                 source: SOURCE_ID,
-                paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.6, 'fill-outline-color': 'rgba(255,255,255,0.25)' },
+                paint: { 'fill-color': ['get', 'color'],
+                    'fill-opacity': (typeof Theme !== 'undefined' && Theme.get() === 'light') ? 0.78 : 0.6,
+                    'fill-outline-color': (typeof Theme !== 'undefined') ? Theme.fg(0.25) : 'rgba(255,255,255,0.25)' },
             });
         }
     }
@@ -200,10 +210,11 @@ const BivariateOverlay = (() => {
         const sel = `background:${pal.surfaceSolid};color:${pal.ink};border:1px solid ${pal.border};border-radius:4px;`;
         const opts = SCORE_OPTIONS.map(o => `<option value="${o.key}">${o.label}</option>`).join('');
         // 3×3 swatch grid (rows top=high Y → bottom=low Y so it reads like an axis).
+        const flat = _flat();
         let grid = '<div style="display:grid;grid-template-columns:repeat(3,16px);gap:2px;">';
         for (let yBin = 2; yBin >= 0; yBin--) {
             for (let xBin = 0; xBin <= 2; xBin++) {
-                grid += `<div title="x=${xBin} y=${yBin}" style="width:16px;height:16px;background:${PALETTE[yBin][xBin]};border-radius:2px;"></div>`;
+                grid += `<div title="x=${xBin} y=${yBin}" style="width:16px;height:16px;background:${flat[yBin * 3 + xBin]};border-radius:2px;"></div>`;
             }
         }
         grid += '</div>';
