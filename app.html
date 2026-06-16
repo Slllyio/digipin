@@ -52,20 +52,23 @@
             crossorigin="anonymous"></script>
 
     <!-- Custom Styles -->
-    <!-- Theme pre-paint: apply the persisted theme before first paint so a
-         light-theme user never sees a dark flash. Runtime API: js/theme.js. -->
+    <!-- Theme pre-paint: paper-light is the default (matching the landing), so
+         apply it before first paint unless the user explicitly chose dark — no
+         flash either way. Runtime API: js/theme.js. -->
     <script>
         try {
-            if (localStorage.getItem('digipin_theme') === 'light') {
+            if (localStorage.getItem('digipin_theme') !== 'dark') {
                 document.documentElement.setAttribute('data-theme', 'light');
             }
-        } catch (e) { /* storage blocked — default dark */ }
+        } catch (e) { /* storage blocked — fall back to bare dark CSS */ }
     </script>
     <link rel="stylesheet" href="css/styles.css">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#00f5ff">
+    <!-- Default theme-color is paper (light default); Theme.apply() swaps it to
+         navy when the user is in dark mode. -->
+    <meta name="theme-color" content="#f6f5f1">
 
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">

@@ -57,14 +57,14 @@ test.describe('core interactions', () => {
     await page.goto('/app.html');
     await page.waitForSelector('.maplibregl-canvas', { timeout: 30_000 });
 
-    // Default is dark (no data-theme attribute).
-    await expect(page.locator('html')).not.toHaveAttribute('data-theme', 'light');
+    // Default is Aino paper-light (data-theme="light").
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     await page.click('#theme-toggle-btn');               // toggle() reloads the page
     await page.waitForSelector('.maplibregl-canvas', { timeout: 30_000 });
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(page.locator('html')).not.toHaveAttribute('data-theme', 'light');
 
     const stored = await page.evaluate(() => localStorage.getItem('digipin_theme'));
-    expect(stored).toBe('light');
+    expect(stored).toBe('dark');
   });
 
   test('Escape closes the open Layers dropdown', async ({ page }) => {
