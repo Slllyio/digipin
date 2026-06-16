@@ -186,6 +186,32 @@ const DigitalTwinLayers = (() => {
                 'circle-stroke-color': '#ffffff',
                 'circle-opacity': 0.8
             },
+            // On the light Positron basemap the white stroke disappears; give the
+            // dots a warm-ink outline so they keep definition on paper.
+            paintLight: {
+                'circle-radius': [
+                    'interpolate', ['linear'], ['zoom'],
+                    10, 2,
+                    14, 4,
+                    18, 7
+                ],
+                'circle-color': [
+                    'match', ['get', 'class'],
+                    'eat_and_drink',      '#ea580c',
+                    'shopping',           '#7c3aed',
+                    'health_and_medical', '#dc2626',
+                    'education',          '#2563eb',
+                    'accommodation',      '#b45309',
+                    'sports_and_recreation', '#15803d',
+                    'arts_and_entertainment', '#be185d',
+                    'public_service',     '#0d9488',
+                    'religious_organization', '#7c3aed',
+                    '#57534e'
+                ],
+                'circle-stroke-width': 1,
+                'circle-stroke-color': 'rgba(28,25,23,0.45)',
+                'circle-opacity': 0.9
+            },
             minZoom: 12,
             tooltip: f => {
                 const p = f.properties || {};

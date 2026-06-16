@@ -4,15 +4,24 @@ import { describe, it, expect } from 'vitest';
 // needs a live MapLibre map + DataFetcher, so these lock the pure pieces: the
 // band colour mapping, the per-cell polygon geometry, and horizon state.
 const G = globalThis.GrowthOverlay;
+const Theme = globalThis.Theme;
 
 describe('GrowthOverlay.colorFor — growth-intensity bands', () => {
-    it('maps composite scores to the diverging band colours', () => {
+    it('maps composite scores to the diverging band colours (dark = originals)', () => {
+        Theme.set('dark');
         expect(G.colorFor(90)).toBe('#b2182b');   // intensifying
         expect(G.colorFor(75)).toBe('#b2182b');   // band edge inclusive
         expect(G.colorFor(70)).toBe('#ef8a62');   // rising
         expect(G.colorFor(50)).toBe('#fddbc7');   // emerging
         expect(G.colorFor(20)).toBe('#67a9cf');   // stable / cooling
         expect(G.colorFor(0)).toBe('#67a9cf');
+    });
+
+    it('deepens the pale stops on the light Positron basemap', () => {
+        Theme.set('light');
+        expect(G.colorFor(50)).toBe('#f4a582');   // emerging, deepened
+        expect(G.colorFor(20)).toBe('#4393c3');   // cooling, deepened
+        Theme.set('dark');
     });
 
     it('is transparent when there is no signal', () => {

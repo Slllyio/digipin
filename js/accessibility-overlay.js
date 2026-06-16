@@ -72,6 +72,12 @@ const AccessibilityOverlay = (() => {
         return BANDS[BANDS.length - 1];
     }
 
+    /** Per-theme band colour (light deepens the pale yellow/green for Positron). */
+    function _bandColor(band) {
+        const cols = (typeof Theme !== 'undefined' && Theme.scale && Theme.scale('accessibility'));
+        return cols ? cols[BANDS.indexOf(band)] : band.color;
+    }
+
     /** Pull a feature key's items from any category of a fetchAllFeatures result. */
     function _amenityItems(data, key) {
         const cats = data && data.categories;
@@ -94,7 +100,9 @@ const AccessibilityOverlay = (() => {
                 id: LAYER_ID,
                 type: 'fill',
                 source: SOURCE_ID,
-                paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.55, 'fill-outline-color': 'rgba(255,255,255,0.25)' },
+                paint: { 'fill-color': ['get', 'color'],
+                    'fill-opacity': (typeof Theme !== 'undefined' && Theme.get() === 'light') ? 0.7 : 0.55,
+                    'fill-outline-color': (typeof Theme !== 'undefined') ? Theme.fg(0.25) : 'rgba(255,255,255,0.25)' },
             });
         }
     }
@@ -148,7 +156,7 @@ const AccessibilityOverlay = (() => {
                             [pt.lng - pt.lngStep / 2, pt.lat - pt.latStep / 2],
                         ]],
                     },
-                    properties: { color: band.color, level: band.level, dist: Number.isFinite(dist) ? Math.round(dist) : null },
+                    properties: { color: _bandColor(band), level: band.level, dist: Number.isFinite(dist) ? Math.round(dist) : null },
                 });
                 addedNew = true;
             });
@@ -179,7 +187,7 @@ const AccessibilityOverlay = (() => {
         const sel = `background:${pal.surfaceSolid};color:${pal.ink};border:1px solid ${pal.border};border-radius:4px;`;
         const opts = AMENITY_OPTIONS.map(o => `<option value="${o.key}">${o.label}</option>`).join('');
         const rows = BANDS.map(b => `<div style="display:flex;align-items:center;gap:6px;margin:2px 0;">`
-            + `<span style="width:14px;height:14px;border-radius:3px;background:${b.color};"></span>`
+            + `<span style="width:14px;height:14px;border-radius:3px;background:${_bandColor(b)};"></span>`
             + `<span>${b.level} <span style="color:${pal.sub};">${b.hint}</span></span></div>`).join('');
         el.innerHTML = `
             <div style="font-weight:600;margin-bottom:6px;color:${pal.primary};">Accessibility</div>

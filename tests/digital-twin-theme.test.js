@@ -8,10 +8,16 @@ const DTL = globalThis.DigitalTwinLayers;
 afterEach(() => { Theme.set('dark'); });
 
 describe('DigitalTwinLayers paper-theme paints', () => {
-    it('the 3D + 2D buildings and greens ship a light variant', () => {
-        for (const key of ['google_buildings', 'google_buildings_flat', 'osm_green_spaces', 'overture_landuse']) {
+    it('the 3D + 2D buildings, greens and POIs ship a light variant', () => {
+        for (const key of ['google_buildings', 'google_buildings_flat', 'osm_green_spaces', 'overture_landuse', 'overture_places']) {
             expect(DTL.LAYER_DEFS[key].paintLight, `${key} needs paintLight`).toBeTruthy();
         }
+    });
+
+    it('places get a warm-ink stroke on paper (white stroke vanishes on Positron)', () => {
+        const places = DTL.LAYER_DEFS.overture_places;
+        expect(places.paint['circle-stroke-color']).toBe('#ffffff');
+        expect(places.paintLight['circle-stroke-color']).toContain('28,25,23');
     });
 
     it('paintFor() returns the neon default under dark', () => {

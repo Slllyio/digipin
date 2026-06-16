@@ -38,10 +38,16 @@ const GrowthOverlay = (() => {
     let _features = [];
     let _abort = null;
 
+    /** Per-theme band colours (light deepens the pale stops for the Positron basemap). */
+    function _colors() {
+        return (typeof Theme !== 'undefined' && Theme.scale && Theme.scale('growth')) || BANDS.map(b => b.color);
+    }
+
     /** Band colour for a composite score (transparent when no signal). */
     function colorFor(score) {
         if (score == null || !Number.isFinite(score)) return 'rgba(0,0,0,0)';
-        for (const b of BANDS) if (score >= b.min) return b.color;
+        const cols = _colors();
+        for (let i = 0; i < BANDS.length; i++) if (score >= BANDS[i].min) return cols[i];
         return 'rgba(0,0,0,0)';
     }
 
@@ -78,7 +84,8 @@ const GrowthOverlay = (() => {
                 id: LAYER_ID,
                 type: 'fill',
                 source: SOURCE_ID,
-                paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.5 },
+                paint: { 'fill-color': ['get', 'color'],
+                    'fill-opacity': (typeof Theme !== 'undefined' && Theme.get() === 'light') ? 0.62 : 0.5 },
             });
         }
     }
@@ -158,9 +165,10 @@ const GrowthOverlay = (() => {
             + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.32);backdrop-filter:blur(8px);';
         const sel = `background:${pal.surfaceSolid};color:${pal.ink};border:1px solid ${pal.border};border-radius:4px;padding:2px 4px;`;
         const hopts = HORIZONS.map(h => `<option value="${h.key}">${h.label}</option>`).join('');
-        const swatches = BANDS.map(b =>
+        const cols = _colors();
+        const swatches = BANDS.map((b, i) =>
             `<div style="display:flex;align-items:center;gap:6px;margin:2px 0;">`
-            + `<span style="width:14px;height:14px;border-radius:3px;background:${b.color};flex:none;"></span>`
+            + `<span style="width:14px;height:14px;border-radius:3px;background:${cols[i]};flex:none;"></span>`
             + `<span style="color:${pal.sub};">${b.label}</span></div>`).join('');
         el.innerHTML = `
             <div style="font-weight:600;margin-bottom:8px;color:${pal.primary};">Growth Forecast</div>
