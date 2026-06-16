@@ -28,6 +28,10 @@
         // ogdApiKey: '', waqiToken: '', ocmApiKey: '',
         // precomputedScores: true,
         // scoresBase: 'data/scores/',
+        // Default AI provider for DISHA / Text2Map's LLM parse. Seeds the
+        // provider config only when the user hasn't chosen one in Settings;
+        // keep real keys OUT of the committed file (inject at deploy time).
+        // aiProvider: { preferred: 'groq', keys: { groq: 'YOUR_GROQ_KEY' } },
       };
     </script>
     -->
@@ -326,6 +330,7 @@
     <script defer src="js/disha.js"></script>
     <script defer src="js/text2map-embeddings.js"></script>
     <script defer src="js/text2map.js"></script>
+    <script defer src="js/text2map-results-layer.js"></script>
     <script defer src="js/disha-panel.js"></script>
     <script defer src="js/compare.js"></script>
     <script defer src="js/isochrone.js"></script>

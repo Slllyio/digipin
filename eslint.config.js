@@ -29,6 +29,7 @@ const APP_GLOBALS = {
   BivariateOverlay: 'readonly', NDVIOverlay: 'readonly', Viewshed: 'readonly',
   KDEOverlay: 'readonly', AccessibilityOverlay: 'readonly',
   PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly', Text2Map: 'readonly', Text2MapEmbeddings: 'readonly',
+  Text2MapResultsLayer: 'readonly',
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly',
   LayersPanel: 'readonly', ExportDialog: 'readonly', Onboarding: 'readonly',
   DIGIPIN_CONFIG: 'readonly',

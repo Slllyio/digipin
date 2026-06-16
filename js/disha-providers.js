@@ -72,6 +72,15 @@ const DISHAProviders = (() => {
             if (saved) parsed = JSON.parse(saved);
         } catch { /* ignore parse errors */ }
 
+        // No user choice saved yet: allow a runtime-injected default provider
+        // (window.DIGIPIN_CONFIG.aiProvider) so an operator can pre-wire a
+        // provider/key at deploy time without committing a secret. An explicit
+        // choice made in Settings is persisted to localStorage and wins here.
+        if (parsed == null && typeof window !== 'undefined'
+            && window.DIGIPIN_CONFIG && window.DIGIPIN_CONFIG.aiProvider) {
+            parsed = window.DIGIPIN_CONFIG.aiProvider;
+        }
+
         _config = normalizeConfig(parsed);
         return _config;
     }

@@ -433,6 +433,10 @@ const DISHAPanel = (() => {
 
     async function handleCityScan(question) {
         _isCityScanning = true;
+        // Drop any previous answer's highlight before this scan starts.
+        if (typeof Text2MapResultsLayer !== 'undefined') {
+            try { Text2MapResultsLayer.clear(); } catch { /* nothing to clear */ }
+        }
         const sendBtn = document.getElementById('disha-send');
         const inputEl = document.getElementById('disha-input');
         sendBtn.style.display = 'none';
@@ -490,6 +494,12 @@ const DISHAPanel = (() => {
             _isCityScanning = false;
 
             addScanResultsCard(results, question);
+
+            // Close the "ask → map" loop: paint the ranked cells on the map and
+            // frame them, so the answer is a map, not just a list.
+            if (typeof Text2MapResultsLayer !== 'undefined') {
+                try { Text2MapResultsLayer.show(results); } catch { /* map-highlight is best-effort */ }
+            }
 
             await streamResponse(question, cityScanContext);
         } catch (err) {
