@@ -3,17 +3,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --paper: #f5f3ed;
-    --paper-2: #faf8f3;
-    --ink: #1c1917;
-    --ink-2: #57534e;
-    --ink-3: #8a857e;
-    --line: rgba(28, 25, 23, 0.10);
-    --coral: #c2410c;
-    --coral-2: #ea580c;
-    --sage: #8aa06f;
+    /* Matched to aino.world: cool architectural light, salmon-coral accent. */
+    --paper: #f4f6f7;
+    --paper-2: #ffffff;
+    --ink: #26282b;
+    --ink-2: #5c6166;
+    --ink-3: #9aa0a6;
+    --line: rgba(40, 44, 48, 0.10);
+    --coral: #dd6b4a;
+    --coral-2: #e6845f;
+    --sage: #7e9468;
     --radius: 14px;
-    --shadow: 0 10px 40px rgba(28, 25, 23, 0.10);
+    --shadow: 0 10px 40px rgba(24, 30, 38, 0.08);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }

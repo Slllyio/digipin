@@ -57,7 +57,7 @@ describe('Theme.mapStyleUrl() / gridColors()', () => {
 
     it('serves positron + coral grid for light', () => {
         expect(T.mapStyleUrl('light')).toContain('positron');
-        expect(T.gridColors('light')).toEqual({ base: '#c2410c', selected: '#7c3aed' });
+        expect(T.gridColors('light')).toEqual({ base: '#dd6b4a', selected: '#2e3033' });
     });
 
     it('follows the persisted theme when no argument is given', () => {
@@ -71,10 +71,10 @@ describe('Theme.mapStyleUrl() / gridColors()', () => {
 describe('Theme.palette() — JS-surface colours', () => {
     it('returns coral-ink paper colours for light', () => {
         const p = T.palette('light');
-        expect(p.primary).toBe('#c2410c');
-        expect(p.ink).toBe('#1c1917');
+        expect(p.primary).toBe('#dd6b4a');
+        expect(p.ink).toBe('#26282b');
         expect(p.inkOnPrimary).toBe('#ffffff');   // readable label on coral
-        expect(p.surfaceSolid).toBe('#faf8f3');   // warm paper, not sterile white
+        expect(p.surfaceSolid).toBe('#ffffff');   // clean white card (Aino)
     });
 
     it('returns neon-on-navy colours for dark', () => {
@@ -94,7 +94,7 @@ describe('Theme.palette() — JS-surface colours', () => {
 
     it('follows the persisted theme with no argument', () => {
         T.set('light');
-        expect(T.palette().primary).toBe('#c2410c');
+        expect(T.palette().primary).toBe('#dd6b4a');
         T.set('dark');
         expect(T.palette().primary).toBe('#00f5ff');
     });
@@ -105,8 +105,8 @@ describe('Theme.scoreColor()', () => {
         expect(T.scoreColor(85, 'dark')).toBe('#22c55e');
         expect(T.scoreColor(55, 'dark')).toBe('#eab308');
         expect(T.scoreColor(10, 'dark')).toBe('#ef4444');
-        expect(T.scoreColor(85, 'light')).toBe('#15803d');
-        expect(T.scoreColor(10, 'light')).toBe('#b91c1c');
+        expect(T.scoreColor(85, 'light')).toBe('#5f8a5a');
+        expect(T.scoreColor(10, 'light')).toBe('#b3392f');
     });
 });
 
@@ -116,7 +116,7 @@ describe('Theme.fg() — canvas ink at alpha', () => {
         expect(T.fg(0.5, 'dark')).toBe('rgba(255, 255, 255, 0.5)');
     });
     it('returns warm ink on light', () => {
-        expect(T.fg(0.08, 'light')).toBe('rgba(28, 25, 23, 0.08)');
+        expect(T.fg(0.08, 'light')).toBe('rgba(40, 44, 48, 0.08)');
     });
 });
 

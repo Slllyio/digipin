@@ -1,9 +1,10 @@
 /**
- * Theme — paper-light (default) / dark theme switching.
+ * Theme — Aino light (default) / dark theme switching.
  *
  * Two complete looks over one token system (css/styles.css):
- *   - "light" — Aino-style warm-paper consultancy look (DEFAULT): ink text,
- *               coral primary accent, light Positron basemap.
+ *   - "light" — Aino (aino.world) cool architectural light (DEFAULT): cool
+ *               near-white surfaces, charcoal ink, one salmon-coral accent,
+ *               charcoal UI chrome (no violet), light Positron basemap.
  *   - "dark"  — the original premium dark / neon control-room theme.
  *
  * Paper-light is the default (matching the landing page) so the landing→app
@@ -31,7 +32,7 @@ const Theme = (() => {
     // a theme change reloads, so init-time colours are sufficient).
     const GRID_COLORS = {
         dark: { base: '#00f5ff', selected: '#a855f7' },
-        light: { base: '#c2410c', selected: '#7c3aed' },
+        light: { base: '#dd6b4a', selected: '#2e3033' },
     };
 
     // Semantic colours for JS-built surfaces (overlay legends, MapLibre popups,
@@ -48,18 +49,19 @@ const Theme = (() => {
             success: '#22c55e', warn: '#eab308', danger: '#ef4444',
         },
         light: {
-            primary: '#c2410c', primarySoft: 'rgba(194,65,12,0.20)',
-            secondary: '#7c3aed', ink: '#1c1917', sub: '#57534e',
-            surface: 'rgba(246,245,241,0.96)', surfaceSolid: '#faf8f3',
-            border: 'rgba(28,25,23,0.12)', inkOnPrimary: '#ffffff',
-            success: '#15803d', warn: '#a16207', danger: '#b91c1c',
+            // Aino (aino.world): salmon-coral primary, charcoal secondary, cool ink.
+            primary: '#dd6b4a', primarySoft: 'rgba(221,107,74,0.18)',
+            secondary: '#2e3033', ink: '#26282b', sub: '#5c6166',
+            surface: 'rgba(248,249,250,0.96)', surfaceSolid: '#ffffff',
+            border: 'rgba(40,44,48,0.12)', inkOnPrimary: '#ffffff',
+            success: '#5f8a5a', warn: '#a3781f', danger: '#b3392f',
         },
     };
 
     // Theme foreground ("ink") at an arbitrary alpha — for canvas chart grids,
     // axes, ticks and labels that were hardcoded white. Dark returns the exact
-    // white the charts used (pixel-identical); light returns warm ink.
-    const FG = { dark: '255, 255, 255', light: '28, 25, 23' };
+    // white the charts used (pixel-identical); light returns cool charcoal ink.
+    const FG = { dark: '255, 255, 255', light: '40, 44, 48' };
 
     // Per-theme data ramps for the overlays whose dark-tuned palettes wash out
     // on the light Positron basemap. Dark arrays == the overlays' current
@@ -101,7 +103,7 @@ const Theme = (() => {
         }
         // Keep the mobile browser chrome (status bar) in sync: paper vs navy.
         const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', isLight ? '#f6f5f1' : '#0a0e27');
+        if (meta) meta.setAttribute('content', isLight ? '#f4f6f7' : '#0a0e27');
     }
 
     function set(theme) {

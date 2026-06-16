@@ -17,7 +17,7 @@ describe('DigitalTwinLayers paper-theme paints', () => {
     it('places get a warm-ink stroke on paper (white stroke vanishes on Positron)', () => {
         const places = DTL.LAYER_DEFS.overture_places;
         expect(places.paint['circle-stroke-color']).toBe('#ffffff');
-        expect(places.paintLight['circle-stroke-color']).toContain('28,25,23');
+        expect(places.paintLight['circle-stroke-color']).toContain('40,44,48');
     });
 
     it('paintFor() returns the neon default under dark', () => {

@@ -82,54 +82,56 @@
    primary accent (mapped onto --accent-cyan, the semantic primary), muted
    secondaries, soft diffuse shadows instead of neon glows. Activated by
    <html data-theme="light"> (set pre-paint from localStorage; see Theme). */
+/* ===== AINO PAPER LIGHT THEME (matched to aino.world) =====
+   Cool architectural light: near-white surfaces, charcoal ink, ONE salmon-
+   coral accent for data highlights/pins, charcoal for UI chrome (toggles,
+   controls) — no violet. Muted sage + pale steel for supporting data. */
 html[data-theme="light"] {
-    --bg-primary: #f6f5f1;
-    /* Warm-paper surfaces (taupe-tinted) to match the Aino landing, not sterile white */
-    --bg-secondary: #faf8f3;
-    --bg-card: rgba(250, 248, 243, 0.92);
-    --bg-glass: rgba(250, 248, 243, 0.85);
-    --wash-02: rgba(28, 25, 23, 0.025);
-    --wash-03: rgba(28, 25, 23, 0.035);
-    --wash-04: rgba(28, 25, 23, 0.045);
-    --wash-05: rgba(28, 25, 23, 0.055);
-    --wash-06: rgba(28, 25, 23, 0.07);
-    --wash-08: rgba(28, 25, 23, 0.09);
-    --wash-10: rgba(28, 25, 23, 0.11);
-    --wash-20: rgba(28, 25, 23, 0.2);
-    --fg-30: rgba(28, 25, 23, 0.3);
-    --fg-35: rgba(28, 25, 23, 0.35);
-    --fg-40: rgba(28, 25, 23, 0.4);
-    --fg-50: rgba(28, 25, 23, 0.5);
-    --fg-60: rgba(28, 25, 23, 0.6);
-    --fg-90: rgba(28, 25, 23, 0.9);
-    --border-color: rgba(28, 25, 23, 0.1);
-    --text-primary: #1c1917;
-    --text-secondary: #57534e;
-    --text-muted: #8a857e;
-    --accent-cyan: #c2410c;
-    --accent-purple: #7c3aed;
-    --accent-pink: #be185d;
-    --accent-green: #15803d;
-    --accent-yellow: #a16207;
-    --accent-red: #b91c1c;
-    --gradient-main: linear-gradient(135deg, #ea580c 0%, #c2410c 50%, #7c3aed 100%);
-    --gradient-subtle: linear-gradient(135deg, rgba(234, 88, 12, 0.07) 0%, rgba(124, 58, 237, 0.07) 100%);
-    --shadow-glow: 0 8px 30px rgba(28, 25, 23, 0.1);
-    --accent-soft: rgba(194, 65, 12, 0.12);
-    --accent-softer: rgba(194, 65, 12, 0.06);
-    --scrim: rgba(28, 25, 23, 0.28);
-    /* RGB channels (coral primary, violet secondary, warm ink, deep red) */
-    --accent-primary-rgb: 194 65 12;
-    --accent-purple-rgb: 124 58 237;
-    --ink-rgb: 28 25 23;
-    --danger-rgb: 185 28 28;
-    --info-rgb: 79 111 173;
-    --success-rgb: 21 128 61;
-    /* Softer, warm shadows + a coral button glow (the Aino consultancy look) */
-    --shadow-modal: 0 16px 50px rgba(28, 25, 23, 0.16);
-    --btn-glow: 0 6px 20px rgba(194, 65, 12, 0.28);
-    /* Slightly warmer corner radius (landing parity) */
-    --radius: 14px;
+    --bg-primary: #f4f6f7;
+    --bg-secondary: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.94);
+    --bg-glass: rgba(255, 255, 255, 0.85);
+    /* cool-charcoal ink at low alpha for washes & strong foregrounds */
+    --wash-02: rgba(40, 44, 48, 0.022);
+    --wash-03: rgba(40, 44, 48, 0.032);
+    --wash-04: rgba(40, 44, 48, 0.042);
+    --wash-05: rgba(40, 44, 48, 0.052);
+    --wash-06: rgba(40, 44, 48, 0.065);
+    --wash-08: rgba(40, 44, 48, 0.085);
+    --wash-10: rgba(40, 44, 48, 0.1);
+    --wash-20: rgba(40, 44, 48, 0.18);
+    --fg-30: rgba(40, 44, 48, 0.3);
+    --fg-35: rgba(40, 44, 48, 0.35);
+    --fg-40: rgba(40, 44, 48, 0.4);
+    --fg-50: rgba(40, 44, 48, 0.5);
+    --fg-60: rgba(40, 44, 48, 0.6);
+    --fg-90: rgba(40, 44, 48, 0.9);
+    --border-color: rgba(40, 44, 48, 0.1);
+    --text-primary: #26282b;
+    --text-secondary: #5c6166;
+    --text-muted: #9aa0a6;
+    --accent-cyan: #dd6b4a;     /* PRIMARY — Aino salmon-coral */
+    --accent-purple: #2e3033;   /* SECONDARY — charcoal (no violet) */
+    --accent-pink: #cf7d6a;     /* muted coral-rose */
+    --accent-green: #5f8a5a;    /* sage (parks/green) */
+    --accent-yellow: #a3781f;
+    --accent-red: #b3392f;
+    --gradient-main: linear-gradient(135deg, #e6845f 0%, #d9603a 100%);
+    --gradient-subtle: linear-gradient(135deg, rgba(221, 107, 74, 0.06) 0%, rgba(46, 48, 51, 0.05) 100%);
+    --shadow-glow: 0 8px 28px rgba(24, 30, 38, 0.08);
+    --accent-soft: rgba(221, 107, 74, 0.12);
+    --accent-softer: rgba(221, 107, 74, 0.06);
+    --scrim: rgba(28, 32, 36, 0.3);
+    /* RGB channels (salmon-coral primary, charcoal secondary, cool ink) */
+    --accent-primary-rgb: 221 107 74;
+    --accent-purple-rgb: 46 48 51;
+    --ink-rgb: 40 44 48;
+    --danger-rgb: 179 57 47;
+    --info-rgb: 108 138 162;
+    --success-rgb: 95 138 90;
+    --shadow-modal: 0 16px 50px rgba(24, 30, 38, 0.14);
+    --btn-glow: 0 6px 18px rgba(221, 107, 74, 0.26);
+    --radius: 12px;
 }
 
 * {
@@ -2325,7 +2327,7 @@ body {
 }
 
 html[data-theme="light"] #disha-send:hover:not(:disabled) {
-    background: #6d28d9;   /* darker violet on paper */
+    background: #1f2123;   /* darker charcoal on hover */
 }
 
 #disha-send:disabled {
