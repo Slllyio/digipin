@@ -65,6 +65,29 @@ python -m pipeline.scores.smoke_check data/scores --region pune
 Adding a brand-new city = one bbox + Geofabrik-zone entry in
 `pipeline/_lib/regions.py` (+ its test), then the steps above.
 
+## Batch build (local, all cities at once)
+
+`pipeline/scores/build_cities.py` builds many cities in one run, grouping them
+by Geofabrik zone so each ~GB extract downloads once (the 8 pilots span just 4
+zones: central / western / southern / northern). It clips each city with
+`osmium extract`, fetches + mosaics its GLO-30 DEM tiles, then runs
+`build_tile` + `smoke_check`.
+
+```bash
+sudo apt-get install -y osmium-tool          # the clip CLI
+pip install -r pipeline/scores/requirements.txt
+python -m pipeline.scores.build_cities                 # all 8 pilots
+python -m pipeline.scores.build_cities pune mumbai     # or a subset
+git add data/scores && git commit -m "chore(scores): build city tiles"
+```
+
+**Network egress:** the build host must reach `download.geofabrik.de` (OSM
+extracts) and `copernicus-dem-30m.s3.amazonaws.com` (DEM). On Claude Code web,
+add `download.geofabrik.de` to the environment's network-egress allowlist and
+start a fresh session for the policy to apply (the DEM S3 host is already
+reachable). GitHub-hosted CI runners are not behind that allowlist, so the
+`precompute-scores.yml` workflow needs no egress change.
+
 ## Remaining infra (needs decisions/secrets)
 
 1. **GHSL population raster.** `population_proxy` + flood currently use a
