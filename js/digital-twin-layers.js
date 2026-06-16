@@ -295,23 +295,26 @@ const DigitalTwinLayers = (() => {
                 'fill-extrusion-base': 0,
                 'fill-extrusion-opacity': 0.75
             },
-            // Paper theme: soft warm-grey extrusions, larger footprints a touch
-            // deeper (pseudo ambient occlusion); MapLibre's vertical gradient
-            // (on by default) adds the gentle top-to-bottom shading Aino has.
+            // Aino (aino.world) light: a white architectural massing model —
+            // cool near-white volumes that deepen to light grey by footprint
+            // (pseudo ambient occlusion), grounded (not floating), with a calm
+            // low-rise height curve. MapLibre's vertical gradient + the
+            // directional map light (set on attach) supply the model shading.
             paintLight: {
                 'fill-extrusion-color': [
                     'interpolate', ['linear'],
                     ['to-number', ['get', 'area_in_meters'], 80],
-                    0, '#efeae2',
-                    150, '#e4ddd2',
-                    600, '#d6cdbe',
-                    2000, '#c8bdac'
+                    0, '#f3f5f7',
+                    150, '#e9edf0',
+                    600, '#dce1e6',
+                    2000, '#ccd2d9'
                 ],
                 'fill-extrusion-height': [
-                    '*', ['sqrt', ['to-number', ['get', 'area_in_meters'], 50]], 3
+                    '+', 5,
+                    ['*', ['sqrt', ['to-number', ['get', 'area_in_meters'], 50]], 1.1]
                 ],
                 'fill-extrusion-base': 0,
-                'fill-extrusion-opacity': 0.95,
+                'fill-extrusion-opacity': 0.96,
                 'fill-extrusion-vertical-gradient': true
             },
             minZoom: 10,
@@ -342,11 +345,11 @@ const DigitalTwinLayers = (() => {
                 'fill-opacity': 0.5,
                 'fill-outline-color': '#ffffff'
             },
-            // Paper theme: flat pale building footprints with a soft ink outline.
+            // Aino light: flat cool-grey building footprints, hairline outline.
             paintLight: {
-                'fill-color': '#e7e1d6',
-                'fill-opacity': 0.85,
-                'fill-outline-color': '#b9b0a0'
+                'fill-color': '#e7ebef',
+                'fill-opacity': 0.88,
+                'fill-outline-color': '#aab2bb'
             },
             minZoom: 10,
             tooltip: f => {
@@ -787,6 +790,16 @@ const DigitalTwinLayers = (() => {
             _map.on('mousemove', layerId, (e) => onMouseMove(e, key));
             _map.on('mouseleave', layerId, onMouseLeave);
             _map.on('click', layerId, onClick);
+
+            // Aino light: give 3D extrusions a fixed directional "sun" so the
+            // white massing model reads with a consistent lit/shadow side
+            // (anchor:'map' keeps the light tied to geography as you rotate).
+            const light = typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';
+            if (light && def.type === 'fill-extrusion') {
+                try {
+                    _map.setLight({ anchor: 'map', position: [1.4, 210, 38], color: '#ffffff', intensity: 0.45 });
+                } catch { /* older MapLibre without setLight — vertical gradient still applies */ }
+            }
         } else {
             _map.setLayoutProperty(layerId, 'visibility', 'visible');
             if (def.tether) _map.setLayoutProperty(tetherLayerId, 'visibility', 'visible');
