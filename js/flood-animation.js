@@ -193,7 +193,7 @@ const FloodAnimation = (() => {
             }
 
             // 2. zero/baseline horizontal grid line
-            ctx.strokeStyle = 'rgba(148,163,184,0.25)';
+            ctx.strokeStyle = (typeof Theme !== 'undefined') ? Theme.fg(0.18) : 'rgba(148,163,184,0.25)';
             ctx.lineWidth = 1;
             ctx.beginPath();
             const ybase = yFor(forecast.baseline_m3s);
@@ -242,7 +242,7 @@ const FloodAnimation = (() => {
 
             // 5. weekday labels (fade in with line)
             ctx.globalAlpha = lineProgress;
-            ctx.fillStyle = 'rgba(100,116,139,0.85)';
+            ctx.fillStyle = (typeof Theme !== 'undefined') ? Theme.fg(0.6) : 'rgba(100,116,139,0.85)';
             ctx.font = '10px sans-serif';
             ctx.textAlign = 'center';
             forecast.days.forEach((d, i) => {

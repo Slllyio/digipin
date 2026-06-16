@@ -86,7 +86,7 @@ describe('Theme.palette() — JS-surface colours', () => {
 
     it('every theme exposes the full semantic key set', () => {
         const keys = ['primary', 'primarySoft', 'secondary', 'ink', 'sub', 'surface', 'surfaceSolid', 'border', 'inkOnPrimary',
-            'success', 'warn', 'danger', 'chartGrid', 'chartAxis', 'chartLabel', 'chartTick', 'dotStroke'];
+            'success', 'warn', 'danger'];
         for (const theme of T.THEMES) {
             for (const k of keys) expect(T.palette(theme)[k], `${theme}.${k}`).toBeTruthy();
         }
@@ -107,6 +107,16 @@ describe('Theme.scoreColor()', () => {
         expect(T.scoreColor(10, 'dark')).toBe('#ef4444');
         expect(T.scoreColor(85, 'light')).toBe('#15803d');
         expect(T.scoreColor(10, 'light')).toBe('#b91c1c');
+    });
+});
+
+describe('Theme.fg() — canvas ink at alpha', () => {
+    it('returns the exact white the charts used on dark (pixel-identical)', () => {
+        expect(T.fg(0.08, 'dark')).toBe('rgba(255, 255, 255, 0.08)');
+        expect(T.fg(0.5, 'dark')).toBe('rgba(255, 255, 255, 0.5)');
+    });
+    it('returns warm ink on light', () => {
+        expect(T.fg(0.08, 'light')).toBe('rgba(28, 25, 23, 0.08)');
     });
 });
 

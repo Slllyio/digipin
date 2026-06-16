@@ -134,7 +134,7 @@ const BuildingIntelDialog = (() => {
             html += `<div class="bi-scores-section"><div class="bi-dist-label">Intelligence Scores</div>`;
             Object.entries(scores).forEach(([key, s]) => {
                 if (s && s.value !== undefined) {
-                    const color = s.value >= 70 ? '#00f5a0' : s.value >= 40 ? '#f5c542' : '#f56b6b';
+                    const color = (typeof Theme !== 'undefined' && Theme.scoreColor) ? Theme.scoreColor(s.value) : (s.value >= 70 ? '#00f5a0' : s.value >= 40 ? '#f5c542' : '#f56b6b');
                     html += `<div class="bi-score-row">
                         <span class="bi-score-label">${esc(s.label)}</span>
                         <div class="bi-score-bar-bg"><div class="bi-score-bar" style="width:${s.value}%;background:${color}"></div></div>

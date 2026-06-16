@@ -46,10 +46,6 @@ const Theme = (() => {
             border: 'rgba(255,255,255,0.12)', inkOnPrimary: '#0a0e27',
             // status colours (mirror CSS --accent-green/yellow/red)
             success: '#22c55e', warn: '#eab308', danger: '#ef4444',
-            // canvas-chart chrome (grid/axis/labels were hardcoded white)
-            chartGrid: 'rgba(255,255,255,0.08)', chartAxis: 'rgba(255,255,255,0.16)',
-            chartLabel: 'rgba(255,255,255,0.6)', chartTick: 'rgba(255,255,255,0.4)',
-            dotStroke: '#0a0e27',
         },
         light: {
             primary: '#c2410c', primarySoft: 'rgba(194,65,12,0.20)',
@@ -57,11 +53,13 @@ const Theme = (() => {
             surface: 'rgba(246,245,241,0.96)', surfaceSolid: '#faf8f3',
             border: 'rgba(28,25,23,0.12)', inkOnPrimary: '#ffffff',
             success: '#15803d', warn: '#a16207', danger: '#b91c1c',
-            chartGrid: 'rgba(28,25,23,0.08)', chartAxis: 'rgba(28,25,23,0.16)',
-            chartLabel: 'rgba(28,25,23,0.55)', chartTick: 'rgba(28,25,23,0.4)',
-            dotStroke: '#faf8f3',
         },
     };
+
+    // Theme foreground ("ink") at an arbitrary alpha — for canvas chart grids,
+    // axes, ticks and labels that were hardcoded white. Dark returns the exact
+    // white the charts used (pixel-identical); light returns warm ink.
+    const FG = { dark: '255, 255, 255', light: '28, 25, 23' };
 
     // Per-theme data ramps for the overlays whose dark-tuned palettes wash out
     // on the light Positron basemap. Dark arrays == the overlays' current
@@ -140,6 +138,11 @@ const Theme = (() => {
         return value >= 70 ? p.success : value >= 40 ? p.warn : p.danger;
     }
 
+    /** Theme foreground at alpha a, e.g. fg(0.08) for a faint chart grid line. */
+    function fg(a, theme) {
+        return `rgba(${FG[normalize(theme !== undefined ? theme : get())]}, ${a})`;
+    }
+
     /** Flip theme and reload (preserving the view via URL state). */
     function toggle() {
         const next = get() === 'dark' ? 'light' : 'dark';
@@ -166,7 +169,7 @@ const Theme = (() => {
     }
 
     return { init, get, set, apply, normalize, toggle, mapStyleUrl, gridColors,
-        palette, scale, scoreColor, THEMES };
+        palette, scale, scoreColor, fg, THEMES };
 })();
 
 if (typeof window !== 'undefined') {

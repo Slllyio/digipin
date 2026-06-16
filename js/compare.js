@@ -156,13 +156,13 @@ const Compare = (() => {
 
                 if (val != null) {
                     cell.textContent = String(val);
-                    cell.style.color = val >= 70 ? '#22c55e' : val >= 40 ? '#eab308' : '#ef4444';
+                    cell.style.color = (typeof Theme !== 'undefined' && Theme.scoreColor) ? Theme.scoreColor(val) : (val >= 70 ? '#22c55e' : val >= 40 ? '#eab308' : '#ef4444');
                     if (val === maxVal && validValues.length > 1) {
                         cell.classList.add('compare-best');
                     }
                 } else {
                     cell.textContent = '-';
-                    cell.style.color = '#64748b';
+                    cell.style.color = (typeof Theme !== 'undefined' && Theme.palette) ? Theme.palette().sub : '#64748b';
                 }
                 row.appendChild(cell);
             });
@@ -208,7 +208,7 @@ const Compare = (() => {
                         : ctx.lineTo(cx + rr * Math.cos(angle), cy + rr * Math.sin(angle));
             }
             ctx.closePath();
-            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.strokeStyle = (typeof Theme !== 'undefined') ? Theme.fg(0.06) : 'rgba(255,255,255,0.06)';
             ctx.stroke();
         }
 
@@ -217,7 +217,7 @@ const Compare = (() => {
             const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
             const lx = cx + (r + 22) * Math.cos(angle);
             const ly = cy + (r + 22) * Math.sin(angle);
-            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.fillStyle = (typeof Theme !== 'undefined') ? Theme.fg(0.4) : 'rgba(255,255,255,0.4)';
             ctx.font = '8px Inter';
             ctx.textAlign = Math.abs(Math.cos(angle)) < 0.3 ? 'center' : Math.cos(angle) > 0 ? 'left' : 'right';
             const label = _pinned[0].data.scores[k]?.label || k;
