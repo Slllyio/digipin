@@ -101,6 +101,37 @@ CI (`.github/workflows/webpack.yml`) runs both across Node 18/20/22, rejects
 merge-conflict markers, and runs an **orphan-JS guard** that fails the build if
 a `js/*.js` module is committed but never wired into a `<script>` tag.
 
+### Network access (sandboxes & egress allowlists)
+
+The app pulls its map engine, basemaps, fonts and live data from external
+hosts. In a restricted environment (e.g. Claude Code on the web, a CI box, or
+a corporate proxy) these must be on the **egress allowlist** or the map shows
+"MapModule unavailable" and tiles/fonts fail to load. Allowlist changes take
+effect at **container/session start**, so add hosts first, then start a fresh
+session.
+
+**Minimum to render the map + 3D buildings (the Aino look):**
+
+| Host | Why |
+|---|---|
+| `unpkg.com` | MapLibre GL JS, PMTiles, georaster |
+| `basemaps.cartocdn.com` | Positron (light) + dark-matter (dark) basemap tiles |
+| `fonts.googleapis.com`, `fonts.gstatic.com` | Inter font |
+| `overturemaps-tiles-us-west-2-beta.s3.amazonaws.com` | Overture building tiles |
+
+> The main **Buildings** layer reads `data/vectors/google_open_buildings_indore.pmtiles`
+> — same-origin (not subject to egress), but **not committed** to the repo; drop
+> the file in to preview that layer.
+
+**Additional hosts for the full live-data layers** (scores, weather, AQI,
+search): `api.open-meteo.com`, `air-quality-api.open-meteo.com`,
+`flood-api.open-meteo.com`, `archive-api.open-meteo.com`, `data.gov.in`,
+`api.data.gov.in`, `overpass-api.de`, `nominatim.openstreetmap.org`,
+`en.wikipedia.org`, `api.waqi.info`, `bhuvan-vec2.nrsc.gov.in`,
+`gibs.earthdata.nasa.gov`, `cdn.jsdelivr.net`, and (for DISHA) `api.groq.com`
+or your local `http://localhost:11434` Ollama. A more permissive egress policy
+(proxy/full) avoids enumerating these.
+
 ## Architecture
 
 ```
