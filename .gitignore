@@ -71,3 +71,6 @@ cesium-demo.html
 
 # Personal Claude Code permission allowlist — local-only
 .claude/settings.local.json
+
+# Generated promo video + frames (build via extras/promo-stills.mjs + build-promo.py)
+extras/out/
