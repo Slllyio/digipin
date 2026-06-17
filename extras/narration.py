@@ -1,18 +1,32 @@
 #!/usr/bin/env python3
 """Generate the explainer narration: one MP3 per scene + a duration manifest.
 
-Voice: gTTS, Indian English (tld co.in). Output: extras/out/narration/<id>.mp3
-and extras/out/narration/manifest.json  ([{id, text, dur, theme, motion}]).
+Voice: edge-tts neural (humanised), Indian English — en-IN-PrabhatNeural by
+default — synthesised at a slightly relaxed rate for a natural narration feel.
+If edge-tts can't reach the cloud, it falls back to gTTS so the build never
+hard-stops. Output: extras/out/narration/<id>.mp3 and
+extras/out/narration/manifest.json ([{id, text, dur, theme, motion, voice}]).
 
-Usage:  python3 extras/narration.py
+Usage:
+  python3 extras/narration.py
+  python3 extras/narration.py --voice en-IN-NeerjaNeural   # female
+  python3 extras/narration.py --rate -8% --pitch -2Hz
 """
+import argparse
 import json
 import os
+import ssl
 import subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NARR = os.path.join(HERE, "out", "narration")
 os.makedirs(NARR, exist_ok=True)
+
+# Humanised neural voice + gentle prosody. Indian English suits DigiPin's
+# India context; a small negative rate reads less rushed than the default.
+DEFAULT_VOICE = "en-IN-PrabhatNeural"
+DEFAULT_RATE = "-6%"
+DEFAULT_PITCH = "+0Hz"
 
 # Each scene: id, theme, a motion key the recorder understands, and narration.
 SCENES = [
@@ -119,17 +133,74 @@ def dur(path):
     return float(out.stdout.strip())
 
 
-def main():
+def _edge_tts_factory(voice, rate, pitch):
+    """Return a synth(text, path) using edge-tts neural voices, or None if the
+    library/network is unavailable. Trusts the system CA bundle so it works
+    behind a TLS-inspecting proxy (edge-tts otherwise pins certifi)."""
+    try:
+        import asyncio
+        import edge_tts
+        import edge_tts.communicate as ec
+    except ImportError:
+        return None
+
+    ca = os.environ.get("SSL_CERT_FILE") or "/etc/ssl/certs/ca-certificates.crt"
+    if os.path.exists(ca):
+        ec._SSL_CTX = ssl.create_default_context(cafile=ca)
+
+    def synth(text, path):
+        async def _run():
+            await edge_tts.Communicate(text, voice, rate=rate, pitch=pitch).save(path)
+        asyncio.run(_run())
+
+    return synth
+
+
+def _gtts_factory():
+    """Fallback synth(text, path) using gTTS (robotic, but offline-tolerant)."""
     from gtts import gTTS
+
+    def synth(text, path):
+        gTTS(text, lang="en", tld="co.in").save(path)
+
+    return synth
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Generate humanised explainer narration")
+    ap.add_argument("--voice", default=DEFAULT_VOICE, help=f"edge-tts voice (default {DEFAULT_VOICE})")
+    ap.add_argument("--rate", default=DEFAULT_RATE, help=f"speaking rate, e.g. -6%% (default {DEFAULT_RATE})")
+    ap.add_argument("--pitch", default=DEFAULT_PITCH, help=f"pitch, e.g. +0Hz (default {DEFAULT_PITCH})")
+    ap.add_argument("--gtts", action="store_true", help="force the gTTS fallback voice")
+    args = ap.parse_args()
+
+    synth = None if args.gtts else _edge_tts_factory(args.voice, args.rate, args.pitch)
+    voice_name = args.voice
+    if synth is None:
+        # Verify edge-tts actually reaches the cloud on the first scene before
+        # committing the whole run to it; otherwise drop to gTTS.
+        synth = _gtts_factory()
+        voice_name = "gTTS:en-co.in"
+        print("[narration] edge-tts unavailable — using gTTS fallback voice")
+    else:
+        try:
+            synth(SCENES[0][3], os.path.join(NARR, f"{SCENES[0][0]}.mp3"))
+        except Exception as e:  # noqa: BLE001 — any network/TLS error → fallback
+            print(f"[narration] edge-tts failed ({type(e).__name__}) — using gTTS fallback")
+            synth = _gtts_factory()
+            voice_name = "gTTS:en-co.in"
+
+    print(f"[narration] voice: {voice_name}")
     manifest = []
     total = 0.0
     for sid, theme, motion, text in SCENES:
         mp3 = os.path.join(NARR, f"{sid}.mp3")
-        gTTS(text, lang="en", tld="co.in").save(mp3)
+        synth(text, mp3)
         d = dur(mp3)
         total += d
         manifest.append({"id": sid, "theme": theme, "motion": motion,
-                         "text": text, "dur": round(d, 3), "file": mp3})
+                         "text": text, "dur": round(d, 3), "file": mp3,
+                         "voice": voice_name})
         print(f"{sid:16s} {theme:5s} {motion:18s} {d:5.1f}s")
     with open(os.path.join(NARR, "manifest.json"), "w") as f:
         json.dump(manifest, f, indent=1)
