@@ -179,7 +179,8 @@ async function recordScene(browser, scene) {
 }
 
 async function main() {
-    rmSync(CLIPS, { recursive: true, force: true });
+    const only = process.env.ONLY ? process.env.ONLY.split(',') : null;
+    if (!only) rmSync(CLIPS, { recursive: true, force: true }); // ONLY re-shoots in place
     mkdirSync(CLIPS, { recursive: true });
     const manifest = JSON.parse(readFileSync(join(OUT, 'narration', 'manifest.json'), 'utf-8'));
     const server = spawn('python3', ['serve.py', String(PORT)], { cwd: ROOT, stdio: 'ignore' });
@@ -191,6 +192,7 @@ async function main() {
     });
     try {
         for (const scene of manifest) {
+            if (only && !only.includes(scene.id)) continue;
             await recordScene(browser, scene);
         }
         console.log('CLIPS DONE');
