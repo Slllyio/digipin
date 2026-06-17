@@ -26,18 +26,23 @@ const OvertureBuildings = (() => {
         return typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';
     }
 
-    // Real building height (metres), independent of theme: prefer the tagged
-    // height, else floors * 3.6m, else a class-based default.
+    // Real building height (metres), independent of theme. NULL-SAFE: every
+    // arithmetic branch is guarded by ['has', …] because MapLibre's `coalesce`
+    // does NOT recover from a runtime error, and `['*', ['get','num_floors'], …]`
+    // *throws* when num_floors is absent — which it is for most Overture
+    // footprints (they often carry no height/floors/class at all). The old
+    // coalesce form errored for those features, collapsing height to 0 (flat)
+    // and the fill-extrusion-color to its black default — so buildings rendered
+    // as flat black footprints in light AND zero-height specks in dark. The
+    // case+has form below always returns a finite number (12m fallback).
     const REAL_HEIGHT = [
-        'coalesce',
-        ['get', 'height'],
-        ['*', ['get', 'num_floors'], 3.6],
-        ['case',
-            ['==', ['get', 'class'], 'commercial'], 35,
-            ['==', ['get', 'class'], 'industrial'], 25,
-            ['==', ['get', 'class'], 'residential'], 12,
-            15
-        ]
+        'case',
+        ['has', 'height'], ['max', 3, ['to-number', ['get', 'height'], 12]],
+        ['has', 'num_floors'], ['*', ['to-number', ['get', 'num_floors'], 3], 3.6],
+        ['==', ['get', 'class'], 'commercial'], 35,
+        ['==', ['get', 'class'], 'industrial'], 25,
+        ['==', ['get', 'class'], 'residential'], 12,
+        12
     ];
 
     // Dark theme: vibrant solid class colours, floated 100m for the
