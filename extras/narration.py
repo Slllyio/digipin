@@ -42,11 +42,24 @@ SCENES = [
      "quieter residential gaps in between. Whether you are siting a new store "
      "or planning infrastructure, these patterns are the starting point. There "
      "are twenty scores in all — from flood risk to digital readiness."),
+    ("05b-floodrisk", "light", "scores:flood_risk",
+     "Some scores matter most in a crisis. Flood risk flags the low-lying, "
+     "poorly-drained cells most likely to inundate when the monsoon hits — so "
+     "you can see vulnerability block by block, before the water ever rises."),
     ("06-buildings3d", "light", "orbit",
      "Now, the third dimension. DigiPin renders real building footprints, "
      "extruded to their true heights, as a clean architectural model of the "
      "city. As the camera orbits, the built form takes shape — every block and "
      "every structure, in genuine three-D."),
+    ("06b-heatmap3d", "light", "heatmap",
+     "Lift any score into the third dimension. This is a living heat-map of the "
+     "city — taller, greener columns are higher-scoring cells; short and red "
+     "are the gaps. The entire urban landscape, readable in one glance."),
+    ("06c-panel", "light", "panel",
+     "Click any single cell to open its full profile — live weather, the "
+     "air-quality index, elevation, and over a hundred and sixty real-world "
+     "features counted around it: schools, clinics, shops and transit. Every "
+     "square, fully understood."),
     ("07-themes", "dark", "pan",
      "The entire interface comes in two themes. You have been seeing the calm, "
      "paper-light Aino theme. Switch to the dark control-room theme for "

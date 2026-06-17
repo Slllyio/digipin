@@ -30,7 +30,10 @@ const CAPS = {
     '03-livability': ['Livability score', '0–100 per cell · green = safer, greener, healthier, quieter'],
     '04-walkability': ['Walkability', 'Swap any of 20 metrics — the city re-colours instantly'],
     '05-commercial': ['Commercial activity', 'Busy retail & office cores vs quiet residential gaps'],
+    '05b-floodrisk': ['Flood risk', 'Low-lying, drainage-poor cells most likely to inundate'],
     '06-buildings3d': ['3D buildings', 'Real footprints, extruded to their true heights'],
+    '06b-heatmap3d': ['3D score heat-map', 'Taller & greener = higher-scoring cells'],
+    '06c-panel': ['Per-cell intelligence', 'Live weather · air quality (AQI) · 160+ features · scores'],
     '07-themes': ['Two themes', 'Paper-light Aino ↔ dark control-room'],
     '08-darkscores': ['Scores, in the dark', 'The palette glows on the deep canvas'],
     '09-text2map': ['Ask in plain English', '“family-friendly · good schools · low flood risk” → ranked on the map'],
@@ -144,6 +147,18 @@ async function drive(page, scene) {
         console.log(`   ${scene.id} t2m cells=${n}`);
         await sleep(1500);
         await ease({ zoom: 13.4, duration: ms }); // gentle push-in on the highlighted cells
+    } else if (m === 'heatmap') {
+        await jump({ center: [C.lng, C.lat], zoom: 13.4, pitch: 52, bearing: 18 });
+        await sleep(1200);
+        await page.evaluate(() => { try { HeatmapOverlay.show('livability'); } catch (e) { void e; } });
+        await sleep(3500); // columns build
+        await ease({ bearing: -18, pitch: 58, duration: ms });
+    } else if (m === 'panel') {
+        await jump({ center: [C.lng, C.lat], zoom: 15 });
+        await sleep(800);
+        await page.evaluate((o) => { try { MapModule.selectByCode(DigiPin.encode(o.lat, o.lng)); } catch (e) { void e; } }, C);
+        await sleep(11000); // let live weather/AQI/feature counts populate the panel
+        await ease({ zoom: 15.4, duration: ms });
     } else if (m === 'zoomout') {
         await jump({ center: [C.lng, C.lat], zoom: 13.6, pitch: 0, bearing: 0 });
         await sleep(2000);
