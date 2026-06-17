@@ -1,5 +1,5 @@
 /* DigiPin Urban Intelligence — themable: Premium Dark (default) + Paper Light */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap');
 
 /* Skip link — off-screen until focused, then drops in at top-left. Neutral
    card colours so it reads in both themes. */
@@ -112,6 +112,8 @@ html[data-theme="light"] {
     --text-muted: #9aa0a6;
     --accent-cyan: #dd6b4a;     /* PRIMARY — Aino salmon-coral */
     --accent-purple: #2e3033;   /* SECONDARY — charcoal (no violet) */
+    /* Aino editorial display serif for headings (light theme only). */
+    --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
     --accent-pink: #cf7d6a;     /* muted coral-rose */
     --accent-green: #5f8a5a;    /* sage (parks/green) */
     --accent-yellow: #a3781f;
@@ -133,6 +135,43 @@ html[data-theme="light"] {
     --btn-glow: 0 6px 18px rgba(221, 107, 74, 0.26);
     --radius: 12px;
 }
+
+/* ── Aino editorial look (light theme only) ───────────────────────────────
+   aino.world leads with an elegant coral serif for titles over the calm
+   paper map. We apply that display serif to the prominent headings and keep
+   the dark "control-room" theme on its original Inter/mono type. Small
+   uppercase micro-labels stay sans for legibility. */
+html[data-theme="light"] .logo-text,
+html[data-theme="light"] .dialog-title-text,
+html[data-theme="light"] .section-title,
+html[data-theme="light"] .data-card-title,
+html[data-theme="light"] .disha-title,
+html[data-theme="light"] .results-header h3,
+html[data-theme="light"] .compare-panel-header h3,
+html[data-theme="light"] .bm-panel-header h3,
+html[data-theme="light"] .cat-section h3,
+html[data-theme="light"] .onboarding-title,
+html[data-theme="light"] .ed-title,
+html[data-theme="light"] .dt-group-title,
+html[data-theme="light"] .overture-stats-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--accent-cyan);   /* coral primary */
+    text-transform: none;
+}
+
+/* The wordmark reads better as solid coral serif than as a clipped gradient. */
+html[data-theme="light"] .logo-text {
+    background: none;
+    -webkit-text-fill-color: var(--accent-cyan);
+    font-size: 16px;
+}
+
+/* Section/card titles a touch larger so the serif has room to breathe. */
+html[data-theme="light"] .section-title,
+html[data-theme="light"] .results-header h3 { font-size: 16px; }
+html[data-theme="light"] .onboarding-title { font-size: 22px; }
 
 * {
     margin: 0;

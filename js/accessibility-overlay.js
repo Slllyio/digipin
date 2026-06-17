@@ -343,8 +343,11 @@ const AccessibilityOverlay = (() => {
         const mode = _measured
             ? 'Real foot-walking routes (OpenRouteService)'
             : 'Straight-line estimate (×1.3 detour)';
+        // Aino editorial serif for the title on the paper-light theme.
+        const titleFont = (typeof Theme !== 'undefined' && Theme.get() === 'light')
+            ? "'Newsreader', Georgia, serif" : 'inherit';
         el.innerHTML = `
-            <div style="font-weight:600;margin-bottom:6px;color:${pal.primary};">15-minute city</div>
+            <div style="font-family:${titleFont};font-weight:600;font-size:15px;margin-bottom:6px;color:${pal.primary};">15-minute city</div>
             <label style="display:block;margin-bottom:8px;">Amenity
                 <select id="access-sel" style="${sel}">${opts}</select>
             </label>
