@@ -132,6 +132,13 @@ const Panel = (() => {
             HeatWidget.attachTo(contentEl, data?.realtime?.heat || null, cell);
         }
 
+        // Flood forecast widget (7-day discharge sparkline + risk badge + a
+        // "show on map" button that drives the DEM inundation overlay). No-ops
+        // when the cell has no flood forecast.
+        if (typeof FloodAnimation !== 'undefined') {
+            FloodAnimation.attachTo(contentEl, data?.realtime?.flood || null, cell);
+        }
+
         const dishaBtn = document.getElementById('ask-disha-btn');
         if (dishaBtn) {
             dishaBtn.addEventListener('click', () => {
