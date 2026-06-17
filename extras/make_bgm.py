@@ -47,10 +47,12 @@ def generate(out_path=DEFAULT_OUT, seconds=360.0):
         f"{''.join(mix_labels)}amix=inputs={len(CHORD)}:normalize=0,"
         # slow amplitude pulse so the pad breathes instead of sitting static
         "tremolo=f=0.10:d=0.35,"
+        # chorus detunes/thickens the bare sines into a warm, moving pad
+        "chorus=0.6:0.85:55|75:0.5|0.35:0.45|0.4:2|1.5,"
         # two short echoes widen it into an ambient space
         "aecho=0.8:0.7:600|1100:0.4|0.3,"
-        # tame the sterile sine harmonics into a warm pad
-        "lowpass=f=1500,"
+        # tame the sterile sine harmonics; high-pass clears muddy sub rumble
+        "highpass=f=70,lowpass=f=1500,"
         f"atrim=0:{seconds:.3f},"
         f"afade=t=in:st=0:d={FADE},"
         f"afade=t=out:st={fade_out_start:.3f}:d={FADE}[bgm]"
