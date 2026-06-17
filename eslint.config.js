@@ -31,7 +31,7 @@ const APP_GLOBALS = {
   PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly', Text2Map: 'readonly', Text2MapEmbeddings: 'readonly',
   Text2MapResultsLayer: 'readonly',
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly',
-  LayersPanel: 'readonly', ExportDialog: 'readonly', Onboarding: 'readonly',
+  LayersPanel: 'readonly', ExportDialog: 'readonly', DTDLExport: 'readonly', Onboarding: 'readonly',
   DIGIPIN_CONFIG: 'readonly',
   // third-party libraries loaded from CDN
   maplibregl: 'readonly', pmtiles: 'readonly', parseGeoraster: 'readonly', GeoRaster: 'readonly',

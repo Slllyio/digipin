@@ -32,7 +32,8 @@ const ExportDialog = (() => {
     function filename(format, code) {
         const clean = (code || 'cell').replace(/-/g, '');
         const ext = format === 'csv' ? 'csv' : format === 'geojson' ? 'geojson' : 'json';
-        return `digipin_${clean}.${ext}`;
+        const suffix = format === 'dtdl' ? '_twin' : '';
+        return `digipin_${clean}${suffix}.${ext}`;
     }
 
     // What each format contains, as human lines built from the summary.
@@ -61,6 +62,19 @@ const ExportDialog = (() => {
                 `${s.featureTypes} feature rows (category, key, name, count)`,
             ],
         },
+        {
+            id: 'dtdl', label: 'Digital Twin',
+            desc: 'DTDL / RealEstateCore twin graph — imports into Azure Digital Twins Explorer',
+            items: (s, cell, data) => {
+                if (typeof DTDLExport === 'undefined') return ['DTDL exporter unavailable'];
+                const d = DTDLExport.summarize(cell, data);
+                return [
+                    `${d.twins} twins (Space, Building, ${d.capabilities} capabilities, ${d.assets} assets)`,
+                    `${d.relationships} relationships (hasPart / hasCapability / hasAsset)`,
+                    `${d.models} DTDL models, RealEstateCore-aligned`,
+                ];
+            },
+        },
     ];
 
     function _doExport(format, cell, data) {
@@ -69,6 +83,8 @@ const ExportDialog = (() => {
             DataFetcher.exportToGeoJSON({ code: cell.code, scores: data.scores }, name);
         } else if (format === 'csv') {
             DataFetcher.exportToCSV(data, name);
+        } else if (format === 'dtdl' && typeof DTDLExport !== 'undefined') {
+            DTDLExport.download(cell, data, name);
         } else {
             DataFetcher.exportToJSON(data, name);
         }
@@ -122,7 +138,7 @@ const ExportDialog = (() => {
             desc.className = 'ed-desc';
             desc.textContent = fmt.desc;
             body.appendChild(desc);
-            fmt.items(summary, cell).forEach(line => {
+            fmt.items(summary, cell, data).forEach(line => {
                 const row = document.createElement('div');
                 row.className = 'ed-item';
                 const tick = document.createElement('span');
