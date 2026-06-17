@@ -41,6 +41,7 @@ loadGlobalScript('js/growth-overlay.js', ['GrowthOverlay']);
 loadGlobalScript('js/heat-score.js', ['HeatScore']);
 loadGlobalScript('js/heat-widget.js', ['HeatWidget']);
 loadGlobalScript('js/realtime-flood.js', ['RealtimeFlood']);
+loadGlobalScript('js/flood-inundation.js', ['FloodInundation']);
 loadGlobalScript('js/realtime-alerts.js', ['RealtimeAlerts']);
 loadGlobalScript('js/realtime-quakes.js', ['RealtimeQuakes']);
 loadGlobalScript('js/realtime-imd.js', ['RealtimeIMD']);
