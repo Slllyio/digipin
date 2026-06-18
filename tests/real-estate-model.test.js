@@ -104,6 +104,65 @@ describe('RealEstateModel.projectAppreciation()', () => {
     });
 });
 
+describe('RealEstateModel intent profiles', () => {
+    // A cell that's great to LIVE in (quiet, green, schools, flood-safe) but a
+    // weak development play (no pipeline / dev potential), and vice-versa.
+    const liveable = cell({
+        green: 90, walkability: 85, schools: 88, healthcare: 80, noise_estimate: 90,
+        flood_risk: 10, development_potential: 20, real_estate_growth: 15, connectivity: 50,
+    });
+    const developable = cell({
+        development_potential: 92, redevelopment_index: 88, real_estate_growth: 85,
+        connectivity: 80, green: 25, noise_estimate: 30, schools: 20, walkability: 40,
+    });
+
+    it('balanced default leaves base behaviour unchanged', () => {
+        const a = REM.growthPotential(liveable);
+        const b = REM.growthPotential(liveable, { intent: 'balanced' });
+        expect(a.score).toBe(b.score);
+    });
+
+    it('re-weights: "live" rates a liveable cell higher than "build" does', () => {
+        const live = REM.outlook(liveable, { intent: 'live' }).score;
+        const build = REM.outlook(liveable, { intent: 'build' }).score;
+        expect(live).toBeGreaterThan(build);
+    });
+
+    it('re-weights: "build" rates a developable cell higher than "live" does', () => {
+        const build = REM.outlook(developable, { intent: 'build' }).score;
+        const live = REM.outlook(developable, { intent: 'live' }).score;
+        expect(build).toBeGreaterThan(live);
+    });
+
+    it('records the active intent in the outlook', () => {
+        expect(REM.outlook(liveable, { intent: 'invest' }).intent).toBe('invest');
+        expect(REM.outlook(liveable, { intent: 'nonsense' }).intent).toBe('balanced');
+    });
+});
+
+describe('RealEstateModel.verdictSentence() & builtForm()', () => {
+    it('summarises built form from building intelligence', () => {
+        const data = cell({ redevelopment_index: 70 }, { buildingIntel: {
+            buildings: { totalCount: 88, avgLevels: 2.4 }, metrics: { fsi: 1.3, urbanForm: 'Open Midrise' },
+        } });
+        const bf = REM.builtForm(data);
+        expect(bf.text).toContain('88 buildings');
+        expect(bf.text).toContain('FSI 1.3');
+        expect(bf.redevelopment).toBe(70);
+    });
+
+    it('produces a plain-English verdict that names drivers', () => {
+        const o = REM.outlook(cell({ connectivity: 90, commercial: 85, flood_risk: 80 }));
+        const s = REM.verdictSentence(o, {});
+        expect(s).toMatch(/\/100/);
+        expect(s.toLowerCase()).toContain('lifted by');
+    });
+
+    it('degrades gracefully with no data', () => {
+        expect(REM.verdictSentence(REM.outlook({}), {})).toMatch(/Not enough/);
+    });
+});
+
 describe('RealEstateModel.outlook()', () => {
     it('bundles score, label, appreciation and top drivers', () => {
         const o = REM.outlook(cell({

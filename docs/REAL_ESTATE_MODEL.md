@@ -32,9 +32,28 @@ back to the `flood_risk` score; air quality uses the live AQI reading.
 
 ## Where it shows
 
-- **Cell panel** — the "🏠 Real Estate Outlook" widget (`real-estate-widget.js`).
-- **DISHA** — an outlook line is injected into the assistant's context, so it can
-  answer investment questions grounded in the model.
+- **Cell panel** — the answer-first **🏠 Property Intelligence** card
+  (`real-estate-widget.js`), inserted directly under the header. It fuses the
+  three previously-scattered real-estate signals: the live outlook + drivers,
+  the **Building Intelligence** built-form summary (with a link to the full
+  dialog), and the satellite **Growth Forecast** folded in as a "Trajectory"
+  sub-section — which gracefully degrades to the live model instead of showing
+  an "unavailable" card when the satellite COGs aren't present.
+- **DISHA** — an outlook line is injected into the assistant's context.
+
+## Intent profiles (Live / Invest / Build)
+
+`INTENT_PROFILES` re-weights the factors for who's asking; the panel exposes a
+toggle that re-renders the verdict live:
+
+| Intent | Emphasis |
+|---|---|
+| **Live** (homebuyer) | walkability, green, schools, healthcare, quiet, flood-safe; de-emphasises construction |
+| **Invest** (default) | accessibility, jobs, construction pipeline, development potential |
+| **Build** (developer) | development potential / FSI headroom, redevelopment scope, pipeline |
+
+`balanced` (all multipliers = 1) is the model default, so `outlook(data)` without
+an intent — including the DISHA context — is unchanged.
 
 ## Research basis
 

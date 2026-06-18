@@ -24,6 +24,29 @@
  * is pure and unit-tested; the value is a *relative* signal, not a price quote.
  */
 const RealEstateModel = (() => {
+    // Intent profiles — per-factor weight multipliers that retune the model for
+    // who's asking. "balanced" (default) leaves the base weights untouched so the
+    // model's default behaviour (and DISHA context) is unchanged. A homebuyer
+    // weights amenity/safety/quiet; an investor weights appreciation drivers; a
+    // developer weights supply-side headroom.
+    const INTENT_PROFILES = {
+        balanced: {},
+        live: {
+            walkability: 1.3, green: 1.4, schools: 1.4, healthcare: 1.3, quietness: 1.6,
+            floodSafety: 1.5, airQuality: 1.4, jobs: 0.8,
+            pipeline: 0.4, redevelopment: 0.4, devPotential: 0.5,
+        },
+        invest: {
+            accessibility: 1.3, jobs: 1.4, pipeline: 1.5, devPotential: 1.3,
+            walkability: 1.1, modernization: 1.1, quietness: 0.5, schools: 0.8,
+        },
+        build: {
+            devPotential: 1.7, redevelopment: 1.7, pipeline: 1.3, accessibility: 1.1,
+            walkability: 0.7, green: 0.6, schools: 0.6, healthcare: 0.6, quietness: 0.4,
+        },
+    };
+    const INTENTS = Object.keys(INTENT_PROFILES);
+
     // Factor weights (relative). Sign is handled by orienting each value so that
     // higher always means "better for growth"; weights are therefore positive.
     // See the module header for the hedonic-literature basis of the ordering.
@@ -80,20 +103,25 @@ const RealEstateModel = (() => {
     }
 
     /** Weighted growth-potential score 0..100 + ranked drivers + confidence.
-     *  Neutral is 50; a factor above 50 lifts the score, below 50 drags it. */
-    function growthPotential(data) {
+     *  Neutral is 50; a factor above 50 lifts the score, below 50 drags it.
+     *  opts.intent ∈ {balanced,live,invest,build} retunes the factor weights. */
+    function growthPotential(data, opts = {}) {
         const fs = factors(data);
         if (fs.length === 0) return { score: null, drivers: [], confidence: 'no_data', factorsUsed: 0 };
+
+        const intent = INTENT_PROFILES[opts.intent] ? opts.intent : 'balanced';
+        const profile = INTENT_PROFILES[intent];
 
         let wSum = 0, wValue = 0;
         const drivers = [];
         for (const f of fs) {
-            wSum += f.weight;
-            wValue += f.weight * f.value;
+            const w = f.weight * (profile[f.key] != null ? profile[f.key] : 1);
+            wSum += w;
+            wValue += w * f.value;
             // signed contribution relative to neutral, for attribution
             drivers.push({
                 key: f.key, label: f.label, group: f.group, value: Math.round(f.value),
-                contribution: +(f.weight * (f.value - 50)).toFixed(1),
+                contribution: +(w * (f.value - 50)).toFixed(1),
             });
         }
         const score = Math.round(wValue / wSum);
@@ -129,14 +157,48 @@ const RealEstateModel = (() => {
         return { lowPct: r(mid - band), midPct: r(mid), highPct: r(mid + band) };
     }
 
-    /** Full outlook for a cell: score, label, appreciation band, ranked drivers. */
+    /** A compact built-form summary from BuildingIntelligence, for the verdict.
+     *  Returns { text, redevelopment } or null when no building data exists. */
+    function builtForm(data) {
+        const bi = data && data.buildingIntel;
+        if (!bi) return null;
+        const b = bi.buildings || {};
+        const m = bi.metrics || {};
+        const parts = [];
+        if (Number.isFinite(b.totalCount) && b.totalCount > 0) parts.push(`${b.totalCount} buildings`);
+        if (Number.isFinite(b.avgLevels) && b.avgLevels > 0) parts.push(`avg ${b.avgLevels} floors`);
+        if (Number.isFinite(m.fsi) && m.fsi > 0) parts.push(`FSI ${m.fsi}`);
+        if (m.urbanForm) parts.push(m.urbanForm);
+        else if (bi.lcz && bi.lcz.name) parts.push(bi.lcz.name);
+        const redev = _score(data, 'redevelopment_index');
+        return { text: parts.join(' · ') || null, redevelopment: redev };
+    }
+
+    /** One-line plain-English verdict from an outlook + built form. Pure. */
+    function verdictSentence(o, data) {
+        if (!o || o.score == null) return 'Not enough live data to assess this cell.';
+        const pos = o.topPositives.map(d => d.label.toLowerCase());
+        const neg = o.topNegatives.map(d => d.label.toLowerCase());
+        let s = `${o.label} (${o.score}/100), an estimated ${o.appreciation.midPct}%/yr.`;
+        if (pos.length) s += ` Lifted by ${pos.slice(0, 2).join(' and ')}.`;
+        if (neg.length) s += ` Held back by ${neg.slice(0, 2).join(' and ')}.`;
+        const bf = builtForm(data);
+        if (bf && bf.redevelopment != null && bf.redevelopment >= 60) {
+            s += ' Notable redevelopment headroom.';
+        }
+        return s;
+    }
+
+    /** Full outlook for a cell: score, label, appreciation band, ranked drivers.
+     *  opts.intent retunes the weights; opts.baselinePct/spreadPct tune projection. */
     function outlook(data, opts = {}) {
-        const gp = growthPotential(data);
+        const gp = growthPotential(data, opts);
         const label = outlookLabel(gp.score);
         const appreciation = projectAppreciation(gp.score, { ...opts, confidence: gp.confidence });
         const positives = gp.drivers.filter(d => d.contribution > 0).slice(0, 3);
         const negatives = gp.drivers.filter(d => d.contribution < 0).slice(0, 3);
-        return {
+        const out = {
+            intent: INTENT_PROFILES[opts.intent] ? opts.intent : 'balanced',
             score: gp.score,
             band: label.band,
             label: label.label,
@@ -146,10 +208,14 @@ const RealEstateModel = (() => {
             drivers: gp.drivers,
             topPositives: positives,
             topNegatives: negatives,
+            builtForm: builtForm(data),
         };
+        out.verdict = verdictSentence(out, data);
+        return out;
     }
 
-    return { FACTORS, factors, growthPotential, outlookLabel, projectAppreciation, outlook };
+    return { FACTORS, INTENTS, INTENT_PROFILES, factors, growthPotential,
+        outlookLabel, projectAppreciation, builtForm, verdictSentence, outlook };
 })();
 
 if (typeof window !== 'undefined') window.RealEstateModel = RealEstateModel;

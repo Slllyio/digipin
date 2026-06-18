@@ -127,19 +127,16 @@ const Panel = (() => {
         contentEl.innerHTML = buildFullHTML(cell, data);
         currentData = data;
 
-        if (typeof GrowthWidget !== 'undefined') {
-            GrowthWidget.attachTo(contentEl, data?.realtime?.growth || null, cell);
+        // Answer-first Property Intelligence card (verdict + intent toggle).
+        // It folds in the Growth Forecast as its "Trajectory" sub-section, so the
+        // standalone growth widget is no longer attached separately. It inserts
+        // itself just below the header (top of the scroll).
+        if (typeof RealEstateWidget !== 'undefined') {
+            RealEstateWidget.attachTo(contentEl, data, cell);
         }
 
         if (typeof HeatWidget !== 'undefined') {
             HeatWidget.attachTo(contentEl, data?.realtime?.heat || null, cell);
-        }
-
-        // Flood forecast widget (7-day discharge sparkline + risk badge + a
-        // "show on map" button that drives the DEM inundation overlay). No-ops
-        // when the cell has no flood forecast.
-        if (typeof RealEstateWidget !== 'undefined') {
-            RealEstateWidget.attachTo(contentEl, data, cell);
         }
 
         if (typeof FloodAnimation !== 'undefined') {
