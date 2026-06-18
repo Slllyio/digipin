@@ -55,6 +55,28 @@ toggle that re-renders the verdict live:
 `balanced` (all multipliers = 1) is the model default, so `outlook(data)` without
 an intent — including the DISHA context — is unchanged.
 
+## Compare view
+
+Pinning 2–3 cells (📌 Pin) and opening Compare shows a **verdict block at the
+top** — each cell's growth score (best highlighted), outlook label and
+appreciation band — above the per-score table and overlay radar.
+
+## Calibrating to real prices
+
+Two hooks make the model calibratable instead of purely heuristic:
+
+1. **Per-city / per-locality baseline.** Set
+   `window.DIGIPIN_CONFIG.realEstateBaselines = { "Indore": 9.5, "default": 5 }`
+   (annual %); the appreciation band anchors to the cell's city, so the *level*
+   reflects real local market data while the model supplies the *relative* tilt.
+
+2. **`RealEstateModel.calibrate(samples, { ridge })`** — a ridge least-squares
+   fit that learns factor weights from observed appreciation. Feed
+   `[{ factors: { accessibility, walkability, … }, appreciationPct }]` built from
+   locality price history (MagicBricks/99acres/PropEquity per
+   `RESEARCH_INTEGRATION.md` §18) and it returns `{ intercept, weights, r2, n }`.
+   Those learned weights can then replace the literature-based defaults.
+
 ## Research basis
 
 The weights are ordinal (relative), grounded in hedonic-pricing findings rather

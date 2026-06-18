@@ -163,6 +163,53 @@ describe('RealEstateModel.verdictSentence() & builtForm()', () => {
     });
 });
 
+describe('RealEstateModel.outlook() city-baseline anchor', () => {
+    it('anchors the appreciation band to a configured per-city baseline', () => {
+        globalThis.window = globalThis.window || {};
+        window.DIGIPIN_CONFIG = { realEstateBaselines: { Indore: 11, default: 4 } };
+        try {
+            // neutral-ish scores → score ~50 → mid ≈ baseline
+            const indore = REM.outlook(cell({ connectivity: 50 }, { address: { city: 'Indore' } }));
+            expect(indore.appreciation.midPct).toBeCloseTo(11, 0);
+            const other = REM.outlook(cell({ connectivity: 50 }, { address: { city: 'Nowhere' } }));
+            expect(other.appreciation.midPct).toBeCloseTo(4, 0);   // falls back to default
+        } finally {
+            delete window.DIGIPIN_CONFIG;
+        }
+    });
+});
+
+describe('RealEstateModel.calibrate()', () => {
+    // Synthetic ground truth: appreciation depends mainly on accessibility + devPotential.
+    function makeSamples(n) {
+        const out = [];
+        let seed = 42;
+        const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+        for (let i = 0; i < n; i++) {
+            const access = rnd() * 100, dev = rnd() * 100, walk = rnd() * 100, green = rnd() * 100;
+            const appreciationPct = 2 + 8 * (access / 100) + 6 * (dev / 100); // truth, no noise
+            out.push({ factors: { accessibility: access, devPotential: dev, walkability: walk, green }, appreciationPct });
+        }
+        return out;
+    }
+
+    it('recovers the dominant drivers and fits well', () => {
+        const fit = REM.calibrate(makeSamples(60), { ridge: 0.02 });
+        expect(fit).not.toBeNull();
+        expect(fit.n).toBe(60);
+        expect(fit.r2).toBeGreaterThan(0.9);
+        // accessibility (true +8) should carry more weight than walkability (true 0)
+        expect(fit.weights.accessibility).toBeGreaterThan(fit.weights.walkability);
+        expect(fit.weights.devPotential).toBeGreaterThan(fit.weights.walkability);
+        expect(fit.weights.accessibility).toBeGreaterThan(3);
+    });
+
+    it('returns null with too few samples', () => {
+        expect(REM.calibrate([{ factors: {}, appreciationPct: 5 }])).toBeNull();
+        expect(REM.calibrate([])).toBeNull();
+    });
+});
+
 describe('RealEstateModel.outlook()', () => {
     it('bundles score, label, appreciation and top drivers', () => {
         const o = REM.outlook(cell({

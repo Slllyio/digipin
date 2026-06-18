@@ -128,6 +128,10 @@ const Compare = (() => {
         });
         container.appendChild(headerRow);
 
+        // Property Intelligence verdict rows (answer-first): each cell's growth
+        // score, outlook label and appreciation band, best score highlighted.
+        _appendVerdictRows(container);
+
         // Score rows — collect all score keys
         const allKeys = new Set();
         _pinned.forEach(p => {
@@ -172,6 +176,52 @@ const Compare = (() => {
 
         // Overlay radar chart
         renderOverlayRadar();
+    }
+
+    /** Top verdict block: growth score / outlook / appreciation per pinned cell. */
+    function _appendVerdictRows(container) {
+        if (typeof RealEstateModel === 'undefined') return;
+        const outlooks = _pinned.map(p => RealEstateModel.outlook(p.data));
+        const sub = (typeof Theme !== 'undefined' && Theme.palette) ? Theme.palette().sub : '#64748b';
+
+        const addRow = (label, render, opts = {}) => {
+            const row = document.createElement('div');
+            row.className = 'compare-row' + (opts.headerish ? ' compare-verdict-row' : '');
+            const lab = document.createElement('div');
+            lab.className = 'compare-label';
+            lab.textContent = label;
+            row.appendChild(lab);
+            outlooks.forEach((o, i) => {
+                const c = document.createElement('div');
+                c.className = 'compare-value';
+                render(c, o, i);
+                row.appendChild(c);
+            });
+            container.appendChild(row);
+        };
+
+        // Growth score (highlight the best among >1 valid)
+        const scores = outlooks.map(o => (o && o.score != null) ? o.score : null);
+        const valid = scores.filter(v => v != null);
+        const best = valid.length ? Math.max(...valid) : null;
+        addRow('Growth score', (c, o) => {
+            if (o.score == null) { c.textContent = '-'; c.style.color = sub; return; }
+            c.textContent = String(o.score);
+            c.style.color = (typeof Theme !== 'undefined' && Theme.scoreColor) ? Theme.scoreColor(o.score)
+                : (o.score >= 70 ? '#22c55e' : o.score >= 40 ? '#eab308' : '#ef4444');
+            if (o.score === best && valid.length > 1) c.classList.add('compare-best');
+        }, { headerish: true });
+
+        addRow('Outlook', (c, o) => {
+            c.textContent = o.label || '-';
+            c.style.color = sub;
+            c.style.fontSize = '11px';
+        });
+
+        addRow('Est. appreciation', (c, o) => {
+            c.textContent = o.appreciation ? `${o.appreciation.midPct}%/yr` : '-';
+            c.style.color = sub;
+        });
     }
 
     function renderOverlayRadar() {

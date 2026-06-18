@@ -189,12 +189,29 @@ const RealEstateModel = (() => {
         return s;
     }
 
+    /** Resolve the appreciation baseline (%/yr) for a cell: explicit opt →
+     *  per-city config (window.DIGIPIN_CONFIG.realEstateBaselines) → default.
+     *  Lets operators anchor the band to real locality appreciation data. */
+    function _baselineFor(data, opts) {
+        if (opts && Number.isFinite(opts.baselinePct)) return opts.baselinePct;
+        const cfg = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG
+            && window.DIGIPIN_CONFIG.realEstateBaselines) || null;
+        if (cfg) {
+            const city = data && data.address && data.address.city;
+            if (city && Number.isFinite(cfg[city])) return cfg[city];
+            if (Number.isFinite(cfg.default)) return cfg.default;
+        }
+        return 6;
+    }
+
     /** Full outlook for a cell: score, label, appreciation band, ranked drivers.
      *  opts.intent retunes the weights; opts.baselinePct/spreadPct tune projection. */
     function outlook(data, opts = {}) {
         const gp = growthPotential(data, opts);
         const label = outlookLabel(gp.score);
-        const appreciation = projectAppreciation(gp.score, { ...opts, confidence: gp.confidence });
+        const baselinePct = _baselineFor(data, opts);
+        const appreciation = projectAppreciation(gp.score,
+            { ...opts, baselinePct, confidence: gp.confidence });
         const positives = gp.drivers.filter(d => d.contribution > 0).slice(0, 3);
         const negatives = gp.drivers.filter(d => d.contribution < 0).slice(0, 3);
         const out = {
@@ -214,8 +231,77 @@ const RealEstateModel = (() => {
         return out;
     }
 
+    // ---------- calibration (learn weights from observed price data) ----------
+    /** Solve (A) x = (b) for a small square system by Gaussian elimination with
+     *  partial pivoting. Returns x, or null if singular. Pure. */
+    function _gaussSolve(A, b) {
+        const n = A.length;
+        const M = A.map((row, i) => [...row, b[i]]);   // augmented
+        for (let col = 0; col < n; col++) {
+            let piv = col;
+            for (let r = col + 1; r < n; r++) if (Math.abs(M[r][col]) > Math.abs(M[piv][col])) piv = r;
+            if (Math.abs(M[piv][col]) < 1e-12) return null;
+            [M[col], M[piv]] = [M[piv], M[col]];
+            for (let r = 0; r < n; r++) {
+                if (r === col) continue;
+                const f = M[r][col] / M[col][col];
+                for (let c = col; c <= n; c++) M[r][c] -= f * M[col][c];
+            }
+        }
+        // Fully reduced → diagonal; x[i] = augmented RHS / diagonal.
+        return M.map((row, i) => row[n] / row[i]);
+    }
+
+    /** Fit factor weights to observed appreciation via ridge regression.
+     *  samples: [{ factors:{key:0..100}, appreciationPct }]. Returns
+     *  { intercept, weights:{key:coef per +1.0 of normalised factor}, r2, n }
+     *  or null when there isn't enough data. This is the path to calibrate the
+     *  model against real locality price history (see docs/REAL_ESTATE_MODEL.md). */
+    function calibrate(samples, opts = {}) {
+        const keys = FACTORS.map(f => f.key);
+        const lambda = Number.isFinite(opts.ridge) ? opts.ridge : 1.0;
+        const X = [], y = [];
+        for (const s of (samples || [])) {
+            if (!s || !Number.isFinite(s.appreciationPct)) continue;
+            const row = [1];   // intercept column
+            for (const k of keys) {
+                const v = s.factors && Number.isFinite(s.factors[k]) ? s.factors[k] : 50;
+                row.push(v / 100);
+            }
+            X.push(row); y.push(s.appreciationPct);
+        }
+        const p = keys.length + 1;
+        if (X.length < 2) return null;
+
+        // Normal equations with ridge: (XᵀX + λI) b = Xᵀy  (intercept un-penalised)
+        const XtX = Array.from({ length: p }, () => new Array(p).fill(0));
+        const Xty = new Array(p).fill(0);
+        for (let i = 0; i < X.length; i++) {
+            for (let a = 0; a < p; a++) {
+                Xty[a] += X[i][a] * y[i];
+                for (let c = 0; c < p; c++) XtX[a][c] += X[i][a] * X[i][c];
+            }
+        }
+        for (let a = 1; a < p; a++) XtX[a][a] += lambda;
+        const b = _gaussSolve(XtX, Xty);
+        if (!b) return null;
+
+        // R² on the fitted samples
+        const meanY = y.reduce((s, v) => s + v, 0) / y.length;
+        let resSS = 0, totSS = 0;
+        for (let i = 0; i < X.length; i++) {
+            const pred = X[i].reduce((s, v, j) => s + v * b[j], 0);
+            resSS += (y[i] - pred) ** 2;
+            totSS += (y[i] - meanY) ** 2;
+        }
+        const r2 = totSS === 0 ? 1 : Math.max(0, Math.min(1, 1 - resSS / totSS));
+        const weights = {};
+        keys.forEach((k, i) => { weights[k] = +b[i + 1].toFixed(4); });
+        return { intercept: +b[0].toFixed(4), weights, r2: +r2.toFixed(3), n: X.length };
+    }
+
     return { FACTORS, INTENTS, INTENT_PROFILES, factors, growthPotential,
-        outlookLabel, projectAppreciation, builtForm, verdictSentence, outlook };
+        outlookLabel, projectAppreciation, builtForm, verdictSentence, outlook, calibrate };
 })();
 
 if (typeof window !== 'undefined') window.RealEstateModel = RealEstateModel;

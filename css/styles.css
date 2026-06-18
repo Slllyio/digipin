@@ -2791,6 +2791,12 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
     align-items: center;
 }
 
+.compare-verdict-row {
+    background: var(--accent-softer);
+    border-radius: 6px;
+    font-weight: 600;
+}
+
 .compare-header-row {
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
