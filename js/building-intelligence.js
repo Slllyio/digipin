@@ -146,8 +146,13 @@ out tags center;`;
             maxHeight: 0,
             maxLevels: 0,
             medianHeight: 0,
-            heightStdDev: 0
+            heightStdDev: 0,
+            // Per-building records (capped) — centroid + parsed levels/height/type.
+            // Retained so consumers (e.g. the DTDL twin export) can emit one twin
+            // per footprint instead of a single aggregate building.
+            items: []
         };
+        const ITEM_CAP = 300;
 
         for (const el of elements) {
             const tags = el.tags || {};
@@ -217,6 +222,22 @@ out tags center;`;
                     result.ageDecades[decade] = (result.ageDecades[decade] || 0) + 1;
                     result.withAge++;
                 }
+            }
+
+            // Per-building record (centroid from `out center`), capped.
+            if (result.items.length < ITEM_CAP && el.center) {
+                const lvl = levelsStr ? parseInt(levelsStr, 10) : NaN;
+                const h = heightStr ? parseFloat(heightStr) : NaN;
+                const heightM = (!isNaN(h) && h > 0 && h < 500) ? h
+                    : (!isNaN(lvl) && lvl > 0) ? +(lvl * 3.2).toFixed(1) : null;
+                result.items.push({
+                    id: el.id != null ? String(el.id) : null,
+                    lat: el.center.lat,
+                    lng: el.center.lon,
+                    type: normalizedType,
+                    levels: (!isNaN(lvl) && lvl > 0 && lvl < 200) ? lvl : null,
+                    heightM,
+                });
             }
         }
 

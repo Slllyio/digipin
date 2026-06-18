@@ -38,6 +38,7 @@ describe('DTDLExport.models()', () => {
         const ids = models.map(m => m['@id']);
         expect(ids).toContain('dtmi:digipin:Space;1');
         expect(ids).toContain('dtmi:digipin:Building;1');
+        expect(ids).toContain('dtmi:digipin:Level;1');
         expect(ids).toContain('dtmi:digipin:Asset;1');
         expect(ids).toContain('dtmi:digipin:Capability;1');
         for (const m of models) {
@@ -45,9 +46,60 @@ describe('DTDLExport.models()', () => {
             expect(m['@context']).toBe('dtmi:dtdl:context;2');
             expect(Array.isArray(m.contents)).toBe(true);
         }
-        // Building extends Space (RealEstateCore-style inheritance)
+        // Building and Level extend Space (RealEstateCore-style inheritance)
         expect(models.find(m => m['@id'] === 'dtmi:digipin:Building;1').extends)
             .toBe('dtmi:digipin:Space;1');
+        expect(models.find(m => m['@id'] === 'dtmi:digipin:Level;1').extends)
+            .toBe('dtmi:digipin:Space;1');
+    });
+});
+
+describe('DTDLExport.build() — per-building footprints', () => {
+    const DATA_BLDGS = {
+        scores: { livability: { label: 'Livability', value: 60 } },
+        buildingIntel: {
+            buildings: {
+                totalCount: 2,
+                items: [
+                    { id: 'w1', lat: 22.72, lng: 75.86, type: 'residential', levels: 3, heightM: 9.6 },
+                    { id: 'w2', lat: 22.721, lng: 75.861, type: 'commercial', levels: 2, heightM: 6.4 },
+                ],
+            },
+        },
+    };
+    const g = DTDLExport.build(CELL, DATA_BLDGS);
+    const twins = g.digitalTwinsGraph.digitalTwins;
+    const rels = g.digitalTwinsGraph.relationships;
+
+    it('emits one Building twin per footprint, each hasPart the cell', () => {
+        const bldgs = twins.filter(t => t.$metadata.$model === 'dtmi:digipin:Building;1');
+        expect(bldgs).toHaveLength(2);
+        expect(bldgs[0].buildingType).toBe('residential');
+        expect(bldgs[0].levels).toBe(3);
+        expect(bldgs[0].latitude).toBeCloseTo(22.72, 5);
+        for (const b of bldgs) {
+            expect(rels.some(r => r.$relationshipName === 'hasPart' && r.$targetId === b.$dtId)).toBe(true);
+        }
+    });
+
+    it('emits a Level twin per floor, each hasPart its Building', () => {
+        const levels = twins.filter(t => t.$metadata.$model === 'dtmi:digipin:Level;1');
+        expect(levels).toHaveLength(5);   // 3 + 2 floors
+        expect(levels.map(l => l.levelNumber).sort()).toEqual([1, 1, 2, 2, 3]);
+        // every Level is hasPart of some Building
+        const bIds = new Set(twins.filter(t => t.$metadata.$model === 'dtmi:digipin:Building;1').map(t => t.$dtId));
+        for (const l of levels) {
+            expect(rels.some(r => r.$relationshipName === 'hasPart'
+                && r.$targetId === l.$dtId && bIds.has(r.$sourceId))).toBe(true);
+        }
+    });
+
+    it('keeps the graph valid (all relationship endpoints exist)', () => {
+        const ids = new Set(twins.map(t => t.$dtId));
+        for (const r of rels) {
+            expect(ids.has(r.$sourceId)).toBe(true);
+            expect(ids.has(r.$targetId)).toBe(true);
+        }
     });
 });
 
@@ -111,7 +163,7 @@ describe('DTDLExport.build()', () => {
 
     it('is valid JSON via toJSON()', () => {
         const parsed = JSON.parse(DTDLExport.toJSON(CELL, DATA));
-        expect(parsed.digitalTwinsModels.length).toBe(4);
+        expect(parsed.digitalTwinsModels.length).toBe(5);
         expect(parsed.digitalTwinsGraph.digitalTwins.length).toBe(twins.length);
     });
 });
@@ -119,9 +171,11 @@ describe('DTDLExport.build()', () => {
 describe('DTDLExport.summarize()', () => {
     it('counts models, twins, capabilities and assets for the dialog', () => {
         const s = DTDLExport.summarize(CELL, DATA);
-        expect(s.models).toBe(4);
+        expect(s.models).toBe(5);
         expect(s.capabilities).toBe(5);   // 2 scores + AQI + temp + flood
         expect(s.assets).toBe(1);
+        expect(s.buildings).toBe(1);      // aggregate Building (DATA has no items)
+        expect(s.levels).toBe(0);
         expect(s.twins).toBe(s.capabilities + s.assets + 2);  // + Space + Building
         expect(s.relationships).toBeGreaterThan(0);
     });
@@ -129,6 +183,6 @@ describe('DTDLExport.summarize()', () => {
     it('is robust to an empty cell/data', () => {
         const s = DTDLExport.summarize({}, {});
         expect(s.twins).toBe(1);          // just the Space
-        expect(s.models).toBe(4);
+        expect(s.models).toBe(5);
     });
 });

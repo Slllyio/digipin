@@ -730,6 +730,15 @@ body {
     padding: 5px 0;
 }
 .ed-tick { color: var(--accent-green); font-weight: 700; }
+.ed-link {
+    display: inline-block;
+    margin: 8px 0 2px;
+    font-size: 12px;
+    color: var(--accent-cyan);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-soft);
+}
+.ed-link:hover { border-bottom-color: var(--accent-cyan); }
 
 .ed-filename {
     margin: 12px 0;

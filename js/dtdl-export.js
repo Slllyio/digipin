@@ -27,9 +27,17 @@ const DTDLExport = (() => {
     const M = {
         space: `${NS}:Space;1`,
         building: `${NS}:Building;1`,
+        level: `${NS}:Level;1`,
         asset: `${NS}:Asset;1`,
         capability: `${NS}:Capability;1`,
     };
+
+    /** Azure Digital Twins Explorer (graph import target). */
+    const ADT_EXPLORER_URL = 'https://explorer.digitaltwins.azure.net/';
+
+    // Keep the graph bounded so a dense cell can't emit thousands of twins.
+    const MAX_BUILDINGS = 60;
+    const MAX_LEVELS = 200;
 
     /** The DTDL interface definitions (RealEstateCore-aligned, self-contained). */
     function models() {
@@ -57,6 +65,17 @@ const DTDLExport = (() => {
                     { '@type': 'Property', name: 'groundCoverageRatio', schema: 'double' },
                     { '@type': 'Property', name: 'urbanForm', schema: 'string' },
                     { '@type': 'Property', name: 'localClimateZone', schema: 'string' },
+                    // per-footprint properties (used when real building records exist)
+                    { '@type': 'Property', name: 'buildingType', schema: 'string' },
+                    { '@type': 'Property', name: 'levels', schema: 'integer' },
+                    { '@type': 'Property', name: 'heightM', schema: 'double' },
+                ],
+            },
+            {
+                '@context': CTX, '@id': M.level, '@type': 'Interface', displayName: 'Level',
+                extends: M.space,
+                contents: [
+                    { '@type': 'Property', name: 'levelNumber', schema: 'integer' },
                 ],
             },
             {
@@ -119,14 +138,37 @@ const DTDLExport = (() => {
             areaSqm: Number.isFinite(cell.areaSqm) ? cell.areaSqm : null,
         }));
 
-        // 2) building morphology → a Building twin (hasPart the cell Space)
+        // 2) buildings → Building twins (one per real footprint when available,
+        //    each with its Level twins), else one aggregate Building twin.
         const bi = data.buildingIntel || {};
         const metrics = bi.metrics || {};
         const buildings = bi.buildings || {};
-        if (Object.keys(metrics).length || Object.keys(buildings).length) {
+        const items = Array.isArray(buildings.items) ? buildings.items : [];
+        if (items.length) {
+            let levelBudget = MAX_LEVELS;
+            items.slice(0, MAX_BUILDINGS).forEach((b, i) => {
+                const bId = `${root}_bldg_${i}`;
+                twins.push(_twin(bId, M.building, {
+                    name: b.type ? `${b.type} building` : `Building ${i + 1}`,
+                    buildingType: b.type || null,
+                    levels: _int(b.levels),
+                    heightM: _num(b.heightM),
+                    latitude: _num(b.lat),
+                    longitude: _num(b.lng),
+                }));
+                rels.push(_rel(root, 'hasPart', bId));
+                // a Level twin per floor (isPartOf the Building), within a global budget
+                const n = Number.isFinite(b.levels) ? b.levels : 0;
+                for (let lvl = 1; lvl <= n && levelBudget > 0; lvl++, levelBudget--) {
+                    const lId = `${bId}_level_${lvl}`;
+                    twins.push(_twin(lId, M.level, { name: `Level ${lvl}`, levelNumber: lvl }));
+                    rels.push(_rel(bId, 'hasPart', lId));
+                }
+            });
+        } else if (Object.keys(metrics).length || Object.keys(buildings).length) {
             const bId = `${root}_buildings`;
             twins.push(_twin(bId, M.building, {
-                buildingCount: _int(buildings.count),
+                buildingCount: _int(buildings.count != null ? buildings.count : buildings.totalCount),
                 avgLevels: _num(buildings.avgLevels),
                 floorSpaceIndex: _num(metrics.fsi),
                 groundCoverageRatio: _num(metrics.gcr),
@@ -211,6 +253,8 @@ const DTDLExport = (() => {
         return {
             models: g.digitalTwinsModels.length,
             twins: tw.length,
+            buildings: byModel(M.building),
+            levels: byModel(M.level),
             capabilities: byModel(M.capability),
             assets: byModel(M.asset),
             relationships: g.digitalTwinsGraph.relationships.length,
@@ -233,7 +277,7 @@ const DTDLExport = (() => {
         setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
-    return { build, summarize, toJSON, download, models, MODELS: M };
+    return { build, summarize, toJSON, download, models, MODELS: M, ADT_EXPLORER_URL };
 })();
 
 if (typeof window !== 'undefined') window.DTDLExport = DTDLExport;

@@ -69,11 +69,15 @@ const ExportDialog = (() => {
                 if (typeof DTDLExport === 'undefined') return ['DTDL exporter unavailable'];
                 const d = DTDLExport.summarize(cell, data);
                 return [
-                    `${d.twins} twins (Space, Building, ${d.capabilities} capabilities, ${d.assets} assets)`,
+                    `${d.twins} twins · ${d.buildings} buildings, ${d.levels} levels`,
+                    `${d.capabilities} capabilities, ${d.assets} assets`,
                     `${d.relationships} relationships (hasPart / hasCapability / hasAsset)`,
                     `${d.models} DTDL models, RealEstateCore-aligned`,
                 ];
             },
+            link: () => (typeof DTDLExport !== 'undefined')
+                ? { href: DTDLExport.ADT_EXPLORER_URL, label: 'Open Azure Digital Twins Explorer ↗ — then Import Graph → this file' }
+                : null,
         },
     ];
 
@@ -150,6 +154,17 @@ const ExportDialog = (() => {
                 row.appendChild(txt);
                 body.appendChild(row);
             });
+            // Optional per-format external link (e.g. open ADT Explorer).
+            const link = typeof fmt.link === 'function' ? fmt.link() : null;
+            if (link && link.href) {
+                const a = document.createElement('a');
+                a.className = 'ed-link';
+                a.href = link.href;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.textContent = link.label || link.href;
+                body.appendChild(a);
+            }
             fileEl.textContent = filename(active, cell.code);
             exportBtn.textContent = `Export ${fmt.label} ⭳`;
         }
