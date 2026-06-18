@@ -29,10 +29,10 @@ We grade each segment with the standard **Highway Capacity Manual** definition �
 a **volume-to-capacity (V/C) ratio** mapped to LOS A (free-flow) … F (breakdown).
 This is also the LOS concept TraffiQ uses, adopted honestly:
 
-```
-V/C  = normalised_betweenness ÷ capacity_for_class(highway)
-LOS  = A ≤0.35 · B ≤0.55 · C ≤0.75 · D ≤0.90 · E ≤1.00 · F >1.00
-risk = clamp(V/C, 0..1) × 100
+```text
+V/C  = normalised_betweenness / capacity_for_class(highway)
+LOS  = A <=0.35 · B <=0.55 · C <=0.75 · D <=0.90 · E <=1.00 · F >1.00
+risk = clamp(V/C, 0..1) * 100
 ```
 
 `capacity_for_class` ranks OSM `highway` classes (motorway/trunk high →

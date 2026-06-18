@@ -11,7 +11,7 @@ Why this exists: the original `extract_buildings_temporal.py` needs Earth Engine
 credentials, so the COG was never produced and the Growth Forecast is null in
 prod. This path is credentials-free.
 
-Why it downsamples: the native tiles are 0.5 m (25000×25000 px); a full-res
+Why it downsamples: the native tiles are 0.5 m (25000x25000 px); a full-res
 Indore COG would be multiple GB — impossible to fetch in the browser. We
 resample to a coarse grid (default 100 m) so the committed COG is ~1-2 MB, which
 is all a neighbourhood-scale growth signal needs.
@@ -61,7 +61,9 @@ def s2_tokens(bbox):
 
 
 def _get_json(url, timeout=60):
-    with urllib.request.urlopen(url, timeout=timeout) as r:
+    if not url.startswith("https://"):     # defense-in-depth: no file://, ftp://, etc.
+        raise ValueError(f"refusing non-HTTPS URL: {url}")
+    with urllib.request.urlopen(url, timeout=timeout) as r:   # noqa: S310 (scheme checked)
         return json.load(r)
 
 
@@ -142,7 +144,7 @@ def build_cog(bbox, res_m, out_path):
         cnt = np.zeros((height, width), dtype="float32")
         tiles = select_tiles(bbox, year)
         log.info("%d: %d intersecting tiles", year, len(tiles))
-        for epsg, url, _b in tiles:
+        for _epsg, url, _b in tiles:
             with rasterio.open(f"/vsicurl/{url}") as src:
                 dst = np.full((height, width), MISSING, dtype="float32")
                 reproject(

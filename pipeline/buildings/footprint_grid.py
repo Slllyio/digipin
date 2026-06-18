@@ -70,6 +70,7 @@ def bin_footprints(features, bbox, res_m=100):
         "bounds": {"west": w, "south": s, "east": e, "north": n},
         "nx": nx, "ny": ny,
         "count": count, "coveragePct": coverage, "meanAreaM2": mean_area,
+        "source": "ml_footprints",
     }
 
 
@@ -98,7 +99,8 @@ def _load_features(path):
             if geom.get("type") == "Point":
                 lng, lat = geom["coordinates"][:2]
             else:
-                lat = props.get("latitude"); lng = props.get("longitude")
+                lat = props.get("latitude")
+                lng = props.get("longitude")
             yield {"lat": lat, "lng": lng, "area": props.get("area_in_meters")}
 
 

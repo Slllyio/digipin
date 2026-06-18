@@ -56,10 +56,14 @@ def neighbourhood(mask):
                 continue
             shifted = np.roll(np.roll(m, dy, axis=0), dx, axis=1)
             # zero the wrapped edges so borders aren't contaminated
-            if dy == 1:   shifted[0, :] = 0
-            if dy == -1:  shifted[-1, :] = 0
-            if dx == 1:   shifted[:, 0] = 0
-            if dx == -1:  shifted[:, -1] = 0
+            if dy == 1:
+                shifted[0, :] = 0
+            if dy == -1:
+                shifted[-1, :] = 0
+            if dx == 1:
+                shifted[:, 0] = 0
+            if dx == -1:
+                shifted[:, -1] = 0
             acc += shifted
             cnt += 1
     return acc / np.maximum(cnt, 1)

@@ -7,8 +7,6 @@ Raster IO (build_stack/run) needs real data and isn't tested here.
 import numpy as np
 import pytest
 
-np  # silence linters
-
 ca = pytest.importorskip("pipeline.growth.urban_ca_ml")
 drv = pytest.importorskip("pipeline.growth.ca_drivers")
 
@@ -25,8 +23,10 @@ def test_neighbourhood_fraction():
 
 def test_markov_demand_counts_mean_gain():
     a = np.zeros((4, 4), dtype=bool)
-    b = a.copy(); b[0, 0] = True            # +1
-    c = b.copy(); c[0, 1] = c[0, 2] = True  # +2
+    b = a.copy()
+    b[0, 0] = True                          # +1
+    c = b.copy()
+    c[0, 1] = c[0, 2] = True                # +2
     assert ca.markov_demand([a, b, c]) == 2   # mean of (1, 2) rounded
 
 
@@ -60,7 +60,8 @@ def test_slope_and_distance_helpers():
     ramp = np.tile(np.arange(5, dtype="float32") * 100, (5, 1))  # 100 m rise / 100 m run
     assert float(drv.slope_from_dem(ramp, 100).mean()) > 40      # ~45°
     pytest.importorskip("scipy")   # distance_field uses scipy.ndimage; skip cleanly if absent
-    mask = np.zeros((5, 5), dtype=bool); mask[0, 0] = True
+    mask = np.zeros((5, 5), dtype=bool)
+    mask[0, 0] = True
     d = drv.distance_field(mask, 100)
     assert d[0, 0] == 0.0 and d[4, 4] > d[0, 0]
 

@@ -67,13 +67,12 @@ def _rasterize_geojson(path, ref_profile):
 
 def _read_aligned(path, ref_profile):
     """Read a single-band raster reprojected onto the reference grid, else zeros."""
-    import numpy as _np
     import rasterio
     from rasterio.warp import reproject, Resampling
     h, w = ref_profile["height"], ref_profile["width"]
     if not Path(path).exists():
-        return _np.zeros((h, w), dtype="float32")
-    dst = _np.zeros((h, w), dtype="float32")
+        return np.zeros((h, w), dtype="float32")
+    dst = np.zeros((h, w), dtype="float32")
     with rasterio.open(path) as src:
         reproject(source=rasterio.band(src, 1), destination=dst,
                   dst_transform=ref_profile["transform"], dst_crs=ref_profile["crs"],
