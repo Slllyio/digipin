@@ -5,11 +5,11 @@ those run in a data-capable environment. We test the geometry/parse helpers.
 """
 import pytest
 
-mod = pytest.importorskip(
-    "pipeline.growth.download_temporal_gcs",
-    reason="needs s2sphere + rasterio",
-)
+# Both heavy geo deps must be present or the whole module skips (CI installs
+# rasterio but not s2sphere); the pipeline + these tests run in a geo env.
+pytest.importorskip("s2sphere")
 pytest.importorskip("rasterio")
+mod = pytest.importorskip("pipeline.growth.download_temporal_gcs")
 
 
 def test_epsg_parsed_from_manifest_name():
