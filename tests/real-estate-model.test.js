@@ -140,6 +140,40 @@ describe('RealEstateModel intent profiles', () => {
     });
 });
 
+describe('RealEstateModel growth-temporal factors', () => {
+    const growthCell = (bue) => cell({ connectivity: 50 }, {
+        realtime: { growth: { horizons: { nowcast: { sub_scores: { bue: { value: bue } } } } } },
+    });
+
+    it('adds a building-change-trend factor from the Growth Forecast BUE', () => {
+        const f = REM.factors(growthCell(82)).find(x => x.key === 'buildingChangeTrend');
+        expect(f).toBeTruthy();
+        expect(f.value).toBe(82);
+    });
+
+    it('drops the trend/expansion factors when growth data is absent', () => {
+        const keys = REM.factors(cell({ connectivity: 50 })).map(f => f.key);
+        expect(keys).not.toContain('buildingChangeTrend');
+        expect(keys).not.toContain('futureExpansion');
+    });
+
+    it('reads future expansion as a 0..1 probability or a 0..100 value', () => {
+        const prob = REM.factors(cell({}, { realtime: { future_expansion: 0.8 } }))
+            .find(f => f.key === 'futureExpansion');
+        expect(prob.value).toBe(80);
+        const pct = REM.factors(cell({}, { realtime: { future_expansion: { value: 65 } } }))
+            .find(f => f.key === 'futureExpansion');
+        expect(pct.value).toBe(65);
+    });
+
+    it('weights building growth higher for invest/build than live', () => {
+        const data = growthCell(90);
+        const invest = REM.outlook(data, { intent: 'invest' }).score;
+        const live = REM.outlook(data, { intent: 'live' }).score;
+        expect(invest).toBeGreaterThan(live);
+    });
+});
+
 describe('RealEstateModel.verdictSentence() & builtForm()', () => {
     it('summarises built form from building intelligence', () => {
         const data = cell({ redevelopment_index: 70 }, { buildingIntel: {

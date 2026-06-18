@@ -35,14 +35,17 @@ const RealEstateModel = (() => {
             walkability: 1.3, green: 1.4, schools: 1.4, healthcare: 1.3, quietness: 1.6,
             floodSafety: 1.5, airQuality: 1.4, jobs: 0.8,
             pipeline: 0.4, redevelopment: 0.4, devPotential: 0.5,
+            buildingChangeTrend: 0.6, futureExpansion: 0.6,
         },
         invest: {
             accessibility: 1.3, jobs: 1.4, pipeline: 1.5, devPotential: 1.3,
             walkability: 1.1, modernization: 1.1, quietness: 0.5, schools: 0.8,
+            buildingChangeTrend: 1.4, futureExpansion: 1.4,
         },
         build: {
             devPotential: 1.7, redevelopment: 1.7, pipeline: 1.3, accessibility: 1.1,
             walkability: 0.7, green: 0.6, schools: 0.6, healthcare: 0.6, quietness: 0.4,
+            buildingChangeTrend: 1.5, futureExpansion: 1.6,
         },
     };
     const INTENTS = Object.keys(INTENT_PROFILES);
@@ -63,6 +66,10 @@ const RealEstateModel = (() => {
         { key: 'pipeline',      label: 'Construction pipeline', group: 'supply',    weight: 0.8, from: d => _score(d, 'real_estate_growth') },
         { key: 'redevelopment', label: 'Redevelopment scope',   group: 'supply',    weight: 0.5, from: d => _score(d, 'redevelopment_index') },
         { key: 'modernization', label: 'Newer building stock',  group: 'supply',    weight: 0.3, from: d => _score(d, 'modernization') },
+        // observed building change (Open Buildings Temporal) + projected expansion (SSP).
+        // Null until the growth COGs are present, so the factor simply drops out.
+        { key: 'buildingChangeTrend', label: 'Recent building growth', group: 'supply', weight: 1.0, from: d => _bueTrend(d) },
+        { key: 'futureExpansion',     label: 'Projected urban expansion', group: 'supply', weight: 0.8, from: d => _futureExpansion(d) },
         // risk discounts (oriented so higher = safer/better)
         { key: 'floodSafety',   label: 'Flood safety',          group: 'risk',      weight: 0.9, from: d => _floodSafety(d) },
         { key: 'airQuality',    label: 'Air quality',           group: 'risk',      weight: 0.4, from: d => _airQuality(d) },
@@ -73,6 +80,29 @@ const RealEstateModel = (() => {
     function _score(data, key) {
         const s = data && data.scores && data.scores[key];
         return (s && typeof s.value === 'number') ? Math.max(0, Math.min(100, s.value)) : null;
+    }
+
+    /** Observed built-up growth from the Growth Forecast (Open Buildings Temporal
+     *  → BUE sub-score, the nowcast built-up-expansion signal). Null when the
+     *  growth COGs aren't present. */
+    function _bueTrend(data) {
+        const bue = data && data.realtime && data.realtime.growth
+            && data.realtime.growth.horizons && data.realtime.growth.horizons.nowcast
+            && data.realtime.growth.horizons.nowcast.sub_scores
+            && data.realtime.growth.horizons.nowcast.sub_scores.bue;
+        const v = bue && bue.value;
+        return Number.isFinite(v) ? Math.max(0, Math.min(100, v)) : null;
+    }
+
+    /** Projected future urban expansion (SSP). Accepts a 0..100 value or a 0..1
+     *  probability on data.realtime.future_expansion. Null when unavailable. */
+    function _futureExpansion(data) {
+        const fe = data && data.realtime && data.realtime.future_expansion;
+        let v = (fe && typeof fe === 'object') ? fe.value : fe;
+        v = Number(v);
+        if (!Number.isFinite(v)) return null;
+        if (v <= 1) v *= 100;             // accept a 0..1 probability
+        return Math.max(0, Math.min(100, v));
     }
 
     /** Flood SAFETY (higher = safer). Prefer the live GloFAS peak ratio, else the

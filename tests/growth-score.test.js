@@ -237,3 +237,21 @@ describe('GrowthScore.confidenceBand()', () => {
         expect(globalThis.GrowthScore.confidenceBand('year_5', -0.2)).toBe(25);
     });
 });
+
+describe('GrowthScore.futureExpansionAdjust()', () => {
+    const F = globalThis.GrowthScore.futureExpansionAdjust;
+    it('is neutral at p=0.5', () => {
+        expect(F(60, 0.5)).toBe(60);
+    });
+    it('lifts the score when expansion is projected (p>0.5)', () => {
+        expect(F(60, 1.0, 20)).toBe(80);
+    });
+    it('lowers the score when built-out/stable (p<0.5)', () => {
+        expect(F(60, 0.0, 20)).toBe(40);
+    });
+    it('clamps to 0..100 and passes through when prob is unavailable', () => {
+        expect(F(95, 1.0, 20)).toBe(100);
+        expect(F(60, null)).toBe(60);
+        expect(F(null, 0.9)).toBeNull();
+    });
+});
