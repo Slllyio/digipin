@@ -26,6 +26,14 @@ const RealEstateWidget = (() => {
         soft: '#e8765a', weak: '#b3392f', unknown: '#9ca3af',
     };
 
+    /** Escape for safe innerHTML interpolation (defense-in-depth: the fields are
+     *  model/constant-derived today, but built-form text traces back to OSM tags). */
+    function _esc(v) {
+        return String(v == null ? '' : v)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
     /** Insert the card just below the panel header (answer-first), else append. */
     function _place(containerEl, wrap) {
         const header = containerEl.querySelector('.panel-header');
@@ -37,8 +45,8 @@ const RealEstateWidget = (() => {
         const color = sign > 0 ? 'var(--accent-green,#1a9850)' : 'var(--accent-red,#b3392f)';
         const mark = sign > 0 ? '▲' : '▼';
         return `<div style="display:flex;justify-content:space-between;gap:8px;margin:2px 0;font-size:12px;">
-            <span style="color:var(--text-secondary,#5c6166);">${mark} ${d.label}</span>
-            <span style="color:${color};font-weight:600;">${d.value}</span></div>`;
+            <span style="color:var(--text-secondary,#5c6166);">${mark} ${_esc(d.label)}</span>
+            <span style="color:${color};font-weight:600;">${_esc(d.value)}</span></div>`;
     }
 
     function attachTo(containerEl, data, cell) {
@@ -78,7 +86,7 @@ const RealEstateWidget = (() => {
         wrap.innerHTML = `
             <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
                 <div style="font-family:${titleFont};font-weight:600;font-size:15px;color:var(--accent-cyan,#dd6b4a);">🏠 Property Intelligence</div>
-                <span style="background:${color};color:#fff;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap;">${o.label}</span>
+                <span style="background:${color};color:#fff;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap;">${_esc(o.label)}</span>
             </div>
             <div style="display:flex;border:1px solid var(--border-color,rgba(40,44,48,.12));border-radius:6px;overflow:hidden;margin:8px 0;" data-intent-toggle>${intentBtns}</div>
             <div style="display:flex;gap:16px;align-items:baseline;">
@@ -87,7 +95,7 @@ const RealEstateWidget = (() => {
                 <div style="font-size:12px;color:var(--text-secondary,#5c6166);">
                     <strong style="color:var(--text-primary,#26282b);">${a.midPct}%/yr</strong> (${a.lowPct}–${a.highPct}%)</div>
             </div>
-            <div style="font-size:12px;color:var(--text-primary,#26282b);margin:8px 0;line-height:1.45;">${o.verdict}</div>
+            <div style="font-size:12px;color:var(--text-primary,#26282b);margin:8px 0;line-height:1.45;">${_esc(o.verdict)}</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--text-muted,#9aa0a6);margin-bottom:2px;">Drivers</div>
                     ${o.topPositives.map(d => _driverRow(d, 1)).join('') || '<div style="font-size:12px;color:var(--text-muted,#9aa0a6);">—</div>'}</div>
@@ -95,11 +103,11 @@ const RealEstateWidget = (() => {
                     ${o.topNegatives.map(d => _driverRow(d, -1)).join('') || '<div style="font-size:12px;color:var(--text-muted,#9aa0a6);">—</div>'}</div>
             </div>
             ${bf ? `<div style="margin-top:10px;font-size:12px;color:var(--text-secondary,#5c6166);">
-                🏗️ Built form: ${bf}
+                🏗️ Built form: ${_esc(bf)}
                 ${(typeof BuildingIntelDialog !== 'undefined' && data.buildingIntel) ? '<a href="#" data-bi-open style="color:var(--accent-cyan,#dd6b4a);text-decoration:none;margin-left:6px;">details ↗</a>' : ''}</div>` : ''}
             <div data-re-trajectory style="margin-top:10px;"></div>
             <details style="margin-top:8px;">
-                <summary style="font-size:11px;color:var(--text-muted,#9aa0a6);cursor:pointer;">ⓘ Methods · ${o.confidence} confidence (${o.factorsUsed} factors)</summary>
+                <summary style="font-size:11px;color:var(--text-muted,#9aa0a6);cursor:pointer;">ⓘ Methods · ${_esc(o.confidence)} confidence (${_esc(o.factorsUsed)} factors)</summary>
                 <div style="font-size:11px;color:var(--text-muted,#9aa0a6);margin-top:4px;line-height:1.4;">
                     Transparent hedonic-style model over live data, retuned by intent. A <em>relative</em>
                     signal, not a price quote. See docs/REAL_ESTATE_MODEL.md.</div>

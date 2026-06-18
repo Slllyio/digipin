@@ -199,8 +199,11 @@ describe('RealEstateModel.verdictSentence() & builtForm()', () => {
 
 describe('RealEstateModel.outlook() city-baseline anchor', () => {
     it('anchors the appreciation band to a configured per-city baseline', () => {
-        globalThis.window = globalThis.window || {};
-        window.DIGIPIN_CONFIG = { realEstateBaselines: { Indore: 11, default: 4 } };
+        // Save/restore global state so the test is order-independent.
+        const hadWindow = typeof globalThis.window !== 'undefined';
+        const prevConfig = hadWindow ? globalThis.window.DIGIPIN_CONFIG : undefined;
+        if (!hadWindow) globalThis.window = {};
+        globalThis.window.DIGIPIN_CONFIG = { realEstateBaselines: { Indore: 11, default: 4 } };
         try {
             // neutral-ish scores → score ~50 → mid ≈ baseline
             const indore = REM.outlook(cell({ connectivity: 50 }, { address: { city: 'Indore' } }));
@@ -208,7 +211,9 @@ describe('RealEstateModel.outlook() city-baseline anchor', () => {
             const other = REM.outlook(cell({ connectivity: 50 }, { address: { city: 'Nowhere' } }));
             expect(other.appreciation.midPct).toBeCloseTo(4, 0);   // falls back to default
         } finally {
-            delete window.DIGIPIN_CONFIG;
+            if (!hadWindow) delete globalThis.window;
+            else if (prevConfig === undefined) delete globalThis.window.DIGIPIN_CONFIG;
+            else globalThis.window.DIGIPIN_CONFIG = prevConfig;
         }
     });
 });

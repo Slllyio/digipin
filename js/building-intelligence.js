@@ -227,15 +227,16 @@ out tags center;`;
             // Per-building record (centroid from `out center`), capped.
             if (result.items.length < ITEM_CAP && el.center) {
                 const lvl = levelsStr ? parseInt(levelsStr, 10) : NaN;
+                const lvlValid = !isNaN(lvl) && lvl > 0 && lvl < 200;
                 const h = heightStr ? parseFloat(heightStr) : NaN;
                 const heightM = (!isNaN(h) && h > 0 && h < 500) ? h
-                    : (!isNaN(lvl) && lvl > 0) ? +(lvl * 3.2).toFixed(1) : null;
+                    : lvlValid ? +(lvl * 3.2).toFixed(1) : null;
                 result.items.push({
                     id: el.id != null ? String(el.id) : null,
                     lat: el.center.lat,
                     lng: el.center.lon,
                     type: normalizedType,
-                    levels: (!isNaN(lvl) && lvl > 0 && lvl < 200) ? lvl : null,
+                    levels: lvlValid ? lvl : null,
                     heightM,
                 });
             }

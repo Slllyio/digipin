@@ -151,8 +151,9 @@ def _edge_tts_factory(voice, rate, pitch):
     if os.path.exists(ca) and hasattr(ec, "_SSL_CTX"):
         try:
             ec._SSL_CTX = ssl.create_default_context(cafile=ca)
-        except Exception:  # noqa: BLE001 — never let TLS setup abort the run
-            pass
+        except Exception as e:  # noqa: BLE001 — never let TLS setup abort the run
+            print(f"[narration] warning: could not apply CA bundle for edge-tts "
+                  f"({type(e).__name__}); proceeding with default TLS")
 
     def synth(text, path):
         async def _run():

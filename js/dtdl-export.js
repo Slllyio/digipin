@@ -147,19 +147,20 @@ const DTDLExport = (() => {
         if (items.length) {
             let levelBudget = MAX_LEVELS;
             items.slice(0, MAX_BUILDINGS).forEach((b, i) => {
+                if (!b || typeof b !== 'object') return;
+                const levelCount = Math.max(0, _int(b.levels) || 0);   // one source of truth
                 const bId = `${root}_bldg_${i}`;
                 twins.push(_twin(bId, M.building, {
                     name: b.type ? `${b.type} building` : `Building ${i + 1}`,
                     buildingType: b.type || null,
-                    levels: _int(b.levels),
+                    levels: levelCount,
                     heightM: _num(b.heightM),
                     latitude: _num(b.lat),
                     longitude: _num(b.lng),
                 }));
                 rels.push(_rel(root, 'hasPart', bId));
                 // a Level twin per floor (isPartOf the Building), within a global budget
-                const n = Number.isFinite(b.levels) ? b.levels : 0;
-                for (let lvl = 1; lvl <= n && levelBudget > 0; lvl++, levelBudget--) {
+                for (let lvl = 1; lvl <= levelCount && levelBudget > 0; lvl++, levelBudget--) {
                     const lId = `${bId}_level_${lvl}`;
                     twins.push(_twin(lId, M.level, { name: `Level ${lvl}`, levelNumber: lvl }));
                     rels.push(_rel(bId, 'hasPart', lId));
