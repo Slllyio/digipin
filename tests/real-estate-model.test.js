@@ -166,6 +166,12 @@ describe('RealEstateModel growth-temporal factors', () => {
         expect(pct.value).toBe(65);
     });
 
+    it('also reads future expansion off the Growth Forecast object (SSP)', () => {
+        const f = REM.factors(cell({}, { realtime: { growth: { future_expansion: 0.7 } } }))
+            .find(x => x.key === 'futureExpansion');
+        expect(f.value).toBe(70);
+    });
+
     it('weights building growth higher for invest/build than live', () => {
         const data = growthCell(90);
         const invest = REM.outlook(data, { intent: 'invest' }).score;

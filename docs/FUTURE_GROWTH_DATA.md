@@ -42,5 +42,28 @@ coarse grid (~1–2 MB) — ample for a neighbourhood growth read. Run it where 
 large tile reads are feasible (the `--probe` step is light and runs anywhere);
 commit the small resulting COG.
 
+## Future urban-expansion layer (SSP)
+
+```sh
+python -m pipeline.growth.download_ssp_urban --url <ssp_scenario_year.tif>   # or --in local.tif
+```
+Clips a global SSP urban-land projection to `data/growth/ssp_urban_expansion_<region>.tif`
+(single band, urban fraction 0..1). `realtime-growth.js` reads it →
+`GrowthScore.futureExpansionAdjust` nudges the 5-yr horizon, and the
+`futureExpansion` real-estate factor activates. Canonical host
+(geosimulation.cn) plus figshare/PANGAEA mirrors; pass the scenario/year GeoTIFF
+via `--url`.
+
+## Richer footprints grid (fixes OSM undercount)
+
+```sh
+python -m pipeline.download_google_buildings           # footprints parquet (no GEE)
+python -m pipeline.buildings.footprint_grid --in data/vectors/google_open_buildings_<region>.parquet
+```
+Aggregates complete ML footprints (Google v3 default; Microsoft/Overture also
+supported) into `data/buildings/footprint_grid_<region>.json` — a small per-cell
+count / coverage% / mean-area grid the browser samples to correct the OSM-biased
+density/FSI in Building Intelligence.
+
 > Licensing: Open Buildings CC-BY-4.0, Microsoft CDLA-Permissive-2.0, GHSL
 > CC-BY-4.0, SSP academic (attribute) — all redistributable with attribution.

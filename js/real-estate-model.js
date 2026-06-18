@@ -97,7 +97,11 @@ const RealEstateModel = (() => {
     /** Projected future urban expansion (SSP). Accepts a 0..100 value or a 0..1
      *  probability on data.realtime.future_expansion. Null when unavailable. */
     function _futureExpansion(data) {
-        const fe = data && data.realtime && data.realtime.future_expansion;
+        const rt = (data && data.realtime) || {};
+        // Accept either an explicit realtime.future_expansion or the value the
+        // Growth Forecast surfaces (rt.growth.future_expansion, a 0..1 SSP prob).
+        const fe = rt.future_expansion != null ? rt.future_expansion
+            : (rt.growth && rt.growth.future_expansion);
         let v = (fe && typeof fe === 'object') ? fe.value : fe;
         v = Number(v);
         if (!Number.isFinite(v)) return null;
