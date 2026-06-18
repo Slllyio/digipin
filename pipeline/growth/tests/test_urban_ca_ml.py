@@ -59,6 +59,7 @@ def test_slope_and_distance_helpers():
     assert float(drv.slope_from_dem(flat, 100).max()) == pytest.approx(0.0)
     ramp = np.tile(np.arange(5, dtype="float32") * 100, (5, 1))  # 100 m rise / 100 m run
     assert float(drv.slope_from_dem(ramp, 100).mean()) > 40      # ~45°
+    pytest.importorskip("scipy")   # distance_field uses scipy.ndimage; skip cleanly if absent
     mask = np.zeros((5, 5), dtype=bool); mask[0, 0] = True
     d = drv.distance_field(mask, 100)
     assert d[0, 0] == 0.0 and d[4, 4] > d[0, 0]
