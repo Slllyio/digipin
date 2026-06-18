@@ -56,6 +56,7 @@ loadGlobalScript('js/kde-overlay.js', ['KDEOverlay']);
 loadGlobalScript('js/accessibility-overlay.js', ['AccessibilityOverlay']);
 loadGlobalScript('js/dtdl-export.js', ['DTDLExport']);
 loadGlobalScript('js/real-estate-model.js', ['RealEstateModel']);
+loadGlobalScript('js/footprint-grid.js', ['FootprintGrid']);
 loadGlobalScript('js/query-engine.js', ['QueryEngine']);
 loadGlobalScript('js/disha.js', ['DISHA']);
 loadGlobalScript('js/text2map.js', ['Text2Map']);

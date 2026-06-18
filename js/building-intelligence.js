@@ -95,6 +95,19 @@ const BuildingIntelligence = (() => {
         }
 
         const result = { buildings, lcz, metrics, scores, overtureStats };
+
+        // Correct OSM undercount with precomputed ML footprints (Google/MS/Overture)
+        // when the grid is present; purely additive — falls back to OSM otherwise.
+        if (typeof FootprintGrid !== 'undefined') {
+            try {
+                const fp = await FootprintGrid.sampleAt(lat, lng);
+                if (fp && Number.isFinite(fp.coveragePct)) {
+                    result.footprint = fp;
+                    metrics.footprintCoveragePct = fp.coveragePct;
+                }
+            } catch { /* grid absent — OSM-only */ }
+        }
+
         _cacheSet(key, result);
         return result;
     }
