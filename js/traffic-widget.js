@@ -43,11 +43,12 @@ const TrafficWidget = (() => {
         const grade = traffic.los_grade;
         const info = _losInfo(grade);
         const t = traffic.transit;
-        const transitLine = (t && t.stops)
-            ? `${t.stops} stop${t.stops === 1 ? '' : 's'}`
+        const transitLine = (t && (t.stops || t.access_score))
+            ? `${t.stops || 0} stop${t.stops === 1 ? '' : 's'} nearby`
                 + (t.headway_min != null ? ` · ~${Math.round(t.headway_min)} min headway` : '')
                 + (t.access_score != null ? ` · access ${t.access_score}/100` : '')
-            : 'No transit stops in cell';
+                + (t.source === 'osm_stops' ? ' (OSM coverage)' : '')
+            : 'No transit stops nearby';
 
         const wrap = document.createElement('div');
         wrap.setAttribute('data-traffic-widget', '');
@@ -78,7 +79,8 @@ const TrafficWidget = (() => {
                 <div class="growth-widget__methods-body">
                     <p>Structural congestion from the OSM road graph: betweenness centrality
                     (through-traffic load proxy) ÷ road-class capacity → Level of Service (A–F).
-                    Transit access from GTFS stop density &amp; frequency.</p>
+                    Transit access from GTFS frequency where available, else OSM stop coverage
+                    (stops within walking distance — no open Indore timetable exists).</p>
                     <p><strong>Not real-time.</strong> This shows where load concentrates by network
                     design — bottlenecks &amp; transit gaps — not current delays. For live traffic use
                     a routing app.</p>

@@ -26,7 +26,8 @@ const RealtimeTraffic = (() => {
     function scoreCell(signals) {
         if (!signals) return null;
         const hasRoad = signals.congestion_risk != null || signals.los_grade != null;
-        const hasTransit = signals.transit_stops != null && signals.transit_stops > 0;
+        const hasTransit = (signals.transit_stops != null && signals.transit_stops > 0)
+            || (signals.transit_access != null && signals.transit_access > 0);
         if (!hasRoad && !hasTransit) return null;
 
         const transit = hasTransit ? {
@@ -37,6 +38,7 @@ const RealtimeTraffic = (() => {
                 : (typeof TrafficScore !== 'undefined'
                     ? TrafficScore.transitAccessScore(signals.transit_headway_min, signals.transit_routes)
                     : null),
+            source: signals.transit_source || null,   // 'osm_stops' (coverage) | 'gtfs' (frequency)
         } : null;
 
         return {

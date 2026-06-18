@@ -44,11 +44,20 @@ relative to what the road was built to carry.
 **Bridge edges** (whose removal disconnects part of the network) are flagged
 `critical` — the resilience-planning half: "this link has no redundancy".
 
-### 4. Transit access (GTFS)
-The multimodal half: a GTFS feed (open bus/transit timetables) gives per-stop
-**route breadth** and **median headway**, aggregated to a per-cell
-`transit_access` score (frequency-dominated, 5-min headway ≈ 100, ≥30-min ≈ 0).
-Well-served cells generate/absorb trips without adding road load.
+### 4. Transit access (GTFS frequency, or OSM coverage)
+The multimodal half. **Where a GTFS feed exists**, `gtfs_transit.py` derives
+per-stop **route breadth** and **median headway** → a frequency-dominated
+`transit_access` score (5-min headway ≈ 100, ≥30-min ≈ 0).
+
+**No open GTFS feed exists for Indore** (AICTSL publishes route/timing web pages
+but no GTFS; Chalo's data is proprietary; Transitland/MobilityDatabase list no
+Indore feed). So the Indore pilot instead uses **OSM stop coverage**
+(`fetch_osm_transit.py` + `osm_transit.py`): OSM-mapped transit stops are binned
+and each cell scored by how many stops fall within its ~walk-shed (3×3
+neighbourhood) — `coverage_access` (4+ nearby stops ≈ 100). This is an honest
+"is transit reachable here" proxy (`transit_source: "osm_stops"`), **not**
+timetable frequency; headway/route fields stay null and the widget labels it
+"(OSM coverage)". Swap in a real GTFS feed later for true frequency.
 
 ## Pipeline (`pipeline/traffic/`)
 

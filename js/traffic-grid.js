@@ -42,6 +42,7 @@ const TrafficGrid = (() => {
             transit_routes: at(grid.transit_routes),
             transit_headway_min: at(grid.transit_headway_min),
             transit_access: at(grid.transit_access),
+            transit_source: grid.transit_source || null,
             res_m: grid.res_m,
             source: grid.source || 'osm_betweenness_los',
         };

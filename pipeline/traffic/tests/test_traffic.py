@@ -9,6 +9,7 @@ import pytest
 rn = pytest.importorskip("pipeline.traffic.road_network")
 tg = pytest.importorskip("pipeline.traffic.traffic_grid")
 gt = pytest.importorskip("pipeline.traffic.gtfs_transit")
+ot = pytest.importorskip("pipeline.traffic.osm_transit")
 
 
 # ── pure scoring helpers ─────────────────────────────────────────
@@ -133,6 +134,28 @@ def test_access_score_frequency_dominates():
     assert frequent > sparse
     assert 0 <= sparse <= 100 and 0 <= frequent <= 100
     assert gt.access_score(None, 0) <= 100
+
+
+def test_osm_coverage_access_bounds():
+    assert ot.coverage_access(0) == 0
+    assert ot.coverage_access(1) == 25
+    assert ot.coverage_access(4) == 100
+    assert ot.coverage_access(20) == 100          # clamped
+    assert ot.coverage_access(None) == 0
+
+
+def test_osm_transit_merges_coverage_into_grid():
+    grid = tg.bin_segments([], (75.6, 22.5, 76.0, 22.9), res_m=2000)
+    stops = [
+        {"lat": 22.51, "lng": 75.61},   # SW area
+        {"lat": 22.512, "lng": 75.612},  # same neighbourhood
+        {"lat": 10.0, "lng": 10.0},     # outside bbox → ignored
+    ]
+    out = ot.merge_into_grid(grid, stops)
+    assert out["transit_source"] == "osm_stops"
+    assert max(out["transit_stops"]) >= 2          # both nearby stops counted in the walk-shed
+    assert max(out["transit_access"]) > 0
+    assert all(h is None for h in out["transit_headway_min"])   # no timetable
 
 
 def test_merge_into_grid_adds_transit_arrays():
