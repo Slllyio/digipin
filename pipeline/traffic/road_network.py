@@ -188,9 +188,23 @@ def compute_centrality(G):
 
 
 # ───────────────────────── orchestration ─────────────────────────
+def _percentile(values, q):
+    """q-th percentile (0..1) of a list via nearest-rank. Pure stdlib."""
+    vals = sorted(v for v in values if v is not None)
+    if not vals:
+        return 0.0
+    k = min(len(vals) - 1, max(0, int(round(q * (len(vals) - 1)))))
+    return vals[k]
+
+
 def enrich(features, betw, bridges, edge_to_features):
     """Attach betweenness/capacity/los/criticality to each feature in place.
-    Returns the scored-segment list (one dict per feature)."""
+    Returns the scored-segment list (one dict per feature).
+
+    Raw normalized betweenness from a city graph is tiny (~1e-2), so we rescale
+    it to a **relative load** (segment betweenness ÷ the network's 95th-percentile
+    betweenness) before the V/C ratio — that's what spreads LOS across A–F instead
+    of collapsing every road to free-flow."""
     per_feature = {}
     for (u, v), b in betw.items():
         is_bridge = (u, v) in bridges
@@ -199,13 +213,19 @@ def enrich(features, betw, bridges, edge_to_features):
             if cur is None or b > cur["betweenness"]:
                 per_feature[idx] = {"betweenness": b, "is_bridge": is_bridge}
 
+    # Robust scale: 95th-percentile betweenness (so a cluster of top arterials
+    # reaches capacity, not just a single outlier). Fallback to max.
+    bvals = [m["betweenness"] for m in per_feature.values() if m["betweenness"] > 0]
+    scale = _percentile(bvals, 0.95) or (max(bvals) if bvals else 0.0)
+
     scored = []
     for idx, feat in enumerate(features):
         props = feat.setdefault("properties", {})
         m = per_feature.get(idx, {"betweenness": 0.0, "is_bridge": False})
         b, is_bridge = m["betweenness"], m["is_bridge"]
         cap = capacity_for_class(props.get("highway"))
-        ratio = vc_ratio(b, cap)
+        rel_load = (b / scale) if scale > 0 else 0.0   # 0..~1 (top arterials ≈ 1)
+        ratio = vc_ratio(rel_load, cap)
         grade = los_from_vc(ratio)
         risk = congestion_risk(ratio)
         crit = criticality_label(b, is_bridge)

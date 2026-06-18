@@ -114,7 +114,9 @@ const TrafficOverlay = (() => {
         for (const f of features) {
             const p = f.properties || (f.properties = {});
             p.color = colorFor(gradeForRoad(p));
-            p.is_critical = (p.criticality === 'critical') || !!p.is_bridge;
+            // Emphasise only genuinely critical links (high-betweenness bridges),
+            // not every graph bridge — an arterial-only network has many of those.
+            p.is_critical = (p.criticality === 'critical');
         }
         return features;
     }

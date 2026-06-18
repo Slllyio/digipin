@@ -54,6 +54,13 @@ data/scores/*
 data/scores/*/*
 !data/scores/*/*.json
 !data/scores/*/*.pmtiles
+# Precomputed traffic (structural congestion) artifacts — browser-consumed.
+!data/traffic/
+data/traffic/*
+!data/traffic/*/
+data/traffic/*/*
+!data/traffic/*/*.json
+!data/traffic/*/*.geojson
 
 # SUMO simulation data (large XML files)
 guna-twin-city/traffic-analysis/sumo/*.xml
