@@ -139,6 +139,10 @@ const Panel = (() => {
             HeatWidget.attachTo(contentEl, data?.realtime?.heat || null, cell);
         }
 
+        if (typeof TrafficWidget !== 'undefined') {
+            TrafficWidget.attachTo(contentEl, data?.realtime?.traffic || null, cell);
+        }
+
         if (typeof FloodAnimation !== 'undefined') {
             FloodAnimation.attachTo(contentEl, data?.realtime?.flood || null, cell);
         }

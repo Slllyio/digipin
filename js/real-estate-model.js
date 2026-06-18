@@ -36,16 +36,19 @@ const RealEstateModel = (() => {
             floodSafety: 1.5, airQuality: 1.4, jobs: 0.8,
             pipeline: 0.4, redevelopment: 0.4, devPotential: 0.5,
             buildingChangeTrend: 0.6, futureExpansion: 0.6, caGrowthPrediction: 0.6,
+            transitAccess: 1.4, lowCongestion: 1.4,
         },
         invest: {
             accessibility: 1.3, jobs: 1.4, pipeline: 1.5, devPotential: 1.3,
             walkability: 1.1, modernization: 1.1, quietness: 0.5, schools: 0.8,
             buildingChangeTrend: 1.4, futureExpansion: 1.4, caGrowthPrediction: 1.5,
+            transitAccess: 1.2, lowCongestion: 0.8,
         },
         build: {
             devPotential: 1.7, redevelopment: 1.7, pipeline: 1.3, accessibility: 1.1,
             walkability: 0.7, green: 0.6, schools: 0.6, healthcare: 0.6, quietness: 0.4,
             buildingChangeTrend: 1.5, futureExpansion: 1.6, caGrowthPrediction: 1.6,
+            transitAccess: 1.0, lowCongestion: 0.6,
         },
     };
     const INTENTS = Object.keys(INTENT_PROFILES);
@@ -71,10 +74,14 @@ const RealEstateModel = (() => {
         { key: 'buildingChangeTrend', label: 'Recent building growth', group: 'supply', weight: 1.0, from: d => _bueTrend(d) },
         { key: 'futureExpansion',     label: 'Projected urban expansion (SSP)', group: 'supply', weight: 0.8, from: d => _futureExpansion(d) },
         { key: 'caGrowthPrediction',  label: 'Predicted growth (CA-ML)', group: 'supply', weight: 0.9, from: d => _caGrowth(d) },
+        // transit access (structural traffic feature) — demand-side connectivity.
+        { key: 'transitAccess', label: 'Transit access',        group: 'demand',    weight: 0.7, from: d => _transitAccess(d) },
         // risk discounts (oriented so higher = safer/better)
         { key: 'floodSafety',   label: 'Flood safety',          group: 'risk',      weight: 0.9, from: d => _floodSafety(d) },
         { key: 'airQuality',    label: 'Air quality',           group: 'risk',      weight: 0.4, from: d => _airQuality(d) },
         { key: 'quietness',     label: 'Quietness',             group: 'risk',      weight: 0.3, from: d => _score(d, 'noise_estimate') },
+        // low structural congestion (higher = lower congestion risk = better).
+        { key: 'lowCongestion', label: 'Low congestion',        group: 'risk',      weight: 0.5, from: d => _lowCongestion(d) },
     ];
 
     // ---------- value extractors (return 0..100 or null when unavailable) ----------
@@ -118,6 +125,22 @@ const RealEstateModel = (() => {
             ? rt.growth.ca_growth_prob : rt.ca_growth_prob);
         if (!Number.isFinite(v)) return null;
         return Math.max(0, Math.min(100, v <= 1 ? v * 100 : v));
+    }
+
+    /** Transit access 0..100 from the structural-traffic layer
+     *  (data.realtime.traffic.transit.access_score). Null when unavailable. */
+    function _transitAccess(data) {
+        const t = data && data.realtime && data.realtime.traffic && data.realtime.traffic.transit;
+        const v = t && Number(t.access_score);
+        return Number.isFinite(v) ? Math.max(0, Math.min(100, v)) : null;
+    }
+
+    /** Low-congestion SAFETY 0..100 (higher = less structural congestion) from
+     *  data.realtime.traffic.congestion_risk (0..100, higher = worse). */
+    function _lowCongestion(data) {
+        const tr = data && data.realtime && data.realtime.traffic;
+        const v = tr && Number(tr.congestion_risk);
+        return Number.isFinite(v) ? Math.max(0, Math.min(100, 100 - v)) : null;
     }
 
     /** Flood SAFETY (higher = safer). Prefer the live GloFAS peak ratio, else the
@@ -172,7 +195,7 @@ const RealEstateModel = (() => {
         const score = Math.round(wValue / wSum);
         drivers.sort((a, b) => Math.abs(b.contribution) - Math.abs(a.contribution));
 
-        // Confidence from breadth of evidence (how many of the 13 factors had data).
+        // Confidence from breadth of evidence (fraction of FACTORS that had data).
         const ratio = fs.length / FACTORS.length;
         const confidence = ratio >= 0.6 ? 'high' : ratio >= 0.35 ? 'medium' : 'low';
         return { score, drivers, confidence, factorsUsed: fs.length };

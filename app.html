@@ -155,6 +155,10 @@
             <span class="tb-icon">&#129529;</span>
             <span class="tb-label">Predict</span>
         </button>
+        <button class="toolbar-btn" id="btn-traffic" title="Traffic — structural congestion (road-network Level of Service) + transit access">
+            <span class="tb-icon">&#128739;</span>
+            <span class="tb-label">Traffic</span>
+        </button>
         <button class="toolbar-btn" id="btn-heat" title="Urban Heat Island">
             <span class="tb-icon">&#127777;&#65039;</span>
             <span class="tb-label">Heat</span>
@@ -306,6 +310,12 @@
     <script defer src="js/growth-widget.js"></script>
     <script defer src="js/growth-overlay.js"></script>
     <script defer src="js/ca-growth-overlay.js"></script>
+    <!-- Traffic (structural congestion: OSM betweenness → LOS + GTFS transit) -->
+    <script defer src="js/traffic-score.js"></script>
+    <script defer src="js/traffic-grid.js"></script>
+    <script defer src="js/realtime-traffic.js"></script>
+    <script defer src="js/traffic-widget.js"></script>
+    <script defer src="js/traffic-overlay.js"></script>
     <!-- Heat feature trio + realtime orchestrator -->
     <script defer src="js/heat-score.js"></script>
     <script defer src="js/realtime-heat.js"></script>
@@ -372,6 +382,7 @@
     [
         ['btn-growth',    () => window.GrowthOverlay],
         ['btn-ca-growth', () => window.CAGrowthOverlay],
+        ['btn-traffic',   () => window.TrafficOverlay],
         ['btn-heat',      () => window.HeatOverlay],
         ['btn-ndvi',      () => window.NDVIOverlay],
         ['btn-bivariate', () => window.BivariateOverlay],

@@ -191,6 +191,36 @@ describe('RealEstateModel growth-temporal factors', () => {
     });
 });
 
+describe('RealEstateModel structural-traffic factors', () => {
+    const trafficCell = (traffic) => cell({ connectivity: 50 }, { realtime: { traffic } });
+
+    it('adds a transit-access factor from realtime.traffic.transit.access_score', () => {
+        const f = REM.factors(trafficCell({ transit: { access_score: 80 } }))
+            .find(x => x.key === 'transitAccess');
+        expect(f).toBeTruthy();
+        expect(f.value).toBe(80);
+    });
+
+    it('adds a low-congestion safety factor inverted from congestion_risk', () => {
+        const f = REM.factors(trafficCell({ congestion_risk: 70 }))
+            .find(x => x.key === 'lowCongestion');
+        expect(f.value).toBe(30);                 // 100 - 70
+    });
+
+    it('drops both traffic factors when there is no traffic layer', () => {
+        const keys = REM.factors(cell({ connectivity: 50 })).map(x => x.key);
+        expect(keys).not.toContain('transitAccess');
+        expect(keys).not.toContain('lowCongestion');
+    });
+
+    it('weights transit access higher for "live" than "build"', () => {
+        const data = trafficCell({ transit: { access_score: 95 }, congestion_risk: 10 });
+        const live = REM.outlook(data, { intent: 'live' }).score;
+        const build = REM.outlook(data, { intent: 'build' }).score;
+        expect(live).toBeGreaterThan(build);
+    });
+});
+
 describe('RealEstateModel.verdictSentence() & builtForm()', () => {
     it('summarises built form from building intelligence', () => {
         const data = cell({ redevelopment_index: 70 }, { buildingIntel: {

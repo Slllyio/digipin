@@ -222,6 +222,23 @@ const Compare = (() => {
             c.textContent = o.appreciation ? `${o.appreciation.midPct}%/yr` : '-';
             c.style.color = sub;
         });
+
+        // Structural traffic (from the per-cell traffic grid), when present.
+        const traffics = _pinned.map(p => p && p.data && p.data.realtime && p.data.realtime.traffic);
+        if (traffics.some(t => t)) {
+            addRow('Congestion (LOS)', (c, o, i) => {
+                const t = traffics[i];
+                if (!t || t.los_grade == null) { c.textContent = '-'; c.style.color = sub; return; }
+                c.textContent = `${t.los_grade}${t.congestion_risk != null ? ' · ' + t.congestion_risk : ''}`;
+                c.style.color = sub;
+            });
+            addRow('Transit access', (c, o, i) => {
+                const t = traffics[i];
+                const a = t && t.transit && t.transit.access_score;
+                c.textContent = (a != null) ? `${a}/100` : '-';
+                c.style.color = sub;
+            });
+        }
     }
 
     function renderOverlayRadar() {

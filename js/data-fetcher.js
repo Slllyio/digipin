@@ -857,6 +857,16 @@ const DataFetcher = (() => {
             }
         }
 
+        if (typeof RealtimeTraffic !== 'undefined') {
+            try {
+                const trafficSignals = await RealtimeTraffic.fetchCell(lat, lng);
+                const traffic = RealtimeTraffic.scoreCell(trafficSignals);
+                if (traffic) result.realtime.traffic = traffic;
+            } catch (e) {
+                console.warn('[orchestrator] traffic fetch skipped:', e);
+            }
+        }
+
         // === Compute intelligence scores ===
         result.scores = computeScores(result);
 
