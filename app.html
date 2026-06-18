@@ -151,6 +151,10 @@
             <span class="tb-icon">&#128200;</span>
             <span class="tb-label">Growth</span>
         </button>
+        <button class="toolbar-btn" id="btn-ca-growth" title="Growth Prediction (CA-ML) — hindcast-validated urbanization probability">
+            <span class="tb-icon">&#129529;</span>
+            <span class="tb-label">Predict</span>
+        </button>
         <button class="toolbar-btn" id="btn-heat" title="Urban Heat Island">
             <span class="tb-icon">&#127777;&#65039;</span>
             <span class="tb-label">Heat</span>
@@ -301,6 +305,7 @@
     <script defer src="js/realtime-growth.js"></script>
     <script defer src="js/growth-widget.js"></script>
     <script defer src="js/growth-overlay.js"></script>
+    <script defer src="js/ca-growth-overlay.js"></script>
     <!-- Heat feature trio + realtime orchestrator -->
     <script defer src="js/heat-score.js"></script>
     <script defer src="js/realtime-heat.js"></script>
@@ -366,6 +371,7 @@
     // screen readers announce "pressed"/"not pressed").
     [
         ['btn-growth',    () => window.GrowthOverlay],
+        ['btn-ca-growth', () => window.CAGrowthOverlay],
         ['btn-heat',      () => window.HeatOverlay],
         ['btn-ndvi',      () => window.NDVIOverlay],
         ['btn-bivariate', () => window.BivariateOverlay],

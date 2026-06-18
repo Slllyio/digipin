@@ -35,17 +35,17 @@ const RealEstateModel = (() => {
             walkability: 1.3, green: 1.4, schools: 1.4, healthcare: 1.3, quietness: 1.6,
             floodSafety: 1.5, airQuality: 1.4, jobs: 0.8,
             pipeline: 0.4, redevelopment: 0.4, devPotential: 0.5,
-            buildingChangeTrend: 0.6, futureExpansion: 0.6,
+            buildingChangeTrend: 0.6, futureExpansion: 0.6, caGrowthPrediction: 0.6,
         },
         invest: {
             accessibility: 1.3, jobs: 1.4, pipeline: 1.5, devPotential: 1.3,
             walkability: 1.1, modernization: 1.1, quietness: 0.5, schools: 0.8,
-            buildingChangeTrend: 1.4, futureExpansion: 1.4,
+            buildingChangeTrend: 1.4, futureExpansion: 1.4, caGrowthPrediction: 1.5,
         },
         build: {
             devPotential: 1.7, redevelopment: 1.7, pipeline: 1.3, accessibility: 1.1,
             walkability: 0.7, green: 0.6, schools: 0.6, healthcare: 0.6, quietness: 0.4,
-            buildingChangeTrend: 1.5, futureExpansion: 1.6,
+            buildingChangeTrend: 1.5, futureExpansion: 1.6, caGrowthPrediction: 1.6,
         },
     };
     const INTENTS = Object.keys(INTENT_PROFILES);
@@ -69,7 +69,8 @@ const RealEstateModel = (() => {
         // observed building change (Open Buildings Temporal) + projected expansion (SSP).
         // Null until the growth COGs are present, so the factor simply drops out.
         { key: 'buildingChangeTrend', label: 'Recent building growth', group: 'supply', weight: 1.0, from: d => _bueTrend(d) },
-        { key: 'futureExpansion',     label: 'Projected urban expansion', group: 'supply', weight: 0.8, from: d => _futureExpansion(d) },
+        { key: 'futureExpansion',     label: 'Projected urban expansion (SSP)', group: 'supply', weight: 0.8, from: d => _futureExpansion(d) },
+        { key: 'caGrowthPrediction',  label: 'Predicted growth (CA-ML)', group: 'supply', weight: 0.9, from: d => _caGrowth(d) },
         // risk discounts (oriented so higher = safer/better)
         { key: 'floodSafety',   label: 'Flood safety',          group: 'risk',      weight: 0.9, from: d => _floodSafety(d) },
         { key: 'airQuality',    label: 'Air quality',           group: 'risk',      weight: 0.4, from: d => _airQuality(d) },
@@ -107,6 +108,16 @@ const RealEstateModel = (() => {
         if (!Number.isFinite(v)) return null;
         if (v <= 1) v *= 100;             // accept a 0..1 probability
         return Math.max(0, Math.min(100, v));
+    }
+
+    /** CA-ML predicted urbanization probability (0..1 on the growth object → 0..100).
+     *  A separate, sharper signal than the coarse SSP futureExpansion. */
+    function _caGrowth(data) {
+        const rt = (data && data.realtime) || {};
+        const v = Number((rt.growth && rt.growth.ca_growth_prob) != null
+            ? rt.growth.ca_growth_prob : rt.ca_growth_prob);
+        if (!Number.isFinite(v)) return null;
+        return Math.max(0, Math.min(100, v <= 1 ? v * 100 : v));
     }
 
     /** Flood SAFETY (higher = safer). Prefer the live GloFAS peak ratio, else the

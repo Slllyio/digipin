@@ -10,6 +10,7 @@ and how to (re)generate the data. All sources are **no Earth Engine required**.
 | **Building change 2016–2023** | Google Open Buildings **2.5D Temporal** (4 m, presence/count/height; covers India) | `pipeline/growth/download_temporal_gcs.py` (direct GCS, no GEE) | `realtime-growth.js` → `GrowthScore` BUE + emerging-hotspot; `RealEstateModel` `buildingChangeTrend` |
 | **Current footprints** | Google Open Buildings v3 / Microsoft / Overture (far more complete than OSM) | `pipeline/download_google_buildings.py` (+ planned `footprint_grid.py`) | Building Intelligence density/FSI |
 | **Future urban expansion** | Global **SSP** urban-land projections (1 km, to 2050/2100) | planned `pipeline/growth/download_ssp_urban.py` | `RealEstateModel` `futureExpansion`; `GrowthScore.futureExpansionAdjust`; map overlay |
+| **Growth prediction (CA-ML)** | Trained **in-house** on the temporal series + drivers (slope/roads/water/built/pop/lights) — a CA-RF model, hindcast-validated | `pipeline/growth/urban_ca_ml.py` (+ `ca_drivers.py`) | `realtime-growth.js` → `ca_growth_prob`; `RealEstateModel` `caGrowthPrediction`; **`CAGrowthOverlay`** (separate "Predict" layer) — see `docs/CA_GROWTH_MODEL.md` |
 | Population Δ | GHSL (JRC), direct download | `pipeline/growth/download_ghsl_pop.py` | `GrowthScore` DEN |
 
 OSMBuildings/OSMBuildings is a 3D *renderer* (unmaintained) — not used; the app
@@ -53,6 +54,25 @@ Clips a global SSP urban-land projection to `data/growth/ssp_urban_expansion_<re
 `futureExpansion` real-estate factor activates. Canonical host
 (geosimulation.cn) plus figshare/PANGAEA mirrors; pass the scenario/year GeoTIFF
 via `--url`.
+
+## Growth prediction layer (CA-ML)
+
+The SSP layer is coarse (1 km, scenario-driven). For a **sharper, locally-trained**
+projection, DigiPin ships a Cellular-Automata + Random-Forest model that learns the
+**observed 2016→2023 transitions** and simulates forward:
+
+```sh
+pip install -r pipeline/growth/requirements.txt   # adds scikit-learn, scipy
+# prerequisites: the temporal COG + driver sources (DEM, OSM roads/water, GHSL, VIIRS)
+python -m pipeline.growth.urban_ca_ml --horizon 2035
+```
+
+Produces `data/growth/ca_urban_prediction_<region>.tif` (1 band, P(urban by horizon)
+0..1, ~100 m) and `data/growth/ca_validation_<region>.json` (hindcast **Figure of
+Merit + Cohen's Kappa**). `realtime-growth.js` reads it → `ca_growth_prob`, the
+`caGrowthPrediction` real-estate factor activates, and the **Predict** toolbar
+button (`CAGrowthOverlay`) renders it as a separate purple layer alongside SSP. Full
+method, drivers and accuracy caveats: **`docs/CA_GROWTH_MODEL.md`**.
 
 ## Richer footprints grid (fixes OSM undercount)
 

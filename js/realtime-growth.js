@@ -16,6 +16,7 @@ const RealtimeGrowth = (() => {
     const COG_VIIRS      = 'data/growth/viirs_2016-2024.tif';
     const COG_GHSL       = 'data/growth/ghsl_pop_2025.tif';
     const COG_SSP        = 'data/growth/ssp_urban_expansion.tif';   // projected urban fraction (0..1)
+    const COG_CA         = 'data/growth/ca_urban_prediction.tif';   // CA-ML P(urban) by horizon (0..1)
     const RERA_SNAPSHOT  = 'data/realtime/rera_mp/latest.json';
     const RERA_RADIUS_KM = 2.0;
     const RERA_TTL_MS    = 5 * 60 * 1000;
@@ -98,11 +99,12 @@ const RealtimeGrowth = (() => {
     async function fetchCell(lat, lng, opts = {}) {
         // OSM-construction count comes from result.categories already populated
         // by data-fetcher.js's main fetch; passed in via opts.
-        const [buildings, viirs, ghsl, ssp, rera] = await Promise.all([
+        const [buildings, viirs, ghsl, ssp, ca, rera] = await Promise.all([
             _readCog(COG_BUILDINGS, lat, lng),
             _readCog(COG_VIIRS, lat, lng),
             _readCog(COG_GHSL, lat, lng),
             _readCog(COG_SSP, lat, lng),
+            _readCog(COG_CA, lat, lng),
             _reraNearby(lat, lng),
         ]);
         // GHSL is single-band; derive pct-change 2020→2025 from the value (placeholder
@@ -112,12 +114,14 @@ const RealtimeGrowth = (() => {
         const popValue = ghsl ? ghsl[0] : null;
         // SSP projected urban fraction (0..1) for the cell; null when the COG is absent.
         const sspVal = (ssp && Number.isFinite(ssp[0])) ? Math.max(0, Math.min(1, ssp[0])) : null;
+        const caVal = (ca && Number.isFinite(ca[0])) ? Math.max(0, Math.min(1, ca[0])) : null;
         return {
             buildings_temporal: buildings,
             heights: null,   // Phase 2 — temporal V1 also has height bands; defer
             viirs,
             ghsl_pop_5yr_pct: popValue != null ? Math.min(20, popValue / 50) : null,
             future_expansion: sspVal,
+            ca_growth_prob: caVal,
             osm_commercial_density: opts.osm_commercial_density || 0,
             osm_construction_count: opts.osm_construction_count || 0,
             rera_projects: rera,
@@ -168,6 +172,7 @@ const RealtimeGrowth = (() => {
         return {
             active_horizon: 'nowcast',
             future_expansion: signals.future_expansion,   // 0..1 SSP, surfaced for RealEstateModel
+            ca_growth_prob: signals.ca_growth_prob,        // 0..1 CA-ML prediction (separate layer)
             horizons: {
                 nowcast: buildHorizon(nowcast, 'nowcast', sub),
                 year_2:  buildHorizon(year_2,  'year_2',  sub),
@@ -178,6 +183,7 @@ const RealtimeGrowth = (() => {
                 viirs:              signals.viirs              ? 'ok' : 'missing',
                 ghsl_pop:           signals.ghsl_pop_5yr_pct != null ? 'ok' : 'missing',
                 future_expansion:   signals.future_expansion != null ? 'ok' : 'missing',
+                ca_growth:          signals.ca_growth_prob != null ? 'ok' : 'missing',
                 rera_mp:            signals.rera_projects === null ? 'out_of_state'
                                   : signals.rera_projects.length === 0 ? 'ok'  // empty, but state covered
                                   : 'ok',

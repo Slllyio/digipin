@@ -69,6 +69,7 @@ describe('RealEstateModel.growthPotential()', () => {
         const many = REM.growthPotential(cell({
             connectivity: 60, commercial: 60, walkability: 60, green: 60, education_score: 60,
             healthcare_access: 60, development_potential: 60, real_estate_growth: 60, noise_estimate: 60,
+            redevelopment_index: 60, modernization: 60, flood_risk: 40,
         }));
         expect(many.confidence).toBe('high');
     });
@@ -170,6 +171,16 @@ describe('RealEstateModel growth-temporal factors', () => {
         const f = REM.factors(cell({}, { realtime: { growth: { future_expansion: 0.7 } } }))
             .find(x => x.key === 'futureExpansion');
         expect(f.value).toBe(70);
+    });
+
+    it('adds a separate CA-ML predicted-growth factor from ca_growth_prob', () => {
+        const f = REM.factors(cell({}, { realtime: { growth: { ca_growth_prob: 0.85 } } }))
+            .find(x => x.key === 'caGrowthPrediction');
+        expect(f).toBeTruthy();
+        expect(f.value).toBe(85);
+        // absent when no CA layer
+        expect(REM.factors(cell({ connectivity: 50 })).map(x => x.key))
+            .not.toContain('caGrowthPrediction');
     });
 
     it('weights building growth higher for invest/build than live', () => {

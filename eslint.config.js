@@ -23,6 +23,7 @@ const APP_GLOBALS = {
   ScoresDialog: 'readonly', DigitalTwinLayers: 'readonly', FloatingDialogs: 'readonly',
   OvertureBuildings: 'readonly', Isochrone: 'readonly', Report: 'readonly', TrainingDataGen: 'readonly',
   GrowthScore: 'readonly', GrowthOverlay: 'readonly', GrowthWidget: 'readonly', RealtimeGrowth: 'readonly',
+  CAGrowthOverlay: 'readonly',
   HeatScore: 'readonly', HeatOverlay: 'readonly', HeatWidget: 'readonly', RealtimeHeat: 'readonly',
   FloodSCS: 'readonly', FloodInundation: 'readonly', FloodAnimation: 'readonly', RealtimeFlood: 'readonly',
   RealtimeAlerts: 'readonly', RealtimeIMD: 'readonly', RealtimeQuakes: 'readonly',

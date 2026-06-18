@@ -38,6 +38,7 @@ loadGlobalScript('js/growth-score.js', ['GrowthScore']);
 loadGlobalScript('js/realtime-growth.js', ['RealtimeGrowth']);
 loadGlobalScript('js/growth-widget.js', ['GrowthWidget']);
 loadGlobalScript('js/growth-overlay.js', ['GrowthOverlay']);
+loadGlobalScript('js/ca-growth-overlay.js', ['CAGrowthOverlay']);
 loadGlobalScript('js/heat-score.js', ['HeatScore']);
 loadGlobalScript('js/heat-widget.js', ['HeatWidget']);
 loadGlobalScript('js/realtime-flood.js', ['RealtimeFlood']);
