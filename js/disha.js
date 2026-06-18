@@ -250,6 +250,19 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
                 lines.push(`\n=== INTELLIGENCE SCORES (0-100) ===`);
                 lines.push(scoreParts.join(', '));
             }
+
+            // Real-estate growth outlook (live hedonic model — works without
+            // the satellite Growth Forecast). Gives DISHA an investment read.
+            if (typeof RealEstateModel !== 'undefined') {
+                const o = RealEstateModel.outlook(data);
+                if (o.score != null) {
+                    const pos = o.topPositives.map(d => d.label).join(', ') || '—';
+                    const neg = o.topNegatives.map(d => d.label).join(', ') || 'none';
+                    lines.push(`Real-estate outlook: ${o.score}/100 (${o.label}), `
+                        + `est. ${o.appreciation.midPct}%/yr [${o.appreciation.lowPct}–${o.appreciation.highPct}%], `
+                        + `${o.confidence} confidence. Drivers: ${pos}. Drags: ${neg}.`);
+                }
+            }
         }
 
         // --- Growth Forecast (composite + horizons) ---

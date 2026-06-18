@@ -138,6 +138,10 @@ const Panel = (() => {
         // Flood forecast widget (7-day discharge sparkline + risk badge + a
         // "show on map" button that drives the DEM inundation overlay). No-ops
         // when the cell has no flood forecast.
+        if (typeof RealEstateWidget !== 'undefined') {
+            RealEstateWidget.attachTo(contentEl, data, cell);
+        }
+
         if (typeof FloodAnimation !== 'undefined') {
             FloodAnimation.attachTo(contentEl, data?.realtime?.flood || null, cell);
         }

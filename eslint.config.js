@@ -32,6 +32,7 @@ const APP_GLOBALS = {
   Text2MapResultsLayer: 'readonly',
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly',
   LayersPanel: 'readonly', ExportDialog: 'readonly', DTDLExport: 'readonly', Onboarding: 'readonly',
+  RealEstateModel: 'readonly', RealEstateWidget: 'readonly',
   DIGIPIN_CONFIG: 'readonly',
   // third-party libraries loaded from CDN
   maplibregl: 'readonly', pmtiles: 'readonly', parseGeoraster: 'readonly', GeoRaster: 'readonly',
