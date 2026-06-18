@@ -87,7 +87,12 @@ const ExportDialog = (() => {
             DataFetcher.exportToGeoJSON({ code: cell.code, scores: data.scores }, name);
         } else if (format === 'csv') {
             DataFetcher.exportToCSV(data, name);
-        } else if (format === 'dtdl' && typeof DTDLExport !== 'undefined') {
+        } else if (format === 'dtdl') {
+            // Never silently fall back to plain JSON under a _twin filename.
+            if (typeof DTDLExport === 'undefined') {
+                if (typeof App !== 'undefined') App.showToast('Export', 'Digital Twin exporter unavailable', 'error');
+                return;
+            }
             DTDLExport.download(cell, data, name);
         } else {
             DataFetcher.exportToJSON(data, name);

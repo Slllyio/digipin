@@ -61,6 +61,8 @@ def main():
         clips.append(dst)
 
     n = len(clips)
+    if n == 0:
+        raise SystemExit("No promo frames found in extras/out — run promo-stills.mjs first.")
     # Build the xfade chain.
     inputs = []
     for c in clips:

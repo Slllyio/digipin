@@ -377,7 +377,7 @@ const App = (() => {
                     if (HeatmapOverlay.getActive() === opt.key) {
                         HeatmapOverlay.clear();
                     } else {
-                        HeatmapOverlay.show(opt.key);
+                        HeatmapOverlay.show(opt.key, { reverse: !!opt.reverse });
                     }
                 });
                 heatmapDrop.appendChild(item);

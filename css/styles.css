@@ -1,5 +1,5 @@
 /* DigiPin Urban Intelligence — themable: Premium Dark (default) + Paper Light */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap');
+@import 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap';
 
 /* Skip link — off-screen until focused, then drops in at top-left. Neutral
    card colours so it reads in both themes. */
@@ -113,7 +113,7 @@ html[data-theme="light"] {
     --accent-cyan: #dd6b4a;     /* PRIMARY — Aino salmon-coral */
     --accent-purple: #2e3033;   /* SECONDARY — charcoal (no violet) */
     /* Aino editorial display serif for headings (light theme only). */
-    --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+    --font-display: 'Newsreader', 'Georgia', 'Times New Roman', serif;
     --accent-pink: #cf7d6a;     /* muted coral-rose */
     --accent-green: #5f8a5a;    /* sage (parks/green) */
     --accent-yellow: #a3781f;

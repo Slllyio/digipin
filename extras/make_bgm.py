@@ -32,7 +32,8 @@ FADE = 4.0   # seconds of fade in/out
 def generate(out_path=DEFAULT_OUT, seconds=360.0):
     """Render an ambient bed of `seconds` length to `out_path` (mp3)."""
     seconds = float(seconds)
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    out_dir = os.path.dirname(os.path.abspath(out_path))
+    os.makedirs(out_dir, exist_ok=True)
 
     inputs = []
     mix_labels = []

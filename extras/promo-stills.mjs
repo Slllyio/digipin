@@ -12,7 +12,7 @@
  */
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
-import { mkdirSync, rmSync } from 'node:fs';
+import { mkdirSync, rmSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -134,25 +134,29 @@ async function clearScores(page) {
 async function shot(page, name) { await page.screenshot({ path: join(OUT, name), timeout: 20000 }); }
 
 async function main() {
-    rmSync(OUT, { recursive: true, force: true });
+    // Only clear this script's own still frames — siblings (narration/, clips/,
+    // _seg/, the rendered MP4s) share extras/out and must survive.
     mkdirSync(OUT, { recursive: true });
+    for (const name of readdirSync(OUT)) {
+        if (name.toLowerCase().endsWith('.png')) rmSync(join(OUT, name), { force: true });
+    }
     const server = spawn('python3', ['serve.py', String(PORT)], { cwd: ROOT, stdio: 'ignore' });
-    await sleep(2500);
-
-    const browser = await chromium.launch({
-        headless: true,
-        args: ['--use-gl=angle', '--use-angle=swiftshader', '--ignore-gpu-blocklist',
-            '--enable-webgl', '--no-sandbox', '--disable-dev-shm-usage', '--ignore-certificate-errors'],
-    });
-    const context = await browser.newContext({
-        viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1, ignoreHTTPSErrors: true,
-    });
-    await context.addInitScript(() => { try { localStorage.setItem('digipin_onboarded', 'done'); } catch (e) { void e; } });
-    await context.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
-    const page = await context.newPage();
-    page.on('console', (m) => { if (m.type() === 'error') console.log('[page]', m.text().slice(0, 160)); });
-
+    let browser;
+    let context;
     try {
+        await sleep(2500);
+        browser = await chromium.launch({
+            headless: true,
+            args: ['--use-gl=angle', '--use-angle=swiftshader', '--ignore-gpu-blocklist',
+                '--enable-webgl', '--no-sandbox', '--disable-dev-shm-usage', '--ignore-certificate-errors'],
+        });
+        context = await browser.newContext({
+            viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1, ignoreHTTPSErrors: true,
+        });
+        await context.addInitScript(() => { try { localStorage.setItem('digipin_onboarded', 'done'); } catch (e) { void e; } });
+        await context.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
+        const page = await context.newPage();
+        page.on('console', (m) => { if (m.type() === 'error') console.log('[page]', m.text().slice(0, 160)); });
         // ---------- LIGHT (Aino) ----------
         await page.goto(BASE, { waitUntil: 'domcontentloaded' });
         await waitForMap(page);
@@ -259,8 +263,8 @@ async function main() {
         console.error('STILLS ERROR:', e);
         process.exitCode = 1;
     } finally {
-        await context.close();
-        await browser.close();
+        if (context) await context.close();
+        if (browser) await browser.close();
         try { server.kill('SIGTERM'); } catch (e) { void e; }
     }
 }

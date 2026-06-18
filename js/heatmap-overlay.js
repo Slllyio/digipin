@@ -23,7 +23,7 @@ const HeatmapOverlay = (() => {
         { key: 'walkability', label: 'Walkability' },
         { key: 'food_diversity', label: 'Food Diversity' },
         { key: 'noise_estimate', label: 'Quietness' },
-        { key: 'population_proxy', label: 'Population' },
+        { key: 'population_proxy', label: 'Population', reverse: true },
     ];
 
     // Color for a 0-100 value. Default ("good" scores): high = green. When
@@ -51,13 +51,22 @@ const HeatmapOverlay = (() => {
         el.style.cssText = 'position:absolute;right:14px;bottom:28px;z-index:5;'
             + 'background:rgba(20,22,26,.82);color:#fff;font:600 12px/1.3 Inter,system-ui,sans-serif;'
             + 'padding:10px 12px;border-radius:10px;box-shadow:0 6px 22px rgba(0,0,0,.35);pointer-events:none;';
-        el.innerHTML = `<div style="margin-bottom:6px;letter-spacing:.3px">${scoreKey} — taller = higher</div>`
-            + `<div style="height:9px;border-radius:5px;background:${ramp}"></div>`
-            + `<div style="display:flex;justify-content:space-between;margin-top:4px;opacity:.85;font-weight:500">`
-            + `<span>low</span><span>${hi}</span></div>`;
+        // Build with DOM nodes + textContent (scoreKey is never interpolated as HTML).
+        const title = document.createElement('div');
+        title.style.cssText = 'margin-bottom:6px;letter-spacing:.3px';
+        title.textContent = `${scoreKey} — taller = higher`;
+        const bar = document.createElement('div');
+        bar.style.cssText = `height:9px;border-radius:5px;background:${ramp}`;
+        const labels = document.createElement('div');
+        labels.style.cssText = 'display:flex;justify-content:space-between;margin-top:4px;opacity:.85;font-weight:500';
+        const lo = document.createElement('span'); lo.textContent = 'low';
+        const hiEl = document.createElement('span'); hiEl.textContent = hi;
+        labels.append(lo, hiEl);
+        el.append(title, bar, labels);
         host.appendChild(el);
     }
     function removeLegend() {
+        if (typeof document === 'undefined') return;
         const old = document.getElementById && document.getElementById(LEGEND_ID);
         if (old) old.remove();
     }

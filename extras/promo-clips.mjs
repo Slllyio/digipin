@@ -326,13 +326,14 @@ async function main() {
     mkdirSync(CLIPS, { recursive: true });
     const manifest = JSON.parse(readFileSync(join(OUT, 'narration', 'manifest.json'), 'utf-8'));
     const server = spawn('python3', ['serve.py', String(PORT)], { cwd: ROOT, stdio: 'ignore' });
-    await sleep(2500);
-    const browser = await chromium.launch({
-        headless: true,
-        args: ['--use-gl=angle', '--use-angle=swiftshader', '--ignore-gpu-blocklist',
-            '--enable-webgl', '--no-sandbox', '--disable-dev-shm-usage', '--ignore-certificate-errors'],
-    });
+    let browser;
     try {
+        await sleep(2500);
+        browser = await chromium.launch({
+            headless: true,
+            args: ['--use-gl=angle', '--use-angle=swiftshader', '--ignore-gpu-blocklist',
+                '--enable-webgl', '--no-sandbox', '--disable-dev-shm-usage', '--ignore-certificate-errors'],
+        });
         for (const scene of manifest) {
             if (only && !only.includes(scene.id)) continue;
             await recordScene(browser, scene);
@@ -342,7 +343,7 @@ async function main() {
         console.error('CLIPS ERROR:', e);
         process.exitCode = 1;
     } finally {
-        await browser.close();
+        if (browser) await browser.close();
         try { server.kill('SIGTERM'); } catch (e) { void e; }
     }
     // leftover stray webms (if any) — note names

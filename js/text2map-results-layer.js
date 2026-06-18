@@ -39,13 +39,28 @@ const Text2MapResultsLayer = (() => {
         ]];
     }
 
-    /** Bounds for one result: the true DIGIPIN cell, or a small square fallback. */
+    /** True when a bounds object has all four finite edges. */
+    function _validBounds(b) {
+        return b && ['south', 'north', 'west', 'east'].every(k => Number.isFinite(b[k]));
+    }
+
+    /** Bounds for one result: explicit bounds, the true DIGIPIN cell, or a square.
+     *  Precomputed lookups return region-level codes (e.g. 6-char), which
+     *  DigiPin.decode() rejects (it requires 10 chars) — so we fall back to
+     *  decodePartial() before the lat/lng square, otherwise every precomputed
+     *  result would shrink to the same ~90 m footprint. */
     function _boundsFor(r) {
-        if (r && r.code && typeof DigiPin !== 'undefined' && DigiPin.decode) {
+        if (!r) return null;
+        if (_validBounds(r.bounds)) return r.bounds;          // carried by the caller
+        if (r.code && typeof DigiPin !== 'undefined') {
             try {
-                const d = DigiPin.decode(r.code);
+                const d = DigiPin.decode && DigiPin.decode(r.code);   // full 10-char cell
                 if (d && d.bounds) return d.bounds;
-            } catch { /* not a decodable code — fall through to the square */ }
+            } catch { /* not a full code — try a partial/region decode */ }
+            try {
+                const d = DigiPin.decodePartial && DigiPin.decodePartial(r.code);
+                if (d && _validBounds(d.bounds)) return d.bounds;
+            } catch { /* not decodable — fall through to the square */ }
         }
         if (typeof r.lat === 'number' && typeof r.lng === 'number') {
             const e = 0.0008; // ~90m half-side, a sensible cell-ish footprint

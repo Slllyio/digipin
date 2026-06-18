@@ -92,6 +92,8 @@ def main():
         print("seg", sid, f"{dur:.1f}s")
 
     listf = os.path.join(SEG, "list.txt")
+    if not segs:
+        raise SystemExit("No scene segments were produced — check extras/out/clips and extras/out/narration.")
     with open(listf, "w") as f:
         for s in segs:
             f.write(f"file '{s}'\n")
@@ -107,6 +109,8 @@ def main():
         total_s = probe_dur(concat_target)
         music = args.music
         if music:
+            if not os.path.exists(music):
+                raise SystemExit(f"--music file not found: {music}")
             print(f"music bed: {music}")
         else:
             music = os.path.join(OUT, "bgm.mp3")

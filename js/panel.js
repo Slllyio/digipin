@@ -121,6 +121,9 @@ const Panel = (() => {
 
     function update(cell, data) {
         if (cell.code !== currentCell?.code) return;
+        // Drop any inundation overlay from a previous render before rebuilding;
+        // the widget re-attaches on demand via its "Show inundation" button.
+        if (typeof FloodInundation !== 'undefined') FloodInundation.detach();
         contentEl.innerHTML = buildFullHTML(cell, data);
         currentData = data;
 
@@ -217,6 +220,7 @@ const Panel = (() => {
 
     function close() {
         panelEl.classList.remove('open');
+        if (typeof FloodInundation !== 'undefined') FloodInundation.detach();
         currentCell = null;
         clearFeatureMarkers();
         // Return focus to wherever it was before the panel opened.

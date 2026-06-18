@@ -144,9 +144,15 @@ def _edge_tts_factory(voice, rate, pitch):
     except ImportError:
         return None
 
+    # edge-tts pins certifi; point it at the system CA bundle so synthesis works
+    # behind a TLS-inspecting proxy. `_SSL_CTX` is a private attribute, so guard
+    # it defensively — if a future edge-tts drops it, we just keep the default.
     ca = os.environ.get("SSL_CERT_FILE") or "/etc/ssl/certs/ca-certificates.crt"
-    if os.path.exists(ca):
-        ec._SSL_CTX = ssl.create_default_context(cafile=ca)
+    if os.path.exists(ca) and hasattr(ec, "_SSL_CTX"):
+        try:
+            ec._SSL_CTX = ssl.create_default_context(cafile=ca)
+        except Exception:  # noqa: BLE001 — never let TLS setup abort the run
+            pass
 
     def synth(text, path):
         async def _run():
@@ -195,7 +201,16 @@ def main():
     total = 0.0
     for sid, theme, motion, text in SCENES:
         mp3 = os.path.join(NARR, f"{sid}.mp3")
-        synth(text, mp3)
+        try:
+            synth(text, mp3)
+        except Exception as e:  # noqa: BLE001 — degrade mid-run instead of aborting
+            if voice_name != "gTTS:en-co.in":
+                print(f"[narration] edge-tts failed on {sid} ({type(e).__name__}) — switching to gTTS")
+                synth = _gtts_factory()
+                voice_name = "gTTS:en-co.in"
+                synth(text, mp3)
+            else:
+                raise
         d = dur(mp3)
         total += d
         manifest.append({"id": sid, "theme": theme, "motion": motion,

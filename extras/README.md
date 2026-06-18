@@ -8,6 +8,8 @@ walkthrough video and slide deck used to demo the product. Nothing in
 |---|---|
 | `record-video.mjs` | Playwright script that drives the live app and records a `.webm` walkthrough |
 | `promo-clips.mjs` | Records one short `.webm` per scene into `out/clips/` |
+| `promo-stills.mjs` | Captures deterministic 1080p still frames into `out/*.png` |
+| `build-promo.py` | Assembles the still frames into a crossfaded promo MP4 |
 | `narration.py` | Synthesises the per-scene narration with a **humanised neural voice** (edge-tts, Indian English) → `out/narration/` + `manifest.json` |
 | `make_bgm.py` | Renders a **royalty-free ambient music bed** from scratch with ffmpeg |
 | `build-narrated.py` | Assembles the scene clips + narration into the explainer MP4, mixing the music bed underneath with sidechain ducking |

@@ -244,6 +244,9 @@ def merge_video_audio(narrations, bgm_path=None):
         )
         print(f"  Background music: {bgm_path} (volume={BGM_VOLUME}, ducked)")
     else:
+        if bgm_path:
+            print(f"  [WARN] Background music not found: {bgm_path}. Continuing without music.")
+            bgm_path = None
         filter_parts.append("[voiceraw]aresample=44100[aout]")
 
     filter_graph = ";\n".join(filter_parts)

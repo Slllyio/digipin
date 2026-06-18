@@ -103,7 +103,14 @@ const FloodInundation = (() => {
             const payload = await r.json();
             const elev = payload && payload.elevation;
             if (!Array.isArray(elev)) throw new Error('elevation API: no data');
-            for (let k = 0; k < elev.length; k++) out[start + k] = elev[k];
+            if (elev.length !== la.length) {
+                throw new Error(`elevation API: expected ${la.length} points, got ${elev.length}`);
+            }
+            for (let k = 0; k < elev.length; k++) {
+                const v = Number(elev[k]);
+                if (!Number.isFinite(v)) throw new Error('elevation API: non-numeric value');
+                out[start + k] = v;
+            }
         }
         return out;
     }
@@ -178,8 +185,11 @@ const FloodInundation = (() => {
     function _rebuildFrames(extraDepthM) {
         if (!_state) return;
         const { field, cellElev, forecast } = _state;
+        const baseline = Number(forecast.baseline_m3s);
+        const safeBaseline = (Number.isFinite(baseline) && baseline > 0) ? baseline : null;
         _frameCanvases = forecast.days.map(day => {
-            const ratio = day.discharge / forecast.baseline_m3s;
+            const discharge = Number(day.discharge);
+            const ratio = (safeBaseline && Number.isFinite(discharge)) ? discharge / safeBaseline : 1;
             const baseDepth = Math.max(0, (ratio - 1) * DEPTH_PER_RATIO);
             const totalDepth = baseDepth + Math.max(0, extraDepthM || 0);
             return buildFrameCanvas(field, FIELD, cellElev, totalDepth, day.risk_color);

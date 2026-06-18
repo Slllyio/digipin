@@ -28,9 +28,17 @@ const AccessibilityOverlay = (() => {
     const LEGEND_ID = 'access-legend';
     const SAMPLE_RADIUS_M = 1000;   // fetch POIs up to 1 km so "gap" means a long walk
 
-    // OpenRouteService foot-walking travel-time matrix (free tier; shared key).
+    // OpenRouteService foot-walking travel-time matrix. The key is read from
+    // window.DIGIPIN_CONFIG.orsKey at deploy time (so operators inject their own
+    // rather than shipping a shared one); the bundled free-tier key is only a
+    // fallback, and a 403/timeout degrades gracefully to the detour estimate.
     const MATRIX_URL = 'https://api.openrouteservice.org/v2/matrix/foot-walking';
-    const ORS_KEY = '5b3ce3597851110001cf62487c0ef84637174f6f9f20656e6c0d8d8a';
+    const ORS_KEY_FALLBACK = '5b3ce3597851110001cf62487c0ef84637174f6f9f20656e6c0d8d8a';
+    function _orsKey() {
+        return (typeof window !== 'undefined' && window.DIGIPIN_CONFIG && window.DIGIPIN_CONFIG.orsKey)
+            || ORS_KEY_FALLBACK;
+    }
+    const MATRIX_TIMEOUT_MS = 15000;
     const WALK_SPEED_MPS = 1.4;     // ≈5 km/h, ORS foot-walking default
     const DETOUR_FACTOR  = 1.3;     // street circuity: real path > straight line
     const NEAREST_K = 4;            // candidate amenities kept per cell for the matrix
@@ -217,10 +225,17 @@ const AccessibilityOverlay = (() => {
         const locations = [...sources, ...destinations];
         const srcIdx = sources.map((_, i) => i);
         const dstIdx = destinations.map((_, i) => sources.length + i);
+        // Cap the wait so an unresponsive ORS can't hang the overlay; combine
+        // with the caller's abort signal when AbortSignal.any is available.
+        let fetchSignal = signal;
+        if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+            const timeout = AbortSignal.timeout(MATRIX_TIMEOUT_MS);
+            fetchSignal = (signal && AbortSignal.any) ? AbortSignal.any([signal, timeout]) : timeout;
+        }
         const resp = await fetch(MATRIX_URL, {
             method: 'POST',
-            signal,
-            headers: { 'Content-Type': 'application/json', 'Authorization': ORS_KEY },
+            signal: fetchSignal,
+            headers: { 'Content-Type': 'application/json', 'Authorization': _orsKey() },
             body: JSON.stringify({
                 locations,
                 sources: srcIdx,
