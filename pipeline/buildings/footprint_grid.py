@@ -33,6 +33,7 @@ log = logging.getLogger("pipeline.buildings.footprint_grid")
 
 
 def _cell_area_m2(lat, res_m):
+    """Ground area in m² of a square res_m cell (constant across the target grid)."""
     # square cells of res_m on the ground; identical everywhere on the target grid
     return float(res_m) * float(res_m)
 
@@ -105,6 +106,7 @@ def _load_features(path):
 
 
 def main():
+    """CLI: aggregate building footprints into a built-up density grid."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser()
     ap.add_argument("--in", dest="inp", required=True, help="footprints parquet/geojson")

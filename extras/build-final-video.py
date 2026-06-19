@@ -350,6 +350,7 @@ def merge_simple(narrations):
 # ════════════════════════════════════════════════════════════
 
 async def main():
+    """CLI: synthesize narration and assemble the final DigiPin explainer video."""
     import argparse
     parser = argparse.ArgumentParser(description="Build DigiPin video with narration audio")
     parser.add_argument("--voice", default=DEFAULT_VOICE, help=f"TTS voice (default: {DEFAULT_VOICE})")

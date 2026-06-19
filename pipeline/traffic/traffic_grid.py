@@ -44,6 +44,7 @@ def _seg_points(geom):
 
 
 def _length_m(geom):
+    """Total length in metres of a line geometry via haversine over its points."""
     pts = list(_seg_points(geom))
     total = 0.0
     for i in range(len(pts) - 1):
@@ -57,6 +58,7 @@ def _length_m(geom):
 
 
 def _cell_of(lng, lat, bbox, nx, ny):
+    """Return the row-major cell index for a lng/lat within bbox, or -1 if outside."""
     w, s, e, n = bbox
     if not (w <= lng < e and s <= lat < n):
         return -1
@@ -132,6 +134,7 @@ def bin_segments(features, bbox, res_m=200):
 
 
 def main():
+    """CLI: bin the road-network LOS layer into a row-major traffic grid."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser()
     ap.add_argument("--in", dest="inp", default=None, help="road_los.geojson")

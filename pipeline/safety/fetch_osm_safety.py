@@ -31,6 +31,7 @@ USER_AGENT = "DigiPinDigitalTwin/1.0 (research)"
 
 
 def _overpass_query(query, retries=3):
+    """POST a query to Overpass with retry/back-off on 429s and timeouts; return JSON."""
     import requests
     for attempt in range(retries):
         try:
@@ -50,6 +51,7 @@ def _overpass_query(query, retries=3):
 
 
 def _classify(tags):
+    """Map OSM tags to a safety feature category (police/level_crossing/barrier) or None."""
     if tags.get("amenity") == "police":
         return "police"
     if tags.get("railway") == "level_crossing":
@@ -60,6 +62,7 @@ def _classify(tags):
 
 
 def _to_features(elements):
+    """Convert Overpass elements into classified GeoJSON Point features."""
     feats = []
     for el in elements:
         lat = el.get("lat")
@@ -108,6 +111,7 @@ def fetch(region=None):
 
 
 def main():
+    """CLI: fetch the region's OSM safety features from Overpass and write geojson."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     argparse.ArgumentParser().parse_args()
     fetch()

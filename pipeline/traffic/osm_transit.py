@@ -36,6 +36,7 @@ def coverage_access(neighbourhood_stops):
 
 
 def _cell_of(lng, lat, grid):
+    """Return the (x, y) grid cell for a lng/lat, or (-1, -1) if out of bounds."""
     b = grid["bounds"]
     w, s, e, n = b["west"], b["south"], b["east"], b["north"]
     if not (w <= lng < e and s <= lat < n):
@@ -62,6 +63,7 @@ def bin_stop_counts(stops, grid):
 
 
 def _neighbourhood_sum(counts, nx, ny, idx):
+    """Sum stop counts over the cell's 3x3 neighbourhood (clamped to the grid)."""
     y, x = divmod(idx, nx)
     total = 0
     for dy in (-1, 0, 1):
@@ -94,6 +96,7 @@ def merge_into_grid(grid, stops):
 
 
 def _load_stops(path):
+    """Read a GeoJSON file and return its Point features as {lat, lng} dicts."""
     gj = json.loads(Path(path).read_text())
     out = []
     for f in gj.get("features", []):
@@ -105,6 +108,7 @@ def _load_stops(path):
 
 
 def main():
+    """CLI: merge OSM transit-stop coverage into an existing traffic grid."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser()
     ap.add_argument("--stops", default=None, help="osm_transit_<region>.geojson")

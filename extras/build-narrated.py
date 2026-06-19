@@ -33,6 +33,7 @@ MUSIC_VOLUME = 0.14   # bed level before ducking (narration sits at 1.0)
 
 
 def run(cmd):
+    """Run a subprocess command, raising SystemExit with stderr tail on failure."""
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         sys.stderr.write(r.stderr[-2500:])
@@ -40,6 +41,7 @@ def run(cmd):
 
 
 def probe_dur(path):
+    """Return the duration in seconds of a media file via ffprobe."""
     r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
                         "-of", "csv=p=0", path], capture_output=True, text=True)
     return float(r.stdout.strip())
@@ -65,6 +67,7 @@ def add_music(narrated, music_path, out_path, volume=MUSIC_VOLUME):
 
 
 def main():
+    """CLI: assemble the narrated explainer video with an optional music bed."""
     ap = argparse.ArgumentParser(description="Assemble the narrated explainer with a music bed")
     ap.add_argument("--music", default=None, help="background track (mp3/wav); default: auto-generated ambient bed")
     ap.add_argument("--no-music", action="store_true", help="skip the background music")

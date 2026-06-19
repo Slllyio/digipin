@@ -61,6 +61,7 @@ def s2_tokens(bbox):
 
 
 def _get_json(url, timeout=60):
+    """Fetch and parse a JSON document over HTTPS (rejects non-HTTPS URLs)."""
     if not url.startswith("https://"):     # defense-in-depth: no file://, ftp://, etc.
         raise ValueError(f"refusing non-HTTPS URL: {url}")
     with urllib.request.urlopen(url, timeout=timeout) as r:   # noqa: S310 (scheme checked)
@@ -84,6 +85,7 @@ def list_year_manifests(token, year):
 
 
 def _epsg_from_name(name):
+    """Parse the EPSG code out of a GCS manifest object name."""
     # v1/manifests/3b_EPSG_32643_2020_06_30.json → 32643
     return int(name.split("_EPSG_")[1].split("_")[0])
 
@@ -102,6 +104,7 @@ def tile_wgs84_bounds(source, epsg):
 
 
 def _intersects(a, b):
+    """True if two (west, south, east, north) bounding boxes overlap."""
     return not (a[2] <= b[0] or a[0] >= b[2] or a[3] <= b[1] or a[1] >= b[3])
 
 
@@ -125,6 +128,7 @@ def select_tiles(bbox, year):
 
 # ---------------------------------------------------------------- build COG
 def build_cog(bbox, res_m, out_path):
+    """Mosaic and reproject intersecting tiles into a clipped cloud-optimized GeoTIFF."""
     import numpy as np
     import rasterio
     from rasterio.transform import from_bounds
@@ -173,6 +177,7 @@ def build_cog(bbox, res_m, out_path):
 
 
 def main():
+    """CLI: build a multi-year temporal COG for the region from GCS tiles."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser()
     ap.add_argument("--res", type=int, default=100, help="output resolution in metres (default 100)")

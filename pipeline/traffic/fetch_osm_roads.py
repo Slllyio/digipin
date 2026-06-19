@@ -107,6 +107,7 @@ def fetch(region=None, classes=None):
 
 
 def main():
+    """CLI: fetch the region's OSM road network from Overpass and write geojson."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser()
     ap.add_argument("--classes", nargs="*", default=None,

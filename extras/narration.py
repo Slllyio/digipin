@@ -127,6 +127,7 @@ SCENES = [
 
 
 def dur(path):
+    """Return the duration in seconds of an audio file via ffprobe."""
     out = subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
          "-of", "csv=p=0", path], capture_output=True, text=True)
@@ -156,7 +157,9 @@ def _edge_tts_factory(voice, rate, pitch):
                   f"({type(e).__name__}); proceeding with default TLS")
 
     def synth(text, path):
+        """Synthesize `text` to `path` using the configured edge-tts voice."""
         async def _run():
+            """Await the edge-tts save coroutine for this utterance."""
             await edge_tts.Communicate(text, voice, rate=rate, pitch=pitch).save(path)
         asyncio.run(_run())
 
@@ -168,12 +171,14 @@ def _gtts_factory():
     from gtts import gTTS
 
     def synth(text, path):
+        """Synthesize `text` to `path` using the gTTS fallback voice."""
         gTTS(text, lang="en", tld="co.in").save(path)
 
     return synth
 
 
 def main():
+    """CLI: synthesize the explainer narration clips and write their manifest."""
     ap = argparse.ArgumentParser(description="Generate humanised explainer narration")
     ap.add_argument("--voice", default=DEFAULT_VOICE, help=f"edge-tts voice (default {DEFAULT_VOICE})")
     ap.add_argument("--rate", default=DEFAULT_RATE, help=f"speaking rate, e.g. -6%% (default {DEFAULT_RATE})")

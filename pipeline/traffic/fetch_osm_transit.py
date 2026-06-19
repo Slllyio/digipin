@@ -97,6 +97,7 @@ def fetch(region=None):
 
 
 def main():
+    """CLI: fetch the region's OSM transit stops from Overpass and write geojson."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     argparse.ArgumentParser().parse_args()
     fetch()

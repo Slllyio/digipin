@@ -43,6 +43,7 @@ POLICE_CAP_KM = 5.0             # reach saturates here (≥5 km ⇒ slowest)
 
 # ───────────────────────── pure helpers ─────────────────────────
 def _haversine_km(lat1, lng1, lat2, lng2):
+    """Great-circle distance in kilometres between two lat/lng points."""
     r = 6371.0
     dlat = math.radians(lat2 - lat1)
     dlng = math.radians(lng2 - lng1)
@@ -77,6 +78,7 @@ def access_class(risk, sealable=False):
 
 
 def _cell_xy(lng, lat, bounds, nx, ny):
+    """Return the (x, y) grid cell for a lng/lat within bounds, or (-1, -1) if outside."""
     w, s, e, n = bounds["west"], bounds["south"], bounds["east"], bounds["north"]
     if not (w <= lng < e and s <= lat < n):
         return -1, -1
@@ -141,6 +143,7 @@ def seal_analysis(G, nx, min_pocket=40, max_pocket=2000, max_seals=2):
 
 
 def _load_geojson(path):
+    """Read a GeoJSON file, or return an empty FeatureCollection if it is missing."""
     p = Path(path)
     return json.loads(p.read_text()) if p.exists() else {"features": []}
 
@@ -259,6 +262,7 @@ def run(region=None):
 
 
 def main():
+    """CLI: build the access-resilience (mobility) grid and print its summary."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     argparse.ArgumentParser().parse_args()
     print(run())

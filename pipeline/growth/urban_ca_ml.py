@@ -229,6 +229,7 @@ def run(region=None, horizon=2035, out=None):
 
 
 def main():
+    """CLI: run the CA-RF urban-growth hindcast/projection and write outputs."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser()
     ap.add_argument("--horizon", type=int, default=2035)

@@ -98,6 +98,7 @@ def _open_table(src, name):
 
 
 def _cell_of(lng, lat, grid):
+    """Return the row-major grid cell index for a lng/lat, or -1 if out of bounds."""
     b = grid["bounds"]
     w, s, e, n = b["west"], b["south"], b["east"], b["north"]
     if not (w <= lng < e and s <= lat < n):
@@ -155,6 +156,7 @@ def merge_into_grid(grid, src):
 
 
 def main():
+    """CLI: derive per-cell transit access from a GTFS feed and enrich the traffic grid."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser()
     ap.add_argument("--gtfs", required=True, help="GTFS dir or .zip")

@@ -76,6 +76,7 @@ def generate(out_path=DEFAULT_OUT, seconds=360.0):
 
 
 def main():
+    """CLI: generate an ambient background-music bed of the requested duration."""
     seconds = float(sys.argv[1]) if len(sys.argv) > 1 else 360.0
     out = sys.argv[2] if len(sys.argv) > 2 else DEFAULT_OUT
     path = generate(out, seconds)

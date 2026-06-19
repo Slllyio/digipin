@@ -77,6 +77,7 @@ def clip_resample(src_path, bbox, res_m, out_path):
 
 
 def main():
+    """CLI: clip and resample the SSP urban-expansion raster to the region grid."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser()
     src = ap.add_mutually_exclusive_group(required=True)

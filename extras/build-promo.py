@@ -31,6 +31,7 @@ W, H = 1920, 1080
 
 
 def run(cmd):
+    """Run a subprocess command, raising SystemExit with stderr tail on failure."""
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         sys.stderr.write(r.stderr[-2000:])
@@ -38,6 +39,7 @@ def run(cmd):
 
 
 def make_clip(src, dst, i):
+    """Render one still image into a 1080p video clip of fixed duration."""
     # Simple, fast, reliable: scale/crop to 1080p. Motion comes from the
     # crossfades between scenes (zoompan proved too slow in this environment).
     vf = (
@@ -50,6 +52,7 @@ def make_clip(src, dst, i):
 
 
 def main():
+    """CLI: build the promo video by clipping each still and crossfading them together."""
     clips = []
     for i, f in enumerate(FRAMES):
         src = os.path.join(OUT, f)

@@ -113,6 +113,7 @@ def criticality_label(betweenness, is_bridge):
 
 # ───────────────────────── geometry (stdlib only) ─────────────────────────
 def _haversine(lon1, lat1, lon2, lat2):
+    """Great-circle distance in metres between two lon/lat points."""
     rlat1, rlat2 = math.radians(lat1), math.radians(lat2)
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
@@ -121,6 +122,7 @@ def _haversine(lon1, lat1, lon2, lat2):
 
 
 def _endpoints(geom):
+    """Return rounded (start, end) coordinate tuples of a (Multi)LineString, or (None, None)."""
     gtype, coords = geom.get("type", ""), geom.get("coordinates", [])
     if gtype == "LineString" and len(coords) >= 2:
         start, end = coords[0][:2], coords[-1][:2]
@@ -132,6 +134,7 @@ def _endpoints(geom):
 
 
 def _length_m(geom):
+    """Total length in metres of a (Multi)LineString geometry."""
     gtype, coords = geom.get("type", ""), geom.get("coordinates", [])
     segs = [coords] if gtype == "LineString" else coords if gtype == "MultiLineString" else []
     total = 0.0
@@ -142,6 +145,7 @@ def _length_m(geom):
 
 
 def _midpoint(geom):
+    """Approximate midpoint coordinate of a (Multi)LineString geometry."""
     gtype, coords = geom.get("type", ""), geom.get("coordinates", [])
     if gtype == "MultiLineString":
         coords = [pt for seg in coords for pt in seg]
@@ -286,6 +290,7 @@ def run(region=None, roads_path=None, out_dir=None):
 
 
 def main():
+    """CLI: build the structural road-network level-of-service layer from OSM roads."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser()
     ap.add_argument("--roads", default=None, help="OSM roads geojson (default data/vectors/osm_roads_<region>.geojson)")
