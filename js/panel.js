@@ -33,10 +33,12 @@ const Panel = (() => {
     // freshness label on the snapshot-backed alert feed.
     const _HAZ_CLASS = { red: 'haz-red', orange: 'haz-orange', yellow: 'haz-yellow', green: 'haz-green' };
 
+    /** Render one severity-coloured hazard chip (icon + text). */
     function _hazChip(color, icon, text) {
         return `<span class="haz-chip ${_HAZ_CLASS[color] || 'haz-yellow'}">${icon} ${text}</span>`;
     }
 
+    /** Build the live-hazards strip (SACHET alerts, IMD warnings, quakes, flood) from realtime data; returns '' when none. */
     function buildHazardsHTML(data) {
         const rt = (data && data.realtime) || {};
         const chips = [];
@@ -81,6 +83,7 @@ const Panel = (() => {
         </div>`;
     }
 
+    /** Build the data-coverage strip showing which data sources loaded vs. failed; returns '' when no status present. */
     function buildSourceStatusHTML(data) {
         const st = data && data.sourceStatus;
         if (!st) return '';
@@ -97,12 +100,14 @@ const Panel = (() => {
         </div>`;
     }
 
+    /** Cache references to the panel's DOM elements. Call once after the DOM is ready. */
     function init() {
         panelEl = document.getElementById('detail-panel');
         contentEl = document.getElementById('panel-content');
         titleEl = document.getElementById('panel-title-text');
     }
 
+    /** Open the panel for a cell, show its loading state, and move focus into it. */
     function show(cell) {
         currentCell = cell;
         titleEl.textContent = cell.code;
@@ -119,6 +124,7 @@ const Panel = (() => {
         try { panelEl.focus({ preventScroll: true }); } catch { /* older browsers */ }
     }
 
+    /** Replace loading state with full feature content for the cell, then attach all sub-widgets and button handlers. Ignored if the cell is no longer current. */
     function update(cell, data) {
         if (cell.code !== currentCell?.code) return;
         // Drop any inundation overlay from a previous render before rebuilding;
@@ -215,6 +221,7 @@ const Panel = (() => {
         });
     }
 
+    /** Render an error state in the panel for a cell that failed to load. */
     function showError(cell, msg) {
         contentEl.innerHTML = `
             <div class="panel-header">
@@ -227,6 +234,7 @@ const Panel = (() => {
             </div>`;
     }
 
+    /** Close the panel, clear map markers, and restore focus to where it was before opening. */
     function close() {
         panelEl.classList.remove('open');
         if (typeof FloodInundation !== 'undefined') FloodInundation.detach();
@@ -239,6 +247,7 @@ const Panel = (() => {
         _restoreFocus = null;
     }
 
+    /** Build the loading-state markup (code, coords, spinner, category list) for a cell. */
     function buildLoadingHTML(cell) {
         return `
             <div class="panel-header">
@@ -259,6 +268,7 @@ const Panel = (() => {
             </div>`;
     }
 
+    /** Build the full panel markup for a cell: header, hazards, environment/AQI, solar, satellite, health, EV, IUDX, Wikipedia, action buttons, and category tabs. */
     function buildFullHTML(cell, data) {
         const addr = data.address || {};
         const env = data.environment || {};
@@ -457,6 +467,7 @@ const Panel = (() => {
         return html;
     }
 
+    /** Activate the category tab and section matching catKey, clearing any feature markers. */
     function switchTab(catKey) {
         clearFeatureMarkers();
         document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
@@ -465,6 +476,7 @@ const Panel = (() => {
         document.querySelector(`.cat-section[data-cat="${catKey}"]`)?.classList.add('active');
     }
 
+    /** Plot a feature card's items as numbered markers on the map and fit the view to them. */
     function showFeatureOnMap(card) {
         const itemsStr = card.getAttribute('data-items');
         if (!itemsStr) return;
@@ -505,6 +517,7 @@ const Panel = (() => {
         } catch (e) { /* invalid JSON — skip */ }
     }
 
+    /** Remove all feature markers currently shown on the map. */
     function clearFeatureMarkers() {
         if (_featureMarkers && _featureMarkers.length > 0) {
             _featureMarkers.forEach(m => m.remove());
@@ -512,6 +525,7 @@ const Panel = (() => {
         }
     }
 
+    /** Map an AQI value to its severity CSS class (good → hazardous). */
     function getAQIClass(aqi) {
         if (aqi <= 50) return 'aqi-good';
         if (aqi <= 100) return 'aqi-moderate';
@@ -520,6 +534,7 @@ const Panel = (() => {
         return 'aqi-hazardous';
     }
 
+    /** Copy a DigiPin code to the clipboard and briefly flash the copy button. */
     function copyCode(code) {
         navigator.clipboard.writeText(code).then(() => {
             const btn = document.querySelector('.copy-btn');
@@ -527,7 +542,9 @@ const Panel = (() => {
         });
     }
 
+    /** Return the cell currently displayed in the panel, or null. */
     function getCurrentCell() { return currentCell; }
+    /** Return the data currently displayed in the panel, or undefined. */
     function getCurrentData() { return currentData; }
 
     return { init, show, update, showError, close, switchTab, copyCode, getCurrentCell, getCurrentData };

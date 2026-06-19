@@ -59,8 +59,10 @@ const TrafficOverlay = (() => {
         return los ? los.grade : null;
     }
 
+    /** Current MapLibre map instance, or null if MapModule isn't ready. */
     function _map_() { return (typeof MapModule !== 'undefined') ? MapModule.getMap() : null; }
 
+    /** Add the source + LOS line / critical-link layers on first paint, or update data thereafter. */
     function _paint(geojson) {
         if (!_map.getSource(SOURCE_ID)) {
             _map.addSource(SOURCE_ID, { type: 'geojson', data: geojson });
@@ -90,8 +92,10 @@ const TrafficOverlay = (() => {
         }
     }
 
+    /** Open a popup describing the clicked road (name, LOS grade, risk, criticality). */
     function _onClick(e) {
         const p = (e.features && e.features[0] && e.features[0].properties) || {};
+        /** HTML-escape a value for safe insertion into the popup markup. */
         const esc = (v) => String(v == null ? '' : v)
             .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -121,6 +125,7 @@ const TrafficOverlay = (() => {
         return features;
     }
 
+    /** Fetch the precomputed LOS GeoJSON artifact, or null when absent/unreachable. */
     async function _loadPrecomputed(signal) {
         try {
             const r = await fetch(GEOJSON_URL, { cache: 'force-cache', signal });
@@ -131,6 +136,7 @@ const TrafficOverlay = (() => {
         } catch { return null; }
     }
 
+    /** Fallback: fetch the viewport's roads live from Overpass and build a class-based FeatureCollection. */
     async function _loadOverpass(signal) {
         const b = _map.getBounds();
         const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
@@ -157,6 +163,7 @@ const TrafficOverlay = (() => {
         return { type: 'FeatureCollection', features };
     }
 
+    /** Load roads (precomputed LOS, else Overpass fallback) and (re)paint the layer + legend. */
     async function refresh() {
         _map = _map_();
         if (!_map) return;
@@ -187,11 +194,13 @@ const TrafficOverlay = (() => {
     }
 
     // ---- legend ----
+    /** Theme palette, with a dark-mode fallback when Theme is unavailable. */
     function _palette() {
         if (typeof Theme !== 'undefined' && Theme.palette) return Theme.palette();
         return { primary: '#00f5ff', ink: '#e2e8f0', sub: '#94a3b8',
             surface: 'rgba(10,14,39,0.92)', border: 'rgba(255,255,255,0.12)' };
     }
+    /** Create or refresh the bottom-left legend listing LOS bands and mode note. */
     function _renderLegend() {
         let el = document.getElementById(LEGEND_ID);
         if (!el) {
@@ -216,9 +225,12 @@ const TrafficOverlay = (() => {
             + `<div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><span style="width:16px;height:4px;background:#000;opacity:.55;flex:none;"></span><span style="color:${pal.sub};">critical link</span></div>`
             + `<div style="margin-top:6px;color:${pal.sub};font-size:11px;">${note}</div>`;
     }
+    /** Remove the legend element if present. */
     function _removeLegend() { const el = document.getElementById(LEGEND_ID); if (el) el.remove(); }
 
+    /** Activate the overlay and load data. */
     function attach() { _active = true; refresh(); }
+    /** Deactivate the overlay: abort fetches, drop the popup/legend, and remove layers/source. */
     function detach() {
         _active = false;
         if (_abort) { _abort.abort(); _abort = null; }
@@ -230,7 +242,9 @@ const TrafficOverlay = (() => {
         if (map.getLayer(LINE_ID)) map.removeLayer(LINE_ID);
         if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
     }
+    /** Toggle the overlay on/off. */
     function toggle() { if (_active) detach(); else attach(); }
+    /** Whether the overlay is currently active. */
     function isVisible() { return _active; }
 
     return { attach, detach, toggle, isVisible, refresh, colorFor, gradeForRoad, BANDS };

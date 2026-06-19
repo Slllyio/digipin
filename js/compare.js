@@ -46,6 +46,7 @@ const Compare = (() => {
         App.showToast('Cell Pinned', `${cell.code} added to compare (${_pinned.length}/${MAX_PINS})`, 'success');
     }
 
+    /** Remove a pinned cell (by code), drop its marker and refresh the badge. */
     function unpin(code) {
         const idx = _pinned.findIndex(p => p.cell.code === code);
         if (idx === -1) return;
@@ -54,6 +55,7 @@ const Compare = (() => {
         updateBadge();
     }
 
+    /** Remove all pins and markers and close the compare panel. */
     function clearAll() {
         _pinned.forEach(p => p.marker.remove());
         _pinned = [];
@@ -61,6 +63,7 @@ const Compare = (() => {
         closePanel();
     }
 
+    /** Sync the toolbar badge count and muted/accent state to the pin count. */
     function updateBadge() {
         const badge = document.getElementById('compare-badge');
         if (badge) {
@@ -70,8 +73,10 @@ const Compare = (() => {
         }
     }
 
+    /** Get the array of pinned entries ({ cell, data, marker }). */
     function getPinned() { return _pinned; }
 
+    /** Open the compare panel and render it (requires 2+ pins). */
     function openPanel() {
         if (_pinned.length < 2) {
             App.showToast('Need 2+ Pins', 'Pin at least 2 cells to compare', 'warning');
@@ -83,11 +88,13 @@ const Compare = (() => {
         renderComparison();
     }
 
+    /** Close the compare panel. */
     function closePanel() {
         const panel = document.getElementById('compare-panel');
         if (panel) panel.classList.remove('open');
     }
 
+    /** Rebuild the compare table (verdict rows, per-score rows, overlay radar). */
     function renderComparison() {
         const container = document.getElementById('compare-content');
         if (!container) return;
@@ -184,6 +191,7 @@ const Compare = (() => {
         const outlooks = _pinned.map(p => RealEstateModel.outlook(p.data));
         const sub = (typeof Theme !== 'undefined' && Theme.palette) ? Theme.palette().sub : '#64748b';
 
+        /** Append one labelled verdict row, rendering a cell per pinned outlook. */
         const addRow = (label, render, opts = {}) => {
             const row = document.createElement('div');
             row.className = 'compare-row' + (opts.headerish ? ' compare-verdict-row' : '');
@@ -241,6 +249,7 @@ const Compare = (() => {
         }
     }
 
+    /** Draw the overlaid radar chart of common scores for all pinned cells. */
     function renderOverlayRadar() {
         const canvas = document.getElementById('compare-radar');
         if (!canvas || _pinned.length < 2) return;

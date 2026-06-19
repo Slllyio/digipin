@@ -51,8 +51,10 @@ const BuildingIntelligence = (() => {
     const CACHE_TTL = 10 * 60 * 1000; // 10 min (building data changes slowly)
     const MAX_CACHE = 50;
 
+    /** Build a cache key from a coordinate (rounded to ~11m precision). */
     function _cacheKey(lat, lng) { return `${lat.toFixed(4)},${lng.toFixed(4)}`; }
 
+    /** LRU cache read — returns cached data, or null if missing/expired. */
     function _cacheGet(key) {
         const e = _cache.get(key);
         if (!e) return null;
@@ -61,6 +63,7 @@ const BuildingIntelligence = (() => {
         return e.data;
     }
 
+    /** Cache write — evicts the oldest entry once MAX_CACHE is reached. */
     function _cacheSet(key, data) {
         if (_cache.size >= MAX_CACHE) _cache.delete(_cache.keys().next().value);
         _cache.set(key, { data, time: Date.now() });
@@ -275,6 +278,7 @@ out tags center;`;
         return result;
     }
 
+    /** Collapse a raw OSM building tag into a coarse usage category. */
     function normalizeBuildingType(raw) {
         const map = {
             'yes': 'unclassified', 'residential': 'residential', 'house': 'residential',
@@ -329,11 +333,14 @@ out tags center;`;
     }
 
     // === Tile math ===
+    /** Web-Mercator tile X index for a longitude at the given zoom. */
     function lon2tile(lon, zoom) { return Math.floor((lon + 180) / 360 * (1 << zoom)); }
+    /** Web-Mercator tile Y index for a latitude at the given zoom. */
     function lat2tile(lat, zoom) {
         return Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * (1 << zoom));
     }
 
+    /** Read the RGBA colour of the pixel in a tile bitmap covering a coordinate. */
     function samplePixelFromBitmap(bmp, lat, lng, zoom, tileX, tileY) {
         const canvas = document.createElement('canvas');
         canvas.width = bmp.width;
@@ -446,6 +453,7 @@ out tags center;`;
         };
     }
 
+    /** Shannon-entropy diversity of a count map, normalized to a 0-100 scale. */
     function computeShannon(obj) {
         const values = Object.values(obj).filter(v => v > 0);
         const total = values.reduce((s, v) => s + v, 0);
@@ -462,6 +470,7 @@ out tags center;`;
         return +(Math.min(100, (entropy / maxEntropy) * 100)).toFixed(0);
     }
 
+    /** Label the urban form from LCZ class, falling back to building heuristics. */
     function classifyUrbanForm(buildings, lcz) {
         if (!buildings.totalCount) return 'Undeveloped';
 
@@ -485,6 +494,7 @@ out tags center;`;
      * Compute building-specific intelligence scores (0-100)
      */
     function computeBuildingScores(buildings, lcz, metrics) {
+        /** Log-compress a value against a soft max into a 0-100 score. */
         const normLog = (val, max) => {
             if (val <= 0) return 0;
             return Math.min(100, Math.round((Math.log(1 + val) / Math.log(1 + max)) * 100));
@@ -534,6 +544,7 @@ out tags center;`;
         };
     }
 
+    /** Score 0-100 by weighting premium/basic/low construction materials. */
     function computeMaterialQuality(buildings) {
         const total = Object.values(buildings.materials).reduce((s, v) => s + v, 0);
         if (total === 0) return 50; // default when no data
@@ -551,6 +562,7 @@ out tags center;`;
         return Math.min(100, Math.round(((premium * 3 + basic * 2 + low * 0.5) / total) * 33));
     }
 
+    /** Score 0-100 for greenfield/vertical development headroom (low density, low FSI, vacant LCZ). */
     function computeDevPotential(buildings, lcz, metrics) {
         let score = 50; // baseline
 
@@ -577,6 +589,7 @@ out tags center;`;
         return Math.max(0, Math.min(100, score));
     }
 
+    /** Score 0-100 for redevelopment likelihood (old stock, dense-but-low, poor materials). */
     function computeRedevelopmentIndex(buildings, metrics) {
         let score = 30; // baseline
 
@@ -603,6 +616,7 @@ out tags center;`;
         return `${LCZ_TMS}/{z}/{x}/{y}.png`;
     }
 
+    /** Zeroed building-data shape used when the Overpass fetch fails. */
     function getEmptyBuildingData() {
         return {
             totalCount: 0, withHeight: 0, withLevels: 0, withMaterial: 0, withAge: 0,

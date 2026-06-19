@@ -24,6 +24,7 @@ const RealtimeGrowth = (() => {
     let _reraCache = null;
     let _reraFetchedAt = 0;
 
+    /** Great-circle distance in km between two lat/lng points. */
     function _haversineKm(lat1, lng1, lat2, lng2) {
         const R = 6371;
         const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -34,6 +35,7 @@ const RealtimeGrowth = (() => {
         return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
     }
 
+    /** Read the COG at `url` and return its per-band values at lat/lng, or null. */
     async function _readCog(url, lat, lng) {
         // Uses georaster.browser.bundle.min.js loaded by index.html.
         // Returns Array<number> (one value per band) or null on failure.
@@ -56,6 +58,7 @@ const RealtimeGrowth = (() => {
         }
     }
 
+    /** Load the RERA snapshot JSON, TTL-cached (incl. negative results). */
     async function _loadReraSnapshot() {
         // RERA scraper is deferred (spec Phase 3). The snapshot file does
         // not exist yet — cache the negative result so we don't 404 on
@@ -75,6 +78,7 @@ const RealtimeGrowth = (() => {
         }
     }
 
+    /** RERA projects within RERA_RADIUS_KM of lat/lng (value/age/distance), or null. */
     async function _reraNearby(lat, lng) {
         const snap = await _loadReraSnapshot();
         if (!snap || !Array.isArray(snap.records)) return null;
@@ -154,7 +158,9 @@ const RealtimeGrowth = (() => {
         }
         const year_5 = { composite: Math.round(year_5_value), effective_weights: nowcast.effective_weights };
 
+        /** Build one horizon's schema entry (composite, confidence band, sub-scores). */
         function buildHorizon(c, horizon, sub) {
+            /** Trend arrow for a sub-score: ▲ rising, ▶ flat-ish, ▽ falling, — none. */
             const direction = (s) => s == null ? '—' : (s > 60 ? '▲' : s > 45 ? '▶' : '▽');
             return {
                 composite: c.composite,

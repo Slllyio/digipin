@@ -41,6 +41,7 @@ const RealEstateWidget = (() => {
         else containerEl.appendChild(wrap);
     }
 
+    /** Render one driver/drag row (▲ green for positive sign, ▼ red for negative). */
     function _driverRow(d, sign) {
         const color = sign > 0 ? 'var(--accent-green,#1a9850)' : 'var(--accent-red,#b3392f)';
         const mark = sign > 0 ? '▲' : '▼';
@@ -49,6 +50,7 @@ const RealEstateWidget = (() => {
             <span style="color:${color};font-weight:600;">${_esc(d.value)}</span></div>`;
     }
 
+    /** Render (idempotently) the Property Intelligence card into the cell panel. */
     function attachTo(containerEl, data, cell) {
         if (!containerEl) return;
         containerEl.querySelectorAll('[data-re-widget]').forEach(e => e.remove());

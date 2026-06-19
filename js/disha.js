@@ -155,6 +155,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
     // ===== RICH CONTEXT BUILDER =====
     // Builds structured context with optional section filtering
     function buildContext(cell, data, sections) {
+        /** True when a section should be included (no filter list, or list contains it). */
         const include = (name) => !sections || sections.includes(name);
         const lines = [];
 
@@ -608,6 +609,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return 'local';
     }
 
+    /** Map a free-text question to the QueryEngine query id whose keywords it matches (defaults to residential). */
     function matchQueryId(question) {
         const q = question.toLowerCase();
         const mappings = [
@@ -721,6 +723,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return results.slice(0, 5);
     }
 
+    /** Format ranked city-scan results into a text context block for the LLM. */
     function buildCityScanContext(results, question) {
         const lines = [];
         lines.push(`=== CITY-LEVEL SCAN RESULTS ===`);
@@ -754,6 +757,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         }
     }
 
+    /** Reset multi-turn conversation memory. */
     function clearHistory() {
         _conversationHistory = [];
     }
@@ -899,6 +903,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         }
     }
 
+    /** Abort the in-flight streaming request, if any. */
     function cancel() {
         if (_abortController) {
             _abortController.abort();
@@ -993,6 +998,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return 'Severe';
     }
 
+    /** True when an AI provider is connected and ready. */
     function isConnected() {
         return DISHAProviders.isConnected();
     }

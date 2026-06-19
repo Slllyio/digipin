@@ -328,6 +328,7 @@ const DataFetcher = (() => {
         return `${lat.toFixed(4)},${lng.toFixed(4)},${radius}`;
     }
 
+    /** LRU read: returns cached data (refreshing recency) or null if missing/expired. */
     function _cacheGet(key) {
         const entry = _cache.get(key);
         if (!entry) return null;
@@ -341,6 +342,7 @@ const DataFetcher = (() => {
     }
 
     let _idbWarned = false;
+    /** LRU write (evicting the oldest at capacity) with async write-through to IndexedDB. */
     function _cacheSet(key, data) {
         if (_cache.size >= MAX_CACHE) {
             const oldest = _cache.keys().next().value;
@@ -367,6 +369,7 @@ const DataFetcher = (() => {
     const IDB_MAX_ENTRIES = 500;
     let _idb = null;
 
+    /** Open (and lazily create) the IndexedDB cache database; resolves the connection. */
     function _idbOpen() {
         if (_idb) return Promise.resolve(_idb);
         return new Promise((resolve, reject) => {
@@ -382,6 +385,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Read a key from IndexedDB; returns its data, or null when missing/expired/error. */
     async function _idbGet(key) {
         const db = await _idbOpen();
         return new Promise((resolve) => {
@@ -401,6 +405,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Persist a key/data entry to IndexedDB, trimming the store when over the size cap. */
     async function _idbSet(key, data) {
         const db = await _idbOpen();
         return new Promise((resolve, reject) => {
@@ -419,6 +424,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Delete a single key from the IndexedDB cache (best-effort). */
     async function _idbDelete(key) {
         const db = await _idbOpen();
         return new Promise((resolve) => {
@@ -429,6 +435,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Evict up to `count` oldest entries via cursor; resolves with the number deleted. */
     async function _idbEvict(count) {
         const db = await _idbOpen();
         return new Promise((resolve) => {
@@ -449,6 +456,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Clear all entries from the IndexedDB cache (best-effort). */
     async function _idbClear() {
         const db = await _idbOpen();
         return new Promise((resolve) => {
@@ -469,6 +477,8 @@ const DataFetcher = (() => {
     // degrades gracefully instead of freezing.
     const FETCH_TIMEOUT_MS = 15000;
 
+    /** Fetch JSON with per-attempt timeout and exponential-backoff retries; honours a
+     *  caller abort signal. Throws the last error after all retries are exhausted. */
     async function fetchWithRetry(url, options = {}, retries = 3, backoff = 1000, timeout = FETCH_TIMEOUT_MS) {
         let lastError;
         for (let i = 0; i < retries; i++) {
@@ -623,6 +633,8 @@ const DataFetcher = (() => {
         return p;
     }
 
+    /** Public entry point: return all features for a cell, serving cache and
+     *  coalescing concurrent identical requests onto one in-flight fetch. */
     async function fetchAllFeatures(lat, lng, radius = 500, sharedAddress = null) {
         const key = _cacheKey(lat, lng, radius);
         const cached = _cacheGet(key);
@@ -630,6 +642,8 @@ const DataFetcher = (() => {
         return _coalesce(_inflight, key, () => _doFetchAllFeatures(lat, lng, radius, sharedAddress));
     }
 
+    /** Core fetch: check caches, fan out all data sources in parallel, assemble the
+     *  result with computed scores + per-source status, then cache and return it. */
     async function _doFetchAllFeatures(lat, lng, radius = 500, sharedAddress = null) {
         const key = _cacheKey(lat, lng, radius);
         const cached = _cacheGet(key);
@@ -682,6 +696,8 @@ const DataFetcher = (() => {
         // staleWhileRevalidate: a repeat visit past the TTL gets last reading
         // instantly (no spinner) while a fresh one loads in the background —
         // these sources change slowly relative to their TTLs.
+        /** Per-source memoize keyed by name+lat/lng (stale-while-revalidate), or
+         *  run the factory directly when the shared cache is unavailable. */
         const memo = (name, ttlMs, factory) => cache
             ? cache.memoize(cache.keyFor(name, lat, lng), ttlMs, factory, { staleWhileRevalidate: true })
             : factory();
@@ -978,6 +994,7 @@ const DataFetcher = (() => {
             ? 'ok' : 'unavailable';
     }
 
+    /** Query Overpass for all OSM elements within `radius` of the cell. */
     async function fetchOSMData(lat, lng, radius) {
         const query = buildOverpassQuery(lat, lng, radius);
         return fetchWithRetry(OVERPASS_URL, {
@@ -987,6 +1004,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Fetch current weather from Open-Meteo; returns normalised fields, {} on failure. */
     async function fetchWeather(lat, lng) {
         const url = `${OPEN_METEO_URL}?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,uv_index&timezone=auto`;
         try {
@@ -1061,6 +1079,7 @@ const DataFetcher = (() => {
         const best = records.find(r => r.pollutant_avg && parseFloat(r.pollutant_avg) > 0) || records[0];
         const pm25 = records.find(r => r.pollutant_id === 'PM2.5');
         const pm10 = records.find(r => r.pollutant_id === 'PM10');
+        /** Find the record for a given CPCB pollutant_id, or undefined. */
         const findPollutant = (id) => records.find(r => r.pollutant_id === id);
         const no2 = findPollutant('NO2');
         const so2 = findPollutant('SO2');
@@ -1116,6 +1135,7 @@ const DataFetcher = (() => {
         return c > 600 ? 500 : null;   // above-scale readings cap at 500
     }
 
+    /** Reverse-geocode a lat/lng via Nominatim into a structured address; {} on failure. */
     async function fetchAddress(lat, lng) {
         try {
             const url = `${NOMINATIM_URL}?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
@@ -1219,6 +1239,7 @@ const DataFetcher = (() => {
             end.setUTCDate(end.getUTCDate() - 7);
             const start = new Date(end);
             start.setUTCFullYear(start.getUTCFullYear() - 1);
+            /** Format a Date as a YYYY-MM-DD string for the archive API. */
             const fmt = (d) => d.toISOString().slice(0, 10);
             const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lng}&start_date=${fmt(start)}&end_date=${fmt(end)}&daily=precipitation_sum&timezone=Asia%2FKolkata`;
             const data = await fetchWithRetry(url);
@@ -1344,7 +1365,9 @@ const DataFetcher = (() => {
             }
 
             // Haversine distance in km
+            /** Degrees to radians. */
             const toRad = d => d * Math.PI / 180;
+            /** Great-circle distance in km between two lat/lng points. */
             const haversine = (lat1, lng1, lat2, lng2) => {
                 const R = 6371;
                 const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
@@ -1528,7 +1551,9 @@ const DataFetcher = (() => {
             const records = data.records || [];
             if (records.length === 0) return null;
 
+            /** Degrees to radians. */
             const toRad = d => d * Math.PI / 180;
+            /** Great-circle distance in km between two lat/lng points. */
             const haversine = (lat1, lng1, lat2, lng2) => {
                 const R = 6371;
                 const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
@@ -1623,6 +1648,7 @@ const DataFetcher = (() => {
         } catch { return null; }
     }
 
+    /** Map an Open-Meteo WMO weather code to a human-readable description. */
     function getWeatherDescription(code) {
         const d = {
             0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
@@ -1678,6 +1704,7 @@ const DataFetcher = (() => {
      */
     function computeScores(data) {
         const cats = data.categories || {};
+        /** Count for a category/feature, or 0 when absent. */
         const get = (catKey, featureKey) => {
             return cats[catKey]?.features?.[featureKey]?.count || 0;
         };
@@ -1831,6 +1858,7 @@ const DataFetcher = (() => {
      */
     function computeSafetyScore(data) {
         const cats = data.categories || {};
+        /** Count for a category/feature, or 0 when absent. */
         const get = (catKey, featureKey) => cats[catKey]?.features?.[featureKey]?.count || 0;
 
         const lamps = get('infrastructure', 'street_lamps');
@@ -1862,6 +1890,7 @@ const DataFetcher = (() => {
      */
     function computeQuietnessScore(data) {
         const cats = data.categories || {};
+        /** Count for a category/feature, or 0 when absent. */
         const get = (catKey, featureKey) => cats[catKey]?.features?.[featureKey]?.count || 0;
 
         // Noise sources with calibrated weights
@@ -1904,6 +1933,7 @@ const DataFetcher = (() => {
 
         // Fallback: building density proxy
         const cats = data.categories || {};
+        /** Count for a category/feature, or 0 when absent. */
         const get = (catKey, featureKey) => cats[catKey]?.features?.[featureKey]?.count || 0;
 
         const resBuildings = get('landuse', 'res_buildings');
@@ -1922,6 +1952,7 @@ const DataFetcher = (() => {
      */
     function computeFloodRisk(data) {
         const cats = data.categories || {};
+        /** Count for a category/feature, or 0 when absent. */
         const get = (catKey, featureKey) => cats[catKey]?.features?.[featureKey]?.count || 0;
         const elev = data.environment?.elevation;
 
@@ -1944,6 +1975,7 @@ const DataFetcher = (() => {
 
     // ===== EXPORT FUNCTIONS =====
 
+    /** Trigger a browser download of `data` as a pretty-printed JSON file. */
     function exportToJSON(data, filename = 'digipin_data.json') {
         const json = JSON.stringify(data, null, 2);
         const blob = new Blob([json], { type: 'application/json' });
@@ -1955,6 +1987,7 @@ const DataFetcher = (() => {
         URL.revokeObjectURL(url);
     }
 
+    /** Trigger a browser download of the cell's non-zero feature counts as CSV. */
     function exportToCSV(data, filename = 'digipin_features.csv') {
         let csv = 'Category,Feature Key,Feature Name,Count\n';
         for (const [, cat] of Object.entries(data.categories)) {
@@ -2029,6 +2062,7 @@ const DataFetcher = (() => {
             })));
     }
 
+    /** Trigger a browser download of a FeatureCollection as a .geojson file. */
     function _downloadGeoJSON(fc, filename) {
         const blob = new Blob([JSON.stringify(fc, null, 2)], { type: 'application/geo+json' });
         const url = URL.createObjectURL(blob);
@@ -2039,10 +2073,12 @@ const DataFetcher = (() => {
         URL.revokeObjectURL(url);
     }
 
+    /** Download a single cell's data as a one-feature GeoJSON file. */
     function exportToGeoJSON(data, filename = 'digipin_cell.geojson') {
         _downloadGeoJSON(cellToGeoJSON(data), filename);
     }
 
+    /** Download ranked Text2Map / city-scan rows as a GeoJSON FeatureCollection. */
     function exportRankedToGeoJSON(results, filename = 'digipin_ranked.geojson') {
         _downloadGeoJSON(rankedToGeoJSON(results), filename);
     }

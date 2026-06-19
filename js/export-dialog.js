@@ -29,6 +29,7 @@ const ExportDialog = (() => {
         return { featureTypes, featureTotal, scores, sources };
     }
 
+    /** Build the download filename for a format + DIGIPIN code. */
     function filename(format, code) {
         const clean = (code || 'cell').replace(/-/g, '');
         const ext = format === 'csv' ? 'csv' : format === 'geojson' ? 'geojson' : 'json';
@@ -81,6 +82,7 @@ const ExportDialog = (() => {
         },
     ];
 
+    /** Dispatch the chosen format to the matching DataFetcher/DTDLExport writer. */
     function _doExport(format, cell, data) {
         const name = filename(format, cell.code);
         if (format === 'geojson') {
@@ -99,10 +101,12 @@ const ExportDialog = (() => {
         }
     }
 
+    /** Remove the export dialog from the DOM if open. */
     function close() {
         document.getElementById('export-dialog-backdrop')?.remove();
     }
 
+    /** Build and show the export dialog (tabs, summary, filename, Export button). */
     function open(cell, data) {
         close();
         const summary = summarize(data);
@@ -138,6 +142,7 @@ const ExportDialog = (() => {
         const exportBtn = document.createElement('button');
         exportBtn.className = 'ed-export-btn';
 
+        /** Re-render the body for the active format tab (desc, items, link, filename). */
         function render() {
             const fmt = FORMATS.find(f => f.id === active);
             tabs.querySelectorAll('.ed-tab').forEach(t =>

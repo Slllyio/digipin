@@ -181,6 +181,7 @@ const Text2MapResultsLayer = (() => {
         return fc.features.length;
     }
 
+    /** Click handler: fly to the centre of the clicked result cell. */
     function _onClick(e) {
         const f = e.features && e.features[0];
         if (!f || typeof MapModule === 'undefined' || !MapModule.flyTo) return;
@@ -191,9 +192,12 @@ const Text2MapResultsLayer = (() => {
         MapModule.flyTo(lat, lng, 17);
     }
 
+    /** Hover-enter handler: show the pointer cursor over result cells. */
     function _onEnter() { if (_map) _map.getCanvas().style.cursor = 'pointer'; }
+    /** Hover-leave handler: restore the default cursor. */
     function _onLeave() { if (_map) _map.getCanvas().style.cursor = ''; }
 
+    /** True while result cells are drawn on the map. */
     function isActive() { return _active; }
 
     return { show, clear, isActive, _toGeoJSON };

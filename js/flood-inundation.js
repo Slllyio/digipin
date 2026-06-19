@@ -175,6 +175,7 @@ const FloodInundation = (() => {
         });
     }
 
+    /** Blit the pre-rendered frame `idx` onto the live source canvas. */
     function _drawFrame(idx) {
         if (!_liveCanvas || !_frameCanvases[idx]) return;
         const ctx = _liveCanvas.getContext('2d');
@@ -182,6 +183,7 @@ const FloodInundation = (() => {
         ctx.drawImage(_frameCanvases[idx], 0, 0);
     }
 
+    /** Rebuild the per-day frame canvases from cached state, adding `extraDepthM` of rise. */
     function _rebuildFrames(extraDepthM) {
         if (!_state) return;
         const { field, cellElev, forecast } = _state;
@@ -245,6 +247,7 @@ const FloodInundation = (() => {
         _drawFrame(_frameIdx);
     }
 
+    /** Stop the animation and remove the layer, source, and live canvas. Idempotent. */
     function detach() {
         if (_animTimer) { clearInterval(_animTimer); _animTimer = null; }
         _attachedCellCode = null;

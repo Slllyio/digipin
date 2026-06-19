@@ -6,6 +6,7 @@
  * access resilience for authorities/emergency planning (docs/MOBILITY_MODEL.md).
  */
 const RealtimeMobility = (() => {
+    /** Async — sample the precomputed MobilityGrid at a lat/lng; null on miss/error. */
     async function fetchCell(lat, lng) {
         if (typeof MobilityGrid === 'undefined') return null;
         try {
@@ -16,6 +17,7 @@ const RealtimeMobility = (() => {
         }
     }
 
+    /** Pure — collapse grid signals to the result.realtime.mobility schema; null when unscored. */
     function scoreCell(signals) {
         if (!signals || signals.mobility_risk == null) return null;
         return {

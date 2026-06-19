@@ -65,12 +65,14 @@ const HeatmapOverlay = (() => {
         el.append(title, bar, labels);
         host.appendChild(el);
     }
+    /** Remove the map-corner legend element if present. */
     function removeLegend() {
         if (typeof document === 'undefined') return;
         const old = document.getElementById && document.getElementById(LEGEND_ID);
         if (old) old.remove();
     }
 
+    /** Paint the 3D score heatmap for scoreKey over the current viewport, using precomputed tiles when available or sampling live otherwise. */
     async function show(scoreKey, opts = {}) {
         clear();
         _activeScore = scoreKey;
@@ -200,6 +202,7 @@ const HeatmapOverlay = (() => {
         }
     }
 
+    /** Abort any in-flight sampling, empty the overlay source, remove the legend, and reset state. */
     function clear() {
         if (_abortController) { _abortController.abort(); _abortController = null; }
         if (_map && _map.getSource(SOURCE_ID)) {
@@ -211,7 +214,9 @@ const HeatmapOverlay = (() => {
         _reverse = false;
     }
 
+    /** Return the list of selectable score options for the heatmap. */
     function getOptions() { return SCORE_OPTIONS; }
+    /** Return the currently active score key, or null if no overlay is shown. */
     function getActive() { return _activeScore; }
 
     return { show, clear, getOptions, getActive };

@@ -55,6 +55,7 @@ const FootprintGrid = (() => {
         return _loading;
     }
 
+    /** Load (if needed) then sample the grid at a lat/lng; null when unavailable. */
     async function sampleAt(lat, lng, url) {
         const g = await load(url);
         return g ? sample(g, lat, lng) : null;

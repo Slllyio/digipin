@@ -34,6 +34,7 @@ const AccessibilityOverlay = (() => {
     // fallback, and a 403/timeout degrades gracefully to the detour estimate.
     const MATRIX_URL = 'https://api.openrouteservice.org/v2/matrix/foot-walking';
     const ORS_KEY_FALLBACK = '5b3ce3597851110001cf62487c0ef84637174f6f9f20656e6c0d8d8a';
+    /** OpenRouteService API key: operator-injected config key, else the bundled fallback. */
     function _orsKey() {
         return (typeof window !== 'undefined' && window.DIGIPIN_CONFIG && window.DIGIPIN_CONFIG.orsKey)
             || ORS_KEY_FALLBACK;
@@ -82,6 +83,7 @@ const AccessibilityOverlay = (() => {
     /** Great-circle distance in metres. */
     function haversineM(aLat, aLng, bLat, bLng) {
         const R = 6371000;
+        /** Convert degrees to radians. */
         const toRad = (d) => d * Math.PI / 180;
         const dLat = toRad(bLat - aLat);
         const dLng = toRad(bLng - aLng);
@@ -151,10 +153,12 @@ const AccessibilityOverlay = (() => {
         return [];
     }
 
+    /** Human-readable label for an amenity key (falls back to the key itself). */
     function _labelFor(key) {
         return (AMENITY_OPTIONS.find(o => o.key === key) || {}).label || key;
     }
 
+    /** Add the source + fill layer once (idempotent). */
     function _ensureLayer() {
         if (!_map.getSource(SOURCE_ID)) {
             _map.addSource(SOURCE_ID, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
@@ -248,6 +252,7 @@ const AccessibilityOverlay = (() => {
         return data && Array.isArray(data.durations) ? data.durations : null;
     }
 
+    /** Grid-sample the viewport: paint instant straight-line estimates, then refine with the ORS walking matrix. */
     async function _sample() {
         if (_abort) _abort.abort();
         const myAbort = new AbortController();
@@ -333,10 +338,12 @@ const AccessibilityOverlay = (() => {
         }
     }
 
+    /** Theme palette, with a dark-mode fallback when Theme is unavailable. */
     function _palette() {
         if (typeof Theme !== 'undefined' && Theme.palette) return Theme.palette();
         return { primary: '#00f5ff', sub: '#9bd', ink: '#cfe', surface: 'rgba(10,14,39,0.92)', surfaceSolid: '#0a0e27', border: 'rgba(255,255,255,0.12)' };
     }
+    /** Create or refresh the legend: amenity selector, walking-time bands, and data-source note. */
     function _renderLegend() {
         let el = document.getElementById(LEGEND_ID);
         if (!el) {
@@ -376,8 +383,10 @@ const AccessibilityOverlay = (() => {
             _sample();
         };
     }
+    /** Remove the legend element if present. */
     function _removeLegend() { const el = document.getElementById(LEGEND_ID); if (el) el.remove(); }
 
+    /** Activate the overlay: bind the map, ensure the layer, render the legend, and sample the viewport. */
     function attach() {
         if (typeof MapModule === 'undefined') return;
         _map = MapModule.getMap();
@@ -388,6 +397,7 @@ const AccessibilityOverlay = (() => {
         _sample();
     }
 
+    /** Deactivate the overlay: abort fetches, drop the legend, and remove the layer/source. */
     function detach() {
         _active = false;
         if (_abort) { _abort.abort(); _abort = null; }
@@ -398,6 +408,7 @@ const AccessibilityOverlay = (() => {
         }
     }
 
+    /** Toggle the overlay on/off. */
     function toggle() { if (_active) detach(); else attach(); }
 
     return {

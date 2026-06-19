@@ -5,6 +5,7 @@
  * TrafficWidget; honest defensive framing in Methods.
  */
 const MobilityWidget = (() => {
+    /** Map an access class to its badge colour + label, with a neutral fallback. */
     function _info(cls) {
         if (typeof MobilityScore !== 'undefined') {
             const c = MobilityScore.CLASSES.find(x => x.key === cls);
@@ -12,12 +13,14 @@ const MobilityWidget = (() => {
         }
         return { color: '#9ca3af', label: cls || 'Unknown' };
     }
+    /** HTML-escape a value for safe interpolation into widget markup. */
     function _esc(v) {
         return String(v == null ? '' : v)
             .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    /** Render the mobility (law-and-order access) card into `containerEl`, or an unavailable note. */
     function attachTo(containerEl, mobility, cell) {
         if (!containerEl) return;
         containerEl.querySelectorAll('[data-mobility-widget]').forEach(e => e.remove());

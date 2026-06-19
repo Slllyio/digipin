@@ -30,6 +30,7 @@ const TrafficGrid = (() => {
     function sample(grid, lat, lng) {
         const i = indexFor(grid, lat, lng);
         if (i < 0) return null;
+        /** Value of array `arr` at this cell index, or null when absent/missing. */
         const at = (arr) => (arr && arr[i] != null) ? arr[i] : null;
         return {
             congestion_risk: at(grid.congestion_risk),
@@ -65,6 +66,7 @@ const TrafficGrid = (() => {
         return _loading;
     }
 
+    /** Load (if needed) then sample the grid at a lat/lng; null when unavailable. */
     async function sampleAt(lat, lng, url) {
         const g = await load(url);
         return g ? sample(g, lat, lng) : null;

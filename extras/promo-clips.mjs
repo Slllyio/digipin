@@ -22,6 +22,7 @@ const CLIPS = join(OUT, 'clips');
 const PORT = 8099;
 const BASE = `http://localhost:${PORT}/app.html`;
 const C = { lng: 75.8577, lat: 22.7196 };
+/** Resolve after `ms` milliseconds. */
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const CAPS = {
@@ -47,6 +48,7 @@ const CAPS = {
     '10-outro': ['', 'DigiPin — built on India’s digital address'],
 };
 
+/** Wait until MapModule's map exists and has finished loading, then settle. */
 async function waitForMap(page) {
     await page.waitForFunction(() => (
         typeof MapModule !== 'undefined' && MapModule.getMap
@@ -55,6 +57,7 @@ async function waitForMap(page) {
     await sleep(4000);
 }
 
+/** Inject the burned-in caption overlay (title/lower-third/badge + title card) and its window helpers. */
 async function injectOverlay(page) {
     await page.evaluate(() => {
         document.getElementById('promo-cap')?.remove();
@@ -102,6 +105,7 @@ async function injectOverlay(page) {
     });
 }
 
+/** Paint a viewport choropleth of the given score key as map layers; returns cell count. */
 async function paintScores(page, key) {
     return page.evaluate(async (key) => {
         const m = MapModule.getMap(); const bb = m.getBounds();
@@ -127,6 +131,7 @@ async function paintScores(page, key) {
     }, key);
 }
 
+/** Enable the Overture 3D buildings overlay if it is not already active. */
 async function buildingsOn(page) {
     await page.evaluate(() => { if (!OvertureBuildings.isActive()) OvertureBuildings.toggle(MapModule.getMap()); });
 }
@@ -136,7 +141,9 @@ async function drive(page, scene) {
     const m = scene.motion;
     const dur = scene.dur;
     const ms = Math.round(dur * 1000);
+    /** Animate the map to camera options `o` over the scene duration. */
     const ease = (o) => page.evaluate((o) => MapModule.getMap().easeTo(o), o);
+    /** Snap the map instantly to camera options `o`. */
     const jump = (o) => page.evaluate((o) => MapModule.getMap().jumpTo(o), o);
 
     if (m === 'zoomin') {
@@ -181,6 +188,7 @@ async function drive(page, scene) {
         await sleep(1200);
         await page.evaluate((o) => {
             const mp = MapModule.getMap();
+            /** Build a walk-catchment ring polygon Feature for `mins` minutes in `color`. */
             const ring = (mins, color) => {
                 const radM = mins * 80; const pts = [];
                 for (let a = 0; a <= 360; a += 6) {
@@ -295,6 +303,7 @@ async function drive(page, scene) {
     await sleep(ms + 400);
 }
 
+/** Record a single scene to a webm: open the app, frame it, drive its motion, save the clip. */
 async function recordScene(browser, scene) {
     const ctx = await browser.newContext({
         viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1, ignoreHTTPSErrors: true,
@@ -320,6 +329,7 @@ async function recordScene(browser, scene) {
     console.log(`✓ ${scene.id} (${scene.dur}s)`);
 }
 
+/** Serve the app, launch a headless browser, and record a clip per manifest scene. */
 async function main() {
     const only = process.env.ONLY ? process.env.ONLY.split(',') : null;
     if (!only) rmSync(CLIPS, { recursive: true, force: true }); // ONLY re-shoots in place

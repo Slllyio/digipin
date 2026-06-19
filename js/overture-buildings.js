@@ -182,6 +182,7 @@ const OvertureBuildings = (() => {
         return _active;
     }
 
+    /** Click handler: show a popup of the clicked building's attributes. */
     function onMapClick(e) {
         if (!_active) return;
 
@@ -275,6 +276,7 @@ const OvertureBuildings = (() => {
         }
     }
 
+    /** True while the buildings overlay is visible. */
     function isActive() { return _active; }
 
     return { toggle, isActive, getVisibleStats };

@@ -90,6 +90,7 @@ const Isochrone = (() => {
             _map.on('click', FILL_LAYER, (e) => {
                 const props = e.features[0].properties;
                 // Props are app-generated, but escape anyway for setHTML safety.
+                /** HTML-escape a value for safe interpolation into popup markup. */
                 const esc = (v) => String(v == null ? '' : v)
                     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -148,11 +149,13 @@ const Isochrone = (() => {
         el.innerHTML = `<div style="font-family:${titleFont};font-weight:600;font-size:15px;margin-bottom:6px;color:${pal.primary};">15-minute city</div>${rows}`;
     }
 
+    /** Remove the legend card from the DOM if present. */
     function _removeLegend() {
         const el = document.getElementById(LEGEND_ID);
         if (el) el.remove();
     }
 
+    /** Hide the rings (and legend/popup); deactivate fully unless `fullyDeactivate` is false. */
     function clear(fullyDeactivate = true) {
         if (fullyDeactivate) _active = false;
         if (_popup) { _popup.remove(); _popup = null; }
@@ -167,6 +170,7 @@ const Isochrone = (() => {
         }
     }
 
+    /** True while the rings are active. */
     function isVisible() { return _active; }
 
     return { show, clear, isVisible, radiusM };

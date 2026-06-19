@@ -22,8 +22,10 @@ const OUT = join(__dirname, 'out');
 const PORT = 8099;
 const BASE = `http://localhost:${PORT}/app.html`;
 const C = { lng: 75.8577, lat: 22.7196 };
+/** Resolve after `ms` milliseconds. */
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/** Wait until MapModule's map exists and has finished loading, then settle. */
 async function waitForMap(page) {
     await page.waitForFunction(() => (
         typeof MapModule !== 'undefined' && MapModule.getMap
@@ -32,6 +34,7 @@ async function waitForMap(page) {
     await sleep(4500);
 }
 
+/** Inject the burned-in caption overlay (title/lower-third/badge) and its window helpers. */
 async function injectOverlay(page) {
     await page.evaluate(() => {
         document.getElementById('promo-cap')?.remove();
@@ -65,10 +68,14 @@ async function injectOverlay(page) {
     });
 }
 
+/** Set the big centred title-card text `t` on the overlay. */
 const title = (p, t) => p.evaluate((t) => window.__title(t), t);
+/** Clear the title and set the lower-third heading `h` and subtitle `s`. */
 const cap = (p, h, s) => p.evaluate(([h, s]) => { window.__title(''); window.__cap(h, s); }, [h, s]);
+/** Snap the map instantly to camera options `o`. */
 const jump = (p, o) => p.evaluate((o) => MapModule.getMap().jumpTo(o), o);
 
+/** Toggle the Overture 3D buildings overlay to the desired `on` state, then let it stream in. */
 async function buildings(page, on) {
     await page.evaluate((on) => {
         const a = typeof OvertureBuildings !== 'undefined' && OvertureBuildings.isActive();
@@ -124,6 +131,7 @@ async function paintScores(page, key) {
     }, key);
     return r;
 }
+/** Remove the choropleth layers + source added by paintScores. */
 async function clearScores(page) {
     await page.evaluate(() => {
         const m = MapModule.getMap();
@@ -131,8 +139,10 @@ async function clearScores(page) {
         if (m.getSource('promo-choro-src')) m.removeSource('promo-choro-src');
     });
 }
+/** Capture a 1080p screenshot of the current page to OUT/`name`. */
 async function shot(page, name) { await page.screenshot({ path: join(OUT, name), timeout: 20000 }); }
 
+/** Serve the app, launch a headless browser, and capture the full light+dark still sequence. */
 async function main() {
     // Only clear this script's own still frames — siblings (narration/, clips/,
     // _seg/, the rendered MP4s) share extras/out and must survive.

@@ -17,14 +17,17 @@ const TrafficWidget = (() => {
         F: { color: '#7f0000', label: 'Breakdown' },
     };
 
+    /** Map a Level-of-Service grade to its colour + label, with a neutral fallback. */
     function _losInfo(grade) { return LOS[grade] || { color: '#9ca3af', label: 'Unknown' }; }
 
+    /** HTML-escape a value for safe interpolation into widget markup. */
     function _esc(v) {
         return String(v == null ? '' : v)
             .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    /** Render the traffic card into `containerEl`, or an unavailable note when there's no signal. */
     function attachTo(containerEl, traffic, cell) {
         if (!containerEl) return;
         containerEl.querySelectorAll('[data-traffic-widget]').forEach(e => e.remove());

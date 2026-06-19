@@ -13,6 +13,7 @@ const MobilityGrid = (() => {
     let _loaded = false;
     let _loading = null;
 
+    /** Row-major cell index for a lat/lng, or -1 when outside the grid bounds. */
     function indexFor(grid, lat, lng) {
         if (!grid || !grid.bounds) return -1;
         const b = grid.bounds;
@@ -39,6 +40,8 @@ const MobilityGrid = (() => {
         };
     }
 
+    /** Load the grid JSON once (best-effort). Resolves to the grid or null;
+     *  a failed/empty load is left retryable. */
     function load(url = DEFAULT_URL) {
         if (_loaded) return Promise.resolve(_grid);
         if (_loading) return _loading;
@@ -59,6 +62,7 @@ const MobilityGrid = (() => {
         return _loading;
     }
 
+    /** Load (if needed) then sample the grid at a lat/lng; null when unavailable. */
     async function sampleAt(lat, lng, url) {
         const g = await load(url);
         return g ? sample(g, lat, lng) : null;

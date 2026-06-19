@@ -221,6 +221,7 @@ const RealEstateModel = (() => {
         const spread = opts.spreadPct != null ? opts.spreadPct : 6;
         const mid = base + ((score - 50) / 50) * spread;
         const band = opts.confidence === 'high' ? 1.5 : opts.confidence === 'medium' ? 2.5 : 4;
+        /** Round to one decimal place. */
         const r = (x) => +x.toFixed(1);
         return { lowPct: r(mid - band), midPct: r(mid), highPct: r(mid + band) };
     }

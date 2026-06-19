@@ -104,10 +104,12 @@ const DTDLExport = (() => {
         return 'digipin_' + String(code || 'cell').replace(/[^a-zA-Z0-9]/g, '');
     }
 
+    /** Build a digital-twin node ($dtId + $metadata.$model) merged with its properties. */
     function _twin(id, model, props) {
         return Object.assign({ $dtId: id, $metadata: { $model: model } }, props);
     }
 
+    /** Build a relationship edge between two twins. */
     function _rel(sourceId, name, targetId) {
         return {
             $relationshipId: `${sourceId}__${name}__${targetId}`,
@@ -242,14 +244,18 @@ const DTDLExport = (() => {
         return out;
     }
 
+    /** Finite number passthrough, else null (DTDL double property). */
     function _num(v) { return Number.isFinite(v) ? v : null; }
+    /** Round a finite number to an integer, else null (DTDL integer property). */
     function _int(v) { return Number.isFinite(v) ? Math.round(v) : null; }
+    /** Slugify a string into an id-safe token (non-alphanumerics → underscore). */
     function _slug(s) { return String(s).replace(/[^a-zA-Z0-9]/g, '_'); }
 
     /** Counts for the export-dialog summary. Pure. */
     function summarize(cell, data) {
         const g = build(cell, data);
         const tw = g.digitalTwinsGraph.digitalTwins;
+        /** Count twins of a given DTDL model id. */
         const byModel = (m) => tw.filter(t => t.$metadata.$model === m).length;
         return {
             models: g.digitalTwinsModels.length,
@@ -262,6 +268,7 @@ const DTDLExport = (() => {
         };
     }
 
+    /** Serialize the twin graph for a cell to pretty-printed JSON. Pure. */
     function toJSON(cell, data) { return JSON.stringify(build(cell, data), null, 2); }
 
     /** Trigger a browser download of the twin graph JSON. */

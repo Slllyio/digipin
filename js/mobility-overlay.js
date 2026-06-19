@@ -41,8 +41,10 @@ const MobilityOverlay = (() => {
         return severity === 'high' ? 7 : 5;
     }
 
+    /** Current MapLibre map instance, or null if MapModule isn't ready. */
     function _map_() { return (typeof MapModule !== 'undefined') ? MapModule.getMap() : null; }
 
+    /** Tag each feature with `color` + `radius` derived from its kind/severity. */
     function _decorate(features) {
         for (const f of features) {
             const p = f.properties || (f.properties = {});
@@ -52,6 +54,7 @@ const MobilityOverlay = (() => {
         return features;
     }
 
+    /** Add the source + line/point layers (and interactions) on first paint, or update data thereafter. */
     function _paint(geojson) {
         if (!_map.getSource(SRC)) {
             _map.addSource(SRC, { type: 'geojson', data: geojson });
@@ -76,11 +79,15 @@ const MobilityOverlay = (() => {
         }
     }
 
+    /** Show a pointer cursor over chokepoint markers. */
     function _onEnter() { if (_map) _map.getCanvas().style.cursor = 'pointer'; }
+    /** Reset the cursor when leaving chokepoint markers. */
     function _onLeave() { if (_map) _map.getCanvas().style.cursor = ''; }
 
+    /** Open a popup describing the clicked chokepoint (kind, name, guidance). */
     function _onClick(e) {
         const p = (e.features && e.features[0] && e.features[0].properties) || {};
+        /** HTML-escape a value for safe insertion into the popup markup. */
         const esc = (v) => String(v == null ? '' : v)
             .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -94,6 +101,7 @@ const MobilityOverlay = (() => {
         }
     }
 
+    /** Fetch the region's chokepoint GeoJSON and (re)paint the layer + legend. */
     async function refresh() {
         _map = _map_();
         if (!_map) return;
@@ -119,11 +127,13 @@ const MobilityOverlay = (() => {
             `${(gj.features || []).length} access chokepoints marked.`, 'success');
     }
 
+    /** Theme palette, with a dark-mode fallback when Theme is unavailable. */
     function _palette() {
         if (typeof Theme !== 'undefined' && Theme.palette) return Theme.palette();
         return { primary: '#00f5ff', ink: '#e2e8f0', sub: '#94a3b8',
             surface: 'rgba(10,14,39,0.92)', border: 'rgba(255,255,255,0.12)' };
     }
+    /** Create or refresh the bottom-left legend listing chokepoint kinds. */
     function _renderLegend() {
         let el = document.getElementById(LEGEND_ID);
         if (!el) {
@@ -146,9 +156,12 @@ const MobilityOverlay = (() => {
             + rows
             + `<div style="margin-top:6px;color:${pal.sub};font-size:11px;">Access chokepoints to keep open in an incident · structural, OSM-derived</div>`;
     }
+    /** Remove the legend element if present. */
     function _removeLegend() { const el = document.getElementById(LEGEND_ID); if (el) el.remove(); }
 
+    /** Activate the overlay and load data. */
     function attach() { _active = true; refresh(); }
+    /** Deactivate the overlay: abort fetches, drop the popup/legend, and remove layers/source. */
     function detach() {
         _active = false;
         if (_abort) { _abort.abort(); _abort = null; }
@@ -163,7 +176,9 @@ const MobilityOverlay = (() => {
         if (map.getLayer(LINE_LAYER)) map.removeLayer(LINE_LAYER);
         if (map.getSource(SRC)) map.removeSource(SRC);
     }
+    /** Toggle the overlay on/off. */
     function toggle() { if (_active) detach(); else attach(); }
+    /** Whether the overlay is currently active. */
     function isVisible() { return _active; }
 
     return { attach, detach, toggle, isVisible, refresh, colorFor, radiusFor, KINDS };

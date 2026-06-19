@@ -58,6 +58,7 @@ const CAGrowthOverlay = (() => {
         return Number.isFinite(p) ? Math.round(Math.max(0, Math.min(1, p)) * 100) : null;
     }
 
+    /** Add the source + fill layer once (idempotent). */
     function _ensureLayer() {
         if (!_map.getSource(SOURCE_ID)) {
             _map.addSource(SOURCE_ID, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
@@ -69,6 +70,7 @@ const CAGrowthOverlay = (() => {
         }
     }
 
+    /** Grid-sample the viewport, fetch each cell's CA growth probability, and incrementally paint cells. */
     async function refresh() {
         _map = (typeof MapModule !== 'undefined') ? MapModule.getMap() : null;
         if (!_map || typeof DataFetcher === 'undefined') return;
@@ -117,11 +119,13 @@ const CAGrowthOverlay = (() => {
         }
     }
 
+    /** Theme palette, with a dark-mode fallback when Theme is unavailable. */
     function _palette() {
         if (typeof Theme !== 'undefined' && Theme.palette) return Theme.palette();
         return { primary: '#00f5ff', ink: '#e2e8f0', sub: '#94a3b8',
             surface: 'rgba(10,14,39,0.92)', border: 'rgba(255,255,255,0.12)' };
     }
+    /** Create or refresh the bottom-left legend listing the probability bands. */
     function _renderLegend() {
         let el = document.getElementById(LEGEND_ID);
         if (!el) {
@@ -144,9 +148,12 @@ const CAGrowthOverlay = (() => {
             + rows
             + `<div style="margin-top:6px;color:${pal.sub};font-size:11px;">Model projection to ~2035 · hindcast-validated</div>`;
     }
+    /** Remove the legend element if present. */
     function _removeLegend() { const el = document.getElementById(LEGEND_ID); if (el) el.remove(); }
 
+    /** Activate the overlay: render the legend and sample the viewport. */
     function attach() { _active = true; _renderLegend(); refresh(); }
+    /** Deactivate the overlay: abort fetches, drop the legend, and remove the layer/source. */
     function detach() {
         _active = false;
         if (_abort) { _abort.abort(); _abort = null; }
@@ -156,7 +163,9 @@ const CAGrowthOverlay = (() => {
         if (map.getLayer(LAYER_ID)) map.removeLayer(LAYER_ID);
         if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
     }
+    /** Toggle the overlay on/off. */
     function toggle() { if (_active) detach(); else attach(); }
+    /** Whether the overlay is currently active. */
     function isVisible() { return _active; }
 
     return { attach, detach, toggle, isVisible, colorFor, cellFeature, probOf, BANDS };
