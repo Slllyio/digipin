@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-06-19T19:15:41Z",
-  "count": 12,
+  "generated_at_iso": "2026-06-19T20:51:25Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us7000suq2",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-06-19T20:10:11.327000+00:00",
+      "latitude": -21.1053,
+      "longitude": -68.9826,
+      "depth_km": 115.513,
+      "place": "76 km W of Ollagüe, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000suq2",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000supp",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-06-19T19:36:30.902000+00:00",
+      "latitude": 25.0026,
+      "longitude": 127.9523,
+      "depth_km": 8.453,
+      "place": "127 km SSE of Itoman, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000supp",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000supf",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-06-19T19:00:52.549000+00:00",
+      "latitude": -5.439,
+      "longitude": 153.2891,
+      "depth_km": 76.074,
+      "place": "165 km SE of Kokopo, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000supf",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000sup8",
       "magnitude": 4.9,
@@ -133,18 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000sueg",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us7000suds",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-06-18T19:17:40.105000+00:00",
-      "latitude": 30.6099,
-      "longitude": 142.2657,
-      "depth_km": 10.0,
-      "place": "Izu Islands, Japan region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000suds",
-      "tsunami": 0,
-      "significance": 432
     }
   ]
 }
