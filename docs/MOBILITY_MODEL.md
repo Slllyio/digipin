@@ -46,7 +46,7 @@ size 40–2000 nodes reachable via ≤2 bridges.
 |---|---|---|
 | Fetch police + chokepoints | `fetch_osm_safety.py` | `data/vectors/osm_safety_<region>.geojson` |
 | Analysis | `mobility.py` | `data/safety/<region>/chokepoints.geojson` + `mobility_grid.json` |
-| Tests | `tests/test_mobility.py` | risk/class/geometry helpers + seal-pocket analysis (`importorskip networkx`) |
+| Tests | `pipeline/safety/tests/test_mobility.py` | risk/class/geometry helpers + seal-pocket analysis (`importorskip networkx`) |
 
 ```sh
 pip install -r pipeline/safety/requirements.txt          # networkx, requests

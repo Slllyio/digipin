@@ -35,12 +35,12 @@ def _overpass_query(query, retries=3):
         try:
             resp = requests.post(OVERPASS_URL, data={"data": query}, timeout=180,
                                  headers={"User-Agent": USER_AGENT})
-            if resp.status_code == 429 and attempt < retries - 1:
+            if resp.status_code in (429, 500, 502, 503, 504) and attempt < retries - 1:
                 time.sleep(30 * (attempt + 1))
                 continue
             resp.raise_for_status()
             return resp.json()
-        except requests.exceptions.Timeout:
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
             if attempt < retries - 1:
                 time.sleep(30 * (attempt + 1))
             else:

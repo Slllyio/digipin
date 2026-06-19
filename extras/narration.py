@@ -193,6 +193,7 @@ def main():
 
     synth = None if args.gtts else _edge_tts_factory(args.voice, args.rate, args.pitch)
     voice_name = args.voice
+    primed_sid = None          # scene already written by the edge-tts reachability probe
     if synth is None:
         # Verify edge-tts actually reaches the cloud on the first scene before
         # committing the whole run to it; otherwise drop to gTTS.
@@ -202,6 +203,7 @@ def main():
     else:
         try:
             synth(SCENES[0][3], os.path.join(NARR, f"{SCENES[0][0]}.mp3"))
+            primed_sid = SCENES[0][0]
         except Exception as e:  # noqa: BLE001 — any network/TLS error → fallback
             print(f"[narration] edge-tts failed ({type(e).__name__}) — using gTTS fallback")
             synth = _gtts_factory()
@@ -212,16 +214,19 @@ def main():
     total = 0.0
     for sid, theme, motion, text in SCENES:
         mp3 = os.path.join(NARR, f"{sid}.mp3")
-        try:
-            synth(text, mp3)
-        except Exception as e:  # noqa: BLE001 — degrade mid-run instead of aborting
-            if voice_name != "gTTS:en-co.in":
-                print(f"[narration] edge-tts failed on {sid} ({type(e).__name__}) — switching to gTTS")
-                synth = _gtts_factory()
-                voice_name = "gTTS:en-co.in"
+        if sid == primed_sid:
+            primed_sid = None          # probe already synthesized this scene; reuse it
+        else:
+            try:
                 synth(text, mp3)
-            else:
-                raise
+            except Exception as e:  # noqa: BLE001 — degrade mid-run instead of aborting
+                if voice_name != "gTTS:en-co.in":
+                    print(f"[narration] edge-tts failed on {sid} ({type(e).__name__}) — switching to gTTS")
+                    synth = _gtts_factory()
+                    voice_name = "gTTS:en-co.in"
+                    synth(text, mp3)
+                else:
+                    raise
         d = dur(mp3)
         total += d
         manifest.append({"id": sid, "theme": theme, "motion": motion,

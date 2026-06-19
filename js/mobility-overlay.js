@@ -115,6 +115,7 @@ const MobilityOverlay = (() => {
             if (!r.ok) throw new Error(`no data (${r.status})`);
             gj = await r.json();
         } catch (e) {
+            if (e?.name === 'AbortError' || signal.aborted) return;   // normal detach/toggle-off
             if (typeof App !== 'undefined') App.showToast('Law & Order Mobility',
                 'No chokepoint data for this region (run the pipeline).', 'warning');
             return;

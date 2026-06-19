@@ -539,6 +539,9 @@ const Panel = (() => {
         navigator.clipboard.writeText(code).then(() => {
             const btn = document.querySelector('.copy-btn');
             if (btn) { btn.textContent = '✓'; setTimeout(() => btn.textContent = '📋', 1500); }
+        }).catch(() => {
+            if (typeof App !== 'undefined') App.showToast('Copy failed',
+                'Clipboard unavailable (needs a secure context or permission).', 'warning');
         });
     }
 
