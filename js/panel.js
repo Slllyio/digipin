@@ -143,6 +143,10 @@ const Panel = (() => {
             TrafficWidget.attachTo(contentEl, data?.realtime?.traffic || null, cell);
         }
 
+        if (typeof MobilityWidget !== 'undefined') {
+            MobilityWidget.attachTo(contentEl, data?.realtime?.mobility || null, cell);
+        }
+
         if (typeof FloodAnimation !== 'undefined') {
             FloodAnimation.attachTo(contentEl, data?.realtime?.flood || null, cell);
         }

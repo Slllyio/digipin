@@ -159,6 +159,10 @@
             <span class="tb-icon">&#128739;</span>
             <span class="tb-label">Traffic</span>
         </button>
+        <button class="toolbar-btn" id="btn-mobility" title="Law &amp; Order Mobility — access chokepoints, sealable pockets &amp; police reach (emergency-planning resilience)">
+            <span class="tb-icon">&#128737;&#65039;</span>
+            <span class="tb-label">L&amp;O</span>
+        </button>
         <button class="toolbar-btn" id="btn-heat" title="Urban Heat Island">
             <span class="tb-icon">&#127777;&#65039;</span>
             <span class="tb-label">Heat</span>
@@ -316,6 +320,12 @@
     <script defer src="js/realtime-traffic.js"></script>
     <script defer src="js/traffic-widget.js"></script>
     <script defer src="js/traffic-overlay.js"></script>
+    <!-- Law & Order Mobility (access resilience: chokepoints + sealable pockets + police reach) -->
+    <script defer src="js/mobility-score.js"></script>
+    <script defer src="js/mobility-grid.js"></script>
+    <script defer src="js/realtime-mobility.js"></script>
+    <script defer src="js/mobility-widget.js"></script>
+    <script defer src="js/mobility-overlay.js"></script>
     <!-- Heat feature trio + realtime orchestrator -->
     <script defer src="js/heat-score.js"></script>
     <script defer src="js/realtime-heat.js"></script>
@@ -383,6 +393,7 @@
         ['btn-growth',    () => window.GrowthOverlay],
         ['btn-ca-growth', () => window.CAGrowthOverlay],
         ['btn-traffic',   () => window.TrafficOverlay],
+        ['btn-mobility',  () => window.MobilityOverlay],
         ['btn-heat',      () => window.HeatOverlay],
         ['btn-ndvi',      () => window.NDVIOverlay],
         ['btn-bivariate', () => window.BivariateOverlay],

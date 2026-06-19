@@ -867,6 +867,16 @@ const DataFetcher = (() => {
             }
         }
 
+        if (typeof RealtimeMobility !== 'undefined') {
+            try {
+                const mobilitySignals = await RealtimeMobility.fetchCell(lat, lng);
+                const mobility = RealtimeMobility.scoreCell(mobilitySignals);
+                if (mobility) result.realtime.mobility = mobility;
+            } catch (e) {
+                console.warn('[orchestrator] mobility fetch skipped:', e);
+            }
+        }
+
         // === Compute intelligence scores ===
         result.scores = computeScores(result);
 

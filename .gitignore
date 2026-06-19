@@ -61,6 +61,13 @@ data/traffic/*
 data/traffic/*/*
 !data/traffic/*/*.json
 !data/traffic/*/*.geojson
+# Precomputed law-and-order mobility (access-resilience) artifacts — browser-consumed.
+!data/safety/
+data/safety/*
+!data/safety/*/
+data/safety/*/*
+!data/safety/*/*.json
+!data/safety/*/*.geojson
 
 # SUMO simulation data (large XML files)
 guna-twin-city/traffic-analysis/sumo/*.xml

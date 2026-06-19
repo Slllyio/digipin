@@ -9,7 +9,7 @@ operators publish, e.g. via Transitland / data.gov.in) and bins per-cell:
   * transit_routes     — distinct routes serving those stops
   * transit_headway_min— median headway (minutes between departures) at the
                          busiest stop (lower = more frequent = better access)
-  * transit_access     — 0..100 access score (frequency × route breadth)
+  * transit_access     — 0..100 access score (frequency x route breadth)
 
 It merges these arrays into the existing `traffic_grid.json` (same grid), so the
 browser samples one file. The GTFS source is pluggable (`--gtfs <dir|zip|url>`)

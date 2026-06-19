@@ -3,11 +3,11 @@
 No open GTFS feed exists for Indore (or most Indian city-bus operators), so we
 can't compute timetable frequency/headway. Instead we bin OSM-mapped transit
 stops onto the grid and score **coverage** — how many stops fall within walking
-distance (the cell's 3×3 ≈ neighbourhood) — which is an honest "is transit
+distance (the cell's 3x3 ≈ neighbourhood) — which is an honest "is transit
 reachable here" proxy, not a frequency measure.
 
 Writes these arrays into `traffic_grid.json` (same grid as traffic_grid.py):
-  transit_stops[]        — stops within the cell's 3×3 neighbourhood (~walk shed)
+  transit_stops[]        — stops within the cell's 3x3 neighbourhood (~walk shed)
   transit_access[]       — 0..100 coverage score (4+ nearby stops ≈ full)
   transit_headway_min[]  — null (unknown without a timetable)
   transit_routes[]       — null (unknown)

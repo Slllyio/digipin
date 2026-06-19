@@ -21,7 +21,7 @@ import logging
 import time
 from pathlib import Path
 
-from pipeline._lib.regions import get_default_bbox, get_default_region_name
+from pipeline._lib.regions import bbox_for, get_default_region_name
 
 log = logging.getLogger("pipeline.traffic.fetch_osm_roads")
 
@@ -46,7 +46,7 @@ def _overpass_query(query, retries=3):
         try:
             resp = requests.post(OVERPASS_URL, data={"data": query}, timeout=300,
                                  headers={"User-Agent": USER_AGENT})
-            if resp.status_code == 429:
+            if resp.status_code == 429 and attempt < retries - 1:
                 wait = 30 * (attempt + 1)
                 log.warning("rate limited, waiting %ds…", wait)
                 time.sleep(wait)
@@ -60,7 +60,7 @@ def _overpass_query(query, retries=3):
                 time.sleep(wait)
             else:
                 raise
-    return {}
+    raise RuntimeError("Overpass query failed without returning data")
 
 
 def _ways_to_lines(elements):
@@ -85,7 +85,7 @@ def _ways_to_lines(elements):
 def fetch(region=None, classes=None):
     """Query Overpass for the region's arterial roads → write the geojson. Returns path."""
     region = region or get_default_region_name()
-    w, s, e, n = get_default_bbox()
+    w, s, e, n = bbox_for(region)          # bbox matches the output region name
     bbox = f"{s},{w},{n},{e}"          # Overpass order: south,west,north,east
     rx = _highway_regex(classes or ARTERIAL)
     query = f"""
