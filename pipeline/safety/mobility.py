@@ -219,6 +219,9 @@ def run(region=None):
     police_km_arr = [None] * size
     chokeprox = [0] * size
 
+    # convert the meter-based chokepoint radius into a cell radius so proximity
+    # scoring stays consistent if res_m changes (round keeps it 1 cell at 200 m).
+    choke_cells = max(1, round(CHOKE_RADIUS_M / max(float(res_m), 1.0)))
     for i in range(size):
         gy, gx = divmod(i, gnx)
         # Only score navigable cells (on the road network / carrying a chokepoint
@@ -231,8 +234,8 @@ def run(region=None):
         pk = min((_haversine_km(clat, clng, plat, plng) for plat, plng in police), default=None)
         police_km_arr[i] = round(pk, 2) if pk is not None else None
         near = False
-        for dy in (-1, 0, 1):
-            for dx in (-1, 0, 1):
+        for dy in range(-choke_cells, choke_cells + 1):
+            for dx in range(-choke_cells, choke_cells + 1):
                 yy, xx = gy + dy, gx + dx
                 if 0 <= yy < gny and 0 <= xx < gnx and choke_cell[yy * gnx + xx]:
                     near = True

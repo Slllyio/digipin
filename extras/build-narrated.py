@@ -44,7 +44,13 @@ def probe_dur(path):
     """Return the duration in seconds of a media file via ffprobe."""
     r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
                         "-of", "csv=p=0", path], capture_output=True, text=True)
-    return float(r.stdout.strip())
+    if r.returncode != 0:
+        sys.stderr.write(r.stderr[-2500:])
+        raise SystemExit(f"ffprobe failed for {path}")
+    try:
+        return float(r.stdout.strip())
+    except ValueError as e:
+        raise SystemExit(f"ffprobe returned no duration for {path}") from e
 
 
 def add_music(narrated, music_path, out_path, volume=MUSIC_VOLUME):

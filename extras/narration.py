@@ -131,7 +131,12 @@ def dur(path):
     out = subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration",
          "-of", "csv=p=0", path], capture_output=True, text=True)
-    return float(out.stdout.strip())
+    if out.returncode != 0:
+        raise SystemExit(f"ffprobe failed for {path}:\n{out.stderr}")
+    try:
+        return float(out.stdout.strip())
+    except ValueError as e:
+        raise SystemExit(f"ffprobe returned no duration for {path}") from e
 
 
 def _edge_tts_factory(voice, rate, pitch):

@@ -44,13 +44,17 @@ const MobilityGrid = (() => {
         if (_loading) return _loading;
         _loading = (async () => {
             try {
-                if (typeof fetch === 'undefined') { _loaded = true; return null; }
+                if (typeof fetch === 'undefined') return null;
                 const r = await fetch(url, { cache: 'force-cache' });
-                if (!r.ok) { _loaded = true; return null; }
+                if (!r.ok) return null;
                 _grid = await r.json();
-            } catch { _grid = null; }
-            _loaded = true;
-            return _grid;
+                _loaded = true;          // cache only on success
+                return _grid;
+            } catch {
+                return null;
+            } finally {
+                _loading = null;         // let a failed/empty load be retried
+            }
         })();
         return _loading;
     }

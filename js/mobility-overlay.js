@@ -69,12 +69,15 @@ const MobilityOverlay = (() => {
                     'circle-stroke-color': '#ffffff', 'circle-stroke-width': 1, 'circle-opacity': 0.9 },
             });
             _map.on('click', PT_LAYER, _onClick);
-            _map.on('mouseenter', PT_LAYER, () => { _map.getCanvas().style.cursor = 'pointer'; });
-            _map.on('mouseleave', PT_LAYER, () => { _map.getCanvas().style.cursor = ''; });
+            _map.on('mouseenter', PT_LAYER, _onEnter);
+            _map.on('mouseleave', PT_LAYER, _onLeave);
         } else {
             _map.getSource(SRC).setData(geojson);
         }
     }
+
+    function _onEnter() { if (_map) _map.getCanvas().style.cursor = 'pointer'; }
+    function _onLeave() { if (_map) _map.getCanvas().style.cursor = ''; }
 
     function _onClick(e) {
         const p = (e.features && e.features[0] && e.features[0].properties) || {};
@@ -153,6 +156,9 @@ const MobilityOverlay = (() => {
         _removeLegend();
         const map = _map_();
         if (!map) return;
+        map.off('click', PT_LAYER, _onClick);
+        map.off('mouseenter', PT_LAYER, _onEnter);
+        map.off('mouseleave', PT_LAYER, _onLeave);
         if (map.getLayer(PT_LAYER)) map.removeLayer(PT_LAYER);
         if (map.getLayer(LINE_LAYER)) map.removeLayer(LINE_LAYER);
         if (map.getSource(SRC)) map.removeSource(SRC);
