@@ -79,7 +79,10 @@ const Compare = (() => {
     /** CSV-escape a field (quote when it contains a comma, quote or newline). Pure. */
     function _csvEscape(s) {
         const v = String(s == null ? '' : s);
-        return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+        // Neutralise spreadsheet formula injection: a leading =,+,-,@ (after any
+        // whitespace) can execute when opened in Excel/Sheets — prefix a quote.
+        const safe = /^\s*[=+\-@]/.test(v) ? `'${v}` : v;
+        return /[",\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
     }
 
     /** Build a comparison CSV string from pinned entries (Metric × cells). Pure. */

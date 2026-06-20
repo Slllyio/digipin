@@ -45,4 +45,18 @@ describe('Compare.buildCSV', () => {
     it('escapes fields containing commas with quotes', () => {
         expect(csv).toContain('"Rajwada, Indore"');
     });
+
+    it('neutralizes spreadsheet formula injection in fields', () => {
+        const evil = [{
+            cell: { code: '=cmd()', center: { lat: 1, lng: 2 } },
+            data: { address: { area: '@SUM(A1)', city: '' }, scores: {} },
+        }, {
+            cell: { code: 'X', center: { lat: 1, lng: 2 } },
+            data: { address: {}, scores: {} },
+        }];
+        const out = C.buildCSV(evil);
+        // leading =/@ get a single-quote prefix to defuse formula execution
+        expect(out).toContain("'=cmd()");
+        expect(out).toContain("'@SUM(A1)");
+    });
 });

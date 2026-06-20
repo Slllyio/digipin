@@ -83,7 +83,12 @@ def main():
     src = ap.add_mutually_exclusive_group(required=True)
     src.add_argument("--url", help="global SSP urban-land GeoTIFF URL")
     src.add_argument("--in", dest="inp", help="local SSP GeoTIFF path")
-    ap.add_argument("--res", type=int, default=1000, help="output resolution m (default 1000)")
+    def _positive_int(v):
+        iv = int(v)
+        if iv <= 0:
+            raise argparse.ArgumentTypeError("--res must be > 0")
+        return iv
+    ap.add_argument("--res", type=_positive_int, default=1000, help="output resolution m (default 1000)")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 

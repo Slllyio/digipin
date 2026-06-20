@@ -85,12 +85,17 @@ const TrafficOverlay = (() => {
                 },
             });
             _map.on('click', LINE_ID, _onClick);
-            _map.on('mouseenter', LINE_ID, () => { _map.getCanvas().style.cursor = 'pointer'; });
-            _map.on('mouseleave', LINE_ID, () => { _map.getCanvas().style.cursor = ''; });
+            _map.on('mouseenter', LINE_ID, _onEnter);
+            _map.on('mouseleave', LINE_ID, _onLeave);
         } else {
             _map.getSource(SOURCE_ID).setData(geojson);
         }
     }
+
+    /** Show a pointer cursor over road lines. */
+    function _onEnter() { if (_map) _map.getCanvas().style.cursor = 'pointer'; }
+    /** Reset the cursor when leaving road lines. */
+    function _onLeave() { if (_map) _map.getCanvas().style.cursor = ''; }
 
     /** Open a popup describing the clicked road (name, LOS grade, risk, criticality). */
     function _onClick(e) {
@@ -238,6 +243,9 @@ const TrafficOverlay = (() => {
         _removeLegend();
         const map = _map_();
         if (!map) return;
+        map.off('click', LINE_ID, _onClick);
+        map.off('mouseenter', LINE_ID, _onEnter);
+        map.off('mouseleave', LINE_ID, _onLeave);
         if (map.getLayer(CRIT_ID)) map.removeLayer(CRIT_ID);
         if (map.getLayer(LINE_ID)) map.removeLayer(LINE_ID);
         if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);

@@ -623,7 +623,8 @@ out tags center;`;
             heights: [], levels: [], types: {}, materials: {}, roofShapes: {},
             ageDecades: {}, heightBands: { low: 0, mid: 0, high: 0, vhigh: 0 },
             avgHeight: 0, avgLevels: 0, maxHeight: 0, maxLevels: 0,
-            medianHeight: 0, heightStdDev: 0
+            medianHeight: 0, heightStdDev: 0,
+            items: []   // keep shape aligned with classifyBuildings() for callers
         };
     }
 

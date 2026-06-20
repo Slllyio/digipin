@@ -102,7 +102,12 @@ def _load_stops(path):
     for f in gj.get("features", []):
         g = f.get("geometry", {})
         if g.get("type") == "Point":
-            lng, lat = g["coordinates"][:2]
+            coords = g.get("coordinates")
+            if not isinstance(coords, list) or len(coords) < 2:
+                continue
+            lng, lat = coords[0], coords[1]
+            if not (isinstance(lng, (int, float)) and isinstance(lat, (int, float))):
+                continue
             out.append({"lat": lat, "lng": lng})
     return out
 

@@ -11,9 +11,8 @@
  */
 const FootprintGrid = (() => {
     const DEFAULT_URL = './data/buildings/footprint_grid_indore.json';
-    let _grid = null;
-    let _loaded = false;
-    let _loading = null;
+    const _grids = new Map();    // url -> parsed grid (cached on success only)
+    const _loading = new Map();  // url -> in-flight promise
 
     /** Row-major cell index for a lat/lng, or -1 when outside the grid bounds. */
     function indexFor(grid, lat, lng) {
@@ -40,19 +39,24 @@ const FootprintGrid = (() => {
 
     /** Load the grid JSON once (best-effort). Resolves to the grid or null. */
     function load(url = DEFAULT_URL) {
-        if (_loaded) return Promise.resolve(_grid);
-        if (_loading) return _loading;
-        _loading = (async () => {
+        if (_grids.has(url)) return Promise.resolve(_grids.get(url));
+        if (_loading.has(url)) return _loading.get(url);
+        const p = (async () => {
             try {
-                if (typeof fetch === 'undefined') { _loaded = true; return null; }
+                if (typeof fetch === 'undefined') return null;
                 const r = await fetch(url, { cache: 'force-cache' });
-                if (!r.ok) { _loaded = true; return null; }
-                _grid = await r.json();
-            } catch { _grid = null; }
-            _loaded = true;
-            return _grid;
+                if (!r.ok) return null;
+                const grid = await r.json();
+                _grids.set(url, grid);          // cache only on success
+                return grid;
+            } catch {
+                return null;
+            } finally {
+                _loading.delete(url);           // let a failed/empty load be retried
+            }
         })();
-        return _loading;
+        _loading.set(url, p);
+        return p;
     }
 
     /** Load (if needed) then sample the grid at a lat/lng; null when unavailable. */

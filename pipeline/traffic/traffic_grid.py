@@ -44,16 +44,24 @@ def _seg_points(geom):
 
 
 def _length_m(geom):
-    """Total length in metres of a line geometry via haversine over its points."""
-    pts = list(_seg_points(geom))
+    """Total length in metres of a LineString/MultiLineString — summed per
+    segment so a MultiLineString doesn't add a phantom jump between segments."""
+    gtype, coords = geom.get("type", ""), geom.get("coordinates", [])
+    if gtype == "LineString":
+        lines = [coords]
+    elif gtype == "MultiLineString":
+        lines = coords
+    else:
+        return 0.0
     total = 0.0
-    for i in range(len(pts) - 1):
-        lon1, lat1 = pts[i]
-        lon2, lat2 = pts[i + 1]
-        rlat1, rlat2 = math.radians(lat1), math.radians(lat2)
-        a = (math.sin(math.radians(lat2 - lat1) / 2) ** 2
-             + math.cos(rlat1) * math.cos(rlat2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2)
-        total += EARTH_RADIUS_M * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    for line in lines:
+        for i in range(len(line) - 1):
+            lon1, lat1 = line[i][0], line[i][1]
+            lon2, lat2 = line[i + 1][0], line[i + 1][1]
+            rlat1, rlat2 = math.radians(lat1), math.radians(lat2)
+            a = (math.sin(math.radians(lat2 - lat1) / 2) ** 2
+                 + math.cos(rlat1) * math.cos(rlat2) * math.sin(math.radians(lon2 - lon1) / 2) ** 2)
+            total += EARTH_RADIUS_M * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return total
 
 
@@ -106,7 +114,8 @@ def bin_segments(features, bbox, res_m=200):
         b = props.get("betweenness")
         if isinstance(b, (int, float)) and b > betw[idx]:
             betw[idx] = float(b)
-        density[idx] += _length_m(geom)
+        seg_len_m = _length_m(geom)          # compute once per feature
+        density[idx] += seg_len_m
         if props.get("criticality") == "critical":
             critical[idx] = 1
         hw = props.get("highway")
@@ -115,7 +124,7 @@ def bin_segments(features, bbox, res_m=200):
         if hw:
             if class_len[idx] is None:
                 class_len[idx] = {}
-            class_len[idx][hw] = class_len[idx].get(hw, 0.0) + _length_m(geom)
+            class_len[idx][hw] = class_len[idx].get(hw, 0.0) + seg_len_m
 
     worst_los = [(_RANK_LOS[r] if r >= 0 else None) for r in los_rank]
     dominant = [(max(cl, key=cl.get) if cl else None) for cl in class_len]

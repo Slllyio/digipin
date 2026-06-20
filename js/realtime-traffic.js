@@ -50,7 +50,7 @@ const RealtimeTraffic = (() => {
             transit,
             sources: {
                 road_network: hasRoad ? 'ok' : 'missing',
-                transit_gtfs: hasTransit ? 'ok' : 'missing',
+                transit_gtfs: (transit && transit.source === 'gtfs') ? 'ok' : 'missing',
             },
             generated_at_iso: new Date().toISOString(),
         };

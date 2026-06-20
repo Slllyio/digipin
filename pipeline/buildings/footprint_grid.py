@@ -85,12 +85,13 @@ def _load_features(path):
         cols = tbl.column_names
         d = tbl.to_pydict()
         n = len(d[cols[0]])
+        missing = [c for c in ("latitude", "longitude") if c not in d]
+        if missing:
+            raise ValueError(f"footprints parquet missing column(s): {', '.join(missing)}")
+        lat_col, lng_col = d["latitude"], d["longitude"]
+        area_col = d.get("area_in_meters", [None] * n)
         for i in range(n):
-            yield {
-                "lat": d.get("latitude", [None] * n)[i],
-                "lng": d.get("longitude", [None] * n)[i],
-                "area": d.get("area_in_meters", [None] * n)[i],
-            }
+            yield {"lat": lat_col[i], "lng": lng_col[i], "area": area_col[i]}
     else:  # geojson
         gj = json.loads(p.read_text())
         for feat in gj.get("features", []):

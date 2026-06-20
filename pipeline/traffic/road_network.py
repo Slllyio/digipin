@@ -183,6 +183,7 @@ def compute_centrality(G):
     kw = {"weight": "weight", "normalized": True}
     if n > 2000:
         kw["k"] = min(500, n)
+        kw["seed"] = 42          # reproducible sampled betweenness
     betw = nx.edge_betweenness_centrality(G, **kw)
     bridges = set()
     for u, v in nx.bridges(G):

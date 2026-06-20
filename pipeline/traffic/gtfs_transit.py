@@ -159,7 +159,7 @@ def main():
     """CLI: derive per-cell transit access from a GTFS feed and enrich the traffic grid."""
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser()
-    ap.add_argument("--gtfs", required=True, help="GTFS dir or .zip")
+    ap.add_argument("--gtfs", default=None, help="GTFS dir or .zip (optional)")
     ap.add_argument("--grid", default=None, help="traffic_grid.json to enrich")
     args = ap.parse_args()
 
@@ -168,6 +168,9 @@ def main():
     if not grid_path.exists():
         raise SystemExit(f"missing {grid_path} — run pipeline.traffic.traffic_grid first")
     grid = json.loads(grid_path.read_text())
+    if not args.gtfs:
+        log.info("no --gtfs supplied; leaving grid unchanged (transit step skipped)")
+        return
     merge_into_grid(grid, args.gtfs)
     grid_path.write_text(json.dumps(grid, separators=(",", ":")))
     log.info("updated %s", grid_path)

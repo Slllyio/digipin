@@ -133,7 +133,12 @@ async function paintScores(page, key) {
 
 /** Enable the Overture 3D buildings overlay if it is not already active. */
 async function buildingsOn(page) {
-    await page.evaluate(() => { if (!OvertureBuildings.isActive()) OvertureBuildings.toggle(MapModule.getMap()); });
+    await page.evaluate(() => {
+        if (typeof OvertureBuildings === 'undefined'
+            || typeof OvertureBuildings.isActive !== 'function'
+            || typeof OvertureBuildings.toggle !== 'function') return;
+        if (!OvertureBuildings.isActive()) OvertureBuildings.toggle(MapModule.getMap());
+    });
 }
 
 // Set up a scene at its start state, then drive `dur` seconds of motion last.

@@ -7,7 +7,7 @@
 const MobilityWidget = (() => {
     /** Map an access class to its badge colour + label, with a neutral fallback. */
     function _info(cls) {
-        if (typeof MobilityScore !== 'undefined') {
+        if (typeof MobilityScore !== 'undefined' && Array.isArray(MobilityScore.CLASSES)) {
             const c = MobilityScore.CLASSES.find(x => x.key === cls);
             if (c) return { color: c.color, label: c.key };
         }

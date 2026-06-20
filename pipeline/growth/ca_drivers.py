@@ -65,8 +65,9 @@ def _rasterize_geojson(path, ref_profile):
     return arr.astype(bool)
 
 
-def _read_aligned(path, ref_profile):
-    """Read a single-band raster reprojected onto the reference grid, else zeros."""
+def _read_aligned(path, ref_profile, band=1):
+    """Read one band of a raster reprojected onto the reference grid, else zeros.
+    `band <= 0` selects the last band (e.g. the latest VIIRS year)."""
     import rasterio
     from rasterio.warp import reproject, Resampling
     h, w = ref_profile["height"], ref_profile["width"]
@@ -74,7 +75,8 @@ def _read_aligned(path, ref_profile):
         return np.zeros((h, w), dtype="float32")
     dst = np.zeros((h, w), dtype="float32")
     with rasterio.open(path) as src:
-        reproject(source=rasterio.band(src, 1), destination=dst,
+        b = src.count if band <= 0 else band
+        reproject(source=rasterio.band(src, b), destination=dst,
                   dst_transform=ref_profile["transform"], dst_crs=ref_profile["crs"],
                   resampling=Resampling.average)
     return dst
@@ -102,12 +104,10 @@ def build_stack(region, bbox, ref_profile):
         normalize01(distance_field(water, res_m)),
         normalize01(_read_aligned(f"data/growth/ghsl_pop_2020_{region}.tif", ref_profile)),
     ]
-    # night-lights: take the latest VIIRS band if present
+    # night-lights: latest VIIRS band, aligned to the reference grid like the rest
     viirs = Path(f"data/growth/viirs_2016-2024_{region}.tif")
     if viirs.exists():
-        import rasterio
-        with rasterio.open(viirs) as src:
-            layers.append(normalize01(src.read(src.count).astype("float32")))
+        layers.append(normalize01(_read_aligned(str(viirs), ref_profile, band=0)))
     stack = np.stack([np.asarray(x, dtype="float32") for x in layers], axis=-1)
     log.info("driver stack %s (%d layers)", stack.shape, stack.shape[-1])
     return stack

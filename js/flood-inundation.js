@@ -47,6 +47,7 @@ const FloodInundation = (() => {
     // Cache the upsampled field + cell elevation + forecast so perturb() can
     // rebuild frames on the rainfall slider without re-fetching elevations.
     let _state = null;   // { field, cellElev, forecast }
+    let _elevAbort = null;   // AbortController for in-flight elevation fetches
 
     // ---------- pure geometry / sampling ----------
     /** GRID×GRID grid of lat/lng over a box around (lat,lng), row 0 = north. */
@@ -92,13 +93,13 @@ const FloodInundation = (() => {
     }
 
     // ---------- elevation fetch ----------
-    async function _fetchElevations(lats, lngs) {
+    async function _fetchElevations(lats, lngs, signal) {
         const out = new Float32Array(lats.length);
         for (let start = 0; start < lats.length; start += MAX_BATCH) {
             const la = lats.slice(start, start + MAX_BATCH);
             const ln = lngs.slice(start, start + MAX_BATCH);
             const url = `${ELEV_URL}?latitude=${la.join(',')}&longitude=${ln.join(',')}`;
-            const r = await fetch(url, { cache: 'no-store' });
+            const r = await fetch(url, { cache: 'no-store', signal });
             if (!r.ok) throw new Error(`elevation API ${r.status}`);
             const payload = await r.json();
             const elev = payload && payload.elevation;
@@ -211,10 +212,12 @@ const FloodInundation = (() => {
         const { lat, lng } = cell.center;
         const { lats, lngs, bounds } = gridPoints(lat, lng);
 
+        _elevAbort = new AbortController();
         let elev;
         try {
-            elev = await _fetchElevations(lats, lngs);
+            elev = await _fetchElevations(lats, lngs, _elevAbort.signal);
         } catch (e) {
+            if (e && e.name === 'AbortError') return;   // detach / cell switch
             console.warn('FloodInundation: elevation fetch failed', e);
             if (typeof App !== 'undefined') {
                 App.showToast('Flood map', 'Elevation data unavailable right now', 'warning');
@@ -250,6 +253,7 @@ const FloodInundation = (() => {
     /** Stop the animation and remove the layer, source, and live canvas. Idempotent. */
     function detach() {
         if (_animTimer) { clearInterval(_animTimer); _animTimer = null; }
+        if (_elevAbort) { _elevAbort.abort(); _elevAbort = null; }
         _attachedCellCode = null;
         _frameCanvases = [];
         _frameIdx = 0;

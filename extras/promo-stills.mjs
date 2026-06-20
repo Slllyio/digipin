@@ -78,8 +78,10 @@ const jump = (p, o) => p.evaluate((o) => MapModule.getMap().jumpTo(o), o);
 /** Toggle the Overture 3D buildings overlay to the desired `on` state, then let it stream in. */
 async function buildings(page, on) {
     await page.evaluate((on) => {
-        const a = typeof OvertureBuildings !== 'undefined' && OvertureBuildings.isActive();
-        if (on !== a) OvertureBuildings.toggle(MapModule.getMap());
+        if (typeof OvertureBuildings === 'undefined'
+            || typeof OvertureBuildings.isActive !== 'function'
+            || typeof OvertureBuildings.toggle !== 'function') return;
+        if (on !== OvertureBuildings.isActive()) OvertureBuildings.toggle(MapModule.getMap());
     }, on);
     await sleep(2500); // let extrusions stream in
 }

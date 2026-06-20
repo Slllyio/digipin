@@ -68,7 +68,11 @@ def generate(out_path=DEFAULT_OUT, seconds=360.0):
         "-ar", "44100", "-c:a", "libmp3lame", "-b:a", "192k",
         out_path,
     ]
-    r = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=seconds + 120)
+    except subprocess.TimeoutExpired as e:
+        sys.stderr.write((e.stderr or "")[-2500:] if isinstance(e.stderr, str) else "")
+        raise SystemExit("ffmpeg timed out while rendering the ambient bed")
     if r.returncode != 0:
         sys.stderr.write(r.stderr[-2500:])
         raise SystemExit("ffmpeg failed to render the ambient bed")
