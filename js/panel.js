@@ -268,6 +268,70 @@ const Panel = (() => {
             </div>`;
     }
 
+    /** Build the "Utilities & infrastructure" card (7 honestly-sourced readings). */
+    function buildUtilitiesHTML(data) {
+        const u = data.utilities;
+        if (!u) return '';
+        const radius = data.radius || 400;
+        const rows = [];
+        const row = (name, value, detail) =>
+            `<div class="health-item"><span class="health-name">${esc(name)}</span>`
+            + `<span class="health-type">${esc(value)}</span>`
+            + (detail ? `<span class="health-beds">${esc(detail)}</span>` : '')
+            + `</div>`;
+
+        // 1. Sound / noise (modeled)
+        if (u.noise) {
+            rows.push(row('Sound / noise', `${u.noise.value}/100 · ${u.noise.band}`, u.noise.source));
+        } else {
+            rows.push(row('Sound / noise', 'estimate unavailable', 'modeled'));
+        }
+        // 2. Ground water level (regional)
+        if (u.groundwater_level) {
+            const g = u.groundwater_level;
+            rows.push(row('Ground water level', `~${g.depth_m_bgl} m bgl`,
+                `${g.category}${g.trend ? ' · ' + g.trend : ''}`));
+        } else {
+            rows.push(row('Ground water level', 'regional data: pilot only', 'CGWB'));
+        }
+        // 3. Sewer lines (OSM)
+        rows.push(u.sewer && u.sewer.count > 0
+            ? row('Sewer lines', `${u.sewer.count} mapped ≤${radius}m`,
+                u.sewer.nearest_m != null ? `nearest ~${u.sewer.nearest_m}m` : 'OSM')
+            : row('Sewer lines', 'none mapped nearby', 'OSM coverage sparse'));
+        // 4. Water pipelines (OSM)
+        rows.push(u.water && u.water.count > 0
+            ? row('Water pipelines', `${u.water.count} mapped ≤${radius}m`,
+                u.water.nearest_m != null ? `nearest ~${u.water.nearest_m}m` : 'OSM')
+            : row('Water pipelines', 'none mapped nearby', 'OSM coverage sparse'));
+        // 5. Gas connection (PNG)
+        if (u.gas_png && u.gas_png.available) {
+            rows.push(row('Gas connection (PNG)', u.gas_png.operator || 'available',
+                u.gas_png.source || 'CGD'));
+        } else {
+            rows.push(row('Gas connection (PNG)', 'CGD status: pilot only', 'PNGRB'));
+        }
+        // 6. Ground water quality (regional)
+        if (u.groundwater_quality) {
+            rows.push(row('Ground water quality', u.groundwater_quality.label,
+                u.groundwater_quality.source || 'CGWB'));
+        } else {
+            rows.push(row('Ground water quality', 'regional data: pilot only', 'CGWB'));
+        }
+        // 7. Electricity connection type (OSM + regional operator)
+        const e = u.electricity || {};
+        const typeLabel = { overhead: 'Overhead', underground: 'Underground', mixed: 'Mixed', unknown: 'Typical: overhead LV' }[e.type] || 'Unknown';
+        const eDetail = [e.operator, e.nearest_substation_m != null ? `substation ~${e.nearest_substation_m}m` : null]
+            .filter(Boolean).join(' · ') || e.source;
+        rows.push(row('Electricity connection', typeLabel, eDetail));
+
+        return `<div class="data-card">
+            <div class="data-card-title">&#128736;&#65039; Utilities &amp; infrastructure <span class="data-badge badge-dim">7 layers</span></div>
+            <div class="health-list">${rows.join('')}</div>
+            <div class="data-card-sub">OSM pipes/power are sparsely mapped; ground water &amp; PNG are regional (CGWB/PNGRB) for the Indore pilot. See docs/UTILITIES_MODEL.md.</div>
+        </div>`;
+    }
+
     /** Build the full panel markup for a cell: header, hazards, environment/AQI, solar, satellite, health, EV, IUDX, Wikipedia, action buttons, and category tabs. */
     function buildFullHTML(cell, data) {
         const addr = data.address || {};
@@ -397,6 +461,10 @@ const Panel = (() => {
                 <div class="context-summary">${esc(wiki.summary)}</div>
             </div>`;
         }
+
+        // Utilities & infrastructure (7 layers: noise, ground water, sewer,
+        // water, gas/PNG, water quality, electricity)
+        html += buildUtilitiesHTML(data);
 
         // Building Intelligence — opens as independent floating dialog
         if (data.buildingIntel) {

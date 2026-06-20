@@ -526,6 +526,8 @@ const DataFetcher = (() => {
   nwr[highway=street_lamp](around:${radius},${lat},${lng});
   way[highway~"^(primary|secondary|tertiary|residential|trunk|footway|path|pedestrian|cycleway)$"](around:${radius},${lat},${lng});
   nwr[man_made~"^(tower|mast|water_tower|storage_tank|bridge)$"](around:${radius},${lat},${lng});
+  nwr[man_made~"^(pipeline|water_works|water_well|wastewater_plant|reservoir_covered|manhole|gasometer)$"](around:${radius},${lat},${lng});
+  nwr[amenity=drinking_water](around:${radius},${lat},${lng});
   nwr[power](around:${radius},${lat},${lng});
   nwr[natural=water](around:${radius},${lat},${lng});
   nwr[waterway](around:${radius},${lat},${lng});
@@ -726,8 +728,10 @@ const DataFetcher = (() => {
         ]);
 
         // === OSM POI data ===
+        let osmElements = [];   // hoisted so the utilities pass can reuse them
         if (osmData.status === 'fulfilled') {
             const elements = osmData.value.elements || [];
+            osmElements = elements;
             result.raw.totalElements = elements.length;
 
             const classified = classifyElements(elements);
@@ -896,6 +900,22 @@ const DataFetcher = (() => {
         // === Compute intelligence scores ===
         result.scores = computeScores(result);
 
+        // === Utilities & infrastructure (per-cell) ===
+        // OSM-derived (sewer/water/gas pipes, electricity) from the elements
+        // already fetched, plus a bundled regional reference (groundwater,
+        // PNG gas) and the modeled noise reading. Best-effort.
+        if (typeof Utilities !== 'undefined') {
+            try {
+                const utilRef = await memo('utilities_ref', 30 * DAY, () => Utilities.loadReference());
+                result.utilities = Utilities.assess(osmElements, utilRef, {
+                    lat, lng,
+                    quietnessScore: result.scores?.quietness_score?.value,
+                });
+            } catch (e) {
+                console.warn('[orchestrator] utilities skipped:', e);
+            }
+        }
+
         // === Real-time signals — best-effort, never fail the cell fetch ===
         // Sources: NDMA SACHET CAP alerts, IMD warnings + forecast, NCS
         // earthquakes, Open-Meteo flood forecast. All best-effort.
@@ -982,6 +1002,7 @@ const DataFetcher = (() => {
             health: sourceState(ogdHealthData),
             iudx: sourceState(iudxData),
             evCharging: sourceState(evChargingData),
+            utilities: result.utilities ? 'ok' : 'unavailable',
         };
 
         _cacheSet(key, result);

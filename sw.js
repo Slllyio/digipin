@@ -43,6 +43,7 @@ const LOCAL_ASSETS = [
     './js/realtime-imd.js',
     './js/realtime-quakes.js',
     './js/realtime-flood.js',
+    './js/utilities.js',
     './js/data-fetcher.js',
     './js/precomputed-scores.js',
     './js/score-choropleth.js',

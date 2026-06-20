@@ -68,6 +68,12 @@ data/safety/*
 data/safety/*/*
 !data/safety/*/*.json
 !data/safety/*/*.geojson
+# Bundled utilities/infrastructure regional reference — browser-consumed.
+!data/utilities/
+data/utilities/*
+!data/utilities/*/
+data/utilities/*/*
+!data/utilities/*/*.json
 
 # SUMO simulation data (large XML files)
 guna-twin-city/traffic-analysis/sumo/*.xml
