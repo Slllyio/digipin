@@ -30,6 +30,8 @@ const App = (() => {
         // Theme first: MapModule.init reads Theme for the basemap + grid colours.
         step('Theme', () => {
             if (typeof Theme !== 'undefined') Theme.init();
+            // Localize the static chrome (top-bar/toolbar/DISHA) to the saved language.
+            if (typeof I18n !== 'undefined') I18n.init();
         });
         step('MapModule', () => MapModule.init());
         // Kick off precomputed-score coverage load (async, non-blocking). When

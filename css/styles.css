@@ -2579,6 +2579,35 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
     color: var(--text-primary);
 }
 
+/* Language selector — mirrors #city-select, narrower (EN/हिं). */
+#lang-select {
+    background: var(--wash-05);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 5px 8px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    outline: none;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+#lang-select option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Hindi UI: prefer Noto Sans Devanagari, falling back to the Latin stack so
+   mixed strings (DIGIPIN codes, numbers) still render in Inter. Only active
+   when <html lang="hi"> (set pre-paint + by I18n.apply). */
+html[lang="hi"] body,
+html[lang="hi"] input,
+html[lang="hi"] button,
+html[lang="hi"] select,
+html[lang="hi"] textarea {
+    font-family: 'Noto Sans Devanagari', 'Inter', -apple-system, sans-serif;
+}
+
 /* ===== TOOLBAR ===== */
 #toolbar {
     position: fixed;

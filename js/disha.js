@@ -806,6 +806,17 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return prompt;
     }
 
+    /**
+     * Language directive appended to the system prompt so DISHA replies in the
+     * user's chosen UI language (js/i18n.js). Empty for English (the default).
+     */
+    function _languageDirective() {
+        if (typeof I18n === 'undefined') return '';
+        const lang = I18n.get();
+        if (lang === 'en') return '';
+        return `\n\nIMPORTANT: Respond entirely in ${I18n.langNameEn(lang)}. Keep DIGIPIN codes, numbers, and units unchanged.`;
+    }
+
     // ===== STREAMING (via DISHAProviders, with cache) =====
     async function ask(context, question, onToken, onDone, onError, cityScanContext) {
         if (_abortController) {
@@ -853,7 +864,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
             if (provider.type === 'ollama') {
                 const prompt = assemblePrompt(context, question, cityScanContext);
                 await DISHAProviders.stream({
-                    system: SYSTEM_PROMPT,
+                    system: SYSTEM_PROMPT + _languageDirective(),
                     prompt,
                     onToken,
                     onDone: (resp) => {
@@ -868,7 +879,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
                     signal: _abortController.signal
                 });
             } else {
-                let systemContent = SYSTEM_PROMPT + '\n\n[LOCATION DATA]\n' + context;
+                let systemContent = SYSTEM_PROMPT + _languageDirective() + '\n\n[LOCATION DATA]\n' + context;
                 if (cityScanContext) {
                     systemContent += '\n\n' + cityScanContext;
                 }
