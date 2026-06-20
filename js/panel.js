@@ -24,7 +24,7 @@ const Panel = (() => {
     const _SOURCE_LABELS = {
         osm: 'OSM', weather: 'Weather', aqi: 'Air Quality', elevation: 'Elevation',
         population: 'Population', wikipedia: 'Wikipedia', solar: 'Solar',
-        health: 'Health', iudx: 'IUDX', evCharging: 'EV',
+        health: 'Health', iudx: 'IUDX', evCharging: 'EV', utilities: 'Utilities',
     };
 
     // Live hazards layer (NDMA SACHET alerts, IMD warnings, nearby earthquakes,
@@ -90,6 +90,14 @@ const Panel = (() => {
         const entries = Object.entries(_SOURCE_LABELS).filter(([k]) => k in st);
         if (entries.length === 0) return '';
         const okCount = entries.filter(([k]) => st[k] === 'ok').length;
+        // Every source failed — collapse the wall of "off" chips into one honest
+        // banner instead (usually means offline or a network outage).
+        if (okCount === 0) {
+            return `<div class="source-status source-offline" role="status">
+                <span class="src-chip src-off">&#9888;&#65039; No live sources reached</span>
+                <span class="source-status-note">You may be offline — showing cached or limited data.</span>
+            </div>`;
+        }
         const chips = entries.map(([k, label]) => {
             const ok = st[k] === 'ok';
             return `<span class="src-chip ${ok ? 'src-ok' : 'src-off'}" title="${esc(label)}: ${ok ? 'loaded' : 'unavailable'}">${esc(label)}</span>`;
@@ -227,11 +235,20 @@ const Panel = (() => {
             <div class="panel-header">
                 <div class="digipin-code">${esc(cell.code)}</div>
             </div>
-            <div class="error-msg">
+            <div class="error-msg" role="alert">
                 <span class="error-icon">&#9888;&#65039;</span>
-                <p>Failed to load data</p>
+                <p>Couldn't load data for this cell</p>
                 <small>${esc(msg)}</small>
+                <button class="retry-btn" id="panel-retry" type="button">&#8635; Retry</button>
             </div>`;
+        const retry = contentEl.querySelector('#panel-retry');
+        if (retry) {
+            retry.addEventListener('click', () => {
+                if (typeof MapModule !== 'undefined' && MapModule.selectByCode) {
+                    MapModule.selectByCode(cell.code);
+                }
+            });
+        }
     }
 
     /** Close the panel, clear map markers, and restore focus to where it was before opening. */
@@ -257,7 +274,7 @@ const Panel = (() => {
                 </div>
                 <div class="coords">${cell.center.lat.toFixed(6)}&deg;N, ${cell.center.lng.toFixed(6)}&deg;E</div>
             </div>
-            <div class="loading-section">
+            <div class="loading-section" role="status" aria-live="polite" aria-label="Loading cell data">
                 <div class="spinner"></div>
                 <p>Fetching 160+ urban features...</p>
                 <div class="loading-categories">

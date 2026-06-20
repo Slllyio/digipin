@@ -3751,3 +3751,52 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
 .heat-widget__methods-body { padding: 6px 0; line-height: 1.4; }
 .heat-widget--unavailable { opacity: 0.7; }
 .heat-widget__msg { color: var(--text-secondary); font-size: 11px; }
+
+/* ============================================================
+   World-class UX — Phase 1: polish & accessibility
+   ============================================================ */
+
+/* Respect the OS "reduce motion" setting: neutralise animations and
+   transitions for vestibular / motion-sensitive users. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+    .spinner { animation: none !important; }
+}
+
+/* Floating dialogs are draggable by their titlebar — show the affordance. */
+.dialog-titlebar { cursor: grab; }
+.dialog-titlebar:active { cursor: grabbing; }
+
+/* Retry button on the panel error state. */
+.retry-btn {
+    margin-top: 12px;
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--accent-cyan);
+    color: var(--bg-primary);
+    font: 600 13px/1 inherit;
+    cursor: pointer;
+}
+.retry-btn:hover { filter: brightness(1.08); }
+
+/* Offline / no-sources banner (replaces the wall of "off" chips). */
+.source-offline { display: flex; flex-direction: column; gap: 4px; }
+.source-status-note { color: var(--text-muted); font-size: 11px; }
+
+/* Honour device safe areas (notch / gesture bars) on mobile so the toolbar
+   tools and dialog controls aren't occluded. */
+@supports (padding: env(safe-area-inset-top)) {
+    @media (max-width: 768px) {
+        .floating-dialog { padding-bottom: env(safe-area-inset-bottom); }
+        #toolbar {
+            padding-top: max(8px, env(safe-area-inset-top));
+            padding-left: env(safe-area-inset-left);
+        }
+    }
+}
