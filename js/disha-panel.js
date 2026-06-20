@@ -607,6 +607,20 @@ const DISHAPanel = (() => {
         scrollToBottom();
     }
 
+    /** Append ✓/✗ chips confirming the map actions DISHA triggered. */
+    function _renderActionChips(parent, results) {
+        if (!results || !results.length) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'disha-action-chips';
+        results.forEach(r => {
+            const chip = document.createElement('span');
+            chip.className = 'disha-action-chip ' + (r.ok ? 'ok' : 'fail');
+            chip.textContent = (r.ok ? '✓ ' : '✗ ') + (r.ok ? r.label : `${r.type}: ${r.error}`);
+            wrap.appendChild(chip);
+        });
+        parent.appendChild(wrap);
+    }
+
     // ===== STREAM RESPONSE =====
     async function streamResponse(question, cityScanContext) {
         _isStreaming = true;
@@ -642,8 +656,12 @@ const DISHAPanel = (() => {
             },
             (meta) => {
                 _isStreaming = false;
-                applyFormattedResponse(contentEl, fullResponse);
                 contentEl.classList.remove('disha-streaming');
+                // Strip any [ACTION] directives from the text shown to the user,
+                // then execute them and confirm with chips.
+                const hasActions = typeof DISHAActions !== 'undefined';
+                const shown = hasActions ? DISHAActions.stripActions(fullResponse) : fullResponse;
+                applyFormattedResponse(contentEl, shown);
                 // Show cached indicator if response was from cache
                 if (meta && meta.cached) {
                     const badge = document.createElement('span');
@@ -652,9 +670,13 @@ const DISHAPanel = (() => {
                     badge.title = 'This response was served from cache';
                     contentEl.appendChild(badge);
                 }
+                if (hasActions) {
+                    const acts = DISHAActions.parseActions(fullResponse);
+                    if (acts.length) _renderActionChips(contentEl, DISHAActions.executeActions(acts));
+                }
                 // Conversation-aware follow-up chips derived from this reply.
                 if (fullResponse.trim()) {
-                    renderSuggestions(DISHA.getSuggestions(_currentData || {}, fullResponse));
+                    renderSuggestions(DISHA.getSuggestions(_currentData || {}, shown));
                 }
                 resetInputState();
             },

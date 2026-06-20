@@ -19,6 +19,7 @@ const APP_GLOBALS = {
   MapModule: 'readonly', App: 'readonly', Panel: 'readonly', QueryEngine: 'readonly',
   KeyboardNav: 'readonly',
   DISHA: 'readonly', DISHAPanel: 'readonly', DISHAProviders: 'readonly', DISHACache: 'readonly',
+  DISHAActions: 'readonly',
   Compare: 'readonly', Bookmarks: 'readonly', CitySelector: 'readonly', WardOverlay: 'readonly',
   HeatmapOverlay: 'readonly', BuildingIntelligence: 'readonly', BuildingIntelDialog: 'readonly',
   ScoresDialog: 'readonly', DigitalTwinLayers: 'readonly', FloatingDialogs: 'readonly',

@@ -91,7 +91,14 @@ DATA SOURCE TRUST HIERARCHY:
 4. WorldPop (satellite-derived, ~100m resolution)
 5. LCZ morphology (global 100m grid, may have classification errors at edges)
 
-You serve urban planners, real estate analysts, municipal officials, citizens, and smart city administrators.`;
+You serve urban planners, real estate analysts, municipal officials, citizens, and smart city administrators.
+
+MAP ACTIONS — in addition to your normal answer, you MAY emit up to 2 machine-readable directives (each on its own line) that the app executes live. Only use them when clearly helpful:
+  [ACTION] flyTo lat:22.7196 lng:75.8577 zoom:15
+  [ACTION] selectCell code:39J-49L-L8T4
+  [ACTION] overlay name:heat   (names: heatmap, growth, prediction, traffic, mobility, heat, ndvi, wards, buildings, scenario, grid)
+  [ACTION] query id:best_residential
+Keep each directive on its own line; the rest of your reply should read normally without them.`;
 
     // ===== SMART CONTEXT SECTIONS =====
     // Maps question intent to which data sections to include
