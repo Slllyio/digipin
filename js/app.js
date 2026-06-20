@@ -58,6 +58,15 @@ const App = (() => {
         });
         step('serviceWorker', () => registerServiceWorker());
 
+        // Connectivity feedback: tell the user when live data pauses/resumes so a
+        // wall of "unavailable" sources reads as "offline", not "broken".
+        step('connectivity', () => {
+            window.addEventListener('offline', () =>
+                showToast('You’re offline', 'Showing cached data — live sources are paused.', 'warning'));
+            window.addEventListener('online', () =>
+                showToast('Back online', 'Live data sources reconnected.', 'info'));
+        });
+
         step('welcome', () => {
             const city = CitySelector.getCurrent();
             showToast('Welcome to DigiPin Urban Intelligence', `${city.name}, ${city.state} \u2022 160+ Features \u2022 Click any grid cell`, 'info');
