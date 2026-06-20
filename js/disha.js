@@ -912,10 +912,32 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
     }
 
     // ===== SMART SUGGESTIONS =====
-    function getSuggestions(data) {
+    /** Suggested questions for the chips. With `lastResponse`, returns
+     *  conversation-aware follow-ups derived from the latest reply; otherwise
+     *  cell-context suggestions (used when the panel first opens). */
+    function getSuggestions(data, lastResponse = null) {
         const scores = data.scores || {};
-        const suggestions = [];
 
+        // Conversation-aware follow-ups: keyed off topics in the latest reply.
+        if (lastResponse) {
+            const r = String(lastResponse).toLowerCase();
+            const follow = [];
+            const add = (q) => { if (!follow.includes(q)) follow.push(q); };
+            if (/flood|inundat|waterlog/.test(r)) add('What flood mitigation is recommended here?');
+            if (/congest|traffic|bottleneck|\broad/.test(r)) add('Which roads are the worst bottlenecks?');
+            if (/growth|construction|develop|expansion/.test(r)) add('What is driving growth here?');
+            if (/safety|crime|police/.test(r)) add('How can safety be improved here?');
+            if (/transit|bus|metro|connectivity/.test(r)) add('How good is public-transit access here?');
+            if (/water|sewer|utilit|electric|\bgas/.test(r)) add('What are the utility gaps here?');
+            if (/invest|real estate|property|price|appreciat/.test(r)) add('Is this a good investment, and why?');
+            if (/school|education|healthcare|hospital/.test(r)) add('How is access to schools and healthcare?');
+            // Always offer a couple of generic deepeners.
+            add('Summarise the top 3 takeaways');
+            add('How does this compare to a typical Indore neighbourhood?');
+            return follow.slice(0, 4);
+        }
+
+        const suggestions = [];
         suggestions.push('Give me a full urban intelligence briefing');
         suggestions.push('What should be built here? Development recommendations');
 

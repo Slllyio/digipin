@@ -3813,3 +3813,13 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
     cursor: pointer;
 }
 .compare-export-btn:hover { color: var(--accent-cyan); border-color: var(--accent-cyan); }
+
+/* DISHA: blinking caret while a reply streams in (token-by-token). */
+.disha-msg-content.disha-streaming::after {
+    content: '▋';
+    display: inline-block;
+    margin-left: 2px;
+    color: var(--accent-cyan);
+    animation: disha-caret 1s steps(2, start) infinite;
+}
+@keyframes disha-caret { 50% { opacity: 0; } }

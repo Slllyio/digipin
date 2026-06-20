@@ -312,7 +312,6 @@ const DISHAPanel = (() => {
         const messagesEl = document.getElementById('disha-messages');
         const inputEl = document.getElementById('disha-input');
         const sendBtn = document.getElementById('disha-send');
-        const suggestionsEl = document.getElementById('disha-suggestions');
 
         // Guard: opening without a cell is a UX path (e.g. user clicked
         // a DISHA-launcher button before clicking the map). Show a
@@ -372,17 +371,25 @@ const DISHAPanel = (() => {
         );
 
         const suggestions = DISHA.getSuggestions(data);
-        while (suggestionsEl.firstChild) suggestionsEl.removeChild(suggestionsEl.firstChild);
-        suggestionsEl.style.display = '';
-        suggestions.forEach(s => {
+        renderSuggestions(suggestions);
+
+        inputEl.focus();
+    }
+
+    /** Render the suggestion/follow-up chips (clears + rebuilds the row). */
+    function renderSuggestions(list) {
+        const el = document.getElementById('disha-suggestions');
+        if (!el) return;
+        while (el.firstChild) el.removeChild(el.firstChild);
+        if (!Array.isArray(list) || list.length === 0) { el.style.display = 'none'; return; }
+        el.style.display = '';
+        list.forEach(s => {
             const btn = document.createElement('button');
             btn.className = 'disha-suggestion';
             btn.textContent = s;
             btn.addEventListener('click', () => askSuggestion(s));
-            suggestionsEl.appendChild(btn);
+            el.appendChild(btn);
         });
-
-        inputEl.focus();
     }
 
     /** Close the chat panel, abort any in-flight request, and reset streaming/scanning flags. */
@@ -613,19 +620,30 @@ const DISHAPanel = (() => {
 
         const messageEl = addMessage('disha', '');
         const contentEl = messageEl.querySelector('.disha-msg-content');
+        contentEl.classList.add('disha-streaming');   // shows a blinking caret
+        contentEl.textContent = '…';                  // "thinking" until first token
         let fullResponse = '';
+        let lastFmt = 0;
 
         await DISHA.ask(
             _currentContext,
             question,
             (token) => {
                 fullResponse += token;
-                contentEl.textContent = fullResponse;
+                // Format live, but throttle (~8 fps) so we don't re-parse the
+                // whole reply on every token (O(n²)); onDone does the final pass.
+                const now = Date.now();
+                if (now - lastFmt > 120) {
+                    lastFmt = now;
+                    applyFormattedResponse(contentEl, fullResponse);
+                    contentEl.classList.add('disha-streaming');
+                }
                 scrollToBottom();
             },
             (meta) => {
                 _isStreaming = false;
                 applyFormattedResponse(contentEl, fullResponse);
+                contentEl.classList.remove('disha-streaming');
                 // Show cached indicator if response was from cache
                 if (meta && meta.cached) {
                     const badge = document.createElement('span');
@@ -634,10 +652,15 @@ const DISHAPanel = (() => {
                     badge.title = 'This response was served from cache';
                     contentEl.appendChild(badge);
                 }
+                // Conversation-aware follow-up chips derived from this reply.
+                if (fullResponse.trim()) {
+                    renderSuggestions(DISHA.getSuggestions(_currentData || {}, fullResponse));
+                }
                 resetInputState();
             },
             (err) => {
                 _isStreaming = false;
+                contentEl.classList.remove('disha-streaming');
                 contentEl.textContent = `Error: ${err.message}`;
                 contentEl.classList.add('disha-error');
                 resetInputState();
