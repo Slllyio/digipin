@@ -105,6 +105,25 @@ const Compare = (() => {
         return rows.map(r => r.map(_csvEscape).join(',')).join('\n');
     }
 
+    /** Download the comparison radar chart as a PNG image. */
+    function exportPNG() {
+        const canvas = document.getElementById('compare-radar');
+        if (!canvas || _pinned.length < 2) {
+            App.showToast('Need 2+ Pins', 'Pin at least 2 cells to export the chart', 'warning');
+            return;
+        }
+        try {
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL('image/png');
+            a.download = `digipin-compare-${_pinned.map(p => p.cell.code).join('_')}.png`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        } catch {
+            App.showToast('Export failed', 'Could not render the chart image', 'warning');
+        }
+    }
+
     /** Download the current comparison as a CSV file. */
     function exportCSV() {
         if (_pinned.length < 2) {
@@ -191,6 +210,12 @@ const Compare = (() => {
         exportBtn.textContent = '↓ Export CSV';
         exportBtn.addEventListener('click', exportCSV);
         actions.appendChild(exportBtn);
+        const pngBtn = document.createElement('button');
+        pngBtn.className = 'compare-export-btn';
+        pngBtn.type = 'button';
+        pngBtn.textContent = '↓ Chart PNG';
+        pngBtn.addEventListener('click', exportPNG);
+        actions.appendChild(pngBtn);
         container.appendChild(actions);
 
         // Property Intelligence verdict rows (answer-first): each cell's growth
@@ -378,5 +403,5 @@ const Compare = (() => {
         });
     }
 
-    return { pin, unpin, clearAll, openPanel, closePanel, getPinned, buildCSV, exportCSV };
+    return { pin, unpin, clearAll, openPanel, closePanel, getPinned, buildCSV, exportCSV, exportPNG };
 })();

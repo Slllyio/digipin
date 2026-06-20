@@ -3802,7 +3802,7 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
 }
 
 /* Compare panel — CSV export action. */
-.compare-actions { display: flex; justify-content: flex-end; margin: 6px 0 10px; }
+.compare-actions { display: flex; justify-content: flex-end; gap: 8px; margin: 6px 0 10px; }
 .compare-export-btn {
     padding: 6px 12px;
     border: 1px solid var(--border-color);
