@@ -21,9 +21,12 @@ test.describe('first-run onboarding', () => {
     const modal = page.locator('#onboarding-backdrop');
     await expect(modal).toBeVisible();
 
-    // Dismiss via "Start exploring" (advance step 1 → 2 → close).
-    await page.locator('.onboarding-next').click();   // → step 2
-    await page.locator('.onboarding-next').click();   // → dismiss
+    // Advance through every step ("Next" … → "Start exploring") to dismiss.
+    // Robust to the number of steps.
+    for (let i = 0; i < 8; i++) {
+      if (await modal.count() === 0) break;
+      await page.locator('.onboarding-next').click();
+    }
     await expect(modal).toHaveCount(0);
 
     // The flag persists, so a reload does NOT re-show it.

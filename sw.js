@@ -2,7 +2,7 @@
  * Service Worker — Offline cache for DigiPin portal
  * Caches static assets; API calls use network-first strategy
  */
-const CACHE_NAME = 'digipin-v6';
+const CACHE_NAME = 'digipin-v22';
 
 // Full same-origin app shell — EVERY js/ module referenced by app.html, so the
 // app is genuinely usable offline. (Previously only ~19 were precached and the
@@ -21,6 +21,19 @@ const LOCAL_ASSETS = [
     './js/realtime-growth.js',
     './js/growth-widget.js',
     './js/growth-overlay.js',
+    './js/ca-growth-overlay.js',
+    './js/scenario-model.js',
+    './js/scenario-panel.js',
+    './js/traffic-score.js',
+    './js/traffic-grid.js',
+    './js/realtime-traffic.js',
+    './js/traffic-widget.js',
+    './js/traffic-overlay.js',
+    './js/mobility-score.js',
+    './js/mobility-grid.js',
+    './js/realtime-mobility.js',
+    './js/mobility-widget.js',
+    './js/mobility-overlay.js',
     './js/heat-score.js',
     './js/realtime-heat.js',
     './js/heat-widget.js',
@@ -32,13 +45,16 @@ const LOCAL_ASSETS = [
     './js/realtime-imd.js',
     './js/realtime-quakes.js',
     './js/realtime-flood.js',
+    './js/utilities.js',
     './js/data-fetcher.js',
     './js/precomputed-scores.js',
     './js/score-choropleth.js',
+    './js/footprint-grid.js',
     './js/building-intelligence.js',
     './js/overture-buildings.js',
     './js/theme.js',
     './js/map.js',
+    './js/keyboard-nav.js',
     './js/panel.js',
     './js/query-engine.js',
     './js/disha-cache.js',
@@ -46,6 +62,7 @@ const LOCAL_ASSETS = [
     './js/disha.js',
     './js/text2map-embeddings.js',
     './js/text2map.js',
+    './js/text2map-results-layer.js',
     './js/disha-panel.js',
     './js/compare.js',
     './js/isochrone.js',
@@ -68,6 +85,9 @@ const LOCAL_ASSETS = [
     './js/saved-views.js',
     './js/onboarding.js',
     './js/layers-panel.js',
+    './js/dtdl-export.js',
+    './js/real-estate-model.js',
+    './js/real-estate-widget.js',
     './js/export-dialog.js',
     './js/app.js',
 ];

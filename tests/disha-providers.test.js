@@ -4,6 +4,23 @@ import { describe, it, expect } from 'vitest';
 const DP = globalThis.DISHAProviders;
 const DEFAULTS = { preferred: 'auto', keys: {}, custom: { baseUrl: '', model: '' } };
 
+// loadConfig() memoises _config and has no reset, so this must be the first
+// getConfig() call in the file — it is (the suites below only hit
+// normalizeConfig). A fresh module load per test file keeps _config null here.
+describe('DISHAProviders.loadConfig() default-provider seeding', () => {
+    it('seeds the provider from DIGIPIN_CONFIG.aiProvider when nothing is saved', () => {
+        // No real key is committed anywhere; an operator injects one at deploy
+        // time via window.DIGIPIN_CONFIG.aiProvider. Seeding must surface it.
+        window.DIGIPIN_CONFIG = { aiProvider: { preferred: 'groq', keys: { groq: 'gsk_injected' } } };
+        const cfg = DP.getConfig();
+        expect(cfg.preferred).toBe('groq');
+        expect(cfg.keys.groq).toBe('gsk_injected');
+        // Normalised shape is preserved (custom block backfilled).
+        expect(cfg.custom).toEqual({ baseUrl: '', model: '' });
+        delete window.DIGIPIN_CONFIG;
+    });
+});
+
 describe('DISHAProviders.normalizeConfig()', () => {
     it('returns defaults for corrupt or wrong-type payloads', () => {
         for (const bad of [null, undefined, 42, 'str', true, [], [1, 2]]) {

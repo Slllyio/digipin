@@ -74,6 +74,22 @@ Or open the ⚙ panel in the app and paste a **Groq** key (free tier) or any
 OpenAI-compatible endpoint. The app auto-detects Ollama → Groq → custom and
 falls back to an offline notice if none is reachable.
 
+To pre-wire a provider at deploy time (so the LLM parse is active without each
+user configuring it), seed `DIGIPIN_CONFIG.aiProvider` — it only applies when
+the user hasn't picked a provider in Settings, and **no key should be committed**
+(inject it from your deploy env, like the other keys above):
+
+```js
+window.DIGIPIN_CONFIG = {
+  aiProvider: { preferred: 'groq', keys: { groq: 'your-groq-key' } },
+};
+```
+
+Without any provider, **Text2Map still works** — natural-language questions are
+parsed by an offline concept lexicon; a connected LLM only upgrades parse quality.
+Either way the top matches are **highlighted on the map** (ranked cells, #1
+emphasised) and framed in view, not just listed.
+
 ## Real-time scrapers
 
 Pulls near-real-time data from Indian public sources that lack clean APIs

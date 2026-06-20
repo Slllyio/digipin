@@ -18,13 +18,24 @@ const Panel = (() => {
             .replace(/'/g, '&#039;');
     }
 
+    /** Format an ISO timestamp as a relative age ("12m ago" / "3h ago" / "2d ago"). */
+    function _relAge(iso) {
+        const t = Date.parse(iso);
+        if (Number.isNaN(t)) return '';
+        const mins = Math.max(0, Math.round((Date.now() - t) / 60000));
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.round(mins / 60);
+        if (hrs < 48) return `${hrs}h ago`;
+        return `${Math.round(hrs / 24)}d ago`;
+    }
+
     // Honest data coverage: show which sources loaded vs failed, so a missing
     // card reads as "AQI unavailable" rather than a silent gap. Driven by
     // result.sourceStatus from DataFetcher.fetchAllFeatures.
     const _SOURCE_LABELS = {
         osm: 'OSM', weather: 'Weather', aqi: 'Air Quality', elevation: 'Elevation',
         population: 'Population', wikipedia: 'Wikipedia', solar: 'Solar',
-        health: 'Health', iudx: 'IUDX', evCharging: 'EV',
+        health: 'Health', iudx: 'IUDX', evCharging: 'EV', utilities: 'Utilities',
     };
 
     // Live hazards layer (NDMA SACHET alerts, IMD warnings, nearby earthquakes,
@@ -33,10 +44,12 @@ const Panel = (() => {
     // freshness label on the snapshot-backed alert feed.
     const _HAZ_CLASS = { red: 'haz-red', orange: 'haz-orange', yellow: 'haz-yellow', green: 'haz-green' };
 
+    /** Render one severity-coloured hazard chip (icon + text). */
     function _hazChip(color, icon, text) {
         return `<span class="haz-chip ${_HAZ_CLASS[color] || 'haz-yellow'}">${icon} ${text}</span>`;
     }
 
+    /** Build the live-hazards strip (SACHET alerts, IMD warnings, quakes, flood) from realtime data; returns '' when none. */
     function buildHazardsHTML(data) {
         const rt = (data && data.realtime) || {};
         const chips = [];
@@ -81,12 +94,21 @@ const Panel = (() => {
         </div>`;
     }
 
+    /** Build the data-coverage strip showing which data sources loaded vs. failed; returns '' when no status present. */
     function buildSourceStatusHTML(data) {
         const st = data && data.sourceStatus;
         if (!st) return '';
         const entries = Object.entries(_SOURCE_LABELS).filter(([k]) => k in st);
         if (entries.length === 0) return '';
         const okCount = entries.filter(([k]) => st[k] === 'ok').length;
+        // Every source failed — collapse the wall of "off" chips into one honest
+        // banner instead (usually means offline or a network outage).
+        if (okCount === 0) {
+            return `<div class="source-status source-offline" role="status">
+                <span class="src-chip src-off">&#9888;&#65039; No live sources reached</span>
+                <span class="source-status-note">You may be offline — showing cached or limited data.</span>
+            </div>`;
+        }
         const chips = entries.map(([k, label]) => {
             const ok = st[k] === 'ok';
             return `<span class="src-chip ${ok ? 'src-ok' : 'src-off'}" title="${esc(label)}: ${ok ? 'loaded' : 'unavailable'}">${esc(label)}</span>`;
@@ -97,12 +119,14 @@ const Panel = (() => {
         </div>`;
     }
 
+    /** Cache references to the panel's DOM elements. Call once after the DOM is ready. */
     function init() {
         panelEl = document.getElementById('detail-panel');
         contentEl = document.getElementById('panel-content');
         titleEl = document.getElementById('panel-title-text');
     }
 
+    /** Open the panel for a cell, show its loading state, and move focus into it. */
     function show(cell) {
         currentCell = cell;
         titleEl.textContent = cell.code;
@@ -119,17 +143,37 @@ const Panel = (() => {
         try { panelEl.focus({ preventScroll: true }); } catch { /* older browsers */ }
     }
 
+    /** Replace loading state with full feature content for the cell, then attach all sub-widgets and button handlers. Ignored if the cell is no longer current. */
     function update(cell, data) {
         if (cell.code !== currentCell?.code) return;
+        // Drop any inundation overlay from a previous render before rebuilding;
+        // the widget re-attaches on demand via its "Show inundation" button.
+        if (typeof FloodInundation !== 'undefined') FloodInundation.detach();
         contentEl.innerHTML = buildFullHTML(cell, data);
         currentData = data;
 
-        if (typeof GrowthWidget !== 'undefined') {
-            GrowthWidget.attachTo(contentEl, data?.realtime?.growth || null, cell);
+        // Answer-first Property Intelligence card (verdict + intent toggle).
+        // It folds in the Growth Forecast as its "Trajectory" sub-section, so the
+        // standalone growth widget is no longer attached separately. It inserts
+        // itself just below the header (top of the scroll).
+        if (typeof RealEstateWidget !== 'undefined') {
+            RealEstateWidget.attachTo(contentEl, data, cell);
         }
 
         if (typeof HeatWidget !== 'undefined') {
             HeatWidget.attachTo(contentEl, data?.realtime?.heat || null, cell);
+        }
+
+        if (typeof TrafficWidget !== 'undefined') {
+            TrafficWidget.attachTo(contentEl, data?.realtime?.traffic || null, cell);
+        }
+
+        if (typeof MobilityWidget !== 'undefined') {
+            MobilityWidget.attachTo(contentEl, data?.realtime?.mobility || null, cell);
+        }
+
+        if (typeof FloodAnimation !== 'undefined') {
+            FloodAnimation.attachTo(contentEl, data?.realtime?.flood || null, cell);
         }
 
         const dishaBtn = document.getElementById('ask-disha-btn');
@@ -196,20 +240,32 @@ const Panel = (() => {
         });
     }
 
+    /** Render an error state in the panel for a cell that failed to load. */
     function showError(cell, msg) {
         contentEl.innerHTML = `
             <div class="panel-header">
                 <div class="digipin-code">${esc(cell.code)}</div>
             </div>
-            <div class="error-msg">
+            <div class="error-msg" role="alert">
                 <span class="error-icon">&#9888;&#65039;</span>
-                <p>Failed to load data</p>
+                <p>Couldn't load data for this cell</p>
                 <small>${esc(msg)}</small>
+                <button class="retry-btn" id="panel-retry" type="button">&#8635; Retry</button>
             </div>`;
+        const retry = contentEl.querySelector('#panel-retry');
+        if (retry) {
+            retry.addEventListener('click', () => {
+                if (typeof MapModule !== 'undefined' && MapModule.selectByCode) {
+                    MapModule.selectByCode(cell.code);
+                }
+            });
+        }
     }
 
+    /** Close the panel, clear map markers, and restore focus to where it was before opening. */
     function close() {
         panelEl.classList.remove('open');
+        if (typeof FloodInundation !== 'undefined') FloodInundation.detach();
         currentCell = null;
         clearFeatureMarkers();
         // Return focus to wherever it was before the panel opened.
@@ -219,6 +275,7 @@ const Panel = (() => {
         _restoreFocus = null;
     }
 
+    /** Build the loading-state markup (code, coords, spinner, category list) for a cell. */
     function buildLoadingHTML(cell) {
         return `
             <div class="panel-header">
@@ -228,7 +285,7 @@ const Panel = (() => {
                 </div>
                 <div class="coords">${cell.center.lat.toFixed(6)}&deg;N, ${cell.center.lng.toFixed(6)}&deg;E</div>
             </div>
-            <div class="loading-section">
+            <div class="loading-section" role="status" aria-live="polite" aria-label="Loading cell data">
                 <div class="spinner"></div>
                 <p>Fetching 160+ urban features...</p>
                 <div class="loading-categories">
@@ -239,6 +296,71 @@ const Panel = (() => {
             </div>`;
     }
 
+    /** Build the "Utilities & infrastructure" card (7 honestly-sourced readings). */
+    function buildUtilitiesHTML(data) {
+        const u = data.utilities;
+        if (!u) return '';
+        const radius = data.radius || 400;
+        const rows = [];
+        const row = (name, value, detail) =>
+            `<div class="health-item"><span class="health-name">${esc(name)}</span>`
+            + `<span class="health-type">${esc(value)}</span>`
+            + (detail ? `<span class="health-beds">${esc(detail)}</span>` : '')
+            + `</div>`;
+
+        // 1. Sound / noise (modeled)
+        if (u.noise) {
+            rows.push(row('Sound / noise', `${u.noise.value}/100 · ${u.noise.band}`, u.noise.source));
+        } else {
+            rows.push(row('Sound / noise', 'estimate unavailable', 'modeled'));
+        }
+        // 2. Ground water level (regional)
+        if (u.groundwater_level) {
+            const g = u.groundwater_level;
+            rows.push(row('Ground water level', `~${g.depth_m_bgl} m bgl`,
+                `${g.category}${g.trend ? ' · ' + g.trend : ''}`));
+        } else {
+            rows.push(row('Ground water level', 'regional data: pilot only', 'CGWB'));
+        }
+        // 3. Sewer lines (OSM)
+        rows.push(u.sewer && u.sewer.count > 0
+            ? row('Sewer lines', `${u.sewer.count} mapped ≤${radius}m`,
+                u.sewer.nearest_m != null ? `nearest ~${u.sewer.nearest_m}m` : 'OSM')
+            : row('Sewer lines', 'none mapped nearby', 'OSM coverage sparse'));
+        // 4. Water pipelines (OSM)
+        rows.push(u.water && u.water.count > 0
+            ? row('Water pipelines', `${u.water.count} mapped ≤${radius}m`,
+                u.water.nearest_m != null ? `nearest ~${u.water.nearest_m}m` : 'OSM')
+            : row('Water pipelines', 'none mapped nearby', 'OSM coverage sparse'));
+        // 5. Gas connection (PNG)
+        if (u.gas_png && u.gas_png.available) {
+            rows.push(row('Gas connection (PNG)', u.gas_png.operator || 'available',
+                u.gas_png.source || 'CGD'));
+        } else {
+            rows.push(row('Gas connection (PNG)', 'CGD status: pilot only', 'PNGRB'));
+        }
+        // 6. Ground water quality (regional)
+        if (u.groundwater_quality) {
+            rows.push(row('Ground water quality', u.groundwater_quality.label,
+                u.groundwater_quality.source || 'CGWB'));
+        } else {
+            rows.push(row('Ground water quality', 'regional data: pilot only', 'CGWB'));
+        }
+        // 7. Electricity connection type (OSM + regional operator)
+        const e = u.electricity || {};
+        const typeLabel = { overhead: 'Overhead', underground: 'Underground', mixed: 'Mixed', unknown: 'Typical: overhead LV' }[e.type] || 'Unknown';
+        const eDetail = [e.operator, e.nearest_substation_m != null ? `substation ~${e.nearest_substation_m}m` : null]
+            .filter(Boolean).join(' · ') || e.source;
+        rows.push(row('Electricity connection', typeLabel, eDetail));
+
+        return `<div class="data-card">
+            <div class="data-card-title">&#128736;&#65039; Utilities &amp; infrastructure <span class="data-badge badge-dim">7 layers</span></div>
+            <div class="health-list">${rows.join('')}</div>
+            <div class="data-card-sub">OSM pipes/power are sparsely mapped; ground water &amp; PNG are regional (CGWB/PNGRB) for the Indore pilot. See docs/UTILITIES_MODEL.md.</div>
+        </div>`;
+    }
+
+    /** Build the full panel markup for a cell: header, hazards, environment/AQI, solar, satellite, health, EV, IUDX, Wikipedia, action buttons, and category tabs. */
     function buildFullHTML(cell, data) {
         const addr = data.address || {};
         const env = data.environment || {};
@@ -289,6 +411,7 @@ const Panel = (() => {
                     ${env.o3 != null ? `<div class="env-item"><span class="env-val">${esc(Math.round(env.o3 * 10) / 10)}</span><span class="env-label">O&#8323;</span></div>` : ''}
                     ${env.co != null ? `<div class="env-item"><span class="env-val">${esc(Math.round(env.co))}</span><span class="env-label">CO &#181;g/m&#179;</span></div>` : ''}
                 </div>
+                ${(env.aqiStation || env.aqiSource) ? `<div class="data-card-sub">${esc(env.aqiSource || 'AQI')}${env.aqiStation ? ' · ' + esc(env.aqiStation) : ''}${env.aqiStationDistanceKm != null ? ' · ' + esc(env.aqiStationDistanceKm) + ' km from cell' : ''}${env.aqiMeasuredAt ? ' · ' + esc(_relAge(env.aqiMeasuredAt)) : ''}</div>` : ''}
             </div>`;
         }
 
@@ -368,6 +491,10 @@ const Panel = (() => {
             </div>`;
         }
 
+        // Utilities & infrastructure (7 layers: noise, ground water, sewer,
+        // water, gas/PNG, water quality, electricity)
+        html += buildUtilitiesHTML(data);
+
         // Building Intelligence — opens as independent floating dialog
         if (data.buildingIntel) {
             html += `<button class="open-dialog-btn" id="open-building-intel-btn">
@@ -437,6 +564,7 @@ const Panel = (() => {
         return html;
     }
 
+    /** Activate the category tab and section matching catKey, clearing any feature markers. */
     function switchTab(catKey) {
         clearFeatureMarkers();
         document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
@@ -445,6 +573,7 @@ const Panel = (() => {
         document.querySelector(`.cat-section[data-cat="${catKey}"]`)?.classList.add('active');
     }
 
+    /** Plot a feature card's items as numbered markers on the map and fit the view to them. */
     function showFeatureOnMap(card) {
         const itemsStr = card.getAttribute('data-items');
         if (!itemsStr) return;
@@ -485,6 +614,7 @@ const Panel = (() => {
         } catch (e) { /* invalid JSON — skip */ }
     }
 
+    /** Remove all feature markers currently shown on the map. */
     function clearFeatureMarkers() {
         if (_featureMarkers && _featureMarkers.length > 0) {
             _featureMarkers.forEach(m => m.remove());
@@ -492,6 +622,7 @@ const Panel = (() => {
         }
     }
 
+    /** Map an AQI value to its severity CSS class (good → hazardous). */
     function getAQIClass(aqi) {
         if (aqi <= 50) return 'aqi-good';
         if (aqi <= 100) return 'aqi-moderate';
@@ -500,14 +631,20 @@ const Panel = (() => {
         return 'aqi-hazardous';
     }
 
+    /** Copy a DigiPin code to the clipboard and briefly flash the copy button. */
     function copyCode(code) {
         navigator.clipboard.writeText(code).then(() => {
             const btn = document.querySelector('.copy-btn');
             if (btn) { btn.textContent = '✓'; setTimeout(() => btn.textContent = '📋', 1500); }
+        }).catch(() => {
+            if (typeof App !== 'undefined') App.showToast('Copy failed',
+                'Clipboard unavailable (needs a secure context or permission).', 'warning');
         });
     }
 
+    /** Return the cell currently displayed in the panel, or null. */
     function getCurrentCell() { return currentCell; }
+    /** Return the data currently displayed in the panel, or undefined. */
     function getCurrentData() { return currentData; }
 
     return { init, show, update, showError, close, switchTab, copyCode, getCurrentCell, getCurrentData };

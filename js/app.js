@@ -3,6 +3,7 @@
  */
 
 const App = (() => {
+    /** Bootstrap the whole app: handle embed mode, then initialise every module/widget in isolated steps. */
     function init() {
         // Embed mode — hide chrome
         const isEmbed = new URLSearchParams(window.location.search).has('embed');
@@ -15,6 +16,7 @@ const App = (() => {
         // Run each step in isolation: one widget throwing must not skip the
         // rest of init (e.g. a dialog bug shouldn't block the toolbar or the
         // service-worker registration that provides offline support).
+        /** Run one init step in isolation; on failure log it and toast a warning without aborting the rest of init. */
         const step = (name, fn) => {
             try { fn(); } catch (e) {
                 console.error(`[init] ${name} failed:`, e);
@@ -54,7 +56,17 @@ const App = (() => {
         step('URLState', () => {
             if (typeof URLState !== 'undefined') URLState.init();
         });
+        step('keyboardNav', () => { if (typeof KeyboardNav !== 'undefined') KeyboardNav.init(); });
         step('serviceWorker', () => registerServiceWorker());
+
+        // Connectivity feedback: tell the user when live data pauses/resumes so a
+        // wall of "unavailable" sources reads as "offline", not "broken".
+        step('connectivity', () => {
+            window.addEventListener('offline', () =>
+                showToast('You’re offline', 'Showing cached data — live sources are paused.', 'warning'));
+            window.addEventListener('online', () =>
+                showToast('Back online', 'Live data sources reconnected.', 'info'));
+        });
 
         step('welcome', () => {
             const city = CitySelector.getCurrent();
@@ -67,11 +79,14 @@ const App = (() => {
         // state consistent). Priority: dropdown > dialog > side panel > detail.
         step('EscapeToClose', () => {
             if (typeof FloatingDialogs === 'undefined' || !FloatingDialogs.registerClosable) return;
+            /** True if the element with the given id exists and has the `open` class. */
             const hasOpen = (id) => {
                 const el = document.getElementById(id);
                 return !!el && el.classList.contains('open');
             };
+            /** Remove the `open` class from the element with the given id, if present. */
             const removeOpen = (id) => document.getElementById(id)?.classList.remove('open');
+            /** Register a closable surface (id + close fn + priority) with FloatingDialogs for Escape-to-close. */
             const reg = (id, close, priority) =>
                 FloatingDialogs.registerClosable({ isOpen: () => hasOpen(id), close, priority });
 
@@ -95,11 +110,13 @@ const App = (() => {
         });
     }
 
+    /** Wire up the search box: resolve DigiPin codes locally or geocode free-text via Nominatim, flying the map to the result. */
     function initSearch() {
         const searchInput = document.getElementById('search-input');
         const searchBtn = document.getElementById('search-btn');
         let searching = false;
 
+        /** Toggle the searching state, disabling the input/button and updating the button's busy indicator. */
         const setSearching = (active) => {
             searching = active;
             searchBtn.disabled = active;
@@ -108,6 +125,7 @@ const App = (() => {
             searchBtn.setAttribute('aria-busy', String(active));
         };
 
+        /** Run the current search: decode a DigiPin code if the query looks like one, otherwise geocode it via Nominatim. */
         const doSearch = async () => {
             const query = searchInput.value.trim();
             if (!query || searching) return;
@@ -248,6 +266,7 @@ const App = (() => {
         });
     }
 
+    /** Run a saved urban query over the visible area, showing progress toasts and rendering ranked results. */
     async function runQueryUI(query) {
         if (QueryEngine.isQueryRunning()) {
             showToast('Query Running', 'Please wait for the current query to finish', 'warning');
@@ -284,6 +303,7 @@ const App = (() => {
         }
     }
 
+    /** Render the top query results into the results panel as a ranked, clickable list that flies the map to each cell. */
     function showQueryResults(query, results) {
         const panel = document.getElementById('results-panel');
         panel.classList.add('open');
@@ -346,6 +366,7 @@ const App = (() => {
         panel.appendChild(list);
     }
 
+    /** Wire the sidebar collapse/expand toggle button. */
     function initSidebar() {
         const toggleBtn = document.getElementById('sidebar-toggle');
         const sidebar = document.getElementById('sidebar');
@@ -377,7 +398,7 @@ const App = (() => {
                     if (HeatmapOverlay.getActive() === opt.key) {
                         HeatmapOverlay.clear();
                     } else {
-                        HeatmapOverlay.show(opt.key);
+                        HeatmapOverlay.show(opt.key, { reverse: !!opt.reverse });
                     }
                 });
                 heatmapDrop.appendChild(item);
@@ -875,6 +896,7 @@ const App = (() => {
         }
     }
 
+    /** Register the service worker for offline support and prompt to refresh when an update is installed. */
     function registerServiceWorker() {
         if (!('serviceWorker' in navigator)) return;
         navigator.serviceWorker.register('./sw.js').then(reg => {
@@ -893,6 +915,7 @@ const App = (() => {
         }).catch(() => { /* SW unsupported or registration blocked — app still works online */ });
     }
 
+    /** Show a transient toast notification (title + message) that auto-dismisses after a few seconds. */
     function showToast(title, message, type = 'info') {
         const container = document.getElementById('toast-container');
         if (!container) return;

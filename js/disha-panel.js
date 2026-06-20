@@ -39,6 +39,7 @@ const DISHAPanel = (() => {
         }
     }
 
+    /** Render the connection status badge (LIVE/cloud/OFF) from a checkConnection result. */
     function updateStatusBadge(result) {
         const statusEl = document.getElementById('disha-status');
         statusEl.classList.remove('connected', 'offline', 'cloud');
@@ -149,6 +150,7 @@ const DISHAPanel = (() => {
         return div;
     }
 
+    /** Build a labelled <select> settings row from an array of {value,label} options. */
     function buildSelectRow(id, labelText, options) {
         const row = document.createElement('div');
         row.className = 'disha-settings-row';
@@ -171,6 +173,7 @@ const DISHAPanel = (() => {
         return row;
     }
 
+    /** Build a labelled <input> settings row of the given type and placeholder. */
     function buildInputRow(id, labelText, placeholder, type) {
         const row = document.createElement('div');
         row.className = 'disha-settings-row';
@@ -190,6 +193,7 @@ const DISHAPanel = (() => {
         return row;
     }
 
+    /** Fill the settings form fields from the saved provider config. */
     function populateSettings() {
         const config = DISHAProviders.getConfig();
         const selectEl = document.getElementById('disha-provider-select');
@@ -210,6 +214,7 @@ const DISHAPanel = (() => {
         document.getElementById('disha-settings-status').textContent = '';
     }
 
+    /** Show/hide the API key, URL, and model rows based on the selected provider. */
     function updateSettingsVisibility(provider) {
         const keyRow = document.getElementById('disha-key-row');
         const customUrlRow = document.getElementById('disha-custom-url-row');
@@ -223,6 +228,7 @@ const DISHAPanel = (() => {
         customModelRow.style.display = isCustom ? '' : 'none';
     }
 
+    /** Probe connectivity for the currently selected provider and report the result in the status line. */
     async function testProvider() {
         const statusEl = document.getElementById('disha-settings-status');
         statusEl.textContent = 'Testing...';
@@ -261,6 +267,7 @@ const DISHAPanel = (() => {
         statusEl.classList.add(check.ok ? 'status-ok' : 'status-err');
     }
 
+    /** Persist the settings form to provider config, re-detect the provider, and auto-close the panel. */
     async function saveSettings() {
         const selectEl = document.getElementById('disha-provider-select');
         const keyEl = document.getElementById('disha-api-key');
@@ -305,7 +312,6 @@ const DISHAPanel = (() => {
         const messagesEl = document.getElementById('disha-messages');
         const inputEl = document.getElementById('disha-input');
         const sendBtn = document.getElementById('disha-send');
-        const suggestionsEl = document.getElementById('disha-suggestions');
 
         // Guard: opening without a cell is a UX path (e.g. user clicked
         // a DISHA-launcher button before clicking the map). Show a
@@ -365,19 +371,28 @@ const DISHAPanel = (() => {
         );
 
         const suggestions = DISHA.getSuggestions(data);
-        while (suggestionsEl.firstChild) suggestionsEl.removeChild(suggestionsEl.firstChild);
-        suggestionsEl.style.display = '';
-        suggestions.forEach(s => {
-            const btn = document.createElement('button');
-            btn.className = 'disha-suggestion';
-            btn.textContent = s;
-            btn.addEventListener('click', () => askSuggestion(s));
-            suggestionsEl.appendChild(btn);
-        });
+        renderSuggestions(suggestions);
 
         inputEl.focus();
     }
 
+    /** Render the suggestion/follow-up chips (clears + rebuilds the row). */
+    function renderSuggestions(list) {
+        const el = document.getElementById('disha-suggestions');
+        if (!el) return;
+        while (el.firstChild) el.removeChild(el.firstChild);
+        if (!Array.isArray(list) || list.length === 0) { el.style.display = 'none'; return; }
+        el.style.display = '';
+        list.forEach(s => {
+            const btn = document.createElement('button');
+            btn.className = 'disha-suggestion';
+            btn.textContent = s;
+            btn.addEventListener('click', () => askSuggestion(s));
+            el.appendChild(btn);
+        });
+    }
+
+    /** Close the chat panel, abort any in-flight request, and reset streaming/scanning flags. */
     function close() {
         document.getElementById('disha-panel').classList.remove('open');
         DISHA.cancel();
@@ -414,6 +429,7 @@ const DISHAPanel = (() => {
         }
     }
 
+    /** Populate the input with a suggestion chip's text and submit it. */
     function askSuggestion(question) {
         document.getElementById('disha-input').value = question;
         send();
@@ -431,8 +447,13 @@ const DISHAPanel = (() => {
         return { south: b.getSouth(), west: b.getWest(), north: b.getNorth(), east: b.getEast() };
     }
 
+    /** Run the city-wide scan flow: rank DIGIPIN cells for the question, render results, then stream an AI summary. */
     async function handleCityScan(question) {
         _isCityScanning = true;
+        // Drop any previous answer's highlight before this scan starts.
+        if (typeof Text2MapResultsLayer !== 'undefined') {
+            try { Text2MapResultsLayer.clear(); } catch { /* nothing to clear */ }
+        }
         const sendBtn = document.getElementById('disha-send');
         const inputEl = document.getElementById('disha-input');
         sendBtn.style.display = 'none';
@@ -491,6 +512,12 @@ const DISHAPanel = (() => {
 
             addScanResultsCard(results, question);
 
+            // Close the "ask → map" loop: paint the ranked cells on the map and
+            // frame them, so the answer is a map, not just a list.
+            if (typeof Text2MapResultsLayer !== 'undefined') {
+                try { Text2MapResultsLayer.show(results); } catch { /* map-highlight is best-effort */ }
+            }
+
             await streamResponse(question, cityScanContext);
         } catch (err) {
             applyFormattedResponse(statusContent, `Scan error: ${err.message}`);
@@ -499,6 +526,7 @@ const DISHAPanel = (() => {
         }
     }
 
+    /** Append a chat card listing ranked scan results with score bars, fly-to clicks, and GeoJSON export. */
     function addScanResultsCard(results, question) {
         const messagesEl = document.getElementById('disha-messages');
         const card = document.createElement('div');
@@ -592,19 +620,30 @@ const DISHAPanel = (() => {
 
         const messageEl = addMessage('disha', '');
         const contentEl = messageEl.querySelector('.disha-msg-content');
+        contentEl.classList.add('disha-streaming');   // shows a blinking caret
+        contentEl.textContent = '…';                  // "thinking" until first token
         let fullResponse = '';
+        let lastFmt = 0;
 
         await DISHA.ask(
             _currentContext,
             question,
             (token) => {
                 fullResponse += token;
-                contentEl.textContent = fullResponse;
+                // Format live, but throttle (~8 fps) so we don't re-parse the
+                // whole reply on every token (O(n²)); onDone does the final pass.
+                const now = Date.now();
+                if (now - lastFmt > 120) {
+                    lastFmt = now;
+                    applyFormattedResponse(contentEl, fullResponse);
+                    contentEl.classList.add('disha-streaming');
+                }
                 scrollToBottom();
             },
             (meta) => {
                 _isStreaming = false;
                 applyFormattedResponse(contentEl, fullResponse);
+                contentEl.classList.remove('disha-streaming');
                 // Show cached indicator if response was from cache
                 if (meta && meta.cached) {
                     const badge = document.createElement('span');
@@ -613,10 +652,15 @@ const DISHAPanel = (() => {
                     badge.title = 'This response was served from cache';
                     contentEl.appendChild(badge);
                 }
+                // Conversation-aware follow-up chips derived from this reply.
+                if (fullResponse.trim()) {
+                    renderSuggestions(DISHA.getSuggestions(_currentData || {}, fullResponse));
+                }
                 resetInputState();
             },
             (err) => {
                 _isStreaming = false;
+                contentEl.classList.remove('disha-streaming');
                 contentEl.textContent = `Error: ${err.message}`;
                 contentEl.classList.add('disha-error');
                 resetInputState();
@@ -625,6 +669,7 @@ const DISHAPanel = (() => {
         );
     }
 
+    /** Restore the input row to its idle state after a response or scan finishes. */
     function resetInputState() {
         const sendBtn = document.getElementById('disha-send');
         const stopBtn = document.getElementById('disha-stop');
@@ -657,6 +702,7 @@ const DISHAPanel = (() => {
         return div;
     }
 
+    /** Scroll the messages container to the latest message. */
     function scrollToBottom() {
         const el = document.getElementById('disha-messages');
         el.scrollTop = el.scrollHeight;
@@ -763,6 +809,7 @@ const DISHAPanel = (() => {
         });
     }
 
+    /** Append inline-formatted text (bold, score badges, clickable DigiPin codes) to a parent element. */
     function appendRichText(parent, text, _scorePattern) {
         const parts = text.split(/(\*\*[^*]+\*\*)/g);
         parts.forEach(part => {
@@ -809,6 +856,7 @@ const DISHAPanel = (() => {
         });
     }
 
+    /** Map a verdict string to its CSS class (good/moderate/poor). */
     function getVerdictClass(verdict) {
         const v = verdict.toLowerCase();
         if (v.includes('excellent') || v.includes('good') || v.includes('outstanding')) return 'disha-verdict-good';

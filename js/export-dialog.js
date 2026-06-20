@@ -29,10 +29,12 @@ const ExportDialog = (() => {
         return { featureTypes, featureTotal, scores, sources };
     }
 
+    /** Build the download filename for a format + DIGIPIN code. */
     function filename(format, code) {
         const clean = (code || 'cell').replace(/-/g, '');
         const ext = format === 'csv' ? 'csv' : format === 'geojson' ? 'geojson' : 'json';
-        return `digipin_${clean}.${ext}`;
+        const suffix = format === 'dtdl' ? '_twin' : '';
+        return `digipin_${clean}${suffix}.${ext}`;
     }
 
     // What each format contains, as human lines built from the summary.
@@ -61,23 +63,50 @@ const ExportDialog = (() => {
                 `${s.featureTypes} feature rows (category, key, name, count)`,
             ],
         },
+        {
+            id: 'dtdl', label: 'Digital Twin',
+            desc: 'DTDL / RealEstateCore twin graph — imports into Azure Digital Twins Explorer',
+            items: (s, cell, data) => {
+                if (typeof DTDLExport === 'undefined') return ['DTDL exporter unavailable'];
+                const d = DTDLExport.summarize(cell, data);
+                return [
+                    `${d.twins} twins · ${d.buildings} buildings, ${d.levels} levels`,
+                    `${d.capabilities} capabilities, ${d.assets} assets`,
+                    `${d.relationships} relationships (hasPart / hasCapability / hasAsset)`,
+                    `${d.models} DTDL models, RealEstateCore-aligned`,
+                ];
+            },
+            link: () => (typeof DTDLExport !== 'undefined')
+                ? { href: DTDLExport.ADT_EXPLORER_URL, label: 'Open Azure Digital Twins Explorer ↗ — then Import Graph → this file' }
+                : null,
+        },
     ];
 
+    /** Dispatch the chosen format to the matching DataFetcher/DTDLExport writer. */
     function _doExport(format, cell, data) {
         const name = filename(format, cell.code);
         if (format === 'geojson') {
             DataFetcher.exportToGeoJSON({ code: cell.code, scores: data.scores }, name);
         } else if (format === 'csv') {
             DataFetcher.exportToCSV(data, name);
+        } else if (format === 'dtdl') {
+            // Never silently fall back to plain JSON under a _twin filename.
+            if (typeof DTDLExport === 'undefined') {
+                if (typeof App !== 'undefined') App.showToast('Export', 'Digital Twin exporter unavailable', 'error');
+                return;
+            }
+            DTDLExport.download(cell, data, name);
         } else {
             DataFetcher.exportToJSON(data, name);
         }
     }
 
+    /** Remove the export dialog from the DOM if open. */
     function close() {
         document.getElementById('export-dialog-backdrop')?.remove();
     }
 
+    /** Build and show the export dialog (tabs, summary, filename, Export button). */
     function open(cell, data) {
         close();
         const summary = summarize(data);
@@ -113,6 +142,7 @@ const ExportDialog = (() => {
         const exportBtn = document.createElement('button');
         exportBtn.className = 'ed-export-btn';
 
+        /** Re-render the body for the active format tab (desc, items, link, filename). */
         function render() {
             const fmt = FORMATS.find(f => f.id === active);
             tabs.querySelectorAll('.ed-tab').forEach(t =>
@@ -122,7 +152,7 @@ const ExportDialog = (() => {
             desc.className = 'ed-desc';
             desc.textContent = fmt.desc;
             body.appendChild(desc);
-            fmt.items(summary, cell).forEach(line => {
+            fmt.items(summary, cell, data).forEach(line => {
                 const row = document.createElement('div');
                 row.className = 'ed-item';
                 const tick = document.createElement('span');
@@ -134,6 +164,17 @@ const ExportDialog = (() => {
                 row.appendChild(txt);
                 body.appendChild(row);
             });
+            // Optional per-format external link (e.g. open ADT Explorer).
+            const link = typeof fmt.link === 'function' ? fmt.link() : null;
+            if (link && link.href) {
+                const a = document.createElement('a');
+                a.className = 'ed-link';
+                a.href = link.href;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.textContent = link.label || link.href;
+                body.appendChild(a);
+            }
             fileEl.textContent = filename(active, cell.code);
             exportBtn.textContent = `Export ${fmt.label} ⭳`;
         }

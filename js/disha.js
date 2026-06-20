@@ -155,6 +155,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
     // ===== RICH CONTEXT BUILDER =====
     // Builds structured context with optional section filtering
     function buildContext(cell, data, sections) {
+        /** True when a section should be included (no filter list, or list contains it). */
         const include = (name) => !sections || sections.includes(name);
         const lines = [];
 
@@ -249,6 +250,19 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
             if (scoreParts.length > 0) {
                 lines.push(`\n=== INTELLIGENCE SCORES (0-100) ===`);
                 lines.push(scoreParts.join(', '));
+            }
+
+            // Real-estate growth outlook (live hedonic model — works without
+            // the satellite Growth Forecast). Gives DISHA an investment read.
+            if (typeof RealEstateModel !== 'undefined') {
+                const o = RealEstateModel.outlook(data);
+                if (o.score != null) {
+                    const pos = o.topPositives.map(d => d.label).join(', ') || '—';
+                    const neg = o.topNegatives.map(d => d.label).join(', ') || 'none';
+                    lines.push(`Real-estate outlook: ${o.score}/100 (${o.label}), `
+                        + `est. ${o.appreciation.midPct}%/yr [${o.appreciation.lowPct}–${o.appreciation.highPct}%], `
+                        + `${o.confidence} confidence. Drivers: ${pos}. Drags: ${neg}.`);
+                }
             }
         }
 
@@ -595,6 +609,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return 'local';
     }
 
+    /** Map a free-text question to the QueryEngine query id whose keywords it matches (defaults to residential). */
     function matchQueryId(question) {
         const q = question.toLowerCase();
         const mappings = [
@@ -708,6 +723,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return results.slice(0, 5);
     }
 
+    /** Format ranked city-scan results into a text context block for the LLM. */
     function buildCityScanContext(results, question) {
         const lines = [];
         lines.push(`=== CITY-LEVEL SCAN RESULTS ===`);
@@ -741,6 +757,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         }
     }
 
+    /** Reset multi-turn conversation memory. */
     function clearHistory() {
         _conversationHistory = [];
     }
@@ -886,6 +903,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         }
     }
 
+    /** Abort the in-flight streaming request, if any. */
     function cancel() {
         if (_abortController) {
             _abortController.abort();
@@ -894,10 +912,32 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
     }
 
     // ===== SMART SUGGESTIONS =====
-    function getSuggestions(data) {
+    /** Suggested questions for the chips. With `lastResponse`, returns
+     *  conversation-aware follow-ups derived from the latest reply; otherwise
+     *  cell-context suggestions (used when the panel first opens). */
+    function getSuggestions(data, lastResponse = null) {
         const scores = data.scores || {};
-        const suggestions = [];
 
+        // Conversation-aware follow-ups: keyed off topics in the latest reply.
+        if (lastResponse) {
+            const r = String(lastResponse).toLowerCase();
+            const follow = [];
+            const add = (q) => { if (!follow.includes(q)) follow.push(q); };
+            if (/flood|inundat|waterlog/.test(r)) add('What flood mitigation is recommended here?');
+            if (/congest|traffic|bottleneck|\broad/.test(r)) add('Which roads are the worst bottlenecks?');
+            if (/growth|construction|develop|expansion/.test(r)) add('What is driving growth here?');
+            if (/safety|crime|police/.test(r)) add('How can safety be improved here?');
+            if (/transit|bus|metro|connectivity/.test(r)) add('How good is public-transit access here?');
+            if (/water|sewer|utilit|electric|\bgas/.test(r)) add('What are the utility gaps here?');
+            if (/invest|real estate|property|price|appreciat/.test(r)) add('Is this a good investment, and why?');
+            if (/school|education|healthcare|hospital/.test(r)) add('How is access to schools and healthcare?');
+            // Always offer a couple of generic deepeners.
+            add('Summarise the top 3 takeaways');
+            add('How does this compare to a typical Indore neighbourhood?');
+            return follow.slice(0, 4);
+        }
+
+        const suggestions = [];
         suggestions.push('Give me a full urban intelligence briefing');
         suggestions.push('What should be built here? Development recommendations');
 
@@ -980,6 +1020,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return 'Severe';
     }
 
+    /** True when an AI provider is connected and ready. */
     function isConnected() {
         return DISHAProviders.isConnected();
     }

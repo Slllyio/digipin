@@ -1,5 +1,5 @@
 /* DigiPin Urban Intelligence — themable: Premium Dark (default) + Paper Light */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap';
 
 /* Skip link — off-screen until focused, then drops in at top-left. Neutral
    card colours so it reads in both themes. */
@@ -112,6 +112,8 @@ html[data-theme="light"] {
     --text-muted: #9aa0a6;
     --accent-cyan: #dd6b4a;     /* PRIMARY — Aino salmon-coral */
     --accent-purple: #2e3033;   /* SECONDARY — charcoal (no violet) */
+    /* Aino editorial display serif for headings (light theme only). */
+    --font-display: 'Newsreader', 'Georgia', 'Times New Roman', serif;
     --accent-pink: #cf7d6a;     /* muted coral-rose */
     --accent-green: #5f8a5a;    /* sage (parks/green) */
     --accent-yellow: #a3781f;
@@ -133,6 +135,43 @@ html[data-theme="light"] {
     --btn-glow: 0 6px 18px rgba(221, 107, 74, 0.26);
     --radius: 12px;
 }
+
+/* ── Aino editorial look (light theme only) ───────────────────────────────
+   aino.world leads with an elegant coral serif for titles over the calm
+   paper map. We apply that display serif to the prominent headings and keep
+   the dark "control-room" theme on its original Inter/mono type. Small
+   uppercase micro-labels stay sans for legibility. */
+html[data-theme="light"] .logo-text,
+html[data-theme="light"] .dialog-title-text,
+html[data-theme="light"] .section-title,
+html[data-theme="light"] .data-card-title,
+html[data-theme="light"] .disha-title,
+html[data-theme="light"] .results-header h3,
+html[data-theme="light"] .compare-panel-header h3,
+html[data-theme="light"] .bm-panel-header h3,
+html[data-theme="light"] .cat-section h3,
+html[data-theme="light"] .onboarding-title,
+html[data-theme="light"] .ed-title,
+html[data-theme="light"] .dt-group-title,
+html[data-theme="light"] .overture-stats-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--accent-cyan);   /* coral primary */
+    text-transform: none;
+}
+
+/* The wordmark reads better as solid coral serif than as a clipped gradient. */
+html[data-theme="light"] .logo-text {
+    background: none;
+    -webkit-text-fill-color: var(--accent-cyan);
+    font-size: 16px;
+}
+
+/* Section/card titles a touch larger so the serif has room to breathe. */
+html[data-theme="light"] .section-title,
+html[data-theme="light"] .results-header h3 { font-size: 16px; }
+html[data-theme="light"] .onboarding-title { font-size: 22px; }
 
 * {
     margin: 0;
@@ -691,6 +730,15 @@ body {
     padding: 5px 0;
 }
 .ed-tick { color: var(--accent-green); font-weight: 700; }
+.ed-link {
+    display: inline-block;
+    margin: 8px 0 2px;
+    font-size: 12px;
+    color: var(--accent-cyan);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent-soft);
+}
+.ed-link:hover { border-bottom-color: var(--accent-cyan); }
 
 .ed-filename {
     margin: 12px 0;
@@ -2743,6 +2791,12 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
     align-items: center;
 }
 
+.compare-verdict-row {
+    background: var(--accent-softer);
+    border-radius: 6px;
+    font-weight: 600;
+}
+
 .compare-header-row {
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
@@ -3697,3 +3751,75 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
 .heat-widget__methods-body { padding: 6px 0; line-height: 1.4; }
 .heat-widget--unavailable { opacity: 0.7; }
 .heat-widget__msg { color: var(--text-secondary); font-size: 11px; }
+
+/* ============================================================
+   World-class UX — Phase 1: polish & accessibility
+   ============================================================ */
+
+/* Respect the OS "reduce motion" setting: neutralise animations and
+   transitions for vestibular / motion-sensitive users. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+    .spinner { animation: none !important; }
+}
+
+/* Floating dialogs are draggable by their titlebar — show the affordance. */
+.dialog-titlebar { cursor: grab; }
+.dialog-titlebar:active { cursor: grabbing; }
+
+/* Retry button on the panel error state. */
+.retry-btn {
+    margin-top: 12px;
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--accent-cyan);
+    color: var(--bg-primary);
+    font: 600 13px/1 inherit;
+    cursor: pointer;
+}
+.retry-btn:hover { filter: brightness(1.08); }
+
+/* Offline / no-sources banner (replaces the wall of "off" chips). */
+.source-offline { display: flex; flex-direction: column; gap: 4px; }
+.source-status-note { color: var(--text-muted); font-size: 11px; }
+
+/* Honour device safe areas (notch / gesture bars) on mobile so the toolbar
+   tools and dialog controls aren't occluded. */
+@supports (padding: env(safe-area-inset-top)) {
+    @media (max-width: 768px) {
+        .floating-dialog { padding-bottom: env(safe-area-inset-bottom); }
+        #toolbar {
+            padding-top: max(8px, env(safe-area-inset-top));
+            padding-left: env(safe-area-inset-left);
+        }
+    }
+}
+
+/* Compare panel — CSV export action. */
+.compare-actions { display: flex; justify-content: flex-end; gap: 8px; margin: 6px 0 10px; }
+.compare-export-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-secondary);
+    font: 600 12px/1 inherit;
+    cursor: pointer;
+}
+.compare-export-btn:hover { color: var(--accent-cyan); border-color: var(--accent-cyan); }
+
+/* DISHA: blinking caret while a reply streams in (token-by-token). */
+.disha-msg-content.disha-streaming::after {
+    content: '▋';
+    display: inline-block;
+    margin-left: 2px;
+    color: var(--accent-cyan);
+    animation: disha-caret 1s steps(2, start) infinite;
+}
+@keyframes disha-caret { 50% { opacity: 0; } }

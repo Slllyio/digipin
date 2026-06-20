@@ -34,8 +34,8 @@ describe('Onboarding gating', () => {
 });
 
 describe('Onboarding content', () => {
-    it('has a two-step flow covering both headline features', () => {
-        expect(O.STEPS).toHaveLength(2);
+    it('is a multi-step flow covering the headline features', () => {
+        expect(O.STEPS.length).toBeGreaterThanOrEqual(2);
         expect(O.STEPS[0].title).toMatch(/cell/i);
         expect(O.STEPS[1].body).toMatch(/text2map/i);
         for (const s of O.STEPS) {

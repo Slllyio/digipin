@@ -154,6 +154,19 @@ const GrowthScore = (() => {
         return { category: 'stable', color: '#f7f7f7', label: 'Stable / no pattern' };
     }
 
+    /** Nudge a composite toward/away from growth using the SSP projected
+     *  urban-expansion probability (0..1). Pure. Centred at 0.5 (neutral): a
+     *  cell the projection flags for expansion lifts the longer-horizon score,
+     *  one it flags as built-out/stable nudges down. `strength` caps the swing.
+     *  Returns the original composite unchanged when sspProb is unavailable. */
+    function futureExpansionAdjust(composite, sspProb, strength = 20) {
+        if (composite == null || !Number.isFinite(composite)) return composite;
+        if (!Number.isFinite(sspProb)) return composite;
+        const p = Math.max(0, Math.min(1, sspProb));
+        const adjusted = composite + (p - 0.5) * 2 * strength;
+        return Math.round(Math.max(0, Math.min(100, adjusted)));
+    }
+
     /** Per-horizon confidence band (±value). */
     function confidenceBand(horizon, r_squared) {
         if (horizon === 'nowcast') return 5;
@@ -164,7 +177,8 @@ const GrowthScore = (() => {
     }
 
     return { bueSubScore, denSubScore, capSubScore, normLog,
-             composite, HORIZON_WEIGHTS, linearTrend, confidenceBand, emergingClass };
+             composite, HORIZON_WEIGHTS, linearTrend, confidenceBand, emergingClass,
+             futureExpansionAdjust };
 })();
 
 if (typeof window !== 'undefined') window.GrowthScore = GrowthScore;

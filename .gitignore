@@ -54,6 +54,26 @@ data/scores/*
 data/scores/*/*
 !data/scores/*/*.json
 !data/scores/*/*.pmtiles
+# Precomputed traffic (structural congestion) artifacts — browser-consumed.
+!data/traffic/
+data/traffic/*
+!data/traffic/*/
+data/traffic/*/*
+!data/traffic/*/*.json
+!data/traffic/*/*.geojson
+# Precomputed law-and-order mobility (access-resilience) artifacts — browser-consumed.
+!data/safety/
+data/safety/*
+!data/safety/*/
+data/safety/*/*
+!data/safety/*/*.json
+!data/safety/*/*.geojson
+# Bundled utilities/infrastructure regional reference — browser-consumed.
+!data/utilities/
+data/utilities/*
+!data/utilities/*/
+data/utilities/*/*
+!data/utilities/*/*.json
 
 # SUMO simulation data (large XML files)
 guna-twin-city/traffic-analysis/sumo/*.xml
@@ -71,3 +91,6 @@ cesium-demo.html
 
 # Personal Claude Code permission allowlist — local-only
 .claude/settings.local.json
+
+# Generated promo video + frames (build via extras/promo-stills.mjs + build-promo.py)
+extras/out/

@@ -21,10 +21,13 @@ Usage:
 
 import asyncio
 import json
+import os
 import subprocess
 import sys
 import shutil
 from pathlib import Path
+
+import make_bgm
 
 # Fix Windows console encoding
 if sys.platform == "win32":
@@ -87,6 +90,14 @@ async def generate_narration_audio(narrations, voice):
         print("\n  [!] edge-tts not installed. Installing...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", "edge-tts"])
         import edge_tts
+
+    # edge-tts pins certifi; trust the system CA bundle too so synthesis works
+    # behind a TLS-inspecting proxy.
+    import ssl
+    import edge_tts.communicate as ec
+    ca = os.environ.get("SSL_CERT_FILE") or "/etc/ssl/certs/ca-certificates.crt"
+    if os.path.exists(ca):
+        ec._SSL_CTX = ssl.create_default_context(cafile=ca)
 
     AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -201,27 +212,42 @@ def merge_video_audio(narrations, bgm_path=None):
         print("\n  [ERROR] No narration clips found!")
         sys.exit(1)
 
-    # Add background music if provided
-    bgm_input_idx = None
+    # Combine the time-aligned narration clips into one voice track.
+    mix_str = "".join(mix_inputs)
+    filter_parts.append(
+        f"{mix_str}amix=inputs={len(mix_inputs)}:duration=longest:"
+        f"dropout_transition=2:normalize=0[voiceraw]"
+    )
+
+    # Background music: use the supplied track, else synthesise a royalty-free
+    # ambient bed. Mixed under the voice with sidechain ducking so it dips
+    # automatically whenever narration plays.
+    if not bgm_path:
+        bgm_path = VIDEO_DIR / "bgm.mp3"
+        print(f"\n  Background music: generating ambient bed ({video_duration_ms/1000:.0f}s)…")
+        make_bgm.generate(str(bgm_path), video_duration_ms / 1000 + 2)
     if bgm_path and Path(bgm_path).exists():
         inputs.extend(["-i", str(bgm_path)])
         bgm_input_idx = clip_count + 1
-        # Loop BGM, lower volume, trim to video length
         filter_parts.append(
             f"[{bgm_input_idx}:a]aloop=loop=-1:size=2e+09,"
-            f"atrim=0:{video_duration_ms/1000},"
-            f"volume={BGM_VOLUME}[bgm]"
+            f"atrim=0:{video_duration_ms/1000},volume={BGM_VOLUME}[bed]"
         )
-        mix_inputs.append("[bgm]")
-        print(f"\n  Background music: {bgm_path} (volume={BGM_VOLUME})")
-
-    # Mix all audio tracks together
-    total_mix = len(mix_inputs)
-    mix_str = "".join(mix_inputs)
-    filter_parts.append(
-        f"{mix_str}amix=inputs={total_mix}:duration=longest:dropout_transition=2,"
-        f"aresample=44100[aout]"
-    )
+        filter_parts.append("[voiceraw]asplit=2[voiceout][voicekey]")
+        filter_parts.append(
+            "[bed][voicekey]sidechaincompress="
+            "threshold=0.015:ratio=8:attack=20:release=400[bgduck]"
+        )
+        filter_parts.append(
+            "[voiceout][bgduck]amix=inputs=2:duration=longest:normalize=0,"
+            "dynaudnorm=f=250:g=7,aresample=44100[aout]"
+        )
+        print(f"  Background music: {bgm_path} (volume={BGM_VOLUME}, ducked)")
+    else:
+        if bgm_path:
+            print(f"  [WARN] Background music not found: {bgm_path}. Continuing without music.")
+            bgm_path = None
+        filter_parts.append("[voiceraw]aresample=44100[aout]")
 
     filter_graph = ";\n".join(filter_parts)
 
@@ -324,6 +350,7 @@ def merge_simple(narrations):
 # ════════════════════════════════════════════════════════════
 
 async def main():
+    """CLI: synthesize narration and assemble the final DigiPin explainer video."""
     import argparse
     parser = argparse.ArgumentParser(description="Build DigiPin video with narration audio")
     parser.add_argument("--voice", default=DEFAULT_VOICE, help=f"TTS voice (default: {DEFAULT_VOICE})")

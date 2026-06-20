@@ -43,12 +43,12 @@ describe('ExportDialog.filename()', () => {
 });
 
 describe('ExportDialog.FORMATS', () => {
-    it('offers the three formats with count-bearing content lines', () => {
-        expect(ED.FORMATS.map(f => f.id)).toEqual(['geojson', 'json', 'csv']);
+    it('offers the four formats with count-bearing content lines', () => {
+        expect(ED.FORMATS.map(f => f.id)).toEqual(['geojson', 'json', 'csv', 'dtdl']);
         const s = ED.summarize(DATA);
         const cell = { code: '4P3-JK8-39LM' };
         for (const f of ED.FORMATS) {
-            const lines = f.items(s, cell);
+            const lines = f.items(s, cell, DATA);
             expect(lines.length).toBeGreaterThan(0);
             expect(lines.join(' ')).toMatch(/\d/); // every format states real counts
         }
@@ -63,7 +63,7 @@ describe('ExportDialog.open() — DOM shape', () => {
         ED.open({ code: '4P3-JK8-39LM' }, DATA);
         const dlg = document.querySelector('.export-dialog');
         expect(dlg).toBeTruthy();
-        expect(dlg.querySelectorAll('.ed-tab')).toHaveLength(3);
+        expect(dlg.querySelectorAll('.ed-tab')).toHaveLength(4);
         expect(dlg.querySelector('.ed-tab.active').dataset.fmt).toBe('geojson');
         expect(dlg.querySelectorAll('.ed-item').length).toBeGreaterThan(0);
         expect(dlg.querySelector('.ed-filename').textContent).toBe('digipin_4P3JK839LM.geojson');
