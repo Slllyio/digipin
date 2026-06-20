@@ -19,12 +19,22 @@ const Onboarding = (() => {
         {
             icon: '📍', // round pushpin
             title: 'Click any DIGIPIN cell',
-            body: 'Every ~3.8 m tile becomes instant, India-native intelligence — flood risk, heat, air quality, schools, transit, buildings. No GIS, no signup.',
+            body: 'Every ~3.8 m tile becomes instant, India-native intelligence — flood risk, heat, air quality, schools, transit, buildings, utilities. No GIS, no signup.',
         },
         {
             icon: '💬', // speech balloon
             title: 'Ask in plain English',
             body: 'Type a question like "family-friendly area near good schools with low flood risk" and Text2Map ranks DIGIPIN cells across the city. Free and auditable.',
+        },
+        {
+            icon: '🗺️', // map
+            title: 'Explore the layers',
+            body: 'Use the toolbar to switch on overlays — growth, traffic, heat, mobility — or open the Scenario planner to test "what-if" growth (new transit hub, protect flood zones).',
+        },
+        {
+            icon: '⌨️', // keyboard
+            title: 'Tips & shortcuts',
+            body: 'Arrow keys step between cells; pin cells to Compare and export CSV/PNG; generate a printable Report; ask DISHA for an AI briefing. Press Esc to close any panel.',
         },
     ];
 
