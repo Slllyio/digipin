@@ -52,6 +52,7 @@ loadGlobalScript('js/mobility-widget.js', ['MobilityWidget']);
 loadGlobalScript('js/mobility-overlay.js', ['MobilityOverlay']);
 loadGlobalScript('js/utilities.js', ['Utilities']);
 loadGlobalScript('js/scenario-model.js', ['ScenarioModel']);
+loadGlobalScript('js/area-aggregate.js', ['AreaAggregate']);
 loadGlobalScript('js/compare.js', ['Compare']);
 loadGlobalScript('js/heat-score.js', ['HeatScore']);
 loadGlobalScript('js/heat-widget.js', ['HeatWidget']);
