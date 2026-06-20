@@ -56,6 +56,7 @@ const App = (() => {
         step('URLState', () => {
             if (typeof URLState !== 'undefined') URLState.init();
         });
+        step('keyboardNav', () => { if (typeof KeyboardNav !== 'undefined') KeyboardNav.init(); });
         step('serviceWorker', () => registerServiceWorker());
 
         // Connectivity feedback: tell the user when live data pauses/resumes so a

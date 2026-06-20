@@ -17,6 +17,7 @@ const globals = require('globals');
 const APP_GLOBALS = {
   DigiPin: 'readonly', DataFetcher: 'readonly', DataFetcherCache: 'readonly',
   MapModule: 'readonly', App: 'readonly', Panel: 'readonly', QueryEngine: 'readonly',
+  KeyboardNav: 'readonly',
   DISHA: 'readonly', DISHAPanel: 'readonly', DISHAProviders: 'readonly', DISHACache: 'readonly',
   Compare: 'readonly', Bookmarks: 'readonly', CitySelector: 'readonly', WardOverlay: 'readonly',
   HeatmapOverlay: 'readonly', BuildingIntelligence: 'readonly', BuildingIntelDialog: 'readonly',

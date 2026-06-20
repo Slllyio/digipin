@@ -31,6 +31,7 @@ function loadGlobalScript(relPath, exposeNames) {
 }
 
 loadGlobalScript('js/digipin.js', ['DigiPin']);
+loadGlobalScript('js/keyboard-nav.js', ['KeyboardNav']);
 loadGlobalScript('js/data-fetcher.js', ['DataFetcher']);
 loadGlobalScript('js/precomputed-scores.js', ['PrecomputedScores']);
 loadGlobalScript('js/score-choropleth.js', ['ScoreChoropleth']);
