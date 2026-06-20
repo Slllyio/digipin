@@ -201,12 +201,28 @@ def run(region=None):
     res_m = grid.get("res_m", 200)
     size = gnx * gny
 
+    # Rasterize chokepoint features into the grid. Points mark a single cell;
+    # seal/critical LineStrings are densified along each segment (~half-cell
+    # spacing) so every cell the link crosses carries the chokepoint term.
     choke_cell = [0] * size
-    for f in chokepts:
-        lng, lat = f["geometry"]["coordinates"][:2]
+
+    def _mark(lng, lat):
         x, y = _cell_xy(lng, lat, bounds, gnx, gny)
         if x >= 0:
             choke_cell[y * gnx + x] = 1
+
+    for f in choke_features:
+        geom = f.get("geometry", {})
+        coords = geom.get("coordinates") or []
+        if geom.get("type") == "Point":
+            _mark(coords[0], coords[1])
+        elif geom.get("type") == "LineString":
+            for (x1, y1), (x2, y2) in zip(coords, coords[1:]):
+                seg_m = _haversine_km(y1, x1, y2, x2) * 1000.0
+                steps = max(1, int(seg_m / max(res_m / 2.0, 1.0)))
+                for s in range(steps + 1):
+                    t = s / steps
+                    _mark(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t)
     seal_cell = [0] * size                              # cells inside a sealable pocket
     for (lng, lat) in sealable_nodes:
         x, y = _cell_xy(lng, lat, bounds, gnx, gny)
@@ -220,8 +236,8 @@ def run(region=None):
     chokeprox = [0] * size
 
     # convert the meter-based chokepoint radius into a cell radius so proximity
-    # scoring stays consistent if res_m changes (round keeps it 1 cell at 200 m).
-    choke_cells = max(1, round(CHOKE_RADIUS_M / max(float(res_m), 1.0)))
+    # scoring stays consistent if res_m changes (ceil so the full radius is covered).
+    choke_cells = max(1, math.ceil(CHOKE_RADIUS_M / max(float(res_m), 1.0)))
     for i in range(size):
         gy, gx = divmod(i, gnx)
         # Only score navigable cells (on the road network / carrying a chokepoint
