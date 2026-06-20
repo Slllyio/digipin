@@ -76,6 +76,53 @@ const Compare = (() => {
     /** Get the array of pinned entries ({ cell, data, marker }). */
     function getPinned() { return _pinned; }
 
+    /** CSV-escape a field (quote when it contains a comma, quote or newline). Pure. */
+    function _csvEscape(s) {
+        const v = String(s == null ? '' : s);
+        return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+    }
+
+    /** Build a comparison CSV string from pinned entries (Metric × cells). Pure. */
+    function buildCSV(pinned) {
+        const rows = [];
+        rows.push(['Metric', ...pinned.map(p => p.cell.code)]);
+        rows.push(['Address', ...pinned.map(p => {
+            const a = p.data.address || {};
+            return [a.area, a.city].filter(Boolean).join(', ') || 'Unknown';
+        })]);
+        rows.push(['Latitude', ...pinned.map(p => p.cell.center ? p.cell.center.lat : '')]);
+        rows.push(['Longitude', ...pinned.map(p => p.cell.center ? p.cell.center.lng : '')]);
+        const keys = new Set();
+        pinned.forEach(p => Object.keys(p.data.scores || {}).forEach(k => keys.add(k)));
+        [...keys].forEach(k => {
+            const label = (pinned.find(p => p.data.scores && p.data.scores[k])
+                || { data: { scores: {} } }).data.scores[k]?.label || k;
+            rows.push([label, ...pinned.map(p => {
+                const v = p.data.scores && p.data.scores[k] ? p.data.scores[k].value : null;
+                return v == null ? '' : v;
+            })]);
+        });
+        return rows.map(r => r.map(_csvEscape).join(',')).join('\n');
+    }
+
+    /** Download the current comparison as a CSV file. */
+    function exportCSV() {
+        if (_pinned.length < 2) {
+            App.showToast('Need 2+ Pins', 'Pin at least 2 cells to export', 'warning');
+            return;
+        }
+        const csv = buildCSV(_pinned);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `digipin-compare-${_pinned.map(p => p.cell.code).join('_')}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
     /** Open the compare panel and render it (requires 2+ pins). */
     function openPanel() {
         if (_pinned.length < 2) {
@@ -134,6 +181,17 @@ const Compare = (() => {
             headerRow.appendChild(cellHeader);
         });
         container.appendChild(headerRow);
+
+        // Actions bar — export the comparison.
+        const actions = document.createElement('div');
+        actions.className = 'compare-actions';
+        const exportBtn = document.createElement('button');
+        exportBtn.className = 'compare-export-btn';
+        exportBtn.type = 'button';
+        exportBtn.textContent = '↓ Export CSV';
+        exportBtn.addEventListener('click', exportCSV);
+        actions.appendChild(exportBtn);
+        container.appendChild(actions);
 
         // Property Intelligence verdict rows (answer-first): each cell's growth
         // score, outlook label and appreciation band, best score highlighted.
@@ -320,5 +378,5 @@ const Compare = (() => {
         });
     }
 
-    return { pin, unpin, clearAll, openPanel, closePanel, getPinned };
+    return { pin, unpin, clearAll, openPanel, closePanel, getPinned, buildCSV, exportCSV };
 })();

@@ -51,6 +51,7 @@ loadGlobalScript('js/mobility-widget.js', ['MobilityWidget']);
 loadGlobalScript('js/mobility-overlay.js', ['MobilityOverlay']);
 loadGlobalScript('js/utilities.js', ['Utilities']);
 loadGlobalScript('js/scenario-model.js', ['ScenarioModel']);
+loadGlobalScript('js/compare.js', ['Compare']);
 loadGlobalScript('js/heat-score.js', ['HeatScore']);
 loadGlobalScript('js/heat-widget.js', ['HeatWidget']);
 loadGlobalScript('js/realtime-flood.js', ['RealtimeFlood']);
