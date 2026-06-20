@@ -18,6 +18,17 @@ const Panel = (() => {
             .replace(/'/g, '&#039;');
     }
 
+    /** Format an ISO timestamp as a relative age ("12m ago" / "3h ago" / "2d ago"). */
+    function _relAge(iso) {
+        const t = Date.parse(iso);
+        if (Number.isNaN(t)) return '';
+        const mins = Math.max(0, Math.round((Date.now() - t) / 60000));
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.round(mins / 60);
+        if (hrs < 48) return `${hrs}h ago`;
+        return `${Math.round(hrs / 24)}d ago`;
+    }
+
     // Honest data coverage: show which sources loaded vs failed, so a missing
     // card reads as "AQI unavailable" rather than a silent gap. Driven by
     // result.sourceStatus from DataFetcher.fetchAllFeatures.
@@ -400,6 +411,7 @@ const Panel = (() => {
                     ${env.o3 != null ? `<div class="env-item"><span class="env-val">${esc(Math.round(env.o3 * 10) / 10)}</span><span class="env-label">O&#8323;</span></div>` : ''}
                     ${env.co != null ? `<div class="env-item"><span class="env-val">${esc(Math.round(env.co))}</span><span class="env-label">CO &#181;g/m&#179;</span></div>` : ''}
                 </div>
+                ${(env.aqiStation || env.aqiSource) ? `<div class="data-card-sub">${esc(env.aqiSource || 'AQI')}${env.aqiStation ? ' · ' + esc(env.aqiStation) : ''}${env.aqiStationDistanceKm != null ? ' · ' + esc(env.aqiStationDistanceKm) + ' km from cell' : ''}${env.aqiMeasuredAt ? ' · ' + esc(_relAge(env.aqiMeasuredAt)) : ''}</div>` : ''}
             </div>`;
         }
 

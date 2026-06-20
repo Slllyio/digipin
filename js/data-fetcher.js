@@ -1057,12 +1057,11 @@ const DataFetcher = (() => {
             if (cpcbResult && cpcbResult.aqi != null) return cpcbResult;
         } catch { /* fall through */ }
 
-        // Fallback: WAQI
+        // Fallback: WAQI. Prefer the geo-query (nearest station to *this cell*)
+        // even on the demo token — it varies by location, unlike the city lookup,
+        // so neighbouring cells no longer all show one city-wide number.
         const waqiToken = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG?.waqiToken) || 'demo';
-        const usingRealToken = waqiToken && waqiToken !== 'demo';
-        const rawUrl = usingRealToken
-            ? `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${encodeURIComponent(waqiToken)}`
-            : `https://api.waqi.info/feed/${encodeURIComponent(cityName)}/?token=demo`;
+        const rawUrl = `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${encodeURIComponent(waqiToken)}`;
         const url = viaProxy(rawUrl);
 
         try {
@@ -1070,6 +1069,17 @@ const DataFetcher = (() => {
             if (data.status !== 'ok') return {};
 
             const d = data.data;
+            // Station coords (d.city.geo = [lat, lng]) → distance from this cell.
+            let distKm = null;
+            const geo = d.city?.geo;
+            if (Array.isArray(geo) && geo.length >= 2) {
+                const R = 6371, toR = Math.PI / 180;
+                const dLat = (geo[0] - lat) * toR, dLng = (geo[1] - lng) * toR;
+                const a = Math.sin(dLat / 2) ** 2
+                    + Math.cos(lat * toR) * Math.cos(geo[0] * toR) * Math.sin(dLng / 2) ** 2;
+                distKm = Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 10) / 10;
+            }
+            const measuredAt = d.time?.iso || (d.time?.s ? d.time.s.replace(' ', 'T') : null);
             return {
                 aqi: d.aqi,
                 pm25: d.iaqi?.pm25?.v,
@@ -1078,8 +1088,10 @@ const DataFetcher = (() => {
                 no2: d.iaqi?.no2?.v,
                 so2: d.iaqi?.so2?.v,
                 aqiStation: d.city?.name,
+                aqiStationDistanceKm: distKm,
+                aqiMeasuredAt: measuredAt,
                 aqiDominant: d.dominentpol,
-                aqiSource: usingRealToken ? 'WAQI (geo)' : 'WAQI (city)'
+                aqiSource: 'WAQI (geo)'
             };
         } catch {
             return {};
