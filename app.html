@@ -155,6 +155,10 @@
             <span class="tb-icon">&#129529;</span>
             <span class="tb-label">Predict</span>
         </button>
+        <button class="toolbar-btn" id="btn-scenario" title="Growth scenario — interactive what-if lens on the CA-ML prediction">
+            <span class="tb-icon">&#127919;</span>
+            <span class="tb-label">Scenario</span>
+        </button>
         <button class="toolbar-btn" id="btn-traffic" title="Traffic — structural congestion (road-network Level of Service) + transit access">
             <span class="tb-icon">&#128739;</span>
             <span class="tb-label">Traffic</span>
@@ -314,6 +318,8 @@
     <script defer src="js/growth-widget.js"></script>
     <script defer src="js/growth-overlay.js"></script>
     <script defer src="js/ca-growth-overlay.js"></script>
+    <script defer src="js/scenario-model.js"></script>
+    <script defer src="js/scenario-panel.js"></script>
     <!-- Traffic (structural congestion: OSM betweenness → LOS + GTFS transit) -->
     <script defer src="js/traffic-score.js"></script>
     <script defer src="js/traffic-grid.js"></script>
@@ -393,6 +399,7 @@
     [
         ['btn-growth',    () => window.GrowthOverlay],
         ['btn-ca-growth', () => window.CAGrowthOverlay],
+        ['btn-scenario',  () => window.ScenarioPanel],
         ['btn-traffic',   () => window.TrafficOverlay],
         ['btn-mobility',  () => window.MobilityOverlay],
         ['btn-heat',      () => window.HeatOverlay],

@@ -103,3 +103,31 @@ Commit the small resulting `ca_urban_prediction_<region>.tif` (rename/symlink to
 - 100 m grid (browser-fetchable) — a neighbourhood-scale read, not parcel-level.
 - Heavy data (temporal + DEM/OSM/GHSL/VIIRS) means training runs on a data-capable
   machine; the pure CA/metric logic is unit-tested here on synthetic rasters.
+
+## Interactive scenario lens (what-if planner)
+
+The **Scenario** toolbar button (`btn-scenario` → `js/scenario-panel.js`) adds an
+interactive *what-if* layer on top of the base CA-ML prediction. It samples the
+viewport (same 5×5 / 400 m pattern as `CAGrowthOverlay`), applies a transparent
+adjustment to each cell's base probability, recolours the cells, and reports the
+aggregate delta (cells crossing the "likely" threshold up/down + mean shift).
+
+**Honesty:** this is **not** a re-trained model run — regenerating the CA-RF
+surface needs the offline pipeline (`pipeline/growth/urban_ca_ml.py`) and cannot
+run in the browser. The lenses are simple, documented rules so a planner can
+reason about *what would steer growth*; the panel is badged "illustrative lens on
+the CA-ML base — not a re-trained run."
+
+Lenses (`js/scenario-model.js`, pure + unit-tested in `tests/scenario-model.test.js`):
+
+| Scenario | Rule |
+|----------|------|
+| Baseline | base probability unchanged |
+| New transit hub (pick a point) | +25 pts at the clicked hub, fading linearly to 0 by 3 km |
+| Protect flood-prone land | ×0.4 where `flood_risk` ≥ 60, ×0.7 where ≥ 40 |
+| Curb urban-edge sprawl | ×0.5 where road density < 50 m, ×0.8 where < 150 m |
+
+Per-cell inputs come from the already-fetched result: `ca_growth_prob`
+(base), `scores.flood_risk`, and `realtime.traffic.road_density_m`. A future
+upgrade can replace these heuristics with precomputed per-scenario COGs from the
+pipeline (committed like the base prediction) for a faithful re-run.

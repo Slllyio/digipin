@@ -23,7 +23,7 @@ const APP_GLOBALS = {
   ScoresDialog: 'readonly', DigitalTwinLayers: 'readonly', FloatingDialogs: 'readonly',
   OvertureBuildings: 'readonly', Isochrone: 'readonly', Report: 'readonly', TrainingDataGen: 'readonly',
   GrowthScore: 'readonly', GrowthOverlay: 'readonly', GrowthWidget: 'readonly', RealtimeGrowth: 'readonly',
-  CAGrowthOverlay: 'readonly',
+  CAGrowthOverlay: 'readonly', ScenarioModel: 'readonly', ScenarioPanel: 'readonly',
   TrafficScore: 'readonly', TrafficGrid: 'readonly', RealtimeTraffic: 'readonly',
   TrafficWidget: 'readonly', TrafficOverlay: 'readonly',
   MobilityScore: 'readonly', MobilityGrid: 'readonly', RealtimeMobility: 'readonly',
