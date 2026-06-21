@@ -443,6 +443,7 @@ const App = (() => {
         if (lczBtn) {
             lczBtn.addEventListener('click', () => {
                 const map = MapModule.getMap();
+                if (!map) { showToast('Map not ready', 'Try again in a moment.', 'warning'); return; }
                 lczActive = !lczActive;
                 if (!lczActive) {
                     if (map.getLayer('lcz-layer')) map.setLayoutProperty('lcz-layer', 'visibility', 'none');
@@ -503,6 +504,7 @@ const App = (() => {
             let is3d = false;
             btn3d.addEventListener('click', async () => {
                 const map = MapModule.getMap();
+                if (!map) { showToast('Map not ready', 'Try again in a moment.', 'warning'); return; }
                 is3d = !is3d;
                 btn3d.classList.toggle('active', is3d);
                 if (is3d) {
@@ -533,6 +535,7 @@ const App = (() => {
         if (lulcBtn) {
             lulcBtn.addEventListener('click', () => {
                 const map = MapModule.getMap();
+                if (!map) { showToast('Map not ready', 'Try again in a moment.', 'warning'); return; }
                 lulcActive = !lulcActive;
                 if (!lulcActive) {
                     if (map.getLayer('bhuvan-lulc-layer')) map.setLayoutProperty('bhuvan-lulc-layer', 'visibility', 'none');

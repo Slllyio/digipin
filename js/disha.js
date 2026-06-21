@@ -658,6 +658,7 @@ Keep each directive on its own line; the rest of your reply should read normally
         if (typeof MapModule === 'undefined') return null;
 
         const map = MapModule.getMap();
+        if (!map) return null;   // map not initialised yet — skip the city scan
         const bounds = map.getBounds();
         const gridSize = 4;
         const latStep = (bounds.getNorth() - bounds.getSouth()) / gridSize;

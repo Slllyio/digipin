@@ -36,7 +36,7 @@ const RealtimeHeat = (() => {
         _grPromise = (async () => {
             try {
                 if (typeof parseGeoraster !== 'function') return null;
-                const resp = await fetch(COG_LST, { cache: 'force-cache' });
+                const resp = await fetch(COG_LST, { cache: 'force-cache', signal: AbortSignal.timeout(15000) });
                 if (!resp.ok) return null;
                 const buf = await resp.arrayBuffer();
                 return await parseGeoraster(buf);
