@@ -31,6 +31,7 @@ const APP_GLOBALS = {
   TrafficWidget: 'readonly', TrafficOverlay: 'readonly',
   MobilityScore: 'readonly', MobilityGrid: 'readonly', RealtimeMobility: 'readonly',
   MobilityWidget: 'readonly', MobilityOverlay: 'readonly',
+  EmergencyAccessScore: 'readonly', EmergencyAccess: 'readonly', EmergencyAccessOverlay: 'readonly',
   Utilities: 'readonly',
   HeatScore: 'readonly', HeatOverlay: 'readonly', HeatWidget: 'readonly', RealtimeHeat: 'readonly',
   FloodSCS: 'readonly', FloodInundation: 'readonly', FloodAnimation: 'readonly', RealtimeFlood: 'readonly',

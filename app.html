@@ -184,6 +184,10 @@
             <span class="tb-icon">&#128737;&#65039;</span>
             <span class="tb-label" data-i18n="tb.mobility">L&amp;O</span>
         </button>
+        <button class="toolbar-btn" id="btn-emergency" title="Emergency Accessibility Index — how quickly police / authorities can reach each cell in an incident (0–100; green = reachable, red = isolated)">
+            <span class="tb-icon">&#128680;</span>
+            <span class="tb-label" data-i18n="tb.emergency">Access</span>
+        </button>
         <button class="toolbar-btn" id="btn-heat" title="Urban Heat Island">
             <span class="tb-icon">&#127777;&#65039;</span>
             <span class="tb-label" data-i18n="tb.heat">Heat</span>
@@ -351,9 +355,12 @@
     <!-- Law & Order Mobility (access resilience: chokepoints + sealable pockets + police reach) -->
     <script defer src="js/mobility-score.js"></script>
     <script defer src="js/mobility-grid.js"></script>
+    <script defer src="js/emergency-access-score.js"></script>
+    <script defer src="js/emergency-access.js"></script>
     <script defer src="js/realtime-mobility.js"></script>
     <script defer src="js/mobility-widget.js"></script>
     <script defer src="js/mobility-overlay.js"></script>
+    <script defer src="js/emergency-access-overlay.js"></script>
     <!-- Heat feature trio + realtime orchestrator -->
     <script defer src="js/heat-score.js"></script>
     <script defer src="js/realtime-heat.js"></script>
@@ -427,6 +434,7 @@
         ['btn-scenario',  () => window.ScenarioPanel],
         ['btn-traffic',   () => window.TrafficOverlay],
         ['btn-mobility',  () => window.MobilityOverlay],
+        ['btn-emergency', () => window.EmergencyAccessOverlay],
         ['btn-heat',      () => window.HeatOverlay],
         ['btn-ndvi',      () => window.NDVIOverlay],
         ['btn-bivariate', () => window.BivariateOverlay],

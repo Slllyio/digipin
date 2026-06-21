@@ -2773,7 +2773,8 @@ html[lang="hi"] textarea {
 #btn-heatmap, #btn-wards, #btn-lcz, #btn-buildings, #btn-3d, #btn-lulc,
 #btn-roads, #btn-growth, #btn-heat, #btn-ndvi, #btn-bivariate,
 #btn-viewshed, #btn-kde, #btn-access, #btn-choropleth,
-#btn-ca-growth, #btn-scenario, #btn-traffic, #btn-mobility, #btn-area {
+#btn-ca-growth, #btn-scenario, #btn-traffic, #btn-mobility, #btn-area,
+#btn-emergency {
     display: none;
 }
 
