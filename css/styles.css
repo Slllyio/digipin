@@ -54,6 +54,13 @@
     --accent-green: #22c55e;
     --accent-yellow: #eab308;
     --accent-red: #ef4444;
+    /* Text-only variants (small text/links on the surface). Default to the base
+       accent — the dark theme's neon accents already read on navy. The light
+       theme overrides these to AA-passing darker shades while keeping the bright
+       accents for fills/borders/brand. */
+    --accent-cyan-text: var(--accent-cyan);
+    --accent-green-text: var(--accent-green);
+    --accent-yellow-text: var(--accent-yellow);
     --gradient-main: linear-gradient(135deg, #00f5ff 0%, #a855f7 50%, #ec4899 100%);
     --gradient-subtle: linear-gradient(135deg, rgba(0, 245, 255, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
     --shadow-glow: 0 0 20px rgba(0, 245, 255, 0.15);
@@ -123,6 +130,12 @@ html[data-theme="light"] {
     --accent-green: #5f8a5a;       /* sage (parks/green) */
     --accent-yellow: #a3781f;
     --accent-red: #b3392f;
+    /* AA-passing darker text shades (≥4.5:1 on white) — used only for small
+       text/links; the bright #0099ff/#5f8a5a/#a3781f stay for fills/icons/brand.
+       Coral headlines keep the exact Aino #ff673d by design (kept large/brand). */
+    --accent-cyan-text: #0072cc;   /* 4.9:1 */
+    --accent-green-text: #3f7a3a;  /* 5.2:1 */
+    --accent-yellow-text: #8a6312; /* 5.4:1 */
     --gradient-main: linear-gradient(135deg, #2e2e2e 0%, #1a1a1a 100%);   /* dark pill (Aino "Share & Export") */
     --gradient-subtle: linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.02) 100%);
     --shadow-glow: 0 8px 30px rgba(0, 0, 0, 0.06);
@@ -240,7 +253,7 @@ html[data-theme="light"] .toolbar-btn {
 }
 html[data-theme="light"] .toolbar-btn:hover {
     background: var(--wash-04);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     border-color: var(--border-color);
 }
 html[data-theme="light"] .floating-dialog {
@@ -261,7 +274,7 @@ html[data-theme="light"] .disha-suggestion {
 html[data-theme="light"] .disha-suggestion:hover {
     background: var(--wash-04);
     border-color: var(--accent-cyan);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
 }
 html[data-theme="light"] .src-chip { border-radius: 8px; }
 html[data-theme="light"] #city-select,
@@ -306,14 +319,14 @@ body {
 
 .leaflet-control-zoom a:hover {
     background: var(--bg-secondary) !important;
-    color: var(--accent-cyan) !important;
+    color: var(--accent-cyan-text) !important;
 }
 
 .digipin-label {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    color: var(--accent-cyan) !important;
+    color: var(--accent-cyan-text) !important;
     font-family: 'JetBrains Mono', monospace !important;
     font-size: 9px !important;
     font-weight: 500 !important;
@@ -481,7 +494,7 @@ body {
 }
 
 #sidebar-toggle:hover {
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
 }
 
 .sidebar-content {
@@ -535,7 +548,7 @@ body {
     font-size: 10px;
     font-weight: 700;
     background: var(--accent-soft);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     padding: 1px 6px;
     border-radius: 10px;
     font-family: 'JetBrains Mono', monospace;
@@ -697,7 +710,7 @@ body {
 
 .export-btn:hover {
     background: var(--wash-10);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
 }
 
 /* ===== EXPORT DIALOG (format tabs + content counts) ===== */
@@ -814,7 +827,7 @@ body {
 }
 .ed-tab.active {
     background: var(--bg-card);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
@@ -827,12 +840,12 @@ body {
     color: var(--text-primary);
     padding: 5px 0;
 }
-.ed-tick { color: var(--accent-green); font-weight: 700; }
+.ed-tick { color: var(--accent-green-text); font-weight: 700; }
 .ed-link {
     display: inline-block;
     margin: 8px 0 2px;
     font-size: 12px;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     text-decoration: none;
     border-bottom: 1px solid var(--accent-soft);
 }
@@ -1031,7 +1044,7 @@ body {
 
 .badge-cyan {
     background: rgb(var(--accent-primary-rgb) / 0.1);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
 }
 
 .badge-dim {
@@ -1046,7 +1059,7 @@ body {
 }
 
 .iudx-category { margin-bottom: 6px; }
-.iudx-cat-label { font-size: 11px; font-weight: 600; color: var(--accent-cyan); display: block; margin-bottom: 4px; }
+.iudx-cat-label { font-size: 11px; font-weight: 600; color: var(--accent-cyan-text); display: block; margin-bottom: 4px; }
 
 .satellite-item, .health-item {
     display: flex;
@@ -1083,7 +1096,7 @@ body {
 }
 
 .health-type {
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     font-size: 10px;
 }
 
@@ -1116,7 +1129,7 @@ body {
 }
 
 .context-title a {
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     text-decoration: none;
 }
 
@@ -1138,11 +1151,11 @@ body {
 }
 
 .aqi-good .env-val {
-    color: var(--accent-green);
+    color: var(--accent-green-text);
 }
 
 .aqi-moderate .env-val {
-    color: var(--accent-yellow);
+    color: var(--accent-yellow-text);
 }
 
 .aqi-unhealthy-sg .env-val {
@@ -1246,7 +1259,7 @@ body {
 .cat-tab.active {
     background: var(--gradient-subtle);
     border-color: var(--accent-cyan);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
 }
 
 .cat-count {
@@ -1365,7 +1378,7 @@ body {
 }
 
 .more-count {
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     font-weight: 600;
 }
 
@@ -1566,7 +1579,7 @@ body {
 .result-rank {
     font-size: 12px;
     font-weight: 800;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     width: 28px;
     text-align: center;
 }
@@ -1643,7 +1656,7 @@ body {
 }
 
 .toast-info .toast-title {
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
 }
 
 .toast-success {
@@ -1651,7 +1664,7 @@ body {
 }
 
 .toast-success .toast-title {
-    color: var(--accent-green);
+    color: var(--accent-green-text);
 }
 
 .toast-error {
@@ -1667,7 +1680,7 @@ body {
 }
 
 .toast-warning .toast-title {
-    color: var(--accent-yellow);
+    color: var(--accent-yellow-text);
 }
 
 /* ===== ACCESSIBILITY ===== */
@@ -2054,7 +2067,7 @@ body {
 
 .disha-status.connected {
     background: rgba(34, 197, 94, 0.15);
-    color: var(--accent-green);
+    color: var(--accent-green-text);
 }
 
 .disha-status.offline {
@@ -2126,7 +2139,7 @@ body {
 
 .disha-msg-content .disha-bullet-icon {
     flex-shrink: 0;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     font-weight: 700;
     font-size: 11px;
     margin-top: 1px;
@@ -2143,12 +2156,12 @@ body {
 
 .disha-msg-content .disha-verdict-good {
     background: rgba(34, 197, 94, 0.15);
-    color: var(--accent-green);
+    color: var(--accent-green-text);
 }
 
 .disha-msg-content .disha-verdict-moderate {
     background: rgba(234, 179, 8, 0.15);
-    color: var(--accent-yellow);
+    color: var(--accent-yellow-text);
 }
 
 .disha-msg-content .disha-verdict-poor {
@@ -2157,7 +2170,7 @@ body {
 }
 
 .disha-msg-content strong {
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     font-weight: 600;
 }
 
@@ -2193,13 +2206,13 @@ body {
 
 .disha-score-badge.badge-good {
     background: rgba(34, 197, 94, 0.15);
-    color: var(--accent-green);
+    color: var(--accent-green-text);
     border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .disha-score-badge.badge-moderate {
     background: rgba(234, 179, 8, 0.15);
-    color: var(--accent-yellow);
+    color: var(--accent-yellow-text);
     border: 1px solid rgba(234, 179, 8, 0.3);
 }
 
@@ -2213,7 +2226,7 @@ body {
 .disha-digipin-link {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     text-decoration: underline;
     text-decoration-style: dotted;
     text-underline-offset: 2px;
@@ -2257,7 +2270,7 @@ body {
 
 .disha-table-row:first-of-type .disha-table-cell {
     font-weight: 600;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     background: var(--accent-softer);
 }
 
@@ -2267,7 +2280,7 @@ body {
     align-items: center;
     gap: 10px;
     padding: 8px 0;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     font-size: 12px;
     font-weight: 500;
 }
@@ -2286,7 +2299,7 @@ body {
 .disha-scan-header {
     font-size: 12px;
     font-weight: 700;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     padding: 6px 0 8px;
     border-bottom: 1px solid rgb(var(--accent-primary-rgb) / 0.15);
     margin-bottom: 8px;
@@ -2531,7 +2544,7 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
 }
 
 .disha-gear-btn:hover {
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     background: var(--wash-05);
 }
 
@@ -2623,7 +2636,7 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
 .disha-settings-btn-action.disha-save {
     background: rgb(var(--accent-primary-rgb) / 0.1);
     border-color: var(--accent-cyan);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
 }
 
 .disha-settings-btn-action.disha-save:hover {
@@ -2637,7 +2650,7 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
 }
 
 .disha-settings-status.status-ok {
-    color: var(--accent-green);
+    color: var(--accent-green-text);
 }
 
 .disha-settings-status.status-err {
@@ -2652,7 +2665,7 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
     margin-top: 8px;
     border-radius: 8px;
     background: rgb(var(--accent-primary-rgb) / 0.1);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -2743,14 +2756,14 @@ html[lang="hi"] textarea {
 
 .toolbar-btn:hover {
     background: var(--gradient-subtle);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     border-color: var(--accent-soft);
 }
 
 .toolbar-btn.active {
     background: rgb(var(--accent-primary-rgb) / 0.1);
     border-color: var(--accent-cyan);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
 }
 
 /* Toolbar collapse — every individual layer toggle lives in the unified
@@ -2772,7 +2785,7 @@ html[lang="hi"] textarea {
 /* The Layers button is now the primary map-tool entry point. */
 #btn-dt-layers {
     border-color: var(--accent-cyan);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     background: var(--gradient-subtle);
 }
 
@@ -2844,7 +2857,7 @@ html[lang="hi"] textarea {
 
 .dropdown-item:hover {
     background: var(--gradient-subtle);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
 }
 
 /* ===== PANEL ACTION BUTTONS ===== */
@@ -2870,7 +2883,7 @@ html[lang="hi"] textarea {
 
 .action-btn:hover {
     background: var(--gradient-subtle);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     border-color: var(--accent-soft);
 }
 
@@ -3083,7 +3096,7 @@ html[lang="hi"] textarea {
 .bm-panel-header h3 {
     font-size: 16px;
     font-weight: 600;
-    color: var(--accent-yellow);
+    color: var(--accent-yellow-text);
 }
 
 .bm-list {
@@ -3113,7 +3126,7 @@ html[lang="hi"] textarea {
     font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
     font-weight: 600;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
 }
 
 .bm-note {
@@ -3161,7 +3174,7 @@ html[lang="hi"] textarea {
     align-items: center;
     justify-content: center;
     font-size: 18px;
-    color: var(--accent-yellow);
+    color: var(--accent-yellow-text);
     filter: drop-shadow(0 0 4px rgba(234, 179, 8, 0.5));
 }
 
@@ -3331,7 +3344,7 @@ html[lang="hi"] textarea {
     border: 1px solid var(--accent-soft);
     border-radius: 12px;
     font-size: 11px;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     margin-bottom: 10px;
 }
 
@@ -3520,7 +3533,7 @@ html[lang="hi"] textarea {
 .overture-popup-title {
     font-size: 13px;
     font-weight: 600;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     margin-bottom: 8px;
     padding-bottom: 6px;
     border-bottom: 1px solid rgb(var(--accent-primary-rgb) / 0.15);
@@ -3644,7 +3657,7 @@ html[lang="hi"] textarea {
     width: 100%;
     background: none;
     border: none;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     font-size: 9px;
     font-weight: 700;
     text-transform: uppercase;
@@ -3666,7 +3679,7 @@ html[lang="hi"] textarea {
 .dt-group-count {
     font-size: 8px;
     background: rgb(var(--accent-primary-rgb) / 0.15);
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     border-radius: 8px;
     padding: 1px 6px;
     margin-right: 6px;
@@ -3945,14 +3958,14 @@ html[lang="hi"] textarea {
     font: 600 12px/1 inherit;
     cursor: pointer;
 }
-.compare-export-btn:hover { color: var(--accent-cyan); border-color: var(--accent-cyan); }
+.compare-export-btn:hover { color: var(--accent-cyan-text); border-color: var(--accent-cyan); }
 
 /* DISHA: blinking caret while a reply streams in (token-by-token). */
 .disha-msg-content.disha-streaming::after {
     content: '▋';
     display: inline-block;
     margin-left: 2px;
-    color: var(--accent-cyan);
+    color: var(--accent-cyan-text);
     animation: disha-caret 1s steps(2, start) infinite;
 }
 @keyframes disha-caret { 50% { opacity: 0; } }
@@ -3966,5 +3979,5 @@ html[lang="hi"] textarea {
     border: 1px solid var(--border-color);
     background: var(--bg-card, transparent);
 }
-.disha-action-chip.ok { color: var(--accent-green); border-color: var(--accent-green); }
+.disha-action-chip.ok { color: var(--accent-green-text); border-color: var(--accent-green); }
 .disha-action-chip.fail { color: var(--accent-red); border-color: var(--accent-red); }
