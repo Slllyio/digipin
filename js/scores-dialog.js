@@ -28,6 +28,7 @@ const ScoresDialog = (() => {
         _contentEl.innerHTML = buildContent(scores, cell);
         _dialogEl.classList.add('open');
         FloatingDialogs.bringToFront(_dialogEl);
+        if (FloatingDialogs.focusInto) FloatingDialogs.focusInto(_dialogEl);
 
         // Position near center if not already positioned by user
         if (!_dialogEl.style.left || _dialogEl.style.left === 'auto') {
@@ -43,6 +44,7 @@ const ScoresDialog = (() => {
 
     function close() {
         if (_dialogEl) _dialogEl.classList.remove('open');
+        if (_dialogEl && FloatingDialogs.restoreFocus) FloatingDialogs.restoreFocus(_dialogEl);
     }
 
     function isOpen() {

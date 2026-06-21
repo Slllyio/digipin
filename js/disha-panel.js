@@ -318,6 +318,7 @@ const DISHAPanel = (() => {
         // friendly empty state instead of crashing on cell.code below.
         if (!cell || !cell.code) {
             panelEl.classList.add('open');
+            if (typeof FloatingDialogs !== 'undefined' && FloatingDialogs.focusInto) FloatingDialogs.focusInto(panelEl);
             while (messagesEl.firstChild) messagesEl.removeChild(messagesEl.firstChild);
             inputEl.disabled = true;
             sendBtn.disabled = true;
@@ -335,6 +336,7 @@ const DISHAPanel = (() => {
         _currentContext = DISHA.buildContext(cell, data);
 
         panelEl.classList.add('open');
+        if (typeof FloatingDialogs !== 'undefined' && FloatingDialogs.focusInto) FloatingDialogs.focusInto(panelEl);
         while (messagesEl.firstChild) messagesEl.removeChild(messagesEl.firstChild);
         inputEl.disabled = false;
         sendBtn.disabled = false;
@@ -394,7 +396,9 @@ const DISHAPanel = (() => {
 
     /** Close the chat panel, abort any in-flight request, and reset streaming/scanning flags. */
     function close() {
-        document.getElementById('disha-panel').classList.remove('open');
+        const panelEl = document.getElementById('disha-panel');
+        panelEl.classList.remove('open');
+        if (typeof FloatingDialogs !== 'undefined' && FloatingDialogs.restoreFocus) FloatingDialogs.restoreFocus(panelEl);
         DISHA.cancel();
         _isStreaming = false;
         _isCityScanning = false;
