@@ -51,13 +51,34 @@ const DISHAActions = (() => {
             .trim();
     }
 
-    // Toggleable overlays (all expose .toggle() — same set the toolbar drives).
+    // Resolve a module global at call time (window in the browser, globalThis in
+    // tests) — the same `window.X` lookup the toolbar wiring uses in app.html.
+    function _g(name) {
+        return (typeof window !== 'undefined' && window[name])
+            || (typeof globalThis !== 'undefined' && globalThis[name])
+            || undefined;
+    }
+
+    // Overlay name → a toggle thunk. Most overlays expose a no-arg toggle()
+    // (the same set the toolbar drives); a few are adapted: OvertureBuildings
+    // needs the map instance, and WardOverlay is a show()/clear() pair. The
+    // HeatmapOverlay is intentionally absent — its show() requires a score key,
+    // so it can't be driven by a bare toggle directive. A missing/undefined
+    // module surfaces as a failed chip via executeActions' try/catch.
     const OVERLAYS = {
-        heatmap: 'HeatmapOverlay', wards: 'WardOverlay', buildings: 'OvertureBuildings',
-        growth: 'GrowthOverlay', prediction: 'CAGrowthOverlay', scenario: 'ScenarioPanel',
-        traffic: 'TrafficOverlay', mobility: 'MobilityOverlay', heat: 'HeatOverlay',
-        ndvi: 'NDVIOverlay', bivariate: 'BivariateOverlay', kde: 'KDEOverlay',
-        access: 'AccessibilityOverlay', grid: 'ScoreChoropleth',
+        growth:     () => _g('GrowthOverlay').toggle(),
+        prediction: () => _g('CAGrowthOverlay').toggle(),
+        scenario:   () => _g('ScenarioPanel').toggle(),
+        traffic:    () => _g('TrafficOverlay').toggle(),
+        mobility:   () => _g('MobilityOverlay').toggle(),
+        heat:       () => _g('HeatOverlay').toggle(),
+        ndvi:       () => _g('NDVIOverlay').toggle(),
+        bivariate:  () => _g('BivariateOverlay').toggle(),
+        kde:        () => _g('KDEOverlay').toggle(),
+        access:     () => _g('AccessibilityOverlay').toggle(),
+        grid:       () => _g('ScoreChoropleth').toggle(),
+        wards:      () => { const w = _g('WardOverlay'); return w.isVisible() ? w.clear() : w.show(); },
+        buildings:  () => _g('OvertureBuildings').toggle(_g('MapModule').getMap()),
     };
 
     /** Dispatch table: type → handler returning a label, or throwing on bad input. */
@@ -74,12 +95,9 @@ const DISHAActions = (() => {
         },
         overlay(p) {
             const name = String(p.name || '').toLowerCase();
-            const globalName = OVERLAYS[name];
-            if (!globalName) throw new Error(`unknown overlay "${p.name}"`);
-            const mod = (typeof window !== 'undefined' ? window[globalName] : undefined)
-                || (typeof globalThis !== 'undefined' ? globalThis[globalName] : undefined);
-            if (!mod || typeof mod.toggle !== 'function') throw new Error(`overlay "${name}" unavailable`);
-            mod.toggle();
+            const fn = OVERLAYS[name];
+            if (!fn) throw new Error(`unknown overlay "${name}"`);
+            fn();
             return `Toggled ${name} overlay`;
         },
         query(p) {

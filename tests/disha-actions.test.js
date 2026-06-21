@@ -40,10 +40,20 @@ describe('DISHAActions.executeActions', () => {
             selectByCode: (code) => calls.push(['selectByCode', code]),
         };
         globalThis.HeatOverlay = { toggle: () => calls.push(['HeatOverlay.toggle']) };
+        globalThis.MapModule.getMap = () => ({ _map: true });
+        let _wardsVisible = false;
+        globalThis.WardOverlay = {
+            isVisible: () => _wardsVisible,
+            show: () => { _wardsVisible = true; calls.push(['WardOverlay.show']); },
+            clear: () => { _wardsVisible = false; calls.push(['WardOverlay.clear']); },
+        };
+        globalThis.OvertureBuildings = { toggle: (map) => calls.push(['OvertureBuildings.toggle', map]) };
     });
     afterEach(() => {
         delete globalThis.MapModule;
         delete globalThis.HeatOverlay;
+        delete globalThis.WardOverlay;
+        delete globalThis.OvertureBuildings;
     });
 
     it('dispatches valid actions and reports ok with a label', () => {
@@ -66,6 +76,24 @@ describe('DISHAActions.executeActions', () => {
         expect(res[0]).toMatchObject({ ok: false, error: 'unknown action' });
         expect(res[1].ok).toBe(false);
         expect(res[2].ok).toBe(false);
+    });
+
+    it('adapts non-standard overlays: wards is show/clear, buildings gets the map', () => {
+        // wards: first toggle shows, second clears (show()/clear() pair).
+        DA.executeActions([{ type: 'overlay', params: { name: 'wards' } }]);
+        DA.executeActions([{ type: 'overlay', params: { name: 'wards' } }]);
+        expect(calls).toContainEqual(['WardOverlay.show']);
+        expect(calls).toContainEqual(['WardOverlay.clear']);
+        // buildings: toggle receives the map instance from MapModule.getMap().
+        const res = DA.executeActions([{ type: 'overlay', params: { name: 'buildings' } }]);
+        expect(res[0].ok).toBe(true);
+        expect(calls).toContainEqual(['OvertureBuildings.toggle', { _map: true }]);
+    });
+
+    it('rejects overlays that cannot be driven by a bare toggle (e.g. heatmap)', () => {
+        const res = DA.executeActions([{ type: 'overlay', params: { name: 'heatmap' } }]);
+        expect(res[0].ok).toBe(false);
+        expect(res[0].error).toMatch(/unknown overlay/);
     });
 
     it('caps the number of actions executed', () => {
