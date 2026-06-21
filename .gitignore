@@ -75,6 +75,12 @@ data/utilities/*
 data/utilities/*/*
 !data/utilities/*/*.json
 
+# OSM vector layers (Digital-Twin) — small browser-consumed GeoJSON only.
+# Large vector PMTiles stay ignored (served from S3/Overture, not Pages).
+!data/vectors/
+data/vectors/*
+!data/vectors/*.geojson
+
 # SUMO simulation data (large XML files)
 guna-twin-city/traffic-analysis/sumo/*.xml
 

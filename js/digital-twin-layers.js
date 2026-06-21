@@ -535,7 +535,7 @@ const DigitalTwinLayers = (() => {
         osm_roads: {
             name: 'Road Network (OSM)',
             icon: '\u{1F6E3}',
-            file: 'vectors/osm_roads_indore.geojson',
+            file: 'vectors/osm_roads_indore_pilot.geojson',
             group: 'Local Data',
             type: 'line',
             paint: {
