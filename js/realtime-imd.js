@@ -22,29 +22,32 @@ const RealtimeIMD = (() => {
         forecastsAt: 0,
     };
 
+    // Returns null on failure (network/timeout/non-OK) so callers can distinguish
+    // "genuinely empty" from "fetch failed" and avoid caching a transient failure
+    // as an empty result for the whole TTL.
     async function _load(path) {
         try {
-            const r = await fetch(path, { cache: 'no-store' });
-            if (!r.ok) return [];
+            const r = await fetch(path, { cache: 'no-store', signal: AbortSignal.timeout(8000) });
+            if (!r.ok) return null;
             const data = await r.json();
             return Array.isArray(data.records) ? data.records : [];
         } catch {
-            return [];
+            return null;
         }
     }
 
     async function getWarnings() {
         if (_state.warnings && Date.now() - _state.warningsAt < TTL_MS) return _state.warnings;
-        _state.warnings = await _load(WARNINGS_PATH);
-        _state.warningsAt = Date.now();
-        return _state.warnings;
+        const loaded = await _load(WARNINGS_PATH);
+        if (loaded !== null) { _state.warnings = loaded; _state.warningsAt = Date.now(); }
+        return _state.warnings || [];
     }
 
     async function getForecasts() {
         if (_state.forecasts && Date.now() - _state.forecastsAt < TTL_MS) return _state.forecasts;
-        _state.forecasts = await _load(FORECAST_PATH);
-        _state.forecastsAt = Date.now();
-        return _state.forecasts;
+        const loaded = await _load(FORECAST_PATH);
+        if (loaded !== null) { _state.forecasts = loaded; _state.forecastsAt = Date.now(); }
+        return _state.forecasts || [];
     }
 
     function _matchesLocation(record, district, city) {
