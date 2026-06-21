@@ -31,7 +31,7 @@ const RealtimeAlerts = (() => {
         if (_inflight) return _inflight;
         _inflight = (async () => {
             try {
-                const resp = await fetch(FEED_PATH, { cache: 'no-store' });
+                const resp = await fetch(FEED_PATH, { cache: 'no-store', signal: AbortSignal.timeout(8000) });
                 if (!resp.ok) return [];
                 const data = await resp.json();
                 _generatedAt = data.generated_at_iso || null;

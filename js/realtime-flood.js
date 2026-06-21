@@ -60,7 +60,7 @@ const RealtimeFlood = (() => {
 
         let payload;
         try {
-            const r = await fetch(url, { cache: 'no-store' });
+            const r = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(8000) });
             if (!r.ok) return null;
             payload = await r.json();
         } catch {

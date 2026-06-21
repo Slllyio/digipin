@@ -44,7 +44,7 @@ const FootprintGrid = (() => {
         const p = (async () => {
             try {
                 if (typeof fetch === 'undefined') return null;
-                const r = await fetch(url, { cache: 'force-cache' });
+                const r = await fetch(url, { cache: 'force-cache', signal: AbortSignal.timeout(10000) });
                 if (!r.ok) return null;
                 const grid = await r.json();
                 _grids.set(url, grid);          // cache only on success

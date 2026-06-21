@@ -45,7 +45,7 @@ const PrecomputedScores = (() => {
         _regionCells.clear();
         if (_disabled()) return false;
         try {
-            const resp = await fetch(`${_base()}coverage.json`, { cache: 'no-cache' });
+            const resp = await fetch(`${_base()}coverage.json`, { cache: 'no-cache', signal: AbortSignal.timeout(8000) });
             if (!resp.ok) return false;
             const cov = await resp.json();
             if (!cov || !Array.isArray(cov.regions) || !Array.isArray(cov.fields)) return false;
@@ -103,7 +103,7 @@ const PrecomputedScores = (() => {
         if (!_shardCache.has(key)) {
             _shardCache.set(key, (async () => {
                 try {
-                    const resp = await fetch(`${_base()}${region.name}/${prefix}.json`, { cache: 'no-cache' });
+                    const resp = await fetch(`${_base()}${region.name}/${prefix}.json`, { cache: 'no-cache', signal: AbortSignal.timeout(8000) });
                     return resp.ok ? await resp.json() : {};
                 } catch { return {}; }
             })());

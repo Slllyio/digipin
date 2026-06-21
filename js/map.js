@@ -8,6 +8,7 @@ const MapModule = (() => {
     let _gridDebounceTimer = null;
     let selectedCellId = null;
     let selectedCellCode = null; // DigiPin code of selected cell (persists across grid updates)
+    let _selectEpoch = 0;        // bumped per selection; stale async fetches bail (no panel overwrite)
     let hoveredCellId = null;
     let currentCells = new Map(); // Store cell data by ID
     let codeToCellId = new Map(); // DigiPin code -> numeric feature ID
@@ -264,6 +265,9 @@ const MapModule = (() => {
     }
 
     async function selectCell(cellData) {
+        // Per-selection epoch: a slow fetch for a previously-clicked cell must not
+        // overwrite the panel after the user has already clicked a different cell.
+        const epoch = ++_selectEpoch;
         // Deselect previous
         if (selectedCellId !== null) {
             try { map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: false }); } catch { /* grid may have regenerated */ }
@@ -283,8 +287,10 @@ const MapModule = (() => {
         // Fetch data
         try {
             const data = await DataFetcher.fetchAllFeatures(cellData.center.lat, cellData.center.lng, 500);
+            if (epoch !== _selectEpoch) return;   // superseded by a newer selection
             Panel.update(cellData, data);
         } catch (err) {
+            if (epoch !== _selectEpoch) return;
             console.error('Data fetch error:', err);
             Panel.showError(cellData, err.message);
         }

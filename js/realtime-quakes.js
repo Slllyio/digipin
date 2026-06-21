@@ -22,7 +22,7 @@ const RealtimeQuakes = (() => {
     async function getQuakes() {
         if (_cache && Date.now() - _fetchedAt < TTL_MS) return _cache;
         try {
-            const r = await fetch(FEED_PATH, { cache: 'no-store' });
+            const r = await fetch(FEED_PATH, { cache: 'no-store', signal: AbortSignal.timeout(8000) });
             if (!r.ok) return [];
             const data = await r.json();
             _cache = Array.isArray(data.records) ? data.records : [];

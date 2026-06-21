@@ -78,6 +78,11 @@ const HeatmapOverlay = (() => {
         _activeScore = scoreKey;
         _reverse = !!opts.reverse;
         _map = MapModule.getMap();
+        if (!_map) return;   // map not initialised yet — every other overlay guards this
+        // addSource/addLayer throw "Style is not done loading" if the style isn't
+        // ready (e.g. a deep-link/URL-state auto-toggle during the basemap swap);
+        // defer to the load event instead of throwing.
+        if (!_map.isStyleLoaded()) { _map.once('load', () => show(scoreKey, opts)); return; }
         _features = [];
 
         if (!_map.getSource(SOURCE_ID)) {
@@ -124,7 +129,10 @@ const HeatmapOverlay = (() => {
                         properties: { color, height: val * 5, score: val },
                     };
                 }).filter(Boolean);
-                _map.getSource(SOURCE_ID).setData({ type: 'FeatureCollection', features: _features });
+                // clear() may have run during the await — guard the source.
+                const src = _map.getSource(SOURCE_ID);
+                if (!src) return;
+                src.setData({ type: 'FeatureCollection', features: _features });
                 App.showToast('3D Heatmap Ready', `${scoreKey} from precomputed tiles — instant.`, 'success');
                 return;
             }
