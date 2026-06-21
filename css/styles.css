@@ -2772,7 +2772,7 @@ html[lang="hi"] textarea {
    (their click handlers own the toggle logic — see js/layers-panel.js). */
 #btn-heatmap, #btn-wards, #btn-lcz, #btn-buildings, #btn-3d, #btn-sun, #btn-lulc,
 #btn-roads, #btn-growth, #btn-heat, #btn-ndvi, #btn-bivariate,
-#btn-viewshed, #btn-kde, #btn-access, #btn-choropleth,
+#btn-viewshed, #btn-kde, #btn-access, #btn-choropleth, #btn-measure,
 #btn-ca-growth, #btn-scenario, #btn-traffic, #btn-mobility, #btn-area {
     display: none;
 }
@@ -4092,4 +4092,92 @@ html[lang="hi"] textarea {
 }
 .sun-play:hover { filter: brightness(1.08); }
 .sun-readout { font-size: 12px; color: var(--text-secondary); }
+.sun-access { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
 .sun-hint { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
+
+/* ===== PRESENTATION MODE (stakeholder view) ===== */
+body.presenting #top-bar,
+body.presenting #toolbar,
+body.presenting #sidebar { display: none !important; }
+.present-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1400;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+}
+.present-brand { font-weight: 700; font-size: 14px; color: var(--text-primary); }
+.present-spacer { flex: 1; }
+.present-btn {
+    padding: 7px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.present-btn:hover { filter: brightness(1.06); }
+.present-exit { border-color: var(--accent-cyan); color: var(--accent-cyan-text); }
+
+/* ===== COMPARISON BRIEF (side-by-side, printable) ===== */
+#compare-brief-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 2100;
+    background: var(--scrim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+.compare-brief {
+    position: relative;
+    width: 560px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 48px);
+    overflow: auto;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-glow), 0 20px 60px rgba(0, 0, 0, 0.4);
+    padding: 22px 24px;
+}
+.cb-close {
+    position: absolute; top: 12px; right: 12px;
+    background: none; border: none; color: var(--text-muted);
+    font-size: 14px; cursor: pointer;
+}
+.cb-close:hover { color: var(--text-primary); }
+.cb-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.cb-sub { font-size: 12px; color: var(--text-muted); margin: 2px 0 14px; }
+.cb-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cb-table th, .cb-table td { padding: 7px 8px; text-align: left; border-bottom: 1px solid var(--border-color); }
+.cb-table th { color: var(--text-secondary); font-weight: 700; font-size: 12px; }
+.cb-table th .cb-city { display: block; font-weight: 500; font-size: 10px; color: var(--text-muted); }
+.cb-metric { color: var(--text-secondary); }
+.cb-band { font-size: 10px; color: var(--text-muted); }
+.cb-na { color: var(--text-muted); }
+.cb-foot { font-size: 10px; color: var(--text-muted); margin: 14px 0; line-height: 1.5; }
+.cb-actions { display: flex; gap: 10px; }
+.cb-btn {
+    flex: 1; padding: 10px 0;
+    border: 1px solid var(--border-color); border-radius: 10px;
+    background: var(--bg-card); color: var(--text-primary);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: var(--transition);
+}
+.cb-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+@media print {
+    body.printing-cbrief > *:not(#compare-brief-backdrop) { display: none !important; }
+    body.printing-cbrief #compare-brief-backdrop { position: static; background: none; display: block; padding: 0; }
+    body.printing-cbrief .compare-brief { width: 100%; max-width: 100%; max-height: none; box-shadow: none; border: none; overflow: visible; }
+    body.printing-cbrief .cb-close, body.printing-cbrief .cb-actions { display: none !important; }
+}

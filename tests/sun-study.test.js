@@ -48,3 +48,34 @@ describe('SunStudy.lightFor', () => {
         expect(l.position[2]).toBeGreaterThan(80); // near the horizon
     });
 });
+
+describe('SunStudy.sunTimes', () => {
+    it('gives ~12 h of daylight at the equator on the equinox', () => {
+        const st = SunStudy.sunTimes(0, 0, new Date(Date.UTC(2024, 2, 20)));
+        expect(st.polar).toBeNull();
+        expect(st.daylightHours).toBeGreaterThan(11.9);
+        expect(st.daylightHours).toBeLessThan(12.3);
+        expect(st.sunriseH).toBeCloseTo(12 - st.daylightHours / 2, 5);
+        expect(st.sunsetH).toBeCloseTo(12 + st.daylightHours / 2, 5);
+    });
+
+    it('gives a long summer day at high northern latitude', () => {
+        const st = SunStudy.sunTimes(51.5, -0.1, new Date(Date.UTC(2024, 5, 20)));
+        expect(st.daylightHours).toBeGreaterThan(16);
+        expect(st.daylightHours).toBeLessThan(17);
+    });
+
+    it('reports polar day/night beyond the circle', () => {
+        expect(SunStudy.sunTimes(80, 0, new Date(Date.UTC(2024, 5, 21))).polar).toBe('day');
+        expect(SunStudy.sunTimes(80, 0, new Date(Date.UTC(2024, 11, 21))).polar).toBe('night');
+    });
+});
+
+describe('SunStudy.formatHM', () => {
+    it('formats decimal hours as HH:MM (24h, wrapping)', () => {
+        expect(SunStudy.formatHM(6.5)).toBe('06:30');
+        expect(SunStudy.formatHM(13.25)).toBe('13:15');
+        expect(SunStudy.formatHM(0)).toBe('00:00');
+        expect(SunStudy.formatHM(null)).toBe('—');
+    });
+});

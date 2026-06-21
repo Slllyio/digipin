@@ -219,6 +219,12 @@ const Compare = (() => {
         pngBtn.textContent = '↓ Chart PNG';
         pngBtn.addEventListener('click', exportPNG);
         actions.appendChild(pngBtn);
+        const briefBtn = document.createElement('button');
+        briefBtn.className = 'compare-export-btn';
+        briefBtn.type = 'button';
+        briefBtn.textContent = '📋 Brief';
+        briefBtn.addEventListener('click', openBrief);
+        actions.appendChild(briefBtn);
         container.appendChild(actions);
 
         // Property Intelligence verdict rows (answer-first): each cell's growth
@@ -406,5 +412,100 @@ const Compare = (() => {
         });
     }
 
-    return { pin, unpin, clearAll, openPanel, closePanel, getPinned, buildCSV, exportCSV, exportPNG };
+    // ---------- Comparison Site Brief (Aino-style, printable) ----------
+    function _esc(v) {
+        return String(v == null ? '' : v).replace(/[&<>"']/g, c =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    /** Row-aligned brief model across the pinned cells (reuses SiteBrief.build). Pure. */
+    function compareBriefModel(pinned) {
+        const list = pinned || [];
+        if (typeof SiteBrief === 'undefined' || !SiteBrief.build) return { cells: [], metricKeys: [] };
+        const cells = list.map(p => {
+            const m = SiteBrief.build(p.data, p.cell);
+            const metrics = {};
+            for (const x of m.metrics) metrics[x.key] = x;
+            return { code: m.code || (p.cell && p.cell.code) || '—', city: m.city, metrics };
+        });
+        const metricKeys = [];
+        const seen = new Set();
+        for (const c of cells) {
+            for (const k of Object.keys(c.metrics)) {
+                if (!seen.has(k)) { seen.add(k); metricKeys.push(k); }
+            }
+        }
+        return { cells, metricKeys };
+    }
+
+    function _briefText(model) {
+        const lines = ['DigiPin Comparison Brief', ''];
+        lines.push(['Metric', ...model.cells.map(c => c.code)].join('\t'));
+        for (const k of model.metricKeys) {
+            const label = model.cells.map(c => c.metrics[k]).find(Boolean)?.label || k;
+            lines.push([label, ...model.cells.map(c => {
+                const m = c.metrics[k];
+                return m ? `${m.value} (${m.band})` : '—';
+            })].join('\t'));
+        }
+        return lines.join('\n');
+    }
+
+    function _closeBrief() { document.getElementById('compare-brief-backdrop')?.remove(); }
+
+    /** Build + show the side-by-side, printable comparison brief. */
+    function openBrief() {
+        if (_pinned.length < 2) {
+            App.showToast('Compare', 'Pin at least two cells to build a comparison brief.', 'warning');
+            return;
+        }
+        _closeBrief();
+        const model = compareBriefModel(_pinned);
+        const backdrop = document.createElement('div');
+        backdrop.id = 'compare-brief-backdrop';
+        backdrop.addEventListener('click', (e) => { if (e.target === backdrop) _closeBrief(); });
+
+        const head = `<tr><th>Metric</th>${model.cells.map(c =>
+            `<th>${_esc(c.code)}${c.city ? `<span class="cb-city">${_esc(c.city)}</span>` : ''}</th>`).join('')}</tr>`;
+        const rows = model.metricKeys.map(k => {
+            const label = model.cells.map(c => c.metrics[k]).find(Boolean)?.label || k;
+            const cells = model.cells.map(c => {
+                const m = c.metrics[k];
+                return m
+                    ? `<td><b style="color:${_esc(m.color)}">${m.value}</b><span class="cb-band"> ${_esc(m.band)}</span></td>`
+                    : '<td class="cb-na">—</td>';
+            }).join('');
+            return `<tr><td class="cb-metric">${_esc(label)}</td>${cells}</tr>`;
+        }).join('');
+
+        const card = document.createElement('div');
+        card.className = 'compare-brief';
+        card.setAttribute('role', 'dialog');
+        card.setAttribute('aria-label', 'Comparison brief');
+        card.innerHTML = `
+            <button class="cb-close" aria-label="Close comparison brief">✕</button>
+            <div class="cb-title">Comparison Brief</div>
+            <div class="cb-sub">${model.cells.length} sites · verdict-banded</div>
+            <table class="cb-table">${head}${rows}</table>
+            <div class="cb-foot">Computed from Indian civic &amp; OpenStreetMap data on the DIGIPIN grid — open and auditable.</div>
+            <div class="cb-actions">
+                <button class="cb-btn cb-copy">Copy summary</button>
+                <button class="cb-btn cb-print">Print / PDF</button>
+            </div>`;
+        card.querySelector('.cb-close').addEventListener('click', _closeBrief);
+        card.querySelector('.cb-print').addEventListener('click', () => {
+            document.body.classList.add('printing-cbrief');
+            const cleanup = () => { document.body.classList.remove('printing-cbrief'); window.removeEventListener('afterprint', cleanup); };
+            window.addEventListener('afterprint', cleanup);
+            window.print();
+        });
+        card.querySelector('.cb-copy').addEventListener('click', async () => {
+            try { await navigator.clipboard.writeText(_briefText(model)); App.showToast('Compare', 'Comparison summary copied.', 'success'); }
+            catch { App.showToast('Compare', 'Copy failed — clipboard blocked.', 'warning'); }
+        });
+        backdrop.appendChild(card);
+        document.body.appendChild(backdrop);
+    }
+
+    return { pin, unpin, clearAll, openPanel, closePanel, getPinned, buildCSV, exportCSV, exportPNG, compareBriefModel, openBrief };
 })();

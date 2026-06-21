@@ -96,6 +96,49 @@ const SunStudy = (() => {
         };
     }
 
+    /** Solar declination (degrees) for a date — the slow-varying NOAA series. */
+    function _declination(date) {
+        const t = (toJulian(date) - 2451545.0) / 36525;
+        let L0 = (280.46646 + t * (36000.76983 + t * 0.0003032)) % 360;
+        if (L0 < 0) L0 += 360;
+        const M = 357.52911 + t * (35999.05029 - 0.0001537 * t);
+        const C = Math.sin(M * RAD) * (1.914602 - t * (0.004817 + 0.000014 * t))
+            + Math.sin(2 * M * RAD) * (0.019993 - 0.000101 * t)
+            + Math.sin(3 * M * RAD) * 0.000289;
+        const omega = 125.04 - 1934.136 * t;
+        const lambda = (L0 + C) - 0.00569 - 0.00478 * Math.sin(omega * RAD);
+        const seconds = 21.448 - t * (46.8150 + t * (0.00059 - t * 0.001813));
+        const eps = 23 + (26 + seconds / 60) / 60 + 0.00256 * Math.cos(omega * RAD);
+        return Math.asin(Math.sin(eps * RAD) * Math.sin(lambda * RAD)) * DEG;
+    }
+
+    /**
+     * Sunrise/sunset (in **apparent solar time**, hours) and total daylight hours
+     * for a latitude on a date. Solar noon is 12:00 by definition, so this is
+     * timezone-free. Returns `polar: 'day'|'night'` (with null times) when the sun
+     * never sets / never rises. lng is accepted for signature symmetry.
+     */
+    function sunTimes(lat, lng, date) {
+        const decl = _declination(date);
+        const latR = lat * RAD, declR = decl * RAD;
+        const cosH0 = (Math.sin(-0.833 * RAD) - Math.sin(latR) * Math.sin(declR))
+            / (Math.cos(latR) * Math.cos(declR));
+        if (cosH0 <= -1) return { daylightHours: 24, sunriseH: null, sunsetH: null, polar: 'day' };
+        if (cosH0 >= 1) return { daylightHours: 0, sunriseH: null, sunsetH: null, polar: 'night' };
+        const haH = Math.acos(cosH0) * DEG / 15;     // half-day length in hours
+        return { daylightHours: 2 * haH, sunriseH: 12 - haH, sunsetH: 12 + haH, polar: null };
+    }
+
+    /** Decimal hours → "HH:MM" (24h), wrapping into [0,24). */
+    function formatHM(hours) {
+        if (hours == null || !Number.isFinite(hours)) return '—';
+        let h = ((hours % 24) + 24) % 24;
+        let m = Math.round((h - Math.floor(h)) * 60);
+        h = Math.floor(h);
+        if (m === 60) { m = 0; h = (h + 1) % 24; }
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+
     let _map = null, _panel = null, _date = null, _playing = false, _raf = 0;
 
     function _latlng() {
@@ -113,7 +156,20 @@ const SunStudy = (() => {
         const { altitude, azimuth } = solarPosition(lat, lng, _date);
         try { _map.setLight(lightFor(altitude, azimuth)); } catch { return false; }
         _updateReadout(altitude, azimuth);
+        _updateAccess();
         return true;
+    }
+
+    /** Refresh the sunrise/sunset/daylight readout for the current date+location. */
+    function _updateAccess() {
+        if (!_panel || !_date) return;
+        const out = _panel.querySelector('.sun-access');
+        if (!out) return;
+        const { lat, lng } = _latlng();
+        const st = sunTimes(lat, lng, _date);
+        if (st.polar === 'day') out.textContent = '☀ Polar day — sun never sets';
+        else if (st.polar === 'night') out.textContent = '🌑 Polar night — sun never rises';
+        else out.textContent = `↑ ${formatHM(st.sunriseH)} · ↓ ${formatHM(st.sunsetH)} · ${st.daylightHours.toFixed(1)} h daylight`;
     }
 
     function _updateReadout(altitude, azimuth) {
@@ -187,6 +243,7 @@ const SunStudy = (() => {
                 <button class="sun-play" aria-label="Play sun arc">▶</button>
                 <span class="sun-readout">—</span>
             </div>
+            <div class="sun-access">—</div>
             <div class="sun-hint">Enable <b>3D Mode</b> / Buildings to see the cast shadows.</div>`;
         el.querySelector('.sun-close').addEventListener('click', () => toggle());
         const dateEl = el.querySelector('.sun-date');
@@ -222,7 +279,7 @@ const SunStudy = (() => {
 
     function isActive() { return !!_panel; }
 
-    return { toggle, isActive, applyToMap, solarPosition, lightFor, toJulian };
+    return { toggle, isActive, applyToMap, solarPosition, lightFor, toJulian, sunTimes, formatHM };
 })();
 
 if (typeof window !== 'undefined') {

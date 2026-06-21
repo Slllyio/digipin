@@ -58,6 +58,7 @@ const App = (() => {
         step('URLState', () => {
             if (typeof URLState !== 'undefined') URLState.init();
         });
+        step('PresentMode', () => { if (typeof PresentMode !== 'undefined') PresentMode.init(); });
         step('keyboardNav', () => { if (typeof KeyboardNav !== 'undefined') KeyboardNav.init(); });
         step('serviceWorker', () => registerServiceWorker());
 
@@ -545,6 +546,18 @@ const App = (() => {
         const pitchBtn = document.getElementById('btn-pitch');
         if (pitchBtn && typeof PitchMap !== 'undefined') {
             pitchBtn.addEventListener('click', () => PitchMap.open());
+        }
+
+        // Measure tool — distance + area (driven from the Layers panel too).
+        const measureBtn = document.getElementById('btn-measure');
+        if (measureBtn && typeof MeasureTool !== 'undefined') {
+            measureBtn.setAttribute('aria-pressed', 'false');
+            measureBtn.addEventListener('click', () => {
+                MeasureTool.toggle();
+                const on = MeasureTool.isVisible();
+                measureBtn.classList.toggle('active', on);
+                measureBtn.setAttribute('aria-pressed', String(on));
+            });
         }
 
         // Bhuvan LULC Overlay toggle (ISRO Land Use / Land Cover via WMS)

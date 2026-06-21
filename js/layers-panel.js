@@ -33,6 +33,7 @@ const LayersPanel = (() => {
         { btnId: 'btn-buildings', name: 'Google Buildings', icon: '\u{1F3E2}', stateful: true },
         { btnId: 'btn-3d', name: '3D Mode', icon: '\u{1F5FA}️' },
         { btnId: 'btn-sun', name: 'Sun & Shadow Study', icon: '\u{2600}️' },
+        { btnId: 'btn-measure', name: 'Measure (distance / area)', icon: '\u{1F4CF}' },
     ];
 
     /** Entries in the shape the unified Layers dropdown renders. */
