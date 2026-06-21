@@ -39,7 +39,7 @@ const APP_GLOBALS = {
   KDEOverlay: 'readonly', AccessibilityOverlay: 'readonly',
   PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly', Text2Map: 'readonly', Text2MapEmbeddings: 'readonly',
   Text2MapResultsLayer: 'readonly',
-  URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly',
+  URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly', I18n: 'readonly',
   LayersPanel: 'readonly', ExportDialog: 'readonly', DTDLExport: 'readonly', Onboarding: 'readonly',
   RealEstateModel: 'readonly', RealEstateWidget: 'readonly', FootprintGrid: 'readonly',
   DIGIPIN_CONFIG: 'readonly',

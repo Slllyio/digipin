@@ -813,6 +813,21 @@ Keep each directive on its own line; the rest of your reply should read normally
         return prompt;
     }
 
+    /** Active UI language ('en' default) — also part of the response cache key. */
+    function _lang() {
+        return (typeof I18n !== 'undefined') ? I18n.get() : 'en';
+    }
+
+    /**
+     * Language directive appended to the system prompt so DISHA replies in the
+     * user's chosen UI language (js/i18n.js). Empty for English (the default).
+     */
+    function _languageDirective() {
+        const lang = _lang();
+        if (lang === 'en' || typeof I18n === 'undefined') return '';
+        return `\n\nIMPORTANT: Respond entirely in ${I18n.langNameEn(lang)}. Keep DIGIPIN codes, numbers, and units unchanged.`;
+    }
+
     // ===== STREAMING (via DISHAProviders, with cache) =====
     async function ask(context, question, onToken, onDone, onError, cityScanContext) {
         if (_abortController) {
@@ -825,7 +840,7 @@ Keep each directive on its own line; the rest of your reply should read normally
 
         // Check cache first (skip for city scans — they have unique scan data)
         if (!cityScanContext && _currentCellCode && typeof DISHACache !== 'undefined') {
-            const cached = await DISHACache.getResponse(_currentCellCode, contextType, question);
+            const cached = await DISHACache.getResponse(_currentCellCode, contextType, question, _lang());
             if (cached) {
                 addToHistory('user', question);
                 addToHistory('assistant', cached.response);
@@ -860,14 +875,14 @@ Keep each directive on its own line; the rest of your reply should read normally
             if (provider.type === 'ollama') {
                 const prompt = assemblePrompt(context, question, cityScanContext);
                 await DISHAProviders.stream({
-                    system: SYSTEM_PROMPT,
+                    system: SYSTEM_PROMPT + _languageDirective(),
                     prompt,
                     onToken,
                     onDone: (resp) => {
                         addToHistory('assistant', resp);
                         // Cache the response
                         if (!cityScanContext && _currentCellCode && typeof DISHACache !== 'undefined') {
-                            DISHACache.putResponse(_currentCellCode, contextType, question, resp, provider.id);
+                            DISHACache.putResponse(_currentCellCode, contextType, question, resp, provider.id, _lang());
                         }
                         if (onDone) onDone({});
                     },
@@ -879,6 +894,9 @@ Keep each directive on its own line; the rest of your reply should read normally
                 if (cityScanContext) {
                     systemContent += '\n\n' + cityScanContext;
                 }
+                // Language instruction last, so it outranks the location data for
+                // LLMs that weight later system content more heavily.
+                systemContent += _languageDirective();
 
                 const historyMessages = getHistoryAsMessages();
                 historyMessages.pop();
@@ -894,7 +912,7 @@ Keep each directive on its own line; the rest of your reply should read normally
                     onDone: (resp) => {
                         addToHistory('assistant', resp);
                         if (!cityScanContext && _currentCellCode && typeof DISHACache !== 'undefined') {
-                            DISHACache.putResponse(_currentCellCode, contextType, question, resp, provider.id);
+                            DISHACache.putResponse(_currentCellCode, contextType, question, resp, provider.id, _lang());
                         }
                         if (onDone) onDone({});
                     },

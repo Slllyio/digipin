@@ -80,6 +80,7 @@ loadGlobalScript('js/text2map.js', ['Text2Map']);
 loadGlobalScript('js/text2map-results-layer.js', ['Text2MapResultsLayer']);
 loadGlobalScript('js/url-state.js', ['URLState']);
 loadGlobalScript('js/theme.js', ['Theme']);
+loadGlobalScript('js/i18n.js', ['I18n']);
 loadGlobalScript('js/digital-twin-layers.js', ['DigitalTwinLayers']);
 loadGlobalScript('js/saved-views.js', ['SavedViews']);
 loadGlobalScript('js/layers-panel.js', ['LayersPanel']);
