@@ -65,16 +65,20 @@
                 document.documentElement.setAttribute('data-theme', 'light');
             }
             // Language pre-paint: set <html lang> before first paint so the
-            // Devanagari font + html[lang="hi"] rules apply with no flash.
-            // Runtime API: js/i18n.js.
+            // html[lang="hi"] rules apply with no flash. The Devanagari webfont
+            // is only loaded for Hindi (here pre-paint, else lazily by I18n) so
+            // English users don't pay a third-party font request. API: js/i18n.js.
             var lang = localStorage.getItem('digipin_language');
             document.documentElement.setAttribute('lang', lang === 'hi' ? 'hi' : 'en');
+            if (lang === 'hi') {
+                var _f = document.createElement('link');
+                _f.id = 'i18n-deva-font';
+                _f.rel = 'stylesheet';
+                _f.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap';
+                document.head.appendChild(_f);
+            }
         } catch (e) { /* storage blocked — fall back to bare dark CSS / en */ }
     </script>
-    <!-- Devanagari webfont for the Hindi UI (only used when lang="hi"). -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="css/styles.css">
 
     <!-- PWA Manifest -->
@@ -106,7 +110,7 @@
         <button id="search-btn" aria-label="Search" data-i18n-aria="btn.search">🔍</button>
         <button id="share-btn" aria-label="Copy shareable link" title="Copy a shareable link to this view" data-i18n-title="btn.share" data-i18n-aria="btn.share">🔗</button>
         <button id="theme-toggle-btn" aria-label="Switch theme" title="Switch theme" data-i18n-title="btn.theme" data-i18n-aria="btn.theme">☀️</button>
-        <select id="lang-select" aria-label="Language" title="Language">
+        <select id="lang-select" aria-label="Language" title="Language" data-i18n-aria="lang.label" data-i18n-title="lang.label">
             <option value="en">EN</option>
             <option value="hi">हिं</option>
         </select>

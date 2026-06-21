@@ -61,9 +61,11 @@ const DISHACache = (() => {
         return question.toLowerCase().trim().replace(/\s+/g, ' ').replace(/[?!.,;:]+$/g, '');
     }
 
-    function makeResponseKey(cellCode, contextType, question) {
+    function makeResponseKey(cellCode, contextType, question, lang) {
         const norm = normalizeQuestion(question);
-        return `${cellCode}:${contextType}:${norm}`;
+        // Include the UI language: a Hindi answer must not be replayed in English
+        // mode (or vice versa) for the same cell+question within the TTL.
+        return `${cellCode}:${contextType}:${lang || 'en'}:${norm}`;
     }
 
     function makeCellKey(lat, lng) {
@@ -72,10 +74,10 @@ const DISHACache = (() => {
     }
 
     // ===== RESPONSE CACHE =====
-    async function getResponse(cellCode, contextType, question) {
+    async function getResponse(cellCode, contextType, question, lang) {
         try {
             const db = await openDB();
-            const key = makeResponseKey(cellCode, contextType, question);
+            const key = makeResponseKey(cellCode, contextType, question, lang);
             const ttl = TTL[contextType] || TTL.general;
 
             return new Promise((resolve) => {
@@ -113,10 +115,10 @@ const DISHACache = (() => {
         }
     }
 
-    async function putResponse(cellCode, contextType, question, response, provider) {
+    async function putResponse(cellCode, contextType, question, response, provider, lang) {
         try {
             const db = await openDB();
-            const key = makeResponseKey(cellCode, contextType, question);
+            const key = makeResponseKey(cellCode, contextType, question, lang);
 
             return new Promise((resolve) => {
                 const tx = db.transaction(STORE_RESPONSES, 'readwrite');

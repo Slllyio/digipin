@@ -30,6 +30,12 @@ describe('I18n.t / normalize', () => {
         expect(I.langNameEn('en')).toBe('English');
         expect(I.langNameEn('xx')).toBe('English');
     });
+
+    it('langName gives the native name (used by the selector)', () => {
+        expect(I.langName('hi')).toBe('हिन्दी');
+        expect(I.langName('en')).toBe('English');
+        expect(I.langName('xx')).toBe('English');
+    });
 });
 
 describe('I18n.set / get / apply (DOM)', () => {

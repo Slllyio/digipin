@@ -132,11 +132,26 @@ const I18n = (() => {
         return LANG_NAMES_EN[normalize(lang !== undefined ? lang : get())] || LANG_NAMES_EN[DEFAULT_LANG];
     }
 
+    // Inject the Devanagari webfont once, and only when Hindi is actually used —
+    // English users (the majority) shouldn't pay a third-party Google Fonts
+    // request for a font that never renders. Idempotent (guards on the id).
+    const FONT_HREF = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap';
+    function _ensureFont() {
+        if (typeof document === 'undefined') return;
+        if (document.getElementById('i18n-deva-font')) return;
+        const link = document.createElement('link');
+        link.id = 'i18n-deva-font';
+        link.rel = 'stylesheet';
+        link.href = FONT_HREF;
+        document.head.appendChild(link);
+    }
+
     /** Swap every opted-in element to the active (or given) language. */
     function apply(lang) {
         if (typeof document === 'undefined') return;
         const l = normalize(lang !== undefined ? lang : get());
         document.documentElement.setAttribute('lang', l);
+        if (l === 'hi') _ensureFont();
         document.querySelectorAll('[data-i18n]').forEach(el => {
             el.textContent = t(el.getAttribute('data-i18n'), l);
         });
@@ -160,11 +175,12 @@ const I18n = (() => {
 
     /** Wire the top-bar language selector (lang itself is applied pre-paint). */
     function init() {
-        apply(get());
+        const current = get();
+        apply(current);
         if (typeof document === 'undefined') return;
         const sel = document.getElementById('lang-select');
         if (sel) {
-            sel.value = get();
+            sel.value = current;
             sel.addEventListener('change', () => set(sel.value));
         }
     }
