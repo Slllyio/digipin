@@ -195,6 +195,10 @@
             <span class="tb-icon">&#129518;</span>
             <span class="tb-label">Grid</span>
         </button>
+        <button class="toolbar-btn" id="btn-area" title="Area summary — drag a rectangle to aggregate every cell inside it">
+            <span class="tb-icon">&#11036;</span>
+            <span class="tb-label">Area</span>
+        </button>
     </div>
 
     <!-- ===== SIDEBAR — QUERIES ===== -->
@@ -320,6 +324,7 @@
     <script defer src="js/ca-growth-overlay.js"></script>
     <script defer src="js/scenario-model.js"></script>
     <script defer src="js/scenario-panel.js"></script>
+    <script defer src="js/area-aggregate.js"></script>
     <!-- Traffic (structural congestion: OSM betweenness → LOS + GTFS transit) -->
     <script defer src="js/traffic-score.js"></script>
     <script defer src="js/traffic-grid.js"></script>
@@ -410,6 +415,7 @@
         ['btn-kde',       () => window.KDEOverlay],
         ['btn-access',    () => window.AccessibilityOverlay],
         ['btn-choropleth', () => window.ScoreChoropleth],
+        ['btn-area',      () => window.AreaAggregate],
     ].forEach(([id, getMod]) => {
         const btn = document.getElementById(id);
         if (!btn) return;

@@ -2,7 +2,7 @@
  * Service Worker — Offline cache for DigiPin portal
  * Caches static assets; API calls use network-first strategy
  */
-const CACHE_NAME = 'digipin-v22';
+const CACHE_NAME = 'digipin-v23';
 
 // Full same-origin app shell — EVERY js/ module referenced by app.html, so the
 // app is genuinely usable offline. (Previously only ~19 were precached and the
@@ -24,6 +24,7 @@ const LOCAL_ASSETS = [
     './js/ca-growth-overlay.js',
     './js/scenario-model.js',
     './js/scenario-panel.js',
+    './js/area-aggregate.js',
     './js/traffic-score.js',
     './js/traffic-grid.js',
     './js/realtime-traffic.js',
