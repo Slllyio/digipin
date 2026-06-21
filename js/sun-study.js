@@ -179,6 +179,7 @@ const SunStudy = (() => {
         try { _map.setLight(lightFor(altitude, azimuth)); } catch { return false; }
         _updateReadout(altitude, azimuth);
         _updateAccess();
+        _drawChart();
         return true;
     }
 
@@ -192,6 +193,44 @@ const SunStudy = (() => {
         if (st.polar === 'day') out.textContent = '☀ Polar day — sun never sets';
         else if (st.polar === 'night') out.textContent = '🌑 Polar night — sun never rises';
         else out.textContent = `↑ ${formatHM(st.sunriseH)} · ↓ ${formatHM(st.sunsetH)} · ${st.daylightHours.toFixed(1)} h daylight`;
+    }
+
+    /** Draw the day's solar-altitude curve with a marker at the current time. */
+    function _drawChart() {
+        if (!_panel || !_date) return;
+        const canvas = _panel.querySelector('.sun-chart');
+        if (!canvas || !canvas.getContext) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        const W = canvas.width, H = canvas.height;
+        const { lat, lng } = _latlng();
+        const samples = dayAltitudes(lat, lng, _date);
+        const pal = (typeof Theme !== 'undefined' && Theme.palette) ? Theme.palette()
+            : { primary: '#0099ff', sub: '#636363', border: 'rgba(0,0,0,0.12)' };
+        const MIN = -15, MAX = 90;                       // altitude window (deg)
+        const y = (alt) => H - ((alt - MIN) / (MAX - MIN)) * H;
+        const x = (h) => (h / 24) * W;
+        ctx.clearRect(0, 0, W, H);
+        // horizon line (altitude 0)
+        ctx.strokeStyle = pal.border;
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(0, y(0)); ctx.lineTo(W, y(0)); ctx.stroke();
+        // altitude curve
+        ctx.strokeStyle = pal.primary;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        samples.forEach((s, i) => { const px = x(s.h), py = y(s.altitude); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
+        ctx.stroke();
+        // current-time marker — altitude at the current solar hour (same model
+        // as dayAltitudes, computed directly for this one instant).
+        const utcMin = _date.getUTCHours() * 60 + _date.getUTCMinutes();
+        let tH = ((utcMin + 4 * lng) / 60) % 24; if (tH < 0) tH += 24;
+        const declR = _declination(_date) * RAD, latR = lat * RAD;
+        const Hh = (tH - 12) * 15 * RAD;
+        const sinAlt = Math.sin(latR) * Math.sin(declR) + Math.cos(latR) * Math.cos(declR) * Math.cos(Hh);
+        const curAlt = Math.asin(Math.max(-1, Math.min(1, sinAlt))) * DEG;
+        ctx.fillStyle = (typeof Theme !== 'undefined' && Theme.palette) ? (Theme.palette().brand || pal.primary) : '#ff673d';
+        ctx.beginPath(); ctx.arc(x(tH), y(curAlt), 3, 0, 2 * Math.PI); ctx.fill();
     }
 
     function _updateReadout(altitude, azimuth) {
@@ -267,6 +306,7 @@ const SunStudy = (() => {
                 <span class="sun-readout">—</span>
             </div>
             <div class="sun-access">—</div>
+            <canvas class="sun-chart" width="222" height="64" aria-label="Sun-path altitude chart"></canvas>
             <div class="sun-hint">Enable <b>3D Mode</b> / Buildings to see the cast shadows.</div>`;
         el.querySelector('.sun-close').addEventListener('click', () => toggle());
         const dateEl = el.querySelector('.sun-date');
