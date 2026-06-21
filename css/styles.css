@@ -1,5 +1,5 @@
 /* DigiPin Urban Intelligence — themable: Premium Dark (default) + Paper Light */
-@import 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&display=swap';
 
 /* Skip link — off-screen until focused, then drops in at top-left. Neutral
    card colours so it reads in both themes. */
@@ -82,57 +82,62 @@
    primary accent (mapped onto --accent-cyan, the semantic primary), muted
    secondaries, soft diffuse shadows instead of neon glows. Activated by
    <html data-theme="light"> (set pre-paint from localStorage; see Theme). */
-/* ===== AINO PAPER LIGHT THEME (matched to aino.world) =====
-   Cool architectural light: near-white surfaces, charcoal ink, ONE salmon-
-   coral accent for data highlights/pins, charcoal for UI chrome (toggles,
-   controls) — no violet. Muted sage + pale steel for supporting data. */
+/* ===== AINO PAPER LIGHT THEME (exact replica of aino.world) =====
+   Cool architectural light: near-white surfaces, charcoal ink (#292929), gray
+   sub-text (#636363), hairline borders rgba(0,0,0,0.07). Aino runs a TWO-accent
+   system: BLUE (#0099ff) for interactive/links/active states (mapped onto
+   --accent-cyan, the semantic "primary" the UI keys off), and CORAL (#ff673d,
+   --accent-coral) for the brand wordmark + serif headlines. Dark UI chrome /
+   primary-filled buttons stay charcoal (--accent-purple). Display serif is
+   Fraunces (a tall high-contrast match for Aino's "Awesome Serif"). */
 html[data-theme="light"] {
-    --bg-primary: #f4f6f7;
+    --bg-primary: #f7f7f6;
     --bg-secondary: #ffffff;
-    --bg-card: rgba(255, 255, 255, 0.94);
-    --bg-glass: rgba(255, 255, 255, 0.85);
-    /* cool-charcoal ink at low alpha for washes & strong foregrounds */
-    --wash-02: rgba(40, 44, 48, 0.022);
-    --wash-03: rgba(40, 44, 48, 0.032);
-    --wash-04: rgba(40, 44, 48, 0.042);
-    --wash-05: rgba(40, 44, 48, 0.052);
-    --wash-06: rgba(40, 44, 48, 0.065);
-    --wash-08: rgba(40, 44, 48, 0.085);
-    --wash-10: rgba(40, 44, 48, 0.1);
-    --wash-20: rgba(40, 44, 48, 0.18);
-    --fg-30: rgba(40, 44, 48, 0.3);
-    --fg-35: rgba(40, 44, 48, 0.35);
-    --fg-40: rgba(40, 44, 48, 0.4);
-    --fg-50: rgba(40, 44, 48, 0.5);
-    --fg-60: rgba(40, 44, 48, 0.6);
-    --fg-90: rgba(40, 44, 48, 0.9);
-    --border-color: rgba(40, 44, 48, 0.1);
-    --text-primary: #26282b;
-    --text-secondary: #5c6166;
-    --text-muted: #9aa0a6;
-    --accent-cyan: #dd6b4a;     /* PRIMARY — Aino salmon-coral */
-    --accent-purple: #2e3033;   /* SECONDARY — charcoal (no violet) */
-    /* Aino editorial display serif for headings (light theme only). */
-    --font-display: 'Newsreader', 'Georgia', 'Times New Roman', serif;
-    --accent-pink: #cf7d6a;     /* muted coral-rose */
-    --accent-green: #5f8a5a;    /* sage (parks/green) */
+    --bg-card: rgba(255, 255, 255, 0.96);
+    --bg-glass: rgba(255, 255, 255, 0.88);
+    /* near-black ink at low alpha for washes, hairlines & strong foregrounds */
+    --wash-02: rgba(0, 0, 0, 0.02);
+    --wash-03: rgba(0, 0, 0, 0.03);
+    --wash-04: rgba(0, 0, 0, 0.04);
+    --wash-05: rgba(0, 0, 0, 0.05);
+    --wash-06: rgba(0, 0, 0, 0.06);
+    --wash-08: rgba(0, 0, 0, 0.07);
+    --wash-10: rgba(0, 0, 0, 0.1);
+    --wash-20: rgba(0, 0, 0, 0.18);
+    --fg-30: rgba(41, 41, 41, 0.3);
+    --fg-35: rgba(41, 41, 41, 0.35);
+    --fg-40: rgba(41, 41, 41, 0.4);
+    --fg-50: rgba(41, 41, 41, 0.5);
+    --fg-60: rgba(41, 41, 41, 0.6);
+    --fg-90: rgba(41, 41, 41, 0.9);
+    --border-color: rgba(0, 0, 0, 0.07);
+    --text-primary: #292929;       /* Aino charcoal ink */
+    --text-secondary: #636363;     /* Aino gray sub-text */
+    --text-muted: #999999;
+    --accent-cyan: #0099ff;        /* PRIMARY interactive — Aino blue (links/active/focus) */
+    --accent-coral: #ff673d;       /* BRAND — Aino coral (wordmark + serif headlines) */
+    --accent-purple: #292929;      /* dark chrome / primary-filled pills (charcoal) */
+    /* Aino display serif for headings (light theme only). */
+    --font-display: 'Fraunces', 'Georgia', 'Times New Roman', serif;
+    --accent-pink: #ff694f;        /* warm coral-rose */
+    --accent-green: #5f8a5a;       /* sage (parks/green) */
     --accent-yellow: #a3781f;
     --accent-red: #b3392f;
-    --gradient-main: linear-gradient(135deg, #e6845f 0%, #d9603a 100%);
-    --gradient-subtle: linear-gradient(135deg, rgba(221, 107, 74, 0.06) 0%, rgba(46, 48, 51, 0.05) 100%);
-    --shadow-glow: 0 8px 28px rgba(24, 30, 38, 0.08);
-    --accent-soft: rgba(221, 107, 74, 0.12);
-    --accent-softer: rgba(221, 107, 74, 0.06);
-    --scrim: rgba(28, 32, 36, 0.3);
-    /* RGB channels (salmon-coral primary, charcoal secondary, cool ink) */
-    --accent-primary-rgb: 221 107 74;
-    --accent-purple-rgb: 46 48 51;
-    --ink-rgb: 40 44 48;
+    --gradient-main: linear-gradient(135deg, #2e2e2e 0%, #1a1a1a 100%);   /* dark pill (Aino "Share & Export") */
+    --gradient-subtle: linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.02) 100%);
+    --shadow-glow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    --accent-soft: rgba(0, 153, 255, 0.12);
+    --accent-softer: rgba(0, 153, 255, 0.06);
+    --scrim: rgba(20, 22, 24, 0.28);
+    /* RGB channels (blue primary, charcoal secondary, pure-black ink for hairlines) */
+    --accent-primary-rgb: 0 153 255;
+    --accent-purple-rgb: 41 41 41;
+    --ink-rgb: 0 0 0;
     --danger-rgb: 179 57 47;
-    --info-rgb: 108 138 162;
+    --info-rgb: 0 153 255;
     --success-rgb: 95 138 90;
-    --shadow-modal: 0 16px 50px rgba(24, 30, 38, 0.14);
-    --btn-glow: 0 6px 18px rgba(221, 107, 74, 0.26);
+    --shadow-modal: 0 16px 50px rgba(0, 0, 0, 0.12);
+    --btn-glow: 0 6px 18px rgba(0, 153, 255, 0.22);
     --radius: 12px;
 }
 
@@ -156,22 +161,115 @@ html[data-theme="light"] .dt-group-title,
 html[data-theme="light"] .overture-stats-title {
     font-family: var(--font-display);
     font-weight: 500;
-    letter-spacing: 0.01em;
-    color: var(--accent-cyan);   /* coral primary */
+    letter-spacing: 0;
+    color: var(--accent-coral);   /* Aino coral brand */
     text-transform: none;
 }
 
-/* The wordmark reads better as solid coral serif than as a clipped gradient. */
+/* The wordmark reads as Aino's signature coral serif *italic* (echoing
+   "Aino Data Connectors"), solid fill rather than a clipped gradient. */
 html[data-theme="light"] .logo-text {
     background: none;
-    -webkit-text-fill-color: var(--accent-cyan);
-    font-size: 16px;
+    -webkit-text-fill-color: var(--accent-coral);
+    color: var(--accent-coral);
+    font-style: italic;
+    font-size: 17px;
+    letter-spacing: 0;
 }
+/* DISHA's title also leans into the italic brand serif. */
+html[data-theme="light"] .disha-title { font-style: italic; }
 
 /* Section/card titles a touch larger so the serif has room to breathe. */
 html[data-theme="light"] .section-title,
-html[data-theme="light"] .results-header h3 { font-size: 16px; }
-html[data-theme="light"] .onboarding-title { font-size: 22px; }
+html[data-theme="light"] .results-header h3 { font-size: 17px; }
+html[data-theme="light"] .onboarding-title { font-size: 24px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   AINO LIGHT — flattened chrome (exact-replica structural overrides)
+   aino.world is crisp & minimal: flat white surfaces, 1px hairline borders,
+   soft diffuse shadows (no glass-blur / neon glow), gently-rounded pill chips,
+   blue interactive accents. These override structural properties the token
+   swap alone can't reach; ALL scoped to the light theme so the dark
+   control-room look is untouched.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Top bar → flat white bar, hairline border, no blur/glow */
+html[data-theme="light"] #top-bar {
+    background: var(--bg-secondary);
+    backdrop-filter: none;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+}
+/* Logo mark → solid charcoal tile (Aino's dark starburst), white "DP" */
+html[data-theme="light"] .logo-icon {
+    background: #292929;
+    color: #ffffff;
+}
+/* Search field → crisp white, hairline, gently rounded; blue focus ring */
+html[data-theme="light"] #search-input {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+/* Search button → Aino blue (the interactive accent), not a dark pill */
+html[data-theme="light"] #search-btn {
+    background: var(--accent-cyan);
+    color: #ffffff;
+}
+/* Round icon buttons → white + hairline */
+html[data-theme="light"] #share-btn,
+html[data-theme="light"] #theme-toggle-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+html[data-theme="light"] #share-btn:hover,
+html[data-theme="light"] #theme-toggle-btn:hover {
+    background: var(--wash-04);
+}
+
+/* Sidebar / toolbar buttons / dialogs → flat white, hairline, soft shadow */
+html[data-theme="light"] #sidebar {
+    background: var(--bg-secondary);
+    backdrop-filter: none;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+html[data-theme="light"] .toolbar-btn {
+    background: var(--bg-secondary);
+    backdrop-filter: none;
+}
+html[data-theme="light"] .toolbar-btn:hover {
+    background: var(--wash-04);
+    color: var(--accent-cyan);
+    border-color: var(--border-color);
+}
+html[data-theme="light"] .floating-dialog {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+/* Dialog titlebar → plain white + hairline divider (drop the tinted gradient) */
+html[data-theme="light"] .dialog-titlebar {
+    background: var(--bg-secondary);
+}
+
+/* Pill chips → white with a hairline border (not tinted fills), 8px radius */
+html[data-theme="light"] .disha-suggestion {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+}
+html[data-theme="light"] .disha-suggestion:hover {
+    background: var(--wash-04);
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+}
+html[data-theme="light"] .src-chip { border-radius: 8px; }
+html[data-theme="light"] #city-select,
+html[data-theme="light"] #lang-select {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
 
 * {
     margin: 0;

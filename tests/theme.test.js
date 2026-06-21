@@ -55,9 +55,9 @@ describe('Theme.mapStyleUrl() / gridColors()', () => {
         expect(T.gridColors('dark')).toEqual({ base: '#00f5ff', selected: '#a855f7' });
     });
 
-    it('serves positron + coral grid for light', () => {
+    it('serves positron + blue-selected grid for light', () => {
         expect(T.mapStyleUrl('light')).toContain('positron');
-        expect(T.gridColors('light')).toEqual({ base: '#dd6b4a', selected: '#2e3033' });
+        expect(T.gridColors('light')).toEqual({ base: '#b8bfc6', selected: '#0099ff' });
     });
 
     it('follows the persisted theme when no argument is given', () => {
@@ -69,11 +69,12 @@ describe('Theme.mapStyleUrl() / gridColors()', () => {
 });
 
 describe('Theme.palette() — JS-surface colours', () => {
-    it('returns coral-ink paper colours for light', () => {
+    it('returns blue-interactive / coral-brand paper colours for light', () => {
         const p = T.palette('light');
-        expect(p.primary).toBe('#dd6b4a');
-        expect(p.ink).toBe('#26282b');
-        expect(p.inkOnPrimary).toBe('#ffffff');   // readable label on coral
+        expect(p.primary).toBe('#0099ff');        // Aino blue — interactive primary
+        expect(p.brand).toBe('#ff673d');          // Aino coral — brand/headlines
+        expect(p.ink).toBe('#292929');
+        expect(p.inkOnPrimary).toBe('#ffffff');   // readable label on blue
         expect(p.surfaceSolid).toBe('#ffffff');   // clean white card (Aino)
     });
 
@@ -94,7 +95,7 @@ describe('Theme.palette() — JS-surface colours', () => {
 
     it('follows the persisted theme with no argument', () => {
         T.set('light');
-        expect(T.palette().primary).toBe('#dd6b4a');
+        expect(T.palette().primary).toBe('#0099ff');
         T.set('dark');
         expect(T.palette().primary).toBe('#00f5ff');
     });

@@ -32,7 +32,7 @@ const Theme = (() => {
     // a theme change reloads, so init-time colours are sufficient).
     const GRID_COLORS = {
         dark: { base: '#00f5ff', selected: '#a855f7' },
-        light: { base: '#dd6b4a', selected: '#2e3033' },
+        light: { base: '#b8bfc6', selected: '#0099ff' },
     };
 
     // Semantic colours for JS-built surfaces (overlay legends, MapLibre popups,
@@ -49,11 +49,15 @@ const Theme = (() => {
             success: '#22c55e', warn: '#eab308', danger: '#ef4444',
         },
         light: {
-            // Aino (aino.world): salmon-coral primary, charcoal secondary, cool ink.
-            primary: '#dd6b4a', primarySoft: 'rgba(221,107,74,0.18)',
-            secondary: '#2e3033', ink: '#26282b', sub: '#5c6166',
-            surface: 'rgba(248,249,250,0.96)', surfaceSolid: '#ffffff',
-            border: 'rgba(40,44,48,0.12)', inkOnPrimary: '#ffffff',
+            // Aino (aino.world): blue interactive primary + coral brand, charcoal
+            // ink. `primary` (blue) drives interactive JS surfaces (markers, scan
+            // header, legends) to match the UI; `brand` (coral) is for headline
+            // accents drawn in JS.
+            primary: '#0099ff', primarySoft: 'rgba(0,153,255,0.18)',
+            brand: '#ff673d',
+            secondary: '#292929', ink: '#292929', sub: '#636363',
+            surface: 'rgba(255,255,255,0.96)', surfaceSolid: '#ffffff',
+            border: 'rgba(0,0,0,0.07)', inkOnPrimary: '#ffffff',
             success: '#5f8a5a', warn: '#a3781f', danger: '#b3392f',
         },
     };
