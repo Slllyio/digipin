@@ -2759,9 +2759,15 @@ html[lang="hi"] textarea {
    (their click handlers own the toggle logic — see js/layers-panel.js). */
 #btn-heatmap, #btn-wards, #btn-lcz, #btn-buildings, #btn-3d, #btn-lulc,
 #btn-roads, #btn-growth, #btn-heat, #btn-ndvi, #btn-bivariate,
-#btn-viewshed, #btn-kde, #btn-access, #btn-choropleth {
+#btn-viewshed, #btn-kde, #btn-access, #btn-choropleth,
+#btn-ca-growth, #btn-scenario, #btn-traffic, #btn-mobility, #btn-area {
     display: none;
 }
+
+/* Layers-panel rows whose data file isn't deployed — dimmed + non-interactive
+   cue (the click still explains via a calm toast). */
+.dt-layer-item.dt-unavailable { opacity: 0.45; }
+.dt-layer-item.dt-unavailable .dt-layer-name { font-style: italic; }
 
 /* The Layers button is now the primary map-tool entry point. */
 #btn-dt-layers {

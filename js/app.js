@@ -816,7 +816,16 @@ const App = (() => {
                                 }
                             } catch (err) {
                                 checkbox.checked = false;
-                                showToast('Layer Unavailable', ld.name + ': ' + err.message, 'error');
+                                // A 404 / load failure means the layer's data file
+                                // simply isn't deployed (most OSM vector layers are
+                                // pipeline-generated per city) — present that as a
+                                // calm "not available" note, not a scary red error.
+                                const missing = /\b404\b|Failed to load|No data source/i.test(err.message || '');
+                                if (missing) {
+                                    showToast('Layer not available', ld.name + ' isn’t available in this deployment yet.', 'info');
+                                } else {
+                                    showToast('Layer Unavailable', ld.name + ': ' + err.message, 'error');
+                                }
                             }
                         });
                     }
@@ -828,6 +837,25 @@ const App = (() => {
                 groupDiv.appendChild(contentDiv);
                 dtLayersDrop.appendChild(groupDiv);
             });
+
+            // Proactively dim Digital-Twin layers whose data file isn't deployed
+            // (most OSM vector layers are generated per-city by the pipeline and
+            // aren't shipped to Pages), so users see "no data" rather than clicking
+            // a dead row. PMTiles/WMS layers always report available. One-shot,
+            // fire-and-forget HEAD probes run once at startup.
+            if (typeof DigitalTwinLayers.checkAvailability === 'function') {
+                layerDefs.forEach(ld => {
+                    DigitalTwinLayers.checkAvailability(ld.key).then(ok => {
+                        if (ok) return;
+                        const item = dtLayersDrop.querySelector('.dt-layer-item[data-layer-key="' + ld.key + '"]');
+                        if (!item) return;
+                        item.classList.add('dt-unavailable');
+                        item.title = 'Not available in this deployment';
+                        const nm = item.querySelector('.dt-layer-name');
+                        if (nm && !/· no data$/.test(nm.textContent)) nm.textContent += ' · no data';
+                    }).catch(() => { /* probe is best-effort */ });
+                });
+            }
 
             dtLayersBtn.addEventListener('click', () => {
                 const isOpen = dtLayersDrop.classList.toggle('open');

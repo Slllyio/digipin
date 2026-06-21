@@ -36,6 +36,13 @@ const HeatOverlay = (() => {
     function attach() {
         _active = true;
         refresh();
+        // The heat surface is driven by the MODIS LST raster (data/heat/*.tif via
+        // RealtimeHeat), which is pipeline-generated and not shipped to Pages, and
+        // there is no committed heat score to sample. Rather than silently add an
+        // empty layer, tell the user — consistent with GrowthOverlay's messaging.
+        if (typeof App !== 'undefined' && App.showToast) {
+            App.showToast('Urban Heat Island', 'Heat (MODIS LST) data isn’t available in this deployment yet.', 'info');
+        }
     }
 
     function detach() {
