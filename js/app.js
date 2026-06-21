@@ -963,6 +963,19 @@ const App = (() => {
     /** Register the service worker for offline support and prompt to refresh when an update is installed. */
     function registerServiceWorker() {
         if (!('serviceWorker' in navigator)) return;
+        // sw.js uses skipWaiting()+clients.claim(), so a new SW takes control
+        // immediately and fires `controllerchange`. Reload once on that event so
+        // the page runs the fresh shell instead of stale in-memory modules —
+        // but only when this REPLACES an existing controller (an update), never
+        // on the first-ever activation, and guarded against reload loops.
+        let _refreshing = false;
+        const _hadController = !!navigator.serviceWorker.controller;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (_refreshing || !_hadController) return;
+            _refreshing = true;
+            showToast('Updated', 'Loading the latest DigiPin…', 'info');
+            window.location.reload();
+        });
         navigator.serviceWorker.register('./sw.js').then(reg => {
             // When a new SW is found and finishes installing while an old one is
             // still controlling the page, the fresh app shell is cached but not

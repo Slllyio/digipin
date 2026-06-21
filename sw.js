@@ -2,7 +2,7 @@
  * Service Worker — Offline cache for DigiPin portal
  * Caches static assets; API calls use network-first strategy
  */
-const CACHE_NAME = 'digipin-v25';
+const CACHE_NAME = 'digipin-v26';
 
 // Full same-origin app shell — EVERY js/ module referenced by app.html, so the
 // app is genuinely usable offline. (Previously only ~19 were precached and the
@@ -132,6 +132,17 @@ self.addEventListener('fetch', event => {
     if (url.hostname !== location.hostname) {
         event.respondWith(
             fetch(event.request).catch(() => caches.match(event.request))
+        );
+        return;
+    }
+
+    // Offline navigation fallback: a deep link to an un-precached route (or any
+    // navigation while offline) should land on the app shell rather than the
+    // browser's offline-error page. ('./', index.html, app.html are precached.)
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request).catch(() =>
+                caches.match(event.request).then(c => c || caches.match('./app.html')))
         );
         return;
     }
