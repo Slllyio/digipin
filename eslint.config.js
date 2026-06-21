@@ -42,7 +42,7 @@ const APP_GLOBALS = {
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly', I18n: 'readonly',
   LayersPanel: 'readonly', ExportDialog: 'readonly', DTDLExport: 'readonly', Onboarding: 'readonly',
   PitchMap: 'readonly', SunStudy: 'readonly', FootprintExport: 'readonly', SiteBrief: 'readonly',
-  MeasureTool: 'readonly', PresentMode: 'readonly',
+  MeasureTool: 'readonly', PresentMode: 'readonly', Annotations: 'readonly',
   RealEstateModel: 'readonly', RealEstateWidget: 'readonly', FootprintGrid: 'readonly',
   DIGIPIN_CONFIG: 'readonly',
   // third-party libraries loaded from CDN

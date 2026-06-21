@@ -59,6 +59,7 @@ const App = (() => {
             if (typeof URLState !== 'undefined') URLState.init();
         });
         step('PresentMode', () => { if (typeof PresentMode !== 'undefined') PresentMode.init(); });
+        step('Annotations', () => { if (typeof Annotations !== 'undefined') Annotations.init(); });
         step('keyboardNav', () => { if (typeof KeyboardNav !== 'undefined') KeyboardNav.init(); });
         step('serviceWorker', () => registerServiceWorker());
 
@@ -557,6 +558,17 @@ const App = (() => {
                 const on = MeasureTool.isVisible();
                 measureBtn.classList.toggle('active', on);
                 measureBtn.setAttribute('aria-pressed', String(on));
+            });
+        }
+
+        // Annotate — drop labelled notes on the map (driven from the Layers panel too).
+        const annotateBtn = document.getElementById('btn-annotate');
+        if (annotateBtn && typeof Annotations !== 'undefined') {
+            annotateBtn.setAttribute('aria-pressed', 'false');
+            annotateBtn.addEventListener('click', () => {
+                const on = Annotations.toggle();
+                annotateBtn.classList.toggle('active', on);
+                annotateBtn.setAttribute('aria-pressed', String(on));
             });
         }
 

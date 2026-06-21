@@ -34,6 +34,7 @@ const LayersPanel = (() => {
         { btnId: 'btn-3d', name: '3D Mode', icon: '\u{1F5FA}️' },
         { btnId: 'btn-sun', name: 'Sun & Shadow Study', icon: '\u{2600}️' },
         { btnId: 'btn-measure', name: 'Measure (distance / area)', icon: '\u{1F4CF}' },
+        { btnId: 'btn-annotate', name: 'Annotate (map notes)', icon: '\u{1F4CC}' },
     ];
 
     /** Entries in the shape the unified Layers dropdown renders. */

@@ -97,3 +97,4 @@ loadGlobalScript('js/footprint-export.js', ['FootprintExport']);
 loadGlobalScript('js/site-brief.js', ['SiteBrief']);
 loadGlobalScript('js/measure-tool.js', ['MeasureTool']);
 loadGlobalScript('js/present-mode.js', ['PresentMode']);
+loadGlobalScript('js/annotations.js', ['Annotations']);

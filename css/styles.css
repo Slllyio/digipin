@@ -2772,7 +2772,7 @@ html[lang="hi"] textarea {
    (their click handlers own the toggle logic — see js/layers-panel.js). */
 #btn-heatmap, #btn-wards, #btn-lcz, #btn-buildings, #btn-3d, #btn-sun, #btn-lulc,
 #btn-roads, #btn-growth, #btn-heat, #btn-ndvi, #btn-bivariate,
-#btn-viewshed, #btn-kde, #btn-access, #btn-choropleth, #btn-measure,
+#btn-viewshed, #btn-kde, #btn-access, #btn-choropleth, #btn-measure, #btn-annotate,
 #btn-ca-growth, #btn-scenario, #btn-traffic, #btn-mobility, #btn-area {
     display: none;
 }
@@ -4126,6 +4126,33 @@ body.presenting #sidebar { display: none !important; }
 }
 .present-btn:hover { filter: brightness(1.06); }
 .present-exit { border-color: var(--accent-cyan); color: var(--accent-cyan-text); }
+
+/* ===== MAP ANNOTATIONS (user markup pins) ===== */
+.map-annotation {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transform: translateY(-2px);
+}
+.map-annotation .ma-dot {
+    width: 12px; height: 12px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    flex: 0 0 auto;
+}
+.map-annotation .ma-label {
+    background: var(--bg-secondary, #fff);
+    color: var(--text-primary, #292929);
+    border: 1px solid var(--border-color, rgba(0,0,0,0.1));
+    border-radius: 6px;
+    padding: 2px 7px;
+    font: 600 11px/1.3 system-ui, sans-serif;
+    white-space: nowrap;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.18);
+}
 
 /* ===== COMPARISON BRIEF (side-by-side, printable) ===== */
 #compare-brief-backdrop {
