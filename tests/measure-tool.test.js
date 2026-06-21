@@ -18,6 +18,13 @@ describe('MeasureTool.pathLengthM', () => {
         expect(MeasureTool.pathLengthM([])).toBe(0);
         expect(MeasureTool.pathLengthM([{ lat: 1, lng: 1 }])).toBe(0);
     });
+
+    it('measures the short arc across the anti-meridian (179° → -179° ≈ 2°)', () => {
+        const m = MeasureTool.pathLengthM([{ lat: 0, lng: 179 }, { lat: 0, lng: -179 }]);
+        // 2° of longitude at the equator ≈ 222 km, NOT ~39,800 km the long way.
+        expect(m).toBeGreaterThan(220000);
+        expect(m).toBeLessThan(224000);
+    });
 });
 
 describe('MeasureTool.polygonAreaM2', () => {
@@ -38,6 +45,15 @@ describe('MeasureTool.polygonAreaM2', () => {
 
     it('is zero for <3 points', () => {
         expect(MeasureTool.polygonAreaM2([{ lat: 0, lng: 0 }, { lat: 0, lng: 1 }])).toBe(0);
+    });
+
+    it('computes a sane area for a polygon straddling the date line', () => {
+        // ~2° × ~0.02° box centred on 180° → roughly the same as the same box at 0°.
+        const ref = MeasureTool.polygonAreaM2([
+            { lat: 0, lng: -1 }, { lat: 0, lng: 1 }, { lat: 0.02, lng: 1 }, { lat: 0.02, lng: -1 }]);
+        const dateline = MeasureTool.polygonAreaM2([
+            { lat: 0, lng: 179 }, { lat: 0, lng: -179 }, { lat: 0.02, lng: -179 }, { lat: 0.02, lng: 179 }]);
+        expect(dateline).toBeCloseTo(ref, -2);   // within ~100 m² scale
     });
 });
 

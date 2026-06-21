@@ -71,6 +71,21 @@ describe('SunStudy.sunTimes', () => {
     });
 });
 
+describe('SunStudy.dayAltitudes / peakAltitude', () => {
+    it('samples the whole day and peaks near overhead at the equator equinox', () => {
+        const samples = SunStudy.dayAltitudes(0, 0, new Date(Date.UTC(2024, 2, 20)));
+        expect(samples).toHaveLength(97);          // 0..1440 step 15, inclusive
+        expect(SunStudy.peakAltitude(samples)).toBeGreaterThan(85);
+        // midnight (solar) is well below the horizon
+        expect(samples[0].altitude).toBeLessThan(0);
+    });
+
+    it('peak stays below the horizon during deep polar winter', () => {
+        const samples = SunStudy.dayAltitudes(78, 0, new Date(Date.UTC(2024, 11, 21)));
+        expect(SunStudy.peakAltitude(samples)).toBeLessThan(0);
+    });
+});
+
 describe('SunStudy.formatHM', () => {
     it('formats decimal hours as HH:MM (24h, wrapping)', () => {
         expect(SunStudy.formatHM(6.5)).toBe('06:30');

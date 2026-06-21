@@ -552,13 +552,15 @@ const App = (() => {
         // Measure tool — distance + area (driven from the Layers panel too).
         const measureBtn = document.getElementById('btn-measure');
         if (measureBtn && typeof MeasureTool !== 'undefined') {
-            measureBtn.setAttribute('aria-pressed', 'false');
-            measureBtn.addEventListener('click', () => {
-                MeasureTool.toggle();
+            const syncMeasureBtn = () => {
                 const on = MeasureTool.isVisible();
                 measureBtn.classList.toggle('active', on);
                 measureBtn.setAttribute('aria-pressed', String(on));
-            });
+            };
+            measureBtn.setAttribute('aria-pressed', 'false');
+            measureBtn.addEventListener('click', () => { MeasureTool.toggle(); syncMeasureBtn(); });
+            // The tool can also detach via other paths — keep the button honest.
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setTimeout(syncMeasureBtn, 0); });
         }
 
         // Annotate — drop labelled notes on the map (driven from the Layers panel too).

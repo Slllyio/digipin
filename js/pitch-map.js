@@ -82,6 +82,7 @@ const PitchMap = (() => {
         out.width = W;
         out.height = H;
         const ctx = out.getContext('2d');
+        if (!ctx) return null;
 
         // Background (paper) behind the bands.
         ctx.fillStyle = P.surfaceSolid;

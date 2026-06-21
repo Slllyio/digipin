@@ -42,7 +42,7 @@ const SiteBrief = (() => {
         const metrics = [];
         const scores = data.scores || {};
         for (const [key, s] of Object.entries(scores)) {
-            if (!s || typeof s.value !== 'number') continue;
+            if (!s || !Number.isFinite(s.value)) continue;
             const value = Math.round(s.value);
             const { band, tone } = _band(value);
             metrics.push({
@@ -62,7 +62,7 @@ const SiteBrief = (() => {
         // A little context, defensively pulled if present.
         let population = null;
         const pop = data.population || (data.categories && data.categories.population);
-        if (pop && typeof pop.total === 'number') population = Math.round(pop.total);
+        if (pop && Number.isFinite(pop.total)) population = Math.round(pop.total);
 
         return {
             code: (cell && cell.code) || data.code || null,
@@ -101,11 +101,16 @@ const SiteBrief = (() => {
 
     function close() {
         document.getElementById('site-brief-backdrop')?.remove();
+        if (close._restoreFocus && typeof close._restoreFocus.focus === 'function') {
+            try { close._restoreFocus.focus({ preventScroll: true }); } catch { /* element gone */ }
+            close._restoreFocus = null;
+        }
     }
 
     /** Build + show the printable/copyable brief dialog. */
     function open(cellData, cell) {
         close();
+        close._restoreFocus = (typeof document !== 'undefined') ? document.activeElement : null;
         const model = build(cellData, cell);
 
         const backdrop = document.createElement('div');
@@ -115,6 +120,7 @@ const SiteBrief = (() => {
         const card = document.createElement('div');
         card.className = 'site-brief';
         card.setAttribute('role', 'dialog');
+        card.setAttribute('aria-modal', 'true');
         card.setAttribute('aria-label', 'Site brief');
 
         const metricRows = model.metrics.map(m => `
@@ -142,6 +148,7 @@ const SiteBrief = (() => {
             </div>`;
 
         card.querySelector('.sb-close').addEventListener('click', close);
+        card.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
         card.querySelector('.sb-print').addEventListener('click', () => {
             document.body.classList.add('printing-brief');
             const cleanup = () => { document.body.classList.remove('printing-brief'); window.removeEventListener('afterprint', cleanup); };
@@ -160,6 +167,7 @@ const SiteBrief = (() => {
 
         backdrop.appendChild(card);
         document.body.appendChild(backdrop);
+        card.querySelector('.sb-close')?.focus();
     }
 
     return { build, text, open, close };

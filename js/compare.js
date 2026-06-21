@@ -451,7 +451,13 @@ const Compare = (() => {
         return lines.join('\n');
     }
 
-    function _closeBrief() { document.getElementById('compare-brief-backdrop')?.remove(); }
+    function _closeBrief() {
+        document.getElementById('compare-brief-backdrop')?.remove();
+        if (_closeBrief._restoreFocus && typeof _closeBrief._restoreFocus.focus === 'function') {
+            try { _closeBrief._restoreFocus.focus({ preventScroll: true }); } catch { /* element gone */ }
+            _closeBrief._restoreFocus = null;
+        }
+    }
 
     /** Build + show the side-by-side, printable comparison brief. */
     function openBrief() {
@@ -460,6 +466,7 @@ const Compare = (() => {
             return;
         }
         _closeBrief();
+        _closeBrief._restoreFocus = (typeof document !== 'undefined') ? document.activeElement : null;
         const model = compareBriefModel(_pinned);
         const backdrop = document.createElement('div');
         backdrop.id = 'compare-brief-backdrop';
@@ -481,6 +488,7 @@ const Compare = (() => {
         const card = document.createElement('div');
         card.className = 'compare-brief';
         card.setAttribute('role', 'dialog');
+        card.setAttribute('aria-modal', 'true');
         card.setAttribute('aria-label', 'Comparison brief');
         card.innerHTML = `
             <button class="cb-close" aria-label="Close comparison brief">✕</button>
@@ -493,6 +501,7 @@ const Compare = (() => {
                 <button class="cb-btn cb-print">Print / PDF</button>
             </div>`;
         card.querySelector('.cb-close').addEventListener('click', _closeBrief);
+        card.addEventListener('keydown', (e) => { if (e.key === 'Escape') _closeBrief(); });
         card.querySelector('.cb-print').addEventListener('click', () => {
             document.body.classList.add('printing-cbrief');
             const cleanup = () => { document.body.classList.remove('printing-cbrief'); window.removeEventListener('afterprint', cleanup); };
@@ -505,6 +514,7 @@ const Compare = (() => {
         });
         backdrop.appendChild(card);
         document.body.appendChild(backdrop);
+        card.querySelector('.cb-close')?.focus();
     }
 
     return { pin, unpin, clearAll, openPanel, closePanel, getPinned, buildCSV, exportCSV, exportPNG, compareBriefModel, openBrief };

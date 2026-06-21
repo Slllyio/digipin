@@ -129,6 +129,28 @@ const SunStudy = (() => {
         return { daylightHours: 2 * haH, sunriseH: 12 - haH, sunsetH: 12 + haH, polar: null };
     }
 
+    /**
+     * Solar altitude (deg) sampled across the day in apparent solar time —
+     * `[{ h, altitude }]` from 00:00 to 24:00. Drives the sun-path chart. Pure;
+     * lng is accepted for signature symmetry with sunTimes.
+     */
+    function dayAltitudes(lat, lng, date, stepMin = 15) {
+        const declR = _declination(date) * RAD, latR = lat * RAD;
+        const out = [];
+        for (let m = 0; m <= 1440; m += stepMin) {
+            const t = m / 60;                          // solar hours
+            const H = (t - 12) * 15 * RAD;             // hour angle
+            const sinAlt = Math.sin(latR) * Math.sin(declR)
+                + Math.cos(latR) * Math.cos(declR) * Math.cos(H);
+            out.push({ h: t, altitude: Math.asin(Math.max(-1, Math.min(1, sinAlt))) * DEG });
+        }
+        return out;
+    }
+    /** Peak altitude (deg) across a day-altitude sample array. Pure. */
+    function peakAltitude(samples) {
+        return (samples || []).reduce((mx, s) => (s.altitude > mx ? s.altitude : mx), -90);
+    }
+
     /** Decimal hours → "HH:MM" (24h), wrapping into [0,24). */
     function formatHM(hours) {
         if (hours == null || !Number.isFinite(hours)) return '—';
@@ -227,7 +249,8 @@ const SunStudy = (() => {
         const el = document.createElement('div');
         el.id = 'sun-study-panel';
         el.className = 'sun-study-panel';
-        const today = new Date().toISOString().slice(0, 10);
+        const now = new Date();
+        const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
         el.innerHTML = `
             <div class="sun-head">
                 <span class="sun-title">☀ Sun &amp; shadow study</span>
@@ -279,7 +302,8 @@ const SunStudy = (() => {
 
     function isActive() { return !!_panel; }
 
-    return { toggle, isActive, applyToMap, solarPosition, lightFor, toJulian, sunTimes, formatHM };
+    return { toggle, isActive, applyToMap, solarPosition, lightFor, toJulian, sunTimes, formatHM,
+        dayAltitudes, peakAltitude };
 })();
 
 if (typeof window !== 'undefined') {

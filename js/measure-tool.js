@@ -23,9 +23,14 @@ const MeasureTool = (() => {
     const RAD = Math.PI / 180;
 
     // ---------- pure helpers ----------
+    // Shortest longitude delta in radians — normalised so a segment crossing the
+    // ±180° anti-meridian (e.g. 179° → −179°) measures 2°, not 358°.
+    function _deltaLngRad(lng1, lng2) {
+        return (((lng2 - lng1 + 540) % 360) - 180) * RAD;
+    }
     function _segM(a, b) {
         const dLat = (b.lat - a.lat) * RAD;
-        const dLng = (b.lng - a.lng) * RAD;
+        const dLng = _deltaLngRad(a.lng, b.lng);
         const s = Math.sin(dLat / 2) ** 2
             + Math.cos(a.lat * RAD) * Math.cos(b.lat * RAD) * Math.sin(dLng / 2) ** 2;
         return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
@@ -45,7 +50,7 @@ const MeasureTool = (() => {
         for (let i = 0; i < n; i++) {
             const p1 = ring[i];
             const p2 = ring[(i + 1) % n];
-            total += (p2.lng - p1.lng) * RAD
+            total += _deltaLngRad(p1.lng, p2.lng)
                 * (2 + Math.sin(p1.lat * RAD) + Math.sin(p2.lat * RAD));
         }
         return Math.abs(total * R * R / 2);
@@ -62,7 +67,7 @@ const MeasureTool = (() => {
     }
 
     // ---------- state + map interaction ----------
-    let _active = false, _map = null, _pts = [], _cursor = null, _finished = false, _clickTimer = null;
+    let _active = false, _map = null, _pts = [], _cursor = null, _finished = false, _clickTimer = null, _restoreDblClick = false;
 
     function _empty() { return { type: 'FeatureCollection', features: [] }; }
     function _features() {
@@ -162,15 +167,22 @@ const MeasureTool = (() => {
     function _onKey(ev) { if (ev.key === 'Escape' && _active) { _pts = []; _cursor = null; _finished = false; _redraw(); } }
 
     function attach() {
-        _active = true;
         _pts = []; _cursor = null; _finished = false;
-        _map = (typeof MapModule !== 'undefined') ? MapModule.getMap() : null;
-        if (!_map) return;
+        const map = (typeof MapModule !== 'undefined') ? MapModule.getMap() : null;
+        if (!map) { _active = false; return; }   // only "active" once truly attached
+        _map = map;
+        _active = true;
         _ensureLayer();
         _map.on('click', _onClick);
         _map.on('mousemove', _onMove);
         _map.on('dblclick', _onDbl);
-        if (_map.doubleClickZoom) _map.doubleClickZoom.disable();
+        // Preserve the map's prior double-click-zoom state so detach() doesn't
+        // re-enable it if the page had it off to begin with.
+        _restoreDblClick = false;
+        if (_map.doubleClickZoom && _map.doubleClickZoom.isEnabled && _map.doubleClickZoom.isEnabled()) {
+            _map.doubleClickZoom.disable();
+            _restoreDblClick = true;
+        }
         if (_map.getCanvas) _map.getCanvas().style.cursor = 'crosshair';
         if (typeof document !== 'undefined') document.addEventListener('keydown', _onKey);
         if (typeof App !== 'undefined') App.showToast('Measure', 'Click points to measure distance; close 3+ points for area.', 'info');
@@ -183,7 +195,8 @@ const MeasureTool = (() => {
             _map.off('click', _onClick);
             _map.off('mousemove', _onMove);
             _map.off('dblclick', _onDbl);
-            if (_map.doubleClickZoom) _map.doubleClickZoom.enable();
+            if (_restoreDblClick && _map.doubleClickZoom) _map.doubleClickZoom.enable();
+            _restoreDblClick = false;
             if (_map.getCanvas) _map.getCanvas().style.cursor = '';
             if (_map.getLayer(FILL)) _map.removeLayer(FILL);
             if (_map.getLayer(LINE)) _map.removeLayer(LINE);

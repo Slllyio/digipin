@@ -6,9 +6,9 @@
  * building footprints from the map (with their heights) plus the selected DIGIPIN
  * cell polygon and serialises them to:
  *   - GeoJSON — a FeatureCollection (footprints + cell), heights as properties.
- *   - DXF     — a minimal R12 ASCII drawing: one closed LWPOLYLINE per footprint
- *               on layer BUILDINGS (thickness = height for a 3D extrude in CAD),
- *               the cell polygon on layer DIGIPIN.
+ *   - DXF     — a minimal ASCII drawing (LWPOLYLINE entities, DXF R13+): one
+ *               closed LWPOLYLINE per footprint on layer BUILDINGS (thickness =
+ *               height for a 3D extrude in CAD), the cell polygon on layer DIGIPIN.
  *
  * Coordinates are written in lng/lat degrees (WGS84) — geo-referenced and
  * directly importable; users reproject to local metres in their CAD/GIS tool.
@@ -96,9 +96,10 @@ const FootprintExport = (() => {
         return fc;
     }
 
-    // ---- DXF (R12 ASCII) ---------------------------------------------------
+    // ---- DXF (ASCII, LWPOLYLINE — DXF R13+) --------------------------------
     // DXF is a list of group-code/value line pairs. We emit a minimal but valid
-    // ENTITIES section of LWPOLYLINEs — broadly importable by CAD/GIS tools.
+    // ENTITIES section of LWPOLYLINEs (introduced in R13) — broadly importable by
+    // modern CAD/GIS tools (AutoCAD R13+, Rhino, QGIS).
     function _poly(lines, ring, layer, thickness) {
         if (!Array.isArray(ring) || ring.length < 2) return;
         lines.push('0', 'LWPOLYLINE', '8', layer, '90', String(ring.length), '70', '1');

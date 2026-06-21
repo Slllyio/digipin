@@ -49,11 +49,17 @@ const PresentMode = (() => {
         return bar;
     }
 
+    function _syncBtn(on) {
+        const btn = document.getElementById('btn-present');
+        if (btn) btn.setAttribute('aria-pressed', String(!!on));
+    }
+
     function enter() {
         if (typeof document === 'undefined') return false;
         _active = true;
         document.body.classList.add('presenting');
         _bar();
+        _syncBtn(true);
         return true;
     }
 
@@ -62,6 +68,7 @@ const PresentMode = (() => {
         _active = false;
         document.body.classList.remove('presenting');
         document.getElementById('present-bar')?.remove();
+        _syncBtn(false);
         return false;
     }
 
@@ -73,10 +80,7 @@ const PresentMode = (() => {
         if (parseFlag()) enter();
         if (typeof document !== 'undefined') {
             const btn = document.getElementById('btn-present');
-            if (btn) btn.addEventListener('click', () => {
-                const on = enter();
-                btn.setAttribute('aria-pressed', String(on));
-            });
+            if (btn) btn.addEventListener('click', () => { toggle(); });
         }
     }
 

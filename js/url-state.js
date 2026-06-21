@@ -103,6 +103,10 @@ const URLState = (() => {
     /** Apply a parsed state to the running app (best-effort, order matters). */
     function apply(state) {
         if (!state) return;
+        // Presentation mode (carried in share links / saved views) — enter when set.
+        if (state.present && typeof PresentMode !== 'undefined' && PresentMode.enter) {
+            PresentMode.enter();
+        }
         // Score choropleth first so the cell/fly paints over the right colouring.
         if (state.score && typeof ScoreChoropleth !== 'undefined') {
             ScoreChoropleth.setScore(state.score);

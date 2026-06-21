@@ -38,7 +38,7 @@ describe('FootprintExport.toGeoJSON', () => {
 });
 
 describe('FootprintExport.toDXF', () => {
-    it('produces a structurally valid R12 ENTITIES drawing', () => {
+    it('produces a structurally valid ENTITIES drawing', () => {
         const dxf = FootprintExport.toDXF(FEATURES, CELL);
         expect(dxf.startsWith('0\nSECTION\n2\nENTITIES')).toBe(true);
         expect(dxf.trimEnd().endsWith('EOF')).toBe(true);
