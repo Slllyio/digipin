@@ -13,6 +13,9 @@ const DISHACache = (() => {
     const DB_VERSION = 1;
     const STORE_RESPONSES = 'responses';
     const STORE_CELLS = 'cells';
+    // Cap the response store so a heavy city-scan session can't grow it until it
+    // hits the storage quota; evict the oldest beyond this (LRU by timestamp).
+    const MAX_RESPONSES = 300;
 
     // TTL in milliseconds
     const TTL = {
@@ -130,12 +133,34 @@ const DISHACache = (() => {
                     contextType,
                     timestamp: Date.now()
                 });
-                tx.oncomplete = () => resolve(true);
+                tx.oncomplete = () => { _evictResponses(); resolve(true); };
                 tx.onerror = () => resolve(false);
             });
         } catch {
             return false;
         }
+    }
+
+    /**
+     * Keep the response store under MAX_RESPONSES by deleting the oldest entries
+     * (ascending 'timestamp' index = oldest first). Best-effort, fire-and-forget.
+     */
+    async function _evictResponses() {
+        try {
+            const db = await openDB();
+            const tx = db.transaction(STORE_RESPONSES, 'readwrite');
+            const store = tx.objectStore(STORE_RESPONSES);
+            const countReq = store.count();
+            countReq.onsuccess = () => {
+                let over = countReq.result - MAX_RESPONSES;
+                if (over <= 0) return;
+                const cur = store.index('timestamp').openCursor();   // ascending = oldest first
+                cur.onsuccess = (e) => {
+                    const cursor = e.target.result;
+                    if (cursor && over > 0) { cursor.delete(); over--; cursor.continue(); }
+                };
+            };
+        } catch { /* eviction is best-effort */ }
     }
 
     async function deleteResponse(key) {

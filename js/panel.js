@@ -483,8 +483,10 @@ const Panel = (() => {
         // Wikipedia Context — title and summary from external API, MUST escape
         const wiki = data.context?.wikipedia;
         if (wiki) {
-            // wiki.url is constructed by us from a pageId, but sanitize href anyway
-            const safeUrl = esc(wiki.url);
+            // wiki.url is constructed by us from a pageId, but validate the scheme
+            // anyway: esc() is an HTML-entity encoder, not a URL sanitizer, so it
+            // wouldn't block a javascript:/data: href. Only allow http(s).
+            const safeUrl = /^https?:\/\//i.test(wiki.url || '') ? esc(wiki.url) : '#';
             html += `<div class="context-card">
                 <div class="context-title">&#128218; Historical Context: <a href="${safeUrl}" target="_blank" rel="noopener">${esc(wiki.title)}</a> <span class="context-dist">(${(wiki.distanceToCenter / 1000).toFixed(1)}km away)</span></div>
                 <div class="context-summary">${esc(wiki.summary)}</div>
