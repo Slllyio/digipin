@@ -2770,7 +2770,7 @@ html[lang="hi"] textarea {
    Layers panel (btn-dt-layers) as a row with a visibility switch. The buttons
    stay in the DOM (hidden) because the panel drives them programmatically
    (their click handlers own the toggle logic — see js/layers-panel.js). */
-#btn-heatmap, #btn-wards, #btn-lcz, #btn-buildings, #btn-3d, #btn-lulc,
+#btn-heatmap, #btn-wards, #btn-lcz, #btn-buildings, #btn-3d, #btn-sun, #btn-lulc,
 #btn-roads, #btn-growth, #btn-heat, #btn-ndvi, #btn-bivariate,
 #btn-viewshed, #btn-kde, #btn-access, #btn-choropleth,
 #btn-ca-growth, #btn-scenario, #btn-traffic, #btn-mobility, #btn-area {
@@ -3981,3 +3981,115 @@ html[lang="hi"] textarea {
 }
 .disha-action-chip.ok { color: var(--accent-green-text); border-color: var(--accent-green); }
 .disha-action-chip.fail { color: var(--accent-red); border-color: var(--accent-red); }
+
+/* ===== SITE BRIEF (Aino-style printable site card) ===== */
+#site-brief-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 2100;
+    background: var(--scrim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+.site-brief {
+    position: relative;
+    width: 420px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-glow), 0 20px 60px rgba(0, 0, 0, 0.4);
+    padding: 22px 24px;
+}
+.sb-close {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: none; border: none;
+    color: var(--text-muted);
+    font-size: 14px; cursor: pointer;
+}
+.sb-close:hover { color: var(--text-primary); }
+.sb-header { margin-bottom: 14px; }
+.sb-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.sb-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+.sb-context { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
+.sb-metrics { display: flex; flex-direction: column; gap: 12px; }
+.sb-metric-head { display: flex; justify-content: space-between; align-items: baseline; }
+.sb-metric-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.sb-metric-value { font-size: 14px; font-weight: 700; }
+.sb-metric-band { font-size: 11px; font-weight: 600; opacity: 0.85; }
+.sb-bar-bg {
+    height: 6px; border-radius: 4px;
+    background: var(--wash-05);
+    margin: 5px 0 3px;
+    overflow: hidden;
+}
+.sb-bar { height: 100%; border-radius: 4px; }
+.sb-note { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+.sb-empty { font-size: 13px; color: var(--text-muted); padding: 12px 0; }
+.sb-foot { font-size: 10px; color: var(--text-muted); margin: 16px 0 14px; line-height: 1.5; }
+.sb-actions { display: flex; gap: 10px; }
+.sb-btn {
+    flex: 1;
+    padding: 10px 0;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.sb-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+
+/* Print: show only the site brief, edge-to-edge, no chrome. */
+@media print {
+    body.printing-brief > *:not(#site-brief-backdrop) { display: none !important; }
+    body.printing-brief #site-brief-backdrop {
+        position: static; background: none; display: block; padding: 0;
+    }
+    body.printing-brief .site-brief {
+        width: 100%; max-width: 100%; max-height: none;
+        box-shadow: none; border: none; overflow: visible;
+    }
+    body.printing-brief .sb-close, body.printing-brief .sb-actions { display: none !important; }
+}
+
+/* ===== SUN & SHADOW STUDY (solar-position control) ===== */
+.sun-study-panel {
+    position: fixed;
+    left: 16px; bottom: 96px;
+    z-index: 1300;
+    width: 250px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-glow), 0 10px 30px rgba(0, 0, 0, 0.3);
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text-primary);
+}
+.sun-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.sun-title { font-weight: 700; }
+.sun-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px; }
+.sun-close:hover { color: var(--text-primary); }
+.sun-row { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--text-secondary); margin-bottom: 10px; }
+.sun-row input[type="date"] {
+    background: var(--bg-card); color: var(--text-primary);
+    border: 1px solid var(--border-color); border-radius: 8px; padding: 6px 8px;
+}
+.sun-row input[type="range"] { width: 100%; accent-color: var(--accent-cyan); }
+.sun-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.sun-play {
+    width: 34px; height: 34px;
+    border: 1px solid var(--border-color); border-radius: 50%;
+    background: var(--bg-card); color: var(--text-primary);
+    font-size: 13px; cursor: pointer;
+}
+.sun-play:hover { filter: brightness(1.08); }
+.sun-readout { font-size: 12px; color: var(--text-secondary); }
+.sun-hint { font-size: 10px; color: var(--text-muted); line-height: 1.4; }

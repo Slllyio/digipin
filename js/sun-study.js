@@ -1,0 +1,230 @@
+/**
+ * SunStudy — solar position + shadow study for the 3D building massing model.
+ *
+ * Aino-style environmental/site analysis: drive the map's directional light from
+ * the *real* sun position for the selected location, so the white 3D massing
+ * model (js/overture-buildings.js) casts a believable lit/shadow side. A
+ * date + time-of-day slider lets a planner sweep the day; ▶ play animates the
+ * sun arc.
+ *
+ * The light is the single global MapLibre map light shared with
+ * overture-buildings.js / digital-twin-layers.js — SunStudy is just another
+ * writer of it (set-only; never reset), so the overlays don't fight.
+ *
+ * solarPosition()/lightFor() are pure (NOAA algorithm, no deps, unit-tested);
+ * the control + animation are DOM.
+ */
+const SunStudy = (() => {
+    const RAD = Math.PI / 180, DEG = 180 / Math.PI;
+
+    /** Julian Day from a JS Date (uses its UTC instant). */
+    function toJulian(date) {
+        return date.getTime() / 86400000 + 2440587.5;
+    }
+
+    /**
+     * Solar altitude + azimuth (degrees) for a lat/lng at a given instant,
+     * via the NOAA solar-position algorithm. Azimuth is measured clockwise
+     * from due north; altitude is degrees above the horizon (negative = night).
+     */
+    function solarPosition(lat, lng, date) {
+        const jd = toJulian(date);
+        const t = (jd - 2451545.0) / 36525;                 // Julian centuries (J2000)
+
+        let L0 = (280.46646 + t * (36000.76983 + t * 0.0003032)) % 360;
+        if (L0 < 0) L0 += 360;
+        const M = 357.52911 + t * (35999.05029 - 0.0001537 * t);
+        const e = 0.016708634 - t * (0.000042037 + 0.0000001267 * t);
+        const C = Math.sin(M * RAD) * (1.914602 - t * (0.004817 + 0.000014 * t))
+            + Math.sin(2 * M * RAD) * (0.019993 - 0.000101 * t)
+            + Math.sin(3 * M * RAD) * 0.000289;
+        const trueLong = L0 + C;
+        const omega = 125.04 - 1934.136 * t;
+        const lambda = trueLong - 0.00569 - 0.00478 * Math.sin(omega * RAD);
+        const seconds = 21.448 - t * (46.8150 + t * (0.00059 - t * 0.001813));
+        const eps0 = 23 + (26 + seconds / 60) / 60;
+        const eps = eps0 + 0.00256 * Math.cos(omega * RAD);
+        const decl = Math.asin(Math.sin(eps * RAD) * Math.sin(lambda * RAD)) * DEG;
+
+        const y = Math.tan(eps / 2 * RAD) ** 2;
+        const Eq = 4 * DEG * (y * Math.sin(2 * L0 * RAD) - 2 * e * Math.sin(M * RAD)
+            + 4 * e * y * Math.sin(M * RAD) * Math.cos(2 * L0 * RAD)
+            - 0.5 * y * y * Math.sin(4 * L0 * RAD)
+            - 1.25 * e * e * Math.sin(2 * M * RAD));     // equation of time (minutes)
+
+        const utcMin = date.getUTCHours() * 60 + date.getUTCMinutes() + date.getUTCSeconds() / 60;
+        let tst = (utcMin + Eq + 4 * lng) % 1440;            // true solar time (minutes)
+        if (tst < 0) tst += 1440;
+        let ha = tst / 4 - 180;                              // hour angle (deg)
+        if (ha < -180) ha += 360;
+
+        const cosZen = Math.sin(lat * RAD) * Math.sin(decl * RAD)
+            + Math.cos(lat * RAD) * Math.cos(decl * RAD) * Math.cos(ha * RAD);
+        const zenith = Math.acos(Math.max(-1, Math.min(1, cosZen))) * DEG;
+        const altitude = 90 - zenith;
+
+        let az;
+        const denom = Math.cos(lat * RAD) * Math.sin(zenith * RAD);
+        if (Math.abs(denom) > 1e-9) {
+            let cosAz = (Math.sin(lat * RAD) * Math.cos(zenith * RAD) - Math.sin(decl * RAD)) / denom;
+            cosAz = Math.max(-1, Math.min(1, cosAz));
+            az = Math.acos(cosAz) * DEG;
+            az = ha > 0 ? (az + 180) % 360 : (540 - az) % 360;
+        } else {
+            az = lat > 0 ? 180 : 0;
+        }
+        return { altitude, azimuth: az };
+    }
+
+    /**
+     * Map a solar altitude/azimuth to a MapLibre `setLight` option object.
+     * position = [radial, azimuthal(from N, clockwise), polar(from straight up)].
+     * Below the horizon → a dim, low dusk light (so night isn't pitch black).
+     */
+    function lightFor(altitude, azimuth) {
+        const above = altitude > 0;
+        const polar = above ? Math.max(2, 90 - altitude) : 88;
+        // Intensity: brightest near noon, fading to a low ambient at/under horizon.
+        const intensity = above
+            ? Math.min(0.6, 0.18 + 0.42 * Math.sin(altitude * RAD))
+            : 0.12;
+        return {
+            anchor: 'map',
+            position: [1.5, azimuth, polar],
+            color: above ? '#fff8ec' : '#9fb0c8',
+            intensity,
+        };
+    }
+
+    let _map = null, _panel = null, _date = null, _playing = false, _raf = 0;
+
+    function _latlng() {
+        if (_map && _map.getCenter) {
+            const c = _map.getCenter();
+            return { lat: c.lat, lng: c.lng };
+        }
+        return { lat: 22.7196, lng: 75.8577 };   // Indore fallback
+    }
+
+    /** Push the light for the current _date to the map (no-op if setLight absent). */
+    function applyToMap() {
+        if (!_map || typeof _map.setLight !== 'function' || !_date) return false;
+        const { lat, lng } = _latlng();
+        const { altitude, azimuth } = solarPosition(lat, lng, _date);
+        try { _map.setLight(lightFor(altitude, azimuth)); } catch { return false; }
+        _updateReadout(altitude, azimuth);
+        return true;
+    }
+
+    function _updateReadout(altitude, azimuth) {
+        if (!_panel) return;
+        const out = _panel.querySelector('.sun-readout');
+        if (!out) return;
+        const above = altitude > 0;
+        out.textContent = above
+            ? `☀ ${altitude.toFixed(0)}° above · bearing ${azimuth.toFixed(0)}°`
+            : `🌙 sun below horizon (${altitude.toFixed(0)}°)`;
+    }
+
+    // Local time helpers: the slider is "minutes past local midnight"; we apply
+    // it relative to the location's longitude (approx local solar offset) so the
+    // shadows match local clock intuition without a timezone database.
+    function _setFromSlider(dateStr, minutes) {
+        const [Y, Mo, D] = dateStr.split('-').map(Number);
+        const tzOffsetHours = _latlng().lng / 15;        // approx solar timezone
+        const utcMs = Date.UTC(Y, Mo - 1, D, 0, 0, 0) + (minutes - tzOffsetHours * 60) * 60000;
+        _date = new Date(utcMs);
+    }
+
+    function _stop() {
+        _playing = false;
+        if (_raf) cancelAnimationFrame(_raf);
+        _raf = 0;
+        const btn = _panel && _panel.querySelector('.sun-play');
+        if (btn) btn.textContent = '▶';
+    }
+
+    function _play() {
+        if (!_panel) return;
+        const slider = _panel.querySelector('.sun-time');
+        const dateEl = _panel.querySelector('.sun-date');
+        const btn = _panel.querySelector('.sun-play');
+        _playing = true;
+        if (btn) btn.textContent = '⏸';
+        let last = 0;
+        const step = (ts) => {
+            if (!_playing) return;
+            if (ts - last > 60) {                          // throttle ~16 fps
+                last = ts;
+                let v = Number(slider.value) + 6;          // 6 sim-minutes / frame
+                if (v > 1080) v = 300;                      // loop 05:00 → 18:00
+                slider.value = String(v);
+                _setFromSlider(dateEl.value, v);
+                applyToMap();
+            }
+            _raf = requestAnimationFrame(step);
+        };
+        _raf = requestAnimationFrame(step);
+    }
+
+    function _buildPanel() {
+        const el = document.createElement('div');
+        el.id = 'sun-study-panel';
+        el.className = 'sun-study-panel';
+        const today = new Date().toISOString().slice(0, 10);
+        el.innerHTML = `
+            <div class="sun-head">
+                <span class="sun-title">☀ Sun &amp; shadow study</span>
+                <button class="sun-close" aria-label="Close sun study">✕</button>
+            </div>
+            <label class="sun-row">Date
+                <input type="date" class="sun-date" value="${today}">
+            </label>
+            <label class="sun-row">Time
+                <input type="range" class="sun-time" min="0" max="1439" value="720" step="5">
+            </label>
+            <div class="sun-controls">
+                <button class="sun-play" aria-label="Play sun arc">▶</button>
+                <span class="sun-readout">—</span>
+            </div>
+            <div class="sun-hint">Enable <b>3D Mode</b> / Buildings to see the cast shadows.</div>`;
+        el.querySelector('.sun-close').addEventListener('click', () => toggle());
+        const dateEl = el.querySelector('.sun-date');
+        const slider = el.querySelector('.sun-time');
+        const onInput = () => { _stop(); _setFromSlider(dateEl.value, Number(slider.value)); applyToMap(); };
+        dateEl.addEventListener('change', onInput);
+        slider.addEventListener('input', onInput);
+        el.querySelector('.sun-play').addEventListener('click', () => (_playing ? _stop() : _play()));
+        document.body.appendChild(el);
+        _setFromSlider(dateEl.value, Number(slider.value));
+        return el;
+    }
+
+    /** Toggle the control. Returns the new visible state. */
+    function toggle() {
+        _map = (typeof MapModule !== 'undefined' && MapModule.getMap) ? MapModule.getMap() : null;
+        if (_panel) {
+            _stop();
+            _panel.remove();
+            _panel = null;
+            return false;
+        }
+        if (_map && typeof _map.setLight !== 'function') {
+            if (typeof App !== 'undefined') {
+                App.showToast('Sun study', 'This map build does not support dynamic lighting.', 'warning');
+            }
+            return false;
+        }
+        _panel = _buildPanel();
+        applyToMap();
+        return true;
+    }
+
+    function isActive() { return !!_panel; }
+
+    return { toggle, isActive, applyToMap, solarPosition, lightFor, toJulian };
+})();
+
+if (typeof window !== 'undefined') {
+    window.SunStudy = SunStudy;
+}

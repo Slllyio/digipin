@@ -529,6 +529,24 @@ const App = (() => {
             });
         }
 
+        // Sun & shadow study — toggle the solar-position control (Aino-style
+        // environmental analysis on the 3D massing model).
+        const sunBtn = document.getElementById('btn-sun');
+        if (sunBtn && typeof SunStudy !== 'undefined') {
+            sunBtn.setAttribute('aria-pressed', 'false');
+            sunBtn.addEventListener('click', () => {
+                const on = SunStudy.toggle();
+                sunBtn.classList.toggle('active', on);
+                sunBtn.setAttribute('aria-pressed', String(on));
+            });
+        }
+
+        // Pitch map — export a presentation-ready PNG of the current view.
+        const pitchBtn = document.getElementById('btn-pitch');
+        if (pitchBtn && typeof PitchMap !== 'undefined') {
+            pitchBtn.addEventListener('click', () => PitchMap.open());
+        }
+
         // Bhuvan LULC Overlay toggle (ISRO Land Use / Land Cover via WMS)
         const lulcBtn = document.getElementById('btn-lulc');
         let lulcActive = false;

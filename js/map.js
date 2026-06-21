@@ -33,7 +33,11 @@ const MapModule = (() => {
             zoom: INITIAL_ZOOM,
             pitch: 0,
             bearing: 0,
-            attributionControl: false
+            attributionControl: false,
+            // Keep the WebGL drawing buffer readable so PitchMap can export the
+            // styled view as a PNG (getCanvas().toBlob). Minor, known perf cost —
+            // acceptable for a client-side map-image export.
+            preserveDrawingBuffer: true
         });
 
         // Controls
