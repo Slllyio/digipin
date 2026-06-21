@@ -816,15 +816,19 @@ const App = (() => {
                                 }
                             } catch (err) {
                                 checkbox.checked = false;
-                                // A 404 / load failure means the layer's data file
-                                // simply isn't deployed (most OSM vector layers are
-                                // pipeline-generated per city) — present that as a
-                                // calm "not available" note, not a scary red error.
-                                const missing = /\b404\b|Failed to load|No data source/i.test(err.message || '');
+                                // Only a genuine 404 / "no data source" means the
+                                // layer simply isn't deployed (most OSM vector
+                                // layers are pipeline-generated per city) — present
+                                // that as a calm "not available" note. _loadGeoJSON
+                                // throws "Failed to load <name>: <status>" for ANY
+                                // non-OK status, so match the 404 specifically and
+                                // surface 5xx/403/429 etc. as real errors.
+                                const msg = String((err && err.message) || err || '');
+                                const missing = /\b404\b|No data source|Not Found/i.test(msg);
                                 if (missing) {
                                     showToast('Layer not available', ld.name + ' isn’t available in this deployment yet.', 'info');
                                 } else {
-                                    showToast('Layer Unavailable', ld.name + ': ' + err.message, 'error');
+                                    showToast('Layer Unavailable', ld.name + ': ' + msg, 'error');
                                 }
                             }
                         });
