@@ -1387,7 +1387,7 @@ const DataFetcher = (() => {
             if (!_iudxCache || cacheEmpty) {
                 const fetches = IUDX_DATASETS.map(async ds => {
                     try {
-                        const resp = await fetch(`${IUDX_S3_BASE}/${ds.file}`);
+                        const resp = await fetch(`${IUDX_S3_BASE}/${ds.file}`, { signal: AbortSignal.timeout(8000) });
                         if (!resp.ok) return { key: ds.key, data: [] };
                         return { key: ds.key, data: await resp.json() };
                     } catch { return { key: ds.key, data: [] }; }
@@ -1451,7 +1451,7 @@ const DataFetcher = (() => {
             if (_iudxCatalogueCache[city]) return _iudxCatalogueCache[city];
 
             const catUrl = `https://cos.iudx.org.in/iudx/cat/v1/search?property=[type]&value=[[iudx:Resource]]&q=${encodeURIComponent(city)}&limit=50`;
-            const resp = await fetch(viaProxy(catUrl, { corsFallback: true }));
+            const resp = await fetch(viaProxy(catUrl, { corsFallback: true }), { signal: AbortSignal.timeout(8000) });
             if (!resp.ok) return null;
             const data = await resp.json();
             const results = data.results || [];
@@ -2022,11 +2022,19 @@ const DataFetcher = (() => {
 
     /** Trigger a browser download of the cell's non-zero feature counts as CSV. */
     function exportToCSV(data, filename = 'digipin_features.csv') {
+        // Neutralise spreadsheet formula injection: a leading =,+,-,@ in an
+        // OSM-derived name can execute when opened in Excel/Sheets — prefix a
+        // quote, and double any embedded quotes. (Mirrors js/compare.js.)
+        const cell = (s) => {
+            const v = String(s == null ? '' : s);
+            const safe = /^\s*[=+\-@]/.test(v) ? `'${v}` : v;
+            return `"${safe.replace(/"/g, '""')}"`;
+        };
         let csv = 'Category,Feature Key,Feature Name,Count\n';
         for (const [, cat] of Object.entries(data.categories)) {
             for (const [featKey, feat] of Object.entries(cat.features)) {
                 if (feat.count > 0) {
-                    csv += `"${cat.name}","${featKey}","${feat.label}",${feat.count}\n`;
+                    csv += `${cell(cat.name)},${cell(featKey)},${cell(feat.label)},${feat.count}\n`;
                 }
             }
         }

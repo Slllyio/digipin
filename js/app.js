@@ -443,6 +443,7 @@ const App = (() => {
         if (lczBtn) {
             lczBtn.addEventListener('click', () => {
                 const map = MapModule.getMap();
+                if (!map) { showToast('Map not ready', 'Try again in a moment.', 'warning'); return; }
                 lczActive = !lczActive;
                 if (!lczActive) {
                     if (map.getLayer('lcz-layer')) map.setLayoutProperty('lcz-layer', 'visibility', 'none');
@@ -503,6 +504,7 @@ const App = (() => {
             let is3d = false;
             btn3d.addEventListener('click', async () => {
                 const map = MapModule.getMap();
+                if (!map) { showToast('Map not ready', 'Try again in a moment.', 'warning'); return; }
                 is3d = !is3d;
                 btn3d.classList.toggle('active', is3d);
                 if (is3d) {
@@ -533,6 +535,7 @@ const App = (() => {
         if (lulcBtn) {
             lulcBtn.addEventListener('click', () => {
                 const map = MapModule.getMap();
+                if (!map) { showToast('Map not ready', 'Try again in a moment.', 'warning'); return; }
                 lulcActive = !lulcActive;
                 if (!lulcActive) {
                     if (map.getLayer('bhuvan-lulc-layer')) map.setLayoutProperty('bhuvan-lulc-layer', 'visibility', 'none');
@@ -667,6 +670,8 @@ const App = (() => {
                     }
                 });
             });
+            dtLayersDrop.setAttribute('role', 'group');
+            dtLayersDrop.setAttribute('aria-label', 'Map layers');
             dtLayersDrop.appendChild(searchInput);
 
             // Render collapsible groups
@@ -698,11 +703,13 @@ const App = (() => {
                     contentDiv.classList.add('open');
                     headerBtn.classList.add('expanded');
                 }
+                headerBtn.setAttribute('aria-expanded', String(gIdx < 2));
 
                 headerBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const isOpen = contentDiv.classList.toggle('open');
                     headerBtn.classList.toggle('expanded', isOpen);
+                    headerBtn.setAttribute('aria-expanded', String(isOpen));
                 });
 
                 // Render each layer item with toggle switch
@@ -710,6 +717,12 @@ const App = (() => {
                     const item = document.createElement('div');
                     item.className = 'dt-layer-item';
                     item.dataset.layerKey = ld.key;
+                    // Keyboard + screen-reader: each row is an operable switch
+                    // (was a plain <div> with a tabindex:-1 checkbox = unreachable).
+                    item.tabIndex = 0;
+                    item.setAttribute('role', 'switch');
+                    item.setAttribute('aria-checked', 'false');
+                    item.setAttribute('aria-label', ld.name);
 
                     const iconEl = document.createElement('span');
                     iconEl.className = 'dt-layer-icon';
@@ -725,6 +738,7 @@ const App = (() => {
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.tabIndex = -1;
+                    checkbox.setAttribute('aria-hidden', 'true');   // the row (role=switch) is the control
                     const sliderSpan = document.createElement('span');
                     sliderSpan.className = 'dt-toggle-slider';
                     toggleLabel.appendChild(checkbox);
@@ -834,6 +848,16 @@ const App = (() => {
                         });
                     }
 
+                    // Enter/Space activate the row (it owns its click handler
+                    // above); mirror the resulting state to aria-checked after the
+                    // handler's own (≤100ms) state update settles.
+                    item.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
+                    });
+                    item.addEventListener('click', () => {
+                        setTimeout(() => item.setAttribute('aria-checked', String(checkbox.checked)), 160);
+                    });
+
                     contentDiv.appendChild(item);
                 });
 
@@ -861,8 +885,35 @@ const App = (() => {
                 });
             }
 
+            // The COG-backed analytics overlays (Growth/Predict/Scenario read
+            // data/growth/*.tif via RealtimeGrowth; Heat reads data/heat/*.tif via
+            // RealtimeHeat) need raster data that the pipeline generates and that
+            // isn't shipped to Pages. Probe a representative file for each and dim
+            // its panel row, same as the Digital-Twin layers, so the panel is
+            // honest about what's renderable. Row key = '_btn_' + btnId.
+            const COG_PROBES = {
+                '_btn_btn-growth':    'data/growth/ca_urban_prediction.tif',
+                '_btn_btn-ca-growth': 'data/growth/ca_urban_prediction.tif',
+                '_btn_btn-scenario':  'data/growth/ca_urban_prediction.tif',
+                '_btn_btn-heat':      'data/heat/modis_lst_2016-2024.tif',
+            };
+            Object.entries(COG_PROBES).forEach(([key, url]) => {
+                fetch(url, { method: 'HEAD' }).then(r => {
+                    if (r.ok) return;
+                    const item = dtLayersDrop.querySelector('.dt-layer-item[data-layer-key="' + key + '"]');
+                    if (!item) return;
+                    item.classList.add('dt-unavailable');
+                    item.title = 'Not available in this deployment (needs pipeline raster data)';
+                    const nm = item.querySelector('.dt-layer-name');
+                    if (nm && !/· no data$/.test(nm.textContent)) nm.textContent += ' · no data';
+                }).catch(() => { /* probe is best-effort */ });
+            });
+
+            dtLayersBtn.setAttribute('aria-haspopup', 'true');
+            dtLayersBtn.setAttribute('aria-expanded', 'false');
             dtLayersBtn.addEventListener('click', () => {
                 const isOpen = dtLayersDrop.classList.toggle('open');
+                dtLayersBtn.setAttribute('aria-expanded', String(isOpen));
                 if (isOpen) {
                     const rect = dtLayersBtn.getBoundingClientRect();
                     dtLayersDrop.style.left = 'auto';

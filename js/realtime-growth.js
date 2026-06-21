@@ -41,7 +41,7 @@ const RealtimeGrowth = (() => {
         // Returns Array<number> (one value per band) or null on failure.
         try {
             if (typeof parseGeoraster !== 'function') return null;
-            const resp = await fetch(url, { cache: 'force-cache' });
+            const resp = await fetch(url, { cache: 'force-cache', signal: AbortSignal.timeout(15000) });
             if (!resp.ok) return null;
             const buf = await resp.arrayBuffer();
             const gr = await parseGeoraster(buf);
@@ -65,7 +65,7 @@ const RealtimeGrowth = (() => {
         // every cell click until then.
         if (Date.now() - _reraFetchedAt < RERA_TTL_MS) return _reraCache;
         try {
-            const r = await fetch(RERA_SNAPSHOT, { cache: 'no-store' });
+            const r = await fetch(RERA_SNAPSHOT, { cache: 'no-store', signal: AbortSignal.timeout(8000) });
             _reraFetchedAt = Date.now();
             if (!r.ok) { _reraCache = null; return null; }
             const data = await r.json();
