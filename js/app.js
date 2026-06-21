@@ -474,43 +474,21 @@ const App = (() => {
             });
         }
 
-        // Google Open Buildings toggle — cycles: Off → 3D → 2D → Off
+        // Buildings toggle — 3D Overture footprints (streamed from the Overture
+        // S3 PMTiles; no local data file, so it works on GitHub Pages). On/off.
         const buildingsBtn = document.getElementById('btn-buildings');
-        if (buildingsBtn) {
-            let buildingMode = 'off'; // off | 3d | 2d
-            buildingsBtn.addEventListener('click', async () => {
+        if (buildingsBtn && typeof OvertureBuildings !== 'undefined') {
+            buildingsBtn.addEventListener('click', () => {
                 const map = MapModule.getMap();
                 try {
-                    if (buildingMode === 'off') {
-                        // Turn on 3D
-                        await DigitalTwinLayers.toggle('google_buildings', map);
-                        buildingMode = '3d';
-                        buildingsBtn.classList.add('active');
-                        buildingsBtn.querySelector('.tb-label').textContent = '3D';
-                        showToast('Google Open Buildings', '528K footprints — 3D extrusion mode.', 'info');
-                    } else if (buildingMode === '3d') {
-                        // Switch to 2D flat
-                        await DigitalTwinLayers.toggle('google_buildings', map); // turn off 3D
-                        await DigitalTwinLayers.toggle('google_buildings_flat', map); // turn on 2D
-                        buildingMode = '2d';
-                        buildingsBtn.querySelector('.tb-label').textContent = '2D';
-                        showToast('Google Open Buildings', '528K footprints — flat 2D mode.', 'info');
-                    } else {
-                        // Turn off — ensure both layers are hidden
-                        if (DigitalTwinLayers.isVisible('google_buildings_flat')) {
-                            await DigitalTwinLayers.toggle('google_buildings_flat', map);
-                        }
-                        if (DigitalTwinLayers.isVisible('google_buildings')) {
-                            await DigitalTwinLayers.toggle('google_buildings', map);
-                        }
-                        // Defensive: force map-level visibility off
-                        ['dt-layer-google_buildings', 'dt-layer-google_buildings_flat', 'dt-tether-google_buildings'].forEach(id => {
-                            if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
-                        });
-                        buildingMode = 'off';
-                        buildingsBtn.classList.remove('active');
-                        buildingsBtn.querySelector('.tb-label').textContent = 'Buildings';
-                    }
+                    OvertureBuildings.toggle(map);
+                    const on = OvertureBuildings.isActive();
+                    buildingsBtn.classList.toggle('active', on);
+                    const label = buildingsBtn.querySelector('.tb-label');
+                    if (label) label.textContent = on ? '3D' : 'Buildings';
+                    showToast('Overture Buildings',
+                        on ? 'Global 3D building footprints — extrusion on.' : 'Buildings hidden.',
+                        'info');
                 } catch (err) {
                     showToast('Buildings Error', err.message, 'error');
                 }
@@ -527,14 +505,15 @@ const App = (() => {
                 btn3d.classList.toggle('active', is3d);
                 if (is3d) {
                     map.easeTo({ pitch: 60, duration: 1000 });
-                    // Auto-enable 3D buildings if no buildings layer is active
-                    if (!DigitalTwinLayers.isVisible('google_buildings') && !DigitalTwinLayers.isVisible('google_buildings_flat')) {
+                    // Auto-enable 3D buildings (Overture) if none are showing yet.
+                    if (typeof OvertureBuildings !== 'undefined' && !OvertureBuildings.isActive()) {
                         try {
-                            await DigitalTwinLayers.toggle('google_buildings', map);
+                            OvertureBuildings.toggle(map);
                             const bBtn = document.getElementById('btn-buildings');
                             if (bBtn) {
                                 bBtn.classList.add('active');
-                                bBtn.querySelector('.tb-label').textContent = '3D';
+                                const lbl = bBtn.querySelector('.tb-label');
+                                if (lbl) lbl.textContent = '3D';
                             }
                         } catch { /* silent */ }
                     }
