@@ -3823,3 +3823,15 @@ html[data-theme="light"] #disha-send:hover:not(:disabled) {
     animation: disha-caret 1s steps(2, start) infinite;
 }
 @keyframes disha-caret { 50% { opacity: 0; } }
+
+/* DISHA: confirmation chips for AI-triggered map actions. */
+.disha-action-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.disha-action-chip {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card, transparent);
+}
+.disha-action-chip.ok { color: var(--accent-green); border-color: var(--accent-green); }
+.disha-action-chip.fail { color: var(--accent-red); border-color: var(--accent-red); }
