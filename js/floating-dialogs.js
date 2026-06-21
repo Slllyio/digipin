@@ -42,6 +42,30 @@ const FloatingDialogs = (() => {
         dialog.style.zIndex = _topZ;
     }
 
+    // ── Focus management ──────────────────────────────────────────────────────
+    // Move focus into a dialog on open (so keyboard/screen-reader users land on
+    // the new content) and restore it to the opener on close (so they don't lose
+    // their place). The opener is stashed per-dialog. Panel does this inline; the
+    // other dialogs call these helpers.
+    const _focusReturn = new WeakMap();
+    function focusInto(dialog) {
+        if (!dialog || typeof document === 'undefined') return;
+        const active = document.activeElement;
+        if (active instanceof HTMLElement && active !== dialog && !dialog.contains(active)) {
+            _focusReturn.set(dialog, active);
+        }
+        if (!dialog.hasAttribute('tabindex')) dialog.setAttribute('tabindex', '-1');
+        try { dialog.focus({ preventScroll: true }); } catch { /* older browsers */ }
+    }
+    function restoreFocus(dialog) {
+        if (!dialog) return;
+        const el = _focusReturn.get(dialog);
+        _focusReturn.delete(dialog);
+        if (el && typeof document !== 'undefined' && document.contains(el)) {
+            try { el.focus({ preventScroll: true }); } catch { /* noop */ }
+        }
+    }
+
     // ── Escape-to-close registry ────────────────────────────────────────────
     // Components register a closable descriptor { isOpen, close, priority }.
     // Escape closes exactly ONE open surface — the highest-priority one — so a
@@ -155,7 +179,7 @@ const FloatingDialogs = (() => {
         });
     }
 
-    return { init, bringToFront, clampPosition, clampSize, registerClosable, closeTopmost };
+    return { init, bringToFront, focusInto, restoreFocus, clampPosition, clampSize, registerClosable, closeTopmost };
 })();
 
 if (typeof window !== 'undefined') {
