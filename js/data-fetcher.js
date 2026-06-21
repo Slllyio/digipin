@@ -854,8 +854,14 @@ const DataFetcher = (() => {
             try {
                 const osmConstruction =
                     (result.categories?.landuse?.features?.construction?.count) || 0;
+                // Commercial intensity from the actual OSM features (the old
+                // `categories.shops.features.commercial` path never existed — there
+                // is no `shops` category nor a `commercial` feature — so this was
+                // always 0, feeding the growth model a dead signal). Sum the
+                // commercial land-use area + commercial buildings under `landuse`.
                 const osmCommercial =
-                    (result.categories?.shops?.features?.commercial?.count) || 0;
+                    ((result.categories?.landuse?.features?.commercial_area?.count) || 0) +
+                    ((result.categories?.landuse?.features?.com_buildings?.count) || 0);
                 const signals = await RealtimeGrowth.fetchCell(lat, lng, {
                     osm_construction_count: osmConstruction,
                     osm_commercial_density: osmCommercial,
