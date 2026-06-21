@@ -72,6 +72,18 @@ describe('EmergencyAccessScore.computeIndex', () => {
         const choked = S.computeIndex({ ...base, on_chokepoint: true, sealable: true });
         expect(choked.index).toBeLessThan(clear.index);
     });
+
+    it('scores an unknown (null) flag neutrally — between flagged and clear', () => {
+        const base = {
+            hasRoad: true, nearest_police_km: 1, betweenness_max: 0.02, road_density_m: 200,
+            congestion_risk: 20, sealable: false, has_critical_link: false, res_m: 200,
+        };
+        const clear = S.computeIndex({ ...base, on_chokepoint: false });   // free → 1
+        const unknown = S.computeIndex({ ...base, on_chokepoint: null });  // neutral → 0.5
+        const flagged = S.computeIndex({ ...base, on_chokepoint: true });  // penalised → 0
+        expect(unknown.index).toBeLessThan(clear.index);
+        expect(unknown.index).toBeGreaterThan(flagged.index);
+    });
 });
 
 describe('EmergencyAccess.combine', () => {
@@ -90,6 +102,11 @@ describe('EmergencyAccess.combine', () => {
     it('reports no road when both samples are empty/null', () => {
         expect(EA.combine(null, null).hasRoad).toBe(false);
         expect(EA.combine(null, { road_density_m: 0, betweenness_max: 0, congestion_risk: 0 }).hasRoad).toBe(false);
+    });
+    it('leaves mobility flags unknown (null) when there is no mobility record', () => {
+        const s = EA.combine(null, { road_density_m: 120, betweenness_max: 0.01, congestion_risk: 40, res_m: 200 });
+        expect(s.on_chokepoint).toBeNull();
+        expect(s.sealable).toBeNull();
     });
     it('round-trips through computeIndex to a real score', () => {
         const s = EA.combine(

@@ -18,15 +18,21 @@ const EmergencyAccess = (() => {
             (traf.road_density_m != null && traf.road_density_m > 0) ||
             (traf.betweenness_max != null && traf.betweenness_max > 0)
         ));
+        // Tri-state booleans: a flag is known true/false only when its source
+        // record exists (the grids' flag arrays are dense, so absence within a
+        // present record means "not flagged" = false). When the whole record is
+        // missing (e.g. a traffic-only road cell has no mobility record) the
+        // flag is genuinely unknown → null, which EmergencyAccessScore scores
+        // neutrally rather than as an optimistic win.
         return {
             hasRoad: !!mob || trafHasRoad,
             nearest_police_km: mob ? mob.nearest_police_km : null,
-            on_chokepoint: !!(mob && mob.on_chokepoint),
-            sealable: !!(mob && mob.sealable),
+            on_chokepoint: mob ? !!mob.on_chokepoint : null,
+            sealable: mob ? !!mob.sealable : null,
             betweenness_max: traf ? traf.betweenness_max : null,
             road_density_m: traf ? traf.road_density_m : null,
             congestion_risk: traf ? traf.congestion_risk : null,
-            has_critical_link: !!(traf && traf.has_critical_link),
+            has_critical_link: traf ? !!traf.has_critical_link : null,
             res_m: (traf && traf.res_m) || (mob && mob.res_m) || 200,
         };
     }
@@ -67,25 +73,45 @@ const EmergencyAccess = (() => {
      * { bounds, nx, ny, res_m, index:[..|null], band:[..|null] } or null when
      * neither grid is usable. Used by the choropleth overlay.
      */
+    /** True when two grids share the same dimensions + bounds (so a row-major
+     *  index refers to the same cell in both). */
+    function _aligned(a, b) {
+        if (a.nx !== b.nx || a.ny !== b.ny) return false;
+        const x = a.bounds, y = b.bounds;
+        return x.west === y.west && x.south === y.south && x.east === y.east && x.north === y.north;
+    }
+
     function sampleGrids(mobGrid, trafGrid) {
         const ref = mobGrid || trafGrid;
         if (!ref || !ref.bounds || !ref.nx || !ref.ny) return null;
         if (typeof EmergencyAccessScore === 'undefined') return null;
+        // If both grids are present but misregistered, a shared index would mix
+        // different locations → wrong scores. Degrade to the reference grid
+        // alone rather than emit a corrupted choropleth.
+        let mg = mobGrid, tg = trafGrid;
+        if (mg && tg && !_aligned(mg, tg)) {
+            if (ref === mg) tg = null; else mg = null;
+            console.warn('[EmergencyAccess] mobility/traffic grids misaligned — scoring from one grid');
+        }
         const nx = ref.nx, ny = ref.ny, n = nx * ny;
         const index = new Array(n).fill(null);
         const band = new Array(n).fill(null);
         for (let i = 0; i < n; i++) {
-            const r = EmergencyAccessScore.computeIndex(combine(_mobAt(mobGrid, i), _trafAt(trafGrid, i)));
+            const r = EmergencyAccessScore.computeIndex(combine(_mobAt(mg, i), _trafAt(tg, i)));
             if (r) { index[i] = r.index; band[i] = r.band; }
         }
         return { bounds: ref.bounds, nx, ny, res_m: ref.res_m, index, band };
     }
 
+    /** Resolve a promise to its value, or null if it rejects — so one grid's
+     *  failure never breaks best-effort single-grid degradation. */
+    function _safe(p) { return Promise.resolve(p).catch(() => null); }
+
     /** Load both grids (best-effort) and return them as { mobGrid, trafGrid }. */
     async function loadGrids() {
         const [mobGrid, trafGrid] = await Promise.all([
-            (typeof MobilityGrid !== 'undefined') ? MobilityGrid.load() : Promise.resolve(null),
-            (typeof TrafficGrid !== 'undefined') ? TrafficGrid.load() : Promise.resolve(null),
+            (typeof MobilityGrid !== 'undefined') ? _safe(MobilityGrid.load()) : Promise.resolve(null),
+            (typeof TrafficGrid !== 'undefined') ? _safe(TrafficGrid.load()) : Promise.resolve(null),
         ]);
         return { mobGrid, trafGrid };
     }
@@ -94,8 +120,8 @@ const EmergencyAccess = (() => {
     async function sampleAt(lat, lng) {
         if (typeof EmergencyAccessScore === 'undefined') return null;
         const [mob, traf] = await Promise.all([
-            (typeof MobilityGrid !== 'undefined') ? MobilityGrid.sampleAt(lat, lng) : Promise.resolve(null),
-            (typeof TrafficGrid !== 'undefined') ? TrafficGrid.sampleAt(lat, lng) : Promise.resolve(null),
+            (typeof MobilityGrid !== 'undefined') ? _safe(MobilityGrid.sampleAt(lat, lng)) : Promise.resolve(null),
+            (typeof TrafficGrid !== 'undefined') ? _safe(TrafficGrid.sampleAt(lat, lng)) : Promise.resolve(null),
         ]);
         return EmergencyAccessScore.computeIndex(combine(mob, traf));
     }

@@ -100,6 +100,8 @@ const EmergencyAccessOverlay = (() => {
                 `${gj.features.length} cells scored — green = reachable, red = isolated.`, 'success');
         } catch (e) {
             console.warn('[EmergencyAccessOverlay] refresh failed', e);
+            if (typeof App !== 'undefined') App.showToast('Emergency Access',
+                'Failed to load accessibility grids.', 'warning');
         } finally {
             _loading = false;
         }

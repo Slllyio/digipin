@@ -84,9 +84,14 @@ const EmergencyAccessScore = (() => {
             ? 0.5
             : _clamp01(1 - signals.congestion_risk / 100);
 
-        const chokepointFree = signals.on_chokepoint ? 0 : 1;
-        const notSealable = signals.sealable ? 0 : 1;
-        const criticalLinkFree = signals.has_critical_link ? 0 : 1;
+        // Penalty signals → "free" sub-scores. A known-clear cell scores 1, a
+        // flagged one 0, and an *unknown* flag (null/undefined — e.g. a
+        // traffic-only road cell with no mobility record) a neutral 0.5 rather
+        // than the optimistic 1, so missing data never inflates accessibility.
+        const _free = (flag) => (flag == null ? 0.5 : (flag ? 0 : 1));
+        const chokepointFree = _free(signals.on_chokepoint);
+        const notSealable = _free(signals.sealable);
+        const criticalLinkFree = _free(signals.has_critical_link);
 
         const components = { policeReach, networkReach, flow, chokepointFree, notSealable, criticalLinkFree };
         let sum = 0;
