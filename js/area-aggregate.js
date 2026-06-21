@@ -49,6 +49,27 @@ const AreaAggregate = (() => {
         }
         return pts;
     }
+    /**
+     * Collapse sample points that fall in the same DIGIPIN cell to one, keyed by
+     * DigiPin code, so the count reflects *distinct cells* — not a fixed 64. For
+     * an area smaller than a cell all samples share a code → one cell (instead of
+     * reporting 64 duplicates). Pure (given DigiPin.encode). Falls back to the raw
+     * points if DigiPin is unavailable.
+     */
+    function dedupeByCell(pts) {
+        if (typeof DigiPin === 'undefined' || !DigiPin.encode) return pts;
+        const seen = new Set();
+        const out = [];
+        for (const p of pts) {
+            let code;
+            try { code = DigiPin.encode(p.lat, p.lng); } catch { code = null; }
+            const key = code || `${p.lat},${p.lng}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+            out.push(p);
+        }
+        return out;
+    }
     /** Aggregate scores across sampled cells → {count, perScore:{key:{avg,min,max,label}}}. Pure.
      *  Accepts fetchAllFeatures results ({scores:{k:{value,label}}}) or plain {k:value} maps. */
     function aggregate(cells) {
@@ -125,19 +146,29 @@ const AreaAggregate = (() => {
         if (_abort) _abort.abort();
         _abort = new AbortController();
         const signal = _abort.signal;
-        const pts = samplePoints(rect, GRID);
+        const pts = dedupeByCell(samplePoints(rect, GRID));
         if (!pts.length) return;
         _renderBox({ loading: true, sampled: pts.length });
         const cells = [];
+        let rejected = 0;
         for (let b = 0; b < pts.length; b += 6) {
             if (signal.aborted) return;
             const chunk = pts.slice(b, b + 6);
             const res = await Promise.allSettled(
                 chunk.map(p => DataFetcher.fetchAllFeatures(p.lat, p.lng, SAMPLE_RADIUS_M)));
-            res.forEach(r => { if (r.status === 'fulfilled' && r.value) cells.push(r.value); });
+            res.forEach(r => {
+                if (r.status === 'fulfilled' && r.value) cells.push(r.value);
+                else if (r.status === 'rejected') rejected++;
+            });
             if (b + 6 < pts.length) await new Promise(r => setTimeout(r, 200));
         }
         if (signal.aborted) return;
+        // Every fetch failed (offline / network) — distinguish from a genuinely
+        // empty area so the user knows to retry rather than assume "no data".
+        if (cells.length === 0 && rejected === pts.length) {
+            _renderBox({ error: true });
+            return;
+        }
         _renderBox({ agg: aggregate(cells) });
     }
 
@@ -147,17 +178,20 @@ const AreaAggregate = (() => {
             surface: 'rgba(10,14,39,0.92)', border: 'rgba(255,255,255,0.12)' };
     }
     /** Render/update the floating summary box. */
-    function _renderBox({ loading, sampled, agg } = {}) {
+    function _renderBox({ loading, sampled, agg, error } = {}) {
         let el = document.getElementById(BOX_ID);
         if (!el) {
             el = document.createElement('div');
             el.id = BOX_ID;
             el.setAttribute('role', 'group');
             el.setAttribute('aria-label', 'Area aggregate summary');
+            el.setAttribute('aria-live', 'polite');   // announce updates to screen readers
             document.body.appendChild(el);
         }
         const pal = _palette();
-        el.style.cssText = `position:absolute;top:84px;left:16px;z-index:6;max-width:260px;`
+        // Right-anchored: the default sidebar is fixed top-left (top:80px,
+        // left:16px, z-index:900), so a left-anchored box would render beneath it.
+        el.style.cssText = `position:absolute;top:84px;right:16px;z-index:950;max-width:260px;`
             + `background:${pal.surface};border:1px solid ${pal.border};border-radius:10px;`
             + `padding:12px 14px;color:${pal.ink};font:12px/1.5 system-ui,sans-serif;`
             + 'box-shadow:0 4px 18px rgba(0,0,0,0.32);backdrop-filter:blur(8px);';
@@ -165,7 +199,9 @@ const AreaAggregate = (() => {
             ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
         let body;
         if (loading) {
-            body = `<div style="color:${pal.sub};">Sampling ${esc(sampled)} points…</div>`;
+            body = `<div style="color:${pal.sub};">Sampling ${esc(sampled)} cells…</div>`;
+        } else if (error) {
+            body = `<div style="color:${pal.sub};">Couldn't load data (offline?). Drag again to retry.</div>`;
         } else if (agg && agg.count > 0) {
             const keys = HEADLINE.filter(k => agg.perScore[k])
                 .concat(Object.keys(agg.perScore).filter(k => !HEADLINE.includes(k)));
@@ -175,7 +211,7 @@ const AreaAggregate = (() => {
                     + `<span style="color:${pal.sub};">${esc(p.label)}</span>`
                     + `<span><b>${esc(p.avg)}</b> <span style="color:${pal.sub};">(${esc(p.min)}–${esc(p.max)})</span></span></div>`;
             }).join('');
-            body = `<div style="margin-bottom:6px;color:${pal.sub};">${esc(agg.count)} cells · avg (min–max)</div>${rows}`;
+            body = `<div style="margin-bottom:6px;color:${pal.sub};">${esc(agg.count)} cells sampled · avg (min–max)</div>${rows}`;
         } else {
             body = `<div style="color:${pal.sub};">No scored cells in this area.</div>`;
         }
@@ -190,33 +226,44 @@ const AreaAggregate = (() => {
         _map = (typeof MapModule !== 'undefined') ? MapModule.getMap() : null;
         if (!_map) return;
         _ensureLayer();
+        // Pointer + touch, so the drag works on phones/tablets too (e.lngLat is
+        // populated identically for touch events).
         _map.on('mousedown', _onDown);
         _map.on('mousemove', _onMove);
         _map.on('mouseup', _onUp);
+        _map.on('touchstart', _onDown);
+        _map.on('touchmove', _onMove);
+        _map.on('touchend', _onUp);
+        if (_map.getCanvas) _map.getCanvas().style.cursor = 'crosshair';   // draw-mode cue
         if (typeof App !== 'undefined') App.showToast('Area summary', 'Drag a rectangle on the map to aggregate it.', 'info');
-        _renderBox({ loading: false, agg: { count: 0, perScore: {} } });
         _renderBox();   // initial hint box
     }
     function detach() {
         _active = false;
         _drawing = false;
         if (_abort) { _abort.abort(); _abort = null; }
-        const map = (typeof MapModule !== 'undefined') ? MapModule.getMap() : null;
-        if (map) {
-            map.off('mousedown', _onDown);
-            map.off('mousemove', _onMove);
-            map.off('mouseup', _onUp);
-            if (map.dragPan) map.dragPan.enable();
-            if (map.getLayer(FILL)) map.removeLayer(FILL);
-            if (map.getLayer(LINE)) map.removeLayer(LINE);
-            if (map.getSource(SRC)) map.removeSource(SRC);
+        // Use the stored map (the one we registered on) — re-fetching could yield
+        // a different/undefined instance and leak the listeners.
+        if (_map) {
+            _map.off('mousedown', _onDown);
+            _map.off('mousemove', _onMove);
+            _map.off('mouseup', _onUp);
+            _map.off('touchstart', _onDown);
+            _map.off('touchmove', _onMove);
+            _map.off('touchend', _onUp);
+            if (_map.dragPan) _map.dragPan.enable();
+            if (_map.getCanvas) _map.getCanvas().style.cursor = '';
+            if (_map.getLayer(FILL)) _map.removeLayer(FILL);
+            if (_map.getLayer(LINE)) _map.removeLayer(LINE);
+            if (_map.getSource(SRC)) _map.removeSource(SRC);
+            _map = null;
         }
         _removeBox();
     }
     function toggle() { if (_active) detach(); else attach(); }
     function isVisible() { return _active; }
 
-    return { attach, detach, toggle, isVisible, aggregate, rectFromPoints, rectContains, samplePoints };
+    return { attach, detach, toggle, isVisible, aggregate, rectFromPoints, rectContains, samplePoints, dedupeByCell };
 })();
 
 if (typeof window !== 'undefined') window.AreaAggregate = AreaAggregate;

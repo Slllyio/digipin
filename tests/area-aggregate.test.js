@@ -59,3 +59,17 @@ describe('AreaAggregate.aggregate', () => {
         expect(a.perScore.walk).toEqual({ avg: 75, min: 50, max: 100, label: 'walk' });
     });
 });
+
+describe('AreaAggregate.dedupeByCell', () => {
+    it('collapses points sharing a DIGIPIN cell to one (sub-cell area → 1 cell)', () => {
+        // Tightly clustered points (well under one ~4m cell) → all the same code.
+        const tiny = A.samplePoints({ west: 75.8577, east: 75.85771, south: 22.7196, north: 22.71961 }, 8);
+        expect(tiny.length).toBe(64);
+        const unique = A.dedupeByCell(tiny);
+        expect(unique.length).toBeLessThan(tiny.length);
+    });
+    it('keeps well-separated points distinct', () => {
+        const spread = A.samplePoints({ west: 75.0, east: 76.0, south: 22.0, north: 23.0 }, 4);
+        expect(A.dedupeByCell(spread)).toHaveLength(spread.length);
+    });
+});
