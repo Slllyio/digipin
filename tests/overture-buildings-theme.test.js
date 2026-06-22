@@ -2,15 +2,16 @@ import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 
 // OvertureBuildings + Theme are exposed on globalThis by tests/setup.js.
 // The Overture footprints overlay renders the Aino white architectural massing
-// model under the light theme and the neon floating-hologram look under dark.
-// We drive toggle() with a stub MapLibre map and capture the paint chosen for
-// the building layer + whether the directional "sun" light / tethers are used.
+// model under the light theme and a grounded Esri-style translucent cyan-glass
+// "digital twin" (with glowing footprint edges) under dark. We drive toggle()
+// with a stub MapLibre map and capture the paint chosen for the building layer
+// + whether the directional "sun" light / glowing edges are used.
 const OB = globalThis.OvertureBuildings;
 
 const LAYER_ID = 'overture-buildings-layer';
-const TETHER_LAYER_ID = 'overture-tethers-layer';
+const EDGE_LAYER_ID = 'overture-edges-layer';
 
-// Minimal MapLibre stub: records addLayer paints, tether visibility and any
+// Minimal MapLibre stub: records addLayer paints, layer visibility and any
 // setLight call so the per-theme styling can be asserted without a real GL map.
 function makeStubMap() {
     const layers = {};      // id -> layer def passed to addLayer
@@ -61,23 +62,27 @@ describe('OvertureBuildings Aino-theme rendering', () => {
         // A directional "sun" is set so the volumes read as a lit model
         expect(map._calls.setLight).toBeTruthy();
         expect(map._calls.setLight.anchor).toBe('map');
-        // Holographic tethers stay hidden — nothing floats to tether
-        expect(map._visibility[TETHER_LAYER_ID]).toBe('none');
+        // Glowing edges stay hidden — the light model is a clean white solid
+        expect(map._visibility[EDGE_LAYER_ID]).toBe('none');
     });
 
-    it('under dark theme keeps the neon floating holograms + tethers', () => {
+    it('under dark theme grounds a translucent cyan-glass twin with glowing edges', () => {
         Theme.set('dark');
         const map = makeStubMap();
         OB.toggle(map);
 
         const paint = map._layers[LAYER_ID].paint;
-        // Floated 100m above ground for the hologram look
-        expect(JSON.stringify(paint['fill-extrusion-base'])).toContain('100');
-        // Vibrant neon class colours, no architectural vertical gradient
-        expect(JSON.stringify(paint['fill-extrusion-color'])).toContain('#0085CA');
-        expect(paint['fill-extrusion-vertical-gradient']).toBeUndefined();
-        // No directional light override; tethers visible
+        // Grounded: base is min_height (no +100 float offset), height un-offset
+        expect(JSON.stringify(paint['fill-extrusion-base'])).not.toContain('100');
+        expect(JSON.stringify(paint['fill-extrusion-height'])).not.toContain('100');
+        // Translucent cyan glass: a height colour ramp + vertical gradient glow
+        expect(JSON.stringify(paint['fill-extrusion-color'])).toContain('#5cf0ff');
+        expect(paint['fill-extrusion-vertical-gradient']).toBe(true);
+        expect(paint['fill-extrusion-opacity']).toBeLessThan(1);
+        // No directional light override (gradient supplies the shading);
+        // the glowing footprint-edge layer is shown
         expect(map._calls.setLight).toBeNull();
-        expect(map._visibility[TETHER_LAYER_ID]).toBe('visible');
+        expect(map._layers[EDGE_LAYER_ID].type).toBe('line');
+        expect(map._visibility[EDGE_LAYER_ID]).toBe('visible');
     });
 });

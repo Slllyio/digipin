@@ -14,7 +14,7 @@
 const OvertureBuildings = (() => {
     const PMTILES_URL = 'https://overturemaps-tiles-us-west-2-beta.s3.amazonaws.com/2024-08-20/buildings.pmtiles';
     const LAYER_ID = 'overture-buildings-layer';
-    const TETHER_LAYER_ID = 'overture-tethers-layer';
+    const EDGE_LAYER_ID = 'overture-edges-layer';
     const SOURCE_ID = 'overture-buildings-source';
 
     let _active = false;
@@ -45,27 +45,25 @@ const OvertureBuildings = (() => {
         12
     ];
 
-    // Dark theme: vibrant solid class colours, floated 100m for the
-    // holographic look (paired with the tether layer below).
+    // Dark theme: an Esri-style "digital twin" — grounded, translucent cyan
+    // glass volumes that deepen to teal at street level and glow toward the
+    // towers. The earlier floating-hologram treatment read as broken (buildings
+    // detached 100m in the air); this grounds them (base = min_height) and uses
+    // MapLibre's vertical gradient + a height colour ramp for the glow, paired
+    // with the bright footprint-edge line layer below for the wireframe look.
     const PAINT_DARK = {
         'fill-extrusion-color': [
-            'match',
-            ['get', 'class'],
-            'commercial', '#0085CA', // Bright blue
-            'industrial', '#0085CA',
-            'retail', '#0085CA',
-            'residential', '#E32A22', // Bright red
-            'education', '#E32A22',
-            'medical', '#0085CA',
-            'government', '#0085CA',
-            'transportation', '#5C2D91',
-            '#E32A22' // Default red
+            'interpolate', ['linear'], REAL_HEIGHT,
+            0, '#0b4a59',    // deep teal at the base
+            25, '#0f7d94',
+            70, '#19b6d6',
+            160, '#5cf0ff'   // bright cyan for tall towers
         ],
-        // Ground base with 100m offset (float above ground)
-        'fill-extrusion-base': ['+', ['coalesce', ['get', 'min_height'], 0], 100],
-        // Height must also be offset by 100m so the building itself doesn't shrink
-        'fill-extrusion-height': ['+', REAL_HEIGHT, 100],
-        'fill-extrusion-opacity': 0.8
+        'fill-extrusion-base': ['coalesce', ['get', 'min_height'], 0],
+        'fill-extrusion-height': REAL_HEIGHT,
+        // Translucent so overlapping volumes layer like glass (the Esri look).
+        'fill-extrusion-opacity': 0.62,
+        'fill-extrusion-vertical-gradient': true
     };
 
     // Aino (aino.world) light: a white architectural massing model — cool
@@ -98,25 +96,21 @@ const OvertureBuildings = (() => {
             url: `pmtiles://${PMTILES_URL}`
         });
 
-        // 1. Add the Holographic Tethers (base goes from 0 to the bottom of the
-        // floating building). Dark-theme only — the grounded Aino massing model
-        // has no float to tether, so it stays hidden under the light theme.
+        // 1. Glowing footprint edges — a bright cyan outline of every building
+        // base. This is the signature of the Esri "digital twin" wireframe-glass
+        // look and the closest MapLibre's renderer gets to lit building edges
+        // (fill-extrusion has no native edge stroke). Dark-theme only; the Aino
+        // light massing model is a clean white solid with no glow.
         map.addLayer({
-            id: TETHER_LAYER_ID,
-            type: 'fill-extrusion',
+            id: EDGE_LAYER_ID,
+            type: 'line',
             source: SOURCE_ID,
             'source-layer': 'building',
             minzoom: 13,
             paint: {
-                'fill-extrusion-color': '#00f0ff',
-                'fill-extrusion-base': 0,
-                'fill-extrusion-height': [
-                    '+',
-                    ['coalesce', ['get', 'min_height'], 0],
-                    100
-                ],
-                // Add artificial transparency for the hologram effect
-                'fill-extrusion-opacity': 0.15
+                'line-color': '#7df4ff',
+                'line-width': ['interpolate', ['linear'], ['zoom'], 13, 0.3, 17, 0.9],
+                'line-opacity': 0.55
             },
             layout: {
                 'visibility': 'none'
@@ -156,9 +150,9 @@ const OvertureBuildings = (() => {
         _active = !_active;
         const light = isLight();
         map.setLayoutProperty(LAYER_ID, 'visibility', _active ? 'visible' : 'none');
-        // Holographic tethers are a dark-theme device; the grounded Aino
-        // massing model has nothing to float, so leave them hidden on light.
-        map.setLayoutProperty(TETHER_LAYER_ID, 'visibility', (_active && !light) ? 'visible' : 'none');
+        // Glowing footprint edges are the dark "digital twin" device; the Aino
+        // light massing model is a clean white solid, so keep edges hidden there.
+        map.setLayoutProperty(EDGE_LAYER_ID, 'visibility', (_active && !light) ? 'visible' : 'none');
 
         // Aino light: give the white volumes a fixed directional "sun" so they
         // read with a consistent lit/shadow side (anchor:'map' keeps the light
