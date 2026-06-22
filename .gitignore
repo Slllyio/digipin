@@ -45,6 +45,10 @@ data/realtime/*
 !data/realtime/*/
 data/realtime/*/*
 !data/realtime/*/latest.json
+# Baked per-building heights (Open Buildings 2.5D) — shipped so the deployed
+# static site can serve them; regenerate with scripts/build_building_heights.py.
+!data/heights/
+!data/heights/*
 !data/realtime/*/README.md
 # Precomputed score tiles are committed and served by Pages (like realtime/).
 !data/scores/
