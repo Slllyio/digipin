@@ -413,6 +413,7 @@ const Compare = (() => {
     }
 
     // ---------- Comparison Site Brief (Aino-style, printable) ----------
+    /** HTML-escape a value for safe interpolation into the brief markup. */
     function _esc(v) {
         return String(v == null ? '' : v).replace(/[&<>"']/g, c =>
             ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -438,6 +439,7 @@ const Compare = (() => {
         return { cells, metricKeys };
     }
 
+    /** Plain-text (tab-separated) rendering of the comparison brief, for the clipboard. */
     function _briefText(model) {
         const lines = ['DigiPin Comparison Brief', ''];
         lines.push(['Metric', ...model.cells.map(c => c.code)].join('\t'));
@@ -451,6 +453,7 @@ const Compare = (() => {
         return lines.join('\n');
     }
 
+    /** Close the comparison-brief dialog and restore focus to the opener. */
     function _closeBrief() {
         document.getElementById('compare-brief-backdrop')?.remove();
         if (_closeBrief._restoreFocus && typeof _closeBrief._restoreFocus.focus === 'function') {

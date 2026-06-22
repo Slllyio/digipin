@@ -100,6 +100,7 @@ const FootprintExport = (() => {
     // DXF is a list of group-code/value line pairs. We emit a minimal but valid
     // ENTITIES section of LWPOLYLINEs (introduced in R13) — broadly importable by
     // modern CAD/GIS tools (AutoCAD R13+, Rhino, QGIS).
+    /** Append one closed LWPOLYLINE (group-code/value pairs) to the DXF lines. */
     function _poly(lines, ring, layer, thickness) {
         if (!Array.isArray(ring) || ring.length < 2) return;
         lines.push('0', 'LWPOLYLINE', '8', layer, '90', String(ring.length), '70', '1');
@@ -109,6 +110,7 @@ const FootprintExport = (() => {
         }
     }
 
+    /** Footprints + the DIGIPIN cell as a DXF ENTITIES drawing (LWPOLYLINE per ring). */
     function toDXF(features, cell) {
         const lines = ['0', 'SECTION', '2', 'ENTITIES'];
         for (const f of (features || [])) {

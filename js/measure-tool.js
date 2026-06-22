@@ -28,6 +28,7 @@ const MeasureTool = (() => {
     function _deltaLngRad(lng1, lng2) {
         return (((lng2 - lng1 + 540) % 360) - 180) * RAD;
     }
+    /** Geodesic length (m) of a single segment between two {lat,lng} points (haversine). */
     function _segM(a, b) {
         const dLat = (b.lat - a.lat) * RAD;
         const dLng = _deltaLngRad(a.lng, b.lng);
@@ -55,10 +56,12 @@ const MeasureTool = (() => {
         }
         return Math.abs(total * R * R / 2);
     }
+    /** Human label for a metre distance (m below 1 km, else km). */
     function formatLength(m) {
         if (!(m > 0)) return '0 m';
         return m >= 1000 ? `${(m / 1000).toFixed(2)} km` : `${Math.round(m)} m`;
     }
+    /** Human label for an area in m² (m²/ha/km² by magnitude). */
     function formatArea(m2) {
         if (!(m2 > 0)) return '0 m²';
         if (m2 >= 1e6) return `${(m2 / 1e6).toFixed(2)} km²`;
@@ -69,7 +72,9 @@ const MeasureTool = (() => {
     // ---------- state + map interaction ----------
     let _active = false, _map = null, _pts = [], _cursor = null, _finished = false, _clickTimer = null, _restoreDblClick = false;
 
+    /** An empty GeoJSON FeatureCollection. */
     function _empty() { return { type: 'FeatureCollection', features: [] }; }
+    /** Build the FeatureCollection (line + optional polygon + vertex points) for the current measurement. */
     function _features() {
         const feats = [];
         const line = _pts.map(p => [p.lng, p.lat]);
@@ -83,11 +88,13 @@ const MeasureTool = (() => {
         for (const p of _pts) feats.push({ type: 'Feature', geometry: { type: 'Point', coordinates: [p.lng, p.lat] } });
         return { type: 'FeatureCollection', features: feats };
     }
+    /** Push the current features to the map source and refresh the readout box. */
     function _redraw() {
         const s = _map && _map.getSource(SRC);
         if (s) s.setData(_features());
         _renderBox();
     }
+    /** Add the measurement source + fill/line/circle layers once. */
     function _ensureLayer() {
         if (_map.getSource(SRC)) return;
         const pal = _palette();
@@ -104,6 +111,7 @@ const MeasureTool = (() => {
                 'circle-stroke-width': 1.5, 'circle-stroke-color': '#fff' } });
     }
 
+    /** Map click → add a vertex (deferred so a double-click can cancel it). */
     function _onClick(e) {
         if (!_active) return;
         // Defer so a double-click (finish) can cancel the second vertex add.
@@ -115,11 +123,13 @@ const MeasureTool = (() => {
             _redraw();
         }, 220);
     }
+    /** Map move → rubber-band the in-progress segment to the cursor. */
     function _onMove(e) {
         if (!_active || _finished) return;
         _cursor = { lat: e.lngLat.lat, lng: e.lngLat.lng };
         if (_pts.length) _redraw();
     }
+    /** Double-click → finish the current measurement (stop rubber-banding). */
     function _onDbl() {
         if (!_active) return;
         if (_clickTimer) { clearTimeout(_clickTimer); _clickTimer = null; }
@@ -128,11 +138,13 @@ const MeasureTool = (() => {
         _redraw();
     }
 
+    /** Active theme palette (with light-theme fallback for tests). */
     function _palette() {
         if (typeof Theme !== 'undefined' && Theme.palette) return Theme.palette();
         return { primary: '#0099ff', ink: '#292929', sub: '#636363',
             surface: 'rgba(255,255,255,0.96)', border: 'rgba(0,0,0,0.08)' };
     }
+    /** Render/update the floating readout (distance, area, reset). */
     function _renderBox() {
         let el = document.getElementById(BOX_ID);
         if (!el) {
@@ -162,10 +174,13 @@ const MeasureTool = (() => {
         const rb = document.getElementById('measure-reset');
         if (rb) rb.onclick = () => { _pts = []; _cursor = null; _finished = false; _redraw(); };
     }
+    /** Remove the readout box from the DOM. */
     function _removeBox() { const el = document.getElementById(BOX_ID); if (el) el.remove(); }
 
+    /** Escape clears the current measurement (the tool stays active). */
     function _onKey(ev) { if (ev.key === 'Escape' && _active) { _pts = []; _cursor = null; _finished = false; _redraw(); } }
 
+    /** Activate the tool: add layers + listeners, set the crosshair cursor. */
     function attach() {
         _pts = []; _cursor = null; _finished = false;
         const map = (typeof MapModule !== 'undefined') ? MapModule.getMap() : null;
@@ -188,6 +203,7 @@ const MeasureTool = (() => {
         if (typeof App !== 'undefined') App.showToast('Measure', 'Click points to measure distance; close 3+ points for area.', 'info');
         _renderBox();
     }
+    /** Deactivate the tool: remove layers/listeners, restore cursor + dbl-click zoom. */
     function detach() {
         _active = false;
         if (_clickTimer) { clearTimeout(_clickTimer); _clickTimer = null; }
@@ -207,7 +223,9 @@ const MeasureTool = (() => {
         if (typeof document !== 'undefined') document.removeEventListener('keydown', _onKey);
         _removeBox();
     }
+    /** Toggle the tool on/off. */
     function toggle() { if (_active) detach(); else attach(); }
+    /** True while the measure tool is active. */
     function isVisible() { return _active; }
 
     return { attach, detach, toggle, isVisible, pathLengthM, polygonAreaM2, formatLength, formatArea };

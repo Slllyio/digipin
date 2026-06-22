@@ -163,6 +163,7 @@ const SunStudy = (() => {
 
     let _map = null, _panel = null, _date = null, _playing = false, _raf = 0;
 
+    /** Current lat/lng to compute the sun for — the map centre (Indore fallback). */
     function _latlng() {
         if (_map && _map.getCenter) {
             const c = _map.getCenter();
@@ -233,6 +234,7 @@ const SunStudy = (() => {
         ctx.beginPath(); ctx.arc(x(tH), y(curAlt), 3, 0, 2 * Math.PI); ctx.fill();
     }
 
+    /** Write the altitude/azimuth (or "below horizon") line into the panel. */
     function _updateReadout(altitude, azimuth) {
         if (!_panel) return;
         const out = _panel.querySelector('.sun-readout');
@@ -246,6 +248,7 @@ const SunStudy = (() => {
     // Local time helpers: the slider is "minutes past local midnight"; we apply
     // it relative to the location's longitude (approx local solar offset) so the
     // shadows match local clock intuition without a timezone database.
+    /** Set _date from the date input + minutes-past-local-midnight slider value. */
     function _setFromSlider(dateStr, minutes) {
         const [Y, Mo, D] = dateStr.split('-').map(Number);
         const tzOffsetHours = _latlng().lng / 15;        // approx solar timezone
@@ -253,6 +256,7 @@ const SunStudy = (() => {
         _date = new Date(utcMs);
     }
 
+    /** Stop the sun-arc animation. */
     function _stop() {
         _playing = false;
         if (_raf) cancelAnimationFrame(_raf);
@@ -261,6 +265,7 @@ const SunStudy = (() => {
         if (btn) btn.textContent = '▶';
     }
 
+    /** Animate the time slider across daylight hours (rAF, throttled). */
     function _play() {
         if (!_panel) return;
         const slider = _panel.querySelector('.sun-time');
@@ -284,6 +289,7 @@ const SunStudy = (() => {
         _raf = requestAnimationFrame(step);
     }
 
+    /** Build and wire the floating sun-study control panel. */
     function _buildPanel() {
         const el = document.createElement('div');
         el.id = 'sun-study-panel';

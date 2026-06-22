@@ -22,6 +22,7 @@ const PresentMode = (() => {
         return p.get('present') === '1' || (p.has('present') && p.get('present') !== '0');
     }
 
+    /** Create (once) the slim Present bar with Brief / export / exit actions. */
     function _bar() {
         let bar = document.getElementById('present-bar');
         if (bar) return bar;
@@ -49,11 +50,13 @@ const PresentMode = (() => {
         return bar;
     }
 
+    /** Keep the toolbar button's aria-pressed in sync with the mode. */
     function _syncBtn(on) {
         const btn = document.getElementById('btn-present');
         if (btn) btn.setAttribute('aria-pressed', String(!!on));
     }
 
+    /** Enter presentation mode (hide chrome, show the Present bar). */
     function enter() {
         if (typeof document === 'undefined') return false;
         _active = true;
@@ -63,6 +66,7 @@ const PresentMode = (() => {
         return true;
     }
 
+    /** Exit presentation mode (restore chrome, remove the Present bar). */
     function exit() {
         if (typeof document === 'undefined') return false;
         _active = false;
@@ -72,7 +76,9 @@ const PresentMode = (() => {
         return false;
     }
 
+    /** Toggle presentation mode. */
     function toggle() { return _active ? exit() : enter(); }
+    /** True while presentation mode is active. */
     function isActive() { return _active; }
 
     /** Auto-enter when the URL asks for it. */

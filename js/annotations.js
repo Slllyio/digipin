@@ -14,6 +14,7 @@ const Annotations = (() => {
 
     // ---------- pure list operations ----------
     let _seq = 0;
+    /** Generate a unique-enough note id. */
     function _id() { return `a${Date.now().toString(36)}${(_seq++).toString(36)}`; }
 
     /** Append a note ({lat,lng,text,color?}) → new list (immutable). */
@@ -61,19 +62,23 @@ const Annotations = (() => {
     // ---------- stateful map layer ----------
     let _active = false, _map = null, _list = [], _markers = [];
 
+    /** Load notes from localStorage into the in-memory list. */
     function _load() {
         try { _list = parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
         catch { _list = []; }
     }
+    /** Persist the in-memory list to localStorage. */
     function _save() {
         try { localStorage.setItem(STORAGE_KEY, serialize(_list)); } catch { /* storage blocked */ }
     }
 
+    /** HTML-escape a value for safe interpolation into marker labels. */
     function _esc(v) {
         return String(v == null ? '' : v).replace(/[&<>"']/g, c =>
             ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
+    /** Create a MapLibre DOM marker for one note (click removes it). */
     function _renderMarker(note) {
         if (typeof maplibregl === 'undefined') return null;
         const el = document.createElement('div');
@@ -91,13 +96,16 @@ const Annotations = (() => {
             .setLngLat([note.lng, note.lat]).addTo(_map);
         return m;
     }
+    /** Remove all rendered markers from the map. */
     function _clearMarkers() { _markers.forEach(m => m && m.remove()); _markers = []; }
+    /** Re-render every note marker and refresh the control box. */
     function _renderAll() {
         _clearMarkers();
         if (_map) _markers = _list.map(_renderMarker).filter(Boolean);
         _renderBox();
     }
 
+    /** Map click (in add-mode) → prompt for a label and drop a note. */
     function _onClick(e) {
         if (!_active) return;
         const text = (typeof window !== 'undefined' && window.prompt)
@@ -120,11 +128,13 @@ const Annotations = (() => {
     }
 
     const BOX_ID = 'annotate-box';
+    /** Active theme palette (with light-theme fallback for tests). */
     function _palette() {
         if (typeof Theme !== 'undefined' && Theme.palette) return Theme.palette();
         return { primary: '#0099ff', ink: '#292929', sub: '#636363',
             surface: 'rgba(255,255,255,0.96)', border: 'rgba(0,0,0,0.08)' };
     }
+    /** Render/update the add-mode control box (count · Export · Clear all). */
     function _renderBox() {
         let el = document.getElementById(BOX_ID);
         if (!_active) { if (el) el.remove(); return; }
@@ -169,6 +179,7 @@ const Annotations = (() => {
         return _active;
     }
 
+    /** Remove every note. */
     function clearAll() {
         _list = [];
         _save();
@@ -176,6 +187,7 @@ const Annotations = (() => {
         if (typeof App !== 'undefined') App.showToast('Annotate', 'All notes cleared.', 'info');
     }
 
+    /** Download the notes as a GeoJSON FeatureCollection. */
     function exportGeoJSON() {
         if (!_list.length) {
             if (typeof App !== 'undefined') App.showToast('Annotate', 'No notes to export yet.', 'warning');
@@ -192,7 +204,9 @@ const Annotations = (() => {
         setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
+    /** True while add-mode is on. */
     function isActive() { return _active; }
+    /** Number of saved notes. */
     function count() { return _list.length; }
 
     return { init, toggle, clearAll, exportGeoJSON, isActive, count,

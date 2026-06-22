@@ -20,6 +20,7 @@ const SiteBrief = (() => {
         return { band: 'Weak', tone: 'poor' };
     }
 
+    /** Verdict colour for a score value (Theme.scoreColor, with a fallback). */
     function _color(value, tone) {
         if (typeof Theme !== 'undefined' && Theme.scoreColor) return Theme.scoreColor(value);
         return tone === 'good' ? '#5f8a5a' : tone === 'fair' ? '#a3781f' : '#b3392f';
@@ -93,12 +94,14 @@ const SiteBrief = (() => {
         return lines.join('\n');
     }
 
+    /** HTML-escape a value for safe interpolation into the dialog markup. */
     function _esc(v) {
         return String(v == null ? '' : v)
             .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    /** Close the brief dialog and restore focus to the opener. */
     function close() {
         document.getElementById('site-brief-backdrop')?.remove();
         if (close._restoreFocus && typeof close._restoreFocus.focus === 'function') {
