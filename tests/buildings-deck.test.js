@@ -60,6 +60,22 @@ describe('DeckBuildings.featuresToPolygons', () => {
         expect(DB.featuresToPolygons([far], null)[0].sel).toBe(false);
     });
 
+    it('prefers a real baked height (by Overture id) over the area estimate', () => {
+        const f = {
+            type: 'Feature',
+            properties: { id: 'bldg-123' },   // no height/floors → would normally be estimated
+            geometry: { type: 'Polygon', coordinates: [[
+                [75.8577, 22.7196], [75.8578, 22.7196], [75.8578, 22.7197], [75.8577, 22.7197], [75.8577, 22.7196]
+            ]] }
+        };
+        const heights = new Map([['bldg-123', 87.5]]);
+        expect(DB.featuresToPolygons([f], null, 220, heights)[0].height).toBe(87.5);
+        // unknown id → falls back to the estimate (not 87.5, and a sane positive number)
+        const est = DB.featuresToPolygons([f], null, 220, new Map())[0].height;
+        expect(est).not.toBe(87.5);
+        expect(est).toBeGreaterThan(0);
+    });
+
     it('handles MultiPolygon and skips degenerate rings', () => {
         const multi = { type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon', coordinates: [
             [[[75.8, 22.7], [75.8001, 22.7], [75.8001, 22.7001], [75.8, 22.7001], [75.8, 22.7]]],

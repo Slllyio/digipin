@@ -27,6 +27,25 @@ const DeckBuildings = (() => {
     let _focus = null;          // {lat,lng} of the focused DIGIPIN cell
     let _data = [];             // harvested deck polygon records
     let _moveBound = false;
+    let _heightById = null;     // Map<overtureId, metres> of real heights, when loaded
+
+    /**
+     * Load a baked per-building height lookup ({ overtureId: metres }) produced
+     * from Google Open Buildings 2.5D (see scripts/build_building_heights.py).
+     * When present, featuresToPolygons uses these real heights; otherwise it
+     * falls back to the footprint-area estimate. Safe to call with a missing
+     * file — a 404 just leaves the estimate in place.
+     */
+    async function loadHeights(url) {
+        try {
+            const res = await fetch(url, { cache: 'force-cache' });
+            if (!res.ok) return false;
+            const obj = await res.json();
+            _heightById = new Map(Object.entries(obj));
+            if (_enabled) refresh();
+            return true;
+        } catch { return false; }
+    }
 
     /** True when deck.gl (with the pieces we use) is loaded. */
     function available() {
@@ -91,12 +110,13 @@ const DeckBuildings = (() => {
      * (outer ring + height), de-duped by centroid and tagged `sel` when within
      * `radiusM` of the focus centre. Pure.
      */
-    function featuresToPolygons(features, focus, radiusM = HIGHLIGHT_RADIUS_M) {
+    function featuresToPolygons(features, focus, radiusM = HIGHLIGHT_RADIUS_M, heightById = _heightById) {
         const out = [];
         const seen = new Set();
         for (const f of (features || [])) {
             const g = f && f.geometry;
             if (!g) continue;
+            const props = f.properties || {};
             const polys = g.type === 'Polygon' ? [g.coordinates]
                 : g.type === 'MultiPolygon' ? g.coordinates : [];
             for (const poly of polys) {
@@ -109,7 +129,12 @@ const DeckBuildings = (() => {
                 if (seen.has(key)) continue;
                 seen.add(key);
                 const sel = !!focus && _haversineM(focus, { lng: cx, lat: cy }) <= radiusM;
-                const height = estimateHeight(f.properties, _ringAreaM2(outer, cy), key);
+                // Prefer a real baked height (Open Buildings 2.5D) keyed by the
+                // Overture id; fall back to the footprint-area estimate.
+                const real = heightById && props.id != null ? heightById.get(props.id) : null;
+                const height = (real != null && isFinite(+real) && +real > 0)
+                    ? Math.max(3, +real)
+                    : estimateHeight(props, _ringAreaM2(outer, cy), key);
                 out.push({ polygon: outer, height, sel });
             }
         }
@@ -198,6 +223,7 @@ const DeckBuildings = (() => {
         _overlay = new deck.MapboxOverlay({ interleaved: false, layers: [] });
         map.addControl(_overlay);
         if (!_moveBound) { map.on('moveend', refresh); _moveBound = true; }
+        if (!_heightById) loadHeights('data/heights/indore_building_heights.json');   // real heights when available
         refresh();
         return true;
     }
@@ -221,7 +247,7 @@ const DeckBuildings = (() => {
     /** True while the deck overlay is attached. */
     function isEnabled() { return _enabled; }
 
-    return { available, enable, disable, setFocus, refresh, isEnabled,
+    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights,
         featureHeight, estimateHeight, featuresToPolygons, ringPaths };
 })();
 
