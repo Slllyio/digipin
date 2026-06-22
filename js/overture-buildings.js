@@ -31,6 +31,7 @@ const OvertureBuildings = (() => {
     let _infoPopup = null;
     let _focus = null;          // {lat,lng} of the focused cell, or null
     let _moveBound = false;     // moveend listener attached once
+    let _deck = false;          // deck.gl WebGL renderer is driving the view
 
     // ---- pure geometry helpers (unit-tested) ------------------------------
     /** Great-circle distance between two {lat,lng} points, in metres. */
@@ -258,6 +259,33 @@ const OvertureBuildings = (() => {
 
         _active = !_active;
         const light = isLight();
+
+        // Preferred dark-theme renderer: a deck.gl WebGL "digital twin" with true
+        // wireframe-glass volumes (Esri SceneView look). deck.gl reads the
+        // geometry MapLibre already loaded, so we keep the MapLibre extrusion
+        // layer present-but-invisible (opacity ~0, still queryRenderedFeatures-
+        // able) and let deck draw the visuals. Falls back to MapLibre's own
+        // fill-extrusion glass when deck.gl isn't loaded.
+        const useDeck = _active && !light
+            && typeof DeckBuildings !== 'undefined' && DeckBuildings.available && DeckBuildings.available();
+
+        if (useDeck) {
+            map.setLayoutProperty(LAYER_ID, 'visibility', 'visible');
+            map.setPaintProperty(LAYER_ID, 'fill-extrusion-opacity', 0.01); // invisible but queryable
+            map.setLayoutProperty(EDGE_LAYER_ID, 'visibility', 'none');     // deck draws edges
+            clearFocus();                                                   // deck draws rings + amber
+            DeckBuildings.enable(map, () => _focus);
+            _deck = true;
+            if (!_active && _infoPopup) { _infoPopup.remove(); _infoPopup = null; }
+            return _active;
+        }
+
+        if (_deck) {   // leaving the deck path (overlay off)
+            try { DeckBuildings.disable(map); } catch { /* not enabled */ }
+            try { map.setPaintProperty(LAYER_ID, 'fill-extrusion-opacity', PAINT_DARK['fill-extrusion-opacity']); } catch { /* layer gone */ }
+            _deck = false;
+        }
+
         map.setLayoutProperty(LAYER_ID, 'visibility', _active ? 'visible' : 'none');
         // Glowing footprint edges are the dark "digital twin" device; the Aino
         // light massing model is a clean white solid, so keep edges hidden there.
@@ -299,6 +327,7 @@ const OvertureBuildings = (() => {
     function focusCell(center) {
         _focus = (center && Number.isFinite(center.lat) && Number.isFinite(center.lng))
             ? { lat: center.lat, lng: center.lng } : null;
+        if (_deck && typeof DeckBuildings !== 'undefined') { DeckBuildings.setFocus(_focus); return; }
         if (_map && _active && !isLight() && _focus) drawFocus();
         else if (_map) clearFocus();
     }
