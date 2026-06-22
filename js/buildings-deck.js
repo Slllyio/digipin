@@ -18,7 +18,7 @@
 const DeckBuildings = (() => {
     // The MapLibre layer whose rendered features we harvest for geometry.
     const SRC_LAYER_ID = 'overture-buildings-layer';
-    const RING_RADII = [150, 300, 460];
+    const RING_RADII = [150, 300, 450];
     const HIGHLIGHT_RADIUS_M = 220;
 
     let _map = null;
@@ -47,7 +47,7 @@ const DeckBuildings = (() => {
     function featureHeight(props) {
         const p = props || {};
         if (p.height != null && isFinite(+p.height)) return Math.max(3, +p.height);
-        if (p.num_floors != null && isFinite(+p.num_floors)) return (+p.num_floors) * 3.6;
+        if (p.num_floors != null && isFinite(+p.num_floors)) return Math.floor(+p.num_floors) * 3.6;
         if (p.class === 'commercial') return 35;
         if (p.class === 'industrial') return 25;
         if (p.class === 'residential') return 12;

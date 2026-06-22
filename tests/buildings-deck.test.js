@@ -65,6 +65,8 @@ describe('DeckBuildings.ringPaths', () => {
             expect(Math.abs(Math.hypot(dLat, dLng) - r.radius)).toBeLessThan(r.radius * 0.05);
         }
         expect(DB.ringPaths(null)).toEqual([]);
+        // default radii (no second arg) match the 150/300/450 focus-ring contract
+        expect(DB.ringPaths(center).map(r => r.radius)).toEqual([150, 300, 450]);
     });
 });
 
