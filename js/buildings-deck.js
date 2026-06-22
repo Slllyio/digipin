@@ -20,6 +20,11 @@ const DeckBuildings = (() => {
     const SRC_LAYER_ID = 'overture-buildings-layer';
     const RING_RADII = [150, 300, 450];
     const HIGHLIGHT_RADIUS_M = 220;
+    // Vertical exaggeration for the 3D view only. Indore is mostly low-rise
+    // (median real height ~6m), so true heights render as a flat carpet. We
+    // scale the *display* elevation so the skyline variation is legible — the
+    // underlying data and the building inspector still report real heights.
+    let _vertExag = 3;
 
     let _map = null;
     let _overlay = null;
@@ -191,14 +196,14 @@ const DeckBuildings = (() => {
             wireframe: true,
             filled: true,
             getPolygon: d => d.polygon,
-            getElevation: d => d.height,
+            getElevation: d => d.height * _vertExag,
             getFillColor: _fill,
             getLineColor: _line,
             lineWidthUnits: 'pixels',
             getLineWidth: 1.2,
             material: { ambient: 0.5, diffuse: 0.55, shininess: 64, specularColor: [140, 225, 255] },
             opacity: 1,
-            updateTriggers: { getFillColor: [_focusKey()], getLineColor: [_focusKey()] }
+            updateTriggers: { getFillColor: [_focusKey()], getLineColor: [_focusKey()], getElevation: [_vertExag] }
         }));
         return layers;
     }
@@ -249,8 +254,13 @@ const DeckBuildings = (() => {
 
     /** True while the deck overlay is attached. */
     function isEnabled() { return _enabled; }
+    /** Set the 3D vertical exaggeration (display-only) and re-render. */
+    function setExaggeration(x) {
+        if (Number.isFinite(+x) && +x > 0) { _vertExag = +x; if (_enabled) refresh(); }
+        return _vertExag;
+    }
 
-    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights,
+    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, setExaggeration,
         featureHeight, estimateHeight, featuresToPolygons, ringPaths };
 })();
 
