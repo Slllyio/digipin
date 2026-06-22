@@ -15,6 +15,24 @@ describe('DeckBuildings.featureHeight', () => {
     });
 });
 
+describe('DeckBuildings.estimateHeight', () => {
+    it('uses real height/floors when present', () => {
+        expect(DB.estimateHeight({ height: 90 }, 5000, 'a')).toBe(90);
+        expect(DB.estimateHeight({ num_floors: 20 }, 5000, 'a')).toBeCloseTo(72);
+    });
+    it('estimates from footprint area when no height data (bigger plot → taller)', () => {
+        const small = DB.estimateHeight({}, 120, 'k1');
+        const big = DB.estimateHeight({}, 8000, 'k1');   // same seed isolates the area effect
+        expect(big).toBeGreaterThan(small);
+        expect(small).toBeGreaterThanOrEqual(6);          // floored
+        expect(big).toBeLessThanOrEqual(150);             // capped
+    });
+    it('is deterministic per seed but varies between buildings', () => {
+        expect(DB.estimateHeight({}, 1000, 'x')).toBe(DB.estimateHeight({}, 1000, 'x'));
+        expect(DB.estimateHeight({}, 1000, 'x')).not.toBe(DB.estimateHeight({}, 1000, 'y'));
+    });
+});
+
 describe('DeckBuildings.featuresToPolygons', () => {
     const at = (lng, lat) => ({
         type: 'Feature',
@@ -40,6 +58,22 @@ describe('DeckBuildings.featuresToPolygons', () => {
         expect(recs[0].sel).toBe(false);
         // no focus → nothing selected
         expect(DB.featuresToPolygons([far], null)[0].sel).toBe(false);
+    });
+
+    it('prefers a real baked height (by Overture id) over the area estimate', () => {
+        const f = {
+            type: 'Feature',
+            properties: { id: 'bldg-123' },   // no height/floors → would normally be estimated
+            geometry: { type: 'Polygon', coordinates: [[
+                [75.8577, 22.7196], [75.8578, 22.7196], [75.8578, 22.7197], [75.8577, 22.7197], [75.8577, 22.7196]
+            ]] }
+        };
+        const heights = new Map([['bldg-123', 87.5]]);
+        expect(DB.featuresToPolygons([f], null, 220, heights)[0].height).toBe(87.5);
+        // unknown id → falls back to the estimate (not 87.5, and a sane positive number)
+        const est = DB.featuresToPolygons([f], null, 220, new Map())[0].height;
+        expect(est).not.toBe(87.5);
+        expect(est).toBeGreaterThan(0);
     });
 
     it('handles MultiPolygon and skips degenerate rings', () => {
