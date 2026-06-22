@@ -33,8 +33,13 @@ EE_YEAR = 2023
 BATCH = 4000   # EE getInfo element budget per request
 
 
-def lon2tile(lon, z): return int((lon + 180.0) / 360.0 * (2 ** z))
+def lon2tile(lon, z):
+    """Slippy-map tile X index for a longitude at zoom z."""
+    return int((lon + 180.0) / 360.0 * (2 ** z))
+
+
 def lat2tile(lat, z):
+    """Slippy-map tile Y index for a latitude at zoom z."""
     r = math.radians(lat)
     return int((1.0 - math.log(math.tan(r) + 1.0 / math.cos(r)) / math.pi) / 2.0 * (2 ** z))
 
@@ -83,6 +88,7 @@ def harvest_centroids():
 
 
 def _all_points(geom):
+    """Flatten every [x, y] coordinate pair out of a (possibly nested) geometry."""
     pts = []
     def walk(x):
         if isinstance(x, (list, tuple)):
@@ -96,6 +102,7 @@ def _all_points(geom):
 
 
 def ee_init():
+    """Initialise Earth Engine from the GEE_SERVICE_ACCOUNT_KEY env var (JSON)."""
     import ee
     key = os.environ.get("GEE_SERVICE_ACCOUNT_KEY")
     if not key:
@@ -104,12 +111,18 @@ def ee_init():
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fh:
         json.dump(info, fh)
         key_path = fh.name
-    creds = ee.ServiceAccountCredentials(info["client_email"], key_path)
-    ee.Initialize(creds)
+    try:
+        creds = ee.ServiceAccountCredentials(info["client_email"], key_path)
+        ee.Initialize(creds)
+    finally:
+        # Don't leave the service-account key sitting on disk.
+        try: os.unlink(key_path)
+        except OSError: pass
     return ee
 
 
 def sample_heights(ee, centroids):
+    """Sample Open Buildings 2.5D height at each centroid; return {id: metres}."""
     img = (ee.ImageCollection(EE_COLLECTION)
            .filter(ee.Filter.calendarRange(EE_YEAR, EE_YEAR, "year"))
            .select("building_height")
@@ -131,6 +144,7 @@ def sample_heights(ee, centroids):
 
 
 def main():
+    """Harvest centroids, sample heights, and write the baked JSON lookup."""
     print("Harvesting Overture building centroids in the pilot bbox…")
     centroids = harvest_centroids()
     print(f"  {len(centroids)} buildings")

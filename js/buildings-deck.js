@@ -44,7 +44,10 @@ const DeckBuildings = (() => {
             _heightById = new Map(Object.entries(obj));
             if (_enabled) refresh();
             return true;
-        } catch { return false; }
+        } catch (e) {
+            console.warn('DeckBuildings.loadHeights failed:', e);
+            return false;
+        }
     }
 
     /** True when deck.gl (with the pieces we use) is loaded. */
