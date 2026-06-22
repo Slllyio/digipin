@@ -72,19 +72,23 @@ const Annotations = (() => {
         try { localStorage.setItem(STORAGE_KEY, serialize(_list)); } catch { /* storage blocked */ }
     }
 
-    /** HTML-escape a value for safe interpolation into marker labels. */
-    function _esc(v) {
-        return String(v == null ? '' : v).replace(/[&<>"']/g, c =>
-            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    }
-
-    /** Create a MapLibre DOM marker for one note (click removes it). */
+    /** Create a MapLibre DOM marker for one note (click removes it).
+     *  Built with DOM nodes (textContent / style) — never innerHTML — so the
+     *  user-entered label can't inject markup. */
     function _renderMarker(note) {
         if (typeof maplibregl === 'undefined') return null;
         const el = document.createElement('div');
         el.className = 'map-annotation';
-        el.innerHTML = `<span class="ma-dot" style="background:${_esc(note.color)}"></span>`
-            + (note.text ? `<span class="ma-label">${_esc(note.text)}</span>` : '');
+        const dot = document.createElement('span');
+        dot.className = 'ma-dot';
+        dot.style.backgroundColor = String(note.color || '#ff673d');
+        el.appendChild(dot);
+        if (note.text) {
+            const label = document.createElement('span');
+            label.className = 'ma-label';
+            label.textContent = String(note.text);
+            el.appendChild(label);
+        }
         el.title = 'Click to remove this note';
         el.addEventListener('click', (ev) => {
             ev.stopPropagation();
