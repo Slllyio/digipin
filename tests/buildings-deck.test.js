@@ -15,6 +15,24 @@ describe('DeckBuildings.featureHeight', () => {
     });
 });
 
+describe('DeckBuildings.estimateHeight', () => {
+    it('uses real height/floors when present', () => {
+        expect(DB.estimateHeight({ height: 90 }, 5000, 'a')).toBe(90);
+        expect(DB.estimateHeight({ num_floors: 20 }, 5000, 'a')).toBeCloseTo(72);
+    });
+    it('estimates from footprint area when no height data (bigger plot → taller)', () => {
+        const small = DB.estimateHeight({}, 120, 'k1');
+        const big = DB.estimateHeight({}, 8000, 'k1');   // same seed isolates the area effect
+        expect(big).toBeGreaterThan(small);
+        expect(small).toBeGreaterThanOrEqual(6);          // floored
+        expect(big).toBeLessThanOrEqual(150);             // capped
+    });
+    it('is deterministic per seed but varies between buildings', () => {
+        expect(DB.estimateHeight({}, 1000, 'x')).toBe(DB.estimateHeight({}, 1000, 'x'));
+        expect(DB.estimateHeight({}, 1000, 'x')).not.toBe(DB.estimateHeight({}, 1000, 'y'));
+    });
+});
+
 describe('DeckBuildings.featuresToPolygons', () => {
     const at = (lng, lat) => ({
         type: 'Feature',

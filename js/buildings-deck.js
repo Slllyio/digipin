@@ -43,7 +43,7 @@ const DeckBuildings = (() => {
             + Math.cos(a.lat * toR) * Math.cos(b.lat * toR) * Math.sin(dLng / 2) ** 2;
         return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)));
     }
-    /** Building height (m) from Overture props — mirrors OvertureBuildings. */
+    /** Building height (m) from explicit Overture props, or null when absent. */
     function featureHeight(props) {
         const p = props || {};
         if (p.height != null && isFinite(+p.height)) return Math.max(3, +p.height);
@@ -52,6 +52,39 @@ const DeckBuildings = (() => {
         if (p.class === 'industrial') return 25;
         if (p.class === 'residential') return 12;
         return 12;
+    }
+    /** Deterministic 0..1 hash of a string (for stable per-building jitter). */
+    function _hash01(s) {
+        let h = 2166136261;
+        for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+        return ((h >>> 0) % 100000) / 100000;
+    }
+    /** Footprint area (m²) of a lng/lat ring via the planar shoelace formula. */
+    function _ringAreaM2(ring, lat0) {
+        if (!ring || ring.length < 3) return 0;
+        const mLng = 111320 * Math.cos(lat0 * Math.PI / 180), mLat = 111320;
+        let a = 0;
+        for (let i = 0, n = ring.length; i < n; i++) {
+            const p1 = ring[i], p2 = ring[(i + 1) % n];
+            a += (p1[0] * mLng) * (p2[1] * mLat) - (p2[0] * mLng) * (p1[1] * mLat);
+        }
+        return Math.abs(a / 2);
+    }
+    /**
+     * Display height (m) for a building. Uses Overture's real height/num_floors
+     * when present; otherwise — the common case for Indian footprints, which
+     * carry no height at all — ESTIMATES from footprint area (larger plots tend
+     * to be taller) with a stable per-building jitter so the skyline varies
+     * instead of rendering as a flat grid of identical boxes. Pure.
+     */
+    function estimateHeight(props, areaM2, seed) {
+        const p = props || {};
+        if (p.height != null && isFinite(+p.height)) return Math.max(3, +p.height);
+        if (p.num_floors != null && isFinite(+p.num_floors)) return Math.floor(+p.num_floors) * 3.6;
+        const base = p.class === 'commercial' ? 16 : p.class === 'industrial' ? 11 : 7;
+        const areaPart = 0.72 * Math.sqrt(Math.max(0, areaM2 || 0));   // ~taller for bigger plots
+        const jitter = 0.78 + 0.55 * _hash01(seed || '');             // 0.78..1.33, stable per building
+        return Math.min(150, Math.max(6, (base + areaPart) * jitter));
     }
     /**
      * Convert MapLibre rendered building features into deck polygon records
@@ -76,7 +109,8 @@ const DeckBuildings = (() => {
                 if (seen.has(key)) continue;
                 seen.add(key);
                 const sel = !!focus && _haversineM(focus, { lng: cx, lat: cy }) <= radiusM;
-                out.push({ polygon: outer, height: featureHeight(f.properties), sel });
+                const height = estimateHeight(f.properties, _ringAreaM2(outer, cy), key);
+                out.push({ polygon: outer, height, sel });
             }
         }
         return out;
@@ -188,7 +222,7 @@ const DeckBuildings = (() => {
     function isEnabled() { return _enabled; }
 
     return { available, enable, disable, setFocus, refresh, isEnabled,
-        featureHeight, featuresToPolygons, ringPaths };
+        featureHeight, estimateHeight, featuresToPolygons, ringPaths };
 })();
 
 if (typeof window !== 'undefined') window.DeckBuildings = DeckBuildings;
