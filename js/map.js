@@ -288,6 +288,12 @@ const MapModule = (() => {
         // Show panel
         Panel.show(cellData);
 
+        // Tie the 3D "digital twin" focus (range rings + amber selected
+        // buildings) to the chosen cell — a no-op unless that overlay is on.
+        if (typeof OvertureBuildings !== 'undefined' && OvertureBuildings.focusCell && cellData.center) {
+            OvertureBuildings.focusCell(cellData.center);
+        }
+
         // Fetch data
         try {
             const data = await DataFetcher.fetchAllFeatures(cellData.center.lat, cellData.center.lng, 500);

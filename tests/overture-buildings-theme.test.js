@@ -86,3 +86,47 @@ describe('OvertureBuildings Aino-theme rendering', () => {
         expect(map._visibility[EDGE_LAYER_ID]).toBe('visible');
     });
 });
+
+describe('OvertureBuildings focus (range rings + amber highlight)', () => {
+    const CENTER = { lat: 22.7196, lng: 75.8577 };
+
+    it('ringsGeoJSON builds one closed circle per radius at the right distance', () => {
+        const fc = OB.ringsGeoJSON(CENTER, [150, 300]);
+        expect(fc.features).toHaveLength(2);
+        for (const f of fc.features) {
+            const ring = f.geometry.coordinates;
+            expect(ring[0]).toEqual(ring[ring.length - 1]);   // closed
+            // a point on the ring sits ~`radius` metres from the centre
+            const [lng, lat] = ring[0];
+            const dLat = (lat - CENTER.lat) * 111320;
+            const dLng = (lng - CENTER.lng) * 111320 * Math.cos(CENTER.lat * Math.PI / 180);
+            const dist = Math.hypot(dLat, dLng);
+            expect(Math.abs(dist - f.properties.radius)).toBeLessThan(f.properties.radius * 0.05);
+        }
+        expect(OB.ringsGeoJSON(null).features).toEqual([]);
+    });
+
+    it('nearbyHighlight keeps only buildings whose centroid is within the radius', () => {
+        const near = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[
+            [75.8578, 22.7197], [75.8579, 22.7197], [75.8579, 22.7198], [75.8578, 22.7198], [75.8578, 22.7197]
+        ]] }, properties: { class: 'commercial' } };
+        const far = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[
+            [75.95, 22.80], [75.951, 22.80], [75.951, 22.801], [75.95, 22.801], [75.95, 22.80]
+        ]] }, properties: {} };
+        const fc = OB.nearbyHighlight([near, far, near], CENTER, 220);
+        expect(fc.features).toHaveLength(1);                  // far dropped, dup de-duped
+        expect(fc.features[0].properties.class).toBe('commercial');
+        expect(OB.nearbyHighlight([near], null).features).toEqual([]);
+    });
+
+    it('focusCell draws rings + highlight only while the dark overlay is active', () => {
+        Theme.set('dark');
+        const map = makeStubMap();
+        OB.toggle(map);                       // overlay on (dark)
+        OB.focusCell(CENTER);
+        expect(map._visibility['overture-rings-layer']).toBe('visible');
+        OB.toggle(map);                       // overlay off → focus cleared
+        expect(map._visibility['overture-rings-layer']).toBe('none');
+        expect(map._visibility['overture-highlight-layer']).toBe('none');
+    });
+});
