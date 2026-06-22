@@ -31,6 +31,17 @@ const URLState = (() => {
         if (p.get('q')) state.q = p.get('q');
         if (p.get('score')) state.score = p.get('score');
         if (p.get('present') === '1') state.present = true;
+        const an = p.get('an');
+        if (an) {
+            try {
+                const arr = JSON.parse(an);
+                // Require at least one real coordinate pair, so a malformed
+                // payload (e.g. an=[{}]) can't sanitise to [] and wipe stored notes.
+                if (Array.isArray(arr) && arr.some(n => n && Number.isFinite(n.lat) && Number.isFinite(n.lng))) {
+                    state.annotations = arr;
+                }
+            } catch { /* malformed annotations param — ignore */ }
+        }
         const z = parseFloat(p.get('z'));
         if (Number.isFinite(z)) state.z = z;
         const ll = p.get('ll');
@@ -48,6 +59,10 @@ const URLState = (() => {
         if (state.q) p.set('q', state.q);
         if (state.score) p.set('score', state.score);
         if (state.present) p.set('present', '1');
+        if (Array.isArray(state.annotations) && state.annotations.length) {
+            p.set('an', JSON.stringify(state.annotations.map(n =>
+                ({ lat: n.lat, lng: n.lng, text: n.text, color: n.color }))));
+        }
         if (Number.isFinite(state.z)) p.set('z', String(round(state.z, 2)));
         if (state.ll && Number.isFinite(state.ll.lat) && Number.isFinite(state.ll.lng)) {
             p.set('ll', `${round(state.ll.lat, 5)},${round(state.ll.lng, 5)}`);
@@ -89,6 +104,10 @@ const URLState = (() => {
         if (typeof PresentMode !== 'undefined' && PresentMode.isActive && PresentMode.isActive()) {
             state.present = true;
         }
+        if (typeof Annotations !== 'undefined' && Annotations.getAll) {
+            const a = Annotations.getAll();
+            if (a.length) state.annotations = a;
+        }
         return state;
     }
 
@@ -106,6 +125,9 @@ const URLState = (() => {
         // Presentation mode (carried in share links / saved views) — enter when set.
         if (state.present && typeof PresentMode !== 'undefined' && PresentMode.enter) {
             PresentMode.enter();
+        }
+        if (Array.isArray(state.annotations) && typeof Annotations !== 'undefined' && Annotations.setAll) {
+            Annotations.setAll(state.annotations);
         }
         // Score choropleth first so the cell/fly paints over the right colouring.
         if (state.score && typeof ScoreChoropleth !== 'undefined') {

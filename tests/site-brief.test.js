@@ -46,6 +46,21 @@ describe('SiteBrief.build', () => {
     });
 });
 
+describe('SiteBrief.narrative', () => {
+    it('summarises strengths and constraints from the model', () => {
+        const m = SiteBrief.build(CELL_DATA, { code: '39J-49L-L8T4' });
+        const n = SiteBrief.narrative(m);
+        expect(n).toContain('DIGIPIN 39J-49L-L8T4');
+        expect(n).toContain('Livability');   // the Strong metric
+        expect(n).toContain('Flood Risk');    // the Weak (constraint) metric
+        expect(n).toMatch(/4[,.\s]?211/);     // population rolled in (locale-agnostic separator)
+    });
+    it('handles a model with no metrics', () => {
+        const n = SiteBrief.narrative(SiteBrief.build(null, null));
+        expect(n.toLowerCase()).toContain('no intelligence scores');
+    });
+});
+
 describe('SiteBrief.text', () => {
     it('renders a plain-text brief with each metric line', () => {
         const m = SiteBrief.build(CELL_DATA, { code: '39J-49L-L8T4' });

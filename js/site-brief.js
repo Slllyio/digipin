@@ -94,6 +94,36 @@ const SiteBrief = (() => {
         return lines.join('\n');
     }
 
+    /** Comma-list a set of metric labels with an Oxford-style "and". */
+    function _listLabels(metrics) {
+        const names = metrics.map(m => m.label);
+        if (names.length <= 1) return names[0] || '';
+        if (names.length === 2) return `${names[0]} and ${names[1]}`;
+        return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
+    }
+
+    /**
+     * A plain-language summary paragraph derived from the brief model — the
+     * default narrative, used when no AI provider elaborates it. Pure.
+     */
+    function narrative(model) {
+        if (!model || !model.metrics || !model.metrics.length) {
+            return 'No intelligence scores are available for this site yet — select a cell and let its data load.';
+        }
+        const loc = model.code ? `DIGIPIN ${model.code}` : 'This site';
+        const strong = model.metrics.filter(m => m.band === 'Strong');
+        const weak = model.metrics.filter(m => m.band === 'Weak');
+        let s = strong.length
+            ? `${loc} scores strongly on ${_listLabels(strong)}`
+            : `${loc} shows no standout strengths in the current scores`;
+        if (weak.length) s += `, and is most constrained by ${_listLabels(weak)}`;
+        s += '.';
+        if (model.population != null) {
+            s += ` Estimated cell population is about ${model.population.toLocaleString()}.`;
+        }
+        return s;
+    }
+
     /** HTML-escape a value for safe interpolation into the dialog markup. */
     function _esc(v) {
         return String(v == null ? '' : v)
@@ -142,13 +172,26 @@ const SiteBrief = (() => {
                 <div class="sb-title">Site Brief</div>
                 <div class="sb-sub">${model.code ? `DIGIPIN ${_esc(model.code)}` : ''}${model.city ? `  ·  ${_esc(model.city)}` : ''}</div>
             </div>
+            <p class="sb-narrative">${_esc(narrative(model))}</p>
             ${model.population != null ? `<div class="sb-context">Population (cell est.): <b>${model.population.toLocaleString()}</b></div>` : ''}
             <div class="sb-metrics">${metricRows || '<div class="sb-empty">No scores computed yet for this cell.</div>'}</div>
             <div class="sb-foot">Computed from Indian civic &amp; OpenStreetMap data on the government DIGIPIN grid — open and auditable. Generated ${_esc(model.generatedAt)}.</div>
             <div class="sb-actions">
+                ${(typeof DISHAPanel !== 'undefined' && typeof DISHAPanel.open === 'function') ? '<button class="sb-btn sb-ai">✨ Ask DISHA</button>' : ''}
                 <button class="sb-btn sb-copy">Copy summary</button>
                 <button class="sb-btn sb-print">Print / PDF</button>
             </div>`;
+
+        const aiBtn = card.querySelector('.sb-ai');
+        if (aiBtn) aiBtn.addEventListener('click', () => {
+            if (typeof DISHAPanel !== 'undefined' && cell && cellData) {
+                DISHAPanel.open(cell, cellData);   // grounds DISHA on this cell's data
+                const input = document.getElementById('disha-input');
+                if (input) input.value = 'Summarise this site for a stakeholder in 3 sentences, highlighting its strengths and constraints.';
+            } else if (typeof App !== 'undefined') {
+                App.showToast('Site brief', 'AI assistant is unavailable.', 'info');
+            }
+        });
 
         card.querySelector('.sb-close').addEventListener('click', close);
         card.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
@@ -173,7 +216,7 @@ const SiteBrief = (() => {
         card.querySelector('.sb-close')?.focus();
     }
 
-    return { build, text, open, close };
+    return { build, text, narrative, open, close };
 })();
 
 if (typeof window !== 'undefined') {

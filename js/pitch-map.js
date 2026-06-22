@@ -186,6 +186,38 @@ const PitchMap = (() => {
             });
         }
 
+        // ---- Annotation pins -----------------------------------------------
+        // Measurement geometry rides along inside the map canvas (it's MapLibre
+        // layers), but annotations are DOM markers — project + draw them here so
+        // they appear in the exported image too.
+        if (typeof Annotations !== 'undefined' && Annotations.getAll && typeof map.project === 'function') {
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            for (const note of Annotations.getAll()) {
+                let pt;
+                try { pt = map.project([note.lng, note.lat]); } catch { continue; }
+                if (!pt) continue;
+                const px = pt.x * dpr, py = titleH + pt.y * dpr;
+                if (px < 0 || py < titleH || px > W || py > H - footH) continue;   // off-frame
+                ctx.fillStyle = note.color || P.brand || P.primary;
+                ctx.beginPath();
+                ctx.arc(px, py, Math.round(5 * dpr), 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = Math.max(1, Math.round(1.5 * dpr));
+                ctx.stroke();
+                if (note.text) {
+                    ctx.font = `600 ${Math.round(11 * dpr)}px Inter, system-ui, sans-serif`;
+                    const tx = px + Math.round(8 * dpr);
+                    const tw = ctx.measureText(note.text).width;
+                    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                    ctx.fillRect(tx - Math.round(3 * dpr), py - Math.round(9 * dpr), tw + Math.round(6 * dpr), Math.round(18 * dpr));
+                    ctx.fillStyle = P.ink;
+                    ctx.fillText(note.text, tx, py);
+                }
+            }
+        }
+
         // ---- Attribution footer --------------------------------------------
         ctx.fillStyle = P.surfaceSolid;
         ctx.fillRect(0, H - footH, W, footH);

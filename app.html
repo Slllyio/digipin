@@ -55,6 +55,14 @@
             integrity="sha384-k/E847ELHPuDVPWoArQHQe5LUD8YSFwxlUaH63fF618o/Y0Gnu4FQ1xjuL280spp"
             crossorigin="anonymous"></script>
 
+    <!-- deck.gl — WebGL 3D layer used for the dark-theme "digital twin" building
+         view (true wireframe-extruded glass volumes that MapLibre can't render).
+         Optional: the buildings overlay falls back to MapLibre fill-extrusion if
+         this fails to load. -->
+    <script defer src="https://unpkg.com/deck.gl@9.0.27/dist.min.js"
+            integrity="sha384-KZR1hNzBrVTMJRamX9VDVN7gzZ9VX8cgIVS33QSfkd0tkEbpL+Xl7q6uWem7hoGt"
+            crossorigin="anonymous"></script>
+
     <!-- Custom Styles -->
     <!-- Theme pre-paint: paper-light is the default (matching the landing), so
          apply it before first paint unless the user explicitly chose dark — no
@@ -395,6 +403,7 @@
     <script defer src="js/score-choropleth.js"></script>
     <script defer src="js/footprint-grid.js"></script>
     <script defer src="js/building-intelligence.js"></script>
+    <script defer src="js/buildings-deck.js"></script>
     <script defer src="js/overture-buildings.js"></script>
     <script defer src="js/theme.js"></script>
     <script defer src="js/i18n.js"></script>

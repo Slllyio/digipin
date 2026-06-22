@@ -68,6 +68,25 @@ const MeasureTool = (() => {
         if (m2 >= 1e4) return `${(m2 / 1e4).toFixed(2)} ha`;
         return `${Math.round(m2)} m²`;
     }
+    /** Measurement as GeoJSON: the path LineString (length_m) plus, for ≥3
+     *  points, the enclosed Polygon (area_m2). Pure. */
+    function toGeoJSON(points) {
+        const pts = points || [];
+        const fc = { type: 'FeatureCollection', features: [] };
+        if (pts.length >= 2) {
+            fc.features.push({ type: 'Feature',
+                geometry: { type: 'LineString', coordinates: pts.map(p => [p.lng, p.lat]) },
+                properties: { kind: 'path', length_m: Math.round(pathLengthM(pts)) } });
+        }
+        if (pts.length >= 3) {
+            const ring = pts.map(p => [p.lng, p.lat]);
+            ring.push([pts[0].lng, pts[0].lat]);
+            fc.features.push({ type: 'Feature',
+                geometry: { type: 'Polygon', coordinates: [ring] },
+                properties: { kind: 'area', area_m2: Math.round(polygonAreaM2(pts)) } });
+        }
+        return fc;
+    }
 
     // ---------- state + map interaction ----------
     let _active = false, _map = null, _pts = [], _cursor = null, _finished = false, _clickTimer = null, _restoreDblClick = false;
@@ -168,11 +187,32 @@ const MeasureTool = (() => {
                 + `<span style="color:${pal.sub};">Distance</span><b>${formatLength(dist)}</b></div>`
                 + (area > 0 ? `<div style="display:flex;justify-content:space-between;gap:12px;">`
                     + `<span style="color:${pal.sub};">Area</span><b>${formatArea(area)}</b></div>` : '');
+        const btn = (id, label) => `<button id="${id}" style="background:none;border:none;color:${pal.primary};cursor:pointer;padding:0;font:inherit;text-decoration:underline;">${label}</button>`;
         el.innerHTML = `<div style="font-weight:600;font-size:14px;margin-bottom:8px;color:${pal.primary};">📏 Measure</div>`
             + rows
-            + `<div style="margin-top:8px;color:${pal.sub};font-size:10px;">${_pts.length >= 2 ? 'Double-click to finish · ' : ''}<button id="measure-reset" style="background:none;border:none;color:${pal.primary};cursor:pointer;padding:0;font:inherit;text-decoration:underline;">Reset</button></div>`;
+            + `<div style="margin-top:8px;color:${pal.sub};font-size:10px;">${_pts.length >= 2 ? 'Double-click to finish · ' : ''}`
+            + (_pts.length >= 2 ? btn('measure-export', 'Export') + ' · ' : '')
+            + btn('measure-reset', 'Reset') + `</div>`;
         const rb = document.getElementById('measure-reset');
         if (rb) rb.onclick = () => { _pts = []; _cursor = null; _finished = false; _redraw(); };
+        const eb = document.getElementById('measure-export');
+        if (eb) eb.onclick = exportGeoJSON;
+    }
+    /** Download the current measurement as a GeoJSON file. */
+    function exportGeoJSON() {
+        if (_pts.length < 2) {
+            if (typeof App !== 'undefined') App.showToast('Measure', 'Add at least two points first.', 'warning');
+            return;
+        }
+        const blob = new Blob([JSON.stringify(toGeoJSON(_pts), null, 2)], { type: 'application/geo+json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'digipin_measurement.geojson';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
     /** Remove the readout box from the DOM. */
     function _removeBox() { const el = document.getElementById(BOX_ID); if (el) el.remove(); }
@@ -228,7 +268,7 @@ const MeasureTool = (() => {
     /** True while the measure tool is active. */
     function isVisible() { return _active; }
 
-    return { attach, detach, toggle, isVisible, pathLengthM, polygonAreaM2, formatLength, formatArea };
+    return { attach, detach, toggle, isVisible, pathLengthM, polygonAreaM2, formatLength, formatArea, toGeoJSON };
 })();
 
 if (typeof window !== 'undefined') window.MeasureTool = MeasureTool;

@@ -212,8 +212,17 @@ const Annotations = (() => {
     function isActive() { return _active; }
     /** Number of saved notes. */
     function count() { return _list.length; }
+    /** A shallow copy of the current notes (for exporters / the pitch map). */
+    function getAll() { return _list.slice(); }
+    /** Replace all notes (from a shared URL / restore), persist, and re-render. */
+    function setAll(list) {
+        _list = parse(typeof list === 'string' ? list : JSON.stringify(list || []));
+        _save();
+        _renderAll();
+        return _list.slice();
+    }
 
-    return { init, toggle, clearAll, exportGeoJSON, isActive, count,
+    return { init, toggle, clearAll, exportGeoJSON, isActive, count, getAll, setAll,
         addNote, removeNote, serialize, parse, toGeoJSON };
 })();
 
