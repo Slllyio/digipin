@@ -132,5 +132,9 @@ describe('URLState.apply()', () => {
         // empty / absent → omitted
         expect(U.stringify({ annotations: [] })).not.toContain('an=');
         expect(U.parse('?cell=X').annotations).toBeUndefined();
+        // malformed-but-valid JSON (no real coordinates) is ignored, so it
+        // can't sanitise to [] and wipe stored notes
+        expect(U.parse('?an=' + encodeURIComponent('[{}]')).annotations).toBeUndefined();
+        expect(U.parse('?an=' + encodeURIComponent('not json')).annotations).toBeUndefined();
     });
 });

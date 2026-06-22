@@ -33,8 +33,14 @@ const URLState = (() => {
         if (p.get('present') === '1') state.present = true;
         const an = p.get('an');
         if (an) {
-            try { const arr = JSON.parse(an); if (Array.isArray(arr) && arr.length) state.annotations = arr; }
-            catch { /* malformed annotations param — ignore */ }
+            try {
+                const arr = JSON.parse(an);
+                // Require at least one real coordinate pair, so a malformed
+                // payload (e.g. an=[{}]) can't sanitise to [] and wipe stored notes.
+                if (Array.isArray(arr) && arr.some(n => n && Number.isFinite(n.lat) && Number.isFinite(n.lng))) {
+                    state.annotations = arr;
+                }
+            } catch { /* malformed annotations param — ignore */ }
         }
         const z = parseFloat(p.get('z'));
         if (Number.isFinite(z)) state.z = z;

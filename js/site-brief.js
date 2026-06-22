@@ -177,7 +177,7 @@ const SiteBrief = (() => {
             <div class="sb-metrics">${metricRows || '<div class="sb-empty">No scores computed yet for this cell.</div>'}</div>
             <div class="sb-foot">Computed from Indian civic &amp; OpenStreetMap data on the government DIGIPIN grid — open and auditable. Generated ${_esc(model.generatedAt)}.</div>
             <div class="sb-actions">
-                ${typeof DISHA !== 'undefined' ? '<button class="sb-btn sb-ai">✨ Ask DISHA</button>' : ''}
+                ${(typeof DISHAPanel !== 'undefined' && typeof DISHAPanel.open === 'function') ? '<button class="sb-btn sb-ai">✨ Ask DISHA</button>' : ''}
                 <button class="sb-btn sb-copy">Copy summary</button>
                 <button class="sb-btn sb-print">Print / PDF</button>
             </div>`;

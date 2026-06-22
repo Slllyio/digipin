@@ -53,7 +53,7 @@ describe('SiteBrief.narrative', () => {
         expect(n).toContain('DIGIPIN 39J-49L-L8T4');
         expect(n).toContain('Livability');   // the Strong metric
         expect(n).toContain('Flood Risk');    // the Weak (constraint) metric
-        expect(n).toContain('4,211');         // population rolled in
+        expect(n).toMatch(/4[,.\s]?211/);     // population rolled in (locale-agnostic separator)
     });
     it('handles a model with no metrics', () => {
         const n = SiteBrief.narrative(SiteBrief.build(null, null));
