@@ -113,4 +113,12 @@ describe('URLState.apply()', () => {
         U.apply({ score: 'safety' });
         expect(ScoreChoropleth.show).not.toHaveBeenCalled();
     });
+
+    it('round-trips the presentation flag', () => {
+        expect(U.stringify({ present: true, cell: 'X' })).toContain('present=1');
+        expect(U.parse('?present=1').present).toBe(true);
+        expect(U.parse('?cell=X').present).toBeUndefined();
+        // a falsey present is omitted from the URL
+        expect(U.stringify({ cell: 'X' })).not.toContain('present');
+    });
 });

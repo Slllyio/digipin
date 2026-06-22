@@ -58,6 +58,8 @@ const App = (() => {
         step('URLState', () => {
             if (typeof URLState !== 'undefined') URLState.init();
         });
+        step('PresentMode', () => { if (typeof PresentMode !== 'undefined') PresentMode.init(); });
+        step('Annotations', () => { if (typeof Annotations !== 'undefined') Annotations.init(); });
         step('keyboardNav', () => { if (typeof KeyboardNav !== 'undefined') KeyboardNav.init(); });
         step('serviceWorker', () => registerServiceWorker());
 
@@ -526,6 +528,49 @@ const App = (() => {
                     map.easeTo({ pitch: 0, bearing: 0, duration: 1000 });
                     showToast('2D Mode', 'Returned to top-down view.', 'info');
                 }
+            });
+        }
+
+        // Sun & shadow study — toggle the solar-position control (Aino-style
+        // environmental analysis on the 3D massing model).
+        const sunBtn = document.getElementById('btn-sun');
+        if (sunBtn && typeof SunStudy !== 'undefined') {
+            sunBtn.setAttribute('aria-pressed', 'false');
+            sunBtn.addEventListener('click', () => {
+                const on = SunStudy.toggle();
+                sunBtn.classList.toggle('active', on);
+                sunBtn.setAttribute('aria-pressed', String(on));
+            });
+        }
+
+        // Pitch map — export a presentation-ready PNG of the current view.
+        const pitchBtn = document.getElementById('btn-pitch');
+        if (pitchBtn && typeof PitchMap !== 'undefined') {
+            pitchBtn.addEventListener('click', () => PitchMap.open());
+        }
+
+        // Measure tool — distance + area (driven from the Layers panel too).
+        const measureBtn = document.getElementById('btn-measure');
+        if (measureBtn && typeof MeasureTool !== 'undefined') {
+            const syncMeasureBtn = () => {
+                const on = MeasureTool.isVisible();
+                measureBtn.classList.toggle('active', on);
+                measureBtn.setAttribute('aria-pressed', String(on));
+            };
+            measureBtn.setAttribute('aria-pressed', 'false');
+            measureBtn.addEventListener('click', () => { MeasureTool.toggle(); syncMeasureBtn(); });
+            // The tool can also detach via other paths — keep the button honest.
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setTimeout(syncMeasureBtn, 0); });
+        }
+
+        // Annotate — drop labelled notes on the map (driven from the Layers panel too).
+        const annotateBtn = document.getElementById('btn-annotate');
+        if (annotateBtn && typeof Annotations !== 'undefined') {
+            annotateBtn.setAttribute('aria-pressed', 'false');
+            annotateBtn.addEventListener('click', () => {
+                const on = Annotations.toggle();
+                annotateBtn.classList.toggle('active', on);
+                annotateBtn.setAttribute('aria-pressed', String(on));
             });
         }
 
