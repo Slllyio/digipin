@@ -57,6 +57,27 @@ describe('MeasureTool.polygonAreaM2', () => {
     });
 });
 
+describe('MeasureTool.toGeoJSON', () => {
+    const pts = [{ lat: 0, lng: 0 }, { lat: 0, lng: 0.01 }, { lat: 0.01, lng: 0.01 }];
+    it('emits a path LineString with length and an area Polygon for 3+ points', () => {
+        const fc = MeasureTool.toGeoJSON(pts);
+        expect(fc.type).toBe('FeatureCollection');
+        const kinds = fc.features.map(f => f.properties.kind);
+        expect(kinds).toContain('path');
+        expect(kinds).toContain('area');
+        const path = fc.features.find(f => f.properties.kind === 'path');
+        expect(path.geometry.type).toBe('LineString');
+        expect(path.properties.length_m).toBeGreaterThan(0);
+        const area = fc.features.find(f => f.properties.kind === 'area');
+        expect(area.geometry.coordinates[0]).toHaveLength(4); // closed ring (3 pts + repeat)
+        expect(area.properties.area_m2).toBeGreaterThan(0);
+    });
+    it('emits only a path for two points and nothing for fewer', () => {
+        expect(MeasureTool.toGeoJSON(pts.slice(0, 2)).features.map(f => f.properties.kind)).toEqual(['path']);
+        expect(MeasureTool.toGeoJSON([{ lat: 1, lng: 1 }]).features).toEqual([]);
+    });
+});
+
 describe('MeasureTool formatters', () => {
     it('formatLength switches m → km', () => {
         expect(MeasureTool.formatLength(450)).toBe('450 m');

@@ -121,4 +121,16 @@ describe('URLState.apply()', () => {
         // a falsey present is omitted from the URL
         expect(U.stringify({ cell: 'X' })).not.toContain('present');
     });
+
+    it('round-trips annotations through the share URL', () => {
+        const annotations = [{ lat: 22.7, lng: 75.8, text: 'gate', color: '#ff673d' }];
+        const qs = U.stringify({ annotations });
+        expect(qs).toContain('an=');
+        const back = U.parse('?' + qs).annotations;
+        expect(back).toHaveLength(1);
+        expect(back[0]).toMatchObject({ lat: 22.7, lng: 75.8, text: 'gate' });
+        // empty / absent → omitted
+        expect(U.stringify({ annotations: [] })).not.toContain('an=');
+        expect(U.parse('?cell=X').annotations).toBeUndefined();
+    });
 });
