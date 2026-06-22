@@ -95,6 +95,13 @@ const Compare = (() => {
         })]);
         rows.push(['Latitude', ...pinned.map(p => p.cell.center ? p.cell.center.lat : '')]);
         rows.push(['Longitude', ...pinned.map(p => p.cell.center ? p.cell.center.lng : '')]);
+        // Emergency Accessibility Index, when scored (higher = easier to reach).
+        if (pinned.some(p => p.data?.realtime?.mobility?.emergency_index != null)) {
+            rows.push(['Emergency access', ...pinned.map(p => {
+                const v = p.data?.realtime?.mobility?.emergency_index;
+                return v == null ? '' : v;
+            })]);
+        }
         const keys = new Set();
         pinned.forEach(p => Object.keys(p.data.scores || {}).forEach(k => keys.add(k)));
         [...keys].forEach(k => {
@@ -331,6 +338,24 @@ const Compare = (() => {
                 const a = t && t.transit && t.transit.access_score;
                 c.textContent = (a != null) ? `${a}/100` : '-';
                 c.style.color = sub;
+            });
+        }
+
+        // Emergency Accessibility Index (from the per-cell mobility realtime),
+        // when present — higher = police/authorities can reach faster.
+        const mobilities = _pinned.map(p => p && p.data && p.data.realtime && p.data.realtime.mobility);
+        if (mobilities.some(m => m && m.emergency_index != null)) {
+            const eaiVals = mobilities.map(m => (m && m.emergency_index != null) ? m.emergency_index : null);
+            const validEai = eaiVals.filter(v => v != null);
+            const bestEai = validEai.length ? Math.max(...validEai) : null;
+            addRow('Emergency access', (c, o, i) => {
+                const m = mobilities[i];
+                if (!m || m.emergency_index == null) { c.textContent = '-'; c.style.color = sub; return; }
+                c.textContent = `${m.emergency_index}/100${m.emergency_band ? ' · ' + m.emergency_band : ''}`;
+                c.style.color = (typeof Theme !== 'undefined' && Theme.scoreColor)
+                    ? Theme.scoreColor(m.emergency_index)
+                    : (m.emergency_index >= 66 ? '#22c55e' : m.emergency_index >= 40 ? '#eab308' : '#ef4444');
+                if (m.emergency_index === bestEai && validEai.length > 1) c.classList.add('compare-best');
             });
         }
     }

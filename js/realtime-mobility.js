@@ -1,34 +1,60 @@
 /**
  * RealtimeMobility — Law & Order Mobility data layer for the cell panel.
  *
- * fetchCell(lat,lng) samples the precomputed MobilityGrid; scoreCell collapses it
- * to result.realtime.mobility. Mirrors realtime-traffic.js. Defensive framing:
- * access resilience for authorities/emergency planning (docs/MOBILITY_MODEL.md).
+ * fetchCell(lat,lng) samples BOTH precomputed grids (MobilityGrid for
+ * chokepoints/sealability/police-reach + TrafficGrid for road-network movement);
+ * scoreCell collapses them to result.realtime.mobility and adds the Emergency
+ * Accessibility Index (emergency_index/band/components). Mirrors
+ * realtime-traffic.js. Defensive framing: access resilience for
+ * authorities/emergency planning (docs/MOBILITY_MODEL.md).
  */
 const RealtimeMobility = (() => {
-    /** Async — sample the precomputed MobilityGrid at a lat/lng; null on miss/error. */
+    /** Async — sample both grids at a lat/lng; returns { mobility, traffic } (each may be null). */
     async function fetchCell(lat, lng) {
-        if (typeof MobilityGrid === 'undefined') return null;
-        try {
-            return await MobilityGrid.sampleAt(lat, lng);
-        } catch (e) {
-            console.warn('[RealtimeMobility] grid sample failed', e);
-            return null;
+        const out = { mobility: null, traffic: null };
+        if (typeof MobilityGrid !== 'undefined') {
+            try { out.mobility = await MobilityGrid.sampleAt(lat, lng); }
+            catch (e) { console.warn('[RealtimeMobility] mobility grid sample failed', e); }
         }
+        if (typeof TrafficGrid !== 'undefined') {
+            try { out.traffic = await TrafficGrid.sampleAt(lat, lng); }
+            catch (e) { console.warn('[RealtimeMobility] traffic grid sample failed', e); }
+        }
+        return out;
     }
 
-    /** Pure — collapse grid signals to the result.realtime.mobility schema; null when unscored. */
+    /** Pure — collapse the two grid samples to the result.realtime.mobility
+     *  schema, including the Emergency Accessibility Index. Null when neither the
+     *  base mobility record nor the EAI is available (no road). */
     function scoreCell(signals) {
-        if (!signals || signals.mobility_risk == null) return null;
-        return {
-            mobility_risk: signals.mobility_risk,
-            access_class: signals.access_class,
-            sealable: !!signals.sealable,
-            on_chokepoint: !!signals.on_chokepoint,
-            nearest_police_km: signals.nearest_police_km,
-            sources: { road_network: 'ok', police_osm: signals.nearest_police_km != null ? 'ok' : 'missing' },
+        if (!signals) return null;
+        const mob = signals.mobility || null;
+        const traf = signals.traffic || null;
+
+        let eai = null;
+        if (typeof EmergencyAccess !== 'undefined' && typeof EmergencyAccessScore !== 'undefined') {
+            eai = EmergencyAccessScore.computeIndex(EmergencyAccess.combine(mob, traf));
+        }
+        if ((!mob || mob.mobility_risk == null) && !eai) return null;
+
+        const result = {
+            mobility_risk: mob ? mob.mobility_risk : null,
+            access_class: mob ? mob.access_class : null,
+            sealable: !!(mob && mob.sealable),
+            on_chokepoint: !!(mob && mob.on_chokepoint),
+            nearest_police_km: mob ? mob.nearest_police_km : null,
+            sources: {
+                road_network: (mob || traf) ? 'ok' : 'missing',
+                police_osm: (mob && mob.nearest_police_km != null) ? 'ok' : 'missing',
+            },
             generated_at_iso: new Date().toISOString(),
         };
+        if (eai) {
+            result.emergency_index = eai.index;
+            result.emergency_band = eai.band;
+            result.emergency_components = eai.components;
+        }
+        return result;
     }
 
     return { fetchCell, scoreCell };
