@@ -24,8 +24,11 @@ Requires: earthengine-api, pmtiles, mapbox-vector-tile  (pip install).
 import os, sys, json, math, gzip, tempfile, urllib.request
 
 PMTILES = "https://overturemaps-tiles-us-west-2-beta.s3.amazonaws.com/2024-08-20/buildings.pmtiles"
-# Indore pilot bbox [west, south, east, north]
-BBOX = (75.78, 22.63, 75.95, 22.80)
+# Central Indore [west, south, east, north] — ~7km around the default map view
+# (75.8577, 22.7196). The full metro has ~435k footprints (too large to ship as a
+# per-building lookup); this covers the pilot's actual viewing area, and anything
+# outside falls back to the footprint-area estimate.
+BBOX = (75.8227, 22.6886, 75.8927, 22.7506)
 ZOOM = 14
 OUT = os.path.join(os.path.dirname(__file__), "..", "data", "heights", "indore_building_heights.json")
 EE_COLLECTION = "GOOGLE/Research/open-buildings-temporal/v1"
@@ -138,7 +141,7 @@ def sample_heights(ee, centroids):
             p = f["properties"]
             h = p.get("building_height", p.get("first"))
             if h is not None and h > 0:
-                heights[p["bid"]] = round(float(h), 1)
+                heights[p["bid"]] = round(float(h))   # whole metres keep the file lean
         print(f"  sampled {min(i + BATCH, len(centroids))}/{len(centroids)} (kept {len(heights)})")
     return heights
 
