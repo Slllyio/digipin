@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-06-23T18:31:44Z",
-  "count": 15,
+  "generated_at_iso": "2026-06-23T22:12:49Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us6000t7qk",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-23T21:53:18.416000+00:00",
+      "latitude": -16.5877,
+      "longitude": -177.2188,
+      "depth_km": 408.891,
+      "place": "269 km SSE of Alo, Wallis and Futuna",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7qk",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000t7ng",
       "magnitude": 4.5,
@@ -133,54 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7hp",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000t7h1",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-06-22T20:41:16.944000+00:00",
-      "latitude": -23.7575,
-      "longitude": -175.6482,
-      "depth_km": 35.0,
-      "place": "276 km SSW of ‘Ohonua, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7h1",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000t7gn",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-06-22T20:14:11.564000+00:00",
-      "latitude": -23.5809,
-      "longitude": -176.1268,
-      "depth_km": 109.246,
-      "place": "275 km SSW of ‘Ohonua, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7gn",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000t7gf",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-06-22T19:46:11.598000+00:00",
-      "latitude": -31.9328,
-      "longitude": -178.2858,
-      "depth_km": 28.23,
-      "place": "Kermadec Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7gf",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000t7fr",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-06-22T18:32:46.112000+00:00",
-      "latitude": -33.2471,
-      "longitude": 77.9949,
-      "depth_km": 10.0,
-      "place": "Mid-Indian Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7fr",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
