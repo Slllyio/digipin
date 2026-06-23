@@ -49,6 +49,13 @@ data/realtime/*/*
 # static site can serve them; regenerate with scripts/build_building_heights.py.
 !data/heights/
 !data/heights/*
+# Pipeline rasters/vectors regenerated for the static deploy so overlays work.
+!data/heat/
+!data/heat/*
+!data/growth/
+!data/growth/*
+!data/vectors/
+!data/vectors/*
 !data/realtime/*/README.md
 # Precomputed score tiles are committed and served by Pages (like realtime/).
 !data/scores/
