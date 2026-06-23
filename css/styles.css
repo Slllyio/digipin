@@ -2782,6 +2782,10 @@ html[lang="hi"] textarea {
 .dt-layer-item.dt-unavailable { opacity: 0.45; }
 .dt-layer-item.dt-unavailable .dt-layer-name { font-style: italic; }
 
+/* Toolbar overlays whose pipeline data isn't published to the static site:
+   dimmed + not-allowed so they read as "unavailable", not "broken". */
+.tb-btn.tb-unavailable, button.tb-unavailable { opacity: 0.4; cursor: not-allowed; }
+
 /* The Layers button is now the primary map-tool entry point. */
 #btn-dt-layers {
     border-color: var(--accent-cyan);
