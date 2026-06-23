@@ -1003,6 +1003,47 @@ const App = (() => {
         if (svBtn) {
             svBtn.addEventListener('click', () => SavedViews.openPanel());
         }
+
+        // Honest toolbar: a few overlays are backed by heavy pipeline rasters
+        // (data/growth/*.tif, data/heat/*.tif) that aren't published to the
+        // static site, so on Pages they 404 and the button used to toast
+        // "Sampling…" then render nothing — looking broken. HEAD-probe each
+        // button's representative file once; if it's missing, mark the button
+        // unavailable and intercept the click with a clear message instead of a
+        // dead action. (Mirrors the Layers-panel "· no data" treatment.)
+        const TOOLBAR_DATA = {
+            'btn-growth':    'data/growth/ca_urban_prediction.tif',
+            'btn-ca-growth': 'data/growth/ca_urban_prediction.tif',
+            'btn-scenario':  'data/growth/ca_urban_prediction.tif',
+            'btn-heat':      'data/heat/modis_lst_2016-2024.tif',
+        };
+        const toolbarEl = document.getElementById('toolbar');
+        if (toolbarEl) {
+            // Capture-phase guard: a disabled overlay button explains itself
+            // rather than running its (data-less) handler.
+            toolbarEl.addEventListener('click', (e) => {
+                const b = e.target.closest('button.tb-unavailable');
+                if (!b) return;
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                showToast('Not available in this deployment',
+                    'This overlay needs pipeline raster data that isn’t published to the static site.',
+                    'warning');
+            }, true);
+        }
+        // De-dupe probes by URL so the four buttons hit two files, not four.
+        const probeCache = {};
+        Object.entries(TOOLBAR_DATA).forEach(([id, url]) => {
+            const b = document.getElementById(id);
+            if (!b) return;
+            (probeCache[url] = probeCache[url] || fetch(url, { method: 'HEAD' }).then(r => r.ok).catch(() => false))
+                .then(ok => {
+                    if (ok) return;
+                    b.classList.add('tb-unavailable');
+                    b.setAttribute('aria-disabled', 'true');
+                    b.title = (b.title ? b.title + ' — ' : '') + 'Not available in this deployment';
+                });
+        });
     }
 
     /** Register the service worker for offline support and prompt to refresh when an update is installed. */
