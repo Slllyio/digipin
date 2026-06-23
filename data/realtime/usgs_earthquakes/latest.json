@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-06-23T16:41:22Z",
+  "generated_at_iso": "2026-06-23T18:31:44Z",
   "count": 15,
   "records": [
+    {
+      "id": "us6000t7ng",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-23T17:08:55.838000+00:00",
+      "latitude": -59.4812,
+      "longitude": -27.4538,
+      "depth_km": 231.662,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7ng",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000t7ls",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-23T15:56:34.958000+00:00",
+      "latitude": 37.7699,
+      "longitude": 95.3734,
+      "depth_km": 10.0,
+      "place": "272 km SSE of Dunhuang, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7ls",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000t7ll",
       "magnitude": 5.2,
@@ -17,11 +41,11 @@
     {
       "id": "us6000t7lb",
       "magnitude": 5.3,
-      "origin_time_utc": "2026-06-23T13:58:36.779000+00:00",
-      "latitude": -20.6721,
-      "longitude": 169.1101,
-      "depth_km": 30.168,
-      "place": "126 km S of Isangel, Vanuatu",
+      "origin_time_utc": "2026-06-23T13:58:34.774000+00:00",
+      "latitude": -20.6302,
+      "longitude": 169.2307,
+      "depth_km": 21.543,
+      "place": "120 km S of Isangel, Vanuatu",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7lb",
       "tsunami": 0,
       "significance": 432
@@ -157,30 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7fr",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000t7fi",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-06-22T18:03:47.931000+00:00",
-      "latitude": -4.6059,
-      "longitude": 102.6778,
-      "depth_km": 63.348,
-      "place": "90 km SW of Pagar Alam, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7fi",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000t7fh",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-06-22T17:51:34.202000+00:00",
-      "latitude": 12.4091,
-      "longitude": -88.8946,
-      "depth_km": 10.0,
-      "place": "103 km SSW of Puerto El Triunfo, El Salvador",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7fh",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
