@@ -1022,6 +1022,7 @@ const App = (() => {
             // Capture-phase guard: a disabled overlay button explains itself
             // rather than running its (data-less) handler.
             toolbarEl.addEventListener('click', (e) => {
+                if (!(e.target instanceof Element)) return;
                 const b = e.target.closest('button.tb-unavailable');
                 if (!b) return;
                 e.stopImmediatePropagation();
