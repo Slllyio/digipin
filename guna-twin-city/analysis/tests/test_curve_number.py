@@ -91,3 +91,22 @@ def test_weighted_cn_mixed_is_area_average():
 
 def test_weighted_cn_empty_returns_documented_default():
     assert cn.weighted_cn({}, amc="II") == pytest.approx(cn.DEFAULT_CN)
+
+
+# ── per-cell CN grid (precise model) ───────────────────────────────────
+
+def test_cn_ii_grid_lookup():
+    np = pytest.importorskip("numpy")
+    wc = np.array([[50, 10], [40, 80]])     # built-up, tree, cropland, water
+    hc = np.array([[4, 3], [2, 1]])         # D, C, B, A
+    g = cn.cn_ii_grid(wc, hc)
+    assert g[0, 0] == cn.CN_TABLE[50]["D"]
+    assert g[0, 1] == cn.CN_TABLE[10]["C"]
+    assert g[1, 0] == cn.CN_TABLE[40]["B"]
+    assert g[1, 1] == cn.CN_TABLE[80]["A"]
+
+
+def test_cn_ii_grid_unknown_class_is_default():
+    np = pytest.importorskip("numpy")
+    g = cn.cn_ii_grid(np.array([[999]]), np.array([[3]]))
+    assert g[0, 0] == cn.DEFAULT_CN

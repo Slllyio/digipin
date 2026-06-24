@@ -30,6 +30,7 @@ __all__ = [
     "amc_iii",
     "cn_for",
     "weighted_cn",
+    "cn_ii_grid",
 ]
 
 # Documented fallback curve number (urban-India mixed, HSG-C/AMC-II) used when
@@ -110,3 +111,21 @@ def weighted_cn(class_hsg_counts: Mapping[tuple[int, str], int], amc: str = "II"
     for (klass, hsg), n in class_hsg_counts.items():
         acc += cn_for(klass, hsg, amc) * n
     return acc / total
+
+
+def cn_ii_grid(worldcover, hsg_codes):
+    """Per-cell AMC-II curve number from aligned WorldCover-class and HSG-code grids.
+
+    Vectorised lookup of CN_TABLE; cells whose class is unknown keep DEFAULT_CN.
+    Used by the precise flood model to replace its slope-derived CN proxy.
+    """
+    import numpy as np
+
+    wc = np.asarray(worldcover)
+    hc = np.asarray(hsg_codes)
+    out = np.full(wc.shape, DEFAULT_CN, dtype="float64")
+    for klass, row in CN_TABLE.items():
+        klass_mask = wc == klass
+        for group, code in (("A", 1), ("B", 2), ("C", 3), ("D", 4)):
+            out[klass_mask & (hc == code)] = row[group]
+    return out

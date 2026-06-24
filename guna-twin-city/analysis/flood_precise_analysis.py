@@ -43,6 +43,8 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 RAINFALL_MM = 328
 DURATION_HR = 24
 CELL_SIZE_M = 90  # SRTM resolution
+# Initial-abstraction ratio Ia/S: modern NRCS (2015) 0.05 (classic SCS was 0.2).
+IA_RATIO = 0.05
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -53,6 +55,47 @@ def haversine(lat1, lon1, lat2, lon2):
          math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
          math.sin(dlon / 2) ** 2)
     return R * 2 * math.asin(math.sqrt(a))
+
+
+def _data_driven_cn_grid(shape, transform, crs):
+    """AMC-II Curve Number per DEM cell from WorldCover x SoilGrids HSG.
+
+    Resamples ESA WorldCover (10 m) and an HSG raster onto the DEM grid and
+    looks up CN via the shared curve_number engine. Returns None if WorldCover
+    is unavailable (caller then falls back to the slope proxy). When SoilGrids
+    texture is absent, a documented regional default HSG (vertisol -> D) is used.
+    """
+    import rasterio
+    from rasterio.warp import reproject, Resampling
+
+    import curve_number
+    import hsg
+
+    wc_path = RASTER_DIR / f"worldcover_10m_{CITY_NAME}.tif"
+    if not wc_path.exists():
+        return None
+
+    def _aligned(path):
+        dst = np.zeros(shape, dtype="float32")
+        with rasterio.open(path) as src:
+            reproject(
+                source=rasterio.band(src, 1), destination=dst,
+                dst_transform=transform, dst_crs=crs, resampling=Resampling.nearest,
+            )
+        return dst
+
+    wc = _aligned(wc_path).astype(np.int32)
+
+    sand_p = RASTER_DIR / f"soilgrids_sand_0-5cm_{CITY_NAME}.tif"
+    clay_p = RASTER_DIR / f"soilgrids_clay_0-5cm_{CITY_NAME}.tif"
+    if sand_p.exists() and clay_p.exists():
+        hsg_codes = hsg.hsg_code_grid(_aligned(sand_p), _aligned(clay_p))
+        log.info("  CN grid: WorldCover x SoilGrids HSG (data-derived)")
+    else:
+        hsg_codes = np.full(shape, hsg.code_for("D"), dtype="uint8")
+        log.info("  CN grid: WorldCover x regional default HSG D (SoilGrids texture unavailable)")
+
+    return curve_number.cn_ii_grid(wc, hsg_codes)
 
 
 # ═══════════════════════════════════════════════════════════
@@ -68,6 +111,7 @@ def load_dem_and_compute_hydrology():
     with rasterio.open(dem_path) as src:
         dem = src.read(1).astype(np.float64)
         transform = src.transform
+        crs = src.crs
         nodata = src.nodata
 
     if nodata is not None:
@@ -414,18 +458,20 @@ def load_dem_and_compute_hydrology():
     # Water depth = rainfall - infiltration + accumulated upstream
     # Simplified: compute ponding depth at depressions
 
-    # Compute Curve Number per cell using slope as proxy
-    # Flat areas (slope < 0.01) = urban/impervious (CN~90)
-    # Moderate slope = agricultural (CN~72)
-    # Steep slope = forested/natural (CN~55)
-    cn_grid = np.where(slope < 0.005, 88,
-              np.where(slope < 0.02, 75,
-              np.where(slope < 0.05, 65, 55)))
-    cn_grid = cn_grid.astype(np.float64)
+    # Per-cell Curve Number from land cover x soil (shared engine). Falls back to
+    # the old slope proxy only if WorldCover is unavailable.
+    cn_grid = _data_driven_cn_grid(dem.shape, transform, crs)
+    if cn_grid is None:
+        log.info("  CN grid: slope proxy (WorldCover unavailable)")
+        cn_grid = np.where(slope < 0.005, 88,
+                  np.where(slope < 0.02, 75,
+                  np.where(slope < 0.05, 65, 55))).astype(np.float64)
+    else:
+        cn_grid = cn_grid.astype(np.float64)
 
-    # SCS runoff per cell
+    # SCS runoff per cell (modern Ia/S = 0.05; see IA_RATIO)
     S = (25400.0 / cn_grid) - 254.0
-    Ia = 0.2 * S
+    Ia = IA_RATIO * S
     P = RAINFALL_MM
     runoff_mm = np.where(P > Ia, (P - Ia) ** 2 / (P - Ia + S), 0.0)
     runoff_mm[~valid] = 0
