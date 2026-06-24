@@ -1,0 +1,48 @@
+{
+  "rainfall_mm": 328.0,
+  "ia_ratio_primary": 0.05,
+  "weighted_cn": {
+    "amc_i": 68.0,
+    "amc_ii": 83.4,
+    "amc_iii": 92.0
+  },
+  "runoff_band_mm": {
+    "amc_i": 234.9,
+    "amc_ii": 281.6,
+    "amc_iii": 306.2
+  },
+  "runoff_ratio_band": {
+    "amc_i": 0.716,
+    "amc_ii": 0.859,
+    "amc_iii": 0.933
+  },
+  "ia_sensitivity_mm": {
+    "ia_0.05": 281.6,
+    "ia_0.2": 274.2
+  },
+  "lulc_distribution_pct": {
+    "Cropland": 67.13,
+    "Grassland": 18.22,
+    "Tree cover": 7.75,
+    "Shrubland": 4.27,
+    "Built-up": 1.42,
+    "Water": 0.88,
+    "Bare/sparse": 0.34
+  },
+  "hsg_distribution_pct": {
+    "D": 100.01
+  },
+  "source": {
+    "lulc": "ESA WorldCover 10 m (2021)",
+    "soil": "ISRIC SoilGrids 250 m (sand/clay -> HSG)",
+    "method": "USDA TR-55 SCS Curve Number; AMC: Sobhani 1975 / Hawkins 1985",
+    "event": "Guna 328 mm/24 h (July 2025)"
+  },
+  "confidence": "reduced",
+  "assumptions": [
+    "SoilGrids texture unavailable; using documented regional default HSG D (Malwa-plateau black-cotton vertisols).",
+    "Screening-level: SCS-CN gives runoff volume, not validated flood depth. 328 mm is beyond the method's design-storm range; treat as early-warning, not engineering design.",
+    "Ia/S = 0.05 (modern NRCS 2015) primary; 0.2 shown for comparison.",
+    "Runoff reported as an antecedent-moisture band (dry/normal/wet), not a point value."
+  ]
+}
