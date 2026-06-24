@@ -263,7 +263,12 @@ const MODELS = {
     inputs: (G) => ({
       runoff_mm: {
         call: (a) => G.runoffMm(...a),
-        args: [[50], [100], [150, 90], [30, 80], [5, 80], [0], [100, 98], [80, 30]],
+        args: [
+          [50], [100], [150, 90], [30, 80], [5, 80], [0], [100, 98], [80, 30],
+          // Ia/S ratio override (3rd arg): modern 0.05 vs classic 0.2, incl. the
+          // Guna 328 mm/24 h event at CN 88.
+          [150, 90, 0.05], [100, 80, 0.05], [328, 88, 0.05], [328, 88, 0.2],
+        ],
       },
       depth_from_runoff: {
         call: (a) => G.depthFromRunoff(...a),

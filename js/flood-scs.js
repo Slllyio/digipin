@@ -37,12 +37,17 @@
 const FloodSCS = (() => {
     const DEFAULT_CN = 80;
     const DEFAULT_DEPTH_PER_RUNOFF_MM = 0.02;
+    // Initial-abstraction ratio Ia/S. Classic SCS uses 0.2; modern NRCS (2015)
+    // and recent literature favour ~0.05 (0.2 over-estimates infiltration, i.e.
+    // under-estimates runoff). Caller-overridable; the 0.2 default keeps the
+    // long-standing Indore behaviour unchanged.
+    const DEFAULT_IA_RATIO = 0.2;
 
-    /** SCS-CN runoff depth (mm) for a given rainfall depth (mm) and CN. */
-    function runoffMm(rainfallMm, cn = DEFAULT_CN) {
+    /** SCS-CN runoff depth (mm) for a given rainfall depth (mm), CN and Ia/S ratio. */
+    function runoffMm(rainfallMm, cn = DEFAULT_CN, iaRatio = DEFAULT_IA_RATIO) {
         if (!(rainfallMm > 0) || !(cn > 0)) return 0;
         const S = (25400 / cn) - 254;
-        const Ia = 0.2 * S;
+        const Ia = iaRatio * S;
         if (rainfallMm <= Ia) return 0;
         const num = (rainfallMm - Ia) ** 2;
         const den = (rainfallMm - Ia) + S;
@@ -68,7 +73,7 @@ const FloodSCS = (() => {
         };
     }
 
-    return { runoffMm, depthFromRunoff, rainfallToExtraDepth, DEFAULT_CN };
+    return { runoffMm, depthFromRunoff, rainfallToExtraDepth, DEFAULT_CN, DEFAULT_IA_RATIO };
 })();
 
 if (typeof window !== 'undefined') {

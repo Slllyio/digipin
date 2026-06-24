@@ -13,20 +13,29 @@ from __future__ import annotations
 
 DEFAULT_CN = 80
 DEFAULT_DEPTH_PER_RUNOFF_MM = 0.02
+# Initial-abstraction ratio Ia/S. Classic SCS uses 0.2; modern NRCS (2015)
+# favours ~0.05. Default keeps the long-standing 0.2 (Indore) behaviour.
+DEFAULT_IA_RATIO = 0.2
 
-__all__ = ["runoff_mm", "depth_from_runoff", "rainfall_to_extra_depth", "DEFAULT_CN"]
+__all__ = [
+    "runoff_mm",
+    "depth_from_runoff",
+    "rainfall_to_extra_depth",
+    "DEFAULT_CN",
+    "DEFAULT_IA_RATIO",
+]
 
 
 def _pos(x) -> bool:
     return isinstance(x, (int, float)) and not isinstance(x, bool) and x > 0
 
 
-def runoff_mm(rainfall_mm, cn=DEFAULT_CN):
-    """SCS-CN runoff depth (mm) for a rainfall depth (mm) and curve number."""
+def runoff_mm(rainfall_mm, cn=DEFAULT_CN, ia_ratio=DEFAULT_IA_RATIO):
+    """SCS-CN runoff depth (mm) for a rainfall depth (mm), curve number and Ia/S ratio."""
     if not _pos(rainfall_mm) or not _pos(cn):
         return 0
     S = (25400 / cn) - 254
-    Ia = 0.2 * S
+    Ia = ia_ratio * S
     if rainfall_mm <= Ia:
         return 0
     num = (rainfall_mm - Ia) ** 2
