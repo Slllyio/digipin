@@ -27,7 +27,10 @@ const CitySelector = (() => {
         CITIES.forEach(city => {
             const opt = document.createElement('option');
             opt.value = city.id;
-            opt.textContent = `${city.name}, ${city.state}`;
+            // Indore is the data pilot; other cities are basemap-only for now.
+            opt.textContent = city.id === 'indore'
+                ? `${city.name}, ${city.state} · pilot`
+                : `${city.name}, ${city.state}`;
             if (city.id === _current.id) opt.selected = true;
             select.appendChild(opt);
         });

@@ -1,0 +1,101 @@
+/**
+ * Setup file for Vitest with jsdom.
+ *
+ * DigiPin and DataFetcher are IIFE modules that rely on browser script-tag
+ * global hoisting:  `const DigiPin = (() => {...})();` becomes globally
+ * accessible inside a <script> tag, but **not** when evaluated via
+ * `vm.runInNewContext` — `const` declarations are lexically scoped to the
+ * script and don't attach to the context object.
+ *
+ * Fix: read the source, **append** `globalThis.<Name> = <Name>` lines so
+ * the IIFE's const becomes reachable, then evaluate via
+ * `vm.runInThisContext` so the assignments hit the Vitest worker's
+ * globalThis (not a fresh sandbox).
+ */
+
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import vm from 'vm';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.dirname(__dirname);
+
+function loadGlobalScript(relPath, exposeNames) {
+    const filePath = path.join(rootDir, relPath);
+    let code = readFileSync(filePath, 'utf-8');
+    for (const name of exposeNames) {
+        code += `\nif (typeof ${name} !== 'undefined') globalThis.${name} = ${name};`;
+    }
+    vm.runInThisContext(code, { filename: relPath });
+}
+
+loadGlobalScript('js/digipin.js', ['DigiPin']);
+loadGlobalScript('js/keyboard-nav.js', ['KeyboardNav']);
+loadGlobalScript('js/data-fetcher.js', ['DataFetcher']);
+loadGlobalScript('js/precomputed-scores.js', ['PrecomputedScores']);
+loadGlobalScript('js/score-choropleth.js', ['ScoreChoropleth']);
+loadGlobalScript('js/growth-score.js', ['GrowthScore']);
+loadGlobalScript('js/realtime-growth.js', ['RealtimeGrowth']);
+loadGlobalScript('js/growth-widget.js', ['GrowthWidget']);
+loadGlobalScript('js/growth-overlay.js', ['GrowthOverlay']);
+loadGlobalScript('js/ca-growth-overlay.js', ['CAGrowthOverlay']);
+loadGlobalScript('js/traffic-score.js', ['TrafficScore']);
+loadGlobalScript('js/traffic-grid.js', ['TrafficGrid']);
+loadGlobalScript('js/realtime-traffic.js', ['RealtimeTraffic']);
+loadGlobalScript('js/traffic-widget.js', ['TrafficWidget']);
+loadGlobalScript('js/traffic-overlay.js', ['TrafficOverlay']);
+loadGlobalScript('js/mobility-score.js', ['MobilityScore']);
+loadGlobalScript('js/mobility-grid.js', ['MobilityGrid']);
+loadGlobalScript('js/realtime-mobility.js', ['RealtimeMobility']);
+loadGlobalScript('js/mobility-widget.js', ['MobilityWidget']);
+loadGlobalScript('js/mobility-overlay.js', ['MobilityOverlay']);
+loadGlobalScript('js/utilities.js', ['Utilities']);
+loadGlobalScript('js/scenario-model.js', ['ScenarioModel']);
+loadGlobalScript('js/area-aggregate.js', ['AreaAggregate']);
+loadGlobalScript('js/compare.js', ['Compare']);
+loadGlobalScript('js/heat-score.js', ['HeatScore']);
+loadGlobalScript('js/heat-widget.js', ['HeatWidget']);
+loadGlobalScript('js/realtime-flood.js', ['RealtimeFlood']);
+loadGlobalScript('js/flood-inundation.js', ['FloodInundation']);
+loadGlobalScript('js/realtime-alerts.js', ['RealtimeAlerts']);
+loadGlobalScript('js/realtime-quakes.js', ['RealtimeQuakes']);
+loadGlobalScript('js/realtime-imd.js', ['RealtimeIMD']);
+loadGlobalScript('js/realtime-heat.js', ['RealtimeHeat']);
+loadGlobalScript('js/data-fetcher-cache.js', ['DataFetcherCache']);
+loadGlobalScript('js/training-data-gen.js', ['TrainingDataGen']);
+loadGlobalScript('js/disha-providers.js', ['DISHAProviders']);
+loadGlobalScript('js/bivariate-overlay.js', ['BivariateOverlay']);
+loadGlobalScript('js/ndvi-overlay.js', ['NDVIOverlay']);
+loadGlobalScript('js/viewshed.js', ['Viewshed']);
+loadGlobalScript('js/kde-overlay.js', ['KDEOverlay']);
+loadGlobalScript('js/accessibility-overlay.js', ['AccessibilityOverlay']);
+loadGlobalScript('js/dtdl-export.js', ['DTDLExport']);
+loadGlobalScript('js/real-estate-model.js', ['RealEstateModel']);
+loadGlobalScript('js/footprint-grid.js', ['FootprintGrid']);
+loadGlobalScript('js/query-engine.js', ['QueryEngine']);
+loadGlobalScript('js/disha.js', ['DISHA']);
+loadGlobalScript('js/disha-actions.js', ['DISHAActions']);
+loadGlobalScript('js/text2map.js', ['Text2Map']);
+loadGlobalScript('js/text2map-results-layer.js', ['Text2MapResultsLayer']);
+loadGlobalScript('js/url-state.js', ['URLState']);
+loadGlobalScript('js/theme.js', ['Theme']);
+loadGlobalScript('js/i18n.js', ['I18n']);
+loadGlobalScript('js/digital-twin-layers.js', ['DigitalTwinLayers']);
+loadGlobalScript('js/saved-views.js', ['SavedViews']);
+loadGlobalScript('js/layers-panel.js', ['LayersPanel']);
+loadGlobalScript('js/export-dialog.js', ['ExportDialog']);
+loadGlobalScript('js/bookmarks.js', ['Bookmarks']);
+loadGlobalScript('js/building-intelligence.js', ['BuildingIntelligence']);
+loadGlobalScript('js/buildings-deck.js', ['DeckBuildings']);
+loadGlobalScript('js/overture-buildings.js', ['OvertureBuildings']);
+loadGlobalScript('js/floating-dialogs.js', ['FloatingDialogs']);
+loadGlobalScript('js/onboarding.js', ['Onboarding']);
+loadGlobalScript('js/text2map-embeddings.js', ['Text2MapEmbeddings']);
+loadGlobalScript('js/pitch-map.js', ['PitchMap']);
+loadGlobalScript('js/sun-study.js', ['SunStudy']);
+loadGlobalScript('js/footprint-export.js', ['FootprintExport']);
+loadGlobalScript('js/site-brief.js', ['SiteBrief']);
+loadGlobalScript('js/measure-tool.js', ['MeasureTool']);
+loadGlobalScript('js/present-mode.js', ['PresentMode']);
+loadGlobalScript('js/annotations.js', ['Annotations']);

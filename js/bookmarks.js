@@ -13,7 +13,14 @@ const Bookmarks = (() => {
 
     function load() {
         try {
-            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            // Guard against valid-JSON-but-wrong-type values (a non-array would
+            // crash renderMarkers/add on .forEach/.some), and drop legacy or
+            // corrupt entries that would render markers at undefined coords.
+            if (!Array.isArray(raw)) return [];
+            return raw.filter(b =>
+                b && typeof b.code === 'string' &&
+                Number.isFinite(b.lat) && Number.isFinite(b.lng));
         } catch { return []; }
     }
 

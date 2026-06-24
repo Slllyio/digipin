@@ -17,6 +17,32 @@
  *  - WorldPop: Population density estimate (100m grid)
  *  - Bhoonidhi (ISRO): Satellite imagery availability for the area
  *  - OGD India: Health facility data enrichment
+ *
+ * CONFIGURATION (window.DIGIPIN_CONFIG):
+ *  Set this object before loading the script to customise behaviour.
+ *
+ *  waqiToken (string) — WAQI API token from https://aqicn.org/data-platform/token/
+ *    Default: 'demo'  (city-name endpoint, city-center AQI only)
+ *    Real token:      uses geo endpoint feed/geo:{lat};{lng}/?token={token}
+ *                     which returns the nearest monitoring station to the cell.
+ *    Example:
+ *      window.DIGIPIN_CONFIG = { waqiToken: 'your-token-here' };
+ *
+ *  ogdApiKey (string) — data.gov.in (OGD) API key for hospital / CEPI / pincode
+ *    enrichment. Defaults to data.gov.in's shared public sample key (rate-limited).
+ *    Register a free key at https://data.gov.in/ for higher quota:
+ *      window.DIGIPIN_CONFIG = { ogdApiKey: 'your-key-here' };
+ *
+ *  ocmApiKey (string) — OpenChargeMap key for EV-charging discovery. Optional;
+ *    prefer injecting it server-side via the proxy (OCM_API_KEY). Free key at
+ *    https://openchargemap.org/site/develop/api .
+ *
+ *  CPCB is the primary AQI source; WAQI is the first fallback.
+ *  Even with a demo token the pipeline gives useful results via CPCB + Open-Meteo.
+ *
+ *  SECURITY NOTE: This is a keyless static PWA — it cannot hide a real secret.
+ *  Only public / shared-sample credentials live in this file. Any genuinely
+ *  private key must be fronted by a backend proxy, never shipped to the browser.
  */
 
 const DataFetcher = (() => {
@@ -30,16 +56,42 @@ const DataFetcher = (() => {
     const OPEN_METEO_AQI_URL = 'https://air-quality-api.open-meteo.com/v1/air-quality';
     const OPEN_METEO_SOLAR_URL = 'https://api.open-meteo.com/v1/forecast';
     // const BHOONIDHI_API = 'https://bhoonidhi-api.nrsc.gov.in'; // CORS-blocked, disabled
-    const OGD_API_KEY = '579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b';
+    // data.gov.in (OGD) key. This is the platform's shared *public sample* key,
+    // documented openly at https://data.gov.in/help/how-use-datasets-apis — it is
+    // rate-limited and low-sensitivity, not a private credential. Override it with
+    // your own registered key via window.DIGIPIN_CONFIG.ogdApiKey for higher quota.
+    const OGD_API_KEY = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG?.ogdApiKey)
+        || '579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b';
     const OGD_HOSPITAL_RESOURCE = '0c534d1d8b4e3c3b0219254f563741a6';
     const OGD_CEPI_RESOURCE = '0579cf1f-7e3b-4b15-b29a-87cf7b7c7a08';
     const OGD_PINCODE_RESOURCE = '5c2f62fe-5afa-4119-a499-fec9d604d5bd';
     let _cepiCache = null; // loaded once (only 43 records)
 
-    // IUDX (India Urban Data Exchange) — Smart City data for Indore
-    const IUDX_AUTH_URL = 'https://cos.iudx.org.in/auth/v1/token';
-    const IUDX_CLIENT_ID = '333f2eed-1ae5-4ba0-b188-85ff2124bae3';
-    const IUDX_CLIENT_SECRET = 'cffdcb8f5e52e192b9108bfefbc31fd19568259f';
+    // OpenChargeMap (EV charging registry). Optional key via
+    // window.DIGIPIN_CONFIG.ocmApiKey, or injected server-side by the proxy
+    // (OCM_API_KEY). Keyless still works (rate-limited) when neither is set.
+    const OCM_API_KEY = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG?.ocmApiKey) || '';
+
+    // Optional serverless proxy for the upstreams the browser can't reach
+    // directly (CORS-blocked or key-requiring). Configure with
+    // window.DIGIPIN_CONFIG.proxyBase = 'https://<worker>.workers.dev' — see
+    // proxy/README.md. Read at call time so config set after this script loads
+    // still applies. When unset, requests go direct (behaviour unchanged); for
+    // the CORS-only IUDX call, `corsFallback` keeps the legacy allorigins route
+    // so nothing regresses without a configured proxy.
+    function viaProxy(url, { corsFallback = false } = {}) {
+        const base = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG?.proxyBase) || '';
+        if (base) return `${base}/?url=${encodeURIComponent(url)}`;
+        if (corsFallback) return `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        return url;
+    }
+
+    // IUDX (India Urban Data Exchange) — Smart City data for Indore.
+    // Both endpoints used below are public/no-auth: the open S3 sample bucket and
+    // the IUDX catalogue search API (via CORS proxy, see fetchIUDXCatalogue). No
+    // client_id/secret is needed or stored here — a static PWA cannot keep a secret
+    // anyway. If a future feature needs the authenticated Resource Server, proxy it
+    // through a backend and inject the token at request time, never in client source.
     const IUDX_S3_BASE = 'https://fs-sample-file-bucket.s3.ap-south-1.amazonaws.com/public-access/indore';
     const IUDX_DATASETS = [
         { key: 'busStops',    label: 'Bus Stops (BRTS/City)',  icon: '🚌', file: 'indore-stops-info.json' },
@@ -276,6 +328,7 @@ const DataFetcher = (() => {
         return `${lat.toFixed(4)},${lng.toFixed(4)},${radius}`;
     }
 
+    /** LRU read: returns cached data (refreshing recency) or null if missing/expired. */
     function _cacheGet(key) {
         const entry = _cache.get(key);
         if (!entry) return null;
@@ -288,14 +341,24 @@ const DataFetcher = (() => {
         return entry.data;
     }
 
+    let _idbWarned = false;
+    /** LRU write (evicting the oldest at capacity) with async write-through to IndexedDB. */
     function _cacheSet(key, data) {
         if (_cache.size >= MAX_CACHE) {
             const oldest = _cache.keys().next().value;
             _cache.delete(oldest);
         }
         _cache.set(key, { data, time: Date.now() });
-        // Write-through to IndexedDB (async, non-blocking)
-        _idbSet(key, data).catch(() => {});
+        // Write-through to IndexedDB (async, non-blocking). If persistence
+        // fails (storage full / blocked / private mode), the in-memory cache
+        // still works — warn once so the degraded offline support is visible
+        // instead of silently swallowed.
+        _idbSet(key, data).catch((e) => {
+            if (!_idbWarned) {
+                _idbWarned = true;
+                console.warn('[DataFetcher] offline cache persistence unavailable; continuing in-memory only:', e && e.message);
+            }
+        });
     }
 
     // ===== IndexedDB PERSISTENT CACHE =====
@@ -306,6 +369,7 @@ const DataFetcher = (() => {
     const IDB_MAX_ENTRIES = 500;
     let _idb = null;
 
+    /** Open (and lazily create) the IndexedDB cache database; resolves the connection. */
     function _idbOpen() {
         if (_idb) return Promise.resolve(_idb);
         return new Promise((resolve, reject) => {
@@ -321,6 +385,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Read a key from IndexedDB; returns its data, or null when missing/expired/error. */
     async function _idbGet(key) {
         const db = await _idbOpen();
         return new Promise((resolve) => {
@@ -340,6 +405,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Persist a key/data entry to IndexedDB, trimming the store when over the size cap. */
     async function _idbSet(key, data) {
         const db = await _idbOpen();
         return new Promise((resolve, reject) => {
@@ -358,6 +424,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Delete a single key from the IndexedDB cache (best-effort). */
     async function _idbDelete(key) {
         const db = await _idbOpen();
         return new Promise((resolve) => {
@@ -368,6 +435,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Evict up to `count` oldest entries via cursor; resolves with the number deleted. */
     async function _idbEvict(count) {
         const db = await _idbOpen();
         return new Promise((resolve) => {
@@ -388,6 +456,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Clear all entries from the IndexedDB cache (best-effort). */
     async function _idbClear() {
         const db = await _idbOpen();
         return new Promise((resolve) => {
@@ -401,18 +470,40 @@ const DataFetcher = (() => {
     /**
      * Utility: Fetch with exponential backoff retry
      */
-    async function fetchWithRetry(url, options = {}, retries = 3, backoff = 1000) {
+    // Per-attempt timeout (ms). The public APIs (Overpass, Nominatim,
+    // open-elevation) routinely hang rather than error under load, which would
+    // otherwise stall the whole cell fetch on a single `await fetch`. Aborting
+    // lets the retry/backoff loop and each caller's fallback kick in so the app
+    // degrades gracefully instead of freezing.
+    const FETCH_TIMEOUT_MS = 15000;
+
+    /** Fetch JSON with per-attempt timeout and exponential-backoff retries; honours a
+     *  caller abort signal. Throws the last error after all retries are exhausted. */
+    async function fetchWithRetry(url, options = {}, retries = 3, backoff = 1000, timeout = FETCH_TIMEOUT_MS) {
         let lastError;
         for (let i = 0; i < retries; i++) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(new Error(`timeout after ${timeout}ms`)), timeout);
+            // Forward a caller-supplied abort signal so external cancellation
+            // (e.g. navigating away mid-query) still propagates to the fetch.
+            if (options.signal) {
+                if (options.signal.aborted) controller.abort(options.signal.reason);
+                else options.signal.addEventListener('abort',
+                    () => controller.abort(options.signal.reason), { once: true });
+            }
             try {
-                const resp = await fetch(url, options);
+                const resp = await fetch(url, { ...options, signal: controller.signal });
                 if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                 return await resp.json();
             } catch (err) {
                 lastError = err;
+                // Honour a caller-initiated abort immediately — don't burn retries.
+                if (options.signal?.aborted) throw err;
                 if (i < retries - 1) {
                     await new Promise(res => setTimeout(res, backoff * Math.pow(2, i)));
                 }
+            } finally {
+                clearTimeout(timer);
             }
         }
         throw lastError;
@@ -435,6 +526,8 @@ const DataFetcher = (() => {
   nwr[highway=street_lamp](around:${radius},${lat},${lng});
   way[highway~"^(primary|secondary|tertiary|residential|trunk|footway|path|pedestrian|cycleway)$"](around:${radius},${lat},${lng});
   nwr[man_made~"^(tower|mast|water_tower|storage_tank|bridge)$"](around:${radius},${lat},${lng});
+  nwr[man_made~"^(pipeline|water_works|water_well|wastewater_plant|reservoir_covered|manhole|gasometer)$"](around:${radius},${lat},${lng});
+  nwr[amenity=drinking_water](around:${radius},${lat},${lng});
   nwr[power](around:${radius},${lat},${lng});
   nwr[natural=water](around:${radius},${lat},${lng});
   nwr[waterway](around:${radius},${lat},${lng});
@@ -468,7 +561,7 @@ const DataFetcher = (() => {
 
         Object.values(CATEGORIES).forEach(cat => {
             cat.features.forEach(f => {
-                results[f.key] = { count: 0, names: [], items: [] };
+                results[f.key] = { count: 0, names: [], items: [], subTypes: {} };
             });
         });
 
@@ -491,6 +584,10 @@ const DataFetcher = (() => {
                                 lng: center.lon || center.lng,
                                 type: el.type
                             });
+                        }
+                        if (f.key === 'worship' && tags.religion) {
+                            const r = String(tags.religion).toLowerCase();
+                            results[f.key].subTypes[r] = (results[f.key].subTypes[r] || 0) + 1;
                         }
                     }
                 });
@@ -519,7 +616,37 @@ const DataFetcher = (() => {
      * @param {number} radius - Search radius in meters (default 500)
      * @param {object} [sharedAddress] - Pre-fetched address to avoid duplicate Nominatim calls
      */
+    // ===== REQUEST COALESCING =====
+    // Overlays fire many concurrent fetchAllFeatures() calls, and rapid
+    // re-toggles / bivariate axis changes re-request the same cells before the
+    // first completes. The LRU/IndexedDB cache only populates *after* a fetch
+    // finishes, so without coalescing each identical (lat,lng,radius) in flight
+    // does a full duplicate network fetch. _coalesce funnels them onto one
+    // promise; the cache then serves everyone once it resolves.
+    const _inflight = new Map();
+
+    /** Funnel concurrent calls for the same key onto a single in-flight promise.
+     *  Pure + testable: pass any Map, a key, and a factory. No caching of its
+     *  own — the entry is removed once the promise settles. */
+    function _coalesce(inflight, key, factory) {
+        if (inflight.has(key)) return inflight.get(key);
+        const p = Promise.resolve().then(factory).finally(() => inflight.delete(key));
+        inflight.set(key, p);
+        return p;
+    }
+
+    /** Public entry point: return all features for a cell, serving cache and
+     *  coalescing concurrent identical requests onto one in-flight fetch. */
     async function fetchAllFeatures(lat, lng, radius = 500, sharedAddress = null) {
+        const key = _cacheKey(lat, lng, radius);
+        const cached = _cacheGet(key);
+        if (cached) return cached;
+        return _coalesce(_inflight, key, () => _doFetchAllFeatures(lat, lng, radius, sharedAddress));
+    }
+
+    /** Core fetch: check caches, fan out all data sources in parallel, assemble the
+     *  result with computed scores + per-source status, then cache and return it. */
+    async function _doFetchAllFeatures(lat, lng, radius = 500, sharedAddress = null) {
         const key = _cacheKey(lat, lng, radius);
         const cached = _cacheGet(key);
         if (cached) return cached;
@@ -563,13 +690,29 @@ const DataFetcher = (() => {
         // Extract city name for AQI queries (shared — no duplicate Nominatim call)
         const cityName = result.address.city || result.address.area || 'Indore';
 
+        // Per-source memoization for the slow / shared-input fetches.
+        // Adjacent DigiPin cells (4x4m) often share the same upstream data
+        // (weather station, elevation tile, Wikipedia geosearch radius), so
+        // this is a meaningful win on top of the existing result-level cache.
+        const cache = (typeof DataFetcherCache !== 'undefined') ? DataFetcherCache : null;
+        // staleWhileRevalidate: a repeat visit past the TTL gets last reading
+        // instantly (no spinner) while a fresh one loads in the background —
+        // these sources change slowly relative to their TTLs.
+        /** Per-source memoize keyed by name+lat/lng (stale-while-revalidate), or
+         *  run the factory directly when the shared cache is unavailable. */
+        const memo = (name, ttlMs, factory) => cache
+            ? cache.memoize(cache.keyFor(name, lat, lng), ttlMs, factory, { staleWhileRevalidate: true })
+            : factory();
+        const HOUR = 60 * 60 * 1000;
+        const DAY = 24 * HOUR;
+
         // Fire remaining requests in parallel (including building intelligence + new sources)
-        const [osmData, weatherData, aqiData, wikiData, elevData, popData, buildingData, openMeteoAqi, solarData, bhoondhiData, ogdHealthData, iudxData, iudxCatalogueData, cepiData, postOfficeData] = await Promise.allSettled([
+        const [osmData, weatherData, aqiData, wikiData, elevData, popData, buildingData, openMeteoAqi, solarData, bhoondhiData, ogdHealthData, iudxData, iudxCatalogueData, cepiData, postOfficeData, precipData, evChargingData] = await Promise.allSettled([
             fetchOSMData(lat, lng, radius),
-            fetchWeather(lat, lng),
-            fetchAQI(lat, lng, cityName),
-            fetchWikipedia(lat, lng),
-            fetchElevation(lat, lng),
+            memo('weather', 1 * HOUR, () => fetchWeather(lat, lng)),
+            memo('aqi', 1 * HOUR, () => fetchAQI(lat, lng, cityName)),
+            memo('wiki', 30 * DAY, () => fetchWikipedia(lat, lng)),
+            memo('elev', 30 * DAY, () => fetchElevation(lat, lng)),
             fetchWorldPop(lat, lng),
             typeof BuildingIntelligence !== 'undefined' ? BuildingIntelligence.fetch(lat, lng, radius) : Promise.resolve(null),
             fetchOpenMeteoAQI(lat, lng),
@@ -579,12 +722,16 @@ const DataFetcher = (() => {
             fetchIUDX(lat, lng),
             fetchIUDXCatalogue(cityName),
             fetchCEPI(cityName, result.address.state),
-            fetchNearbyPostOffices(lat, lng, result.address.district)
+            fetchNearbyPostOffices(lat, lng, result.address.district),
+            memo('precip', 7 * DAY, () => fetchHistoricalPrecipitation(lat, lng)),
+            memo('ev', 7 * DAY, () => fetchEVCharging(lat, lng))
         ]);
 
         // === OSM POI data ===
+        let osmElements = [];   // hoisted so the utilities pass can reuse them
         if (osmData.status === 'fulfilled') {
             const elements = osmData.value.elements || [];
+            osmElements = elements;
             result.raw.totalElements = elements.length;
 
             const classified = classifyElements(elements);
@@ -626,6 +773,11 @@ const DataFetcher = (() => {
         // === Elevation (for flood risk) ===
         if (elevData.status === 'fulfilled' && elevData.value != null) {
             result.environment.elevation = elevData.value;
+        }
+
+        // === Annual precipitation (for flood risk) ===
+        if (precipData.status === 'fulfilled' && precipData.value != null) {
+            result.environment.precipitation = precipData.value;
         }
 
         // === WorldPop population density ===
@@ -671,6 +823,11 @@ const DataFetcher = (() => {
             result.context.healthFacilities = ogdHealthData.value;
         }
 
+        // === EV Charging (OpenChargeMap) ===
+        if (evChargingData.status === 'fulfilled' && evChargingData.value) {
+            result.context.evCharging = evChargingData.value;
+        }
+
         // === IUDX Smart City Data ===
         if (iudxData.status === 'fulfilled' && iudxData.value) {
             result.context.iudx = iudxData.value;
@@ -691,8 +848,135 @@ const DataFetcher = (() => {
             result.context.postOffices = postOfficeData.value;
         }
 
+        // === Realtime layers (urban growth forecast, future: IMD, quakes, etc.) ===
+        result.realtime = result.realtime || {};
+        if (typeof RealtimeGrowth !== 'undefined') {
+            try {
+                const osmConstruction =
+                    (result.categories?.landuse?.features?.construction?.count) || 0;
+                // Commercial intensity from the actual OSM features (the old
+                // `categories.shops.features.commercial` path never existed — there
+                // is no `shops` category nor a `commercial` feature — so this was
+                // always 0, feeding the growth model a dead signal). Sum the
+                // commercial land-use area + commercial buildings under `landuse`.
+                const osmCommercial =
+                    ((result.categories?.landuse?.features?.commercial_area?.count) || 0) +
+                    ((result.categories?.landuse?.features?.com_buildings?.count) || 0);
+                const signals = await RealtimeGrowth.fetchCell(lat, lng, {
+                    osm_construction_count: osmConstruction,
+                    osm_commercial_density: osmCommercial,
+                });
+                const growth = RealtimeGrowth.scoreCell(signals);
+                if (growth) result.realtime.growth = growth;
+            } catch (e) {
+                console.warn('[orchestrator] growth fetch skipped:', e);
+            }
+        }
+
+        if (typeof RealtimeHeat !== 'undefined') {
+            try {
+                const heatSignals = await RealtimeHeat.fetchCell(lat, lng);
+                const heat = RealtimeHeat.scoreCell(heatSignals);
+                if (heat) result.realtime.heat = heat;
+            } catch (e) {
+                console.warn('[orchestrator] heat fetch skipped:', e);
+            }
+        }
+
+        if (typeof RealtimeTraffic !== 'undefined') {
+            try {
+                const trafficSignals = await RealtimeTraffic.fetchCell(lat, lng);
+                const traffic = RealtimeTraffic.scoreCell(trafficSignals);
+                if (traffic) result.realtime.traffic = traffic;
+            } catch (e) {
+                console.warn('[orchestrator] traffic fetch skipped:', e);
+            }
+        }
+
+        if (typeof RealtimeMobility !== 'undefined') {
+            try {
+                const mobilitySignals = await RealtimeMobility.fetchCell(lat, lng);
+                const mobility = RealtimeMobility.scoreCell(mobilitySignals);
+                if (mobility) result.realtime.mobility = mobility;
+            } catch (e) {
+                console.warn('[orchestrator] mobility fetch skipped:', e);
+            }
+        }
+
         // === Compute intelligence scores ===
         result.scores = computeScores(result);
+
+        // === Utilities & infrastructure (per-cell) ===
+        // OSM-derived (sewer/water/gas pipes, electricity) from the elements
+        // already fetched, plus a bundled regional reference (groundwater,
+        // PNG gas) and the modeled noise reading. Best-effort.
+        if (typeof Utilities !== 'undefined') {
+            try {
+                const utilRef = await memo('utilities_ref', 30 * DAY, () => Utilities.loadReference());
+                result.utilities = Utilities.assess(osmElements, utilRef, {
+                    lat, lng,
+                    quietnessScore: result.scores?.quietness_score?.value,
+                });
+            } catch (e) {
+                console.warn('[orchestrator] utilities skipped:', e);
+            }
+        }
+
+        // === Real-time signals — best-effort, never fail the cell fetch ===
+        // Sources: NDMA SACHET CAP alerts, IMD warnings + forecast, NCS
+        // earthquakes, Open-Meteo flood forecast. All best-effort.
+        // NOTE: preserve any realtime keys already written upstream
+        // (growth, heat) — earlier the unconditional reset to {} silently
+        // erased those scores for every alert-bearing cell.
+        result.realtime = result.realtime || {};
+        const stateName = result.address?.state || '';
+        const districtName = result.address?.district || '';
+        // cityName is already declared above (line ~564). Reuse it.
+
+        if (typeof RealtimeAlerts !== 'undefined') {
+            try {
+                const scoped = await RealtimeAlerts.getForLocation(stateName, cityName);
+                const severe = RealtimeAlerts.filterBySeverity(scoped, 'Severe');
+                result.realtime.sachet = {
+                    alerts: scoped,
+                    severeCount: severe.length,
+                    summary: RealtimeAlerts.summary(scoped),
+                    generatedAt: RealtimeAlerts.getGeneratedAt ? RealtimeAlerts.getGeneratedAt() : null
+                };
+            } catch { /* skip */ }
+        }
+
+        if (typeof RealtimeIMD !== 'undefined') {
+            try {
+                const [imdWarnings, imdForecast] = await Promise.all([
+                    RealtimeIMD.getWarningsForLocation(districtName, cityName),
+                    RealtimeIMD.getForecastForLocation(districtName, cityName),
+                ]);
+                result.realtime.imd = {
+                    warnings: imdWarnings,
+                    forecast: imdForecast,
+                    worstColor: RealtimeIMD.worstColor(imdWarnings),
+                };
+            } catch { /* skip */ }
+        }
+
+        if (typeof RealtimeQuakes !== 'undefined') {
+            try {
+                const nearby = await RealtimeQuakes.getNearby(lat, lng, 200);
+                result.realtime.quakes = {
+                    nearby,
+                    largest_nearby: nearby[0] || null,
+                    count_within_200km: nearby.length,
+                };
+            } catch { /* skip */ }
+        }
+
+        if (typeof RealtimeFlood !== 'undefined') {
+            try {
+                const flood = await RealtimeFlood.getForecast(lat, lng);
+                if (flood) result.realtime.flood = flood;
+            } catch { /* skip */ }
+        }
 
         // Merge building intelligence scores into main scores
         if (result.buildingIntel?.scores) {
@@ -708,10 +992,36 @@ const DataFetcher = (() => {
             result.scores.real_estate_growth.value = Math.min(100, Math.round(existing * 0.7 + devBoost));
         }
 
+        // Per-source health, so the UI can show what loaded vs what failed
+        // instead of silently hiding missing cards. A source is 'ok' when its
+        // fetch settled with non-null data, 'unavailable' otherwise (rejected,
+        // timed out, or returned null after an internal error).
+        const _aqiOk = sourceState(aqiData) === 'ok' || sourceState(openMeteoAqi) === 'ok';
+        result.sourceStatus = {
+            osm: sourceState(osmData),
+            weather: sourceState(weatherData),
+            aqi: _aqiOk ? 'ok' : 'unavailable',
+            elevation: sourceState(elevData),
+            population: sourceState(popData),
+            wikipedia: sourceState(wikiData),
+            solar: sourceState(solarData),
+            health: sourceState(ogdHealthData),
+            iudx: sourceState(iudxData),
+            evCharging: sourceState(evChargingData),
+            utilities: result.utilities ? 'ok' : 'unavailable',
+        };
+
         _cacheSet(key, result);
         return result;
     }
 
+    /** Map one Promise.allSettled outcome to 'ok' | 'unavailable'. Pure. */
+    function sourceState(settled) {
+        return (settled && settled.status === 'fulfilled' && settled.value != null)
+            ? 'ok' : 'unavailable';
+    }
+
+    /** Query Overpass for all OSM elements within `radius` of the cell. */
     async function fetchOSMData(lat, lng, radius) {
         const query = buildOverpassQuery(lat, lng, radius);
         return fetchWithRetry(OVERPASS_URL, {
@@ -721,6 +1031,7 @@ const DataFetcher = (() => {
         });
     }
 
+    /** Fetch current weather from Open-Meteo; returns normalised fields, {} on failure. */
     async function fetchWeather(lat, lng) {
         const url = `${OPEN_METEO_URL}?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,uv_index&timezone=auto`;
         try {
@@ -740,23 +1051,41 @@ const DataFetcher = (() => {
 
     /**
      * AQI: Primary — CPCB via data.gov.in
-     * Fallback — WAQI demo token
-     * cityName is passed in to avoid duplicate Nominatim call
+     * Fallback — WAQI. Uses geo endpoint when a real token is configured
+     * via window.DIGIPIN_CONFIG.waqiToken; otherwise falls back to the
+     * city-name endpoint (the demo token cannot do geo).
+     * cityName is passed in to avoid duplicate Nominatim call.
      */
-    async function fetchAQI(_lat, _lng, cityName = 'Indore') {
+    async function fetchAQI(lat, lng, cityName = 'Indore') {
         // Try CPCB first
         try {
             const cpcbResult = await fetchCPCB_AQI(cityName);
             if (cpcbResult && cpcbResult.aqi != null) return cpcbResult;
         } catch { /* fall through */ }
 
-        // Fallback: WAQI
+        // Fallback: WAQI. Prefer the geo-query (nearest station to *this cell*)
+        // even on the demo token — it varies by location, unlike the city lookup,
+        // so neighbouring cells no longer all show one city-wide number.
+        const waqiToken = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG?.waqiToken) || 'demo';
+        const rawUrl = `https://api.waqi.info/feed/geo:${lat};${lng}/?token=${encodeURIComponent(waqiToken)}`;
+        const url = viaProxy(rawUrl);
+
         try {
-            const url = `https://api.waqi.info/feed/${encodeURIComponent(cityName)}/?token=demo`;
             const data = await fetchWithRetry(url);
             if (data.status !== 'ok') return {};
 
             const d = data.data;
+            // Station coords (d.city.geo = [lat, lng]) → distance from this cell.
+            let distKm = null;
+            const geo = d.city?.geo;
+            if (Array.isArray(geo) && geo.length >= 2) {
+                const R = 6371, toR = Math.PI / 180;
+                const dLat = (geo[0] - lat) * toR, dLng = (geo[1] - lng) * toR;
+                const a = Math.sin(dLat / 2) ** 2
+                    + Math.cos(lat * toR) * Math.cos(geo[0] * toR) * Math.sin(dLng / 2) ** 2;
+                distKm = Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 10) / 10;
+            }
+            const measuredAt = d.time?.iso || (d.time?.s ? d.time.s.replace(' ', 'T') : null);
             return {
                 aqi: d.aqi,
                 pm25: d.iaqi?.pm25?.v,
@@ -765,8 +1094,10 @@ const DataFetcher = (() => {
                 no2: d.iaqi?.no2?.v,
                 so2: d.iaqi?.so2?.v,
                 aqiStation: d.city?.name,
+                aqiStationDistanceKm: distKm,
+                aqiMeasuredAt: measuredAt,
                 aqiDominant: d.dominentpol,
-                aqiSource: 'WAQI'
+                aqiSource: 'WAQI (geo)'
             };
         } catch {
             return {};
@@ -778,7 +1109,7 @@ const DataFetcher = (() => {
      * Now takes cityName directly instead of calling Nominatim again
      */
     async function fetchCPCB_AQI(cityName) {
-        const url = `https://api.data.gov.in/resource/${CPCB_AQI_RESOURCE}?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json&limit=5&filters[city]=${encodeURIComponent(cityName)}`;
+        const url = viaProxy(`https://api.data.gov.in/resource/${CPCB_AQI_RESOURCE}?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json&limit=5&filters[city]=${encodeURIComponent(cityName)}`);
 
         const data = await fetchWithRetry(url);
         const records = data.records || [];
@@ -787,6 +1118,7 @@ const DataFetcher = (() => {
         const best = records.find(r => r.pollutant_avg && parseFloat(r.pollutant_avg) > 0) || records[0];
         const pm25 = records.find(r => r.pollutant_id === 'PM2.5');
         const pm10 = records.find(r => r.pollutant_id === 'PM10');
+        /** Find the record for a given CPCB pollutant_id, or undefined. */
         const findPollutant = (id) => records.find(r => r.pollutant_id === id);
         const no2 = findPollutant('NO2');
         const so2 = findPollutant('SO2');
@@ -808,34 +1140,41 @@ const DataFetcher = (() => {
         };
     }
 
-    /** AQI sub-index for PM2.5 (Indian NAQI standard) */
+    /** AQI sub-index for PM2.5 (Indian NAQI standard).
+     *  Bands are contiguous (each cLow touches the previous cHigh) so any
+     *  fractional concentration in a former gap (e.g. 30.5, 60.7) still maps
+     *  to a sub-index instead of falling through to null. */
     function computeAQI_PM25(c) {
+        if (c == null || !Number.isFinite(c) || c < 0) return null;
         const bp = [
-            [0, 30, 0, 50], [31, 60, 51, 100], [61, 90, 101, 200],
-            [91, 120, 201, 300], [121, 250, 301, 400], [251, 500, 401, 500]
+            [0, 30, 0, 50], [30, 60, 51, 100], [60, 90, 101, 200],
+            [90, 120, 201, 300], [120, 250, 301, 400], [250, 500, 401, 500]
         ];
         for (const [cLow, cHigh, iLow, iHigh] of bp) {
             if (c >= cLow && c <= cHigh) {
                 return Math.round(((iHigh - iLow) / (cHigh - cLow)) * (c - cLow) + iLow);
             }
         }
-        return c > 250 ? 500 : null;
+        return c > 500 ? 500 : null;   // above-scale readings cap at 500
     }
 
-    /** AQI sub-index for PM10 (Indian NAQI standard) */
+    /** AQI sub-index for PM10 (Indian NAQI standard). Contiguous bands — see
+     *  computeAQI_PM25 for the gap-closing rationale. */
     function computeAQI_PM10(c) {
+        if (c == null || !Number.isFinite(c) || c < 0) return null;
         const bp = [
-            [0, 50, 0, 50], [51, 100, 51, 100], [101, 250, 101, 200],
-            [251, 350, 201, 300], [351, 430, 301, 400], [431, 600, 401, 500]
+            [0, 50, 0, 50], [50, 100, 51, 100], [100, 250, 101, 200],
+            [250, 350, 201, 300], [350, 430, 301, 400], [430, 600, 401, 500]
         ];
         for (const [cLow, cHigh, iLow, iHigh] of bp) {
             if (c >= cLow && c <= cHigh) {
                 return Math.round(((iHigh - iLow) / (cHigh - cLow)) * (c - cLow) + iLow);
             }
         }
-        return c > 430 ? 500 : null;
+        return c > 600 ? 500 : null;   // above-scale readings cap at 500
     }
 
+    /** Reverse-geocode a lat/lng via Nominatim into a structured address; {} on failure. */
     async function fetchAddress(lat, lng) {
         try {
             const url = `${NOMINATIM_URL}?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
@@ -862,27 +1201,33 @@ const DataFetcher = (() => {
      */
     async function fetchWikipedia(lat, lng) {
         try {
-            const searchUrl = `${WIKIPEDIA_URL}?action=query&list=geosearch&gscoord=${lat}|${lng}&gsradius=1000&gslimit=1&format=json&origin=*`;
+            const searchUrl = `${WIKIPEDIA_URL}?action=query&list=geosearch&gscoord=${lat}|${lng}&gsradius=5000&gslimit=3&format=json&origin=*`;
             const searchData = await fetchWithRetry(searchUrl);
             const pages = searchData.query?.geosearch;
             if (!pages || pages.length === 0) return null;
 
-            const pageId = pages[0].pageid;
-            const dist = pages[0].dist;
-
-            const propUrl = `${WIKIPEDIA_URL}?action=query&prop=extracts&exintro=1&explaintext=1&pageids=${pageId}&format=json&origin=*`;
+            const pageIds = pages.map(p => p.pageid).join('|');
+            const propUrl = `${WIKIPEDIA_URL}?action=query&prop=extracts&exintro=1&explaintext=1&pageids=${pageIds}&format=json&origin=*`;
             const propData = await fetchWithRetry(propUrl);
-            const extract = propData.query?.pages[pageId]?.extract;
+            const propPages = propData.query?.pages || {};
 
-            if (extract) {
-                return {
-                    title: pages[0].title,
-                    distanceToCenter: dist,
-                    summary: extract.substring(0, 300) + (extract.length > 300 ? '...' : ''),
-                    url: `https://en.wikipedia.org/?curid=${pageId}`
-                };
-            }
-            return null;
+            const nearest = pages[0];
+            const nearestExtract = propPages[nearest.pageid]?.extract;
+            if (!nearestExtract) return null;
+
+            const nearby = pages.slice(1).map(p => ({
+                title: p.title,
+                distance: p.dist,
+                url: `https://en.wikipedia.org/?curid=${p.pageid}`
+            }));
+
+            return {
+                title: nearest.title,
+                distanceToCenter: nearest.dist,
+                summary: nearestExtract.substring(0, 300) + (nearestExtract.length > 300 ? '...' : ''),
+                url: `https://en.wikipedia.org/?curid=${nearest.pageid}`,
+                nearby
+            };
         } catch {
             return null;
         }
@@ -915,6 +1260,36 @@ const DataFetcher = (() => {
                 surrounding: avgSurrounding,
                 relative: centerElev - avgSurrounding,
                 isLowLying: centerElev < avgSurrounding - 2
+            };
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * Fetch the previous 365 days of daily precipitation from Open-Meteo's
+     * archive API (free, no key) and return the annual total in mm.
+     * Used as input to the flood_risk score. The window ends 7 days ago
+     * to account for archive ingestion lag.
+     */
+    async function fetchHistoricalPrecipitation(lat, lng) {
+        try {
+            const end = new Date();
+            end.setUTCDate(end.getUTCDate() - 7);
+            const start = new Date(end);
+            start.setUTCFullYear(start.getUTCFullYear() - 1);
+            /** Format a Date as a YYYY-MM-DD string for the archive API. */
+            const fmt = (d) => d.toISOString().slice(0, 10);
+            const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lng}&start_date=${fmt(start)}&end_date=${fmt(end)}&daily=precipitation_sum&timezone=Asia%2FKolkata`;
+            const data = await fetchWithRetry(url);
+            const sums = (data.daily?.precipitation_sum || []).filter(v => v != null);
+            if (sums.length === 0) return null;
+            const totalMm = sums.reduce((a, b) => a + b, 0);
+            return {
+                annualMm: Math.round(totalMm),
+                daysCovered: sums.length,
+                periodStart: fmt(start),
+                periodEnd: fmt(end)
             };
         } catch {
             return null;
@@ -1018,7 +1393,7 @@ const DataFetcher = (() => {
             if (!_iudxCache || cacheEmpty) {
                 const fetches = IUDX_DATASETS.map(async ds => {
                     try {
-                        const resp = await fetch(`${IUDX_S3_BASE}/${ds.file}`);
+                        const resp = await fetch(`${IUDX_S3_BASE}/${ds.file}`, { signal: AbortSignal.timeout(8000) });
                         if (!resp.ok) return { key: ds.key, data: [] };
                         return { key: ds.key, data: await resp.json() };
                     } catch { return { key: ds.key, data: [] }; }
@@ -1029,7 +1404,9 @@ const DataFetcher = (() => {
             }
 
             // Haversine distance in km
+            /** Degrees to radians. */
             const toRad = d => d * Math.PI / 180;
+            /** Great-circle distance in km between two lat/lng points. */
             const haversine = (lat1, lng1, lat2, lng2) => {
                 const R = 6371;
                 const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
@@ -1069,7 +1446,9 @@ const DataFetcher = (() => {
     /**
      * IUDX Catalogue API — Discover available datasets for a city.
      * Uses cos.iudx.org.in/iudx/cat/v1/search (no auth needed).
-     * Routed via allorigins proxy to bypass CORS restrictions from browser.
+     * CORS-blocked from the browser, so routed via the configured data proxy
+     * (window.DIGIPIN_CONFIG.proxyBase), falling back to the public allorigins
+     * proxy when none is configured. See proxy/README.md.
      * Returns dataset metadata: names, descriptions, resource types, providers.
      */
     async function fetchIUDXCatalogue(cityName) {
@@ -1078,8 +1457,7 @@ const DataFetcher = (() => {
             if (_iudxCatalogueCache[city]) return _iudxCatalogueCache[city];
 
             const catUrl = `https://cos.iudx.org.in/iudx/cat/v1/search?property=[type]&value=[[iudx:Resource]]&q=${encodeURIComponent(city)}&limit=50`;
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(catUrl)}`;
-            const resp = await fetch(proxyUrl);
+            const resp = await fetch(viaProxy(catUrl, { corsFallback: true }), { signal: AbortSignal.timeout(8000) });
             if (!resp.ok) return null;
             const data = await resp.json();
             const results = data.results || [];
@@ -1136,7 +1514,7 @@ const DataFetcher = (() => {
      */
     async function fetchOGDHealthFacilities(lat, lng, state) {
         try {
-            const url = `https://api.data.gov.in/resource/${OGD_HOSPITAL_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=10&filters[state]=${encodeURIComponent(state || 'Madhya Pradesh')}`;
+            const url = viaProxy(`https://api.data.gov.in/resource/${OGD_HOSPITAL_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=10&filters[state]=${encodeURIComponent(state || 'Madhya Pradesh')}`);
             const data = await fetchWithRetry(url);
             const records = data.records || [];
             if (records.length === 0) return null;
@@ -1170,7 +1548,7 @@ const DataFetcher = (() => {
     async function fetchCEPI(cityName, state) {
         try {
             if (!_cepiCache) {
-                const url = `https://api.data.gov.in/resource/${OGD_CEPI_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=50`;
+                const url = viaProxy(`https://api.data.gov.in/resource/${OGD_CEPI_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=50`);
                 const data = await fetchWithRetry(url);
                 _cepiCache = data.records || [];
             }
@@ -1207,12 +1585,14 @@ const DataFetcher = (() => {
     async function fetchNearbyPostOffices(lat, lng, district) {
         try {
             const dist = district || 'Indore';
-            const url = `https://api.data.gov.in/resource/${OGD_PINCODE_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=50&filters[district]=${encodeURIComponent(dist.toUpperCase())}`;
+            const url = viaProxy(`https://api.data.gov.in/resource/${OGD_PINCODE_RESOURCE}?api-key=${OGD_API_KEY}&format=json&limit=50&filters[district]=${encodeURIComponent(dist.toUpperCase())}`);
             const data = await fetchWithRetry(url);
             const records = data.records || [];
             if (records.length === 0) return null;
 
+            /** Degrees to radians. */
             const toRad = d => d * Math.PI / 180;
+            /** Great-circle distance in km between two lat/lng points. */
             const haversine = (lat1, lng1, lat2, lng2) => {
                 const R = 6371;
                 const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
@@ -1252,6 +1632,62 @@ const DataFetcher = (() => {
         } catch { return null; }
     }
 
+    /**
+     * Collapse one OpenChargeMap POI into a flat, defensively-typed station.
+     * Pure — every upstream field is optional, so guard each access.
+     */
+    function parseOCMStation(poi) {
+        if (!poi || typeof poi !== 'object') return null;
+        const addr = poi.AddressInfo || {};
+        const conns = Array.isArray(poi.Connections) ? poi.Connections : [];
+        const powers = conns
+            .map(c => (c && typeof c.PowerKW === 'number' ? c.PowerKW : null))
+            .filter(p => p != null);
+        const types = [...new Set(
+            conns.map(c => c && c.ConnectionType && c.ConnectionType.Title).filter(Boolean)
+        )];
+        const summedQty = conns.reduce(
+            (s, c) => s + (c && typeof c.Quantity === 'number' ? c.Quantity : 0), 0);
+        return {
+            name: addr.Title || 'Charging station',
+            town: addr.Town || null,
+            distanceKm: typeof addr.Distance === 'number' ? Math.round(addr.Distance * 10) / 10 : null,
+            operator: (poi.OperatorInfo && poi.OperatorInfo.Title) || null,
+            points: typeof poi.NumberOfPoints === 'number' ? poi.NumberOfPoints : (summedQty || null),
+            maxPowerKW: powers.length ? Math.max(...powers) : null,
+            connectionTypes: types,
+            isOperational: poi.StatusType ? poi.StatusType.IsOperational !== false : null,
+        };
+    }
+
+    /**
+     * EV charging access — nearby OpenChargeMap stations. Contextual layer
+     * (shown in the panel), not part of the composite score. CORS/key-gated, so
+     * routed through the proxy when configured.
+     */
+    async function fetchEVCharging(lat, lng) {
+        try {
+            const key = OCM_API_KEY ? `&key=${encodeURIComponent(OCM_API_KEY)}` : '';
+            const url = viaProxy(`https://api.openchargemap.io/v3/poi/?output=json&latitude=${lat}&longitude=${lng}&distance=8&distanceunit=KM&maxresults=25&compact=true&verbose=false${key}`);
+            const data = await fetchWithRetry(url);
+            if (!Array.isArray(data) || data.length === 0) return null;
+
+            const stations = data.map(parseOCMStation).filter(Boolean)
+                .sort((a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity));
+            if (stations.length === 0) return null;
+
+            return {
+                count: stations.length,
+                nearestKm: stations[0].distanceKm,
+                fastCount: stations.filter(s => s.maxPowerKW != null && s.maxPowerKW >= 50).length,
+                totalPoints: stations.reduce((sum, s) => sum + (s.points || 0), 0),
+                operators: [...new Set(stations.map(s => s.operator).filter(Boolean))].slice(0, 4),
+                stations: stations.slice(0, 5),
+            };
+        } catch { return null; }
+    }
+
+    /** Map an Open-Meteo WMO weather code to a human-readable description. */
     function getWeatherDescription(code) {
         const d = {
             0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
@@ -1274,11 +1710,40 @@ const DataFetcher = (() => {
     }
 
     /**
+     * Religious diversity from a {religion: count} distribution.
+     * Blends Shannon evenness (how balanced the mix is) with richness
+     * (how many distinct religions are present, saturating at 4).
+     * Falls back to a discounted log of total count when OSM has no
+     * religion= tags, so the score does not collapse to zero in
+     * under-tagged areas.
+     */
+    function religiousDiversityScore(subTypes, totalCount) {
+        const counts = Object.values(subTypes || {}).filter(c => c > 0);
+        const taggedTotal = counts.reduce((a, b) => a + b, 0);
+        if (taggedTotal === 0) {
+            // No religion= tags survived classification; weak fallback from raw count.
+            return Math.round(normLog(totalCount, 20) * 0.5);
+        }
+        const richnessFactor = Math.min(counts.length / 4, 1);
+        if (counts.length === 1) {
+            // Single religion: evenness undefined; lean on richness + presence only.
+            return Math.round(100 * (0.4 * richnessFactor) * Math.min(1, taggedTotal / 3));
+        }
+        const H = counts.reduce((acc, c) => {
+            const p = c / taggedTotal;
+            return acc - p * Math.log(p);
+        }, 0);
+        const evenness = H / Math.log(counts.length);
+        return Math.round(100 * (0.6 * evenness + 0.4 * richnessFactor));
+    }
+
+    /**
      * Compute 20 intelligence scores (0-100) using log-scale normalization
      * Max values calibrated for 500m radius in dense Indian cities
      */
     function computeScores(data) {
         const cats = data.categories || {};
+        /** Count for a category/feature, or 0 when absent. */
         const get = (catKey, featureKey) => {
             return cats[catKey]?.features?.[featureKey]?.count || 0;
         };
@@ -1378,10 +1843,13 @@ const DataFetcher = (() => {
                     get('food', 'bakery') + get('food', 'bars') + get('food', 'ice_cream') +
                     get('food', 'confectionery') + get('food', 'butcher'), 40)
             },
-            religious_diversity: {
-                label: 'Religious Diversity',
-                value: normLog(get('entertainment', 'worship'), 20)
-            },
+            religious_diversity: (() => {
+                const worship = cats['entertainment']?.features?.['worship'];
+                return {
+                    label: 'Religious Diversity',
+                    value: religiousDiversityScore(worship?.subTypes, worship?.count || 0)
+                };
+            })(),
             public_service: {
                 label: 'Public Service Access',
                 value: normLog(
@@ -1429,6 +1897,7 @@ const DataFetcher = (() => {
      */
     function computeSafetyScore(data) {
         const cats = data.categories || {};
+        /** Count for a category/feature, or 0 when absent. */
         const get = (catKey, featureKey) => cats[catKey]?.features?.[featureKey]?.count || 0;
 
         const lamps = get('infrastructure', 'street_lamps');
@@ -1460,6 +1929,7 @@ const DataFetcher = (() => {
      */
     function computeQuietnessScore(data) {
         const cats = data.categories || {};
+        /** Count for a category/feature, or 0 when absent. */
         const get = (catKey, featureKey) => cats[catKey]?.features?.[featureKey]?.count || 0;
 
         // Noise sources with calibrated weights
@@ -1502,6 +1972,7 @@ const DataFetcher = (() => {
 
         // Fallback: building density proxy
         const cats = data.categories || {};
+        /** Count for a category/feature, or 0 when absent. */
         const get = (catKey, featureKey) => cats[catKey]?.features?.[featureKey]?.count || 0;
 
         const resBuildings = get('landuse', 'res_buildings');
@@ -1520,6 +1991,7 @@ const DataFetcher = (() => {
      */
     function computeFloodRisk(data) {
         const cats = data.categories || {};
+        /** Count for a category/feature, or 0 when absent. */
         const get = (catKey, featureKey) => cats[catKey]?.features?.[featureKey]?.count || 0;
         const elev = data.environment?.elevation;
 
@@ -1542,6 +2014,7 @@ const DataFetcher = (() => {
 
     // ===== EXPORT FUNCTIONS =====
 
+    /** Trigger a browser download of `data` as a pretty-printed JSON file. */
     function exportToJSON(data, filename = 'digipin_data.json') {
         const json = JSON.stringify(data, null, 2);
         const blob = new Blob([json], { type: 'application/json' });
@@ -1553,12 +2026,21 @@ const DataFetcher = (() => {
         URL.revokeObjectURL(url);
     }
 
+    /** Trigger a browser download of the cell's non-zero feature counts as CSV. */
     function exportToCSV(data, filename = 'digipin_features.csv') {
+        // Neutralise spreadsheet formula injection: a leading =,+,-,@ in an
+        // OSM-derived name can execute when opened in Excel/Sheets — prefix a
+        // quote, and double any embedded quotes. (Mirrors js/compare.js.)
+        const cell = (s) => {
+            const v = String(s == null ? '' : s);
+            const safe = /^\s*[=+\-@]/.test(v) ? `'${v}` : v;
+            return `"${safe.replace(/"/g, '""')}"`;
+        };
         let csv = 'Category,Feature Key,Feature Name,Count\n';
         for (const [, cat] of Object.entries(data.categories)) {
-            for (const [, feat] of Object.entries(cat.features)) {
+            for (const [featKey, feat] of Object.entries(cat.features)) {
                 if (feat.count > 0) {
-                    csv += `"${cat.name}","${featKey}","${feat.label}",${feat.count}\n`;
+                    csv += `${cell(cat.name)},${cell(featKey)},${cell(feat.label)},${feat.count}\n`;
                 }
             }
         }
@@ -1570,6 +2052,84 @@ const DataFetcher = (() => {
         a.click();
         URL.revokeObjectURL(url);
     }
+
+    // ===== GEOJSON EXPORT =====
+    // DIGIPIN cells are real rectangles, so they export cleanly as GeoJSON
+    // polygons for QGIS / geojson.io / government workflows — the interop lever.
+
+    // Flatten a scores object — accepts both {id:{label,value}} (live/precomputed)
+    // and an already-flat {id:value} — into plain {id:value} feature properties.
+    function _flattenScores(scores) {
+        const out = {};
+        if (!scores || typeof scores !== 'object') return out;
+        for (const [id, s] of Object.entries(scores)) {
+            out[id] = (s && typeof s === 'object' && 'value' in s) ? s.value : s;
+        }
+        return out;
+    }
+
+    // A GeoJSON Polygon Feature for one DIGIPIN cell. The ring is closed and
+    // wound counter-clockwise (RFC 7946 right-hand rule). decodePartial handles
+    // both full 10-char and truncated (precomputed level-N) codes.
+    function cellToFeature(code, scores, extraProps) {
+        const b = DigiPin.decodePartial(code).bounds;
+        const ring = [
+            [b.west, b.south], [b.east, b.south],
+            [b.east, b.north], [b.west, b.north],
+            [b.west, b.south],
+        ];
+        const props = { digipin: DigiPin.format(code) };
+        if (extraProps) {
+            for (const [k, v] of Object.entries(extraProps)) {
+                if (v !== undefined && v !== null) props[k] = v;
+            }
+        }
+        Object.assign(props, _flattenScores(scores));
+        return { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: props };
+    }
+
+    // Wrap features in a FeatureCollection.
+    function buildFeatureCollection(features) {
+        return { type: 'FeatureCollection', features: features || [] };
+    }
+
+    // One full-cell data object ({code, scores}) → single-feature collection.
+    function cellToGeoJSON(data) {
+        const code = data.code || data.digipin;
+        return buildFeatureCollection(code ? [cellToFeature(code, data.scores)] : []);
+    }
+
+    // Text2Map / city-scan ranked rows ({code, score, area, scores}) → collection.
+    function rankedToGeoJSON(results) {
+        return buildFeatureCollection((results || [])
+            .filter(r => r && r.code)
+            .map(r => cellToFeature(r.code, r.scores, {
+                score: typeof r.score === 'number' ? Math.round(r.score * 10) / 10 : undefined,
+                area: r.area || undefined,
+            })));
+    }
+
+    /** Trigger a browser download of a FeatureCollection as a .geojson file. */
+    function _downloadGeoJSON(fc, filename) {
+        const blob = new Blob([JSON.stringify(fc, null, 2)], { type: 'application/geo+json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    /** Download a single cell's data as a one-feature GeoJSON file. */
+    function exportToGeoJSON(data, filename = 'digipin_cell.geojson') {
+        _downloadGeoJSON(cellToGeoJSON(data), filename);
+    }
+
+    /** Download ranked Text2Map / city-scan rows as a GeoJSON FeatureCollection. */
+    function exportRankedToGeoJSON(results, filename = 'digipin_ranked.geojson') {
+        _downloadGeoJSON(rankedToGeoJSON(results), filename);
+    }
+
 
     return {
         fetchAllFeatures,
@@ -1585,14 +2145,28 @@ const DataFetcher = (() => {
         fetchIUDXCatalogue,
         fetchCEPI,
         fetchNearbyPostOffices,
+        fetchEVCharging,
+        parseOCMStation,
         fetchAddress,
         fetchWikipedia,
         fetchElevation,
         fetchWorldPop,
         classifyElements,
+        computeAQI_PM25,
+        computeAQI_PM10,
+        _coalesce,
         clearPersistentCache: _idbClear,
         exportToJSON,
         exportToCSV,
-        getRadiusForZoom
+        cellToFeature,
+        buildFeatureCollection,
+        cellToGeoJSON,
+        rankedToGeoJSON,
+        exportToGeoJSON,
+        exportRankedToGeoJSON,
+        getRadiusForZoom,
+        computeScores,
+        viaProxy,
+        sourceState
     };
 })();

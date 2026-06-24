@@ -29,6 +29,7 @@ const BuildingIntelDialog = (() => {
         _contentEl.innerHTML = buildContent(bi, cell);
         _dialogEl.classList.add('open');
         FloatingDialogs.bringToFront(_dialogEl);
+        if (FloatingDialogs.focusInto) FloatingDialogs.focusInto(_dialogEl);
 
         // Position near center-left if not already positioned by user
         if (!_dialogEl.style.left || _dialogEl.style.left === 'auto') {
@@ -41,6 +42,7 @@ const BuildingIntelDialog = (() => {
 
     function close() {
         if (_dialogEl) _dialogEl.classList.remove('open');
+        if (_dialogEl && FloatingDialogs.restoreFocus) FloatingDialogs.restoreFocus(_dialogEl);
     }
 
     function isOpen() {
@@ -60,8 +62,12 @@ const BuildingIntelDialog = (() => {
         }
 
         // LCZ Classification badge
+        // CSS sanitization: esc() only HTML-encodes — it does NOT prevent
+        // CSS injection if a malicious lcz.color contains `;` or `}`.
+        // Allowlist 3- or 6-digit hex; fall back to a safe default.
+        const safeColor = /^#[0-9a-f]{3,6}$/i.test(String(lcz?.color || '')) ? lcz.color : '#94a3b8';
         if (lcz && lcz.className) {
-            html += `<div class="lcz-badge" style="border-left: 4px solid ${esc(lcz.color)}">
+            html += `<div class="lcz-badge" style="border-left: 4px solid ${safeColor}">
                 <div class="lcz-class">${esc(lcz.className)}</div>
                 <div class="lcz-detail">${esc(lcz.type === 'built' ? 'Built-up' : 'Natural')}${lcz.density ? ' &bull; ' + esc(lcz.density) + ' density' : ''}${lcz.height ? ' &bull; ' + esc(lcz.height) + '-rise' : ''}</div>
             </div>`;
@@ -130,7 +136,7 @@ const BuildingIntelDialog = (() => {
             html += `<div class="bi-scores-section"><div class="bi-dist-label">Intelligence Scores</div>`;
             Object.entries(scores).forEach(([key, s]) => {
                 if (s && s.value !== undefined) {
-                    const color = s.value >= 70 ? '#00f5a0' : s.value >= 40 ? '#f5c542' : '#f56b6b';
+                    const color = (typeof Theme !== 'undefined' && Theme.scoreColor) ? Theme.scoreColor(s.value) : (s.value >= 70 ? '#00f5a0' : s.value >= 40 ? '#f5c542' : '#f56b6b');
                     html += `<div class="bi-score-row">
                         <span class="bi-score-label">${esc(s.label)}</span>
                         <div class="bi-score-bar-bg"><div class="bi-score-bar" style="width:${s.value}%;background:${color}"></div></div>

@@ -3,223 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DigiPin Urban Intelligence Portal — 160+ urban features for every 4x4m grid cell in India. Powered by OpenStreetMap and India Post DigiPin system.">
-    <title>DigiPin Urban Intelligence — Indore Pilot</title>
-
-    <!-- MapLibre GL JS -->
-    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css" />
-    <script src="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js"></script>
-
-    <!-- PMTiles v3 — IIFE global build for MapLibre addProtocol -->
-    <script src="https://unpkg.com/pmtiles@3.0.7/dist/pmtiles.js"></script>
-
-    <!-- GeoRaster for COG/GeoTIFF rendering -->
-    <script src="https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js"></script>
-
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/styles.css">
-
-    <!-- PWA Manifest -->
+    <title>DigiPin — India-native urban intelligence</title>
+    <meta name="description" content="Ask any location question in plain English and get a ranked, source-tracked map on India's government DIGIPIN grid. Free, auditable, no account.">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#00f5ff">
-
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+    <!-- Honour the saved app theme before first paint (no FOUC). The landing's
+         default is the paper aesthetic; only an explicit "dark" choice flips it,
+         mirroring the app so the landing→app hand-off feels cohesive. -->
+    <script>
+        try { if (localStorage.getItem('digipin_theme') === 'dark')
+            document.documentElement.setAttribute('data-theme', 'dark'); } catch (e) { /* storage blocked */ }
+    </script>
+    <link rel="stylesheet" href="css/landing.css">
 </head>
 <body>
+    <!-- ===== HERO ===== -->
+    <header class="hero">
+        <img class="hero-bg" src="assets/hero-city.png" alt="" aria-hidden="true">
+        <div class="hero-fade" aria-hidden="true"></div>
 
-    <!-- ===== MAP ===== -->
-    <div id="map" role="application" aria-label="Interactive DigiPin grid map of India"></div>
+        <nav class="topnav">
+            <div class="brand"><span class="brand-mark">DP</span> DigiPin</div>
+            <a class="nav-cta" href="app.html">Open the map →</a>
+        </nav>
 
-    <!-- ===== TOP BAR ===== -->
-    <div id="top-bar" role="search" aria-label="Search for locations">
-        <div class="logo" aria-hidden="true">
-            <div class="logo-icon">DP</div>
-            <span class="logo-text">DigiPin Intelligence</span>
-        </div>
-        <select id="city-select" aria-label="Select city"></select>
-        <label for="search-input" class="sr-only">Search DigiPin code or place name</label>
-        <input type="text" id="search-input" placeholder="Search DigiPin code or place name (e.g. Rajwada, Indore)" autocomplete="off" aria-label="Search DigiPin code or place name">
-        <button id="search-btn" aria-label="Search">🔍</button>
-    </div>
-
-    <!-- ===== TOOLBAR ===== -->
-    <div id="toolbar" aria-label="Map tools">
-        <button class="toolbar-btn" id="btn-heatmap" title="Heatmap Overlay">
-            <span class="tb-icon">&#9632;</span>
-            <span class="tb-label">Heatmap</span>
-        </button>
-        <!-- heatmap dropdown moved outside toolbar for z-index fix -->
-        <button class="toolbar-btn" id="btn-wards" title="Ward Boundaries">
-            <span class="tb-icon">&#9638;</span>
-            <span class="tb-label">Wards</span>
-        </button>
-        <button class="toolbar-btn" id="btn-lcz" title="Local Climate Zones Overlay">
-            <span class="tb-icon">&#127961;</span>
-            <span class="tb-label">LCZ</span>
-        </button>
-        <button class="toolbar-btn" id="btn-buildings" title="Overture Buildings Footprints">
-            <span class="tb-icon">&#127970;</span>
-            <span class="tb-label">Buildings</span>
-        </button>
-        <button class="toolbar-btn" id="btn-3d" title="Toggle 3D Map">
-            <span class="tb-icon">&#128362;</span>
-            <span class="tb-label">3D Mode</span>
-        </button>
-        <button class="toolbar-btn" id="btn-lulc" title="ISRO Bhuvan Land Use / Land Cover">
-            <span class="tb-icon">&#127758;</span>
-            <span class="tb-label">LULC</span>
-        </button>
-        <button class="toolbar-btn" id="btn-roads" title="Road Network Overlay">
-            <span class="tb-icon">&#128739;</span>
-            <span class="tb-label">Roads</span>
-        </button>
-        <button class="toolbar-btn" id="btn-dt-layers" title="Digital Twin Data Layers">
-            <span class="tb-icon">&#128202;</span>
-            <span class="tb-label">Layers</span>
-        </button>
-        <button class="toolbar-btn" id="btn-compare" title="Compare Cells">
-            <span class="tb-icon">&#8860;</span>
-            <span class="tb-label">Compare</span>
-            <span class="toolbar-badge" id="compare-badge" style="display:none">0</span>
-        </button>
-        <button class="toolbar-btn" id="btn-bookmarks" title="Bookmarks">
-            <span class="tb-icon">&#9733;</span>
-            <span class="tb-label">Saved</span>
-        </button>
-    </div>
-
-    <!-- ===== SIDEBAR — QUERIES ===== -->
-    <nav id="sidebar" aria-label="Urban planning queries">
-        <button id="sidebar-toggle" aria-label="Toggle sidebar" aria-expanded="true">←</button>
-        <div class="sidebar-content">
-            <div class="sidebar-title">🧠 Urban Queries</div>
-            <div id="query-list" role="list" aria-label="Available queries"></div>
-        </div>
-    </nav>
-
-    <!-- ===== DETAIL PANEL (floating, draggable, resizable) ===== -->
-    <aside id="detail-panel" class="floating-dialog" aria-label="Location details">
-        <div class="dialog-titlebar" data-dialog="detail-panel" id="panel-titlebar">
-            <div class="dialog-title-text" id="panel-title-text">Cell Details</div>
-            <button class="close-btn" onclick="Panel.close()" aria-label="Close detail panel">&#10005;</button>
-        </div>
-        <div class="dialog-body" id="panel-content"></div>
-        <div class="dialog-resize-handle" data-dialog="detail-panel"></div>
-    </aside>
-
-    <!-- ===== DISHA CHAT DIALOG (floating, draggable, resizable) ===== -->
-    <aside id="disha-panel" class="floating-dialog" aria-label="DISHA AI Assistant">
-        <div class="dialog-titlebar" data-dialog="disha-panel">
-            <div class="disha-title">
-                <span class="disha-logo" aria-hidden="true">D</span>
-                <span>DISHA</span>
-                <span class="disha-status" id="disha-status" title="Checking provider..." role="status">...</span>
-                <button class="disha-gear-btn" id="disha-settings-btn" title="AI Provider Settings" aria-label="Provider settings">&#9881;</button>
+        <div class="hero-body">
+            <p class="eyebrow">India-native urban intelligence</p>
+            <h1>Ask a place a question.<br>Get a map back.</h1>
+            <p class="sub">
+                Type “family-friendly area near good schools, low flood risk” and DigiPin
+                ranks every cell on India’s government <strong>DIGIPIN</strong> grid —
+                instantly, source-tracked, and free. No GIS specialist, no account, no servers.
+            </p>
+            <div class="hero-actions">
+                <a class="btn-primary" href="app.html">Try Indore live →</a>
+                <a class="btn-ghost" href="docs/METHODOLOGY.md">How the scores work</a>
             </div>
-            <div class="disha-subtitle">Urban Intelligence Assistant</div>
-            <button class="close-btn" onclick="DISHAPanel.close()" aria-label="Close DISHA panel">&#10005;</button>
-        </div>
-        <div class="disha-body">
-            <div class="disha-messages" id="disha-messages" role="log" aria-live="polite" aria-label="Chat messages"></div>
-            <div class="disha-suggestions" id="disha-suggestions" aria-label="Suggested questions"></div>
-            <div class="disha-input-row">
-                <label for="disha-input" class="sr-only">Ask DISHA about this location</label>
-                <input type="text" id="disha-input" placeholder="Ask about this location..." disabled aria-label="Ask about this location">
-                <button id="disha-send" onclick="DISHAPanel.send()" disabled aria-label="Send message">-></button>
-                <button id="disha-stop" onclick="DISHA.cancel()" style="display:none" aria-label="Stop generation">||</button>
+
+            <!-- Aino-style floating feature call-outs -->
+            <div class="cards">
+                <div class="card"><span class="pin"></span><b>Text2Map</b><span>Plain-English question → ranked DIGIPIN cells</span></div>
+                <div class="card"><span class="pin"></span><b>Score grid</b><span>~30 intelligence scores per 244 m cell</span></div>
+                <div class="card"><span class="pin"></span><b>GeoJSON export</b><span>Cell polygons for QGIS / AutoCAD</span></div>
+                <div class="card"><span class="pin"></span><b>Share a view</b><span>Every cell is a permalink</span></div>
             </div>
         </div>
-        <div class="dialog-resize-handle" data-dialog="disha-panel"></div>
-    </aside>
+    </header>
 
-    <!-- ===== BUILDING INTELLIGENCE DIALOG (floating, draggable, resizable) ===== -->
-    <aside id="building-intel-dialog" class="floating-dialog" aria-label="Building Intelligence">
-        <div class="dialog-titlebar" data-dialog="building-intel-dialog">
-            <div class="dialog-title-text">&#127959;&#65039; Building Intelligence</div>
-            <button class="close-btn" onclick="BuildingIntelDialog.close()" aria-label="Close Building Intelligence">&#10005;</button>
+    <!-- ===== STAT STRIP ===== -->
+    <section class="stats" aria-label="At a glance">
+        <div class="stat"><div class="num">244&nbsp;m</div><div class="lbl">DIGIPIN cell — government grid</div></div>
+        <div class="stat"><div class="num">~30</div><div class="lbl">Intelligence scores per cell</div></div>
+        <div class="stat"><div class="num">100%</div><div class="lbl">Free, static &amp; auditable</div></div>
+        <div class="stat"><div class="num">Indore</div><div class="lbl">Live pilot city</div></div>
+    </section>
+
+    <!-- ===== HOW ===== -->
+    <section class="how" aria-label="How it works">
+        <h2>Not a report you generate. A map you live in.</h2>
+        <div class="steps">
+            <div class="step"><span class="step-n">01</span><b>Ask in plain English</b><p>A connected model turns your question into a weighting over real, named scores — never a black box.</p></div>
+            <div class="step"><span class="step-n">02</span><b>Rank the whole city</b><p>Every DIGIPIN cell in view is scored from the precomputed grid in well under a second — no 250-call live storm.</p></div>
+            <div class="step"><span class="step-n">03</span><b>Share &amp; export</b><p>Send a permalink, save the view as a template, or export the ranked cells as GeoJSON for your own tools.</p></div>
         </div>
-        <div class="dialog-body" id="building-intel-content"></div>
-        <div class="dialog-resize-handle" data-dialog="building-intel-dialog"></div>
-    </aside>
+    </section>
 
-    <!-- ===== INTELLIGENCE SCORES DIALOG ===== -->
-    <aside id="scores-dialog" class="floating-dialog" aria-label="Intelligence Scores">
-        <div class="dialog-titlebar" data-dialog="scores-dialog">
-            <div class="dialog-title-text">&#129504; Intelligence Scores</div>
-            <button class="close-btn" onclick="ScoresDialog.close()" aria-label="Close Intelligence Scores">&#10005;</button>
-        </div>
-        <div class="dialog-body" id="scores-dialog-content"></div>
-        <div class="dialog-resize-handle" data-dialog="scores-dialog"></div>
-    </aside>
+    <!-- ===== TRUST ===== -->
+    <section class="trust">
+        <p>Built on Indian civic &amp; OpenStreetMap data on the government DIGIPIN grid — every score open, sourced, and reproducible. Not a closed Western GIS product.</p>
+        <a class="btn-primary" href="app.html">Open the live map →</a>
+    </section>
 
-    <!-- ===== RESULTS PANEL ===== -->
-    <div id="results-panel" role="region" aria-label="Query results"></div>
-
-    <!-- ===== QUERY PROGRESS ===== -->
-    <div id="query-progress" role="status" aria-live="polite">
-        <div style="flex:1">
-            <div id="query-progress-text">Analyzing...</div>
-            <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:2px;margin-top:6px;overflow:hidden;">
-                <div id="query-progress-bar" style="width:0%" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== COMPARE PANEL ===== -->
-    <aside id="compare-panel" aria-label="Cell comparison">
-        <div class="compare-panel-header">
-            <h3>Cell Comparison</h3>
-            <button class="close-btn" onclick="Compare.closePanel()" aria-label="Close compare">&#10005;</button>
-        </div>
-        <canvas id="compare-radar"></canvas>
-        <div id="compare-content" class="compare-content"></div>
-        <div class="compare-actions">
-            <button class="compare-clear-btn" onclick="Compare.clearAll()">Clear All Pins</button>
-        </div>
-    </aside>
-
-    <!-- ===== BOOKMARKS PANEL ===== -->
-    <aside id="bookmarks-panel" aria-label="Saved bookmarks">
-        <div class="bm-panel-header">
-            <h3>&#9733; Bookmarks</h3>
-            <button class="close-btn" onclick="Bookmarks.closePanel()" aria-label="Close bookmarks">&#10005;</button>
-        </div>
-        <div id="bookmarks-list" class="bm-list"></div>
-    </aside>
-
-    <!-- ===== TOAST CONTAINER ===== -->
-    <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
-
-    <!-- ===== SCRIPTS ===== -->
-    <script src="js/digipin.js"></script>
-    <script src="js/data-fetcher.js"></script>
-    <script src="js/building-intelligence.js"></script>
-    <script src="js/overture-buildings.js"></script>
-    <script src="js/map.js"></script>
-    <script src="js/panel.js"></script>
-    <script src="js/query-engine.js"></script>
-    <script src="js/disha-cache.js"></script>
-    <script src="js/disha-providers.js"></script>
-    <script src="js/disha.js"></script>
-    <script src="js/disha-panel.js"></script>
-    <script src="js/compare.js"></script>
-    <script src="js/isochrone.js"></script>
-    <script src="js/report.js"></script>
-    <script src="js/heatmap-overlay.js"></script>
-    <script src="js/bookmarks.js"></script>
-    <script src="js/city-selector.js"></script>
-    <script src="js/ward-overlay.js"></script>
-    <script src="js/floating-dialogs.js"></script>
-    <script src="js/building-intel-dialog.js"></script>
-    <script src="js/scores-dialog.js"></script>
-    <script src="js/digital-twin-layers.js"></script>
-    <script src="js/training-data-gen.js"></script>
-    <script src="js/app.js"></script>
-
-    <!-- Dropdowns placed outside #toolbar to escape overflow:auto clipping -->
-    <div id="heatmap-dropdown" class="toolbar-dropdown"></div>
-    <div id="dt-layers-dropdown" class="toolbar-dropdown dt-layers-menu"></div>
-
+    <footer class="foot">
+        <span>DigiPin · India-native DIGIPIN urban intelligence</span>
+        <a href="app.html">Launch app</a>
+    </footer>
 </body>
 </html>

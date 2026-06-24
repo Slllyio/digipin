@@ -91,7 +91,14 @@ DATA SOURCE TRUST HIERARCHY:
 4. WorldPop (satellite-derived, ~100m resolution)
 5. LCZ morphology (global 100m grid, may have classification errors at edges)
 
-You serve urban planners, real estate analysts, municipal officials, citizens, and smart city administrators.`;
+You serve urban planners, real estate analysts, municipal officials, citizens, and smart city administrators.
+
+MAP ACTIONS — in addition to your normal answer, you MAY emit up to 3 machine-readable directives (each on its own line) that the app executes live. Only use them when clearly helpful:
+  [ACTION] flyTo lat:22.7196 lng:75.8577 zoom:15
+  [ACTION] selectCell code:39J-49L-L8T4
+  [ACTION] overlay name:heat   (names: growth, prediction, scenario, traffic, mobility, heat, ndvi, bivariate, kde, access, grid, wards, buildings)
+  [ACTION] query id:best_residential
+Keep each directive on its own line; the rest of your reply should read normally without them.`;
 
     // ===== SMART CONTEXT SECTIONS =====
     // Maps question intent to which data sections to include
@@ -155,12 +162,22 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
     // ===== RICH CONTEXT BUILDER =====
     // Builds structured context with optional section filtering
     function buildContext(cell, data, sections) {
+        /** True when a section should be included (no filter list, or list contains it). */
         const include = (name) => !sections || sections.includes(name);
         const lines = [];
 
         // --- Location Header (always included) ---
         lines.push(`=== LOCATION: DigiPin ${cell.code} ===`);
         lines.push(`Coordinates: ${cell.center.lat.toFixed(5)}N, ${cell.center.lng.toFixed(5)}E`);
+
+        // --- Temporal Context (enables time-aware reasoning: rush hour, after-dark, weekend) ---
+        const nowIST = new Date().toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata',
+            weekday: 'long',
+            year: 'numeric', month: 'short', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', hour12: false
+        });
+        lines.push(`Time (IST): ${nowIST}`);
 
         // --- Address ---
         if (include('address')) {
@@ -241,6 +258,29 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
                 lines.push(`\n=== INTELLIGENCE SCORES (0-100) ===`);
                 lines.push(scoreParts.join(', '));
             }
+
+            // Real-estate growth outlook (live hedonic model — works without
+            // the satellite Growth Forecast). Gives DISHA an investment read.
+            if (typeof RealEstateModel !== 'undefined') {
+                const o = RealEstateModel.outlook(data);
+                if (o.score != null) {
+                    const pos = o.topPositives.map(d => d.label).join(', ') || '—';
+                    const neg = o.topNegatives.map(d => d.label).join(', ') || 'none';
+                    lines.push(`Real-estate outlook: ${o.score}/100 (${o.label}), `
+                        + `est. ${o.appreciation.midPct}%/yr [${o.appreciation.lowPct}–${o.appreciation.highPct}%], `
+                        + `${o.confidence} confidence. Drivers: ${pos}. Drags: ${neg}.`);
+                }
+            }
+        }
+
+        // --- Growth Forecast (composite + horizons) ---
+        const growth = data.realtime?.growth;
+        if (growth) {
+            const now = growth.horizons.nowcast;
+            const y5  = growth.horizons.year_5;
+            lines.push(`\n=== GROWTH FORECAST (composite 0-100) ===`);
+            lines.push(`Nowcast: composite=${now.composite} conf=±${now.confidence_band}  BUE=${now.sub_scores.bue.value} DEN=${now.sub_scores.den.value} CAP=${now.sub_scores.cap.value}`);
+            lines.push(`5-year:  composite=${y5.composite} conf=±${y5.confidence_band}  trend: linear extrapolation`);
         }
 
         // --- Top Features (sparse) ---
@@ -576,6 +616,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return 'local';
     }
 
+    /** Map a free-text question to the QueryEngine query id whose keywords it matches (defaults to residential). */
     function matchQueryId(question) {
         const q = question.toLowerCase();
         const mappings = [
@@ -617,6 +658,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         if (typeof MapModule === 'undefined') return null;
 
         const map = MapModule.getMap();
+        if (!map) return null;   // map not initialised yet — skip the city scan
         const bounds = map.getBounds();
         const gridSize = 4;
         const latStep = (bounds.getNorth() - bounds.getSouth()) / gridSize;
@@ -689,6 +731,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return results.slice(0, 5);
     }
 
+    /** Format ranked city-scan results into a text context block for the LLM. */
     function buildCityScanContext(results, question) {
         const lines = [];
         lines.push(`=== CITY-LEVEL SCAN RESULTS ===`);
@@ -722,6 +765,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         }
     }
 
+    /** Reset multi-turn conversation memory. */
     function clearHistory() {
         _conversationHistory = [];
     }
@@ -770,6 +814,21 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return prompt;
     }
 
+    /** Active UI language ('en' default) — also part of the response cache key. */
+    function _lang() {
+        return (typeof I18n !== 'undefined') ? I18n.get() : 'en';
+    }
+
+    /**
+     * Language directive appended to the system prompt so DISHA replies in the
+     * user's chosen UI language (js/i18n.js). Empty for English (the default).
+     */
+    function _languageDirective() {
+        const lang = _lang();
+        if (lang === 'en' || typeof I18n === 'undefined') return '';
+        return `\n\nIMPORTANT: Respond entirely in ${I18n.langNameEn(lang)}. Keep DIGIPIN codes, numbers, and units unchanged.`;
+    }
+
     // ===== STREAMING (via DISHAProviders, with cache) =====
     async function ask(context, question, onToken, onDone, onError, cityScanContext) {
         if (_abortController) {
@@ -782,7 +841,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
 
         // Check cache first (skip for city scans — they have unique scan data)
         if (!cityScanContext && _currentCellCode && typeof DISHACache !== 'undefined') {
-            const cached = await DISHACache.getResponse(_currentCellCode, contextType, question);
+            const cached = await DISHACache.getResponse(_currentCellCode, contextType, question, _lang());
             if (cached) {
                 addToHistory('user', question);
                 addToHistory('assistant', cached.response);
@@ -817,14 +876,14 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
             if (provider.type === 'ollama') {
                 const prompt = assemblePrompt(context, question, cityScanContext);
                 await DISHAProviders.stream({
-                    system: SYSTEM_PROMPT,
+                    system: SYSTEM_PROMPT + _languageDirective(),
                     prompt,
                     onToken,
                     onDone: (resp) => {
                         addToHistory('assistant', resp);
                         // Cache the response
                         if (!cityScanContext && _currentCellCode && typeof DISHACache !== 'undefined') {
-                            DISHACache.putResponse(_currentCellCode, contextType, question, resp, provider.id);
+                            DISHACache.putResponse(_currentCellCode, contextType, question, resp, provider.id, _lang());
                         }
                         if (onDone) onDone({});
                     },
@@ -836,6 +895,9 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
                 if (cityScanContext) {
                     systemContent += '\n\n' + cityScanContext;
                 }
+                // Language instruction last, so it outranks the location data for
+                // LLMs that weight later system content more heavily.
+                systemContent += _languageDirective();
 
                 const historyMessages = getHistoryAsMessages();
                 historyMessages.pop();
@@ -851,7 +913,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
                     onDone: (resp) => {
                         addToHistory('assistant', resp);
                         if (!cityScanContext && _currentCellCode && typeof DISHACache !== 'undefined') {
-                            DISHACache.putResponse(_currentCellCode, contextType, question, resp, provider.id);
+                            DISHACache.putResponse(_currentCellCode, contextType, question, resp, provider.id, _lang());
                         }
                         if (onDone) onDone({});
                     },
@@ -867,6 +929,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         }
     }
 
+    /** Abort the in-flight streaming request, if any. */
     function cancel() {
         if (_abortController) {
             _abortController.abort();
@@ -875,10 +938,32 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
     }
 
     // ===== SMART SUGGESTIONS =====
-    function getSuggestions(data) {
+    /** Suggested questions for the chips. With `lastResponse`, returns
+     *  conversation-aware follow-ups derived from the latest reply; otherwise
+     *  cell-context suggestions (used when the panel first opens). */
+    function getSuggestions(data, lastResponse = null) {
         const scores = data.scores || {};
-        const suggestions = [];
 
+        // Conversation-aware follow-ups: keyed off topics in the latest reply.
+        if (lastResponse) {
+            const r = String(lastResponse).toLowerCase();
+            const follow = [];
+            const add = (q) => { if (!follow.includes(q)) follow.push(q); };
+            if (/flood|inundat|waterlog/.test(r)) add('What flood mitigation is recommended here?');
+            if (/congest|traffic|bottleneck|\broad/.test(r)) add('Which roads are the worst bottlenecks?');
+            if (/growth|construction|develop|expansion/.test(r)) add('What is driving growth here?');
+            if (/safety|crime|police/.test(r)) add('How can safety be improved here?');
+            if (/transit|bus|metro|connectivity/.test(r)) add('How good is public-transit access here?');
+            if (/water|sewer|utilit|electric|\bgas/.test(r)) add('What are the utility gaps here?');
+            if (/invest|real estate|property|price|appreciat/.test(r)) add('Is this a good investment, and why?');
+            if (/school|education|healthcare|hospital/.test(r)) add('How is access to schools and healthcare?');
+            // Always offer a couple of generic deepeners.
+            add('Summarise the top 3 takeaways');
+            add('How does this compare to a typical Indore neighbourhood?');
+            return follow.slice(0, 4);
+        }
+
+        const suggestions = [];
         suggestions.push('Give me a full urban intelligence briefing');
         suggestions.push('What should be built here? Development recommendations');
 
@@ -961,6 +1046,7 @@ You serve urban planners, real estate analysts, municipal officials, citizens, a
         return 'Severe';
     }
 
+    /** True when an AI provider is connected and ready. */
     function isConnected() {
         return DISHAProviders.isConnected();
     }

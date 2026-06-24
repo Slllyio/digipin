@@ -28,6 +28,7 @@ const ScoresDialog = (() => {
         _contentEl.innerHTML = buildContent(scores, cell);
         _dialogEl.classList.add('open');
         FloatingDialogs.bringToFront(_dialogEl);
+        if (FloatingDialogs.focusInto) FloatingDialogs.focusInto(_dialogEl);
 
         // Position near center if not already positioned by user
         if (!_dialogEl.style.left || _dialogEl.style.left === 'auto') {
@@ -43,6 +44,7 @@ const ScoresDialog = (() => {
 
     function close() {
         if (_dialogEl) _dialogEl.classList.remove('open');
+        if (_dialogEl && FloatingDialogs.restoreFocus) FloatingDialogs.restoreFocus(_dialogEl);
     }
 
     function isOpen() {
@@ -73,6 +75,10 @@ const ScoresDialog = (() => {
         });
         html += `</div>`;
 
+        // Trust/auditability: India-native framing + link to exact formulas.
+        html += `<div class="sd-trust">Computed from Indian civic &amp; OpenStreetMap data on the government DIGIPIN grid — every score is open and auditable.</div>`;
+        html += `<a class="sd-methodology" href="docs/METHODOLOGY.md" target="_blank" rel="noopener">How these scores are computed &rarr;</a>`;
+
         return html;
     }
 
@@ -98,6 +104,16 @@ const ScoresDialog = (() => {
         const n = keys.length;
         if (n < 3) return;
 
+        // Theme-aware drawing (dark returns the exact prior colours).
+        const T = (typeof Theme !== 'undefined') ? Theme : null;
+        const ink = (a) => T ? T.fg(a) : `rgba(255,255,255,${a})`;
+        const P = T && T.palette ? T.palette() : { primary: '#00f5ff', secondary: '#a855f7' };
+        const hexA = (hex, a) => {
+            const m = hex.replace('#', '');
+            const b = parseInt(m.length === 3 ? m.replace(/(.)/g, '$1$1') : m, 16);
+            return `rgba(${(b >> 16) & 255}, ${(b >> 8) & 255}, ${b & 255}, ${a})`;
+        };
+
         ctx.clearRect(0, 0, cssW, cssH);
 
         // Concentric rings
@@ -111,10 +127,10 @@ const ScoresDialog = (() => {
                 j === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
             }
             ctx.closePath();
-            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.strokeStyle = ink(0.08);
             ctx.stroke();
 
-            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.fillStyle = ink(0.2);
             ctx.font = '7px Inter';
             ctx.textAlign = 'left';
             ctx.fillText(String(i * 25), cx + 2, cy - rr + 8);
@@ -126,13 +142,13 @@ const ScoresDialog = (() => {
             ctx.beginPath();
             ctx.moveTo(cx, cy);
             ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
-            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.strokeStyle = ink(0.06);
             ctx.stroke();
 
             const labelR = r + (n > 15 ? 28 : 20);
             const lx = cx + labelR * Math.cos(angle);
             const ly = cy + labelR * Math.sin(angle);
-            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.fillStyle = ink(0.5);
             ctx.font = n > 15 ? '7px Inter' : '8px Inter';
 
             if (Math.abs(Math.cos(angle)) < 0.3) ctx.textAlign = 'center';
@@ -155,11 +171,11 @@ const ScoresDialog = (() => {
         });
         ctx.closePath();
         const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-        grad.addColorStop(0, 'rgba(168,85,247,0.35)');
-        grad.addColorStop(1, 'rgba(0,245,255,0.2)');
+        grad.addColorStop(0, hexA(P.secondary, 0.35));
+        grad.addColorStop(1, hexA(P.primary, 0.2));
         ctx.fillStyle = grad;
         ctx.fill();
-        ctx.strokeStyle = '#a855f7';
+        ctx.strokeStyle = P.secondary;
         ctx.lineWidth = 2;
         ctx.stroke();
 
@@ -171,9 +187,9 @@ const ScoresDialog = (() => {
             const y = cy + val * Math.sin(angle);
             ctx.beginPath();
             ctx.arc(x, y, 3, 0, Math.PI * 2);
-            ctx.fillStyle = s.value >= 70 ? '#22c55e' : s.value >= 40 ? '#eab308' : '#ef4444';
+            ctx.fillStyle = T ? T.scoreColor(s.value) : getScoreColor(s.value);
             ctx.fill();
-            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.strokeStyle = ink(0.3);
             ctx.lineWidth = 1;
             ctx.stroke();
         });
@@ -186,6 +202,7 @@ const ScoresDialog = (() => {
     }
 
     function getScoreColor(val) {
+        if (typeof Theme !== 'undefined' && Theme.scoreColor) return Theme.scoreColor(val);
         if (val >= 70) return '#22c55e';
         if (val >= 40) return '#eab308';
         return '#ef4444';

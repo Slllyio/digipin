@@ -2,15 +2,41 @@
     "name": "DigiPin Urban Intelligence",
     "short_name": "DigiPin",
     "description": "160+ urban features for every 4x4m grid cell in India",
-    "start_url": "./index.html",
+    "start_url": "./app.html",
+    "id": "/digipin/",
+    "scope": "./",
     "display": "standalone",
-    "background_color": "#0a0e27",
-    "theme_color": "#00f5ff",
+    "orientation": "any",
+    "lang": "en-IN",
+    "categories": ["maps", "navigation", "utilities", "government", "productivity"],
+    "background_color": "#f4f6f7",
+    "theme_color": "#f4f6f7",
     "icons": [
         {
-            "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%8D%3C/text%3E%3C/svg%3E",
+            "src": "assets/icon.svg",
             "sizes": "any",
-            "type": "image/svg+xml"
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/icon-maskable.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Search a place",
+            "short_name": "Search",
+            "description": "Jump to a place or DIGIPIN and inspect its cell",
+            "url": "./app.html?focus=search"
+        },
+        {
+            "name": "Ask DISHA (AI)",
+            "short_name": "DISHA",
+            "description": "Ask an urban-intelligence question in plain English",
+            "url": "./app.html?focus=disha"
         }
     ]
 }

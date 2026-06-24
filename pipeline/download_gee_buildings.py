@@ -22,22 +22,16 @@ Usage:
 
 import argparse
 import json
-import logging
 import sys
 import time
 from pathlib import Path
 
 from config import BBOX, CENTER_LAT, CENTER_LON
+from _lib.io import data_dir, setup_logging
 
-OUT_DIR = Path(__file__).parent.parent / "data" / "vectors"
-OUT_DIR.mkdir(parents=True, exist_ok=True)
+OUT_DIR = data_dir("vectors")
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-log = logging.getLogger("gee_buildings")
+log = setup_logging("gee_buildings")
 
 # Google Open Buildings v3 asset ID
 OPEN_BUILDINGS_V3 = "GOOGLE/Research/open-buildings/v3/polygons"

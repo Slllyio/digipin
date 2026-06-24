@@ -19,6 +19,14 @@ const DigitalTwinLayers = (() => {
     let _hoverPopup = null;
     let _clickPopup = null;
 
+    // Theme-aware paint: a layer def may carry a `paintLight` variant tuned for
+    // the Aino-style paper theme (pale shaded buildings, soft sage greens). When
+    // the light theme is active and a variant exists, use it; else the default.
+    function _paintFor(def) {
+        const light = typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';
+        return (light && def.paintLight) ? def.paintLight : def.paint;
+    }
+
     // ─── Layer Definitions ─────────────────────────────────────────
     const LAYER_DEFS = {
         // ── Overture Maps PMTiles (vector tiles, no download needed) ──
@@ -125,6 +133,21 @@ const DigitalTwinLayers = (() => {
                 'fill-opacity': 0.3,
                 'fill-outline-color': '#9ca3af'
             },
+            // Paper theme: greens become soft sage canopy; everything else is a
+            // muted warm-paper wash so vegetation reads as the only colour.
+            paintLight: {
+                'fill-color': [
+                    'match', ['get', 'class'],
+                    'park',          '#bcd3a6',
+                    'forest',        '#a6c48c',
+                    'recreation',    '#c4d8b2',
+                    'farmland',      '#d8dcb0',
+                    'cemetery',      '#cdd3bd',
+                    '#e6e0d5'
+                ],
+                'fill-opacity': 0.5,
+                'fill-outline-color': '#c2bbac'
+            },
             minZoom: 10,
             tooltip: f => {
                 const p = f.properties || {};
@@ -162,6 +185,32 @@ const DigitalTwinLayers = (() => {
                 'circle-stroke-width': 1,
                 'circle-stroke-color': '#ffffff',
                 'circle-opacity': 0.8
+            },
+            // On the light Positron basemap the white stroke disappears; give the
+            // dots a warm-ink outline so they keep definition on paper.
+            paintLight: {
+                'circle-radius': [
+                    'interpolate', ['linear'], ['zoom'],
+                    10, 2,
+                    14, 4,
+                    18, 7
+                ],
+                'circle-color': [
+                    'match', ['get', 'class'],
+                    'eat_and_drink',      '#dd6b4a',
+                    'shopping',           '#5f7184',
+                    'health_and_medical', '#c0392b',
+                    'education',          '#3f6f8f',
+                    'accommodation',      '#a3781f',
+                    'sports_and_recreation', '#5f8a5a',
+                    'arts_and_entertainment', '#b3627a',
+                    'public_service',     '#4f8a86',
+                    'religious_organization', '#6c727a',
+                    '#7a7f85'
+                ],
+                'circle-stroke-width': 1,
+                'circle-stroke-color': 'rgba(40,44,48,0.45)',
+                'circle-opacity': 0.9
             },
             minZoom: 12,
             tooltip: f => {
@@ -246,6 +295,28 @@ const DigitalTwinLayers = (() => {
                 'fill-extrusion-base': 0,
                 'fill-extrusion-opacity': 0.75
             },
+            // Aino (aino.world) light: a white architectural massing model —
+            // cool near-white volumes that deepen to light grey by footprint
+            // (pseudo ambient occlusion), grounded (not floating), with a calm
+            // low-rise height curve. MapLibre's vertical gradient + the
+            // directional map light (set on attach) supply the model shading.
+            paintLight: {
+                'fill-extrusion-color': [
+                    'interpolate', ['linear'],
+                    ['to-number', ['get', 'area_in_meters'], 80],
+                    0, '#f3f5f7',
+                    150, '#e9edf0',
+                    600, '#dce1e6',
+                    2000, '#ccd2d9'
+                ],
+                'fill-extrusion-height': [
+                    '+', 5,
+                    ['*', ['sqrt', ['to-number', ['get', 'area_in_meters'], 50]], 1.1]
+                ],
+                'fill-extrusion-base': 0,
+                'fill-extrusion-opacity': 0.96,
+                'fill-extrusion-vertical-gradient': true
+            },
             minZoom: 10,
             tooltip: f => {
                 const p = f.properties || {};
@@ -273,6 +344,12 @@ const DigitalTwinLayers = (() => {
                 ],
                 'fill-opacity': 0.5,
                 'fill-outline-color': '#ffffff'
+            },
+            // Aino light: flat cool-grey building footprints, hairline outline.
+            paintLight: {
+                'fill-color': '#e7ebef',
+                'fill-opacity': 0.88,
+                'fill-outline-color': '#aab2bb'
             },
             minZoom: 10,
             tooltip: f => {
@@ -326,6 +403,12 @@ const DigitalTwinLayers = (() => {
                 'fill-color': '#22c55e',
                 'fill-opacity': 0.45,
                 'fill-outline-color': '#16a34a'
+            },
+            // Paper theme: soft sage canopy (Aino's muted greens, not saturated).
+            paintLight: {
+                'fill-color': '#bcd3a6',
+                'fill-opacity': 0.6,
+                'fill-outline-color': '#9bbb80'
             },
             minZoom: 10,
             tooltip: f => {
@@ -452,7 +535,7 @@ const DigitalTwinLayers = (() => {
         osm_roads: {
             name: 'Road Network (OSM)',
             icon: '\u{1F6E3}',
-            file: 'vectors/osm_roads_indore.geojson',
+            file: 'vectors/osm_roads_indore_pilot.geojson',
             group: 'Local Data',
             type: 'line',
             paint: {
@@ -699,7 +782,7 @@ const DigitalTwinLayers = (() => {
                 type: def.type,
                 source: sourceId,
                 'source-layer': def.sourceLayer,
-                paint: def.paint,
+                paint: _paintFor(def),
                 minzoom: def.minZoom || 0,
                 layout: { visibility: 'visible' }
             });
@@ -707,6 +790,16 @@ const DigitalTwinLayers = (() => {
             _map.on('mousemove', layerId, (e) => onMouseMove(e, key));
             _map.on('mouseleave', layerId, onMouseLeave);
             _map.on('click', layerId, onClick);
+
+            // Aino light: give 3D extrusions a fixed directional "sun" so the
+            // white massing model reads with a consistent lit/shadow side
+            // (anchor:'map' keeps the light tied to geography as you rotate).
+            const light = typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';
+            if (light && def.type === 'fill-extrusion') {
+                try {
+                    _map.setLight({ anchor: 'map', position: [1.4, 210, 38], color: '#ffffff', intensity: 0.45 });
+                } catch { /* older MapLibre without setLight — vertical gradient still applies */ }
+            }
         } else {
             _map.setLayoutProperty(layerId, 'visibility', 'visible');
             if (def.tether) _map.setLayoutProperty(tetherLayerId, 'visibility', 'visible');
@@ -778,7 +871,7 @@ const DigitalTwinLayers = (() => {
                 id: baseLayerId,
                 type: def.type,
                 source: sourceId,
-                paint: def.paint,
+                paint: _paintFor(def),
                 minzoom: def.minZoom || 0,
                 layout: { visibility: 'visible' }
             });
@@ -831,8 +924,8 @@ const DigitalTwinLayers = (() => {
         if (!def.tooltip) return;
 
         const f = e.features[0];
-        const html = def.tooltip(f);
-        if (!html) return;
+        const text = def.tooltip(f);
+        if (!text) return;
 
         if (!_hoverPopup) {
             _hoverPopup = new maplibregl.Popup({
@@ -842,7 +935,9 @@ const DigitalTwinLayers = (() => {
             });
         }
 
-        _hoverPopup.setLngLat(e.lngLat).setHTML(html).addTo(_map);
+        // tooltip() returns plain text built from external Overture props
+        // (names, class, subclass) — setText escapes it; setHTML would not.
+        _hoverPopup.setLngLat(e.lngLat).setText(text).addTo(_map);
     }
 
     function onMouseLeave() {
@@ -875,11 +970,16 @@ const DigitalTwinLayers = (() => {
         const entries = Object.entries(displayProps).slice(0, 12);
         if (entries.length === 0) return;
 
+        // Overture props (incl. the building name) are external data — escape
+        // both key and value before interpolating into setHTML.
+        const esc = (s) => String(s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         let html = '<div class="dt-popup" style="font-family:Inter,sans-serif; min-width:180px;">';
         entries.forEach(([k, v]) => {
             html += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; border-bottom:1px solid #eee; padding-bottom:2px;">
-                <span style="color:#555; text-transform:capitalize; margin-right:8px;">${k.replace(/_/g, ' ')}</span>
-                <span style="font-weight:bold; text-align:right;">${String(v).slice(0, 60)}</span>
+                <span style="color:#555; text-transform:capitalize; margin-right:8px;">${esc(k.replace(/_/g, ' '))}</span>
+                <span style="font-weight:bold; text-align:right;">${esc(String(v).slice(0, 60))}</span>
             </div>`;
         });
         html += '</div>';
@@ -1012,6 +1112,7 @@ const DigitalTwinLayers = (() => {
         isVisible,
         getFeatureCount,
         clearAll,
+        paintFor: _paintFor,
         LAYER_DEFS
     };
 })();

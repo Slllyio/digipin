@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/mcp-config.schema.json",
   "mcpServers": {
     "gee": {
       "type": "stdio",
@@ -15,6 +16,17 @@
       "command": "npx",
       "args": ["-y", "mcp-weather-free"],
       "env": {}
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "description": "Live documentation lookup for MapLibre, georaster, Open-Meteo, IMD, and the other libraries the portal depends on. Use this in place of WebFetch for library docs — the docs change frequently and context7 stays current."
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"],
+      "description": "Browser automation for testing the cell panel, flood animation, and inundation overlay. Project already has playwright as a dep (record-video.mjs uses it) so the binary is on hand."
     }
   }
 }
