@@ -498,7 +498,30 @@ const StrategicTwin = (() => {
 
     const FloodWarning = (() => {
         let _panel = null;
+        let _cnData;            // flood_cn_guna.json (data-driven Curve Number), loaded once
+        let _cnTried = false;
         const RAIN_THRESHOLDS = { green: 10, yellow: 30, orange: 80, red: 150 };
+
+        // Load the precomputed data-driven CN summary (ESA WorldCover x SoilGrids
+        // HSG, AMC band). A small static artifact so the browser never parses
+        // rasters; built by analysis/build_flood_cn_summary.py.
+        async function _loadCn() {
+            if (_cnTried) return;
+            _cnTried = true;
+            try {
+                const r = await fetch('analysis/output/flood_cn_guna.json');
+                if (r.ok) _cnData = await r.json();
+            } catch (e) { /* fall back to a labelled default below */ }
+        }
+
+        // SCS-CN runoff: reuse the shared, parity-tested FloodSCS if present,
+        // else an inline equivalent (same formula, configurable Ia/S ratio).
+        function _runoffMm(P, cnValue, iaRatio) {
+            if (typeof FloodSCS !== 'undefined') return FloodSCS.runoffMm(P, cnValue, iaRatio);
+            if (!(P > 0) || !(cnValue > 0)) return 0;
+            const S = (25400 / cnValue) - 254, Ia = iaRatio * S;
+            return P > Ia ? Math.pow(P - Ia, 2) / ((P - Ia) + S) : 0;
+        }
 
         async function open() {
             if (!_panel) _createPanel();
@@ -528,6 +551,7 @@ const StrategicTwin = (() => {
             loader.appendChild(_el('div', { className: 'spinner' }));
             loader.appendChild(_el('p', {}, 'Fetching 7-day rainfall forecast...'));
             c.appendChild(loader);
+            await _loadCn();
 
             try {
                 const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + GUNA.lat + '&longitude=' + GUNA.lon
@@ -588,19 +612,28 @@ const StrategicTwin = (() => {
                 alertDiv.appendChild(_el('div', { style: { fontSize: '11px', color: '#888', marginTop: '4px' } },
                     'Max forecast: ' + maxRain.toFixed(1) + 'mm | Red threshold: ' + RAIN_THRESHOLDS.red + 'mm'));
 
-                // SCS-CN runoff
-                const CN = 78;
-                const S = (25400 / CN) - 254;
-                const Ia = 0.2 * S;
-                if (maxRain > Ia) {
-                    const Q = Math.pow(maxRain - Ia, 2) / (maxRain + 0.8 * S);
-                    const runoff = _el('div', { style: { marginTop: '8px', padding: '8px', background: 'rgba(0,229,255,0.05)', borderRadius: '8px', fontSize: '12px' } });
-                    runoff.appendChild(_el('div', { style: { color: '#00e5ff', fontWeight: '600' } }, 'SCS-CN Runoff Estimate'));
-                    runoff.appendChild(_el('div', {}, 'CN=' + CN + ' (semi-urban) | S=' + S.toFixed(0) + 'mm | Ia=' + Ia.toFixed(0) + 'mm'));
-                    runoff.appendChild(_el('div', {}, 'Estimated runoff: ' + Q.toFixed(1) + 'mm from ' + maxRain.toFixed(1) + 'mm rain'));
-                    runoff.appendChild(_el('div', { style: { color: '#888', marginTop: '2px' } }, 'Runoff ratio: ' + (Q / maxRain * 100).toFixed(0) + '%'));
-                    c.appendChild(runoff);
+                // SCS-CN runoff — data-driven Curve Number with a dry->wet AMC band.
+                const runoff = _el('div', { style: { marginTop: '8px', padding: '8px', background: 'rgba(0,229,255,0.05)', borderRadius: '8px', fontSize: '12px' } });
+                runoff.appendChild(_el('div', { style: { color: '#00e5ff', fontWeight: '600' } }, 'SCS-CN Runoff Estimate'));
+                if (_cnData && _cnData.weighted_cn) {
+                    const w = _cnData.weighted_cn;
+                    const ia = _cnData.ia_ratio_primary || 0.05;
+                    const qII = _runoffMm(maxRain, w.amc_ii, ia);
+                    const qI = _runoffMm(maxRain, w.amc_i, ia);
+                    const qIII = _runoffMm(maxRain, w.amc_iii, ia);
+                    runoff.appendChild(_el('div', {}, 'CN ' + w.amc_ii + ' normal (dry ' + w.amc_i + ' – wet ' + w.amc_iii + ') | Ia/S=' + ia));
+                    runoff.appendChild(_el('div', {}, 'Runoff from ' + maxRain.toFixed(1) + 'mm: ' + qII.toFixed(1) + 'mm normal, band ' + qI.toFixed(1) + '–' + qIII.toFixed(1) + 'mm'));
+                    if (maxRain > 0) runoff.appendChild(_el('div', { style: { color: '#888', marginTop: '2px' } }, 'Runoff ratio: ' + (qII / maxRain * 100).toFixed(0) + '% (normal antecedent)'));
+                    runoff.appendChild(_el('div', { style: { color: '#888', marginTop: '4px', fontSize: '10px' } },
+                        'CN from ESA WorldCover × SoilGrids HSG (' + (_cnData.confidence || 'derived') + '). Screening-level — not validated design depth.'));
+                } else {
+                    const CN = 78;
+                    const q = _runoffMm(maxRain, CN, 0.2);
+                    runoff.appendChild(_el('div', {}, 'CN=' + CN + ' (default estimate — calibration data not loaded)'));
+                    runoff.appendChild(_el('div', {}, 'Estimated runoff: ' + q.toFixed(1) + 'mm from ' + maxRain.toFixed(1) + 'mm rain'));
+                    if (maxRain > 0) runoff.appendChild(_el('div', { style: { color: '#888', marginTop: '2px' } }, 'Runoff ratio: ' + (q / maxRain * 100).toFixed(0) + '%'));
                 }
+                c.appendChild(runoff);
             } catch (err) {
                 c.replaceChildren(_el('p', { style: { padding: '20px', color: '#ef4444' } }, 'Forecast error: ' + err.message));
             }
