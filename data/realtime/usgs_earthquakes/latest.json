@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-06-25T06:06:02Z",
-  "count": 15,
+  "generated_at_iso": "2026-06-25T19:23:18Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us6000t84x",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-06-25T16:11:45.225000+00:00",
+      "latitude": 40.4803,
+      "longitude": 141.963,
+      "depth_km": 63.091,
+      "place": "36 km NNE of Kuji, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t84x",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000t83p",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-06-25T11:58:34.146000+00:00",
+      "latitude": 40.4809,
+      "longitude": 142.0284,
+      "depth_km": 66.567,
+      "place": "39 km NE of Kuji, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t83p",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000t81q",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-06-25T06:19:35.965000+00:00",
+      "latitude": -4.3413,
+      "longitude": 152.9318,
+      "depth_km": 33.0,
+      "place": "73 km E of Kokopo, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t81q",
+      "tsunami": 0,
+      "significance": 466
+    },
     {
       "id": "us6000t817",
       "magnitude": 4.9,
@@ -36,7 +72,19 @@
       "place": "30 km ENE of Kuji, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7zq",
       "tsunami": 0,
-      "significance": 785
+      "significance": 796
+    },
+    {
+      "id": "us6000t80d",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-24T22:23:54.046000+00:00",
+      "latitude": 10.6092,
+      "longitude": -66.7168,
+      "depth_km": 10.0,
+      "place": "13 km N of Caucagüito, Venezuela",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t80d",
+      "tsunami": 0,
+      "significance": 312
     },
     {
       "id": "us6000t7zp",
@@ -48,7 +96,7 @@
       "place": "28 km SE of Yumare, Venezuela",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7zp",
       "tsunami": 0,
-      "significance": 2339
+      "significance": 2432
     },
     {
       "id": "us6000t7zc",
@@ -73,114 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7yv",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000t7wm",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-06-24T16:25:59.573000+00:00",
-      "latitude": -8.1501,
-      "longitude": -74.2589,
-      "depth_km": 167.918,
-      "place": "41 km NE of San Fernando, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7wm",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "nc75382936",
-      "magnitude": 5.59,
-      "origin_time_utc": "2026-06-24T15:10:40.760000+00:00",
-      "latitude": 39.3623333333333,
-      "longitude": -123.228833333333,
-      "depth_km": 8.85,
-      "place": "11 km N of Redwood Valley, CA",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75382936",
-      "tsunami": 0,
-      "significance": 1320
-    },
-    {
-      "id": "us6000t7un",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-24T13:19:34.898000+00:00",
-      "latitude": -25.1509,
-      "longitude": 179.8323,
-      "depth_km": 512.681,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7un",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000t7uf",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-06-24T12:16:31.673000+00:00",
-      "latitude": 15.4949,
-      "longitude": -93.197,
-      "depth_km": 93.488,
-      "place": "1 km E of El Palmarcito, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7uf",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000t7u2",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-24T10:51:28.685000+00:00",
-      "latitude": 16.574,
-      "longitude": 119.2775,
-      "depth_km": 10.0,
-      "place": "64 km WNW of Catuday, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7u2",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000t7tx",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-24T10:36:34.167000+00:00",
-      "latitude": -29.8291,
-      "longitude": -71.2145,
-      "depth_km": 59.354,
-      "place": "8 km NNE of La Serena, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7tx",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000t7tg",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-24T08:57:00.388000+00:00",
-      "latitude": -27.1825,
-      "longitude": -63.1861,
-      "depth_km": 587.411,
-      "place": "17 km SSE of El Hoyo, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7tg",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000t7tc",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-06-24T08:25:54.497000+00:00",
-      "latitude": 35.2481,
-      "longitude": 27.1649,
-      "depth_km": 10.0,
-      "place": "28 km SE of Fry, Greece",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7tc",
-      "tsunami": 0,
-      "significance": 372
-    },
-    {
-      "id": "us6000t7t2",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-06-24T06:17:22.718000+00:00",
-      "latitude": -6.7815,
-      "longitude": 155.1762,
-      "depth_km": 70.1,
-      "place": "61 km SSW of Panguna, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7t2",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
