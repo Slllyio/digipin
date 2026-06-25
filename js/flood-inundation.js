@@ -48,6 +48,13 @@ const FloodInundation = (() => {
     // rebuild frames on the rainfall slider without re-fetching elevations.
     let _state = null;   // { field, cellElev, forecast }
     let _elevAbort = null;   // AbortController for in-flight elevation fetches
+    // Optional 3D scene (Guna sets window.DIGIPIN_FLOOD_3D): we pitch the camera
+    // and turn on 3D buildings while the inundation is shown, then restore.
+    let _did3D = false;
+    let _prevPitch = 0;
+    let _prevZoom = 0;
+    let _prevCenter = null;
+    let _enabledBuildings = false;
 
     // ---------- pure geometry / sampling ----------
     /** GRID×GRID grid of lat/lng over a box around (lat,lng), row 0 = north. */
@@ -195,8 +202,54 @@ const FloodInundation = (() => {
             const ratio = (safeBaseline && Number.isFinite(discharge)) ? discharge / safeBaseline : 1;
             const baseDepth = Math.max(0, (ratio - 1) * DEPTH_PER_RATIO);
             const totalDepth = baseDepth + Math.max(0, extraDepthM || 0);
-            return buildFrameCanvas(field, FIELD, cellElev, totalDepth, day.risk_color);
+            // Guna renders the inundation as blue water; default keeps per-day risk colour.
+            const waterColor = (typeof window !== 'undefined' && window.DIGIPIN_FLOOD_WATER_COLOR) || day.risk_color;
+            return buildFrameCanvas(field, FIELD, cellElev, totalDepth, waterColor);
         });
+    }
+
+    // ---------- optional 3D scene (opt-in via window.DIGIPIN_FLOOD_3D) ----------
+    /** Pitch the camera and turn on 3D buildings, with water drawn beneath them. */
+    function _enter3D(map, center) {
+        if (typeof window === 'undefined' || !window.DIGIPIN_FLOOD_3D) return;
+        try {
+            _did3D = true;
+            _prevPitch = map.getPitch();
+            _prevZoom = map.getZoom();
+            _prevCenter = map.getCenter();
+            // Fly into the flooded cell at street level so 3D buildings (minzoom 13)
+            // are visible standing in the water.
+            const camera = { pitch: 58, duration: 1200 };
+            if (center) {
+                camera.center = [center.lng, center.lat];
+                camera.zoom = Math.max(map.getZoom(), 15.3);
+            }
+            map.easeTo(camera);
+            if (typeof OvertureBuildings !== 'undefined' && !OvertureBuildings.isActive()) {
+                OvertureBuildings.toggle(map);
+                _enabledBuildings = true;
+            }
+            // Render the water layer beneath the buildings so they stand in it.
+            if (map.getLayer(LAYER_ID) && map.getLayer('overture-edges-layer')) {
+                map.moveLayer(LAYER_ID, 'overture-edges-layer');
+            }
+        } catch (e) { /* non-fatal */ }
+    }
+    /** Restore the prior camera pitch and turn buildings back off if we enabled them. */
+    function _exit3D(map) {
+        if (!_did3D) return;
+        _did3D = false;
+        try {
+            const cam = { pitch: _prevPitch || 0, duration: 700 };
+            if (_prevCenter) cam.center = _prevCenter;
+            if (_prevZoom) cam.zoom = _prevZoom;
+            map.easeTo(cam);
+            if (_enabledBuildings && typeof OvertureBuildings !== 'undefined' && OvertureBuildings.isActive()) {
+                OvertureBuildings.toggle(map);
+            }
+        } catch (e) { /* non-fatal */ }
+        _enabledBuildings = false;
+        _prevCenter = null;
     }
 
     // ---------- public API ----------
@@ -235,6 +288,7 @@ const FloodInundation = (() => {
 
         _setupMapLayer(map, bounds);
         _drawFrame(0);
+        _enter3D(map, cell.center);
 
         _animTimer = setInterval(() => {
             _frameIdx = (_frameIdx + 1) % _frameCanvases.length;
@@ -262,6 +316,7 @@ const FloodInundation = (() => {
         if (typeof MapModule !== 'undefined') {
             const map = MapModule.getMap();
             if (map) {
+                _exit3D(map);
                 if (map.getLayer(LAYER_ID))  map.removeLayer(LAYER_ID);
                 if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
             }
