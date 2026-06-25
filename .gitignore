@@ -141,3 +141,8 @@ guna-twin-city/data/scores/*
 !guna-twin-city/data/scores/*/
 !guna-twin-city/data/scores/*/*.json
 !guna-twin-city/data/scores/*/*.pmtiles
+# Browser-served raster overlays (MODIS LST heat + CA-ML growth COGs).
+!guna-twin-city/data/heat/
+!guna-twin-city/data/heat/*.tif
+!guna-twin-city/data/growth/
+!guna-twin-city/data/growth/*.tif

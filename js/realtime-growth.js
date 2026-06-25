@@ -24,6 +24,27 @@ const RealtimeGrowth = (() => {
     let _reraCache = null;
     let _reraFetchedAt = 0;
 
+    // Parsed-georaster cache, keyed by URL. Without this every fetchCell re-fetches
+    // and re-parses all five COGs — so a viewport overlay sampling N cells fires 5×N
+    // concurrent requests, which race and fail. Parse each COG once, reuse forever.
+    const _cogCache = new Map();
+    function _loadGeoraster(url) {
+        if (_cogCache.has(url)) return _cogCache.get(url);
+        const p = (async () => {
+            try {
+                if (typeof parseGeoraster !== 'function') return null;
+                const resp = await fetch(url, { cache: 'force-cache', signal: AbortSignal.timeout(15000) });
+                if (!resp.ok) return null;
+                return await parseGeoraster(await resp.arrayBuffer());
+            } catch (e) {
+                console.warn('[RealtimeGrowth] COG load failed', url, e);
+                return null;
+            }
+        })();
+        _cogCache.set(url, p);
+        return p;
+    }
+
     /** Great-circle distance in km between two lat/lng points. */
     function _haversineKm(lat1, lng1, lat2, lng2) {
         const R = 6371;
@@ -40,12 +61,12 @@ const RealtimeGrowth = (() => {
         // Uses georaster.browser.bundle.min.js loaded by index.html.
         // Returns Array<number> (one value per band) or null on failure.
         try {
-            if (typeof parseGeoraster !== 'function') return null;
-            const resp = await fetch(url, { cache: 'force-cache', signal: AbortSignal.timeout(15000) });
-            if (!resp.ok) return null;
-            const buf = await resp.arrayBuffer();
-            const gr = await parseGeoraster(buf);
-            const [px, py] = gr.toCanvasCoords([lng, lat]);
+            const gr = await _loadGeoraster(url);
+            if (!gr) return null;
+            // Pixel from lng/lat via the affine (xmin/pixelWidth) — version-independent,
+            // unlike gr.toCanvasCoords which isn't present in the bundled georaster build.
+            const px = Math.floor((lng - gr.xmin) / gr.pixelWidth);
+            const py = Math.floor((gr.ymax - lat) / gr.pixelHeight);
             if (px < 0 || py < 0 || px >= gr.width || py >= gr.height) return null;
             const out = [];
             for (let b = 0; b < gr.values.length; b++) {

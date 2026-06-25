@@ -51,8 +51,10 @@ const RealtimeHeat = (() => {
     function _readBandsAt(gr, lat, lng) {
         if (!gr) return null;
         try {
-            const [px, py] = gr.toCanvasCoords([lng, lat]);
-            const x = Math.floor(px), y = Math.floor(py);
+            // Pixel from lng/lat via the affine (xmin/pixelWidth) — version-independent,
+            // unlike gr.toCanvasCoords which isn't present in the bundled georaster build.
+            const x = Math.floor((lng - gr.xmin) / gr.pixelWidth);
+            const y = Math.floor((gr.ymax - lat) / gr.pixelHeight);
             if (x < 0 || y < 0 || x >= gr.width || y >= gr.height) return null;
             const out = new Array(gr.values.length);
             for (let b = 0; b < gr.values.length; b++) {
