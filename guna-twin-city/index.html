@@ -173,6 +173,34 @@
         <div id="panel-content" class="panel-content"></div>
     </aside>
 
+    <!-- ===== DISHA CHAT DIALOG (floating, draggable, resizable) =====
+         Ported from the main app: js/disha-panel.js (DISHAPanel.init, called by
+         js/app.js) wires #disha-input and #disha-status unconditionally, so this
+         markup must exist or init throws a classList-null error. -->
+    <aside id="disha-panel" class="floating-dialog" role="dialog" aria-label="DISHA AI Assistant">
+        <div class="dialog-titlebar" data-dialog="disha-panel">
+            <div class="disha-title">
+                <span class="disha-logo" aria-hidden="true">D</span>
+                <span>DISHA</span>
+                <span class="disha-status" id="disha-status" title="Checking provider..." role="status">...</span>
+                <button class="disha-gear-btn" id="disha-settings-btn" title="AI Provider Settings" aria-label="Provider settings">&#9881;</button>
+            </div>
+            <div class="disha-subtitle" data-i18n="disha.subtitle">India-native DIGIPIN intelligence &bull; free &amp; auditable</div>
+            <button class="close-btn" onclick="DISHAPanel.close()" aria-label="Close DISHA panel">&#10005;</button>
+        </div>
+        <div class="disha-body">
+            <div class="disha-messages" id="disha-messages" role="log" aria-live="polite" aria-label="Chat messages"></div>
+            <div class="disha-suggestions" id="disha-suggestions" aria-label="Suggested questions"></div>
+            <div class="disha-input-row">
+                <label for="disha-input" class="sr-only">Ask DISHA about this location</label>
+                <input type="text" id="disha-input" placeholder="Ask about this location..." data-i18n-placeholder="disha.placeholder" disabled aria-label="Ask about this location">
+                <button id="disha-send" onclick="DISHAPanel.send()" disabled aria-label="Send message">-&gt;</button>
+                <button id="disha-stop" onclick="DISHA.cancel()" style="display:none" aria-label="Stop generation">||</button>
+            </div>
+        </div>
+        <div class="dialog-resize-handle" data-dialog="disha-panel"></div>
+    </aside>
+
     <!-- ===== QUERY ENGINE ===== -->
     <div id="query-progress" role="status" aria-live="polite">
         <div style="flex:1">

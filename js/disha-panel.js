@@ -20,12 +20,17 @@ const DISHAPanel = (() => {
 
         updateStatusBadge(result);
 
-        inputEl.addEventListener('keydown', e => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                send();
-            }
-        });
+        // Pages without the DISHA chat chrome (e.g. the Guna twin) load this
+        // module but have no #disha-input. Guard so init() stays a no-op there;
+        // when the input IS present (main Indore app) behaviour is unchanged.
+        if (inputEl) {
+            inputEl.addEventListener('keydown', e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    send();
+                }
+            });
+        }
 
         // Settings gear click
         const gearBtn = document.getElementById('disha-settings-btn');
@@ -42,6 +47,10 @@ const DISHAPanel = (() => {
     /** Render the connection status badge (LIVE/cloud/OFF) from a checkConnection result. */
     function updateStatusBadge(result) {
         const statusEl = document.getElementById('disha-status');
+        // No-op on pages that don't render the DISHA status badge (e.g. the Guna
+        // twin loads this module but has no DISHA chat chrome). When the element
+        // IS present (the main Indore app) behaviour is unchanged.
+        if (!statusEl) return;
         statusEl.classList.remove('connected', 'offline', 'cloud');
 
         if (result.connected) {

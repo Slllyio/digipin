@@ -97,8 +97,9 @@ guna-twin-city/traffic-analysis/sumo/*.xml
 
 # Analysis output: ignore heavy generated maps/rasters, keep small summary JSONs
 guna-twin-city/analysis/output/*
-!guna-twin-city/analysis/output/*.json
-!guna-twin-city/analysis/output/*.geojson
+!guna-twin-city/analysis/output/flood_cn_guna.json
+!guna-twin-city/analysis/output/flood_buildings_guna.geojson
+!guna-twin-city/analysis/output/flood_risk_cells_guna.geojson
 
 # Large binary files
 *.pptx
@@ -108,8 +109,9 @@ guna-twin-city/traffic-analysis/sumo/*.xml
 
 # Analysis output: ignore heavy generated maps/rasters, keep small summary JSONs
 guna-twin-city/analysis/output/*
-!guna-twin-city/analysis/output/*.json
-!guna-twin-city/analysis/output/*.geojson
+!guna-twin-city/analysis/output/flood_cn_guna.json
+!guna-twin-city/analysis/output/flood_buildings_guna.geojson
+!guna-twin-city/analysis/output/flood_risk_cells_guna.geojson
 
 # Large binary files
 *.pptx

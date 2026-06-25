@@ -1107,7 +1107,10 @@ const StrategicTwin = (() => {
         const buttons = [
             { id: 'btn-ward-dash', icon: '\uD83D\uDCCA', label: 'Wards+', title: 'Ward KPI Dashboard', action: () => WardDashboard.open() },
             { id: 'btn-flood-warn', icon: '\uD83D\uDEA8', label: 'Flood', title: 'Flood Early Warning', action: () => FloodWarning.open() },
-            { id: 'btn-mobility', icon: '\uD83D\uDEB6', label: 'Walk', title: 'Active Mobility Network', action: () => ActiveMobility.toggle() },
+            // NOTE: ids are 'btn-st-*' (strategic-twin) to avoid colliding with the
+            // ported Indore toolbar buttons (btn-mobility = L&O overlay, etc.),
+            // which other overlay modules wire by getElementById.
+            { id: 'btn-st-mobility', icon: '\uD83D\uDEB6', label: 'Walk', title: 'Active Mobility Network', action: () => ActiveMobility.toggle() },
             { id: 'btn-uhi', icon: '\uD83C\uDF21', label: 'UHI', title: 'Urban Heat Island', action: () => HeatIsland.toggle() },
             { id: 'btn-reports', icon: '\uD83D\uDCDD', label: 'Report', title: 'Citizen Issue Reports', action: () => CitizenFeedback.toggleLayer() },
             { id: 'btn-drainage', icon: '\uD83D\uDCA7', label: 'Drains', title: 'Inferred Drainage Paths', action: () => GenerativeTwin.inferDrainagePaths() }
@@ -1130,8 +1133,10 @@ const StrategicTwin = (() => {
             const panel = document.getElementById('panel-content');
             if (!panel) return;
             const actionsRow = panel.querySelector('.panel-actions');
-            if (actionsRow && !actionsRow.querySelector('#btn-scenario')) {
-                const scenarioBtn = _el('button', { className: 'action-btn', id: 'btn-scenario', title: 'What-If Scenario' }, '\uD83D\uDD2C Scenario');
+            // 'btn-st-scenario' avoids colliding with the ported toolbar's
+            // 'btn-scenario' (CA-ML growth-scenario lens, wired by scenario-panel.js).
+            if (actionsRow && !actionsRow.querySelector('#btn-st-scenario')) {
+                const scenarioBtn = _el('button', { className: 'action-btn', id: 'btn-st-scenario', title: 'What-If Scenario' }, '\uD83D\uDD2C Scenario');
                 scenarioBtn.addEventListener('click', () => {
                     const cell = Panel.getCurrentCell?.();
                     const data = Panel.getCurrentData?.();
