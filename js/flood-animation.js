@@ -93,10 +93,14 @@ const FloodAnimation = (() => {
 
         function updateSim(rainfallMm) {
             if (!valueEl || !readoutEl) return;
-            valueEl.textContent = `+${rainfallMm} mm/day`;
+            // Optional per-deployment overrides (Guna sets these): a data-driven
+            // Curve Number and a rainfall-duration label. Default to mm/day + CN 80.
+            const unit = (typeof window !== 'undefined' && window.DIGIPIN_FLOOD_RAIN_UNIT) || 'mm/day';
+            const cnOverride = (typeof window !== 'undefined' && Number(window.DIGIPIN_FLOOD_CN)) || undefined;
+            valueEl.textContent = `+${rainfallMm} ${unit}`;
             let extraDepth = 0;
             if (typeof FloodSCS !== 'undefined') {
-                const result = FloodSCS.rainfallToExtraDepth(rainfallMm);
+                const result = FloodSCS.rainfallToExtraDepth(rainfallMm, cnOverride);
                 extraDepth = result.extra_depth_m;
                 readoutEl.textContent =
                     `SCS Curve Number (CN=${result.cn}): ` +

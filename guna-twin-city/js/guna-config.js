@@ -11,3 +11,14 @@ const GUNA_CONFIG = {
     lng: 77.3126,
     zoom: 13,
 };
+
+// Feed the data-driven flood Curve Number (analysis/output/flood_cn_guna.json)
+// into the rainfall->inundation what-if slider, and label rainfall as a 12-hour
+// event. Both are read by js/flood-animation.js when present.
+if (typeof window !== 'undefined') {
+    window.DIGIPIN_FLOOD_RAIN_UNIT = 'mm/12h';
+    fetch('analysis/output/flood_cn_guna.json')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j) => { if (j && j.weighted_cn) window.DIGIPIN_FLOOD_CN = j.weighted_cn.amc_ii; })
+        .catch(() => {});
+}
