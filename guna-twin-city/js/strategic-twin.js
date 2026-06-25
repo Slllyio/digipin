@@ -638,6 +638,21 @@ const StrategicTwin = (() => {
                     if (maxRain > 0) runoff.appendChild(_el('div', { style: { color: '#888', marginTop: '2px' } }, 'Runoff ratio: ' + (q / maxRain * 100).toFixed(0) + '%'));
                 }
                 c.appendChild(runoff);
+
+                // At-risk buildings (3D) — per-building flood depth / risk extent
+                if (typeof FloodBuildings !== 'undefined') {
+                    const label = () => (FloodBuildings.isActive() ? 'Hide at-risk buildings' : 'Show at-risk buildings (3D)');
+                    const bbtn = _el('button', { style: {
+                        marginTop: '10px', width: '100%', padding: '9px 12px', cursor: 'pointer',
+                        background: 'rgba(31,111,235,0.15)', color: '#cfe6ff',
+                        border: '1px solid #1f6feb', borderRadius: '8px', fontSize: '12px', fontWeight: '600'
+                    } }, label());
+                    bbtn.addEventListener('click', () => {
+                        const map = (typeof MapModule !== 'undefined') ? MapModule.getMap() : null;
+                        Promise.resolve(FloodBuildings.toggle(map)).then(() => { bbtn.textContent = label(); });
+                    });
+                    c.appendChild(bbtn);
+                }
             } catch (err) {
                 c.replaceChildren(_el('p', { style: { padding: '20px', color: '#ef4444' } }, 'Forecast error: ' + err.message));
             }
