@@ -38,6 +38,8 @@ def _event_context() -> dict:
 
 
 def build() -> dict:
+    if not SRC.exists():
+        raise SystemExit(f"Missing {SRC.name} — run flood_risk_analysis.py first.")
     data = json.loads(SRC.read_text(encoding="utf-8"))
     zones = data.get("zones", [])
     features = []

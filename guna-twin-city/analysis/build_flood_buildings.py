@@ -39,6 +39,8 @@ def _ring_to_polygon(ring):
 
 
 def build() -> dict:
+    if not RESULTS.exists():
+        raise SystemExit(f"Missing {RESULTS.name} — run flood_precise_analysis.py first.")
     results = json.loads(RESULTS.read_text(encoding="utf-8"))
     risk = _find_risk_buildings(results) or []
 

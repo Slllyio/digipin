@@ -55,3 +55,13 @@ def test_runoff_ratio_band_bounded():
     s = bld.summarize_cn(lulc, hsg_codes)
     for v in s["runoff_ratio_band"].values():
         assert 0.0 <= v <= 1.0
+
+
+def test_zero_rainfall_does_not_crash():
+    # rainfall <= 0 must not divide-by-zero in the ratio band; falls back to the event value
+    lulc = np.full((2, 2), 50)
+    hsg_codes = np.full((2, 2), 4)
+    s = bld.summarize_cn(lulc, hsg_codes, rainfall_mm=0)
+    assert s["rainfall_mm"] == bld.GUNA_RAINFALL_MM
+    for v in s["runoff_ratio_band"].values():
+        assert 0.0 <= v <= 1.0

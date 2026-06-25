@@ -64,6 +64,10 @@ def summarize_cn(lulc, hsg_codes, rainfall_mm: float = GUNA_RAINFALL_MM) -> dict
 
     from pipeline.scores import flood_scs
 
+    # Guard a non-positive rainfall (would divide by zero in the runoff-ratio band).
+    if not rainfall_mm or rainfall_mm <= 0:
+        rainfall_mm = GUNA_RAINFALL_MM
+
     counts = _counts(lulc, hsg_codes)
     total = sum(counts.values()) or 1
 
