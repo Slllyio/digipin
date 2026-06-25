@@ -653,6 +653,21 @@ const StrategicTwin = (() => {
                     });
                     c.appendChild(bbtn);
                 }
+
+                // Per-cell flood-risk heatmap (green->red) for planning flood-prone areas
+                if (typeof FloodRiskGrid !== 'undefined') {
+                    const rlabel = () => (FloodRiskGrid.isActive() ? 'Hide flood-risk cells' : 'Flood-risk cells (planning)');
+                    const rbtn = _el('button', { style: {
+                        marginTop: '8px', width: '100%', padding: '9px 12px', cursor: 'pointer',
+                        background: 'rgba(215,48,39,0.14)', color: '#ffd9d2',
+                        border: '1px solid #d73027', borderRadius: '8px', fontSize: '12px', fontWeight: '600'
+                    } }, rlabel());
+                    rbtn.addEventListener('click', () => {
+                        const map = (typeof MapModule !== 'undefined') ? MapModule.getMap() : null;
+                        Promise.resolve(FloodRiskGrid.toggle(map)).then(() => { rbtn.textContent = rlabel(); });
+                    });
+                    c.appendChild(rbtn);
+                }
             } catch (err) {
                 c.replaceChildren(_el('p', { style: { padding: '20px', color: '#ef4444' } }, 'Forecast error: ' + err.message));
             }
