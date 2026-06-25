@@ -102,11 +102,18 @@ const FloodInundation = (() => {
     // ---------- elevation fetch ----------
     async function _fetchElevations(lats, lngs, signal) {
         const out = new Float32Array(lats.length);
+        const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+        let batchIdx = 0;
         for (let start = 0; start < lats.length; start += MAX_BATCH) {
+            if (batchIdx++ > 0) await sleep(220);    // throttle so many batches don't trip 429
             const la = lats.slice(start, start + MAX_BATCH);
             const ln = lngs.slice(start, start + MAX_BATCH);
             const url = `${ELEV_URL}?latitude=${la.join(',')}&longitude=${ln.join(',')}`;
-            const r = await fetch(url, { cache: 'no-store', signal });
+            let r = await fetch(url, { cache: 'no-store', signal });
+            if (r.status === 429) {                  // rate-limited: back off once and retry
+                await sleep(1600);
+                r = await fetch(url, { cache: 'no-store', signal });
+            }
             if (!r.ok) throw new Error(`elevation API ${r.status}`);
             const payload = await r.json();
             const elev = payload && payload.elevation;
@@ -263,7 +270,11 @@ const FloodInundation = (() => {
         _attachedCellCode = cell.code;
 
         const { lat, lng } = cell.center;
-        const { lats, lngs, bounds } = gridPoints(lat, lng);
+        // City-scale coverage is opt-in (Guna sets a bigger GRID + HALF_LAT so the
+        // user can freely roam the whole flooded core, not just a ~2.4 km box).
+        const G = (typeof window !== 'undefined' && +window.DIGIPIN_FLOOD_GRID) || GRID;
+        const HALF = (typeof window !== 'undefined' && +window.DIGIPIN_FLOOD_HALF_LAT) || HALF_LAT_DEG;
+        const { lats, lngs, bounds } = gridPoints(lat, lng, G, HALF);
 
         _elevAbort = new AbortController();
         let elev;
@@ -279,8 +290,8 @@ const FloodInundation = (() => {
         }
         if (_attachedCellCode !== cell.code) return;   // cell changed mid-fetch
 
-        const field = upsample(elev, GRID, FIELD);
-        const cellElev = bilinear(elev, GRID, (GRID - 1) / 2, (GRID - 1) / 2);
+        const field = upsample(elev, G, FIELD);
+        const cellElev = bilinear(elev, G, (G - 1) / 2, (G - 1) / 2);
 
         _state = { field, cellElev, forecast };
         _rebuildFrames(0);
