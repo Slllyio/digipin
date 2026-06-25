@@ -121,6 +121,9 @@ building-blocks/
 iD/
 cesium-demo.html
 
+# Local git worktrees (agent isolation) — never commit
+DigiPin.worktrees/
+
 # Personal Claude Code permission allowlist — local-only
 .claude/settings.local.json
 
@@ -137,3 +140,4 @@ guna-twin-city/data/scores/*
 !guna-twin-city/data/scores/*.json
 !guna-twin-city/data/scores/*/
 !guna-twin-city/data/scores/*/*.json
+!guna-twin-city/data/scores/*/*.pmtiles

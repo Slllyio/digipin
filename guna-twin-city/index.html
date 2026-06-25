@@ -364,5 +364,35 @@
     <div id="heatmap-dropdown" class="toolbar-dropdown"></div>
     <div id="dt-layers-dropdown" class="toolbar-dropdown dt-layers-menu"></div>
 
+    <!-- Wire the toggle-overlay toolbar buttons (ported from the main app, which
+         wires these inline). Flips the overlay + reflects .active / aria-pressed. -->
+    <script>
+    [
+        ['btn-growth',    () => window.GrowthOverlay],
+        ['btn-ca-growth', () => window.CAGrowthOverlay],
+        ['btn-scenario',  () => window.ScenarioPanel],
+        ['btn-traffic',   () => window.TrafficOverlay],
+        ['btn-mobility',  () => window.MobilityOverlay],
+        ['btn-heat',      () => window.HeatOverlay],
+        ['btn-ndvi',      () => window.NDVIOverlay],
+        ['btn-bivariate', () => window.BivariateOverlay],
+        ['btn-viewshed',  () => window.Viewshed],
+        ['btn-kde',       () => window.KDEOverlay],
+        ['btn-access',    () => window.AccessibilityOverlay],
+        ['btn-choropleth', () => window.ScoreChoropleth],
+        ['btn-area',      () => window.AreaAggregate],
+    ].forEach(([id, getMod]) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.setAttribute('aria-pressed', 'false');
+        btn.addEventListener('click', () => {
+            const mod = getMod();
+            if (mod && typeof mod.toggle === 'function') mod.toggle();
+            const on = btn.classList.toggle('active');
+            btn.setAttribute('aria-pressed', String(on));
+        });
+    });
+    </script>
+
 </body>
 </html>
