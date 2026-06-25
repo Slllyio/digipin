@@ -16,6 +16,25 @@
     <!-- GeoRaster for COG/GeoTIFF rendering -->
     <script src="https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js"></script>
 
+    <!-- Theme pre-paint: Aino paper-light is the default unless the user chose dark
+         (no flash either way). Runtime API: ../js/theme.js. -->
+    <script>
+        try {
+            if (localStorage.getItem('digipin_theme') !== 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+            var lang = localStorage.getItem('digipin_language');
+            document.documentElement.setAttribute('lang', lang === 'hi' ? 'hi' : 'en');
+            if (lang === 'hi') {
+                var _f = document.createElement('link');
+                _f.id = 'i18n-deva-font'; _f.rel = 'stylesheet';
+                _f.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap';
+                document.head.appendChild(_f);
+            }
+        } catch (e) { /* storage blocked — fall back to bare CSS / en */ }
+    </script>
+    <meta name="theme-color" content="#f4f6f7">
+
     <!-- Custom Styles (shared with parent) -->
     <link rel="stylesheet" href="../css/styles.css">
 
@@ -37,6 +56,7 @@
         <label for="search-input" class="sr-only">Search DigiPin code or place name</label>
         <input type="text" id="search-input" placeholder="Search DigiPin code or place name (e.g. Guna Fort)" autocomplete="off" aria-label="Search DigiPin code or place name">
         <button id="search-btn" aria-label="Search">🔍</button>
+        <button id="theme-toggle-btn" aria-label="Switch theme" title="Switch theme" data-i18n-title="btn.theme">☀️</button>
     </div>
 
     <!-- ===== TOOLBAR ===== -->

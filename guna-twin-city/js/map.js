@@ -23,7 +23,11 @@ const MapModule = (() => {
 
         map = new maplibregl.Map({
             container: 'map',
-            style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+            // Respect the active theme (Aino paper-light vs dark) like the main app;
+            // theme toggling reloads the page, so the right basemap loads each time.
+            style: (typeof Theme !== 'undefined')
+                ? Theme.mapStyleUrl()
+                : 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
             center: [GUNA.lng, GUNA.lat],
             zoom: INITIAL_ZOOM,
             pitch: 0,
@@ -62,6 +66,11 @@ const MapModule = (() => {
     }
 
     function setupGridLayers() {
+        // Grid colours follow the active theme (neon on dark, coral/violet on Aino
+        // paper-light), matching the main app. Theme switches reload, so init is enough.
+        const gc = (typeof Theme !== 'undefined') ? Theme.gridColors()
+            : { base: '#00f5ff', selected: '#a855f7' };
+
         map.addSource('digipin-grid', {
             type: 'geojson',
             data: { type: 'FeatureCollection', features: [] }
@@ -72,7 +81,7 @@ const MapModule = (() => {
             type: 'fill',
             source: 'digipin-grid',
             paint: {
-                'fill-color': ['case', ['boolean', ['feature-state', 'selected'], false], '#a855f7', '#00f5ff'],
+                'fill-color': ['case', ['boolean', ['feature-state', 'selected'], false], gc.selected, gc.base],
                 'fill-opacity': [
                     'case',
                     ['boolean', ['feature-state', 'selected'], false], 0.25,
@@ -87,7 +96,7 @@ const MapModule = (() => {
             type: 'line',
             source: 'digipin-grid',
             paint: {
-                'line-color': ['case', ['boolean', ['feature-state', 'selected'], false], '#a855f7', '#00f5ff'],
+                'line-color': ['case', ['boolean', ['feature-state', 'selected'], false], gc.selected, gc.base],
                 'line-width': [
                     'case',
                     ['boolean', ['feature-state', 'selected'], false], 3,
