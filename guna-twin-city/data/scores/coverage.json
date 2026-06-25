@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "fields": [
+    "walkability",
+    "safety",
+    "green",
+    "connectivity",
+    "commercial",
+    "education_score",
+    "healthcare_access",
+    "entertainment_score",
+    "livability",
+    "investment",
+    "tourism",
+    "infra_maturity",
+    "noise_estimate",
+    "population_proxy",
+    "food_diversity",
+    "religious_diversity",
+    "public_service",
+    "real_estate_growth",
+    "digital_readiness",
+    "flood_risk"
+  ],
+  "regions": [
+    {
+      "name": "guna",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "35"
+      ],
+      "bbox": {
+        "west": 77.25,
+        "south": 24.58,
+        "east": 77.4,
+        "north": 24.7
+      },
+      "path": "data/scores/guna/"
+    }
+  ],
+  "generated": "2026-06-25T19:40:58Z",
+  "radiusM": 400.0
+}

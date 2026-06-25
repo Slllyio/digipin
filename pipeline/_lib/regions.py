@@ -34,6 +34,7 @@ INDIA_FULL: Final[tuple[float, float, float, float]] = (68.0, 6.5, 97.5, 35.5)
 # 6 (~244 m). Cell counts at L6 are listed in the runbook.
 _REGIONS: Final[dict[str, tuple[float, float, float, float]]] = {
     "indore_pilot": INDORE_PILOT,
+    "guna":       (77.25, 24.58, 77.40, 24.70),
     "bhopal":     (77.30, 23.18, 77.52, 23.32),
     "pune":       (73.75, 18.43, 73.99, 18.64),
     "mumbai":     (72.78, 18.89, 72.99, 19.27),
