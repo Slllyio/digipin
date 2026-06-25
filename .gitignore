@@ -126,3 +126,14 @@ cesium-demo.html
 
 # Generated promo video + frames (build via extras/promo-stills.mjs + build-promo.py)
 extras/out/
+
+# ===== Guna twin: ignore heavy local source data, keep generated map artifacts =====
+guna-twin-city/data/*
+!guna-twin-city/data/ai_outputs/
+guna-twin-city/data/ai_outputs/*
+!guna-twin-city/data/ai_outputs/*.geojson
+!guna-twin-city/data/scores/
+guna-twin-city/data/scores/*
+!guna-twin-city/data/scores/*.json
+!guna-twin-city/data/scores/*/
+!guna-twin-city/data/scores/*/*.json
