@@ -531,7 +531,11 @@ const StrategicTwin = (() => {
         }
 
         function _createPanel() {
-            _panel = _el('aside', { id: 'flood-warning', className: 'floating-dialog' });
+            // Anchor explicitly: this dialog is appended to <body> after the page
+            // content, so .floating-dialog's fixed top:auto would otherwise leave
+            // it off-screen at the bottom of the tall page.
+            _panel = _el('aside', { id: 'flood-warning', className: 'floating-dialog',
+                style: { top: '72px', right: '16px', left: 'auto', width: 'min(380px, 94vw)' } });
             const header = _el('div', { className: 'panel-header', style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px' } });
             header.appendChild(_el('h3', { style: { margin: '0', fontSize: '15px' } }, 'Flood Early Warning'));
             const closeBtn = _el('button', { className: 'close-btn', 'aria-label': 'Close' });
