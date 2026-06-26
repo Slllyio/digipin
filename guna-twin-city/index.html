@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css" />
     <script src="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js"></script>
 
+    <!-- deck.gl umbrella bundle — WebGL overlay for the Aino-style 3D twin
+         (white building massing, procedural window facades, instanced trees,
+         ambient-occlusion + soft-shadow lighting). Provides window.deck. -->
+    <script src="https://unpkg.com/deck.gl@9.0.38/dist.min.js"></script>
+
     <!-- PMTiles v3 — IIFE global build for MapLibre addProtocol -->
     <script src="https://unpkg.com/pmtiles@3.0.7/dist/pmtiles.js"></script>
 
@@ -80,6 +85,10 @@
         <button class="toolbar-btn" id="btn-3d" title="Toggle 3D View">
             <span class="tb-icon">&#9650;</span>
             <span class="tb-label">3D</span>
+        </button>
+        <button class="toolbar-btn" id="btn-aino" title="Aino 3D Twin — white architectural massing model (deck.gl)">
+            <span class="tb-icon">&#127961;</span>
+            <span class="tb-label">Aino 3D</span>
         </button>
         <button class="toolbar-btn" id="btn-lulc" title="Land Use Land Cover">
             <span class="tb-icon">&#127758;</span>
@@ -329,6 +338,7 @@
     <script src="../js/score-choropleth.js"></script>
     <script src="../js/footprint-grid.js"></script>
     <script src="../js/buildings-deck.js"></script>
+    <script src="js/aino-twin.js"></script>
     <script src="../js/theme.js"></script>
     <script src="../js/i18n.js"></script>
     <script src="../js/real-estate-model.js"></script>
@@ -381,6 +391,7 @@
         ['btn-access',    () => window.AccessibilityOverlay],
         ['btn-choropleth', () => window.ScoreChoropleth],
         ['btn-area',      () => window.AreaAggregate],
+        ['btn-aino',      () => window.AinoTwin],
     ].forEach(([id, getMod]) => {
         const btn = document.getElementById(id);
         if (!btn) return;
