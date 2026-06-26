@@ -168,13 +168,14 @@ function _ribbons(gj, widthFn, color, y) {
     if (!geoms.length) return null;
     const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
     merged.computeVertexNormals();
-    const mesh = new THREE.Mesh(merged, new THREE.MeshStandardMaterial({ color, roughness: 0.95, metalness: 0 }));
+    const mesh = new THREE.Mesh(merged, new THREE.MeshStandardMaterial({ color, roughness: 0.95, metalness: 0, side: THREE.DoubleSide }));
     mesh.receiveShadow = true;
     return mesh;
 }
-function _buildWaterPolys(gj, y) {
+function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null) {
     const geoms = [];
     for (const f of (gj.features || [])) {
+        if (tier && f.properties && f.properties.tier !== tier) continue;
         const g = f.geometry; if (!g) continue;
         const polys = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [];
         for (const poly of polys) {
@@ -191,7 +192,7 @@ function _buildWaterPolys(gj, y) {
     }
     if (!geoms.length) return null;
     const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
-    const mesh = new THREE.Mesh(merged, new THREE.MeshStandardMaterial({ color: 0x9fb8c9, roughness: 0.6, metalness: 0 }));
+    const mesh = new THREE.Mesh(merged, new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0, side: THREE.DoubleSide }));
     mesh.receiveShadow = true;
     // crisp bank outline
     const banks = new THREE.LineSegments(
@@ -221,20 +222,20 @@ function _buildGreenSpaces(gj, y) {
     }
     if (!geoms.length) return null;
     const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
-    const mesh = new THREE.Mesh(merged, new THREE.MeshStandardMaterial({ color: 0xcfe0bf, roughness: 1, metalness: 0 }));
+    const mesh = new THREE.Mesh(merged, new THREE.MeshStandardMaterial({ color: 0xcfe0bf, roughness: 1, metalness: 0, side: THREE.DoubleSide }));
     mesh.receiveShadow = true;
     return mesh;
 }
 
-/** Road style by OSM class: delicate light-grey lines, pixel width + colour. */
+/** Road style by OSM class: clean grey lines with a clear width hierarchy. */
 function _roadStyle(f) {
     const k = ((f.properties && (f.properties.highway || f.properties.fclass)) || '') + '';
-    if (/motorway|trunk|_link/.test(k)) return { w: 2.6, color: 0xb9bec9 };
-    if (/primary/.test(k)) return { w: 2.2, color: 0xbfc4cf };
-    if (/secondary/.test(k)) return { w: 1.8, color: 0xc6cad3 };
-    if (/tertiary/.test(k)) return { w: 1.5, color: 0xccd0d8 };
-    if (/residential|unclassified|living/.test(k)) return { w: 1.1, color: 0xd2d6dd };
-    return { w: 0.8, color: 0xd8dbe2 };                 // service/track/footway/path
+    if (/motorway|trunk|_link/.test(k)) return { w: 6.5, color: 0xaab0bd };
+    if (/primary/.test(k)) return { w: 5.2, color: 0xb2b8c4 };
+    if (/secondary/.test(k)) return { w: 4.0, color: 0xbac0cb };
+    if (/tertiary/.test(k)) return { w: 3.1, color: 0xc2c7d1 };
+    if (/residential|unclassified|living/.test(k)) return { w: 2.2, color: 0xc9ced7 };
+    return { w: 1.5, color: 0xd2d6dd };                 // service/track/footway/path
 }
 
 /** Roads as delicate fat-lines: one LineSegments2 per class (pixel-constant width).
@@ -328,18 +329,23 @@ function _setupComposer(w, h) {
 
 async function _build() {
     const w = innerWidth, h = innerHeight;
-    const [b, t, riv, wat, road, green] = await Promise.all([
+    const [b, t, riv, wat, road, green, jrc] = await Promise.all([
         _json(BASE + 'buildings_lite_guna.geojson'),
         _json(BASE + 'aino_trees_guna.json'),
         _json(BASE + 'osm_rivers_guna_continuous.geojson'),
         _json(BASE + 'osm_water_guna.geojson'),
         _json(BASE + 'osm_roads_guna.geojson'),
         _json(BASE + 'osm_green_spaces_guna.geojson'),
+        _json(BASE + 'jrc_water_guna.geojson'),   // satellite-observed Guniya river + streams + tanks
     ]);
-    // y-stack: parks 0.10 → roads 0.15 → water 0.45 → rivers 0.55 → bridges 0.70
+    // y-stack: parks 0.10 → roads 0.15 → water 0.40-0.46 → rivers 0.55 → bridges 0.70
     if (green) { const m = _buildGreenSpaces(green, 0.10); if (m) _scene.add(m); }
     if (road) { const m = _buildRoadLines(road, w, h); if (m) _scene.add(m); }
-    if (wat) { const m = _buildWaterPolys(wat, 0.45); if (m) _scene.add(m); }
+    if (jrc) {
+        const sw = _buildWaterPolys(jrc, 0.42, 0xb2c8d8, 'seasonal'); if (sw) _scene.add(sw);
+        const pw = _buildWaterPolys(jrc, 0.46, 0x86a6c0, 'permanent'); if (pw) _scene.add(pw);
+    }
+    if (wat) { const m = _buildWaterPolys(wat, 0.45, 0x9fb8c9); if (m) _scene.add(m); }
     if (riv) { const m = _ribbons(riv, _riverW, 0x93b0c4, 0.55); if (m) _scene.add(m); }
     if (road) { const m = _buildBridges(road, 0.70); if (m) _scene.add(m); }
     if (b) { const m = _buildBuildings(b); if (m) _scene.add(m); }
@@ -395,6 +401,7 @@ async function open() {
     await _build();
     loading.remove();
     _loop();
+    window.__aino = { scene: _scene, camera: _camera, controls: _controls, THREE };  // debug/framing handle
 }
 function close_() {
     if (!_active) return;
