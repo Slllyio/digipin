@@ -23,6 +23,7 @@ const AinoTwin = (() => {
     const BUILDINGS_URL = 'data/vectors/buildings_lite_guna.geojson';
     const TREES_URL = 'data/vectors/aino_trees_guna.json';
     const WATER_URL = 'data/vectors/osm_water_guna.geojson';
+    const RIVERS_URL = 'data/vectors/osm_rivers_guna_continuous.geojson';
     const ROADS_URL = 'data/vectors/osm_roads_guna.geojson';
     const VERT_EXAG = 1.0;          // true proportions — accurate low-rise, no skyline inflation
     let _trees = null;              // [{position:[lng,lat], s}] scattered in green areas
@@ -206,6 +207,20 @@ const AinoTwin = (() => {
                 getFillColor: [158, 196, 222, 235],    // soft Aino blue
                 getLineColor: [120, 168, 200, 255],
                 lineWidthUnits: 'pixels', getLineWidth: 1,
+                parameters: { depthTest: false },
+            }),
+            // Rivers / waterway lines — wider, brighter blue than drains/streams.
+            new deck.GeoJsonLayer({
+                id: 'aino-rivers',
+                data: RIVERS_URL,
+                stroked: true, filled: false,
+                getLineColor: [96, 156, 200, 255],
+                lineWidthUnits: 'meters',
+                getLineWidth: f => {
+                    const k = f.properties && f.properties.waterway;
+                    return (k === 'river' || k === 'canal') ? 14 : (k === 'stream' ? 5 : 3);
+                },
+                lineWidthMinPixels: 1.5, lineWidthMaxPixels: 10,
                 parameters: { depthTest: false },
             }),
             // Road network — thin grey lines drawn on the white ground.
