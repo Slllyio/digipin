@@ -1,0 +1,1 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [77.1701565, 24.4632093]}, "properties": {"amenity": "fuel", "brand": "Indian OIL", "fuel:diesel": "yes", "shop": "no", "osm_id": 1728954049}}]}

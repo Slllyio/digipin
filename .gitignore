@@ -146,3 +146,18 @@ guna-twin-city/data/scores/*
 !guna-twin-city/data/heat/*.tif
 !guna-twin-city/data/growth/
 !guna-twin-city/data/growth/*.tif
+# Browser-served Digital-Twin vector layers (DT-layers menu + strategic-twin
+# Ward Dashboard). Only the frontend-referenced files — the heavier pipeline
+# intermediates (roads_centrality, service_gaps, settlement_index, the source
+# google_open_buildings geojson, etc.) stay ignored.
+!guna-twin-city/data/vectors/
+!guna-twin-city/data/vectors/osm_admin_boundaries_guna.geojson
+!guna-twin-city/data/vectors/osm_green_spaces_guna.geojson
+!guna-twin-city/data/vectors/osm_pois_guna.geojson
+!guna-twin-city/data/vectors/osm_railways_guna.geojson
+!guna-twin-city/data/vectors/osm_roads_guna.geojson
+!guna-twin-city/data/vectors/osm_shops_guna.geojson
+!guna-twin-city/data/vectors/osm_utilities_guna.geojson
+!guna-twin-city/data/vectors/osm_water_guna.geojson
+!guna-twin-city/data/vectors/roads_crowd_capacity_guna.geojson
+!guna-twin-city/data/vectors/sensitive_infrastructure_guna.geojson
