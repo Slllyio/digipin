@@ -151,6 +151,36 @@ const AinoTwin = (() => {
         return new deck.LightingEffect({ ambient, sun, fill });
     }
 
+    // Building fill layer with a procedural facade shader: a thin dark band once
+    // per 3.2 m of height, on WALLS only → reads as floors/windows. Uses
+    // geometry.worldPosition.z (elevation in metres) so spacing is metric at any
+    // zoom, and geometry.normal.z to skip roofs. Built lazily (needs deck loaded).
+    let _WindowLayer = null;
+    function _windowLayerClass() {
+        if (_WindowLayer) return _WindowLayer;
+        _WindowLayer = class extends deck.SolidPolygonLayer {
+            getShaders() {
+                const s = super.getShaders();
+                const inj = s.inject || {};
+                s.inject = Object.assign({}, inj, {
+                    'vs:#decl': (inj['vs:#decl'] || '') + '\nout float vAlt;\nout float vNz;\n',
+                    'vs:DECKGL_FILTER_GL_POSITION': (inj['vs:DECKGL_FILTER_GL_POSITION'] || '')
+                        + '\nvAlt = geometry.worldPosition.z;\nvNz = geometry.normal.z;\n',
+                    'fs:#decl': (inj['fs:#decl'] || '') + '\nin float vAlt;\nin float vNz;\n',
+                    'fs:DECKGL_FILTER_COLOR': (inj['fs:DECKGL_FILTER_COLOR'] || '') + `
+                        if (abs(vNz) < 0.5) {                 // walls only, not roofs
+                            float f = fract(vAlt / 3.2);      // one band per ~3.2 m floor
+                            float line = (1.0 - smoothstep(0.0, 0.09, f)) + smoothstep(0.82, 1.0, f);
+                            color.rgb *= mix(1.0, 0.74, clamp(line, 0.0, 1.0));
+                        }
+                    `,
+                });
+                return s;
+            }
+        };
+        return _WindowLayer;
+    }
+
     // A white "table" under the model. Two jobs: (1) the clean white Aino ground,
     // (2) a surface for building shadows to fall on — in overlay mode deck renders
     // on a transparent canvas, so without a ground plane cast shadows have nothing
@@ -187,7 +217,7 @@ const AinoTwin = (() => {
                 lineWidthUnits: 'pixels', getLineWidth: 0.7, lineWidthMinPixels: 0.5,
                 parameters: { depthTest: false },
             }),
-            new deck.PolygonLayer({
+            new (_windowLayerClass())({
                 id: 'aino-buildings',
                 data: _records || [],
                 extruded: true,
@@ -197,9 +227,6 @@ const AinoTwin = (() => {
                 getElevation: d => d.height * VERT_EXAG,
                 getFillColor: [250, 250, 253],         // near-white blocks, lighter than the grey ground
                 getLineColor: [88, 96, 116, 235],      // crisp dark-grey edges
-                lineWidthUnits: 'pixels',
-                getLineWidth: 1.0,
-                lineWidthMinPixels: 1,
                 material: { ambient: 0.5, diffuse: 0.85, shininess: 10, specularColor: [255, 255, 255] },
                 parameters: { depthTest: true },
             }),
