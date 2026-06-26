@@ -92,23 +92,48 @@ const AinoTwin = (() => {
         return _loading;
     }
 
-    /** Low-poly tree mesh: a cone canopy on a short trunk, in metres, +Z up. */
-    function _treeMesh(seg = 7) {
+    /** Metric road width (m) by OSM class — wide arterials, thin lanes. */
+    function _roadW(f) {
+        const k = ((f.properties && (f.properties.highway || f.properties.fclass || f.properties.class)) || '') + '';
+        if (/motorway|trunk/.test(k)) return 16;
+        if (/primary/.test(k)) return 13;
+        if (/secondary/.test(k)) return 10;
+        if (/tertiary/.test(k)) return 7.5;
+        if (/residential|unclassified|living_street/.test(k)) return 5;
+        return 3.2;
+    }
+
+    /** Low-poly tree mesh: a rounded (slightly flattened) canopy sphere on a
+     *  short trunk, in metres, +Z up — a stylised deciduous tree, not a pine. */
+    function _treeMesh() {
         const pos = [], nrm = [], idx = [];
-        const R = 2.4, base = 1.6, top = 5.8;        // canopy radius / start / apex (m)
-        pos.push(0, 0, top); nrm.push(0, 0, 1);      // 0: apex
-        for (let i = 0; i < seg; i++) {
-            const a = 2 * Math.PI * i / seg;
-            pos.push(Math.cos(a) * R, Math.sin(a) * R, base);
-            nrm.push(Math.cos(a), Math.sin(a), 0.45);
+        const rings = 5, segs = 9;                    // canopy resolution
+        const R = 3.0;                               // canopy radius
+        const cz = 4.2;                              // canopy centre height
+        const squash = 0.85;                         // flatten slightly -> fuller crown
+        // canopy sphere
+        for (let i = 0; i <= rings; i++) {
+            const phi = Math.PI * i / rings;
+            for (let j = 0; j <= segs; j++) {
+                const th = 2 * Math.PI * j / segs;
+                const x = R * Math.sin(phi) * Math.cos(th);
+                const y = R * Math.sin(phi) * Math.sin(th);
+                const z = R * squash * Math.cos(phi);
+                pos.push(x, y, cz + z);
+                const l = Math.hypot(x, y, z) || 1;
+                nrm.push(x / l, y / l, z / l);
+            }
         }
-        for (let i = 0; i < seg; i++) idx.push(0, 1 + i, 1 + (i + 1) % seg);   // cone sides
-        const c = pos.length / 3; pos.push(0, 0, base); nrm.push(0, 0, -1);    // base centre
-        for (let i = 0; i < seg; i++) idx.push(c, 1 + (i + 1) % seg, 1 + i);   // base cap
-        // trunk (thin box-ish quad column)
-        const t = 0.35, tb = 0, tt = base + 0.3, s0 = pos.length / 3;
+        for (let i = 0; i < rings; i++) {
+            for (let j = 0; j < segs; j++) {
+                const a = i * (segs + 1) + j, b = a + segs + 1;
+                idx.push(a, b, a + 1, b, b + 1, a + 1);
+            }
+        }
+        // trunk (square column up to the canopy)
+        const t = 0.4, tt = cz, s0 = pos.length / 3;
         const corners = [[-t, -t], [t, -t], [t, t], [-t, t]];
-        for (const [x, y] of corners) { pos.push(x, y, tb); nrm.push(x, y, 0); }
+        for (const [x, y] of corners) { pos.push(x, y, 0); nrm.push(x, y, 0); }
         for (const [x, y] of corners) { pos.push(x, y, tt); nrm.push(x, y, 0); }
         for (let i = 0; i < 4; i++) {
             const a = s0 + i, b = s0 + (i + 1) % 4, c2 = s0 + 4 + i, d = s0 + 4 + (i + 1) % 4;
@@ -169,10 +194,15 @@ const AinoTwin = (() => {
                         + '\nvAlt = geometry.worldPosition.z;\nvNz = geometry.normal.z;\n',
                     'fs:#decl': (inj['fs:#decl'] || '') + '\nin float vAlt;\nin float vNz;\n',
                     'fs:DECKGL_FILTER_COLOR': (inj['fs:DECKGL_FILTER_COLOR'] || '') + `
-                        if (abs(vNz) < 0.5) {                 // walls only, not roofs
-                            float f = fract(vAlt / 3.2);      // one band per ~3.2 m floor
-                            float line = (1.0 - smoothstep(0.0, 0.09, f)) + smoothstep(0.82, 1.0, f);
-                            color.rgb *= mix(1.0, 0.74, clamp(line, 0.0, 1.0));
+                        if (abs(vNz) < 0.5 && vAlt > 0.4) {   // walls only, skip ground sill
+                            // horizontal floor lines (one per ~3.2 m)
+                            float fy = abs(fract(vAlt / 3.2) - 0.5);
+                            float floors = 1.0 - smoothstep(0.40, 0.49, fy);   // thin dark line
+                            // vertical mullions across the facade via the wall UV
+                            float fx = abs(fract(geometry.uv.x * 26.0) - 0.5);
+                            float mull = 1.0 - smoothstep(0.40, 0.49, fx);
+                            float grid = clamp(max(floors, mull * 0.7), 0.0, 1.0);
+                            color.rgb *= mix(1.0, 0.86, grid);  // subtle, clean window grid
                         }
                     `,
                 });
@@ -201,36 +231,50 @@ const AinoTwin = (() => {
             }),
             // Water bodies + rivers — flat on the ground (depthTest off so they
             // sit cleanly on the table; buildings draw after and occlude them).
+            // Water bodies — clear Aino blue fill, drawn flat on the table.
             new deck.GeoJsonLayer({
                 id: 'aino-water',
                 data: WATER_URL,
                 extruded: false, stroked: true, filled: true,
-                getFillColor: [158, 196, 222, 235],    // soft Aino blue
-                getLineColor: [120, 168, 200, 255],
-                lineWidthUnits: 'pixels', getLineWidth: 1,
+                getFillColor: [120, 176, 214, 245],    // clear water blue
+                getLineColor: [86, 146, 190, 255],
+                lineWidthUnits: 'pixels', getLineWidth: 1.2,
                 parameters: { depthTest: false },
             }),
-            // Rivers / waterway lines — wider, brighter blue than drains/streams.
+            // Roads — grey ribbons with real metric width by class (like the Aino
+            // theme): trunk/primary wide, residential thin. Casing + fill for a
+            // clean "drawn road" read.
+            new deck.GeoJsonLayer({
+                id: 'aino-roads-casing',
+                data: ROADS_URL,
+                stroked: true, filled: false,
+                getLineColor: [188, 192, 202, 255],
+                lineWidthUnits: 'meters', getLineWidth: _roadW, lineWidthScale: 1.5,
+                lineWidthMinPixels: 1.5, lineWidthMaxPixels: 26, lineJointRounded: true, lineCapRounded: true,
+                parameters: { depthTest: false },
+            }),
+            new deck.GeoJsonLayer({
+                id: 'aino-roads',
+                data: ROADS_URL,
+                stroked: true, filled: false,
+                getLineColor: [232, 234, 238, 255],    // light fill so roads read as paved ribbons
+                lineWidthUnits: 'meters', getLineWidth: _roadW,
+                lineWidthMinPixels: 0.8, lineWidthMaxPixels: 20, lineJointRounded: true, lineCapRounded: true,
+                parameters: { depthTest: false },
+            }),
+            // Water pathways — rivers/canals/streams/drains as BLUE lines with
+            // observable metric width so they clearly read as water.
             new deck.GeoJsonLayer({
                 id: 'aino-rivers',
                 data: RIVERS_URL,
                 stroked: true, filled: false,
-                getLineColor: [96, 156, 200, 255],
+                getLineColor: [86, 150, 200, 255],     // water blue
                 lineWidthUnits: 'meters',
                 getLineWidth: f => {
                     const k = f.properties && f.properties.waterway;
-                    return (k === 'river' || k === 'canal') ? 14 : (k === 'stream' ? 5 : 3);
+                    return k === 'river' ? 24 : k === 'canal' ? 18 : k === 'stream' ? 10 : 7;
                 },
-                lineWidthMinPixels: 1.5, lineWidthMaxPixels: 10,
-                parameters: { depthTest: false },
-            }),
-            // Road network — thin grey lines drawn on the white ground.
-            new deck.GeoJsonLayer({
-                id: 'aino-roads',
-                data: ROADS_URL,
-                extruded: false, stroked: true, filled: false,
-                getLineColor: [176, 182, 196, 220],
-                lineWidthUnits: 'pixels', getLineWidth: 0.7, lineWidthMinPixels: 0.5,
+                lineWidthMinPixels: 3, lineWidthMaxPixels: 30, lineJointRounded: true, lineCapRounded: true,
                 parameters: { depthTest: false },
             }),
         ];
@@ -246,7 +290,7 @@ const AinoTwin = (() => {
                 getPolygon: d => d.polygon,
                 getElevation: d => d.height * VERT_EXAG,
                 getFillColor: [250, 250, 253],         // near-white blocks, lighter than the grey ground
-                getLineColor: [88, 96, 116, 235],      // crisp dark-grey edges
+                getLineColor: [150, 158, 174, 200],    // soft architectural edges
                 material: { ambient: 0.5, diffuse: 0.85, shininess: 10, specularColor: [255, 255, 255] },
                 parameters: { depthTest: true },
             }));
@@ -257,9 +301,9 @@ const AinoTwin = (() => {
                 data: _trees,
                 mesh: _treeMesh(),
                 getPosition: d => d.position,
-                getColor: [104, 142, 92],              // stylized canopy green
-                getScale: d => [d.s, d.s, d.s],
-                material: { ambient: 0.6, diffuse: 0.75, shininess: 4, specularColor: [120, 150, 120] },
+                getColor: [88, 138, 86],               // richer canopy green
+                getScale: d => [d.s * 1.15, d.s * 1.15, d.s * 1.15],
+                material: { ambient: 0.65, diffuse: 0.7, shininess: 2, specularColor: [110, 140, 110] },
                 parameters: { depthTest: true },
             }));
         }
