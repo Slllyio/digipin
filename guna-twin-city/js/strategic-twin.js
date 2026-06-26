@@ -143,13 +143,21 @@ const StrategicTwin = (() => {
                         }
                     }
 
-                    const selected = samplePoints.slice(0, 4);
+                    // Prefer the precomputed score tiles (instant, cached shards) over
+                    // live DataFetcher.fetchAllFeatures — sampling 4 live points across
+                    // every ward meant ~hundreds of external-API-bound calls and a
+                    // multi-minute hang. Fall back to the live path only when no tiles.
+                    const usePrecomp = typeof PrecomputedScores !== 'undefined'
+                        && PrecomputedScores.isEnabled && PrecomputedScores.isEnabled();
+                    const selected = usePrecomp ? samplePoints : samplePoints.slice(0, 4);
                     const fetches = await Promise.allSettled(
-                        selected.map(pt => DataFetcher.fetchAllFeatures(pt.lat, pt.lng, 400))
+                        selected.map(pt => usePrecomp
+                            ? PrecomputedScores.lookup(pt.lat, pt.lng)
+                            : DataFetcher.fetchAllFeatures(pt.lat, pt.lng, 400))
                     );
 
                     fetches.forEach(r => {
-                        if (r.status !== 'fulfilled') return;
+                        if (r.status !== 'fulfilled' || !r.value) return;
                         const s = r.value.scores || {};
                         kpiKeys.forEach(k => { if (s[k]?.value != null) scores[k].push(s[k].value); });
                         sampled++;

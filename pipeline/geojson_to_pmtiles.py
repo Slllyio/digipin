@@ -107,8 +107,16 @@ def convert(
     min_zoom: int = 10,
     max_zoom: int = 14,
     layer_name: str = "building",
+    keep_props=None,
 ):
-    """Convert GeoJSON to PMTiles."""
+    """Convert GeoJSON to PMTiles.
+
+    keep_props: optional iterable of property column names to retain. When None
+    (the default) ALL non-geometry columns are kept — required for the score
+    choropleth, whose per-cell fields (livability/connectivity/flood_risk/…) were
+    previously dropped by a hardcoded building-only allow-list, leaving the
+    choropleth rendering a single uniform colour with no data-driven values.
+    """
     log.info("Loading GeoJSON: %s", input_path)
     start = time.time()
 
@@ -131,11 +139,13 @@ def convert(
     total_bounds = gdf.total_bounds  # [minx, miny, maxx, maxy]
     log.info("Bounds: %.4f, %.4f to %.4f, %.4f", *total_bounds)
 
-    # Prepare properties — keep only useful columns, reduce size
+    # Prepare properties. Default (keep_props=None) keeps every non-geometry
+    # column so the score choropleth gets its fields; callers that want smaller
+    # tiles (e.g. building footprints) pass an explicit keep_props allow-list.
     prop_columns = [c for c in gdf.columns if c != "geometry"]
-    # Limit to essential properties to keep tile sizes small
-    keep_props = {"confidence", "area_in_meters", "class", "height", "num_floors"}
-    prop_columns = [c for c in prop_columns if c in keep_props]
+    if keep_props is not None:
+        keep = set(keep_props)
+        prop_columns = [c for c in prop_columns if c in keep]
 
     # Collect all tiles
     all_tiles = {}  # tileid -> tile_bytes
@@ -302,6 +312,8 @@ def main():
         min_zoom=args.min_zoom,
         max_zoom=args.max_zoom,
         layer_name=args.layer_name,
+        # Building footprints: keep only the small render-relevant allow-list.
+        keep_props={"confidence", "area_in_meters", "class", "height", "num_floors"},
     )
 
 
