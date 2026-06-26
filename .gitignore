@@ -160,6 +160,8 @@ guna-twin-city/data/scores/*
 !guna-twin-city/data/safety/*/*.json
 !guna-twin-city/data/safety/*/*.geojson
 !guna-twin-city/data/vectors/
+!guna-twin-city/data/vectors/buildings_lite_guna.geojson
+!guna-twin-city/data/vectors/aino_trees_guna.json
 !guna-twin-city/data/vectors/osm_admin_boundaries_guna.geojson
 !guna-twin-city/data/vectors/osm_green_spaces_guna.geojson
 !guna-twin-city/data/vectors/osm_pois_guna.geojson

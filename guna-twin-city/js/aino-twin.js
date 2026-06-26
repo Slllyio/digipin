@@ -17,8 +17,11 @@
  * M4 water/drainage + render polish.
  */
 const AinoTwin = (() => {
-    const BUILDINGS_URL = 'data/vectors/google_open_buildings_guna.geojson';
-    const GREEN_URL = 'data/vectors/osm_green_spaces_guna.geojson';
+    // Slimmed, committed assets (built by pipeline/build_aino_assets_guna.py) so
+    // the twin works on deploy — the full google_open_buildings geojson is
+    // gitignored and was local-only.
+    const BUILDINGS_URL = 'data/vectors/buildings_lite_guna.geojson';
+    const TREES_URL = 'data/vectors/aino_trees_guna.json';
     const WATER_URL = 'data/vectors/osm_water_guna.geojson';
     const ROADS_URL = 'data/vectors/osm_roads_guna.geojson';
     const VERT_EXAG = 1.0;          // true proportions — accurate low-rise, no skyline inflation
@@ -119,43 +122,15 @@ const AinoTwin = (() => {
         };
     }
 
-    /** Ray-cast point-in-polygon for a single ring of [lng,lat]. */
-    function _inRing(x, y, ring) {
-        let inside = false;
-        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-            const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
-            if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
-        }
-        return inside;
-    }
-
-    /** Scatter tree instances inside the green/park polygons (density ∝ area). */
+    /** Load the precomputed tree points (green-area + street trees) — a small
+     *  committed [[lng,lat,scale], ...] set from build_aino_assets_guna.py. */
     function _loadTrees() {
         if (_trees) return Promise.resolve(_trees);
-        return fetch(GREEN_URL, { cache: 'force-cache' })
-            .then(r => r.ok ? r.json() : { features: [] })
-            .then(gj => {
-                const pts = [];
-                for (const f of (gj.features || [])) {
-                    const g = f.geometry; if (!g) continue;
-                    const polys = g.type === 'Polygon' ? [g.coordinates]
-                        : g.type === 'MultiPolygon' ? g.coordinates : [];
-                    for (const poly of polys) {
-                        const ring = poly && poly[0]; if (!ring || ring.length < 4) continue;
-                        let mnx = 1e9, mny = 1e9, mxx = -1e9, mxy = -1e9;
-                        for (const c of ring) { mnx = Math.min(mnx, c[0]); mxx = Math.max(mxx, c[0]); mny = Math.min(mny, c[1]); mxy = Math.max(mxy, c[1]); }
-                        const n = Math.min(140, Math.max(3, Math.floor((mxx - mnx) * (mxy - mny) * 6e6)));
-                        let placed = 0, tries = 0;
-                        while (placed < n && tries < n * 10) {
-                            tries++;
-                            const px = mnx + Math.random() * (mxx - mnx);
-                            const py = mny + Math.random() * (mxy - mny);
-                            if (_inRing(px, py, ring)) { pts.push({ position: [px, py], s: 0.7 + Math.random() * 0.8 }); placed++; }
-                        }
-                    }
-                }
-                _trees = pts;
-                return pts;
+        return fetch(TREES_URL, { cache: 'force-cache' })
+            .then(r => r.ok ? r.json() : { trees: [] })
+            .then(obj => {
+                _trees = (obj.trees || []).map(t => ({ position: [t[0], t[1]], s: t[2] || 1 }));
+                return _trees;
             })
             .catch(() => { _trees = []; return []; });
     }
