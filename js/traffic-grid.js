@@ -10,7 +10,8 @@
  * unit-tested.
  */
 const TrafficGrid = (() => {
-    const DEFAULT_URL = './data/traffic/indore_pilot/traffic_grid.json';
+    const _REGION = (typeof window !== 'undefined' && window.DIGIPIN_REGION) || 'indore_pilot';
+    const DEFAULT_URL = `./data/traffic/${_REGION}/traffic_grid.json`;
     const _grids = new Map();    // url -> parsed grid (cached on success only)
     const _loading = new Map();  // url -> in-flight promise
 

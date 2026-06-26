@@ -8,7 +8,8 @@
  * the file is absent. indexFor/sample are pure and unit-tested.
  */
 const MobilityGrid = (() => {
-    const DEFAULT_URL = './data/safety/indore_pilot/mobility_grid.json';
+    const _REGION = (typeof window !== 'undefined' && window.DIGIPIN_REGION) || 'indore_pilot';
+    const DEFAULT_URL = `./data/safety/${_REGION}/mobility_grid.json`;
     const _grids = new Map();    // url -> parsed grid (cached on success only)
     const _loading = new Map();  // url -> in-flight promise
 

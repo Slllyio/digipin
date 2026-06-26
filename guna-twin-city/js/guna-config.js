@@ -16,6 +16,10 @@ const GUNA_CONFIG = {
 // into the rainfall->inundation what-if slider, and label rainfall as a 12-hour
 // event. Both are read by js/flood-animation.js when present.
 if (typeof window !== 'undefined') {
+    // Region key for the shared precomputed-data modules (Traffic LOS, Law-&-Order
+    // Mobility, traffic/mobility grids). They default to 'indore_pilot'; without
+    // this they'd fetch Indore paths on the Guna page and 404 → slow Overpass.
+    window.DIGIPIN_REGION = 'guna';
     window.DIGIPIN_FLOOD_RAIN_UNIT = 'mm/12h';
     window.DIGIPIN_FLOOD_3D = true;               // pitch + 3D buildings when inundation shown
     window.DIGIPIN_FLOOD_WATER_COLOR = '#2e8bff'; // render inundation as blue water

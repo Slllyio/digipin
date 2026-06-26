@@ -14,7 +14,7 @@ const MobilityOverlay = (() => {
     const PT_LAYER = 'mobility-overlay-points';
     const LINE_LAYER = 'mobility-overlay-lines';
     const LEGEND_ID = 'mobility-legend';
-    const REGION = 'indore_pilot';
+    const REGION = (typeof window !== 'undefined' && window.DIGIPIN_REGION) || 'indore_pilot';
     const URL = `./data/safety/${REGION}/chokepoints.geojson`;
 
     // kind → colour + legend label. Lines (seal/critical) vs points (OSM chokepoints).

@@ -22,7 +22,7 @@ const TrafficOverlay = (() => {
     const LINE_ID   = 'traffic-overlay-line';
     const CRIT_ID   = 'traffic-overlay-critical';
     const LEGEND_ID = 'traffic-legend';
-    const REGION    = 'indore_pilot';
+    const REGION    = (typeof window !== 'undefined' && window.DIGIPIN_REGION) || 'indore_pilot';
     const GEOJSON_URL = `./data/traffic/${REGION}/road_los.geojson`;
     const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 
