@@ -15,6 +15,18 @@
          ambient-occlusion + soft-shadow lighting). Provides window.deck. -->
     <script src="https://unpkg.com/deck.gl@9.0.38/dist.min.js"></script>
 
+    <!-- Three.js (ESM importmap) for the high-fidelity "Aino Studio" scene —
+         real shadow maps + SSAO + post-processing. Loaded by js/aino-scene.js. -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+    </script>
+    <script type="module" src="js/aino-scene.js"></script>
+
     <!-- PMTiles v3 — IIFE global build for MapLibre addProtocol -->
     <script src="https://unpkg.com/pmtiles@3.0.7/dist/pmtiles.js"></script>
 
@@ -391,7 +403,7 @@
         ['btn-access',    () => window.AccessibilityOverlay],
         ['btn-choropleth', () => window.ScoreChoropleth],
         ['btn-area',      () => window.AreaAggregate],
-        ['btn-aino',      () => window.AinoTwin],
+        ['btn-aino',      () => window.AinoScene],
     ].forEach(([id, getMod]) => {
         const btn = document.getElementById(id);
         if (!btn) return;
