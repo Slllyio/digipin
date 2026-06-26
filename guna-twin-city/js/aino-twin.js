@@ -18,7 +18,7 @@
  */
 const AinoTwin = (() => {
     const BUILDINGS_URL = 'data/vectors/google_open_buildings_guna.geojson';
-    const VERT_EXAG = 3.5;          // low-rise town — exaggerate so the massing reads in 3D
+    const VERT_EXAG = 1.0;          // true proportions — accurate low-rise, no skyline inflation
 
     let _map = null;
     let _overlay = null;
@@ -33,17 +33,28 @@ const AinoTwin = (() => {
             && !!deck.GeoJsonLayer && !!deck.LightingEffect;
     }
 
-    /** Per-building display height (m). Prefer DeckBuildings' tested estimator. */
+    /** Deterministic 0..1 hash of a string (stable per-building roofline jitter). */
+    function _hash01(s) {
+        let h = 2166136261;
+        for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+        return ((h >>> 0) % 100000) / 100000;
+    }
+
+    /** Realistic building height (m) for a low-rise Indian town. Google Open
+     *  Buildings carry no height (height_m = -1), so we infer FLOORS from the
+     *  footprint — small plots are 1–2 storeys, larger plots a few more, capped
+     *  at ~6 — then × ~3.2 m/floor with a stable ±1-floor jitter so rooflines
+     *  vary. Result ~3–20 m: accurate proportions, not an inflated skyline. */
     function _height(props) {
         const p = props || {};
+        const real = +p.height_m > 0 ? +p.height_m : (+p.height > 0 ? +p.height : 0);
+        if (real > 0) return Math.max(3, real);
         const area = +p.area_m2 || +p.area_in_meters || 0;
-        const seed = `${p.id || ''}${area}`;
-        if (typeof DeckBuildings !== 'undefined' && DeckBuildings.estimateHeight) {
-            return DeckBuildings.estimateHeight(p, area, seed);
-        }
-        // Fallback: area-driven with stable jitter.
-        const base = 7 + 0.72 * Math.sqrt(Math.max(0, area));
-        return Math.min(150, Math.max(6, base));
+        let floors = area < 50 ? 1 : area < 110 ? 2 : area < 220 ? 3
+            : area < 450 ? 4 : area < 900 ? 5 : 6;
+        const j = _hash01(`${p.id || ''}:${Math.round(area)}`);
+        if (j > 0.86) floors += 1; else if (j < 0.16 && floors > 1) floors -= 1;
+        return floors * 3.2;
     }
 
     /** Fetch the building geojson ONCE and pre-build {polygon, height} records —
