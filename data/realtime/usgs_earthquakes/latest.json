@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-06-25T19:23:18Z",
-  "count": 10,
+  "generated_at_iso": "2026-06-26T08:19:50Z",
+  "count": 7,
   "records": [
+    {
+      "id": "us6000t8di",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-06-26T06:18:59.942000+00:00",
+      "latitude": -32.4752,
+      "longitude": -177.9409,
+      "depth_km": 10.0,
+      "place": "south of the Kermadec Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8di",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000t8dg",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-06-26T05:57:52.671000+00:00",
+      "latitude": 30.2589,
+      "longitude": 69.8305,
+      "depth_km": 10.0,
+      "place": "49 km NE of Barkhan, Pakistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8dg",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000t8cy",
+      "magnitude": 5.8,
+      "origin_time_utc": "2026-06-26T03:46:35.803000+00:00",
+      "latitude": 35.6314,
+      "longitude": 140.5099,
+      "depth_km": 43.0,
+      "place": "3 km SE of Yokoshiba, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8cy",
+      "tsunami": 0,
+      "significance": 533
+    },
+    {
+      "id": "us6000t8bm",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-06-25T23:05:52.643000+00:00",
+      "latitude": 52.4413,
+      "longitude": -169.886,
+      "depth_km": 59.306,
+      "place": "88 km SW of Nikolski, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8bm",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000t8al",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-06-25T21:17:49.072000+00:00",
+      "latitude": 9.8919,
+      "longitude": 126.9518,
+      "depth_km": 10.0,
+      "place": "93 km E of Union, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8al",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us6000t84x",
       "magnitude": 4.7,
@@ -25,102 +85,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t83p",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us6000t81q",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-06-25T06:19:35.965000+00:00",
-      "latitude": -4.3413,
-      "longitude": 152.9318,
-      "depth_km": 33.0,
-      "place": "73 km E of Kokopo, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t81q",
-      "tsunami": 0,
-      "significance": 466
-    },
-    {
-      "id": "us6000t817",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-06-25T04:03:41.361000+00:00",
-      "latitude": 5.288,
-      "longitude": 125.2741,
-      "depth_km": 75.132,
-      "place": "24 km WSW of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t817",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000t815",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-06-25T03:53:24.853000+00:00",
-      "latitude": 13.3421,
-      "longitude": 50.8792,
-      "depth_km": 10.0,
-      "place": "152 km N of Caluula, Somalia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t815",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000t7zq",
-      "magnitude": 6.9,
-      "origin_time_utc": "2026-06-24T22:30:14.931000+00:00",
-      "latitude": 40.2912,
-      "longitude": 142.0981,
-      "depth_km": 50.923,
-      "place": "30 km ENE of Kuji, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7zq",
-      "tsunami": 0,
-      "significance": 796
-    },
-    {
-      "id": "us6000t80d",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-24T22:23:54.046000+00:00",
-      "latitude": 10.6092,
-      "longitude": -66.7168,
-      "depth_km": 10.0,
-      "place": "13 km N of Caucagüito, Venezuela",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t80d",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000t7zp",
-      "magnitude": 7.5,
-      "origin_time_utc": "2026-06-24T22:05:11.566000+00:00",
-      "latitude": 10.4351,
-      "longitude": -68.4716,
-      "depth_km": 10.0,
-      "place": "28 km SE of Yumare, Venezuela",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7zp",
-      "tsunami": 0,
-      "significance": 2432
-    },
-    {
-      "id": "us6000t7zc",
-      "magnitude": 7.2,
-      "origin_time_utc": "2026-06-24T22:04:33.389000+00:00",
-      "latitude": 10.436,
-      "longitude": -68.5277,
-      "depth_km": 20.294,
-      "place": "23 km SE of Yumare, Venezuela",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7zc",
-      "tsunami": 0,
-      "significance": 2000
-    },
-    {
-      "id": "us6000t7yv",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-24T21:02:56.064000+00:00",
-      "latitude": 2.6449,
-      "longitude": 128.6735,
-      "depth_km": 269.213,
-      "place": "125 km NE of Tobelo, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7yv",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
