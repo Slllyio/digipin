@@ -179,6 +179,7 @@ const AinoTwin = (() => {
                 return s;
             }
         };
+        _WindowLayer.layerName = 'AinoWindowLayer';   // silence deck's componentName warning
         return _WindowLayer;
     }
 
@@ -189,7 +190,7 @@ const AinoTwin = (() => {
     const GROUND = [[77.02, 24.46], [77.60, 24.46], [77.60, 24.84], [77.02, 24.84]];
 
     function _layers() {
-        return [
+        const layers = [
             new deck.SolidPolygonLayer({
                 id: 'aino-ground',
                 data: [{ polygon: GROUND }],
@@ -232,9 +233,13 @@ const AinoTwin = (() => {
                 lineWidthUnits: 'pixels', getLineWidth: 0.7, lineWidthMinPixels: 0.5,
                 parameters: { depthTest: false },
             }),
-            new (_windowLayerClass())({
+        ];
+        // Only add the data-driven layers once their data is in — drawing an
+        // empty extruded SolidPolygon / SimpleMesh triggers deck's primcount<0 warning.
+        if (_records && _records.length) {
+            layers.push(new (_windowLayerClass())({
                 id: 'aino-buildings',
-                data: _records || [],
+                data: _records,
                 extruded: true,
                 filled: true,
                 wireframe: true,                       // crisp massing edges
@@ -244,18 +249,21 @@ const AinoTwin = (() => {
                 getLineColor: [88, 96, 116, 235],      // crisp dark-grey edges
                 material: { ambient: 0.5, diffuse: 0.85, shininess: 10, specularColor: [255, 255, 255] },
                 parameters: { depthTest: true },
-            }),
-            new deck.SimpleMeshLayer({
+            }));
+        }
+        if (_trees && _trees.length) {
+            layers.push(new deck.SimpleMeshLayer({
                 id: 'aino-trees',
-                data: _trees || [],
+                data: _trees,
                 mesh: _treeMesh(),
                 getPosition: d => d.position,
                 getColor: [104, 142, 92],              // stylized canopy green
                 getScale: d => [d.s, d.s, d.s],
                 material: { ambient: 0.6, diffuse: 0.75, shininess: 4, specularColor: [120, 150, 120] },
                 parameters: { depthTest: true },
-            }),
-        ];
+            }));
+        }
+        return layers;
     }
 
     function attach() {
