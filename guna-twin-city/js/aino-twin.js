@@ -18,7 +18,9 @@
  */
 const AinoTwin = (() => {
     const BUILDINGS_URL = 'data/vectors/google_open_buildings_guna.geojson';
+    const GREEN_URL = 'data/vectors/osm_green_spaces_guna.geojson';
     const VERT_EXAG = 1.0;          // true proportions — accurate low-rise, no skyline inflation
+    let _trees = null;              // [{position:[lng,lat], s}] scattered in green areas
 
     let _map = null;
     let _overlay = null;
@@ -84,6 +86,78 @@ const AinoTwin = (() => {
         return _loading;
     }
 
+    /** Low-poly tree mesh: a cone canopy on a short trunk, in metres, +Z up. */
+    function _treeMesh(seg = 7) {
+        const pos = [], nrm = [], idx = [];
+        const R = 2.4, base = 1.6, top = 5.8;        // canopy radius / start / apex (m)
+        pos.push(0, 0, top); nrm.push(0, 0, 1);      // 0: apex
+        for (let i = 0; i < seg; i++) {
+            const a = 2 * Math.PI * i / seg;
+            pos.push(Math.cos(a) * R, Math.sin(a) * R, base);
+            nrm.push(Math.cos(a), Math.sin(a), 0.45);
+        }
+        for (let i = 0; i < seg; i++) idx.push(0, 1 + i, 1 + (i + 1) % seg);   // cone sides
+        const c = pos.length / 3; pos.push(0, 0, base); nrm.push(0, 0, -1);    // base centre
+        for (let i = 0; i < seg; i++) idx.push(c, 1 + (i + 1) % seg, 1 + i);   // base cap
+        // trunk (thin box-ish quad column)
+        const t = 0.35, tb = 0, tt = base + 0.3, s0 = pos.length / 3;
+        const corners = [[-t, -t], [t, -t], [t, t], [-t, t]];
+        for (const [x, y] of corners) { pos.push(x, y, tb); nrm.push(x, y, 0); }
+        for (const [x, y] of corners) { pos.push(x, y, tt); nrm.push(x, y, 0); }
+        for (let i = 0; i < 4; i++) {
+            const a = s0 + i, b = s0 + (i + 1) % 4, c2 = s0 + 4 + i, d = s0 + 4 + (i + 1) % 4;
+            idx.push(a, b, c2, b, d, c2);
+        }
+        return {
+            attributes: {
+                positions: { value: new Float32Array(pos), size: 3 },
+                normals: { value: new Float32Array(nrm), size: 3 },
+            },
+            indices: { value: new Uint16Array(idx), size: 1 },
+        };
+    }
+
+    /** Ray-cast point-in-polygon for a single ring of [lng,lat]. */
+    function _inRing(x, y, ring) {
+        let inside = false;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+            const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+            if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
+        }
+        return inside;
+    }
+
+    /** Scatter tree instances inside the green/park polygons (density ∝ area). */
+    function _loadTrees() {
+        if (_trees) return Promise.resolve(_trees);
+        return fetch(GREEN_URL, { cache: 'force-cache' })
+            .then(r => r.ok ? r.json() : { features: [] })
+            .then(gj => {
+                const pts = [];
+                for (const f of (gj.features || [])) {
+                    const g = f.geometry; if (!g) continue;
+                    const polys = g.type === 'Polygon' ? [g.coordinates]
+                        : g.type === 'MultiPolygon' ? g.coordinates : [];
+                    for (const poly of polys) {
+                        const ring = poly && poly[0]; if (!ring || ring.length < 4) continue;
+                        let mnx = 1e9, mny = 1e9, mxx = -1e9, mxy = -1e9;
+                        for (const c of ring) { mnx = Math.min(mnx, c[0]); mxx = Math.max(mxx, c[0]); mny = Math.min(mny, c[1]); mxy = Math.max(mxy, c[1]); }
+                        const n = Math.min(140, Math.max(3, Math.floor((mxx - mnx) * (mxy - mny) * 6e6)));
+                        let placed = 0, tries = 0;
+                        while (placed < n && tries < n * 10) {
+                            tries++;
+                            const px = mnx + Math.random() * (mxx - mnx);
+                            const py = mny + Math.random() * (mxy - mny);
+                            if (_inRing(px, py, ring)) { pts.push({ position: [px, py], s: 0.7 + Math.random() * 0.8 }); placed++; }
+                        }
+                    }
+                }
+                _trees = pts;
+                return pts;
+            })
+            .catch(() => { _trees = []; return []; });
+    }
+
     /** Ambient + two directional lights → the white-model look. NOTE: no
      *  `_shadow: true` — deck.gl's shadow pass breaks extrusion rendering under
      *  MapboxOverlay (geometry collapses flat). Face shading from the directional
@@ -121,15 +195,25 @@ const AinoTwin = (() => {
                 data: _records || [],
                 extruded: true,
                 filled: true,
-                wireframe: true,                       // draws the crisp massing edges
+                wireframe: true,                       // crisp massing edges
                 getPolygon: d => d.polygon,
                 getElevation: d => d.height * VERT_EXAG,
                 getFillColor: [250, 250, 253],         // near-white blocks, lighter than the grey ground
                 getLineColor: [88, 96, 116, 235],      // crisp dark-grey edges
                 lineWidthUnits: 'pixels',
-                getLineWidth: 1.2,
+                getLineWidth: 1.0,
                 lineWidthMinPixels: 1,
                 material: { ambient: 0.5, diffuse: 0.85, shininess: 10, specularColor: [255, 255, 255] },
+                parameters: { depthTest: true },
+            }),
+            new deck.SimpleMeshLayer({
+                id: 'aino-trees',
+                data: _trees || [],
+                mesh: _treeMesh(),
+                getPosition: d => d.position,
+                getColor: [104, 142, 92],              // stylized canopy green
+                getScale: d => [d.s, d.s, d.s],
+                material: { ambient: 0.6, diffuse: 0.75, shininess: 4, specularColor: [120, 150, 120] },
                 parameters: { depthTest: true },
             }),
         ];
@@ -152,8 +236,10 @@ const AinoTwin = (() => {
         if (typeof App !== 'undefined' && App.showToast) {
             App.showToast('Aino 3D Twin', 'Loading white architectural massing…', 'info');
         }
-        // Load building geometry, then push the real layers in.
-        _load().then(() => { if (_active && _overlay) _overlay.setProps({ layers: _layers() }); });
+        // Load building geometry + scatter trees, then push the real layers in.
+        Promise.all([_load(), _loadTrees()]).then(() => {
+            if (_active && _overlay) _overlay.setProps({ layers: _layers() });
+        });
         return true;
     }
 
