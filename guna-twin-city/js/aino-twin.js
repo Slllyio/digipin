@@ -19,6 +19,8 @@
 const AinoTwin = (() => {
     const BUILDINGS_URL = 'data/vectors/google_open_buildings_guna.geojson';
     const GREEN_URL = 'data/vectors/osm_green_spaces_guna.geojson';
+    const WATER_URL = 'data/vectors/osm_water_guna.geojson';
+    const ROADS_URL = 'data/vectors/osm_roads_guna.geojson';
     const VERT_EXAG = 1.0;          // true proportions — accurate low-rise, no skyline inflation
     let _trees = null;              // [{position:[lng,lat], s}] scattered in green areas
 
@@ -189,6 +191,26 @@ const AinoTwin = (() => {
                 getFillColor: [222, 225, 231],         // light GREY table — buildings (white) pop above it
                 material: { ambient: 0.9, diffuse: 0.5, shininess: 1, specularColor: [255, 255, 255] },
                 parameters: { depthTest: true },
+            }),
+            // Water bodies + rivers — flat on the ground (depthTest off so they
+            // sit cleanly on the table; buildings draw after and occlude them).
+            new deck.GeoJsonLayer({
+                id: 'aino-water',
+                data: WATER_URL,
+                extruded: false, stroked: true, filled: true,
+                getFillColor: [158, 196, 222, 235],    // soft Aino blue
+                getLineColor: [120, 168, 200, 255],
+                lineWidthUnits: 'pixels', getLineWidth: 1,
+                parameters: { depthTest: false },
+            }),
+            // Road network — thin grey lines drawn on the white ground.
+            new deck.GeoJsonLayer({
+                id: 'aino-roads',
+                data: ROADS_URL,
+                extruded: false, stroked: true, filled: false,
+                getLineColor: [176, 182, 196, 220],
+                lineWidthUnits: 'pixels', getLineWidth: 0.7, lineWidthMinPixels: 0.5,
+                parameters: { depthTest: false },
             }),
             new deck.PolygonLayer({
                 id: 'aino-buildings',
