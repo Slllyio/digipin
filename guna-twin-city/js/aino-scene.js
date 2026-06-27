@@ -211,13 +211,17 @@ function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null, bank = { color: 
     const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
     // Unlit flat blue — avoids the lighting/SSAO striping that MeshStandard gave on
     // the many thin vectorised water triangles; reads as clean clear water.
-    const mesh = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
-    mesh.renderOrder = 2;
+    const mesh = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({
+        color, side: THREE.DoubleSide, depthWrite: false,
+        polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
+    }));
+    mesh.renderOrder = 5;                               // above the stream tiers (2-4), no z-fight
     const grp = new THREE.Group(); grp.add(mesh);
     if (bank) {                                          // crisp bank outline (skipped for tiny brooks)
         const banks = new THREE.LineSegments(
             new THREE.EdgesGeometry(merged, 1),
-            new THREE.LineBasicMaterial({ color: bank.color, transparent: true, opacity: bank.opacity }));
+            new THREE.LineBasicMaterial({ color: bank.color, transparent: true, opacity: bank.opacity, depthWrite: false }));
+        banks.renderOrder = 6;                            // above its own fill, no z-fight
         grp.add(banks);
     }
     return grp;
@@ -229,10 +233,10 @@ function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null, bank = { color: 
  *  water reads clean without SSAO/lighting striping; deeper tiers sit slightly
  *  higher so the Guniya trunk stays crisp where tributaries merge into it. */
 function _buildStreams(gj, y) {
-    const TIER = {
-        brook:  { color: 0x49a4e6, y: y },
-        stream: { color: 0x1f8adf, y: y + 0.03 },
-        river:  { color: 0x1773cf, y: y + 0.06 },
+    const TIER = {                                   // ro: fixed render order so tiers layer deterministically
+        brook:  { color: 0x49a4e6, y: y,        ro: 2 },
+        stream: { color: 0x1f8adf, y: y + 0.02, ro: 3 },
+        river:  { color: 0x1773cf, y: y + 0.04, ro: 4 },
     };
     const wOf = u => Math.min(85, Math.max(7, 7 + 5.2 * Math.sqrt(Math.max(0, u))));
     const grp = new THREE.Group();
@@ -258,8 +262,13 @@ function _buildStreams(gj, y) {
         }
         if (!geoms.length) continue;
         const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
-        const mesh = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({ color: st.color, side: THREE.DoubleSide }));
-        mesh.renderOrder = 2;
+        // depthWrite off + fixed renderOrder: overlapping ribbon quads & adjacent tiers
+        // never z-fight (no flicker); depthTest stays on so buildings still occlude water.
+        const mesh = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({
+            color: st.color, side: THREE.DoubleSide, depthWrite: false,
+            polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
+        }));
+        mesh.renderOrder = st.ro;
         grp.add(mesh);
     }
     return grp.children.length ? grp : null;
