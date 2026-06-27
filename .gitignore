@@ -164,6 +164,7 @@ guna-twin-city/data/scores/*
 !guna-twin-city/data/vectors/aino_trees_guna.json
 !guna-twin-city/data/vectors/osm_rivers_guna_continuous.geojson
 !guna-twin-city/data/vectors/jrc_water_guna.geojson
+!guna-twin-city/data/vectors/streams_guna.geojson
 !guna-twin-city/data/vectors/osm_admin_boundaries_guna.geojson
 !guna-twin-city/data/vectors/osm_green_spaces_guna.geojson
 !guna-twin-city/data/vectors/osm_pois_guna.geojson

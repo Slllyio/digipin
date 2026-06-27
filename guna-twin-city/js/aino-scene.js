@@ -189,7 +189,7 @@ function _ribbons(gj, widthFn, color, y) {
     mesh.receiveShadow = true;
     return mesh;
 }
-function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null) {
+function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null, bank = { color: 0x155fae, opacity: 0.75 }) {
     const geoms = [];
     for (const f of (gj.features || [])) {
         if (tier && f.properties && f.properties.tier !== tier) continue;
@@ -213,12 +213,56 @@ function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null) {
     // the many thin vectorised water triangles; reads as clean clear water.
     const mesh = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
     mesh.renderOrder = 2;
-    // crisp bank outline
-    const banks = new THREE.LineSegments(
-        new THREE.EdgesGeometry(merged, 1),
-        new THREE.LineBasicMaterial({ color: 0x155fae, transparent: true, opacity: 0.75 }));
-    const grp = new THREE.Group(); grp.add(mesh); grp.add(banks);
+    const grp = new THREE.Group(); grp.add(mesh);
+    if (bank) {                                          // crisp bank outline (skipped for tiny brooks)
+        const banks = new THREE.LineSegments(
+            new THREE.EdgesGeometry(merged, 1),
+            new THREE.LineBasicMaterial({ color: bank.color, transparent: true, opacity: bank.opacity }));
+        grp.add(banks);
+    }
     return grp;
+}
+
+/** MERIT Hydro drainage network → connected blue ribbons (real water pathways).
+ *  Each segment's width follows hydraulic geometry (∝ √drainage-area) and its
+ *  colour deepens by tier (brook → stream → river). Flat unlit MeshBasic so the
+ *  water reads clean without SSAO/lighting striping; deeper tiers sit slightly
+ *  higher so the Guniya trunk stays crisp where tributaries merge into it. */
+function _buildStreams(gj, y) {
+    const TIER = {
+        brook:  { color: 0x49a4e6, y: y },
+        stream: { color: 0x1f8adf, y: y + 0.03 },
+        river:  { color: 0x1773cf, y: y + 0.06 },
+    };
+    const wOf = u => Math.min(85, Math.max(7, 7 + 5.2 * Math.sqrt(Math.max(0, u))));
+    const grp = new THREE.Group();
+    for (const tier of Object.keys(TIER)) {
+        const st = TIER[tier], geoms = [];
+        for (const f of (gj.features || [])) {
+            if (!f.properties || f.properties.tier !== tier) continue;
+            const g = f.geometry; if (!g || g.type !== 'LineString') continue;
+            const co = g.coordinates, w = wOf(+f.properties.upa) / 2;
+            for (let i = 0; i < co.length - 1; i++) {
+                if (!_inRange(co[i][0], co[i][1]) && !_inRange(co[i + 1][0], co[i + 1][1])) continue;
+                const x1 = px(co[i][0]), z1 = pz(co[i][1]), x2 = px(co[i + 1][0]), z2 = pz(co[i + 1][1]);
+                const dx = x2 - x1, dz = z2 - z1, len = Math.hypot(dx, dz) || 1;
+                const nx = -dz / len * w, nz = dx / len * w;
+                const q = new THREE.BufferGeometry();
+                q.setAttribute('position', new THREE.Float32BufferAttribute([
+                    x1 + nx, st.y, z1 + nz, x1 - nx, st.y, z1 - nz,
+                    x2 + nx, st.y, z2 + nz, x2 - nx, st.y, z2 - nz,
+                ], 3));
+                q.setIndex([0, 2, 1, 1, 2, 3]);
+                geoms.push(q);
+            }
+        }
+        if (!geoms.length) continue;
+        const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
+        const mesh = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({ color: st.color, side: THREE.DoubleSide }));
+        mesh.renderOrder = 2;
+        grp.add(mesh);
+    }
+    return grp.children.length ? grp : null;
 }
 
 /** Soft muted-green park fill polygons (osm green spaces). */
@@ -396,7 +440,7 @@ function _setupComposer(w, h) {
 
 async function _build() {
     const w = innerWidth, h = innerHeight;
-    const [b, t, riv, wat, road, green, jrc, rail, poi, sens, adm] = await Promise.all([
+    const [b, t, riv, wat, road, green, jrc, str, rail, poi, sens, adm] = await Promise.all([
         _json(BASE + 'buildings_lite_guna.geojson'),
         _json(BASE + 'aino_trees_guna.json'),
         _json(BASE + 'osm_rivers_guna_continuous.geojson'),
@@ -404,6 +448,7 @@ async function _build() {
         _json(BASE + 'osm_roads_guna.geojson'),
         _json(BASE + 'osm_green_spaces_guna.geojson'),
         _json(BASE + 'jrc_water_guna.geojson'),   // satellite-observed Guniya river + streams + tanks
+        _json(BASE + 'streams_guna.geojson'),      // MERIT Hydro drainage network (connected pathways)
         _json(BASE + 'osm_railways_guna.geojson'),
         _json(BASE + 'osm_pois_guna.geojson'),
         _json(BASE + 'sensitive_infrastructure_guna.geojson'),
@@ -412,12 +457,13 @@ async function _build() {
     const pts = (gj, pred) => (gj && gj.features || [])
         .filter(f => f.geometry && f.geometry.type === 'Point' && (!pred || pred(f.properties || {})))
         .map(f => f.geometry.coordinates);
-    // y-stack: boundaries 0.08 → parks 0.10 → roads 0.15 → water 0.40-0.46 → rivers 0.55 → bridges 0.70
+    // y-stack: boundaries 0.08 → parks 0.10 → roads 0.15 → streams 0.34-0.40 → JRC water 0.42-0.46 → rivers 0.55 → bridges 0.70
     if (adm) { const m = _buildBoundaries(adm, 0.08); if (m) _scene.add(m); }
     if (green) { const m = _buildGreenSpaces(green, 0.10); if (m) _scene.add(m); }
     if (road) { const m = _buildRoadLines(road, w, h); if (m) _scene.add(m); }
+    if (str) { const m = _buildStreams(str, 0.36); if (m) _scene.add(m); }   // connected drainage network (Guniya + tributaries)
     if (jrc) {
-        const sw = _buildWaterPolys(jrc, 0.42, 0x4aa0e6, 'seasonal'); if (sw) _scene.add(sw);   // clear blue
+        // observed standing water on top of the network: real tanks/lakes + river pool.
         const pw = _buildWaterPolys(jrc, 0.46, 0x1d7fd6, 'permanent'); if (pw) _scene.add(pw);  // deep water blue
     }
     if (wat) { const m = _buildWaterPolys(wat, 0.45, 0x1d7fd6); if (m) _scene.add(m); }
