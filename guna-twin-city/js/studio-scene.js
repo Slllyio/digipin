@@ -79,9 +79,11 @@ async function _buildBuildings(gj) {
         geo.rotateX(-Math.PI / 2);                 // shape plane → ground (XZ), depth → +Y
         // subtle per-building tonal variation: near-white with a faint warm/cool shift
         const seed = geoms.length;
-        const v = 0.93 + 0.05 * _hash01(seed * 2.3 + 9);
-        const warm = _hash01(seed * 1.7 + 3) < 0.5;
-        const col = new THREE.Color(v * (warm ? 1.0 : 0.985), v * 0.99, v * (warm ? 0.975 : 1.0));
+        const v = 0.95 + 0.04 * _hash01(seed * 2.3 + 9);            // tighter, brighter ivory 0.95–0.99
+        const warm = _hash01(seed * 1.7 + 3) < 0.55;               // slight warm majority
+        const col = warm
+            ? new THREE.Color(v * 1.000, v * 0.992, v * 0.978)     // warm ivory
+            : new THREE.Color(v * 0.990, v * 0.994, v * 1.000);    // cool porcelain (neutral, not blue)
         const n = geo.attributes.position.count, carr = new Float32Array(n * 3);
         for (let k = 0; k < n; k++) { carr[k * 3] = col.r; carr[k * 3 + 1] = col.g; carr[k * 3 + 2] = col.b; }
         geo.setAttribute('color', new THREE.Float32BufferAttribute(carr, 3));
@@ -98,7 +100,7 @@ async function _buildBuildings(gj) {
     geoms.forEach(g => g.dispose());
     merged.computeVertexNormals();
 
-    const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.92, metalness: 0.0, envMapIntensity: ENV_I });
+    const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.85, metalness: 0.0, envMapIntensity: ENV_I });
     mat.onBeforeCompile = (sh) => {
         sh.vertexShader = sh.vertexShader
             .replace('#include <common>', '#include <common>\nvarying vec3 vWPos; varying vec3 vWNrm;')
@@ -107,6 +109,10 @@ async function _buildBuildings(gj) {
         sh.fragmentShader = sh.fragmentShader
             .replace('#include <common>', '#include <common>\nvarying vec3 vWPos; varying vec3 vWNrm;')
             .replace('#include <dithering_fragment>', `
+                // vertical tonal grade — soft contact-darkening at the base + a faint
+                // warm crown: gives each white mass weight & form (the premium-model cue).
+                gl_FragColor.rgb *= mix(0.88, 1.0, smoothstep(0.0, 6.0, vWPos.y));
+                gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * vec3(1.02, 1.01, 0.997), clamp(vWPos.y / 24.0, 0.0, 1.0));
                 if (abs(vWNrm.y) < 0.5 && vWPos.y > 0.4) {       // walls: delicate window grid
                     float fy = abs(fract(vWPos.y / 3.2) - 0.5);   // floor lines (per 3.2 m)
                     float floors = 1.0 - smoothstep(0.46, 0.49, fy);
@@ -114,27 +120,27 @@ async function _buildBuildings(gj) {
                     float mz = abs(fract(vWPos.z / 3.4) - 0.5);
                     float mull = max(1.0 - smoothstep(0.46, 0.49, mx), 1.0 - smoothstep(0.46, 0.49, mz));
                     float grid = clamp(max(floors, mull), 0.0, 1.0);
-                    gl_FragColor.rgb *= mix(1.0, 0.93, grid);     // light, crisp
+                    gl_FragColor.rgb *= mix(1.0, 0.955, grid);    // softer, more delicate
                 } else if (vWNrm.y > 0.5 && vWPos.y > 0.4) {     // roofs: very faint panel grid
                     float rx = abs(fract(vWPos.x / 4.0) - 0.5);
                     float rz = abs(fract(vWPos.z / 4.0) - 0.5);
                     float roof = max(1.0 - smoothstep(0.47, 0.49, rx), 1.0 - smoothstep(0.47, 0.49, rz));
-                    gl_FragColor.rgb *= mix(1.0, 0.96, roof);
+                    gl_FragColor.rgb *= mix(1.0, 0.975, roof);    // barely-there
                 }
                 #include <dithering_fragment>`);
     };
     const mesh = new THREE.Mesh(merged, mat);
     mesh.castShadow = true; mesh.receiveShadow = true;
 
-    // soft architectural edges (light grey, more crease lines)
+    // delicate architectural creases (fewer, fainter, cooler → pencil line not wireframe)
     const edges = new THREE.LineSegments(
-        new THREE.EdgesGeometry(merged, 20),
-        new THREE.LineBasicMaterial({ color: 0xb4bac6, transparent: true, opacity: 0.45 }));
+        new THREE.EdgesGeometry(merged, 24),
+        new THREE.LineBasicMaterial({ color: 0xaab2c0, transparent: true, opacity: 0.35 }));
     const grp = new THREE.Group(); grp.add(mesh); grp.add(edges);
     return grp;
 }
 
-const _TREE_GREENS = [0x6f9e63, 0x5e8f57, 0x7faa66, 0x86a86a, 0x5a874f];
+const _TREE_GREENS = [0x6f9e5c, 0x5e9150, 0x7fae63, 0x88a866, 0x4f7e46, 0x6aa57a];
 function _hash01(n) { const s = Math.sin(n * 127.1) * 43758.5453; return s - Math.floor(s); }
 
 /** Two InstancedMeshes (canopy + trunk) sharing per-instance transforms, with
@@ -142,19 +148,21 @@ function _hash01(n) { const s = Math.sin(n * 127.1) * 43758.5453; return s - Mat
 function _buildTrees(obj) {
     const pts = (obj && obj.trees || []).filter(t => _inRange(t[0], t[1]));
     if (!pts.length) return null;
-    const canopyGeo = new THREE.SphereGeometry(3.0, 9, 6); canopyGeo.scale(1, 0.85, 1); canopyGeo.translate(0, 4.4, 0);
+    const canopyGeo = new THREE.IcosahedronGeometry(3.2, 1); canopyGeo.scale(1, 0.82, 1); canopyGeo.translate(0, 4.4, 0);
     const trunkGeo = new THREE.CylinderGeometry(0.35, 0.45, 4.4, 6); trunkGeo.translate(0, 2.2, 0);
-    const canopyMat = new THREE.MeshStandardMaterial({ roughness: 0.92, metalness: 0, envMapIntensity: ENV_I });
+    const canopyMat = new THREE.MeshStandardMaterial({ roughness: 0.9, metalness: 0, envMapIntensity: ENV_I,
+        emissive: 0x24401c, emissiveIntensity: 0.16 });   // instanceColor tints per-tree; faint leaf glow in shade
     const trunkMat = new THREE.MeshStandardMaterial({ color: 0x7a5a3a, roughness: 0.95, metalness: 0, envMapIntensity: ENV_I });
     const canopy = new THREE.InstancedMesh(canopyGeo, canopyMat, pts.length);
     const trunk = new THREE.InstancedMesh(trunkGeo, trunkMat, pts.length);
-    canopy.castShadow = canopy.receiveShadow = true; trunk.castShadow = true;
+    canopy.castShadow = canopy.receiveShadow = true; trunk.castShadow = false;   // trunk shadow hidden under canopy
 
     const m = new THREE.Matrix4(), q = new THREE.Quaternion(), pos = new THREE.Vector3(), scl = new THREE.Vector3();
     const col = new THREE.Color();
     for (let i = 0; i < pts.length; i++) {
         const base = (pts[i][2] || 1) * 1.1;
-        const s = base * (0.82 + 0.42 * _hash01(i + 0.3));         // size jitter
+        const r = _hash01(i + 0.3);
+        const s = base * (0.7 + 0.85 * r * r);                     // r²-biased: many small, few large = natural stand
         pos.set(px(pts[i][0]), 0, pz(pts[i][1]));
         q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), _hash01(i) * Math.PI * 2);  // random yaw
         scl.set(s, s * (0.9 + 0.25 * _hash01(i + 0.7)), s);       // slight height variation
@@ -195,6 +203,29 @@ function _ribbons(gj, widthFn, color, y) {
     mesh.receiveShadow = true;
     return mesh;
 }
+/** Unlit water material: deep-centre → bright sky-sheen at grazing angles (Fresnel)
+ *  two-tone. Stays flat + depthWrite:false (no z-fight, no time-based shimmer). */
+function _waterMat(color) {
+    const mat = new THREE.MeshBasicMaterial({
+        color: 0xffffff, side: THREE.DoubleSide, depthWrite: false,
+        polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
+    });
+    const deep = new THREE.Color(color).multiplyScalar(0.82);
+    const edge = new THREE.Color(color).lerp(new THREE.Color(0xeaf4fb), 0.42);
+    mat.onBeforeCompile = (sh) => {
+        sh.uniforms.uDeep = { value: deep }; sh.uniforms.uEdge = { value: edge };
+        sh.vertexShader = sh.vertexShader
+            .replace('#include <common>', '#include <common>\nvarying vec3 vVDw;')
+            .replace('#include <begin_vertex>', '#include <begin_vertex>\n vVDw = normalize(cameraPosition - (modelMatrix * vec4(transformed,1.0)).xyz);');
+        sh.fragmentShader = sh.fragmentShader
+            .replace('#include <common>', '#include <common>\nuniform vec3 uDeep; uniform vec3 uEdge; varying vec3 vVDw;')
+            .replace('#include <dithering_fragment>', `
+                float fres = pow(1.0 - clamp(vVDw.y, 0.0, 1.0), 3.0);   // grazing banks catch sky
+                gl_FragColor.rgb = mix(uDeep, uEdge, clamp(fres * 1.4, 0.0, 1.0)) + fres * 0.08;
+                #include <dithering_fragment>`);
+    };
+    return mat;
+}
 function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null, bank = { color: 0x155fae, opacity: 0.75 }) {
     const geoms = [];
     for (const f of (gj.features || [])) {
@@ -217,10 +248,7 @@ function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null, bank = { color: 
     const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
     // Unlit flat blue — avoids the lighting/SSAO striping that MeshStandard gave on
     // the many thin vectorised water triangles; reads as clean clear water.
-    const mesh = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({
-        color, side: THREE.DoubleSide, depthWrite: false,
-        polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
-    }));
+    const mesh = new THREE.Mesh(merged, _waterMat(color));
     mesh.renderOrder = 5;                               // above the stream tiers (2-4), no z-fight
     const grp = new THREE.Group(); grp.add(mesh);
     if (bank) {                                          // crisp bank outline (skipped for tiny brooks)
@@ -276,10 +304,7 @@ function _buildTracedChannel(gj, y) {
         }
         if (!geoms.length) continue;
         const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
-        const mesh = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({
-            color: COL[tier] || 0x1773cf, side: THREE.DoubleSide, depthWrite: false,
-            polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
-        }));
+        const mesh = new THREE.Mesh(merged, _waterMat(COL[tier] || 0x1773cf));
         mesh.renderOrder = ro++;
         grp.add(mesh);
     }
@@ -306,7 +331,7 @@ function _buildGreenSpaces(gj, y) {
     }
     if (!geoms.length) return null;
     const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
-    const mesh = new THREE.Mesh(merged, new THREE.MeshStandardMaterial({ color: 0xcfe0bf, roughness: 1, metalness: 0, side: THREE.DoubleSide }));
+    const mesh = new THREE.Mesh(merged, new THREE.MeshStandardMaterial({ color: 0xd2dec0, roughness: 1, metalness: 0, side: THREE.DoubleSide, envMapIntensity: ENV_I }));
     mesh.receiveShadow = true;
     return mesh;
 }
@@ -314,12 +339,12 @@ function _buildGreenSpaces(gj, y) {
 /** Road style by OSM class: clean grey lines with a clear width hierarchy. */
 function _roadStyle(f) {
     const k = ((f.properties && (f.properties.highway || f.properties.fclass)) || '') + '';
-    if (/motorway|trunk|_link/.test(k)) return { w: 6.5, color: 0x5f6672 };
-    if (/primary/.test(k)) return { w: 5.2, color: 0x6b7280 };
-    if (/secondary/.test(k)) return { w: 4.0, color: 0x78808c };
-    if (/tertiary/.test(k)) return { w: 3.1, color: 0x868d99 };
-    if (/residential|unclassified|living/.test(k)) return { w: 2.2, color: 0x939aa6 };
-    return { w: 1.5, color: 0xa1a7b2 };                 // service/track/footway/path
+    if (/motorway|trunk|_link/.test(k)) return { w: 5.6, color: 0x737a87 };
+    if (/primary/.test(k)) return { w: 4.4, color: 0x80828f };
+    if (/secondary/.test(k)) return { w: 3.4, color: 0x8b909c };
+    if (/tertiary/.test(k)) return { w: 2.6, color: 0x979ca8 };
+    if (/residential|unclassified|living/.test(k)) return { w: 1.8, color: 0xa6abb6 };
+    return { w: 1.2, color: 0xb2b7c1 };                 // service/track/footway — barely there
 }
 
 /** Roads as delicate fat-lines: one LineSegments2 per class (pixel-constant width).
@@ -376,7 +401,8 @@ function _buildMarkers(pts, color) {
     const inr = pts.filter(p => _inRange(p[0], p[1]));
     if (!inr.length) return null;
     const mesh = new THREE.InstancedMesh(_markerGeo(),
-        new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.1 }), inr.length);
+        new THREE.MeshStandardMaterial({ color, roughness: 0.5, metalness: 0.05, envMapIntensity: ENV_I,
+            emissive: new THREE.Color(color).multiplyScalar(0.25), emissiveIntensity: 0.6 }), inr.length);   // glow as accents
     mesh.castShadow = true;
     const m = new THREE.Matrix4();
     for (let i = 0; i < inr.length; i++) { m.makeTranslation(px(inr[i][0]), 0, pz(inr[i][1])); mesh.setMatrixAt(i, m); }
@@ -447,7 +473,7 @@ function _setupRenderer(w, h) {
     _renderer.shadowMap.enabled = true;
     _renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     _renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    _renderer.toneMappingExposure = 0.95;
+    _renderer.toneMappingExposure = 0.88;
     _renderer.outputColorSpace = THREE.SRGBColorSpace;
 }
 function _setupScene() {
