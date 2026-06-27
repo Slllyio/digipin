@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Guna · Channel Tracer (satellite)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+<style>
+  html, body { margin: 0; height: 100%; font: 13px system-ui, sans-serif; }
+  #map { position: absolute; inset: 0; }
+  #panel {
+    position: absolute; top: 12px; left: 12px; z-index: 1000; width: 280px;
+    background: rgba(18,22,34,0.92); color: #e8ecf4; border-radius: 10px; padding: 12px 14px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+  }
+  #panel h1 { font-size: 14px; margin: 0 0 6px; }
+  #panel p { margin: 4px 0; color: #aeb6c6; line-height: 1.35; }
+  #panel button { font: 600 12px system-ui; border: none; border-radius: 7px; padding: 7px 10px;
+    margin: 4px 6px 0 0; cursor: pointer; background: #2f6fed; color: #fff; }
+  #panel button.alt { background: #394257; }
+  #panel button.warn { background: #b3473e; }
+  #count { font-weight: 700; color: #6fe0a0; }
+  #gj { width: 100%; height: 120px; margin-top: 8px; font: 11px ui-monospace, monospace;
+    background: #0e1320; color: #cfe0ff; border: 1px solid #2a3350; border-radius: 6px; box-sizing: border-box; }
+  .seg { font-size: 11px; color: #8fa0bd; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="panel">
+  <h1>Guna · Channel Tracer</h1>
+  <p>Click along the <b>Guniya channel</b> from one end to the other. Each click adds a
+     point in real lng/lat. Use the imagery (and your knowledge) to follow the bed.</p>
+  <p>Points: <span id="count">0</span></p>
+  <div>
+    <button id="undo" class="alt">↶ Undo</button>
+    <button id="clear" class="warn">Clear</button>
+    <button id="copy">Copy GeoJSON</button>
+    <button id="dl">Download</button>
+  </div>
+  <p class="seg">Tier toggle for the next clicks:
+    <select id="tier"><option value="river">river</option>
+      <option value="stream">stream</option></select></p>
+  <textarea id="gj" readonly spellcheck="false"></textarea>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+<script>
+const KEY = 'guna_channel_v1';
+const map = L.map('map', { zoomControl: true }).setView([24.6354, 77.3126], 14);
+L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  { maxZoom: 19, attribution: 'Esri World Imagery' }).addTo(map);
+
+let pts = JSON.parse(localStorage.getItem(KEY) || '[]');   // [{lng,lat,tier}]
+let line = L.polyline([], { color: '#ff2bd6', weight: 4, opacity: 0.95 }).addTo(map);
+let dots = L.layerGroup().addTo(map);
+
+function tier() { return document.getElementById('tier').value; }
+function redraw() {
+  line.setLatLngs(pts.map(p => [p.lat, p.lng]));
+  dots.clearLayers();
+  pts.forEach((p, i) => L.circleMarker([p.lat, p.lng],
+    { radius: 4, color: '#fff', weight: 1, fillColor: '#ff2bd6', fillOpacity: 1 })
+    .bindTooltip(String(i + 1)).addTo(dots));
+  document.getElementById('count').textContent = pts.length;
+  document.getElementById('gj').value = geojson();
+  localStorage.setItem(KEY, JSON.stringify(pts));
+}
+function geojson() {
+  // group consecutive points by tier into LineString features
+  const feats = []; let cur = null;
+  for (const p of pts) {
+    if (!cur || cur.tier !== p.tier) {
+      if (cur && cur.coords.length >= 2)
+        feats.push({ type: 'Feature', properties: { tier: cur.tier },
+          geometry: { type: 'LineString', coordinates: cur.coords } });
+      cur = { tier: p.tier, coords: [] };
+      if (feats.length) cur.coords.push(feats[feats.length - 1].geometry.coordinates.slice(-1)[0]);
+    }
+    cur.coords.push([+p.lng.toFixed(6), +p.lat.toFixed(6)]);
+  }
+  if (cur && cur.coords.length >= 2)
+    feats.push({ type: 'Feature', properties: { tier: cur.tier },
+      geometry: { type: 'LineString', coordinates: cur.coords } });
+  return JSON.stringify({ type: 'FeatureCollection', features: feats });
+}
+map.on('click', e => { pts.push({ lng: e.latlng.lng, lat: e.latlng.lat, tier: tier() }); redraw(); });
+document.getElementById('undo').onclick = () => { pts.pop(); redraw(); };
+document.getElementById('clear').onclick = () => { if (confirm('Clear all points?')) { pts = []; redraw(); } };
+document.getElementById('copy').onclick = () => navigator.clipboard.writeText(geojson());
+document.getElementById('dl').onclick = () => {
+  const b = new Blob([geojson()], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+  a.download = 'channels_traced_guna.geojson'; a.click();
+};
+
+// Programmatic API (for drafting / automation)
+window.__trace = {
+  addLngLat: (lng, lat, t = 'river') => { pts.push({ lng, lat, tier: t }); redraw(); },
+  pxToLngLat: (x, y) => { const ll = map.containerPointToLatLng([x, y]); return [ll.lng, ll.lat]; },
+  set: arr => { pts = arr; redraw(); },
+  geojson, get points() { return pts; }, map,
+};
+redraw();
+</script>
+</body>
+</html>
