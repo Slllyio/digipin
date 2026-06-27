@@ -227,53 +227,6 @@ function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null, bank = { color: 
     return grp;
 }
 
-/** MERIT Hydro drainage network → connected blue ribbons (real water pathways).
- *  Each segment's width follows hydraulic geometry (∝ √drainage-area) and its
- *  colour deepens by tier (brook → stream → river). Flat unlit MeshBasic so the
- *  water reads clean without SSAO/lighting striping; deeper tiers sit slightly
- *  higher so the Guniya trunk stays crisp where tributaries merge into it. */
-function _buildStreams(gj, y) {
-    const TIER = {                                   // ro: fixed render order so tiers layer deterministically
-        brook:  { color: 0x49a4e6, y: y,        ro: 2 },
-        stream: { color: 0x1f8adf, y: y + 0.02, ro: 3 },
-        river:  { color: 0x1773cf, y: y + 0.04, ro: 4 },
-    };
-    const wOf = u => Math.min(85, Math.max(7, 7 + 5.2 * Math.sqrt(Math.max(0, u))));
-    const grp = new THREE.Group();
-    for (const tier of Object.keys(TIER)) {
-        const st = TIER[tier], geoms = [];
-        for (const f of (gj.features || [])) {
-            if (!f.properties || f.properties.tier !== tier) continue;
-            const g = f.geometry; if (!g || g.type !== 'LineString') continue;
-            const co = g.coordinates, w = wOf(+f.properties.upa) / 2;
-            for (let i = 0; i < co.length - 1; i++) {
-                if (!_inRange(co[i][0], co[i][1]) && !_inRange(co[i + 1][0], co[i + 1][1])) continue;
-                const x1 = px(co[i][0]), z1 = pz(co[i][1]), x2 = px(co[i + 1][0]), z2 = pz(co[i + 1][1]);
-                const dx = x2 - x1, dz = z2 - z1, len = Math.hypot(dx, dz) || 1;
-                const nx = -dz / len * w, nz = dx / len * w;
-                const q = new THREE.BufferGeometry();
-                q.setAttribute('position', new THREE.Float32BufferAttribute([
-                    x1 + nx, st.y, z1 + nz, x1 - nx, st.y, z1 - nz,
-                    x2 + nx, st.y, z2 + nz, x2 - nx, st.y, z2 - nz,
-                ], 3));
-                q.setIndex([0, 2, 1, 1, 2, 3]);
-                geoms.push(q);
-            }
-        }
-        if (!geoms.length) continue;
-        const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
-        // depthWrite off + fixed renderOrder: overlapping ribbon quads & adjacent tiers
-        // never z-fight (no flicker); depthTest stays on so buildings still occlude water.
-        const mesh = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({
-            color: st.color, side: THREE.DoubleSide, depthWrite: false,
-            polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
-        }));
-        mesh.renderOrder = st.ro;
-        grp.add(mesh);
-    }
-    return grp.children.length ? grp : null;
-}
-
 /** Hand-digitised channel centreline (survey-grade, traced on satellite imagery)
  *  → a smooth tapered ribbon. Per-vertex averaged normals give continuous mitred
  *  joints (no gaps at bends); the ends taper so the river doesn't stop abruptly.
