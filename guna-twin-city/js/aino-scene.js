@@ -274,6 +274,59 @@ function _buildStreams(gj, y) {
     return grp.children.length ? grp : null;
 }
 
+/** Hand-digitised channel centreline (survey-grade, traced on satellite imagery)
+ *  → a smooth tapered ribbon. Per-vertex averaged normals give continuous mitred
+ *  joints (no gaps at bends); the ends taper so the river doesn't stop abruptly.
+ *  Flat unlit + depthWrite:false so it sits stable over the ground (no z-fight). */
+function _buildTracedChannel(gj, y) {
+    const W = { river: 26, stream: 14 }, COL = { river: 0x1773cf, stream: 0x2f8fdc };
+    const byTier = {};
+    for (const f of (gj.features || [])) {
+        const t = (f.properties && f.properties.tier) || 'river';
+        (byTier[t] = byTier[t] || []).push(f);
+    }
+    const grp = new THREE.Group();
+    let ro = 4;
+    for (const tier of Object.keys(byTier)) {
+        const wBase = W[tier] || 18, geoms = [];
+        for (const f of byTier[tier]) {
+            const g = f.geometry; if (!g || g.type !== 'LineString') continue;
+            const co = g.coordinates;
+            const pp = co.map(c => [px(c[0]), pz(c[1])]);   // [X, Z]
+            const n = pp.length; if (n < 2) continue;
+            const L = [], R = [];
+            for (let i = 0; i < n; i++) {
+                const a = pp[Math.max(0, i - 1)], b = pp[Math.min(n - 1, i + 1)];
+                let dx = b[0] - a[0], dz = b[1] - a[1];
+                const len = Math.hypot(dx, dz) || 1; dx /= len; dz /= len;
+                const nx = -dz, nz = dx;                     // left normal in XZ
+                const t = i / (n - 1), edge = Math.min(t, 1 - t);
+                const hw = wBase * (0.5 + 0.5 * Math.min(1, edge / 0.07)) / 2;  // taper tips
+                L.push([pp[i][0] + nx * hw, pp[i][1] + nz * hw]);
+                R.push([pp[i][0] - nx * hw, pp[i][1] - nz * hw]);
+            }
+            const pos = [];
+            for (let i = 0; i < n - 1; i++) {
+                const l0 = L[i], r0 = R[i], l1 = L[i + 1], r1 = R[i + 1];
+                pos.push(l0[0], y, l0[1], r0[0], y, r0[1], l1[0], y, l1[1]);
+                pos.push(r0[0], y, r0[1], r1[0], y, r1[1], l1[0], y, l1[1]);
+            }
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+            geoms.push(geo);
+        }
+        if (!geoms.length) continue;
+        const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
+        const mesh = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({
+            color: COL[tier] || 0x1773cf, side: THREE.DoubleSide, depthWrite: false,
+            polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
+        }));
+        mesh.renderOrder = ro++;
+        grp.add(mesh);
+    }
+    return grp.children.length ? grp : null;
+}
+
 /** Soft muted-green park fill polygons (osm green spaces). */
 function _buildGreenSpaces(gj, y) {
     const geoms = [];
@@ -449,15 +502,15 @@ function _setupComposer(w, h) {
 
 async function _build() {
     const w = innerWidth, h = innerHeight;
-    const [b, t, riv, wat, road, green, jrc, str, rail, poi, sens, adm] = await Promise.all([
+    const [b, t, riv, wat, road, green, s2, chan, rail, poi, sens, adm] = await Promise.all([
         _json(BASE + 'buildings_lite_guna.geojson'),
         _json(BASE + 'aino_trees_guna.json'),
         _json(BASE + 'osm_rivers_guna_continuous.geojson'),
         _json(BASE + 'osm_water_guna.geojson'),
         _json(BASE + 'osm_roads_guna.geojson'),
         _json(BASE + 'osm_green_spaces_guna.geojson'),
-        _json(BASE + 'jrc_water_guna.geojson'),   // satellite-observed Guniya river + streams + tanks
-        _json(BASE + 'streams_guna.geojson'),      // MERIT Hydro drainage network (connected pathways)
+        _json(BASE + 'channels_s2_guna.geojson'),   // Sentinel-2 (10 m) standing water → tanks
+        _json(BASE + 'channels_traced_guna.geojson'), // survey-grade Guniya traced on satellite imagery
         _json(BASE + 'osm_railways_guna.geojson'),
         _json(BASE + 'osm_pois_guna.geojson'),
         _json(BASE + 'sensitive_infrastructure_guna.geojson'),
@@ -470,11 +523,9 @@ async function _build() {
     if (adm) { const m = _buildBoundaries(adm, 0.08); if (m) _scene.add(m); }
     if (green) { const m = _buildGreenSpaces(green, 0.10); if (m) _scene.add(m); }
     if (road) { const m = _buildRoadLines(road, w, h); if (m) _scene.add(m); }
-    if (str) { const m = _buildStreams(str, 0.36); if (m) _scene.add(m); }   // connected drainage network (Guniya + tributaries)
-    if (jrc) {
-        // observed standing water on top of the network: real tanks/lakes + river pool.
-        const pw = _buildWaterPolys(jrc, 0.46, 0x1d7fd6, 'permanent'); if (pw) _scene.add(pw);  // deep water blue
-    }
+    // Survey-grade water: Guniya traced on satellite imagery + Sentinel-2 tanks.
+    if (s2) { const pw = _buildWaterPolys(s2, 0.46, 0x1773cf, 'permanent'); if (pw) _scene.add(pw); }  // real tanks/perennial pools
+    if (chan) { const m = _buildTracedChannel(chan, 0.44); if (m) _scene.add(m); }                     // the Guniya, on its real course
     if (wat) { const m = _buildWaterPolys(wat, 0.45, 0x1d7fd6); if (m) _scene.add(m); }
     if (riv) { const m = _ribbons(riv, _riverW, 0x1d7fd6, 0.55); if (m) _scene.add(m); }
     if (road) { const m = _buildBridges(road, 0.70); if (m) _scene.add(m); }
