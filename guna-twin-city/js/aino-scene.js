@@ -197,7 +197,7 @@ function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null) {
     // crisp bank outline
     const banks = new THREE.LineSegments(
         new THREE.EdgesGeometry(merged, 1),
-        new THREE.LineBasicMaterial({ color: 0x84a0b4, transparent: true, opacity: 0.6 }));
+        new THREE.LineBasicMaterial({ color: 0x2f7bc4, transparent: true, opacity: 0.7 }));
     const grp = new THREE.Group(); grp.add(mesh); grp.add(banks);
     return grp;
 }
@@ -342,11 +342,11 @@ async function _build() {
     if (green) { const m = _buildGreenSpaces(green, 0.10); if (m) _scene.add(m); }
     if (road) { const m = _buildRoadLines(road, w, h); if (m) _scene.add(m); }
     if (jrc) {
-        const sw = _buildWaterPolys(jrc, 0.42, 0xb2c8d8, 'seasonal'); if (sw) _scene.add(sw);
-        const pw = _buildWaterPolys(jrc, 0.46, 0x86a6c0, 'permanent'); if (pw) _scene.add(pw);
+        const sw = _buildWaterPolys(jrc, 0.42, 0x6db3e8, 'seasonal'); if (sw) _scene.add(sw);   // clearer blue
+        const pw = _buildWaterPolys(jrc, 0.46, 0x3f93dd, 'permanent'); if (pw) _scene.add(pw);  // vivid water blue
     }
-    if (wat) { const m = _buildWaterPolys(wat, 0.45, 0x9fb8c9); if (m) _scene.add(m); }
-    if (riv) { const m = _ribbons(riv, _riverW, 0x93b0c4, 0.55); if (m) _scene.add(m); }
+    if (wat) { const m = _buildWaterPolys(wat, 0.45, 0x3f93dd); if (m) _scene.add(m); }
+    if (riv) { const m = _ribbons(riv, _riverW, 0x3f93dd, 0.55); if (m) _scene.add(m); }
     if (road) { const m = _buildBridges(road, 0.70); if (m) _scene.add(m); }
     if (b) { const m = _buildBuildings(b); if (m) _scene.add(m); }
     if (t) { const m = _buildTrees(t); if (m) _scene.add(m); }
