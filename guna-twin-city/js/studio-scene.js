@@ -18,6 +18,9 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
@@ -38,6 +41,7 @@ let _container = null, _renderer = null, _scene = null, _camera = null;
 let _controls = null, _composer = null, _raf = 0, _active = false, _built = false;
 let _lineMats = [];                       // LineMaterials needing resolution updates on resize
 let _onProgress = null;                    // (msg) => void — updates the loading overlay during build
+let _tiltH = null, _tiltV = null, _bloom = null, _smaa = null;   // post passes needing resize updates
 
 // ───────────────────────── data ─────────────────────────
 async function _json(url) {
@@ -493,13 +497,83 @@ function _setupCamera(w, h) {
     _controls.maxPolarAngle = Math.PI / 2.15; _controls.minDistance = 200; _controls.maxDistance = RANGE * 3;
     _controls.update();
 }
+// Tilt-shift: separable gaussian whose blur ramps up outside a screen-Y band of
+// sharpness — the signature "miniature scale-model" cue. Screen-space, so it is
+// stable as the camera orbits. Two instances run H then V.
+function _tiltShader() {
+    return {
+        uniforms: {
+            tDiffuse: { value: null },
+            uDir: { value: new THREE.Vector2(1 / innerWidth, 0) },
+            uFocus: { value: 0.52 }, uWidth: { value: 0.16 },
+            uFalloff: { value: 0.28 }, uMaxBlur: { value: 2.6 },
+        },
+        vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+        fragmentShader: `
+            uniform sampler2D tDiffuse; uniform vec2 uDir;
+            uniform float uFocus, uWidth, uFalloff, uMaxBlur; varying vec2 vUv;
+            void main(){
+                float d = abs(vUv.y - uFocus);
+                float amt = clamp((d - uWidth) / uFalloff, 0.0, 1.0) * uMaxBlur;
+                vec2 o = uDir * amt;
+                vec4 s = texture2D(tDiffuse, vUv) * 0.227027;
+                s += texture2D(tDiffuse, vUv + o*1.0) * 0.194595;
+                s += texture2D(tDiffuse, vUv - o*1.0) * 0.194595;
+                s += texture2D(tDiffuse, vUv + o*2.0) * 0.121622;
+                s += texture2D(tDiffuse, vUv - o*2.0) * 0.121622;
+                s += texture2D(tDiffuse, vUv + o*3.0) * 0.054054;
+                s += texture2D(tDiffuse, vUv - o*3.0) * 0.054054;
+                s += texture2D(tDiffuse, vUv + o*4.0) * 0.016216;
+                s += texture2D(tDiffuse, vUv - o*4.0) * 0.016216;
+                gl_FragColor = s;
+            }`,
+    };
+}
+// Warm split-tone grade + gentle vignette — a whisper of cinematic finish.
+function _gradeShader() {
+    return {
+        uniforms: {
+            tDiffuse: { value: null }, uWarm: { value: 1.0 }, uSat: { value: 0.97 },
+            uContrast: { value: 1.05 }, uVigOffset: { value: 0.30 }, uVigDark: { value: 0.30 },
+        },
+        vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+        fragmentShader: `
+            uniform sampler2D tDiffuse; uniform float uWarm, uSat, uContrast, uVigOffset, uVigDark;
+            varying vec2 vUv;
+            void main(){
+                vec4 c = texture2D(tDiffuse, vUv); vec3 col = c.rgb;
+                float l = dot(col, vec3(0.299, 0.587, 0.114));
+                col += l * vec3(0.020, 0.008, -0.014) * uWarm;        // warm highlights
+                col += (1.0 - l) * vec3(-0.006, 0.0, 0.012) * uWarm;  // cool shadows
+                col = mix(vec3(l), col, uSat);                        // saturation
+                col = (col - 0.5) * uContrast + 0.5;                  // contrast
+                float vig = 1.0 - uVigDark * smoothstep(uVigOffset, 0.72, length(vUv - 0.5));
+                col *= vig;
+                gl_FragColor = vec4(clamp(col, 0.0, 1.0), c.a);
+            }`,
+    };
+}
 function _setupComposer(w, h) {
-    _composer = new EffectComposer(_renderer);
+    _composer = new EffectComposer(_renderer);     // r160 default RT is HalfFloat → no banding on the gradient sky
     _composer.addPass(new RenderPass(_scene, _camera));
+
     const ssao = new SSAOPass(_scene, _camera, w, h);
-    ssao.kernelRadius = 10; ssao.minDistance = 0.0008; ssao.maxDistance = 0.12;
+    ssao.kernelRadius = 12; ssao.minDistance = 0.0008; ssao.maxDistance = 0.09;   // seat buildings, no sky halos
     _composer.addPass(ssao);
-    _composer.addPass(new OutputPass());
+
+    _tiltH = new ShaderPass(_tiltShader()); _tiltV = new ShaderPass(_tiltShader());
+    _tiltH.uniforms.uDir.value.set(1 / w, 0); _tiltV.uniforms.uDir.value.set(0, 1 / h);
+    _composer.addPass(_tiltH); _composer.addPass(_tiltV);
+
+    _bloom = new UnrealBloomPass(new THREE.Vector2(w, h), 0.16, 0.5, 0.92);   // subtle; high threshold protects white roofs
+    _composer.addPass(_bloom);
+
+    _composer.addPass(new ShaderPass(_gradeShader()));
+
+    _smaa = new SMAAPass(w, h);
+    _composer.addPass(_smaa);
+
+    _composer.addPass(new OutputPass());           // owns tone-mapping + sRGB; must stay last
 }
 
 async function _build() {
@@ -551,8 +625,10 @@ function _onResize() {
     if (!_active) return;
     const w = innerWidth, h = innerHeight;
     _camera.aspect = w / h; _camera.updateProjectionMatrix();
-    _renderer.setSize(w, h); _composer.setSize(w, h);
+    _renderer.setSize(w, h); _composer.setSize(w, h);   // propagates setSize to bloom/SMAA/SSAO passes
     _lineMats.forEach(m => m.resolution.set(w, h));   // fat lines need canvas size
+    if (_tiltH) _tiltH.uniforms.uDir.value.set(1 / w, 0);   // keep tilt-shift blur axis pixel-correct
+    if (_tiltV) _tiltV.uniforms.uDir.value.set(0, 1 / h);
 }
 
 function _chrome() {
@@ -602,6 +678,7 @@ function close_() {
     if (_renderer) { _renderer.dispose(); }
     if (_container) { _container.remove(); _container = null; }
     _lineMats = [];
+    _tiltH = _tiltV = _bloom = _smaa = null;
     _scene = _camera = _controls = _composer = _renderer = null; _built = false;
 }
 function toggle() { _active ? close_() : open(); }
