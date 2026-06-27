@@ -1,9 +1,9 @@
 /**
- * PitchMap — Aino-style "Pitch Map" export.
+ * PitchMap — paper-model "Pitch Map" export.
  *
- * Aino's signature deliverable is a *presentation-ready* map: a clean, branded
+ * the signature deliverable is a *presentation-ready* map: a clean, branded
  * snapshot of the styled view, sized for a slide deck. This module composites
- * the live MapLibre canvas (the 3D Aino massing model + basemap) onto an
+ * the live MapLibre canvas (the 3D Paper massing model + basemap) onto an
  * offscreen 2D canvas, then frames it with a title band (project + DIGIPIN code
  * + city), a north arrow, a scale bar, an optional active-overlay legend, and an
  * attribution footer, and downloads it as a PNG.

@@ -60,7 +60,7 @@ test.describe('core interactions', () => {
     await page.goto('/app.html');
     await page.waitForSelector('.maplibregl-canvas', { timeout: 30_000 });
 
-    // Default is Aino paper-light (data-theme="light").
+    // Default is paper-light (data-theme="light").
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     await page.click('#theme-toggle-btn');               // toggle() reloads the page
     await page.waitForSelector('.maplibregl-canvas', { timeout: 30_000 });

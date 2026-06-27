@@ -1,5 +1,5 @@
 /**
- * Annotations — user map markup for presentations (Aino-style stakeholder maps).
+ * Annotations — user map markup for presentations (paper-model stakeholder maps).
  *
  * Drop labelled pins anywhere on the map, persisted in localStorage so they
  * survive reloads and show in Presentation mode. Click a pin to delete it; the

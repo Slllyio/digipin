@@ -11,7 +11,7 @@ beforeEach(() => {
 });
 
 describe('Theme.normalize()', () => {
-    it('accepts only known themes, defaulting to light (Aino paper)', () => {
+    it('accepts only known themes, defaulting to light (paper-light)', () => {
         expect(T.normalize('light')).toBe('light');
         expect(T.normalize('dark')).toBe('dark');
         expect(T.normalize('neon')).toBe('light');
@@ -71,11 +71,11 @@ describe('Theme.mapStyleUrl() / gridColors()', () => {
 describe('Theme.palette() — JS-surface colours', () => {
     it('returns blue-interactive / coral-brand paper colours for light', () => {
         const p = T.palette('light');
-        expect(p.primary).toBe('#0099ff');        // Aino blue — interactive primary
-        expect(p.brand).toBe('#ff673d');          // Aino coral — brand/headlines
+        expect(p.primary).toBe('#0099ff');        // accent blue — interactive primary
+        expect(p.brand).toBe('#ff673d');          // brand coral — brand/headlines
         expect(p.ink).toBe('#292929');
         expect(p.inkOnPrimary).toBe('#ffffff');   // readable label on blue
-        expect(p.surfaceSolid).toBe('#ffffff');   // clean white card (Aino)
+        expect(p.surfaceSolid).toBe('#ffffff');   // clean white card (Paper)
     });
 
     it('returns neon-on-navy colours for dark', () => {

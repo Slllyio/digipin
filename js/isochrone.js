@@ -27,7 +27,7 @@ const Isochrone = (() => {
     const POINT_LAYER = 'isochrone-point';
     const LEGEND_ID = 'isochrone-legend';
 
-    // Aino-style soft concentric bands (deep coral core → pale outer reach).
+    // paper-model soft concentric bands (deep coral core → pale outer reach).
     const PRESETS = [
         { minutes: 5,  color: '#dd6b4a', label: '5 min walk'  },
         { minutes: 10, color: '#e8a06a', label: '10 min walk' },
@@ -124,7 +124,7 @@ const Isochrone = (() => {
         }
     }
 
-    /** Aino-style legend card: coral serif title + the three walking-band chips. */
+    /** paper-model legend card: coral serif title + the three walking-band chips. */
     function _renderLegend() {
         const pal = (typeof Theme !== 'undefined' && Theme.palette)
             ? Theme.palette()

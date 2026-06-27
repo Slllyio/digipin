@@ -10,13 +10,13 @@
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css" />
     <script src="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js"></script>
 
-    <!-- deck.gl umbrella bundle — WebGL overlay for the Aino-style 3D twin
+    <!-- deck.gl umbrella bundle — WebGL overlay for the paper-model 3D twin
          (white building massing, procedural window facades, instanced trees,
          ambient-occlusion + soft-shadow lighting). Provides window.deck. -->
     <script src="https://unpkg.com/deck.gl@9.0.38/dist.min.js"></script>
 
-    <!-- Three.js (ESM importmap) for the high-fidelity "Aino Studio" scene —
-         real shadow maps + SSAO + post-processing. Loaded by js/aino-scene.js. -->
+    <!-- Three.js (ESM importmap) for the high-fidelity "City Studio" scene —
+         real shadow maps + SSAO + post-processing. Loaded by js/studio-scene.js. -->
     <script type="importmap">
     {
       "imports": {
@@ -25,7 +25,7 @@
       }
     }
     </script>
-    <script type="module" src="js/aino-scene.js"></script>
+    <script type="module" src="js/studio-scene.js"></script>
 
     <!-- PMTiles v3 — IIFE global build for MapLibre addProtocol -->
     <script src="https://unpkg.com/pmtiles@3.0.7/dist/pmtiles.js"></script>
@@ -33,7 +33,7 @@
     <!-- GeoRaster for COG/GeoTIFF rendering -->
     <script src="https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js"></script>
 
-    <!-- Theme pre-paint: Aino paper-light is the default unless the user chose dark
+    <!-- Theme pre-paint: paper-light is the default unless the user chose dark
          (no flash either way). Runtime API: ../js/theme.js. -->
     <script>
         try {
@@ -98,9 +98,9 @@
             <span class="tb-icon">&#9650;</span>
             <span class="tb-label">3D</span>
         </button>
-        <button class="toolbar-btn" id="btn-aino" title="Aino 3D Twin — white architectural massing model (deck.gl)">
+        <button class="toolbar-btn" id="btn-studio" title="3D Twin — white architectural massing model (deck.gl)">
             <span class="tb-icon">&#127961;</span>
-            <span class="tb-label">Aino 3D</span>
+            <span class="tb-label">3D Model</span>
         </button>
         <button class="toolbar-btn" id="btn-lulc" title="Land Use Land Cover">
             <span class="tb-icon">&#127758;</span>
@@ -318,7 +318,7 @@
     <script src="js/ai-layers.js"></script>
 
     <!-- Shared app init -->
-    <!-- ===== Indore feature parity: shared score models, overlays, widgets, Aino packs ===== -->
+    <!-- ===== Indore feature parity: shared score models, overlays, widgets, Paper packs ===== -->
     <script src="../js/data-fetcher-cache.js"></script>
     <script src="../js/growth-score.js"></script>
     <script src="../js/realtime-growth.js"></script>
@@ -402,7 +402,7 @@
         ['btn-access',    () => window.AccessibilityOverlay],
         ['btn-choropleth', () => window.ScoreChoropleth],
         ['btn-area',      () => window.AreaAggregate],
-        ['btn-aino',      () => window.AinoScene],
+        ['btn-studio',      () => window.StudioScene],
     ].forEach(([id, getMod]) => {
         const btn = document.getElementById(id);
         if (!btn) return;

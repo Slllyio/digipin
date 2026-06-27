@@ -95,7 +95,7 @@ SCENES = [
      "structure instantly."),
     ("07-themes", "dark", "pan",
      "The entire interface comes in two themes. You have been seeing the calm, "
-     "paper-light Aino theme. Switch to the dark control-room theme for "
+     "paper-light theme. Switch to the dark control-room theme for "
      "low-light work and presentations. Same data, same maps — a completely "
      "different mood."),
     ("08-darkscores", "dark", "scores:livability",

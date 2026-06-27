@@ -1,8 +1,8 @@
 /**
- * Theme — Aino light (default) / dark theme switching.
+ * Theme — Paper light (default) / dark theme switching.
  *
  * Two complete looks over one token system (css/styles.css):
- *   - "light" — Aino (aino.world) cool architectural light (DEFAULT): cool
+ *   - "light" — Paper (reference design) cool architectural light (DEFAULT): cool
  *               near-white surfaces, charcoal ink, one salmon-coral accent,
  *               charcoal UI chrome (no violet), light Positron basemap.
  *   - "dark"  — the original premium dark / neon control-room theme.
@@ -21,7 +21,7 @@
 const Theme = (() => {
     const STORAGE_KEY = 'digipin_theme';
     const THEMES = ['dark', 'light'];
-    const DEFAULT_THEME = 'light';   // Aino paper-light is the default look
+    const DEFAULT_THEME = 'light';   // paper-light is the default look
 
     const BASEMAPS = {
         dark: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
@@ -49,7 +49,7 @@ const Theme = (() => {
             success: '#22c55e', warn: '#eab308', danger: '#ef4444',
         },
         light: {
-            // Aino (aino.world): blue interactive primary + coral brand, charcoal
+            // Paper (reference design): blue interactive primary + coral brand, charcoal
             // ink. `primary` (blue) drives interactive JS surfaces (markers, scan
             // header, legends) to match the UI; `brand` (coral) is for headline
             // accents drawn in JS.

@@ -1,4 +1,4 @@
-"""Precompute deploy-ready assets for the Aino 3D twin (aino-twin.js).
+"""Precompute deploy-ready assets for the 3D Model twin (studio-twin.js).
 
 Two problems this solves:
   1. The twin read the full 8.6 MB google_open_buildings_guna.geojson, which is
@@ -9,9 +9,9 @@ Two problems this solves:
 
 Outputs (committed, served by the page):
   data/vectors/buildings_lite_guna.geojson   {geometry, properties:{area_m2}}
-  data/vectors/aino_trees_guna.json          {"trees": [[lng,lat,scale], ...]}
+  data/vectors/studio_trees_guna.json          {"trees": [[lng,lat,scale], ...]}
 
-Run:  python guna-twin-city/pipeline/build_aino_assets_guna.py
+Run:  python guna-twin-city/pipeline/build_studio_assets_guna.py
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ BUILDINGS_IN = VEC / "google_open_buildings_guna.geojson"
 GREEN_IN = VEC / "osm_green_spaces_guna.geojson"
 ROADS_IN = VEC / "osm_roads_guna.geojson"
 BUILDINGS_OUT = VEC / "buildings_lite_guna.geojson"
-TREES_OUT = VEC / "aino_trees_guna.json"
+TREES_OUT = VEC / "studio_trees_guna.json"
 
 # Guna metro core (lng/lat) — street trees only seeded here, where the demo looks.
 CORE = (77.28, 24.60, 77.36, 24.69)            # w, s, e, n

@@ -1,9 +1,9 @@
-/* DigiPin landing — paper / architectural-model aesthetic (Aino-inspired).
+/* DigiPin landing — paper / architectural-model aesthetic (paper-model).
    Standalone styles; the live app (index.html) keeps its own theme system. */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap');
 
 :root {
-    /* Exact replica of aino.world: near-white paper, charcoal ink, hairline
+    /* Exact replica of the reference design: near-white paper, charcoal ink, hairline
        borders, coral brand accent (#ff673d) + blue interactive (#0099ff),
        Fraunces display serif for headlines. */
     --paper: #f7f7f6;
@@ -110,7 +110,7 @@ a { color: inherit; text-decoration: none; }
 }
 .btn-ghost:hover { color: var(--ink); }
 
-/* Aino-style floating call-out cards */
+/* paper-model floating call-out cards */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));

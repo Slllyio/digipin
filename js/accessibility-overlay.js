@@ -365,7 +365,7 @@ const AccessibilityOverlay = (() => {
         const mode = _measured
             ? 'Real foot-walking routes (OpenRouteService)'
             : 'Straight-line estimate (×1.3 detour)';
-        // Aino editorial serif for the title on the paper-light theme.
+        // editorial serif for the title on the paper-light theme.
         const titleFont = (typeof Theme !== 'undefined' && Theme.get() === 'light')
             ? "'Newsreader', Georgia, serif" : 'inherit';
         el.innerHTML = `

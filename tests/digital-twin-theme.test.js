@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 
 // DigitalTwinLayers + Theme are exposed on globalThis by tests/setup.js.
-// paintFor() picks the Aino paper-theme paint variant when the light theme is
+// paintFor() picks the paper-light-theme paint variant when the light theme is
 // active; the building/green layers carry that variant.
 const DTL = globalThis.DigitalTwinLayers;
 
@@ -30,7 +30,7 @@ describe('DigitalTwinLayers paper-theme paints', () => {
         Theme.set('light');
         const b = DTL.LAYER_DEFS.google_buildings;
         expect(DTL.paintFor(b)).toBe(b.paintLight);
-        // Aino cool-white massing model, not the neon confidence ramp
+        // cool-white massing model, not the neon confidence ramp
         expect(JSON.stringify(b.paintLight)).toContain('vertical-gradient');
         expect(JSON.stringify(b.paintLight)).toContain('#f3f5f7');
         expect(JSON.stringify(b.paint)).toContain('#a78bfa'); // dark stays neon

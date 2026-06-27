@@ -89,14 +89,14 @@
    primary accent (mapped onto --accent-cyan, the semantic primary), muted
    secondaries, soft diffuse shadows instead of neon glows. Activated by
    <html data-theme="light"> (set pre-paint from localStorage; see Theme). */
-/* ===== AINO PAPER LIGHT THEME (exact replica of aino.world) =====
+/* ===== PAPER-LIGHT THEME (paper-light architectural-model aesthetic) =====
    Cool architectural light: near-white surfaces, charcoal ink (#292929), gray
-   sub-text (#636363), hairline borders rgba(0,0,0,0.07). Aino runs a TWO-accent
+   sub-text (#636363), hairline borders rgba(0,0,0,0.07). Paper runs a TWO-accent
    system: BLUE (#0099ff) for interactive/links/active states (mapped onto
    --accent-cyan, the semantic "primary" the UI keys off), and CORAL (#ff673d,
    --accent-coral) for the brand wordmark + serif headlines. Dark UI chrome /
    primary-filled buttons stay charcoal (--accent-purple). Display serif is
-   Fraunces (a tall high-contrast match for Aino's "Awesome Serif"). */
+   Fraunces (a tall high-contrast match for the "Awesome Serif"). */
 html[data-theme="light"] {
     --bg-primary: #f7f7f6;
     --bg-secondary: #ffffff;
@@ -118,13 +118,13 @@ html[data-theme="light"] {
     --fg-60: rgba(41, 41, 41, 0.6);
     --fg-90: rgba(41, 41, 41, 0.9);
     --border-color: rgba(0, 0, 0, 0.07);
-    --text-primary: #292929;       /* Aino charcoal ink */
-    --text-secondary: #636363;     /* Aino gray sub-text */
+    --text-primary: #292929;       /* charcoal ink */
+    --text-secondary: #636363;     /* gray sub-text */
     --text-muted: #999999;
-    --accent-cyan: #0099ff;        /* PRIMARY interactive — Aino blue (links/active/focus) */
-    --accent-coral: #ff673d;       /* BRAND — Aino coral (wordmark + serif headlines) */
+    --accent-cyan: #0099ff;        /* PRIMARY interactive — accent blue (links/active/focus) */
+    --accent-coral: #ff673d;       /* BRAND — brand coral (wordmark + serif headlines) */
     --accent-purple: #292929;      /* dark chrome / primary-filled pills (charcoal) */
-    /* Aino display serif for headings (light theme only). */
+    /* Paper display serif for headings (light theme only). */
     --font-display: 'Fraunces', 'Georgia', 'Times New Roman', serif;
     --accent-pink: #ff694f;        /* warm coral-rose */
     --accent-green: #5f8a5a;       /* sage (parks/green) */
@@ -132,11 +132,11 @@ html[data-theme="light"] {
     --accent-red: #b3392f;
     /* AA-passing darker text shades (≥4.5:1 on white) — used only for small
        text/links; the bright #0099ff/#5f8a5a/#a3781f stay for fills/icons/brand.
-       Coral headlines keep the exact Aino #ff673d by design (kept large/brand). */
+       Coral headlines keep the exact Paper #ff673d by design (kept large/brand). */
     --accent-cyan-text: #0072cc;   /* 4.9:1 */
     --accent-green-text: #3f7a3a;  /* 5.2:1 */
     --accent-yellow-text: #8a6312; /* 5.4:1 */
-    --gradient-main: linear-gradient(135deg, #2e2e2e 0%, #1a1a1a 100%);   /* dark pill (Aino "Share & Export") */
+    --gradient-main: linear-gradient(135deg, #2e2e2e 0%, #1a1a1a 100%);   /* dark pill (Paper "Share & Export") */
     --gradient-subtle: linear-gradient(135deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.02) 100%);
     --shadow-glow: 0 8px 30px rgba(0, 0, 0, 0.06);
     --accent-soft: rgba(0, 153, 255, 0.12);
@@ -154,8 +154,8 @@ html[data-theme="light"] {
     --radius: 12px;
 }
 
-/* ── Aino editorial look (light theme only) ───────────────────────────────
-   aino.world leads with an elegant coral serif for titles over the calm
+/* ── editorial look (light theme only) ───────────────────────────────
+   the reference design leads with an elegant coral serif for titles over the calm
    paper map. We apply that display serif to the prominent headings and keep
    the dark "control-room" theme on its original Inter/mono type. Small
    uppercase micro-labels stay sans for legibility. */
@@ -175,12 +175,12 @@ html[data-theme="light"] .overture-stats-title {
     font-family: var(--font-display);
     font-weight: 500;
     letter-spacing: 0;
-    color: var(--accent-coral);   /* Aino coral brand */
+    color: var(--accent-coral);   /* brand coral brand */
     text-transform: none;
 }
 
-/* The wordmark reads as Aino's signature coral serif *italic* (echoing
-   "Aino Data Connectors"), solid fill rather than a clipped gradient. */
+/* The wordmark reads as the signature coral serif *italic* (echoing
+   "Paper Data Connectors"), solid fill rather than a clipped gradient. */
 html[data-theme="light"] .logo-text {
     background: none;
     -webkit-text-fill-color: var(--accent-coral);
@@ -198,8 +198,8 @@ html[data-theme="light"] .results-header h3 { font-size: 17px; }
 html[data-theme="light"] .onboarding-title { font-size: 24px; }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   AINO LIGHT — flattened chrome (exact-replica structural overrides)
-   aino.world is crisp & minimal: flat white surfaces, 1px hairline borders,
+   PAPER LIGHT — flattened chrome (paper-model structural overrides)
+   the reference design is crisp & minimal: flat white surfaces, 1px hairline borders,
    soft diffuse shadows (no glass-blur / neon glow), gently-rounded pill chips,
    blue interactive accents. These override structural properties the token
    swap alone can't reach; ALL scoped to the light theme so the dark
@@ -214,7 +214,7 @@ html[data-theme="light"] #top-bar {
     border-radius: 14px;
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
 }
-/* Logo mark → solid charcoal tile (Aino's dark starburst), white "DP" */
+/* Logo mark → solid charcoal tile (the dark starburst), white "DP" */
 html[data-theme="light"] .logo-icon {
     background: #292929;
     color: #ffffff;
@@ -225,7 +225,7 @@ html[data-theme="light"] #search-input {
     border: 1px solid var(--border-color);
     border-radius: 8px;
 }
-/* Search button → Aino blue (the interactive accent), not a dark pill */
+/* Search button → accent blue (the interactive accent), not a dark pill */
 html[data-theme="light"] #search-btn {
     background: var(--accent-cyan);
     color: #ffffff;
@@ -4128,7 +4128,7 @@ html[lang="hi"] textarea {
 .disha-action-chip.ok { color: var(--accent-green-text); border-color: var(--accent-green); }
 .disha-action-chip.fail { color: var(--accent-red); border-color: var(--accent-red); }
 
-/* ===== SITE BRIEF (Aino-style printable site card) ===== */
+/* ===== SITE BRIEF (paper-model printable site card) ===== */
 #site-brief-backdrop {
     position: fixed;
     inset: 0;

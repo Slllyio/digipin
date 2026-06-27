@@ -531,7 +531,7 @@ const App = (() => {
             });
         }
 
-        // Sun & shadow study — toggle the solar-position control (Aino-style
+        // Sun & shadow study — toggle the solar-position control (paper-model
         // environmental analysis on the 3D massing model).
         const sunBtn = document.getElementById('btn-sun');
         if (sunBtn && typeof SunStudy !== 'undefined') {

@@ -20,7 +20,7 @@ const DigitalTwinLayers = (() => {
     let _clickPopup = null;
 
     // Theme-aware paint: a layer def may carry a `paintLight` variant tuned for
-    // the Aino-style paper theme (pale shaded buildings, soft sage greens). When
+    // the paper-model paper theme (pale shaded buildings, soft sage greens). When
     // the light theme is active and a variant exists, use it; else the default.
     function _paintFor(def) {
         const light = typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';
@@ -295,7 +295,7 @@ const DigitalTwinLayers = (() => {
                 'fill-extrusion-base': 0,
                 'fill-extrusion-opacity': 0.75
             },
-            // Aino (aino.world) light: a white architectural massing model —
+            // Paper (reference design) light: a white architectural massing model —
             // cool near-white volumes that deepen to light grey by footprint
             // (pseudo ambient occlusion), grounded (not floating), with a calm
             // low-rise height curve. MapLibre's vertical gradient + the
@@ -345,7 +345,7 @@ const DigitalTwinLayers = (() => {
                 'fill-opacity': 0.5,
                 'fill-outline-color': '#ffffff'
             },
-            // Aino light: flat cool-grey building footprints, hairline outline.
+            // Paper light: flat cool-grey building footprints, hairline outline.
             paintLight: {
                 'fill-color': '#e7ebef',
                 'fill-opacity': 0.88,
@@ -404,7 +404,7 @@ const DigitalTwinLayers = (() => {
                 'fill-opacity': 0.45,
                 'fill-outline-color': '#16a34a'
             },
-            // Paper theme: soft sage canopy (Aino's muted greens, not saturated).
+            // Paper theme: soft sage canopy (the muted greens, not saturated).
             paintLight: {
                 'fill-color': '#bcd3a6',
                 'fill-opacity': 0.6,
@@ -791,7 +791,7 @@ const DigitalTwinLayers = (() => {
             _map.on('mouseleave', layerId, onMouseLeave);
             _map.on('click', layerId, onClick);
 
-            // Aino light: give 3D extrusions a fixed directional "sun" so the
+            // Paper light: give 3D extrusions a fixed directional "sun" so the
             // white massing model reads with a consistent lit/shadow side
             // (anchor:'map' keeps the light tied to geography as you rotate).
             const light = typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';

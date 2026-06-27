@@ -1,7 +1,7 @@
 /**
- * SiteBrief — Aino-style "automated site research" card.
+ * SiteBrief — paper-model "automated site research" card.
  *
- * Aino turns a location into a presentation-ready site brief in one glance. This
+ * Paper turns a location into a presentation-ready site brief in one glance. This
  * module rolls the cell's already-computed intelligence scores (+ a little
  * context) into a structured brief model, then renders it as a printable /
  * copyable floating card: a verdict-banded scores grid, a one-line auto-narrative

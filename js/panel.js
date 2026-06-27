@@ -514,7 +514,7 @@ const Panel = (() => {
             </button>`;
         }
 
-        // Site Brief — presentation-ready, printable site summary (Aino-style)
+        // Site Brief — presentation-ready, printable site summary (paper-model)
         if (data.scores) {
             html += `<button class="open-dialog-btn" id="open-site-brief-btn">
                 <span class="dialog-btn-icon">&#128203;</span> Site Brief

@@ -1,6 +1,6 @@
-# Aino theme — handoff for the next session
+# paper theme — handoff for the next session
 
-Picks up the aino.world theme work. The palette/CSS/3D-building changes are
+Picks up the paper-light theme work. The palette/CSS/3D-building changes are
 **already merged to `main`** (PRs #45, #46) and the required egress hosts are
 documented (#47). What's left is **live visual verification + fine-tuning**,
 which couldn't be done in earlier sessions because the map CDNs were blocked.
@@ -21,7 +21,7 @@ session started *after* the hosts were allowlisted:
 ```sh
 for h in https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js \
          https://basemaps.cartocdn.com/gl/positron-gl-style/style.json \
-         https://www.aino.world/ ; do
+         https://example.com/ ; do
   echo "$(curl -so /dev/null -w '%{http_code}' --max-time 15 "$h")  $h"
 done
 ```
@@ -38,16 +38,16 @@ to render until these return `200`.
      — **same-origin but not committed**. If absent, that layer won't draw;
      ask the user to drop the file in, or preview massing with a synthetic
      MapLibre scene.
-4. If `aino.world` is reachable, WebFetch it and compare palette/surfaces/fonts.
+4. If `the reference design` is reachable, WebFetch it and compare palette/surfaces/fonts.
 
 ## Fine-tuning targets (tune against the live render, not from memory)
-- **Coral hue** `--accent-cyan` / `PALETTE.light.primary` — Aino's is a soft
+- **Coral hue** `--accent-cyan` / `PALETTE.light.primary` — currently a soft
   salmon ~`#df6e4d`/`#e07a5e`; deepen/lighten to taste.
 - **Building grey ramp** + **height curve** (`5 + sqrt(area)*1.1`) — calmer or
   taller massing.
 - **Map light** angle/intensity — `setLight({anchor:'map', position:[1.4,210,38], intensity:0.45})`
   in `_initPMTilesLayer`.
-- **Font / basemap** — currently Inter + Positron; swap if aino.world differs.
+- **Font / basemap** — currently Inter + Positron; swap if the reference design differs.
 
 ## Guardrails
 - Keep the **dark theme byte-identical** (regression baseline: render dark

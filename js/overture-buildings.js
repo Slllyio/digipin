@@ -91,7 +91,7 @@ const OvertureBuildings = (() => {
         return { type: 'FeatureCollection', features: out };
     }
 
-    /** True when the Aino paper-light theme is active. */
+    /** True when the paper-light theme is active. */
     function isLight() {
         return typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';
     }
@@ -136,7 +136,7 @@ const OvertureBuildings = (() => {
         'fill-extrusion-vertical-gradient': true
     };
 
-    // Aino (aino.world) light: a white architectural massing model — cool
+    // Paper (reference design) light: a white architectural massing model — cool
     // near-white volumes deepening to light grey by height (pseudo ambient
     // occlusion), grounded (not floating, no tethers). MapLibre's vertical
     // gradient + the directional map light (set on attach) supply the model
@@ -169,7 +169,7 @@ const OvertureBuildings = (() => {
         // 1. Glowing footprint edges — a bright cyan outline of every building
         // base. This is the signature of the Esri "digital twin" wireframe-glass
         // look and the closest MapLibre's renderer gets to lit building edges
-        // (fill-extrusion has no native edge stroke). Dark-theme only; the Aino
+        // (fill-extrusion has no native edge stroke). Dark-theme only; the Paper
         // light massing model is a clean white solid with no glow.
         map.addLayer({
             id: EDGE_LAYER_ID,
@@ -188,7 +188,7 @@ const OvertureBuildings = (() => {
         });
 
         // 2. Add the Overture buildings: a grounded white massing model under
-        // the Aino light theme, or the floating neon volumes under dark.
+        // the Paper light theme, or the floating neon volumes under dark.
         map.addLayer({
             id: LAYER_ID,
             type: 'fill-extrusion',
@@ -287,11 +287,11 @@ const OvertureBuildings = (() => {
         }
 
         map.setLayoutProperty(LAYER_ID, 'visibility', _active ? 'visible' : 'none');
-        // Glowing footprint edges are the dark "digital twin" device; the Aino
+        // Glowing footprint edges are the dark "digital twin" device; the Paper
         // light massing model is a clean white solid, so keep edges hidden there.
         map.setLayoutProperty(EDGE_LAYER_ID, 'visibility', (_active && !light) ? 'visible' : 'none');
 
-        // Aino light: give the white volumes a fixed directional "sun" so they
+        // Paper light: give the white volumes a fixed directional "sun" so they
         // read with a consistent lit/shadow side (anchor:'map' keeps the light
         // tied to geography as you rotate). map.setLight is a *global* map
         // property, deliberately identical to DigitalTwinLayers' light (same

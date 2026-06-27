@@ -1,14 +1,14 @@
 /**
- * AinoScene — high-fidelity "Aino Studio" 3D model of Guna, in Three.js.
+ * StudioScene — high-fidelity "City Studio" 3D model of Guna, in Three.js.
  *
- * The deck.gl overlay (aino-twin.js) hit a hard ceiling: no real shadows (deck's
+ * The deck.gl overlay (studio-twin.js) hit a hard ceiling: no real shadows (deck's
  * shadow pass collapses extrusion under MapboxOverlay), so it reads as a flat
  * white model. This is a STANDALONE Three.js scene — real directional shadow
  * maps + SSAO ambient occlusion + tone-mapped materials — to actually approach
- * the aino.world illustration: soft shadows, refined white massing, rounded
+ * a polished paper architectural-model look: soft shadows, refined white massing, rounded
  * trees, blue water with width, grey roads with width.
  *
- * Opens as a fullscreen overlay from the "Aino 3D" button; OrbitControls to
+ * Opens as a fullscreen overlay from the "3D Model" button; OrbitControls to
  * fly around. Reads the same committed assets the deck twin uses.
  */
 import * as THREE from 'three';
@@ -457,7 +457,7 @@ async function _build() {
     const w = innerWidth, h = innerHeight;
     const [b, t, riv, wat, road, green, s2, chan, rail, poi, sens, adm] = await Promise.all([
         _json(BASE + 'buildings_lite_guna.geojson'),
-        _json(BASE + 'aino_trees_guna.json'),
+        _json(BASE + 'studio_trees_guna.json'),
         _json(BASE + 'osm_rivers_guna_continuous.geojson'),
         _json(BASE + 'osm_water_guna.geojson'),
         _json(BASE + 'osm_roads_guna.geojson'),
@@ -512,7 +512,7 @@ function _chrome() {
         + 'border-radius:8px;background:rgba(20,24,40,0.82);color:#fff;font:600 13px system-ui;cursor:pointer;';
     close.onclick = close_;
     const label = document.createElement('div');
-    label.textContent = 'Guna · Aino Studio (Three.js) — drag to orbit, scroll to zoom';
+    label.textContent = 'Guna · City Studio (Three.js) — drag to orbit, scroll to zoom';
     label.style.cssText = 'position:absolute;bottom:14px;left:16px;z-index:2;padding:6px 12px;border-radius:8px;'
         + 'background:rgba(20,24,40,0.7);color:#e7ebf2;font:500 12px system-ui;';
     _container.appendChild(close); _container.appendChild(label);
@@ -522,7 +522,7 @@ async function open() {
     if (_active) return;
     _active = true;
     _container = document.createElement('div');
-    _container.id = 'aino-scene';
+    _container.id = 'studio-scene';
     _container.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#f4f2ec;';
     const loading = document.createElement('div');
     loading.textContent = 'Building Guna 3D model…';
@@ -542,7 +542,7 @@ async function open() {
     _onProgress = null;
     loading.remove();
     _loop();
-    window.__aino = { scene: _scene, camera: _camera, controls: _controls, THREE };  // debug/framing handle
+    window.__studio = { scene: _scene, camera: _camera, controls: _controls, THREE };  // debug/framing handle
 }
 function close_() {
     if (!_active) return;
@@ -557,4 +557,4 @@ function close_() {
 function toggle() { _active ? close_() : open(); }
 function isActive() { return _active; }
 
-window.AinoScene = { open, close: close_, toggle, isActive };
+window.StudioScene = { open, close: close_, toggle, isActive };

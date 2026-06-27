@@ -126,7 +126,7 @@ a corporate proxy) these must be on the **egress allowlist** or the map shows
 effect at **container/session start**, so add hosts first, then start a fresh
 session.
 
-**Minimum to render the map + 3D buildings (the Aino look):**
+**Minimum to render the map + 3D buildings (the Paper look):**
 
 | Host | Why |
 |---|---|

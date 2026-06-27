@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 
 // OvertureBuildings + Theme are exposed on globalThis by tests/setup.js.
-// The Overture footprints overlay renders the Aino white architectural massing
+// The Overture footprints overlay renders the white architectural massing
 // model under the light theme and a grounded Esri-style translucent cyan-glass
 // "digital twin" (with glowing footprint edges) under dark. We drive toggle()
 // with a stub MapLibre map and capture the paint chosen for the building layer
@@ -47,7 +47,7 @@ afterEach(() => {
     Theme.set('dark');
 });
 
-describe('OvertureBuildings Aino-theme rendering', () => {
+describe('OvertureBuildings paper-theme rendering', () => {
     it('under light theme grounds the white massing model (no float, vertical gradient)', () => {
         Theme.set('light');
         const map = makeStubMap();

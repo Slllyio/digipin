@@ -23,7 +23,7 @@ const MapModule = (() => {
 
         map = new maplibregl.Map({
             container: 'map',
-            // Respect the active theme (Aino paper-light vs dark) like the main app;
+            // Respect the active theme (paper-light vs dark) like the main app;
             // theme toggling reloads the page, so the right basemap loads each time.
             style: (typeof Theme !== 'undefined')
                 ? Theme.mapStyleUrl()
@@ -66,7 +66,7 @@ const MapModule = (() => {
     }
 
     function setupGridLayers() {
-        // Grid colours follow the active theme (neon on dark, coral/violet on Aino
+        // Grid colours follow the active theme (neon on dark, coral/violet on Paper
         // paper-light), matching the main app. Theme switches reload, so init is enough.
         const gc = (typeof Theme !== 'undefined') ? Theme.gridColors()
             : { base: '#00f5ff', selected: '#a855f7' };

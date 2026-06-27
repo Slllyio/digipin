@@ -1,5 +1,5 @@
 """Extract Guna's real surface water (the Guniya river, streams, tanks) for the
-Aino 3D scene from the JRC Global Surface Water raster.
+3D Model scene from the JRC Global Surface Water raster.
 
 OpenStreetMap has almost no waterways mapped around Guna town (the Guniya river
 isn't in OSM), but JRC GSW is satellite-observed water occurrence (0-100 %), so
@@ -12,7 +12,7 @@ Two occurrence tiers so the renderer can style permanent vs seasonal water:
 
 Output (committed):  data/vectors/jrc_water_guna.geojson
 
-Run:  python guna-twin-city/pipeline/build_aino_water_guna.py
+Run:  python guna-twin-city/pipeline/build_studio_water_guna.py
 """
 from __future__ import annotations
 

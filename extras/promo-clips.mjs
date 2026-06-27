@@ -39,7 +39,7 @@ const CAPS = {
     '06d-15min': ['The 15-minute city', '5 · 10 · 15-minute walking zones from any point'],
     '06e-viewshed': ['Line-of-sight', 'Elevation-based visibility — what you can and cannot see'],
     '06f-roads': ['Road network', 'Colour-coded by class — highways to local streets'],
-    '07-themes': ['Two themes', 'Paper-light Aino ↔ dark control-room'],
+    '07-themes': ['Two themes', 'Paper-light ↔ dark control-room'],
     '08-darkscores': ['Scores, in the dark', 'The palette glows on the deep canvas'],
     '08b-hazards': ['Real-time hazards', 'Live earthquakes (NCS) + disaster alerts (SACHET) on the grid'],
     '09-text2map': ['Ask in plain English', '“family-friendly · good schools · low flood risk” → ranked on the map'],

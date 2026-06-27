@@ -1,7 +1,7 @@
 /**
- * FootprintExport — Aino-style CAD export of building footprints.
+ * FootprintExport — paper-model CAD export of building footprints.
  *
- * Aino exports site geometry (footprints, boundaries) as geo-referenced GeoJSON
+ * Paper exports site geometry (footprints, boundaries) as geo-referenced GeoJSON
  * and DXF for Rhino / AutoCAD / QGIS. This module collects the *visible* Overture
  * building footprints from the map (with their heights) plus the selected DIGIPIN
  * cell polygon and serialises them to:

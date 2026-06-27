@@ -412,7 +412,7 @@ const Compare = (() => {
         });
     }
 
-    // ---------- Comparison Site Brief (Aino-style, printable) ----------
+    // ---------- Comparison Site Brief (paper-model, printable) ----------
     /** HTML-escape a value for safe interpolation into the brief markup. */
     function _esc(v) {
         return String(v == null ? '' : v).replace(/[&<>"']/g, c =>

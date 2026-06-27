@@ -169,7 +169,7 @@ async function main() {
         await context.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
         const page = await context.newPage();
         page.on('console', (m) => { if (m.type() === 'error') console.log('[page]', m.text().slice(0, 160)); });
-        // ---------- LIGHT (Aino) ----------
+        // ---------- LIGHT (Paper) ----------
         await page.goto(BASE, { waitUntil: 'domcontentloaded' });
         await waitForMap(page);
         await injectOverlay(page);
@@ -209,7 +209,7 @@ async function main() {
         await sleep(1500);
         await buildings(page, true);
         await sleep(1500);
-        await cap(page, '3D buildings · Aino',
+        await cap(page, '3D buildings · Paper',
             'Every footprint extruded to its real height — a clean architectural model of the city.');
         await shot(page, '06-light-3d.png');
         await buildings(page, false);

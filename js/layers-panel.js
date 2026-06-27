@@ -1,6 +1,6 @@
 /**
  * LayersPanel — registry that folds the analytics-overlay toolbar buttons into
- * the unified Layers dropdown (btn-dt-layers), Aino-style: one panel, every
+ * the unified Layers dropdown (btn-dt-layers), paper-model: one panel, every
  * overlay a row with a visibility toggle, instead of 16 separate buttons.
  *
  * Architecture: each analytics overlay's toggle logic lives in its toolbar

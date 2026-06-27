@@ -1,7 +1,7 @@
 /**
  * SunStudy — solar position + shadow study for the 3D building massing model.
  *
- * Aino-style environmental/site analysis: drive the map's directional light from
+ * paper-model environmental/site analysis: drive the map's directional light from
  * the *real* sun position for the selected location, so the white 3D massing
  * model (js/overture-buildings.js) casts a believable lit/shadow side. A
  * date + time-of-day slider lets a planner sweep the day; ▶ play animates the

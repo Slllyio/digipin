@@ -1,5 +1,5 @@
 /**
- * PresentMode — Aino-style "Stakeholder" presentation view.
+ * PresentMode — paper-model "Stakeholder" presentation view.
  *
  * A distraction-free, read-only mode for showing a site to non-technical
  * viewers: it hides the editing chrome (top bar, toolbar, sidebar) and shows a
