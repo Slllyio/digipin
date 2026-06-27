@@ -216,7 +216,7 @@ function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null) {
     // crisp bank outline
     const banks = new THREE.LineSegments(
         new THREE.EdgesGeometry(merged, 1),
-        new THREE.LineBasicMaterial({ color: 0x2f7bc4, transparent: true, opacity: 0.7 }));
+        new THREE.LineBasicMaterial({ color: 0x155fae, transparent: true, opacity: 0.75 }));
     const grp = new THREE.Group(); grp.add(mesh); grp.add(banks);
     return grp;
 }
@@ -249,12 +249,12 @@ function _buildGreenSpaces(gj, y) {
 /** Road style by OSM class: clean grey lines with a clear width hierarchy. */
 function _roadStyle(f) {
     const k = ((f.properties && (f.properties.highway || f.properties.fclass)) || '') + '';
-    if (/motorway|trunk|_link/.test(k)) return { w: 6.5, color: 0xaab0bd };
-    if (/primary/.test(k)) return { w: 5.2, color: 0xb2b8c4 };
-    if (/secondary/.test(k)) return { w: 4.0, color: 0xbac0cb };
-    if (/tertiary/.test(k)) return { w: 3.1, color: 0xc2c7d1 };
-    if (/residential|unclassified|living/.test(k)) return { w: 2.2, color: 0xc9ced7 };
-    return { w: 1.5, color: 0xd2d6dd };                 // service/track/footway/path
+    if (/motorway|trunk|_link/.test(k)) return { w: 6.5, color: 0x5f6672 };
+    if (/primary/.test(k)) return { w: 5.2, color: 0x6b7280 };
+    if (/secondary/.test(k)) return { w: 4.0, color: 0x78808c };
+    if (/tertiary/.test(k)) return { w: 3.1, color: 0x868d99 };
+    if (/residential|unclassified|living/.test(k)) return { w: 2.2, color: 0x939aa6 };
+    return { w: 1.5, color: 0xa1a7b2 };                 // service/track/footway/path
 }
 
 /** Roads as delicate fat-lines: one LineSegments2 per class (pixel-constant width).
@@ -417,11 +417,11 @@ async function _build() {
     if (green) { const m = _buildGreenSpaces(green, 0.10); if (m) _scene.add(m); }
     if (road) { const m = _buildRoadLines(road, w, h); if (m) _scene.add(m); }
     if (jrc) {
-        const sw = _buildWaterPolys(jrc, 0.42, 0x6db3e8, 'seasonal'); if (sw) _scene.add(sw);   // clearer blue
-        const pw = _buildWaterPolys(jrc, 0.46, 0x3f93dd, 'permanent'); if (pw) _scene.add(pw);  // vivid water blue
+        const sw = _buildWaterPolys(jrc, 0.42, 0x4aa0e6, 'seasonal'); if (sw) _scene.add(sw);   // clear blue
+        const pw = _buildWaterPolys(jrc, 0.46, 0x1d7fd6, 'permanent'); if (pw) _scene.add(pw);  // deep water blue
     }
-    if (wat) { const m = _buildWaterPolys(wat, 0.45, 0x3f93dd); if (m) _scene.add(m); }
-    if (riv) { const m = _ribbons(riv, _riverW, 0x3f93dd, 0.55); if (m) _scene.add(m); }
+    if (wat) { const m = _buildWaterPolys(wat, 0.45, 0x1d7fd6); if (m) _scene.add(m); }
+    if (riv) { const m = _ribbons(riv, _riverW, 0x1d7fd6, 0.55); if (m) _scene.add(m); }
     if (road) { const m = _buildBridges(road, 0.70); if (m) _scene.add(m); }
     if (b) { const m = await _buildBuildings(b); if (m) _scene.add(m); }
     if (t) { const m = _buildTrees(t); if (m) _scene.add(m); }
