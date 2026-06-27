@@ -21,10 +21,12 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const BASE = 'data/vectors/';
 const C = { lat: 24.6354, lng: 77.3126 };
 const MLAT = 110540, MLNG = 111320 * Math.cos(C.lat * Math.PI / 180);
+const ENV_I = 0.5;                         // per-material envMapIntensity (r160 lacks scene.environmentIntensity)
 const RANGE = 5000;                       // metres from centre — covers most of the city + the
                                           // two nearest water bodies (~3.8/4.6 km). Guna's rivers
                                           // are 12 km+ out (rural), so no in-core river exists.
@@ -92,7 +94,7 @@ async function _buildBuildings(gj) {
     geoms.forEach(g => g.dispose());
     merged.computeVertexNormals();
 
-    const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.92, metalness: 0.0 });
+    const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.92, metalness: 0.0, envMapIntensity: ENV_I });
     mat.onBeforeCompile = (sh) => {
         sh.vertexShader = sh.vertexShader
             .replace('#include <common>', '#include <common>\nvarying vec3 vWPos; varying vec3 vWNrm;')
@@ -138,8 +140,8 @@ function _buildTrees(obj) {
     if (!pts.length) return null;
     const canopyGeo = new THREE.SphereGeometry(3.0, 9, 6); canopyGeo.scale(1, 0.85, 1); canopyGeo.translate(0, 4.4, 0);
     const trunkGeo = new THREE.CylinderGeometry(0.35, 0.45, 4.4, 6); trunkGeo.translate(0, 2.2, 0);
-    const canopyMat = new THREE.MeshStandardMaterial({ roughness: 0.92, metalness: 0 });
-    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x7a5a3a, roughness: 0.95, metalness: 0 });
+    const canopyMat = new THREE.MeshStandardMaterial({ roughness: 0.92, metalness: 0, envMapIntensity: ENV_I });
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x7a5a3a, roughness: 0.95, metalness: 0, envMapIntensity: ENV_I });
     const canopy = new THREE.InstancedMesh(canopyGeo, canopyMat, pts.length);
     const trunk = new THREE.InstancedMesh(trunkGeo, trunkMat, pts.length);
     canopy.castShadow = canopy.receiveShadow = true; trunk.castShadow = true;
@@ -403,6 +405,37 @@ function _buildBoundaries(gj, y) {
 }
 
 // ───────────────────────── scene lifecycle ─────────────────────────
+// ───────────────────────── atmosphere & ground (canvas textures) ─────────────────────────
+/** Vertical gradient sky: cool zenith → warm horizon, complements the warm model. */
+function _skyTexture() {
+    const c = document.createElement('canvas'); c.width = 2; c.height = 512;
+    const g = c.getContext('2d'), grad = g.createLinearGradient(0, 0, 0, 512);
+    grad.addColorStop(0.0, '#cdd9e8');     // cool zenith
+    grad.addColorStop(0.55, '#e9e6df');    // neutral mid
+    grad.addColorStop(1.0, '#f3ead9');     // warm horizon (== fog colour)
+    g.fillStyle = grad; g.fillRect(0, 0, 2, 512);
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+}
+/** Model-base ground: bright lit pool under the city, darkening to a plinth rim,
+ *  plus a near-invisible paper grain so the plane never bands. */
+function _groundTexture() {
+    const s = 1024, c = document.createElement('canvas'); c.width = c.height = s;
+    const g = c.getContext('2d');
+    g.fillStyle = '#efece4'; g.fillRect(0, 0, s, s);
+    const r = g.createRadialGradient(s / 2, s / 2, s * 0.10, s / 2, s / 2, s * 0.55);
+    r.addColorStop(0.0, '#f7f4ed'); r.addColorStop(0.6, '#ece8df'); r.addColorStop(1.0, '#d7d1c4');
+    g.fillStyle = r; g.fillRect(0, 0, s, s);
+    const img = g.getImageData(0, 0, s, s), d = img.data;
+    for (let i = 0; i < d.length; i += 4) { const n = (Math.random() - 0.5) * 6; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
+    g.putImageData(img, 0, 0);
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = _renderer.capabilities.getMaxAnisotropy();
+    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+    tex.center.set(0.5, 0.5); tex.repeat.set(2.4, 2.4);   // compress the lit pool to ~city size
+    return tex;
+}
+
 function _setupRenderer(w, h) {
     _renderer = new THREE.WebGLRenderer({ antialias: true });
     _renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -410,30 +443,46 @@ function _setupRenderer(w, h) {
     _renderer.shadowMap.enabled = true;
     _renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     _renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    _renderer.toneMappingExposure = 0.98;
+    _renderer.toneMappingExposure = 0.95;
     _renderer.outputColorSpace = THREE.SRGBColorSpace;
 }
 function _setupScene() {
     _scene = new THREE.Scene();
-    _scene.background = new THREE.Color(0xf4f2ec);                 // warm near-white
-    _scene.fog = new THREE.Fog(0xf4f2ec, RANGE * 1.7, RANGE * 4.2);   // subtle depth haze only at far edge
+    _scene.background = _skyTexture();                             // cool-zenith → warm-horizon gradient
+    _scene.fog = new THREE.Fog(0xf3ead9, RANGE * 1.5, RANGE * 4.0);   // matched to horizon → city dissolves into sky
 
-    const hemi = new THREE.HemisphereLight(0xffffff, 0xe9e4da, 1.15);
+    // Soft image-based ambient (RoomEnvironment) — the biggest win for a premium
+    // white model. r160 has no scene.environmentIntensity, so strength is set
+    // per-material via envMapIntensity (ENV_I on buildings/ground/trees).
+    try {
+        const pmrem = new THREE.PMREMGenerator(_renderer);
+        const envScene = new RoomEnvironment();
+        _scene.environment = pmrem.fromScene(envScene, 0.04).texture;
+        if (envScene.dispose) envScene.dispose();
+        pmrem.dispose();
+    } catch (e) { /* IBL optional — hemi + sun still light the scene */ }
+
+    const hemi = new THREE.HemisphereLight(0xfdf3e3, 0xd8cfc0, 0.32);   // faint warm bias; IBL is the real fill
     _scene.add(hemi);
-    const sun = new THREE.DirectionalLight(0xfff4e2, 1.7);
-    sun.position.set(-900, 1500, 800);
+
+    // Warm raking key light (golden-hour) → soft long shadows that define massing.
+    const sun = new THREE.DirectionalLight(0xffe0b0, 2.1);
+    const el = 26 * Math.PI / 180, az = 38 * Math.PI / 180, R = 9000;
+    sun.position.set(R * Math.cos(el) * Math.sin(az), R * Math.sin(el), R * Math.cos(el) * Math.cos(az));
     sun.castShadow = true;
     sun.shadow.mapSize.set(4096, 4096);
-    const d = RANGE * 1.2;
-    Object.assign(sun.shadow.camera, { left: -d, right: d, top: d, bottom: -d, near: 100, far: 6000 });
-    sun.shadow.bias = -0.0002;
-    _scene.add(sun);
+    const d = RANGE * 1.05;                              // tighter frustum → crisper shadow texels
+    Object.assign(sun.shadow.camera, { left: -d, right: d, top: d, bottom: -d, near: 1000, far: 16000 });
+    sun.shadow.bias = -0.0001; sun.shadow.normalBias = 1.3;
+    _scene.add(sun); _scene.add(sun.target);
 
     const ground = new THREE.Mesh(
         new THREE.PlaneGeometry(RANGE * 6, RANGE * 6),
-        new THREE.MeshStandardMaterial({ color: 0xf3f0ea, roughness: 1, metalness: 0 }));   // near-white warm
+        new THREE.MeshStandardMaterial({ color: 0xffffff, map: _groundTexture(), roughness: 0.96, metalness: 0, envMapIntensity: ENV_I }));
     ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
     _scene.add(ground);
+
+    _renderer.shadowMap.autoUpdate = false;             // static scene — render shadows once after _build()
 }
 function _setupCamera(w, h) {
     _camera = new THREE.PerspectiveCamera(45, w / h, 1, 12000);
@@ -490,6 +539,7 @@ async function _build() {
     if (hosp.length) { const m = _buildMarkers(hosp, 0xd98a8a); if (m) _scene.add(m); }   // soft red
     if (stn.length) { const m = _buildMarkers(stn, 0x8a93d9); if (m) _scene.add(m); }     // soft indigo
     _built = true;
+    if (_renderer) _renderer.shadowMap.needsUpdate = true;   // render shadows once now everything is in (autoUpdate off)
 }
 function _riverW(f) {
     const k = (f.properties && f.properties.waterway) || '';
