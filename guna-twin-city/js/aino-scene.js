@@ -35,6 +35,7 @@ const pz = lat => -(lat - C.lat) * MLAT;  // north → -Z (footprint shapes use 
 let _container = null, _renderer = null, _scene = null, _camera = null;
 let _controls = null, _composer = null, _raf = 0, _active = false, _built = false;
 let _lineMats = [];                       // LineMaterials needing resolution updates on resize
+let _onProgress = null;                    // (msg) => void — updates the loading overlay during build
 
 // ───────────────────────── data ─────────────────────────
 async function _json(url) {
@@ -53,9 +54,11 @@ function _inRange(lng, lat) {
 }
 
 // ───────────────────────── builders ─────────────────────────
-function _buildBuildings(gj) {
+async function _buildBuildings(gj) {
     const geoms = [];
-    for (const f of (gj.features || [])) {
+    const feats = gj.features || [];
+    for (let fi = 0; fi < feats.length; fi++) {
+        const f = feats[fi];
         const g = f.geometry; if (!g || g.type !== 'Polygon') continue;
         const ring = g.coordinates[0]; if (!ring || ring.length < 4) continue;
         const cx = ring[0][0], cy = ring[0][1];
@@ -68,14 +71,28 @@ function _buildBuildings(gj) {
         const h = _height(+(f.properties && f.properties.area_m2) || 0);
         const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: false });
         geo.rotateX(-Math.PI / 2);                 // shape plane → ground (XZ), depth → +Y
+        // subtle per-building tonal variation: near-white with a faint warm/cool shift
+        const seed = geoms.length;
+        const v = 0.93 + 0.05 * _hash01(seed * 2.3 + 9);
+        const warm = _hash01(seed * 1.7 + 3) < 0.5;
+        const col = new THREE.Color(v * (warm ? 1.0 : 0.985), v * 0.99, v * (warm ? 0.975 : 1.0));
+        const n = geo.attributes.position.count, carr = new Float32Array(n * 3);
+        for (let k = 0; k < n; k++) { carr[k * 3] = col.r; carr[k * 3 + 1] = col.g; carr[k * 3 + 2] = col.b; }
+        geo.setAttribute('color', new THREE.Float32BufferAttribute(carr, 3));
         geoms.push(geo);
+        if (fi % 1800 === 0) {
+            if (_onProgress) _onProgress(`Building model… ${Math.round(100 * fi / feats.length)}%`);
+            await new Promise(r => setTimeout(r));   // yield so the UI stays responsive
+        }
     }
     if (!geoms.length) return null;
+    if (_onProgress) _onProgress('Assembling…');
+    await new Promise(r => setTimeout(r));
     const merged = mergeGeometries(geoms, false);
     geoms.forEach(g => g.dispose());
     merged.computeVertexNormals();
 
-    const mat = new THREE.MeshStandardMaterial({ color: 0xf7f8fa, roughness: 0.92, metalness: 0.0 });
+    const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.92, metalness: 0.0 });
     mat.onBeforeCompile = (sh) => {
         sh.vertexShader = sh.vertexShader
             .replace('#include <common>', '#include <common>\nvarying vec3 vWPos; varying vec3 vWNrm;')
@@ -192,8 +209,10 @@ function _buildWaterPolys(gj, y, color = 0x9fb8c9, tier = null) {
     }
     if (!geoms.length) return null;
     const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
-    const mesh = new THREE.Mesh(merged, new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0, side: THREE.DoubleSide }));
-    mesh.receiveShadow = true;
+    // Unlit flat blue — avoids the lighting/SSAO striping that MeshStandard gave on
+    // the many thin vectorised water triangles; reads as clean clear water.
+    const mesh = new THREE.Mesh(merged, new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
+    mesh.renderOrder = 2;
     // crisp bank outline
     const banks = new THREE.LineSegments(
         new THREE.EdgesGeometry(merged, 1),
@@ -254,17 +273,23 @@ function _buildRoadLines(gj, w, h) {
         }
     }
     const grp = new THREE.Group();
-    for (const b of buckets.values()) {
-        if (!b.pts.length) continue;
-        const geo = new LineSegmentsGeometry(); geo.setPositions(new Float32Array(b.pts));
+    const mkLine = (positions, color, lw, ro, ofs) => {
+        const geo = new LineSegmentsGeometry(); geo.setPositions(positions);
         const mat = new LineMaterial({
-            color: b.color, linewidth: b.w, worldUnits: false,
-            resolution: new THREE.Vector2(w, h), transparent: true, opacity: 0.95,
-            depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
+            color, linewidth: lw, worldUnits: false,
+            resolution: new THREE.Vector2(w, h), transparent: true, opacity: 0.96,
+            depthWrite: false, polygonOffset: true, polygonOffsetFactor: ofs, polygonOffsetUnits: ofs,
         });
         _lineMats.push(mat);
-        const line = new LineSegments2(geo, mat); line.renderOrder = 1; line.computeLineDistances();
+        const line = new LineSegments2(geo, mat); line.renderOrder = ro; line.computeLineDistances();
         grp.add(line);
+    };
+    for (const b of buckets.values()) {
+        if (!b.pts.length) continue;
+        const positions = new Float32Array(b.pts);
+        const casing = new THREE.Color(b.color).multiplyScalar(0.80).getHex();
+        mkLine(positions, casing, b.w + 1.6, 1, -2);   // darker casing under
+        mkLine(positions, b.color, b.w, 2, -3);        // lighter fill on top
     }
     return grp.children.length ? grp : null;
 }
@@ -274,6 +299,48 @@ function _buildBridges(gj, y) {
     const sub = { type: 'FeatureCollection', features: (gj.features || []).filter(f => f.properties && f.properties.bridge === 'yes') };
     if (!sub.features.length) return null;
     return _ribbons(sub, f => _roadStyle(f).w * 4.0, 0xf4f5f7, y);   // metre width ~ class
+}
+
+/** A small pin (thin pole + ball) for landmark markers. */
+function _markerGeo() {
+    const pole = new THREE.CylinderGeometry(1.1, 1.1, 22, 5); pole.translate(0, 11, 0);
+    const ball = new THREE.SphereGeometry(5, 8, 6); ball.translate(0, 26, 0);
+    return mergeGeometries([pole, ball], false);
+}
+function _buildMarkers(pts, color) {
+    const inr = pts.filter(p => _inRange(p[0], p[1]));
+    if (!inr.length) return null;
+    const mesh = new THREE.InstancedMesh(_markerGeo(),
+        new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.1 }), inr.length);
+    mesh.castShadow = true;
+    const m = new THREE.Matrix4();
+    for (let i = 0; i < inr.length; i++) { m.makeTranslation(px(inr[i][0]), 0, pz(inr[i][1])); mesh.setMatrixAt(i, m); }
+    mesh.instanceMatrix.needsUpdate = true;
+    return mesh;
+}
+
+/** Faint ward / admin boundary lines on the ground. */
+function _buildBoundaries(gj, y) {
+    const geoms = [];
+    for (const f of (gj.features || [])) {
+        const g = f.geometry; if (!g) continue;
+        const polys = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [];
+        for (const poly of polys) {
+            const ring = poly[0]; if (!ring || ring.length < 2) continue;
+            if (!_inRange(ring[0][0], ring[0][1])) continue;
+            const pos = [];
+            for (let i = 0; i < ring.length - 1; i++) {
+                pos.push(px(ring[i][0]), y, pz(ring[i][1]), px(ring[i + 1][0]), y, pz(ring[i + 1][1]));
+            }
+            const q = new THREE.BufferGeometry();
+            q.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+            geoms.push(q);
+        }
+    }
+    if (!geoms.length) return null;
+    const merged = mergeGeometries(geoms, false); geoms.forEach(g => g.dispose());
+    return new THREE.LineSegments(merged,
+        new THREE.LineBasicMaterial({ color: 0xc6a8cf, transparent: true, opacity: 0.32 }));
 }
 
 // ───────────────────────── scene lifecycle ─────────────────────────
@@ -290,7 +357,7 @@ function _setupRenderer(w, h) {
 function _setupScene() {
     _scene = new THREE.Scene();
     _scene.background = new THREE.Color(0xf4f2ec);                 // warm near-white
-    _scene.fog = new THREE.Fog(0xf4f2ec, RANGE * 1.2, RANGE * 2.6);
+    _scene.fog = new THREE.Fog(0xf4f2ec, RANGE * 1.7, RANGE * 4.2);   // subtle depth haze only at far edge
 
     const hemi = new THREE.HemisphereLight(0xffffff, 0xe9e4da, 1.15);
     _scene.add(hemi);
@@ -311,7 +378,7 @@ function _setupScene() {
 }
 function _setupCamera(w, h) {
     _camera = new THREE.PerspectiveCamera(45, w / h, 1, 12000);
-    _camera.position.set(RANGE * 0.8, RANGE * 0.75, RANGE * 0.8);
+    _camera.position.set(RANGE * 0.45, RANGE * 0.38, RANGE * 0.45);   // framed on the core, not a hazy overview
     _controls = new OrbitControls(_camera, _renderer.domElement);
     _controls.target.set(0, 0, 0);
     _controls.enableDamping = true; _controls.dampingFactor = 0.08;
@@ -329,7 +396,7 @@ function _setupComposer(w, h) {
 
 async function _build() {
     const w = innerWidth, h = innerHeight;
-    const [b, t, riv, wat, road, green, jrc] = await Promise.all([
+    const [b, t, riv, wat, road, green, jrc, rail, poi, sens, adm] = await Promise.all([
         _json(BASE + 'buildings_lite_guna.geojson'),
         _json(BASE + 'aino_trees_guna.json'),
         _json(BASE + 'osm_rivers_guna_continuous.geojson'),
@@ -337,8 +404,16 @@ async function _build() {
         _json(BASE + 'osm_roads_guna.geojson'),
         _json(BASE + 'osm_green_spaces_guna.geojson'),
         _json(BASE + 'jrc_water_guna.geojson'),   // satellite-observed Guniya river + streams + tanks
+        _json(BASE + 'osm_railways_guna.geojson'),
+        _json(BASE + 'osm_pois_guna.geojson'),
+        _json(BASE + 'sensitive_infrastructure_guna.geojson'),
+        _json(BASE + 'osm_admin_boundaries_guna.geojson'),
     ]);
-    // y-stack: parks 0.10 → roads 0.15 → water 0.40-0.46 → rivers 0.55 → bridges 0.70
+    const pts = (gj, pred) => (gj && gj.features || [])
+        .filter(f => f.geometry && f.geometry.type === 'Point' && (!pred || pred(f.properties || {})))
+        .map(f => f.geometry.coordinates);
+    // y-stack: boundaries 0.08 → parks 0.10 → roads 0.15 → water 0.40-0.46 → rivers 0.55 → bridges 0.70
+    if (adm) { const m = _buildBoundaries(adm, 0.08); if (m) _scene.add(m); }
     if (green) { const m = _buildGreenSpaces(green, 0.10); if (m) _scene.add(m); }
     if (road) { const m = _buildRoadLines(road, w, h); if (m) _scene.add(m); }
     if (jrc) {
@@ -348,8 +423,13 @@ async function _build() {
     if (wat) { const m = _buildWaterPolys(wat, 0.45, 0x3f93dd); if (m) _scene.add(m); }
     if (riv) { const m = _ribbons(riv, _riverW, 0x3f93dd, 0.55); if (m) _scene.add(m); }
     if (road) { const m = _buildBridges(road, 0.70); if (m) _scene.add(m); }
-    if (b) { const m = _buildBuildings(b); if (m) _scene.add(m); }
+    if (b) { const m = await _buildBuildings(b); if (m) _scene.add(m); }
     if (t) { const m = _buildTrees(t); if (m) _scene.add(m); }
+    // landmark markers: hospitals + stations (committed-but-previously-unused data)
+    const hosp = [...pts(poi, p => /hospital|clinic/.test(p.amenity || '')), ...pts(sens, p => p.category === 'hospital')];
+    const stn = [...pts(rail), ...pts(sens, p => p.category === 'transport')];
+    if (hosp.length) { const m = _buildMarkers(hosp, 0xd98a8a); if (m) _scene.add(m); }   // soft red
+    if (stn.length) { const m = _buildMarkers(stn, 0x8a93d9); if (m) _scene.add(m); }     // soft indigo
     _built = true;
 }
 function _riverW(f) {
@@ -398,7 +478,9 @@ async function open() {
     _setupScene(); _setupCamera(w, h); _setupComposer(w, h);
     addEventListener('resize', _onResize);
     _chrome();
+    _onProgress = (msg) => { loading.textContent = msg; };
     await _build();
+    _onProgress = null;
     loading.remove();
     _loop();
     window.__aino = { scene: _scene, camera: _camera, controls: _controls, THREE };  // debug/framing handle
