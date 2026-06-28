@@ -114,15 +114,15 @@ async function _buildBuildings(gj) {
                 // warm crown: gives each white mass weight & form (the premium-model cue).
                 gl_FragColor.rgb *= mix(0.88, 1.0, smoothstep(0.0, 9.0, vWPos.y));
                 gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * vec3(1.02, 1.01, 0.997), clamp(vWPos.y / 36.0, 0.0, 1.0));
-                if (abs(vWNrm.y) < 0.5 && vWPos.y > 1.2) {       // walls: window panes (skip ground floor)
-                    float vf = fract(vWPos.y / 4.8);              // vertical coord within each ~4.8 m floor
+                if (abs(vWNrm.y) < 0.5 && vWPos.y > 1.2) {       // walls: one window row per floor (skip ground floor)
+                    float vf = fract(vWPos.y / 4.8);              // 4.8 m == one (exaggerated) floor → rows match floor count
                     // horizontal coord runs ALONG the wall (axis perpendicular to the facade normal)
-                    float hf = fract((abs(vWNrm.x) > abs(vWNrm.z) ? vWPos.z : vWPos.x) / 3.4);
-                    // each cell = a soft-edged dark glass rectangle; the soft margins read as the frame
-                    float paneV = smoothstep(0.16, 0.24, vf) - smoothstep(0.78, 0.86, vf);
-                    float paneH = smoothstep(0.18, 0.26, hf) - smoothstep(0.74, 0.82, hf);
+                    float hf = fract((abs(vWNrm.x) > abs(vWNrm.z) ? vWPos.z : vWPos.x) / 6.0);   // wider bays → far fewer windows
+                    // one tall window per floor, subdivided into sparse bays; soft margins = the frame/slab
+                    float paneV = smoothstep(0.14, 0.22, vf) - smoothstep(0.82, 0.90, vf);
+                    float paneH = smoothstep(0.18, 0.30, hf) - smoothstep(0.70, 0.82, hf);
                     float pane = clamp(paneV * paneH, 0.0, 1.0);
-                    gl_FragColor.rgb *= mix(1.0, 0.72, pane);     // darker glass → windows read clearly
+                    gl_FragColor.rgb *= mix(1.0, 0.70, pane);     // darker glass → windows read clearly
                 } else if (vWNrm.y > 0.5 && vWPos.y > 0.4) {     // roofs: very faint panel grid
                     float rx = abs(fract(vWPos.x / 4.0) - 0.5);
                     float rz = abs(fract(vWPos.z / 4.0) - 0.5);
