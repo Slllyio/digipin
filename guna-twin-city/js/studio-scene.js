@@ -518,9 +518,9 @@ function _setupScene() {
 }
 function _setupCamera(w, h) {
     _camera = new THREE.PerspectiveCamera(45, w / h, 1, 12000);
-    _camera.position.set(RANGE * 0.45, RANGE * 0.38, RANGE * 0.45);   // framed on the core, not a hazy overview
+    _camera.position.set(1300, 760, 1300);              // closer 3/4 hero over the core — flattering first impression
     _controls = new OrbitControls(_camera, _renderer.domElement);
-    _controls.target.set(0, 0, 0);
+    _controls.target.set(250, 0, -250);                // the dense core + Guniya corridor
     _controls.enableDamping = true; _controls.dampingFactor = 0.08;
     _controls.maxPolarAngle = Math.PI / 2.15; _controls.minDistance = 200; _controls.maxDistance = RANGE * 3;
     _controls.update();
