@@ -68,7 +68,10 @@ const DishaAgent = (() => {
             }
             return { skill: 'scenario', params: { code, field, delta } };
         }
-        if (/\bexposure\b|\baffected\b|\bat risk (?:now|today)\b|\balert|\bemergenc|\bevacuat|\brespond/i.test(t)) {
+        if (/\bevacuat|safe route|nearest safe|where (?:do|should|to)\b.*\bgo|escape route/i.test(t)) {
+            return { skill: 'evacuate', params: { hazard: _hazard(t), top: _topN(t) } };
+        }
+        if (/\bexposure\b|\baffected\b|\bat risk (?:now|today)\b|\balert|\bemergenc|\brespond/i.test(t)) {
             return { skill: 'exposure', params: { hazard: _hazard(t), top: _topN(t) } };
         }
         if (/under[- ]?served|service\s*gap|lacking services|equity/i.test(t)) {
@@ -127,6 +130,7 @@ const DishaAgent = (() => {
         return [
             { id: 'findCells',    params: 'index, top',   desc: 'Rank covered cells in view by an index' },
             { id: 'exposure',     params: 'hazard, top',  desc: 'Rank cells by live-hazard exposure' },
+            { id: 'evacuate',     params: 'hazard, top',  desc: 'Route at-risk cells to the nearest safe cell' },
             { id: 'serviceGaps',  params: 'top',          desc: 'Most underserved cells (equity)' },
             { id: 'assessCell',   params: 'code',         desc: 'Full intelligence brief for a cell' },
             { id: 'compareCells', params: 'codes',        desc: 'Compare cells across indices' },
@@ -184,6 +188,22 @@ const DishaAgent = (() => {
             return {
                 summary: `Exposure to ${hazard.kind}: ${sum.byPriority.Critical} critical, ${sum.byPriority.High} high-priority cells of ${sum.cells}.`,
                 data: { hazard, summary: sum, ranked: ranked.map(c => ({ code: _code(c), exposure: c.exposure, priority: c.priority })) },
+                actions,
+            };
+        },
+        async evacuate(p, ctx) {
+            if (typeof CellExposure === 'undefined' || typeof CellRouting === 'undefined')
+                return { summary: 'Routing/exposure layer unavailable.', data: null, actions: [] };
+            const cells = await _cells(ctx);
+            const hazard = CellExposure.hazardProfile({ category: p.hazard || 'flood', severity: p.severity });
+            const ranked = CellExposure.rank(cells, hazard);
+            const plan = CellRouting.planEvacuation(ranked, {
+                safeBelow: p.safeBelow, riskAbove: p.riskAbove, top: +p.top || 10, maxKm: p.maxKm,
+            });
+            const actions = plan.routes[0] ? [`[ACTION] selectCell code:${plan.routes[0].from.code}`] : [];
+            return {
+                summary: `Evacuation plan for ${hazard.kind}: ${plan.summary.routed}/${plan.summary.atRisk} at-risk cells routed to nearest safe cell (${plan.summary.safeCells} safe cells; ${plan.summary.unreachable} unreachable within range).`,
+                data: { hazard, ...plan },
                 actions,
             };
         },

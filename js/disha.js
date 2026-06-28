@@ -103,6 +103,7 @@ AGENT SKILLS — for analytical "which/where/compare/what-if" questions, delegat
   [ACTION] agent skill:findCells index:disasterRisk top:10   (rank covered cells in view by an index)
   [ACTION] agent skill:serviceGaps top:10                     (most underserved cells — equity/works)
   [ACTION] agent skill:exposure hazard:flood                  (live-hazard exposure ranking; hazards: flood, heat, air, quake, storm)
+  [ACTION] agent skill:evacuate hazard:flood top:10           (route at-risk cells to the nearest safe cell)
   [ACTION] agent skill:assessCell code:39J-49L-L8T4           (full intelligence brief for a cell)
   [ACTION] agent skill:compareCells codes:"39J-49L-L8T4 34M-TML-MTML"  (compare cells across indices)
   [ACTION] agent skill:scenario code:39J-49L-L8T4 field:green delta:30  (what-if: change a field, see index impact)
