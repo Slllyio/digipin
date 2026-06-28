@@ -114,14 +114,15 @@ async function _buildBuildings(gj) {
                 // warm crown: gives each white mass weight & form (the premium-model cue).
                 gl_FragColor.rgb *= mix(0.88, 1.0, smoothstep(0.0, 9.0, vWPos.y));
                 gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * vec3(1.02, 1.01, 0.997), clamp(vWPos.y / 36.0, 0.0, 1.0));
-                if (abs(vWNrm.y) < 0.5 && vWPos.y > 0.4) {       // walls: delicate window grid
-                    float fy = abs(fract(vWPos.y / 4.8) - 0.5);   // floor lines (per ~4.8 m exaggerated floor)
-                    float floors = 1.0 - smoothstep(0.46, 0.49, fy);
-                    float mx = abs(fract(vWPos.x / 3.4) - 0.5);   // mullions aligned to facade axes
-                    float mz = abs(fract(vWPos.z / 3.4) - 0.5);
-                    float mull = max(1.0 - smoothstep(0.46, 0.49, mx), 1.0 - smoothstep(0.46, 0.49, mz));
-                    float grid = clamp(max(floors, mull), 0.0, 1.0);
-                    gl_FragColor.rgb *= mix(1.0, 0.955, grid);    // softer, more delicate
+                if (abs(vWNrm.y) < 0.5 && vWPos.y > 1.2) {       // walls: window panes (skip ground floor)
+                    float vf = fract(vWPos.y / 4.8);              // vertical coord within each ~4.8 m floor
+                    // horizontal coord runs ALONG the wall (axis perpendicular to the facade normal)
+                    float hf = fract((abs(vWNrm.x) > abs(vWNrm.z) ? vWPos.z : vWPos.x) / 3.4);
+                    // each cell = a soft-edged dark glass rectangle; the soft margins read as the frame
+                    float paneV = smoothstep(0.16, 0.24, vf) - smoothstep(0.78, 0.86, vf);
+                    float paneH = smoothstep(0.18, 0.26, hf) - smoothstep(0.74, 0.82, hf);
+                    float pane = clamp(paneV * paneH, 0.0, 1.0);
+                    gl_FragColor.rgb *= mix(1.0, 0.72, pane);     // darker glass → windows read clearly
                 } else if (vWNrm.y > 0.5 && vWPos.y > 0.4) {     // roofs: very faint panel grid
                     float rx = abs(fract(vWPos.x / 4.0) - 0.5);
                     float rz = abs(fract(vWPos.z / 4.0) - 0.5);
