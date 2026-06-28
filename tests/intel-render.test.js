@@ -36,20 +36,22 @@ describe('DishaAgent.run() — render payload + mode', () => {
         { digipin: { code: 'B' }, geometry: { center: { lat: 22.71, lng: 75.81 } }, features: { flood_risk: 20, population_proxy: 80, infra_maturity: 40 } },
     ];
 
-    it('findCells returns a cells render payload and map mode', async () => {
+    it('findCells returns a choropleth render payload and map mode', async () => {
         const res = await AG().run('findCells', { index: 'disasterRisk' }, { cells });
         expect(res.mode).toBe('map');
-        expect(res.data.render.kind).toBe('cells');
+        expect(res.data.render.kind).toBe('choropleth');
         expect(res.data.render.cells.length).toBe(2);
-        expect(res.data.render.cells[0]).toHaveProperty('lat');
-        expect(res.data.render.cells[0]).toHaveProperty('score');
+        expect(res.data.render.cells[0]).toHaveProperty('value');
+        expect(res.data.render.cells[0]).toHaveProperty('center');
+        expect(res.data.render.highMeans).toBe('risk');   // disasterRisk
         expect(res.rendered).toBe(false);    // no map in jsdom
     });
 
-    it('exposure returns a cells render payload', async () => {
+    it('exposure returns a choropleth render payload (risk-oriented)', async () => {
         const res = await AG().run('exposure', { hazard: 'flood' }, { cells });
         expect(res.mode).toBe('map');
-        expect(res.data.render.kind).toBe('cells');
+        expect(res.data.render.kind).toBe('choropleth');
+        expect(res.data.render.highMeans).toBe('risk');
         expect(res.data.render.cells.length).toBeGreaterThan(0);
     });
 

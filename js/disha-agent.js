@@ -184,14 +184,14 @@ const DishaAgent = (() => {
     }
     function _code(c) { return (c.digipin && c.digipin.code) || c.code; }
     function _slim(c) { return { code: _code(c), value: c.indexValue, band: c.band, center: c.geometry && c.geometry.center }; }
-    /** Build a map-render payload (graded cells) from ranked records. Pure. */
-    function _renderCells(cells, valueKey) {
+    /** Build a choropleth render payload (every cell, with bounds) from ranked records. Pure. */
+    function _render(cells, valueKey, label, highMeans) {
         return {
-            kind: 'cells',
+            kind: 'choropleth', label, highMeans: highMeans || 'good',
             cells: (cells || []).map(c => {
-                const ctr = (c.geometry && c.geometry.center) || c.center || {};
-                return { lat: ctr.lat, lng: ctr.lng, score: c[valueKey], code: _code(c) };
-            }).filter(c => c.lat != null && c.lng != null),
+                const ctr = (c.geometry && c.geometry.center) || c.center || null;
+                return { code: _code(c), value: c[valueKey], bounds: c.geometry && c.geometry.bounds, center: ctr };
+            }).filter(c => c.value != null && (c.bounds || c.center)),
         };
     }
     /** Paint a skill result onto the map (browser-only; no-op in tests). */
@@ -199,6 +199,7 @@ const DishaAgent = (() => {
         if (typeof IntelMapLayer === 'undefined' || !res || !res.data || !res.data.render) return false;
         const r = res.data.render;
         try {
+            if (r.kind === 'choropleth') return IntelMapLayer.paintChoropleth(r.cells, { label: r.label, reverse: r.highMeans === 'risk' });
             if (r.kind === 'cells') return IntelMapLayer.paintCells(r.cells);
             if (r.kind === 'routes') return IntelMapLayer.paintRoutes(r.geojson);
         } catch { /* */ }
@@ -210,13 +211,14 @@ const DishaAgent = (() => {
         async findCells(p, ctx) {
             const index = p.index || 'livability';
             const cells = await _cells(ctx);
-            const ranked = rankByIndex(cells, index).slice(0, +p.top || 10);
+            const rankedAll = rankByIndex(cells, index);          // all covered cells (for the choropleth)
+            const ranked = rankedAll.slice(0, +p.top || 10);       // top-N (for the list + summary)
             const def = (typeof IntelIndices !== 'undefined') && IntelIndices.DEFS[index];
             const actions = ranked[0] ? [`[ACTION] selectCell code:${_code(ranked[0])}`] : [];
             const summary = ranked.length
-                ? `Top ${ranked.length} cells by ${def ? def.label : index} (${def && def.highMeans === 'risk' ? 'most at risk' : 'best'}). #1 ${_code(ranked[0])} = ${ranked[0].indexValue}.`
+                ? `Top ${ranked.length} of ${rankedAll.length} cells by ${def ? def.label : index} (${def && def.highMeans === 'risk' ? 'most at risk' : 'best'}). #1 ${_code(ranked[0])} = ${ranked[0].indexValue}.`
                 : 'No covered cells in the current view.';
-            return { summary, data: { index, cells: ranked.map(_slim), render: _renderCells(ranked, 'indexValue') }, actions };
+            return { summary, data: { index, cells: ranked.map(_slim), render: _render(rankedAll, 'indexValue', def ? def.label : index, def ? def.highMeans : 'good') }, actions };
         },
         async serviceGaps(p, ctx) { return EXEC.findCells({ index: 'serviceGap', top: p.top }, ctx); },
         async exposure(p, ctx) {
@@ -229,7 +231,7 @@ const DishaAgent = (() => {
             const actions = ranked[0] ? [`[ACTION] selectCell code:${_code(ranked[0])}`] : [];
             return {
                 summary: `Exposure to ${hazard.kind}: ${sum.byPriority.Critical} critical, ${sum.byPriority.High} high-priority cells of ${sum.cells}.`,
-                data: { hazard, summary: sum, ranked: ranked.map(c => ({ code: _code(c), exposure: c.exposure, priority: c.priority })), render: _renderCells(ranked, 'exposure') },
+                data: { hazard, summary: sum, ranked: ranked.map(c => ({ code: _code(c), exposure: c.exposure, priority: c.priority })), render: _render(all, 'exposure', 'Exposure: ' + hazard.kind, 'risk') },
                 actions,
             };
         },
