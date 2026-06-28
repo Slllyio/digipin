@@ -56,6 +56,7 @@ const LOCAL_ASSETS = [
     './js/intelligence-indices.js',
     './js/cell-exposure.js',
     './js/cell-routing.js',
+    './js/intel-report.js',
     './js/disha-agent.js',
     './js/score-choropleth.js',
     './js/footprint-grid.js',
