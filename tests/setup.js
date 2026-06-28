@@ -38,6 +38,7 @@ loadGlobalScript('js/feature-store.js', ['DigiPinIntel']);
 loadGlobalScript('js/intelligence-indices.js', ['IntelIndices']);
 loadGlobalScript('js/cell-exposure.js', ['CellExposure']);
 loadGlobalScript('js/cell-routing.js', ['CellRouting']);
+loadGlobalScript('js/utility-estimates.js', ['UtilityEstimates']);
 loadGlobalScript('js/intel-report.js', ['IntelReport']);
 loadGlobalScript('js/disha-agent.js', ['DishaAgent']);
 loadGlobalScript('js/score-choropleth.js', ['ScoreChoropleth']);

@@ -17,6 +17,17 @@
 const IntelReport = (() => {
     function _features(record) { return (record && record.features) || record || {}; }
 
+    /** Cell area in km² from its bounds (for utility downscaling); undefined → L6 default. */
+    function _areaKm2(record) {
+        const b = record && record.geometry && record.geometry.bounds;
+        if (!b || b.north == null) return undefined;
+        const lat = (b.north + b.south) / 2;
+        const w = (b.east - b.west) * 111320 * Math.cos(lat * Math.PI / 180);
+        const h = (b.north - b.south) * 110540;
+        const km2 = (w * h) / 1e6;
+        return km2 > 0 ? km2 : undefined;
+    }
+
     /** Derived notable flags from indices + raw fields. Pure. */
     function flags(record, indices) {
         const f = _features(record);
@@ -51,6 +62,15 @@ const IntelReport = (() => {
         const risks = list.filter(i => i.highMeans === 'risk' && i.value != null).sort((a, b) => b.value - a.value);
         const head = i => i ? { id: i.id, label: i.label, value: i.value, band: i.band } : null;
 
+        const utilities = (available && typeof UtilityEstimates !== 'undefined')
+            ? UtilityEstimates.all(features, { areaKm2: _areaKm2(rec) }) : null;
+        const allFlags = flags(rec, indices);
+        if (utilities) {
+            if (utilities.supplyStress.band === 'High') allFlags.push({ level: 'risk', text: 'High utility supply stress' });
+            if (utilities.solarRooftop.offsetPct != null && utilities.solarRooftop.offsetPct >= 60)
+                allFlags.push({ level: 'good', text: 'Strong rooftop-solar potential' });
+        }
+
         return {
             schemaVersion: 1,
             generatedBy: 'DigiPin Urban Intelligence',
@@ -63,7 +83,8 @@ const IntelReport = (() => {
                 topRisk: head(risks[0]),
             },
             indices: list.map(i => ({ id: i.id, label: i.label, value: i.value, band: i.band, highMeans: i.highMeans, drivers: i.drivers })),
-            flags: flags(rec, indices),
+            flags: allFlags,
+            utilities,
             domains: rec.domains || (typeof DigiPinIntel !== 'undefined' ? DigiPinIntel.group(features) : undefined),
             exposure: opts.exposure || null,
         };
@@ -88,6 +109,12 @@ const IntelReport = (() => {
         }
         if (report.indices && report.indices.length) {
             L.push('Indices: ' + report.indices.filter(i => i.value != null).map(i => `${i.label} ${i.value}`).join(', '));
+        }
+        if (report.utilities) {
+            const u = report.utilities;
+            L.push(`Utilities (est): ${u.electricity.kwhPerDay} kWh/day (${u.electricity.carbonKgPerDay} kgCO₂), `
+                + `${Math.round(u.water.litresPerDay / 1000)} kL/day water, ${u.waste.kgPerDay} kg/day waste; `
+                + `rooftop solar offsets ~${u.solarRooftop.offsetPct}%; supply stress ${u.supplyStress.band}`);
         }
         return L.join('\n');
     }

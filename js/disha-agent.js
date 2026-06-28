@@ -77,6 +77,9 @@ const DishaAgent = (() => {
         if (/under[- ]?served|service\s*gap|lacking services|equity/i.test(t)) {
             return { skill: 'serviceGaps', params: { top: _topN(t) } };
         }
+        if (/electric|power|energy|water (?:demand|supply|use)|waste|garbage|sewage|solar|utilit|consumption|\bkwh\b|load/i.test(t)) {
+            return { skill: 'utilities', params: { code: _codes(t)[0] || null } };
+        }
         const codes = _codes(t);
         if (codes.length && /\b(brief|assess|about|tell me|profile|summary|details?)\b/i.test(t)) {
             return { skill: 'assessCell', params: { code: codes[0] } };
@@ -132,6 +135,7 @@ const DishaAgent = (() => {
             { id: 'exposure',     params: 'hazard, top',  desc: 'Rank cells by live-hazard exposure' },
             { id: 'evacuate',     params: 'hazard, top',  desc: 'Route at-risk cells to the nearest safe cell' },
             { id: 'serviceGaps',  params: 'top',          desc: 'Most underserved cells (equity)' },
+            { id: 'utilities',    params: 'code',         desc: 'Estimated electricity/water/waste/solar + supply stress' },
             { id: 'assessCell',   params: 'code',         desc: 'Full intelligence brief for a cell' },
             { id: 'compareCells', params: 'codes',        desc: 'Compare cells across indices' },
             { id: 'scenario',     params: 'code, field, delta', desc: 'What-if a field change and see index impact' },
@@ -205,6 +209,22 @@ const DishaAgent = (() => {
                 summary: `Evacuation plan for ${hazard.kind}: ${plan.summary.routed}/${plan.summary.atRisk} at-risk cells routed to nearest safe cell (${plan.summary.safeCells} safe cells; ${plan.summary.unreachable} unreachable within range).`,
                 data: { hazard, ...plan },
                 actions,
+            };
+        },
+        async utilities(p) {
+            let code = p.code;
+            if (!code && typeof window !== 'undefined' && window.MapModule && window.MapModule.getSelectedCode) code = window.MapModule.getSelectedCode();
+            if (typeof DigiPinIntel === 'undefined' || !code) return { summary: 'Select a cell or give a code for utility estimates.', data: null, actions: [] };
+            const rec = await DigiPinIntel.cellByCode(code);
+            if (!rec || !rec.available) return { summary: 'No data for this cell.', data: null, actions: [] };
+            // use IntelReport so the cell-area calibration matches the panel exactly
+            const u = (typeof IntelReport !== 'undefined') ? IntelReport.build(rec).utilities
+                : (typeof UtilityEstimates !== 'undefined' ? UtilityEstimates.all(rec.features) : null);
+            if (!u) return { summary: 'Utility layer unavailable.', data: null, actions: [] };
+            return {
+                summary: `Utilities for ${rec.digipin.code} (~${u.populationEst} residents): ~${u.electricity.kwhPerDay} kWh/day electricity (${u.electricity.carbonKgPerDay} kgCO₂), ${Math.round(u.water.litresPerDay / 1000)} kL/day water, ${u.waste.kgPerDay} kg/day waste; rooftop solar offsets ~${u.solarRooftop.offsetPct}%; supply stress ${u.supplyStress.band}.`,
+                data: { code: rec.digipin.code, utilities: u },
+                actions: [`[ACTION] selectCell code:${rec.digipin.code}`],
             };
         },
         async assessCell(p) {

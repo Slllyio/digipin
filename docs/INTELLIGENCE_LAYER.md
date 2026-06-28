@@ -17,6 +17,7 @@ gracefully (modules no-op when their data/deps are absent).
 | `js/disha-agent.js` | `DishaAgent` | **P4** | Agentic municipal skills over the above |
 | `js/disha-actions.js` | `DISHAActions` | **P4** | `[ACTION] agent skill:…` execution |
 | `js/cell-routing.js` | `CellRouting` | **P6** | Evacuation routing (at-risk → nearest safe cell) |
+| `js/utility-estimates.js` | `UtilityEstimates` | **P9** | Estimated electricity/water/waste/solar + supply stress |
 | `js/intel-report.js` | `IntelReport` | **P7** | ULB brief + Intelligence-as-a-Service JSON payload |
 | `js/intel-panel.js` | `IntelPanel` | **P8** | Floating UI panel: indices, flags, agent box, export |
 
@@ -59,6 +60,7 @@ DISHA invokes skills in-chat via directives, e.g.
 | Disaster management | `disasterRisk` + `CellExposure` live ranking; `exposure` + `evacuate` skills (route at-risk → nearest safe cell) |
 | Works / equity | `serviceGap`; `serviceGaps` skill |
 | Revenue / economy | `investmentPotential`, `economicVitality`; `findCells` |
+| Utilities / energy | `UtilityEstimates` (electricity, water, waste, rooftop-solar, carbon, supply stress); `utilities` skill |
 | Any (front office) | `assessCell` brief, `compareCells` site selection; the **Urban Intelligence panel** + JSON export |
 
 ## Governance

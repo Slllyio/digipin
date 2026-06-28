@@ -116,6 +116,13 @@ const IntelPanel = (() => {
             ${flags ? `<div style="margin:6px 0 10px;">${flags}</div>` : ''}
             <div style="font-weight:600;font-size:12px;color:#9fb0c8;margin-bottom:2px;">Indices</div>
             ${indices}
+            ${r.utilities ? `<div style="font-weight:600;font-size:12px;color:#9fb0c8;margin:11px 0 3px;">Utilities — estimated (~${r.utilities.populationEst.toLocaleString()} residents)</div>
+              <div style="font-size:12px;line-height:1.7;background:#172033;border-radius:8px;padding:8px 10px;">
+                ⚡ Electricity <b>${r.utilities.electricity.kwhPerDay.toLocaleString()}</b> kWh/day <span style="color:#7c8190;">· ${r.utilities.electricity.carbonKgPerDay.toLocaleString()} kgCO₂</span><br>
+                💧 Water <b>${Math.round(r.utilities.water.litresPerDay / 1000).toLocaleString()}</b> kL/day &nbsp;&nbsp; 🗑 Waste <b>${r.utilities.waste.kgPerDay.toLocaleString()}</b> kg/day<br>
+                ☀ Rooftop solar offsets ~<b>${r.utilities.solarRooftop.offsetPct}%</b> &nbsp;·&nbsp; supply stress <b style="color:${BAND_COLOR[r.utilities.supplyStress.band] || '#9aa0ab'};">${r.utilities.supplyStress.band}</b>
+              </div>
+              <div style="font-size:10px;color:#6b7280;margin-top:3px;">Indicative — downscaled from population/activity, not metered.</div>` : ''}
             <div style="display:flex;gap:8px;margin-top:12px;">
               <button id="ip-copy" style="flex:1;background:#394257;color:#fff;border:none;border-radius:7px;padding:7px;cursor:pointer;font:600 12px system-ui;">Copy brief</button>
               <button id="ip-json" style="flex:1;background:#394257;color:#fff;border:none;border-radius:7px;padding:7px;cursor:pointer;font:600 12px system-ui;">Copy JSON</button>
