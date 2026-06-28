@@ -43,8 +43,26 @@ const IntelPanel = (() => {
         head.appendChild(_el('div', 'font-weight:700;font-size:14px;', 'Urban Intelligence'));
         const close = _el('button', 'background:none;border:none;color:#9fb0c8;font-size:18px;cursor:pointer;line-height:1;', '×');
         close.onclick = close_; head.appendChild(close);
+        // Always-visible quick-paint chips — one-click city-wide choropleth of any layer.
+        const PAINT_CHIPS = [
+            { m: 'disasterRisk', l: 'Disaster risk' }, { m: 'serviceGap', l: 'Service gap' },
+            { m: 'livability', l: 'Livability' }, { m: 'investmentPotential', l: 'Investment' },
+            { m: 'climateResilience', l: 'Climate' }, { m: 'electricity', l: 'Electricity' },
+            { m: 'water', l: 'Water' }, { m: 'supplyStress', l: 'Utility stress' }, { m: 'solar', l: 'Solar' },
+        ];
+        const chips = _el('div', 'padding:8px 10px;border-bottom:1px solid #2a3350;display:flex;flex-wrap:wrap;gap:5px;align-items:center;');
+        chips.appendChild(_el('div', 'width:100%;font-size:10.5px;color:#9fb0c8;', 'Paint across the city ↓'));
+        for (const pc of PAINT_CHIPS) {
+            const b = _el('button', 'background:#243049;color:#cfe0ff;border:1px solid #2a3350;border-radius:12px;padding:3px 9px;font:11px system-ui;cursor:pointer;', pc.l);
+            b.onclick = () => { if (_has('DishaAgent')) window.DishaAgent.run('paint', { metric: pc.m }, {}); };
+            chips.appendChild(b);
+        }
+        const clrAll = _el('button', 'background:none;border:none;color:#7c8190;font-size:11px;cursor:pointer;text-decoration:underline;margin-left:auto;', 'clear');
+        clrAll.onclick = () => { if (_has('IntelMapLayer')) window.IntelMapLayer.clear(); };
+        chips.appendChild(clrAll);
+
         _body = _el('div', 'padding:12px 13px;overflow-y:auto;flex:1;');
-        _root.appendChild(head); _root.appendChild(_body);
+        _root.appendChild(head); _root.appendChild(chips); _root.appendChild(_body);
         document.body.appendChild(_root);
 
         document.addEventListener('digipin:cellselect', (e) => {

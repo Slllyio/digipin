@@ -19,7 +19,8 @@ gracefully (modules no-op when their data/deps are absent).
 | `js/cell-routing.js` | `CellRouting` | **P6** | Evacuation routing (at-risk → nearest safe cell) |
 | `js/utility-estimates.js` | `UtilityEstimates` | **P9** | Estimated electricity/water/waste/solar + supply stress |
 | `js/intel-report.js` | `IntelReport` | **P7** | ULB brief + Intelligence-as-a-Service JSON payload |
-| `js/intel-panel.js` | `IntelPanel` | **P8** | Floating UI panel: indices, flags, agent box, export |
+| `js/intel-panel.js` | `IntelPanel` | **P8** | Floating UI panel: indices, flags, agent box, export, paint chips |
+| `js/intel-map-layer.js` | `IntelMapLayer` | **P10–12** | Map render: choropleth (legend, auto-fit, click-through), routes, heatmap |
 
 All scoring/planning helpers are **pure and unit-tested** (`tests/feature-store`,
 `intelligence-indices`, `cell-exposure`, `disha-agent`).

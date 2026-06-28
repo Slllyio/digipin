@@ -36,6 +36,35 @@ const DishaAgent = (() => {
     ];
     const CODE_RE = /[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{4}/g;
 
+    // Utility metrics paintable as a city choropleth (absolute ones min-max normalised).
+    const UTIL_METRICS = {
+        electricity: { get: u => u.electricity.kwhPerDay, label: 'Electricity demand', highMeans: 'risk', normalize: true },
+        carbon: { get: u => u.electricity.carbonKgPerDay, label: 'Electricity carbon', highMeans: 'risk', normalize: true },
+        water: { get: u => u.water.litresPerDay, label: 'Water demand', highMeans: 'risk', normalize: true },
+        waste: { get: u => u.waste.kgPerDay, label: 'Waste generation', highMeans: 'risk', normalize: true },
+        solar: { get: u => u.solarRooftop.kwhPerDayPotential, label: 'Rooftop solar potential', highMeans: 'good', normalize: true },
+        supplyStress: { get: u => u.supplyStress.value, label: 'Utility supply stress', highMeans: 'risk', normalize: false },
+        demand: { get: u => u.demandIntensity, label: 'Utility demand intensity', highMeans: 'risk', normalize: false },
+    };
+    function _cellAreaKm2(c) {
+        const b = c && c.geometry && c.geometry.bounds;
+        if (!b || b.north == null) return undefined;
+        const lat = (b.north + b.south) / 2;
+        const w = (b.east - b.west) * 111320 * Math.cos(lat * Math.PI / 180);
+        const h = (b.north - b.south) * 110540;
+        const km2 = (w * h) / 1e6;
+        return km2 > 0 ? km2 : undefined;
+    }
+    function _utilMetric(t) {
+        if (/electric|power|\bkwh\b/i.test(t)) return 'electricity';
+        if (/carbon|emission|co2/i.test(t)) return 'carbon';
+        if (/water/i.test(t)) return 'water';
+        if (/waste|garbage|solid/i.test(t)) return 'waste';
+        if (/solar|rooftop/i.test(t)) return 'solar';
+        if (/demand|load/i.test(t)) return 'demand';
+        return 'supplyStress';
+    }
+
     function _codes(text) { return String(text || '').toUpperCase().match(CODE_RE) || []; }
     function _topN(text) {
         const m = String(text || '').match(/\b(?:top|first|highest|worst)\s+(\d{1,3})\b/i)
@@ -55,7 +84,7 @@ const DishaAgent = (() => {
     // Intent mode: does the user want it PAINTED on the map, or pure ANALYSIS?
     const MAP_CUE = /\b(show|display|map|paint|visuali[sz]e|highlight|heatmap|overlay|plot|mark)\b|on the map|where are/i;
     const ANALYZE_CUE = /\b(why|explain|analy[sz]e|assess|reason|cause|describe|is it|should i|how come|tell me about)\b/i;
-    const RANKING = new Set(['findCells', 'serviceGaps', 'exposure', 'evacuate']);
+    const RANKING = new Set(['findCells', 'serviceGaps', 'exposure', 'evacuate', 'paint']);
     function _mode(text, skill) {
         if (MAP_CUE.test(text)) return 'map';
         if (ANALYZE_CUE.test(text)) return 'analyze';
@@ -94,7 +123,10 @@ const DishaAgent = (() => {
         if (/under[- ]?served|service\s*gap|lacking services|equity/i.test(t)) {
             return { skill: 'serviceGaps', params: { top: _topN(t) } };
         }
-        if (/electric|power|energy|water (?:demand|supply|use)|waste|garbage|sewage|solar|utilit|consumption|\bkwh\b|load/i.test(t)) {
+        if (/electric|power|energy|water (?:demand|supply|use)|waste|garbage|sewage|solar|utilit|consumption|\bkwh\b|load|carbon|emission/i.test(t)) {
+            if (MAP_CUE.test(t) || /across|whole city|every cell|all cells|citywide|city-wide/i.test(t)) {
+                return { skill: 'paint', params: { metric: _utilMetric(t) } };
+            }
             return { skill: 'utilities', params: { code: _codes(t)[0] || null } };
         }
         const codes = _codes(t);
@@ -152,6 +184,7 @@ const DishaAgent = (() => {
             { id: 'exposure',     params: 'hazard, top',  desc: 'Rank cells by live-hazard exposure' },
             { id: 'evacuate',     params: 'hazard, top',  desc: 'Route at-risk cells to the nearest safe cell' },
             { id: 'serviceGaps',  params: 'top',          desc: 'Most underserved cells (equity)' },
+            { id: 'paint',        params: 'metric',       desc: 'Paint any index/utility/hazard as a city choropleth' },
             { id: 'utilities',    params: 'code',         desc: 'Estimated electricity/water/waste/solar + supply stress' },
             { id: 'assessCell',   params: 'code',         desc: 'Full intelligence brief for a cell' },
             { id: 'compareCells', params: 'codes',        desc: 'Compare cells across indices' },
@@ -221,6 +254,32 @@ const DishaAgent = (() => {
             return { summary, data: { index, cells: ranked.map(_slim), render: _render(rankedAll, 'indexValue', def ? def.label : index, def ? def.highMeans : 'good') }, actions };
         },
         async serviceGaps(p, ctx) { return EXEC.findCells({ index: 'serviceGap', top: p.top }, ctx); },
+        // Paint ANY metric — an index, a utility metric, or a hazard — as a city choropleth.
+        async paint(p, ctx) {
+            const metric = String(p.metric || '').trim();
+            if (typeof IntelIndices !== 'undefined' && IntelIndices.DEFS[metric]) return EXEC.findCells({ index: metric, top: p.top }, ctx);
+            if (['flood', 'heat', 'air', 'quake', 'storm'].includes(metric)) return EXEC.exposure({ hazard: metric, top: p.top }, ctx);
+            const um = UTIL_METRICS[metric];
+            if (um && typeof UtilityEstimates !== 'undefined') {
+                const cells = await _cells(ctx);
+                let valued = cells.map(c => {
+                    const u = UtilityEstimates.all(c.features, { areaKm2: _cellAreaKm2(c) });
+                    return { ...c, _v: um.get(u) };
+                }).filter(c => c._v != null && Number.isFinite(c._v));
+                if (!valued.length) return { summary: 'No covered cells in view.', data: null, actions: [] };
+                if (um.normalize) {
+                    const vs = valued.map(c => c._v), lo = Math.min(...vs), hi = Math.max(...vs), span = (hi - lo) || 1;
+                    valued = valued.map(c => ({ ...c, _v: Math.round(100 * (c._v - lo) / span) }));
+                }
+                const top = valued.slice().sort((a, b) => b._v - a._v)[0];
+                return {
+                    summary: `Painted ${um.label} across ${valued.length} cells${top ? `; highest ${_code(top)}` : ''}.`,
+                    data: { metric, render: _render(valued, '_v', um.label, um.highMeans) },
+                    actions: top ? [`[ACTION] selectCell code:${_code(top)}`] : [],
+                };
+            }
+            return { summary: `Unknown metric "${metric}". Try an index, a utility (electricity/water/waste/solar/supplyStress) or a hazard.`, data: null, actions: [] };
+        },
         async exposure(p, ctx) {
             if (typeof CellExposure === 'undefined') return { summary: 'Exposure layer unavailable.', data: null, actions: [] };
             const cells = await _cells(ctx);

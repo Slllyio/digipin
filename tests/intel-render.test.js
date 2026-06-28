@@ -67,6 +67,26 @@ describe('DishaAgent.run() — render payload + mode', () => {
         expect(res.data.render.geojson.type).toBe('FeatureCollection');
     });
 
+    it('paint(index) renders a choropleth via findCells', async () => {
+        const res = await AG().run('paint', { metric: 'disasterRisk' }, { cells });
+        expect(res.mode).toBe('map');
+        expect(res.data.render.kind).toBe('choropleth');
+        expect(res.data.render.highMeans).toBe('risk');
+    });
+
+    it('paint(utility) min-max normalises an absolute metric to a choropleth', async () => {
+        const ucells = [
+            { digipin: { code: 'A' }, geometry: { center: { lat: 22.70, lng: 75.80 }, bounds: { west: 75.80, south: 22.70, east: 75.81, north: 22.71 } }, features: { population_proxy: 90, commercial: 60, infra_maturity: 40 } },
+            { digipin: { code: 'B' }, geometry: { center: { lat: 22.71, lng: 75.81 }, bounds: { west: 75.81, south: 22.71, east: 75.82, north: 22.72 } }, features: { population_proxy: 10, commercial: 10, infra_maturity: 80 } },
+        ];
+        const res = await AG().run('paint', { metric: 'electricity' }, { cells: ucells });
+        expect(res.mode).toBe('map');
+        expect(res.data.render.kind).toBe('choropleth');
+        const vals = res.data.render.cells.map(c => c.value).sort((a, b) => a - b);
+        expect(vals[0]).toBe(0);            // min-max normalised
+        expect(vals[vals.length - 1]).toBe(100);
+    });
+
     it('single-cell skills run in analyze mode (no paint)', async () => {
         const res = await AG().run('compareCells', { codes: [] }, {});
         expect(res.mode).toBe('analyze');
