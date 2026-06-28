@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-06-28T04:53:54Z",
-  "count": 13,
+  "generated_at_iso": "2026-06-28T14:15:27Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us6000t8ta",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-28T11:35:31.479000+00:00",
+      "latitude": -7.38,
+      "longitude": 128.695,
+      "depth_km": 165.511,
+      "place": "225 km NE of Lospalos, Timor Leste",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8ta",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000t8t3",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-06-28T11:04:12.997000+00:00",
+      "latitude": -40.3938,
+      "longitude": 174.4645,
+      "depth_km": 81.184,
+      "place": "65 km W of Foxton Beach, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8t3",
+      "tsunami": 0,
+      "significance": 387
+    },
+    {
+      "id": "us6000t8su",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-28T08:46:10.376000+00:00",
+      "latitude": 10.6806,
+      "longitude": -68.4901,
+      "depth_km": 10.0,
+      "place": "20 km W of Boca de Aroa, Venezuela",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8su",
+      "tsunami": 0,
+      "significance": 313
+    },
+    {
+      "id": "us6000t8ss",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-06-28T08:34:26.555000+00:00",
+      "latitude": -52.7331,
+      "longitude": 27.5651,
+      "depth_km": 10.0,
+      "place": "south of Africa",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8ss",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000t8sl",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-06-28T07:05:45.186000+00:00",
+      "latitude": -14.7852,
+      "longitude": 167.4024,
+      "depth_km": 160.295,
+      "place": "45 km NE of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8sl",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000t8si",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-28T05:39:32.691000+00:00",
+      "latitude": 40.2288,
+      "longitude": 142.3616,
+      "depth_km": 51.62,
+      "place": "48 km ENE of Noda, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8si",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000t8se",
       "magnitude": 4.6,
@@ -60,7 +132,7 @@
       "place": "51 km ENE of Noda, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8qd",
       "tsunami": 0,
-      "significance": 522
+      "significance": 523
     },
     {
       "id": "us6000t8q8",
@@ -97,66 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8pl",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us6000t8pa",
-      "magnitude": 6.1,
-      "origin_time_utc": "2026-06-27T13:34:52.534000+00:00",
-      "latitude": 36.4731,
-      "longitude": 70.7644,
-      "depth_km": 199.0,
-      "place": "43 km S of Jurm, Afghanistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8pa",
-      "tsunami": 0,
-      "significance": 584
-    },
-    {
-      "id": "us6000t8p3",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-27T12:35:16.218000+00:00",
-      "latitude": -17.653,
-      "longitude": -178.8386,
-      "depth_km": 531.393,
-      "place": "200 km ENE of Levuka, Fiji",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8p3",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000t8ny",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-06-27T11:23:02.399000+00:00",
-      "latitude": -10.655,
-      "longitude": 163.1809,
-      "depth_km": 10.0,
-      "place": "139 km E of Kirakira, Solomon Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8ny",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000t8nf",
-      "magnitude": 5.9,
-      "origin_time_utc": "2026-06-27T10:37:02.333000+00:00",
-      "latitude": -6.7898,
-      "longitude": 125.6119,
-      "depth_km": 525.542,
-      "place": "192 km N of Metinaro, Timor Leste",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8nf",
-      "tsunami": 0,
-      "significance": 536
-    },
-    {
-      "id": "us6000t8me",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-06-27T07:47:23.012000+00:00",
-      "latitude": -8.9563,
-      "longitude": 111.1499,
-      "depth_km": 65.584,
-      "place": "114 km SSW of Trenggalek, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8me",
-      "tsunami": 0,
-      "significance": 420
     }
   ]
 }
