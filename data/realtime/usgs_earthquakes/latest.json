@@ -1,7 +1,103 @@
 {
-  "generated_at_iso": "2026-06-28T17:09:20Z",
-  "count": 13,
+  "generated_at_iso": "2026-06-28T23:18:17Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us6000t8vm",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-06-28T21:43:51.470000+00:00",
+      "latitude": -10.2921,
+      "longitude": 116.1323,
+      "depth_km": 10.0,
+      "place": "173 km S of Lembar, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8vm",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000t8v9",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-06-28T20:01:33.567000+00:00",
+      "latitude": 16.4442,
+      "longitude": 119.2155,
+      "depth_km": 10.0,
+      "place": "65 km WNW of Catuday, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8v9",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000t8v2",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-06-28T19:25:57.500000+00:00",
+      "latitude": 16.4879,
+      "longitude": 119.2433,
+      "depth_km": 10.0,
+      "place": "63 km WNW of Catuday, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8v2",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000t8ux",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-06-28T19:09:03.928000+00:00",
+      "latitude": 16.5146,
+      "longitude": 119.2088,
+      "depth_km": 10.0,
+      "place": "68 km WNW of Catuday, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8ux",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000t8uv",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-06-28T18:45:21.433000+00:00",
+      "latitude": -6.4983,
+      "longitude": 149.341,
+      "depth_km": 30.018,
+      "place": "39 km SW of Kandrian, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8uv",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000t8ut",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-06-28T18:37:11.965000+00:00",
+      "latitude": 34.7539,
+      "longitude": 3.0556,
+      "depth_km": 10.0,
+      "place": "21 km WNW of Djelfa, Algeria",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8ut",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000t8uk",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-28T17:57:17.188000+00:00",
+      "latitude": 5.7561,
+      "longitude": 125.36,
+      "depth_km": 60.243,
+      "place": "10 km SSE of Kiupo, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8uk",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000t8ua",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-28T17:34:16.402000+00:00",
+      "latitude": -22.8713,
+      "longitude": -66.1655,
+      "depth_km": 252.862,
+      "place": "50 km WSW of Abra Pampa, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8ua",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000t8u3",
       "magnitude": 5.2,
@@ -12,7 +108,7 @@
       "place": "8 km WNW of Changning, China",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8u3",
       "tsunami": 0,
-      "significance": 421
+      "significance": 422
     },
     {
       "id": "us6000t8ta",
@@ -121,42 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8re",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000t8qv",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-06-27T21:10:26.101000+00:00",
-      "latitude": -6.2095,
-      "longitude": 104.6082,
-      "depth_km": 10.0,
-      "place": "112 km SW of Bandar Lampung, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8qv",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000t8qd",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-06-27T20:21:50.769000+00:00",
-      "latitude": 40.206,
-      "longitude": 142.4136,
-      "depth_km": 34.0,
-      "place": "51 km ENE of Noda, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8qd",
-      "tsunami": 0,
-      "significance": 523
-    },
-    {
-      "id": "us6000t8q8",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-06-27T19:20:36.606000+00:00",
-      "latitude": 10.6023,
-      "longitude": -67.5112,
-      "depth_km": 10.0,
-      "place": "35 km NNE of El Limón, Venezuela",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8q8",
-      "tsunami": 0,
-      "significance": 375
     }
   ]
 }
