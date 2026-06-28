@@ -98,6 +98,15 @@ MAP ACTIONS — in addition to your normal answer, you MAY emit up to 3 machine-
   [ACTION] selectCell code:39J-49L-L8T4
   [ACTION] overlay name:heat   (names: growth, prediction, scenario, traffic, mobility, heat, ndvi, bivariate, kde, access, grid, wards, buildings)
   [ACTION] query id:best_residential
+
+AGENT SKILLS — for analytical "which/where/compare/what-if" questions, delegate to a skill that ranks real DigiPin cells and drives the map. Prefer these over guessing:
+  [ACTION] agent skill:findCells index:disasterRisk top:10   (rank covered cells in view by an index)
+  [ACTION] agent skill:serviceGaps top:10                     (most underserved cells — equity/works)
+  [ACTION] agent skill:exposure hazard:flood                  (live-hazard exposure ranking; hazards: flood, heat, air, quake, storm)
+  [ACTION] agent skill:assessCell code:39J-49L-L8T4           (full intelligence brief for a cell)
+  [ACTION] agent skill:compareCells codes:"39J-49L-L8T4 34M-TML-MTML"  (compare cells across indices)
+  [ACTION] agent skill:scenario code:39J-49L-L8T4 field:green delta:30  (what-if: change a field, see index impact)
+  (indices: livability, climateResilience, disasterRisk, serviceGap, investmentPotential, economicVitality, sustainability)
 Keep each directive on its own line; the rest of your reply should read normally without them.`;
 
     // ===== SMART CONTEXT SECTIONS =====

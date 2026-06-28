@@ -37,6 +37,7 @@ loadGlobalScript('js/precomputed-scores.js', ['PrecomputedScores']);
 loadGlobalScript('js/feature-store.js', ['DigiPinIntel']);
 loadGlobalScript('js/intelligence-indices.js', ['IntelIndices']);
 loadGlobalScript('js/cell-exposure.js', ['CellExposure']);
+loadGlobalScript('js/disha-agent.js', ['DishaAgent']);
 loadGlobalScript('js/score-choropleth.js', ['ScoreChoropleth']);
 loadGlobalScript('js/growth-score.js', ['GrowthScore']);
 loadGlobalScript('js/realtime-growth.js', ['RealtimeGrowth']);

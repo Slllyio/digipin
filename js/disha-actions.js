@@ -106,6 +106,21 @@ const DISHAActions = (() => {
             QueryEngine.runQuery(String(p.id));
             return `Ran query "${p.id}"`;
         },
+        // Agentic skills (DishaAgent): run a municipal skill over the feature store /
+        // indices / exposure, then execute whatever map actions it returns. Async —
+        // kicks off and resolves later, so the chip reports dispatch, not the result.
+        agent(p) {
+            const A = _g('DishaAgent');
+            if (!A || !A.run) throw new Error('agent unavailable');
+            const skill = String(p.skill || '');
+            if (!skill) throw new Error('agent needs a skill');
+            Promise.resolve(A.run(skill, p, {})).then(res => {
+                if (res && Array.isArray(res.actions) && res.actions.length) {
+                    executeActions(parseActions(res.actions.join('\n')), 8);
+                }
+            }).catch(() => { /* skill failures are surfaced in its own summary */ });
+            return `Ran agent skill "${skill}"`;
+        },
     };
 
     /** Execute parsed actions (capped). Returns [{type, ok, label|error}]. */
