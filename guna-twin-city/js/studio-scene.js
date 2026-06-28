@@ -30,6 +30,7 @@ const BASE = 'data/vectors/';
 const C = { lat: 24.6354, lng: 77.3126 };
 const MLAT = 110540, MLNG = 111320 * Math.cos(C.lat * Math.PI / 180);
 const ENV_I = 0.5;                         // per-material envMapIntensity (r160 lacks scene.environmentIntensity)
+const HEIGHT_EXAG = 1.5;                   // vertical exaggeration — gives the low-rise massing presence
 const RANGE = 5000;                       // metres from centre — covers most of the city + the
                                           // two nearest water bodies (~3.8/4.6 km). Guna's rivers
                                           // are 12 km+ out (rural), so no in-core river exists.
@@ -52,7 +53,7 @@ function _height(area) {
     let f = area < 50 ? 1 : area < 110 ? 2 : area < 220 ? 3 : area < 450 ? 4 : area < 900 ? 5 : 6;
     const j = Math.abs(Math.sin(area * 12.9898)) ;     // stable pseudo-jitter
     if (j > 0.86) f += 1; else if (j < 0.16 && f > 1) f -= 1;
-    return f * 3.2;
+    return f * 3.2 * HEIGHT_EXAG;        // presentation-model vertical exaggeration for presence
 }
 function _inRange(lng, lat) {
     const x = px(lng), z = pz(lat);
@@ -111,10 +112,10 @@ async function _buildBuildings(gj) {
             .replace('#include <dithering_fragment>', `
                 // vertical tonal grade — soft contact-darkening at the base + a faint
                 // warm crown: gives each white mass weight & form (the premium-model cue).
-                gl_FragColor.rgb *= mix(0.88, 1.0, smoothstep(0.0, 6.0, vWPos.y));
-                gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * vec3(1.02, 1.01, 0.997), clamp(vWPos.y / 24.0, 0.0, 1.0));
+                gl_FragColor.rgb *= mix(0.88, 1.0, smoothstep(0.0, 9.0, vWPos.y));
+                gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * vec3(1.02, 1.01, 0.997), clamp(vWPos.y / 36.0, 0.0, 1.0));
                 if (abs(vWNrm.y) < 0.5 && vWPos.y > 0.4) {       // walls: delicate window grid
-                    float fy = abs(fract(vWPos.y / 3.2) - 0.5);   // floor lines (per 3.2 m)
+                    float fy = abs(fract(vWPos.y / 4.8) - 0.5);   // floor lines (per ~4.8 m exaggerated floor)
                     float floors = 1.0 - smoothstep(0.46, 0.49, fy);
                     float mx = abs(fract(vWPos.x / 3.4) - 0.5);   // mullions aligned to facade axes
                     float mz = abs(fract(vWPos.z / 3.4) - 0.5);
