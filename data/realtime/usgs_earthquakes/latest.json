@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-06-28T14:15:27Z",
-  "count": 14,
+  "generated_at_iso": "2026-06-28T17:09:20Z",
+  "count": 13,
   "records": [
+    {
+      "id": "us6000t8u3",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-06-28T16:12:08.958000+00:00",
+      "latitude": 28.6031,
+      "longitude": 104.8416,
+      "depth_km": 10.0,
+      "place": "8 km WNW of Changning, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8u3",
+      "tsunami": 0,
+      "significance": 421
+    },
     {
       "id": "us6000t8ta",
       "magnitude": 4.5,
@@ -145,30 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8q8",
       "tsunami": 0,
       "significance": 375
-    },
-    {
-      "id": "us6000t8pw",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-06-27T16:35:34.867000+00:00",
-      "latitude": 52.1982,
-      "longitude": 176.4343,
-      "depth_km": 10.0,
-      "place": "231 km ESE of Attu Station, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8pw",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000t8pl",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-06-27T14:15:37.724000+00:00",
-      "latitude": 31.6065,
-      "longitude": 141.8106,
-      "depth_km": 10.0,
-      "place": "Izu Islands, Japan region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8pl",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
