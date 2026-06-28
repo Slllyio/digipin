@@ -287,6 +287,9 @@ const MapModule = (() => {
 
         // Show panel
         Panel.show(cellData);
+        // Broadcast selection so add-on panels (e.g. the Urban Intelligence panel)
+        // can react without coupling into this flow.
+        try { document.dispatchEvent(new CustomEvent('digipin:cellselect', { detail: cellData })); } catch { /* no DOM */ }
 
         // Tie the 3D "digital twin" focus (range rings + amber selected
         // buildings) to the chosen cell — a no-op unless that overlay is on.
