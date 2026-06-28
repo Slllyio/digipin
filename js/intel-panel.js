@@ -136,7 +136,12 @@ const IntelPanel = (() => {
     function _agentBox() {
         if (!_has('DishaAgent')) return;
         const wrap = _el('div', 'margin-top:14px;border-top:1px solid #2a3350;padding-top:10px;');
-        wrap.appendChild(_el('div', 'font-weight:600;font-size:12px;color:#9fb0c8;margin-bottom:5px;', 'Ask the agent'));
+        const hd = _el('div', 'display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;');
+        hd.appendChild(_el('div', 'font-weight:600;font-size:12px;color:#9fb0c8;', 'Ask the agent'));
+        const clr = _el('button', 'background:none;border:none;color:#7c8190;font-size:11px;cursor:pointer;text-decoration:underline;', 'clear map');
+        clr.onclick = () => { if (_has('IntelMapLayer')) window.IntelMapLayer.clear(); };
+        hd.appendChild(clr);
+        wrap.appendChild(hd);
         const row = _el('div', 'display:flex;gap:6px;');
         const inp = _el('input', 'flex:1;background:#0e1320;border:1px solid #2a3350;border-radius:7px;color:#cfe0ff;padding:7px;font:12px system-ui;');
         inp.placeholder = 'e.g. where is flood risk highest?';

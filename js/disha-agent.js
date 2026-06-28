@@ -52,8 +52,25 @@ const DishaAgent = (() => {
         return 'generic';
     }
 
-    /** Map a natural-language municipal question to {skill, params}. Pure. */
+    // Intent mode: does the user want it PAINTED on the map, or pure ANALYSIS?
+    const MAP_CUE = /\b(show|display|map|paint|visuali[sz]e|highlight|heatmap|overlay|plot|mark)\b|on the map|where are/i;
+    const ANALYZE_CUE = /\b(why|explain|analy[sz]e|assess|reason|cause|describe|is it|should i|how come|tell me about)\b/i;
+    const RANKING = new Set(['findCells', 'serviceGaps', 'exposure', 'evacuate']);
+    function _mode(text, skill) {
+        if (MAP_CUE.test(text)) return 'map';
+        if (ANALYZE_CUE.test(text)) return 'analyze';
+        return RANKING.has(skill) ? 'map' : 'analyze';   // ranking sets are inherently spatial
+    }
+
+    /** Map a natural-language municipal question to {skill, params, mode}. Pure. */
     function intent(text) {
+        const plan = _plan(text);
+        plan.mode = _mode(String(text || ''), plan.skill);
+        return plan;
+    }
+
+    /** Inner planner → {skill, params}. Pure. */
+    function _plan(text) {
         const t = String(text || '');
         if (/\bcompare\b|\bversus\b|\bvs\b/i.test(t)) return { skill: 'compareCells', params: { codes: _codes(t) } };
         if (/\bwhat if\b|\bscenario\b|\bif we\b|\bsuppose\b|\bsimulate\b/i.test(t)) {
@@ -167,6 +184,27 @@ const DishaAgent = (() => {
     }
     function _code(c) { return (c.digipin && c.digipin.code) || c.code; }
     function _slim(c) { return { code: _code(c), value: c.indexValue, band: c.band, center: c.geometry && c.geometry.center }; }
+    /** Build a map-render payload (graded cells) from ranked records. Pure. */
+    function _renderCells(cells, valueKey) {
+        return {
+            kind: 'cells',
+            cells: (cells || []).map(c => {
+                const ctr = (c.geometry && c.geometry.center) || c.center || {};
+                return { lat: ctr.lat, lng: ctr.lng, score: c[valueKey], code: _code(c) };
+            }).filter(c => c.lat != null && c.lng != null),
+        };
+    }
+    /** Paint a skill result onto the map (browser-only; no-op in tests). */
+    function _paint(res) {
+        if (typeof IntelMapLayer === 'undefined' || !res || !res.data || !res.data.render) return false;
+        const r = res.data.render;
+        try {
+            if (r.kind === 'cells') return IntelMapLayer.paintCells(r.cells);
+            if (r.kind === 'routes') return IntelMapLayer.paintRoutes(r.geojson);
+        } catch { /* */ }
+        return false;
+    }
+    function clear() { if (typeof IntelMapLayer !== 'undefined') IntelMapLayer.clear(); }
 
     const EXEC = {
         async findCells(p, ctx) {
@@ -178,7 +216,7 @@ const DishaAgent = (() => {
             const summary = ranked.length
                 ? `Top ${ranked.length} cells by ${def ? def.label : index} (${def && def.highMeans === 'risk' ? 'most at risk' : 'best'}). #1 ${_code(ranked[0])} = ${ranked[0].indexValue}.`
                 : 'No covered cells in the current view.';
-            return { summary, data: { index, cells: ranked.map(_slim) }, actions };
+            return { summary, data: { index, cells: ranked.map(_slim), render: _renderCells(ranked, 'indexValue') }, actions };
         },
         async serviceGaps(p, ctx) { return EXEC.findCells({ index: 'serviceGap', top: p.top }, ctx); },
         async exposure(p, ctx) {
@@ -191,7 +229,7 @@ const DishaAgent = (() => {
             const actions = ranked[0] ? [`[ACTION] selectCell code:${_code(ranked[0])}`] : [];
             return {
                 summary: `Exposure to ${hazard.kind}: ${sum.byPriority.Critical} critical, ${sum.byPriority.High} high-priority cells of ${sum.cells}.`,
-                data: { hazard, summary: sum, ranked: ranked.map(c => ({ code: _code(c), exposure: c.exposure, priority: c.priority })) },
+                data: { hazard, summary: sum, ranked: ranked.map(c => ({ code: _code(c), exposure: c.exposure, priority: c.priority })), render: _renderCells(ranked, 'exposure') },
                 actions,
             };
         },
@@ -205,9 +243,10 @@ const DishaAgent = (() => {
                 safeBelow: p.safeBelow, riskAbove: p.riskAbove, top: +p.top || 10, maxKm: p.maxKm,
             });
             const actions = plan.routes[0] ? [`[ACTION] selectCell code:${plan.routes[0].from.code}`] : [];
+            const geojson = (typeof CellRouting.routesGeoJSON === 'function') ? CellRouting.routesGeoJSON(plan) : null;
             return {
                 summary: `Evacuation plan for ${hazard.kind}: ${plan.summary.routed}/${plan.summary.atRisk} at-risk cells routed to nearest safe cell (${plan.summary.safeCells} safe cells; ${plan.summary.unreachable} unreachable within range).`,
-                data: { hazard, ...plan },
+                data: { hazard, ...plan, render: geojson ? { kind: 'routes', geojson } : null },
                 actions,
             };
         },
@@ -260,23 +299,28 @@ const DishaAgent = (() => {
         },
     };
 
-    /** Run a skill by id with params + context {bounds?, cells?, city?}. Async. */
+    /** Run a skill by id with params + context {bounds?, cells?, city?, mode?}. Async.
+     *  When mode is 'map' (default for ranking skills) the result is painted on the map. */
     async function run(skill, params, ctx) {
         const fn = EXEC[skill];
-        if (!fn) return { summary: `Unknown skill "${skill}".`, data: null, actions: [] };
-        try { return await fn(params || {}, ctx || {}); }
-        catch (e) { return { summary: `Skill "${skill}" failed: ${e && e.message ? e.message : 'error'}`, data: null, actions: [] }; }
+        const mode = (ctx && ctx.mode) || (params && params.mode) || (RANKING.has(skill) ? 'map' : 'analyze');
+        if (!fn) return { summary: `Unknown skill "${skill}".`, data: null, actions: [], mode };
+        let res;
+        try { res = await fn(params || {}, ctx || {}); }
+        catch (e) { return { summary: `Skill "${skill}" failed: ${e && e.message ? e.message : 'error'}`, data: null, actions: [], mode }; }
+        const rendered = mode === 'map' ? _paint(res) : false;
+        return { mode, rendered, ...res };
     }
 
-    /** Plan from natural language, then run. Convenience. Async. */
+    /** Plan from natural language, then run (painting the map when appropriate). Async. */
     async function ask(text, ctx) {
         const plan = intent(text);
-        const result = await run(plan.skill, plan.params, ctx);
+        const result = await run(plan.skill, { ...plan.params, mode: plan.mode }, { ...(ctx || {}), mode: plan.mode });
         return { plan, ...result };
     }
 
-    return { intent, applyScenario, rankByIndex, skills, indexIds, run, ask,
-             _codes, _topN, _idx, _hazard };
+    return { intent, applyScenario, rankByIndex, skills, indexIds, run, ask, clear,
+             _codes, _topN, _idx, _hazard, _mode };
 })();
 
 if (typeof window !== 'undefined') window.DishaAgent = DishaAgent;

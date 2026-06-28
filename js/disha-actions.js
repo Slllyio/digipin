@@ -121,6 +121,12 @@ const DISHAActions = (() => {
             }).catch(() => { /* skill failures are surfaced in its own summary */ });
             return `Ran agent skill "${skill}"`;
         },
+        clearmap() {
+            const A = _g('DishaAgent');
+            if (A && A.clear) A.clear();
+            else if (_g('IntelMapLayer')) _g('IntelMapLayer').clear();
+            return 'Cleared map overlays';
+        },
     };
 
     /** Execute parsed actions (capped). Returns [{type, ok, label|error}]. */

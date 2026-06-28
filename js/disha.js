@@ -109,6 +109,7 @@ AGENT SKILLS — for analytical "which/where/compare/what-if" questions, delegat
   [ACTION] agent skill:compareCells codes:"39J-49L-L8T4 34M-TML-MTML"  (compare cells across indices)
   [ACTION] agent skill:scenario code:39J-49L-L8T4 field:green delta:30  (what-if: change a field, see index impact)
   (indices: livability, climateResilience, disasterRisk, serviceGap, investmentPotential, economicVitality, sustainability)
+  Add mode:map to PAINT results across the map, or mode:analyze for a text-only answer. Ranking skills (findCells/serviceGaps/exposure/evacuate) paint by default. Use [ACTION] clearmap to remove overlays.
 Keep each directive on its own line; the rest of your reply should read normally without them.`;
 
     // ===== SMART CONTEXT SECTIONS =====
