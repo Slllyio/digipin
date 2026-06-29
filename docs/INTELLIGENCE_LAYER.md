@@ -18,6 +18,7 @@ gracefully (modules no-op when their data/deps are absent).
 | `js/disha-actions.js` | `DISHAActions` | **P4** | `[ACTION] agent skill:…` execution |
 | `js/cell-routing.js` | `CellRouting` | **P6** | Evacuation routing (at-risk → nearest safe cell) |
 | `js/utility-estimates.js` | `UtilityEstimates` | **P9** | Estimated electricity/water/waste/solar + supply stress |
+| `js/priority-analysis.js` | `PriorityAnalysis` | **P13** | MCDA "where to act" playbooks (drainage/clinics/schools/parks/transit/…) |
 | `js/intel-report.js` | `IntelReport` | **P7** | ULB brief + Intelligence-as-a-Service JSON payload |
 | `js/intel-panel.js` | `IntelPanel` | **P8** | Floating UI panel: indices, flags, agent box, export, paint chips |
 | `js/intel-map-layer.js` | `IntelMapLayer` | **P10–12** | Map render: choropleth (legend, auto-fit, click-through), routes, heatmap |

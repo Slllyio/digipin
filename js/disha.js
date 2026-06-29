@@ -103,6 +103,7 @@ AGENT SKILLS — for analytical "which/where/compare/what-if" questions, delegat
   [ACTION] agent skill:findCells index:disasterRisk top:10   (rank covered cells in view by an index)
   [ACTION] agent skill:serviceGaps top:10                     (most underserved cells — equity/works)
   [ACTION] agent skill:paint metric:disasterRisk             (paint a whole-city choropleth; metric = any index, a utility electricity/water/waste/solar/supplyStress, or a hazard flood/heat/air)
+  [ACTION] agent skill:priority goal:clinics                 (where to ACT — MCDA hotspots; goals: drainage, clinics, schools, parks, transit, sanitation, policing)
   [ACTION] agent skill:exposure hazard:flood                  (live-hazard exposure ranking; hazards: flood, heat, air, quake, storm)
   [ACTION] agent skill:evacuate hazard:flood top:10           (route at-risk cells to the nearest safe cell)
   [ACTION] agent skill:utilities code:39J-49L-L8T4            (estimated electricity/water/waste/solar + supply stress)

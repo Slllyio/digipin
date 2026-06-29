@@ -61,6 +61,18 @@ const IntelPanel = (() => {
         clrAll.onclick = () => { if (_has('IntelMapLayer')) window.IntelMapLayer.clear(); };
         chips.appendChild(clrAll);
 
+        // Priority (where-to-act) chips — MCDA hotspots
+        const PRIORITY_CHIPS = [
+            { g: 'drainage', l: 'Drainage' }, { g: 'clinics', l: 'Clinics' }, { g: 'schools', l: 'Schools' },
+            { g: 'parks', l: 'Parks' }, { g: 'transit', l: 'Transit' }, { g: 'sanitation', l: 'Sanitation' },
+        ];
+        chips.appendChild(_el('div', 'width:100%;font-size:10.5px;color:#9fb0c8;margin-top:4px;', 'Where to act (priority) ↓'));
+        for (const pc of PRIORITY_CHIPS) {
+            const b = _el('button', 'background:#33283a;color:#f0d6ff;border:1px solid #4a3358;border-radius:12px;padding:3px 9px;font:11px system-ui;cursor:pointer;', pc.l);
+            b.onclick = () => { if (_has('DishaAgent')) window.DishaAgent.run('priority', { goal: pc.g }, {}); };
+            chips.appendChild(b);
+        }
+
         _body = _el('div', 'padding:12px 13px;overflow-y:auto;flex:1;');
         _root.appendChild(head); _root.appendChild(chips); _root.appendChild(_body);
         document.body.appendChild(_root);

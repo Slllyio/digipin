@@ -55,6 +55,16 @@ const DishaAgent = (() => {
         const km2 = (w * h) / 1e6;
         return km2 > 0 ? km2 : undefined;
     }
+    function _goal(t) {
+        if (/clinic|hospital|health|dispensary/i.test(t)) return 'clinics';
+        if (/school|educat|college/i.test(t)) return 'schools';
+        if (/park|green|tree|garden/i.test(t)) return 'parks';
+        if (/drain|flood|storm ?water|sewer/i.test(t)) return 'drainage';
+        if (/transit|bus|metro|connect/i.test(t)) return 'transit';
+        if (/waste|sanitation|garbage|toilet/i.test(t)) return 'sanitation';
+        if (/police|safety|patrol|law|crime/i.test(t)) return 'policing';
+        return null;
+    }
     function _utilMetric(t) {
         if (/electric|power|\bkwh\b/i.test(t)) return 'electricity';
         if (/carbon|emission|co2/i.test(t)) return 'carbon';
@@ -84,7 +94,7 @@ const DishaAgent = (() => {
     // Intent mode: does the user want it PAINTED on the map, or pure ANALYSIS?
     const MAP_CUE = /\b(show|display|map|paint|visuali[sz]e|highlight|heatmap|overlay|plot|mark)\b|on the map|where are/i;
     const ANALYZE_CUE = /\b(why|explain|analy[sz]e|assess|reason|cause|describe|is it|should i|how come|tell me about)\b/i;
-    const RANKING = new Set(['findCells', 'serviceGaps', 'exposure', 'evacuate', 'paint']);
+    const RANKING = new Set(['findCells', 'serviceGaps', 'exposure', 'evacuate', 'paint', 'priority']);
     function _mode(text, skill) {
         if (MAP_CUE.test(text)) return 'map';
         if (ANALYZE_CUE.test(text)) return 'analyze';
@@ -116,6 +126,9 @@ const DishaAgent = (() => {
         }
         if (/\bevacuat|safe route|nearest safe|where (?:do|should|to)\b.*\bgo|escape route/i.test(t)) {
             return { skill: 'evacuate', params: { hazard: _hazard(t), top: _topN(t) } };
+        }
+        if (/\bpriorit|where (?:should|to)\b.*\b(build|add|place|put|site|locate|invest)|best (?:place|site|location)s? (?:for|to)|site (?:for|selection)/i.test(t)) {
+            return { skill: 'priority', params: { goal: _goal(t) || 'drainage', top: _topN(t) } };
         }
         if (/\bexposure\b|\baffected\b|\bat risk (?:now|today)\b|\balert|\bemergenc|\brespond/i.test(t)) {
             return { skill: 'exposure', params: { hazard: _hazard(t), top: _topN(t) } };
@@ -185,6 +198,7 @@ const DishaAgent = (() => {
             { id: 'evacuate',     params: 'hazard, top',  desc: 'Route at-risk cells to the nearest safe cell' },
             { id: 'serviceGaps',  params: 'top',          desc: 'Most underserved cells (equity)' },
             { id: 'paint',        params: 'metric',       desc: 'Paint any index/utility/hazard as a city choropleth' },
+            { id: 'priority',     params: 'goal',         desc: 'Where to act: MCDA priority (drainage/clinics/schools/parks/transit/sanitation/policing)' },
             { id: 'utilities',    params: 'code',         desc: 'Estimated electricity/water/waste/solar + supply stress' },
             { id: 'assessCell',   params: 'code',         desc: 'Full intelligence brief for a cell' },
             { id: 'compareCells', params: 'codes',        desc: 'Compare cells across indices' },
@@ -308,6 +322,23 @@ const DishaAgent = (() => {
             return {
                 summary: `Evacuation plan for ${hazard.kind}: ${plan.summary.routed}/${plan.summary.atRisk} at-risk cells routed to nearest safe cell (${plan.summary.safeCells} safe cells; ${plan.summary.unreachable} unreachable within range).`,
                 data: { hazard, ...plan, render: geojson ? { kind: 'routes', geojson } : null },
+                actions,
+            };
+        },
+        async priority(p, ctx) {
+            const goal = String(p.goal || '').trim();
+            const def = (typeof PriorityAnalysis !== 'undefined') && PriorityAnalysis.PLAYBOOKS[goal];
+            if (!def) return { summary: `Unknown priority goal "${goal}".`, data: null, actions: [] };
+            const cells = await _cells(ctx);
+            const ranked = cells
+                .map(c => { const r = PriorityAnalysis.compute(c.features, goal); return { ...c, _v: r ? r.value : null }; })
+                .filter(c => c._v != null)
+                .sort((a, b) => b._v - a._v);
+            if (!ranked.length) return { summary: 'No covered cells in view.', data: null, actions: [] };
+            const actions = [`[ACTION] selectCell code:${_code(ranked[0])}`];
+            return {
+                summary: `Priority for ${def.label}: ${ranked.length} cells scored; act first at ${_code(ranked[0])} (${ranked[0]._v}).`,
+                data: { goal, top: ranked.slice(0, +p.top || 10).map(c => ({ code: _code(c), value: c._v })), render: _render(ranked, '_v', def.label + ' — priority', 'risk') },
                 actions,
             };
         },
