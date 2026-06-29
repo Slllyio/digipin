@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-06-29T11:31:39Z",
-  "count": 19,
+  "generated_at_iso": "2026-06-29T21:26:03Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us6000t91x",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-06-29T18:47:16.538000+00:00",
+      "latitude": -23.414,
+      "longitude": -175.4452,
+      "depth_km": 10.0,
+      "place": "234 km SSW of ‘Ohonua, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t91x",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000t907",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-06-29T15:51:18.068000+00:00",
+      "latitude": -23.8507,
+      "longitude": 179.9587,
+      "depth_km": 537.255,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t907",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000t8z3",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-06-29T12:33:04.790000+00:00",
+      "latitude": 41.6562,
+      "longitude": 81.3141,
+      "depth_km": 10.0,
+      "place": "101 km ENE of Aksu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8z3",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000t8yt",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-06-29T11:35:33.629000+00:00",
+      "latitude": 43.3828,
+      "longitude": -127.0788,
+      "depth_km": 10.0,
+      "place": "218 km W of Bandon, Oregon",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8yt",
+      "tsunami": 0,
+      "significance": 469
+    },
+    {
+      "id": "us6000t8yu",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-06-29T11:33:12.639000+00:00",
+      "latitude": 36.5625,
+      "longitude": 70.5788,
+      "depth_km": 204.45,
+      "place": "40 km SW of Jurm, Afghanistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8yu",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000t8yf",
       "magnitude": 4.6,
@@ -12,7 +72,7 @@
       "place": "27 km N of Caraballeda, Venezuela",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8yf",
       "tsunami": 0,
-      "significance": 329
+      "significance": 358
     },
     {
       "id": "us6000t8xq",
@@ -96,7 +156,7 @@
       "place": "35 km SSW of Cordova, Alaska",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026msxacu",
       "tsunami": 0,
-      "significance": 468
+      "significance": 467
     },
     {
       "id": "us6000t8wr",
@@ -121,114 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8vm",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000t8v9",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-06-28T20:01:33.567000+00:00",
-      "latitude": 16.4442,
-      "longitude": 119.2155,
-      "depth_km": 10.0,
-      "place": "65 km WNW of Catuday, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8v9",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000t8v2",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-06-28T19:25:57.500000+00:00",
-      "latitude": 16.4879,
-      "longitude": 119.2433,
-      "depth_km": 10.0,
-      "place": "63 km WNW of Catuday, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8v2",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000t8ux",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-06-28T19:09:03.928000+00:00",
-      "latitude": 16.5146,
-      "longitude": 119.2088,
-      "depth_km": 10.0,
-      "place": "68 km WNW of Catuday, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8ux",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000t8uv",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-06-28T18:45:21.433000+00:00",
-      "latitude": -6.4983,
-      "longitude": 149.341,
-      "depth_km": 30.018,
-      "place": "39 km SW of Kandrian, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8uv",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000t8ut",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-06-28T18:37:11.965000+00:00",
-      "latitude": 34.7539,
-      "longitude": 3.0556,
-      "depth_km": 10.0,
-      "place": "21 km WNW of Djelfa, Algeria",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8ut",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000t8uk",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-28T17:57:17.188000+00:00",
-      "latitude": 5.7561,
-      "longitude": 125.36,
-      "depth_km": 60.243,
-      "place": "10 km SSE of Kiupo, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8uk",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000t8ua",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-28T17:34:16.402000+00:00",
-      "latitude": -22.8713,
-      "longitude": -66.1655,
-      "depth_km": 252.862,
-      "place": "50 km WSW of Abra Pampa, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8ua",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000t8u3",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-06-28T16:12:08.958000+00:00",
-      "latitude": 28.6031,
-      "longitude": 104.8416,
-      "depth_km": 10.0,
-      "place": "8 km WNW of Changning, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8u3",
-      "tsunami": 0,
-      "significance": 422
-    },
-    {
-      "id": "us6000t8ta",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-28T11:35:31.479000+00:00",
-      "latitude": -7.38,
-      "longitude": 128.695,
-      "depth_km": 165.511,
-      "place": "225 km NE of Lospalos, Timor Leste",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8ta",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
