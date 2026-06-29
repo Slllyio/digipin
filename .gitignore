@@ -65,6 +65,13 @@ data/scores/*
 data/scores/*/*
 !data/scores/*/*.json
 !data/scores/*/*.pmtiles
+# Intelligence-as-a-Service static export (precomputed per-region intel.json).
+!data/intel/
+data/intel/*
+!data/intel/manifest.json
+!data/intel/*/
+data/intel/*/*
+!data/intel/*/*.json
 # Precomputed traffic (structural congestion) artifacts — browser-consumed.
 !data/traffic/
 data/traffic/*

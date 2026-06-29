@@ -41,6 +41,7 @@ loadGlobalScript('js/cell-routing.js', ['CellRouting']);
 loadGlobalScript('js/utility-estimates.js', ['UtilityEstimates']);
 loadGlobalScript('js/priority-analysis.js', ['PriorityAnalysis']);
 loadGlobalScript('js/intel-report.js', ['IntelReport']);
+loadGlobalScript('js/intel-service.js', ['IntelService']);
 loadGlobalScript('js/disha-agent.js', ['DishaAgent']);
 loadGlobalScript('js/score-choropleth.js', ['ScoreChoropleth']);
 loadGlobalScript('js/growth-score.js', ['GrowthScore']);

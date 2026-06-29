@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "generatedBy": "DigiPin Urban Intelligence",
+  "regions": [
+    {
+      "name": "indore_pilot",
+      "level": 6,
+      "count": 2209,
+      "bbox": {
+        "west": 75.6,
+        "south": 22.5,
+        "east": 76,
+        "north": 22.9
+      },
+      "path": "data/intel/indore_pilot/intel.json"
+    }
+  ]
+}

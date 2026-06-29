@@ -22,6 +22,8 @@ gracefully (modules no-op when their data/deps are absent).
 | `js/intel-report.js` | `IntelReport` | **P7** | ULB brief + Intelligence-as-a-Service JSON payload |
 | `js/intel-panel.js` | `IntelPanel` | **P8** | Floating UI panel: indices, flags, agent box, export, paint chips |
 | `js/intel-map-layer.js` | `IntelMapLayer` | **P10–12** | Map render: choropleth (legend, auto-fit, click-through), routes, heatmap |
+| `js/intel-service.js` | `IntelService` | **P14** | Client for the static Intelligence-as-a-Service artifact |
+| `pipeline/build_intel_export.mjs` | — | **P14** | Precompute `data/intel/<region>/intel.json` (IaaS) from the score shards |
 
 All scoring/planning helpers are **pure and unit-tested** (`tests/feature-store`,
 `intelligence-indices`, `cell-exposure`, `disha-agent`).
