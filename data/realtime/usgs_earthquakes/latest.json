@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-06-30T10:01:03Z",
-  "count": 9,
+  "generated_at_iso": "2026-06-30T19:18:04Z",
+  "count": 8,
   "records": [
+    {
+      "id": "us6000t97h",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-06-30T15:15:17.435000+00:00",
+      "latitude": -56.0388,
+      "longitude": -26.949,
+      "depth_km": 57.943,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t97h",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000t978",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-06-30T14:41:10.582000+00:00",
+      "latitude": -5.727,
+      "longitude": 150.9338,
+      "depth_km": 35.0,
+      "place": "90 km ESE of Kimbe, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t978",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us6000t977",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-06-30T14:26:47.700000+00:00",
+      "latitude": 3.2669,
+      "longitude": 125.9464,
+      "depth_km": 56.219,
+      "place": "221 km NNE of Bitung, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t977",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000t973",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-06-30T14:02:23.783000+00:00",
+      "latitude": 40.16,
+      "longitude": 142.3618,
+      "depth_km": 62.767,
+      "place": "46 km E of Noda, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t973",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000t96r",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-06-30T12:39:56.740000+00:00",
+      "latitude": 28.9088,
+      "longitude": 131.3868,
+      "depth_km": 10.0,
+      "place": "168 km SSE of Koshima, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t96r",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000t93x",
       "magnitude": 5.1,
@@ -37,78 +97,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t937",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000t91x",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-06-29T18:47:16.538000+00:00",
-      "latitude": -23.414,
-      "longitude": -175.4452,
-      "depth_km": 10.0,
-      "place": "234 km SSW of ‘Ohonua, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t91x",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000t907",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-06-29T15:51:18.068000+00:00",
-      "latitude": -23.8507,
-      "longitude": 179.9587,
-      "depth_km": 537.255,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t907",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000t8z3",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-06-29T12:33:04.790000+00:00",
-      "latitude": 41.6562,
-      "longitude": 81.3141,
-      "depth_km": 10.0,
-      "place": "101 km ENE of Aksu, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8z3",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000t8yt",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-06-29T11:35:33.629000+00:00",
-      "latitude": 43.3828,
-      "longitude": -127.0788,
-      "depth_km": 10.0,
-      "place": "218 km W of Bandon, Oregon",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8yt",
-      "tsunami": 0,
-      "significance": 471
-    },
-    {
-      "id": "us6000t8yu",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-29T11:33:12.639000+00:00",
-      "latitude": 36.5625,
-      "longitude": 70.5788,
-      "depth_km": 204.45,
-      "place": "40 km SW of Jurm, Afghanistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8yu",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000t8yf",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-06-29T11:01:03.516000+00:00",
-      "latitude": 10.8601,
-      "longitude": -66.8435,
-      "depth_km": 10.0,
-      "place": "27 km N of Caraballeda, Venezuela",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8yf",
-      "tsunami": 0,
-      "significance": 359
     }
   ]
 }
