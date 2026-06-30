@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-06-29T21:26:03Z",
-  "count": 15,
+  "generated_at_iso": "2026-06-30T01:49:54Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us6000t93x",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-06-30T00:15:12.439000+00:00",
+      "latitude": -55.5087,
+      "longitude": -27.2192,
+      "depth_km": 35.0,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t93x",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000t939",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-06-29T22:06:46.596000+00:00",
+      "latitude": 44.8824,
+      "longitude": 151.8082,
+      "depth_km": 10.0,
+      "place": "east of the Kuril Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t939",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000t937",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-06-29T21:38:36.945000+00:00",
+      "latitude": -17.9754,
+      "longitude": -178.4499,
+      "depth_km": 616.793,
+      "place": "236 km E of Levuka, Fiji",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t937",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000t91x",
       "magnitude": 4.9,
@@ -72,7 +108,7 @@
       "place": "27 km N of Caraballeda, Venezuela",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8yf",
       "tsunami": 0,
-      "significance": 358
+      "significance": 359
     },
     {
       "id": "us6000t8xq",
@@ -167,18 +203,6 @@
       "depth_km": 10.0,
       "place": "Kermadec Islands region",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8wr",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000t8vm",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-06-28T21:43:51.471000+00:00",
-      "latitude": -10.2969,
-      "longitude": 116.1434,
-      "depth_km": 10.0,
-      "place": "173 km S of Lembar, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8vm",
       "tsunami": 0,
       "significance": 369
     }
