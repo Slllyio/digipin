@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-06-30T01:49:54Z",
-  "count": 17,
+  "generated_at_iso": "2026-06-30T10:01:03Z",
+  "count": 9,
   "records": [
     {
       "id": "us6000t93x",
@@ -84,7 +84,7 @@
       "place": "218 km W of Bandon, Oregon",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8yt",
       "tsunami": 0,
-      "significance": 469
+      "significance": 471
     },
     {
       "id": "us6000t8yu",
@@ -109,102 +109,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8yf",
       "tsunami": 0,
       "significance": 359
-    },
-    {
-      "id": "us6000t8xq",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-06-29T07:38:27.562000+00:00",
-      "latitude": 2.302,
-      "longitude": -84.3832,
-      "depth_km": 10.0,
-      "place": "off the coast of Central America",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8xq",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000t8xr",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-06-29T07:36:09.992000+00:00",
-      "latitude": 51.3546,
-      "longitude": 160.1889,
-      "depth_km": 10.0,
-      "place": "213 km SE of Vilyuchinsk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8xr",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000t8xp",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-06-29T07:19:50.329000+00:00",
-      "latitude": 1.285,
-      "longitude": 126.2952,
-      "depth_km": 35.0,
-      "place": "131 km E of Bitung, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8xp",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000t8xk",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-06-29T06:54:16.912000+00:00",
-      "latitude": 22.9945,
-      "longitude": 142.2351,
-      "depth_km": 179.368,
-      "place": "Volcano Islands, Japan region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8xk",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000t8x8",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-06-29T04:23:05.855000+00:00",
-      "latitude": 4.4724,
-      "longitude": 125.1893,
-      "depth_km": 9.906,
-      "place": "107 km SSW of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8x8",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000t8x6",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-06-29T04:14:33.185000+00:00",
-      "latitude": 4.5908,
-      "longitude": 125.4036,
-      "depth_km": 45.108,
-      "place": "90 km S of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8x6",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "aka2026msxacu",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-06-29T03:32:39.606000+00:00",
-      "latitude": 60.237,
-      "longitude": -145.91,
-      "depth_km": 13.3,
-      "place": "35 km SSW of Cordova, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026msxacu",
-      "tsunami": 0,
-      "significance": 467
-    },
-    {
-      "id": "us6000t8wr",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-06-29T03:10:28.375000+00:00",
-      "latitude": -31.2186,
-      "longitude": -177.6455,
-      "depth_km": 10.0,
-      "place": "Kermadec Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t8wr",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
