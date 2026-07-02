@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-07-02T15:40:10Z",
-  "count": 19,
+  "generated_at_iso": "2026-07-02T17:19:36Z",
+  "count": 18,
   "records": [
     {
       "id": "us6000t9mw",
@@ -217,18 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t9gc",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000t9fz",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-01T16:15:34.646000+00:00",
-      "latitude": 40.3898,
-      "longitude": 142.3042,
-      "depth_km": 64.614,
-      "place": "50 km ENE of Kuji, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t9fz",
-      "tsunami": 0,
-      "significance": 370
     }
   ]
 }
