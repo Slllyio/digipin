@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-07-06T17:20:13Z",
-  "count": 10,
+  "generated_at_iso": "2026-07-07T01:25:55Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us6000taj0",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-06T20:25:12.410000+00:00",
+      "latitude": -18.2571,
+      "longitude": 64.8211,
+      "depth_km": 10.0,
+      "place": "216 km NE of Port Mathurin, Mauritius",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000taj0",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000tai6",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-06T17:09:03.352000+00:00",
+      "latitude": 40.1864,
+      "longitude": 142.4253,
+      "depth_km": 57.696,
+      "place": "52 km E of Noda, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tai6",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000tai4",
       "magnitude": 4.9,
@@ -36,7 +60,7 @@
       "place": "56 km W of La Ligua, Chile",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tahc",
       "tsunami": 0,
-      "significance": 415
+      "significance": 419
     },
     {
       "id": "us6000taft",
@@ -84,7 +108,7 @@
       "place": "48 km SSW of Sarangani, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tadc",
       "tsunami": 0,
-      "significance": 521
+      "significance": 523
     },
     {
       "id": "us6000tada",
@@ -109,18 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tacl",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000tab5",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-07-05T19:10:14.439000+00:00",
-      "latitude": -2.7128,
-      "longitude": 138.968,
-      "depth_km": 19.39,
-      "place": "185 km W of Abepura, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tab5",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
