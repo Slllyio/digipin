@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-07-11T14:53:11Z",
+  "generated_at_iso": "2026-07-11T16:56:00Z",
   "count": 15,
   "records": [
+    {
+      "id": "us7000szr0",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-11T15:33:17.598000+00:00",
+      "latitude": -15.3141,
+      "longitude": -173.293,
+      "depth_km": 10.0,
+      "place": "89 km NE of Hihifo, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szr0",
+      "tsunami": 0,
+      "significance": 400
+    },
     {
       "id": "us7000szqn",
       "magnitude": 4.6,
@@ -36,7 +48,7 @@
       "place": "41 km S of Sarangani, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szq0",
       "tsunami": 0,
-      "significance": 450
+      "significance": 451
     },
     {
       "id": "us7000szpb",
@@ -169,18 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szim",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us7000szhy",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-10T15:36:55.499000+00:00",
-      "latitude": 1.8034,
-      "longitude": -30.6181,
-      "depth_km": 10.0,
-      "place": "central Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szhy",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
