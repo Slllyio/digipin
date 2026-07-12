@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-07-12T14:13:59Z",
-  "count": 12,
+  "generated_at_iso": "2026-07-12T19:50:18Z",
+  "count": 13,
   "records": [
+    {
+      "id": "us7000szwe",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-12T17:03:28.584000+00:00",
+      "latitude": 31.1137,
+      "longitude": 102.26,
+      "depth_km": 10.0,
+      "place": "126 km NNE of Kangding, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szwe",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000szwc",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-12T16:31:08.579000+00:00",
+      "latitude": -42.5781,
+      "longitude": 173.5183,
+      "depth_km": 29.352,
+      "place": "58 km E of Hanmer Springs, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szwc",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000szw8",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-12T15:15:57.411000+00:00",
+      "latitude": -55.6391,
+      "longitude": -27.2728,
+      "depth_km": 39.127,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szw8",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000szvv",
       "magnitude": 5.3,
@@ -36,7 +72,7 @@
       "place": "27 km SSW of Unalaska, Alaska",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szv2",
       "tsunami": 0,
-      "significance": 315
+      "significance": 316
     },
     {
       "id": "us7000szuz",
@@ -121,30 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szse",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us7000szri",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-07-11T17:49:31.928000+00:00",
-      "latitude": 4.9407,
-      "longitude": 125.2447,
-      "depth_km": 61.682,
-      "place": "56 km SSW of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szri",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000szr0",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-07-11T15:33:17.598000+00:00",
-      "latitude": -15.3141,
-      "longitude": -173.293,
-      "depth_km": 10.0,
-      "place": "89 km NE of Hihifo, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szr0",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
