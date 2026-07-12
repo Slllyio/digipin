@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-07-12T11:37:29Z",
-  "count": 11,
+  "generated_at_iso": "2026-07-12T12:37:48Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us7000szv2",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-12T11:23:48.880000+00:00",
+      "latitude": 53.6497,
+      "longitude": -166.7155,
+      "depth_km": 95.216,
+      "place": "27 km SSW of Unalaska, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szv2",
+      "tsunami": 0,
+      "significance": 315
+    },
     {
       "id": "us7000szuz",
       "magnitude": 5.0,
