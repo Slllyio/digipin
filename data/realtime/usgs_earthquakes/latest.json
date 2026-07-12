@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-07-12T12:37:48Z",
+  "generated_at_iso": "2026-07-12T14:13:59Z",
   "count": 12,
   "records": [
+    {
+      "id": "us7000szvv",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-07-12T13:46:37.185000+00:00",
+      "latitude": 1.1684,
+      "longitude": 121.446,
+      "depth_km": 35.0,
+      "place": "192 km WNW of Gorontalo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szvv",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us7000szvq",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-12T13:20:25.867000+00:00",
+      "latitude": -9.6705,
+      "longitude": 119.304,
+      "depth_km": 42.944,
+      "place": "27 km SSE of Tambolaka, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szvq",
+      "tsunami": 0,
+      "significance": 401
+    },
     {
       "id": "us7000szv2",
       "magnitude": 4.5,
@@ -121,30 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szr0",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us7000szqn",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-07-11T13:15:58.813000+00:00",
-      "latitude": 51.1281,
-      "longitude": 151.3975,
-      "depth_km": 426.609,
-      "place": "Sea of Okhotsk",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szqn",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000szqj",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-07-11T12:48:30.711000+00:00",
-      "latitude": -17.3108,
-      "longitude": 166.7258,
-      "depth_km": 10.0,
-      "place": "152 km SSW of Lakatoro, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szqj",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
