@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-07-12T19:50:18Z",
-  "count": 13,
+  "generated_at_iso": "2026-07-13T08:15:23Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us7000szzl",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-13T06:45:31.999000+00:00",
+      "latitude": -22.8646,
+      "longitude": 171.5471,
+      "depth_km": 10.0,
+      "place": "southeast of the Loyalty Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szzl",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000szyr",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-07-13T00:54:02.072000+00:00",
+      "latitude": 12.7921,
+      "longitude": 123.0436,
+      "depth_km": 10.0,
+      "place": "24 km W of Mabiton, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szyr",
+      "tsunami": 0,
+      "significance": 450
+    },
+    {
+      "id": "us7000szxs",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-12T21:02:12.483000+00:00",
+      "latitude": 28.6112,
+      "longitude": 104.7797,
+      "depth_km": 34.16,
+      "place": "14 km WNW of Changning, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szxs",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000szwe",
       "magnitude": 4.6,
@@ -95,66 +131,6 @@
       "depth_km": 152.278,
       "place": "80 km WSW of Gorontalo, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szus",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000szu6",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-07-12T07:29:23.556000+00:00",
-      "latitude": -54.6008,
-      "longitude": -118.9732,
-      "depth_km": 10.0,
-      "place": "southern East Pacific Rise",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szu6",
-      "tsunami": 0,
-      "significance": 465
-    },
-    {
-      "id": "us7000szt5",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-07-12T03:04:07.694000+00:00",
-      "latitude": -15.0887,
-      "longitude": 167.3355,
-      "depth_km": 126.089,
-      "place": "28 km E of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szt5",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000szsv",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-12T00:43:30.178000+00:00",
-      "latitude": 3.6769,
-      "longitude": 127.0246,
-      "depth_km": 41.8,
-      "place": "241 km NNW of Tobelo, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szsv",
-      "tsunami": 0,
-      "significance": 370
-    },
-    {
-      "id": "us7000szsn",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-11T23:35:45.479000+00:00",
-      "latitude": 16.4995,
-      "longitude": 84.5232,
-      "depth_km": 10.0,
-      "place": "184 km SE of Yārāda, India",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szsn",
-      "tsunami": 0,
-      "significance": 313
-    },
-    {
-      "id": "us7000szse",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-07-11T22:13:42.896000+00:00",
-      "latitude": 32.655,
-      "longitude": -39.8835,
-      "depth_km": 10.0,
-      "place": "northern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000szse",
       "tsunami": 0,
       "significance": 340
     }
