@@ -1,5 +1,5 @@
 {
-  "generated_at_iso": "2026-07-14T03:32:35Z",
+  "generated_at_iso": "2026-07-14T05:56:35Z",
   "count": 19,
   "records": [
     {
@@ -36,7 +36,7 @@
       "place": "2 km WSW of Congregación Reforma, Mexico",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t07s",
       "tsunami": 0,
-      "significance": 387
+      "significance": 388
     },
     {
       "id": "us7000t07r",
