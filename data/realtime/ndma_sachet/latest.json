@@ -1,7 +1,84 @@
 {
-  "generated_at_iso": "2026-07-15T23:40:33Z",
+  "generated_at_iso": "2026-07-16T01:08:10Z",
   "count": 100,
   "records": [
+    {
+      "id": "1784164011229010",
+      "headline": "River Beki at Beki NH Crossing in Barpeta district of Assam continues to flow in above normal flood situation at 6:00 am today.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 16 Jul 2026 01:06:52 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784164011229010",
+      "severity": "Minor",
+      "category": "Met-Flood",
+      "tags": []
+    },
+    {
+      "id": "1784164011137010",
+      "headline": "River Brahmaputra at Dhubri in Dhubri district of Assam continues to flow in above normal flood situation at 6:00 am today.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 16 Jul 2026 01:06:52 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784164011137010",
+      "severity": "Minor",
+      "category": "Met-Flood",
+      "tags": []
+    },
+    {
+      "id": "1784164010979010",
+      "headline": "River Brahmaputra at Goalpara in Goalpara district of Assam continues to flow in above normal flood situation at 6:00 am today.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 16 Jul 2026 01:06:52 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784164010979010",
+      "severity": "Minor",
+      "category": "Met-Flood",
+      "tags": []
+    },
+    {
+      "id": "1784156343433029",
+      "headline": "पुढील ३ तासांत बीड, लातूर, मुंबई, मुंबई उपनगर, नांदेड, पालघर, रायगड, सोलापूर आणि ठाणे या जिल्ह्यांमधील काही ठिकाणी हलका पाऊस पडण्याची दाट शक्यता आहे. नागरिकांनी सतर्क रहावे. मंत्रालय, मुंबई.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 16 Jul 2026 00:46:37 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784156343433029",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1784162132894009",
+      "headline": "अगले 3-4 घंटों में आपके जनपद में कुछ जगहों  पर हल्की से मध्यम बारिश और कुछ अलग-अलग जगहों पर बिजली कड़कने/तेज़ से बहुत तेज़ बारिश के साथ आंधी-तूफान आने की संभावना है।",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 16 Jul 2026 00:38:41 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784162132894009",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1784161809768033",
+      "headline": "Light to Moderate Rain is very likely to occur at a few places over North Goa, South Goa in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 16 Jul 2026 00:30:11 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784161809768033",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1784160789612010",
+      "headline": "Due to continuous increase of water level of River Dikhow at Sivasagar in Sivasagar district of Assam, Citizens are advised to stay away from the river. Issued in Public Interest by ASDMA.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 16 Jul 2026 00:16:13 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784160789612010",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1784141748554016",
       "headline": "River Kamla Balan at Jhanjarpur in Madhubani district of Bihar continues to flow in above normal flood situation at 12:00 am today.",
@@ -22,17 +99,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784157127119013",
       "severity": "Minor",
       "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1784156343433029",
-      "headline": "Light Rain is very likely to occur at isolated places over Beed, Latur, Mumbai, Mumbai Suburban, Nanded, Palghar, Raigad, Solapur, Thane in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 15 Jul 2026 22:59:07 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784156343433029",
-      "severity": "Minor",
-      "category": "Met-Storm",
       "tags": []
     },
     {
@@ -1033,72 +1099,6 @@
       "published_utc": "Wed, 15 Jul 2026 09:50:32 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784109030217018",
       "severity": "Minor",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1784108929876016",
-      "headline": "River Kosi at Basua in Supaul district of Bihar continues to flow in above normal flood situation at 3:00 pm today.",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 15 Jul 2026 09:48:51 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784108929876016",
-      "severity": "Minor",
-      "category": "Met-Flood",
-      "tags": []
-    },
-    {
-      "id": "1784108907593018",
-      "headline": "Moderate Thunderstorms with lightning, surface wind and rain is likely to occur at isolated places over Bilaspur, Jashpur, Korba, Mungeli, Raigarh, Surguja in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 15 Jul 2026 09:48:29 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784108907593018",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1784108619259013",
-      "headline": "अगले 3 घंटों में आपके इलाके में तेज़ हवाओं (30-40 किमी/घंटा) और बिजली कड़कने के साथ मध्यम से तेज़ बारिश होने की संभावना है।",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 15 Jul 2026 09:46:04 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784108619259013",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1784108217575009",
-      "headline": "[2026/07/15 15:03] अगले 3 घंटो के दौरान, आपके क्षेत्र में, कहीं-कहीं गर्जन के साथ आकाशीय बिजली चमकने एवं वर्षा के तीव्र दौर होने की संभवना हैं I",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 15 Jul 2026 09:38:53 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784108217575009",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1784108089736015",
-      "headline": "Moderate Rain with light to moderate thunderstorms is very likely to continue at a few places over Dhalai in next 1 to 2 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 15 Jul 2026 09:37:10 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784108089736015",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1784107930029015",
-      "headline": "Light to moderate rain with Light Thunderstorms is very likely to continue at a few places over West Tripura in next 1 to 2 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Wed, 15 Jul 2026 09:33:27 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1784107930029015",
-      "severity": "Moderate",
       "category": "Met-Storm",
       "tags": []
     }
