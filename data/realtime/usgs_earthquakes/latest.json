@@ -1,7 +1,103 @@
 {
-  "generated_at_iso": "2026-07-17T16:46:35Z",
+  "generated_at_iso": "2026-07-18T01:05:23Z",
   "count": 29,
   "records": [
+    {
+      "id": "us7000t1hg",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-17T22:35:28.122000+00:00",
+      "latitude": -24.1908,
+      "longitude": -66.9098,
+      "depth_km": 188.384,
+      "place": "60 km W of San Antonio de los Cobres, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1hg",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000t1hd",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-17T22:13:06.825000+00:00",
+      "latitude": 14.2237,
+      "longitude": -92.9584,
+      "depth_km": 35.0,
+      "place": "79 km SW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1hd",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000t1gx",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-17T21:09:04.495000+00:00",
+      "latitude": 53.3593,
+      "longitude": 78.2015,
+      "depth_km": 10.0,
+      "place": "8 km WNW of Burla, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1gx",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000t1gb",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-17T19:30:15.872000+00:00",
+      "latitude": -48.2608,
+      "longitude": 165.4561,
+      "depth_km": 15.31,
+      "place": "284 km SW of Bluff, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1gb",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000t1fk",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-07-17T18:26:43.919000+00:00",
+      "latitude": 14.3713,
+      "longitude": -92.9332,
+      "depth_km": 10.0,
+      "place": "67 km SW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1fk",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000t1f6",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-17T17:23:30.902000+00:00",
+      "latitude": 14.2633,
+      "longitude": -92.713,
+      "depth_km": 35.128,
+      "place": "59 km SSW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1f6",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000t1f0",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-17T17:15:19.287000+00:00",
+      "latitude": 14.3448,
+      "longitude": -92.9705,
+      "depth_km": 10.0,
+      "place": "72 km SW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1f0",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000t1ey",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-17T17:03:38.011000+00:00",
+      "latitude": 14.3368,
+      "longitude": -93.0323,
+      "depth_km": 10.0,
+      "place": "78 km WSW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1ey",
+      "tsunami": 0,
+      "significance": 400
+    },
     {
       "id": "us7000t1ej",
       "magnitude": 4.7,
@@ -16,15 +112,39 @@
     },
     {
       "id": "us7000t1e8",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-07-17T16:12:56.063000+00:00",
-      "latitude": 5.7419,
-      "longitude": 125.3523,
-      "depth_km": 66.134,
-      "place": "9 km ENE of Pangyan, Philippines",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-07-17T16:12:57.547000+00:00",
+      "latitude": 5.7602,
+      "longitude": 125.378,
+      "depth_km": 79.819,
+      "place": "11 km SE of Kiupo, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1e8",
       "tsunami": 0,
-      "significance": 433
+      "significance": 417
+    },
+    {
+      "id": "us7000t1ep",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-17T16:01:26.495000+00:00",
+      "latitude": 14.4643,
+      "longitude": -92.5836,
+      "depth_km": 64.924,
+      "place": "33 km SSW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1ep",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000t1dz",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-17T16:00:54.702000+00:00",
+      "latitude": 14.4035,
+      "longitude": -92.7007,
+      "depth_km": 73.875,
+      "place": "46 km SW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1dz",
+      "tsunami": 0,
+      "significance": 369
     },
     {
       "id": "us7000t1dv",
@@ -60,7 +180,7 @@
       "place": "90 km SW of Puerto Madero, Mexico",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1cc",
       "tsunami": 0,
-      "significance": 554
+      "significance": 555
     },
     {
       "id": "us7000t1c2",
@@ -96,7 +216,7 @@
       "place": "58 km WSW of Puerto Madero, Mexico",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1bu",
       "tsunami": 0,
-      "significance": 1123
+      "significance": 971
     },
     {
       "id": "us7000t1b3",
@@ -229,126 +349,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t171",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us7000t15z",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-16T21:53:58.953000+00:00",
-      "latitude": -12.7868,
-      "longitude": -15.0898,
-      "depth_km": 10.0,
-      "place": "southern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t15z",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000t15t",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-07-16T21:49:42.977000+00:00",
-      "latitude": 30.7625,
-      "longitude": 131.5099,
-      "depth_km": 35.0,
-      "place": "48 km E of Nishinoomote, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t15t",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000t15s",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-07-16T21:29:40.802000+00:00",
-      "latitude": -12.8026,
-      "longitude": -14.851,
-      "depth_km": 10.0,
-      "place": "southern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t15s",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000t15b",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-16T21:16:33.262000+00:00",
-      "latitude": -12.6241,
-      "longitude": -14.8449,
-      "depth_km": 10.0,
-      "place": "southern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t15b",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000t14v",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-07-16T20:21:52.035000+00:00",
-      "latitude": -12.6871,
-      "longitude": -14.7175,
-      "depth_km": 10.0,
-      "place": "southern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t14v",
-      "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "us7000t14r",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-16T20:03:00.391000+00:00",
-      "latitude": -12.5741,
-      "longitude": -14.7608,
-      "depth_km": 10.0,
-      "place": "southern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t14r",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t14m",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-16T19:55:32.193000+00:00",
-      "latitude": -12.6918,
-      "longitude": -14.3805,
-      "depth_km": 11.86,
-      "place": "southern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t14m",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000t14l",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-16T19:44:54.568000+00:00",
-      "latitude": -12.6935,
-      "longitude": -14.3837,
-      "depth_km": 10.0,
-      "place": "southern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t14l",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000t141",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-16T19:24:18.908000+00:00",
-      "latitude": -12.6148,
-      "longitude": -14.7673,
-      "depth_km": 10.0,
-      "place": "southern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t141",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000t12v",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-07-16T17:46:44.073000+00:00",
-      "latitude": -4.7306,
-      "longitude": 153.1761,
-      "depth_km": 88.702,
-      "place": "109 km ESE of Kokopo, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t12v",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
