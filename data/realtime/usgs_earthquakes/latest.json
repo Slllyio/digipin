@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-07-19T03:53:32Z",
-  "count": 25,
+  "generated_at_iso": "2026-07-19T12:36:25Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us7000t1s3",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-19T10:45:30.968000+00:00",
+      "latitude": 28.4577,
+      "longitude": 82.6023,
+      "depth_km": 10.0,
+      "place": "46 km NE of Tulsīpur, Nepal",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1s3",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000t1rx",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-19T09:48:03.957000+00:00",
+      "latitude": -16.3454,
+      "longitude": -173.038,
+      "depth_km": 10.0,
+      "place": "91 km ESE of Hihifo, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1rx",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000t1rh",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-07-19T08:11:02.424000+00:00",
+      "latitude": -7.7393,
+      "longitude": 106.4455,
+      "depth_km": 10.0,
+      "place": "83 km S of Pelabuhanratu, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1rh",
+      "tsunami": 0,
+      "significance": 355
+    },
+    {
+      "id": "us7000t1qt",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-19T04:58:25.200000+00:00",
+      "latitude": 47.5702,
+      "longitude": 152.5539,
+      "depth_km": 112.886,
+      "place": "Kuril Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1qt",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000t1q8",
       "magnitude": 4.9,
@@ -12,7 +60,7 @@
       "place": "40 km ENE of Shahrak-e Kūlūrī, Iran",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1q8",
       "tsunami": 0,
-      "significance": 369
+      "significance": 370
     },
     {
       "id": "us7000t1q7",
@@ -24,7 +72,7 @@
       "place": "2 km WSW of Sicaya, Peru",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1q7",
       "tsunami": 0,
-      "significance": 652
+      "significance": 654
     },
     {
       "id": "us7000t1q6",
@@ -37,6 +85,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1q6",
       "tsunami": 0,
       "significance": 432
+    },
+    {
+      "id": "us7000t1q5",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-19T02:01:33.461000+00:00",
+      "latitude": 14.3608,
+      "longitude": -92.7735,
+      "depth_km": 35.0,
+      "place": "55 km SW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1q5",
+      "tsunami": 0,
+      "significance": 326
     },
     {
       "id": "us7000t1q4",
@@ -157,150 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1mu",
       "tsunami": 0,
       "significance": 401
-    },
-    {
-      "id": "us7000t1ld",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-18T11:12:57.724000+00:00",
-      "latitude": -24.3838,
-      "longitude": -116.1102,
-      "depth_km": 10.0,
-      "place": "southern East Pacific Rise",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1ld",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t1l8",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-18T10:36:19.521000+00:00",
-      "latitude": 37.9146,
-      "longitude": 72.6745,
-      "depth_km": 136.85,
-      "place": "109 km ENE of Khorugh, Tajikistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1l8",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000t1l4",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-07-18T09:59:22.033000+00:00",
-      "latitude": 14.3207,
-      "longitude": -92.9174,
-      "depth_km": 44.887,
-      "place": "69 km SW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1l4",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000t1kh",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-07-18T08:28:43.339000+00:00",
-      "latitude": -23.5937,
-      "longitude": -179.7416,
-      "depth_km": 529.091,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1kh",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000t1kf",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-18T08:21:42.737000+00:00",
-      "latitude": -6.6034,
-      "longitude": 103.7876,
-      "depth_km": 23.732,
-      "place": "208 km SW of Bandar Lampung, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1kf",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t1jy",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-07-18T06:51:50.543000+00:00",
-      "latitude": 14.3804,
-      "longitude": -93.1511,
-      "depth_km": 35.0,
-      "place": "87 km WSW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1jy",
-      "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "us7000t1jw",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-18T06:26:08.899000+00:00",
-      "latitude": -0.9196,
-      "longitude": -21.4952,
-      "depth_km": 10.0,
-      "place": "central Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1jw",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000t1jt",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-07-18T06:10:19+00:00",
-      "latitude": 14.2694,
-      "longitude": -92.9244,
-      "depth_km": 35.0,
-      "place": "73 km SW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1jt",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000t1jq",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-07-18T05:47:22.550000+00:00",
-      "latitude": 38.6227,
-      "longitude": 75.1665,
-      "depth_km": 10.0,
-      "place": "116 km ENE of Murghob, Tajikistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1jq",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000t1jp",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-07-18T05:46:47.673000+00:00",
-      "latitude": -32.8189,
-      "longitude": -178.1149,
-      "depth_km": 10.0,
-      "place": "south of the Kermadec Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1jp",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000t1jb",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-18T04:28:52.579000+00:00",
-      "latitude": 14.5811,
-      "longitude": -93.0737,
-      "depth_km": 35.0,
-      "place": "71 km WSW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1jb",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t1j4",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-18T04:07:11.863000+00:00",
-      "latitude": -11.6863,
-      "longitude": -13.8232,
-      "depth_km": 10.0,
-      "place": "Ascension Island region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1j4",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
