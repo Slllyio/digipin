@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-07-19T12:36:25Z",
-  "count": 18,
+  "generated_at_iso": "2026-07-19T16:26:19Z",
+  "count": 17,
   "records": [
     {
       "id": "us7000t1s3",
@@ -173,9 +173,9 @@
     {
       "id": "us7000t1ng",
       "magnitude": 5.5,
-      "origin_time_utc": "2026-07-18T19:50:37.215000+00:00",
-      "latitude": -60.7066,
-      "longitude": -51.0559,
+      "origin_time_utc": "2026-07-18T19:50:36.395000+00:00",
+      "latitude": -60.6982,
+      "longitude": -50.9727,
       "depth_km": 10.0,
       "place": "Scotia Sea",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1ng",
@@ -205,18 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1n0",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us7000t1mu",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-07-18T16:08:44.116000+00:00",
-      "latitude": 17.9439,
-      "longitude": -81.5431,
-      "depth_km": 10.0,
-      "place": "149 km S of George Town, Cayman Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1mu",
-      "tsunami": 0,
-      "significance": 401
     }
   ]
 }
