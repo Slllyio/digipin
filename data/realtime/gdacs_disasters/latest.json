@@ -1,7 +1,24 @@
 {
-  "generated_at_iso": "2026-07-19T11:36:39Z",
-  "count": 36,
+  "generated_at_iso": "2026-07-19T17:31:36Z",
+  "count": 38,
   "records": [
+    {
+      "id": "1001290",
+      "event_type": "TC",
+      "event_label": "Tropical Cyclone",
+      "alert_score": 1.0,
+      "alert_level": "Green",
+      "title": "Green notification for tropical cyclone TWO-26. Population affected by Category 1 (120 km/h) wind speeds or higher is 0  (0 in Tropical Storm).",
+      "description": "From 19/07/2026 to 19/07/2026, a Tropical Depression (maximum wind speed of 93 km/h) TWO-26 was active in Atlantic. The cyclone affects these countries: United States (vulnerability Low). Estimated population affected by category 1 (120 km/h) wind speeds or higher is 0  (0 in tropical storm).",
+      "country": "United States",
+      "published_utc": "Sun, 19 Jul 2026 15:09:29 GMT",
+      "latitude": null,
+      "longitude": null,
+      "url": "https://www.gdacs.org/report.aspx?eventtype=TC&eventid=1001290",
+      "glide_number": "",
+      "population_affected": "Population affected by Category 1 (120 km/h) wind speeds or higher is 0 (14.19 million in Tropical Storm)",
+      "tags": []
+    },
     {
       "id": "1001289",
       "event_type": "TC",
@@ -68,6 +85,23 @@
       "url": "https://www.gdacs.org/report.aspx?eventtype=EQ&eventid=1552687",
       "glide_number": "",
       "population_affected": "820 thousand in MMI IV",
+      "tags": []
+    },
+    {
+      "id": "1104032",
+      "event_type": "FL",
+      "event_label": "Flood",
+      "alert_score": 1.0,
+      "alert_level": "Green",
+      "title": "Green flood alert in South Korea",
+      "description": "On 18/07/2026, a flood started in South Korea, lasting until 20/07/2026 (last update). The flood caused 0 deaths and 95 displaced .",
+      "country": "South Korea",
+      "published_utc": "Sun, 19 Jul 2026 12:38:47 GMT",
+      "latitude": null,
+      "longitude": null,
+      "url": "https://www.gdacs.org/report.aspx?eventtype=FL&eventid=1104032",
+      "glide_number": "",
+      "population_affected": "0 deaths and 95 displaced",
       "tags": []
     },
     {
@@ -390,7 +424,7 @@
       "longitude": null,
       "url": "https://www.gdacs.org/report.aspx?eventtype=FL&eventid=1103972",
       "glide_number": "",
-      "population_affected": "4 deaths",
+      "population_affected": "0 deaths and 40 displaced",
       "tags": []
     },
     {
@@ -407,7 +441,7 @@
       "longitude": null,
       "url": "https://www.gdacs.org/report.aspx?eventtype=FL&eventid=1103942",
       "glide_number": "",
-      "population_affected": "0 deaths and 76 displaced",
+      "population_affected": "0 deaths and 100 displaced",
       "tags": []
     },
     {
