@@ -130,4 +130,26 @@ describe('DISHAAgent.run (loop mechanics, scripted model)', () => {
         // Exactly two model turns (no runaway loop).
         expect(i).toBe(2);
     });
+
+    it('synthesizes an answer when the model ends with a bare [ACTION] finish', async () => {
+        // Turn 1 gathers data; turn 2 is a *bare* finish directive with no prose;
+        // the loop must then force a synthesis turn rather than return empty.
+        const turns = [
+            'Checking.\n[ACTION] getCellData code:39J49LL8T4',
+            '[ACTION] finish',
+            'Based on the data, safety is strong here.',
+        ];
+        let i = 0;
+        globalThis.DISHA.complete = async () => turns[i++];
+
+        const finalProse = [];
+        const final = await AG.run('Assess this area, then finish.', { context: 'CTX' }, {
+            onAssistant: (t, meta) => { if (meta.final) finalProse.push(t); },
+            onChips: () => {},
+        });
+
+        expect(final).toContain('safety is strong');
+        expect(finalProse).toEqual(['Based on the data, safety is strong here.']);
+        expect(i).toBe(3);   // gather → bare finish → forced synthesis
+    });
 });

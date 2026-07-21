@@ -95,6 +95,23 @@ const DISHAAgent = (() => {
     }
 
     /**
+     * Ask the model for a final plain-language answer from the messages gathered
+     * so far, with tools off. Used when tools/iterations are exhausted, and when
+     * a final *signal* (a bare `[ACTION] finish` / `[DONE]`) arrives with no
+     * prose — so "I'm done" never terminates the run with an empty answer.
+     */
+    async function finalize(state, extra, onAssistant) {
+        const msgs = [
+            ...state.messages,
+            ...extra,
+            { role: 'user', content: 'Provide your final answer now, based on the observations gathered so far, in plain language and with no [ACTION] directives.' },
+        ];
+        const text = cleanProse(await DISHA.complete({ system: state.system, messages: msgs }));
+        if (text) onAssistant(text, { final: true });
+        return text;
+    }
+
+    /**
      * Run the agent loop.
      * @param {string} question
      * @param {{cell?,data?,context?,bounds?}} ground  selected-cell grounding
@@ -107,7 +124,6 @@ const DISHAAgent = (() => {
         const onChips = hooks.onChips || (() => {});
 
         const state = initState(question, ground);
-        let finalText = '';
 
         while (state.iter < MAX_ITERS) {
             const turn = await DISHA.complete({ system: state.system, messages: state.messages });
@@ -116,9 +132,11 @@ const DISHAAgent = (() => {
 
             // Final answer: model stopped calling tools (or hit the tool budget).
             if (isFinal(turn, acts) || state.calls >= AGENT_BUDGET) {
-                finalText = prose;
-                if (prose) onAssistant(prose, { final: true });
-                return finalText;
+                if (prose) { onAssistant(prose, { final: true }); return prose; }
+                // A final *signal* with no prose — e.g. a bare `[ACTION] finish`
+                // or `[DONE]` after gathering observations. Don't stop empty:
+                // synthesize the answer from what has been gathered so far.
+                return await finalize(state, [{ role: 'assistant', content: turn }], onAssistant);
             }
 
             // Intermediate reasoning (the agent narrating this step).
@@ -139,17 +157,11 @@ const DISHAAgent = (() => {
 
             // Budget/iteration exhausted → one forced synthesis turn with tools off.
             if (state.iter >= MAX_ITERS || state.calls >= AGENT_BUDGET) {
-                const forced = await DISHA.complete({
-                    system: state.system + '\n\nTOOLS ARE EXHAUSTED. Give your final answer now in plain language, with no [ACTION] directives.',
-                    messages: state.messages,
-                });
-                finalText = cleanProse(forced);
-                if (finalText) onAssistant(finalText, { final: true });
-                return finalText;
+                return await finalize(state, [], onAssistant);
             }
         }
 
-        return finalText;
+        return '';
     }
 
     return {
