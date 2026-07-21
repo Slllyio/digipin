@@ -217,6 +217,9 @@ Existing `flyto` / `selectcell` / `overlay` / `query` are unchanged (state-chang
 ## 5. Tier-2 design sketches
 
 ### 5.1 Alert Triage & Correlation Agent
+
+> **Status: implemented** in `pipeline/triage/` (deterministic core + CLI + pytest + `.github/workflows/alert-triage.yml`). Run it with `python -m pipeline.triage --stdout`. See `pipeline/triage/README.md`.
+
 **Run as** a scheduled GitHub Action (reusing the `realtime-scrape.yml` cadence) or a small worker — **not** in the browser.
 **Inputs:** `data/realtime/*/latest.json` (already committed by the scrapers) + `data/scores/<region>/*.json`.
 **Loop:** read active alerts → for each, spatially intersect its area with the score tile → score priority `= population_proxy × hazard_severity × exposure` (e.g. `flood_risk` for GloFAS/IMD flood, heat-score for heatwave, proximity for quakes) → the LLM drafts a ranked, human-readable brief with the top affected DigiPin cells and a recommended action → **deliver** via webhook/email/GitHub issue.
