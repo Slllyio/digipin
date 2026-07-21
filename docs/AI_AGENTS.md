@@ -104,9 +104,9 @@ This section is the buildable spec. All file/function references below were veri
 
 ### 4.1 Architecture
 
-A new IIFE module **`js/disha-agent.js`** (`DISHAAgent`) owns a **ReAct loop** — *plan → act → observe → continue*. The panel stays the view layer; **all side effects remain in `DISHAActions.REGISTRY`**; the agent only sequences turns.
+A new IIFE module **`js/disha-agent.js`** (`DISHAAgent`) owns a **ReAct loop** — *plan → act → observe → continue*. The panel stays the view layer; **all side effects remain in the DISHAActions registries** (the sync `REGISTRY` for the legacy map actions, plus the async `AGENT_REGISTRY` executed by `executeAgentActions`); the agent only sequences turns.
 
-```
+```text
 DISHAAgent.run(question, ground, hooks):
   state = initState(question, ground)          // { messages, iter:0, budget, transcript }
   while state.iter < MAX_ITERS (=4):
@@ -121,13 +121,13 @@ DISHAAgent.run(question, ground, hooks):
   return final stripped text
 ```
 
-**New primitive — `DISHA.complete({system, messages, prompt, signal})` in `js/disha.js`.** It wraps `DISHAProviders.stream(...)`, which **already resolves to the full response string** (both `streamOllama` and `streamOpenAI` `return fullResponse`; `Text2Map.parseWithLLM` already relies on this) — so we can `await` a complete turn without re-plumbing callbacks. Unlike the existing `ask()`, `complete()` does **not** use the response cache (each loop turn is unique) and does **not** mutate `_conversationHistory` (the agent owns `state.messages`). `ask()` remains the single-shot path for non-agent questions.
+**New primitive — `DISHA.complete({system, messages})` in `js/disha.js`.** It wraps `DISHAProviders.stream(...)`, which **already resolves to the full response string** (both `streamOllama` and `streamOpenAI` `return fullResponse`; `Text2Map.parseWithLLM` already relies on this) — so we can `await` a complete turn without re-plumbing callbacks. It flattens `messages` to a prompt transcript on the Ollama path, reuses the module `_abortController` (so the Stop button cancels an agent turn), and surfaces an `AbortError` on cancellation. Unlike the existing `ask()`, `complete()` does **not** use the response cache (each loop turn is unique) and does **not** mutate `_conversationHistory` (the agent owns `state.messages`). `ask()` remains the single-shot path for non-agent questions.
 
 ### 4.2 Observation feedback
 
 Read-tool handlers return their data (see 4.4); `buildObservation(results)` renders results to a plain-text block appended as the **next user turn**:
 
-```
+```text
 [OBSERVATION]
 rankCells ok — top: 4FJ-2K-9L (health_gap=83), 4FJ-2K-8T (77), 4FK-3C-42 (71)
 getCellData 4FJ-2K-9L ok — healthcare_access=18, population_proxy=88, safety=61, flood_risk=22
@@ -145,15 +145,15 @@ Because the channel is text, the identical loop runs on Ollama (default, prompt-
 
 A new **pure** module **`js/disha-tools.js`** (`DISHATools`) holds a single declarative `TOOLS` array — the source of truth — and derives everything else:
 
-- `DISHATools.renderSystemPrompt(TOOLS)` → the `[ACTION]` instruction block. **This replaces the hand-written block at `js/disha.js:96-101`**, so the prompt can never drift from the registry.
+- `DISHATools.renderSystemPrompt(TOOLS)` → the `[ACTION]` instruction block. In the shipped design the single-shot block at `js/disha.js` is **retained**; the agent instead composes its own system prompt from `renderSystemPrompt({agent:true})` at runtime (avoids coupling a module-eval constant to load order), so the *agent's* tool list can never drift from the schema.
 - `DISHATools.toOpenAI(TOOLS)` → an OpenAI `tools: [{type:'function', function:{name, parameters}}]` array, consumed only when the provider is OpenAI-type and a feature flag is on.
 - `DISHATools.validateArgs(tool, params)` → the safety gate (4.5).
 
-**Recommendation: keep `[ACTION]` text directives as the universal execution path; treat native function-calling as an optional accelerator.** The default provider is **Ollama**, whose `/api/generate` cannot do native tool-calls, and `streamOpenAI` today hardcodes the request body with no `tools` field and reads only `choices[0].delta.content` (ignoring `delta.tool_calls`). A text protocol that already works on every provider and is already unit-tested is the pragmatic substrate. **Phase 2** extends `streamOpenAI` to pass `tools`/`tool_choice` and accumulate `delta.tool_calls` fragments, normalizing them onto the **same** `DISHAActions.REGISTRY` — native and text tool-calls converge on one dispatcher.
+**Recommendation: keep `[ACTION]` text directives as the universal execution path; treat native function-calling as an optional accelerator.** The default provider is **Ollama**, whose `/api/generate` cannot do native tool-calls, and `streamOpenAI` today hardcodes the request body with no `tools` field and reads only `choices[0].delta.content` (ignoring `delta.tool_calls`). A text protocol that already works on every provider and is already unit-tested is the pragmatic substrate. **Phase 2** extends `streamOpenAI` to pass `tools`/`tool_choice` and accumulate `delta.tool_calls` fragments, normalizing them onto the **same** `DISHAActions` dispatcher (`executeAgentActions`) — native and text tool-calls converge on one path.
 
 ### 4.5 Tool registry expansion
 
-Extend the handler contract: a handler may return a **string** (state-changing, label only, as today) or **`{label, observation}`** (read tools that feed data back). `executeActions` attaches `observation` to its result objects; the per-action try/catch and `slice(0, max)` cap are unchanged.
+The new tools live in a separate async `AGENT_REGISTRY` run by `executeAgentActions` (the sync `executeActions` single-shot path is untouched). A handler returns a **string** (state-changing, label only) or **`{label, observation}`** (read tools that feed data back); `executeAgentActions` attaches `observation` to its result objects, validates args via `DISHATools.validateArgs`, and applies the per-run tool cap and map-mutation cap.
 
 | Tool | kind | Wraps (verified) |
 |------|------|-------|
@@ -169,7 +169,7 @@ Existing `flyto` / `selectcell` / `overlay` / `query` are unchanged (state-chang
 ### 4.6 Safety
 
 - **Argument validation** — `DISHATools.validateArgs` mirrors `Text2Map.validateWeights` (`js/text2map.js:69`): drop unknown arg keys, coerce/clamp types, and validate `digipin`-typed args against the `23456789CFJKLMPT` alphabet (the same check `js/disha-panel.js` uses when linkifying codes). `rankCells` inherits Text2Map's anti-hallucination gate automatically.
-- **Containment** — keep the existing per-action try/catch and `slice(0, max)` cap in `executeActions`; one bad tool cannot break the turn.
+- **Containment** — the per-action try/catch and `slice(0, max)` cap in `executeAgentActions`; one bad tool cannot break the turn.
 - **Read vs. state** — the `kind` field lets the loop call read tools freely up to budget while **capping map-mutating tools harder (≤ 2 per run)** so the agent cannot thrash the camera/markers. `compareCells` already self-caps at `MAX_PINS=3`.
 - **Budget** — `AGENT_BUDGET` (total tool calls across all iterations, e.g. 8) on top of `ACTIONS_PER_STEP=3` and `MAX_ITERS=4`.
 - **Auditability** — the agent re-renders `DISHAPanel._renderActionChips` after **every** iteration, so each tool call is visible ✓/✗ in-UI, not hidden.

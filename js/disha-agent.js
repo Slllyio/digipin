@@ -129,33 +129,36 @@ const DISHAAgent = (() => {
             const turn = await DISHA.complete({ system: state.system, messages: state.messages });
             const acts = (typeof DISHAActions !== 'undefined') ? DISHAActions.parseActions(turn) : [];
             const prose = cleanProse(turn);
+            const actionable = acts.filter(a => a.type !== 'finish');
+            const final = isFinal(turn, acts) || state.calls >= AGENT_BUDGET;
 
-            // Final answer: model stopped calling tools (or hit the tool budget).
-            if (isFinal(turn, acts) || state.calls >= AGENT_BUDGET) {
-                if (prose) { onAssistant(prose, { final: true }); return prose; }
-                // A final *signal* with no prose — e.g. a bare `[ACTION] finish`
-                // or `[DONE]` after gathering observations. Don't stop empty:
-                // synthesize the answer from what has been gathered so far.
-                return await finalize(state, [{ role: 'assistant', content: turn }], onAssistant);
+            // Run this turn's tool directives FIRST — even on a final turn — so a
+            // closing "generateSiteBrief + selectCell + [DONE]" still executes and
+            // renders chips instead of being silently dropped.
+            let results = [];
+            if (actionable.length && state.calls < AGENT_BUDGET) {
+                const cap = Math.min(ACTIONS_PER_STEP, AGENT_BUDGET - state.calls);
+                results = await DISHAActions.executeAgentActions(actionable, {
+                    max: cap, mapMutationCap: MAP_MUTATION_CAP, counters: state.counters,
+                });
+                state.calls += results.length;
+                if (results.length) onChips(results);
             }
 
-            // Intermediate reasoning (the agent narrating this step).
+            if (final) {
+                if (prose) { onAssistant(prose, { final: true }); return prose; }
+                // Final signal (bare finish/[DONE]) with no prose → synthesize the
+                // answer from this turn plus any observations it just produced.
+                const extra = [{ role: 'assistant', content: turn }];
+                if (results.length) extra.push({ role: 'user', content: buildObservation(results) });
+                return await finalize(state, extra, onAssistant);
+            }
+
+            // Not final: narrate this step, feed observations back, continue.
             if (prose) onAssistant(prose, { final: false });
-
-            const actionable = acts.filter(a => a.type !== 'finish');
-            const cap = Math.min(ACTIONS_PER_STEP, AGENT_BUDGET - state.calls);
-            const results = await DISHAActions.executeAgentActions(actionable, {
-                max: cap,
-                mapMutationCap: MAP_MUTATION_CAP,
-                counters: state.counters,
-            });
-            state.calls += results.length;
-            if (results.length) onChips(results);
-
             state.messages = nextMessages(state.messages, turn, buildObservation(results));
             state.iter++;
 
-            // Budget/iteration exhausted → one forced synthesis turn with tools off.
             if (state.iter >= MAX_ITERS || state.calls >= AGENT_BUDGET) {
                 return await finalize(state, [], onAssistant);
             }

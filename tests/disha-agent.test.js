@@ -152,4 +152,22 @@ describe('DISHAAgent.run (loop mechanics, scripted model)', () => {
         expect(finalProse).toEqual(['Based on the data, safety is strong here.']);
         expect(i).toBe(3);   // gather → bare finish → forced synthesis
     });
+
+    it('executes tool directives on a final [DONE] turn before returning', async () => {
+        // One final turn carries both a directive and the answer + [DONE]. The
+        // directive must run (chip) rather than being dropped by early return.
+        globalThis.DISHA.complete = async () =>
+            'Assessment:\n[ACTION] getCellData code:39J49LL8T4\nSafe and central. [DONE]';
+        let chips = null;
+        const finals = [];
+        const final = await AG.run('Assess this cell.', { context: 'CTX' }, {
+            onAssistant: (t, m) => { if (m.final) finals.push(t); },
+            onChips: (r) => { chips = r; },
+        });
+        expect(final).toContain('Safe and central');
+        expect(finals).toHaveLength(1);
+        expect(finals[0]).toContain('Safe and central');
+        expect(chips).toHaveLength(1);
+        expect(chips[0]).toMatchObject({ type: 'getcelldata', ok: true });
+    });
 });

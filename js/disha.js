@@ -972,17 +972,28 @@ Keep each directive on its own line; the rest of your reply should read normally
         const signal = _abortController.signal;
 
         try {
+            let text;
             if (provider.type === 'ollama') {
                 const transcript = (messages || [])
                     .map(m => `${m.role === 'assistant' ? 'DISHA' : 'User'}: ${m.content}`)
                     .join('\n\n');
-                return await DISHAProviders.stream({
+                text = await DISHAProviders.stream({
                     system, prompt: `${transcript}\n\nDISHA:`, onToken: () => {}, signal,
                 });
+            } else {
+                text = await DISHAProviders.stream({
+                    system, messages: messages || [], onToken: () => {}, signal,
+                });
             }
-            return await DISHAProviders.stream({
-                system, messages: messages || [], onToken: () => {}, signal,
-            });
+            // DISHAProviders.stream swallows AbortError (returns ''); surface it so
+            // the agent loop stops cleanly on Stop instead of treating '' as a
+            // final-but-empty turn and firing another request.
+            if (signal.aborted) {
+                const err = new Error('cancelled');
+                err.name = 'AbortError';
+                throw err;
+            }
+            return text;
         } finally {
             _abortController = null;
         }

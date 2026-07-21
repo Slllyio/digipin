@@ -755,10 +755,14 @@ const DISHAPanel = (() => {
             }
         } catch (err) {
             clearThinking();
-            const el = addMessage('disha', '');
-            const content = el.querySelector('.disha-msg-content');
-            content.textContent = `Agent error: ${err.message}`;
-            content.classList.add('disha-error');
+            // Stop button → DISHA.cancel() → AbortError. Treat as cancellation:
+            // leave whatever already rendered, show no error.
+            if (!(err && err.name === 'AbortError')) {
+                const el = addMessage('disha', '');
+                const content = el.querySelector('.disha-msg-content');
+                content.textContent = `Agent error: ${err.message}`;
+                content.classList.add('disha-error');
+            }
         } finally {
             if (typeof DISHAActions !== 'undefined' && DISHAActions._resetAgentState) DISHAActions._resetAgentState();
             _isStreaming = false;

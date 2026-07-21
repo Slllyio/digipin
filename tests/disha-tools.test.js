@@ -68,6 +68,16 @@ describe('DISHATools.renderSystemPrompt', () => {
     });
 });
 
+describe('overlay allowlist ↔ dispatch table', () => {
+    it('the overlay enum stays in sync with DISHAActions.OVERLAYS keys', () => {
+        // Guards against drift: validateArgs must accept exactly the overlays the
+        // dispatch table can actually toggle (see js/disha-actions.js OVERLAYS).
+        const enumVals = DT.getTool('overlay').args.name.values.slice().sort();
+        const dispatchKeys = Object.keys(globalThis.DISHAActions.OVERLAYS).sort();
+        expect(enumVals).toEqual(dispatchKeys);
+    });
+});
+
 describe('DISHATools.toOpenAI', () => {
     it('emits function specs and omits the finish sentinel', () => {
         const tools = DT.toOpenAI({ agent: true });
