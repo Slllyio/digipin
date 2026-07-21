@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-07-21T10:00:53Z",
-  "count": 15,
+  "generated_at_iso": "2026-07-21T11:59:44Z",
+  "count": 13,
   "records": [
+    {
+      "id": "us7000t25j",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-21T11:09:45.478000+00:00",
+      "latitude": 12.8216,
+      "longitude": 144.3814,
+      "depth_km": 12.164,
+      "place": "58 km SSW of Merizo Village, Guam",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t25j",
+      "tsunami": 0,
+      "significance": 386
+    },
     {
       "id": "us7000t24u",
       "magnitude": 4.6,
@@ -145,42 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1xp",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us7000t1x8",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-20T11:10:48.518000+00:00",
-      "latitude": 14.2217,
-      "longitude": -92.8306,
-      "depth_km": 35.0,
-      "place": "70 km SW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1x8",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000t1x5",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-20T10:55:00.820000+00:00",
-      "latitude": 10.6707,
-      "longitude": -62.2023,
-      "depth_km": 66.041,
-      "place": "14 km NE of Güiria, Venezuela",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1x5",
-      "tsunami": 0,
-      "significance": 356
-    },
-    {
-      "id": "us7000t1x3",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-20T10:53:50.628000+00:00",
-      "latitude": 14.3235,
-      "longitude": -92.6156,
-      "depth_km": 39.894,
-      "place": "48 km WSW of Brisas Barra de Suchiate, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t1x3",
-      "tsunami": 0,
-      "significance": 370
     }
   ]
 }
