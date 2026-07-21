@@ -101,3 +101,60 @@ describe('DISHAActions.executeActions', () => {
         expect(DA.executeActions(many, 3)).toHaveLength(3);
     });
 });
+
+describe('DISHAActions.executeAgentActions (agent tools, async)', () => {
+    let origDigiPin, origDataFetcher;
+    beforeEach(() => {
+        DA._resetAgentState();
+        origDigiPin = globalThis.DigiPin;
+        origDataFetcher = globalThis.DataFetcher;
+        // Deterministic stubs for the read-tool data path.
+        globalThis.DigiPin = { decode: () => ({ lat: 22.7, lng: 75.8 }) };
+        globalThis.DataFetcher = {
+            fetchAllFeatures: async () => ({
+                scores: {
+                    safety: { value: 72, label: 'Safety' },
+                    healthcare_access: { value: 18, label: 'Healthcare' },
+                    empty: { value: 0, label: 'Empty' },
+                },
+            }),
+        };
+    });
+    afterEach(() => {
+        globalThis.DigiPin = origDigiPin;
+        globalThis.DataFetcher = origDataFetcher;
+        delete globalThis.MapModule;
+        DA._resetAgentState();
+    });
+
+    it('getCellData returns a {label, observation} with the non-zero scores', async () => {
+        const res = await DA.executeAgentActions([{ type: 'getcelldata', params: { code: '39J49LL8T4' } }]);
+        expect(res[0]).toMatchObject({ type: 'getcelldata', ok: true });
+        expect(res[0].observation).toContain('safety=72');
+        expect(res[0].observation).toContain('healthcare_access=18');
+        expect(res[0].observation).not.toContain('empty=0');
+    });
+
+    it('rejects a hallucinated DIGIPIN code via validateArgs (no throw)', async () => {
+        const res = await DA.executeAgentActions([{ type: 'getcelldata', params: { code: 'not a code!' } }]);
+        expect(res[0]).toMatchObject({ ok: false });
+        expect(res[0].error).toMatch(/invalid DIGIPIN/);
+    });
+
+    it('enforces the per-run map-mutation cap for state-changing tools', async () => {
+        globalThis.MapModule = { flyTo: () => {}, getMap: () => ({}) };
+        const counters = { mutations: 0 };
+        const res = await DA.executeAgentActions([
+            { type: 'flyto', params: { lat: 1, lng: 2 } },
+            { type: 'flyto', params: { lat: 3, lng: 4 } },
+        ], { max: 3, mapMutationCap: 1, counters });
+        expect(res[0].ok).toBe(true);
+        expect(res[1]).toMatchObject({ ok: false });
+        expect(res[1].error).toMatch(/limit/);
+    });
+
+    it('reports unknown actions without throwing', async () => {
+        const res = await DA.executeAgentActions([{ type: 'teleport', params: {} }]);
+        expect(res[0]).toMatchObject({ ok: false, error: 'unknown action' });
+    });
+});

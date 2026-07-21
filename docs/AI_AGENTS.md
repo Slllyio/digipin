@@ -1,8 +1,25 @@
 # AI Agents for the DigiPin Digital City — Research & Implementation Plan
 
-> **Status:** research + implementation plan (no application code changed by this document).
+> **Status:** research + implementation plan. **P0 (the Urban Analyst Agent, §4) is now implemented on this branch** — see "Implementation status" below.
 > **Scope:** how DigiPin should adopt "AI agents," grounded in the code that exists today.
 > **Companion:** builds on `docs/DIGITAL_TWIN_ARCHITECTURE.md`, `docs/PRECOMPUTE_PLAN.md`, `docs/METHODOLOGY.md`.
+
+## Implementation status (P0 — Urban Analyst Agent)
+
+Shipped on this branch and covered by unit + loop-integration tests (`npm test`):
+
+- **`js/disha-tools.js`** — the single declarative `TOOLS` schema + `renderSystemPrompt` / `validateArgs` / `toOpenAI`.
+- **`js/disha-agent.js`** — the ReAct `run` loop (`MAX_ITERS=4`, `AGENT_BUDGET=8`, `MAP_MUTATION_CAP=2`) with pure helpers `initState` / `buildObservation` / `isFinal` / `nextMessages` / `cleanProse`.
+- **`js/disha-actions.js`** — new async `executeAgentActions` + the `rankCells` / `getCellData` / `compareCells` / `generateSiteBrief` / `runIsochrone` / `finish` tools, allowlist-validated, with a per-run code→coord index.
+- **`js/disha.js`** — `DISHA.complete()` (cache-free, history-free single turn; reuses the AbortController so the existing Stop button cancels the agent) + `isAgentQuestion` routing.
+- **`js/disha-panel.js`** — `handleAgent()` renders the agent's per-step reasoning and ✓/✗ tool chips live; `send()` routes agent-eligible questions (or an explicit `/agent …`).
+- Tests: `tests/disha-tools.test.js`, `tests/disha-agent.test.js` (incl. a scripted-model loop trace), extended `tests/disha-actions.test.js`.
+
+**Two deliberate deviations from the plan below**, both to keep the change safe and backward-compatible:
+1. The agent tools live in a **separate async `executeAgentActions` / `AGENT_REGISTRY`** rather than being merged into the sync `REGISTRY` — so the single-shot path and its existing tests are untouched.
+2. The inline `[ACTION]` block in `disha.js`'s `SYSTEM_PROMPT` (single-shot chat) is **left in place**; the agent composes its own system prompt from `DISHATools.renderSystemPrompt({agent:true})` at runtime (avoids a load-order coupling on a module-eval constant). The tool schema is still the single source of truth for the *agent*.
+
+Not yet built (future phases): native function-calling in `streamOpenAI` (P1), and the Tier-2/3 agents (§5–6).
 
 ## 0. Why this document
 

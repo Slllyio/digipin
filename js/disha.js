@@ -652,6 +652,30 @@ Keep each directive on its own line; the rest of your reply should read normally
         return 'best_residential';
     }
 
+    /**
+     * True when a question warrants the multi-step Urban Analyst Agent (a
+     * tool-using ReAct loop) rather than the fast single-shot answer. Kept
+     * deliberately narrow — an explicit `/agent` prefix always qualifies, and
+     * otherwise only genuinely multi-step planning asks (find-then-justify,
+     * compare-and-recommend) do, so casual questions stay on the quick path.
+     */
+    function isAgentQuestion(question) {
+        const q = String(question || '').trim();
+        if (/^\/agent\b/i.test(q)) return true;
+        const ql = q.toLowerCase();
+        return (
+            /\bstep[-\s]?by[-\s]?step\b/.test(ql)
+            || (/\bwhere\s+should\b/.test(ql) && /\b(why|then|and\s+(then|compare|recommend|why))\b/.test(ql))
+            || (/\bcompare\b/.test(ql) && /\b(recommend|suggest|which\s+is\s+best|and\s+why|decide|pick)\b/.test(ql))
+            || (/\brecommend\b/.test(ql) && /\bwhy\b/.test(ql))
+        );
+    }
+
+    /** Strip a leading `/agent` command prefix from a question. */
+    function stripAgentPrefix(question) {
+        return String(question || '').replace(/^\/agent\b\s*/i, '').trim();
+    }
+
     // ===== CITY-LEVEL SCAN (optimized) =====
     // Batches of 8, cell caching, faster processing
     async function cityScan(question, onStatus) {
@@ -929,6 +953,41 @@ Keep each directive on its own line; the rest of your reply should read normally
         }
     }
 
+    /**
+     * Run one full model turn and resolve to the complete reply string — the
+     * primitive the Urban Analyst Agent's loop awaits. Unlike ask(), it does
+     * NOT touch the response cache or _conversationHistory (the agent owns its
+     * own message list), and it accepts a canonical `messages` array, flattening
+     * it to a prompt transcript for the Ollama (prompt-only) path.
+     *
+     * Reuses the module-level AbortController so the existing Stop button
+     * (DISHA.cancel()) aborts an in-flight agent turn too.
+     */
+    async function complete({ system, messages }) {
+        const provider = DISHAProviders.getActive();
+        if (!provider) throw new Error('No AI provider available');
+
+        if (_abortController) _abortController.abort();
+        _abortController = new AbortController();
+        const signal = _abortController.signal;
+
+        try {
+            if (provider.type === 'ollama') {
+                const transcript = (messages || [])
+                    .map(m => `${m.role === 'assistant' ? 'DISHA' : 'User'}: ${m.content}`)
+                    .join('\n\n');
+                return await DISHAProviders.stream({
+                    system, prompt: `${transcript}\n\nDISHA:`, onToken: () => {}, signal,
+                });
+            }
+            return await DISHAProviders.stream({
+                system, messages: messages || [], onToken: () => {}, signal,
+            });
+        } finally {
+            _abortController = null;
+        }
+    }
+
     /** Abort the in-flight streaming request, if any. */
     function cancel() {
         if (_abortController) {
@@ -1061,11 +1120,16 @@ Keep each directive on its own line; the rest of your reply should read normally
         cityScan,
         buildCityScanContext,
         ask,
+        complete,
         cancel,
         getSuggestions,
         offlineSummary,
         clearHistory,
         isConnected,
-        getAQICategory
+        getAQICategory,
+        isAgentQuestion,
+        stripAgentPrefix,
+        languageDirective: _languageDirective,
+        SYSTEM_PROMPT
     };
 })();
