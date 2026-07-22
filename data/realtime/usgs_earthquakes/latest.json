@@ -1,7 +1,127 @@
 {
-  "generated_at_iso": "2026-07-22T13:48:41Z",
-  "count": 15,
+  "generated_at_iso": "2026-07-22T23:28:58Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us7000t2jk",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-22T21:58:51.218000+00:00",
+      "latitude": -15.8322,
+      "longitude": -173.9028,
+      "depth_km": 71.248,
+      "place": "17 km NW of Hihifo, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2jk",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000t2jh",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-22T21:42:50.558000+00:00",
+      "latitude": -14.7317,
+      "longitude": 167.9943,
+      "depth_km": 10.0,
+      "place": "104 km ENE of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2jh",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000t2j3",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-22T21:03:02.092000+00:00",
+      "latitude": -29.6177,
+      "longitude": -177.9234,
+      "depth_km": 46.903,
+      "place": "Kermadec Islands, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2j3",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000t2ig",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-22T20:07:27.595000+00:00",
+      "latitude": -29.433,
+      "longitude": -177.1006,
+      "depth_km": 35.0,
+      "place": "Kermadec Islands, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2ig",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000t2hm",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-07-22T18:29:39.600000+00:00",
+      "latitude": -31.5416,
+      "longitude": 179.9243,
+      "depth_km": 346.444,
+      "place": "Kermadec Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2hm",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "aka2026okmwzn",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-22T18:13:23.544000+00:00",
+      "latitude": 56.199,
+      "longitude": -153.375,
+      "depth_km": 16.2,
+      "place": "96 km SSE of Akhiok, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026okmwzn",
+      "tsunami": 0,
+      "significance": 370
+    },
+    {
+      "id": "us7000t2h9",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-22T17:34:36.746000+00:00",
+      "latitude": -23.3767,
+      "longitude": -68.5273,
+      "depth_km": 108.731,
+      "place": "61 km SSW of San Pedro de Atacama, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2h9",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000t2gx",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-07-22T15:45:47.284000+00:00",
+      "latitude": -29.6426,
+      "longitude": -176.9767,
+      "depth_km": 35.0,
+      "place": "Kermadec Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2gx",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000t2gq",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-22T15:39:22.525000+00:00",
+      "latitude": -29.7099,
+      "longitude": -177.3364,
+      "depth_km": 35.0,
+      "place": "Kermadec Islands, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2gq",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000t2gh",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-22T14:50:42.472000+00:00",
+      "latitude": -2.5597,
+      "longitude": 138.8297,
+      "depth_km": 10.0,
+      "place": "200 km W of Abepura, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2gh",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000t2g0",
       "magnitude": 4.6,
@@ -109,78 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2dg",
       "tsunami": 0,
       "significance": 346
-    },
-    {
-      "id": "us7000t2c9",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-21T22:33:01.323000+00:00",
-      "latitude": -17.9675,
-      "longitude": 168.6204,
-      "depth_km": 146.721,
-      "place": "41 km SE of Port-Vila, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2c9",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000t2az",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-21T19:29:18.670000+00:00",
-      "latitude": -20.2649,
-      "longitude": 168.5976,
-      "depth_km": 10.0,
-      "place": "107 km SW of Isangel, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2az",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000t2a7",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-07-21T18:33:27.762000+00:00",
-      "latitude": 5.739,
-      "longitude": 125.4295,
-      "depth_km": 68.769,
-      "place": "7 km WNW of Kalbay, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2a7",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000t2a5",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-07-21T18:32:56.368000+00:00",
-      "latitude": 43.3469,
-      "longitude": -127.0338,
-      "depth_km": 17.396,
-      "place": "214 km W of Bandon, Oregon",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2a5",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000t29t",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-07-21T17:43:01.447000+00:00",
-      "latitude": -9.0849,
-      "longitude": -79.9136,
-      "depth_km": 35.0,
-      "place": "139 km W of Puerto Santa, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t29t",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000t29r",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-21T17:21:06.859000+00:00",
-      "latitude": -57.1718,
-      "longitude": -66.6861,
-      "depth_km": 10.0,
-      "place": "281 km SSE of Ushuaia, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t29r",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
