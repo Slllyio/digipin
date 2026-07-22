@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-07-22T09:57:59Z",
-  "count": 18,
+  "generated_at_iso": "2026-07-22T13:48:41Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us7000t2g0",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-22T11:37:17.816000+00:00",
+      "latitude": -23.8369,
+      "longitude": -68.3218,
+      "depth_km": 126.094,
+      "place": "103 km S of San Pedro de Atacama, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2g0",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000t2fu",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-07-22T10:58:32.056000+00:00",
+      "latitude": -5.912,
+      "longitude": 147.3646,
+      "depth_km": 106.527,
+      "place": "89 km NW of Finschhafen, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2fu",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000t2fq",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-22T10:24:53.831000+00:00",
+      "latitude": 14.3451,
+      "longitude": -92.9016,
+      "depth_km": 35.0,
+      "place": "66 km SW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2fq",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000t2fj",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-22T09:47:20.059000+00:00",
+      "latitude": 5.733,
+      "longitude": 125.3902,
+      "depth_km": 64.477,
+      "place": "11 km NW of Sugal, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2fj",
+      "tsunami": 0,
+      "significance": 370
+    },
     {
       "id": "us7000t2fd",
       "magnitude": 5.1,
@@ -133,90 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t29r",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us7000t26k",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-07-21T13:48:06.868000+00:00",
-      "latitude": 13.0193,
-      "longitude": 122.6735,
-      "depth_km": 10.0,
-      "place": "18 km SSE of Talisay, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t26k",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000t26j",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-07-21T13:47:12.433000+00:00",
-      "latitude": -2.5778,
-      "longitude": 138.8732,
-      "depth_km": 7.875,
-      "place": "195 km W of Abepura, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t26j",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000t26b",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-07-21T13:13:11.261000+00:00",
-      "latitude": 39.9371,
-      "longitude": -29.7175,
-      "depth_km": 6.736,
-      "place": "132 km ENE of Santa Cruz das Flores, Portugal",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t26b",
-      "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "us7000t25y",
-      "magnitude": 5.6,
-      "origin_time_utc": "2026-07-21T12:14:33.338000+00:00",
-      "latitude": -29.5116,
-      "longitude": -176.9951,
-      "depth_km": 10.0,
-      "place": "Kermadec Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t25y",
-      "tsunami": 0,
-      "significance": 482
-    },
-    {
-      "id": "us7000t25t",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-21T11:47:15.816000+00:00",
-      "latitude": -7.5366,
-      "longitude": 122.8227,
-      "depth_km": 550.12,
-      "place": "137 km NNE of Maumere, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t25t",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000t25s",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-21T11:43:08.411000+00:00",
-      "latitude": 23.2707,
-      "longitude": 101.5395,
-      "depth_km": 10.0,
-      "place": "78 km NE of Simao, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t25s",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t25j",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-21T11:09:45.478000+00:00",
-      "latitude": 12.8216,
-      "longitude": 144.3814,
-      "depth_km": 12.164,
-      "place": "58 km SSW of Merizo Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t25j",
-      "tsunami": 0,
-      "significance": 386
     }
   ]
 }
