@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-07-22T07:21:15Z",
-  "count": 16,
+  "generated_at_iso": "2026-07-22T09:57:59Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us7000t2fd",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-22T09:34:22.317000+00:00",
+      "latitude": -27.8666,
+      "longitude": -71.7009,
+      "depth_km": 10.0,
+      "place": "121 km NW of Vallenar, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2fd",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000t2ei",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-22T06:46:40.106000+00:00",
+      "latitude": -2.6349,
+      "longitude": 138.7604,
+      "depth_km": 21.587,
+      "place": "208 km W of Abepura, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2ei",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000t2dz",
       "magnitude": 5.0,
