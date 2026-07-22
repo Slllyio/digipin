@@ -1,5 +1,5 @@
 {
-  "generated_at_iso": "2026-07-21T22:35:22Z",
+  "generated_at_iso": "2026-07-22T04:33:24Z",
   "count": 29,
   "records": [
     {
@@ -94,14 +94,14 @@
       "alert_score": 1.0,
       "alert_level": "Green",
       "title": "Green notification for tropical cyclone BERTHA-26. Population affected by Category 1 (120 km/h) wind speeds or higher is 0  (0 in Tropical Storm).",
-      "description": "From 19/07/2026 to 21/07/2026, a Tropical Storm (maximum wind speed of 93 km/h) BERTHA-26 was active in Atlantic. The cyclone affects these countries: United States (vulnerability Low). Estimated population affected by category 1 (120 km/h) wind speeds or higher is 0  (0 in tropical storm).",
+      "description": "From 19/07/2026 to 22/07/2026, a Tropical Storm (maximum wind speed of 93 km/h) BERTHA-26 was active in Atlantic. The cyclone affects these countries: United States (vulnerability Low). Estimated population affected by category 1 (120 km/h) wind speeds or higher is 0  (0 in tropical storm).",
       "country": "United States",
       "published_utc": "Sun, 19 Jul 2026 15:09:29 GMT",
       "latitude": null,
       "longitude": null,
       "url": "https://www.gdacs.org/report.aspx?eventtype=TC&eventid=1001290",
       "glide_number": "",
-      "population_affected": "Population affected by Category 1 (120 km/h) wind speeds or higher is 0 (13.671 million in Tropical Storm)",
+      "population_affected": "Population affected by Category 1 (120 km/h) wind speeds or higher is 0 (12.438 million in Tropical Storm)",
       "tags": []
     },
     {
@@ -111,7 +111,7 @@
       "alert_score": 1.0,
       "alert_level": "Green",
       "title": "Green notification for tropical cyclone FAUSTO-26. Population affected by Category 1 (120 km/h) wind speeds or higher is 0  (0 in Tropical Storm).",
-      "description": "From 19/07/2026 to 21/07/2026, a Hurricane/Typhoon > 74 mph (maximum wind speed of 157 km/h) FAUSTO-26 was active in EastPacific. The cyclone affects these countries: [unknown] (vulnerability [unknown]). Estimated population affected by category 1 (120 km/h) wind speeds or higher is 0  (0 in tropical storm).",
+      "description": "From 19/07/2026 to 22/07/2026, a Hurricane/Typhoon > 74 mph (maximum wind speed of 157 km/h) FAUSTO-26 was active in EastPacific. The cyclone affects these countries: [unknown] (vulnerability [unknown]). Estimated population affected by category 1 (120 km/h) wind speeds or higher is 0  (0 in tropical storm).",
       "country": "",
       "published_utc": "Sun, 19 Jul 2026 02:53:14 GMT",
       "latitude": null,
@@ -125,17 +125,17 @@
       "id": "1552752",
       "event_type": "EQ",
       "event_label": "Earthquake",
-      "alert_score": 1.96488405318581,
+      "alert_score": 1.93224355119598,
       "alert_level": "Orange",
-      "title": "Orange earthquake (Magnitude 5.5M, Depth:10km) in Peru 19/07/2026 02:24 UTC, 1.2 million in 100km.",
-      "description": "On 7/19/2026 2:24:35 AM, an earthquake occurred in Peru potentially affecting 1.2 million in 100km. The earthquake had Magnitude 5.5M, Depth:10km.",
+      "title": "Orange earthquake (Magnitude 5.5M, Depth:10km) in Peru 19/07/2026 02:24 UTC, 240 thousand (in MMI>=VII).",
+      "description": "On 7/19/2026 2:24:35 AM, an earthquake occurred in Peru potentially affecting 240 thousand (in MMI>=VII). The earthquake had Magnitude 5.5M, Depth:10km.",
       "country": "Peru",
       "published_utc": "Sun, 19 Jul 2026 02:42:14 GMT",
       "latitude": null,
       "longitude": null,
       "url": "https://www.gdacs.org/report.aspx?eventtype=EQ&eventid=1552752",
       "glide_number": "",
-      "population_affected": "440 thousand in MMI VI",
+      "population_affected": "240 thousand (in MMI>=VII)",
       "tags": []
     },
     {
