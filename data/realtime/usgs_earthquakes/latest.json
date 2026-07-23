@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-07-23T01:04:14Z",
+  "generated_at_iso": "2026-07-23T04:32:56Z",
   "count": 19,
   "records": [
+    {
+      "id": "us7000t2l3",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-23T02:55:40.344000+00:00",
+      "latitude": -9.6602,
+      "longitude": -79.0735,
+      "depth_km": 62.203,
+      "place": "78 km WSW of Puerto Casma, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2l3",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000t2ku",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-07-23T02:38:25.218000+00:00",
+      "latitude": -16.3095,
+      "longitude": -72.8016,
+      "depth_km": 96.293,
+      "place": "33 km NNW of El Cardo, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2ku",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000t2kg",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-07-23T01:56:00.935000+00:00",
+      "latitude": -23.1101,
+      "longitude": -68.9868,
+      "depth_km": 95.961,
+      "place": "72 km S of Calama, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2kg",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000t2jk",
       "magnitude": 4.9,
@@ -193,42 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2ei",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us7000t2dz",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-22T04:18:22.071000+00:00",
-      "latitude": 4.2441,
-      "longitude": 97.5238,
-      "depth_km": 10.0,
-      "place": "55 km WSW of Langsa, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2dz",
-      "tsunami": 0,
-      "significance": 386
-    },
-    {
-      "id": "us7000t2dv",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-07-22T03:45:49.474000+00:00",
-      "latitude": 44.4209,
-      "longitude": 148.9654,
-      "depth_km": 35.0,
-      "place": "124 km SE of Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2dv",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000t2dg",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-07-22T02:03:50.385000+00:00",
-      "latitude": -19.2494,
-      "longitude": -70.1036,
-      "depth_km": 60.814,
-      "place": "12 km SE of Cuya, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2dg",
-      "tsunami": 0,
-      "significance": 346
     }
   ]
 }
