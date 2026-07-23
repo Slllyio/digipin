@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-07-23T04:32:56Z",
-  "count": 19,
+  "generated_at_iso": "2026-07-23T09:56:55Z",
+  "count": 20,
   "records": [
+    {
+      "id": "us7000t2n5",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-23T09:30:18.969000+00:00",
+      "latitude": 51.604,
+      "longitude": -173.2484,
+      "depth_km": 35.0,
+      "place": "92 km SE of Atka, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2n5",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000t2n3",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-23T09:22:22.460000+00:00",
+      "latitude": 27.8812,
+      "longitude": 130.1887,
+      "depth_km": 10.0,
+      "place": "85 km SE of Tatsugō, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2n3",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000t2mc",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-23T06:51:08.005000+00:00",
+      "latitude": 51.6051,
+      "longitude": -173.1921,
+      "depth_km": 40.716,
+      "place": "95 km SE of Atka, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2mc",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000t2mi",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-23T06:29:57.530000+00:00",
+      "latitude": 8.5099,
+      "longitude": -39.3528,
+      "depth_km": 10.0,
+      "place": "central Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2mi",
+      "tsunami": 0,
+      "significance": 400
+    },
     {
       "id": "us7000t2l3",
       "magnitude": 4.6,
@@ -193,42 +241,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2fq",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000t2fj",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-22T09:47:20.059000+00:00",
-      "latitude": 5.733,
-      "longitude": 125.3902,
-      "depth_km": 64.477,
-      "place": "11 km NW of Sugal, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2fj",
-      "tsunami": 0,
-      "significance": 370
-    },
-    {
-      "id": "us7000t2fd",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-07-22T09:34:22.317000+00:00",
-      "latitude": -27.8666,
-      "longitude": -71.7009,
-      "depth_km": 10.0,
-      "place": "121 km NW of Vallenar, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2fd",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000t2ei",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-22T06:46:40.106000+00:00",
-      "latitude": -2.6349,
-      "longitude": 138.7604,
-      "depth_km": 21.587,
-      "place": "208 km W of Abepura, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2ei",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
