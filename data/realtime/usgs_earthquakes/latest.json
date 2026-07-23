@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-07-23T09:56:55Z",
+  "generated_at_iso": "2026-07-23T17:20:48Z",
   "count": 20,
   "records": [
+    {
+      "id": "us7000t2tf",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-23T15:29:58.775000+00:00",
+      "latitude": 14.562,
+      "longitude": -93.4626,
+      "depth_km": 30.291,
+      "place": "103 km SSW of La Esperanza (El Zapotal), Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2tf",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000t2t9",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-07-23T14:12:59.750000+00:00",
+      "latitude": -11.9406,
+      "longitude": 166.4229,
+      "depth_km": 186.505,
+      "place": "150 km SSE of Lata, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2t9",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000t2p7",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-23T13:14:03.195000+00:00",
+      "latitude": 13.876,
+      "longitude": -92.2338,
+      "depth_km": 35.0,
+      "place": "57 km SW of Champerico, Guatemala",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2p7",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000t2p1",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-23T12:11:57.629000+00:00",
+      "latitude": 18.0675,
+      "longitude": 145.2565,
+      "depth_km": 320.638,
+      "place": "Pagan region, Northern Mariana Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2p1",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000t2nz",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-23T12:04:46.113000+00:00",
+      "latitude": 13.8303,
+      "longitude": -92.4514,
+      "depth_km": 10.0,
+      "place": "77 km SW of Champerico, Guatemala",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2nz",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "tx2026ojlaky",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-23T10:21:43.909000+00:00",
+      "latitude": 35.902,
+      "longitude": -100.976,
+      "depth_km": 5.6885,
+      "place": "38 km SSE of Spearman, Texas",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/tx2026ojlaky",
+      "tsunami": 0,
+      "significance": 647
+    },
     {
       "id": "us7000t2n5",
       "magnitude": 5.1,
@@ -169,78 +241,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2h9",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us7000t2gx",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-22T15:45:47.284000+00:00",
-      "latitude": -29.6426,
-      "longitude": -176.9767,
-      "depth_km": 35.0,
-      "place": "Kermadec Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2gx",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000t2gq",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-22T15:39:22.525000+00:00",
-      "latitude": -29.7099,
-      "longitude": -177.3364,
-      "depth_km": 35.0,
-      "place": "Kermadec Islands, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2gq",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t2gh",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-22T14:50:42.472000+00:00",
-      "latitude": -2.5597,
-      "longitude": 138.8297,
-      "depth_km": 10.0,
-      "place": "200 km W of Abepura, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2gh",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t2g0",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-07-22T11:37:17.816000+00:00",
-      "latitude": -23.8369,
-      "longitude": -68.3218,
-      "depth_km": 126.094,
-      "place": "103 km S of San Pedro de Atacama, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2g0",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000t2fu",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-07-22T10:58:32.056000+00:00",
-      "latitude": -5.912,
-      "longitude": 147.3646,
-      "depth_km": 106.527,
-      "place": "89 km NW of Finschhafen, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2fu",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000t2fq",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-22T10:24:53.831000+00:00",
-      "latitude": 14.3451,
-      "longitude": -92.9016,
-      "depth_km": 35.0,
-      "place": "66 km SW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2fq",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
