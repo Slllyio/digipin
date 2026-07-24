@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-07-24T19:54:30Z",
-  "count": 21,
+  "generated_at_iso": "2026-07-24T21:01:28Z",
+  "count": 20,
   "records": [
     {
       "id": "us7000t36n",
@@ -13,6 +13,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t36n",
       "tsunami": 0,
       "significance": 449
+    },
+    {
+      "id": "us7000t36g",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-24T19:06:27.517000+00:00",
+      "latitude": 4.9092,
+      "longitude": 125.4751,
+      "depth_km": 10.0,
+      "place": "54 km S of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t36g",
+      "tsunami": 0,
+      "significance": 369
     },
     {
       "id": "us7000t36e",
@@ -72,7 +84,7 @@
       "place": "49 km W of Turangi, New Zealand",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t34g",
       "tsunami": 0,
-      "significance": 535
+      "significance": 537
     },
     {
       "id": "us7000t34c",
@@ -229,30 +241,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2vx",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000t2v2",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-23T20:22:44.527000+00:00",
-      "latitude": -18.6714,
-      "longitude": -178.0442,
-      "depth_km": 488.723,
-      "place": "286 km ESE of Levuka, Fiji",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2v2",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000t2uz",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-23T20:15:13.431000+00:00",
-      "latitude": -2.6381,
-      "longitude": 138.7352,
-      "depth_km": 10.0,
-      "place": "211 km W of Abepura, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2uz",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
