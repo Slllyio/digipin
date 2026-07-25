@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-07-25T10:25:25Z",
-  "count": 19,
+  "generated_at_iso": "2026-07-25T16:54:43Z",
+  "count": 13,
   "records": [
     {
       "id": "us7000t3a4",
@@ -24,7 +24,7 @@
       "place": "43 km SW of Puerto Madero, Mexico",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3a0",
       "tsunami": 0,
-      "significance": 401
+      "significance": 402
     },
     {
       "id": "us7000t38a",
@@ -157,78 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t35n",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us7000t34g",
-      "magnitude": 5.7,
-      "origin_time_utc": "2026-07-24T16:51:37.514000+00:00",
-      "latitude": -38.9621,
-      "longitude": 175.2332,
-      "depth_km": 10.0,
-      "place": "49 km W of Turangi, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t34g",
-      "tsunami": 0,
-      "significance": 541
-    },
-    {
-      "id": "us7000t34c",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-07-24T16:33:19.808000+00:00",
-      "latitude": 51.7216,
-      "longitude": 158.127,
-      "depth_km": 69.804,
-      "place": "115 km ENE of Ozernovskiy, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t34c",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000t33w",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-24T15:34:32.283000+00:00",
-      "latitude": -27.2556,
-      "longitude": -67.8335,
-      "depth_km": 10.0,
-      "place": "50 km NNW of Fiambalá, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t33w",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000t30v",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-07-24T12:27:02.974000+00:00",
-      "latitude": -2.6055,
-      "longitude": 138.8797,
-      "depth_km": 10.0,
-      "place": "194 km W of Abepura, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t30v",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000t30r",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-07-24T12:14:28.267000+00:00",
-      "latitude": -2.5572,
-      "longitude": 138.8159,
-      "depth_km": 10.0,
-      "place": "202 km W of Abepura, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t30r",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us7000t309",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-07-24T11:11:34.234000+00:00",
-      "latitude": -2.5436,
-      "longitude": 138.8612,
-      "depth_km": 10.0,
-      "place": "197 km W of Abepura, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t309",
-      "tsunami": 0,
-      "significance": 432
     }
   ]
 }
