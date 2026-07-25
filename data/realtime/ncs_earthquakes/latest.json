@@ -1,7 +1,73 @@
 {
-  "generated_at_iso": "2026-07-24T22:17:07Z",
+  "generated_at_iso": "2026-07-25T11:43:39Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-07-25 12:10:27|20.433,73.673",
+      "magnitude": 3.4,
+      "origin_time": "2026-07-25 12:10:27",
+      "latitude": 20.433,
+      "longitude": 73.673,
+      "depth_km": 5.0,
+      "region": "Nashik, Maharashtra",
+      "location": "49km NNW of Nashik, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-07-25 10:57:18|19.916,72.877",
+      "magnitude": 3.1,
+      "origin_time": "2026-07-25 10:57:18",
+      "latitude": 19.916,
+      "longitude": 72.877,
+      "depth_km": 9.0,
+      "region": "Palghar, Maharashtra",
+      "location": "93km N of Mumbai, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-07-25 09:55:26|20.360,73.607",
+      "magnitude": 3.6,
+      "origin_time": "2026-07-25 09:55:26",
+      "latitude": 20.36,
+      "longitude": 73.607,
+      "depth_km": 5.0,
+      "region": "Nashik, Maharashtra",
+      "location": "44km NNW of Nashik, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-07-25 09:43:04|22.274,78.273",
+      "magnitude": 3.3,
+      "origin_time": "2026-07-25 09:43:04",
+      "latitude": 22.274,
+      "longitude": 78.273,
+      "depth_km": 5.0,
+      "region": "Chhindwara, Madhya Pradesh",
+      "location": "27km SW of Pachmarhi, Madhya Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-07-25 08:34:34|37.571,72.340",
+      "magnitude": 4.0,
+      "origin_time": "2026-07-25 08:34:34",
+      "latitude": 37.571,
+      "longitude": 72.34,
+      "depth_km": 180.0,
+      "region": "Tajikistan",
+      "location": "166km ENE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-07-25 02:56:44|26.737,92.368",
+      "magnitude": 3.1,
+      "origin_time": "2026-07-25 02:56:44",
+      "latitude": 26.737,
+      "longitude": 92.368,
+      "depth_km": 14.0,
+      "region": "Sonitpur, Assam",
+      "location": "43km WNW of Tezpur, Assam, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-07-24 22:49:46|24.455,91.013",
       "magnitude": 3.1,
@@ -1584,72 +1650,6 @@
       "depth_km": 5.0,
       "region": "Mangan, Sikkim",
       "location": "8km N of Gangtok, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-07-08 17:56:26|27.428,88.618",
-      "magnitude": 2.2,
-      "origin_time": "2026-07-08 17:56:26",
-      "latitude": 27.428,
-      "longitude": 88.618,
-      "depth_km": 5.0,
-      "region": "Namchi, Sikkim",
-      "location": "10km N of Gangtok, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-07-08 16:51:59|27.407,88.634",
-      "magnitude": 3.0,
-      "origin_time": "2026-07-08 16:51:59",
-      "latitude": 27.407,
-      "longitude": 88.634,
-      "depth_km": 15.0,
-      "region": "Mangan, Sikkim",
-      "location": "8km NNE of Gangtok, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-07-08 16:33:42|27.371,88.458",
-      "magnitude": 3.0,
-      "origin_time": "2026-07-08 16:33:42",
-      "latitude": 27.371,
-      "longitude": 88.458,
-      "depth_km": 5.0,
-      "region": "Namchi, Sikkim",
-      "location": "11km NE of Ravangla, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-07-08 12:24:32|26.315,92.336",
-      "magnitude": 3.2,
-      "origin_time": "2026-07-08 12:24:32",
-      "latitude": 26.315,
-      "longitude": 92.336,
-      "depth_km": 10.0,
-      "region": "Morigaon, Assam",
-      "location": "59km SW of Tezpur, Assam, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-07-08 11:44:53|37.248,72.145",
-      "magnitude": 4.7,
-      "origin_time": "2026-07-08 11:44:53",
-      "latitude": 37.248,
-      "longitude": 72.145,
-      "depth_km": 208.0,
-      "region": "Tajikistan",
-      "location": "142km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-07-08 11:12:09|28.401,87.408",
-      "magnitude": 3.5,
-      "origin_time": "2026-07-08 11:12:09",
-      "latitude": 28.401,
-      "longitude": 87.408,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "139km NW of Yuksom, Sikkim, India",
       "review_status": "Reviewed"
     }
   ]
