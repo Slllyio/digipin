@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-07-25T16:54:43Z",
-  "count": 13,
+  "generated_at_iso": "2026-07-25T22:26:03Z",
+  "count": 7,
   "records": [
+    {
+      "id": "us7000t3d9",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-25T21:39:01.620000+00:00",
+      "latitude": -29.4861,
+      "longitude": -177.5595,
+      "depth_km": 55.602,
+      "place": "Kermadec Islands, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3d9",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000t3cv",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-25T21:03:17.610000+00:00",
+      "latitude": 51.6063,
+      "longitude": -173.2803,
+      "depth_km": 40.779,
+      "place": "91 km SE of Atka, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3cv",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us7000t3a4",
       "magnitude": 5.0,
@@ -59,102 +83,6 @@
       "depth_km": 10.0,
       "place": "4 km WNW of Sola, Vanuatu",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t382",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t37a",
-      "magnitude": 6.0,
-      "origin_time_utc": "2026-07-24T21:37:56.459000+00:00",
-      "latitude": -14.0205,
-      "longitude": 166.8006,
-      "depth_km": 44.637,
-      "place": "82 km W of Sola, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t37a",
-      "tsunami": 0,
-      "significance": 555
-    },
-    {
-      "id": "us7000t376",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-07-24T21:19:44.549000+00:00",
-      "latitude": -14.0586,
-      "longitude": 166.8778,
-      "depth_km": 16.7,
-      "place": "75 km WSW of Sola, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t376",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000t36n",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-07-24T19:38:42.356000+00:00",
-      "latitude": -23.9755,
-      "longitude": -66.6072,
-      "depth_km": 193.727,
-      "place": "39 km NW of San Antonio de los Cobres, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t36n",
-      "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "us7000t36g",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-24T19:06:27.517000+00:00",
-      "latitude": 4.9092,
-      "longitude": 125.4751,
-      "depth_km": 10.0,
-      "place": "54 km S of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t36g",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t36e",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-24T18:43:04.208000+00:00",
-      "latitude": 31.4494,
-      "longitude": 141.3858,
-      "depth_km": 35.0,
-      "place": "Izu Islands, Japan region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t36e",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000t35u",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-24T17:33:36.568000+00:00",
-      "latitude": 17.7658,
-      "longitude": -93.9139,
-      "depth_km": 201.907,
-      "place": "7 km SSE of Francisco Rueda, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t35u",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000t35r",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-24T17:28:05.655000+00:00",
-      "latitude": -5.5376,
-      "longitude": 103.9042,
-      "depth_km": 58.802,
-      "place": "133 km SW of Kotabumi, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t35r",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t35n",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-24T17:14:55.479000+00:00",
-      "latitude": -20.3259,
-      "longitude": -174.7728,
-      "depth_km": 50.677,
-      "place": "71 km SW of Pangai, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t35n",
       "tsunami": 0,
       "significance": 369
     }
