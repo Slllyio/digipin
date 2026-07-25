@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-07-25T01:09:38Z",
+  "generated_at_iso": "2026-07-25T06:39:16Z",
   "count": 19,
   "records": [
+    {
+      "id": "us7000t3a0",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-25T05:26:33.842000+00:00",
+      "latitude": 14.4952,
+      "longitude": -92.7508,
+      "depth_km": 35.0,
+      "place": "43 km SW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3a0",
+      "tsunami": 0,
+      "significance": 401
+    },
     {
       "id": "us7000t38a",
       "magnitude": 5.0,
@@ -217,18 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2ye",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "pr2026205000",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-24T02:42:36.550000+00:00",
-      "latitude": 18.9423,
-      "longitude": -67.2968,
-      "depth_km": 9.0,
-      "place": "54 km NNW of San Antonio, Puerto Rico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/pr2026205000",
-      "tsunami": 0,
-      "significance": 447
     }
   ]
 }
