@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-07-25T06:39:16Z",
+  "generated_at_iso": "2026-07-25T10:25:25Z",
   "count": 19,
   "records": [
+    {
+      "id": "us7000t3a4",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-25T06:46:06.097000+00:00",
+      "latitude": 4.8793,
+      "longitude": 125.4791,
+      "depth_km": 52.163,
+      "place": "57 km S of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3a4",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us7000t3a0",
       "magnitude": 5.1,
@@ -156,7 +168,7 @@
       "place": "49 km W of Turangi, New Zealand",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t34g",
       "tsunami": 0,
-      "significance": 540
+      "significance": 541
     },
     {
       "id": "us7000t34c",
@@ -217,18 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t309",
       "tsunami": 0,
       "significance": 432
-    },
-    {
-      "id": "us7000t2ye",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-24T08:01:18.375000+00:00",
-      "latitude": -23.0953,
-      "longitude": 68.9337,
-      "depth_km": 10.0,
-      "place": "Mid-Indian Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2ye",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
