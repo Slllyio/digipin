@@ -1,18 +1,78 @@
 {
-  "generated_at_iso": "2026-07-24T21:01:28Z",
-  "count": 20,
+  "generated_at_iso": "2026-07-25T01:09:38Z",
+  "count": 19,
   "records": [
     {
+      "id": "us7000t38a",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-24T23:44:10.140000+00:00",
+      "latitude": -14.2346,
+      "longitude": 166.7272,
+      "depth_km": 10.0,
+      "place": "96 km NNW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t38a",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000t387",
+      "magnitude": 5.7,
+      "origin_time_utc": "2026-07-24T23:10:29.856000+00:00",
+      "latitude": -57.3066,
+      "longitude": -66.8383,
+      "depth_km": 10.0,
+      "place": "292 km SSE of Ushuaia, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t387",
+      "tsunami": 0,
+      "significance": 500
+    },
+    {
+      "id": "us7000t382",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-24T22:39:19.684000+00:00",
+      "latitude": -13.8673,
+      "longitude": 167.5081,
+      "depth_km": 10.0,
+      "place": "4 km WNW of Sola, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t382",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000t37a",
+      "magnitude": 6.0,
+      "origin_time_utc": "2026-07-24T21:37:56.459000+00:00",
+      "latitude": -14.0205,
+      "longitude": 166.8006,
+      "depth_km": 44.637,
+      "place": "82 km W of Sola, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t37a",
+      "tsunami": 0,
+      "significance": 555
+    },
+    {
+      "id": "us7000t376",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-24T21:19:44.549000+00:00",
+      "latitude": -14.0586,
+      "longitude": 166.8778,
+      "depth_km": 16.7,
+      "place": "75 km WSW of Sola, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t376",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
       "id": "us7000t36n",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-07-24T19:38:42.138000+00:00",
-      "latitude": -24.0121,
-      "longitude": -66.7282,
-      "depth_km": 197.18,
-      "place": "47 km WNW of San Antonio de los Cobres, Argentina",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-07-24T19:38:42.356000+00:00",
+      "latitude": -23.9755,
+      "longitude": -66.6072,
+      "depth_km": 193.727,
+      "place": "39 km NW of San Antonio de los Cobres, Argentina",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t36n",
       "tsunami": 0,
-      "significance": 449
+      "significance": 432
     },
     {
       "id": "us7000t36g",
@@ -84,7 +144,7 @@
       "place": "49 km W of Turangi, New Zealand",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t34g",
       "tsunami": 0,
-      "significance": 537
+      "significance": 540
     },
     {
       "id": "us7000t34c",
@@ -169,78 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/pr2026205000",
       "tsunami": 0,
       "significance": 447
-    },
-    {
-      "id": "us7000t2wx",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-24T01:03:16.097000+00:00",
-      "latitude": 51.1015,
-      "longitude": -176.0652,
-      "depth_km": 10.0,
-      "place": "94 km SSE of Adak, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2wx",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000t2ws",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-24T00:37:03.421000+00:00",
-      "latitude": -58.7946,
-      "longitude": -25.2979,
-      "depth_km": 35.0,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2ws",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t2w3",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-07-23T22:58:36.362000+00:00",
-      "latitude": 0.592,
-      "longitude": 126.2244,
-      "depth_km": 49.188,
-      "place": "130 km W of Ternate, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2w3",
-      "tsunami": 0,
-      "significance": 519
-    },
-    {
-      "id": "us7000t2w2",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-07-23T22:55:57.612000+00:00",
-      "latitude": 39.0003,
-      "longitude": 15.3717,
-      "depth_km": 243.071,
-      "place": "56 km NW of Santa Domenica, Italy",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2w2",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000t2w1",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-07-23T22:50:23.617000+00:00",
-      "latitude": -6.1688,
-      "longitude": 100.6411,
-      "depth_km": 10.0,
-      "place": "southwest of Sumatra, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2w1",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000t2vx",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-23T22:39:03.397000+00:00",
-      "latitude": 13.9895,
-      "longitude": -93.4188,
-      "depth_km": 10.0,
-      "place": "134 km SW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t2vx",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
