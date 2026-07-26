@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-07-26T07:20:20Z",
-  "count": 6,
+  "generated_at_iso": "2026-07-26T15:20:37Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us7000t3gt",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-07-26T12:36:17.467000+00:00",
+      "latitude": 24.8852,
+      "longitude": 121.8508,
+      "depth_km": 93.836,
+      "place": "15 km ESE of Pinglin, Taiwan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3gt",
+      "tsunami": 0,
+      "significance": 346
+    },
+    {
+      "id": "us7000t3g4",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-07-26T10:57:37.061000+00:00",
+      "latitude": -10.007,
+      "longitude": 123.4402,
+      "depth_km": 10.0,
+      "place": "25 km NW of Kupang, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3g4",
+      "tsunami": 0,
+      "significance": 433
+    },
+    {
+      "id": "us7000t3fs",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-26T09:26:55.020000+00:00",
+      "latitude": 11.2364,
+      "longitude": -86.8076,
+      "depth_km": 35.0,
+      "place": "68 km SSW of Masachapa, Nicaragua",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3fs",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000t3fm",
+      "magnitude": 5.8,
+      "origin_time_utc": "2026-07-26T08:35:18.849000+00:00",
+      "latitude": 51.4994,
+      "longitude": -173.306,
+      "depth_km": 10.0,
+      "place": "99 km SE of Atka, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3fm",
+      "tsunami": 0,
+      "significance": 518
+    },
     {
       "id": "us7000t3eb",
       "magnitude": 4.7,
