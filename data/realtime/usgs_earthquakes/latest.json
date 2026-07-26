@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-07-25T22:26:03Z",
-  "count": 7,
+  "generated_at_iso": "2026-07-26T07:20:20Z",
+  "count": 6,
   "records": [
+    {
+      "id": "us7000t3eb",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-07-26T02:13:46.744000+00:00",
+      "latitude": 4.7907,
+      "longitude": -72.7547,
+      "depth_km": 12.362,
+      "place": "18 km ESE of Monterrey, Colombia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3eb",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000t3e7",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-26T01:32:44.077000+00:00",
+      "latitude": -34.0707,
+      "longitude": -14.543,
+      "depth_km": 10.0,
+      "place": "Tristan da Cunha region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3e7",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000t3dp",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-25T23:40:48.247000+00:00",
+      "latitude": 50.2541,
+      "longitude": 156.8988,
+      "depth_km": 50.022,
+      "place": "72 km SE of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3dp",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000t3di",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-25T23:09:29.078000+00:00",
+      "latitude": 25.9804,
+      "longitude": 95.294,
+      "depth_km": 92.961,
+      "place": "56 km SE of Tuensang, India",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3di",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000t3d9",
       "magnitude": 4.9,
@@ -25,66 +73,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3cv",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us7000t3a4",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-25T06:46:06.097000+00:00",
-      "latitude": 4.8793,
-      "longitude": 125.4791,
-      "depth_km": 52.163,
-      "place": "57 km S of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3a4",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000t3a0",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-07-25T05:26:33.842000+00:00",
-      "latitude": 14.4952,
-      "longitude": -92.7508,
-      "depth_km": 35.0,
-      "place": "43 km SW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3a0",
-      "tsunami": 0,
-      "significance": 402
-    },
-    {
-      "id": "us7000t38a",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-24T23:44:10.140000+00:00",
-      "latitude": -14.2346,
-      "longitude": 166.7272,
-      "depth_km": 10.0,
-      "place": "96 km NNW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t38a",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000t387",
-      "magnitude": 5.7,
-      "origin_time_utc": "2026-07-24T23:10:29.856000+00:00",
-      "latitude": -57.3066,
-      "longitude": -66.8383,
-      "depth_km": 10.0,
-      "place": "292 km SSE of Ushuaia, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t387",
-      "tsunami": 0,
-      "significance": 500
-    },
-    {
-      "id": "us7000t382",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-24T22:39:19.684000+00:00",
-      "latitude": -13.8673,
-      "longitude": 167.5081,
-      "depth_km": 10.0,
-      "place": "4 km WNW of Sola, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t382",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
