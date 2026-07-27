@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-07-26T15:20:37Z",
+  "generated_at_iso": "2026-07-27T00:11:43Z",
   "count": 10,
   "records": [
+    {
+      "id": "us7000t3jr",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-26T22:39:02.826000+00:00",
+      "latitude": -22.5127,
+      "longitude": -20.2453,
+      "depth_km": 10.0,
+      "place": "South Atlantic Ocean",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3jr",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000t3in",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-07-26T18:19:40.684000+00:00",
+      "latitude": 29.9365,
+      "longitude": -42.8052,
+      "depth_km": 10.0,
+      "place": "northern Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3in",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us7000t3il",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-26T18:15:31.398000+00:00",
+      "latitude": -23.4795,
+      "longitude": 179.8773,
+      "depth_km": 535.429,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3il",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000t3ia",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-26T17:29:13.394000+00:00",
+      "latitude": -28.0972,
+      "longitude": -66.7262,
+      "depth_km": 157.114,
+      "place": "53 km N of Arauco, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3ia",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000t3gt",
       "magnitude": 4.7,
@@ -12,7 +60,7 @@
       "place": "15 km ESE of Pinglin, Taiwan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3gt",
       "tsunami": 0,
-      "significance": 346
+      "significance": 347
     },
     {
       "id": "us7000t3g4",
@@ -73,54 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3e7",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us7000t3dp",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-25T23:40:48.247000+00:00",
-      "latitude": 50.2541,
-      "longitude": 156.8988,
-      "depth_km": 50.022,
-      "place": "72 km SE of Severo-Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3dp",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000t3di",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-25T23:09:29.078000+00:00",
-      "latitude": 25.9804,
-      "longitude": 95.294,
-      "depth_km": 92.961,
-      "place": "56 km SE of Tuensang, India",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3di",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000t3d9",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-25T21:39:01.620000+00:00",
-      "latitude": -29.4861,
-      "longitude": -177.5595,
-      "depth_km": 55.602,
-      "place": "Kermadec Islands, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3d9",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t3cv",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-25T21:03:17.610000+00:00",
-      "latitude": 51.6063,
-      "longitude": -173.2803,
-      "depth_km": 40.779,
-      "place": "91 km SE of Atka, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3cv",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }
