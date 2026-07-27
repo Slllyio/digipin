@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-07-27T16:16:27Z",
+  "generated_at_iso": "2026-07-27T18:02:45Z",
   "count": 22,
   "records": [
+    {
+      "id": "us6000tg2t",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-27T15:51:33.601000+00:00",
+      "latitude": -2.5548,
+      "longitude": 138.7744,
+      "depth_km": 10.0,
+      "place": "206 km W of Abepura, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tg2t",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000t3p2",
       "magnitude": 5.1,
@@ -253,18 +265,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3il",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us7000t3ia",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-26T17:29:13.394000+00:00",
-      "latitude": -28.0972,
-      "longitude": -66.7262,
-      "depth_km": 157.114,
-      "place": "53 km N of Arauco, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3ia",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
