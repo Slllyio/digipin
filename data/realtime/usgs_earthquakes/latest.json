@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-07-27T18:02:45Z",
-  "count": 22,
+  "generated_at_iso": "2026-07-27T21:08:12Z",
+  "count": 23,
   "records": [
+    {
+      "id": "us6000tg75",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-27T20:10:01.634000+00:00",
+      "latitude": -14.5194,
+      "longitude": 168.0332,
+      "depth_km": 10.0,
+      "place": "88 km SE of Sola, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tg75",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tg6e",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-27T19:03:38.391000+00:00",
+      "latitude": 28.1222,
+      "longitude": 139.8936,
+      "depth_km": 426.772,
+      "place": "Bonin Islands, Japan region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tg6e",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tg5f",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-27T17:47:01.325000+00:00",
+      "latitude": 36.6101,
+      "longitude": 71.5913,
+      "depth_km": 116.626,
+      "place": "9 km SSE of Ashkāsham, Afghanistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tg5f",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000tg2t",
       "magnitude": 4.9,
@@ -241,30 +277,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3jr",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us7000t3in",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-07-26T18:19:40.684000+00:00",
-      "latitude": 29.9365,
-      "longitude": -42.8052,
-      "depth_km": 10.0,
-      "place": "northern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3in",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us7000t3il",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-07-26T18:15:31.398000+00:00",
-      "latitude": -23.4795,
-      "longitude": 179.8773,
-      "depth_km": 535.429,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3il",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
