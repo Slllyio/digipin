@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-07-27T21:08:12Z",
+  "generated_at_iso": "2026-07-27T23:33:37Z",
   "count": 23,
   "records": [
+    {
+      "id": "us6000tg8z",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-27T22:32:02.648000+00:00",
+      "latitude": -7.5058,
+      "longitude": -13.4844,
+      "depth_km": 10.0,
+      "place": "112 km ENE of Georgetown, Saint Helena",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tg8z",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us6000tg75",
       "magnitude": 5.0,
@@ -265,18 +277,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3kd",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us7000t3jr",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-26T22:39:02.826000+00:00",
-      "latitude": -22.5127,
-      "longitude": -20.2453,
-      "depth_km": 10.0,
-      "place": "South Atlantic Ocean",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3jr",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }
