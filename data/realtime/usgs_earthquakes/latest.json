@@ -1,7 +1,103 @@
 {
-  "generated_at_iso": "2026-07-28T12:12:49Z",
-  "count": 23,
+  "generated_at_iso": "2026-07-28T20:42:40Z",
+  "count": 26,
   "records": [
+    {
+      "id": "us6000tggi",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-28T20:23:42.798000+00:00",
+      "latitude": -22.1845,
+      "longitude": 179.5638,
+      "depth_km": 575.128,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tggi",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000tgg2",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-28T19:28:08.993000+00:00",
+      "latitude": -10.9261,
+      "longitude": 161.3309,
+      "depth_km": 10.0,
+      "place": "82 km SW of Kirakira, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgg2",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tgg0",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-28T19:25:41.879000+00:00",
+      "latitude": -16.7774,
+      "longitude": -173.6421,
+      "depth_km": 123.194,
+      "place": "92 km S of Hihifo, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgg0",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tget",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-07-28T16:14:16.143000+00:00",
+      "latitude": 14.3624,
+      "longitude": -92.6355,
+      "depth_km": 47.981,
+      "place": "45 km SSW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tget",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000tgd4",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-07-28T14:01:56.881000+00:00",
+      "latitude": 32.5384,
+      "longitude": 130.494,
+      "depth_km": 9.343,
+      "place": "10 km WNW of Honmachi, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgd4",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tgd1",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-07-28T13:42:17.919000+00:00",
+      "latitude": 18.8891,
+      "longitude": -81.1356,
+      "depth_km": 10.0,
+      "place": "44 km SSE of Bodden Town, Cayman Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgd1",
+      "tsunami": 0,
+      "significance": 332
+    },
+    {
+      "id": "us6000tgcx",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-07-28T13:24:33.090000+00:00",
+      "latitude": -9.6737,
+      "longitude": -79.8368,
+      "depth_km": 9.709,
+      "place": "151 km WSW of Puerto Santa, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgcx",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000tgcq",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-07-28T12:26:18.600000+00:00",
+      "latitude": 32.6443,
+      "longitude": 130.7799,
+      "depth_km": 10.0,
+      "place": "8 km SSW of Mifune, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgcq",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000tgc3",
       "magnitude": 4.7,
@@ -69,7 +165,7 @@
       "latitude": 32.6817,
       "longitude": 130.7217,
       "depth_km": 10.0,
-      "place": "5 km E of Uto, Japan",
+      "place": "2026 Uto, Japan Earthquake ",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgb9",
       "tsunami": 0,
       "significance": 723
@@ -96,7 +192,7 @@
       "place": "26 km WSW of Santa Cruz, Chile",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgav",
       "tsunami": 0,
-      "significance": 354
+      "significance": 355
     },
     {
       "id": "us6000tgaw",
@@ -217,66 +313,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tg8z",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us6000tg75",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-27T20:10:01.634000+00:00",
-      "latitude": -14.5194,
-      "longitude": 168.0332,
-      "depth_km": 10.0,
-      "place": "88 km SE of Sola, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tg75",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tg6e",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-27T19:03:38.391000+00:00",
-      "latitude": 28.1222,
-      "longitude": 139.8936,
-      "depth_km": 426.772,
-      "place": "Bonin Islands, Japan region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tg6e",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tg5f",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-27T17:47:01.325000+00:00",
-      "latitude": 36.6101,
-      "longitude": 71.5913,
-      "depth_km": 116.626,
-      "place": "9 km SSE of Ashkāsham, Afghanistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tg5f",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tg2t",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-07-27T15:51:33.601000+00:00",
-      "latitude": -2.5548,
-      "longitude": 138.7744,
-      "depth_km": 10.0,
-      "place": "206 km W of Abepura, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tg2t",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000t3p2",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-07-27T14:33:36.219000+00:00",
-      "latitude": -5.4518,
-      "longitude": 151.462,
-      "depth_km": 91.011,
-      "place": "147 km E of Kimbe, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000t3p2",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
