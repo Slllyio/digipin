@@ -1,7 +1,103 @@
 {
-  "generated_at_iso": "2026-07-29T13:22:48Z",
-  "count": 19,
+  "generated_at_iso": "2026-07-29T19:41:56Z",
+  "count": 21,
   "records": [
+    {
+      "id": "us6000tgs2",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-07-29T18:09:46.411000+00:00",
+      "latitude": 15.2857,
+      "longitude": -45.9007,
+      "depth_km": 10.0,
+      "place": "northern Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgs2",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000tgrk",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-29T17:07:35.465000+00:00",
+      "latitude": -24.6958,
+      "longitude": -175.2899,
+      "depth_km": 10.0,
+      "place": "south of Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgrk",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tgpr",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-07-29T15:10:02.995000+00:00",
+      "latitude": 13.1384,
+      "longitude": 124.6138,
+      "depth_km": 46.281,
+      "place": "53 km E of Rapu-Rapu, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgpr",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us6000tgnu",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-07-29T14:11:03.513000+00:00",
+      "latitude": 15.2694,
+      "longitude": 122.8525,
+      "depth_km": 10.0,
+      "place": "79 km NE of Casuguran, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgnu",
+      "tsunami": 0,
+      "significance": 405
+    },
+    {
+      "id": "us6000tgn1",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-07-29T14:02:34.716000+00:00",
+      "latitude": 32.5115,
+      "longitude": 130.4901,
+      "depth_km": 10.0,
+      "place": "10 km W of Honmachi, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgn1",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tgn0",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-29T13:23:56.014000+00:00",
+      "latitude": 5.3176,
+      "longitude": 124.9945,
+      "depth_km": 63.992,
+      "place": "48 km SW of Balangonan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgn0",
+      "tsunami": 0,
+      "significance": 387
+    },
+    {
+      "id": "us6000tgmx",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-07-29T13:19:36.661000+00:00",
+      "latitude": 32.34,
+      "longitude": 130.4881,
+      "depth_km": 10.0,
+      "place": "11 km N of Tsunagi, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgmx",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us6000tgmy",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-07-29T13:16:59.109000+00:00",
+      "latitude": 5.6157,
+      "longitude": 125.3648,
+      "depth_km": 54.238,
+      "place": "4 km NNE of Balangonan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgmy",
+      "tsunami": 0,
+      "significance": 388
+    },
     {
       "id": "us6000tgm6",
       "magnitude": 5.0,
@@ -132,7 +228,7 @@
       "place": "52 km E of Denali National Park, Alaska",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026ovufno",
       "tsunami": 0,
-      "significance": 453
+      "significance": 455
     },
     {
       "id": "us6000tggm",
@@ -157,78 +253,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tggi",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us6000tgg2",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-07-28T19:28:08.993000+00:00",
-      "latitude": -10.9261,
-      "longitude": 161.3309,
-      "depth_km": 10.0,
-      "place": "82 km SW of Kirakira, Solomon Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgg2",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tgg0",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-28T19:25:41.879000+00:00",
-      "latitude": -16.7774,
-      "longitude": -173.6421,
-      "depth_km": 123.194,
-      "place": "92 km S of Hihifo, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgg0",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tget",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-07-28T16:14:16.143000+00:00",
-      "latitude": 14.3624,
-      "longitude": -92.6355,
-      "depth_km": 47.981,
-      "place": "45 km SSW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tget",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tgd4",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-07-28T14:01:56.881000+00:00",
-      "latitude": 32.5384,
-      "longitude": 130.494,
-      "depth_km": 9.343,
-      "place": "10 km WNW of Honmachi, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgd4",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000tgd1",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-28T13:42:17.919000+00:00",
-      "latitude": 18.8891,
-      "longitude": -81.1356,
-      "depth_km": 10.0,
-      "place": "44 km SSE of Bodden Town, Cayman Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgd1",
-      "tsunami": 0,
-      "significance": 332
-    },
-    {
-      "id": "us6000tgcx",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-07-28T13:24:33.090000+00:00",
-      "latitude": -9.6737,
-      "longitude": -79.8368,
-      "depth_km": 9.709,
-      "place": "151 km WSW of Puerto Santa, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tgcx",
-      "tsunami": 0,
-      "significance": 416
     }
   ]
 }
