@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-01T10:22:03Z",
+  "generated_at_iso": "2026-08-01T11:41:52Z",
   "count": 21,
   "records": [
+    {
+      "id": "us6000thg5",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-01T11:07:20.537000+00:00",
+      "latitude": -39.5342,
+      "longitude": -15.9614,
+      "depth_km": 10.0,
+      "place": "Tristan da Cunha region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thg5",
+      "tsunami": 0,
+      "significance": 400
+    },
     {
       "id": "us6000thfp",
       "magnitude": 5.1,
@@ -241,18 +253,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000th7y",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000th7q",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-07-31T11:09:22.344000+00:00",
-      "latitude": -41.0049,
-      "longitude": 174.4771,
-      "depth_km": 55.622,
-      "place": "31 km WNW of Titahi Bay, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000th7q",
-      "tsunami": 0,
-      "significance": 313
     }
   ]
 }
