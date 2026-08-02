@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-02T11:35:50Z",
-  "count": 18,
+  "generated_at_iso": "2026-08-02T12:41:51Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us6000thly",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-08-02T11:52:33.048000+00:00",
+      "latitude": -3.2144,
+      "longitude": -12.1759,
+      "depth_km": 10.0,
+      "place": "north of Ascension Island",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thly",
+      "tsunami": 0,
+      "significance": 432
+    },
     {
       "id": "us6000thlj",
       "magnitude": 5.3,
@@ -60,7 +72,7 @@
       "place": "14 km S of Hicks Bay, New Zealand",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thl3",
       "tsunami": 0,
-      "significance": 493
+      "significance": 494
     },
     {
       "id": "us6000thl2",
