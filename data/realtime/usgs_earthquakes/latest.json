@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-02T10:14:17Z",
-  "count": 17,
+  "generated_at_iso": "2026-08-02T11:35:50Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us6000thlj",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-08-02T10:34:14.181000+00:00",
+      "latitude": -23.7388,
+      "longitude": -174.9439,
+      "depth_km": 10.0,
+      "place": "265 km S of ‘Ohonua, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thlj",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us6000thlf",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-02T10:00:08.813000+00:00",
+      "latitude": 32.3966,
+      "longitude": 130.6919,
+      "depth_km": 10.0,
+      "place": "14 km SE of Honmachi, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thlf",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000thlb",
       "magnitude": 5.0,
@@ -36,7 +60,7 @@
       "place": "14 km S of Hicks Bay, New Zealand",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thl3",
       "tsunami": 0,
-      "significance": 492
+      "significance": 493
     },
     {
       "id": "us6000thl2",
@@ -193,18 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thgg",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000thg5",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-01T11:07:20.537000+00:00",
-      "latitude": -39.5342,
-      "longitude": -15.9614,
-      "depth_km": 10.0,
-      "place": "Tristan da Cunha region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thg5",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
