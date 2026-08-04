@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-04T10:08:38Z",
-  "count": 9,
+  "generated_at_iso": "2026-08-04T16:58:52Z",
+  "count": 5,
   "records": [
+    {
+      "id": "us6000ti0r",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-04T14:56:14.381000+00:00",
+      "latitude": -24.6061,
+      "longitude": -175.2303,
+      "depth_km": 10.0,
+      "place": "south of Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti0r",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000ti0a",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-04T14:00:26.620000+00:00",
+      "latitude": 38.3126,
+      "longitude": 142.3433,
+      "depth_km": 40.428,
+      "place": "79 km E of Onagawa Chō, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti0a",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000thym",
       "magnitude": 4.6,
@@ -37,78 +61,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thv7",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000ths9",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-03T15:54:05.781000+00:00",
-      "latitude": 39.6999,
-      "longitude": 143.3753,
-      "depth_km": 35.0,
-      "place": "123 km E of Miyako, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ths9",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000ths2",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-03T14:39:45.353000+00:00",
-      "latitude": 43.2547,
-      "longitude": 146.8482,
-      "depth_km": 35.0,
-      "place": "61 km S of Shikotan, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ths2",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000thrs",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-03T13:14:01.939000+00:00",
-      "latitude": -7.4962,
-      "longitude": 156.087,
-      "depth_km": 35.0,
-      "place": "106 km NW of Gizo, Solomon Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thrs",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000thre",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-03T11:26:42.305000+00:00",
-      "latitude": 49.9188,
-      "longitude": 155.9445,
-      "depth_km": 57.695,
-      "place": "85 km S of Severo-Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thre",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000thrb",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-03T10:55:35.633000+00:00",
-      "latitude": -24.4954,
-      "longitude": -67.1352,
-      "depth_km": 182.541,
-      "place": "88 km WSW of San Antonio de los Cobres, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thrb",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000thra",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-03T10:45:23.234000+00:00",
-      "latitude": -17.1228,
-      "longitude": -176.6766,
-      "depth_km": 10.0,
-      "place": "Fiji region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thra",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
