@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-03T19:56:41Z",
-  "count": 14,
+  "generated_at_iso": "2026-08-04T10:08:38Z",
+  "count": 9,
   "records": [
+    {
+      "id": "us6000thym",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-04T07:07:08.745000+00:00",
+      "latitude": 14.3215,
+      "longitude": -93.3796,
+      "depth_km": 10.0,
+      "place": "112 km WSW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thym",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000thvj",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-03T21:42:13.017000+00:00",
+      "latitude": 49.2319,
+      "longitude": 157.8994,
+      "depth_km": 10.0,
+      "place": "204 km SE of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thvj",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000thv7",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-03T20:14:45.600000+00:00",
+      "latitude": 32.2009,
+      "longitude": -5.1249,
+      "depth_km": 10.0,
+      "place": "64 km SSW of Midelt, Morocco",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thv7",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000ths9",
       "magnitude": 4.5,
@@ -73,102 +109,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thra",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000thr2",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-03T09:19:09.814000+00:00",
-      "latitude": 14.0138,
-      "longitude": -93.6006,
-      "depth_km": 10.0,
-      "place": "149 km WSW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thr2",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "attj6shm",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-03T09:17:46+00:00",
-      "latitude": 53.837,
-      "longitude": -132.974,
-      "depth_km": 15.0,
-      "place": "152 km S of Hydaburg, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/attj6shm",
-      "tsunami": 0,
-      "significance": 355
-    },
-    {
-      "id": "us6000thqe",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-03T05:01:20.034000+00:00",
-      "latitude": 19.2743,
-      "longitude": -69.627,
-      "depth_km": 10.0,
-      "place": "5 km NNW of Sánchez, Dominican Republic",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thqe",
-      "tsunami": 0,
-      "significance": 323
-    },
-    {
-      "id": "us6000thqf",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-03T05:00:48.666000+00:00",
-      "latitude": 28.6876,
-      "longitude": 104.7633,
-      "depth_km": 10.0,
-      "place": "14 km ESE of Yibin, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thqf",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000thpt",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-08-03T01:42:24.662000+00:00",
-      "latitude": -8.5724,
-      "longitude": -75.7603,
-      "depth_km": 125.256,
-      "place": "66 km WNW of San Alejandro, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thpt",
-      "tsunami": 0,
-      "significance": 418
-    },
-    {
-      "id": "us6000thpb",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-03T00:00:33.082000+00:00",
-      "latitude": 30.2922,
-      "longitude": 32.6273,
-      "depth_km": 10.0,
-      "place": "36 km NNE of Suez, Egypt",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thpb",
-      "tsunami": 0,
-      "significance": 577
-    },
-    {
-      "id": "us6000thp0",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-02T22:48:30.461000+00:00",
-      "latitude": 5.4131,
-      "longitude": 125.4077,
-      "depth_km": 8.955,
-      "place": "6 km W of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thp0",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000thna",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-02T20:02:10.395000+00:00",
-      "latitude": 43.0682,
-      "longitude": 147.0554,
-      "depth_km": 35.0,
-      "place": "85 km SSE of Shikotan, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000thna",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
