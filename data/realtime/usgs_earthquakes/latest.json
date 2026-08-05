@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-05T07:17:38Z",
-  "count": 16,
+  "generated_at_iso": "2026-08-05T12:15:47Z",
+  "count": 21,
   "records": [
+    {
+      "id": "us6000ti9w",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-05T10:06:09.955000+00:00",
+      "latitude": 29.0027,
+      "longitude": 94.681,
+      "depth_km": 10.0,
+      "place": "60 km NNE of Shi Yomi, India",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti9w",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000ti9k",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-05T09:17:07.881000+00:00",
+      "latitude": 5.0507,
+      "longitude": 125.2544,
+      "depth_km": 35.0,
+      "place": "45 km SSW of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti9k",
+      "tsunami": 0,
+      "significance": 355
+    },
+    {
+      "id": "us6000ti8i",
+      "magnitude": 6.3,
+      "origin_time_utc": "2026-08-05T07:43:27.317000+00:00",
+      "latitude": -33.8063,
+      "longitude": 179.4727,
+      "depth_km": 226.084,
+      "place": "south of the Kermadec Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti8i",
+      "tsunami": 0,
+      "significance": 615
+    },
     {
       "id": "us6000ti85",
       "magnitude": 5.2,
@@ -25,6 +61,30 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti80",
       "tsunami": 0,
       "significance": 400
+    },
+    {
+      "id": "us6000ti7z",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-05T05:57:02.837000+00:00",
+      "latitude": 5.1481,
+      "longitude": 125.8812,
+      "depth_km": 43.708,
+      "place": "54 km ESE of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti7z",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000ti7y",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-05T05:53:54.201000+00:00",
+      "latitude": 5.0554,
+      "longitude": 126.1378,
+      "depth_km": 35.0,
+      "place": "84 km ESE of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti7y",
+      "tsunami": 0,
+      "significance": 326
     },
     {
       "id": "us6000ti7t",
@@ -60,7 +120,7 @@
       "place": "31 km S of Sarangani, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti71",
       "tsunami": 0,
-      "significance": 417
+      "significance": 419
     },
     {
       "id": "us6000ti6z",
@@ -84,7 +144,7 @@
       "place": "32 km SW of Sarangani, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti6x",
       "tsunami": 0,
-      "significance": 626
+      "significance": 644
     },
     {
       "id": "us6000ti6f",
