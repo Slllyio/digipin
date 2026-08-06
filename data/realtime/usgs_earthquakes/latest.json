@@ -1,7 +1,91 @@
 {
-  "generated_at_iso": "2026-08-05T12:15:47Z",
+  "generated_at_iso": "2026-08-06T00:54:21Z",
   "count": 21,
   "records": [
+    {
+      "id": "us6000tigl",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-06T00:15:17.634000+00:00",
+      "latitude": 29.0283,
+      "longitude": 94.6765,
+      "depth_km": 10.0,
+      "place": "62 km NNE of Shi Yomi, India",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tigl",
+      "tsunami": 0,
+      "significance": 355
+    },
+    {
+      "id": "us6000tig8",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-05T22:59:25.088000+00:00",
+      "latitude": 32.491,
+      "longitude": 130.485,
+      "depth_km": 10.0,
+      "place": "10 km W of Honmachi, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tig8",
+      "tsunami": 0,
+      "significance": 372
+    },
+    {
+      "id": "us6000tif5",
+      "magnitude": 5.9,
+      "origin_time_utc": "2026-08-05T21:41:28.262000+00:00",
+      "latitude": 5.1757,
+      "longitude": 125.2809,
+      "depth_km": 10.0,
+      "place": "32 km SW of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tif5",
+      "tsunami": 0,
+      "significance": 537
+    },
+    {
+      "id": "us6000tiex",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-05T20:59:38.899000+00:00",
+      "latitude": -21.5171,
+      "longitude": -176.1885,
+      "depth_km": 137.247,
+      "place": "99 km WSW of Houma, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tiex",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tie5",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-08-05T19:46:26.861000+00:00",
+      "latitude": -6.5225,
+      "longitude": 143.8444,
+      "depth_km": 10.028,
+      "place": "31 km SSW of Ialibu, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tie5",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000tics",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-08-05T16:50:18.349000+00:00",
+      "latitude": 1.7901,
+      "longitude": 127.454,
+      "depth_km": 115.65,
+      "place": "62 km W of Tobelo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tics",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us6000tial",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-05T14:16:50.054000+00:00",
+      "latitude": 1.2938,
+      "longitude": 126.2646,
+      "depth_km": 10.0,
+      "place": "127 km E of Bitung, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tial",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000ti9w",
       "magnitude": 5.0,
@@ -144,7 +228,7 @@
       "place": "32 km SW of Sarangani, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti6x",
       "tsunami": 0,
-      "significance": 644
+      "significance": 649
     },
     {
       "id": "us6000ti6f",
@@ -167,90 +251,6 @@
       "depth_km": 73.257,
       "place": "36 km ESE of Severo-Kuril’sk, Russia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti6d",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000ti5u",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-05T00:11:57.782000+00:00",
-      "latitude": 21.9032,
-      "longitude": 94.6478,
-      "depth_km": 103.392,
-      "place": "55 km WSW of Monywa, Burma (Myanmar)",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti5u",
-      "tsunami": 0,
-      "significance": 355
-    },
-    {
-      "id": "us6000ti5m",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-04T23:08:00.747000+00:00",
-      "latitude": -55.7454,
-      "longitude": -26.7928,
-      "depth_km": 10.0,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti5m",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000ti4e",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-04T20:30:04.431000+00:00",
-      "latitude": -21.7953,
-      "longitude": -179.3558,
-      "depth_km": 603.036,
-      "place": "Fiji region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti4e",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000ti49",
-      "magnitude": 5.7,
-      "origin_time_utc": "2026-08-04T20:16:37.181000+00:00",
-      "latitude": 1.5066,
-      "longitude": 126.4856,
-      "depth_km": 35.0,
-      "place": "127 km NW of Ternate, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti49",
-      "tsunami": 0,
-      "significance": 501
-    },
-    {
-      "id": "us6000ti40",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-04T19:56:58.739000+00:00",
-      "latitude": 30.2082,
-      "longitude": 131.0474,
-      "depth_km": 44.967,
-      "place": "43 km ESE of Koseda, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti40",
-      "tsunami": 0,
-      "significance": 355
-    },
-    {
-      "id": "us6000ti0r",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-04T14:56:14.381000+00:00",
-      "latitude": -24.6061,
-      "longitude": -175.2303,
-      "depth_km": 10.0,
-      "place": "south of Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti0r",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000ti0a",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-04T14:00:26.620000+00:00",
-      "latitude": 38.3126,
-      "longitude": 142.3433,
-      "depth_km": 40.428,
-      "place": "79 km E of Onagawa Chō, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000ti0a",
       "tsunami": 0,
       "significance": 326
     }
