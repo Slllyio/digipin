@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-07T09:13:01Z",
-  "count": 12,
+  "generated_at_iso": "2026-08-07T11:06:41Z",
+  "count": 10,
   "records": [
     {
       "id": "us6000tiwj",
@@ -121,30 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tik6",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us6000tijg",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-06T10:49:24.271000+00:00",
-      "latitude": 32.6611,
-      "longitude": 130.7231,
-      "depth_km": 10.0,
-      "place": "5 km ENE of Matsubase, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tijg",
-      "tsunami": 0,
-      "significance": 327
-    },
-    {
-      "id": "us6000tij5",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-06T09:55:40.381000+00:00",
-      "latitude": 42.4079,
-      "longitude": -125.9976,
-      "depth_km": 10.0,
-      "place": "128 km WSW of Port Orford, Oregon",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tij5",
-      "tsunami": 0,
-      "significance": 370
     }
   ]
 }
