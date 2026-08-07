@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-08-07T18:10:47Z",
-  "count": 10,
+  "generated_at_iso": "2026-08-07T23:57:52Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us6000tj4s",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-07T23:11:23.416000+00:00",
+      "latitude": -12.1235,
+      "longitude": -75.5241,
+      "depth_km": 10.0,
+      "place": "17 km WNW of Yanacancha, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj4s",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000tj4f",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-07T22:19:39.579000+00:00",
+      "latitude": -21.5086,
+      "longitude": -113.5805,
+      "depth_km": 10.0,
+      "place": "southern East Pacific Rise",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj4f",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tj2p",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-07T19:48:15.479000+00:00",
+      "latitude": 4.3305,
+      "longitude": 127.3898,
+      "depth_km": 10.0,
+      "place": "244 km ESE of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj2p",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tiyy",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-07T14:55:33.817000+00:00",
+      "latitude": 36.8607,
+      "longitude": 72.5557,
+      "depth_km": 10.0,
+      "place": "23 km ESE of Khandūd, Afghanistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tiyy",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000tixr",
       "magnitude": 5.0,
@@ -85,42 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tits",
       "tsunami": 0,
       "significance": 314
-    },
-    {
-      "id": "us6000tiqe",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-06T21:17:28.824000+00:00",
-      "latitude": -38.2308,
-      "longitude": 178.5415,
-      "depth_km": 22.793,
-      "place": "64 km NE of Mangapapa, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tiqe",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tipv",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-06T20:07:24.549000+00:00",
-      "latitude": 52.0723,
-      "longitude": 160.1111,
-      "depth_km": 40.732,
-      "place": "149 km SE of Petropavlovsk-Kamchatsky, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tipv",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tip9",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-08-06T18:57:21.831000+00:00",
-      "latitude": -12.1948,
-      "longitude": -75.2574,
-      "depth_km": 10.0,
-      "place": "7 km SSW of Huayucachi, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tip9",
-      "tsunami": 0,
-      "significance": 434
     }
   ]
 }
