@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-07T11:06:41Z",
+  "generated_at_iso": "2026-08-07T18:10:47Z",
   "count": 10,
   "records": [
+    {
+      "id": "us6000tixr",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-07T14:21:30.314000+00:00",
+      "latitude": 50.4235,
+      "longitude": 156.7027,
+      "depth_km": 83.854,
+      "place": "49 km SE of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tixr",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tixn",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-07T14:07:39.382000+00:00",
+      "latitude": -5.6385,
+      "longitude": 110.2192,
+      "depth_km": 534.964,
+      "place": "108 km NNW of Batang, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tixn",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us6000tiwj",
       "magnitude": 4.6,
@@ -13,6 +37,30 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tiwj",
       "tsunami": 0,
       "significance": 326
+    },
+    {
+      "id": "us6000tiw5",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-07T06:23:02.987000+00:00",
+      "latitude": 4.4892,
+      "longitude": 125.941,
+      "depth_km": 102.132,
+      "place": "114 km SSE of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tiw5",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tivz",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-07T05:08:30.903000+00:00",
+      "latitude": 28.505,
+      "longitude": 104.7523,
+      "depth_km": 10.0,
+      "place": "6 km NNE of Xunchang, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tivz",
+      "tsunami": 0,
+      "significance": 400
     },
     {
       "id": "us6000tivb",
@@ -36,7 +84,7 @@
       "place": "29 km S of Mendoza, Argentina",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tits",
       "tsunami": 0,
-      "significance": 313
+      "significance": 314
     },
     {
       "id": "us6000tiqe",
@@ -73,54 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tip9",
       "tsunami": 0,
       "significance": 434
-    },
-    {
-      "id": "us6000timi",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-06T17:50:40.068000+00:00",
-      "latitude": 39.6385,
-      "longitude": 143.67,
-      "depth_km": 10.0,
-      "place": "148 km E of Miyako, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000timi",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000timf",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-08-06T17:43:36.862000+00:00",
-      "latitude": 39.5829,
-      "longitude": 143.6408,
-      "depth_km": 10.0,
-      "place": "145 km E of Yamada, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000timf",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us6000tikr",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-06T16:01:59.722000+00:00",
-      "latitude": -3.3233,
-      "longitude": 148.4767,
-      "depth_km": 10.0,
-      "place": "195 km SE of Lorengau, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tikr",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tik6",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-06T13:42:11.429000+00:00",
-      "latitude": -8.0025,
-      "longitude": 158.5995,
-      "depth_km": 54.348,
-      "place": "110 km W of Buala, Solomon Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tik6",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
