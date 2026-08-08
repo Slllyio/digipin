@@ -1,7 +1,91 @@
 {
-  "generated_at_iso": "2026-08-07T23:57:52Z",
-  "count": 11,
+  "generated_at_iso": "2026-08-08T08:01:15Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us6000tj70",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-08T05:39:39.927000+00:00",
+      "latitude": 49.8507,
+      "longitude": 155.753,
+      "depth_km": 82.521,
+      "place": "95 km SSW of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj70",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "aka2026powmkf",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-08-08T04:50:34.985000+00:00",
+      "latitude": 62.269,
+      "longitude": -152.314,
+      "depth_km": 10.0,
+      "place": "57 km WNW of Skwentna, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026powmkf",
+      "tsunami": 0,
+      "significance": 1022
+    },
+    {
+      "id": "us6000tj69",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-08T03:59:31.810000+00:00",
+      "latitude": -28.4766,
+      "longitude": -176.5487,
+      "depth_km": 10.0,
+      "place": "Kermadec Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj69",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tj68",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-08T03:45:26.267000+00:00",
+      "latitude": 39.6351,
+      "longitude": 82.875,
+      "depth_km": 10.0,
+      "place": "158 km NNE of Darya Boyi, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj68",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tj67",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-08T03:30:04.685000+00:00",
+      "latitude": 32.7786,
+      "longitude": 73.853,
+      "depth_km": 10.0,
+      "place": "2 km ESE of Mehmand Chak, Pakistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj67",
+      "tsunami": 0,
+      "significance": 313
+    },
+    {
+      "id": "us6000tj65",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-08T02:44:59.172000+00:00",
+      "latitude": 5.1189,
+      "longitude": 125.3651,
+      "depth_km": 10.0,
+      "place": "33 km SSW of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj65",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tj4x",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-07T23:30:48.420000+00:00",
+      "latitude": 0.2552,
+      "longitude": 122.0018,
+      "depth_km": 198.985,
+      "place": "122 km WSW of Gorontalo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj4x",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000tj4s",
       "magnitude": 4.7,
@@ -12,7 +96,19 @@
       "place": "17 km WNW of Yanacancha, Peru",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj4s",
       "tsunami": 0,
-      "significance": 340
+      "significance": 341
+    },
+    {
+      "id": "us6000tj4i",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-07T22:53:49.394000+00:00",
+      "latitude": 5.8489,
+      "longitude": 125.622,
+      "depth_km": 139.805,
+      "place": "7 km SSW of Caburan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj4i",
+      "tsunami": 0,
+      "significance": 326
     },
     {
       "id": "us6000tj4f",
@@ -85,54 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tiwj",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tiw5",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-07T06:23:02.987000+00:00",
-      "latitude": 4.4892,
-      "longitude": 125.941,
-      "depth_km": 102.132,
-      "place": "114 km SSE of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tiw5",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tivz",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-07T05:08:30.903000+00:00",
-      "latitude": 28.505,
-      "longitude": 104.7523,
-      "depth_km": 10.0,
-      "place": "6 km NNE of Xunchang, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tivz",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000tivb",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-07T02:38:10.013000+00:00",
-      "latitude": 13.3855,
-      "longitude": 120.6108,
-      "depth_km": 90.196,
-      "place": "7 km NW of Cabacao, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tivb",
-      "tsunami": 0,
-      "significance": 393
-    },
-    {
-      "id": "us6000tits",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-07T00:00:38.677000+00:00",
-      "latitude": -33.1527,
-      "longitude": -68.8413,
-      "depth_km": 10.0,
-      "place": "29 km S of Mendoza, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tits",
-      "tsunami": 0,
-      "significance": 314
     }
   ]
 }
