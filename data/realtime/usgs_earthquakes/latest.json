@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-08T12:02:42Z",
-  "count": 16,
+  "generated_at_iso": "2026-08-08T13:11:11Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us6000tj96",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-08T12:44:22.647000+00:00",
+      "latitude": -24.392,
+      "longitude": -67.0572,
+      "depth_km": 163.582,
+      "place": "77 km WSW of San Antonio de los Cobres, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj96",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000tj8t",
       "magnitude": 5.6,
@@ -13,6 +25,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj8t",
       "tsunami": 0,
       "significance": 482
+    },
+    {
+      "id": "us6000tj8n",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-08T10:56:06.170000+00:00",
+      "latitude": -17.3821,
+      "longitude": 172.8279,
+      "depth_km": 10.0,
+      "place": "Vanuatu region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj8n",
+      "tsunami": 0,
+      "significance": 326
     },
     {
       "id": "us6000tj8e",
