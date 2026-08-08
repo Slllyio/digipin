@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-08T08:01:15Z",
+  "generated_at_iso": "2026-08-08T11:42:02Z",
   "count": 15,
   "records": [
+    {
+      "id": "us6000tj8e",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-08T10:20:46.908000+00:00",
+      "latitude": 5.095,
+      "longitude": 125.0834,
+      "depth_km": 10.022,
+      "place": "54 km SW of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj8e",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us6000tj70",
       "magnitude": 4.8,
@@ -169,18 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tixn",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us6000tiwj",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-07T08:43:42.850000+00:00",
-      "latitude": 5.1687,
-      "longitude": 125.0613,
-      "depth_km": 43.488,
-      "place": "51 km WSW of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tiwj",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
