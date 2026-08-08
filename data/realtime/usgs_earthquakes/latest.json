@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-08T13:11:11Z",
-  "count": 18,
+  "generated_at_iso": "2026-08-08T15:03:30Z",
+  "count": 15,
   "records": [
     {
       "id": "us6000tj96",
@@ -181,42 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj2p",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000tiyy",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-07T14:55:33.817000+00:00",
-      "latitude": 36.8607,
-      "longitude": 72.5557,
-      "depth_km": 10.0,
-      "place": "23 km ESE of Khandūd, Afghanistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tiyy",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tixr",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-07T14:21:30.314000+00:00",
-      "latitude": 50.4235,
-      "longitude": 156.7027,
-      "depth_km": 83.854,
-      "place": "49 km SE of Severo-Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tixr",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tixn",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-07T14:07:39.382000+00:00",
-      "latitude": -5.6385,
-      "longitude": 110.2192,
-      "depth_km": 534.964,
-      "place": "108 km NNW of Batang, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tixn",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
