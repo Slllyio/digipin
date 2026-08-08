@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-08T17:27:59Z",
-  "count": 15,
+  "generated_at_iso": "2026-08-08T19:55:18Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us6000tjas",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-08T19:07:57.041000+00:00",
+      "latitude": -28.5661,
+      "longitude": -176.5182,
+      "depth_km": 10.0,
+      "place": "Kermadec Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjas",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000tjan",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-08T18:28:26.011000+00:00",
+      "latitude": -10.5042,
+      "longitude": 165.4256,
+      "depth_km": 75.441,
+      "place": "47 km WNW of Lata, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjan",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tjaj",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-08-08T17:57:58.745000+00:00",
+      "latitude": 40.1723,
+      "longitude": 142.3107,
+      "depth_km": 34.0,
+      "place": "42 km E of Noda, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjaj",
+      "tsunami": 0,
+      "significance": 483
+    },
     {
       "id": "us6000tj96",
       "magnitude": 4.6,
@@ -169,18 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj4f",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us6000tj2p",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-07T19:48:15.479000+00:00",
-      "latitude": 4.3305,
-      "longitude": 127.3898,
-      "depth_km": 10.0,
-      "place": "244 km ESE of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj2p",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
