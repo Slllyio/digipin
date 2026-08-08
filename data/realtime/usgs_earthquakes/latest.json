@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-08T11:42:02Z",
-  "count": 15,
+  "generated_at_iso": "2026-08-08T12:02:42Z",
+  "count": 16,
   "records": [
+    {
+      "id": "us6000tj8t",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-08-08T11:41:27.702000+00:00",
+      "latitude": -41.4826,
+      "longitude": -90.0796,
+      "depth_km": 10.0,
+      "place": "southeast of Easter Island",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tj8t",
+      "tsunami": 0,
+      "significance": 482
+    },
     {
       "id": "us6000tj8e",
       "magnitude": 4.8,
