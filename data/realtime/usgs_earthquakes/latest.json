@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-09T15:05:35Z",
-  "count": 12,
+  "generated_at_iso": "2026-08-09T17:13:32Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us6000tjfr",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-09T15:40:05.269000+00:00",
+      "latitude": -10.994,
+      "longitude": -74.5481,
+      "depth_km": 95.468,
+      "place": "30 km NNE of Satipo, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjfr",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tjfj",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-08-09T15:15:03.956000+00:00",
+      "latitude": -5.7782,
+      "longitude": 102.8866,
+      "depth_km": 35.0,
+      "place": "197 km SSW of Pagar Alam, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjfj",
+      "tsunami": 0,
+      "significance": 432
+    },
     {
       "id": "us6000tjfb",
       "magnitude": 4.6,
