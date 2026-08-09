@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-09T12:50:37Z",
+  "generated_at_iso": "2026-08-09T15:05:35Z",
   "count": 12,
   "records": [
+    {
+      "id": "us6000tjfb",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-09T13:47:06.146000+00:00",
+      "latitude": 4.814,
+      "longitude": 125.6593,
+      "depth_km": 162.836,
+      "place": "68 km SSE of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjfb",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000tjen",
       "magnitude": 5.2,
@@ -133,18 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjaj",
       "tsunami": 0,
       "significance": 483
-    },
-    {
-      "id": "us6000tjer",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-08T13:49:30.800000+00:00",
-      "latitude": -41.2757,
-      "longitude": -90.8121,
-      "depth_km": 10.0,
-      "place": "southeast of Easter Island",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjer",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
