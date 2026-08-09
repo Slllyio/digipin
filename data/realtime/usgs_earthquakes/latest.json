@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-08-09T17:13:32Z",
-  "count": 14,
+  "generated_at_iso": "2026-08-09T21:48:19Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us6000tjgp",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-09T18:23:02.637000+00:00",
+      "latitude": -23.8269,
+      "longitude": -179.8704,
+      "depth_km": 525.534,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjgp",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tjgl",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-09T18:11:29.507000+00:00",
+      "latitude": -5.8198,
+      "longitude": 154.4887,
+      "depth_km": 104.48,
+      "place": "123 km WNW of Panguna, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjgl",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tjgf",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-09T17:11:42.151000+00:00",
+      "latitude": 8.8103,
+      "longitude": 40.0706,
+      "depth_km": 10.0,
+      "place": "19 km ESE of Metahāra, Ethiopia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjgf",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tjgd",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-09T17:05:42.371000+00:00",
+      "latitude": 11.3941,
+      "longitude": 125.2313,
+      "depth_km": 110.58,
+      "place": "7 km ESE of Mabini, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjgd",
+      "tsunami": 0,
+      "significance": 355
+    },
     {
       "id": "us6000tjfr",
       "magnitude": 4.6,
@@ -133,42 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjbg",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us6000tjas",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-08T19:07:57.041000+00:00",
-      "latitude": -28.5661,
-      "longitude": -176.5182,
-      "depth_km": 10.0,
-      "place": "Kermadec Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjas",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tjan",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-08T18:28:26.011000+00:00",
-      "latitude": -10.5042,
-      "longitude": 165.4256,
-      "depth_km": 75.441,
-      "place": "47 km WNW of Lata, Solomon Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjan",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tjaj",
-      "magnitude": 5.6,
-      "origin_time_utc": "2026-08-08T17:57:58.745000+00:00",
-      "latitude": 40.1723,
-      "longitude": 142.3107,
-      "depth_km": 34.0,
-      "place": "42 km E of Noda, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjaj",
-      "tsunami": 0,
-      "significance": 483
     }
   ]
 }
