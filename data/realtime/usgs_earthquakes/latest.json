@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-08-09T21:48:19Z",
-  "count": 15,
+  "generated_at_iso": "2026-08-10T06:41:04Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us6000tjjj",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-08-10T05:41:44.224000+00:00",
+      "latitude": 0.3112,
+      "longitude": -114.648,
+      "depth_km": 10.0,
+      "place": "east central Pacific Ocean",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjjj",
+      "tsunami": 0,
+      "significance": 465
+    },
+    {
+      "id": "us6000tjjh",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-10T05:35:51.062000+00:00",
+      "latitude": 8.9207,
+      "longitude": 126.0577,
+      "depth_km": 103.062,
+      "place": "13 km ESE of San Miguel, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjjh",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tjiq",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-10T01:20:10.110000+00:00",
+      "latitude": -15.6002,
+      "longitude": -173.0524,
+      "depth_km": 10.0,
+      "place": "88 km ENE of Hihifo, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjiq",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000tji3",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-09T22:17:27.839000+00:00",
+      "latitude": 4.1417,
+      "longitude": 126.8342,
+      "depth_km": 35.0,
+      "place": "206 km SE of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tji3",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tjhn",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-09T21:42:38.761000+00:00",
+      "latitude": 4.1847,
+      "longitude": 126.9362,
+      "depth_km": 35.0,
+      "place": "211 km SE of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjhn",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us6000tjgp",
       "magnitude": 4.5,
@@ -109,78 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tje3",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tjcr",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-09T04:05:44.245000+00:00",
-      "latitude": -12.0506,
-      "longitude": -75.4906,
-      "depth_km": 10.0,
-      "place": "12 km W of Chambara, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjcr",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tjcn",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-09T03:36:17.166000+00:00",
-      "latitude": 51.987,
-      "longitude": -173.261,
-      "depth_km": 60.301,
-      "place": "68 km ESE of Atka, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjcn",
-      "tsunami": 0,
-      "significance": 370
-    },
-    {
-      "id": "us6000tjcl",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-09T03:02:07.086000+00:00",
-      "latitude": 7.017,
-      "longitude": 94.1402,
-      "depth_km": 10.0,
-      "place": "180 km NW of Sabang, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjcl",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tjc4",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-09T01:09:19.167000+00:00",
-      "latitude": -17.848,
-      "longitude": -178.453,
-      "depth_km": 589.12,
-      "place": "237 km E of Levuka, Fiji",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjc4",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tjbq",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-08T23:12:22.267000+00:00",
-      "latitude": 4.5819,
-      "longitude": 125.2976,
-      "depth_km": 9.688,
-      "place": "92 km SSW of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjbq",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tjbg",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-08T22:09:05.164000+00:00",
-      "latitude": 33.7777,
-      "longitude": -38.0334,
-      "depth_km": 10.0,
-      "place": "northern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjbg",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
