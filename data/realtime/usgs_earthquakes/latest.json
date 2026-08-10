@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-10T21:11:31Z",
-  "count": 15,
+  "generated_at_iso": "2026-08-10T22:45:24Z",
+  "count": 13,
   "records": [
     {
       "id": "us6000tjqj",
@@ -60,7 +60,7 @@
       "place": "5 km S of San José del Palmar, Colombia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjl2",
       "tsunami": 0,
-      "significance": 1724
+      "significance": 1743
     },
     {
       "id": "us6000tjl0",
@@ -155,30 +155,6 @@
       "depth_km": 10.0,
       "place": "88 km ENE of Hihifo, Tonga",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjiq",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tji3",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-09T22:17:27.839000+00:00",
-      "latitude": 4.1417,
-      "longitude": 126.8342,
-      "depth_km": 35.0,
-      "place": "206 km SE of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tji3",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tjhn",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-09T21:42:38.761000+00:00",
-      "latitude": 4.1847,
-      "longitude": 126.9362,
-      "depth_km": 35.0,
-      "place": "211 km SE of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjhn",
       "tsunami": 0,
       "significance": 369
     }
