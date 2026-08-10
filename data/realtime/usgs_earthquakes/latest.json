@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-10T17:36:08Z",
-  "count": 17,
+  "generated_at_iso": "2026-08-10T18:33:43Z",
+  "count": 15,
   "records": [
     {
       "id": "us6000tjqj",
@@ -60,7 +60,7 @@
       "place": "5 km S of San José del Palmar, Colombia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjl2",
       "tsunami": 0,
-      "significance": 1649
+      "significance": 1672
     },
     {
       "id": "us6000tjl0",
@@ -181,30 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjhn",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000tjgp",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-09T18:23:02.637000+00:00",
-      "latitude": -23.8269,
-      "longitude": -179.8704,
-      "depth_km": 525.534,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjgp",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tjgl",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-09T18:11:29.507000+00:00",
-      "latitude": -5.8198,
-      "longitude": 154.4887,
-      "depth_km": 104.48,
-      "place": "123 km WNW of Panguna, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjgl",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
