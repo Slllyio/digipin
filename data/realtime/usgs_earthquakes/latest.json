@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-08-10T11:58:22Z",
-  "count": 15,
+  "generated_at_iso": "2026-08-10T14:35:32Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us6000tjm4",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-10T13:18:10.451000+00:00",
+      "latitude": 4.8971,
+      "longitude": -76.3859,
+      "depth_km": 98.522,
+      "place": "16 km W of San José del Palmar, Colombia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjm4",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tjls",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-10T12:46:10.915000+00:00",
+      "latitude": -13.0188,
+      "longitude": 168.8919,
+      "depth_km": 655.67,
+      "place": "173 km ENE of Sola, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjls",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tjl2",
+      "magnitude": 7.4,
+      "origin_time_utc": "2026-08-10T12:34:28.125000+00:00",
+      "latitude": 4.8436,
+      "longitude": -76.2422,
+      "depth_km": 110.285,
+      "place": "5 km S of San José del Palmar, Colombia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjl2",
+      "tsunami": 0,
+      "significance": 1507
+    },
+    {
+      "id": "us6000tjl0",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-10T12:12:22.220000+00:00",
+      "latitude": 17.5068,
+      "longitude": -45.8376,
+      "depth_km": 10.0,
+      "place": "northern Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjl0",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tjku",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-10T11:50:25.901000+00:00",
+      "latitude": -12.8915,
+      "longitude": 168.882,
+      "depth_km": 640.51,
+      "place": "180 km NE of Sola, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjku",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000tjkl",
       "magnitude": 4.7,
@@ -169,18 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjfj",
       "tsunami": 0,
       "significance": 432
-    },
-    {
-      "id": "us6000tjfb",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-09T13:47:06.146000+00:00",
-      "latitude": 4.814,
-      "longitude": 125.6593,
-      "depth_km": 162.836,
-      "place": "68 km SSE of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjfb",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
