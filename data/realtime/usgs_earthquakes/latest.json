@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-10T06:41:04Z",
-  "count": 14,
+  "generated_at_iso": "2026-08-10T11:58:22Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us6000tjkl",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-10T10:36:42.622000+00:00",
+      "latitude": 44.0156,
+      "longitude": 147.4942,
+      "depth_km": 66.149,
+      "place": "66 km ENE of Shikotan, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjkl",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000tjk6",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-10T08:34:28.098000+00:00",
+      "latitude": -19.7958,
+      "longitude": 170.0,
+      "depth_km": 10.0,
+      "place": "80 km ESE of Isangel, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjk6",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tjjz",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-10T07:17:28.964000+00:00",
+      "latitude": -37.4038,
+      "longitude": 177.8305,
+      "depth_km": 71.243,
+      "place": "46 km WNW of Hicks Bay, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjjz",
+      "tsunami": 0,
+      "significance": 355
+    },
     {
       "id": "us6000tjjj",
       "magnitude": 5.5,
@@ -143,30 +179,6 @@
       "depth_km": 162.836,
       "place": "68 km SSE of Sarangani, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjfb",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tjen",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-08-09T11:57:33.237000+00:00",
-      "latitude": 2.2955,
-      "longitude": -101.9125,
-      "depth_km": 10.0,
-      "place": "Galapagos Triple Junction region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjen",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000tje3",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-09T10:04:31.077000+00:00",
-      "latitude": 4.5364,
-      "longitude": 125.3517,
-      "depth_km": 10.0,
-      "place": "96 km S of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tje3",
       "tsunami": 0,
       "significance": 326
     }
