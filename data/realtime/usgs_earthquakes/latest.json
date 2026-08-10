@@ -1,5 +1,5 @@
 {
-  "generated_at_iso": "2026-08-10T22:45:24Z",
+  "generated_at_iso": "2026-08-10T23:32:40Z",
   "count": 13,
   "records": [
     {
@@ -60,7 +60,7 @@
       "place": "5 km S of San José del Palmar, Colombia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjl2",
       "tsunami": 0,
-      "significance": 1743
+      "significance": 1755
     },
     {
       "id": "us6000tjl0",
