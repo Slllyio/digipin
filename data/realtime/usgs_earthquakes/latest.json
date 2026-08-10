@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-10T14:35:32Z",
-  "count": 19,
+  "generated_at_iso": "2026-08-10T17:36:08Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us6000tjqj",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-10T17:08:06.809000+00:00",
+      "latitude": -5.9347,
+      "longitude": 102.3607,
+      "depth_km": 21.72,
+      "place": "232 km SSW of Pagar Alam, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjqj",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000tjmt",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-10T15:01:10.127000+00:00",
+      "latitude": 32.6863,
+      "longitude": 48.0359,
+      "depth_km": 10.0,
+      "place": "55 km NW of Shahrak-e Kūlūrī, Iran",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjmt",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000tjm4",
       "magnitude": 5.0,
@@ -36,7 +60,7 @@
       "place": "5 km S of San José del Palmar, Colombia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjl2",
       "tsunami": 0,
-      "significance": 1507
+      "significance": 1649
     },
     {
       "id": "us6000tjl0",
@@ -181,54 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjgl",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000tjgf",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-09T17:11:42.151000+00:00",
-      "latitude": 8.8103,
-      "longitude": 40.0706,
-      "depth_km": 10.0,
-      "place": "19 km ESE of Metahāra, Ethiopia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjgf",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tjgd",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-09T17:05:42.371000+00:00",
-      "latitude": 11.3941,
-      "longitude": 125.2313,
-      "depth_km": 110.58,
-      "place": "7 km ESE of Mabini, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjgd",
-      "tsunami": 0,
-      "significance": 355
-    },
-    {
-      "id": "us6000tjfr",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-09T15:40:05.269000+00:00",
-      "latitude": -10.994,
-      "longitude": -74.5481,
-      "depth_km": 95.468,
-      "place": "30 km NNE of Satipo, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjfr",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tjfj",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-08-09T15:15:03.956000+00:00",
-      "latitude": -5.7782,
-      "longitude": 102.8866,
-      "depth_km": 35.0,
-      "place": "197 km SSW of Pagar Alam, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjfj",
-      "tsunami": 0,
-      "significance": 432
     }
   ]
 }
