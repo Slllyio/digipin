@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-10T23:32:40Z",
-  "count": 13,
+  "generated_at_iso": "2026-08-11T05:28:02Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us6000tjvb",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-11T03:11:19.919000+00:00",
+      "latitude": -23.5978,
+      "longitude": -179.7759,
+      "depth_km": 548.449,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjvb",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tjug",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-11T01:12:46.205000+00:00",
+      "latitude": -4.4801,
+      "longitude": 102.5519,
+      "depth_km": 61.94,
+      "place": "81 km SSE of Bengkulu, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjug",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000tjt8",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-10T21:31:44.273000+00:00",
+      "latitude": 28.6111,
+      "longitude": 104.6343,
+      "depth_km": 55.31,
+      "place": "12 km SE of Baixi, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjt8",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000tjqj",
       "magnitude": 5.1,
@@ -36,7 +72,7 @@
       "place": "16 km W of San José del Palmar, Colombia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjm4",
       "tsunami": 0,
-      "significance": 385
+      "significance": 386
     },
     {
       "id": "us6000tjls",
@@ -60,7 +96,7 @@
       "place": "5 km S of San José del Palmar, Colombia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjl2",
       "tsunami": 0,
-      "significance": 1755
+      "significance": 1790
     },
     {
       "id": "us6000tjl0",
@@ -145,18 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjjh",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tjiq",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-10T01:20:10.110000+00:00",
-      "latitude": -15.6002,
-      "longitude": -173.0524,
-      "depth_km": 10.0,
-      "place": "88 km ENE of Hihifo, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjiq",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
