@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-08-11T05:28:02Z",
-  "count": 15,
+  "generated_at_iso": "2026-08-11T15:05:52Z",
+  "count": 8,
   "records": [
+    {
+      "id": "us6000tjxa",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-11T12:45:12.884000+00:00",
+      "latitude": -7.397,
+      "longitude": 130.3922,
+      "depth_km": 30.609,
+      "place": "Pulau Pulau Tanimbar, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjxa",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tjx1",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-11T10:49:52.149000+00:00",
+      "latitude": -6.7252,
+      "longitude": 129.7317,
+      "depth_km": 170.699,
+      "place": "Banda Sea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjx1",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tjwh",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-11T08:49:24.635000+00:00",
+      "latitude": 54.4899,
+      "longitude": -159.9971,
+      "depth_km": 36.925,
+      "place": "99 km SSE of Sand Point, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjwh",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tjwd",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-11T08:00:34.362000+00:00",
+      "latitude": -5.8682,
+      "longitude": -81.0116,
+      "depth_km": 39.674,
+      "place": "40 km SSW of Sechura, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjwd",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000tjvb",
       "magnitude": 4.5,
@@ -49,138 +97,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjqj",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us6000tjmt",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-10T15:01:10.127000+00:00",
-      "latitude": 32.6863,
-      "longitude": 48.0359,
-      "depth_km": 10.0,
-      "place": "55 km NW of Shahrak-e Kūlūrī, Iran",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjmt",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tjm4",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-10T13:18:10.451000+00:00",
-      "latitude": 4.8971,
-      "longitude": -76.3859,
-      "depth_km": 98.522,
-      "place": "16 km W of San José del Palmar, Colombia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjm4",
-      "tsunami": 0,
-      "significance": 386
-    },
-    {
-      "id": "us6000tjls",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-10T12:46:10.915000+00:00",
-      "latitude": -13.0188,
-      "longitude": 168.8919,
-      "depth_km": 655.67,
-      "place": "173 km ENE of Sola, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjls",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000tjl2",
-      "magnitude": 7.4,
-      "origin_time_utc": "2026-08-10T12:34:28.125000+00:00",
-      "latitude": 4.8436,
-      "longitude": -76.2422,
-      "depth_km": 110.285,
-      "place": "5 km S of San José del Palmar, Colombia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjl2",
-      "tsunami": 0,
-      "significance": 1790
-    },
-    {
-      "id": "us6000tjl0",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-10T12:12:22.220000+00:00",
-      "latitude": 17.5068,
-      "longitude": -45.8376,
-      "depth_km": 10.0,
-      "place": "northern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjl0",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tjku",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-10T11:50:25.901000+00:00",
-      "latitude": -12.8915,
-      "longitude": 168.882,
-      "depth_km": 640.51,
-      "place": "180 km NE of Sola, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjku",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tjkl",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-10T10:36:42.622000+00:00",
-      "latitude": 44.0156,
-      "longitude": 147.4942,
-      "depth_km": 66.149,
-      "place": "66 km ENE of Shikotan, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjkl",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tjk6",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-10T08:34:28.098000+00:00",
-      "latitude": -19.7958,
-      "longitude": 170.0,
-      "depth_km": 10.0,
-      "place": "80 km ESE of Isangel, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjk6",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000tjjz",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-10T07:17:28.964000+00:00",
-      "latitude": -37.4038,
-      "longitude": 177.8305,
-      "depth_km": 71.243,
-      "place": "46 km WNW of Hicks Bay, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjjz",
-      "tsunami": 0,
-      "significance": 355
-    },
-    {
-      "id": "us6000tjjj",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-08-10T05:41:44.224000+00:00",
-      "latitude": 0.3112,
-      "longitude": -114.648,
-      "depth_km": 10.0,
-      "place": "east central Pacific Ocean",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjjj",
-      "tsunami": 0,
-      "significance": 465
-    },
-    {
-      "id": "us6000tjjh",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-10T05:35:51.062000+00:00",
-      "latitude": 8.9207,
-      "longitude": 126.0577,
-      "depth_km": 103.062,
-      "place": "13 km ESE of San Miguel, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjjh",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
