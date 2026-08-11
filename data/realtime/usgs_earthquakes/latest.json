@@ -1,7 +1,91 @@
 {
-  "generated_at_iso": "2026-08-11T15:05:52Z",
-  "count": 8,
+  "generated_at_iso": "2026-08-11T21:03:32Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us6000tk29",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-11T20:31:28.580000+00:00",
+      "latitude": -4.7193,
+      "longitude": 152.9875,
+      "depth_km": 68.887,
+      "place": "89 km ESE of Kokopo, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk29",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tk1y",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-11T20:14:18.452000+00:00",
+      "latitude": 1.7064,
+      "longitude": 128.4742,
+      "depth_km": 10.0,
+      "place": "51 km E of Tobelo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk1y",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000tk1m",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-11T19:55:41.269000+00:00",
+      "latitude": 10.5351,
+      "longitude": 93.4884,
+      "depth_km": 113.482,
+      "place": "149 km SSE of Port Blair, India",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk1m",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000tk14",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-11T18:45:19.680000+00:00",
+      "latitude": -19.0842,
+      "longitude": -172.9513,
+      "depth_km": 10.0,
+      "place": "118 km ESE of Neiafu, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk14",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tk0u",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-11T18:10:25.542000+00:00",
+      "latitude": -31.5799,
+      "longitude": 126.5708,
+      "depth_km": 10.0,
+      "place": "Western Australia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk0u",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tk0c",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-11T17:21:15.884000+00:00",
+      "latitude": 45.487,
+      "longitude": 26.1598,
+      "depth_km": 140.003,
+      "place": "7 km W of Lunca Jariștei, Romania",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk0c",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tk0a",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-11T17:06:18.902000+00:00",
+      "latitude": -7.6341,
+      "longitude": 144.8583,
+      "depth_km": 10.0,
+      "place": "107 km WNW of Kerema, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk0a",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us6000tjxa",
       "magnitude": 4.8,
@@ -13,6 +97,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjxa",
       "tsunami": 0,
       "significance": 354
+    },
+    {
+      "id": "us6000tjx7",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-11T12:13:41.963000+00:00",
+      "latitude": 49.2842,
+      "longitude": 153.1425,
+      "depth_km": 174.304,
+      "place": "264 km SW of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjx7",
+      "tsunami": 0,
+      "significance": 312
     },
     {
       "id": "us6000tjx1",
@@ -85,18 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjt8",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000tjqj",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-10T17:08:06.809000+00:00",
-      "latitude": -5.9347,
-      "longitude": 102.3607,
-      "depth_km": 21.72,
-      "place": "232 km SSW of Pagar Alam, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjqj",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
