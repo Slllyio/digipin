@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-12T13:20:00Z",
-  "count": 15,
+  "generated_at_iso": "2026-08-12T15:38:12Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us6000tk75",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-12T11:56:29.774000+00:00",
+      "latitude": 13.9641,
+      "longitude": -92.3028,
+      "depth_km": 35.0,
+      "place": "55 km SW of Champerico, Guatemala",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk75",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000tk74",
       "magnitude": 6.0,
@@ -13,6 +25,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk74",
       "tsunami": 0,
       "significance": 554
+    },
+    {
+      "id": "us6000tk6n",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-12T10:15:28.554000+00:00",
+      "latitude": -2.6342,
+      "longitude": 127.7768,
+      "depth_km": 10.0,
+      "place": "125 km NNW of Ambon, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk6n",
+      "tsunami": 0,
+      "significance": 312
     },
     {
       "id": "us6000tk5x",
