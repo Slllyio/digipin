@@ -1,7 +1,103 @@
 {
-  "generated_at_iso": "2026-08-11T23:02:51Z",
-  "count": 14,
+  "generated_at_iso": "2026-08-12T13:20:00Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us6000tk74",
+      "magnitude": 6.0,
+      "origin_time_utc": "2026-08-12T11:47:12.117000+00:00",
+      "latitude": -60.2445,
+      "longitude": -28.9899,
+      "depth_km": 10.0,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk74",
+      "tsunami": 0,
+      "significance": 554
+    },
+    {
+      "id": "us6000tk5x",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-12T07:14:52.581000+00:00",
+      "latitude": 42.0411,
+      "longitude": 75.3037,
+      "depth_km": 10.0,
+      "place": "66 km E of Chayek, Kyrgyzstan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk5x",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tk5j",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-12T05:11:27.487000+00:00",
+      "latitude": -55.9202,
+      "longitude": -143.4933,
+      "depth_km": 10.0,
+      "place": "Pacific-Antarctic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk5j",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000tk5c",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-12T04:05:51.903000+00:00",
+      "latitude": 32.4564,
+      "longitude": 130.4504,
+      "depth_km": 10.0,
+      "place": "14 km WSW of Honmachi, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk5c",
+      "tsunami": 0,
+      "significance": 370
+    },
+    {
+      "id": "hv75018296",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-08-12T03:48:33.980000+00:00",
+      "latitude": 18.879,
+      "longitude": -155.233333333333,
+      "depth_km": 10.73,
+      "place": "42 km ESE of Naalehu, Hawaii",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/hv75018296",
+      "tsunami": 0,
+      "significance": 440
+    },
+    {
+      "id": "us6000tk41",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-11T23:33:14.884000+00:00",
+      "latitude": -3.9381,
+      "longitude": 139.9386,
+      "depth_km": 34.264,
+      "place": "167 km SSW of Abepura, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk41",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000tk3b",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-11T21:45:53.951000+00:00",
+      "latitude": 41.5705,
+      "longitude": 142.1187,
+      "depth_km": 59.553,
+      "place": "81 km ENE of Mutsu, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk3b",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tk33",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-11T21:37:04.529000+00:00",
+      "latitude": 32.3871,
+      "longitude": 69.6826,
+      "depth_km": 43.011,
+      "place": "14 km NE of Wana, Pakistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk33",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000tk29",
       "magnitude": 5.0,
@@ -85,90 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk0a",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us6000tjxa",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-11T12:45:12.884000+00:00",
-      "latitude": -7.397,
-      "longitude": 130.3922,
-      "depth_km": 30.609,
-      "place": "Pulau Pulau Tanimbar, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjxa",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000tjx7",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-11T12:13:41.963000+00:00",
-      "latitude": 49.2842,
-      "longitude": 153.1425,
-      "depth_km": 174.304,
-      "place": "264 km SW of Severo-Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjx7",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tjx1",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-11T10:49:52.149000+00:00",
-      "latitude": -6.7252,
-      "longitude": 129.7317,
-      "depth_km": 170.699,
-      "place": "Banda Sea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjx1",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tjwh",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-11T08:49:24.635000+00:00",
-      "latitude": 54.4899,
-      "longitude": -159.9971,
-      "depth_km": 36.925,
-      "place": "99 km SSE of Sand Point, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjwh",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tjwd",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-11T08:00:34.362000+00:00",
-      "latitude": -5.8682,
-      "longitude": -81.0116,
-      "depth_km": 39.674,
-      "place": "40 km SSW of Sechura, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjwd",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tjvb",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-11T03:11:19.919000+00:00",
-      "latitude": -23.5978,
-      "longitude": -179.7759,
-      "depth_km": 548.449,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjvb",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tjug",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-11T01:12:46.205000+00:00",
-      "latitude": -4.4801,
-      "longitude": 102.5519,
-      "depth_km": 61.94,
-      "place": "81 km SSE of Bengkulu, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tjug",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
