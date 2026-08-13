@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-13T13:35:34Z",
-  "count": 10,
+  "generated_at_iso": "2026-08-13T15:40:30Z",
+  "count": 11,
   "records": [
     {
       "id": "us6000tkgn",
@@ -84,7 +84,7 @@
       "place": "69 km SSW of Chirilagua, El Salvador",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkcb",
       "tsunami": 0,
-      "significance": 471
+      "significance": 470
     },
     {
       "id": "us6000tkba",
@@ -121,6 +121,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkaw",
       "tsunami": 0,
       "significance": 326
+    },
+    {
+      "id": "us6000tk9q",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-12T18:58:25.658000+00:00",
+      "latitude": -6.5002,
+      "longitude": 129.516,
+      "depth_km": 178.38,
+      "place": "Banda Sea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk9q",
+      "tsunami": 0,
+      "significance": 312
     }
   ]
 }
