@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-13T15:40:30Z",
-  "count": 11,
+  "generated_at_iso": "2026-08-13T21:13:50Z",
+  "count": 13,
   "records": [
+    {
+      "id": "us6000tkig",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-08-13T18:39:31.327000+00:00",
+      "latitude": 5.3002,
+      "longitude": 125.4836,
+      "depth_km": 66.312,
+      "place": "11 km S of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkig",
+      "tsunami": 0,
+      "significance": 433
+    },
+    {
+      "id": "us6000tki8",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-13T17:39:29.650000+00:00",
+      "latitude": -56.8562,
+      "longitude": 147.2281,
+      "depth_km": 10.0,
+      "place": "west of Macquarie Island",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tki8",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000tkhm",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-08-13T16:11:45.826000+00:00",
+      "latitude": -28.6742,
+      "longitude": -176.3124,
+      "depth_km": 10.0,
+      "place": "Kermadec Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkhm",
+      "tsunami": 0,
+      "significance": 482
+    },
     {
       "id": "us6000tkgn",
       "magnitude": 5.0,
@@ -36,7 +72,7 @@
       "place": "22 km ENE of Lapuan, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkfh",
       "tsunami": 0,
-      "significance": 404
+      "significance": 405
     },
     {
       "id": "us6000tkeb",
@@ -121,18 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkaw",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tk9q",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-12T18:58:25.658000+00:00",
-      "latitude": -6.5002,
-      "longitude": 129.516,
-      "depth_km": 178.38,
-      "place": "Banda Sea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk9q",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
