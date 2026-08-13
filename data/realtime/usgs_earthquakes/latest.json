@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-08-13T02:20:27Z",
-  "count": 13,
+  "generated_at_iso": "2026-08-13T13:35:34Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us6000tkgn",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-13T12:44:59.102000+00:00",
+      "latitude": -4.4318,
+      "longitude": 143.8885,
+      "depth_km": 134.025,
+      "place": "45 km SSW of Angoram, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkgn",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tkg4",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-13T10:23:19.536000+00:00",
+      "latitude": -8.4115,
+      "longitude": 114.1762,
+      "depth_km": 145.679,
+      "place": "3 km ESE of Gambiran Satu, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkg4",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tkfh",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-13T09:22:58.999000+00:00",
+      "latitude": 6.2479,
+      "longitude": 125.8789,
+      "depth_km": 91.206,
+      "place": "22 km ENE of Lapuan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkfh",
+      "tsunami": 0,
+      "significance": 404
+    },
+    {
+      "id": "us6000tkeb",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-13T07:09:24.608000+00:00",
+      "latitude": 48.738,
+      "longitude": 155.3646,
+      "depth_km": 35.0,
+      "place": "222 km SSW of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkeb",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000tkci",
       "magnitude": 5.1,
@@ -73,90 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkaw",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tk75",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-12T11:56:29.774000+00:00",
-      "latitude": 13.9641,
-      "longitude": -92.3028,
-      "depth_km": 35.0,
-      "place": "55 km SW of Champerico, Guatemala",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk75",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tk74",
-      "magnitude": 6.0,
-      "origin_time_utc": "2026-08-12T11:47:12.117000+00:00",
-      "latitude": -60.2445,
-      "longitude": -28.9899,
-      "depth_km": 10.0,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk74",
-      "tsunami": 0,
-      "significance": 554
-    },
-    {
-      "id": "us6000tk6n",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-12T10:15:28.554000+00:00",
-      "latitude": -2.6342,
-      "longitude": 127.7768,
-      "depth_km": 10.0,
-      "place": "125 km NNW of Ambon, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk6n",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tk5x",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-12T07:14:52.581000+00:00",
-      "latitude": 42.0411,
-      "longitude": 75.3037,
-      "depth_km": 10.0,
-      "place": "66 km E of Chayek, Kyrgyzstan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk5x",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tk5j",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-12T05:11:27.487000+00:00",
-      "latitude": -55.9202,
-      "longitude": -143.4933,
-      "depth_km": 10.0,
-      "place": "Pacific-Antarctic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk5j",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000tk5c",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-12T04:05:51.903000+00:00",
-      "latitude": 32.4564,
-      "longitude": 130.4504,
-      "depth_km": 10.0,
-      "place": "14 km WSW of Honmachi, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tk5c",
-      "tsunami": 0,
-      "significance": 370
-    },
-    {
-      "id": "hv75018296",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-08-12T03:48:33.980000+00:00",
-      "latitude": 18.879,
-      "longitude": -155.233333333333,
-      "depth_km": 10.73,
-      "place": "42 km ESE of Naalehu, Hawaii",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/hv75018296",
-      "tsunami": 0,
-      "significance": 441
     }
   ]
 }
