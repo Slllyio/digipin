@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-13T21:13:50Z",
-  "count": 13,
+  "generated_at_iso": "2026-08-14T07:21:25Z",
+  "count": 8,
   "records": [
+    {
+      "id": "us6000tklc",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-14T04:53:15.378000+00:00",
+      "latitude": 27.6391,
+      "longitude": 139.5875,
+      "depth_km": 516.445,
+      "place": "Bonin Islands, Japan region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tklc",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tkkw",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-14T01:14:53.627000+00:00",
+      "latitude": 5.3865,
+      "longitude": 125.1585,
+      "depth_km": 92.559,
+      "place": "29 km SW of Balangonan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkkw",
+      "tsunami": 0,
+      "significance": 370
+    },
     {
       "id": "us6000tkig",
       "magnitude": 5.3,
@@ -73,90 +97,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkfh",
       "tsunami": 0,
       "significance": 405
-    },
-    {
-      "id": "us6000tkeb",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-13T07:09:24.608000+00:00",
-      "latitude": 48.738,
-      "longitude": 155.3646,
-      "depth_km": 35.0,
-      "place": "222 km SSW of Severo-Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkeb",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tkci",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-13T00:35:18.815000+00:00",
-      "latitude": 36.7849,
-      "longitude": 74.3579,
-      "depth_km": 58.893,
-      "place": "59 km NNW of Barishal, Pakistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkci",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000tkcj",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-13T00:33:27.168000+00:00",
-      "latitude": 73.4757,
-      "longitude": 7.8276,
-      "depth_km": 10.0,
-      "place": "Greenland Sea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkcj",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tkcb",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-08-13T00:30:04.840000+00:00",
-      "latitude": 12.6084,
-      "longitude": -88.2864,
-      "depth_km": 56.794,
-      "place": "69 km SSW of Chirilagua, El Salvador",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkcb",
-      "tsunami": 0,
-      "significance": 470
-    },
-    {
-      "id": "us6000tkba",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-12T22:13:33.611000+00:00",
-      "latitude": -17.8749,
-      "longitude": -178.554,
-      "depth_km": 570.792,
-      "place": "226 km E of Levuka, Fiji",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkba",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000tkax",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-12T21:25:20.192000+00:00",
-      "latitude": 20.4966,
-      "longitude": 122.2726,
-      "depth_km": 10.0,
-      "place": "31 km E of Basco, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkax",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tkaw",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-12T21:21:29.025000+00:00",
-      "latitude": 32.4765,
-      "longitude": 130.4343,
-      "depth_km": 10.0,
-      "place": "15 km WSW of Honmachi, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkaw",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
