@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-08-14T14:39:42Z",
-  "count": 6,
+  "generated_at_iso": "2026-08-14T21:22:48Z",
+  "count": 8,
   "records": [
+    {
+      "id": "us6000tksg",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-14T20:23:53.872000+00:00",
+      "latitude": -10.4124,
+      "longitude": 161.7858,
+      "depth_km": 69.797,
+      "place": "15 km WNW of Kirakira, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tksg",
+      "tsunami": 0,
+      "significance": 355
+    },
+    {
+      "id": "us6000tkrw",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-14T18:33:25.499000+00:00",
+      "latitude": -12.3805,
+      "longitude": 167.4799,
+      "depth_km": 369.326,
+      "place": "165 km N of Sola, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkrw",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tkrs",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-14T18:03:54.327000+00:00",
+      "latitude": 4.2883,
+      "longitude": 128.0475,
+      "depth_km": 10.0,
+      "place": "283 km N of Tobelo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkrs",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000tkrq",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-14T17:47:42.334000+00:00",
+      "latitude": 51.371,
+      "longitude": 158.869,
+      "depth_km": 35.0,
+      "place": "165 km E of Ozernovskiy, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkrq",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tkrg",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-14T16:56:14.767000+00:00",
+      "latitude": 41.1279,
+      "longitude": 48.7787,
+      "depth_km": 10.0,
+      "place": "19 km WSW of Divichibazar, Azerbaijan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkrg",
+      "tsunami": 0,
+      "significance": 370
+    },
     {
       "id": "us6000tkmy",
       "magnitude": 4.8,
@@ -37,42 +97,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkkw",
       "tsunami": 0,
       "significance": 370
-    },
-    {
-      "id": "us6000tkig",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-08-13T18:39:31.327000+00:00",
-      "latitude": 5.3002,
-      "longitude": 125.4836,
-      "depth_km": 66.312,
-      "place": "11 km S of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkig",
-      "tsunami": 0,
-      "significance": 433
-    },
-    {
-      "id": "us6000tki8",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-13T17:39:29.650000+00:00",
-      "latitude": -56.8562,
-      "longitude": 147.2281,
-      "depth_km": 10.0,
-      "place": "west of Macquarie Island",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tki8",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000tkhm",
-      "magnitude": 5.6,
-      "origin_time_utc": "2026-08-13T16:11:45.826000+00:00",
-      "latitude": -28.6742,
-      "longitude": -176.3124,
-      "depth_km": 10.0,
-      "place": "Kermadec Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkhm",
-      "tsunami": 0,
-      "significance": 482
     }
   ]
 }
