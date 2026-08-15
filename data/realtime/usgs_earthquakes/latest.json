@@ -1,5 +1,5 @@
 {
-  "generated_at_iso": "2026-08-15T13:27:58Z",
+  "generated_at_iso": "2026-08-15T14:47:51Z",
   "count": 42,
   "records": [
     {
@@ -48,7 +48,7 @@
       "place": "15 km NNW of Pematangsiantar, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkyk",
       "tsunami": 0,
-      "significance": 748
+      "significance": 750
     },
     {
       "id": "us6000tkyg",
@@ -444,7 +444,7 @@
       "place": "68 km NNW of Ende, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkt2",
       "tsunami": 0,
-      "significance": 1030
+      "significance": 1031
     },
     {
       "id": "us6000tksg",
