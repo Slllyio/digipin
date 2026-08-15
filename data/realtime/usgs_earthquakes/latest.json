@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-15T14:47:51Z",
-  "count": 42,
+  "generated_at_iso": "2026-08-15T16:59:43Z",
+  "count": 44,
   "records": [
+    {
+      "id": "us6000tl1s",
+      "magnitude": 5.7,
+      "origin_time_utc": "2026-08-15T16:25:18.342000+00:00",
+      "latitude": 0.1542,
+      "longitude": 120.2573,
+      "depth_km": 72.495,
+      "place": "125 km NNE of Palu, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tl1s",
+      "tsunami": 0,
+      "significance": 500
+    },
     {
       "id": "us6000tl0v",
       "magnitude": 5.2,
@@ -372,7 +384,31 @@
       "place": "1 km SW of Otura, Spain",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkv2",
       "tsunami": 0,
-      "significance": 491
+      "significance": 727
+    },
+    {
+      "id": "us6000tl1g",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-14T23:00:03.603000+00:00",
+      "latitude": -8.2899,
+      "longitude": 120.829,
+      "depth_km": 11.296,
+      "place": "53 km NE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tl1g",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tkv1",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-14T22:59:12.662000+00:00",
+      "latitude": -8.146,
+      "longitude": 120.2424,
+      "depth_km": 10.0,
+      "place": "55 km NE of Labuan Bajo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkv1",
+      "tsunami": 0,
+      "significance": 340
     },
     {
       "id": "us6000tkuw",
@@ -493,18 +529,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkrq",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000tkrg",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-14T16:56:14.767000+00:00",
-      "latitude": 41.1279,
-      "longitude": 48.7787,
-      "depth_km": 10.0,
-      "place": "19 km WSW of Divichibazar, Azerbaijan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkrg",
-      "tsunami": 0,
-      "significance": 370
     }
   ]
 }
