@@ -1,7 +1,127 @@
 {
-  "generated_at_iso": "2026-08-15T07:16:09Z",
-  "count": 33,
+  "generated_at_iso": "2026-08-15T13:27:58Z",
+  "count": 42,
   "records": [
+    {
+      "id": "us6000tl0v",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-08-15T12:14:39.321000+00:00",
+      "latitude": -8.2575,
+      "longitude": 121.2565,
+      "depth_km": 10.0,
+      "place": "78 km NW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tl0v",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000tl0a",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-15T11:30:15.368000+00:00",
+      "latitude": 24.4732,
+      "longitude": 122.2931,
+      "depth_km": 66.357,
+      "place": "63 km ESE of Yilan, Taiwan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tl0a",
+      "tsunami": 0,
+      "significance": 370
+    },
+    {
+      "id": "us6000tkyz",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-08-15T11:10:24.937000+00:00",
+      "latitude": -4.411,
+      "longitude": 143.9212,
+      "depth_km": 120.214,
+      "place": "41 km SSW of Angoram, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkyz",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us6000tkyk",
+      "magnitude": 6.9,
+      "origin_time_utc": "2026-08-15T10:54:51.796000+00:00",
+      "latitude": 3.0856,
+      "longitude": 99.015,
+      "depth_km": 172.526,
+      "place": "15 km NNW of Pematangsiantar, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkyk",
+      "tsunami": 0,
+      "significance": 748
+    },
+    {
+      "id": "us6000tkyg",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-15T10:31:30.185000+00:00",
+      "latitude": -8.264,
+      "longitude": 120.3675,
+      "depth_km": 10.0,
+      "place": "39 km NNW of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkyg",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000tkya",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-15T09:51:45.571000+00:00",
+      "latitude": -0.1583,
+      "longitude": 122.0236,
+      "depth_km": 272.756,
+      "place": "122 km NW of Luwuk, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkya",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tky8",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-15T09:32:53.800000+00:00",
+      "latitude": -8.2814,
+      "longitude": 121.4883,
+      "depth_km": 10.0,
+      "place": "65 km NNW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tky8",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000tky5",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-15T09:08:22.294000+00:00",
+      "latitude": -8.1297,
+      "longitude": 120.4925,
+      "depth_km": 10.0,
+      "place": "53 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tky5",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tkx5",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-15T07:39:38.975000+00:00",
+      "latitude": -8.0446,
+      "longitude": 120.7765,
+      "depth_km": 10.0,
+      "place": "71 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkx5",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000tkwz",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-15T07:16:07.016000+00:00",
+      "latitude": -8.2926,
+      "longitude": 121.4064,
+      "depth_km": 10.0,
+      "place": "67 km NNW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkwz",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000tkwt",
       "magnitude": 4.7,
@@ -252,7 +372,7 @@
       "place": "1 km SW of Otura, Spain",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkv2",
       "tsunami": 0,
-      "significance": 471
+      "significance": 491
     },
     {
       "id": "us6000tkuw",
@@ -324,7 +444,7 @@
       "place": "68 km NNW of Ende, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkt2",
       "tsunami": 0,
-      "significance": 1029
+      "significance": 1030
     },
     {
       "id": "us6000tksg",
@@ -385,18 +505,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkrg",
       "tsunami": 0,
       "significance": 370
-    },
-    {
-      "id": "us6000tkmy",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-14T09:58:43.693000+00:00",
-      "latitude": 33.615,
-      "longitude": 141.619,
-      "depth_km": 10.0,
-      "place": "207 km SE of Katsuura, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkmy",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
