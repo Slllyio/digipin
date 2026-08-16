@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-16T09:41:33Z",
-  "count": 24,
+  "generated_at_iso": "2026-08-16T11:26:50Z",
+  "count": 23,
   "records": [
+    {
+      "id": "usd0015e7p",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-16T10:59:10.367000+00:00",
+      "latitude": -5.5481,
+      "longitude": 146.7476,
+      "depth_km": 138.737,
+      "place": "112 km ESE of Madang, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015e7p",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "usd0015e7k",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-16T10:31:34.822000+00:00",
+      "latitude": -7.8791,
+      "longitude": 120.5504,
+      "depth_km": 10.0,
+      "place": "81 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015e7k",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "usd0015e7j",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-08-16T10:14:36.343000+00:00",
+      "latitude": -7.9399,
+      "longitude": 120.5995,
+      "depth_km": 10.0,
+      "place": "75 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015e7j",
+      "tsunami": 0,
+      "significance": 432
+    },
     {
       "id": "usd0015e6s",
       "magnitude": 4.6,
@@ -241,54 +277,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tl0a",
       "tsunami": 0,
       "significance": 370
-    },
-    {
-      "id": "us6000tkyz",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-08-15T11:10:24.937000+00:00",
-      "latitude": -4.411,
-      "longitude": 143.9212,
-      "depth_km": 120.214,
-      "place": "41 km SSW of Angoram, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkyz",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us6000tkyk",
-      "magnitude": 6.9,
-      "origin_time_utc": "2026-08-15T10:54:51.796000+00:00",
-      "latitude": 3.0856,
-      "longitude": 99.015,
-      "depth_km": 172.526,
-      "place": "15 km NNW of Pematangsiantar, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkyk",
-      "tsunami": 0,
-      "significance": 751
-    },
-    {
-      "id": "us6000tkyg",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-15T10:31:30.185000+00:00",
-      "latitude": -8.264,
-      "longitude": 120.3675,
-      "depth_km": 10.0,
-      "place": "39 km NNW of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkyg",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000tkya",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-15T09:51:45.571000+00:00",
-      "latitude": -0.1583,
-      "longitude": 122.0236,
-      "depth_km": 272.756,
-      "place": "122 km NW of Luwuk, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkya",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
