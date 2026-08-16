@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-16T01:48:03Z",
-  "count": 32,
+  "generated_at_iso": "2026-08-16T03:51:34Z",
+  "count": 30,
   "records": [
+    {
+      "id": "us6000tl4w",
+      "magnitude": 6.1,
+      "origin_time_utc": "2026-08-16T03:20:24.373000+00:00",
+      "latitude": -14.5474,
+      "longitude": 167.1934,
+      "depth_km": 188.148,
+      "place": "56 km NNE of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tl4w",
+      "tsunami": 0,
+      "significance": 573
+    },
     {
       "id": "us6000tl44",
       "magnitude": 5.0,
@@ -349,42 +361,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkw9",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us6000tkw2",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-15T02:46:55.923000+00:00",
-      "latitude": -8.299,
-      "longitude": 121.3427,
-      "depth_km": 10.0,
-      "place": "69 km NNW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkw2",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tkw0",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-15T02:18:46.795000+00:00",
-      "latitude": -8.2289,
-      "longitude": 121.3629,
-      "depth_km": 10.0,
-      "place": "75 km NNW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkw0",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tkvy",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-15T02:03:45.840000+00:00",
-      "latitude": -8.1754,
-      "longitude": 121.2637,
-      "depth_km": 10.0,
-      "place": "85 km NNW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkvy",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
