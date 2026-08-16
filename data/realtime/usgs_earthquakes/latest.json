@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-16T03:51:34Z",
-  "count": 30,
+  "generated_at_iso": "2026-08-16T05:05:14Z",
+  "count": 29,
   "records": [
+    {
+      "id": "us6000tl55",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-16T03:42:59.885000+00:00",
+      "latitude": -8.4615,
+      "longitude": 121.5082,
+      "depth_km": 10.0,
+      "place": "45 km NNW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tl55",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us6000tl4w",
       "magnitude": 6.1,
@@ -36,7 +48,7 @@
       "place": "19 km NE of Colonia, Micronesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tl43",
       "tsunami": 0,
-      "significance": 451
+      "significance": 452
     },
     {
       "id": "us6000tl3n",
@@ -335,30 +347,6 @@
       "depth_km": 10.0,
       "place": "62 km NNW of Ende, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkwj",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tkwd",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-15T04:23:07.762000+00:00",
-      "latitude": -8.3988,
-      "longitude": 121.2851,
-      "depth_km": 10.0,
-      "place": "64 km NW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkwd",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tkw9",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-15T03:54:13.099000+00:00",
-      "latitude": -8.32,
-      "longitude": 121.3458,
-      "depth_km": 10.0,
-      "place": "67 km NNW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tkw9",
       "tsunami": 0,
       "significance": 385
     }
