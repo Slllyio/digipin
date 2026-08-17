@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-17T14:01:47Z",
+  "generated_at_iso": "2026-08-17T17:03:04Z",
   "count": 24,
   "records": [
+    {
+      "id": "usd0015ee2",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-17T13:58:34.474000+00:00",
+      "latitude": -8.3182,
+      "longitude": 120.4472,
+      "depth_km": 10.0,
+      "place": "32 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015ee2",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "usd0015edt",
       "magnitude": 4.9,
@@ -277,18 +289,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015e96",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "usd0015e8n",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-08-16T15:52:53.557000+00:00",
-      "latitude": 14.4177,
-      "longitude": -92.969,
-      "depth_km": 35.0,
-      "place": "67 km WSW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015e8n",
-      "tsunami": 0,
-      "significance": 416
     }
   ]
 }
