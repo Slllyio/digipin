@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-17T17:03:04Z",
-  "count": 24,
+  "generated_at_iso": "2026-08-17T17:44:30Z",
+  "count": 22,
   "records": [
     {
       "id": "usd0015ee2",
@@ -265,30 +265,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015ea6",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "usd0015e9a",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-16T17:26:15.105000+00:00",
-      "latitude": -7.9109,
-      "longitude": 120.4602,
-      "depth_km": 9.309,
-      "place": "77 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015e9a",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "usd0015e96",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-16T17:11:07.915000+00:00",
-      "latitude": -22.5775,
-      "longitude": -20.3712,
-      "depth_km": 10.0,
-      "place": "South Atlantic Ocean",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015e96",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
