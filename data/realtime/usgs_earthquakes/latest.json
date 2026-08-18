@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-08-18T03:22:34Z",
-  "count": 22,
+  "generated_at_iso": "2026-08-18T10:02:45Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us6000tlm3",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-18T09:01:39.508000+00:00",
+      "latitude": -7.9353,
+      "longitude": 120.4656,
+      "depth_km": 33.11,
+      "place": "74 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlm3",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tllu",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-18T08:37:44.898000+00:00",
+      "latitude": 37.1786,
+      "longitude": -3.6311,
+      "depth_km": 10.0,
+      "place": "2 km WSW of Granada, Spain",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tllu",
+      "tsunami": 0,
+      "significance": 379
+    },
+    {
+      "id": "us6000tlkt",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-08-18T06:02:20.229000+00:00",
+      "latitude": -0.6858,
+      "longitude": 98.416,
+      "depth_km": 10.0,
+      "place": "154 km SSE of Teluk Dalam, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlkt",
+      "tsunami": 0,
+      "significance": 482
+    },
+    {
+      "id": "us6000tlkl",
+      "magnitude": 5.7,
+      "origin_time_utc": "2026-08-18T05:02:32.244000+00:00",
+      "latitude": 14.2298,
+      "longitude": -93.1475,
+      "depth_km": 10.0,
+      "place": "95 km SW of Puerto Madero, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlkl",
+      "tsunami": 0,
+      "significance": 500
+    },
     {
       "id": "us6000tlk5",
       "magnitude": 4.8,
@@ -29,11 +77,11 @@
     {
       "id": "us6000tlgm",
       "magnitude": 5.3,
-      "origin_time_utc": "2026-08-17T22:53:11.009000+00:00",
-      "latitude": 9.7621,
-      "longitude": 138.6056,
+      "origin_time_utc": "2026-08-17T22:53:11.292000+00:00",
+      "latitude": 9.638,
+      "longitude": 138.3106,
       "depth_km": 10.0,
-      "place": "59 km ENE of Colonia, Micronesia",
+      "place": "24 km ENE of Colonia, Micronesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlgm",
       "tsunami": 0,
       "significance": 433
@@ -41,10 +89,10 @@
     {
       "id": "us6000tlbz",
       "magnitude": 5.1,
-      "origin_time_utc": "2026-08-17T21:36:35.887000+00:00",
-      "latitude": 46.4341,
-      "longitude": 151.3834,
-      "depth_km": 90.992,
+      "origin_time_utc": "2026-08-17T21:36:36.105000+00:00",
+      "latitude": 46.4392,
+      "longitude": 151.4468,
+      "depth_km": 93.538,
       "place": "Kuril Islands",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlbz",
       "tsunami": 0,
@@ -181,90 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015ed7",
       "tsunami": 0,
       "significance": 416
-    },
-    {
-      "id": "usd0015ed1",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-17T09:16:05.268000+00:00",
-      "latitude": -8.3911,
-      "longitude": 121.5192,
-      "depth_km": 10.0,
-      "place": "52 km NNW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015ed1",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "usd0015ech",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-17T07:20:32.272000+00:00",
-      "latitude": -8.5254,
-      "longitude": 121.2007,
-      "depth_km": 28.252,
-      "place": "61 km NW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015ech",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "usd0015ecf",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-17T06:55:11.062000+00:00",
-      "latitude": 14.5955,
-      "longitude": 147.0932,
-      "depth_km": 10.0,
-      "place": "159 km ESE of Saipan, Northern Mariana Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015ecf",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "usd0015ebp",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-17T05:18:41.824000+00:00",
-      "latitude": -38.907,
-      "longitude": 175.3138,
-      "depth_km": 177.408,
-      "place": "43 km WNW of Turangi, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015ebp",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "usd0015ebj",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-08-17T03:48:04.873000+00:00",
-      "latitude": -8.2999,
-      "longitude": 121.327,
-      "depth_km": 16.335,
-      "place": "70 km NNW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015ebj",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "usd0015ebi",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-08-17T03:36:39.370000+00:00",
-      "latitude": -8.278,
-      "longitude": 121.407,
-      "depth_km": 10.0,
-      "place": "68 km NNW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015ebi",
-      "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "usd0015ebh",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-17T03:33:53.507000+00:00",
-      "latitude": -8.0913,
-      "longitude": 121.0947,
-      "depth_km": 10.0,
-      "place": "90 km NE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015ebh",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
