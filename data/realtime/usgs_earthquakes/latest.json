@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-18T21:21:28Z",
+  "generated_at_iso": "2026-08-18T22:50:13Z",
   "count": 17,
   "records": [
+    {
+      "id": "us6000tlrj",
+      "magnitude": 5.9,
+      "origin_time_utc": "2026-08-18T21:36:29.215000+00:00",
+      "latitude": 37.8349,
+      "longitude": 95.538,
+      "depth_km": 10.0,
+      "place": "269 km SSE of Dunhuang, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlrj",
+      "tsunami": 0,
+      "significance": 650
+    },
     {
       "id": "us6000tlqv",
       "magnitude": 4.8,
@@ -193,18 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlgm",
       "tsunami": 0,
       "significance": 433
-    },
-    {
-      "id": "us6000tlbz",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-17T21:36:36.105000+00:00",
-      "latitude": 46.4392,
-      "longitude": 151.4468,
-      "depth_km": 93.538,
-      "place": "Kuril Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlbz",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
