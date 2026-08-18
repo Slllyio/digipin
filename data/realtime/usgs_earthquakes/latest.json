@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-18T15:58:40Z",
-  "count": 18,
+  "generated_at_iso": "2026-08-18T18:55:25Z",
+  "count": 16,
   "records": [
     {
       "id": "us6000tlnv",
@@ -193,30 +193,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015efp",
       "tsunami": 0,
       "significance": 355
-    },
-    {
-      "id": "usd0015efc",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-17T18:51:11.299000+00:00",
-      "latitude": 9.7108,
-      "longitude": 138.2886,
-      "depth_km": 10.0,
-      "place": "28 km NE of Colonia, Micronesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015efc",
-      "tsunami": 0,
-      "significance": 370
-    },
-    {
-      "id": "usd0015ef3",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-17T18:10:05.545000+00:00",
-      "latitude": -7.0242,
-      "longitude": 117.2457,
-      "depth_km": 496.552,
-      "place": "155 km N of Pototano, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015ef3",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
