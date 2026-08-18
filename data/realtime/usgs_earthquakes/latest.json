@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-18T18:55:25Z",
-  "count": 16,
+  "generated_at_iso": "2026-08-18T21:21:28Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us6000tlqv",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-18T20:15:46.995000+00:00",
+      "latitude": -8.306,
+      "longitude": 121.2814,
+      "depth_km": 56.415,
+      "place": "72 km NW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlqv",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tlqq",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-08-18T19:51:09.478000+00:00",
+      "latitude": 36.5535,
+      "longitude": 70.7551,
+      "depth_km": 195.937,
+      "place": "35 km SSW of Jurm, Afghanistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlqq",
+      "tsunami": 0,
+      "significance": 433
+    },
+    {
+      "id": "us6000tlqk",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-18T19:03:07.854000+00:00",
+      "latitude": -8.2942,
+      "longitude": 121.2432,
+      "depth_km": 10.0,
+      "place": "76 km NW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlqk",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us6000tlnv",
       "magnitude": 4.9,
@@ -96,7 +132,7 @@
       "place": "2 km WSW of Granada, Spain",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tllu",
       "tsunami": 0,
-      "significance": 381
+      "significance": 382
     },
     {
       "id": "us6000tlkt",
@@ -169,30 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlbz",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "aka2026qgsene",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-17T20:35:10.038000+00:00",
-      "latitude": 57.279,
-      "longitude": -154.894,
-      "depth_km": 57.9,
-      "place": "41 km SW of Karluk, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026qgsene",
-      "tsunami": 0,
-      "significance": 313
-    },
-    {
-      "id": "usd0015efp",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-17T19:51:23.274000+00:00",
-      "latitude": 77.5754,
-      "longitude": 6.791,
-      "depth_km": 10.0,
-      "place": "219 km WSW of Longyearbyen, Svalbard and Jan Mayen",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usd0015efp",
-      "tsunami": 0,
-      "significance": 355
     }
   ]
 }
