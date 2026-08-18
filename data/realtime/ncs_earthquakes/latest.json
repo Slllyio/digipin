@@ -1,7 +1,84 @@
 {
-  "generated_at_iso": "2026-08-17T15:04:27Z",
+  "generated_at_iso": "2026-08-18T07:24:12Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-08-18 09:46:54|24.986,94.412",
+      "magnitude": 3.5,
+      "origin_time": "2026-08-18 09:46:54",
+      "latitude": 24.986,
+      "longitude": 94.412,
+      "depth_km": 10.0,
+      "region": "Ukhrul, Manipur",
+      "location": "9km NW of Ukhrul, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-18 09:09:30|37.254,71.687",
+      "magnitude": 4.1,
+      "origin_time": "2026-08-18 09:09:30",
+      "latitude": 37.254,
+      "longitude": 71.687,
+      "depth_km": 137.0,
+      "region": "Tajikistan",
+      "location": "102km E of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-18 08:26:48|26.038,90.619",
+      "magnitude": 2.4,
+      "origin_time": "2026-08-18 08:26:48",
+      "latitude": 26.038,
+      "longitude": 90.619,
+      "depth_km": 5.0,
+      "region": "Goalpara, Assam",
+      "location": "71km NE of Tura, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-18 06:44:39|28.123,87.439",
+      "magnitude": 2.7,
+      "origin_time": "2026-08-18 06:44:39",
+      "latitude": 28.123,
+      "longitude": 87.439,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "113km NW of Yuksom, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-18 01:07:06|28.040,87.439",
+      "magnitude": 2.8,
+      "origin_time": "2026-08-18 01:07:06",
+      "latitude": 28.04,
+      "longitude": 87.439,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "107km NW of Yuksom, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-17 23:35:37|27.421,88.638",
+      "magnitude": 1.8,
+      "origin_time": "2026-08-17 23:35:37",
+      "latitude": 27.421,
+      "longitude": 88.638,
+      "depth_km": 5.0,
+      "region": "Mangan, Sikkim",
+      "location": "9km NNE of Gangtok, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-17 20:26:00|20.460,73.722",
+      "magnitude": 2.1,
+      "origin_time": "2026-08-17 20:26:00",
+      "latitude": 20.46,
+      "longitude": 73.722,
+      "depth_km": 5.0,
+      "region": "Nashik, Maharashtra",
+      "location": "51km N of Nashik, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-08-17 12:40:31|20.499,73.800",
       "magnitude": 3.0,
@@ -11,6 +88,17 @@
       "depth_km": 5.0,
       "region": "Nashik, Maharashtra",
       "location": "55km N of Nashik, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-17 06:31:31|38.274,69.252",
+      "magnitude": 4.1,
+      "origin_time": "2026-08-17 06:31:31",
+      "latitude": 38.274,
+      "longitude": 69.252,
+      "depth_km": 107.0,
+      "region": "Tajikistan",
+      "location": "51km SE of Dushanbe, Tajikistan",
       "review_status": "Reviewed"
     },
     {
@@ -1562,94 +1650,6 @@
       "depth_km": 8.0,
       "region": "North District, Delhi",
       "location": "26km WNW of New Delhi, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-02 01:15:59|36.209,70.903",
-      "magnitude": 4.3,
-      "origin_time": "2026-08-02 01:15:59",
-      "latitude": 36.209,
-      "longitude": 70.903,
-      "depth_km": 172.0,
-      "region": "Afghanistan",
-      "location": "104km SSE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-01 11:29:46|29.934,79.846",
-      "magnitude": 2.9,
-      "origin_time": "2026-08-01 11:29:46",
-      "latitude": 29.934,
-      "longitude": 79.846,
-      "depth_km": 10.0,
-      "region": "Bageshwar, Uttarakhand",
-      "location": "53km NW of Pithoragarh, Uttarakhand, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-01 06:59:45|34.919,99.436",
-      "magnitude": 4.2,
-      "origin_time": "2026-08-01 06:59:45",
-      "latitude": 34.919,
-      "longitude": 99.436,
-      "depth_km": 104.0,
-      "region": "China",
-      "location": "840km NNE of Changlang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-01 05:53:39|25.019,91.103",
-      "magnitude": 3.0,
-      "origin_time": "2026-08-01 05:53:39",
-      "latitude": 25.019,
-      "longitude": 91.103,
-      "depth_km": 5.0,
-      "region": "Bangladesh",
-      "location": "69km WSW of Cherrapunjee, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-01 04:39:42|23.196,93.550",
-      "magnitude": 2.9,
-      "origin_time": "2026-08-01 04:39:42",
-      "latitude": 23.196,
-      "longitude": 93.55,
-      "depth_km": 10.0,
-      "region": "Myanmar",
-      "location": "36km SE of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-01 01:56:49|37.762,69.745",
-      "magnitude": 4.5,
-      "origin_time": "2026-08-01 01:56:49",
-      "latitude": 37.762,
-      "longitude": 69.745,
-      "depth_km": 55.0,
-      "region": "Tajikistan",
-      "location": "102km NW of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-07-31 22:41:33|29.019,76.692",
-      "magnitude": 3.2,
-      "origin_time": "2026-07-31 22:41:33",
-      "latitude": 29.019,
-      "longitude": 76.692,
-      "depth_km": 5.0,
-      "region": "Rohtak, Haryana",
-      "location": "16km NNE of Rohtak, Haryana, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-07-31 17:06:34|31.606,74.407",
-      "magnitude": 3.1,
-      "origin_time": "2026-07-31 17:06:34",
-      "latitude": 31.606,
-      "longitude": 74.407,
-      "depth_km": 20.0,
-      "region": "Pakistan",
-      "location": "44km W of Amritsar, Punjab, India",
       "review_status": "Reviewed"
     }
   ]
