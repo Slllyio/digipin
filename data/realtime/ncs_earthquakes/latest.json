@@ -1,7 +1,150 @@
 {
-  "generated_at_iso": "2026-08-18T07:24:12Z",
+  "generated_at_iso": "2026-08-19T04:09:49Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-08-19 03:29:59|37.758,95.690",
+      "magnitude": 4.6,
+      "origin_time": "2026-08-19 03:29:59",
+      "latitude": 37.758,
+      "longitude": 95.69,
+      "depth_km": 59.0,
+      "region": "China",
+      "location": "1070km N of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-19 03:06:26|37.951,95.564",
+      "magnitude": 5.3,
+      "origin_time": "2026-08-19 03:06:26",
+      "latitude": 37.951,
+      "longitude": 95.564,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "1091km N of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-19 01:55:11|31.664,79.740",
+      "magnitude": 3.1,
+      "origin_time": "2026-08-19 01:55:11",
+      "latitude": 31.664,
+      "longitude": 79.74,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "124km N of Joshimath, Uttarakhand , India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-19 01:38:11|25.524,90.971",
+      "magnitude": 3.1,
+      "origin_time": "2026-08-19 01:38:11",
+      "latitude": 25.524,
+      "longitude": 90.971,
+      "depth_km": 5.0,
+      "region": "West Khasi Hills, Meghalaya",
+      "location": "77km E of Tura, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-19 01:28:58|28.377,83.995",
+      "magnitude": 4.0,
+      "origin_time": "2026-08-19 01:28:58",
+      "latitude": 28.377,
+      "longitude": 83.995,
+      "depth_km": 7.0,
+      "region": "Nepal",
+      "location": "149km WNW of Kathmandu, Nepal",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-19 01:21:09|36.410,70.799",
+      "magnitude": 5.0,
+      "origin_time": "2026-08-19 01:21:09",
+      "latitude": 36.41,
+      "longitude": 70.799,
+      "depth_km": 181.0,
+      "region": "Afghanistan",
+      "location": "79km SSE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-19 00:21:21|34.943,63.145",
+      "magnitude": 4.0,
+      "origin_time": "2026-08-19 00:21:21",
+      "latitude": 34.943,
+      "longitude": 63.145,
+      "depth_km": 10.0,
+      "region": "Afghanistan",
+      "location": "546km SE of Ashgabat, Turkmenistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-18 19:42:58|32.339,76.398",
+      "magnitude": 3.0,
+      "origin_time": "2026-08-18 19:42:58",
+      "latitude": 32.339,
+      "longitude": 76.398,
+      "depth_km": 5.0,
+      "region": "Chamba, Himachal Pradesh",
+      "location": "15km NNE of Dharamshala, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-18 19:40:02|32.313,76.304",
+      "magnitude": 4.0,
+      "origin_time": "2026-08-18 19:40:02",
+      "latitude": 32.313,
+      "longitude": 76.304,
+      "depth_km": 5.0,
+      "region": "Kangra, Himachal Pradesh",
+      "location": "10km N of Dharamshala, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-18 18:54:47|32.413,76.462",
+      "magnitude": 3.6,
+      "origin_time": "2026-08-18 18:54:47",
+      "latitude": 32.413,
+      "longitude": 76.462,
+      "depth_km": 5.0,
+      "region": "Chamba, Himachal Pradesh",
+      "location": "25km NNE of Dharamshala, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-18 14:01:24|14.858,76.403",
+      "magnitude": 2.7,
+      "origin_time": "2026-08-18 14:01:24",
+      "latitude": 14.858,
+      "longitude": 76.403,
+      "depth_km": 5.0,
+      "region": "Vijayanagar, Karnataka",
+      "location": "53km S of Hampi, Karnataka, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-18 12:57:46|15.123,76.473",
+      "magnitude": 2.2,
+      "origin_time": "2026-08-18 12:57:46",
+      "latitude": 15.123,
+      "longitude": 76.473,
+      "depth_km": 5.0,
+      "region": "Ballari, Karnataka",
+      "location": "23km S of Hampi, Karnataka, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-08-18 11:44:41|25.742,90.664",
+      "magnitude": 2.8,
+      "origin_time": "2026-08-18 11:44:41",
+      "latitude": 25.742,
+      "longitude": 90.664,
+      "depth_km": 10.0,
+      "region": "East Garo Hills, Meghalaya",
+      "location": "52km ENE of Tura, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-08-18 09:46:54|24.986,94.412",
       "magnitude": 3.5,
@@ -1507,149 +1650,6 @@
       "depth_km": 5.0,
       "region": "Chamoli, Uttarakhand",
       "location": "14km WSW of Joshimath, Uttarakhand , India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-03 06:05:59|26.147,90.277",
-      "magnitude": 2.6,
-      "origin_time": "2026-08-03 06:05:59",
-      "latitude": 26.147,
-      "longitude": 90.277,
-      "depth_km": 4.0,
-      "region": "Goalpara, Assam",
-      "location": "70km N of Tura, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-03 04:35:59|25.250,94.806",
-      "magnitude": 3.3,
-      "origin_time": "2026-08-03 04:35:59",
-      "latitude": 25.25,
-      "longitude": 94.806,
-      "depth_km": 105.0,
-      "region": "Myanmar",
-      "location": "41km ENE of Shirui, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-03 02:52:19|28.501,82.444",
-      "magnitude": 4.0,
-      "origin_time": "2026-08-03 02:52:19",
-      "latitude": 28.501,
-      "longitude": 82.444,
-      "depth_km": 30.0,
-      "region": "Nepal",
-      "location": "191km N of Ayodhya, Uttar Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-03 02:51:27|27.205,91.957",
-      "magnitude": 2.8,
-      "origin_time": "2026-08-03 02:51:27",
-      "latitude": 27.205,
-      "longitude": 91.957,
-      "depth_km": 10.0,
-      "region": "Bhutan",
-      "location": "42km S of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-03 01:37:14|33.329,75.018",
-      "magnitude": 2.9,
-      "origin_time": "2026-08-03 01:37:14",
-      "latitude": 33.329,
-      "longitude": 75.018,
-      "depth_km": 5.0,
-      "region": "Reasi, Jammu and Kashmir",
-      "location": "38km NNE of Katra, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-02 20:01:46|35.207,99.063",
-      "magnitude": 4.5,
-      "origin_time": "2026-08-02 20:01:46",
-      "latitude": 35.207,
-      "longitude": 99.063,
-      "depth_km": 10.0,
-      "region": "China",
-      "location": "861km NNE of Changlang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-02 10:37:23|36.517,71.553",
-      "magnitude": 4.0,
-      "origin_time": "2026-08-02 10:37:23",
-      "latitude": 36.517,
-      "longitude": 71.553,
-      "depth_km": 110.0,
-      "region": "Afghanistan",
-      "location": "110km SE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-02 09:34:19|24.420,93.757",
-      "magnitude": 3.4,
-      "origin_time": "2026-08-02 09:34:19",
-      "latitude": 24.42,
-      "longitude": 93.757,
-      "depth_km": 53.0,
-      "region": "Bishnupur, Manipur",
-      "location": "8km SSW of Moirang, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-02 09:13:18|31.445,76.993",
-      "magnitude": 3.1,
-      "origin_time": "2026-08-02 09:13:18",
-      "latitude": 31.445,
-      "longitude": 76.993,
-      "depth_km": 8.0,
-      "region": "Mandi, Himachal Pradesh",
-      "location": "17km SSE of Mandi, Himachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-02 06:11:53|31.316,77.850",
-      "magnitude": 2.6,
-      "origin_time": "2026-08-02 06:11:53",
-      "latitude": 31.316,
-      "longitude": 77.85,
-      "depth_km": 7.0,
-      "region": "Shimla, Himachal Pradesh",
-      "location": "68km ENE of Shimla, Himachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-02 05:38:13|27.529,91.830",
-      "magnitude": 2.8,
-      "origin_time": "2026-08-02 05:38:13",
-      "latitude": 27.529,
-      "longitude": 91.83,
-      "depth_km": 5.0,
-      "region": "Tawang, Arunachal Pradesh",
-      "location": "7km SW of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-02 05:25:03|26.239,91.151",
-      "magnitude": 2.4,
-      "origin_time": "2026-08-02 05:25:03",
-      "latitude": 26.239,
-      "longitude": 91.151,
-      "depth_km": 4.0,
-      "region": "Barpeta, Assam",
-      "location": "59km W of Guwahati, Assam, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-08-02 04:14:01|28.721,76.957",
-      "magnitude": 2.9,
-      "origin_time": "2026-08-02 04:14:01",
-      "latitude": 28.721,
-      "longitude": 76.957,
-      "depth_km": 8.0,
-      "region": "North District, Delhi",
-      "location": "26km WNW of New Delhi, India",
       "review_status": "Reviewed"
     }
   ]
