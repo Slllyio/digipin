@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-19T05:27:36Z",
+  "generated_at_iso": "2026-08-19T06:47:46Z",
   "count": 21,
   "records": [
+    {
+      "id": "us6000tltq",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-19T05:22:24.762000+00:00",
+      "latitude": 37.8621,
+      "longitude": 95.5097,
+      "depth_km": 10.0,
+      "place": "265 km SSE of Dunhuang, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tltq",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000tlta",
       "magnitude": 4.8,
@@ -241,18 +253,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tllu",
       "tsunami": 0,
       "significance": 382
-    },
-    {
-      "id": "us6000tlkt",
-      "magnitude": 5.6,
-      "origin_time_utc": "2026-08-18T06:02:20.229000+00:00",
-      "latitude": -0.6858,
-      "longitude": 98.416,
-      "depth_km": 10.0,
-      "place": "154 km SSE of Teluk Dalam, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlkt",
-      "tsunami": 0,
-      "significance": 482
     }
   ]
 }
