@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-18T22:50:13Z",
+  "generated_at_iso": "2026-08-19T01:07:21Z",
   "count": 17,
   "records": [
+    {
+      "id": "us6000tls8",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-19T00:06:39.224000+00:00",
+      "latitude": 53.2146,
+      "longitude": 159.7133,
+      "depth_km": 72.813,
+      "place": "74 km ENE of Petropavlovsk-Kamchatsky, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tls8",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000tlrj",
       "magnitude": 5.9,
@@ -193,18 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tljs",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us6000tlgm",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-08-17T22:53:11.292000+00:00",
-      "latitude": 9.638,
-      "longitude": 138.3106,
-      "depth_km": 10.0,
-      "place": "24 km ENE of Colonia, Micronesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlgm",
-      "tsunami": 0,
-      "significance": 433
     }
   ]
 }
