@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-19T06:47:46Z",
-  "count": 21,
+  "generated_at_iso": "2026-08-19T09:03:16Z",
+  "count": 18,
   "records": [
     {
       "id": "us6000tltq",
@@ -217,42 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlmc",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tlm6",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-18T09:02:35.424000+00:00",
-      "latitude": -24.7429,
-      "longitude": -177.1264,
-      "depth_km": 130.03,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlm6",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tlm3",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-18T09:01:39.508000+00:00",
-      "latitude": -7.9353,
-      "longitude": 120.4656,
-      "depth_km": 33.11,
-      "place": "74 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlm3",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000tllu",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-18T08:37:44.898000+00:00",
-      "latitude": 37.1786,
-      "longitude": -3.6311,
-      "depth_km": 10.0,
-      "place": "2 km WSW of Granada, Spain",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tllu",
-      "tsunami": 0,
-      "significance": 382
     }
   ]
 }
