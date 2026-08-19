@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-19T15:45:21Z",
-  "count": 17,
+  "generated_at_iso": "2026-08-19T17:29:23Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us6000tlxq",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-08-19T16:17:38.400000+00:00",
+      "latitude": -8.1769,
+      "longitude": 120.6643,
+      "depth_km": 10.0,
+      "place": "52 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlxq",
+      "tsunami": 0,
+      "significance": 466
+    },
     {
       "id": "us6000tlvn",
       "magnitude": 4.9,
