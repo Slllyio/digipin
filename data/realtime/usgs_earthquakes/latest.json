@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-19T09:03:16Z",
+  "generated_at_iso": "2026-08-19T09:48:23Z",
   "count": 18,
   "records": [
+    {
+      "id": "us6000tluh",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-19T09:07:19.758000+00:00",
+      "latitude": -15.9165,
+      "longitude": -172.7309,
+      "depth_km": 10.0,
+      "place": "114 km E of Hihifo, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tluh",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000tltq",
       "magnitude": 4.7,
@@ -205,18 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlmq",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000tlmc",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-18T09:34:37.659000+00:00",
-      "latitude": 37.0875,
-      "longitude": -3.7084,
-      "depth_km": 10.0,
-      "place": "5 km ENE of Escúzar, Spain",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlmc",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
