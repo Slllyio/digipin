@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-19T17:29:23Z",
+  "generated_at_iso": "2026-08-19T20:36:49Z",
   "count": 18,
   "records": [
+    {
+      "id": "us6000tlz8",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-08-19T18:45:29.754000+00:00",
+      "latitude": -17.8049,
+      "longitude": -178.6638,
+      "depth_km": 556.753,
+      "place": "215 km E of Levuka, Fiji",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlz8",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us6000tlyv",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-08-19T18:07:17.251000+00:00",
+      "latitude": 49.4799,
+      "longitude": 155.8633,
+      "depth_km": 41.176,
+      "place": "134 km S of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlyv",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us6000tlyi",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-19T17:19:34.166000+00:00",
+      "latitude": 5.8923,
+      "longitude": 126.6639,
+      "depth_km": 10.0,
+      "place": "74 km SE of Pondaguitan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlyi",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us6000tlxq",
       "magnitude": 5.5,
@@ -181,42 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlre",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000tlqv",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-18T20:15:46.995000+00:00",
-      "latitude": -8.306,
-      "longitude": 121.2814,
-      "depth_km": 56.415,
-      "place": "72 km NW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlqv",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000tlqq",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-08-18T19:51:09.478000+00:00",
-      "latitude": 36.5535,
-      "longitude": 70.7551,
-      "depth_km": 195.937,
-      "place": "35 km SSW of Jurm, Afghanistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlqq",
-      "tsunami": 0,
-      "significance": 433
-    },
-    {
-      "id": "us6000tlqk",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-18T19:03:07.854000+00:00",
-      "latitude": -8.2942,
-      "longitude": 121.2432,
-      "depth_km": 10.0,
-      "place": "76 km NW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlqk",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
