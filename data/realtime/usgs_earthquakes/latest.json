@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-19T09:48:23Z",
-  "count": 18,
+  "generated_at_iso": "2026-08-19T15:45:21Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us6000tlvn",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-19T14:32:22.495000+00:00",
+      "latitude": -5.1696,
+      "longitude": 125.5363,
+      "depth_km": 538.071,
+      "place": "Banda Sea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlvn",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000tlun",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-19T11:01:37.358000+00:00",
+      "latitude": 5.4275,
+      "longitude": 125.2714,
+      "depth_km": 84.483,
+      "place": "18 km SSW of Balangonan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlun",
+      "tsunami": 0,
+      "significance": 356
+    },
+    {
+      "id": "us6000tlum",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-19T10:44:59.407000+00:00",
+      "latitude": -7.8858,
+      "longitude": 120.4442,
+      "depth_km": 10.179,
+      "place": "80 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlum",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000tluh",
       "magnitude": 4.7,
@@ -169,54 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlqk",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000tlnv",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-18T12:03:50.174000+00:00",
-      "latitude": -7.9051,
-      "longitude": 120.5751,
-      "depth_km": 36.253,
-      "place": "79 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlnv",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tlmz",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-18T12:00:13.955000+00:00",
-      "latitude": -7.9812,
-      "longitude": 120.6328,
-      "depth_km": 35.0,
-      "place": "72 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlmz",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tlmt",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-18T11:06:50.913000+00:00",
-      "latitude": -7.8898,
-      "longitude": 120.3661,
-      "depth_km": 10.259,
-      "place": "80 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlmt",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tlmq",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-18T10:39:43.915000+00:00",
-      "latitude": 37.1061,
-      "longitude": -3.6598,
-      "depth_km": 10.0,
-      "place": "1 km WSW of Alhendín, Spain",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlmq",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
