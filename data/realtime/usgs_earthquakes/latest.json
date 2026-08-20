@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-20T07:27:27Z",
-  "count": 19,
+  "generated_at_iso": "2026-08-20T08:56:05Z",
+  "count": 21,
   "records": [
+    {
+      "id": "us6000tm2k",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-20T08:01:33.945000+00:00",
+      "latitude": -8.2196,
+      "longitude": 120.4879,
+      "depth_km": 35.0,
+      "place": "43 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm2k",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tm2j",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-20T07:55:03.208000+00:00",
+      "latitude": -8.2868,
+      "longitude": 120.377,
+      "depth_km": 10.0,
+      "place": "37 km NNW of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm2j",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us6000tm25",
       "magnitude": 4.7,
