@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-20T16:32:22Z",
+  "generated_at_iso": "2026-08-20T19:02:37Z",
   "count": 23,
   "records": [
+    {
+      "id": "us6000tm8j",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-20T18:25:19.502000+00:00",
+      "latitude": -5.3709,
+      "longitude": 153.5631,
+      "depth_km": 35.0,
+      "place": "183 km SE of Kokopo, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm8j",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000tm8h",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-08-20T18:12:51.721000+00:00",
+      "latitude": -8.2877,
+      "longitude": 121.3981,
+      "depth_km": 10.0,
+      "place": "67 km NNW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm8h",
+      "tsunami": 0,
+      "significance": 482
+    },
+    {
+      "id": "us6000tm81",
+      "magnitude": 6.7,
+      "origin_time_utc": "2026-08-20T18:00:18.626000+00:00",
+      "latitude": -14.6414,
+      "longitude": -73.5236,
+      "depth_km": 99.0,
+      "place": "31 km NW of Aniso, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm81",
+      "tsunami": 0,
+      "significance": 712
+    },
     {
       "id": "us6000tm44",
       "magnitude": 4.5,
@@ -241,42 +277,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlzp",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tlz8",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-08-19T18:45:29.787000+00:00",
-      "latitude": -17.7629,
-      "longitude": -178.664,
-      "depth_km": 557.465,
-      "place": "216 km E of Levuka, Fiji",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlz8",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us6000tlyv",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-08-19T18:07:17.251000+00:00",
-      "latitude": 49.4799,
-      "longitude": 155.8633,
-      "depth_km": 41.176,
-      "place": "134 km S of Severo-Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlyv",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us6000tlyi",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-19T17:19:34.166000+00:00",
-      "latitude": 5.8923,
-      "longitude": 126.6639,
-      "depth_km": 10.0,
-      "place": "74 km SE of Pondaguitan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlyi",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
