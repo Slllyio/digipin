@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-20T01:38:09Z",
-  "count": 19,
+  "generated_at_iso": "2026-08-20T02:42:35Z",
+  "count": 17,
   "records": [
     {
       "id": "us6000tm16",
@@ -205,30 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlt9",
       "tsunami": 0,
       "significance": 416
-    },
-    {
-      "id": "us6000tlt1",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-19T02:20:00.069000+00:00",
-      "latitude": -15.3235,
-      "longitude": -174.8659,
-      "depth_km": 236.641,
-      "place": "134 km WNW of Hihifo, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlt1",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tlss",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-19T01:44:50.319000+00:00",
-      "latitude": -8.2229,
-      "longitude": 121.0211,
-      "depth_km": 10.0,
-      "place": "74 km NE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlss",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
