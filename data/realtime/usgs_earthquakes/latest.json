@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-21T22:21:55Z",
-  "count": 26,
+  "generated_at_iso": "2026-08-21T23:21:10Z",
+  "count": 27,
   "records": [
+    {
+      "id": "us6000tmnz",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-21T22:26:03.081000+00:00",
+      "latitude": -25.5675,
+      "longitude": -68.8817,
+      "depth_km": 102.426,
+      "place": "147 km NE of Diego de Almagro, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmnz",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000tmm3",
       "magnitude": 4.7,
