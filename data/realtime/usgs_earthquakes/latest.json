@@ -1,7 +1,91 @@
 {
-  "generated_at_iso": "2026-08-20T19:02:37Z",
-  "count": 23,
+  "generated_at_iso": "2026-08-21T03:35:30Z",
+  "count": 22,
   "records": [
+    {
+      "id": "us6000tmcn",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-21T01:38:42.430000+00:00",
+      "latitude": -8.2838,
+      "longitude": 121.2731,
+      "depth_km": 10.0,
+      "place": "75 km NW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmcn",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tmcj",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-21T01:18:05.726000+00:00",
+      "latitude": -8.2183,
+      "longitude": 120.5956,
+      "depth_km": 10.0,
+      "place": "45 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmcj",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tmc4",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-21T00:01:20.430000+00:00",
+      "latitude": 26.4848,
+      "longitude": 127.7859,
+      "depth_km": 44.11,
+      "place": "6 km W of Onna, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmc4",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000tmbw",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-20T23:36:41.054000+00:00",
+      "latitude": -56.5921,
+      "longitude": -141.4541,
+      "depth_km": 10.0,
+      "place": "Pacific-Antarctic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmbw",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tmb4",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-20T21:57:40.312000+00:00",
+      "latitude": 15.9742,
+      "longitude": 145.6176,
+      "depth_km": 213.529,
+      "place": "85 km N of Saipan, Northern Mariana Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmb4",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tm9h",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-20T19:53:51.824000+00:00",
+      "latitude": -8.214,
+      "longitude": 121.3299,
+      "depth_km": 10.0,
+      "place": "78 km NNW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm9h",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tm93",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-20T19:24:03.495000+00:00",
+      "latitude": -8.423,
+      "longitude": 121.2709,
+      "depth_km": 10.0,
+      "place": "63 km NW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm93",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us6000tm8j",
       "magnitude": 5.1,
@@ -36,7 +120,7 @@
       "place": "31 km NW of Aniso, Peru",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm81",
       "tsunami": 0,
-      "significance": 712
+      "significance": 728
     },
     {
       "id": "us6000tm44",
@@ -179,102 +263,6 @@
       "depth_km": 10.0,
       "place": "26 km NNW of Ruteng, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm1y",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tm1m",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-20T03:09:06.998000+00:00",
-      "latitude": -24.3365,
-      "longitude": -67.1154,
-      "depth_km": 166.707,
-      "place": "81 km W of San Antonio de los Cobres, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm1m",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tm1l",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-20T03:00:57.597000+00:00",
-      "latitude": -8.2547,
-      "longitude": 120.662,
-      "depth_km": 10.0,
-      "place": "45 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm1l",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tm1j",
-      "magnitude": 5.7,
-      "origin_time_utc": "2026-08-20T02:46:59.072000+00:00",
-      "latitude": -8.3582,
-      "longitude": 120.6104,
-      "depth_km": 10.0,
-      "place": "32 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm1j",
-      "tsunami": 0,
-      "significance": 500
-    },
-    {
-      "id": "us6000tm16",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-20T00:20:24.938000+00:00",
-      "latitude": -20.324,
-      "longitude": 169.1514,
-      "depth_km": 72.946,
-      "place": "87 km S of Isangel, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm16",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tm10",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-19T23:20:14.116000+00:00",
-      "latitude": -8.2733,
-      "longitude": 120.7214,
-      "depth_km": 10.0,
-      "place": "46 km NE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm10",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tm0u",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-08-19T22:45:17.395000+00:00",
-      "latitude": -8.3922,
-      "longitude": 120.5278,
-      "depth_km": 10.0,
-      "place": "25 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm0u",
-      "tsunami": 0,
-      "significance": 520
-    },
-    {
-      "id": "us6000tm0s",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-08-19T22:28:08.388000+00:00",
-      "latitude": -8.3101,
-      "longitude": 120.4718,
-      "depth_km": 10.0,
-      "place": "33 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tm0s",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000tlzp",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-19T20:06:29.427000+00:00",
-      "latitude": 17.6051,
-      "longitude": -94.3016,
-      "depth_km": 178.278,
-      "place": "28 km NE of Niños Héroes, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tlzp",
       "tsunami": 0,
       "significance": 326
     }
