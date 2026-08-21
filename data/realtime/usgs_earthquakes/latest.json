@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-21T23:21:10Z",
-  "count": 27,
+  "generated_at_iso": "2026-08-21T23:47:53Z",
+  "count": 26,
   "records": [
     {
       "id": "us6000tmnz",
@@ -313,18 +313,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmc4",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000tmbw",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-20T23:36:41.054000+00:00",
-      "latitude": -56.5921,
-      "longitude": -141.4541,
-      "depth_km": 10.0,
-      "place": "Pacific-Antarctic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmbw",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }
