@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-08-22T07:53:49Z",
-  "count": 30,
+  "generated_at_iso": "2026-08-22T09:58:57Z",
+  "count": 28,
   "records": [
+    {
+      "id": "us6000tmrx",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-22T08:29:00.857000+00:00",
+      "latitude": -7.8939,
+      "longitude": 120.6999,
+      "depth_km": 10.0,
+      "place": "83 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmrx",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tmrw",
+      "magnitude": 6.2,
+      "origin_time_utc": "2026-08-22T08:22:37.740000+00:00",
+      "latitude": -60.3789,
+      "longitude": -47.6047,
+      "depth_km": 10.0,
+      "place": "Scotia Sea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmrw",
+      "tsunami": 0,
+      "significance": 591
+    },
+    {
+      "id": "us6000tmrq",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-22T07:43:51.050000+00:00",
+      "latitude": 14.337,
+      "longitude": 145.3295,
+      "depth_km": 115.924,
+      "place": "76 km SSW of San Jose Village, Northern Mariana Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmrq",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tmrn",
+      "magnitude": 5.7,
+      "origin_time_utc": "2026-08-22T07:40:12.697000+00:00",
+      "latitude": -60.2649,
+      "longitude": -47.2591,
+      "depth_km": 10.0,
+      "place": "Scotia Sea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmrn",
+      "tsunami": 0,
+      "significance": 500
+    },
     {
       "id": "us6000tmri",
       "magnitude": 4.9,
@@ -36,7 +84,7 @@
       "place": "167 km SE of San Jose Village, Northern Mariana Islands",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmra",
       "tsunami": 0,
-      "significance": 369
+      "significance": 370
     },
     {
       "id": "us6000tmr7",
@@ -289,78 +337,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmf2",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000tmes",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-21T09:22:36.390000+00:00",
-      "latitude": 9.4833,
-      "longitude": 125.5784,
-      "depth_km": 10.0,
-      "place": "1 km N of Alegria, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmes",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000tmer",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-08-21T09:12:20.890000+00:00",
-      "latitude": 9.3382,
-      "longitude": 125.342,
-      "depth_km": 10.0,
-      "place": "19 km W of Jabonga, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmer",
-      "tsunami": 0,
-      "significance": 418
-    },
-    {
-      "id": "us6000tmeq",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-21T08:54:58.799000+00:00",
-      "latitude": -8.3581,
-      "longitude": 120.6565,
-      "depth_km": 10.194,
-      "place": "35 km NE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmeq",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tmek",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-21T08:30:16.137000+00:00",
-      "latitude": -8.106,
-      "longitude": 120.5246,
-      "depth_km": 9.293,
-      "place": "56 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmek",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tmej",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-21T08:14:00.844000+00:00",
-      "latitude": -7.8156,
-      "longitude": 120.5155,
-      "depth_km": 36.554,
-      "place": "88 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmej",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tmei",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-21T08:12:34.179000+00:00",
-      "latitude": -24.7124,
-      "longitude": -175.3072,
-      "depth_km": 10.0,
-      "place": "south of Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmei",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
