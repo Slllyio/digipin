@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-21T23:47:53Z",
-  "count": 26,
+  "generated_at_iso": "2026-08-22T02:20:25Z",
+  "count": 25,
   "records": [
+    {
+      "id": "us6000tmq6",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-08-22T01:34:57.606000+00:00",
+      "latitude": -12.7714,
+      "longitude": -14.8824,
+      "depth_km": 10.0,
+      "place": "southern Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmq6",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us6000tmq5",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-08-22T01:30:59.335000+00:00",
+      "latitude": -8.2752,
+      "longitude": 120.5614,
+      "depth_km": 10.0,
+      "place": "38 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmq5",
+      "tsunami": 0,
+      "significance": 416
+    },
     {
       "id": "us6000tmnz",
       "magnitude": 4.7,
@@ -277,42 +301,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmd2",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tmcn",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-21T01:38:42.430000+00:00",
-      "latitude": -8.2838,
-      "longitude": 121.2731,
-      "depth_km": 10.0,
-      "place": "75 km NW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmcn",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tmcj",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-21T01:18:05.726000+00:00",
-      "latitude": -8.2183,
-      "longitude": 120.5956,
-      "depth_km": 10.0,
-      "place": "45 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmcj",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tmc4",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-21T00:01:20.430000+00:00",
-      "latitude": 26.4848,
-      "longitude": 127.7859,
-      "depth_km": 44.11,
-      "place": "6 km W of Onna, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmc4",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
