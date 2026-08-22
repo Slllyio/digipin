@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-22T02:20:25Z",
-  "count": 25,
+  "generated_at_iso": "2026-08-22T05:24:39Z",
+  "count": 27,
   "records": [
+    {
+      "id": "us6000tmr2",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-22T04:44:08.744000+00:00",
+      "latitude": 9.3981,
+      "longitude": 125.5805,
+      "depth_km": 10.0,
+      "place": "6 km S of Kitcharao, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmr2",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tmq8",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-22T01:59:28.543000+00:00",
+      "latitude": -8.3069,
+      "longitude": 120.6927,
+      "depth_km": 10.0,
+      "place": "42 km NE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmq8",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000tmq6",
       "magnitude": 5.3,
@@ -255,6 +279,18 @@
       "significance": 312
     },
     {
+      "id": "us6000tmek",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-21T08:30:16.137000+00:00",
+      "latitude": -8.106,
+      "longitude": 120.5246,
+      "depth_km": 9.293,
+      "place": "56 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmek",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
       "id": "us6000tmej",
       "magnitude": 4.9,
       "origin_time_utc": "2026-08-21T08:14:00.844000+00:00",
@@ -287,18 +323,6 @@
       "depth_km": 10.0,
       "place": "south of Africa",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tme0",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tmd2",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-21T02:33:07.261000+00:00",
-      "latitude": -8.3786,
-      "longitude": 120.5112,
-      "depth_km": 10.0,
-      "place": "26 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmd2",
       "tsunami": 0,
       "significance": 326
     }
