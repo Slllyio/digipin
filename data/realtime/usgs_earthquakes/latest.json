@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-22T09:58:57Z",
-  "count": 28,
+  "generated_at_iso": "2026-08-22T10:58:26Z",
+  "count": 27,
   "records": [
     {
       "id": "us6000tmrx",
@@ -325,18 +325,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmf5",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tmf2",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-21T10:38:57.051000+00:00",
-      "latitude": 47.2192,
-      "longitude": 146.7826,
-      "depth_km": 350.501,
-      "place": "237 km NNW of Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmf2",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
