@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-23T17:59:47Z",
+  "generated_at_iso": "2026-08-23T20:21:09Z",
   "count": 11,
   "records": [
+    {
+      "id": "us6000tn0a",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-23T18:57:38.731000+00:00",
+      "latitude": 5.7891,
+      "longitude": 126.1936,
+      "depth_km": 9.989,
+      "place": "61 km ESE of Mangili, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn0a",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000tmzy",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-23T17:56:30.373000+00:00",
+      "latitude": -23.1294,
+      "longitude": -66.457,
+      "depth_km": 224.789,
+      "place": "80 km W of El Aguilar, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmzy",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000tmzw",
       "magnitude": 4.9,
@@ -109,30 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmuq",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000tmtu",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-22T19:54:07.957000+00:00",
-      "latitude": -0.1709,
-      "longitude": 123.0095,
-      "depth_km": 116.29,
-      "place": "78 km S of Gorontalo, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmtu",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tmtm",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-22T18:46:27.765000+00:00",
-      "latitude": -22.1927,
-      "longitude": -68.793,
-      "depth_km": 105.494,
-      "place": "32 km NNE of Calama, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmtm",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
