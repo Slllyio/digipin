@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-08-23T05:44:04Z",
-  "count": 17,
+  "generated_at_iso": "2026-08-23T14:20:36Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us6000tmz6",
+      "magnitude": 6.0,
+      "origin_time_utc": "2026-08-23T13:44:53.514000+00:00",
+      "latitude": 41.8344,
+      "longitude": 142.8255,
+      "depth_km": 42.867,
+      "place": "33 km SSW of Honchō, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmz6",
+      "tsunami": 0,
+      "significance": 555
+    },
+    {
+      "id": "us6000tmyk",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-08-23T11:22:41.913000+00:00",
+      "latitude": -12.8299,
+      "longitude": -14.8524,
+      "depth_km": 10.0,
+      "place": "southern Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmyk",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us6000tmy3",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-23T10:04:42.433000+00:00",
+      "latitude": 36.7596,
+      "longitude": 74.4767,
+      "depth_km": 45.456,
+      "place": "52 km NNW of Barishal, Pakistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmy3",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tmxn",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-08-23T08:12:38.133000+00:00",
+      "latitude": -10.9015,
+      "longitude": 162.9618,
+      "depth_km": 120.328,
+      "place": "124 km ESE of Kirakira, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmxn",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000tmww",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-23T05:39:21.468000+00:00",
+      "latitude": -18.3505,
+      "longitude": -178.1181,
+      "depth_km": 571.282,
+      "place": "273 km E of Levuka, Fiji",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmww",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000tmwk",
       "magnitude": 4.6,
@@ -84,7 +144,7 @@
       "place": "4 km N of Toride, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmta",
       "tsunami": 0,
-      "significance": 588
+      "significance": 593
     },
     {
       "id": "us6000tmt8",
@@ -107,102 +167,6 @@
       "depth_km": 26.342,
       "place": "170 km SW of Sungai Penuh, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmt7",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tmrx",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-22T08:29:00.857000+00:00",
-      "latitude": -7.8939,
-      "longitude": 120.6999,
-      "depth_km": 10.0,
-      "place": "83 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmrx",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000tmrw",
-      "magnitude": 6.2,
-      "origin_time_utc": "2026-08-22T08:22:37.740000+00:00",
-      "latitude": -60.3789,
-      "longitude": -47.6047,
-      "depth_km": 10.0,
-      "place": "Scotia Sea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmrw",
-      "tsunami": 0,
-      "significance": 591
-    },
-    {
-      "id": "us6000tmrq",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-22T07:43:51.050000+00:00",
-      "latitude": 14.337,
-      "longitude": 145.3295,
-      "depth_km": 115.924,
-      "place": "76 km SSW of San Jose Village, Northern Mariana Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmrq",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tmrn",
-      "magnitude": 5.7,
-      "origin_time_utc": "2026-08-22T07:40:12.697000+00:00",
-      "latitude": -60.2649,
-      "longitude": -47.2591,
-      "depth_km": 10.0,
-      "place": "Scotia Sea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmrn",
-      "tsunami": 0,
-      "significance": 500
-    },
-    {
-      "id": "us6000tmri",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-22T07:21:25.611000+00:00",
-      "latitude": 12.5208,
-      "longitude": -44.6327,
-      "depth_km": 10.0,
-      "place": "northern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmri",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tmrf",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-22T06:43:39.032000+00:00",
-      "latitude": 6.7397,
-      "longitude": 126.7362,
-      "depth_km": 107.802,
-      "place": "45 km SE of Lukatan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmrf",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tmra",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-22T05:47:07.443000+00:00",
-      "latitude": 13.8954,
-      "longitude": 146.7194,
-      "depth_km": 10.0,
-      "place": "167 km SE of San Jose Village, Northern Mariana Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmra",
-      "tsunami": 0,
-      "significance": 370
-    },
-    {
-      "id": "us6000tmr7",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-22T05:45:11.914000+00:00",
-      "latitude": -8.2301,
-      "longitude": 121.4575,
-      "depth_km": 10.0,
-      "place": "71 km NNW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmr7",
       "tsunami": 0,
       "significance": 340
     }
