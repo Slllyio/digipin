@@ -1,5 +1,5 @@
 {
-  "generated_at_iso": "2026-08-23T14:20:36Z",
+  "generated_at_iso": "2026-08-23T14:48:50Z",
   "count": 14,
   "records": [
     {
@@ -12,7 +12,7 @@
       "place": "33 km SSW of Honchō, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmz6",
       "tsunami": 0,
-      "significance": 555
+      "significance": 556
     },
     {
       "id": "us6000tmyk",
