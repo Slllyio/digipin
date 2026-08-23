@@ -1,5 +1,5 @@
 {
-  "generated_at_iso": "2026-08-23T12:35:29Z",
+  "generated_at_iso": "2026-08-23T13:19:39Z",
   "count": 491,
   "records": [
     {
@@ -6095,7 +6095,7 @@
       "alert_score": 1.0,
       "alert_level": "Green",
       "title": "Green forest fire notification in Russian Federation",
-      "description": "On 10/08/2026, a forest fire started in Russian Federation,  until 22/08/2026.",
+      "description": "On 10/08/2026, a forest fire started in Russian Federation,  until 23/08/2026.",
       "country": "Russian Federation",
       "published_utc": "Sat, 15 Aug 2026 19:08:30 GMT",
       "latitude": null,
@@ -6112,7 +6112,7 @@
       "alert_score": 1.0,
       "alert_level": "Green",
       "title": "Green forest fire notification in Russian Federation",
-      "description": "On 10/08/2026, a forest fire started in Russian Federation,  until 22/08/2026.",
+      "description": "On 10/08/2026, a forest fire started in Russian Federation,  until 23/08/2026.",
       "country": "Russian Federation",
       "published_utc": "Sun, 16 Aug 2026 11:07:58 GMT",
       "latitude": null,
@@ -8069,7 +8069,7 @@
       "title": "Green flood alert in Italy",
       "description": "On 26/07/2026, a flood started in Italy, lasting until 15/08/2026 (last update). The flood caused 0 deaths and 183 displaced .",
       "country": "Italy",
-      "published_utc": "Sun, 23 Aug 2026 12:06:11 GMT",
+      "published_utc": "Sun, 23 Aug 2026 12:35:09 GMT",
       "latitude": null,
       "longitude": null,
       "url": "https://www.gdacs.org/report.aspx?eventtype=FL&eventid=1104053",
