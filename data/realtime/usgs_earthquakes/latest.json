@@ -1,5 +1,5 @@
 {
-  "generated_at_iso": "2026-08-23T05:01:12Z",
+  "generated_at_iso": "2026-08-23T05:44:04Z",
   "count": 17,
   "records": [
     {
@@ -84,7 +84,7 @@
       "place": "4 km N of Toride, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmta",
       "tsunami": 0,
-      "significance": 587
+      "significance": 588
     },
     {
       "id": "us6000tmt8",
