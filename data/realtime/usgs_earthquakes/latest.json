@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-23T03:35:10Z",
+  "generated_at_iso": "2026-08-23T05:01:12Z",
   "count": 17,
   "records": [
+    {
+      "id": "us6000tmwk",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-23T03:44:57.056000+00:00",
+      "latitude": 17.7854,
+      "longitude": 96.0025,
+      "depth_km": 10.0,
+      "place": "26 km E of Letpandan, Burma (Myanmar)",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmwk",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000tmut",
       "magnitude": 4.5,
@@ -72,7 +84,7 @@
       "place": "4 km N of Toride, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmta",
       "tsunami": 0,
-      "significance": 579
+      "significance": 587
     },
     {
       "id": "us6000tmt8",
@@ -193,18 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmr7",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000tmr2",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-22T04:44:08.744000+00:00",
-      "latitude": 9.3981,
-      "longitude": 125.5805,
-      "depth_km": 10.0,
-      "place": "6 km S of Kitcharao, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmr2",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }
