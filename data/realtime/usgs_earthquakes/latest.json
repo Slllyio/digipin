@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-23T20:21:09Z",
-  "count": 11,
+  "generated_at_iso": "2026-08-23T22:57:59Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us6000tn0t",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-08-23T21:32:21.749000+00:00",
+      "latitude": -10.7354,
+      "longitude": 164.633,
+      "depth_km": 10.0,
+      "place": "127 km W of Lata, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn0t",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us6000tn0s",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-08-23T21:20:16.733000+00:00",
+      "latitude": -8.2734,
+      "longitude": 120.7421,
+      "depth_km": 10.0,
+      "place": "48 km NE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn0s",
+      "tsunami": 0,
+      "significance": 417
+    },
+    {
+      "id": "us6000tn0n",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-23T20:38:14.973000+00:00",
+      "latitude": -36.7356,
+      "longitude": -71.6087,
+      "depth_km": 102.487,
+      "place": "23 km ESE of Coihueco, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn0n",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000tn0a",
       "magnitude": 4.7,
@@ -109,30 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmwk",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tmut",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-22T22:01:02.600000+00:00",
-      "latitude": -8.1213,
-      "longitude": 120.741,
-      "depth_km": 10.0,
-      "place": "62 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmut",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tmuq",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-22T21:53:41.193000+00:00",
-      "latitude": 14.1261,
-      "longitude": -93.3288,
-      "depth_km": 10.0,
-      "place": "117 km SW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmuq",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
