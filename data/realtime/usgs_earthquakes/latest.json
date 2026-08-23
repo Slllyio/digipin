@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-23T14:48:50Z",
-  "count": 14,
+  "generated_at_iso": "2026-08-23T17:59:47Z",
+  "count": 11,
   "records": [
+    {
+      "id": "us6000tmzw",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-23T17:23:29.822000+00:00",
+      "latitude": -58.7481,
+      "longitude": -25.264,
+      "depth_km": 35.0,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmzw",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us6000tmz6",
       "magnitude": 6.0,
@@ -121,54 +133,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmtm",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tmte",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-22T17:40:08.982000+00:00",
-      "latitude": -3.0302,
-      "longitude": 100.8738,
-      "depth_km": 43.194,
-      "place": "122 km SSW of Sungai Penuh, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmte",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tmta",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-08-22T17:00:39.472000+00:00",
-      "latitude": 35.9375,
-      "longitude": 140.0778,
-      "depth_km": 61.0,
-      "place": "4 km N of Toride, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmta",
-      "tsunami": 0,
-      "significance": 593
-    },
-    {
-      "id": "us6000tmt8",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-22T16:42:56.593000+00:00",
-      "latitude": -7.8936,
-      "longitude": 120.5992,
-      "depth_km": 10.0,
-      "place": "80 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmt8",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tmt7",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-22T16:33:04.780000+00:00",
-      "latitude": -3.2971,
-      "longitude": 100.4875,
-      "depth_km": 26.342,
-      "place": "170 km SW of Sungai Penuh, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmt7",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
