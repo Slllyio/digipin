@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-24T22:43:23Z",
-  "count": 18,
+  "generated_at_iso": "2026-08-24T23:57:43Z",
+  "count": 16,
   "records": [
     {
       "id": "us6000tn80",
@@ -193,30 +193,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn1h",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000tn19",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-23T23:20:35.668000+00:00",
-      "latitude": 52.1941,
-      "longitude": 176.3834,
-      "depth_km": 13.186,
-      "place": "228 km ESE of Attu Station, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn19",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tn14",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-23T22:57:34.074000+00:00",
-      "latitude": -8.0432,
-      "longitude": 120.6944,
-      "depth_km": 35.0,
-      "place": "67 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn14",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
