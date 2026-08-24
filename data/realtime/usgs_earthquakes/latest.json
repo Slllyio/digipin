@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-24T05:19:50Z",
-  "count": 18,
+  "generated_at_iso": "2026-08-24T09:03:49Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us6000tn2j",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-24T07:37:17.435000+00:00",
+      "latitude": 9.9853,
+      "longitude": -83.9132,
+      "depth_km": 10.0,
+      "place": "10 km NNW of Cot, Costa Rica",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn2j",
+      "tsunami": 0,
+      "significance": 386
+    },
+    {
+      "id": "us6000tn2d",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-24T05:40:47.930000+00:00",
+      "latitude": -20.9867,
+      "longitude": -176.289,
+      "depth_km": 209.196,
+      "place": "104 km WNW of Houma, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn2d",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tn29",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-24T05:04:04.171000+00:00",
+      "latitude": -28.143,
+      "longitude": -67.1543,
+      "depth_km": 129.457,
+      "place": "41 km ESE of Tinogasta, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn29",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000tn25",
       "magnitude": 4.8,
@@ -191,30 +227,6 @@
       "depth_km": 45.456,
       "place": "52 km NNW of Barishal, Pakistan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmy3",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tmxn",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-08-23T08:12:38.133000+00:00",
-      "latitude": -10.9015,
-      "longitude": 162.9618,
-      "depth_km": 120.328,
-      "place": "124 km ESE of Kirakira, Solomon Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmxn",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000tmww",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-23T05:39:21.468000+00:00",
-      "latitude": -18.3505,
-      "longitude": -178.1181,
-      "depth_km": 571.282,
-      "place": "273 km E of Levuka, Fiji",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmww",
       "tsunami": 0,
       "significance": 326
     }
