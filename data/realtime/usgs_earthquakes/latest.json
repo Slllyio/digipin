@@ -1,15 +1,99 @@
 {
-  "generated_at_iso": "2026-08-23T22:57:59Z",
-  "count": 12,
+  "generated_at_iso": "2026-08-24T04:28:19Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us6000tn25",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-24T03:59:33.162000+00:00",
+      "latitude": 5.3312,
+      "longitude": 125.2291,
+      "depth_km": 68.263,
+      "place": "27 km WSW of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn25",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tn1z",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-24T02:45:08.660000+00:00",
+      "latitude": -12.6363,
+      "longitude": -14.921,
+      "depth_km": 10.0,
+      "place": "southern Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn1z",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000tn1v",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-24T02:19:39.063000+00:00",
+      "latitude": -7.9644,
+      "longitude": 120.4679,
+      "depth_km": 10.0,
+      "place": "71 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn1v",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000tn1k",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-24T01:12:59.871000+00:00",
+      "latitude": -8.2203,
+      "longitude": 120.4857,
+      "depth_km": 10.0,
+      "place": "43 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn1k",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000tn1h",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-24T00:26:26.599000+00:00",
+      "latitude": 28.4135,
+      "longitude": 105.0337,
+      "depth_km": 42.466,
+      "place": "11 km N of Bowangshan, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn1h",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000tn19",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-23T23:20:35.049000+00:00",
+      "latitude": 52.0776,
+      "longitude": 176.4797,
+      "depth_km": 7.956,
+      "place": "239 km ESE of Attu Station, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn19",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tn14",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-23T22:57:34.074000+00:00",
+      "latitude": -8.0432,
+      "longitude": 120.6944,
+      "depth_km": 35.0,
+      "place": "67 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn14",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000tn0t",
       "magnitude": 5.3,
-      "origin_time_utc": "2026-08-23T21:32:21.749000+00:00",
-      "latitude": -10.7354,
-      "longitude": 164.633,
+      "origin_time_utc": "2026-08-23T21:32:20.775000+00:00",
+      "latitude": -10.6943,
+      "longitude": 164.6977,
       "depth_km": 10.0,
-      "place": "127 km W of Lata, Solomon Islands",
+      "place": "120 km W of Lata, Solomon Islands",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn0t",
       "tsunami": 0,
       "significance": 432
@@ -17,11 +101,11 @@
     {
       "id": "us6000tn0s",
       "magnitude": 5.2,
-      "origin_time_utc": "2026-08-23T21:20:16.733000+00:00",
-      "latitude": -8.2734,
-      "longitude": 120.7421,
+      "origin_time_utc": "2026-08-23T21:20:15.767000+00:00",
+      "latitude": -8.1992,
+      "longitude": 120.8354,
       "depth_km": 10.0,
-      "place": "48 km NE of Ruteng, Indonesia",
+      "place": "61 km NE of Ruteng, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn0s",
       "tsunami": 0,
       "significance": 417
@@ -84,7 +168,7 @@
       "place": "33 km SSW of Honchō, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmz6",
       "tsunami": 0,
-      "significance": 556
+      "significance": 558
     },
     {
       "id": "us6000tmyk",
@@ -131,18 +215,6 @@
       "depth_km": 571.282,
       "place": "273 km E of Levuka, Fiji",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmww",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tmwk",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-23T03:44:57.056000+00:00",
-      "latitude": 17.7854,
-      "longitude": 96.0025,
-      "depth_km": 10.0,
-      "place": "26 km E of Letpandan, Burma (Myanmar)",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmwk",
       "tsunami": 0,
       "significance": 326
     }
