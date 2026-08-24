@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-24T09:03:49Z",
-  "count": 19,
+  "generated_at_iso": "2026-08-24T10:52:54Z",
+  "count": 20,
   "records": [
+    {
+      "id": "us6000tn37",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-24T10:19:43.962000+00:00",
+      "latitude": -18.1013,
+      "longitude": -171.9977,
+      "depth_km": 10.0,
+      "place": "218 km ENE of Neiafu, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn37",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000tn33",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-08-24T10:02:58.888000+00:00",
+      "latitude": -5.0525,
+      "longitude": 129.6871,
+      "depth_km": 10.0,
+      "place": "207 km SSE of Amahai, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn33",
+      "tsunami": 0,
+      "significance": 465
+    },
     {
       "id": "us6000tn2j",
       "magnitude": 4.9,
@@ -12,7 +36,7 @@
       "place": "10 km NNW of Cot, Costa Rica",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn2j",
       "tsunami": 0,
-      "significance": 386
+      "significance": 397
     },
     {
       "id": "us6000tn2d",
@@ -217,18 +241,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmyk",
       "tsunami": 0,
       "significance": 432
-    },
-    {
-      "id": "us6000tmy3",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-23T10:04:42.433000+00:00",
-      "latitude": 36.7596,
-      "longitude": 74.4767,
-      "depth_km": 45.456,
-      "place": "52 km NNW of Barishal, Pakistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmy3",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
