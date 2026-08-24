@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-08-24T10:52:54Z",
-  "count": 20,
+  "generated_at_iso": "2026-08-24T17:15:33Z",
+  "count": 22,
   "records": [
+    {
+      "id": "us6000tn4p",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-24T15:27:32.740000+00:00",
+      "latitude": 26.111,
+      "longitude": 128.6513,
+      "depth_km": 10.0,
+      "place": "76 km SE of Taira, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn4p",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000tn4m",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-24T15:12:14.584000+00:00",
+      "latitude": -7.7836,
+      "longitude": 120.4543,
+      "depth_km": 10.0,
+      "place": "91 km N of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn4m",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000tn41",
+      "magnitude": 6.0,
+      "origin_time_utc": "2026-08-24T14:10:17.299000+00:00",
+      "latitude": -6.6264,
+      "longitude": 127.4598,
+      "depth_km": 10.0,
+      "place": "215 km NNE of Lospalos, Timor Leste",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn41",
+      "tsunami": 0,
+      "significance": 554
+    },
+    {
+      "id": "us6000tn3t",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-24T12:29:31.627000+00:00",
+      "latitude": -17.7036,
+      "longitude": -13.8368,
+      "depth_km": 10.0,
+      "place": "southern Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn3t",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us6000tn37",
       "magnitude": 4.9,
@@ -36,7 +84,7 @@
       "place": "10 km NNW of Cot, Costa Rica",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn2j",
       "tsunami": 0,
-      "significance": 397
+      "significance": 418
     },
     {
       "id": "us6000tn2d",
@@ -217,30 +265,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmzw",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000tmz6",
-      "magnitude": 6.0,
-      "origin_time_utc": "2026-08-23T13:44:53.514000+00:00",
-      "latitude": 41.8344,
-      "longitude": 142.8255,
-      "depth_km": 42.867,
-      "place": "33 km SSW of Honchō, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmz6",
-      "tsunami": 0,
-      "significance": 558
-    },
-    {
-      "id": "us6000tmyk",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-08-23T11:22:41.913000+00:00",
-      "latitude": -12.8299,
-      "longitude": -14.8524,
-      "depth_km": 10.0,
-      "place": "southern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmyk",
-      "tsunami": 0,
-      "significance": 432
     }
   ]
 }
