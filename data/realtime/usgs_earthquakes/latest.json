@@ -1,5 +1,5 @@
 {
-  "generated_at_iso": "2026-08-24T04:28:19Z",
+  "generated_at_iso": "2026-08-24T05:19:50Z",
   "count": 18,
   "records": [
     {
@@ -65,11 +65,11 @@
     {
       "id": "us6000tn19",
       "magnitude": 5.0,
-      "origin_time_utc": "2026-08-23T23:20:35.049000+00:00",
-      "latitude": 52.0776,
-      "longitude": 176.4797,
-      "depth_km": 7.956,
-      "place": "239 km ESE of Attu Station, Alaska",
+      "origin_time_utc": "2026-08-23T23:20:35.668000+00:00",
+      "latitude": 52.1941,
+      "longitude": 176.3834,
+      "depth_km": 13.186,
+      "place": "228 km ESE of Attu Station, Alaska",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn19",
       "tsunami": 0,
       "significance": 385
