@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-24T17:15:33Z",
-  "count": 22,
+  "generated_at_iso": "2026-08-24T22:43:23Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us6000tn80",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-24T19:00:03.416000+00:00",
+      "latitude": -6.6912,
+      "longitude": 127.5019,
+      "depth_km": 9.947,
+      "place": "209 km NNE of Lospalos, Timor Leste",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn80",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tn6z",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-24T16:25:24.020000+00:00",
+      "latitude": 18.6438,
+      "longitude": 145.6671,
+      "depth_km": 205.654,
+      "place": "Pagan region, Northern Mariana Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn6z",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000tn4p",
       "magnitude": 4.9,
@@ -84,7 +108,7 @@
       "place": "10 km NNW of Cot, Costa Rica",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn2j",
       "tsunami": 0,
-      "significance": 418
+      "significance": 424
     },
     {
       "id": "us6000tn2d",
@@ -161,11 +185,11 @@
     {
       "id": "us6000tn1h",
       "magnitude": 4.9,
-      "origin_time_utc": "2026-08-24T00:26:26.599000+00:00",
-      "latitude": 28.4135,
-      "longitude": 105.0337,
-      "depth_km": 42.466,
-      "place": "11 km N of Bowangshan, China",
+      "origin_time_utc": "2026-08-24T00:26:26.410000+00:00",
+      "latitude": 28.3791,
+      "longitude": 105.0691,
+      "depth_km": 44.666,
+      "place": "8 km NNE of Bowangshan, China",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn1h",
       "tsunami": 0,
       "significance": 369
@@ -193,78 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn14",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000tn0t",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-08-23T21:32:20.775000+00:00",
-      "latitude": -10.6943,
-      "longitude": 164.6977,
-      "depth_km": 10.0,
-      "place": "120 km W of Lata, Solomon Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn0t",
-      "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "us6000tn0s",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-08-23T21:20:15.767000+00:00",
-      "latitude": -8.1992,
-      "longitude": 120.8354,
-      "depth_km": 10.0,
-      "place": "61 km NE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn0s",
-      "tsunami": 0,
-      "significance": 417
-    },
-    {
-      "id": "us6000tn0n",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-23T20:38:14.973000+00:00",
-      "latitude": -36.7356,
-      "longitude": -71.6087,
-      "depth_km": 102.487,
-      "place": "23 km ESE of Coihueco, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn0n",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tn0a",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-23T18:57:38.731000+00:00",
-      "latitude": 5.7891,
-      "longitude": 126.1936,
-      "depth_km": 9.989,
-      "place": "61 km ESE of Mangili, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn0a",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tmzy",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-23T17:56:30.373000+00:00",
-      "latitude": -23.1294,
-      "longitude": -66.457,
-      "depth_km": 224.789,
-      "place": "80 km W of El Aguilar, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmzy",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tmzw",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-23T17:23:29.822000+00:00",
-      "latitude": -58.7481,
-      "longitude": -25.264,
-      "depth_km": 35.0,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tmzw",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
