@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-08-25T12:14:47Z",
+  "generated_at_iso": "2026-08-25T17:29:32Z",
   "count": 15,
   "records": [
+    {
+      "id": "us7000tbsj",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-25T16:23:33.830000+00:00",
+      "latitude": -14.235,
+      "longitude": 170.4985,
+      "depth_km": 628.976,
+      "place": "Vanuatu region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tbsj",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tnd7",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-08-25T15:15:54.612000+00:00",
+      "latitude": -17.2913,
+      "longitude": -171.9817,
+      "depth_km": 10.0,
+      "place": "243 km SE of Hihifo, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tnd7",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000tnd4",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-25T14:58:54.206000+00:00",
+      "latitude": -8.1362,
+      "longitude": 120.5816,
+      "depth_km": 10.0,
+      "place": "54 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tnd4",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000tnci",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-08-25T12:12:03.252000+00:00",
+      "latitude": -23.3497,
+      "longitude": 179.8207,
+      "depth_km": 528.283,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tnci",
+      "tsunami": 0,
+      "significance": 465
+    },
+    {
+      "id": "us6000tncc",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-25T11:29:44.762000+00:00",
+      "latitude": -3.6519,
+      "longitude": 127.3328,
+      "depth_km": 10.0,
+      "place": "94 km W of Ambon, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tncc",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us6000tnbv",
       "magnitude": 5.0,
@@ -24,7 +84,7 @@
       "place": "108 km NE of Hengchun, Taiwan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tnbm",
       "tsunami": 0,
-      "significance": 468
+      "significance": 471
     },
     {
       "id": "us6000tnbk",
@@ -84,7 +144,7 @@
       "place": "4 km NNE of Jalālābād, Afghanistan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tna9",
       "tsunami": 0,
-      "significance": 370
+      "significance": 651
     },
     {
       "id": "us6000tn9w",
@@ -119,66 +179,6 @@
       "depth_km": 9.947,
       "place": "209 km NNE of Lospalos, Timor Leste",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn80",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tn6z",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-24T16:25:24.020000+00:00",
-      "latitude": 18.6438,
-      "longitude": 145.6671,
-      "depth_km": 205.654,
-      "place": "Pagan region, Northern Mariana Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn6z",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tn4p",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-24T15:27:32.740000+00:00",
-      "latitude": 26.111,
-      "longitude": 128.6513,
-      "depth_km": 10.0,
-      "place": "76 km SE of Taira, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn4p",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tn4m",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-24T15:12:14.584000+00:00",
-      "latitude": -7.7836,
-      "longitude": 120.4543,
-      "depth_km": 10.0,
-      "place": "91 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn4m",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000tn41",
-      "magnitude": 6.0,
-      "origin_time_utc": "2026-08-24T14:10:17.299000+00:00",
-      "latitude": -6.6264,
-      "longitude": 127.4598,
-      "depth_km": 10.0,
-      "place": "215 km NNE of Lospalos, Timor Leste",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn41",
-      "tsunami": 0,
-      "significance": 554
-    },
-    {
-      "id": "us6000tn3t",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-24T12:29:31.627000+00:00",
-      "latitude": -17.7036,
-      "longitude": -13.8368,
-      "depth_km": 10.0,
-      "place": "southern Mid-Atlantic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn3t",
       "tsunami": 0,
       "significance": 385
     }
