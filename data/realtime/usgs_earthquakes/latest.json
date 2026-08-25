@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-25T17:29:32Z",
-  "count": 15,
+  "generated_at_iso": "2026-08-25T19:56:43Z",
+  "count": 14,
   "records": [
     {
       "id": "us7000tbsj",
@@ -169,18 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn8w",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tn80",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-24T19:00:03.416000+00:00",
-      "latitude": -6.6912,
-      "longitude": 127.5019,
-      "depth_km": 9.947,
-      "place": "209 km NNE of Lospalos, Timor Leste",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn80",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }
