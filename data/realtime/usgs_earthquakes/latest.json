@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-24T23:57:43Z",
+  "generated_at_iso": "2026-08-25T02:44:08Z",
   "count": 16,
   "records": [
+    {
+      "id": "us6000tnaa",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-25T01:22:25.241000+00:00",
+      "latitude": -6.9731,
+      "longitude": 155.6413,
+      "depth_km": 109.317,
+      "place": "74 km SSE of Panguna, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tnaa",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tna9",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-25T01:18:46.243000+00:00",
+      "latitude": 34.462,
+      "longitude": 70.463,
+      "depth_km": 10.0,
+      "place": "4 km NNE of Jalālābād, Afghanistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tna9",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000tn9w",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-25T00:05:24.229000+00:00",
+      "latitude": -8.4237,
+      "longitude": 120.2166,
+      "depth_km": 10.0,
+      "place": "34 km NW of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn9w",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us6000tn80",
       "magnitude": 5.0,
@@ -108,7 +144,7 @@
       "place": "10 km NNW of Cot, Costa Rica",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn2j",
       "tsunami": 0,
-      "significance": 424
+      "significance": 426
     },
     {
       "id": "us6000tn2d",
@@ -155,42 +191,6 @@
       "depth_km": 10.0,
       "place": "southern Mid-Atlantic Ridge",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn1z",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tn1v",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-08-24T02:19:39.063000+00:00",
-      "latitude": -7.9644,
-      "longitude": 120.4679,
-      "depth_km": 10.0,
-      "place": "71 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn1v",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tn1k",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-24T01:12:59.871000+00:00",
-      "latitude": -8.2203,
-      "longitude": 120.4857,
-      "depth_km": 10.0,
-      "place": "43 km N of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn1k",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000tn1h",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-24T00:26:26.410000+00:00",
-      "latitude": 28.3791,
-      "longitude": 105.0691,
-      "depth_km": 44.666,
-      "place": "8 km NNE of Bowangshan, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn1h",
       "tsunami": 0,
       "significance": 369
     }
