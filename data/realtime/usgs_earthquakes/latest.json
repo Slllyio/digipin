@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-25T19:56:43Z",
+  "generated_at_iso": "2026-08-25T22:01:36Z",
   "count": 14,
   "records": [
+    {
+      "id": "us7000tbu3",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-25T20:23:36.308000+00:00",
+      "latitude": 37.2686,
+      "longitude": 141.8893,
+      "depth_km": 35.0,
+      "place": "77 km E of Tomioka, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tbu3",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000tbsj",
       "magnitude": 4.5,
@@ -157,18 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn9w",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000tn8w",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-24T21:02:14.533000+00:00",
-      "latitude": -6.4947,
-      "longitude": 152.0529,
-      "depth_km": 10.0,
-      "place": "236 km ESE of Kimbe, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn8w",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
