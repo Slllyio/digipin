@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-25T09:07:12Z",
-  "count": 16,
+  "generated_at_iso": "2026-08-25T12:14:47Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us6000tnbv",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-25T09:07:20.740000+00:00",
+      "latitude": 43.045,
+      "longitude": 145.6343,
+      "depth_km": 96.855,
+      "place": "31 km S of Nemuro, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tnbv",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us6000tnbm",
       "magnitude": 5.5,
@@ -72,7 +84,7 @@
       "place": "4 km NNE of Jalālābād, Afghanistan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tna9",
       "tsunami": 0,
-      "significance": 369
+      "significance": 370
     },
     {
       "id": "us6000tn9w",
@@ -169,30 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn3t",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us6000tn37",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-24T10:19:43.962000+00:00",
-      "latitude": -18.1013,
-      "longitude": -171.9977,
-      "depth_km": 10.0,
-      "place": "218 km ENE of Neiafu, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn37",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tn33",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-08-24T10:02:58.888000+00:00",
-      "latitude": -5.0525,
-      "longitude": 129.6871,
-      "depth_km": 10.0,
-      "place": "207 km SSE of Amahai, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tn33",
-      "tsunami": 0,
-      "significance": 465
     }
   ]
 }
