@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-08-26T07:08:05Z",
+  "generated_at_iso": "2026-08-26T12:17:23Z",
   "count": 13,
   "records": [
+    {
+      "id": "us7000tby1",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-26T09:51:22.122000+00:00",
+      "latitude": 21.5368,
+      "longitude": 122.3274,
+      "depth_km": 10.0,
+      "place": "126 km NNE of Basco, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tby1",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tbxl",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-26T07:32:17.399000+00:00",
+      "latitude": 44.6862,
+      "longitude": 146.4404,
+      "depth_km": 159.458,
+      "place": "82 km NE of Otrada, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tbxl",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000tbxf",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-26T06:54:52.876000+00:00",
+      "latitude": 39.7276,
+      "longitude": 143.6596,
+      "depth_km": 10.0,
+      "place": "147 km E of Miyako, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tbxf",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us7000tbx8",
       "magnitude": 4.8,
@@ -119,42 +155,6 @@
       "depth_km": 10.0,
       "place": "54 km NNE of Ruteng, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tnd4",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000tnci",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-08-25T12:12:03.252000+00:00",
-      "latitude": -23.3497,
-      "longitude": 179.8207,
-      "depth_km": 528.283,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tnci",
-      "tsunami": 0,
-      "significance": 465
-    },
-    {
-      "id": "us6000tncc",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-25T11:29:44.762000+00:00",
-      "latitude": -3.6519,
-      "longitude": 127.3328,
-      "depth_km": 10.0,
-      "place": "94 km W of Ambon, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tncc",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tnbv",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-25T09:07:20.740000+00:00",
-      "latitude": 43.045,
-      "longitude": 145.6343,
-      "depth_km": 96.855,
-      "place": "31 km S of Nemuro, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tnbv",
       "tsunami": 0,
       "significance": 385
     }
