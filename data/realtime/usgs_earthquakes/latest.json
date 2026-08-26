@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-08-26T12:17:23Z",
-  "count": 13,
+  "generated_at_iso": "2026-08-26T16:52:52Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us7000tbyz",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-08-26T14:25:41.270000+00:00",
+      "latitude": -11.0416,
+      "longitude": 165.7947,
+      "depth_km": 71.191,
+      "place": "35 km S of Lata, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tbyz",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000tbyu",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-08-26T14:15:31.234000+00:00",
+      "latitude": -8.3715,
+      "longitude": 121.5083,
+      "depth_km": 10.0,
+      "place": "54 km NNW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tbyu",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us7000tby1",
       "magnitude": 4.6,
@@ -11,6 +35,18 @@
       "depth_km": 10.0,
       "place": "126 km NNE of Basco, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tby1",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tbxz",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-08-26T09:47:34.473000+00:00",
+      "latitude": -8.3296,
+      "longitude": 121.337,
+      "depth_km": 10.0,
+      "place": "67 km NNW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tbxz",
       "tsunami": 0,
       "significance": 326
     },
@@ -49,6 +85,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tbx8",
       "tsunami": 0,
       "significance": 354
+    },
+    {
+      "id": "us7000tbwb",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-08-26T02:52:10+00:00",
+      "latitude": 28.271,
+      "longitude": 85.515,
+      "depth_km": 0.0,
+      "place": "55 km NW of Kodāri̇̄, Nepal",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tbwb",
+      "tsunami": 0,
+      "significance": 601
     },
     {
       "id": "us7000tbw6",
@@ -121,42 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tbu3",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us7000tbsj",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-25T16:23:33.830000+00:00",
-      "latitude": -14.235,
-      "longitude": 170.4985,
-      "depth_km": 628.976,
-      "place": "Vanuatu region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tbsj",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000tnd7",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-08-25T15:15:54.612000+00:00",
-      "latitude": -17.2913,
-      "longitude": -171.9817,
-      "depth_km": 10.0,
-      "place": "243 km SE of Hihifo, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tnd7",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000tnd4",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-25T14:58:54.206000+00:00",
-      "latitude": -8.1362,
-      "longitude": 120.5816,
-      "depth_km": 10.0,
-      "place": "54 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tnd4",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }
