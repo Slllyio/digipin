@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-08-29T20:25:33Z",
-  "count": 14,
+  "generated_at_iso": "2026-08-29T22:43:53Z",
+  "count": 13,
   "records": [
+    {
+      "id": "us7000tcv5",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-29T21:00:19.499000+00:00",
+      "latitude": 29.9927,
+      "longitude": 131.0784,
+      "depth_km": 35.0,
+      "place": "58 km ESE of Koshima, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcv5",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us7000tcu2",
       "magnitude": 4.7,
@@ -12,7 +24,7 @@
       "place": "16 km ENE of Hasaki, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcu2",
       "tsunami": 0,
-      "significance": 341
+      "significance": 342
     },
     {
       "id": "aka2026rcluqc",
@@ -145,30 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcqg",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us7000tcq8",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-28T22:07:33.184000+00:00",
-      "latitude": 42.2861,
-      "longitude": 80.5254,
-      "depth_km": 10.0,
-      "place": "124 km N of Aksu, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcq8",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000tcpf",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-28T20:44:36.759000+00:00",
-      "latitude": -18.8677,
-      "longitude": -69.9747,
-      "depth_km": 87.955,
-      "place": "38 km NNE of Cuya, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcpf",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
