@@ -1,6 +1,6 @@
 {
-  "generated_at_iso": "2026-08-29T17:53:50Z",
-  "count": 16,
+  "generated_at_iso": "2026-08-29T20:25:33Z",
+  "count": 14,
   "records": [
     {
       "id": "us7000tcu2",
@@ -169,30 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcpf",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000tcp5",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-08-28T20:19:38.305000+00:00",
-      "latitude": -6.211,
-      "longitude": 151.7381,
-      "depth_km": 10.0,
-      "place": "191 km ESE of Kimbe, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcp5",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000tcnj",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-08-28T19:12:55.174000+00:00",
-      "latitude": -28.3225,
-      "longitude": 62.5441,
-      "depth_km": 10.0,
-      "place": "Southwest Indian Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcnj",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
