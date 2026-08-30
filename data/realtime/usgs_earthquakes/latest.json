@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-08-29T22:43:53Z",
-  "count": 13,
+  "generated_at_iso": "2026-08-30T06:14:09Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us7000tcwp",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-08-30T05:19:51.149000+00:00",
+      "latitude": -22.1794,
+      "longitude": -70.4392,
+      "depth_km": 52.115,
+      "place": "26 km WSW of Tocopilla, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcwp",
+      "tsunami": 0,
+      "significance": 341
+    },
+    {
+      "id": "us7000tcwd",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-08-30T03:55:28.753000+00:00",
+      "latitude": -56.4575,
+      "longitude": -27.0033,
+      "depth_km": 135.686,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcwd",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000tcvt",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-30T00:14:19.915000+00:00",
+      "latitude": 42.0423,
+      "longitude": 142.6167,
+      "depth_km": 63.625,
+      "place": "18 km SW of Urakawa, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcvt",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tcvp",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-29T23:26:17.542000+00:00",
+      "latitude": -22.6579,
+      "longitude": -67.5745,
+      "depth_km": 158.92,
+      "place": "70 km ENE of San Pedro de Atacama, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcvp",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tcvf",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-08-29T22:35:22.010000+00:00",
+      "latitude": 40.1538,
+      "longitude": 19.8822,
+      "depth_km": 10.0,
+      "place": "13 km ENE of Himarë, Albania",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcvf",
+      "tsunami": 0,
+      "significance": 371
+    },
     {
       "id": "us7000tcv5",
       "magnitude": 4.8,
@@ -24,7 +84,7 @@
       "place": "16 km ENE of Hasaki, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcu2",
       "tsunami": 0,
-      "significance": 342
+      "significance": 343
     },
     {
       "id": "aka2026rcluqc",
@@ -37,6 +97,18 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026rcluqc",
       "tsunami": 0,
       "significance": 354
+    },
+    {
+      "id": "us7000tctp",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-08-29T12:32:52.747000+00:00",
+      "latitude": 36.2182,
+      "longitude": 27.5734,
+      "depth_km": 14.336,
+      "place": "25 km W of Émponas, Greece",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tctp",
+      "tsunami": 0,
+      "significance": 312
     },
     {
       "id": "us7000tcth",
@@ -97,66 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcsc",
       "tsunami": 0,
       "significance": 356
-    },
-    {
-      "id": "us7000tcs7",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-08-29T05:40:06.207000+00:00",
-      "latitude": -31.8483,
-      "longitude": 56.9522,
-      "depth_km": 10.0,
-      "place": "Southwest Indian Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcs7",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000tcrx",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-08-29T04:48:42.059000+00:00",
-      "latitude": 44.8019,
-      "longitude": 149.9582,
-      "depth_km": 43.998,
-      "place": "170 km ESE of Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcrx",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "nc75426637",
-      "magnitude": 4.84,
-      "origin_time_utc": "2026-08-29T02:41:11.610000+00:00",
-      "latitude": 40.45,
-      "longitude": -125.272333333333,
-      "depth_km": 10.0,
-      "place": "85 km W of Petrolia, CA",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/nc75426637",
-      "tsunami": 0,
-      "significance": 467
-    },
-    {
-      "id": "us7000tcqr",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-08-28T23:55:58.905000+00:00",
-      "latitude": 37.422,
-      "longitude": 22.7096,
-      "depth_km": 89.639,
-      "place": "2 km NNW of Ástros, Greece",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcqr",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tcqg",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-08-28T23:10:36.399000+00:00",
-      "latitude": 39.6554,
-      "longitude": 143.2337,
-      "depth_km": 34.933,
-      "place": "110 km E of Miyako, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tcqg",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
