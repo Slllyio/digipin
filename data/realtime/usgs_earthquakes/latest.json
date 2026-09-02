@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-09-02T13:46:16Z",
+  "generated_at_iso": "2026-09-02T17:35:34Z",
   "count": 20,
   "records": [
+    {
+      "id": "us7000tdn6",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-09-02T13:53:02.378000+00:00",
+      "latitude": 22.8619,
+      "longitude": 144.06,
+      "depth_km": 38.413,
+      "place": "Volcano Islands, Japan region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tdn6",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000tdms",
       "magnitude": 5.9,
@@ -229,18 +241,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tder",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us7000tdbt",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-09-01T13:47:19.528000+00:00",
-      "latitude": 52.2673,
-      "longitude": -169.4311,
-      "depth_km": 35.0,
-      "place": "84 km SSW of Nikolski, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tdbt",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
