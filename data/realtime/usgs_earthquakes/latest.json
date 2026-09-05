@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-09-04T19:51:53Z",
+  "generated_at_iso": "2026-09-05T04:27:51Z",
   "count": 13,
   "records": [
+    {
+      "id": "us7000tegg",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-09-05T01:41:01.465000+00:00",
+      "latitude": -30.7935,
+      "longitude": -177.8256,
+      "depth_km": 33.579,
+      "place": "Kermadec Islands, New Zealand",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tegg",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000teg7",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-09-05T00:22:45.357000+00:00",
+      "latitude": 40.6426,
+      "longitude": 143.5636,
+      "depth_km": 33.857,
+      "place": "159 km ENE of Noda, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000teg7",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tefx",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-09-04T23:52:30.886000+00:00",
+      "latitude": 44.9792,
+      "longitude": 149.8346,
+      "depth_km": 36.429,
+      "place": "156 km E of Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tefx",
+      "tsunami": 0,
+      "significance": 465
+    },
+    {
+      "id": "us7000tefw",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-09-04T23:38:40.818000+00:00",
+      "latitude": 9.4666,
+      "longitude": -40.8475,
+      "depth_km": 10.0,
+      "place": "central Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tefw",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000tefr",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-09-04T23:17:48.392000+00:00",
+      "latitude": -8.2997,
+      "longitude": 120.6133,
+      "depth_km": 10.0,
+      "place": "38 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tefr",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000tede",
       "magnitude": 4.6,
@@ -12,7 +72,7 @@
       "place": "32 km NW of Raumati Beach, New Zealand",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tede",
       "tsunami": 0,
-      "significance": 335
+      "significance": 336
     },
     {
       "id": "us7000teck",
@@ -97,66 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te82",
       "tsunami": 0,
       "significance": 418
-    },
-    {
-      "id": "us7000te7l",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-09-04T02:28:38.697000+00:00",
-      "latitude": 51.9555,
-      "longitude": 176.3482,
-      "depth_km": 10.0,
-      "place": "236 km ESE of Attu Station, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te7l",
-      "tsunami": 1,
-      "significance": 385
-    },
-    {
-      "id": "us7000te5e",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-09-03T21:18:21.492000+00:00",
-      "latitude": -31.8967,
-      "longitude": -71.2399,
-      "depth_km": 81.851,
-      "place": "29 km WSW of Salamanca, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te5e",
-      "tsunami": 0,
-      "significance": 356
-    },
-    {
-      "id": "us7000te55",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-09-03T21:05:15.371000+00:00",
-      "latitude": 0.5261,
-      "longitude": 122.1776,
-      "depth_km": 111.177,
-      "place": "98 km W of Gorontalo, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te55",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000te51",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-09-03T21:00:10.101000+00:00",
-      "latitude": -8.3207,
-      "longitude": 121.6664,
-      "depth_km": 10.0,
-      "place": "57 km N of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te51",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000te4b",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-09-03T20:21:15.216000+00:00",
-      "latitude": 52.0506,
-      "longitude": -169.1387,
-      "depth_km": 10.0,
-      "place": "100 km S of Nikolski, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te4b",
-      "tsunami": 0,
-      "significance": 465
     }
   ]
 }
