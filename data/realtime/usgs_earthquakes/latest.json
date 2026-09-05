@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-09-05T08:30:30Z",
-  "count": 12,
+  "generated_at_iso": "2026-09-05T15:13:01Z",
+  "count": 13,
   "records": [
+    {
+      "id": "us7000teji",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-09-05T14:12:07.727000+00:00",
+      "latitude": -4.5469,
+      "longitude": 153.6766,
+      "depth_km": 114.364,
+      "place": "157 km E of Kokopo, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000teji",
+      "tsunami": 0,
+      "significance": 465
+    },
+    {
+      "id": "us7000tej2",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-09-05T11:37:12.553000+00:00",
+      "latitude": -26.1078,
+      "longitude": -66.7176,
+      "depth_km": 10.0,
+      "place": "69 km E of Antofagasta de la Sierra, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tej2",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000teiy",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-09-05T10:59:15.678000+00:00",
+      "latitude": -4.4202,
+      "longitude": 102.7513,
+      "depth_km": 68.934,
+      "place": "70 km SW of Pagar Alam, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000teiy",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000teim",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-09-05T09:14:15.563000+00:00",
+      "latitude": 3.2202,
+      "longitude": 96.1107,
+      "depth_km": 10.0,
+      "place": "87 km NNW of Sinabang, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000teim",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000tehs",
       "magnitude": 4.5,
@@ -53,11 +101,11 @@
     {
       "id": "us7000tefx",
       "magnitude": 5.5,
-      "origin_time_utc": "2026-09-04T23:52:30.886000+00:00",
-      "latitude": 44.9792,
-      "longitude": 149.8346,
-      "depth_km": 36.429,
-      "place": "156 km E of Kuril’sk, Russia",
+      "origin_time_utc": "2026-09-04T23:52:29.825000+00:00",
+      "latitude": 44.9418,
+      "longitude": 149.9838,
+      "depth_km": 32.0,
+      "place": "168 km ESE of Kuril’sk, Russia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tefx",
       "tsunami": 0,
       "significance": 465
@@ -109,42 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000teck",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us7000tea7",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-09-04T13:47:52.492000+00:00",
-      "latitude": -25.8505,
-      "longitude": -177.0721,
-      "depth_km": 76.735,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tea7",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000te9t",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-09-04T11:59:58.323000+00:00",
-      "latitude": -28.5616,
-      "longitude": -176.6452,
-      "depth_km": 10.0,
-      "place": "Kermadec Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te9t",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us7000te95",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-09-04T08:48:03.904000+00:00",
-      "latitude": 15.1784,
-      "longitude": 120.0504,
-      "depth_km": 61.292,
-      "place": "2 km NNW of Cabangan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te95",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
