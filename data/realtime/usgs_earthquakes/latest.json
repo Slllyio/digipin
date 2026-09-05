@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-09-05T04:27:51Z",
-  "count": 13,
+  "generated_at_iso": "2026-09-05T08:30:30Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us7000tehs",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-09-05T06:34:55.998000+00:00",
+      "latitude": -0.1498,
+      "longitude": 123.1527,
+      "depth_km": 202.347,
+      "place": "76 km S of Gorontalo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tehs",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tehe",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-09-05T05:00:06.778000+00:00",
+      "latitude": 3.5071,
+      "longitude": -83.151,
+      "depth_km": 10.0,
+      "place": "off the coast of Central America",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tehe",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us7000tegg",
       "magnitude": 4.8,
@@ -72,7 +96,7 @@
       "place": "32 km NW of Raumati Beach, New Zealand",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tede",
       "tsunami": 0,
-      "significance": 336
+      "significance": 337
     },
     {
       "id": "us7000teck",
@@ -121,42 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te95",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us7000te8p",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-09-04T06:48:06.994000+00:00",
-      "latitude": -21.3768,
-      "longitude": -68.5636,
-      "depth_km": 130.651,
-      "place": "36 km WSW of Ollagüe, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te8p",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000te8r",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-09-04T06:45:54.522000+00:00",
-      "latitude": -56.1536,
-      "longitude": -26.1632,
-      "depth_km": 10.0,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te8r",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000te82",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-09-04T05:04:54.278000+00:00",
-      "latitude": -7.9867,
-      "longitude": 109.0409,
-      "depth_km": 10.0,
-      "place": "28 km S of Cilacap, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000te82",
-      "tsunami": 0,
-      "significance": 418
     }
   ]
 }
