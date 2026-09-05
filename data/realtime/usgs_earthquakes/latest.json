@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-09-05T15:13:01Z",
-  "count": 13,
+  "generated_at_iso": "2026-09-05T23:06:33Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us7000tel1",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-09-05T21:06:01.351000+00:00",
+      "latitude": -19.914,
+      "longitude": 170.104,
+      "depth_km": 10.0,
+      "place": "95 km ESE of Isangel, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tel1",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000tek7",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-09-05T18:00:09.215000+00:00",
+      "latitude": 52.2713,
+      "longitude": -169.329,
+      "depth_km": 35.0,
+      "place": "80 km SSW of Nikolski, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tek7",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000tek0",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-09-05T17:02:11.581000+00:00",
+      "latitude": -19.807,
+      "longitude": 170.1576,
+      "depth_km": 10.0,
+      "place": "96 km ESE of Isangel, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tek0",
+      "tsunami": 0,
+      "significance": 482
+    },
     {
       "id": "us7000teji",
       "magnitude": 5.5,
@@ -12,7 +48,19 @@
       "place": "157 km E of Kokopo, Papua New Guinea",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000teji",
       "tsunami": 0,
-      "significance": 465
+      "significance": 466
+    },
+    {
+      "id": "us7000tejg",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-09-05T14:06:07.776000+00:00",
+      "latitude": 1.0574,
+      "longitude": 98.6095,
+      "depth_km": 91.853,
+      "place": "77 km SSW of Sibolga, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tejg",
+      "tsunami": 0,
+      "significance": 416
     },
     {
       "id": "us7000tej2",
@@ -133,30 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tefr",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000tede",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-09-04T18:34:01.487000+00:00",
-      "latitude": -40.7112,
-      "longitude": 174.7119,
-      "depth_km": 50.571,
-      "place": "32 km NW of Raumati Beach, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tede",
-      "tsunami": 0,
-      "significance": 337
-    },
-    {
-      "id": "us7000teck",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-09-04T16:24:41.107000+00:00",
-      "latitude": 1.3758,
-      "longitude": 99.0453,
-      "depth_km": 121.712,
-      "place": "25 km W of Padangsidempuan, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000teck",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
