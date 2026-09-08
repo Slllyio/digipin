@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-09-08T14:11:54Z",
-  "count": 9,
+  "generated_at_iso": "2026-09-08T17:55:44Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us7000tfur",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-09-08T16:08:34.980000+00:00",
+      "latitude": 29.2727,
+      "longitude": 83.9779,
+      "depth_km": 10.0,
+      "place": "97 km NNE of Chitre, Nepal",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfur",
+      "tsunami": 0,
+      "significance": 373
+    },
+    {
+      "id": "us7000tfup",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-09-08T15:43:57.137000+00:00",
+      "latitude": -16.0323,
+      "longitude": -173.298,
+      "depth_km": 10.0,
+      "place": "54 km E of Hihifo, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfup",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000tfum",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-09-08T15:36:35.020000+00:00",
+      "latitude": -7.6774,
+      "longitude": 121.0852,
+      "depth_km": 10.0,
+      "place": "123 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfum",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000tfu8",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-09-08T14:13:09.955000+00:00",
+      "latitude": 49.8562,
+      "longitude": 155.7106,
+      "depth_km": 64.43,
+      "place": "95 km SSW of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfu8",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tfty",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-09-08T13:42:08.931000+00:00",
+      "latitude": -21.4066,
+      "longitude": -68.8236,
+      "depth_km": 110.668,
+      "place": "62 km WSW of Ollagüe, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfty",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000tftd",
       "magnitude": 5.3,
