@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-09-08T17:55:44Z",
-  "count": 14,
+  "generated_at_iso": "2026-09-09T11:22:07Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us7000tg12",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-09-09T10:06:57.170000+00:00",
+      "latitude": -26.1386,
+      "longitude": -66.5049,
+      "depth_km": 10.0,
+      "place": "53 km W of Cafayate, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tg12",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000tg06",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-09-09T07:07:03.319000+00:00",
+      "latitude": 4.0172,
+      "longitude": 125.3233,
+      "depth_km": 10.0,
+      "place": "154 km S of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tg06",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000tfyn",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-09-09T00:23:19.728000+00:00",
+      "latitude": -4.9167,
+      "longitude": 102.8454,
+      "depth_km": 39.565,
+      "place": "108 km SSW of Pagar Alam, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfyn",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tfy8",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-09-08T23:23:42.291000+00:00",
+      "latitude": 16.5996,
+      "longitude": 148.4279,
+      "depth_km": 10.0,
+      "place": "Mariana Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfy8",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000tfxg",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-09-08T21:57:33.202000+00:00",
+      "latitude": -17.7255,
+      "longitude": -172.2335,
+      "depth_km": 10.0,
+      "place": "211 km ENE of Neiafu, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfxg",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000tfxd",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-09-08T21:42:22.442000+00:00",
+      "latitude": -8.1535,
+      "longitude": 120.658,
+      "depth_km": 17.467,
+      "place": "54 km NNE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfxd",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000tfur",
       "magnitude": 4.9,
@@ -12,7 +84,7 @@
       "place": "97 km NNE of Chitre, Nepal",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfur",
       "tsunami": 0,
-      "significance": 373
+      "significance": 376
     },
     {
       "id": "us7000tfup",
@@ -73,102 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tftd",
       "tsunami": 0,
       "significance": 433
-    },
-    {
-      "id": "us7000tfsj",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-09-08T07:46:29.636000+00:00",
-      "latitude": 38.4261,
-      "longitude": 21.2463,
-      "depth_km": 10.0,
-      "place": "1 km NNW of Katochí, Greece",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfsj",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tfs3",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-09-08T06:50:46.470000+00:00",
-      "latitude": -58.1213,
-      "longitude": -26.2578,
-      "depth_km": 128.647,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfs3",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000tfs1",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-09-08T06:49:48.990000+00:00",
-      "latitude": 10.733,
-      "longitude": -69.1624,
-      "depth_km": 10.0,
-      "place": "43 km NW of Aroa, Venezuela",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfs1",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000tfr8",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-09-08T04:40:28.046000+00:00",
-      "latitude": -8.1646,
-      "longitude": 120.5995,
-      "depth_km": 10.0,
-      "place": "51 km NNE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfr8",
-      "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "us7000tfqv",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-09-08T02:34:20.009000+00:00",
-      "latitude": 51.5605,
-      "longitude": 159.7019,
-      "depth_km": 24.871,
-      "place": "176 km SSE of Vilyuchinsk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfqv",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tfqi",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-09-08T01:39:35.020000+00:00",
-      "latitude": -22.3345,
-      "longitude": -179.7628,
-      "depth_km": 568.559,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfqi",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tfqf",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-09-08T00:52:02.083000+00:00",
-      "latitude": -19.8072,
-      "longitude": 170.1194,
-      "depth_km": 10.0,
-      "place": "92 km ESE of Isangel, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tfqf",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000tez1",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-09-07T21:54:38.748000+00:00",
-      "latitude": -25.0539,
-      "longitude": -69.2641,
-      "depth_km": 90.724,
-      "place": "129 km ENE of Taltal, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tez1",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
