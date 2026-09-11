@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-09-11T05:58:52Z",
-  "count": 10,
+  "generated_at_iso": "2026-09-11T18:32:06Z",
+  "count": 7,
   "records": [
+    {
+      "id": "us7000tgpu",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-09-11T16:42:30.894000+00:00",
+      "latitude": 4.4193,
+      "longitude": -76.8325,
+      "depth_km": 61.088,
+      "place": "33 km SW of Sipí, Colombia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgpu",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000tgl2",
+      "magnitude": 5.9,
+      "origin_time_utc": "2026-09-11T11:56:23.115000+00:00",
+      "latitude": -7.2863,
+      "longitude": 128.9383,
+      "depth_km": 111.763,
+      "place": "253 km ENE of Lospalos, Timor Leste",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgl2",
+      "tsunami": 0,
+      "significance": 537
+    },
+    {
+      "id": "us7000tgky",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-09-11T10:47:12.613000+00:00",
+      "latitude": 51.213,
+      "longitude": -178.5429,
+      "depth_km": 40.892,
+      "place": "151 km WSW of Adak, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgky",
+      "tsunami": 1,
+      "significance": 432
+    },
+    {
+      "id": "us7000tgk1",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-09-11T07:31:45.952000+00:00",
+      "latitude": 54.034,
+      "longitude": -163.1555,
+      "depth_km": 43.105,
+      "place": "92 km S of False Pass, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgk1",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000tgij",
       "magnitude": 4.9,
@@ -36,91 +84,7 @@
       "place": "83 km E of Lospalos, Timor Leste",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgf2",
       "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "us7000tgey",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-09-10T18:21:18.934000+00:00",
-      "latitude": -34.8341,
-      "longitude": -109.1514,
-      "depth_km": 10.0,
-      "place": "southern East Pacific Rise",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgey",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us7000tgb4",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-09-10T13:29:03.015000+00:00",
-      "latitude": 14.0976,
-      "longitude": -92.8815,
-      "depth_km": 10.0,
-      "place": "84 km SW of Puerto Madero, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgb4",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tgb6",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-09-10T13:28:15.798000+00:00",
-      "latitude": 12.0265,
-      "longitude": 143.8739,
-      "depth_km": 10.0,
-      "place": "162 km SSW of Merizo Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgb6",
-      "tsunami": 0,
-      "significance": 401
-    },
-    {
-      "id": "us7000tga8",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-09-10T12:05:53.736000+00:00",
-      "latitude": -17.8933,
-      "longitude": -65.8339,
-      "depth_km": 372.617,
-      "place": "35 km SSE of Cliza, Bolivia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tga8",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000tg9q",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-09-10T10:39:36.283000+00:00",
-      "latitude": -3.9669,
-      "longitude": -77.3635,
-      "depth_km": 22.065,
-      "place": "116 km WSW of Alianza Cristiana, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tg9q",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000tg98",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-09-10T08:26:53.828000+00:00",
-      "latitude": 9.0275,
-      "longitude": -84.0624,
-      "depth_km": 10.0,
-      "place": "45 km SSE of Quepos, Costa Rica",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tg98",
-      "tsunami": 0,
-      "significance": 388
-    },
-    {
-      "id": "us7000tg8v",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-09-10T06:42:40.393000+00:00",
-      "latitude": -3.873,
-      "longitude": -77.5027,
-      "depth_km": 10.0,
-      "place": "126 km WSW of Alianza Cristiana, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tg8v",
-      "tsunami": 0,
-      "significance": 432
+      "significance": 433
     }
   ]
 }
