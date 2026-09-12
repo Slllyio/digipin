@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-09-12T06:10:35Z",
-  "count": 11,
+  "generated_at_iso": "2026-09-12T10:46:07Z",
+  "count": 13,
   "records": [
+    {
+      "id": "us7000tgyh",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-09-12T09:35:46.724000+00:00",
+      "latitude": -13.2829,
+      "longitude": 166.3361,
+      "depth_km": 16.926,
+      "place": "147 km WNW of Sola, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgyh",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000tgy2",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-09-12T08:46:38.186000+00:00",
+      "latitude": -14.4855,
+      "longitude": -76.2161,
+      "depth_km": 24.123,
+      "place": "63 km WSW of Santiago, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgy2",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tgxg",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-09-12T06:14:30.594000+00:00",
+      "latitude": -6.0912,
+      "longitude": 130.5082,
+      "depth_km": 134.354,
+      "place": "253 km WSW of Tual, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgxg",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us7000tgx2",
       "magnitude": 4.7,
@@ -36,7 +72,7 @@
       "place": "2 km NE of Manaca Norte, Panama",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgw1",
       "tsunami": 0,
-      "significance": 351
+      "significance": 352
     },
     {
       "id": "us7000tgvr",
@@ -84,7 +120,7 @@
       "place": "115 km NNE of Teluknaga, Indonesia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgrk",
       "tsunami": 0,
-      "significance": 677
+      "significance": 678
     },
     {
       "id": "us7000tgpu",
@@ -121,18 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgky",
       "tsunami": 1,
       "significance": 432
-    },
-    {
-      "id": "us7000tgk1",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-09-11T07:31:45.952000+00:00",
-      "latitude": 54.034,
-      "longitude": -163.1555,
-      "depth_km": 43.105,
-      "place": "92 km S of False Pass, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tgk1",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
