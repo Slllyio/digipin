@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-09-17T19:04:02Z",
-  "count": 14,
+  "generated_at_iso": "2026-09-18T00:18:29Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us7000ti5y",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-09-17T21:10:25.572000+00:00",
+      "latitude": 4.5211,
+      "longitude": -76.8219,
+      "depth_km": 57.808,
+      "place": "24 km SW of Sipí, Colombia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ti5y",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000ti5b",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-09-17T19:19:06.799000+00:00",
+      "latitude": 30.1619,
+      "longitude": -42.1489,
+      "depth_km": 10.0,
+      "place": "northern Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ti5b",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000ti5c",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-09-17T19:17:33+00:00",
+      "latitude": -7.7411,
+      "longitude": 104.5828,
+      "depth_km": 10.0,
+      "place": "204 km SW of Labuan, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ti5c",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000ti1p",
       "magnitude": 6.5,
@@ -12,7 +48,7 @@
       "place": "165 km W of Nikolski, Alaska",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ti1p",
       "tsunami": 1,
-      "significance": 652
+      "significance": 653
     },
     {
       "id": "us7000ti1h",
@@ -109,66 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000thz3",
       "tsunami": 0,
       "significance": 432
-    },
-    {
-      "id": "us7000thxm",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-09-16T20:55:00.902000+00:00",
-      "latitude": 4.46,
-      "longitude": -76.8006,
-      "depth_km": 51.459,
-      "place": "27 km SW of Sipí, Colombia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000thxm",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000thxg",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-09-16T20:21:24.970000+00:00",
-      "latitude": -6.1072,
-      "longitude": 151.7775,
-      "depth_km": 10.0,
-      "place": "191 km ESE of Kimbe, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000thxg",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000thxc",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-09-16T20:12:52.070000+00:00",
-      "latitude": 4.5241,
-      "longitude": -76.8772,
-      "depth_km": 59.026,
-      "place": "29 km WSW of Sipí, Colombia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000thxc",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000thxb",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-09-16T20:03:35.025000+00:00",
-      "latitude": -30.2154,
-      "longitude": -177.5927,
-      "depth_km": 35.0,
-      "place": "Kermadec Islands, New Zealand",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000thxb",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000thx7",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-09-16T19:37:05.143000+00:00",
-      "latitude": -5.5399,
-      "longitude": 146.0172,
-      "depth_km": 59.858,
-      "place": "43 km SE of Madang, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000thx7",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
