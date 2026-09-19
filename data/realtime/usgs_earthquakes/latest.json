@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-09-19T16:31:05Z",
+  "generated_at_iso": "2026-09-19T18:55:50Z",
   "count": 13,
   "records": [
+    {
+      "id": "us7000tiju",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-09-19T13:56:00.869000+00:00",
+      "latitude": -8.1668,
+      "longitude": 120.8819,
+      "depth_km": 10.0,
+      "place": "67 km NE of Ruteng, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tiju",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000tijs",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-09-19T13:44:35.732000+00:00",
+      "latitude": 4.5179,
+      "longitude": -76.8729,
+      "depth_km": 58.204,
+      "place": "29 km WSW of Sipí, Colombia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tijs",
+      "tsunami": 0,
+      "significance": 355
+    },
     {
       "id": "us7000tijf",
       "magnitude": 4.5,
@@ -133,30 +157,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tiem",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000tie4",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-09-18T18:41:22.677000+00:00",
-      "latitude": 4.5042,
-      "longitude": -76.7978,
-      "depth_km": 72.587,
-      "place": "23 km SW of Sipí, Colombia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tie4",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tid4",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-09-18T16:52:07.958000+00:00",
-      "latitude": -33.3109,
-      "longitude": -70.3344,
-      "depth_km": 100.009,
-      "place": "28 km NE of Villa Presidente Frei, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tid4",
-      "tsunami": 0,
-      "significance": 428
     }
   ]
 }
