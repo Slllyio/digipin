@@ -70,6 +70,8 @@ const LOCAL_ASSETS = [
     './js/text2map-embeddings.js',
     './js/text2map.js',
     './js/text2map-results-layer.js',
+    './js/disha-tools.js',
+    './js/disha-agent.js',
     './js/disha-panel.js',
     './js/compare.js',
     './js/isochrone.js',

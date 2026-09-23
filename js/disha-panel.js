@@ -421,6 +421,13 @@ const DISHAPanel = (() => {
             return;
         }
 
+        // Agent mode: multi-step planning questions run the Urban Analyst Agent
+        // (a tool-using ReAct loop) instead of the single-shot answer.
+        if (typeof DISHAAgent !== 'undefined' && DISHA.isAgentQuestion(question) && _currentCell) {
+            await handleAgent(DISHA.stripAgentPrefix(question));
+            return;
+        }
+
         // Smart context: filter by question type instead of sending everything
         _currentContext = DISHA.buildFilteredContext(_currentCell, _currentData, question);
 
@@ -693,6 +700,74 @@ const DISHAPanel = (() => {
             },
             cityScanContext || null
         );
+    }
+
+    // ===== AGENT FLOW =====
+    /** Run the multi-step Urban Analyst Agent, rendering its per-step reasoning and action chips live. */
+    async function handleAgent(question) {
+        _isStreaming = true;
+        const sendBtn = document.getElementById('disha-send');
+        const stopBtn = document.getElementById('disha-stop');
+        const inputEl = document.getElementById('disha-input');
+        sendBtn.style.display = 'none';
+        stopBtn.style.display = 'inline-flex';
+        inputEl.disabled = true;
+
+        // A "thinking" bubble until the first reasoning/step renders.
+        const thinkingEl = addMessage('disha', '');
+        let thinkingCleared = false;
+        const clearThinking = () => { if (!thinkingCleared) { thinkingCleared = true; thinkingEl.remove(); } };
+
+        const ground = {
+            cell: _currentCell,
+            data: _currentData,
+            context: _currentCell ? DISHA.buildFilteredContext(_currentCell, _currentData, question) : '',
+            bounds: _cityScanBounds(),
+        };
+
+        const hooks = {
+            onAssistant: (text, meta) => {
+                clearThinking();
+                const el = addMessage('disha', '');
+                const content = el.querySelector('.disha-msg-content');
+                applyFormattedResponse(content, text);   // clears then renders
+                if (!meta.final) content.classList.add('disha-agent-step');
+                scrollToBottom();
+            },
+            onChips: (results) => {
+                if (!results || !results.length) return;
+                clearThinking();
+                const el = addMessage('disha', '');
+                const content = el.querySelector('.disha-msg-content');
+                while (content.firstChild) content.removeChild(content.firstChild);
+                _renderActionChips(content, results);
+                scrollToBottom();
+            },
+        };
+
+        try {
+            const finalText = await DISHAAgent.run(question, ground, hooks);
+            clearThinking();
+            if (!finalText || !finalText.trim()) {
+                addMessage('disha', 'No answer produced. Try rephrasing, or check the AI provider in Settings.');
+            } else {
+                renderSuggestions(DISHA.getSuggestions(_currentData || {}, finalText));
+            }
+        } catch (err) {
+            clearThinking();
+            // Stop button → DISHA.cancel() → AbortError. Treat as cancellation:
+            // leave whatever already rendered, show no error.
+            if (!(err && err.name === 'AbortError')) {
+                const el = addMessage('disha', '');
+                const content = el.querySelector('.disha-msg-content');
+                content.textContent = `Agent error: ${err.message}`;
+                content.classList.add('disha-error');
+            }
+        } finally {
+            if (typeof DISHAActions !== 'undefined' && DISHAActions._resetAgentState) DISHAActions._resetAgentState();
+            _isStreaming = false;
+            resetInputState();
+        }
     }
 
     /** Restore the input row to its idle state after a response or scan finishes. */

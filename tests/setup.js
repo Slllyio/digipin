@@ -76,6 +76,8 @@ loadGlobalScript('js/footprint-grid.js', ['FootprintGrid']);
 loadGlobalScript('js/query-engine.js', ['QueryEngine']);
 loadGlobalScript('js/disha.js', ['DISHA']);
 loadGlobalScript('js/disha-actions.js', ['DISHAActions']);
+loadGlobalScript('js/disha-tools.js', ['DISHATools']);
+loadGlobalScript('js/disha-agent.js', ['DISHAAgent']);
 loadGlobalScript('js/text2map.js', ['Text2Map']);
 loadGlobalScript('js/text2map-results-layer.js', ['Text2MapResultsLayer']);
 loadGlobalScript('js/url-state.js', ['URLState']);
