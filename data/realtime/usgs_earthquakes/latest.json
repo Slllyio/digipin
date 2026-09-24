@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-09-23T22:16:39Z",
-  "count": 12,
+  "generated_at_iso": "2026-09-24T10:24:54Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us6000tx9u",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-09-24T07:40:58.138000+00:00",
+      "latitude": 37.4736,
+      "longitude": 38.8612,
+      "depth_km": 10.0,
+      "place": "15 km SSW of Hilvan, Turkey",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tx9u",
+      "tsunami": 0,
+      "significance": 435
+    },
+    {
+      "id": "us6000tx8q",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-09-24T03:30:26.013000+00:00",
+      "latitude": -8.33,
+      "longitude": 119.3665,
+      "depth_km": 10.0,
+      "place": "31 km NNW of Komodo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tx8q",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000tx7g",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-09-24T00:26:38.374000+00:00",
+      "latitude": -1.8133,
+      "longitude": 138.7809,
+      "depth_km": 35.0,
+      "place": "223 km WNW of Abepura, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tx7g",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000tx58",
       "magnitude": 5.0,
@@ -85,66 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tx31",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tx29",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-09-23T09:21:14.600000+00:00",
-      "latitude": -28.7298,
-      "longitude": -67.2912,
-      "depth_km": 121.534,
-      "place": "51 km WSW of Arauco, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tx29",
-      "tsunami": 0,
-      "significance": 434
-    },
-    {
-      "id": "us6000tx23",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-09-23T08:41:58.018000+00:00",
-      "latitude": -60.2661,
-      "longitude": -47.6004,
-      "depth_km": 10.0,
-      "place": "Scotia Sea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tx23",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tx16",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-09-23T05:46:11.056000+00:00",
-      "latitude": 37.2772,
-      "longitude": 71.768,
-      "depth_km": 141.19,
-      "place": "30 km SE of Khorugh, Tajikistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tx16",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000tx08",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-09-23T02:02:43.755000+00:00",
-      "latitude": -8.1454,
-      "longitude": 120.808,
-      "depth_km": 10.0,
-      "place": "63 km NE of Ruteng, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tx08",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000twzp",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-09-22T22:27:38.897000+00:00",
-      "latitude": -6.9217,
-      "longitude": 105.5232,
-      "depth_km": 35.0,
-      "place": "68 km SSW of Labuan, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000twzp",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
