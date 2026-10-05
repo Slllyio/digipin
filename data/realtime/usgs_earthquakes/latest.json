@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-10-04T23:49:21Z",
-  "count": 13,
+  "generated_at_iso": "2026-10-05T04:08:24Z",
+  "count": 12,
   "records": [
+    {
+      "id": "us6000tzlp",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-10-05T01:18:50.392000+00:00",
+      "latitude": -0.4325,
+      "longitude": -19.965,
+      "depth_km": 10.0,
+      "place": "central Mid-Atlantic Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tzlp",
+      "tsunami": 0,
+      "significance": 432
+    },
     {
       "id": "us6000tzkn",
       "magnitude": 4.8,
@@ -133,30 +145,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tzh0",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000tzg0",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-04T01:47:52.030000+00:00",
-      "latitude": -58.1594,
-      "longitude": -23.3522,
-      "depth_km": 10.0,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tzg0",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000tzfv",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-04T01:38:46.078000+00:00",
-      "latitude": -6.5916,
-      "longitude": 147.1353,
-      "depth_km": 94.221,
-      "place": "21 km NE of Lae, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000tzfv",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
