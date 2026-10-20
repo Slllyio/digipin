@@ -11,6 +11,14 @@ name: Open data cells
 #        Earth Engine access on GEE_PROJECT); skipped with a notice when it is unset.
 
 on:
+  # Re-bake when the bakers change on dev (GITHUB_TOKEN pushes don't retrigger).
+  push:
+    branches: [dev]
+    paths:
+      - 'pipeline/cells/osm_layers.py'
+      - 'pipeline/cells/ee_layers.py'
+      - 'pipeline/cells/earthengine.py'
+      - '.github/workflows/open-data-cells.yml'
   schedule:
     - cron: "41 3 7 * *"     # 03:41 UTC on the 7th of each month
   workflow_dispatch:
