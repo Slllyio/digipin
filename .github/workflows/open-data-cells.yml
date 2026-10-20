@@ -61,7 +61,7 @@ jobs:
 
       - name: Install deps
         run: |
-          pip install -r pipeline/cells/requirements.txt osmium earthengine-api numpy pytest
+          pip install -r pipeline/cells/requirements.txt osmium earthengine-api numpy pytest rasterio
           if [[ " $SOURCES " == *" osm "* ]]; then
             sudo apt-get update && sudo apt-get install -y osmium-tool
           fi
