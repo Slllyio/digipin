@@ -88,6 +88,7 @@
         } catch (e) { /* storage blocked — fall back to bare dark CSS / en */ }
     </script>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/analyses.css">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -195,6 +196,10 @@
         <button class="toolbar-btn" id="btn-saved-views" title="Saved Views &amp; Templates">
             <span class="tb-icon">&#128193;</span>
             <span class="tb-label" data-i18n="tb.views">Views</span>
+        </button>
+        <button class="toolbar-btn" id="btn-analyses" title="Analyses — saved, re-runnable analyses over an area, with shareable reports">
+            <span class="tb-icon">&#128203;</span>
+            <span class="tb-label">Analyses</span>
         </button>
         <button class="toolbar-btn" id="btn-growth" title="Urban Growth Forecast">
             <span class="tb-icon">&#128200;</span>
@@ -358,6 +363,15 @@
         <div id="saved-views-list" class="bm-list"></div>
     </aside>
 
+    <!-- ===== ANALYSES PANEL ===== -->
+    <aside id="analyses-panel" aria-label="Saved analyses and reports">
+        <div class="bm-panel-header">
+            <h3>&#128203; Analyses</h3>
+            <button class="close-btn" onclick="AnalysesPanel.closePanel()" aria-label="Close analyses">&#10005;</button>
+        </div>
+        <div id="analyses-list" class="bm-list"></div>
+    </aside>
+
     <!-- ===== TOAST CONTAINER ===== -->
     <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
 
@@ -452,6 +466,8 @@
     <script defer src="js/accessibility-overlay.js"></script>
     <script defer src="js/url-state.js"></script>
     <script defer src="js/saved-views.js"></script>
+    <script defer src="js/analysis.js"></script>
+    <script defer src="js/analyses-panel.js"></script>
     <script defer src="js/onboarding.js"></script>
     <script defer src="js/layers-panel.js"></script>
     <script defer src="js/dtdl-export.js"></script>

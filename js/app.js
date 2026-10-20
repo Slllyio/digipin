@@ -61,6 +61,9 @@ const App = (() => {
         step('SavedViews', () => {
             if (typeof SavedViews !== 'undefined') SavedViews.init();
         });
+        step('AnalysesPanel', () => {
+            if (typeof AnalysesPanel !== 'undefined') AnalysesPanel.init();
+        });
         step('search', () => initSearch());
         step('queryPanel', () => initQueryPanel());
         step('sidebar', () => initSidebar());
@@ -113,6 +116,8 @@ const App = (() => {
             reg('compare-panel', () => Compare.closePanel(), 20);
             reg('bookmarks-panel', () => Bookmarks.closePanel(), 20);
             reg('saved-views-panel', () => SavedViews.closePanel(), 20);
+            reg('analysis-report-dialog', () => AnalysesPanel.closeDialog(), 30);
+            reg('analyses-panel', () => AnalysesPanel.closePanel(), 20);
             reg('detail-panel', () => Panel.close(), 10);
             reg('results-panel', () => removeOpen('results-panel'), 10);
         });
