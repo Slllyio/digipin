@@ -269,7 +269,9 @@ def run(region=None, roads_path=None, out_dir=None):
 
     out_dir = Path(out_dir) if out_dir else Path(f"data/traffic/{region}")
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "road_los.geojson").write_text(json.dumps(gj, separators=(",", ":")))
+    # Within the repo's per-file budget; osm_id / vc_ratio aren't read downstream.
+    from pipeline.traffic.compact import dumps_lines
+    (out_dir / "road_los.geojson").write_text(dumps_lines(features, drop_props=("osm_id", "vc_ratio")))
 
     dist = {}
     for s in scored:
