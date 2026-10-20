@@ -37,7 +37,7 @@ const APP_GLOBALS = {
   HeatScore: 'readonly', HeatOverlay: 'readonly', HeatWidget: 'readonly', RealtimeHeat: 'readonly',
   FloodSCS: 'readonly', FloodInundation: 'readonly', FloodAnimation: 'readonly', RealtimeFlood: 'readonly',
   RealtimeAlerts: 'readonly', RealtimeIMD: 'readonly', RealtimeQuakes: 'readonly',
-  BivariateOverlay: 'readonly', NDVIOverlay: 'readonly', Viewshed: 'readonly',
+  BivariateOverlay: 'readonly', NDVIOverlay: 'readonly', Viewshed: 'readonly', TerrainHydrology: 'readonly',
   KDEOverlay: 'readonly', AccessibilityOverlay: 'readonly',
   PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly',
   CellStore: 'readonly', CellLayers: 'readonly', CellIngest: 'readonly', TimeSlider: 'readonly', Text2Map: 'readonly', Text2MapEmbeddings: 'readonly',

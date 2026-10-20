@@ -28,6 +28,7 @@ const LayersPanel = (() => {
         { btnId: 'btn-bivariate', name: 'Bivariate Map', icon: '\u{1F3A8}' },
         { btnId: 'btn-kde', name: 'Hotspot Density', icon: '\u{1F525}' },
         { btnId: 'btn-viewshed', name: 'Viewshed', icon: '\u{1F441}' },
+        { btnId: 'btn-hydrology', name: 'Terrain Hydrology (ponding)', icon: '\u{1F4A7}' },
         { btnId: 'btn-access', name: 'Accessibility Gaps', icon: '♿' },
         { btnId: 'btn-area', name: 'Area Summary (drag)', icon: '\u{2B1A}' },
         { btnId: 'btn-roads', name: 'Road Network', icon: '\u{1F6E3}️', stateful: true },

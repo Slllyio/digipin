@@ -83,6 +83,7 @@ loadGlobalScript('js/disha-providers.js', ['DISHAProviders']);
 loadGlobalScript('js/bivariate-overlay.js', ['BivariateOverlay']);
 loadGlobalScript('js/ndvi-overlay.js', ['NDVIOverlay']);
 loadGlobalScript('js/viewshed.js', ['Viewshed']);
+loadGlobalScript('js/terrain-hydrology.js', ['TerrainHydrology']);
 loadGlobalScript('js/kde-overlay.js', ['KDEOverlay']);
 loadGlobalScript('js/accessibility-overlay.js', ['AccessibilityOverlay']);
 loadGlobalScript('js/dtdl-export.js', ['DTDLExport']);

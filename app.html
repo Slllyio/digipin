@@ -242,6 +242,10 @@
             <span class="tb-icon">&#128065;</span>
             <span class="tb-label" data-i18n="tb.viewshed">Viewshed</span>
         </button>
+        <button class="toolbar-btn" id="btn-hydrology" title="Hydrology — where rain ponds and runs, from the DEM (Whitebox in the browser)">
+            <span class="tb-icon">&#128167;</span>
+            <span class="tb-label" data-i18n="tb.hydrology">Hydrology</span>
+        </button>
         <button class="toolbar-btn" id="btn-kde" title="Hotspot — kernel-density surface of a score">
             <span class="tb-icon">&#128293;</span>
             <span class="tb-label" data-i18n="tb.kde">Hotspot</span>
@@ -480,6 +484,7 @@
     <script defer src="js/bivariate-overlay.js"></script>
     <script defer src="js/ndvi-overlay.js"></script>
     <script defer src="js/viewshed.js"></script>
+    <script defer src="js/terrain-hydrology.js"></script>
     <script defer src="js/kde-overlay.js"></script>
     <script defer src="js/accessibility-overlay.js"></script>
     <script defer src="js/url-state.js"></script>
@@ -519,6 +524,7 @@
         ['btn-ndvi',      () => window.NDVIOverlay],
         ['btn-bivariate', () => window.BivariateOverlay],
         ['btn-viewshed',  () => window.Viewshed],
+        ['btn-hydrology', () => window.TerrainHydrology],
         ['btn-kde',       () => window.KDEOverlay],
         ['btn-access',    () => window.AccessibilityOverlay],
         ['btn-choropleth', () => window.ScoreChoropleth],
