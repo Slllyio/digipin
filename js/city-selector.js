@@ -18,7 +18,37 @@ const CitySelector = (() => {
         { id: 'kolkata', name: 'Kolkata', lat: 22.5726, lng: 88.3639, zoom: 13, state: 'WB' },
     ];
 
+    // City id -> precomputed-score region name (data/scores/<region>/), where
+    // they differ. Every other city's region name is its id.
+    const REGION_ALIASES = { indore: 'indore_pilot' };
+
     let _current = CITIES[0];
+    let _scored = new Set();   // city ids with a precomputed score tile
+
+    function regionName(city) { return REGION_ALIASES[city.id] || city.id; }
+
+    function _label(city) {
+        // Cities with a precomputed tile render scores instantly; the rest are
+        // basemap + live per-click fetches only.
+        return _scored.has(city.id)
+            ? `${city.name}, ${city.state} · scored`
+            : `${city.name}, ${city.state}`;
+    }
+
+    /** Re-read precomputed coverage and relabel the options. Safe to call
+     *  repeatedly (coverage.json loads async after init). */
+    function refreshCoverage() {
+        const regions = (typeof PrecomputedScores !== 'undefined' && PrecomputedScores.getRegions)
+            ? PrecomputedScores.getRegions() : [];
+        const names = new Set(regions.map(r => r.name));
+        _scored = new Set(CITIES.filter(c => names.has(regionName(c))).map(c => c.id));
+        const select = document.getElementById('city-select');
+        if (!select) return;
+        for (const opt of select.options) {
+            const city = CITIES.find(c => c.id === opt.value);
+            if (city) opt.textContent = _label(city);
+        }
+    }
 
     function init() {
         const select = document.getElementById('city-select');
@@ -27,10 +57,7 @@ const CitySelector = (() => {
         CITIES.forEach(city => {
             const opt = document.createElement('option');
             opt.value = city.id;
-            // Indore is the data pilot; other cities are basemap-only for now.
-            opt.textContent = city.id === 'indore'
-                ? `${city.name}, ${city.state} · pilot`
-                : `${city.name}, ${city.state}`;
+            opt.textContent = _label(city);
             if (city.id === _current.id) opt.selected = true;
             select.appendChild(opt);
         });
@@ -40,13 +67,16 @@ const CitySelector = (() => {
             if (city) {
                 _current = city;
                 MapModule.flyTo(city.lat, city.lng, city.zoom);
-                App.showToast('City Changed', `Now viewing ${city.name}, ${city.state}`, 'info');
+                App.showToast('City Changed', _scored.has(city.id)
+                    ? `Now viewing ${city.name}, ${city.state} \u2022 precomputed scores available`
+                    : `Now viewing ${city.name}, ${city.state}`, 'info');
             }
         });
+        refreshCoverage();
     }
 
     function getCurrent() { return _current; }
     function getCities() { return CITIES; }
 
-    return { init, getCurrent, getCities };
+    return { init, getCurrent, getCities, refreshCoverage, regionName };
 })();

@@ -46,8 +46,15 @@ not a constraint; CI compute + raster inputs are.
 ## Build one city
 
 Via CI (preferred): **Actions → Precompute scores → Run workflow**, set
-`region` (e.g. `pune`) and `level` (6). The job resolves the extract/clip/DEM,
-builds, smoke-checks, and commits `data/scores/pune/` + updates `coverage.json`.
+`region` to `all` (the default) or a space-separated subset such as
+`delhi mumbai`, and `level` (6). The job runs `build_cities.py` (one zonal
+download per Geofabrik zone), smoke-checks every tile, and commits
+`data/scores/<region>/` + the merged `coverage.json` back to the branch it ran
+on. Pushes to `main` that touch the scoring code, and the monthly cron, rebuild
+all registered cities.
+
+The city dropdown in the app marks every city whose region is in
+`coverage.json` as "· scored", so new tiles show up there with no app change.
 
 Locally (to verify before CI):
 

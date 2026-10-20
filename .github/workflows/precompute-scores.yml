@@ -7,13 +7,14 @@ name: Precompute scores
 # the branch for Pages to serve atomically with the code.
 #
 # Region-driven: every per-region input (Geofabrik extract, clip bbox, DEM
-# tiles) is resolved from pipeline/_lib/regions.py via its small CLI, so
-# building a NEW city is just `workflow_dispatch` with that region name — no
-# YAML edits. See docs/PRECOMPUTE_PHASE1.md for the city list + the remaining
-# infra (parallel matrix + R2 hosting) needed for a full multi-city rollout.
+# tiles) is resolved from pipeline/_lib/regions.py, and the job runs
+# pipeline/scores/build_cities.py, which groups cities by Geofabrik zone so each
+# ~1 GB extract downloads once. Push/cron runs rebuild every registered city;
+# `workflow_dispatch` takes 'all' or a space-separated subset. Adding a NEW
+# city is one registry entry — no YAML edits. See docs/PRECOMPUTE_PHASE1.md.
 #
 # Elevation comes from the public Copernicus GLO-30 DEM (no auth) so flood-risk
-# uses real terrain (multiple 1°×1° tiles are mosaicked with gdalbuildvrt); if
+# uses real terrain (multiple 1°×1° tiles are mosaicked with rasterio); if
 # the download fails the tile builds OSM-only. Population (GHSL GHS-POP) still
 # needs a one-time GEE export hosted as an asset, then --pop wires it in; until
 # then population_proxy uses its building-density fallback.
@@ -33,8 +34,8 @@ on:
   workflow_dispatch:
     inputs:
       region:
-        description: "Region (indore_pilot, bhopal, pune, mumbai, bengaluru, hyderabad, chennai, delhi)"
-        default: indore_pilot
+        description: "Region(s): 'all', or space-separated names (indore_pilot bhopal pune mumbai bengaluru hyderabad chennai delhi)"
+        default: all
       level:
         description: "DIGIPIN level (6 ~244m, 7 ~61m)"
         default: "6"
@@ -49,10 +50,12 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # 8 cities across 4 Geofabrik zones: ~4 zonal downloads + 8 builds.
+    timeout-minutes: 150
     env:
       PYTHONPATH: .
-      REGION: ${{ github.event.inputs.region || 'indore_pilot' }}
+      # Push/cron runs rebuild every registered city so all tiles stay fresh.
+      REGION: ${{ github.event.inputs.region || 'all' }}
       LEVEL: ${{ github.event.inputs.level || '6' }}
     steps:
       - uses: actions/checkout@v4
@@ -62,64 +65,31 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Install osmium-tool + GDAL (DEM mosaic)
-        run: sudo apt-get update && sudo apt-get install -y osmium-tool gdal-bin
+      - name: Install osmium-tool
+        run: sudo apt-get update && sudo apt-get install -y osmium-tool
 
       - name: Install pipeline deps
         run: pip install -r pipeline/scores/requirements.txt
 
-      - name: Download + clip the region's Geofabrik extract
-        # Extract URL and clip bbox both come from the region registry, so this
-        # step is identical for every city — only $REGION changes.
+      - name: Build + smoke-check tiles (grouped by Geofabrik zone)
+        # build_cities downloads each zonal extract once, clips every city in it,
+        # fetches + mosaics its GLO-30 DEM tiles (OSM-only fallback if the DEM is
+        # unavailable), builds JSON shards + PMTiles, and smoke-checks each tile.
+        # Exits non-zero if any requested city failed, which gates the commit.
         run: |
-          EXTRACT_URL=$(python -m pipeline._lib.regions geofabrik-url "$REGION")
-          CLIP=$(python -m pipeline._lib.regions clip-bbox "$REGION")
-          echo "Extract: $EXTRACT_URL"
-          echo "Clip bbox: $CLIP"
-          curl -sSL --retry 3 -o zone.osm.pbf "$EXTRACT_URL"
-          osmium extract -b "$CLIP" zone.osm.pbf -o region.osm.pbf
+          if [ "$REGION" = "all" ]; then ARGS=""; else ARGS="$REGION"; fi
+          python -m pipeline.scores.build_cities $ARGS --level "$LEVEL" --out data/scores
 
-      - name: Download + mosaic Copernicus GLO-30 DEM tiles (public, no auth)
-        # One or more 1°×1° tiles cover a region's bbox; mosaic to a single VRT
-        # rasterio can read. Optional: on any failure we build OSM-only (flood-
-        # risk falls back to its baseline) rather than failing the whole tile.
-        run: |
-          DEM_TIFS=()
-          while read -r url; do
-            [ -z "$url" ] && continue
-            f="dem_$(basename "$url")"
-            if curl -sSL --retry 2 -o "$f" "$url" && [ -s "$f" ]; then
-              DEM_TIFS+=("$f")
-            fi
-          done < <(python -m pipeline._lib.regions dem-urls "$REGION")
-          if [ "${#DEM_TIFS[@]}" -eq 0 ]; then
-            echo "::notice::GLO-30 DEM unavailable — building OSM-only (flood-risk uses baseline)."
-          elif [ "${#DEM_TIFS[@]}" -eq 1 ]; then
-            echo "DEM_ARG=--dem ${DEM_TIFS[0]}" >> "$GITHUB_ENV"
-            echo "DEM: 1 tile (${DEM_TIFS[0]})."
-          else
-            gdalbuildvrt dem_mosaic.vrt "${DEM_TIFS[@]}"
-            echo "DEM_ARG=--dem dem_mosaic.vrt" >> "$GITHUB_ENV"
-            echo "DEM: mosaicked ${#DEM_TIFS[@]} tiles."
-          fi
-
-      - name: Build scored tile (JSON shards + PMTiles choropleth)
-        run: |
-          python -m pipeline.scores.build_tile \
-            --region "$REGION" --level "$LEVEL" \
-            --pbf region.osm.pbf $DEM_ARG --pmtiles --out data/scores
-
-      - name: Smoke check (gates the commit)
-        run: python -m pipeline.scores.smoke_check data/scores --region "$REGION"
-
-      - name: Commit refreshed tile
+      - name: Commit refreshed tiles
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/scores/
           if ! git diff --staged --quiet; then
-            git commit -m "chore(scores): refresh $REGION tile (level $LEVEL)"
-            git push
+            git commit -m "chore(scores): refresh $REGION tiles (level $LEVEL)"
+            # The build is long; rebase over anything pushed meanwhile.
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
           else
             echo "No changes to commit."
           fi
