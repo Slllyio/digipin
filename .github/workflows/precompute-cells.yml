@@ -1,0 +1,127 @@
+name: Precompute cell datasets
+
+# Builds the OSM-derived per-cell datasets (traffic, mobility) for every city
+# in pipeline/_lib/regions.py CITY_PILOTS and writes them into the cell store
+# (data/cells/, docs/CELL_STORE.md), committing back to the branch it ran on.
+#
+# Per city: Overpass fetch (arterial roads, transit stops, police/chokepoints)
+# → road_network (betweenness, LOS) → traffic_grid + osm_transit → mobility →
+# pipeline.cells.build traffic mobility. Cities run one after another to stay
+# polite to Overpass; a failed city is reported and skipped, never committed
+# half-built, and the job fails at the end if any city failed.
+#
+# Earth Engine datasets (growth, lst/ndvi/no2 monthly) are not built here: they
+# need GEE credentials (scripts/build_cell_timeseries.py). Scores have their own
+# workflow (precompute-scores.yml).
+
+on:
+  # Runs when this workflow or the builders change, on dev and main (a
+  # workflow_dispatch only becomes available once the file is on main).
+  push:
+    branches: [main, dev]
+    paths:
+      - '.github/workflows/precompute-cells.yml'
+      - 'pipeline/traffic/**'
+      - 'pipeline/safety/**'
+  workflow_dispatch:
+    inputs:
+      region:
+        description: "Region(s): 'all', or space-separated names from pipeline/_lib/regions.py CITY_PILOTS"
+        default: all
+  schedule:
+    - cron: "41 3 4 * *"     # 03:41 UTC on the 4th of each month (after scores)
+
+permissions:
+  contents: write
+
+concurrency:
+  group: precompute-cells
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      PYTHONPATH: .
+      REGION: ${{ github.event.inputs.region || 'all' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install pipeline deps
+        run: |
+          pip install -r pipeline/traffic/requirements.txt -r pipeline/safety/requirements.txt \
+                      -r pipeline/cells/requirements.txt
+
+      - name: Build traffic + mobility per city (one commit per city)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ "$REGION" = "all" ]; then
+            REGIONS=$(python -c "from pipeline._lib.regions import CITY_PILOTS; print(' '.join(CITY_PILOTS))")
+          else
+            REGIONS="$REGION"
+          fi
+          failed=""; built=""
+          for r in $REGIONS; do
+            echo "::group::$r"
+            if DIGIPIN_REGION="$r" bash -euo pipefail -c '
+                python -m pipeline.traffic.fetch_osm_roads
+                python -m pipeline.traffic.fetch_osm_transit
+                python -m pipeline.safety.fetch_osm_safety --region "$DIGIPIN_REGION"
+                python -m pipeline.traffic.road_network
+                python -m pipeline.traffic.traffic_grid
+                python -m pipeline.traffic.osm_transit
+                python -m pipeline.safety.mobility
+                python -m pipeline.cells.build --region "$DIGIPIN_REGION" traffic mobility
+              '; then
+              git add data/vectors/ data/traffic/ data/safety/ data/cells/
+              git diff --staged --quiet || git commit -qm "chore(cells): refresh traffic + mobility for $r"
+              built="$built $r"
+            else
+              echo "::error::$r failed"
+              failed="$failed $r"
+              # Each good city is committed above, so this drops only this
+              # city's half-written files.
+              git checkout -- data/ 2>/dev/null || true
+              git clean -fdq -- data/ || true
+            fi
+            echo "::endgroup::"
+            sleep 20   # Overpass etiquette between cities
+          done
+          echo "FAILED=$failed" >> "$GITHUB_ENV"
+          echo "BUILT=$built" >> "$GITHUB_ENV"
+
+      - name: Push refreshed datasets
+        # The build is long and other work lands on the branch meanwhile, so
+        # catalog.json would conflict on a rebase. Instead start from the
+        # branch's current head, take this run's source grids, and re-derive
+        # the cell-store files (cheap: it only re-bins the grids).
+        if: env.BUILT != ''
+        run: |
+          BUILD_SHA=$(git rev-parse HEAD)
+          for i in 1 2 3 4; do
+            git fetch -q origin "${GITHUB_REF_NAME}"
+            git checkout -qB publish "origin/${GITHUB_REF_NAME}"
+            git checkout "$BUILD_SHA" -- data/vectors/ data/traffic/ data/safety/
+            for r in $BUILT; do
+              python -m pipeline.cells.build --region "$r" traffic mobility
+            done
+            git add data/vectors/ data/traffic/ data/safety/ data/cells/
+            git diff --staged --quiet && { echo "No changes to commit."; exit 0; }
+            git commit -qm "chore(cells): refresh traffic + mobility for$BUILT"
+            git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep $((i * 10))
+          done
+          exit 1
+
+      - name: Fail if any city failed
+        if: env.FAILED != ''
+        run: |
+          echo "::error::cities failed:$FAILED"
+          exit 1
