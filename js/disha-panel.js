@@ -857,6 +857,26 @@ const DISHAPanel = (() => {
             content.appendChild(geo);
         }
 
+        // Keep this answer as its own layer (source scores are never changed).
+        if (typeof CellIngest !== 'undefined' && typeof CellLayers !== 'undefined') {
+            const keep = document.createElement('button');
+            keep.className = 'disha-scan-export';
+            keep.textContent = 'Save as layer';
+            keep.title = 'Add these ranked cells to the Layers panel as a layer you can restyle, extrude or share';
+            keep.addEventListener('click', async () => {
+                keep.disabled = true;
+                try {
+                    const spec = CellIngest.saveRanking(results, question);
+                    await CellLayers.show(spec.id, { field: 'score', extrude: true });
+                    keep.textContent = `Saved as “${spec.title}”`;
+                } catch (e) {
+                    keep.textContent = e && e.message ? e.message : 'Could not save';
+                    keep.disabled = false;
+                }
+            });
+            content.appendChild(keep);
+        }
+
         card.appendChild(content);
         messagesEl.appendChild(card);
         scrollToBottom();
