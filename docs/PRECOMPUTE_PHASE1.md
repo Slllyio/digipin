@@ -38,7 +38,12 @@ changes.
 | chennai | southern-zone | 726 | ~40 KB |
 | pune | western-zone | 700 | ~39 KB |
 | bhopal | central-zone | 442 | ~24 KB |
-| **8 cities** | | **~11.0k** | **~0.6 MB** |
+| jaipur | northern-zone | 624 | |
+| lucknow | northern-zone | 529 | |
+| ahmedabad | western-zone | 504 | |
+| kolkata | eastern-zone | 480 | |
+| guna | central-zone | 100 | |
+| **13 cities** | | **~14.2k** | |
 
 Level 7 (~61 m) is ~167k cells / ~9 MB total — still trivial to host. Storage is
 not a constraint; CI compute + raster inputs are.

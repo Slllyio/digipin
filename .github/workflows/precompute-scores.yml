@@ -34,7 +34,7 @@ on:
   workflow_dispatch:
     inputs:
       region:
-        description: "Region(s): 'all', or space-separated names (indore_pilot bhopal pune mumbai bengaluru hyderabad chennai delhi)"
+        description: "Region(s): 'all', or space-separated names from pipeline/_lib/regions.py CITY_PILOTS"
         default: all
       level:
         description: "DIGIPIN level (6 ~244m, 7 ~61m)"
