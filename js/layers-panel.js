@@ -22,6 +22,7 @@ const LayersPanel = (() => {
         { btnId: 'btn-scenario', name: 'Growth Scenario', icon: '\u{1F39B}️' },
         { btnId: 'btn-traffic', name: 'Traffic Congestion', icon: '\u{1F6A6}' },
         { btnId: 'btn-mobility', name: 'Law & Order Mobility', icon: '\u{1F693}' },
+        { btnId: 'btn-emergency', name: 'Emergency Accessibility', icon: '\u{1F6A8}' },
         { btnId: 'btn-heat', name: 'Urban Heat Island', icon: '\u{1F321}️' },
         { btnId: 'btn-ndvi', name: 'NDVI Vegetation', icon: '\u{1F33F}' },
         { btnId: 'btn-bivariate', name: 'Bivariate Map', icon: '\u{1F3A8}' },
