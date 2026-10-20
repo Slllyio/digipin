@@ -27,7 +27,7 @@ resolve correctly:
 
 ```sh
 # from the repo root:
-python serve.py &                 # serve the app on :5500
+python serve.py 5500 python serve.py &                 # serve the app on :5500            # serve the app on :5500
 node extras/record-video.mjs      # writes video-output/*.webm
 python extras/build-final-video.py
 python extras/generate-ppt.py
