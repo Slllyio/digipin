@@ -251,18 +251,25 @@ and an SVG chart of the cell's whole history for the selected field, with the
 current step marked. The chart follows the slider while it is open. **Copy**
 adds the series as CSV.
 
-**Built datasets** (Indore pilot, Oct 2024 to Sep 2026, Earth Engine project
-`van-suraksha-alert`):
+**Built datasets** (all 13 city pilots; monthly ones cover Oct 2024 to Sep
+2026; Earth Engine project `van-suraksha-alert`):
 
 | id | level | fields | source |
 |---|---:|---|---|
 | `lst_monthly` | 6 | `lst_day_c`, `lst_night_c` (°C) | MODIS MOD11A2 + MYD11A2 8-day LST, 1 km |
 | `ndvi_monthly` | 7 | `ndvi` | MODIS MOD13Q1 + MYD13Q1 16-day NDVI, 250 m |
 | `no2_monthly` | 6 | `no2_umol_m2` (µmol/m²) | Sentinel-5P TROPOMI OFFL L3 tropospheric NO₂ |
+| `rain_monthly` | 5 | `rain_mm` (monthly total) | CHIRPS v2.0 daily, ~5.5 km |
+| `nightlights_monthly` | 7 | `radiance` (nW/cm²/sr) | VIIRS DNB monthly VCMSLCFG, ~460 m |
+| `pm25_monthly` | 5 | `pm25_ugm3` (µg/m³) | CAMS NRT forecast model, ~40 km (modelled, not monitors) |
+| `builtup_yearly` | 7 | `built_pct` (% of cell built) | JRC GHSL GHS-BUILT-S R2023A, 1975–2020 every 5 years |
+
+Domains are pooled over every city, so a colour means the same value in
+Delhi and in Chennai.
 
 ```sh
-python3 scripts/build_cell_timeseries.py --region indore_pilot                 # last 24 complete months
-python3 scripts/build_cell_timeseries.py --start 2024-10 --months 24 ndvi      # one, fixed window
+python3 scripts/build_cell_timeseries.py --region all                          # every dataset, every city
+python3 scripts/build_cell_timeseries.py --start 2024-10 --months 24 --region delhi,pune ndvi
 ```
 
 Python: `store.series_table(level, steps, {code: {key: [v…]}}, keys)` builds

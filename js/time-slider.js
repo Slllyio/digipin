@@ -157,8 +157,10 @@ const TimeSlider = (() => {
             return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden' ? r : null;
         };
         const left = visible('#sidebar');
-        const right = visible('#detail-panel.open');
-        const g = gapFor(vw, left && left.left < vw / 2 ? left.right : 0, right && right.left > vw / 2 ? right.left : vw);
+        // Right obstacles: the detail panel and the cell-layer legend (bottom right).
+        const rights = [visible('#detail-panel.open'), visible('#cell-layer-legend')]
+            .filter(r => r && r.left > vw / 2).map(r => r.left);
+        const g = gapFor(vw, left && left.left < vw / 2 ? left.right : 0, Math.min(vw, ...rights));
         _el.style.left = `${Math.round(g.left)}px`;
         _el.style.width = `${Math.round(g.width)}px`;
     }

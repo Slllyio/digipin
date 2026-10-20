@@ -34,7 +34,7 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "pipeline"))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _lib import digipin  # noqa: E402
-from _lib.regions import bbox_for  # noqa: E402
+from _lib.regions import CITY_PILOTS, bbox_for  # noqa: E402
 from build_building_heights import aligned_bbox, cell_size, ee_init  # noqa: E402
 from pipeline.cells import store  # noqa: E402
 from pipeline.cells.schema import DatasetSpec, FieldSpec, TimeSpec  # noqa: E402
@@ -69,17 +69,22 @@ def default_start(n):
 # Each returns {field_key: ee.Image for one month}; `col_month(ee, a, b)` gets
 # the month's [a, b) date range. Empty months come back fully masked → None.
 
-def _monthly_mean(ee, ids, band, a, b, scale=1.0, offset=0.0):
+def _monthly_mean(ee, ids, band, a, b, scale=1.0, offset=0.0, reduce="mean", where=None):
+    """One image for [a, b): the mean (or sum) of `band` over the merged collections."""
     col = ee.ImageCollection(ids[0])
     for extra in ids[1:]:
         col = col.merge(ee.ImageCollection(extra))
-    col = col.filterDate(a, b).select(band)
+    col = col.filterDate(a, b)
+    if where is not None:
+        col = col.filter(where)
+    col = col.select(band)
     empty = ee.Image.constant(0).updateMask(ee.Image.constant(0)).rename(band)
-    img = ee.Image(ee.Algorithms.If(col.size().gt(0), col.mean(), empty))
+    agg = col.sum() if reduce == "sum" else col.mean()
+    img = ee.Image(ee.Algorithms.If(col.size().gt(0), agg, empty))
     return img.multiply(scale).add(offset).toFloat()
 
 
-def recipe_lst(ee, a, b):
+def recipe_lst(ee, a, b, label=None):
     ids = ["MODIS/061/MOD11A2", "MODIS/061/MYD11A2"]
     return {
         "lst_day_c": _monthly_mean(ee, ids, "LST_Day_1km", a, b, 0.02, -273.15),
@@ -87,16 +92,46 @@ def recipe_lst(ee, a, b):
     }
 
 
-def recipe_ndvi(ee, a, b):
+def recipe_ndvi(ee, a, b, label=None):
     ids = ["MODIS/061/MOD13Q1", "MODIS/061/MYD13Q1"]
     return {"ndvi": _monthly_mean(ee, ids, "NDVI", a, b, 0.0001)}
 
 
-def recipe_no2(ee, a, b):
+def recipe_no2(ee, a, b, label=None):
     ids = ["COPERNICUS/S5P/OFFL/L3_NO2"]
     # mol/m² → µmol/m²
     return {"no2_umol_m2": _monthly_mean(ee, ids, "tropospheric_NO2_column_number_density", a, b, 1e6)}
 
+
+def recipe_rain(ee, a, b, label=None):
+    # CHIRPS daily rainfall (mm/day) summed over the month → mm.
+    return {"rain_mm": _monthly_mean(ee, ["UCSB-CHG/CHIRPS/DAILY"], "precipitation", a, b, reduce="sum")}
+
+
+def recipe_lights(ee, a, b, label=None):
+    # VIIRS DNB monthly, stray-light corrected; radiance nW/cm²/sr.
+    return {"radiance": _monthly_mean(ee, ["NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG"], "avg_rad", a, b)}
+
+
+def recipe_pm25(ee, a, b, label=None):
+    # CAMS near-real-time forecasts: keep the first 24 h of each 00 UTC run so
+    # every hour of the month is counted once. kg/m³ → µg/m³.
+    first_day = ee.Filter.And(ee.Filter.eq("model_initialization_hour", 0),
+                              ee.Filter.lt("model_forecast_hour", 24))
+    return {"pm25_ugm3": _monthly_mean(ee, ["ECMWF/CAMS/NRT"], "particulate_matter_d_less_than_25_um_surface",
+                                       a, b, 1e9, where=first_day)}
+
+
+def recipe_built(ee, a, b, label=None):
+    # GHSL built-up surface (m² per 100 m pixel) for the epoch → share of land built.
+    img = (ee.ImageCollection("JRC/GHSL/P2023A/GHS_BUILT_S")
+           .filter(ee.Filter.eq("system:index", str(label))).first().select("built_surface"))
+    # Average the 100 m pixels up to the cell rather than sampling one of them.
+    img = img.divide(100).reduceResolution(ee.Reducer.mean(), maxPixels=1024)   # m²/10,000 m² × 100
+    return {"built_pct": img.toFloat()}
+
+
+GHSL_EPOCHS = [str(y) for y in range(1975, 2021, 5)]
 
 DATASETS = {
     "lst": dict(
@@ -139,20 +174,84 @@ DATASETS = {
                               higher_is="worse")],
             default_field="no2_umol_m2", height_m=600,
             time=TimeSpec("month", steps))),
+    "rain": dict(
+        recipe=recipe_rain, level=5, decimals=1,
+        spec=lambda steps: DatasetSpec(
+            id="rain_monthly", title="Rainfall (monthly total)",
+            description="CHIRPS satellite-gauge rainfall summed per month. Native pixels are "
+                        "~5.5 km, so this is drawn on ~3.9 km cells.",
+            source="CHIRPS v2.0 daily (UCSB Climate Hazards Center) via Earth Engine "
+                   "(scripts/build_cell_timeseries.py)",
+            license="CHIRPS, public domain (CC0)",
+            group="Time series", level=5,
+            fields=[FieldSpec("rain_mm", "Rainfall", unit="mm", ramp="blues")],
+            default_field="rain_mm", height_m=1500,
+            time=TimeSpec("month", steps))),
+    "lights": dict(
+        recipe=recipe_lights, level=7, decimals=2,
+        spec=lambda steps: DatasetSpec(
+            id="nightlights_monthly", title="Night lights (monthly)",
+            description="VIIRS Day/Night Band monthly radiance, stray-light corrected. Tracks "
+                        "built-up activity, electrification and festival lighting.",
+            source="NOAA EOG VIIRS DNB monthly (VCMSLCFG) via Earth Engine "
+                   "(scripts/build_cell_timeseries.py)",
+            license="NOAA EOG, free with attribution",
+            group="Time series", level=7,
+            fields=[FieldSpec("radiance", "Night-time radiance", unit="nW/cm²/sr", ramp="viridis")],
+            default_field="radiance", height_m=300,
+            time=TimeSpec("month", steps))),
+    "pm25": dict(
+        recipe=recipe_pm25, level=5, decimals=1,
+        spec=lambda steps: DatasetSpec(
+            id="pm25_monthly", title="Air quality: PM2.5 (monthly, modelled)",
+            description="Monthly mean surface PM2.5 from the CAMS global forecast model "
+                        "(~40 km grid, so whole districts share a value). A model estimate, "
+                        "not a monitor reading.",
+            source="Copernicus Atmosphere Monitoring Service near-real-time forecasts via "
+                   "Earth Engine (scripts/build_cell_timeseries.py)",
+            license="Copernicus, free and open",
+            group="Time series", level=5,
+            fields=[FieldSpec("pm25_ugm3", "Surface PM2.5", unit="µg/m³", ramp="reds",
+                              higher_is="worse")],
+            default_field="pm25_ugm3", height_m=1500,
+            time=TimeSpec("month", steps))),
+    "built": dict(
+        recipe=recipe_built, level=7, decimals=1, steps=GHSL_EPOCHS,
+        spec=lambda steps: DatasetSpec(
+            id="builtup_yearly", title="Built-up land, 1975–2020",
+            description="Share of each cell covered by buildings in each GHSL epoch "
+                        "(every 5 years), from Landsat and Sentinel-2. Play it to watch "
+                        "the city grow.",
+            source="JRC GHSL GHS-BUILT-S R2023A via Earth Engine (scripts/build_cell_timeseries.py)",
+            license="JRC GHSL, CC BY 4.0",
+            group="Time series", level=7,
+            fields=[FieldSpec("built_pct", "Built-up share", unit="%", domain=[0, 60],
+                              ramp="heat")],
+            default_field="built_pct", height_m=300,
+            time=TimeSpec("year", steps))),
 }
 
 
+def step_range(ee, label):
+    """[start, end) ee.Dates of an ISO year or month label."""
+    parts = [int(x) for x in label.split("-")]
+    if len(parts) == 1:
+        a = ee.Date.fromYMD(parts[0], 1, 1)
+        return a, a.advance(1, "year")
+    a = ee.Date.fromYMD(parts[0], parts[1], 1)
+    return a, a.advance(1, "month")
+
+
 def fetch(ee, recipe, steps, bbox, level, decimals=4):
-    """{code: {key: [v per step]}} by sampling each month on the DIGIPIN grid."""
+    """{code: {key: [v per step]}} by sampling each step on the DIGIPIN grid."""
     import numpy as np
     w, s, e, n = aligned_bbox(bbox, level)
     lat_step, lon_step = cell_size(level)
     cols, rows = round((e - w) / lon_step), round((n - s) / lat_step)
     bands, keys = [], None
     for i, step in enumerate(steps):
-        y, m = (int(x) for x in step.split("-"))
-        a = ee.Date.fromYMD(y, m, 1)
-        imgs = recipe(ee, a, a.advance(1, "month"))
+        a, b = step_range(ee, step)
+        imgs = recipe(ee, a, b, step)
         keys = list(imgs)
         # Masked (cloudy / empty) pixels → sentinel, so NPY carries them explicitly.
         bands += [imgs[k].unmask(NODATA).rename(f"{k}__{i}") for k in keys]
@@ -193,29 +292,39 @@ def fetch(ee, recipe, steps, bbox, level, decimals=4):
     return out, keys
 
 
-def robust_domains(spec, table, lo_pct=2, hi_pct=98):
-    """Fill missing number domains with the 2nd–98th percentile over all steps.
+def pooled_domains(out, spec, lo_pct=2, hi_pct=98):
+    """Set each data-derived domain to the 2nd–98th percentile over every
+    region and step already in the store, then patch catalog.json.
 
-    A min/max domain lets one bad pixel (a cloud-contaminated −1 °C LST cell)
-    wash out the colour ramp for every month; percentiles keep it legible.
+    One domain for all cities keeps a colour meaning the same °C in Delhi
+    and in Chennai, and percentiles stop one bad pixel (a cloud-contaminated
+    −1 °C LST cell) washing out the ramp. Fields with an explicit domain in
+    the spec (NDVI's 0–0.8) are left alone.
     """
-    from dataclasses import replace
     import numpy as np
-    fields = []
-    for f in spec.fields:
-        if f.domain is None:
-            vals = [v for s in table.columns[f.key] for v in s if v is not None]
-            if vals:
-                lo, hi = np.percentile(vals, [lo_pct, hi_pct])
-                f = replace(f, domain=[round(float(lo), 2), round(float(hi), 2)])
-        fields.append(f)
-    return replace(spec, fields=fields)
+    path = os.path.join(out, store.CATALOG)
+    with open(path) as fh:
+        cat = json.load(fh)
+    entry = next(d for d in cat["datasets"] if d["id"] == spec.id)
+    tables = [store.read_region(out, r) for r in entry["regions"]]
+    for f in entry["fields"]:
+        if next(x for x in spec.fields if x.key == f["key"]).domain is not None:
+            continue
+        vals = [v for t in tables for s in t.columns[f["key"]] for v in s if v is not None]
+        if vals:
+            lo, hi = np.percentile(vals, [lo_pct, hi_pct])
+            f["domain"] = [round(float(lo), 2), round(float(hi), 2)]
+    with open(path + ".tmp", "w") as fh:
+        fh.write(json.dumps(cat, indent=2) + "\n")
+    os.replace(path + ".tmp", path)
+    return {f["key"]: f.get("domain") for f in entry["fields"]}
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("datasets", nargs="*", help=f"subset of {sorted(DATASETS)} (default: all)")
-    ap.add_argument("--region", default="indore_pilot")
+    ap.add_argument("--region", default="indore_pilot",
+                    help="region key, comma-separated keys, or 'all' (every city pilot)")
     ap.add_argument("--months", type=int, default=24)
     ap.add_argument("--start", help="first month YYYY-MM (default: the last --months complete months)")
     ap.add_argument("--out", default=os.path.join(ROOT, "data", "cells"))
@@ -226,16 +335,18 @@ def main():
         ap.error(f"unknown dataset(s) {sorted(unknown)}; known: {sorted(DATASETS)}")
 
     steps = months(a.start or default_start(a.months), a.months)
-    bbox = bbox_for(a.region)
+    regions = list(CITY_PILOTS) if a.region == "all" else a.region.split(",")
     ee = ee_init()
     for name in a.datasets or list(DATASETS):
         d = DATASETS[name]
-        print(f"{name}: {steps[0]}..{steps[-1]} at L{d['level']}")
-        rows, keys = fetch(ee, d["recipe"], steps, bbox, d["level"], d["decimals"])
-        spec = d["spec"](steps)
-        table = store.series_table(d["level"], steps, rows, keys)
-        spec = robust_domains(spec, table)
-        print(json.dumps(store.write_dataset(a.out, spec, a.region, table, parquet=not a.no_parquet)))
+        ds_steps = d.get("steps", steps)
+        spec = d["spec"](ds_steps)
+        for region in regions:
+            print(f"{name} / {region}: {ds_steps[0]}..{ds_steps[-1]} at L{d['level']}")
+            rows, keys = fetch(ee, d["recipe"], ds_steps, bbox_for(region), d["level"], d["decimals"])
+            table = store.series_table(d["level"], ds_steps, rows, keys)
+            print(json.dumps(store.write_dataset(a.out, spec, region, table, parquet=not a.no_parquet)))
+        print(json.dumps({"dataset": spec.id, "domains": pooled_domains(a.out, spec)}))
     return 0
 
 
