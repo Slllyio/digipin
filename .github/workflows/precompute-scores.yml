@@ -86,12 +86,13 @@ jobs:
           for r in $(python -c "import json; print(' '.join(x['name'] for x in json.load(open('data/scores/coverage.json'))['regions']))"); do
             python -m pipeline.cells.build --region "$r" scores
           done
+          python -m pipeline.cells.coverage --write
 
       - name: Commit refreshed tiles
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/scores/ data/cells/
+          git add data/scores/ data/cells/ docs/CELL_STORE.md
           if ! git diff --staged --quiet; then
             git commit -m "chore(scores): refresh $REGION tiles (level $LEVEL)"
             # The build is long; rebase over anything pushed meanwhile.

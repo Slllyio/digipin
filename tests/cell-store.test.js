@@ -225,3 +225,34 @@ describe('CellStore sharded regions', () => {
         expect((await CS.load('sharded')).cells.sort()).toEqual([A, B].sort());
     });
 });
+
+describe('CellStore.coversCity() / datasetsFor()', () => {
+    const MULTI = { ...SPEC, id: 'multi', regions: [
+        { name: 'indore_pilot', json: 'm/indore_pilot.json', bbox: { west: 75.6, south: 22.5, east: 76.0, north: 22.9 } },
+        { name: 'x', json: 'm/x.json', bbox: { west: 77.3, south: 23.18, east: 77.52, north: 23.32 } },
+    ] };
+    beforeEach(async () => {
+        globalThis.fetch = mockFetch([['catalog.json', { version: 1, datasets: [SPEC, MULTI] }]]);
+        await CS.init();
+    });
+
+    it('matches a city by region name or by a region bbox holding its centre', () => {
+        expect(CS.coversCity(MULTI, { region: 'indore_pilot' })).toBe(true);
+        expect(CS.coversCity(MULTI, { region: 'bhopal', lat: 23.26, lng: 77.41 })).toBe(true);
+        expect(CS.coversCity(MULTI, { region: 'pune', lat: 18.52, lng: 73.86 })).toBe(false);
+        expect(CS.coversCity(SPEC, { region: 'pune', lat: 18.52, lng: 73.86 })).toBe(false);
+    });
+
+    it('lists only datasets with data for the city; null city lists everything', () => {
+        expect(CS.datasetsFor({ region: 'bhopal', lat: 23.26, lng: 77.41 }).map(d => d.id)).toEqual(['multi']);
+        expect(CS.datasetsFor({ region: 'indore_pilot' }).map(d => d.id)).toEqual(['traffic', 'multi']);
+        expect(CS.datasetsFor(null).length).toBe(2);
+    });
+
+    it('always lists datasets dropped on the map', () => {
+        CS.register({ id: 'drop', title: 'D', level: 8, fields: [{ key: 'v', label: 'V', type: 'number', agg: 'sum' }] },
+            { level: 8, cells: ['34PLLMPK'], columns: { v: [1] } });
+        expect(CS.datasetsFor({ region: 'pune', lat: 18.52, lng: 73.86 }).map(d => d.id)).toEqual(['drop']);
+        CS.unregister('drop');
+    });
+});

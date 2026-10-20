@@ -331,6 +331,24 @@ const CellStore = (() => {
         return !b || (lat >= b.south && lat <= b.north && lng >= b.west && lng <= b.east);
     }
 
+    /**
+     * Does a dataset have data for a city? `city` is { region, lat, lng }:
+     * a catalog region named `region` counts, as does any region whose bbox
+     * holds the city centre. Datasets dropped on the map always count (the
+     * user brought them), and so does every dataset when `city` is null.
+     */
+    function coversCity(spec, city) {
+        if (!spec) return false;
+        if (!city || _local.has(spec.id)) return true;
+        return (spec.regions || []).some(r => (city.region && r.name === city.region)
+            || (r.bbox && city.lat != null && _inBbox(r.bbox, city.lat, city.lng)));
+    }
+
+    /** Registry entries that have data for `city` (see coversCity). */
+    function datasetsFor(city) {
+        return datasets().filter(d => coversCity(d, city));
+    }
+
     // ── hierarchy roll-up ───────────────────────────────────────────────────
 
     // How native cells combine into a parent. Cells at one level are equal
@@ -608,7 +626,7 @@ const CellStore = (() => {
     return {
         init, isEnabled, base, datasets, get, generated, tableUrl, field, onChange, isTemporal, stepKey,
         cellCode, binRecords, dataDomain, load, loadCells, regionParts, viewParts, loadView, loadAt, rollup, rowAt,
-        register, unregister, isLocal, toGeoJSON,
+        register, unregister, isLocal, toGeoJSON, coversCity, datasetsFor,
         sqlSources, viewStatements, sql,
     };
 })();

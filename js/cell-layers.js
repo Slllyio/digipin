@@ -683,10 +683,18 @@ const CellLayers = (() => {
         return item;
     }
 
-    /** Rows for the registry, grouped by spec.group: [{ group, rows:[{id,title}] }]. */
-    function panelGroups() {
+    /** The selected city ({ region, lat, lng, name }), or null without a city picker. */
+    function _city() {
+        return typeof CitySelector !== 'undefined' && CitySelector.currentArea ? CitySelector.currentArea() : null;
+    }
+
+    /**
+     * Rows for the registry, grouped by spec.group: [{ group, rows:[{id,title}] }].
+     * Only datasets with data for `city` (default: the selected city) are listed.
+     */
+    function panelGroups(city = _city()) {
         const groups = new Map();
-        for (const d of CellStore.datasets()) {
+        for (const d of CellStore.datasetsFor(city)) {
             const g = d.group || 'Cell Data';
             if (!groups.has(g)) groups.set(g, []);
             groups.get(g).push({ id: d.id, title: d.title, level: d.level });
@@ -698,7 +706,13 @@ const CellLayers = (() => {
         if (!_panel) return;
         const { dropdown } = _panel;
         dropdown.querySelectorAll('.dt-layer-group[data-cell-store]').forEach(g => g.remove());
-        const groups = panelGroups();
+        const city = _city();
+        const groups = panelGroups(city);
+        // Keep a group whose layers all lack data here, so its note still shows.
+        for (const d of CellStore.datasets()) {
+            const g = d.group || 'Cell Data';
+            if (!groups.some(x => x.group === g)) groups.push({ group: g, rows: [] });
+        }
         if (!groups.some(g => g.group === 'Ingested data')) groups.push({ group: 'Ingested data', rows: [] });
         for (const { group, rows } of groups) {
             const groupDiv = document.createElement('div');
@@ -720,6 +734,15 @@ const CellLayers = (() => {
             });
             for (const r of rows) {
                 content.appendChild(_row('_cell_' + r.id, '▦', `${r.title} · L${r.level}`, () => toggle(r.id)));
+            }
+            const missing = group === 'Ingested data' ? [] : CellStore.datasets()
+                .filter(d => (d.group || 'Cell Data') === group && !CellStore.coversCity(d, city));
+            if (missing.length && city) {
+                const note = document.createElement('div');
+                note.className = 'dt-layer-note';
+                note.style.cssText = 'font-size:10px;color:var(--text-secondary);padding:2px 10px 4px;';
+                note.textContent = `No ${city.name} data yet: ${missing.map(d => d.title).join(', ')}`;
+                content.appendChild(note);
             }
             if (group === 'Ingested data' && typeof CellIngest !== 'undefined') {
                 const add = _row('_cell_ingest', '➕', 'Plot a CSV / GeoJSON file…', () => CellIngest.pickFile());
@@ -753,6 +776,16 @@ const CellLayers = (() => {
         if (!dropdown || (_panel && _panel.dropdown === dropdown)) return;
         _panel = { dropdown };
         CellStore.onChange(_renderPanel);
+        if (typeof CitySelector !== 'undefined' && CitySelector.onChange) CitySelector.onChange(_onCity);
+        _renderPanel();
+    }
+
+    /** City changed: drop layers with nothing to show there, then relist. */
+    function _onCity() {
+        const city = _city();
+        for (const id of [..._active.keys()]) {
+            if (!CellStore.coversCity(CellStore.get(id), city)) hide(id);
+        }
         _renderPanel();
     }
 

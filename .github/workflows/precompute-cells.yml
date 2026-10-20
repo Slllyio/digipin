@@ -112,7 +112,8 @@ jobs:
             for r in $BUILT; do
               python -m pipeline.cells.build --region "$r" traffic mobility
             done
-            git add data/vectors/ data/traffic/ data/safety/ data/cells/
+            python -m pipeline.cells.coverage --write
+            git add data/vectors/ data/traffic/ data/safety/ data/cells/ docs/CELL_STORE.md
             git diff --staged --quiet && { echo "No changes to commit."; exit 0; }
             git commit -qm "chore(cells): refresh traffic + mobility for$BUILT"
             git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0

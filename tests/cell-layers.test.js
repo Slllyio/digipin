@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // CellLayers is exposed by tests/setup.js. Map rendering needs a live
 // MapLibre map, so these lock the pure paint/legend builders that make the
@@ -81,6 +81,15 @@ describe('CellLayers.panelGroups()', () => {
         const g = CL.panelGroups().find(x => x.group === 'Ingested data');
         expect(g.rows).toContainEqual({ id: 'user_g', title: 'G', level: 8 });
         globalThis.CellStore.unregister('user_g');
+    });
+
+    it('lists only datasets that cover the given city', () => {
+        const spy = vi.spyOn(globalThis.CellStore, 'datasetsFor').mockImplementation(city =>
+            [{ id: 'a', title: 'A', level: 7, regions: [{ name: 'pune' }] }]
+                .filter(d => !city || d.regions.some(r => r.name === city.region)));
+        expect(CL.panelGroups({ region: 'pune' })[0].rows.map(r => r.id)).toEqual(['a']);
+        expect(CL.panelGroups({ region: 'guna' })).toEqual([]);
+        spy.mockRestore();
     });
 });
 

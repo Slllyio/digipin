@@ -101,3 +101,11 @@ def test_committed_catalog_lists_the_builtins():
         for r in d["regions"]:
             t = store.read_region(build.DATA / "cells", r)    # sharded or single file
             assert len(t) == r["cells"]
+
+
+def test_coverage_matrix_marks_missing_cities():
+    from pipeline.cells.coverage import matrix
+    cat = {"datasets": [{"id": "t", "level": 7, "regions": [{"name": "a", "cells": 1234}]}]}
+    out = matrix(cat, cities=("a", "b"))
+    assert "| a | 1,234 |" in out and "| b | — |" in out
+    assert "1 of 2" in out

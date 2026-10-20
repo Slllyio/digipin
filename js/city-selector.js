@@ -24,6 +24,7 @@ const CitySelector = (() => {
 
     let _current = CITIES[0];
     let _scored = new Set();   // city ids with a precomputed score tile
+    const _listeners = new Set();
 
     function regionName(city) { return REGION_ALIASES[city.id] || city.id; }
 
@@ -66,6 +67,7 @@ const CitySelector = (() => {
             const city = CITIES.find(c => c.id === select.value);
             if (city) {
                 _current = city;
+                _listeners.forEach(fn => { try { fn(city); } catch (e) { console.warn('CitySelector listener', e); } });
                 MapModule.flyTo(city.lat, city.lng, city.zoom);
                 App.showToast('City Changed', _scored.has(city.id)
                     ? `Now viewing ${city.name}, ${city.state} \u2022 precomputed scores available`
@@ -78,5 +80,13 @@ const CitySelector = (() => {
     function getCurrent() { return _current; }
     function getCities() { return CITIES; }
 
-    return { init, getCurrent, getCities, refreshCoverage, regionName };
+    /** Call fn(city) whenever the user picks another city; returns an unsubscribe. */
+    function onChange(fn) { _listeners.add(fn); return () => _listeners.delete(fn); }
+
+    /** The current city as cell-store coverage wants it: { id, name, region, lat, lng }. */
+    function currentArea() {
+        return { id: _current.id, name: _current.name, region: regionName(_current), lat: _current.lat, lng: _current.lng };
+    }
+
+    return { init, getCurrent, getCities, refreshCoverage, regionName, onChange, currentArea };
 })();

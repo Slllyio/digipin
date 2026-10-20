@@ -42,3 +42,28 @@ describe('CitySelector coverage labels', () => {
         expect(optionText('delhi')).toContain('· scored');
     });
 });
+
+describe('CitySelector city changes', () => {
+    beforeEach(() => { document.body.innerHTML = '<select id="city-select"></select>'; });
+    afterEach(() => { document.body.innerHTML = ''; });
+
+    it('describes the current city as a cell-store area and notifies listeners', () => {
+        globalThis.MapModule = globalThis.MapModule || {};
+        globalThis.MapModule.flyTo = vi.fn();
+        globalThis.App = globalThis.App || {};
+        globalThis.App.showToast = vi.fn();
+        CS.init();
+        const seen = [];
+        const off = CS.onChange(c => seen.push(c.id));
+        const select = document.getElementById('city-select');
+        select.value = 'pune';
+        select.dispatchEvent(new Event('change'));
+        expect(seen).toEqual(['pune']);
+        expect(CS.currentArea()).toMatchObject({ id: 'pune', region: 'pune', lat: 18.5204 });
+        off();
+        select.value = 'indore';
+        select.dispatchEvent(new Event('change'));
+        expect(seen).toEqual(['pune']);
+        expect(CS.currentArea().region).toBe('indore_pilot');
+    });
+});

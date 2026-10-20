@@ -324,6 +324,44 @@ fixes the drop-ingest level.
   code. The road-line overlays (`TrafficOverlay`, `MobilityOverlay`) and the
   cell-panel samplers are unchanged.
 
+## Coverage by city
+
+Which datasets exist for which of the app's 13 cities. The Layers panel only lists
+a dataset for the selected city when the catalog has a region with that name, or
+a region whose bbox holds the city centre (`CellStore.coversCity`). Layers with
+no data there are named in a short "No <city> data yet" line under their group,
+and switching city hides any active layer the new city doesn't have.
+
+| Dataset | Source | How it is built for a city |
+|---|---|---|
+| `scores` | Bulk OSM extract (Geofabrik) + Copernicus DEM | `precompute-scores.yml` (dispatch with a region list) |
+| `traffic`, `mobility` | OSM via Overpass | `precompute-cells.yml` (all cities, or a region list) |
+| `growth` | Earth Engine: Open Buildings Temporal + CA-ML prediction | `pipeline/growth/*` COGs, then `pipeline.cells.build growth` (needs GEE auth) |
+| `lst_monthly`, `ndvi_monthly`, `no2_monthly` | Earth Engine: MODIS, Sentinel-5P | `scripts/build_cell_timeseries.py --region <city>` (needs GEE auth) |
+
+Cell counts per region (`python -m pipeline.cells.coverage --write` regenerates this
+table; both precompute workflows run it after a build):
+
+<!-- coverage:start -->
+| City | `growth` L7 | `lst_monthly` L6 | `mobility` L7 | `ndvi_monthly` L7 | `no2_monthly` L6 | `scores` L6 | `traffic` L7 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| indore_pilot | 30,611 | 2,209 | 1,765 | 33,489 | 2,209 | 2,209 | 1,991 |
+| bhopal | — | — | — | — | — | 442 | — |
+| pune | — | — | — | — | — | 700 | — |
+| mumbai | — | — | — | — | — | 1,125 | — |
+| bengaluru | — | — | — | — | — | 1,368 | — |
+| hyderabad | — | — | — | — | — | 1,080 | — |
+| chennai | — | — | — | — | — | 726 | — |
+| delhi | — | — | — | — | — | 3,304 | — |
+| guna | — | — | — | — | — | — | — |
+| jaipur | — | — | — | — | — | — | — |
+| ahmedabad | — | — | — | — | — | — | — |
+| lucknow | — | — | — | — | — | — | — |
+| kolkata | — | — | — | — | — | — | — |
+
+14 of 91 city × dataset slots filled.
+<!-- coverage:end -->
+
 ## Not done yet
 
 - The older traffic, mobility and heat widgets still sample their own grids.
