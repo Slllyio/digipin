@@ -193,7 +193,7 @@ self.addEventListener('fetch', event => {
     // picked up promptly (falls back to cache offline). The score *shards*
     // themselves fall through to the cache-first + background-revalidate handler
     // below — instant and offline-capable, refreshed in the background.
-    if (url.pathname.endsWith('/data/scores/coverage.json')) {
+    if (url.pathname.endsWith('/data/scores/coverage.json') || url.pathname.endsWith('/data/heights/index.json')) {
         event.respondWith(
             fetch(event.request).then(response => {
                 _cacheIfOk(event.request, response);

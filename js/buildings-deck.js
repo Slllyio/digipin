@@ -33,10 +33,12 @@ const DeckBuildings = (() => {
     let _data = [];             // harvested deck polygon records
     let _moveBound = false;
     let _grid = null;           // { levels:[…], cells: Map<dashless DIGIPIN, metres> }, when loaded
-    let _gridLoad = null;       // in-flight/finished ensureHeights() promise
-    // Baked per-region height grids (scripts/build_building_heights.py). Add a
-    // region's file here once it has been baked.
-    const HEIGHT_GRIDS = ['data/heights/indore_pilot_heights_digipin.json'];
+    const _gridLoads = new Map();   // grid url -> in-flight/finished loadHeights() promise
+    let _index = null;          // in-flight/finished fetch of the grid index
+    // Per-region height grids baked by scripts/build_building_heights.py, which
+    // also writes this index ([{ region, bbox:[w,s,e,n], file }]). Only the grid
+    // covering the viewed city is fetched; the big metros run to several MB each.
+    const HEIGHT_INDEX = 'data/heights/index.json';
 
     /**
      * Load a baked DIGIPIN height grid ({ level, cells: { code: metres } })
@@ -58,10 +60,33 @@ const DeckBuildings = (() => {
         }
     }
 
-    /** Load every baked height grid once; resolves when done (missing files are skipped). */
-    function ensureHeights() {
-        if (!_gridLoad) _gridLoad = Promise.all(HEIGHT_GRIDS.map(loadHeights));
-        return _gridLoad;
+    /** Grid files from the index whose bbox contains {lat,lng}. Pure. */
+    function gridsFor(index, pt) {
+        if (!Array.isArray(index) || !pt || !isFinite(pt.lat) || !isFinite(pt.lng)) return [];
+        return index.filter(g => Array.isArray(g.bbox) && g.file
+            && pt.lng >= g.bbox[0] && pt.lat >= g.bbox[1] && pt.lng <= g.bbox[2] && pt.lat <= g.bbox[3])
+            .map(g => g.file);
+    }
+
+    /**
+     * Load the baked grid(s) covering `pt` (default: the focused cell, else the
+     * map centre) once each; resolves when done. Missing files are skipped.
+     */
+    async function ensureHeights(pt) {
+        if (!pt) {
+            pt = _focus;
+            if (!pt && _map && _map.getCenter) { const c = _map.getCenter(); pt = { lat: c.lat, lng: c.lng }; }
+        }
+        if (!_index) {
+            _index = fetch(HEIGHT_INDEX, { cache: 'no-cache' })
+                .then(r => (r.ok ? r.json() : []))
+                .catch(() => []);
+        }
+        const files = gridsFor(await _index, pt);
+        return Promise.all(files.map(f => {
+            if (!_gridLoads.has(f)) _gridLoads.set(f, loadHeights(f));
+            return _gridLoads.get(f);
+        }));
     }
 
     /** True when deck.gl (with the pieces we use) is loaded. */
@@ -262,7 +287,7 @@ const DeckBuildings = (() => {
         }
         _overlay = new deck.MapboxOverlay({ interleaved: false, layers: [] });
         map.addControl(_overlay);
-        if (!_moveBound) { map.on('moveend', refresh); _moveBound = true; }
+        if (!_moveBound) { map.on('moveend', () => { ensureHeights(); refresh(); }); _moveBound = true; }
         ensureHeights();   // real heights when available
         refresh();
         return true;
@@ -281,7 +306,7 @@ const DeckBuildings = (() => {
     function setFocus(center) {
         _focus = (center && isFinite(center.lat) && isFinite(center.lng))
             ? { lat: center.lat, lng: center.lng } : null;
-        if (_enabled) refresh();
+        if (_enabled) { ensureHeights(); refresh(); }
     }
 
     /** True while the deck overlay is attached. */
@@ -296,7 +321,7 @@ const DeckBuildings = (() => {
 
     return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights,
         setExaggeration, getExaggeration,
-        featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, cellHeight };
+        featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, cellHeight, gridsFor };
 })();
 
 if (typeof window !== 'undefined') window.DeckBuildings = DeckBuildings;

@@ -400,11 +400,22 @@ const OvertureBuildings = (() => {
             map.setLayoutProperty(TWIN_LAYER_ID, 'visibility', 'visible');
             _twin = true;
             if (!_twinBound) {
-                map.on('moveend', () => { if (_twin) _refreshTwin(); });
+                map.on('moveend', () => {
+                    if (!_twin) return;
+                    _refreshTwin();
+                    // Panning to another city pulls in that city's height grid.
+                    if (typeof DeckBuildings !== 'undefined' && DeckBuildings.ensureHeights) {
+                        const c = map.getCenter ? map.getCenter() : null;
+                        DeckBuildings.ensureHeights(c ? { lat: c.lat, lng: c.lng } : null)
+                            .then(() => { if (_twin) _refreshTwin(); });
+                    }
+                });
                 _twinBound = true;
             }
             if (typeof DeckBuildings !== 'undefined' && DeckBuildings.ensureHeights) {
-                DeckBuildings.ensureHeights().then(() => { if (_twin) _refreshTwin(); });
+                const c = map.getCenter ? map.getCenter() : null;
+                DeckBuildings.ensureHeights(c ? { lat: c.lat, lng: c.lng } : null)
+                    .then(() => { if (_twin) _refreshTwin(); });
             }
             // Tiles may still be loading: harvest once the map settles.
             if (map.once) map.once('idle', () => { if (_twin) _refreshTwin(); });

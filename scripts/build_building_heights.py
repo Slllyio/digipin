@@ -186,6 +186,25 @@ def grid_from_legacy(path, level):
     return cells, (min(lngs), min(lats), max(lngs), max(lats))
 
 
+def write_index(out_dir=OUT_DIR):
+    """Rewrite <out_dir>/index.json: [{region, bbox, file}] for every baked grid.
+
+    The web app reads it to fetch only the grid covering the viewed city.
+    """
+    suffix = "_heights_digipin.json"
+    entries = []
+    for name in sorted(os.listdir(out_dir)):
+        if not name.endswith(suffix):
+            continue
+        with open(os.path.join(out_dir, name)) as fh:
+            doc = json.load(fh)
+        entries.append({"region": name[: -len(suffix)], "bbox": doc["bbox"],
+                        "file": f"data/heights/{name}", "cells": len(doc["cells"])})
+    with open(os.path.join(out_dir, "index.json"), "w") as fh:
+        json.dump(entries, fh, indent=1)
+    return entries
+
+
 def main():
     """Build the grid in the chosen mode and write the JSON lookup."""
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -193,8 +212,12 @@ def main():
     ap.add_argument("--level", type=int, default=8, help="DIGIPIN level of the grid (8 ≈ 60 m)")
     ap.add_argument("--from-legacy", metavar="JSON", help="re-key an old Overture-id → metres file")
     ap.add_argument("--out", help="output path (default data/heights/<region>_heights_digipin.json)")
+    ap.add_argument("--index-only", action="store_true", help="just rewrite data/heights/index.json")
     args = ap.parse_args()
 
+    if args.index_only:
+        print(f"Indexed {len(write_index())} height grids")
+        return
     if args.from_legacy:
         cells, bbox = grid_from_legacy(args.from_legacy, args.level)
         source = "Google Open Buildings 2.5D (2023), re-keyed from Overture 2024 ids"
@@ -209,6 +232,8 @@ def main():
     with open(out, "w") as fh:
         json.dump(doc, fh, separators=(",", ":"))
     print(f"Wrote {len(cells)} level-{args.level} cells -> {os.path.relpath(out)}")
+    if os.path.dirname(os.path.abspath(out)) == os.path.abspath(OUT_DIR):
+        write_index()
 
 
 if __name__ == "__main__":

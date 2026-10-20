@@ -1,0 +1,13 @@
+[
+ {
+  "region": "indore_pilot",
+  "bbox": [
+   75.59979,
+   22.49951,
+   76.00024,
+   22.90051
+  ],
+  "file": "data/heights/indore_pilot_heights_digipin.json",
+  "cells": 109434
+ }
+]

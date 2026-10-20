@@ -123,6 +123,29 @@ describe('DeckBuildings height grid', () => {
     });
 });
 
+describe('DeckBuildings.gridsFor', () => {
+    const index = [
+        { region: 'a', bbox: [75.6, 22.5, 76.0, 22.9], file: 'a.json' },
+        { region: 'b', bbox: [77.3, 23.18, 77.52, 23.32], file: 'b.json' },
+    ];
+    it('picks only the grid whose bbox holds the point', () => {
+        expect(DB.gridsFor(index, { lat: 22.72, lng: 75.86 })).toEqual(['a.json']);
+        expect(DB.gridsFor(index, { lat: 23.25, lng: 77.4 })).toEqual(['b.json']);
+        expect(DB.gridsFor(index, { lat: 19.0, lng: 72.8 })).toEqual([]);
+        expect(DB.gridsFor(null, { lat: 22.72, lng: 75.86 })).toEqual([]);
+        expect(DB.gridsFor(index, null)).toEqual([]);
+    });
+    it('ships an index whose every entry points at a real grid file', async () => {
+        const { readFileSync, existsSync } = await import('fs');
+        const idx = JSON.parse(readFileSync('data/heights/index.json', 'utf-8'));
+        expect(idx.length).toBeGreaterThan(0);
+        for (const g of idx) {
+            expect(existsSync(g.file)).toBe(true);
+            expect(g.bbox).toHaveLength(4);
+        }
+    });
+});
+
 describe('DeckBuildings.ringPaths', () => {
     const center = { lat: 22.7196, lng: 75.8577 };
     it('builds one closed ring per radius at the right distance', () => {
