@@ -230,7 +230,7 @@ def test_write_temporal_dataset_json_catalog_and_parquet(tmp_path):
                                       "34PLLJ": {"lst": [20, 25, 27]}}, ["lst"])
     with pytest.raises(ValueError):          # table without times for a temporal spec
         store.write_dataset(tmp_path, _tspec(), "x", store.CellTable(6, t.codes, t.columns), parquet=False)
-    store.write_dataset(tmp_path, _tspec(), "indore_pilot", t, parquet=False)
+    store.write_dataset(tmp_path, _tspec(), "indore_pilot", t, parquet=False, compress=False)
     doc = json.loads((tmp_path / "lst" / "indore_pilot.json").read_text())
     assert doc["times"] == steps
     assert doc["columns"]["lst"] == [[20, 25, 27], [30.1235, None, 41]]
@@ -245,3 +245,28 @@ def test_write_temporal_dataset_json_catalog_and_parquet(tmp_path):
     tbl = pq.read_table(tmp_path / "lst" / "indore_pilot.parquet")
     assert tbl.column("lst").to_pylist()[1] == [30.123456, None, 41.0]
     assert json.loads(tbl.schema.metadata[b"digipin_cells"])["time"]["steps"] == steps
+
+
+def test_temporal_store_is_gzipped_and_quantised(tmp_path):
+    import gzip
+    steps = ["2025-01", "2025-02", "2025-03"]
+    t = store.series_table(6, steps, {"34PLLM": {"lst": [30.1, None, 41.5]},
+                                      "34PLLJ": {"lst": [20.0, 25.2, 27.0]}}, ["lst"])
+    store.write_dataset(tmp_path, _tspec(), "r", t, parquet=False)
+    (d,) = json.loads((tmp_path / "catalog.json").read_text())["datasets"]
+    assert d["regions"][0]["json"] == "lst/r.json.gz"
+    raw = json.loads(gzip.decompress((tmp_path / "lst" / "r.json.gz").read_bytes()))
+    assert raw["scale"] == {"lst": 0.1}
+    assert raw["columns"]["lst"] == [[200, 252, 270], [301, None, 415]]
+    back = store.read_json(tmp_path / "lst" / "r.json.gz")
+    assert back.columns["lst"] == [[20.0, 25.2, 27.0], [30.1, None, 41.5]]
+    # Re-writing uncompressed replaces the .gz rather than leaving both.
+    store.write_dataset(tmp_path, _tspec(), "r", t, parquet=False, compress=False)
+    assert not (tmp_path / "lst" / "r.json.gz").exists() and (tmp_path / "lst" / "r.json").exists()
+
+
+def test_scale_detection():
+    assert store._scale_for([[0.412, None, 0.5]]) == 0.001
+    assert store._scale_for([1, 2, 3]) is None
+    assert store._scale_for([0.123456]) is None          # too many decimals → left as floats
+    assert store._scale_for(["a"]) is None

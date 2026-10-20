@@ -277,12 +277,39 @@ const CellStore = (() => {
         return [{ key: '', url: tableUrl(region) }];
     }
 
+    /** Multiply a quantised column (ints, or per-cell int arrays) back by its scale. */
+    function _dequantise(col, scale) {
+        const r = Math.max(0, Math.round(-Math.log10(scale)));
+        const f = (v) => (v == null ? null : Number((v * scale).toFixed(r)));
+        return col.map(v => (Array.isArray(v) ? v.map(f) : f(v)));
+    }
+
+    /**
+     * A region file's bytes → its JSON doc. `.json.gz` files (temporal
+     * datasets) are gzipped on disk and served as-is by static hosts, so the
+     * gzip magic is checked and inflated here; a host that already sent
+     * Content-Encoding: gzip hands over plain JSON. `scale` columns hold
+     * quantised integers (pipeline/cells/store.py write_json).
+     */
+    async function decodeDoc(buf) {
+        let bytes = new Uint8Array(buf);
+        if (bytes[0] === 0x1f && bytes[1] === 0x8b) {
+            const stream = new Response(bytes).body.pipeThrough(new DecompressionStream('gzip'));
+            bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+        }
+        const doc = JSON.parse(new TextDecoder().decode(bytes));
+        for (const [k, sc] of Object.entries(doc.scale || {})) {
+            if (doc.columns && doc.columns[k]) doc.columns[k] = _dequantise(doc.columns[k], sc);
+        }
+        return doc;
+    }
+
     function _fetchPart(url) {
         if (!_parts.has(url)) {
             const p = (async () => {
                 try {
                     const resp = await fetch(url, { signal: AbortSignal.timeout(15000) });
-                    return resp.ok ? await resp.json() : null;
+                    return resp.ok ? decodeDoc(await resp.arrayBuffer()) : null;
                 } catch { return null; }
             })();
             _parts.set(url, p);
@@ -625,7 +652,7 @@ const CellStore = (() => {
 
     return {
         init, isEnabled, base, datasets, get, generated, tableUrl, field, onChange, isTemporal, stepKey,
-        cellCode, binRecords, dataDomain, load, loadCells, regionParts, viewParts, loadView, loadAt, rollup, rowAt,
+        cellCode, binRecords, dataDomain, decodeDoc, load, loadCells, regionParts, viewParts, loadView, loadAt, rollup, rowAt,
         register, unregister, isLocal, toGeoJSON, coversCity, datasetsFor,
         sqlSources, viewStatements, sql,
     };

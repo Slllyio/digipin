@@ -15,6 +15,7 @@ pyarrow; only ``write_parquet`` needs pyarrow (imported lazily).
 """
 from __future__ import annotations
 
+import gzip
 import json
 import math
 import os
@@ -257,9 +258,44 @@ def _round(v):
     return v
 
 
+def _scale_for(values: list) -> Optional[float]:
+    """Smallest 10**-d (d <= 4) that turns every number into an integer, or
+    None when the column isn't numeric or needs more than 4 decimals."""
+    nums = [v for v in _flat(values) if v is not None]
+    if not nums or not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in nums):
+        return None
+    for d in range(5):
+        m = 10 ** d
+        if all(abs(v * m - round(v * m)) < 1e-6 for v in nums):
+            return None if d == 0 else round(1 / m, d)
+    return None
+
+
+def _quantise(v, scale):
+    if v is None:
+        return None
+    if isinstance(v, (list, tuple)):
+        return [_quantise(x, scale) for x in v]
+    return int(round(v / scale))
+
+
+def _dequantise(v, scale):
+    if v is None:
+        return None
+    if isinstance(v, list):
+        return [_dequantise(x, scale) for x in v]
+    return round(v * scale, 6)
+
+
 def write_json(path: Path, spec: DatasetSpec, region: str, table: CellTable) -> None:
-    """Columnar JSON: {version, dataset, region, level, fields, cells, columns}."""
+    """Columnar JSON: {version, dataset, region, level, fields, cells, columns}.
+
+    A ``.json.gz`` path writes it gzipped with number columns quantised to
+    integers: ``columns[k]`` holds ints and ``scale[k]`` the multiplier back
+    (0.001 → three decimals, exact for values already rounded to that).
+    """
     keys = spec.field_keys()
+    gz = str(path).endswith(".gz")
     doc = {
         "version": SCHEMA_VERSION,
         "dataset": spec.id,
@@ -270,6 +306,20 @@ def write_json(path: Path, spec: DatasetSpec, region: str, table: CellTable) -> 
         "cells": table.codes,
         "columns": {k: [_round(v) for v in table.columns[k]] for k in keys},
     }
+    if gz:
+        scales = {k: _scale_for(doc["columns"][k]) for k in keys}
+        scales = {k: v for k, v in scales.items() if v}
+        for k, sc in scales.items():
+            doc["columns"][k] = _quantise(doc["columns"][k], sc)
+        if scales:
+            doc["scale"] = scales
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        # mtime=0 → byte-identical output for identical data (clean git diffs).
+        with open(tmp, "wb") as fh:
+            fh.write(gzip.compress(json.dumps(doc, separators=(",", ":")).encode(), 9, mtime=0))
+        os.replace(tmp, path)
+        return
     _atomic_write(path, json.dumps(doc, separators=(",", ":")))
 
 
@@ -330,7 +380,7 @@ def write_parquet(path: Path, spec: DatasetSpec, table: CellTable) -> None:
     t = pa.table(arrays).replace_schema_metadata(meta)
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    pq.write_table(t, tmp, compression="zstd")
+    pq.write_table(t, tmp, compression="zstd", compression_level=19)
     os.replace(tmp, path)
 
 
@@ -384,7 +434,7 @@ def shard_table(table: CellTable, prefix_len: int) -> dict:
 
 def update_catalog(root: Path, spec: DatasetSpec, region: str, table: CellTable,
                    has_parquet: bool, explicit_domains: set,
-                   shards: Optional[dict] = None) -> dict:
+                   shards: Optional[dict] = None, ext: str = ".json") -> dict:
     """Upsert this dataset/region into catalog.json; returns the dataset entry."""
     path = root / CATALOG
     try:
@@ -406,7 +456,7 @@ def update_catalog(root: Path, spec: DatasetSpec, region: str, table: CellTable,
         "name": region,
         "cells": len(table),
         "bbox": extent,
-        "json": f"{spec.id}/{region}/{{prefix}}.json" if shards else f"{spec.id}/{region}.json",
+        "json": (f"{spec.id}/{region}/{{prefix}}{ext}" if shards else f"{spec.id}/{region}{ext}"),
         "parquet": f"{spec.id}/{region}.parquet" if has_parquet else None,
     }
     if shards:
@@ -425,13 +475,17 @@ def update_catalog(root: Path, spec: DatasetSpec, region: str, table: CellTable,
 
 
 def write_dataset(root, spec: DatasetSpec, region: str, table: CellTable,
-                  parquet: bool = True, shard: object = "auto") -> dict:
+                  parquet: bool = True, shard: object = "auto",
+                  compress: Optional[bool] = None) -> dict:
     """Validate, then write JSON (+ GeoParquet) and register in the catalog.
 
     ``parquet=True`` requires pyarrow; pass False for a JSON-only store.
     ``shard``: "auto" (split big regions, see ``shard_prefix_len``), None (one
     file) or an int prefix length. Sharded JSON goes to
     ``<id>/<region>/<prefix>.json``; the GeoParquet copy is always one file.
+    ``compress`` writes ``.json.gz`` with quantised integer columns (see
+    ``write_json``); the default compresses temporal datasets, which are
+    most of the store's bytes.
     Returns a small summary dict.
     """
     validate(spec)
@@ -444,32 +498,40 @@ def write_dataset(root, spec: DatasetSpec, region: str, table: CellTable,
     explicit = {f.key for f in spec.fields if f.domain is not None}
     spec = resolved_spec(spec, table)
     plen = shard_prefix_len(spec.level, len(table)) if shard == "auto" else shard
-    single = root / spec.id / f"{region}.json"
+    if compress is None:
+        compress = table.times is not None
+    ext = ".json.gz" if compress else ".json"
+    single = root / spec.id / f"{region}{ext}"
     shard_dir = root / spec.id / region
-    # Clear the other layout's files so a re-run can't leave stale data behind.
-    for old in (shard_dir.glob("*.json") if shard_dir.is_dir() else []):
+    # Clear the other layout's / encoding's files so a re-run can't leave stale data behind.
+    for old in ([*shard_dir.glob("*.json"), *shard_dir.glob("*.json.gz")] if shard_dir.is_dir() else []):
         old.unlink()
+    for e in (".json", ".json.gz"):
+        stale = root / spec.id / f"{region}{e}"
+        if stale.exists() and (plen or e != ext):
+            stale.unlink()
     shards = None
     if plen:
-        if single.exists():
-            single.unlink()
         parts = shard_table(table, plen)
         for key, part in parts.items():
-            write_json(shard_dir / f"{key}.json", spec, region, part)
+            write_json(shard_dir / f"{key}{ext}", spec, region, part)
         shards = {"prefixLen": plen, "keys": sorted(parts)}
     else:
         write_json(single, spec, region, table)
     if parquet:
         write_parquet(root / spec.id / f"{region}.parquet", spec, table)
-    update_catalog(root, spec, region, table, parquet, explicit, shards=shards)
+    update_catalog(root, spec, region, table, parquet, explicit, shards=shards, ext=ext)
     return {"dataset": spec.id, "region": region, "level": spec.level,
             "cells": len(table), "fields": len(spec.fields), "parquet": parquet,
             "shards": len(shards["keys"]) if shards else 0}
 
 
 def read_json(path) -> CellTable:
-    """Read a columnar JSON file back into a CellTable."""
-    doc = json.loads(Path(path).read_text())
+    """Read a columnar JSON (or quantised ``.json.gz``) file back into a CellTable."""
+    raw = Path(path).read_bytes()
+    doc = json.loads(gzip.decompress(raw) if raw[:2] == b"\x1f\x8b" else raw)
+    for k, sc in (doc.get("scale") or {}).items():
+        doc["columns"][k] = _dequantise(doc["columns"][k], sc)
     return CellTable(level=doc["level"], codes=doc["cells"], columns=doc["columns"],
                      times=doc.get("times"))
 

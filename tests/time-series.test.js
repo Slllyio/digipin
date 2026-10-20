@@ -164,3 +164,29 @@ describe('TimeSlider.want()', () => {
         expect(TS.current()).toBeNull();   // nothing active yet; applied on the next sync
     });
 });
+
+describe('CellStore.decodeDoc() — quantised .json.gz region files', () => {
+    it('inflates gzip and scales integer series back', async () => {
+        const { gzipSync } = await import('zlib');
+        const doc = { level: 6, times: STEPS, cells: ['34PLLM'], scale: { lst_day_c: 0.1 },
+            columns: { lst_day_c: [[301, null, 415]], lst_night_c: [[15, 16, 22]] } };
+        const gz = gzipSync(Buffer.from(JSON.stringify(doc)));
+        const out = await CS.decodeDoc(gz.buffer.slice(gz.byteOffset, gz.byteOffset + gz.length));
+        expect(out.columns.lst_day_c).toEqual([[30.1, null, 41.5]]);
+        expect(out.columns.lst_night_c).toEqual([[15, 16, 22]]);   // no scale → untouched
+    });
+
+    it('passes plain JSON through (host already decoded it)', async () => {
+        const buf = new TextEncoder().encode(JSON.stringify({ cells: ['A'], scale: { v: 0.001 }, columns: { v: [412] } }));
+        expect((await CS.decodeDoc(buf.buffer)).columns.v).toEqual([0.412]);
+    });
+});
+
+describe('CellProfile on series datasets', () => {
+    it('latestStep finds the last non-null step', () => {
+        const CP = globalThis.CellProfile;
+        expect(CP.latestStep([1, 2, null])).toBe(1);
+        expect(CP.latestStep([null, null])).toBe(-1);
+        expect(CP.latestStep(5)).toBe(-1);
+    });
+});

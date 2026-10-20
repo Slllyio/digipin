@@ -546,7 +546,7 @@
             "east": 72.68017578125,
             "north": 23.121337890625
           },
-          "json": "builtup_yearly/ahmedabad.json",
+          "json": "builtup_yearly/ahmedabad.json.gz",
           "parquet": "builtup_yearly/ahmedabad.parquet"
         },
         {
@@ -558,7 +558,7 @@
             "east": 77.780029296875,
             "north": 13.141357421875
           },
-          "json": "builtup_yearly/bengaluru/{prefix}.json",
+          "json": "builtup_yearly/bengaluru/{prefix}.json.gz",
           "parquet": "builtup_yearly/bengaluru.parquet",
           "shards": {
             "prefixLen": 4,
@@ -584,7 +584,7 @@
             "east": 77.520751953125,
             "north": 23.3212890625
           },
-          "json": "builtup_yearly/bhopal.json",
+          "json": "builtup_yearly/bhopal.json.gz",
           "parquet": "builtup_yearly/bhopal.parquet"
         },
         {
@@ -596,7 +596,7 @@
             "east": 80.320068359375,
             "north": 13.180908203125
           },
-          "json": "builtup_yearly/chennai/{prefix}.json",
+          "json": "builtup_yearly/chennai/{prefix}.json.gz",
           "parquet": "builtup_yearly/chennai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -619,7 +619,7 @@
             "east": 77.3515625,
             "north": 28.88037109375
           },
-          "json": "builtup_yearly/delhi/{prefix}.json",
+          "json": "builtup_yearly/delhi/{prefix}.json.gz",
           "parquet": "builtup_yearly/delhi.parquet",
           "shards": {
             "prefixLen": 4,
@@ -656,7 +656,7 @@
             "east": 77.3515625,
             "north": 24.681396484375
           },
-          "json": "builtup_yearly/guna.json",
+          "json": "builtup_yearly/guna.json.gz",
           "parquet": "builtup_yearly/guna.parquet"
         },
         {
@@ -668,7 +668,7 @@
             "east": 78.601806640625,
             "north": 17.55126953125
           },
-          "json": "builtup_yearly/hyderabad/{prefix}.json",
+          "json": "builtup_yearly/hyderabad/{prefix}.json.gz",
           "parquet": "builtup_yearly/hyderabad.parquet",
           "shards": {
             "prefixLen": 4,
@@ -694,7 +694,7 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "builtup_yearly/indore_pilot/{prefix}.json",
+          "json": "builtup_yearly/indore_pilot/{prefix}.json.gz",
           "parquet": "builtup_yearly/indore_pilot.parquet",
           "shards": {
             "prefixLen": 4,
@@ -723,7 +723,7 @@
             "east": 75.921142578125,
             "north": 27.001708984375
           },
-          "json": "builtup_yearly/jaipur/{prefix}.json",
+          "json": "builtup_yearly/jaipur/{prefix}.json.gz",
           "parquet": "builtup_yearly/jaipur.parquet",
           "shards": {
             "prefixLen": 4,
@@ -749,7 +749,7 @@
             "east": 88.4521484375,
             "north": 22.651123046875
           },
-          "json": "builtup_yearly/kolkata.json",
+          "json": "builtup_yearly/kolkata.json.gz",
           "parquet": "builtup_yearly/kolkata.parquet"
         },
         {
@@ -761,7 +761,7 @@
             "east": 81.0517578125,
             "north": 26.951171875
           },
-          "json": "builtup_yearly/lucknow/{prefix}.json",
+          "json": "builtup_yearly/lucknow/{prefix}.json.gz",
           "parquet": "builtup_yearly/lucknow.parquet",
           "shards": {
             "prefixLen": 4,
@@ -782,7 +782,7 @@
             "east": 72.9921875,
             "north": 19.271728515625
           },
-          "json": "builtup_yearly/mumbai/{prefix}.json",
+          "json": "builtup_yearly/mumbai/{prefix}.json.gz",
           "parquet": "builtup_yearly/mumbai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -811,7 +811,7 @@
             "east": 73.991943359375,
             "north": 18.64111328125
           },
-          "json": "builtup_yearly/pune/{prefix}.json",
+          "json": "builtup_yearly/pune/{prefix}.json.gz",
           "parquet": "builtup_yearly/pune.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1365,7 +1365,7 @@
             "east": 72.6845703125,
             "north": 23.1279296875
           },
-          "json": "lst_monthly/ahmedabad.json",
+          "json": "lst_monthly/ahmedabad.json.gz",
           "parquet": "lst_monthly/ahmedabad.parquet"
         },
         {
@@ -1377,7 +1377,7 @@
             "east": 77.7822265625,
             "north": 13.1435546875
           },
-          "json": "lst_monthly/bengaluru.json",
+          "json": "lst_monthly/bengaluru.json.gz",
           "parquet": "lst_monthly/bengaluru.parquet"
         },
         {
@@ -1389,7 +1389,7 @@
             "east": 77.52734375,
             "north": 23.3212890625
           },
-          "json": "lst_monthly/bhopal.json",
+          "json": "lst_monthly/bhopal.json.gz",
           "parquet": "lst_monthly/bhopal.parquet"
         },
         {
@@ -1401,7 +1401,7 @@
             "east": 80.3134765625,
             "north": 13.1875
           },
-          "json": "lst_monthly/chennai.json",
+          "json": "lst_monthly/chennai.json.gz",
           "parquet": "lst_monthly/chennai.parquet"
         },
         {
@@ -1413,7 +1413,7 @@
             "east": 77.3515625,
             "north": 28.884765625
           },
-          "json": "lst_monthly/delhi.json",
+          "json": "lst_monthly/delhi.json.gz",
           "parquet": "lst_monthly/delhi.parquet"
         },
         {
@@ -1425,7 +1425,7 @@
             "east": 77.3515625,
             "north": 24.68359375
           },
-          "json": "lst_monthly/guna.json",
+          "json": "lst_monthly/guna.json.gz",
           "parquet": "lst_monthly/guna.parquet"
         },
         {
@@ -1437,7 +1437,7 @@
             "east": 78.6083984375,
             "north": 17.5556640625
           },
-          "json": "lst_monthly/hyderabad.json",
+          "json": "lst_monthly/hyderabad.json.gz",
           "parquet": "lst_monthly/hyderabad.parquet"
         },
         {
@@ -1449,7 +1449,7 @@
             "east": 76.0068359375,
             "north": 22.908203125
           },
-          "json": "lst_monthly/indore_pilot.json",
+          "json": "lst_monthly/indore_pilot.json.gz",
           "parquet": "lst_monthly/indore_pilot.parquet"
         },
         {
@@ -1461,7 +1461,7 @@
             "east": 75.927734375,
             "north": 27.00390625
           },
-          "json": "lst_monthly/jaipur.json",
+          "json": "lst_monthly/jaipur.json.gz",
           "parquet": "lst_monthly/jaipur.parquet"
         },
         {
@@ -1473,7 +1473,7 @@
             "east": 88.4521484375,
             "north": 22.6533203125
           },
-          "json": "lst_monthly/kolkata.json",
+          "json": "lst_monthly/kolkata.json.gz",
           "parquet": "lst_monthly/kolkata.parquet"
         },
         {
@@ -1485,7 +1485,7 @@
             "east": 81.0517578125,
             "north": 26.951171875
           },
-          "json": "lst_monthly/lucknow.json",
+          "json": "lst_monthly/lucknow.json.gz",
           "parquet": "lst_monthly/lucknow.parquet"
         },
         {
@@ -1497,7 +1497,7 @@
             "east": 72.9921875,
             "north": 19.2783203125
           },
-          "json": "lst_monthly/mumbai.json",
+          "json": "lst_monthly/mumbai.json.gz",
           "parquet": "lst_monthly/mumbai.parquet"
         },
         {
@@ -1509,7 +1509,7 @@
             "east": 73.994140625,
             "north": 18.6455078125
           },
-          "json": "lst_monthly/pune.json",
+          "json": "lst_monthly/pune.json.gz",
           "parquet": "lst_monthly/pune.parquet"
         }
       ]
@@ -1668,7 +1668,7 @@
             "east": 72.68017578125,
             "north": 23.121337890625
           },
-          "json": "ndvi_monthly/ahmedabad.json",
+          "json": "ndvi_monthly/ahmedabad.json.gz",
           "parquet": "ndvi_monthly/ahmedabad.parquet"
         },
         {
@@ -1680,7 +1680,7 @@
             "east": 77.780029296875,
             "north": 13.141357421875
           },
-          "json": "ndvi_monthly/bengaluru/{prefix}.json",
+          "json": "ndvi_monthly/bengaluru/{prefix}.json.gz",
           "parquet": "ndvi_monthly/bengaluru.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1706,7 +1706,7 @@
             "east": 77.520751953125,
             "north": 23.3212890625
           },
-          "json": "ndvi_monthly/bhopal.json",
+          "json": "ndvi_monthly/bhopal.json.gz",
           "parquet": "ndvi_monthly/bhopal.parquet"
         },
         {
@@ -1718,7 +1718,7 @@
             "east": 80.320068359375,
             "north": 13.180908203125
           },
-          "json": "ndvi_monthly/chennai/{prefix}.json",
+          "json": "ndvi_monthly/chennai/{prefix}.json.gz",
           "parquet": "ndvi_monthly/chennai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1741,7 +1741,7 @@
             "east": 77.3515625,
             "north": 28.88037109375
           },
-          "json": "ndvi_monthly/delhi/{prefix}.json",
+          "json": "ndvi_monthly/delhi/{prefix}.json.gz",
           "parquet": "ndvi_monthly/delhi.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1778,7 +1778,7 @@
             "east": 77.3515625,
             "north": 24.681396484375
           },
-          "json": "ndvi_monthly/guna.json",
+          "json": "ndvi_monthly/guna.json.gz",
           "parquet": "ndvi_monthly/guna.parquet"
         },
         {
@@ -1790,7 +1790,7 @@
             "east": 78.601806640625,
             "north": 17.55126953125
           },
-          "json": "ndvi_monthly/hyderabad/{prefix}.json",
+          "json": "ndvi_monthly/hyderabad/{prefix}.json.gz",
           "parquet": "ndvi_monthly/hyderabad.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1816,7 +1816,7 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "ndvi_monthly/indore_pilot/{prefix}.json",
+          "json": "ndvi_monthly/indore_pilot/{prefix}.json.gz",
           "parquet": "ndvi_monthly/indore_pilot.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1845,7 +1845,7 @@
             "east": 75.921142578125,
             "north": 27.001708984375
           },
-          "json": "ndvi_monthly/jaipur/{prefix}.json",
+          "json": "ndvi_monthly/jaipur/{prefix}.json.gz",
           "parquet": "ndvi_monthly/jaipur.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1871,7 +1871,7 @@
             "east": 88.4521484375,
             "north": 22.651123046875
           },
-          "json": "ndvi_monthly/kolkata.json",
+          "json": "ndvi_monthly/kolkata.json.gz",
           "parquet": "ndvi_monthly/kolkata.parquet"
         },
         {
@@ -1883,7 +1883,7 @@
             "east": 81.0517578125,
             "north": 26.951171875
           },
-          "json": "ndvi_monthly/lucknow/{prefix}.json",
+          "json": "ndvi_monthly/lucknow/{prefix}.json.gz",
           "parquet": "ndvi_monthly/lucknow.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1904,7 +1904,7 @@
             "east": 72.9921875,
             "north": 19.271728515625
           },
-          "json": "ndvi_monthly/mumbai/{prefix}.json",
+          "json": "ndvi_monthly/mumbai/{prefix}.json.gz",
           "parquet": "ndvi_monthly/mumbai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1931,7 +1931,7 @@
             "east": 73.991943359375,
             "north": 18.64111328125
           },
-          "json": "ndvi_monthly/pune/{prefix}.json",
+          "json": "ndvi_monthly/pune/{prefix}.json.gz",
           "parquet": "ndvi_monthly/pune.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2263,7 +2263,7 @@
             "east": 72.68017578125,
             "north": 23.121337890625
           },
-          "json": "nightlights_monthly/ahmedabad.json",
+          "json": "nightlights_monthly/ahmedabad.json.gz",
           "parquet": "nightlights_monthly/ahmedabad.parquet"
         },
         {
@@ -2275,7 +2275,7 @@
             "east": 77.780029296875,
             "north": 13.141357421875
           },
-          "json": "nightlights_monthly/bengaluru/{prefix}.json",
+          "json": "nightlights_monthly/bengaluru/{prefix}.json.gz",
           "parquet": "nightlights_monthly/bengaluru.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2301,7 +2301,7 @@
             "east": 77.520751953125,
             "north": 23.3212890625
           },
-          "json": "nightlights_monthly/bhopal.json",
+          "json": "nightlights_monthly/bhopal.json.gz",
           "parquet": "nightlights_monthly/bhopal.parquet"
         },
         {
@@ -2313,7 +2313,7 @@
             "east": 80.320068359375,
             "north": 13.180908203125
           },
-          "json": "nightlights_monthly/chennai/{prefix}.json",
+          "json": "nightlights_monthly/chennai/{prefix}.json.gz",
           "parquet": "nightlights_monthly/chennai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2336,7 +2336,7 @@
             "east": 77.3515625,
             "north": 28.88037109375
           },
-          "json": "nightlights_monthly/delhi/{prefix}.json",
+          "json": "nightlights_monthly/delhi/{prefix}.json.gz",
           "parquet": "nightlights_monthly/delhi.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2373,7 +2373,7 @@
             "east": 77.3515625,
             "north": 24.681396484375
           },
-          "json": "nightlights_monthly/guna.json",
+          "json": "nightlights_monthly/guna.json.gz",
           "parquet": "nightlights_monthly/guna.parquet"
         },
         {
@@ -2385,7 +2385,7 @@
             "east": 78.601806640625,
             "north": 17.55126953125
           },
-          "json": "nightlights_monthly/hyderabad/{prefix}.json",
+          "json": "nightlights_monthly/hyderabad/{prefix}.json.gz",
           "parquet": "nightlights_monthly/hyderabad.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2411,7 +2411,7 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "nightlights_monthly/indore_pilot/{prefix}.json",
+          "json": "nightlights_monthly/indore_pilot/{prefix}.json.gz",
           "parquet": "nightlights_monthly/indore_pilot.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2440,7 +2440,7 @@
             "east": 75.921142578125,
             "north": 27.001708984375
           },
-          "json": "nightlights_monthly/jaipur/{prefix}.json",
+          "json": "nightlights_monthly/jaipur/{prefix}.json.gz",
           "parquet": "nightlights_monthly/jaipur.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2466,7 +2466,7 @@
             "east": 88.4521484375,
             "north": 22.651123046875
           },
-          "json": "nightlights_monthly/kolkata.json",
+          "json": "nightlights_monthly/kolkata.json.gz",
           "parquet": "nightlights_monthly/kolkata.parquet"
         },
         {
@@ -2478,7 +2478,7 @@
             "east": 81.0517578125,
             "north": 26.951171875
           },
-          "json": "nightlights_monthly/lucknow/{prefix}.json",
+          "json": "nightlights_monthly/lucknow/{prefix}.json.gz",
           "parquet": "nightlights_monthly/lucknow.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2499,7 +2499,7 @@
             "east": 72.9921875,
             "north": 19.271728515625
           },
-          "json": "nightlights_monthly/mumbai/{prefix}.json",
+          "json": "nightlights_monthly/mumbai/{prefix}.json.gz",
           "parquet": "nightlights_monthly/mumbai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2528,7 +2528,7 @@
             "east": 73.991943359375,
             "north": 18.64111328125
           },
-          "json": "nightlights_monthly/pune/{prefix}.json",
+          "json": "nightlights_monthly/pune/{prefix}.json.gz",
           "parquet": "nightlights_monthly/pune.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2613,7 +2613,7 @@
             "east": 72.6845703125,
             "north": 23.1279296875
           },
-          "json": "no2_monthly/ahmedabad.json",
+          "json": "no2_monthly/ahmedabad.json.gz",
           "parquet": "no2_monthly/ahmedabad.parquet"
         },
         {
@@ -2625,7 +2625,7 @@
             "east": 77.7822265625,
             "north": 13.1435546875
           },
-          "json": "no2_monthly/bengaluru.json",
+          "json": "no2_monthly/bengaluru.json.gz",
           "parquet": "no2_monthly/bengaluru.parquet"
         },
         {
@@ -2637,7 +2637,7 @@
             "east": 77.52734375,
             "north": 23.3212890625
           },
-          "json": "no2_monthly/bhopal.json",
+          "json": "no2_monthly/bhopal.json.gz",
           "parquet": "no2_monthly/bhopal.parquet"
         },
         {
@@ -2649,7 +2649,7 @@
             "east": 80.322265625,
             "north": 13.1875
           },
-          "json": "no2_monthly/chennai.json",
+          "json": "no2_monthly/chennai.json.gz",
           "parquet": "no2_monthly/chennai.parquet"
         },
         {
@@ -2661,7 +2661,7 @@
             "east": 77.3515625,
             "north": 28.884765625
           },
-          "json": "no2_monthly/delhi.json",
+          "json": "no2_monthly/delhi.json.gz",
           "parquet": "no2_monthly/delhi.parquet"
         },
         {
@@ -2673,7 +2673,7 @@
             "east": 77.3515625,
             "north": 24.68359375
           },
-          "json": "no2_monthly/guna.json",
+          "json": "no2_monthly/guna.json.gz",
           "parquet": "no2_monthly/guna.parquet"
         },
         {
@@ -2685,7 +2685,7 @@
             "east": 78.6083984375,
             "north": 17.5556640625
           },
-          "json": "no2_monthly/hyderabad.json",
+          "json": "no2_monthly/hyderabad.json.gz",
           "parquet": "no2_monthly/hyderabad.parquet"
         },
         {
@@ -2697,7 +2697,7 @@
             "east": 76.0068359375,
             "north": 22.908203125
           },
-          "json": "no2_monthly/indore_pilot.json",
+          "json": "no2_monthly/indore_pilot.json.gz",
           "parquet": "no2_monthly/indore_pilot.parquet"
         },
         {
@@ -2709,7 +2709,7 @@
             "east": 75.927734375,
             "north": 27.00390625
           },
-          "json": "no2_monthly/jaipur.json",
+          "json": "no2_monthly/jaipur.json.gz",
           "parquet": "no2_monthly/jaipur.parquet"
         },
         {
@@ -2721,7 +2721,7 @@
             "east": 88.4521484375,
             "north": 22.6533203125
           },
-          "json": "no2_monthly/kolkata.json",
+          "json": "no2_monthly/kolkata.json.gz",
           "parquet": "no2_monthly/kolkata.parquet"
         },
         {
@@ -2733,7 +2733,7 @@
             "east": 81.0517578125,
             "north": 26.951171875
           },
-          "json": "no2_monthly/lucknow.json",
+          "json": "no2_monthly/lucknow.json.gz",
           "parquet": "no2_monthly/lucknow.parquet"
         },
         {
@@ -2745,7 +2745,7 @@
             "east": 72.9921875,
             "north": 19.2783203125
           },
-          "json": "no2_monthly/mumbai.json",
+          "json": "no2_monthly/mumbai.json.gz",
           "parquet": "no2_monthly/mumbai.parquet"
         },
         {
@@ -2757,7 +2757,7 @@
             "east": 73.994140625,
             "north": 18.6455078125
           },
-          "json": "no2_monthly/pune.json",
+          "json": "no2_monthly/pune.json.gz",
           "parquet": "no2_monthly/pune.parquet"
         }
       ]
@@ -2831,7 +2831,7 @@
             "east": 72.7109375,
             "north": 23.13671875
           },
-          "json": "pm25_monthly/ahmedabad.json",
+          "json": "pm25_monthly/ahmedabad.json.gz",
           "parquet": "pm25_monthly/ahmedabad.parquet"
         },
         {
@@ -2843,7 +2843,7 @@
             "east": 77.80859375,
             "north": 13.15234375
           },
-          "json": "pm25_monthly/bengaluru.json",
+          "json": "pm25_monthly/bengaluru.json.gz",
           "parquet": "pm25_monthly/bengaluru.parquet"
         },
         {
@@ -2855,7 +2855,7 @@
             "east": 77.52734375,
             "north": 23.34765625
           },
-          "json": "pm25_monthly/bhopal.json",
+          "json": "pm25_monthly/bhopal.json.gz",
           "parquet": "pm25_monthly/bhopal.parquet"
         },
         {
@@ -2867,7 +2867,7 @@
             "east": 80.33984375,
             "north": 13.1875
           },
-          "json": "pm25_monthly/chennai.json",
+          "json": "pm25_monthly/chennai.json.gz",
           "parquet": "pm25_monthly/chennai.parquet"
         },
         {
@@ -2879,7 +2879,7 @@
             "east": 77.3515625,
             "north": 28.90234375
           },
-          "json": "pm25_monthly/delhi.json",
+          "json": "pm25_monthly/delhi.json.gz",
           "parquet": "pm25_monthly/delhi.parquet"
         },
         {
@@ -2891,7 +2891,7 @@
             "east": 77.3515625,
             "north": 24.68359375
           },
-          "json": "pm25_monthly/guna.json",
+          "json": "pm25_monthly/guna.json.gz",
           "parquet": "pm25_monthly/guna.parquet"
         },
         {
@@ -2903,7 +2903,7 @@
             "east": 78.6171875,
             "north": 17.58203125
           },
-          "json": "pm25_monthly/hyderabad.json",
+          "json": "pm25_monthly/hyderabad.json.gz",
           "parquet": "pm25_monthly/hyderabad.parquet"
         },
         {
@@ -2915,7 +2915,7 @@
             "east": 76.015625,
             "north": 22.92578125
           },
-          "json": "pm25_monthly/indore_pilot.json",
+          "json": "pm25_monthly/indore_pilot.json.gz",
           "parquet": "pm25_monthly/indore_pilot.parquet"
         },
         {
@@ -2927,7 +2927,7 @@
             "east": 75.9453125,
             "north": 27.00390625
           },
-          "json": "pm25_monthly/jaipur.json",
+          "json": "pm25_monthly/jaipur.json.gz",
           "parquet": "pm25_monthly/jaipur.parquet"
         },
         {
@@ -2939,7 +2939,7 @@
             "east": 88.4609375,
             "north": 22.6796875
           },
-          "json": "pm25_monthly/kolkata.json",
+          "json": "pm25_monthly/kolkata.json.gz",
           "parquet": "pm25_monthly/kolkata.parquet"
         },
         {
@@ -2951,7 +2951,7 @@
             "east": 81.078125,
             "north": 26.96875
           },
-          "json": "pm25_monthly/lucknow.json",
+          "json": "pm25_monthly/lucknow.json.gz",
           "parquet": "pm25_monthly/lucknow.parquet"
         },
         {
@@ -2963,7 +2963,7 @@
             "east": 72.9921875,
             "north": 19.3046875
           },
-          "json": "pm25_monthly/mumbai.json",
+          "json": "pm25_monthly/mumbai.json.gz",
           "parquet": "pm25_monthly/mumbai.parquet"
         },
         {
@@ -2975,7 +2975,7 @@
             "east": 74.01171875,
             "north": 18.671875
           },
-          "json": "pm25_monthly/pune.json",
+          "json": "pm25_monthly/pune.json.gz",
           "parquet": "pm25_monthly/pune.parquet"
         }
       ]
@@ -3320,7 +3320,7 @@
             "east": 72.7109375,
             "north": 23.13671875
           },
-          "json": "rain_monthly/ahmedabad.json",
+          "json": "rain_monthly/ahmedabad.json.gz",
           "parquet": "rain_monthly/ahmedabad.parquet"
         },
         {
@@ -3332,7 +3332,7 @@
             "east": 77.80859375,
             "north": 13.15234375
           },
-          "json": "rain_monthly/bengaluru.json",
+          "json": "rain_monthly/bengaluru.json.gz",
           "parquet": "rain_monthly/bengaluru.parquet"
         },
         {
@@ -3344,7 +3344,7 @@
             "east": 77.52734375,
             "north": 23.34765625
           },
-          "json": "rain_monthly/bhopal.json",
+          "json": "rain_monthly/bhopal.json.gz",
           "parquet": "rain_monthly/bhopal.parquet"
         },
         {
@@ -3356,7 +3356,7 @@
             "east": 80.33984375,
             "north": 13.1875
           },
-          "json": "rain_monthly/chennai.json",
+          "json": "rain_monthly/chennai.json.gz",
           "parquet": "rain_monthly/chennai.parquet"
         },
         {
@@ -3368,7 +3368,7 @@
             "east": 77.3515625,
             "north": 28.90234375
           },
-          "json": "rain_monthly/delhi.json",
+          "json": "rain_monthly/delhi.json.gz",
           "parquet": "rain_monthly/delhi.parquet"
         },
         {
@@ -3380,7 +3380,7 @@
             "east": 77.3515625,
             "north": 24.68359375
           },
-          "json": "rain_monthly/guna.json",
+          "json": "rain_monthly/guna.json.gz",
           "parquet": "rain_monthly/guna.parquet"
         },
         {
@@ -3392,7 +3392,7 @@
             "east": 78.6171875,
             "north": 17.58203125
           },
-          "json": "rain_monthly/hyderabad.json",
+          "json": "rain_monthly/hyderabad.json.gz",
           "parquet": "rain_monthly/hyderabad.parquet"
         },
         {
@@ -3404,7 +3404,7 @@
             "east": 76.015625,
             "north": 22.92578125
           },
-          "json": "rain_monthly/indore_pilot.json",
+          "json": "rain_monthly/indore_pilot.json.gz",
           "parquet": "rain_monthly/indore_pilot.parquet"
         },
         {
@@ -3416,7 +3416,7 @@
             "east": 75.9453125,
             "north": 27.00390625
           },
-          "json": "rain_monthly/jaipur.json",
+          "json": "rain_monthly/jaipur.json.gz",
           "parquet": "rain_monthly/jaipur.parquet"
         },
         {
@@ -3428,7 +3428,7 @@
             "east": 88.4609375,
             "north": 22.6796875
           },
-          "json": "rain_monthly/kolkata.json",
+          "json": "rain_monthly/kolkata.json.gz",
           "parquet": "rain_monthly/kolkata.parquet"
         },
         {
@@ -3440,7 +3440,7 @@
             "east": 81.078125,
             "north": 26.96875
           },
-          "json": "rain_monthly/lucknow.json",
+          "json": "rain_monthly/lucknow.json.gz",
           "parquet": "rain_monthly/lucknow.parquet"
         },
         {
@@ -3452,7 +3452,7 @@
             "east": 72.9921875,
             "north": 19.3046875
           },
-          "json": "rain_monthly/mumbai.json",
+          "json": "rain_monthly/mumbai.json.gz",
           "parquet": "rain_monthly/mumbai.parquet"
         },
         {
@@ -3464,7 +3464,7 @@
             "east": 74.01171875,
             "north": 18.671875
           },
-          "json": "rain_monthly/pune.json",
+          "json": "rain_monthly/pune.json.gz",
           "parquet": "rain_monthly/pune.parquet"
         }
       ]

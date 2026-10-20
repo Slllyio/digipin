@@ -80,6 +80,13 @@ const CellProfile = (() => {
         return _sorted.get(k);
     }
 
+    /** Index of the last non-null value in a series, or -1. */
+    function latestStep(series) {
+        if (!Array.isArray(series)) return -1;
+        for (let t = series.length - 1; t >= 0; t--) if (series[t] != null) return t;
+        return -1;
+    }
+
     /**
      * Profile of the cell at (lat,lng): one section per dataset that has a row
      * there, in registry order. With { rank: true } numeric fields also carry
@@ -94,11 +101,21 @@ const CellProfile = (() => {
             const spec = specs[i], row = rows[i];
             if (!row) continue;
             const fields = [];
+            const temporal = CellStore.isTemporal && CellStore.isTemporal(spec);
             for (const f of spec.fields) {
-                const v = row[f.key];
+                let v = row[f.key];
+                let when = '';
+                if (temporal) {
+                    // A series: show its latest value, labelled with its step.
+                    const t = latestStep(v);
+                    if (t < 0) continue;
+                    v = v[t];
+                    when = ` (${spec.time.steps[t]})`;
+                }
                 if (v == null) continue;
-                const item = { key: f.key, label: f.label, type: f.type, value: v, text: formatValue(f, v), higherIs: f.higherIs || null };
-                if (opts.rank && f.type === 'number') {
+                const item = { key: f.key, label: f.label, type: f.type, value: v, text: formatValue(f, v) + when, higherIs: f.higherIs || null };
+                // Ranking needs the whole dataset; series datasets span every city, so skip them.
+                if (opts.rank && f.type === 'number' && !temporal) {
                     item.rank = rankOf(await _sortedColumn(spec.id, f.key), Number(v));
                     item.rankText = rankLabel(f, item.rank);
                 }
@@ -176,7 +193,7 @@ const CellProfile = (() => {
 
     if (typeof CellStore !== 'undefined' && CellStore.onChange) CellStore.onChange(reset);
 
-    return { profile, attachTo, formatValue, rankOf, rankLabel, reset };
+    return { profile, attachTo, formatValue, rankOf, rankLabel, latestStep, reset };
 })();
 
 if (typeof window !== 'undefined') {
