@@ -23,6 +23,7 @@ const TimeSlider = (() => {
     let _timer = null;
     let _el = null;
     let _ids = [];            // temporal datasets currently driven
+    let _wanted = null;       // step from a share link, applied once layers arrive
     let _layoutTimer = null;  // keeps the bar in the gap between side panels
 
     const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -81,6 +82,12 @@ const TimeSlider = (() => {
         _apply();
     }
 
+    /** Open on `label` — now if a timeline exists, else when the first temporal layer shows. */
+    function want(label) {
+        if (_steps.length) set(String(label));
+        else _wanted = String(label);
+    }
+
     function step(d) { if (_steps.length) set((_i + d + _steps.length) % _steps.length); }
 
     function play() {
@@ -111,7 +118,10 @@ const TimeSlider = (() => {
             if (_layoutTimer) { clearInterval(_layoutTimer); _layoutTimer = null; }
             return;
         }
-        if (prevLabel) {
+        if (_wanted) {
+            _i = indexFor(_steps, _wanted);
+            _wanted = null;
+        } else if (prevLabel) {
             _i = indexFor(_steps, prevLabel);
         } else {
             // First temporal layer: open on its default step.
@@ -218,7 +228,7 @@ const TimeSlider = (() => {
         else init();
     }
 
-    return { mergeSteps, indexFor, formatStep, gapFor, sync, set, step, play, pause, toggle, isPlaying, current, steps };
+    return { mergeSteps, indexFor, formatStep, gapFor, sync, set, want, step, play, pause, toggle, isPlaying, current, steps };
 })();
 
 if (typeof window !== 'undefined') {

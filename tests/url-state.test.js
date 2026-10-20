@@ -196,3 +196,21 @@ describe('URLState layers param', () => {
         }
     });
 });
+
+describe('URLState time-slider step (t=)', () => {
+    it('round-trips ISO steps and drops malformed ones', () => {
+        expect(U.parse('?t=2025-04').t).toBe('2025-04');
+        expect(U.parse('?t=2025-04-09').t).toBe('2025-04-09');
+        expect(U.parse('?t=2025').t).toBe('2025');
+        expect(U.parse('?t=April').t).toBeUndefined();
+        expect(U.parse('?t=2025-4').t).toBeUndefined();
+        expect(U.stringify({ t: '2025-04', layers: ['cell:lst_monthly'] })).toBe('layers=cell%3Alst_monthly&t=2025-04');
+        expect(U.stringify({ t: 'bad' })).toBe('');
+    });
+
+    it('apply() hands the step to TimeSlider before the layers load', () => {
+        const want = vi.spyOn(TimeSlider, 'want');
+        U.apply({ t: '2025-04' });
+        expect(want).toHaveBeenCalledWith('2025-04');
+    });
+});

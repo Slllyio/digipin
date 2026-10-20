@@ -15,6 +15,7 @@
  *                     `dt:<key>` (Digital-Twin layer), `cell:<id>` (cell store)
  *   &bc=<ds:field>    field colouring the 3D buildings (BuildingData)
  *   &bh=<ds:field>    field driving the 3D buildings' height
+ *   &t=<step>         time-slider step for temporal cell layers ("2025-04")
  *
  * parse()/stringify() are pure (unit-tested). capture()/apply()/init() touch the
  * running app and degrade quietly when a module or the map isn't ready.
@@ -49,6 +50,11 @@ const URLState = (() => {
         return raw && /^[a-z][a-z0-9_]{0,63}:[A-Za-z0-9_]{1,64}$/.test(raw) ? raw : null;
     }
 
+    /** An ISO time-slider step ("2025", "2025-04", "2025-04-09"), or null. */
+    function _step(raw) {
+        return raw && /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/.test(raw) ? raw : null;
+    }
+
     /** Query string (defaults to the live location) → plain state object. */
     function parse(search) {
         const raw = search != null ? search
@@ -63,6 +69,7 @@ const URLState = (() => {
         if (layers.length) state.layers = layers;
         if (_bkey(p.get('bc'))) state.bcolor = p.get('bc');
         if (_bkey(p.get('bh'))) state.bheight = p.get('bh');
+        if (_step(p.get('t'))) state.t = p.get('t');
         const an = p.get('an');
         if (an) {
             try {
@@ -95,6 +102,7 @@ const URLState = (() => {
         if (layers.length) p.set('layers', layers.join(','));
         if (_bkey(state.bcolor)) p.set('bc', state.bcolor);
         if (_bkey(state.bheight)) p.set('bh', state.bheight);
+        if (_step(state.t)) p.set('t', state.t);
         if (Array.isArray(state.annotations) && state.annotations.length) {
             p.set('an', JSON.stringify(state.annotations.map(n =>
                 ({ lat: n.lat, lng: n.lng, text: n.text, color: n.color }))));
@@ -146,6 +154,9 @@ const URLState = (() => {
         }
         const layers = activeLayers();
         if (layers.length) state.layers = layers;
+        if (typeof TimeSlider !== 'undefined' && TimeSlider.current && TimeSlider.current()) {
+            state.t = TimeSlider.current();
+        }
         if (typeof BuildingData !== 'undefined' && BuildingData.get) {
             const b = BuildingData.get();
             if (b.color) state.bcolor = b.color;
@@ -252,6 +263,8 @@ const URLState = (() => {
         if ((state.bcolor || state.bheight) && typeof BuildingData !== 'undefined' && BuildingData.set) {
             BuildingData.set({ color: state.bcolor || null, height: state.bheight || null });
         }
+        // The step first: temporal layers load async and open on it when they arrive.
+        if (state.t && typeof TimeSlider !== 'undefined' && TimeSlider.want) TimeSlider.want(state.t);
         if (Array.isArray(state.layers) && state.layers.length) applyLayers(state.layers);
         // A Text2Map question is prefilled (running it needs a selected cell/context).
         if (state.q && typeof document !== 'undefined') {

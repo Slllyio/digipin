@@ -157,3 +157,10 @@ describe('TimeSlider timeline', () => {
         expect(document.getElementById('cell-time-slider')).toBeNull();
     });
 });
+
+describe('TimeSlider.want()', () => {
+    it('holds a share-link step until a timeline exists', () => {
+        TS.want('2025-02');
+        expect(TS.current()).toBeNull();   // nothing active yet; applied on the next sync
+    });
+});
