@@ -16,6 +16,7 @@ const LOCAL_ASSETS = [
     './css/landing.css',
     './css/styles.css',
     './css/analyses.css',
+    './css/polish.css',
     './assets/icon.svg',
     './assets/icon-maskable.svg',
     './manifest.json',
@@ -129,6 +130,8 @@ const LOCAL_ASSETS = [
     './js/present-mode.js',
     './js/annotations.js',
     './js/app.js',
+    './js/ui-polish.js',
+    './js/city-overview.js',
 ];
 
 // Third-party libraries the map actually depends on. The app uses MapLibre GL
