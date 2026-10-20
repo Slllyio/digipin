@@ -31,6 +31,12 @@ DEFAULT_RADIUS_M = 400.0
 DEFAULT_SHARD_PREFIX_LEN = 2
 
 
+def shard_prefix_for(level: int) -> int:
+    """Shard key length for a level: 2 chars at L6, one more per finer level,
+    so each shard stays ~1-2k cells (~100 KB) however fine the grid."""
+    return max(DEFAULT_SHARD_PREFIX_LEN, level - 4)
+
+
 def _bbox_dict(t: tuple) -> dict:
     w, s, e, n = t
     return {"west": w, "south": s, "east": e, "north": n}
@@ -62,7 +68,7 @@ def build(
     pop: Optional[str] = None,
     dem: Optional[str] = None,
     radius_m: float = DEFAULT_RADIUS_M,
-    shard_prefix_len: int = DEFAULT_SHARD_PREFIX_LEN,
+    shard_prefix_len: Optional[int] = None,
     max_cells: Optional[int] = None,
     pmtiles: bool = False,
 ) -> dict:
@@ -70,6 +76,8 @@ def build(
     if region not in regions._REGIONS:
         raise ValueError(f"unknown region {region!r}; known: {sorted(regions._REGIONS)}")
     bbox = _bbox_dict(regions._REGIONS[region])
+    if shard_prefix_len is None:
+        shard_prefix_len = shard_prefix_for(level)
     counter = _make_counter(pbf, pop, dem, radius_m)
     fields = score_grid.score_field_names()
 
@@ -151,7 +159,8 @@ def main(argv=None):
     p.add_argument("--pop")
     p.add_argument("--dem")
     p.add_argument("--radius-m", type=float, default=DEFAULT_RADIUS_M)
-    p.add_argument("--shard-prefix-len", type=int, default=DEFAULT_SHARD_PREFIX_LEN)
+    p.add_argument("--shard-prefix-len", type=int, default=None,
+                   help="default: 2 at level 6, +1 per finer level")
     p.add_argument("--max-cells", type=int, default=None)
     p.add_argument("--pmtiles", action="store_true")
     a = p.parse_args(argv)

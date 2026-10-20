@@ -144,3 +144,10 @@ def test_smoke_check_rejects_corrupt_pmtiles(tmp_path, fixture_osm):
 def test_unknown_region_raises(tmp_path):
     with pytest.raises(ValueError, match="unknown region"):
         build_tile.build("atlantis", level=5, out_dir=str(tmp_path))
+
+
+def test_shard_prefix_scales_with_level():
+    assert build_tile.shard_prefix_for(5) == 2
+    assert build_tile.shard_prefix_for(6) == 2
+    assert build_tile.shard_prefix_for(7) == 3
+    assert build_tile.shard_prefix_for(8) == 4
