@@ -11,6 +11,8 @@
  *   &z=<zoom>         map zoom
  *   &score=<id>       active score-choropleth field
  *   &q=<question>     a Text2Map question to prefill in DISHA
+ *   &layers=<list>    overlays that were on: `heat` (toolbar overlay btn-heat),
+ *                     `dt:<key>` (Digital-Twin layer), `cell:<id>` (cell store)
  *
  * parse()/stringify() are pure (unit-tested). capture()/apply()/init() touch the
  * running app and degrade quietly when a module or the map isn't ready.
@@ -20,6 +22,25 @@ const URLState = (() => {
         const f = Math.pow(10, d);
         return Math.round(n * f) / f;
     };
+
+    // Toolbar overlays that are interactive tools or already carried by another
+    // param — never restored from a link (they'd start a drag/draw mode, or the
+    // score grid is `score=`).
+    const NOT_SHARED = new Set(['btn-choropleth', 'btn-area', 'btn-measure', 'btn-annotate']);
+    const MAX_LAYERS = 20;
+
+    /** `layers` param → validated, de-duplicated token list (bad tokens dropped). */
+    function parseLayers(raw) {
+        if (!raw) return [];
+        const out = [];
+        for (const tok of String(raw).split(',')) {
+            const t = tok.trim();
+            if (!/^(?:(?:dt|cell):)?[A-Za-z0-9_-]{1,64}$/.test(t) || out.includes(t)) continue;
+            out.push(t);
+            if (out.length >= MAX_LAYERS) break;
+        }
+        return out;
+    }
 
     /** Query string (defaults to the live location) → plain state object. */
     function parse(search) {
@@ -31,6 +52,8 @@ const URLState = (() => {
         if (p.get('q')) state.q = p.get('q');
         if (p.get('score')) state.score = p.get('score');
         if (p.get('present') === '1') state.present = true;
+        const layers = parseLayers(p.get('layers'));
+        if (layers.length) state.layers = layers;
         const an = p.get('an');
         if (an) {
             try {
@@ -59,6 +82,8 @@ const URLState = (() => {
         if (state.q) p.set('q', state.q);
         if (state.score) p.set('score', state.score);
         if (state.present) p.set('present', '1');
+        const layers = parseLayers(Array.isArray(state.layers) ? state.layers.join(',') : '');
+        if (layers.length) p.set('layers', layers.join(','));
         if (Array.isArray(state.annotations) && state.annotations.length) {
             p.set('an', JSON.stringify(state.annotations.map(n =>
                 ({ lat: n.lat, lng: n.lng, text: n.text, color: n.color }))));
@@ -108,7 +133,71 @@ const URLState = (() => {
             const a = Annotations.getAll();
             if (a.length) state.annotations = a;
         }
+        const layers = activeLayers();
+        if (layers.length) state.layers = layers;
         return state;
+    }
+
+    /** Tokens for every overlay currently on (see the `layers` param above). */
+    function activeLayers() {
+        const out = [];
+        if (typeof LayersPanel !== 'undefined' && LayersPanel.ANALYTICS) {
+            LayersPanel.ANALYTICS.forEach(a => {
+                if (!NOT_SHARED.has(a.btnId) && LayersPanel.isActive(a.btnId)) {
+                    out.push(a.btnId.replace(/^btn-/, ''));
+                }
+            });
+        }
+        if (typeof DigitalTwinLayers !== 'undefined' && DigitalTwinLayers.getLayerDefs) {
+            DigitalTwinLayers.getLayerDefs().forEach(d => { if (d.visible) out.push('dt:' + d.key); });
+        }
+        if (typeof CellLayers !== 'undefined' && CellLayers.active) {
+            CellLayers.active().forEach(id => {
+                // Dropped files live only in this browser — a link can't carry them.
+                const local = typeof CellStore !== 'undefined' && CellStore.isLocal && CellStore.isLocal(id);
+                if (!local) out.push('cell:' + id);
+            });
+        }
+        return parseLayers(out.join(','));
+    }
+
+    /** Tick the Layers-panel row for `key` so it matches a restored layer. */
+    function _syncRow(key, on) {
+        if (typeof document === 'undefined') return;
+        const item = document.querySelector('.dt-layer-item[data-layer-key="' + key + '"]');
+        const cb = item && item.querySelector('input[type=checkbox]');
+        if (cb) cb.checked = !!on;
+        if (item && item.getAttribute('role') === 'switch') item.setAttribute('aria-checked', String(!!on));
+    }
+
+    /** Turn on each overlay named in a `layers` list (best-effort, skips unknowns). */
+    function applyLayers(tokens) {
+        const map = (typeof MapModule !== 'undefined' && MapModule.getMap) ? MapModule.getMap() : null;
+        (tokens || []).forEach(tok => {
+            if (tok.startsWith('dt:')) {
+                const key = tok.slice(3);
+                if (typeof DigitalTwinLayers === 'undefined' || !DigitalTwinLayers.toggle) return;
+                if (!(DigitalTwinLayers.LAYER_DEFS || {})[key] || DigitalTwinLayers.isVisible(key)) return;
+                Promise.resolve(DigitalTwinLayers.toggle(key, map))
+                    .then(on => _syncRow(key, on)).catch(() => { /* layer not deployed */ });
+            } else if (tok.startsWith('cell:')) {
+                const id = tok.slice(5);
+                if (typeof CellLayers === 'undefined' || typeof CellStore === 'undefined') return;
+                const show = () => { if (!CellLayers.isVisible(id)) CellLayers.show(id); };
+                // The catalog loads asynchronously; wait for it if it isn't in yet.
+                if (CellStore.get(id)) show();
+                else if (CellStore.onChange) {
+                    const off = CellStore.onChange(() => { if (CellStore.get(id)) { off(); show(); } });
+                }
+            } else if (typeof LayersPanel !== 'undefined') {
+                const btnId = 'btn-' + tok;
+                const known = LayersPanel.ANALYTICS.some(a => a.btnId === btnId);
+                if (!known || NOT_SHARED.has(btnId) || LayersPanel.isActive(btnId)) return;
+                LayersPanel.drive(btnId);
+                // Some overlay handlers settle async (same 100 ms the panel row waits).
+                setTimeout(() => _syncRow('_btn_' + btnId, LayersPanel.isActive(btnId)), 150);
+            }
+        });
     }
 
     /** Push the current view into the address bar without a history entry. */
@@ -143,6 +232,7 @@ const URLState = (() => {
                 MapModule.flyTo(state.ll.lat, state.ll.lng, state.z || 15);
             }
         }
+        if (Array.isArray(state.layers) && state.layers.length) applyLayers(state.layers);
         // A Text2Map question is prefilled (running it needs a selected cell/context).
         if (state.q && typeof document !== 'undefined') {
             const input = document.getElementById('disha-input');
@@ -180,7 +270,7 @@ const URLState = (() => {
         else run();
     }
 
-    return { parse, stringify, buildUrl, capture, apply, sync, init };
+    return { parse, parseLayers, stringify, buildUrl, capture, activeLayers, apply, applyLayers, sync, init };
 })();
 
 if (typeof window !== 'undefined') {
