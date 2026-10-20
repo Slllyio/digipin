@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-20T22:18:46Z",
+  "generated": "2026-10-20T22:24:56Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -4842,6 +4842,745 @@
           },
           "json": "no2_monthly/pune.json.gz",
           "parquet": "no2_monthly/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "osm_amenities",
+      "title": "Amenities (OpenStreetMap)",
+      "description": "Points of interest per cell in each category of the score engine's OSM classifier (pipeline/scores/osm_classify.py). Counts reflect OSM mapping completeness as well as reality.",
+      "source": "OpenStreetMap via Geofabrik extract (pipeline/cells/osm_layers.py)",
+      "license": "ODbL (\u00a9 OpenStreetMap contributors)",
+      "group": "Open Data (OpenStreetMap)",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "poi_total",
+          "label": "All points of interest",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            1,
+            140
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "food",
+          "label": "Food & drink",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            59
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "shopping",
+          "label": "Shops",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            89
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "healthcare",
+          "label": "Healthcare",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            24
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "education",
+          "label": "Education",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            12
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "transport",
+          "label": "Transport stops & stations",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            15
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "finance",
+          "label": "Banks & ATMs",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            23
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "leisure",
+          "label": "Parks & leisure",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            95
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "entertainment",
+          "label": "Entertainment",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            12
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "accommodation",
+          "label": "Hotels & stays",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            24
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "government",
+          "label": "Government & civic",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            17
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "business",
+          "label": "Offices & business",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            42
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "poi_total",
+        "extrude": true,
+        "heightM": 400
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 1342,
+          "bbox": {
+            "west": 72.480224609375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "osm_amenities/ahmedabad.json",
+          "parquet": "osm_amenities/ahmedabad.parquet"
+        },
+        {
+          "name": "bengaluru",
+          "cells": 8257,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "osm_amenities/bengaluru/{prefix}.json.gz",
+          "parquet": "osm_amenities/bengaluru.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 760,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.516357421875,
+            "north": 23.319091796875
+          },
+          "json": "osm_amenities/bhopal.json",
+          "parquet": "osm_amenities/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 3222,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "osm_amenities/chennai.json",
+          "parquet": "osm_amenities/chennai.parquet"
+        },
+        {
+          "name": "delhi",
+          "cells": 8440,
+          "bbox": {
+            "west": 76.841796875,
+            "south": 28.399169921875,
+            "east": 77.349365234375,
+            "north": 28.88037109375
+          },
+          "json": "osm_amenities/delhi/{prefix}.json.gz",
+          "parquet": "osm_amenities/delhi.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 16,
+          "bbox": {
+            "west": 77.283447265625,
+            "south": 24.62646484375,
+            "east": 77.3251953125,
+            "north": 24.663818359375
+          },
+          "json": "osm_amenities/guna.json",
+          "parquet": "osm_amenities/guna.parquet"
+        },
+        {
+          "name": "hyderabad",
+          "cells": 4646,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "osm_amenities/hyderabad.json.gz",
+          "parquet": "osm_amenities/hyderabad.parquet"
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 1574,
+          "bbox": {
+            "west": 75.604736328125,
+            "south": 22.50390625,
+            "east": 75.995849609375,
+            "north": 22.8994140625
+          },
+          "json": "osm_amenities/indore_pilot.json",
+          "parquet": "osm_amenities/indore_pilot.parquet"
+        },
+        {
+          "name": "jaipur",
+          "cells": 1632,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.9189453125,
+            "north": 26.99951171875
+          },
+          "json": "osm_amenities/jaipur.json",
+          "parquet": "osm_amenities/jaipur.parquet"
+        },
+        {
+          "name": "kolkata",
+          "cells": 2053,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.449951171875,
+            "north": 22.651123046875
+          },
+          "json": "osm_amenities/kolkata.json",
+          "parquet": "osm_amenities/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 1575,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.94677734375
+          },
+          "json": "osm_amenities/lucknow.json",
+          "parquet": "osm_amenities/lucknow.parquet"
+        },
+        {
+          "name": "mumbai",
+          "cells": 3957,
+          "bbox": {
+            "west": 72.78125,
+            "south": 18.893798828125,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "osm_amenities/mumbai.json",
+          "parquet": "osm_amenities/mumbai.parquet"
+        },
+        {
+          "name": "pune",
+          "cells": 2845,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.43017578125,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "osm_amenities/pune.json",
+          "parquet": "osm_amenities/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "osm_roads",
+      "title": "Roads & buildings (OpenStreetMap)",
+      "description": "Road length per km\u00b2 by class (segments credited to the cell of their midpoint), junction density, and mapped building count and footprint cover from OpenStreetMap.",
+      "source": "OpenStreetMap via Geofabrik extract (pipeline/cells/osm_layers.py)",
+      "license": "ODbL (\u00a9 OpenStreetMap contributors)",
+      "group": "Open Data (OpenStreetMap)",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "road_km_km2",
+          "label": "Road density (all drivable)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km/km\u00b2",
+          "domain": [
+            0.0,
+            130.18
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "major_km_km2",
+          "label": "Major roads (motorway\u2013primary)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km/km\u00b2",
+          "domain": [
+            0.0,
+            130.18
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "secondary_km_km2",
+          "label": "Secondary & tertiary roads",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km/km\u00b2",
+          "domain": [
+            0.0,
+            41.29
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "local_km_km2",
+          "label": "Local & residential streets",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km/km\u00b2",
+          "domain": [
+            0.0,
+            101.02
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "path_km_km2",
+          "label": "Footpaths & cycleways",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km/km\u00b2",
+          "domain": [
+            0.0,
+            57.15
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "junctions_km2",
+          "label": "Street junctions",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per km\u00b2",
+          "domain": [
+            0.0,
+            2846.7
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "buildings",
+          "label": "Mapped buildings",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            741
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "building_cover_pct",
+          "label": "Building footprint cover",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of cell",
+          "domain": [
+            0,
+            80
+          ],
+          "ramp": "heat"
+        }
+      ],
+      "default": {
+        "field": "road_km_km2",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 6546,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "osm_roads/ahmedabad.json.gz",
+          "parquet": "osm_roads/ahmedabad.parquet"
+        },
+        {
+          "name": "bengaluru",
+          "cells": 20048,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "osm_roads/bengaluru/{prefix}.json.gz",
+          "parquet": "osm_roads/bengaluru.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 5259,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "osm_roads/bhopal.json",
+          "parquet": "osm_roads/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 8361,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "osm_roads/chennai/{prefix}.json.gz",
+          "parquet": "osm_roads/chennai.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 37198,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "osm_roads/delhi/{prefix}.json.gz",
+          "parquet": "osm_roads/delhi.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 833,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "osm_roads/guna.json",
+          "parquet": "osm_roads/guna.parquet"
+        },
+        {
+          "name": "hyderabad",
+          "cells": 14658,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "osm_roads/hyderabad/{prefix}.json.gz",
+          "parquet": "osm_roads/hyderabad.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 16996,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "osm_roads/indore_pilot/{prefix}.json.gz",
+          "parquet": "osm_roads/indore_pilot.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 8118,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "osm_roads/jaipur.json.gz",
+          "parquet": "osm_roads/jaipur.parquet"
+        },
+        {
+          "name": "kolkata",
+          "cells": 6775,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "osm_roads/kolkata.json.gz",
+          "parquet": "osm_roads/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 7471,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "osm_roads/lucknow.json.gz",
+          "parquet": "osm_roads/lucknow.parquet"
+        },
+        {
+          "name": "mumbai",
+          "cells": 8358,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "osm_roads/mumbai/{prefix}.json.gz",
+          "parquet": "osm_roads/mumbai.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 9695,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "osm_roads/pune/{prefix}.json.gz",
+          "parquet": "osm_roads/pune.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
         }
       ]
     },
