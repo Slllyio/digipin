@@ -112,7 +112,72 @@ def build_mobility(region: str, level: int = 7):
     return spec, store.bin_records(records, level, specs)
 
 
-BUILTINS = {"scores": build_scores, "traffic": build_traffic, "mobility": build_mobility}
+def raster_dataset(spec: DatasetSpec, path, bands: dict, derive: dict | None = None,
+                   keep=None):
+    """(spec, table) for one GeoTIFF: the one-liner for raster-backed datasets.
+
+    ``bands``/``derive``/``keep`` are passed to ``adapters.raster_records``;
+    each field's ``agg`` decides how pixels in a cell combine. Returns None
+    when the file is missing, matching the other builders.
+    """
+    if not Path(path).exists():
+        return None
+    records = adapters.raster_records(path, bands, spec.level, derive=derive, keep=keep)
+    return spec, store.bin_records(records, spec.level, spec.fields)
+
+
+def build_growth(region: str, level: int = 7):
+    """Built-up fraction 2016 → 2023 (Open Buildings Temporal) + CA-ML P(urban 2035)."""
+    if region != "indore_pilot":   # the growth COGs are clipped to the Indore pilot bbox
+        return None
+    growth = DATA / "growth"
+    built = growth / "buildings_temporal_2016-2023.tif"
+    pred = growth / "ca_urban_prediction.tif"
+    if not built.exists():
+        return None
+    pct = lambda k: (lambda r: None if r.get(k) is None else r[k] * 100)
+    spec = DatasetSpec(
+        id="growth", title="Urban growth",
+        description="Share of each cell built up in 2016 and 2023 (Google Open Buildings "
+                    "Temporal), the change, and the CA-ML probability it is urban by 2035.",
+        source="data/growth/*.tif (pipeline/growth)", license="CC BY 4.0 (Open Buildings)",
+        level=level, default_field="built_change_pp", height_m=400, fields=[
+            FieldSpec("built_2016_pct", "Built-up 2016", agg="mean", unit="%", domain=[0, 100],
+                      ramp="heat"),
+            FieldSpec("built_2023_pct", "Built-up 2023", agg="mean", unit="%", domain=[0, 100],
+                      ramp="heat"),
+            FieldSpec("built_change_pp", "Built-up change 2016→23", agg="mean", unit="pp",
+                      ramp="diverging"),
+            FieldSpec("urban_2035_pct", "P(urban by 2035)", agg="mean", unit="%",
+                      domain=[0, 100], ramp="reds"),
+        ])
+    derive = {
+        "built_2016_pct": pct("b2016"),
+        "built_2023_pct": pct("b2023"),
+        "built_change_pp": lambda r: None if r["b2016"] is None or r["b2023"] is None
+        else (r["b2023"] - r["b2016"]) * 100,
+    }
+    built_table = raster_dataset(spec, built, {"b2016": 1, "b2023": 8}, derive=derive)[1]
+    # Join the prediction COG (same grid) onto the same cells, then drop empty land.
+    pred_field = [f for f in spec.fields if f.key == "urban_2035_pct"]
+    p_table = store.bin_records(
+        adapters.raster_records(pred, {"p": 1}, level, derive={"urban_2035_pct": pct("p")}),
+        level, pred_field) if pred.exists() else None
+    p_by_code = dict(zip(p_table.codes, p_table.columns["urban_2035_pct"])) if p_table else {}
+    codes, cols = [], {f.key: [] for f in spec.fields}
+    for i, code in enumerate(built_table.codes):
+        row = {k: built_table.columns[k][i] for k in ("built_2016_pct", "built_2023_pct", "built_change_pp")}
+        row["urban_2035_pct"] = p_by_code.get(code)
+        if not any(v for v in row.values()):   # all zero / None: open land, skip
+            continue
+        codes.append(code)
+        for k, v in row.items():
+            cols[k].append(v)
+    return spec, store.CellTable(level=level, codes=codes, columns=cols)
+
+
+BUILTINS = {"scores": build_scores, "traffic": build_traffic, "mobility": build_mobility,
+            "growth": build_growth}
 
 
 def main(argv=None) -> int:

@@ -122,13 +122,40 @@ lists each dataset as a `DatasetSpec` paired with a reader:
 
 ```sh
 pip install -r pipeline/cells/requirements.txt   # pyarrow, for GeoParquet
-python -m pipeline.cells.build --region indore_pilot             # scores, traffic, mobility
+python -m pipeline.cells.build --region indore_pilot             # scores, traffic, mobility, growth
 python -m pipeline.cells.build --region indore_pilot traffic     # just one
 python -m pipeline.cells.build --no-parquet                      # stdlib only
 ```
 
 The *Precompute scores* workflow runs the `scores` step after each city build,
 so a new city appears in the store automatically.
+
+**Raster (GeoTIFF) datasets.** Use `adapters.raster_records` for any EPSG:4326
+GeoTIFF. It picks the sampling method from the resolution. When pixels are
+finer than cells, it emits one record per pixel, and the field's `agg`
+combines them: `mean` for a zonal mean, `sum` for counts such as population.
+When pixels are coarser than cells, every cell samples the pixel under its
+centre. A new raster dataset is one function plus a `BUILTINS` entry:
+
+```python
+def build_ndvi(region, level=7):
+    spec = DatasetSpec(id="ndvi", title="Vegetation (NDVI)", level=level,
+                       group="Open Data (satellite)", fields=[
+        FieldSpec("ndvi_2024", "NDVI 2024", agg="mean", domain=[-1, 1], ramp="greens"),
+        FieldSpec("ndvi_change", "NDVI change 2016→24", agg="mean", ramp="diverging"),
+    ])
+    return raster_dataset(spec, DATA / "ndvi" / f"{region}.tif",
+                          bands={"ndvi_2016": 1, "ndvi_2024": 9},         # raw bands (1-based)
+                          derive={"ndvi_change": lambda r: r["ndvi_2024"] - r["ndvi_2016"]},
+                          keep=lambda r: r["ndvi_2024"] is not None)       # stay sparse
+```
+
+`derive` keys may convert units or compute changes between years. Band keys
+that are not fields are dropped. Data that lives in Earth Engine rather than
+in a local GeoTIFF is written straight to the store by
+`pipeline/cells/earthengine.py`, which uses the same `write_dataset` call.
+`growth` (Open Buildings Temporal 2016→2023 + CA-ML P(urban 2035), L7) is
+the built-in example.
 
 **2. Any CSV / GeoJSON (no code).**
 
