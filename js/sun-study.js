@@ -315,6 +315,8 @@ const SunStudy = (() => {
             <canvas class="sun-chart" width="222" height="64" aria-label="Sun-path altitude chart"></canvas>
             <button class="sun-hours-btn" type="button">Sun hours at map centre</button>
             <div class="sun-hours-out" aria-live="polite"></div>
+            <button class="sun-hours-btn sun-far-btn" type="button">Density (FAR) of selected cell</button>
+            <div class="sun-far-out sun-hours-out" aria-live="polite"></div>
             <div class="sun-hint">Enable <b>3D Mode</b> / Buildings to see the cast shadows.</div>`;
         el.querySelector('.sun-close').addEventListener('click', () => toggle());
         const dateEl = el.querySelector('.sun-date');
@@ -329,6 +331,12 @@ const SunStudy = (() => {
             out.className = 'sun-hours-out sun-' + SunHours.band(r.sunHours);
             out.textContent = SunHours.summary(r, formatHM)
                 + (r.buildingCount ? ` · ${r.buildingCount} buildings in view` : ' · no buildings in view (open sky assumed)');
+        });
+        el.querySelector('.sun-far-btn').addEventListener('click', () => {
+            const out = el.querySelector('.sun-far-out');
+            const r = (typeof FloorArea !== 'undefined') ? FloorArea.analyseSelection() : { error: 'Density analysis unavailable.' };
+            out.className = 'sun-far-out sun-hours-out';
+            out.textContent = r.error ? r.error : FloorArea.summary(r);
         });
         el.querySelector('.sun-play').addEventListener('click', () => (_playing ? _stop() : _play()));
         document.body.appendChild(el);
