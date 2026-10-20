@@ -92,3 +92,17 @@ def test_osm_datasets_write(osm_file, tmp_path):
     roads = store.read_json(out / "osm_roads" / "bhopal.json")
     assert max(roads.columns["road_km_km2"]) > 0
     assert all(0 <= v <= 100 for v in roads.columns["building_cover_pct"])
+
+
+def test_catalog_merge_keeps_untouched_regions():
+    from pipeline.cells.catalog_merge import merge
+    dst = {"version": 1, "datasets": [
+        {"id": "a", "title": "old", "regions": [{"name": "x"}, {"name": "y"}]},
+        {"id": "b", "title": "other", "regions": [{"name": "x"}]}]}
+    src = {"datasets": [{"id": "a", "title": "new", "regions": [{"name": "y", "cells": 2}]},
+                        {"id": "c", "title": "skip", "regions": []}]}
+    out = merge(src, dst, {"a"})
+    a = next(d for d in out["datasets"] if d["id"] == "a")
+    assert a["title"] == "new" and [r["name"] for r in a["regions"]] == ["x", "y"]
+    assert a["regions"][1]["cells"] == 2
+    assert {d["id"] for d in out["datasets"]} == {"a", "b"}

@@ -83,11 +83,26 @@ jobs:
         run: python -m pytest -q pipeline/cells
 
       - name: Commit
+        # Other jobs push data/cells/catalog.json too, so instead of rebasing
+        # onto it, reset to the latest branch, restore only the baked dataset
+        # directories and merge their catalog entries.
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/cells/
-          if git diff --staged --quiet; then echo "No changes."; exit 0; fi
-          git commit -m "chore(cells): bake open data ($SOURCES, $REGION)"
-          git pull --rebase origin "${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          IDS=$(git status --porcelain data/cells | awk '{print $2}' | cut -d/ -f3 | grep -v '^catalog.json$' | sort -u | tr '\n' ' ')
+          if [ -z "$IDS" ]; then echo "No changes."; exit 0; fi
+          echo "baked: $IDS"
+          mkdir -p /tmp/baked && cp data/cells/catalog.json /tmp/baked/catalog.json
+          for id in $IDS; do cp -r "data/cells/$id" /tmp/baked/; done
+          for attempt in 1 2 3 4; do
+            git fetch -q origin "${GITHUB_REF_NAME}"
+            git reset -q --hard "origin/${GITHUB_REF_NAME}"
+            for id in $IDS; do rm -rf "data/cells/$id"; cp -r "/tmp/baked/$id" data/cells/; done
+            python -m pipeline.cells.catalog_merge /tmp/baked/catalog.json data/cells/catalog.json --ids $IDS
+            python -m pipeline.cells.coverage --write || true
+            git add data/cells docs/CELL_STORE.md
+            git commit -q -m "chore(cells): bake open data ($SOURCES, $REGION)"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then exit 0; fi
+            sleep $((attempt * 10))
+          done
+          exit 1

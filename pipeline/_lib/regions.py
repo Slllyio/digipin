@@ -65,7 +65,7 @@ _GEOFABRIK_ZONE: Final[dict[str, str]] = {
     "guna":         "central-zone",
     "jaipur":       "northern-zone",  # Rajasthan
     "ahmedabad":    "western-zone",   # Gujarat
-    "lucknow":      "northern-zone",  # Uttar Pradesh
+    "lucknow":      "central-zone",   # Uttar Pradesh (Geofabrik puts UP in central)
     "kolkata":      "eastern-zone",   # West Bengal
 }
 
