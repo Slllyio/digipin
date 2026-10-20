@@ -25,6 +25,7 @@ import argparse
 import csv
 import io
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -39,6 +40,13 @@ SOURCES = {
 OUT = Path("data/open-data/cloud_catalogs.json")
 INDIA_BBOX = (68.0, 6.5, 97.5, 35.5)
 MAX_TAGS = 10
+# Upstream bboxes are sometimes global for a national product (California
+# AirView, USGS 3DEP, CORINE). Rows whose title or id names a place India is
+# not in are dropped rather than trusted.
+OFF_INDIA = re.compile(
+    r"\b(california|canada|canadian|europe|european|corine|epfd|usa|conus|united states|alaska|hawaii|"
+    r"us drought|africa|african|brazil|australia|mexico|germany|france|england|japan|china|goes|3dep|nlcd|naip)\b",
+    re.I)
 
 _EE_TYPES = {"image": "Raster (EE Image)", "image_collection": "Raster time series (EE ImageCollection)",
              "table": "Vector (EE FeatureCollection)", "table_collection": "Vector (EE FeatureCollection)"}
@@ -58,6 +66,10 @@ def parse_bbox(text: str) -> Optional[tuple]:
 
 def intersects(a: tuple, b: tuple = INDIA_BBOX) -> bool:
     return a[0] <= b[2] and a[2] >= b[0] and a[1] <= b[3] and a[3] >= b[1]
+
+
+def off_india(title: str, ident: str) -> bool:
+    return bool(OFF_INDIA.search(f"{title} {re.sub(r'[/_-]', ' ', ident)}"))
 
 
 def coverage(bbox: tuple) -> str:
@@ -93,6 +105,8 @@ def gee_entries(rows: Iterable[dict]) -> Iterable[dict]:
         bbox = parse_bbox(r.get("bbox", ""))
         if not bbox or not intersects(bbox) or not r.get("id") or not r.get("url", "").startswith("https://"):
             continue
+        if off_india(r.get("title", ""), r["id"]):
+            continue
         yield {
             "id": "ee:" + r["id"],
             "title": r.get("title") or r["id"],
@@ -113,6 +127,8 @@ def pc_entries(rows: Iterable[dict]) -> Iterable[dict]:
         bbox = parse_bbox(r.get("bbox", ""))
         link = r.get("link", "")
         if not bbox or not intersects(bbox) or not r.get("id") or not link.startswith("https://"):
+            continue
+        if off_india(r.get("title", ""), r["id"]):
             continue
         yield {
             "id": "pc:" + r["id"],

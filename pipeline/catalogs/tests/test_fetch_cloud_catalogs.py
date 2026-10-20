@@ -1,5 +1,5 @@
 """Offline tests for the Earth Engine / Planetary Computer catalog index."""
-from pipeline.catalogs.fetch_cloud_catalogs import build, coverage, intersects, parse_bbox
+from pipeline.catalogs.fetch_cloud_catalogs import build, coverage, intersects, off_india, parse_bbox
 
 GEE = (
     "id\ttitle\ttype\tsnippet\tprovider\tstate_date\tend_date\tbbox\tdeprecated\tcategory\tkeywords\tcatalog\turl\tlicense\n"
@@ -43,3 +43,10 @@ def test_build_keeps_india_rows_in_finder_shape():
 
 def test_build_tolerates_missing_sources():
     assert build({})["datasets"] == []
+
+
+def test_drops_rows_named_for_other_countries_despite_a_global_bbox():
+    assert off_india("AirView California Unified", "GOOGLE/AirView/California_Unified_2015_2019")
+    assert off_india("USGS 3DEP 10m", "USGS/3DEP/10m_collection")
+    assert not off_india("ESA WorldCover 10m v200", "ESA/WorldCover/v200")
+    assert not off_india("VIIRS Nighttime Day/Night Band", "NOAA/VIIRS/DNB/ANNUAL_V22")

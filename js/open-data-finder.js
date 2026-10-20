@@ -58,12 +58,20 @@ const OpenDataFinder = (() => {
         return /^(ee|pc):/.test(String(entry.id || ''));
     }
 
-    function _score(entry, terms) {
+    function _score(entry, terms, phrase) {
         const tags = (entry.tags || []).map(t => t.toLowerCase());
         const title = String(entry.title || '').toLowerCase();
         const rest = [entry.publisher, entry.coverage, entry.format].join(' ').toLowerCase();
         let score = 0;
         const hit = [];
+        // A multi-word topic named as one thing ("land cover" → landcover tag)
+        // scores as full tag hits on every word, so rows that only match the
+        // words separately ("land" + "cover" in a grassland row) rank below it.
+        if (phrase && (tags.some(tag => tag.replace(/[^a-z0-9]/g, '') === phrase.compact) || title.includes(phrase.text))) {
+            score = 3 * phrase.words.length + 1;
+            hit.push(...phrase.words);
+            terms = terms.filter(t => !phrase.words.includes(t));
+        }
         terms.forEach(t => {
             let s = 0;
             if (tags.some(tag => tag === t || tag === t + 's' || _stem(tag) === t)) s = 3;
@@ -84,8 +92,10 @@ const OpenDataFinder = (() => {
         const terms = tokens(query);
         const list = (catalog && catalog.datasets) || [];
         if (!terms.length) return [];
+        const words = String(query).toLowerCase().split(/[^a-z0-9.+]+/).filter(w => w && !STOP.has(w));
+        const phrase = words.length > 1 ? { words, text: words.join(' '), compact: words.join('') } : null;
         return list
-            .map(entry => ({ entry, ..._score(entry, terms) }))
+            .map(entry => ({ entry, ..._score(entry, terms, phrase) }))
             .filter(r => r.score > 0)
             .sort((a, b) => b.score - a.score || a.entry.title.localeCompare(b.entry.title))
             .slice(0, limit)

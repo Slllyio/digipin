@@ -32,6 +32,17 @@ describe('OpenDataFinder.merge()', () => {
         expect(OD.merge(a, null, b).datasets.map(d => d.title)).toEqual(['A', 'C']);
     });
 
+    it('ranks a row named for the whole phrase above rows matching its words apart', () => {
+        const cat = { datasets: [
+            { id: 'ee:grass', title: 'Grassland', tags: ['land', 'landcover', 'pasture'] },
+            { id: 'ee:wc', title: 'WorldCover', tags: ['landcover', 'esa'] },
+            { id: 'ee:soil', title: 'Soil', tags: ['land', 'soil cover'] },
+        ] };
+        const ids = OD.search('land cover', cat).map(r => r.entry.id);
+        expect(ids.indexOf('ee:soil')).toBe(2);
+        expect(OD.search('land cover', cloud).slice(0, 3).every(r => r.entry.tags.some(t => t.replace(/[^a-z]/g, '') === 'landcover'))).toBe(true);
+    });
+
     it('ranks a curated entry above a cloud row with the same match', () => {
         const cat = OD.merge({ datasets: [{ id: 'ee:wc', title: 'Land cover', tags: ['landcover'] }, { id: 'wc', title: 'Land cover', tags: ['landcover'] }] });
         expect(OD.search('landcover', cat)[0].entry.id).toBe('wc');
