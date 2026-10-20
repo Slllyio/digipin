@@ -20,13 +20,18 @@ import logging
 import os
 from dataclasses import dataclass
 
-from ..lib.http import PoliteClient
+from ..lib.http import PoliteClient, SourceUnavailable
 from .imd_warnings import DEFAULT_DISTRICTS, SEVERITY_BY_COLOR
 
 log = logging.getLogger("scrapers.imd_nowcast")
 
 SOURCE_ID = "imd_nowcast"
 ENDPOINT = "https://api.imd.gov.in/api/v1/districtnowcast"
+
+# The CLI checks these before calling fetch() and leaves latest.json
+# untouched when any is unset, so a missing secret never wipes the last
+# good snapshot.
+REQUIRED_ENV = ("IMD_API_KEY", "IMD_API_TOKEN")
 
 
 @dataclass
@@ -102,6 +107,7 @@ def fetch(client: PoliteClient) -> list[Nowcast]:
     client._session.headers.update(headers)
 
     all_rows: list[Nowcast] = []
+    ok = 0
     for district_id, district_name in DEFAULT_DISTRICTS.items():
         body = client.get(ENDPOINT, params={"id": district_id})
         if body is None:
@@ -112,7 +118,11 @@ def fetch(client: PoliteClient) -> list[Nowcast]:
             log.warning("non-JSON nowcast response for district %s — skipping", district_id)
             continue
         all_rows.extend(_parse_response(payload, district_id, district_name))
+        ok += 1
         client.polite_sleep()
+
+    if ok == 0:
+        raise SourceUnavailable(f"no district returned a usable response ({len(DEFAULT_DISTRICTS)} tried)")
 
     log.info("fetched %d nowcast row(s) across %d district(s)", len(all_rows), len(DEFAULT_DISTRICTS))
     return all_rows
