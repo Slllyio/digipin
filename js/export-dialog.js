@@ -35,6 +35,8 @@ const ExportDialog = (() => {
         // CAD footprint tabs export the visible buildings, not the cell-data object.
         if (format === 'footgeo') return `digipin_footprints_${clean}.geojson`;
         if (format === 'footdxf') return `digipin_footprints_${clean}.dxf`;
+        if (format === 'png') return typeof MapSnapshot !== 'undefined'
+            ? MapSnapshot.filename(clean) : `digipin_map_${clean}.png`;
         const ext = format === 'csv' ? 'csv' : format === 'geojson' ? 'geojson' : 'json';
         const suffix = format === 'dtdl' ? '_twin' : '';
         return `digipin_${clean}${suffix}.${ext}`;
@@ -90,6 +92,17 @@ const ExportDialog = (() => {
                 : null,
         },
         {
+            id: 'png', label: 'Map PNG',
+            desc: 'The map as you see it, with a title bar and a credit line for every visible layer',
+            items: () => {
+                const n = (typeof URLState !== 'undefined' && URLState.activeLayers) ? URLState.activeLayers().length : 0;
+                return [
+                    '1 PNG image of the current map view',
+                    n ? `${n} visible layer${n === 1 ? '' : 's'} credited in the footer` : 'Base map only (no overlays on)',
+                ];
+            },
+        },
+        {
             id: 'footgeo', label: 'CAD GeoJSON',
             desc: 'Visible 3D building footprints (+ heights) + the cell — for QGIS / Rhino / AutoCAD',
             items: (s, cell) => {
@@ -114,6 +127,16 @@ const ExportDialog = (() => {
     /** Dispatch the chosen format to the matching DataFetcher/DTDLExport writer. */
     function _doExport(format, cell, data) {
         const name = filename(format, cell.code);
+        if (format === 'png') {
+            if (typeof MapSnapshot === 'undefined') {
+                if (typeof App !== 'undefined') App.showToast('Export', 'Map export unavailable', 'error');
+                return;
+            }
+            MapSnapshot.download({ title: `DigiPin ${cell.code}`, filename: name }).then(ok => {
+                if (!ok && typeof App !== 'undefined') App.showToast('Export', 'Map is not ready yet', 'error');
+            });
+            return;
+        }
         if (format === 'footgeo' || format === 'footdxf') {
             if (typeof FootprintExport === 'undefined') {
                 if (typeof App !== 'undefined') App.showToast('Export', 'Footprint exporter unavailable', 'error');

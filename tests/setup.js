@@ -93,6 +93,7 @@ loadGlobalScript('js/disha-agent.js', ['DISHAAgent']);
 loadGlobalScript('js/text2map.js', ['Text2Map']);
 loadGlobalScript('js/text2map-results-layer.js', ['Text2MapResultsLayer']);
 loadGlobalScript('js/provenance.js', ['Provenance']);
+loadGlobalScript('js/map-snapshot.js', ['MapSnapshot']);
 loadGlobalScript('js/disha-mentions.js', ['DishaMentions']);
 loadGlobalScript('js/url-state.js', ['URLState']);
 loadGlobalScript('js/theme.js', ['Theme']);
