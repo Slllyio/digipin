@@ -46,7 +46,13 @@ jobs:
           git add data/triage
           if ! git diff --staged --quiet; then
             git commit -m "chore(triage): refresh situational brief"
-            git push
+            # The realtime scraper also pushes to main; rebase and retry
+            # rather than fail on a non-fast-forward.
+            for attempt in 1 2 3; do
+              git pull --rebase --quiet && git push && exit 0
+              sleep $((attempt * 5))
+            done
+            exit 1
           else
             echo "No changes to commit."
           fi
