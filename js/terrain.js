@@ -95,9 +95,14 @@ const Terrain = (() => {
         if (!map) return _enabled;
         on = !!on;
         if (on === _enabled) return _enabled;
-        if (on) _attach(map); else _detach(map);
         _enabled = on;
-        _emit();
+        if (!on) { _detach(map); _emit(); return _enabled; }
+        // MapLibre 4.1 throws inside its render loop (and silently stops
+        // drawing) if terrain appears mid-easeTo: the ease never prepared an
+        // elevation target. Attach once the camera is still.
+        const attach = () => { if (_enabled) { _attach(map); _emit(); } };
+        if (map.isMoving && map.isMoving()) map.once('moveend', attach);
+        else attach();
         return _enabled;
     }
 

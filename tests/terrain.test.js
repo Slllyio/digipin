@@ -51,6 +51,19 @@ describe('Terrain', () => {
         expect(T.isEnabled()).toBe(false);
     });
 
+    it('waits for the camera to stop before draping (MapLibre 4.1 mid-ease bug)', () => {
+        const map = stubMap();
+        let moving = true, onMoveEnd = null;
+        map.isMoving = () => moving;
+        map.once = (ev, fn) => { if (ev === 'moveend') onMoveEnd = fn; };
+        expect(T.setEnabled(map, true)).toBe(true);
+        expect(map._calls.terrain).toHaveLength(0);        // not yet
+        moving = false;
+        onMoveEnd();
+        expect(map._calls.terrain).toHaveLength(1);
+        expect(map._layers[T.HILLSHADE_ID]).toBeTruthy();
+    });
+
     it('updates exaggeration live and rejects bad values', () => {
         const map = stubMap();
         T.setEnabled(map, true);

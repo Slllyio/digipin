@@ -24,6 +24,7 @@ Two modes:
      service-account key in GEE_SERVICE_ACCOUNT_KEY):
 
          export GEE_SERVICE_ACCOUNT_KEY="$(cat key.json)"
+         export GEE_PROJECT=van-suraksha-alert        # the default
          python3 scripts/build_building_heights.py --region indore_pilot
 
      Averages the Open Buildings 2.5D Temporal `building_height` band over
@@ -86,7 +87,8 @@ def ee_init():
         key_path = fh.name
     try:
         creds = ee.ServiceAccountCredentials(info["client_email"], key_path)
-        ee.Initialize(creds)
+        # Cloud project that bills the EE requests (the team's project by default).
+        ee.Initialize(creds, project=os.environ.get("GEE_PROJECT", "van-suraksha-alert"))
     finally:
         # Don't leave the service-account key sitting on disk.
         try: os.unlink(key_path)
