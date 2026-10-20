@@ -204,6 +204,223 @@
       ]
     },
     {
+      "id": "aerosol_monthly",
+      "title": "Air quality: aerosol index (monthly)",
+      "description": "Monthly mean Sentinel-5P UV absorbing aerosol index: smoke and dust haze. Above ~1 is notable; native pixels ~7 km.",
+      "source": "Copernicus Sentinel-5P OFFL L3 AER_AI via Earth Engine (scripts/build_cell_timeseries.py)",
+      "license": "Copernicus Sentinel data, free and open",
+      "group": "Time series",
+      "level": 6,
+      "approxCellM": 975,
+      "fields": [
+        {
+          "key": "aerosol_index",
+          "label": "UV aerosol index",
+          "type": "number",
+          "agg": "mean",
+          "domain": [
+            -0.8,
+            0.88
+          ],
+          "ramp": "diverging",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "aerosol_index",
+        "extrude": false,
+        "heightM": 600
+      },
+      "time": {
+        "unit": "month",
+        "steps": [
+          "2024-10",
+          "2024-11",
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04",
+          "2025-05",
+          "2025-06",
+          "2025-07",
+          "2025-08",
+          "2025-09",
+          "2025-10",
+          "2025-11",
+          "2025-12",
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08",
+          "2026-09"
+        ],
+        "default": "2026-09"
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 504,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.6845703125,
+            "north": 23.1279296875
+          },
+          "json": "aerosol_monthly/ahmedabad.json.gz",
+          "parquet": "aerosol_monthly/ahmedabad.parquet"
+        },
+        {
+          "name": "bengaluru",
+          "cells": 1368,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.8271484375,
+            "east": 77.7822265625,
+            "north": 13.1435546875
+          },
+          "json": "aerosol_monthly/bengaluru.json.gz",
+          "parquet": "aerosol_monthly/bengaluru.parquet"
+        },
+        {
+          "name": "bhopal",
+          "cells": 442,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.3212890625
+          },
+          "json": "aerosol_monthly/bhopal.json.gz",
+          "parquet": "aerosol_monthly/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 726,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.8974609375,
+            "east": 80.322265625,
+            "north": 13.1875
+          },
+          "json": "aerosol_monthly/chennai.json.gz",
+          "parquet": "aerosol_monthly/chennai.parquet"
+        },
+        {
+          "name": "delhi",
+          "cells": 3304,
+          "bbox": {
+            "west": 76.8330078125,
+            "south": 28.392578125,
+            "east": 77.3515625,
+            "north": 28.884765625
+          },
+          "json": "aerosol_monthly/delhi.json.gz",
+          "parquet": "aerosol_monthly/delhi.parquet"
+        },
+        {
+          "name": "guna",
+          "cells": 100,
+          "bbox": {
+            "west": 77.263671875,
+            "south": 24.595703125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "aerosol_monthly/guna.json.gz",
+          "parquet": "aerosol_monthly/guna.parquet"
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1080,
+          "bbox": {
+            "west": 78.2919921875,
+            "south": 17.2919921875,
+            "east": 78.6083984375,
+            "north": 17.5556640625
+          },
+          "json": "aerosol_monthly/hyderabad.json.gz",
+          "parquet": "aerosol_monthly/hyderabad.parquet"
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 2209,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.4951171875,
+            "east": 76.0068359375,
+            "north": 22.908203125
+          },
+          "json": "aerosol_monthly/indore_pilot.json.gz",
+          "parquet": "aerosol_monthly/indore_pilot.parquet"
+        },
+        {
+          "name": "jaipur",
+          "cells": 624,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.927734375,
+            "north": 27.00390625
+          },
+          "json": "aerosol_monthly/jaipur.json.gz",
+          "parquet": "aerosol_monthly/jaipur.parquet"
+        },
+        {
+          "name": "kolkata",
+          "cells": 480,
+          "bbox": {
+            "west": 88.2763671875,
+            "south": 22.4423828125,
+            "east": 88.4521484375,
+            "north": 22.6533203125
+          },
+          "json": "aerosol_monthly/kolkata.json.gz",
+          "parquet": "aerosol_monthly/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 529,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "aerosol_monthly/lucknow.json.gz",
+          "parquet": "aerosol_monthly/lucknow.parquet"
+        },
+        {
+          "name": "mumbai",
+          "cells": 1125,
+          "bbox": {
+            "west": 72.7724609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.2783203125
+          },
+          "json": "aerosol_monthly/mumbai.json.gz",
+          "parquet": "aerosol_monthly/mumbai.parquet"
+        },
+        {
+          "name": "pune",
+          "cells": 700,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.42578125,
+            "east": 73.994140625,
+            "north": 18.6455078125
+          },
+          "json": "aerosol_monthly/pune.json.gz",
+          "parquet": "aerosol_monthly/pune.parquet"
+        }
+      ]
+    },
+    {
       "id": "air_quality",
       "title": "Air quality (satellite)",
       "description": "Sentinel-5P TROPOMI column means for 2025 (NO\u2082, CO, aerosol index, HCHO; ~5 km native) and the Washington University satellite-derived surface PM2.5 (V6.GL, ~1 km, latest year 2022). Columns are not ground concentrations; use for spatial contrast.",
@@ -1171,6 +1388,224 @@
       ]
     },
     {
+      "id": "co_monthly",
+      "title": "Air quality: CO column (monthly)",
+      "description": "Monthly mean Sentinel-5P TROPOMI carbon monoxide column: crop-residue and biomass burning, traffic and industry. Native pixels ~7 km.",
+      "source": "Copernicus Sentinel-5P OFFL L3 CO via Earth Engine (scripts/build_cell_timeseries.py)",
+      "license": "Copernicus Sentinel data, free and open",
+      "group": "Time series",
+      "level": 6,
+      "approxCellM": 975,
+      "fields": [
+        {
+          "key": "co_mmol_m2",
+          "label": "CO column",
+          "type": "number",
+          "agg": "mean",
+          "unit": "mmol/m\u00b2",
+          "domain": [
+            25.05,
+            50.19
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "co_mmol_m2",
+        "extrude": false,
+        "heightM": 600
+      },
+      "time": {
+        "unit": "month",
+        "steps": [
+          "2024-10",
+          "2024-11",
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04",
+          "2025-05",
+          "2025-06",
+          "2025-07",
+          "2025-08",
+          "2025-09",
+          "2025-10",
+          "2025-11",
+          "2025-12",
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08",
+          "2026-09"
+        ],
+        "default": "2026-09"
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 504,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.6845703125,
+            "north": 23.1279296875
+          },
+          "json": "co_monthly/ahmedabad.json.gz",
+          "parquet": "co_monthly/ahmedabad.parquet"
+        },
+        {
+          "name": "bengaluru",
+          "cells": 1368,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.8271484375,
+            "east": 77.7822265625,
+            "north": 13.1435546875
+          },
+          "json": "co_monthly/bengaluru.json.gz",
+          "parquet": "co_monthly/bengaluru.parquet"
+        },
+        {
+          "name": "bhopal",
+          "cells": 442,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.3212890625
+          },
+          "json": "co_monthly/bhopal.json.gz",
+          "parquet": "co_monthly/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 726,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.8974609375,
+            "east": 80.322265625,
+            "north": 13.1875
+          },
+          "json": "co_monthly/chennai.json.gz",
+          "parquet": "co_monthly/chennai.parquet"
+        },
+        {
+          "name": "delhi",
+          "cells": 3304,
+          "bbox": {
+            "west": 76.8330078125,
+            "south": 28.392578125,
+            "east": 77.3515625,
+            "north": 28.884765625
+          },
+          "json": "co_monthly/delhi.json.gz",
+          "parquet": "co_monthly/delhi.parquet"
+        },
+        {
+          "name": "guna",
+          "cells": 100,
+          "bbox": {
+            "west": 77.263671875,
+            "south": 24.595703125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "co_monthly/guna.json.gz",
+          "parquet": "co_monthly/guna.parquet"
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1080,
+          "bbox": {
+            "west": 78.2919921875,
+            "south": 17.2919921875,
+            "east": 78.6083984375,
+            "north": 17.5556640625
+          },
+          "json": "co_monthly/hyderabad.json.gz",
+          "parquet": "co_monthly/hyderabad.parquet"
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 2209,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.4951171875,
+            "east": 76.0068359375,
+            "north": 22.908203125
+          },
+          "json": "co_monthly/indore_pilot.json.gz",
+          "parquet": "co_monthly/indore_pilot.parquet"
+        },
+        {
+          "name": "jaipur",
+          "cells": 624,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.927734375,
+            "north": 27.00390625
+          },
+          "json": "co_monthly/jaipur.json.gz",
+          "parquet": "co_monthly/jaipur.parquet"
+        },
+        {
+          "name": "kolkata",
+          "cells": 480,
+          "bbox": {
+            "west": 88.2763671875,
+            "south": 22.4423828125,
+            "east": 88.4521484375,
+            "north": 22.6533203125
+          },
+          "json": "co_monthly/kolkata.json.gz",
+          "parquet": "co_monthly/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 529,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "co_monthly/lucknow.json.gz",
+          "parquet": "co_monthly/lucknow.parquet"
+        },
+        {
+          "name": "mumbai",
+          "cells": 1125,
+          "bbox": {
+            "west": 72.7724609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.2783203125
+          },
+          "json": "co_monthly/mumbai.json.gz",
+          "parquet": "co_monthly/mumbai.parquet"
+        },
+        {
+          "name": "pune",
+          "cells": 700,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.42578125,
+            "east": 73.994140625,
+            "north": 18.6455078125
+          },
+          "json": "co_monthly/pune.json.gz",
+          "parquet": "co_monthly/pune.parquet"
+        }
+      ]
+    },
+    {
       "id": "growth",
       "title": "Urban growth",
       "description": "Share of each cell built up in 2016 and 2023 (Google Open Buildings Temporal), the change, and the CA-ML probability it is urban by 2035.",
@@ -1951,6 +2386,378 @@
           },
           "json": "land_cover/pune/{prefix}.json.gz",
           "parquet": "land_cover/pune.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "landcover_yearly",
+      "title": "Land cover by year, 2016\u20132025",
+      "description": "Yearly mean Dynamic World class probability from every Sentinel-2 scene: how much of each cell reads as built-up, trees, water or crops. Recent change at 10 m detail, averaged to the cell.",
+      "source": "Google / WRI Dynamic World V1 via Earth Engine (scripts/build_cell_timeseries.py)",
+      "license": "CC BY 4.0",
+      "group": "Time series",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "built_pct",
+          "label": "Built-up",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "trees_pct",
+          "label": "Trees",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "water_pct",
+          "label": "Water",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "crops_pct",
+          "label": "Crops",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens"
+        }
+      ],
+      "default": {
+        "field": "built_pct",
+        "extrude": false,
+        "heightM": 300
+      },
+      "time": {
+        "unit": "year",
+        "steps": [
+          "2016",
+          "2017",
+          "2018",
+          "2019",
+          "2020",
+          "2021",
+          "2022",
+          "2023",
+          "2024",
+          "2025"
+        ],
+        "default": "2025"
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "landcover_yearly/ahmedabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "landcover_yearly/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 6565,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "landcover_yearly/bhopal.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 11136,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.320068359375,
+            "north": 13.180908203125
+          },
+          "json": "landcover_yearly/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "landcover_yearly/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "landcover_yearly/guna.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "landcover_yearly/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 33489,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "landcover_yearly/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "landcover_yearly/jaipur/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "landcover_yearly/kolkata.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "landcover_yearly/lucknow/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 16878,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "landcover_yearly/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK4",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKM",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "landcover_yearly/pune/{prefix}.json.gz",
+          "parquet": null,
           "shards": {
             "prefixLen": 4,
             "keys": [

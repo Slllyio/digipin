@@ -84,7 +84,7 @@ def _monthly_mean(ee, ids, band, a, b, scale=1.0, offset=0.0, reduce="mean", whe
     return img.multiply(scale).add(offset).toFloat()
 
 
-def recipe_lst(ee, a, b, label=None):
+def recipe_lst(ee, a, b, label=None, **_):
     ids = ["MODIS/061/MOD11A2", "MODIS/061/MYD11A2"]
     return {
         "lst_day_c": _monthly_mean(ee, ids, "LST_Day_1km", a, b, 0.02, -273.15),
@@ -92,28 +92,28 @@ def recipe_lst(ee, a, b, label=None):
     }
 
 
-def recipe_ndvi(ee, a, b, label=None):
+def recipe_ndvi(ee, a, b, label=None, **_):
     ids = ["MODIS/061/MOD13Q1", "MODIS/061/MYD13Q1"]
     return {"ndvi": _monthly_mean(ee, ids, "NDVI", a, b, 0.0001)}
 
 
-def recipe_no2(ee, a, b, label=None):
+def recipe_no2(ee, a, b, label=None, **_):
     ids = ["COPERNICUS/S5P/OFFL/L3_NO2"]
     # mol/m² → µmol/m²
     return {"no2_umol_m2": _monthly_mean(ee, ids, "tropospheric_NO2_column_number_density", a, b, 1e6)}
 
 
-def recipe_rain(ee, a, b, label=None):
+def recipe_rain(ee, a, b, label=None, **_):
     # CHIRPS daily rainfall (mm/day) summed over the month → mm.
     return {"rain_mm": _monthly_mean(ee, ["UCSB-CHG/CHIRPS/DAILY"], "precipitation", a, b, reduce="sum")}
 
 
-def recipe_lights(ee, a, b, label=None):
+def recipe_lights(ee, a, b, label=None, **_):
     # VIIRS DNB monthly, stray-light corrected; radiance nW/cm²/sr.
     return {"radiance": _monthly_mean(ee, ["NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG"], "avg_rad", a, b)}
 
 
-def recipe_pm25(ee, a, b, label=None):
+def recipe_pm25(ee, a, b, label=None, **_):
     # CAMS near-real-time forecasts: keep the first 24 h of each 00 UTC run so
     # every hour of the month is counted once. kg/m³ → µg/m³.
     first_day = ee.Filter.And(ee.Filter.eq("model_initialization_hour", 0),
@@ -122,7 +122,7 @@ def recipe_pm25(ee, a, b, label=None):
                                        a, b, 1e9, where=first_day)}
 
 
-def recipe_built(ee, a, b, label=None):
+def recipe_built(ee, a, b, label=None, **_):
     # GHSL built-up surface (m² per 100 m pixel) for the epoch → share of land built.
     img = (ee.ImageCollection("JRC/GHSL/P2023A/GHS_BUILT_S")
            .filter(ee.Filter.eq("system:index", str(label))).first().select("built_surface"))
@@ -130,6 +130,34 @@ def recipe_built(ee, a, b, label=None):
     img = img.divide(100).reduceResolution(ee.Reducer.mean(), maxPixels=1024)   # m²/10,000 m² × 100
     return {"built_pct": img.toFloat()}
 
+
+def recipe_dw(ee, a, b, label=None, geom=None, **_):
+    # Dynamic World: mean class probability over the year's Sentinel-2 scenes.
+    # No reduceResolution — sampling a ~244 m grid reads EE's mean pyramids,
+    # which average the 10 m probabilities at a fraction of the cost.
+    col = ee.ImageCollection("GOOGLE/DYNAMICWORLD/V1").filterDate(a, b)
+    if geom is not None:
+        col = col.filterBounds(geom)
+    empty = ee.Image.constant([0, 0, 0, 0]).updateMask(ee.Image.constant(0)).rename(
+        ["built", "trees", "water", "crops"])
+    mean = ee.Image(ee.Algorithms.If(col.size().gt(0),
+                                     col.select(["built", "trees", "water", "crops"]).mean(), empty))
+    return {f"{k}_pct": mean.select(k).multiply(100).toFloat() for k in ("built", "trees", "water", "crops")}
+
+
+def recipe_co(ee, a, b, label=None, **_):
+    # Sentinel-5P TROPOMI CO total column, mol/m² → mmol/m².
+    return {"co_mmol_m2": _monthly_mean(ee, ["COPERNICUS/S5P/OFFL/L3_CO"], "CO_column_number_density",
+                                        a, b, 1e3)}
+
+
+def recipe_aai(ee, a, b, label=None, **_):
+    # Sentinel-5P UV aerosol index (smoke, dust; unitless, > 1 is notable).
+    return {"aerosol_index": _monthly_mean(ee, ["COPERNICUS/S5P/OFFL/L3_AER_AI"], "absorbing_aerosol_index",
+                                           a, b)}
+
+
+DW_YEARS = [str(y) for y in range(2016, 2026)]
 
 GHSL_EPOCHS = [str(y) for y in range(1975, 2021, 5)]
 
@@ -229,6 +257,51 @@ DATASETS = {
                               ramp="heat")],
             default_field="built_pct", height_m=300,
             time=TimeSpec("year", steps))),
+    "dw": dict(
+        recipe=recipe_dw, level=7, steps=DW_YEARS,
+        decimals=0,   # whole percent: finer is false precision
+        spec=lambda steps: DatasetSpec(
+            id="landcover_yearly", title="Land cover by year, 2016–2025",
+            description="Yearly mean Dynamic World class probability from every Sentinel-2 "
+                        "scene: how much of each cell reads as built-up, trees, water or crops. "
+                        "Recent change at 10 m detail, averaged to the cell.",
+            source="Google / WRI Dynamic World V1 via Earth Engine (scripts/build_cell_timeseries.py)",
+            license="CC BY 4.0",
+            group="Time series", level=7,
+            fields=[FieldSpec("built_pct", "Built-up", unit="%", domain=[0, 100], ramp="heat"),
+                    FieldSpec("trees_pct", "Trees", unit="%", domain=[0, 100], ramp="greens",
+                              higher_is="better"),
+                    FieldSpec("water_pct", "Water", unit="%", domain=[0, 100], ramp="blues"),
+                    FieldSpec("crops_pct", "Crops", unit="%", domain=[0, 100], ramp="greens")],
+            default_field="built_pct", height_m=300,
+            time=TimeSpec("year", steps))),
+    "co": dict(
+        recipe=recipe_co, level=6, decimals=2,
+        spec=lambda steps: DatasetSpec(
+            id="co_monthly", title="Air quality: CO column (monthly)",
+            description="Monthly mean Sentinel-5P TROPOMI carbon monoxide column: crop-residue "
+                        "and biomass burning, traffic and industry. Native pixels ~7 km.",
+            source="Copernicus Sentinel-5P OFFL L3 CO via Earth Engine (scripts/build_cell_timeseries.py)",
+            license="Copernicus Sentinel data, free and open",
+            group="Time series", level=6,
+            fields=[FieldSpec("co_mmol_m2", "CO column", unit="mmol/m²", ramp="reds",
+                              higher_is="worse")],
+            default_field="co_mmol_m2", height_m=600,
+            time=TimeSpec("month", steps))),
+    "aai": dict(
+        recipe=recipe_aai, level=6, decimals=2,
+        spec=lambda steps: DatasetSpec(
+            id="aerosol_monthly", title="Air quality: aerosol index (monthly)",
+            description="Monthly mean Sentinel-5P UV absorbing aerosol index: smoke and dust "
+                        "haze. Above ~1 is notable; native pixels ~7 km.",
+            source="Copernicus Sentinel-5P OFFL L3 AER_AI via Earth Engine "
+                   "(scripts/build_cell_timeseries.py)",
+            license="Copernicus Sentinel data, free and open",
+            group="Time series", level=6,
+            fields=[FieldSpec("aerosol_index", "UV aerosol index", ramp="diverging",
+                              higher_is="worse")],
+            default_field="aerosol_index", height_m=600,
+            time=TimeSpec("month", steps))),
 }
 
 
@@ -251,7 +324,7 @@ def fetch(ee, recipe, steps, bbox, level, decimals=4):
     bands, keys = [], None
     for i, step in enumerate(steps):
         a, b = step_range(ee, step)
-        imgs = recipe(ee, a, b, step)
+        imgs = recipe(ee, a, b, step, geom=ee.Geometry.Rectangle([w, s, e, n]))
         keys = list(imgs)
         # Masked (cloudy / empty) pixels → sentinel, so NPY carries them explicitly.
         bands += [imgs[k].unmask(NODATA).rename(f"{k}__{i}") for k in keys]
@@ -285,7 +358,7 @@ def fetch(ee, recipe, steps, bbox, level, decimals=4):
                         vals = []
                         for i in range(len(steps)):
                             v = float(arr[f"{k}__{i}"][r, c])
-                            vals.append(round(v, decimals) if np.isfinite(v) and v > NODATA / 2 else None)
+                            vals.append((round(v, decimals) if decimals else int(round(v))) if np.isfinite(v) and v > NODATA / 2 else None)
                         series[k] = vals
                     out[code] = series
             print(f"    tile r{r0} c{c0}: {len(out)} cells")
