@@ -38,8 +38,114 @@
         "north": 22.9
       },
       "path": "data/scores/indore_pilot/"
+    },
+    {
+      "name": "bhopal",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "35"
+      ],
+      "bbox": {
+        "west": 77.3,
+        "south": 23.18,
+        "east": 77.52,
+        "north": 23.32
+      },
+      "path": "data/scores/bhopal/"
+    },
+    {
+      "name": "pune",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "4F"
+      ],
+      "bbox": {
+        "west": 73.75,
+        "south": 18.43,
+        "east": 73.99,
+        "north": 18.64
+      },
+      "path": "data/scores/pune/"
+    },
+    {
+      "name": "mumbai",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "4F"
+      ],
+      "bbox": {
+        "west": 72.78,
+        "south": 18.89,
+        "east": 72.99,
+        "north": 19.27
+      },
+      "path": "data/scores/mumbai/"
+    },
+    {
+      "name": "bengaluru",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "4P"
+      ],
+      "bbox": {
+        "west": 77.45,
+        "south": 12.83,
+        "east": 77.78,
+        "north": 13.14
+      },
+      "path": "data/scores/bengaluru/"
+    },
+    {
+      "name": "hyderabad",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "42"
+      ],
+      "bbox": {
+        "west": 78.3,
+        "south": 17.3,
+        "east": 78.6,
+        "north": 17.55
+      },
+      "path": "data/scores/hyderabad/"
+    },
+    {
+      "name": "chennai",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "4T"
+      ],
+      "bbox": {
+        "west": 80.13,
+        "south": 12.9,
+        "east": 80.32,
+        "north": 13.18
+      },
+      "path": "data/scores/chennai/"
+    },
+    {
+      "name": "delhi",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "39",
+        "3C"
+      ],
+      "bbox": {
+        "west": 76.84,
+        "south": 28.4,
+        "east": 77.35,
+        "north": 28.88
+      },
+      "path": "data/scores/delhi/"
     }
   ],
-  "generated": "2026-10-03T08:15:31Z",
+  "generated": "2026-10-20T18:35:22Z",
   "radiusM": 400.0
 }
