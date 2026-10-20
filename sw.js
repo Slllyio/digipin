@@ -2,7 +2,7 @@
  * Service Worker — Offline cache for DigiPin portal
  * Caches static assets; API calls use network-first strategy
  */
-const CACHE_NAME = 'digipin-v53';
+const CACHE_NAME = 'digipin-v54';
 
 // Full same-origin app shell — EVERY js/ module referenced by app.html, so the
 // app is genuinely usable offline. (Previously only ~19 were precached and the
@@ -136,8 +136,8 @@ const LOCAL_ASSETS = [
 // never caches these — so precaching them here is what makes the map usable
 // offline. Versions must match the <script>/<link> tags in app.html.
 const CDN_ASSETS = [
-    'https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css',
-    'https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js',
+    'https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css',
+    'https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js',
     'https://unpkg.com/pmtiles@3.0.7/dist/pmtiles.js',
     'https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js',
 ];
