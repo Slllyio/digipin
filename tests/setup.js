@@ -31,6 +31,8 @@ function loadGlobalScript(relPath, exposeNames) {
 }
 
 loadGlobalScript('js/digipin.js', ['DigiPin']);
+loadGlobalScript('js/overture-release.js', ['OvertureRelease']);
+loadGlobalScript('js/terrain.js', ['Terrain']);
 loadGlobalScript('js/keyboard-nav.js', ['KeyboardNav']);
 loadGlobalScript('js/data-fetcher.js', ['DataFetcher']);
 loadGlobalScript('js/precomputed-scores.js', ['PrecomputedScores']);

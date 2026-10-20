@@ -23,7 +23,7 @@ const APP_GLOBALS = {
   Compare: 'readonly', Bookmarks: 'readonly', CitySelector: 'readonly', WardOverlay: 'readonly',
   HeatmapOverlay: 'readonly', BuildingIntelligence: 'readonly', BuildingIntelDialog: 'readonly',
   ScoresDialog: 'readonly', DigitalTwinLayers: 'readonly', FloatingDialogs: 'readonly',
-  OvertureBuildings: 'readonly', DeckBuildings: 'readonly', deck: 'readonly',
+  OvertureBuildings: 'readonly', DeckBuildings: 'readonly', OvertureRelease: 'readonly', Terrain: 'readonly', deck: 'readonly',
   Isochrone: 'readonly', Report: 'readonly', TrainingDataGen: 'readonly',
   GrowthScore: 'readonly', GrowthOverlay: 'readonly', GrowthWidget: 'readonly', RealtimeGrowth: 'readonly',
   CAGrowthOverlay: 'readonly', ScenarioModel: 'readonly', ScenarioPanel: 'readonly',
