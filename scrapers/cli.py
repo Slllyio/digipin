@@ -17,10 +17,11 @@ from __future__ import annotations
 import argparse
 import importlib
 import logging
+import os
 import sys
 from pathlib import Path
 
-from .lib.http import PoliteClient
+from .lib.http import PoliteClient, SourceUnavailable
 from .lib.storage import (
     append_seen_id,
     load_seen_ids,
@@ -76,10 +77,22 @@ def main(argv: list[str] | None = None) -> int:
     seen_path = out_dir / "seen_ids.txt"
     snapshot_path = out_dir / "latest.json"
 
+    missing_env = [k for k in getattr(module, "REQUIRED_ENV", ()) if not os.environ.get(k)]
+    if missing_env:
+        # Leave latest.json as-is: overwriting it with an empty snapshot
+        # would erase the last good data and churn a commit every run.
+        log.warning("skipping %r: %s not set — latest.json left untouched",
+                    source_id, ", ".join(missing_env))
+        return 0
+
     seen = set() if args.no_resume else load_seen_ids(seen_path)
     client = PoliteClient(delay=args.delay, verify_ssl=not args.insecure)
 
-    records = module.fetch(client)
+    try:
+        records = module.fetch(client)
+    except SourceUnavailable as e:
+        log.error("source %r unavailable: %s — latest.json left untouched", source_id, e)
+        return 1
     log.info("source %r returned %d record(s)", source_id, len(records))
 
     new_records = [r for r in records if module.key_for(r) not in seen]

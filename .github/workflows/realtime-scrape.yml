@@ -38,22 +38,68 @@ jobs:
 
       - name: Run scraper — ${{ matrix.source }}
         env:
-          # Sources that need keys all skip gracefully when unset, so this
-          # workflow is safe to enable before secrets are configured.
+          # Sources that need keys skip when unset and leave their last
+          # snapshot in place, so this workflow is safe before secrets exist.
           # Register each provider and add to Settings → Secrets → Actions.
           IMD_API_KEY: ${{ secrets.IMD_API_KEY }}         # api.imd.gov.in
           IMD_API_TOKEN: ${{ secrets.IMD_API_TOKEN }}     # api.imd.gov.in
           OPENAQ_API_KEY: ${{ secrets.OPENAQ_API_KEY }}   # explore.openaq.org
         run: python -m scrapers.cli ${{ matrix.source }}
 
+      # Each matrix job only uploads its snapshot; the single `commit` job
+      # below pushes them all at once. Pushing from every matrix job raced:
+      # the first push won and the other seven failed non-fast-forward, so
+      # most sources never reached main.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: snapshot-${{ matrix.source }}
+          path: data/realtime/${{ matrix.source }}/latest.json
+          if-no-files-found: ignore
+          retention-days: 1
+
+  commit:
+    needs: scrape
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: realtime-scrape-commit
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: snapshot-*
+          path: ${{ runner.temp }}/snapshots
+
       - name: Commit refreshed snapshots
+        env:
+          SNAPSHOTS: ${{ runner.temp }}/snapshots
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/realtime/${{ matrix.source }}/latest.json
-          if ! git diff --staged --quiet; then
-            git commit -m "chore(realtime): refresh ${{ matrix.source }} snapshot"
-            git push
-          else
+          shopt -s nullglob
+          changed=()
+          for dir in "$SNAPSHOTS"/snapshot-*; do
+            source="${dir##*/snapshot-}"
+            [ -f "$dir/latest.json" ] || continue
+            cp "$dir/latest.json" "data/realtime/$source/latest.json"
+            # A timestamp-only change still counts: the alerts banner uses
+            # generated_at_iso to flag a stale feed.
+            if ! git diff --quiet -- "data/realtime/$source/latest.json"; then
+              git add "data/realtime/$source/latest.json"
+              changed+=("$source")
+            fi
+          done
+          if [ ${#changed[@]} -eq 0 ]; then
             echo "No changes to commit."
+            exit 0
           fi
+          git commit -m "chore(realtime): refresh ${changed[*]} snapshot(s)"
+          for attempt in 1 2 3; do
+            git pull --rebase --quiet && git push && exit 0
+            sleep $((attempt * 5))
+          done
+          exit 1
