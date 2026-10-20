@@ -18,11 +18,17 @@
 const CityOverview = (() => {
     const COLLAPSE_KEY = 'digipin_overview_collapsed';
     const KPIS = [
-        { id: 'livability', label: 'Livability' },
-        { id: 'walkability', label: 'Walkability' },
-        { id: 'green', label: 'Green cover' },
-        { id: 'flood_risk', label: 'Flood risk', invert: true },
+        { id: 'livability', key: 'co.livability' },
+        { id: 'walkability', key: 'co.walkability' },
+        { id: 'green', key: 'co.green' },
+        { id: 'flood_risk', key: 'co.flood', invert: true },
     ];
+    /** Active-language string (I18n), with {n}-style substitution. */
+    const _t = (key, vars) => {
+        let s = (typeof I18n !== 'undefined' && I18n.t) ? I18n.t(key) : key;
+        for (const [k, v] of Object.entries(vars || {})) s = s.replace(`{${k}}`, v);
+        return s;
+    };
     // Region aliases mirror CitySelector (indore → indore_pilot).
     const _regionOf = (city) => (typeof CitySelector !== 'undefined' && CitySelector.regionName)
         ? CitySelector.regionName(city) : city.id;
@@ -142,7 +148,7 @@ const CityOverview = (() => {
         const good = k.invert ? 100 - val : val;
         const tone = good >= 60 ? 'good' : good >= 35 ? 'mid' : 'low';
         return `<div class="co-kpi co-kpi--${tone}">
-            <div class="co-kpi-label">${_esc(k.label)}</div>
+            <div class="co-kpi-label">${_esc(_t(k.key))}</div>
             <div class="co-kpi-value">${val}<span>/100</span></div>
             <div class="co-kpi-bar"><i style="width:${Math.max(3, val)}%"></i></div>
         </div>`;
@@ -161,10 +167,10 @@ const CityOverview = (() => {
         const h = (heights || []).find(x => x.region === region);
         const facts = [];
         const area = bboxAreaKm2(stats?.bbox || h?.bbox);
-        if (area) facts.push(['Area mapped', `${fmtCount(area)} km²`]);
-        if (stats) facts.push(['Scored cells', fmtCount(stats.cells)]);
-        if (stats && stats.core) facts.push(['Core cells', fmtCount(stats.core)]);
-        if (h) facts.push(['Height cells', fmtCount(h.cells)]);
+        if (area) facts.push([_t('co.area'), `${fmtCount(area)} km²`]);
+        if (stats) facts.push([_t('co.scored'), fmtCount(stats.cells)]);
+        if (stats && stats.core) facts.push([_t('co.core'), fmtCount(stats.core)]);
+        if (h) facts.push([_t('co.heights'), fmtCount(h.cells)]);
         const factsHtml = facts.map(([l, v]) =>
             `<div class="co-fact"><div class="co-fact-value">${_esc(v)}</div><div class="co-fact-label">${_esc(l)}</div></div>`).join('');
         let kpis = '';
@@ -172,10 +178,10 @@ const CityOverview = (() => {
             kpis = KPIS.map(k => _kpiHtml(k, stats.means[k.id])).join('');
         }
         const hist = stats && stats.core
-            ? `<div class="co-dist">${histogramSvg(stats.hist)}<div class="co-dist-label">Livability spread across ${fmtCount(stats.core)} core cells (0–100)</div></div>`
+            ? `<div class="co-dist">${histogramSvg(stats.hist)}<div class="co-dist-label">${_esc(_t('co.spread', { n: fmtCount(stats.core) }))}</div></div>`
             : '';
         body.innerHTML = `<div class="co-facts">${factsHtml}</div>`
-            + (kpis ? `<div class="co-kpis">${kpis}</div>` : '<div class="co-note">Scores load live when you click a cell.</div>')
+            + (kpis ? `<div class="co-kpis">${kpis}</div>` : `<div class="co-note">${_esc(_t('co.live'))}</div>`)
             + hist;
     }
 
@@ -260,7 +266,7 @@ const CityOverview = (() => {
         _el.innerHTML = `
             <header class="co-head">
                 <div class="co-title">
-                    <div class="co-eyebrow">Urban intelligence</div>
+                    <div class="co-eyebrow">${_esc(_t('co.eyebrow'))}</div>
                     <h2 class="co-name"></h2>
                     <div class="co-state"></div>
                 </div>
@@ -268,8 +274,8 @@ const CityOverview = (() => {
             </header>
             <div class="co-body" id="city-overview-body"></div>
             <div class="co-actions">
-                <button class="co-btn co-btn--primary" data-co="fly">${_ic('cube', 16)}<span>Explore in 3D</span></button>
-                <button class="co-btn" data-co="orbit" aria-pressed="false" title="Slowly orbit the camera">${_ic('play', 14)}<span>Orbit</span></button>
+                <button class="co-btn co-btn--primary" data-co="fly">${_ic('cube', 16)}<span>${_esc(_t('co.explore'))}</span></button>
+                <button class="co-btn" data-co="orbit" aria-pressed="false" title="Slowly orbit the camera">${_ic('play', 14)}<span>${_esc(_t('co.orbit'))}</span></button>
             </div>`;
         document.body.appendChild(_el);
         _el.querySelector('[data-co="fly"]').addEventListener('click', flyIn3D);
