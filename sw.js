@@ -2,7 +2,7 @@
  * Service Worker — Offline cache for DigiPin portal
  * Caches static assets; API calls use network-first strategy
  */
-const CACHE_NAME = 'digipin-v43';
+const CACHE_NAME = 'digipin-v44';
 
 // Full same-origin app shell — EVERY js/ module referenced by app.html, so the
 // app is genuinely usable offline. (Previously only ~19 were precached and the
@@ -151,8 +151,20 @@ self.addEventListener('activate', event => {
     );
 });
 
+// Only full 200s go in the cache. Caching a 404 for a data file that was
+// deployed later pinned the 404 for every visitor until the next SW bump.
+function _cacheIfOk(request, response) {
+    if (response.status !== 200) return;
+    const clone = response.clone();
+    caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+}
+
 self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
+
+    // Range requests (PMTiles, COG readers) expect 206 Partial Content, which
+    // the Cache API can't store — leave them to the network. Same for non-GET.
+    if (event.request.method !== 'GET' || event.request.headers.has('range')) return;
 
     // Network-first for API calls
     if (url.hostname !== location.hostname) {
@@ -180,8 +192,7 @@ self.addEventListener('fetch', event => {
     if (url.pathname.endsWith('/data/scores/coverage.json')) {
         event.respondWith(
             fetch(event.request).then(response => {
-                const clone = response.clone();
-                caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                _cacheIfOk(event.request, response);
                 return response;
             }).catch(() => caches.match(event.request))
         );
@@ -192,8 +203,7 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request).then(cached => {
             const fetched = fetch(event.request).then(response => {
-                const clone = response.clone();
-                caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                _cacheIfOk(event.request, response);
                 return response;
             });
             return cached || fetched;
