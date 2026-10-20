@@ -21,7 +21,8 @@ Level 8 cells are ~60 m square: one value per city block, which matches the
 Two modes:
 
   1. Earth Engine (any region in pipeline/_lib/regions.py; needs a GEE
-     service-account key in GEE_SERVICE_ACCOUNT_KEY):
+     service-account key in GEE_SERVICE_ACCOUNT_KEY, or in a Claude cloud
+     session a "GCP access token" network secret on earthengine.googleapis.com):
 
          export GEE_SERVICE_ACCOUNT_KEY="$(cat key.json)"
          export GEE_PROJECT=van-suraksha-alert        # the default
@@ -78,17 +79,25 @@ def aligned_bbox(bbox, level):
 def ee_init():
     """Initialise Earth Engine from the GEE_SERVICE_ACCOUNT_KEY env var (JSON)."""
     import ee
+    # Cloud project that bills the EE requests (the team's project by default).
+    project = os.environ.get("GEE_PROJECT", "van-suraksha-alert")
     key = os.environ.get("GEE_SERVICE_ACCOUNT_KEY")
     if not key:
-        sys.exit("GEE_SERVICE_ACCOUNT_KEY not set in environment.")
+        # Claude cloud sessions: a "GCP access token" network secret on
+        # earthengine.googleapis.com makes the egress proxy inject the real
+        # bearer token, so the key never enters the container. The token here
+        # is only a placeholder the proxy overwrites.
+        from google.oauth2.credentials import Credentials
+        print("  GEE_SERVICE_ACCOUNT_KEY not set; relying on proxy-injected auth")
+        ee.Initialize(Credentials(token="proxy-injected"), project=project)
+        return ee
     info = json.loads(key)
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fh:
         json.dump(info, fh)
         key_path = fh.name
     try:
         creds = ee.ServiceAccountCredentials(info["client_email"], key_path)
-        # Cloud project that bills the EE requests (the team's project by default).
-        ee.Initialize(creds, project=os.environ.get("GEE_PROJECT", "van-suraksha-alert"))
+        ee.Initialize(creds, project=project)
     finally:
         # Don't leave the service-account key sitting on disk.
         try: os.unlink(key_path)
