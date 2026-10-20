@@ -13,9 +13,14 @@
  * from its legend. Standard overlay contract: idempotent show/hide/toggle,
  * one source + one layer per dataset, cleaned up on hide.
  *
+ * Category legends double as filters (click a row to hide that category), and
+ * a click opens an inspector that pages through every active dataset's cell
+ * under the pointer ("1 of N"), with a copy button and the dataset's source.
+ *
  * mountPanel() adds a registry-driven group to the unified Layers dropdown,
  * re-rendered whenever the registry changes (catalog load, file dropped).
- * colorExpr/heightExpr/legendStops are pure and unit-tested.
+ * colorExpr/heightExpr/legendStops/filterExpr/inspectorRows/inspectorText are
+ * pure and unit-tested.
  */
 const CellLayers = (() => {
     const SRC = 'cell-layer-src-';
@@ -35,11 +40,12 @@ const CellLayers = (() => {
     const QUALITATIVE = ['#1b9e77', '#d95f02', '#7570b3', '#e7298a', '#66a61e',
         '#e6ab02', '#a6761d', '#666666', '#1f78b4', '#b2df8a', '#fb9a99', '#cab2d6'];
 
-    const _active = new Map();   // id -> { field, extrude }
+    const _active = new Map();   // id -> { field, extrude, hidden:[category], cells }
     let _map = null;
     let _popup = null;
     let _legendFor = null;       // dataset id the legend currently describes
     let _panel = null;           // { dropdown, group } once mounted
+    let _lastClick = null;       // originalEvent of the last handled click (one per click, not per layer)
 
     function _map_() { return (typeof MapModule !== 'undefined') ? MapModule.getMap() : null; }
 
@@ -98,6 +104,38 @@ const CellLayers = (() => {
         return ramp.map((color, i) => ({ color, label: fmt(lo + (hi - lo) * i / (ramp.length - 1)) }));
     }
 
+    /**
+     * Layer filter hiding the given categories of a category field, or null
+     * when nothing is hidden (or the field isn't categorical).
+     */
+    function filterExpr(f, hidden) {
+        if (!f || f.type !== 'category' || !hidden || !hidden.length) return null;
+        return ['!', ['in', ['to-string', ['get', f.key]], ['literal', hidden.map(String)]]];
+    }
+
+    function _fmtValue(f, v) {
+        if (f.type === 'number' && !isNaN(v)) v = Math.round(Number(v) * 100) / 100;
+        const unit = f.unit && f.type === 'number' && !/^[\d.]+\s*[-–]\s*[\d.]+$/.test(f.unit) ? ' ' + f.unit : '';
+        return String(v) + unit;
+    }
+
+    /** Inspector rows for one cell: [{ label, value, primary }], empty values skipped. */
+    function inspectorRows(spec, props, activeField) {
+        const p = props || {};
+        return (spec.fields || [])
+            .filter(f => p[f.key] != null && p[f.key] !== 'null' && p[f.key] !== '')
+            .map(f => ({ label: f.label || f.key, value: _fmtValue(f, p[f.key]), primary: f.key === activeField }));
+    }
+
+    /** Plain-text copy of one cell: title, DIGIPIN, then one "label: value" line per field. */
+    function inspectorText(spec, props) {
+        const p = props || {};
+        const head = `${spec.title} \u00b7 ${p.digipin || ''} \u00b7 L${spec.level}`;
+        const lines = inspectorRows(spec, p).map(r => `${r.label}: ${r.value}`);
+        if (spec.source) lines.push(`Source: ${spec.source}${spec.license ? ' (' + spec.license + ')' : ''}`);
+        return [head, ...lines].join('\n');
+    }
+
     function _esc(v) {
         return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;')
             .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -135,31 +173,101 @@ const CellLayers = (() => {
                 },
             });
         }
+        const filter = filterExpr(f, state.hidden);
+        if (filter) _map.setFilter(lyr, filter);
         _map.off('click', lyr, _onClick);
         _map.on('click', lyr, _onClick);
     }
 
-    function _onClick(e) {
-        const feat = e.features && e.features[0];
-        if (!feat) return;
-        const id = String(feat.layer && feat.layer.id || '').slice(LYR.length);
-        const spec = CellStore.get(id);
-        if (!spec) return;
-        const p = feat.properties || {};
-        const state = _active.get(id) || {};
-        let html = `<div style="font-family:Inter,sans-serif;font-size:12px;max-width:260px;">`
-            + `<strong>${_esc(spec.title)}</strong><br><span style="opacity:.7">${_esc(p.digipin)} · L${spec.level}</span>`;
-        for (const f of spec.fields) {
-            let v = p[f.key];
-            if (v == null || v === 'null') continue;
-            if (f.type === 'number' && !isNaN(v)) v = Math.round(Number(v) * 100) / 100;
-            const bold = f.key === state.field ? 'font-weight:600;' : '';
-            html += `<div style="${bold}">${_esc(f.label)}: ${_esc(v)}${f.unit && f.type === 'number' ? ' ' + _esc(f.unit) : ''}</div>`;
+    /** Every active dataset's cell under the click, top layer first: [{ spec, props }]. */
+    function _cellsAt(e) {
+        const layers = active().map(id => LYR + id).filter(l => _map.getLayer(l));
+        const hits = layers.length && _map.queryRenderedFeatures ? _map.queryRenderedFeatures(e.point, { layers }) : [];
+        const seen = new Set();
+        const out = [];
+        for (const feat of (hits.length ? hits : (e.features || []))) {
+            const id = String(feat.layer && feat.layer.id || '').slice(LYR.length);
+            const spec = CellStore.get(id);
+            if (!spec || seen.has(id)) continue;
+            seen.add(id);
+            out.push({ spec, props: feat.properties || {} });
         }
-        html += '</div>';
+        return out;
+    }
+
+    function _onClick(e) {
+        // Each active layer has its own click listener; handle one click once.
+        if (e.originalEvent && e.originalEvent === _lastClick) return;
+        _lastClick = e.originalEvent || null;
+        const pages = _cellsAt(e);
+        if (!pages.length || typeof document === 'undefined') return;
+        let i = 0;
+        const box = document.createElement('div');
+        box.className = 'cell-inspector';
+        const render = () => {
+            const { spec, props } = pages[i];
+            const st = _active.get(spec.id) || {};
+            box.textContent = '';
+            const head = document.createElement('div');
+            head.className = 'cell-inspector-head';
+            const title = document.createElement('strong');
+            title.textContent = spec.title;
+            head.appendChild(title);
+            if (pages.length > 1) {
+                const nav = document.createElement('span');
+                nav.className = 'cell-inspector-nav';
+                const prev = document.createElement('button');
+                prev.type = 'button';
+                prev.textContent = '\u2039';
+                prev.setAttribute('aria-label', 'Previous layer');
+                prev.onclick = () => { i = (i + pages.length - 1) % pages.length; render(); };
+                const count = document.createElement('span');
+                count.textContent = `${i + 1} of ${pages.length}`;
+                const next = document.createElement('button');
+                next.type = 'button';
+                next.textContent = '\u203a';
+                next.setAttribute('aria-label', 'Next layer');
+                next.onclick = () => { i = (i + 1) % pages.length; render(); };
+                nav.append(prev, count, next);
+                head.appendChild(nav);
+            }
+            box.appendChild(head);
+            const sub = document.createElement('div');
+            sub.className = 'cell-inspector-sub';
+            sub.textContent = `${props.digipin || ''} \u00b7 L${spec.level}`;
+            box.appendChild(sub);
+            const dl = document.createElement('dl');
+            inspectorRows(spec, props, st.field).forEach(r => {
+                const dt = document.createElement('dt');
+                dt.textContent = r.label;
+                const dd = document.createElement('dd');
+                dd.textContent = r.value;
+                if (r.primary) { dt.classList.add('primary'); dd.classList.add('primary'); }
+                dl.append(dt, dd);
+            });
+            box.appendChild(dl);
+            const foot = document.createElement('div');
+            foot.className = 'cell-inspector-foot';
+            if (spec.source) {
+                const src = document.createElement('span');
+                src.textContent = 'Source: ' + spec.source;
+                foot.appendChild(src);
+            }
+            const copy = document.createElement('button');
+            copy.type = 'button';
+            copy.textContent = 'Copy';
+            copy.onclick = () => {
+                const text = inspectorText(spec, props);
+                const done = () => { copy.textContent = 'Copied'; };
+                if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(() => {});
+            };
+            foot.appendChild(copy);
+            box.appendChild(foot);
+        };
+        render();
         if (_popup) _popup.remove();
         if (typeof maplibregl !== 'undefined') {
-            _popup = new maplibregl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(_map);
+            _popup = new maplibregl.Popup({ maxWidth: '280px' }).setLngLat(e.lngLat).setDOMContent(box).addTo(_map);
         }
     }
 
@@ -171,9 +279,13 @@ const CellLayers = (() => {
         if (!spec) return false;
         const prev = _active.get(id) || {};
         const def = spec.default || {};
+        const field = opts.field || prev.field || def.field || spec.fields[0].key;
         const state = {
-            field: opts.field || prev.field || def.field || spec.fields[0].key,
+            field,
             extrude: opts.extrude ?? prev.extrude ?? !!def.extrude,
+            // Hidden categories belong to one field; switching field shows all again.
+            hidden: field === prev.field ? (opts.hidden || prev.hidden || []) : (opts.hidden || []),
+            cells: prev.cells || 0,
         };
         _active.set(id, state);
         const table = await CellStore.load(id);
@@ -184,6 +296,7 @@ const CellLayers = (() => {
             return false;
         }
         if (!_active.has(id)) return false;   // hidden while loading
+        state.cells = (table.cells && table.cells.length) || 0;
         _paint(spec, table, state);
         _legendFor = id;
         _renderLegend();
@@ -215,6 +328,21 @@ const CellLayers = (() => {
     function isVisible(id) { return _active.has(id); }
     function active() { return [..._active.keys()]; }
     function state(id) { return _active.has(id) ? { ..._active.get(id) } : null; }
+
+    /** Show/hide one category of the dataset's current field (legend row click). */
+    function toggleCategory(id, label) {
+        const st = _active.get(id);
+        const spec = CellStore.get(id);
+        if (!st || !spec) return false;
+        const f = CellStore.field(spec, st.field) || spec.fields[0];
+        const hidden = new Set(st.hidden || []);
+        if (hidden.has(label)) hidden.delete(label); else hidden.add(label);
+        st.hidden = [...hidden];
+        const map = _map_();
+        if (map && map.getLayer(LYR + id)) map.setFilter(LYR + id, filterExpr(f, st.hidden));
+        if (_legendFor === id) _renderLegend();
+        return !hidden.has(label);
+    }
 
     function setField(id, key) { return _active.has(id) ? show(id, { field: key }) : Promise.resolve(false); }
     function setExtrude(id, on) { return _active.has(id) ? show(id, { extrude: !!on }) : Promise.resolve(false); }
@@ -255,12 +383,18 @@ const CellLayers = (() => {
         const swatches = f.type === 'number'
             ? `<div style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:6px;">${stops.map(s => `<span style="flex:1;background:${s.color}"></span>`).join('')}</div>`
               + `<div style="display:flex;justify-content:space-between;color:${pal.sub};font-size:11px;"><span>${_esc(stops[0].label)}</span><span>${_esc(stops[stops.length - 1].label)}${unit}</span></div>`
-            : stops.map(s => `<div style="display:flex;align-items:center;gap:6px;margin:2px 0;"><span style="width:12px;height:12px;border-radius:2px;background:${s.color};flex:none;"></span><span style="color:${pal.sub};">${_esc(s.label)}</span></div>`).join('');
+            : f.type === 'category'
+                ? stops.map(s => {
+                    const off = (st.hidden || []).includes(s.label);
+                    return `<button type="button" data-act="cat" data-cat="${_esc(s.label)}" aria-pressed="${!off}" title="${off ? 'Show' : 'Hide'} ${_esc(s.label)}" style="display:flex;align-items:center;gap:6px;margin:2px 0;width:100%;padding:0;background:none;border:none;cursor:pointer;font:inherit;text-align:left;opacity:${off ? 0.4 : 1};"><span style="width:12px;height:12px;border-radius:2px;background:${s.color};flex:none;"></span><span style="color:${pal.sub};flex:1;${off ? 'text-decoration:line-through;' : ''}">${_esc(s.label)}</span><span style="color:${pal.sub};font-size:10px;">${off ? 'hidden' : ''}</span></button>`;
+                }).join('')
+                : stops.map(s => `<div style="display:flex;align-items:center;gap:6px;margin:2px 0;"><span style="width:12px;height:12px;border-radius:2px;background:${s.color};flex:none;"></span><span style="color:${pal.sub};">${_esc(s.label)}</span></div>`).join('');
         const others = active().filter(id => id !== spec.id);
         const rebinnable = typeof CellIngest !== 'undefined' && CellIngest.isRebinnable(spec.id);
         el.innerHTML =
             `<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">`
             + `<strong style="color:${pal.primary};font-size:13px;flex:1;">${_esc(spec.title)}</strong>`
+            + (st.cells ? `<span style="color:${pal.sub};font-size:11px;">${st.cells.toLocaleString()} cells</span>` : '')
             + `<button type="button" data-act="close" aria-label="Hide ${_esc(spec.title)}" style="background:none;border:none;color:${pal.sub};cursor:pointer;font-size:14px;">✕</button></div>`
             + `<select data-act="field" aria-label="Field to colour by" style="width:100%;margin-bottom:4px;">${options}</select>`
             + `<label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" data-act="extrude"${st.extrude ? ' checked' : ''}> 3D extruded cells</label>`
@@ -276,6 +410,9 @@ const CellLayers = (() => {
         el.querySelector('[data-act="close"]').onclick = () => hide(id);
         el.querySelector('[data-act="field"]').onchange = (e) => setField(id, e.target.value);
         el.querySelector('[data-act="extrude"]').onchange = (e) => setExtrude(id, e.target.checked);
+        el.querySelectorAll('[data-act="cat"]').forEach(b => {
+            b.onclick = () => toggleCategory(id, b.dataset.cat);
+        });
         const lvl = el.querySelector('[data-act="level"]');
         if (lvl) lvl.onchange = (e) => CellIngest.rebin(id, Number(e.target.value));
         el.querySelectorAll('[data-act="focus"]').forEach(a => {
@@ -380,8 +517,9 @@ const CellLayers = (() => {
     }
 
     return {
-        show, hide, toggle, hideAll, isVisible, active, state, setField, setExtrude,
+        show, hide, toggle, hideAll, isVisible, active, state, setField, setExtrude, toggleCategory,
         mountPanel, panelGroups, colorExpr, heightExpr, legendStops, categoryColors, RAMPS,
+        filterExpr, inspectorRows, inspectorText,
     };
 })();
 

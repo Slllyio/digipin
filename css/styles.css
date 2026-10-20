@@ -4346,3 +4346,15 @@ body.presenting #sidebar { display: none !important; }
 .disha-plan-done .disha-plan-actions,
 .disha-plan-done .disha-plan-skip,
 .disha-plan-done .disha-plan-weight button { display: none; }
+
+/* Cell-layer inspector popup */
+.cell-inspector { font-size: 12px; min-width: 200px; }
+.cell-inspector-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.cell-inspector-nav { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; opacity: 0.8; }
+.cell-inspector-nav button, .cell-inspector-foot button { background: none; border: 1px solid currentColor; border-radius: 4px; color: inherit; cursor: pointer; font: inherit; padding: 0 6px; opacity: 0.8; }
+.cell-inspector-sub { opacity: 0.65; margin: 2px 0 6px; font-size: 11px; }
+.cell-inspector dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 0; }
+.cell-inspector dt { opacity: 0.7; }
+.cell-inspector dd { margin: 0; text-align: right; }
+.cell-inspector dt.primary, .cell-inspector dd.primary { font-weight: 600; opacity: 1; }
+.cell-inspector-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; font-size: 10px; opacity: 0.85; }
