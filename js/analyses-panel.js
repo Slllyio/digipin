@@ -124,7 +124,7 @@ const AnalysesPanel = (() => {
             return null;
         }
         _toast('Running analysis', `${tpl.title} · ${area.label}`, 'info');
-        const store = { get: CellStore.get, load: CellStore.load, generated: () => _generated };
+        const store = { get: CellStore.get, load: CellStore.load, generated: () => CellStore.generated() };
         let report;
         try {
             report = await Analysis.run(tpl, area, store, { link: (t) => _shareUrl({ ...t, builtin: !!tpl.builtin }, area) });
@@ -138,15 +138,6 @@ const AnalysesPanel = (() => {
         openReport(report, image);
         renderPanel();
         return report;
-    }
-
-    let _generated = null;
-    async function _loadGenerated() {
-        if (typeof CellStore === 'undefined') return;
-        try {
-            const r = await fetch(`${CellStore.base()}catalog.json`, { cache: 'force-cache' });
-            if (r.ok) _generated = (await r.json()).generated || null;
-        } catch { /* optional */ }
     }
 
     /** Register the result as a runtime cell dataset, extrude it, frame the area, snapshot. */
@@ -519,7 +510,6 @@ const AnalysesPanel = (() => {
         _reports = loadReports();
         const btn = document.getElementById('btn-analyses');
         if (btn) btn.addEventListener('click', openPanel);
-        _loadGenerated();
         _runFromLink();
     }
 
