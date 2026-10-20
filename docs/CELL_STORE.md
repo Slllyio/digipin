@@ -54,8 +54,39 @@ cells.
 ```
 catalog.json                     the layer registry
 <dataset>/<region>.json          columnar JSON: what the browser reads
-<dataset>/<region>.parquet       GeoParquet 1.1: DuckDB(-WASM), QGIS, geopandas
+<dataset>/<region>.json.gz       the same, gzipped with quantised integer columns (large regions)
+<dataset>/<region>.parquet       GeoParquet 1.1: DuckDB(-WASM), QGIS, geopandas — generated, not in git
 ```
+
+### Compression (`.json.gz`)
+
+Temporal datasets, and any region with more than `GZIP_MIN_VALUES` (50k)
+values, are written as `.json.gz`. Number columns whose values have at most 4
+decimals are stored as integers with a per-field multiplier:
+
+```json
+{ "level": 7, "fields": ["ndvi"], "times": […], "cells": […],
+  "scale": { "ndvi": 0.001 }, "columns": { "ndvi": [[412, 398, null, …], …] } }
+```
+
+The values are exactly the ones written: the builders already round to those
+decimals. Static hosts such as GitHub Pages serve the file as-is.
+`CellStore.decodeDoc` checks the gzip magic bytes, inflates the file with
+`DecompressionStream`, and multiplies the columns back. A host that already
+sent `Content-Encoding: gzip` hands over plain JSON, which passes through.
+`store.read_json` does the same in Python. The files are written with
+`mtime=0`, so identical data gives identical bytes and git diffs stay clean.
+This and zstd-19 Parquet cut `data/cells` from 104 MB to 69 MB before the
+Parquet copies left git.
+
+### GeoParquet copies are generated
+
+The Parquet files duplicate the JSON, and they were more than half of
+`data/cells`, so git ignores them. The JSON is the source of truth.
+`python -m pipeline.cells.parquet` rebuilds every `regions[].parquet` named in
+the catalog (about 2 minutes for everything). The **Deploy to GitHub Pages**
+workflow runs it before publishing, so `CellStore.sql()` works on the site.
+Run it locally before using SQL against `serve.py`.
 
 Both files hold the same table: one row per cell **that has data** (sparse),
 sorted by code.

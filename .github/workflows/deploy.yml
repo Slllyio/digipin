@@ -26,6 +26,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # The cell store's GeoParquet copies (CellStore.sql / DuckDB-WASM) are
+      # not in git; build them from the committed JSON before publishing.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate cell-store GeoParquet
+        run: |
+          pip install pyarrow
+          python -m pipeline.cells.parquet
       - name: Stage static site
         # Upload only the deployable static site, not the whole repo. Uploading
         # `.` tars ~760 MB (.git ~174M, node_modules ~105M, extras ~481M of promo

@@ -280,3 +280,18 @@ def test_big_static_regions_are_gzipped(tmp_path):
     back = store.read_json(tmp_path / "demo" / "r.json.gz")
     assert back.codes == t.codes and back.columns["kind"] == t.columns["kind"]
     assert back.columns["density"] == pytest.approx(t.columns["density"])
+
+
+def test_parquet_regenerates_from_json(tmp_path):
+    pq = pytest.importorskip("pyarrow.parquet")
+    from pipeline.cells import parquet as cells_parquet
+    steps = ["2025-01", "2025-02", "2025-03"]
+    t = store.series_table(6, steps, {"34PLLM": {"lst": [30.1, None, 41.5]}}, ["lst"])
+    store.write_dataset(tmp_path, _tspec(), "r", t, parquet=True)
+    pth = tmp_path / "lst" / "r.parquet"
+    before = pq.read_table(pth).to_pylist()
+    pth.unlink()
+    assert cells_parquet.build(tmp_path) == [{"dataset": "lst", "region": "r", "cells": 1}]
+    tbl = pq.read_table(pth)
+    assert tbl.to_pylist() == before
+    assert json.loads(tbl.schema.metadata[b"digipin_cells"])["time"]["steps"] == steps

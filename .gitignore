@@ -109,7 +109,7 @@ data/cells/*
 data/cells/*/*
 !data/cells/*/*.json
 !data/cells/*/*.json.gz
-!data/cells/*/*.parquet
+# GeoParquet copies are generated at deploy time (python -m pipeline.cells.parquet).
 !data/cells/*/*/
 data/cells/*/*/*
 !data/cells/*/*/*.json

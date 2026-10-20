@@ -333,8 +333,12 @@ def _polygon_wkb(b: dict) -> bytes:
     return out
 
 
-def write_parquet(path: Path, spec: DatasetSpec, table: CellTable) -> None:
-    """GeoParquet 1.1: digipin/level/lat/lng + bbox covering + WKB geometry + fields."""
+def write_parquet(path: Path, spec: DatasetSpec, table: CellTable, meta: Optional[dict] = None) -> None:
+    """GeoParquet 1.1: digipin/level/lat/lng + bbox covering + WKB geometry + fields.
+
+    ``meta`` overrides the ``digipin_cells`` metadata block (default: the
+    spec's catalog entry), for regenerating from a published catalog.
+    """
     import pyarrow as pa
     import pyarrow.parquet as pq
 
@@ -376,7 +380,7 @@ def write_parquet(path: Path, spec: DatasetSpec, table: CellTable) -> None:
         }},
     }
     meta = {b"geo": json.dumps(geo).encode(),
-            b"digipin_cells": json.dumps(spec.to_json()).encode()}
+            b"digipin_cells": json.dumps(meta or spec.to_json()).encode()}
     t = pa.table(arrays).replace_schema_metadata(meta)
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
