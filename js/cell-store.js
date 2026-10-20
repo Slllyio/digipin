@@ -220,6 +220,17 @@ const CellStore = (() => {
         return out;
     }
 
+    /**
+     * URL of one region file, versioned by the catalog build stamp. Like Aino's
+     * version-in-the-path tiles, a new build is a new URL, so the browser can
+     * reuse its cached copy for as long as the stamp is unchanged instead of
+     * revalidating every file on every visit.
+     */
+    function tableUrl(region) {
+        const v = generated();
+        return base() + region.json + (v ? '?v=' + encodeURIComponent(v) : '');
+    }
+
     /** The dataset's table (all regions), loaded once. null when unavailable. */
     function load(id) {
         if (_tables.has(id)) return _tables.get(id);
@@ -228,7 +239,7 @@ const CellStore = (() => {
         const p = (async () => {
             const parts = await Promise.all((spec.regions || []).map(async r => {
                 try {
-                    const resp = await fetch(base() + r.json, { cache: 'no-cache', signal: AbortSignal.timeout(15000) });
+                    const resp = await fetch(tableUrl(r), { signal: AbortSignal.timeout(15000) });
                     return resp.ok ? await resp.json() : null;
                 } catch { return null; }
             }));
@@ -368,7 +379,7 @@ const CellStore = (() => {
     }
 
     return {
-        init, isEnabled, base, datasets, get, generated, field, onChange,
+        init, isEnabled, base, datasets, get, generated, tableUrl, field, onChange,
         cellCode, binRecords, dataDomain, load, rowAt,
         register, unregister, isLocal, toGeoJSON,
         sqlSources, viewStatements, sql,

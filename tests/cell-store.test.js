@@ -96,6 +96,16 @@ describe('CellStore catalog + load', () => {
         expect(await CS.rowAt('traffic', 22.9, 75.99)).toBeNull();
     });
 
+    it('versions region files by the catalog build stamp (no stamp, no query)', async () => {
+        globalThis.fetch = mockFetch([['catalog.json', { ...CATALOG, generated: '2026-10-20T19:37:12Z' }]]);
+        await CS.init();
+        expect(CS.tableUrl({ json: 'traffic/indore_pilot.json' }))
+            .toBe('data/cells/traffic/indore_pilot.json?v=2026-10-20T19%3A37%3A12Z');
+        globalThis.fetch = mockFetch([['catalog.json', { ...CATALOG, generated: undefined }]]);
+        await CS.init();
+        expect(CS.tableUrl({ json: 'a.json' })).toBe('data/cells/a.json');
+    });
+
     it('honours a cellsBase override', async () => {
         window.DIGIPIN_CONFIG = { cellsBase: 'https://cdn.example.com/cells/' };
         const f = mockFetch([['catalog.json', CATALOG]]);
