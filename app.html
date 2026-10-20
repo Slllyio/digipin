@@ -90,6 +90,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/analyses.css">
     <link rel="stylesheet" href="css/polish.css">
+    <link rel="stylesheet" href="css/insights.css">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -128,6 +129,10 @@
 
     <!-- ===== TOOLBAR ===== -->
     <div id="toolbar" aria-label="Map tools">
+        <button class="toolbar-btn" id="btn-insights" title="Urban Intelligence — city dashboard, what’s notable here, compare areas, what-if scenarios (key: i)">
+            <span class="tb-icon">&#9678;</span>
+            <span class="tb-label">Intel</span>
+        </button>
         <button class="toolbar-btn" id="btn-heatmap" title="Heatmap Overlay">
             <span class="tb-icon">&#9632;</span>
             <span class="tb-label" data-i18n="tb.heatmap">Heatmap</span>
@@ -464,6 +469,7 @@
     <script defer src="js/map-snapshot.js"></script>
     <script defer src="js/open-data-finder.js"></script>
     <script defer src="js/disha-mentions.js"></script>
+    <script defer src="js/disha-intel.js"></script>
     <script defer src="js/disha-tools.js"></script>
     <script defer src="js/disha-agent.js"></script>
     <script defer src="js/disha-panel.js"></script>
@@ -492,6 +498,8 @@
     <script defer src="js/saved-views.js"></script>
     <script defer src="js/analysis.js"></script>
     <script defer src="js/analyses-panel.js"></script>
+    <script defer src="js/urban-insights.js"></script>
+    <script defer src="js/insights-panel.js"></script>
     <script defer src="js/onboarding.js"></script>
     <script defer src="js/layers-panel.js"></script>
     <script defer src="js/dtdl-export.js"></script>

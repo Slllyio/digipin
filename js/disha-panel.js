@@ -430,9 +430,29 @@ const DISHAPanel = (() => {
         const pins = mentions.pins;
         const modelQuestion = mentions.question;
 
+        // Notable-here / what-if / compare / city-ranking questions are answered
+        // from the cell store (js/urban-insights.js), with or without a model.
+        const intel = (typeof DishaIntel !== 'undefined' && !/^\/agent\b/i.test(question)) ? DishaIntel.match(modelQuestion, DishaIntel.cities()) : null;
+        if (intel) {
+            const msg = addMessage('disha', '');
+            const text = await DishaIntel.answer(msg.querySelector('.disha-msg-content'), intel, { cell: _currentCell });
+            scrollToBottom();
+            if (text && DISHA.isConnected()) {
+                _currentContext = await _withEvidence(DISHA.buildFilteredContext(_currentCell, _currentData, modelQuestion));
+                await streamResponse(`${modelQuestion}\n\nExplain the computed result above in plain language for a planner, citing [C#] tags where they apply.`,
+                    `=== COMPUTED RESULT (from the cell store) ===\n${text}`);
+            }
+            return;
+        }
+
         if (!DISHA.isConnected()) {
             const summary = DISHA.offlineSummary(_currentCell, _currentData);
             addMessage('disha', summary);
+            if (typeof DishaIntel !== 'undefined' && _currentCell) {
+                const msg = addMessage('disha', '');
+                await DishaIntel.answer(msg.querySelector('.disha-msg-content'), { type: 'insights' }, { cell: _currentCell });
+                scrollToBottom();
+            }
             return;
         }
 
@@ -443,8 +463,9 @@ const DISHAPanel = (() => {
             return;
         }
 
-        // Smart context: filter by question type instead of sending everything
-        _currentContext = DISHA.buildFilteredContext(_currentCell, _currentData, modelQuestion);
+        // Smart context: filter by question type instead of sending everything,
+        // then add the cited cell-store evidence ([C#] tags) for this cell.
+        _currentContext = await _withEvidence(DISHA.buildFilteredContext(_currentCell, _currentData, modelQuestion));
 
         // A pinned @score only means something to a ranking, so it implies one.
         const intent = pins.length ? 'city_scan' : DISHA.detectIntent(modelQuestion);
@@ -454,6 +475,17 @@ const DISHAPanel = (() => {
         } else {
             await streamResponse(modelQuestion);
         }
+    }
+
+    /** Prepend the selected cell's cited cell-store evidence to a context block. */
+    let _citations = [];
+    async function _withEvidence(context) {
+        _citations = [];
+        if (typeof DishaIntel === 'undefined' || !_currentCell) return context;
+        const ev = await DishaIntel.evidence(_currentCell);
+        if (!ev.text) return context;
+        _citations = ev.citations;
+        return `${ev.text}\n\n${context}`;
     }
 
     /** Answer "find open data for X" with catalog cards (offline-safe). */
@@ -937,6 +969,8 @@ const DISHAPanel = (() => {
                 const hasActions = typeof DISHAActions !== 'undefined';
                 const shown = hasActions ? DISHAActions.stripActions(fullResponse) : fullResponse;
                 applyFormattedResponse(contentEl, shown);
+                // [C#] tags → source-card chips for the cell-store datasets cited.
+                if (typeof DishaIntel !== 'undefined') DishaIntel.decorate(contentEl, _citations);
                 // Show cached indicator if response was from cache
                 if (meta && meta.cached) {
                     const badge = document.createElement('span');

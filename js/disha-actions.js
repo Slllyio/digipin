@@ -276,6 +276,42 @@ const DISHAActions = (() => {
             return 'Showing 5/10/15-min walking zones';
         },
 
+        async areainsights(p) {
+            const UI = _g('UrbanInsights');
+            if (!UI) throw new Error('insights engine unavailable');
+            const code = _norm(p.code).slice(0, 8);
+            const r = await UI.areaInsights({ code }, null, { limit: 6 });
+            return { label: `Insights for ${code}`, observation: `areaInsights ${code}:\n${UI.toText(r)}` };
+        },
+
+        async whatif(p) {
+            const UI = _g('UrbanInsights');
+            if (!UI) throw new Error('scenario engine unavailable');
+            const sc = { type: p.scenario };
+            if (p.code) sc.code = _norm(p.code);
+            if (p.factor) sc.factor = p.factor;
+            if (p.scenario === 'flood') {
+                sc.level = p.level || 'severe';
+                const b = _bounds();
+                if (b.south != null) sc.area = { bbox: b, label: 'the map view' };
+            }
+            const r = await UI.whatIf(sc, null);
+            return { label: r.title, observation: `whatIf ${p.scenario}:\n${UI.toText(r)}` };
+        },
+
+        async comparecities(p) {
+            const UI = _g('UrbanInsights');
+            const CS = _g('CellStore');
+            if (!UI || !CS) throw new Error('compare engine unavailable');
+            const resolve = (s) => {
+                const t = String(s).trim().toLowerCase().replace(/\s+/g, '_');
+                const city = UI.cities(CS).find(c => c.name === t || c.name.replace(/_pilot$/, '') === t || c.label.toLowerCase() === t.replace(/_/g, ' '));
+                return city ? { city: city.name } : { code: _norm(s) };
+            };
+            const r = await UI.compare(resolve(p.a), resolve(p.b), null);
+            return { label: `Compared ${r.a.label} vs ${r.b.label}`, observation: `compare:\n${UI.toText(r)}` };
+        },
+
         finish() { return { label: 'done', observation: '' }; },
     };
 

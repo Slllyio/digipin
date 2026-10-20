@@ -151,6 +151,7 @@ const Panel = (() => {
         // The cell-store profile is local data, so it can paint before the
         // live fetch finishes; update() re-attaches it after the rebuild.
         if (typeof CellProfile !== 'undefined') CellProfile.attachTo(contentEl, cell);
+        if (typeof InsightsPanel !== 'undefined') InsightsPanel.attachTo(contentEl, cell);
         _wireHier(cell);
         if (!panelEl.hasAttribute('tabindex')) panelEl.setAttribute('tabindex', '-1');
         try { panelEl.focus({ preventScroll: true }); } catch { /* older browsers */ }
@@ -176,6 +177,8 @@ const Panel = (() => {
 
         // Every cell-store dataset for this cell (js/cell-profile.js).
         if (typeof CellProfile !== 'undefined') CellProfile.attachTo(contentEl, cell);
+        // What stands out in the cell's neighbourhood (js/insights-panel.js).
+        if (typeof InsightsPanel !== 'undefined') InsightsPanel.attachTo(contentEl, cell);
 
         if (typeof HeatWidget !== 'undefined') {
             HeatWidget.attachTo(contentEl, data?.realtime?.heat || null, cell);

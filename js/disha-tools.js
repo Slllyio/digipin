@@ -81,6 +81,28 @@ const DISHATools = (() => {
             example: '[ACTION] generateSiteBrief code:39J-49L-L8T4',
         },
         {
+            name: 'areaInsights', type: 'areainsights', kind: 'read', agentOnly: true,
+            args: { code: { type: 'digipin', required: true } },
+            desc: 'What stands out in a DIGIPIN area (4-6 characters) vs its city: ranked strengths, concerns, trends, anomalies and hotspots, each with its source dataset.',
+            example: '[ACTION] areaInsights code:34M-P6',
+        },
+        {
+            name: 'whatIf', type: 'whatif', kind: 'read', agentOnly: true,
+            args: {
+                scenario: { type: 'enum', values: ['park', 'density', 'flood'], required: true },
+                code: { type: 'digipin' }, factor: { type: 'number' },
+                level: { type: 'enum', values: ['moderate', 'severe', 'extreme'] },
+            },
+            desc: 'Simulate a new park or more density at a cell (code), or a flood event (level) over the map view: affected cells, buildings and services.',
+            example: '[ACTION] whatIf scenario:park code:34M-P6L',
+        },
+        {
+            name: 'compareCities', type: 'comparecities', kind: 'read', agentOnly: true,
+            args: { a: { type: 'string', required: true }, b: { type: 'string', required: true } },
+            desc: 'Compare two cities (e.g. indore, pune) or DIGIPIN areas indicator by indicator from the cell store.',
+            example: '[ACTION] compareCities a:indore b:pune',
+        },
+        {
             name: 'runIsochrone', type: 'runisochrone', kind: 'state', agentOnly: true,
             args: { code: { type: 'digipin' }, lat: { type: 'number' }, lng: { type: 'number' } },
             desc: 'Show 5/10/15-minute walking zones around a cell or point.',

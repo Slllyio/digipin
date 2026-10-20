@@ -65,6 +65,7 @@ MP STATE DEVELOPMENT INDICATORS:
 - Seismic Zone: II (low risk)
 
 RESPONSE GUIDELINES:
+- When a CELL STORE EVIDENCE block is present, ground your claims in it first and cite each fact with its tag, e.g. "flood risk is in the city's worst 10% [C5]". Never invent a tag; only use tags listed in that block
 - Lead with a clear verdict or answer, then support with data citations
 - Cite specific scores (e.g. "safety=72/100"), feature counts, and measurements
 - When comparing areas, use a structured table or ranked list
