@@ -133,7 +133,8 @@ session.
 | `unpkg.com` | MapLibre GL JS, PMTiles, georaster |
 | `basemaps.cartocdn.com` | Positron (light) + dark-matter (dark) basemap tiles |
 | `fonts.googleapis.com`, `fonts.gstatic.com` | Inter font |
-| `overturemaps-tiles-us-west-2-beta.s3.amazonaws.com` | Overture building tiles |
+| `overturemaps-extras-us-west-2.s3.us-west-2.amazonaws.com` | Overture building/road/place tiles (newest release auto-discovered by `js/overture-release.js`) |
+| `s3.amazonaws.com` (`elevation-tiles-prod`) | Terrain DEM tiles for the Terrain / 3D Mode ground surface |
 
 > The main **Buildings** layer reads `data/vectors/google_open_buildings_indore.pmtiles`
 > — same-origin (not subject to egress), but **not committed** to the repo; drop

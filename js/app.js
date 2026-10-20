@@ -34,6 +34,11 @@ const App = (() => {
             if (typeof I18n !== 'undefined') I18n.init();
         });
         step('MapModule', () => MapModule.init());
+        // Find the newest Overture tile release (old ones are deleted upstream)
+        // before any building/road overlay is switched on. Non-blocking.
+        step('OvertureRelease', () => {
+            if (typeof OvertureRelease !== 'undefined') OvertureRelease.resolve();
+        });
         // Kick off precomputed-score coverage load (async, non-blocking). When
         // data/scores/coverage.json is absent it stays disabled and the app uses
         // the live path unchanged.
@@ -523,10 +528,43 @@ const App = (() => {
                             }
                         } catch { /* silent */ }
                     }
-                    showToast('3D Mode', 'Map pitched to 60\u00b0. Right-click + drag to rotate.', 'success');
+                    if (typeof Terrain !== 'undefined') {
+                        try { Terrain.setEnabled(map, true); } catch { /* terrain optional */ }
+                    }
+                    showToast('3D Mode', 'Map pitched to 60\u00b0 over real terrain. Right-click + drag to rotate.', 'success');
                 } else {
                     map.easeTo({ pitch: 0, bearing: 0, duration: 1000 });
+                    if (typeof Terrain !== 'undefined') {
+                        try { Terrain.setEnabled(map, false); } catch { /* terrain optional */ }
+                    }
                     showToast('2D Mode', 'Returned to top-down view.', 'info');
+                }
+            });
+        }
+
+        // Terrain — drape the map on real elevation (AWS Terrain Tiles) with a
+        // hillshade. 3D Mode switches it on too; this button controls it alone.
+        const terrainBtn = document.getElementById('btn-terrain');
+        const syncTerrainBtn = () => {
+            if (!terrainBtn || typeof Terrain === 'undefined') return;
+            const on = Terrain.isEnabled();
+            terrainBtn.classList.toggle('active', on);
+            terrainBtn.setAttribute('aria-pressed', String(on));
+        };
+        if (terrainBtn && typeof Terrain !== 'undefined') {
+            terrainBtn.setAttribute('aria-pressed', 'false');
+            window.addEventListener('terrain:change', syncTerrainBtn);
+            terrainBtn.addEventListener('click', () => {
+                const map = MapModule.getMap();
+                if (!map) { showToast('Map not ready', 'Try again in a moment.', 'warning'); return; }
+                try {
+                    const on = Terrain.toggle(map);
+                    if (on && map.getPitch() < 30) map.easeTo({ pitch: 55, duration: 1000 });
+                    showToast('Terrain',
+                        on ? `Ground elevation on (${Terrain.DEFAULT_EXAGGERATION}× relief).` : 'Flat ground.',
+                        'info');
+                } catch (err) {
+                    showToast('Terrain Error', err.message, 'error');
                 }
             });
         }
