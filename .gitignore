@@ -108,10 +108,12 @@ data/cells/*
 !data/cells/*/
 data/cells/*/*
 !data/cells/*/*.json
+!data/cells/*/*.json.gz
 !data/cells/*/*.parquet
 !data/cells/*/*/
 data/cells/*/*/*
 !data/cells/*/*/*.json
+!data/cells/*/*/*.json.gz
 
 # Bharatlas mirror — keep the index files in git, leave the GB of
 # PMTiles/parquet locally only (run pipeline/bharatlas/fetch_all.py).
