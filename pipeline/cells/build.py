@@ -126,21 +126,15 @@ def raster_dataset(spec: DatasetSpec, path, bands: dict, derive: dict | None = N
     return spec, store.bin_records(records, spec.level, spec.fields)
 
 
-def build_growth(region: str, level: int = 7):
-    """Built-up fraction 2016 → 2023 (Open Buildings Temporal) + CA-ML P(urban 2035)."""
-    if region != "indore_pilot":   # the growth COGs are clipped to the Indore pilot bbox
-        return None
-    growth = DATA / "growth"
-    built = growth / "buildings_temporal_2016-2023.tif"
-    pred = growth / "ca_urban_prediction.tif"
-    if not built.exists():
-        return None
-    pct = lambda k: (lambda r: None if r.get(k) is None else r[k] * 100)
-    spec = DatasetSpec(
+def growth_spec(level: int = 7) -> DatasetSpec:
+    """The ``growth`` registry entry, shared by every city that has the dataset
+    (Indore from the COGs here, the rest from scripts/build_cell_growth.py)."""
+    return DatasetSpec(
         id="growth", title="Urban growth",
         description="Share of each cell built up in 2016 and 2023 (Google Open Buildings "
                     "Temporal), the change, and the CA-ML probability it is urban by 2035.",
-        source="data/growth/*.tif (pipeline/growth)", license="CC BY 4.0 (Open Buildings)",
+        source="Open Buildings Temporal via Earth Engine (pipeline/growth; other cities: "
+               "scripts/build_cell_growth.py)", license="CC BY 4.0 (Open Buildings)",
         level=level, default_field="built_change_pp", height_m=400, fields=[
             FieldSpec("built_2016_pct", "Built-up 2016", agg="mean", unit="%", domain=[0, 100],
                       ramp="heat"),
@@ -151,6 +145,19 @@ def build_growth(region: str, level: int = 7):
             FieldSpec("urban_2035_pct", "P(urban by 2035)", agg="mean", unit="%",
                       domain=[0, 100], ramp="reds"),
         ])
+
+
+def build_growth(region: str, level: int = 7):
+    """Built-up fraction 2016 → 2023 (Open Buildings Temporal) + CA-ML P(urban 2035)."""
+    if region != "indore_pilot":   # the growth COGs are clipped to the Indore pilot bbox
+        return None
+    growth = DATA / "growth"
+    built = growth / "buildings_temporal_2016-2023.tif"
+    pred = growth / "ca_urban_prediction.tif"
+    if not built.exists():
+        return None
+    pct = lambda k: (lambda r: None if r.get(k) is None else r[k] * 100)
+    spec = growth_spec(level)
     derive = {
         "built_2016_pct": pct("b2016"),
         "built_2023_pct": pct("b2023"),

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-20T21:13:22Z",
+  "generated": "2026-10-20T21:25:03Z",
   "datasets": [
     {
       "id": "air_quality",
@@ -831,7 +831,7 @@
       "id": "growth",
       "title": "Urban growth",
       "description": "Share of each cell built up in 2016 and 2023 (Google Open Buildings Temporal), the change, and the CA-ML probability it is urban by 2035.",
-      "source": "data/growth/*.tif (pipeline/growth)",
+      "source": "Open Buildings Temporal via Earth Engine (pipeline/growth; other cities: scripts/build_cell_growth.py)",
       "license": "CC BY 4.0 (Open Buildings)",
       "group": "Cell Data",
       "level": 7,
@@ -868,7 +868,7 @@
           "agg": "mean",
           "unit": "pp",
           "domain": [
-            -45.22106878769895,
+            -52.766998291015625,
             67.19351410865784
           ],
           "ramp": "diverging"
@@ -892,6 +892,154 @@
         "heightM": 400
       },
       "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "growth/ahmedabad.json",
+          "parquet": "growth/ahmedabad.parquet"
+        },
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "growth/bengaluru/{prefix}.json",
+          "parquet": "growth/bengaluru.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 6498,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "growth/bhopal.json",
+          "parquet": "growth/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 9003,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.31787109375,
+            "north": 13.180908203125
+          },
+          "json": "growth/chennai/{prefix}.json",
+          "parquet": "growth/chennai.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "growth/delhi/{prefix}.json",
+          "parquet": "growth/delhi.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 1346,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "growth/guna.json",
+          "parquet": "growth/guna.parquet"
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "growth/hyderabad/{prefix}.json",
+          "parquet": "growth/hyderabad.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
         {
           "name": "indore_pilot",
           "cells": 30611,
@@ -918,6 +1066,115 @@
               "3MC7",
               "3MC8",
               "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 8962,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "growth/jaipur/{prefix}.json",
+          "parquet": "growth/jaipur.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7243,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "growth/kolkata.json",
+          "parquet": "growth/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 8457,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "growth/lucknow/{prefix}.json",
+          "parquet": "growth/lucknow.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 11372,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "growth/mumbai/{prefix}.json",
+          "parquet": "growth/mumbai.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "growth/pune/{prefix}.json",
+          "parquet": "growth/pune.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
             ]
           }
         }
