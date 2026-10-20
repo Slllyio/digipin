@@ -96,6 +96,7 @@ const LOCAL_ASSETS = [
     './js/building-intel-dialog.js',
     './js/scores-dialog.js',
     './js/digital-twin-layers.js',
+    './js/bharatlas.js',
     './js/training-data-gen.js',
     './js/bivariate-overlay.js',
     './js/ndvi-overlay.js',
