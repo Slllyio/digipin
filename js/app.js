@@ -54,10 +54,22 @@ const App = (() => {
         // registry behind the "Cell Data" panel group + drag-and-drop ingest.
         step('CellStore', () => {
             if (typeof CellStore !== 'undefined') {
-                CellStore.init().then(() => {
+                const cellStoreUp = (ok) => {
                     // Building-level joins need the registry loaded first.
-                    if (typeof BuildingData !== 'undefined') BuildingData.init();
-                });
+                    if (ok && typeof BuildingData !== 'undefined') BuildingData.init();
+                    if (typeof DataStatus === 'undefined') return ok;
+                    // Only flag a real failure: a deployment that has turned the
+                    // store off (config.cellStore === false) is not degraded.
+                    const disabled = window.DIGIPIN_CONFIG && window.DIGIPIN_CONFIG.cellStore === false;
+                    if (ok || disabled) DataStatus.clear('cellstore');
+                    else DataStatus.set('cellstore', {
+                        kind: 'error',
+                        text: 'Per-cell datasets are unavailable right now — layers and analyses are limited.',
+                        action: { label: 'Retry', run: () => CellStore.init().then(cellStoreUp) },
+                    });
+                    return ok;
+                };
+                CellStore.init().then(cellStoreUp);
             }
             if (typeof CellIngest !== 'undefined') CellIngest.wireDropTarget(document.getElementById('map'));
         });
@@ -90,10 +102,19 @@ const App = (() => {
         // Connectivity feedback: tell the user when live data pauses/resumes so a
         // wall of "unavailable" sources reads as "offline", not "broken".
         step('connectivity', () => {
-            window.addEventListener('offline', () =>
-                showToast('You’re offline', 'Showing cached data — live sources are paused.', 'warning'));
-            window.addEventListener('online', () =>
-                showToast('Back online', 'Live data sources reconnected.', 'info'));
+            const offline = () => {
+                showToast('You’re offline', 'Showing cached data — live sources are paused.', 'warning');
+                if (typeof DataStatus !== 'undefined') DataStatus.set('offline', {
+                    kind: 'warning', text: 'You’re offline — showing cached data; live sources are paused.',
+                });
+            };
+            window.addEventListener('offline', offline);
+            window.addEventListener('online', () => {
+                showToast('Back online', 'Live data sources reconnected.', 'info');
+                if (typeof DataStatus !== 'undefined') DataStatus.clear('offline');
+            });
+            // Opened the tab while already offline: say so without waiting for an event.
+            if (typeof navigator !== 'undefined' && navigator.onLine === false) offline();
         });
 
         step('welcome', () => {

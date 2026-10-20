@@ -15,10 +15,15 @@ test.describe('resilience', () => {
     await waitForApp(page);
     await settle(page, 1500);
     expect(await page.evaluate(() => CellStore.isEnabled())).toBe(false);
+    // The user is told, persistently, and can retry; the retry succeeds once
+    // the store is reachable again.
+    await expect(page.locator('#data-status .data-status-row[data-key="cellstore"]')).toBeVisible({ timeout: 15_000 });
+    await page.unroute('**/data/cells/**');
+    await page.click('#data-status .ds-action');
+    await expect(page.locator('#data-status .data-status-row[data-key="cellstore"]')).toHaveCount(0, { timeout: 15_000 });
+    expect(await page.evaluate(() => CellStore.isEnabled())).toBe(true);
     await openLayersPanel(page);
     await expect(page.locator('#dt-layers-dropdown')).toBeVisible();
-    // Analyses degrade to a toast, not a throw.
-    await page.evaluate(() => AnalysesPanel && typeof AnalysesPanel.run === 'function' ? null : null);
   });
 
   test('boots when every data file 404s and marks unavailable rows honestly', async ({ page }) => {
@@ -32,6 +37,15 @@ test.describe('resilience', () => {
     // Selecting a cell still works: the grid is computed client-side.
     await page.evaluate(() => MapModule.selectByCode('34P-LL5-4L7'));
     await expect.poll(() => page.evaluate(() => MapModule.getSelectedCode()), { timeout: 15_000 }).toBe('34P-LL5-4L7');
+  });
+
+  test('going offline shows a persistent notice that clears on reconnect', async ({ page, context }) => {
+    await page.goto('/app.html');
+    await waitForApp(page);
+    await context.setOffline(true);
+    await expect(page.locator('#data-status .data-status-row[data-key="offline"]')).toBeVisible({ timeout: 10_000 });
+    await context.setOffline(false);
+    await expect(page.locator('#data-status .data-status-row[data-key="offline"]')).toHaveCount(0, { timeout: 10_000 });
   });
 
   test('malformed data files do not take the app down', async ({ page }) => {
