@@ -474,6 +474,16 @@ def update_catalog(root: Path, spec: DatasetSpec, region: str, table: CellTable,
     return entry
 
 
+# Regions bigger than this many values are written as .json.gz (≈5x smaller
+# on disk and in the Pages deploy; static hosts serve them as-is).
+GZIP_MIN_VALUES = 50_000
+
+
+def _n_values(table: CellTable) -> int:
+    steps = len(table.times) if table.times is not None else 1
+    return len(table) * max(1, len(table.columns)) * steps
+
+
 def write_dataset(root, spec: DatasetSpec, region: str, table: CellTable,
                   parquet: bool = True, shard: object = "auto",
                   compress: Optional[bool] = None) -> dict:
@@ -484,8 +494,8 @@ def write_dataset(root, spec: DatasetSpec, region: str, table: CellTable,
     file) or an int prefix length. Sharded JSON goes to
     ``<id>/<region>/<prefix>.json``; the GeoParquet copy is always one file.
     ``compress`` writes ``.json.gz`` with quantised integer columns (see
-    ``write_json``); the default compresses temporal datasets, which are
-    most of the store's bytes.
+    ``write_json``); by default temporal datasets and any region holding more
+    than ``GZIP_MIN_VALUES`` values are compressed, small ones stay plain.
     Returns a small summary dict.
     """
     validate(spec)
@@ -499,7 +509,7 @@ def write_dataset(root, spec: DatasetSpec, region: str, table: CellTable,
     spec = resolved_spec(spec, table)
     plen = shard_prefix_len(spec.level, len(table)) if shard == "auto" else shard
     if compress is None:
-        compress = table.times is not None
+        compress = table.times is not None or _n_values(table) > GZIP_MIN_VALUES
     ext = ".json.gz" if compress else ".json"
     single = root / spec.id / f"{region}{ext}"
     shard_dir = root / spec.id / region

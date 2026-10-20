@@ -294,7 +294,7 @@
             "east": 77.780029296875,
             "north": 13.141357421875
           },
-          "json": "built_up/bengaluru/{prefix}.json",
+          "json": "built_up/bengaluru/{prefix}.json.gz",
           "parquet": "built_up/bengaluru.parquet",
           "shards": {
             "prefixLen": 4,
@@ -332,7 +332,7 @@
             "east": 80.320068359375,
             "north": 13.180908203125
           },
-          "json": "built_up/chennai/{prefix}.json",
+          "json": "built_up/chennai/{prefix}.json.gz",
           "parquet": "built_up/chennai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -355,7 +355,7 @@
             "east": 77.3515625,
             "north": 28.88037109375
           },
-          "json": "built_up/delhi/{prefix}.json",
+          "json": "built_up/delhi/{prefix}.json.gz",
           "parquet": "built_up/delhi.parquet",
           "shards": {
             "prefixLen": 4,
@@ -392,7 +392,7 @@
             "east": 78.601806640625,
             "north": 17.55126953125
           },
-          "json": "built_up/hyderabad/{prefix}.json",
+          "json": "built_up/hyderabad/{prefix}.json.gz",
           "parquet": "built_up/hyderabad.parquet",
           "shards": {
             "prefixLen": 4,
@@ -418,7 +418,7 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "built_up/indore_pilot/{prefix}.json",
+          "json": "built_up/indore_pilot/{prefix}.json.gz",
           "parquet": "built_up/indore_pilot.parquet",
           "shards": {
             "prefixLen": 4,
@@ -447,7 +447,7 @@
             "east": 72.9921875,
             "north": 19.271728515625
           },
-          "json": "built_up/mumbai/{prefix}.json",
+          "json": "built_up/mumbai/{prefix}.json.gz",
           "parquet": "built_up/mumbai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -476,7 +476,7 @@
             "east": 73.991943359375,
             "north": 18.64111328125
           },
-          "json": "built_up/pune/{prefix}.json",
+          "json": "built_up/pune/{prefix}.json.gz",
           "parquet": "built_up/pune.parquet",
           "shards": {
             "prefixLen": 4,
@@ -901,7 +901,7 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "growth/indore_pilot/{prefix}.json",
+          "json": "growth/indore_pilot/{prefix}.json.gz",
           "parquet": "growth/indore_pilot.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1085,7 +1085,7 @@
             "east": 77.780029296875,
             "north": 13.141357421875
           },
-          "json": "land_cover/bengaluru/{prefix}.json",
+          "json": "land_cover/bengaluru/{prefix}.json.gz",
           "parquet": "land_cover/bengaluru.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1111,7 +1111,7 @@
             "east": 77.520751953125,
             "north": 23.3212890625
           },
-          "json": "land_cover/bhopal.json",
+          "json": "land_cover/bhopal.json.gz",
           "parquet": "land_cover/bhopal.parquet"
         },
         {
@@ -1123,7 +1123,7 @@
             "east": 80.320068359375,
             "north": 13.180908203125
           },
-          "json": "land_cover/chennai/{prefix}.json",
+          "json": "land_cover/chennai/{prefix}.json.gz",
           "parquet": "land_cover/chennai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1146,7 +1146,7 @@
             "east": 77.3515625,
             "north": 28.88037109375
           },
-          "json": "land_cover/delhi/{prefix}.json",
+          "json": "land_cover/delhi/{prefix}.json.gz",
           "parquet": "land_cover/delhi.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1183,7 +1183,7 @@
             "east": 78.601806640625,
             "north": 17.55126953125
           },
-          "json": "land_cover/hyderabad/{prefix}.json",
+          "json": "land_cover/hyderabad/{prefix}.json.gz",
           "parquet": "land_cover/hyderabad.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1209,7 +1209,7 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "land_cover/indore_pilot/{prefix}.json",
+          "json": "land_cover/indore_pilot/{prefix}.json.gz",
           "parquet": "land_cover/indore_pilot.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1238,7 +1238,7 @@
             "east": 72.9921875,
             "north": 19.271728515625
           },
-          "json": "land_cover/mumbai/{prefix}.json",
+          "json": "land_cover/mumbai/{prefix}.json.gz",
           "parquet": "land_cover/mumbai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -1267,7 +1267,7 @@
             "east": 73.991943359375,
             "north": 18.64111328125
           },
-          "json": "land_cover/pune/{prefix}.json",
+          "json": "land_cover/pune/{prefix}.json.gz",
           "parquet": "land_cover/pune.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2058,7 +2058,7 @@
             "east": 77.3515625,
             "north": 28.88037109375
           },
-          "json": "nightlights/delhi/{prefix}.json",
+          "json": "nightlights/delhi/{prefix}.json.gz",
           "parquet": "nightlights/delhi.parquet",
           "shards": {
             "prefixLen": 4,
@@ -2121,7 +2121,7 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "nightlights/indore_pilot/{prefix}.json",
+          "json": "nightlights/indore_pilot/{prefix}.json.gz",
           "parquet": "nightlights/indore_pilot.parquet",
           "shards": {
             "prefixLen": 4,
@@ -3054,7 +3054,7 @@
             "east": 77.780029296875,
             "north": 13.141357421875
           },
-          "json": "population/bengaluru/{prefix}.json",
+          "json": "population/bengaluru/{prefix}.json.gz",
           "parquet": "population/bengaluru.parquet",
           "shards": {
             "prefixLen": 4,
@@ -3115,7 +3115,7 @@
             "east": 77.3515625,
             "north": 28.88037109375
           },
-          "json": "population/delhi/{prefix}.json",
+          "json": "population/delhi/{prefix}.json.gz",
           "parquet": "population/delhi.parquet",
           "shards": {
             "prefixLen": 4,
@@ -3152,7 +3152,7 @@
             "east": 78.601806640625,
             "north": 17.55126953125
           },
-          "json": "population/hyderabad/{prefix}.json",
+          "json": "population/hyderabad/{prefix}.json.gz",
           "parquet": "population/hyderabad.parquet",
           "shards": {
             "prefixLen": 4,
@@ -3178,7 +3178,7 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "population/indore_pilot/{prefix}.json",
+          "json": "population/indore_pilot/{prefix}.json.gz",
           "parquet": "population/indore_pilot.parquet",
           "shards": {
             "prefixLen": 4,
@@ -3207,7 +3207,7 @@
             "east": 72.9921875,
             "north": 19.271728515625
           },
-          "json": "population/mumbai/{prefix}.json",
+          "json": "population/mumbai/{prefix}.json.gz",
           "parquet": "population/mumbai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -3980,7 +3980,7 @@
             "east": 77.3515625,
             "north": 28.884765625
           },
-          "json": "scores/delhi.json",
+          "json": "scores/delhi.json.gz",
           "parquet": "scores/delhi.parquet"
         },
         {
@@ -4111,7 +4111,7 @@
             "east": 77.780029296875,
             "north": 13.141357421875
           },
-          "json": "surface_heat/bengaluru/{prefix}.json",
+          "json": "surface_heat/bengaluru/{prefix}.json.gz",
           "parquet": "surface_heat/bengaluru.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4172,7 +4172,7 @@
             "east": 77.3515625,
             "north": 28.88037109375
           },
-          "json": "surface_heat/delhi/{prefix}.json",
+          "json": "surface_heat/delhi/{prefix}.json.gz",
           "parquet": "surface_heat/delhi.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4209,7 +4209,7 @@
             "east": 78.601806640625,
             "north": 17.55126953125
           },
-          "json": "surface_heat/hyderabad/{prefix}.json",
+          "json": "surface_heat/hyderabad/{prefix}.json.gz",
           "parquet": "surface_heat/hyderabad.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4235,7 +4235,7 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "surface_heat/indore_pilot/{prefix}.json",
+          "json": "surface_heat/indore_pilot/{prefix}.json.gz",
           "parquet": "surface_heat/indore_pilot.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4264,7 +4264,7 @@
             "east": 72.9921875,
             "north": 19.271728515625
           },
-          "json": "surface_heat/mumbai/{prefix}.json",
+          "json": "surface_heat/mumbai/{prefix}.json.gz",
           "parquet": "surface_heat/mumbai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4384,7 +4384,7 @@
             "east": 77.780029296875,
             "north": 13.141357421875
           },
-          "json": "terrain/bengaluru/{prefix}.json",
+          "json": "terrain/bengaluru/{prefix}.json.gz",
           "parquet": "terrain/bengaluru.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4445,7 +4445,7 @@
             "east": 77.3515625,
             "north": 28.88037109375
           },
-          "json": "terrain/delhi/{prefix}.json",
+          "json": "terrain/delhi/{prefix}.json.gz",
           "parquet": "terrain/delhi.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4482,7 +4482,7 @@
             "east": 78.601806640625,
             "north": 17.55126953125
           },
-          "json": "terrain/hyderabad/{prefix}.json",
+          "json": "terrain/hyderabad/{prefix}.json.gz",
           "parquet": "terrain/hyderabad.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4508,7 +4508,7 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "terrain/indore_pilot/{prefix}.json",
+          "json": "terrain/indore_pilot/{prefix}.json.gz",
           "parquet": "terrain/indore_pilot.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4537,7 +4537,7 @@
             "east": 72.9921875,
             "north": 19.271728515625
           },
-          "json": "terrain/mumbai/{prefix}.json",
+          "json": "terrain/mumbai/{prefix}.json.gz",
           "parquet": "terrain/mumbai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4809,7 +4809,7 @@
             "east": 77.780029296875,
             "north": 13.141357421875
           },
-          "json": "water/bengaluru/{prefix}.json",
+          "json": "water/bengaluru/{prefix}.json.gz",
           "parquet": "water/bengaluru.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4847,7 +4847,7 @@
             "east": 80.320068359375,
             "north": 13.180908203125
           },
-          "json": "water/chennai/{prefix}.json",
+          "json": "water/chennai/{prefix}.json.gz",
           "parquet": "water/chennai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4870,7 +4870,7 @@
             "east": 77.3515625,
             "north": 28.88037109375
           },
-          "json": "water/delhi/{prefix}.json",
+          "json": "water/delhi/{prefix}.json.gz",
           "parquet": "water/delhi.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4907,7 +4907,7 @@
             "east": 78.601806640625,
             "north": 17.55126953125
           },
-          "json": "water/hyderabad/{prefix}.json",
+          "json": "water/hyderabad/{prefix}.json.gz",
           "parquet": "water/hyderabad.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4933,7 +4933,7 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "water/indore_pilot/{prefix}.json",
+          "json": "water/indore_pilot/{prefix}.json.gz",
           "parquet": "water/indore_pilot.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4962,7 +4962,7 @@
             "east": 72.9921875,
             "north": 19.271728515625
           },
-          "json": "water/mumbai/{prefix}.json",
+          "json": "water/mumbai/{prefix}.json.gz",
           "parquet": "water/mumbai.parquet",
           "shards": {
             "prefixLen": 4,
@@ -4991,7 +4991,7 @@
             "east": 73.991943359375,
             "north": 18.64111328125
           },
-          "json": "water/pune/{prefix}.json",
+          "json": "water/pune/{prefix}.json.gz",
           "parquet": "water/pune.parquet",
           "shards": {
             "prefixLen": 4,

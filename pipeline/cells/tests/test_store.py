@@ -270,3 +270,13 @@ def test_scale_detection():
     assert store._scale_for([1, 2, 3]) is None
     assert store._scale_for([0.123456]) is None          # too many decimals → left as floats
     assert store._scale_for(["a"]) is None
+
+
+def test_big_static_regions_are_gzipped(tmp_path):
+    t = _many(n_side=140)                      # 19,600 cells x 3 fields > GZIP_MIN_VALUES
+    store.write_dataset(tmp_path, _spec(level=8), "r", t, parquet=False, shard=None)
+    (d,) = json.loads((tmp_path / "catalog.json").read_text())["datasets"]
+    assert d["regions"][0]["json"] == "demo/r.json.gz"
+    back = store.read_json(tmp_path / "demo" / "r.json.gz")
+    assert back.codes == t.codes and back.columns["kind"] == t.columns["kind"]
+    assert back.columns["density"] == pytest.approx(t.columns["density"])
