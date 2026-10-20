@@ -80,24 +80,33 @@ jobs:
           if [ "$REGION" = "all" ]; then ARGS=""; else ARGS="$REGION"; fi
           python -m pipeline.scores.build_cities $ARGS --level "$LEVEL" --out data/scores
 
-      - name: Mirror scores into the per-cell data store (docs/CELL_STORE.md)
-        run: |
-          pip install -r pipeline/cells/requirements.txt
-          for r in $(python -c "import json; print(' '.join(x['name'] for x in json.load(open('data/scores/coverage.json'))['regions']))"); do
-            python -m pipeline.cells.build --region "$r" scores
-          done
-          python -m pipeline.cells.coverage --write
+      - name: Install cell-store deps (scores are mirrored into data/cells/ on commit)
+        run: pip install -r pipeline/cells/requirements.txt
 
       - name: Commit refreshed tiles
+        # Other work lands on the branch during the long build, and
+        # data/cells/catalog.json conflicts on a rebase. So: commit here, then
+        # publish from the branch's current head with this run's data/scores/
+        # and re-derive data/cells/ from it (cheap: it re-reads the shards).
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/scores/ data/cells/ docs/CELL_STORE.md
-          if ! git diff --staged --quiet; then
-            git commit -m "chore(scores): refresh $REGION tiles (level $LEVEL)"
-            # The build is long; rebase over anything pushed meanwhile.
-            git pull --rebase origin "${GITHUB_REF_NAME}"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
-          else
-            echo "No changes to commit."
-          fi
+          git add data/scores/
+          git diff --staged --quiet && { echo "No changes to commit."; exit 0; }
+          git commit -qm "build: scores"
+          BUILD_SHA=$(git rev-parse HEAD)
+          for i in 1 2 3 4; do
+            git fetch -q origin "${GITHUB_REF_NAME}"
+            git checkout -qB publish "origin/${GITHUB_REF_NAME}"
+            git checkout "$BUILD_SHA" -- data/scores/
+            for r in $(python -c "import json; print(' '.join(x['name'] for x in json.load(open('data/scores/coverage.json'))['regions']))"); do
+              python -m pipeline.cells.build --region "$r" scores
+            done
+            python -m pipeline.cells.coverage --write
+            git add data/scores/ data/cells/ docs/CELL_STORE.md
+            git diff --staged --quiet && { echo "No changes to commit."; exit 0; }
+            git commit -qm "chore(scores): refresh $REGION tiles (level $LEVEL)"
+            git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep $((i * 10))
+          done
+          exit 1
