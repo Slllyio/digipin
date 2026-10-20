@@ -59,6 +59,7 @@ jobs:
         pip install -r requirements-test.txt
         pip install -r scrapers/requirements.txt
         pip install -r pipeline/scores/requirements.txt
+        pip install -r pipeline/cells/requirements.txt
 
     - name: Pytest (scrapers + smoke)
       run: pytest -q

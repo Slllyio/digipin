@@ -90,6 +90,23 @@ parsed by an offline concept lexicon; a connected LLM only upgrades parse qualit
 Either way the top matches are **highlighted on the map** (ranked cells, #1
 emphasised) and framed in view, not just listed.
 
+## Per-cell data store (plot any dataset)
+
+Every dataset keyed by DIGIPIN cell, whether pipeline grids, precomputed scores
+or your own CSV/GeoJSON, is stored in one documented shape under `data/cells/`.
+That shape is columnar JSON for the app plus GeoParquet for DuckDB, QGIS and
+pandas, and it is listed in a layer registry (`catalog.json`). Every registry
+entry shows up under **Layers** as 2D or 3D extruded cells with no per-layer
+code. You can also drop a CSV or GeoJSON on the map to bin and plot it in the
+browser.
+
+```sh
+python -m pipeline.cells.build --region indore_pilot         # scores, traffic, mobility
+python -m pipeline.cells.ingest my.csv --id my_data --level 8   # any lat/lng or digipin file
+```
+
+The schema, levels and API are in [`docs/CELL_STORE.md`](docs/CELL_STORE.md).
+
 ## Real-time scrapers
 
 Pulls near-real-time data from Indian public sources that lack clean APIs

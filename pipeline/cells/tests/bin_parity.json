@@ -1,0 +1,278 @@
+{
+ "fields": [
+  {
+   "key": "count",
+   "label": "Count",
+   "type": "number",
+   "agg": "count",
+   "ramp": "viridis"
+  },
+  {
+   "key": "pop",
+   "label": "Population",
+   "type": "number",
+   "agg": "sum",
+   "ramp": "viridis"
+  },
+  {
+   "key": "aqi",
+   "label": "AQI",
+   "type": "number",
+   "agg": "mean",
+   "ramp": "viridis"
+  },
+  {
+   "key": "peak",
+   "label": "Peak",
+   "type": "number",
+   "agg": "max",
+   "ramp": "viridis"
+  },
+  {
+   "key": "low",
+   "label": "Low",
+   "type": "number",
+   "agg": "min",
+   "ramp": "viridis"
+  },
+  {
+   "key": "los",
+   "label": "LOS",
+   "type": "category",
+   "agg": "max"
+  },
+  {
+   "key": "kind",
+   "label": "Kind",
+   "type": "category",
+   "agg": "mode"
+  },
+  {
+   "key": "flag",
+   "label": "Flag",
+   "type": "boolean",
+   "agg": "any"
+  }
+ ],
+ "records": [
+  {
+   "lat": 22.7196,
+   "lng": 75.8577,
+   "pop": 120,
+   "aqi": 80,
+   "peak": 3,
+   "low": 3,
+   "los": "B",
+   "kind": "school",
+   "flag": 0
+  },
+  {
+   "lat": 22.7197,
+   "lng": 75.8578,
+   "pop": 30,
+   "aqi": 100,
+   "peak": 9,
+   "low": 1,
+   "los": "E",
+   "kind": "clinic",
+   "flag": 1
+  },
+  {
+   "lat": 22.7195,
+   "lng": 75.8579,
+   "pop": null,
+   "aqi": null,
+   "peak": null,
+   "low": null,
+   "los": null,
+   "kind": "school",
+   "flag": null
+  },
+  {
+   "digipin": "34P-LLM-PKT9",
+   "pop": 5,
+   "aqi": 50,
+   "peak": 1,
+   "low": 1,
+   "los": "A",
+   "kind": "park",
+   "flag": 0
+  },
+  {
+   "lat": 22.75,
+   "lng": 75.9,
+   "pop": 7,
+   "aqi": 60,
+   "peak": 2,
+   "low": 2,
+   "los": "C",
+   "kind": "clinic",
+   "flag": 0
+  },
+  {
+   "lat": 22.7501,
+   "lng": 75.9001,
+   "kind": "school"
+  },
+  {
+   "lat": 1.0,
+   "lng": 75.0,
+   "pop": 999
+  },
+  {
+   "pop": 1
+  }
+ ],
+ "cases": [
+  {
+   "level": 6,
+   "cells": [
+    "34PLLM",
+    "34PLLP",
+    "3MC88P"
+   ],
+   "columns": {
+    "count": [
+     1,
+     2,
+     3
+    ],
+    "pop": [
+     5,
+     7,
+     150
+    ],
+    "aqi": [
+     50.0,
+     60.0,
+     90.0
+    ],
+    "peak": [
+     1,
+     2,
+     9
+    ],
+    "low": [
+     1,
+     2,
+     1
+    ],
+    "los": [
+     "A",
+     "C",
+     "E"
+    ],
+    "kind": [
+     "park",
+     "clinic",
+     "school"
+    ],
+    "flag": [
+     false,
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "level": 7,
+   "cells": [
+    "34PLLMP",
+    "34PLLPT",
+    "3MC88PJ"
+   ],
+   "columns": {
+    "count": [
+     1,
+     2,
+     3
+    ],
+    "pop": [
+     5,
+     7,
+     150
+    ],
+    "aqi": [
+     50.0,
+     60.0,
+     90.0
+    ],
+    "peak": [
+     1,
+     2,
+     9
+    ],
+    "low": [
+     1,
+     2,
+     1
+    ],
+    "los": [
+     "A",
+     "C",
+     "E"
+    ],
+    "kind": [
+     "park",
+     "clinic",
+     "school"
+    ],
+    "flag": [
+     false,
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "level": 8,
+   "cells": [
+    "34PLLMPK",
+    "34PLLPTM",
+    "3MC88PJL"
+   ],
+   "columns": {
+    "count": [
+     1,
+     2,
+     3
+    ],
+    "pop": [
+     5,
+     7,
+     150
+    ],
+    "aqi": [
+     50.0,
+     60.0,
+     90.0
+    ],
+    "peak": [
+     1,
+     2,
+     9
+    ],
+    "low": [
+     1,
+     2,
+     1
+    ],
+    "los": [
+     "A",
+     "C",
+     "E"
+    ],
+    "kind": [
+     "park",
+     "clinic",
+     "school"
+    ],
+    "flag": [
+     false,
+     false,
+     true
+    ]
+   }
+  }
+ ]
+}

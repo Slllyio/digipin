@@ -40,6 +40,12 @@ const App = (() => {
         step('PrecomputedScores', () => {
             if (typeof PrecomputedScores !== 'undefined') PrecomputedScores.init();
         });
+        // Per-DIGIPIN-cell data store (data/cells/catalog.json): the layer
+        // registry behind the "Cell Data" panel group + drag-and-drop ingest.
+        step('CellStore', () => {
+            if (typeof CellStore !== 'undefined') CellStore.init();
+            if (typeof CellIngest !== 'undefined') CellIngest.wireDropTarget(document.getElementById('map'));
+        });
         step('Panel', () => Panel.init());
         step('DISHAPanel', () => DISHAPanel.init());
         step('BuildingIntelDialog', () => BuildingIntelDialog.init());
@@ -953,6 +959,10 @@ const App = (() => {
                     if (nm && !/· no data$/.test(nm.textContent)) nm.textContent += ' · no data';
                 }).catch(() => { /* probe is best-effort */ });
             });
+
+            // Registry-driven rows: every cell-store dataset (and any dropped
+            // CSV/GeoJSON) gets a row with no per-layer code — js/cell-layers.js.
+            if (typeof CellLayers !== 'undefined') CellLayers.mountPanel(dtLayersDrop);
 
             dtLayersBtn.setAttribute('aria-haspopup', 'true');
             dtLayersBtn.setAttribute('aria-expanded', 'false');

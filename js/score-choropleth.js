@@ -10,6 +10,13 @@
  * .js / digital-twin-layers.js): add-once guard on the source, fill layer with
  * source-layer "scores" (the tiler's layer name), data-driven fill colour.
  * Disabled gracefully when no tile is published yet.
+ *
+ * Migrated onto the cell-store registry (docs/CELL_STORE.md): when
+ * data/cells/catalog.json lists a `scores` dataset, show() hands rendering to
+ * the generic CellLayers renderer (any score, 2D or 3D extruded cells, field
+ * picker in its legend) and the PMTiles path below is only the fallback. The
+ * public API (show/clear/toggle/setScore/isActive) is unchanged, so URL state
+ * and DISHA actions keep working.
  */
 const ScoreChoropleth = (() => {
     const SOURCE_PREFIX = 'score-choro-src-';
@@ -18,6 +25,15 @@ const ScoreChoropleth = (() => {
     let _active = false;
     let _scoreKey = 'livability';
     let _layers = [];   // [{ source, layer }]
+    let _viaCells = false;   // rendering through CellLayers('scores')
+    let _cellsFailed = false; // its table failed to load once — stay on PMTiles
+    const CELL_DATASET = 'scores';
+
+    /** True when the cell store can render the scores dataset. */
+    function _cellsReady() {
+        return !_cellsFailed && typeof CellStore !== 'undefined' && typeof CellLayers !== 'undefined'
+            && !!CellStore.get(CELL_DATASET);
+    }
 
     function _base() {
         const cfg = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG) || {};
@@ -38,6 +54,8 @@ const ScoreChoropleth = (() => {
     }
 
     function clear() {
+        if (_viaCells) CellLayers.hide(CELL_DATASET);
+        _viaCells = false;
         if (_map) {
             _layers.forEach(({ layer, source }) => {
                 if (_map.getLayer(layer)) _map.removeLayer(layer);
@@ -54,6 +72,20 @@ const ScoreChoropleth = (() => {
         _map = MapModule.getMap();
         if (!_map) return false;
         clear();
+
+        if (_cellsReady()) {
+            _viaCells = true;
+            _active = true;
+            CellLayers.show(CELL_DATASET, { field: _scoreKey }).then(ok => {
+                if (ok || !_viaCells) return;
+                // Catalog listed it but the table didn't load — PMTiles fallback.
+                _viaCells = false;
+                _active = false;
+                _cellsFailed = true;
+                show();
+            });
+            return true;
+        }
 
         const regions = (typeof PrecomputedScores !== 'undefined' && PrecomputedScores.getRegions)
             ? PrecomputedScores.getRegions() : [];
@@ -90,6 +122,7 @@ const ScoreChoropleth = (() => {
 
     function setScore(scoreKey) {
         _scoreKey = scoreKey;
+        if (_viaCells) { CellLayers.setField(CELL_DATASET, scoreKey); return; }
         if (_active) {
             _layers.forEach(({ layer }) => {
                 if (_map.getLayer(layer)) _map.setPaintProperty(layer, 'fill-color', colorExpr(scoreKey));
@@ -98,13 +131,20 @@ const ScoreChoropleth = (() => {
     }
 
     function toggle() {
-        if (_active) { clear(); return false; }
+        if (isActive()) { clear(); return false; }
         return show(_scoreKey);
     }
 
-    function isActive() { return _active; }
+    function isActive() {
+        // The cell legend's ✕ can hide the layer directly, so ask the renderer.
+        if (_viaCells) return CellLayers.isVisible(CELL_DATASET);
+        return _active;
+    }
 
-    function getScoreKey() { return _scoreKey; }
+    function getScoreKey() {
+        const st = _viaCells && CellLayers.state(CELL_DATASET);
+        return (st && st.field) || _scoreKey;
+    }
 
     return { show, clear, toggle, isActive, setScore, getScoreKey, colorExpr, pmtilesUrl };
 })();
