@@ -27,6 +27,9 @@ const DISHAPanel = (() => {
             }
         });
 
+        // `/layer` + `@score` pick-list while typing (js/disha-mentions.js).
+        if (typeof DishaMentions !== 'undefined') DishaMentions.attachAutocomplete(inputEl);
+
         // Settings gear click
         const gearBtn = document.getElementById('disha-settings-btn');
         if (gearBtn) {
@@ -415,6 +418,12 @@ const DISHAPanel = (() => {
 
         document.getElementById('disha-suggestions').style.display = 'none';
 
+        // `/layer` turns layers on; `@score` pins scores into the ranking.
+        const mentions = await _applyMentions(question);
+        if (mentions.done) return;
+        const pins = mentions.pins;
+        const modelQuestion = mentions.question;
+
         if (!DISHA.isConnected()) {
             const summary = DISHA.offlineSummary(_currentCell, _currentData);
             addMessage('disha', summary);
@@ -422,15 +431,198 @@ const DISHAPanel = (() => {
         }
 
         // Smart context: filter by question type instead of sending everything
-        _currentContext = DISHA.buildFilteredContext(_currentCell, _currentData, question);
+        _currentContext = DISHA.buildFilteredContext(_currentCell, _currentData, modelQuestion);
 
-        const intent = DISHA.detectIntent(question);
+        // A pinned @score only means something to a ranking, so it implies one.
+        const intent = pins.length ? 'city_scan' : DISHA.detectIntent(modelQuestion);
 
         if (intent === 'city_scan') {
-            await handleCityScan(question);
+            await handleCityScan(modelQuestion, pins, question);
         } else {
-            await streamResponse(question);
+            await streamResponse(modelQuestion);
         }
+    }
+
+    /**
+     * Resolve `/layer` and `@score` tokens in a question: turn the layers on,
+     * report each token as a ✓/✗ chip, and return the question rewritten for
+     * the model plus the pinned score ids. `done` = nothing left to answer.
+     */
+    async function _applyMentions(question) {
+        const none = { question, pins: [], done: false };
+        if (typeof DishaMentions === 'undefined') return none;
+        const tok = DishaMentions.extract(question);
+        if (!tok.layers.length && !tok.scores.length) return none;
+
+        const L = DishaMentions.resolve(tok.layers, DishaMentions.layerCandidates());
+        const S = DishaMentions.resolve(tok.scores, DishaMentions.scoreCandidates());
+        const chips = [];
+        for (const c of L.matched) {
+            let ok = false;
+            try { ok = await DishaMentions.showLayer(c); } catch { ok = false; }
+            chips.push({ ok, label: `${c.name} on`, type: '/' + c.token, error: 'couldn’t turn it on here' });
+        }
+        S.matched.forEach(c => chips.push({ ok: true, label: `Pinned ${c.name}` }));
+        const miss = (sigil) => (u) => chips.push({
+            ok: false, type: sigil + u.token,
+            error: u.suggestions.length ? `not found, try ${u.suggestions.join(', ')}` : 'not found',
+        });
+        L.unknown.forEach(miss('/'));
+        S.unknown.forEach(miss('@'));
+
+        const msg = addMessage('disha', '');
+        const content = msg.querySelector('.disha-msg-content');
+        content.textContent = '';
+        _renderActionChips(content, chips);
+
+        const rewritten = DishaMentions.rewrite(question, S.matched);
+        return { question: rewritten, pins: S.matched.map(m => m.id), done: !rewritten && !S.matched.length };
+    }
+
+    // ===== PLAN BEFORE RUN =====
+    const SKIP_PLANS_KEY = 'digipin_skip_plans';
+
+    function _skipPlans() {
+        try { return localStorage.getItem(SKIP_PLANS_KEY) === '1'; } catch { return false; }
+    }
+
+    function _providerName() {
+        if (typeof DISHAProviders === 'undefined' || !DISHAProviders.isConnected()) return null;
+        const a = DISHAProviders.getActive && DISHAProviders.getActive();
+        return (a && a.name) || null;
+    }
+
+    function _gridReady() {
+        return typeof PrecomputedScores !== 'undefined' && PrecomputedScores.isEnabled && PrecomputedScores.isEnabled();
+    }
+
+    /** A plan is worth showing for multi-score rankings, unless the user opted out. */
+    function _shouldShowPlan(parsed) {
+        return !!parsed && Object.keys(parsed.weights || {}).length >= 2 && !_skipPlans();
+    }
+
+    /**
+     * Show the ranking's steps and wait for the user. Resolves to the (possibly
+     * trimmed) parsed weighting on Run, or null on Edit / Cancel.
+     */
+    function _confirmPlan(parsed, originalQuestion) {
+        return new Promise(resolve => {
+            let current = { ...parsed, weights: { ...parsed.weights } };
+            const messagesEl = document.getElementById('disha-messages');
+            const card = document.createElement('div');
+            card.className = 'disha-msg disha-msg-disha';
+            const content = document.createElement('div');
+            content.className = 'disha-msg-content disha-plan';
+            card.appendChild(content);
+
+            const header = document.createElement('div');
+            header.className = 'disha-scan-header';
+            header.textContent = 'Plan';
+            const intro = document.createElement('div');
+            intro.className = 'disha-plan-intro';
+            intro.textContent = 'Here’s what I’ll do. Remove any score you don’t want, then run it.';
+            const list = document.createElement('ol');
+            list.className = 'disha-plan-steps';
+            const actions = document.createElement('div');
+            actions.className = 'disha-plan-actions';
+
+            const btn = (label, cls) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'disha-plan-btn ' + cls;
+                b.textContent = label;
+                return b;
+            };
+            const run = btn('Run', 'primary');
+            const edit = btn('Edit question', '');
+            const cancel = btn('Cancel', '');
+            const skipLbl = document.createElement('label');
+            skipLbl.className = 'disha-plan-skip';
+            const skip = document.createElement('input');
+            skip.type = 'checkbox';
+            skipLbl.appendChild(skip);
+            skipLbl.appendChild(document.createTextNode(' Run without asking next time'));
+
+            const render = () => {
+                list.textContent = '';
+                const steps = Text2Map.plan(current, { gridReady: _gridReady(), provider: _providerName() });
+                steps.forEach((st, i) => {
+                    const li = document.createElement('li');
+                    const t = document.createElement('div');
+                    t.className = 'disha-plan-title';
+                    t.textContent = st.title;
+                    li.appendChild(t);
+                    if (i === 0) {
+                        // Weights as removable chips instead of a line of text.
+                        const chips = document.createElement('div');
+                        chips.className = 'disha-plan-weights';
+                        Object.entries(current.weights).forEach(([id, w]) => {
+                            const chip = document.createElement('span');
+                            chip.className = 'disha-plan-weight' + (w < 0 ? ' neg' : '');
+                            const pin = (current.pinned || []).includes(id) ? ' (pinned)' : '';
+                            chip.textContent = `${Text2Map.scoreLabel(id)} ${w > 0 ? '+' : '−'}${Math.abs(w).toFixed(1)}${pin}`;
+                            const x = document.createElement('button');
+                            x.type = 'button';
+                            x.textContent = '×';
+                            x.setAttribute('aria-label', 'Remove ' + Text2Map.scoreLabel(id));
+                            x.addEventListener('click', () => {
+                                delete current.weights[id];
+                                render();
+                            });
+                            chip.appendChild(x);
+                            chips.appendChild(chip);
+                        });
+                        li.appendChild(chips);
+                    } else {
+                        const d = document.createElement('div');
+                        d.className = 'disha-plan-detail';
+                        d.textContent = st.detail;
+                        li.appendChild(d);
+                    }
+                    const src = document.createElement('div');
+                    src.className = 'disha-plan-source';
+                    src.textContent = st.source;
+                    li.appendChild(src);
+                    list.appendChild(li);
+                });
+                run.disabled = Object.keys(current.weights).length === 0;
+            };
+
+            const finish = (value) => {
+                [run, edit, cancel, skip].forEach(el => { el.disabled = true; });
+                card.classList.add('disha-plan-done');
+                resolve(value);
+            };
+            run.addEventListener('click', () => {
+                if (skip.checked) {
+                    try { localStorage.setItem(SKIP_PLANS_KEY, '1'); } catch { /* storage blocked */ }
+                }
+                const ids = Object.keys(current.weights);
+                if (current.primaryScore && current.weights[current.primaryScore] == null) {
+                    current.primaryScore = ids.reduce((a, b) => (Math.abs(current.weights[b]) > Math.abs(current.weights[a]) ? b : a));
+                }
+                finish(current);
+            });
+            edit.addEventListener('click', () => {
+                const inputEl = document.getElementById('disha-input');
+                finish(null);
+                if (inputEl) { inputEl.disabled = false; inputEl.value = originalQuestion; inputEl.focus(); }
+            });
+            cancel.addEventListener('click', () => finish(null));
+
+            actions.appendChild(run);
+            actions.appendChild(edit);
+            actions.appendChild(cancel);
+            content.appendChild(header);
+            content.appendChild(intro);
+            content.appendChild(list);
+            content.appendChild(actions);
+            content.appendChild(skipLbl);
+            render();
+            messagesEl.appendChild(card);
+            scrollToBottom();
+            run.focus();
+        });
     }
 
     /** Populate the input with a suggestion chip's text and submit it. */
@@ -452,7 +644,7 @@ const DISHAPanel = (() => {
     }
 
     /** Run the city-wide scan flow: rank DIGIPIN cells for the question, render results, then stream an AI summary. */
-    async function handleCityScan(question) {
+    async function handleCityScan(question, pins = [], originalQuestion = question) {
         _isCityScanning = true;
         // Drop any previous answer's highlight before this scan starts.
         if (typeof Text2MapResultsLayer !== 'undefined') {
@@ -482,13 +674,30 @@ const DISHAPanel = (() => {
             // keyword fallback) and rank the precomputed DIGIPIN grid instantly.
             // Falls back internally to the live sampler when the viewport isn't
             // covered. Older path (DISHA.cityScan) kept if Text2Map is absent.
-            let results, label = null;
+            let results, label = null, out = null;
             if (typeof Text2Map !== 'undefined') {
                 scanText.textContent = 'Understanding your question...';
                 const bounds = _cityScanBounds();
-                const out = await Text2Map.run(question, bounds, (status) => {
+                let parsed = await Text2Map.parse(question);
+                if (pins.length && typeof DishaMentions !== 'undefined') {
+                    parsed = DishaMentions.applyPins(
+                        parsed || { weights: {}, primaryScore: pins[0], label: 'Pinned scores', source: 'keyword' }, pins);
+                }
+                // Plan before run: show the steps + weights and wait for a go-ahead.
+                if (_shouldShowPlan(parsed)) {
+                    scanText.textContent = 'Waiting for you to confirm the plan...';
+                    parsed = await _confirmPlan(parsed, originalQuestion);
+                    if (!parsed) {
+                        statusMsg.remove();
+                        resetInputState();
+                        _isCityScanning = false;
+                        return;
+                    }
+                    scanText.textContent = 'Ranking...';
+                }
+                out = parsed ? await Text2Map.rank(parsed, question, bounds, (status) => {
                     scanText.textContent = status;
-                });
+                }) : null;
                 results = out ? out.results : null;
                 label = out?.parsed?.label || null;
                 if (out && out.mode === 'precomputed') {
@@ -514,7 +723,7 @@ const DISHAPanel = (() => {
             statusMsg.remove();
             _isCityScanning = false;
 
-            addScanResultsCard(results, question);
+            addScanResultsCard(results, question, out);
 
             // Close the "ask → map" loop: paint the ranked cells on the map and
             // frame them, so the answer is a map, not just a list.
@@ -531,7 +740,7 @@ const DISHAPanel = (() => {
     }
 
     /** Append a chat card listing ranked scan results with score bars, fly-to clicks, and GeoJSON export. */
-    function addScanResultsCard(results, question) {
+    function addScanResultsCard(results, question, out) {
         const messagesEl = document.getElementById('disha-messages');
         const card = document.createElement('div');
         card.className = 'disha-msg disha-msg-disha';
@@ -595,6 +804,13 @@ const DISHAPanel = (() => {
         hint.className = 'disha-scan-hint';
         hint.textContent = 'Click a result to fly to that location on the map';
         content.appendChild(hint);
+
+        // Where these numbers came from (source card, js/provenance.js).
+        if (out && out.parsed && typeof Provenance !== 'undefined') {
+            const meta = Provenance.forRanking(out.parsed, out.mode, { provider: _providerName() });
+            const el = Provenance.renderCard(meta);
+            if (el) content.appendChild(el);
+        }
 
         // Export the ranked cells as GeoJSON (QGIS / geojson.io / gov workflows).
         if (typeof DataFetcher !== 'undefined' && DataFetcher.exportRankedToGeoJSON) {

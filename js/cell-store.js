@@ -75,6 +75,11 @@ const CellStore = (() => {
         return datasets().find(d => d.id === id) || null;
     }
 
+    /** catalog.json's build timestamp (ISO string), or null when not loaded. */
+    function generated() {
+        return _enabled ? (_catalog.generated || null) : null;
+    }
+
     function field(spec, key) {
         if (!spec) return null;
         return spec.fields.find(f => f.key === key) || null;
@@ -363,7 +368,7 @@ const CellStore = (() => {
     }
 
     return {
-        init, isEnabled, base, datasets, get, field, onChange,
+        init, isEnabled, base, datasets, get, generated, field, onChange,
         cellCode, binRecords, dataDomain, load, rowAt,
         register, unregister, isLocal, toGeoJSON,
         sqlSources, viewStatements, sql,

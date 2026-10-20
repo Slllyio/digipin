@@ -237,3 +237,28 @@ describe('Text2Map.run() — end to end', () => {
         }
     });
 });
+
+describe('Text2Map.plan() — plan before run', () => {
+    const parsed = { weights: { safety: 0.9, flood_risk: -0.8 }, source: 'llm', pinned: ['safety'] };
+    const labelFor = (id) => ({ safety: 'Safety', flood_risk: 'Flood Risk' }[id] || id);
+
+    it('lists weights (strongest first, pins marked) and the data source per step', () => {
+        const steps = T.plan(parsed, { gridReady: true, provider: 'Groq Cloud', labelFor });
+        expect(steps).toHaveLength(4);
+        expect(steps[0].detail).toBe('Weights: Safety +0.9 (pinned), Flood Risk −0.8');
+        expect(steps[0].source).toBe('Parsed by the connected language model (Groq Cloud)');
+        expect(steps[1].source).toMatch(/Precomputed DIGIPIN score grid/);
+        expect(steps[2].title).toBe(`Rank and show the top ${T.TOP_N}`);
+        expect(steps[3].source).toBe('DISHA via Groq Cloud');
+    });
+
+    it('names live sampling when the grid is not loaded', () => {
+        const steps = T.plan({ ...parsed, source: 'lexicon' }, { gridReady: false, labelFor });
+        expect(steps[0].source).toBe('Parsed by the offline keyword lexicon');
+        expect(steps[1].source).toMatch(/Live sampling/);
+    });
+
+    it('returns no steps without a weighting', () => {
+        expect(T.plan(null)).toEqual([]);
+    });
+});

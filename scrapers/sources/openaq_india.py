@@ -26,12 +26,17 @@ import logging
 import os
 from dataclasses import dataclass, field
 
-from ..lib.http import PoliteClient
+from ..lib.http import PoliteClient, SourceUnavailable
 
 log = logging.getLogger("scrapers.openaq_india")
 
 SOURCE_ID = "openaq_india"
 ENDPOINT = "https://api.openaq.org/v3/locations"
+
+# The CLI checks these before calling fetch() and leaves latest.json
+# untouched when any is unset, so a missing secret never wipes the last
+# good snapshot.
+REQUIRED_ENV = ("OPENAQ_API_KEY",)
 
 
 @dataclass
@@ -116,10 +121,14 @@ def fetch(client: PoliteClient) -> list[Station]:
         params = {"iso": "IN", "limit": page_size, "page": page}
         body = client.get(ENDPOINT, params=params)
         if body is None:
+            if page == 1:
+                raise SourceUnavailable("first page request failed (bad key or API down)")
             break
         try:
             payload = json.loads(body)
         except json.JSONDecodeError:
+            if page == 1:
+                raise SourceUnavailable("first page was not JSON")
             log.error("non-JSON response on page %d", page)
             break
 

@@ -40,7 +40,7 @@ const APP_GLOBALS = {
   KDEOverlay: 'readonly', AccessibilityOverlay: 'readonly',
   PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly',
   CellStore: 'readonly', CellLayers: 'readonly', CellIngest: 'readonly', Text2Map: 'readonly', Text2MapEmbeddings: 'readonly',
-  Text2MapResultsLayer: 'readonly',
+  Text2MapResultsLayer: 'readonly', Provenance: 'readonly', DishaMentions: 'readonly',
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly', I18n: 'readonly',
   LayersPanel: 'readonly', ExportDialog: 'readonly', DTDLExport: 'readonly', Onboarding: 'readonly',
   PitchMap: 'readonly', SunStudy: 'readonly', FootprintExport: 'readonly', SiteBrief: 'readonly',

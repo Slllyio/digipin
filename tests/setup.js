@@ -84,6 +84,8 @@ loadGlobalScript('js/disha.js', ['DISHA']);
 loadGlobalScript('js/disha-actions.js', ['DISHAActions']);
 loadGlobalScript('js/text2map.js', ['Text2Map']);
 loadGlobalScript('js/text2map-results-layer.js', ['Text2MapResultsLayer']);
+loadGlobalScript('js/provenance.js', ['Provenance']);
+loadGlobalScript('js/disha-mentions.js', ['DishaMentions']);
 loadGlobalScript('js/url-state.js', ['URLState']);
 loadGlobalScript('js/theme.js', ['Theme']);
 loadGlobalScript('js/i18n.js', ['I18n']);

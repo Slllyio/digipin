@@ -34,12 +34,17 @@ import logging
 import os
 from dataclasses import dataclass, field
 
-from ..lib.http import PoliteClient
+from ..lib.http import PoliteClient, SourceUnavailable
 
 log = logging.getLogger("scrapers.imd_warnings")
 
 SOURCE_ID = "imd_warnings"
 ENDPOINT = "https://api.imd.gov.in/api/v1/districtwarning"
+
+# The CLI checks these before calling fetch() and leaves latest.json
+# untouched when any is unset, so a missing secret never wipes the last
+# good snapshot.
+REQUIRED_ENV = ("IMD_API_KEY", "IMD_API_TOKEN")
 
 # District IDs follow IMD's internal numbering (NOT Census codes).
 # Below is a small hand-curated set for the DigiPin pilot. Expand by
@@ -151,6 +156,7 @@ def fetch(client: PoliteClient) -> list[Warning]:
     client._session.headers.update(headers)
 
     all_warnings: list[Warning] = []
+    ok = 0
     for district_id, district_name in DEFAULT_DISTRICTS.items():
         body = client.get(ENDPOINT, params={"id": district_id})
         if body is None:
@@ -161,7 +167,11 @@ def fetch(client: PoliteClient) -> list[Warning]:
             log.warning("non-JSON response for district %s — skipping", district_id)
             continue
         all_warnings.extend(_parse_response(payload, district_id, district_name))
+        ok += 1
         client.polite_sleep()
+
+    if ok == 0:
+        raise SourceUnavailable(f"no district returned a usable response ({len(DEFAULT_DISTRICTS)} tried)")
 
     log.info("fetched %d warning row(s) across %d district(s)", len(all_warnings), len(DEFAULT_DISTRICTS))
     return all_warnings
