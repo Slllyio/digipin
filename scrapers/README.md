@@ -225,10 +225,13 @@ All 8 sources now ship a schema contract and are wired into the
 | `gdacs_disasters` | ✅ | ✅ |
 | `openaq_india` | ✅ | ✅ |
 
-> `imd_cityforecast` and `imd_nowcast` commit empty snapshots until
-> `IMD_API_KEY` / `IMD_API_TOKEN` are configured (they skip gracefully
-> without keys). Their contracts validate the empty snapshot today and
-> the full record shape once the keys are added.
+> The IMD sources and `openaq_india` declare `REQUIRED_ENV`. When any of
+> those env vars is unset the CLI skips the source and leaves its
+> `latest.json` untouched (the committed empty snapshots date from before
+> this guard). When the key is set but every request fails (401, API
+> down), `fetch()` raises `SourceUnavailable`: the CLI keeps the old
+> snapshot and exits 1, so the cron job goes red instead of publishing
+> `count: 0`. 401/403 responses are not retried.
 
 ### Adding a contract for a source
 

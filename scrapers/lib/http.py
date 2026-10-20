@@ -23,6 +23,15 @@ import requests
 
 log = logging.getLogger("scrapers.http")
 
+
+class SourceUnavailable(RuntimeError):
+    """Raised by a source's fetch() when no upstream request succeeded.
+
+    Distinguishes "the feed is down / rejected our key" from "the feed is
+    up and currently has zero records" — the CLI keeps the previous
+    latest.json and exits non-zero for the former, so a dead feed shows
+    up as a red CI job instead of a silent `count: 0` snapshot."""
+
 DEFAULT_HEADERS = {
     "User-Agent": (
         "DigiPin-RealtimeScraper/0.1 "
@@ -58,6 +67,12 @@ class PoliteClient:
                     return r.content
                 if r.status_code in (404, 410):
                     log.debug("not found: %s", r.url)
+                    return None
+                if r.status_code in (401, 403):
+                    # Auth failures don't heal on retry; backing off 4x per
+                    # request would blow the 5-minute CI budget across a
+                    # 10-district loop.
+                    log.error("HTTP %s on %s — check the API key", r.status_code, r.url)
                     return None
                 log.warning("HTTP %s on %s (attempt %s/%s)", r.status_code, r.url, attempt, self.max_retries)
             except requests.RequestException as e:

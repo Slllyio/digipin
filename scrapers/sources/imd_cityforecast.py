@@ -18,12 +18,17 @@ import logging
 import os
 from dataclasses import dataclass
 
-from ..lib.http import PoliteClient
+from ..lib.http import PoliteClient, SourceUnavailable
 
 log = logging.getLogger("scrapers.imd_cityforecast")
 
 SOURCE_ID = "imd_cityforecast"
 ENDPOINT = "https://api.imd.gov.in/api/v1/cityforecast"
+
+# The CLI checks these before calling fetch() and leaves latest.json
+# untouched when any is unset, so a missing secret never wipes the last
+# good snapshot.
+REQUIRED_ENV = ("IMD_API_KEY", "IMD_API_TOKEN")
 
 # IMD's city IDs — hand-curated from the dropdown at
 # https://city.imd.gov.in/citywx/city_weather.php (the dropdown's <option
@@ -132,6 +137,7 @@ def fetch(client: PoliteClient) -> list[Forecast]:
     client._session.headers.update(headers)
 
     all_forecasts: list[Forecast] = []
+    ok = 0
     for city_id, city_name in DEFAULT_CITIES.items():
         body = client.get(ENDPOINT, params={"id": city_id})
         if body is None:
@@ -142,7 +148,11 @@ def fetch(client: PoliteClient) -> list[Forecast]:
             log.warning("non-JSON response for city %s — skipping", city_id)
             continue
         all_forecasts.extend(_parse_response(payload, city_id, city_name))
+        ok += 1
         client.polite_sleep()
+
+    if ok == 0:
+        raise SourceUnavailable(f"no city returned a usable response ({len(DEFAULT_CITIES)} tried)")
 
     log.info("fetched %d forecast row(s) across %d cit(ies)", len(all_forecasts), len(DEFAULT_CITIES))
     return all_forecasts

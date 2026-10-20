@@ -60,7 +60,7 @@ describe('DeckBuildings.featuresToPolygons', () => {
         expect(DB.featuresToPolygons([far], null)[0].sel).toBe(false);
     });
 
-    it('prefers a real baked height (by Overture id) over the area estimate', () => {
+    it('uses the baked DIGIPIN-cell height (jittered ±15%) over the area estimate', () => {
         const f = {
             type: 'Feature',
             properties: { id: 'bldg-123' },   // no height/floors → would normally be estimated
@@ -68,12 +68,22 @@ describe('DeckBuildings.featuresToPolygons', () => {
                 [75.8577, 22.7196], [75.8578, 22.7196], [75.8578, 22.7197], [75.8577, 22.7197], [75.8577, 22.7196]
             ]] }
         };
-        const heights = new Map([['bldg-123', 87.5]]);
-        expect(DB.featuresToPolygons([f], null, 220, heights)[0].height).toBe(87.5);
-        // unknown id → falls back to the estimate (not 87.5, and a sane positive number)
-        const est = DB.featuresToPolygons([f], null, 220, new Map())[0].height;
-        expect(est).not.toBe(87.5);
+        const code = DigiPin.encode(22.71965, 75.85775).replace(/-/g, '').slice(0, 8);
+        const grid = DB.mergeHeightGrid(null, { level: 8, cells: { [code]: 80 } });
+        const h = DB.featuresToPolygons([f], null, 220, grid)[0].height;
+        expect(h).toBeGreaterThanOrEqual(80 * 0.85);
+        expect(h).toBeLessThanOrEqual(80 * 1.15);
+        // cell not in the grid → falls back to the estimate
+        const est = DB.featuresToPolygons([f], null, 220, DB.mergeHeightGrid(null, { level: 8, cells: {} }))[0].height;
         expect(est).toBeGreaterThan(0);
+        expect(est).toBeLessThan(80 * 0.85);
+    });
+
+    it("keeps Overture's own height over the baked cell height", () => {
+        const f = at(75.8577, 22.7196);   // properties.height = 50
+        const code = DigiPin.encode(22.71965, 75.85775).replace(/-/g, '').slice(0, 8);
+        const grid = DB.mergeHeightGrid(null, { level: 8, cells: { [code]: 80 } });
+        expect(DB.featuresToPolygons([f], null, 220, grid)[0].height).toBe(50);
     });
 
     it('handles MultiPolygon and skips degenerate rings', () => {
@@ -83,6 +93,33 @@ describe('DeckBuildings.featuresToPolygons', () => {
         ] } };
         expect(DB.featuresToPolygons([multi], null)).toHaveLength(1);
         expect(DB.featuresToPolygons([], null)).toEqual([]);
+    });
+});
+
+describe('DeckBuildings height grid', () => {
+    it('merges grid files and looks up the finest level first', () => {
+        const pin = DigiPin.encode(22.7196, 75.8577).replace(/-/g, '');
+        let g = DB.mergeHeightGrid(null, { level: 8, cells: { [pin.slice(0, 8)]: 6 } });
+        expect(DB.cellHeight(g, 22.7196, 75.8577)).toBe(6);
+        g = DB.mergeHeightGrid(g, { level: 9, cells: { [pin.slice(0, 9)]: 21 } });
+        expect(g.levels).toEqual([9, 8]);
+        expect(DB.cellHeight(g, 22.7196, 75.8577)).toBe(21);
+    });
+    it('returns null outside the grid, outside India, or with no grid', () => {
+        const g = DB.mergeHeightGrid(null, { level: 8, cells: { XXXXXXXX: 6 } });
+        expect(DB.cellHeight(g, 22.7196, 75.8577)).toBeNull();
+        expect(DB.cellHeight(g, 51.5, -0.12)).toBeNull();
+        expect(DB.cellHeight(null, 22.7196, 75.8577)).toBeNull();
+        expect(DB.mergeHeightGrid(null, { cells: {} })).toBeNull();   // malformed file ignored
+    });
+    it('ships an Indore grid that covers central Indore with plausible heights', async () => {
+        const { readFileSync } = await import('fs');
+        const doc = JSON.parse(readFileSync('data/heights/indore_pilot_heights_digipin.json', 'utf-8'));
+        const g = DB.mergeHeightGrid(null, doc);
+        expect(g.cells.size).toBeGreaterThan(10000);
+        const h = DB.cellHeight(g, 22.72, 75.86);   // a built block near the default view
+        expect(h).toBeGreaterThan(0);
+        expect(h).toBeLessThan(200);
     });
 });
 

@@ -138,3 +138,61 @@ describe('URLState.apply()', () => {
         expect(U.parse('?an=' + encodeURIComponent('not json')).annotations).toBeUndefined();
     });
 });
+
+describe('URLState layers param', () => {
+    it('parses, validates and de-duplicates layer tokens', () => {
+        expect(U.parseLayers('heat,dt:overture_roads,cell:traffic,heat')).toEqual(['heat', 'dt:overture_roads', 'cell:traffic']);
+        expect(U.parseLayers('heat,<script>,x:y,,ndvi')).toEqual(['heat', 'ndvi']);
+        expect(U.parseLayers(Array(30).fill(0).map((_, i) => 'l' + i).join(','))).toHaveLength(20);
+        expect(U.parseLayers(null)).toEqual([]);
+    });
+
+    it('round-trips through stringify/parse', () => {
+        const qs = U.stringify({ cell: 'X', layers: ['ndvi', 'dt:osm_roads'] });
+        expect(qs).toContain('layers=ndvi%2Cdt%3Aosm_roads');
+        expect(U.parse('?' + qs).layers).toEqual(['ndvi', 'dt:osm_roads']);
+        expect(U.stringify({ cell: 'X', layers: [] })).not.toContain('layers');
+    });
+
+    it('captures active overlays but not interactive tools', () => {
+        const ids = ['btn-ndvi', 'btn-measure', 'btn-choropleth'];
+        ids.forEach(id => {
+            const b = document.createElement('button');
+            b.id = id;
+            b.className = 'active';
+            document.body.appendChild(b);
+        });
+        try {
+            expect(U.activeLayers()).toEqual(['ndvi']);
+        } finally {
+            ids.forEach(id => document.getElementById(id).remove());
+        }
+    });
+
+    it('drives only known, inactive overlays on apply', () => {
+        const btn = document.createElement('button');
+        btn.id = 'btn-heat';
+        const clicks = vi.fn(() => btn.classList.add('active'));
+        btn.addEventListener('click', clicks);
+        document.body.appendChild(btn);
+        try {
+            U.applyLayers(['heat', 'heat', 'measure', 'bogus']);
+            expect(clicks).toHaveBeenCalledTimes(1);   // second 'heat' sees it already active
+        } finally {
+            btn.remove();
+        }
+    });
+
+    it('toggles Digital-Twin layers that exist and are off', () => {
+        const real = { toggle: DigitalTwinLayers.toggle, isVisible: DigitalTwinLayers.isVisible };
+        DigitalTwinLayers.toggle = vi.fn(() => Promise.resolve(true));
+        DigitalTwinLayers.isVisible = () => false;
+        try {
+            U.applyLayers(['dt:overture_roads', 'dt:not_a_layer']);
+            expect(DigitalTwinLayers.toggle).toHaveBeenCalledTimes(1);
+            expect(DigitalTwinLayers.toggle.mock.calls[0][0]).toBe('overture_roads');
+        } finally {
+            Object.assign(DigitalTwinLayers, real);
+        }
+    });
+});

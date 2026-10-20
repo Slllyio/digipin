@@ -91,6 +91,13 @@ data/utilities/*/*
 !data/vectors/
 data/vectors/*
 !data/vectors/*.geojson
+!data/cells/
+data/cells/*
+!data/cells/catalog.json
+!data/cells/*/
+data/cells/*/*
+!data/cells/*/*.json
+!data/cells/*/*.parquet
 
 # SUMO simulation data (large XML files)
 guna-twin-city/traffic-analysis/sumo/*.xml
