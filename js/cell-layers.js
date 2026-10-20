@@ -433,7 +433,10 @@ const CellLayers = (() => {
         _active.set(id, state);
         _watchZoom();
         state.level = targetLevel(spec, _map.getZoom ? _map.getZoom() : null, state.pinned);
-        const table = await CellStore.loadAt(id, state.level);
+        // Only the regions / shards in view (plus a margin) are fetched.
+        const view = _viewBbox();
+        state.viewKey = _viewKey(spec, view);
+        const table = await CellStore.loadAt(id, state.level, view);
         if (!table) {
             _active.delete(id);
             if (typeof App !== 'undefined') App.showToast(spec.title, 'No data published for this layer yet.', 'info');
@@ -523,21 +526,36 @@ const CellLayers = (() => {
     /** Pin a dataset to a DIGIPIN level (null/0 = follow the zoom). */
     function setLevel(id, level) { return _active.has(id) ? show(id, { pinned: level ? Number(level) : null }) : Promise.resolve(false); }
 
-    // Re-render datasets whose target level changed after a zoom.
+    /** The map view widened by half a screen each way, or null without a map. */
+    function _viewBbox() {
+        if (!_map || !_map.getBounds) return null;
+        const b = _map.getBounds();
+        const dy = (b.getNorth() - b.getSouth()) / 2, dx = (b.getEast() - b.getWest()) / 2;
+        return { south: b.getSouth() - dy, north: b.getNorth() + dy, west: b.getWest() - dx, east: b.getEast() + dx };
+    }
+
+    function _viewKey(spec, view) {
+        return CellStore.viewParts ? CellStore.viewParts(spec, view).map(p => p.url).join(',') : '';
+    }
+
+    // Re-render datasets whose target level, or whose set of regions / shards
+    // in view, changed after the map moved.
     let _zoomMap = null;
     function _watchZoom() {
         if (!_map || _zoomMap === _map || !_map.on) return;
         _zoomMap = _map;
-        _map.on('zoomend', _onZoom);
+        _map.on('moveend', _onMove);
     }
 
-    function _onZoom() {
+    function _onMove() {
         const map = _map_();
         if (!map) return;
         const z = map.getZoom();
+        const view = _viewBbox();
         for (const [id, st] of _active) {
             const spec = CellStore.get(id);
-            if (spec && targetLevel(spec, z, st.pinned) !== st.level) show(id);
+            if (!spec) continue;
+            if (targetLevel(spec, z, st.pinned) !== st.level || (!CellStore.isLocal(id) && _viewKey(spec, view) !== st.viewKey)) show(id);
         }
     }
 

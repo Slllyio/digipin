@@ -52,6 +52,7 @@ const CellStore = (() => {
         _enabled = false;
         _tables.clear();
         _parts.clear();
+        _views.clear();
         if (_cfg().cellStore === false) return false;
         try {
             const resp = await fetch(`${base()}catalog.json`, { cache: 'no-cache', signal: AbortSignal.timeout(8000) });
@@ -384,11 +385,62 @@ const CellStore = (() => {
         return _index({ level, nativeLevel: table.nativeLevel || table.level, cells, columns, counts });
     }
 
-    const _rolled = new Map();   // `${id}@${level}` -> table
+    function _bboxHit(a, b) {
+        return !a || !b || !(a.north < b.south || a.south > b.north || a.east < b.west || a.west > b.east);
+    }
 
-    /** The dataset at `level`: rolled up when coarser than native, else native. */
-    async function loadAt(id, level) {
-        const table = await load(id);
+    /**
+     * The parts of a dataset a viewport needs: regions whose catalog bbox
+     * misses `bbox` are dropped, and a sharded region keeps only the shards
+     * under the view's cover at the shard prefix length. Pure given the catalog.
+     */
+    function viewParts(spec, bbox) {
+        const out = [];
+        for (const r of (spec && spec.regions) || []) {
+            if (!_bboxHit(r.bbox, bbox)) continue;
+            const parts = regionParts(r);
+            const sh = r.shards;
+            if (bbox && sh && sh.prefixLen && typeof DigiPin !== 'undefined' && DigiPin.cover) {
+                const want = DigiPin.cover(bbox, sh.prefixLen, 4096);
+                if (want) {
+                    const set = new Set(want);
+                    out.push(...parts.filter(pt => set.has(pt.key)));
+                    continue;
+                }
+            }
+            out.push(...parts);
+        }
+        return out;
+    }
+
+    const _views = new Map();    // `${id}|${urls}` -> Promise<table>, most recent last
+
+    /**
+     * The dataset's cells for a viewport (see viewParts). The same set of
+     * parts returns the same table object, so callers can tell when a pan
+     * brought new data into view. Runtime datasets return their whole table.
+     */
+    function loadView(id, bbox) {
+        const spec = get(id);
+        if (!spec) return Promise.resolve(null);
+        if (_local.has(id) || !bbox) return load(id);
+        const parts = viewParts(spec, bbox);
+        const key = id + '|' + parts.map(p => p.url).join(',');
+        if (!_views.has(key)) {
+            _views.set(key, _tableFrom(spec, parts));
+            while (_views.size > 24) _views.delete(_views.keys().next().value);
+        }
+        return _views.get(key);
+    }
+
+    const _rolled = new Map();   // `${id}@${level}` -> { src, table }
+
+    /**
+     * The dataset at `level`: rolled up when coarser than native, else native.
+     * With `bbox`, only the regions / shards in view are loaded (loadView).
+     */
+    async function loadAt(id, level, bbox) {
+        const table = await (bbox ? loadView(id, bbox) : load(id));
         if (!table || level == null || level >= table.level) return table;
         const key = `${id}@${level}`;
         if (!_rolled.has(key) || _rolled.get(key).src !== table) {

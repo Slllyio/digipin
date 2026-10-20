@@ -144,3 +144,31 @@ describe('CellStore.rollup (temporal)', () => {
         expect(t.columns.s[0]).toEqual([4, 6]);
     });
 });
+
+describe('CellStore.viewParts', () => {
+    const indore = { south: 22.6, north: 22.85, west: 75.75, east: 76.0 };
+    const delhi = { south: 28.4, north: 28.9, west: 76.8, east: 77.4 };
+    const shardKeys = D.cover(indore, 4);
+    const spec = {
+        id: 'v', level: 7, fields: [], regions: [
+            { name: 'indore', bbox: indore, json: 'v/indore/{prefix}.json', shards: { prefixLen: 4, keys: shardKeys } },
+            { name: 'delhi', bbox: delhi, json: 'v/delhi.json' },
+        ],
+    };
+
+    it('drops regions whose bbox misses the view', () => {
+        const parts = CS.viewParts(spec, delhi);
+        expect(parts).toHaveLength(1);
+        expect(parts[0].url).toContain('v/delhi.json');
+    });
+
+    it('keeps only the shards under the view', () => {
+        const small = { south: 22.72, north: 22.73, west: 75.85, east: 75.86 };
+        const parts = CS.viewParts(spec, small);
+        expect(parts.map(p => p.key)).toEqual([D.encodeLevel(22.725, 75.855, 4)]);
+    });
+
+    it('with no bbox, every part', () => {
+        expect(CS.viewParts(spec, null)).toHaveLength(shardKeys.length + 1);
+    });
+});
