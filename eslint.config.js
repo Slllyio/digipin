@@ -23,7 +23,8 @@ const APP_GLOBALS = {
   Compare: 'readonly', Bookmarks: 'readonly', CitySelector: 'readonly', WardOverlay: 'readonly',
   HeatmapOverlay: 'readonly', BuildingIntelligence: 'readonly', BuildingIntelDialog: 'readonly',
   ScoresDialog: 'readonly', DigitalTwinLayers: 'readonly', FloatingDialogs: 'readonly',
-  OvertureBuildings: 'readonly', Isochrone: 'readonly', Report: 'readonly', TrainingDataGen: 'readonly',
+  OvertureBuildings: 'readonly', DeckBuildings: 'readonly', deck: 'readonly',
+  Isochrone: 'readonly', Report: 'readonly', TrainingDataGen: 'readonly',
   GrowthScore: 'readonly', GrowthOverlay: 'readonly', GrowthWidget: 'readonly', RealtimeGrowth: 'readonly',
   CAGrowthOverlay: 'readonly', ScenarioModel: 'readonly', ScenarioPanel: 'readonly',
   AreaAggregate: 'readonly',
@@ -42,6 +43,8 @@ const APP_GLOBALS = {
   Text2MapResultsLayer: 'readonly',
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly', I18n: 'readonly',
   LayersPanel: 'readonly', ExportDialog: 'readonly', DTDLExport: 'readonly', Onboarding: 'readonly',
+  PitchMap: 'readonly', SunStudy: 'readonly', FootprintExport: 'readonly', SiteBrief: 'readonly',
+  MeasureTool: 'readonly', PresentMode: 'readonly', Annotations: 'readonly',
   RealEstateModel: 'readonly', RealEstateWidget: 'readonly', FootprintGrid: 'readonly',
   DIGIPIN_CONFIG: 'readonly',
   // third-party libraries loaded from CDN

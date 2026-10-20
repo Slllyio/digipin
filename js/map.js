@@ -33,7 +33,11 @@ const MapModule = (() => {
             zoom: INITIAL_ZOOM,
             pitch: 0,
             bearing: 0,
-            attributionControl: false
+            attributionControl: false,
+            // Keep the WebGL drawing buffer readable so PitchMap can export the
+            // styled view as a PNG (getCanvas().toBlob). Minor, known perf cost —
+            // acceptable for a client-side map-image export.
+            preserveDrawingBuffer: true
         });
 
         // Controls
@@ -283,6 +287,12 @@ const MapModule = (() => {
 
         // Show panel
         Panel.show(cellData);
+
+        // Tie the 3D "digital twin" focus (range rings + amber selected
+        // buildings) to the chosen cell — a no-op unless that overlay is on.
+        if (typeof OvertureBuildings !== 'undefined' && OvertureBuildings.focusCell && cellData.center) {
+            OvertureBuildings.focusCell(cellData.center);
+        }
 
         // Fetch data
         try {

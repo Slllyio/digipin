@@ -55,6 +55,14 @@
             integrity="sha384-k/E847ELHPuDVPWoArQHQe5LUD8YSFwxlUaH63fF618o/Y0Gnu4FQ1xjuL280spp"
             crossorigin="anonymous"></script>
 
+    <!-- deck.gl — WebGL 3D layer used for the dark-theme "digital twin" building
+         view (true wireframe-extruded glass volumes that MapLibre can't render).
+         Optional: the buildings overlay falls back to MapLibre fill-extrusion if
+         this fails to load. -->
+    <script defer src="https://unpkg.com/deck.gl@9.0.27/dist.min.js"
+            integrity="sha384-KZR1hNzBrVTMJRamX9VDVN7gzZ9VX8cgIVS33QSfkd0tkEbpL+Xl7q6uWem7hoGt"
+            crossorigin="anonymous"></script>
+
     <!-- Custom Styles -->
     <!-- Theme pre-paint: paper-light is the default (matching the landing), so
          apply it before first paint unless the user explicitly chose dark — no
@@ -138,6 +146,26 @@
         <button class="toolbar-btn" id="btn-3d" title="Toggle 3D Map">
             <span class="tb-icon">&#128362;</span>
             <span class="tb-label" data-i18n="tb.3d">3D Mode</span>
+        </button>
+        <button class="toolbar-btn" id="btn-sun" title="Sun &amp; shadow study — light the 3D buildings from the real solar position for a date/time">
+            <span class="tb-icon">&#9728;&#65039;</span>
+            <span class="tb-label" data-i18n="tb.sun">Sun</span>
+        </button>
+        <button class="toolbar-btn" id="btn-pitch" title="Pitch map — export a presentation-ready PNG of the current view">
+            <span class="tb-icon">&#128247;</span>
+            <span class="tb-label" data-i18n="tb.pitch">Pitch</span>
+        </button>
+        <button class="toolbar-btn" id="btn-measure" title="Measure — click points for distance; close 3+ points for area">
+            <span class="tb-icon">&#128207;</span>
+            <span class="tb-label" data-i18n="tb.measure">Measure</span>
+        </button>
+        <button class="toolbar-btn" id="btn-present" title="Presentation mode — distraction-free, shareable stakeholder view">
+            <span class="tb-icon">&#128421;&#65039;</span>
+            <span class="tb-label" data-i18n="tb.present">Present</span>
+        </button>
+        <button class="toolbar-btn" id="btn-annotate" title="Annotate — drop labelled notes on the map (saved locally; export as GeoJSON)">
+            <span class="tb-icon">&#128204;</span>
+            <span class="tb-label" data-i18n="tb.annotate">Annotate</span>
         </button>
         <button class="toolbar-btn" id="btn-lulc" title="ISRO Bhuvan Land Use / Land Cover">
             <span class="tb-icon">&#127758;</span>
@@ -382,6 +410,7 @@
     <script defer src="js/score-choropleth.js"></script>
     <script defer src="js/footprint-grid.js"></script>
     <script defer src="js/building-intelligence.js"></script>
+    <script defer src="js/buildings-deck.js"></script>
     <script defer src="js/overture-buildings.js"></script>
     <script defer src="js/theme.js"></script>
     <script defer src="js/i18n.js"></script>
@@ -423,6 +452,13 @@
     <script defer src="js/layers-panel.js"></script>
     <script defer src="js/dtdl-export.js"></script>
     <script defer src="js/export-dialog.js"></script>
+    <script defer src="js/footprint-export.js"></script>
+    <script defer src="js/pitch-map.js"></script>
+    <script defer src="js/sun-study.js"></script>
+    <script defer src="js/site-brief.js"></script>
+    <script defer src="js/measure-tool.js"></script>
+    <script defer src="js/present-mode.js"></script>
+    <script defer src="js/annotations.js"></script>
     <script defer src="js/app.js"></script>
     <script>
     // Wire the toggle-overlay toolbar buttons: flip the overlay, then reflect

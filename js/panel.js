@@ -192,6 +192,15 @@ const Panel = (() => {
             });
         }
 
+        const briefBtn = document.getElementById('open-site-brief-btn');
+        if (briefBtn) {
+            briefBtn.addEventListener('click', () => {
+                if (currentData && typeof SiteBrief !== 'undefined') {
+                    SiteBrief.open(currentData, currentCell);
+                }
+            });
+        }
+
         const scoresBtn = document.getElementById('open-scores-btn');
         if (scoresBtn) {
             scoresBtn.addEventListener('click', () => {
@@ -501,6 +510,14 @@ const Panel = (() => {
         if (data.buildingIntel) {
             html += `<button class="open-dialog-btn" id="open-building-intel-btn">
                 <span class="dialog-btn-icon">&#127959;&#65039;</span> Building Intelligence
+                <span class="dialog-btn-arrow">&#8599;</span>
+            </button>`;
+        }
+
+        // Site Brief — presentation-ready, printable site summary (Aino-style)
+        if (data.scores) {
+            html += `<button class="open-dialog-btn" id="open-site-brief-btn">
+                <span class="dialog-btn-icon">&#128203;</span> Site Brief
                 <span class="dialog-btn-arrow">&#8599;</span>
             </button>`;
         }

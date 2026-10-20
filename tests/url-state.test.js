@@ -113,4 +113,28 @@ describe('URLState.apply()', () => {
         U.apply({ score: 'safety' });
         expect(ScoreChoropleth.show).not.toHaveBeenCalled();
     });
+
+    it('round-trips the presentation flag', () => {
+        expect(U.stringify({ present: true, cell: 'X' })).toContain('present=1');
+        expect(U.parse('?present=1').present).toBe(true);
+        expect(U.parse('?cell=X').present).toBeUndefined();
+        // a falsey present is omitted from the URL
+        expect(U.stringify({ cell: 'X' })).not.toContain('present');
+    });
+
+    it('round-trips annotations through the share URL', () => {
+        const annotations = [{ lat: 22.7, lng: 75.8, text: 'gate', color: '#ff673d' }];
+        const qs = U.stringify({ annotations });
+        expect(qs).toContain('an=');
+        const back = U.parse('?' + qs).annotations;
+        expect(back).toHaveLength(1);
+        expect(back[0]).toMatchObject({ lat: 22.7, lng: 75.8, text: 'gate' });
+        // empty / absent → omitted
+        expect(U.stringify({ annotations: [] })).not.toContain('an=');
+        expect(U.parse('?cell=X').annotations).toBeUndefined();
+        // malformed-but-valid JSON (no real coordinates) is ignored, so it
+        // can't sanitise to [] and wipe stored notes
+        expect(U.parse('?an=' + encodeURIComponent('[{}]')).annotations).toBeUndefined();
+        expect(U.parse('?an=' + encodeURIComponent('not json')).annotations).toBeUndefined();
+    });
 });

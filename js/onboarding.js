@@ -32,6 +32,11 @@ const Onboarding = (() => {
             body: 'Use the toolbar to switch on overlays — growth, traffic, heat, mobility — or open the Scenario planner to test "what-if" growth (new transit hub, protect flood zones).',
         },
         {
+            icon: '🖼️', // framed picture
+            title: 'Analyse & present',
+            body: 'New tools in the toolbar & Layers panel: ☀️ Sun & shadow study, 📏 Measure distance/area, 📌 Annotate the map, 📷 export a presentation-ready Pitch Map, a printable Site Brief, and a distraction-free Present mode you can share by link.',
+        },
+        {
             icon: '⌨️', // keyboard
             title: 'Tips & shortcuts',
             body: 'Arrow keys step between cells; pin cells to Compare and export CSV/PNG; generate a printable Report; ask DISHA for an AI briefing. Press Esc to close any panel.',

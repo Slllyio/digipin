@@ -58,6 +58,8 @@ const App = (() => {
         step('URLState', () => {
             if (typeof URLState !== 'undefined') URLState.init();
         });
+        step('PresentMode', () => { if (typeof PresentMode !== 'undefined') PresentMode.init(); });
+        step('Annotations', () => { if (typeof Annotations !== 'undefined') Annotations.init(); });
         step('keyboardNav', () => { if (typeof KeyboardNav !== 'undefined') KeyboardNav.init(); });
         step('serviceWorker', () => registerServiceWorker());
 
@@ -529,6 +531,49 @@ const App = (() => {
             });
         }
 
+        // Sun & shadow study — toggle the solar-position control (Aino-style
+        // environmental analysis on the 3D massing model).
+        const sunBtn = document.getElementById('btn-sun');
+        if (sunBtn && typeof SunStudy !== 'undefined') {
+            sunBtn.setAttribute('aria-pressed', 'false');
+            sunBtn.addEventListener('click', () => {
+                const on = SunStudy.toggle();
+                sunBtn.classList.toggle('active', on);
+                sunBtn.setAttribute('aria-pressed', String(on));
+            });
+        }
+
+        // Pitch map — export a presentation-ready PNG of the current view.
+        const pitchBtn = document.getElementById('btn-pitch');
+        if (pitchBtn && typeof PitchMap !== 'undefined') {
+            pitchBtn.addEventListener('click', () => PitchMap.open());
+        }
+
+        // Measure tool — distance + area (driven from the Layers panel too).
+        const measureBtn = document.getElementById('btn-measure');
+        if (measureBtn && typeof MeasureTool !== 'undefined') {
+            const syncMeasureBtn = () => {
+                const on = MeasureTool.isVisible();
+                measureBtn.classList.toggle('active', on);
+                measureBtn.setAttribute('aria-pressed', String(on));
+            };
+            measureBtn.setAttribute('aria-pressed', 'false');
+            measureBtn.addEventListener('click', () => { MeasureTool.toggle(); syncMeasureBtn(); });
+            // The tool can also detach via other paths — keep the button honest.
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setTimeout(syncMeasureBtn, 0); });
+        }
+
+        // Annotate — drop labelled notes on the map (driven from the Layers panel too).
+        const annotateBtn = document.getElementById('btn-annotate');
+        if (annotateBtn && typeof Annotations !== 'undefined') {
+            annotateBtn.setAttribute('aria-pressed', 'false');
+            annotateBtn.addEventListener('click', () => {
+                const on = Annotations.toggle();
+                annotateBtn.classList.toggle('active', on);
+                annotateBtn.setAttribute('aria-pressed', String(on));
+            });
+        }
+
         // Bhuvan LULC Overlay toggle (ISRO Land Use / Land Cover via WMS)
         const lulcBtn = document.getElementById('btn-lulc');
         let lulcActive = false;
@@ -958,6 +1003,48 @@ const App = (() => {
         if (svBtn) {
             svBtn.addEventListener('click', () => SavedViews.openPanel());
         }
+
+        // Honest toolbar: a few overlays are backed by heavy pipeline rasters
+        // (data/growth/*.tif, data/heat/*.tif) that aren't published to the
+        // static site, so on Pages they 404 and the button used to toast
+        // "Sampling…" then render nothing — looking broken. HEAD-probe each
+        // button's representative file once; if it's missing, mark the button
+        // unavailable and intercept the click with a clear message instead of a
+        // dead action. (Mirrors the Layers-panel "· no data" treatment.)
+        const TOOLBAR_DATA = {
+            'btn-growth':    'data/growth/ca_urban_prediction.tif',
+            'btn-ca-growth': 'data/growth/ca_urban_prediction.tif',
+            'btn-scenario':  'data/growth/ca_urban_prediction.tif',
+            'btn-heat':      'data/heat/modis_lst_2016-2024.tif',
+        };
+        const toolbarEl = document.getElementById('toolbar');
+        if (toolbarEl) {
+            // Capture-phase guard: a disabled overlay button explains itself
+            // rather than running its (data-less) handler.
+            toolbarEl.addEventListener('click', (e) => {
+                if (!(e.target instanceof Element)) return;
+                const b = e.target.closest('button.tb-unavailable');
+                if (!b) return;
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                showToast('Not available in this deployment',
+                    'This overlay needs pipeline raster data that isn’t published to the static site.',
+                    'warning');
+            }, true);
+        }
+        // De-dupe probes by URL so the four buttons hit two files, not four.
+        const probeCache = {};
+        Object.entries(TOOLBAR_DATA).forEach(([id, url]) => {
+            const b = document.getElementById(id);
+            if (!b) return;
+            (probeCache[url] = probeCache[url] || fetch(url, { method: 'HEAD' }).then(r => r.ok).catch(() => false))
+                .then(ok => {
+                    if (ok) return;
+                    b.classList.add('tb-unavailable');
+                    b.setAttribute('aria-disabled', 'true');
+                    b.title = (b.title ? b.title + ' — ' : '') + 'Not available in this deployment';
+                });
+        });
     }
 
     /** Register the service worker for offline support and prompt to refresh when an update is installed. */

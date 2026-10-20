@@ -32,9 +32,18 @@ const ExportDialog = (() => {
     /** Build the download filename for a format + DIGIPIN code. */
     function filename(format, code) {
         const clean = (code || 'cell').replace(/-/g, '');
+        // CAD footprint tabs export the visible buildings, not the cell-data object.
+        if (format === 'footgeo') return `digipin_footprints_${clean}.geojson`;
+        if (format === 'footdxf') return `digipin_footprints_${clean}.dxf`;
         const ext = format === 'csv' ? 'csv' : format === 'geojson' ? 'geojson' : 'json';
         const suffix = format === 'dtdl' ? '_twin' : '';
         return `digipin_${clean}${suffix}.${ext}`;
+    }
+
+    /** Live count of exportable building footprints (0 when none visible). */
+    function _footprintCount() {
+        return (typeof FootprintExport !== 'undefined' && FootprintExport.count)
+            ? FootprintExport.count() : 0;
     }
 
     // What each format contains, as human lines built from the summary.
@@ -80,11 +89,39 @@ const ExportDialog = (() => {
                 ? { href: DTDLExport.ADT_EXPLORER_URL, label: 'Open Azure Digital Twins Explorer ↗ — then Import Graph → this file' }
                 : null,
         },
+        {
+            id: 'footgeo', label: 'CAD GeoJSON',
+            desc: 'Visible 3D building footprints (+ heights) + the cell — for QGIS / Rhino / AutoCAD',
+            items: (s, cell) => {
+                const n = _footprintCount();
+                return n > 0
+                    ? [`${n.toLocaleString()} building footprints (with heights)`, `1 DIGIPIN cell polygon (${cell.code})`]
+                    : ['0 building footprints visible', 'Enable the Buildings overlay and zoom in first'];
+            },
+        },
+        {
+            id: 'footdxf', label: 'CAD DXF',
+            desc: 'Same footprints as a DXF drawing (thickness = height) — opens directly in AutoCAD / Rhino',
+            items: (s, cell) => {
+                const n = _footprintCount();
+                return n > 0
+                    ? [`${n.toLocaleString()} closed polylines on layer BUILDINGS`, `1 cell polyline on layer DIGIPIN (${cell.code})`]
+                    : ['0 building footprints visible', 'Enable the Buildings overlay and zoom in first'];
+            },
+        },
     ];
 
     /** Dispatch the chosen format to the matching DataFetcher/DTDLExport writer. */
     function _doExport(format, cell, data) {
         const name = filename(format, cell.code);
+        if (format === 'footgeo' || format === 'footdxf') {
+            if (typeof FootprintExport === 'undefined') {
+                if (typeof App !== 'undefined') App.showToast('Export', 'Footprint exporter unavailable', 'error');
+                return;
+            }
+            FootprintExport.exportFormat(format === 'footdxf' ? 'dxf' : 'geojson', cell);
+            return;
+        }
         if (format === 'geojson') {
             DataFetcher.exportToGeoJSON({ code: cell.code, scores: data.scores }, name);
         } else if (format === 'csv') {
