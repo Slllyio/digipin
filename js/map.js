@@ -1,6 +1,12 @@
 /**
  * Interactive Map Module — MapLibre GL JS + DigiPin Grid Overlay
  * Pilot City: Indore (22.7196°N, 75.8577°E)
+ *
+ * The grid is multi-resolution: its DIGIPIN level follows the zoom
+ * (DigiPin.levelForZoom: z13–14 → L6 ~1 km, z15–16 → L7 ~245 m, z17–18 → L8
+ * ~61 m), so a click always selects a cell of the level you're looking at.
+ * A readout shows the code under the pointer, and the selected cell keeps its
+ * own outline layer so it stays visible when the grid changes level.
  */
 
 const MapModule = (() => {
@@ -13,6 +19,8 @@ const MapModule = (() => {
     let currentCells = new Map(); // Store cell data by ID
     let codeToCellId = new Map(); // DigiPin code -> numeric feature ID
 
+    let gridLevel = null;        // DIGIPIN level the grid is drawn at
+    let _refreshReadout = () => {};
     const INDORE = { lat: 22.7196, lng: 75.8577 };
     const INITIAL_ZOOM = 13;
 
@@ -158,6 +166,16 @@ const MapModule = (() => {
             map.getCanvas().style.cursor = '';
         });
 
+        // Selected-cell outline: independent of the grid, so a selection made
+        // at one level stays visible after zooming to another.
+        map.addSource('digipin-selected', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+        map.addLayer({
+            id: 'digipin-selected-line', type: 'line', source: 'digipin-selected',
+            paint: { 'line-color': gc.selected, 'line-width': 3, 'line-dasharray': [2, 1] },
+        });
+
+        _setupReadout();
+
         // Click event
         map.on('click', 'digipin-grid-fill', (e) => {
             if (e.features.length > 0) {
@@ -165,6 +183,62 @@ const MapModule = (() => {
                 const cellData = currentCells.get(feature.id);
                 if (cellData) selectCell(cellData);
             }
+        });
+    }
+
+    /** Outline the selected cell (any level) on its own layer. */
+    function _drawSelected(code) {
+        const src = map && map.getSource('digipin-selected');
+        if (!src) return;
+        let feature = null;
+        try {
+            const b = DigiPin.cellBounds(code).bounds;
+            feature = {
+                type: 'Feature', properties: { code: DigiPin.format(code) },
+                geometry: { type: 'Polygon', coordinates: [[[b.west, b.south], [b.east, b.south], [b.east, b.north], [b.west, b.north], [b.west, b.south]]] },
+            };
+        } catch { /* invalid code: clear */ }
+        src.setData({ type: 'FeatureCollection', features: feature ? [feature] : [] });
+    }
+
+    /**
+     * Readout chip: the code of the cell under the pointer at the grid's level,
+     * its size, and the full 10-symbol code of the point. Click copies the code.
+     */
+    function _setupReadout() {
+        if (typeof document === 'undefined' || document.getElementById('digipin-readout')) return;
+        const el = document.createElement('button');
+        el.id = 'digipin-readout';
+        el.type = 'button';
+        el.className = 'digipin-readout';
+        el.title = 'DIGIPIN under the pointer: click to copy';
+        el.setAttribute('aria-live', 'off');
+        el.hidden = true;
+        (map.getContainer() || document.body).appendChild(el);
+        let raf = null, last = null;
+        const render = () => {
+            raf = null;
+            if (!last) return;
+            let cell, point;
+            try {
+                const L = gridLevel || DigiPin.levelForZoom(map.getZoom());
+                cell = DigiPin.encodeLevel(last.lat, last.lng, L);
+                point = DigiPin.encode(last.lat, last.lng);
+            } catch { el.hidden = true; return; }
+            el.hidden = false;
+            el.dataset.code = DigiPin.format(cell);
+            el.innerHTML = `<strong>${DigiPin.format(cell)}</strong> <span>L${cell.length} · ${DigiPin.sizeLabel(cell.length, last.lat)}</span> <span class="digipin-readout-point">${point}</span>`;
+        };
+        map.on('mousemove', (e) => {
+            last = e.lngLat;
+            if (raf == null) raf = requestAnimationFrame(render);
+        });
+        map.on('mouseout', () => { el.hidden = true; });
+        // The grid's level changes with zoom; redraw the readout when it does.
+        _refreshReadout = () => { if (last && raf == null) raf = requestAnimationFrame(render); };
+        el.addEventListener('click', () => {
+            const code = el.dataset.code;
+            if (code && navigator.clipboard) navigator.clipboard.writeText(code).catch(() => {});
         });
     }
 
@@ -208,7 +282,7 @@ const MapModule = (() => {
     function updateGrid() {
         const zoom = map.getZoom();
         
-        if (zoom < 8) {
+        if (zoom < 4) {
             // clear grid
             if (map.getSource('digipin-grid')) {
                 map.getSource('digipin-grid').setData({ type: 'FeatureCollection', features: [] });
@@ -225,6 +299,8 @@ const MapModule = (() => {
         };
 
         const cells = DigiPin.getGridCells(mapBounds, zoom);
+        gridLevel = cells.length ? cells[0].level : null;
+        _refreshReadout();
         
         const features = [];
         currentCells.clear();
@@ -251,7 +327,8 @@ const MapModule = (() => {
                     ]]
                 },
                 properties: {
-                    code: cell.code
+                    code: cell.code,
+                    level: cell.level
                 }
             });
         });
@@ -285,6 +362,7 @@ const MapModule = (() => {
 
         selectedCellId = cellData.id != null ? cellData.id : null;
         selectedCellCode = cellData.code;
+        _drawSelected(cellData.code);
         // Highlight only when the cell is an actually-rendered grid feature
         // (deep-linked cells may sit outside the current grid render).
         if (selectedCellId != null) {
@@ -379,8 +457,12 @@ const MapModule = (() => {
         if (!map || !code) return;
         const clean = code.replace(/-/g, '').toUpperCase();
         let decoded;
+        if (DigiPin.isValid && !DigiPin.isValid(clean)) return;
         try { decoded = DigiPin.decodePartial(clean); } catch { return; }
-        const zoom = Math.min(18, 8 + clean.length);
+        // Fly to the zoom whose grid is this code's level, so the selection
+        // lands on a rendered grid cell of the same size.
+        const zoom = DigiPin.zoomForLevel ? DigiPin.zoomForLevel(clean.length) : Math.min(18, 8 + clean.length);
+        _drawSelected(clean);
         flyTo(decoded.lat, decoded.lng, zoom);
         map.once('idle', () => {
             const formatted = DigiPin.format(clean);
@@ -395,5 +477,7 @@ const MapModule = (() => {
         });
     }
 
-    return { init, flyTo, showHeatmap, clearHeatmap, getMap, updateGrid, selectByCode, getSelectedCode };
+    function getGridLevel() { return gridLevel; }
+
+    return { init, flyTo, showHeatmap, clearHeatmap, getMap, updateGrid, selectByCode, getSelectedCode, getGridLevel };
 })();

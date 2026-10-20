@@ -40,6 +40,7 @@ loadGlobalScript('js/score-choropleth.js', ['ScoreChoropleth']);
 loadGlobalScript('js/city-selector.js', ['CitySelector']);
 loadGlobalScript('js/cell-store.js', ['CellStore']);
 loadGlobalScript('js/cell-layers.js', ['CellLayers']);
+loadGlobalScript('js/cell-hierarchy.js', ['CellHierarchy']);
 loadGlobalScript('js/cell-ingest.js', ['CellIngest']);
 loadGlobalScript('js/cell-profile.js', ['CellProfile']);
 loadGlobalScript('js/time-slider.js', ['TimeSlider']);

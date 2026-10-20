@@ -26,7 +26,7 @@ The frontend already auto-discovers any region from `coverage.json`
 (`js/precomputed-scores.js`), so a newly-built city lights up with no app
 changes.
 
-## City registry (level 6 ≈ 244 m)
+## City registry (level 6 ≈ 978 m)
 
 | Region | Geofabrik zone | L6 cells | ~JSON |
 |---|---|---:|---:|
@@ -45,7 +45,7 @@ changes.
 | guna | central-zone | 100 | |
 | **13 cities** | | **~14.2k** | |
 
-Level 7 (~61 m) is ~167k cells / ~9 MB total — still trivial to host. Storage is
+Level 7 (~245 m) is ~167k cells / ~9 MB total — still trivial to host. Storage is
 not a constraint; CI compute + raster inputs are.
 
 ## Build one city

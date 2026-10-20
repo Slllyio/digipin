@@ -27,16 +27,27 @@ DIGIPIN is a strict 4×4 quadtree over India, so:
 
 | Level | Cell edge | Indore pilot bbox (cells) | Typical use |
 |---:|---:|---:|---|
-| 4 | ~15.6 km | ~9 | district |
+| 4 | ~15.7 km | ~9 | district |
 | 5 | ~3.9 km | ~144 | city zones |
-| 6 | **~975 m** | 2,209 | city-wide scores (`scores`) |
-| 7 | **~244 m** | 33,489 | road / grid datasets (`traffic`, `mobility`) |
+| 6 | **~978 m** | 2,209 | city-wide scores (`scores`) |
+| 7 | **~245 m** | 33,489 | road / grid datasets (`traffic`, `mobility`) |
 | 8 | ~61 m | ~532k | point data, block level |
 | 10 | ~3.8 m | — | a full DIGIPIN address |
 
-> Older docs (`PRECOMPUTE_PHASE1.md`, `pipeline/_lib/grid.py`) give "level 6 ≈
-> 244 m". The grid maths (36° ÷ 4^level) and the enumerated cells say L6 is
-> about 975 m and L7 about 244 m. This table uses the measured values.
+Exact sizes for all ten levels, the hierarchy API and how the map picks a
+level per zoom: [DIGIPIN_LEVELS.md](DIGIPIN_LEVELS.md). Older docs said "level
+6 ≈ 244 m"; 244 m is level 7.
+
+### Rolling up the hierarchy
+
+`CellStore.rollup(spec, table, level)` / `CellStore.loadAt(id, level)` turn
+any dataset into a coarser one by code prefix, combining child cells with the
+field's `agg` (`mean` → mean of children, `sum`/`count` → sum, `min`/`max`/
+`mode`/`any` carry over). Rolled tables carry `counts` (native cells per
+parent) and `nativeLevel`. CellLayers uses this for level of detail: a dataset
+draws one level finer than the map grid, capped at its native level, so a
+zoomed-out city shows ~1 km or ~4 km parents and a zoomed-in one the native
+cells.
 
 ## On-disk layout (`data/cells/`)
 
@@ -262,9 +273,11 @@ the table, and `DatasetSpec(time=TimeSpec("month", steps))` declares it.
 ```js
 await CellStore.init();                         // loads catalog.json (silent no-op on 404)
 CellStore.datasets();                           // registry entries (catalog + runtime)
-await CellStore.rowAt('traffic', lat, lng);     // { digipin, congestion_risk, … } | null — fetches ≤ 1 shard
+await CellStore.rowAt('traffic', lat, lng);     // { digipin, level, congestion_risk, … } | null — fetches ≤ 1 shard
+await CellStore.rowAt('traffic', lat, lng, 6);  // rolled up to the L6 parent (+ cells: n)
 await CellStore.loadCells('growth', ['34PL']);  // only the shards overlapping these code prefixes
 await CellStore.load('growth');                 // the whole table (every region + shard)
+await CellStore.loadAt('traffic', 5);           // whole table rolled up to L5
 await CellProfile.profile(lat, lng, { rank: true });  // every dataset's row for one cell
 await CellLayers.show('traffic', { field: 'worst_los', extrude: true });
 CellLayers.setField('traffic', 'congestion_risk');

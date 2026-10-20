@@ -330,11 +330,84 @@ const CellStore = (() => {
         return !b || (lat >= b.south && lat <= b.north && lng >= b.west && lng <= b.east);
     }
 
-    /** A dataset's row for the cell containing (lat,lng), or null. Loads at most one shard per region. */
-    async function rowAt(id, lat, lng) {
+    // ── hierarchy roll-up ───────────────────────────────────────────────────
+
+    // How native cells combine into a parent. Cells at one level are equal
+    // area, so a plain mean of child means is the area-weighted mean; counts
+    // and sums add up; min/max/mode/any carry over.
+    const ROLLUP_AGG = { mean: 'mean', sum: 'sum', count: 'sum', min: 'min', max: 'max', mode: 'mode', any: 'any', first: 'first' };
+
+    /**
+     * Aggregate a table up the DIGIPIN hierarchy to a coarser `level` by code
+     * prefix, using each field's agg. Returns a table of the same shape plus
+     * `counts` (native cells per parent) and `nativeLevel`. A level at or
+     * finer than the table's is returned unchanged (data can't be refined).
+     */
+    function rollup(spec, table, level) {
+        if (!table || level >= table.level) return table;
+        const fields = spec.fields;
+        const temporal = isTemporal(spec);
+        const accs = new Map();
+        for (let i = 0; i < table.cells.length; i++) {
+            const code = table.cells[i].slice(0, level);
+            let a = accs.get(code);
+            if (!a) {
+                a = { n: 0, f: fields.map(f => _acc(ROLLUP_AGG[f.agg] || 'first')) };
+                accs.set(code, a);
+            }
+            a.n++;
+            fields.forEach((f, k) => {
+                const v = table.columns[f.key][i];
+                if (!temporal) { _add(a.f[k], v); return; }
+                // Temporal fields hold one value per step: aggregate per step.
+                if (!Array.isArray(a.f[k])) a.f[k] = [];
+                (v || []).forEach((x, t) => {
+                    if (!a.f[k][t]) a.f[k][t] = _acc(ROLLUP_AGG[f.agg] || 'first');
+                    _add(a.f[k][t], x);
+                });
+            });
+        }
+        const cells = [...accs.keys()].sort();
+        const columns = Object.fromEntries(fields.map(f => [f.key, []]));
+        const counts = [];
+        for (const code of cells) {
+            const a = accs.get(code);
+            counts.push(a.n);
+            const out = (f, acc) => {
+                const v = acc ? _value(acc) : null;
+                return v == null ? null : (f.type === 'number' ? Math.round(v * 1e4) / 1e4 : _coerce(f, v));
+            };
+            fields.forEach((f, k) => {
+                columns[f.key].push(temporal ? (a.f[k] || []).map(acc => out(f, acc)) : out(f, a.f[k]));
+            });
+        }
+        return _index({ level, nativeLevel: table.nativeLevel || table.level, cells, columns, counts });
+    }
+
+    const _rolled = new Map();   // `${id}@${level}` -> table
+
+    /** The dataset at `level`: rolled up when coarser than native, else native. */
+    async function loadAt(id, level) {
+        const table = await load(id);
+        if (!table || level == null || level >= table.level) return table;
+        const key = `${id}@${level}`;
+        if (!_rolled.has(key) || _rolled.get(key).src !== table) {
+            _rolled.set(key, { src: table, table: rollup(get(id), table, level) });
+        }
+        return _rolled.get(key).table;
+    }
+
+    /**
+     * A dataset's row for the cell containing (lat,lng), or null. Loads at
+     * most one shard per region. With `level` coarser than the dataset's, the
+     * row is the rolled-up parent (plus `cells`: how many native cells it
+     * summarises), built from just the shards under that parent.
+     */
+    async function rowAt(id, lat, lng, level) {
         const spec = get(id);
         if (!spec) return null;
-        const code = cellCode(spec.level, lat, lng);
+        const L = level != null && level < spec.level ? level : spec.level;
+        const code = cellCode(L, lat, lng);
         if (!code) return null;
         let table;
         if (_local.has(id)) {
@@ -342,15 +415,19 @@ const CellStore = (() => {
         } else {
             const regions = (spec.regions || []).filter(r => _inBbox(r.bbox, lat, lng));
             if (!regions.length) return null;
-            const parts = regions.flatMap(regionParts).filter(pt => !pt.key || code.startsWith(pt.key));
+            const parts = regions.flatMap(regionParts)
+                .filter(pt => !pt.key || code.startsWith(pt.key) || pt.key.startsWith(code));
             table = await _tableFrom(spec, parts);
         }
+        if (table && L < table.level) table = rollup(spec, table, L);
         const i = table && table.index.get(code);
         if (i === undefined || i === null) return null;
-        const row = { digipin: DigiPin.format(code) };
+        const row = { digipin: DigiPin.format(code), level: L };
         for (const f of spec.fields) row[f.key] = table.columns[f.key][i];
+        if (table.counts) row.cells = table.counts[i];
         return row;
     }
+
 
     /** Add a runtime dataset (e.g. a dropped file). Replaces one with the same id. */
     function register(spec, table) {
@@ -358,6 +435,7 @@ const CellStore = (() => {
         s.fields = s.fields.map(f => (f.domain == null ? { ...f, domain: dataDomain(f, table.columns[f.key] || []) } : f));
         s.default = { field: s.fields[0].key, extrude: false, heightM: 400, ...s.default };
         _local.set(s.id, { spec: s, table: _index(table) });
+        _dropRolled(s.id);
         _tables.set(s.id, Promise.resolve(_index(table)));
         _emit();
         return s;
@@ -365,11 +443,15 @@ const CellStore = (() => {
 
     function unregister(id) {
         const had = _local.delete(id);
-        if (had) { _tables.delete(id); _emit(); }
+        if (had) { _tables.delete(id); _dropRolled(id); _emit(); }
         return had;
     }
 
     function isLocal(id) { return _local.has(id); }
+
+    function _dropRolled(id) {
+        for (const k of [..._rolled.keys()]) if (k.startsWith(id + '@')) _rolled.delete(k);
+    }
 
     // ── geometry ────────────────────────────────────────────────────────────
 
@@ -388,7 +470,8 @@ const CellStore = (() => {
             let b;
             try { b = DigiPin.decodePartial(code).bounds; } catch { continue; }
             if (bbox && (b.north < bbox.south || b.south > bbox.north || b.east < bbox.west || b.west > bbox.east)) continue;
-            const props = { digipin: DigiPin.format(code) };
+            const props = { digipin: DigiPin.format(code), level: table.level };
+            if (table.counts) props.cells = table.counts[i];
             for (const f of spec.fields) {
                 const v = table.columns[f.key][i];
                 if (temporal) (v || []).forEach((x, t) => { props[stepKey(f.key, t)] = x; });
@@ -472,7 +555,7 @@ const CellStore = (() => {
 
     return {
         init, isEnabled, base, datasets, get, generated, tableUrl, field, onChange, isTemporal, stepKey,
-        cellCode, binRecords, dataDomain, load, loadCells, regionParts, rowAt,
+        cellCode, binRecords, dataDomain, load, loadCells, regionParts, viewParts, loadView, loadAt, rollup, rowAt,
         register, unregister, isLocal, toGeoJSON,
         sqlSources, viewStatements, sql,
     };

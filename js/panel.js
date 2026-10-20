@@ -126,6 +126,15 @@ const Panel = (() => {
         titleEl = document.getElementById('panel-title-text');
     }
 
+    /** DIGIPIN level / ancestor breadcrumb / cell-store rows (js/cell-hierarchy.js). */
+    function _hierHTML(cell) {
+        return (typeof CellHierarchy !== 'undefined') ? CellHierarchy.html(cell.code) : '';
+    }
+
+    function _wireHier(cell) {
+        if (typeof CellHierarchy !== 'undefined') CellHierarchy.wire(contentEl, cell.code);
+    }
+
     /** Open the panel for a cell, show its loading state, and move focus into it. */
     function show(cell) {
         currentCell = cell;
@@ -142,6 +151,7 @@ const Panel = (() => {
         // The cell-store profile is local data, so it can paint before the
         // live fetch finishes; update() re-attaches it after the rebuild.
         if (typeof CellProfile !== 'undefined') CellProfile.attachTo(contentEl, cell);
+        _wireHier(cell);
         if (!panelEl.hasAttribute('tabindex')) panelEl.setAttribute('tabindex', '-1');
         try { panelEl.focus({ preventScroll: true }); } catch { /* older browsers */ }
     }
@@ -154,6 +164,7 @@ const Panel = (() => {
         if (typeof FloodInundation !== 'undefined') FloodInundation.detach();
         contentEl.innerHTML = buildFullHTML(cell, data);
         currentData = data;
+        _wireHier(cell);
 
         // Answer-first Property Intelligence card (verdict + intent toggle).
         // It folds in the Growth Forecast as its "Trajectory" sub-section, so the
@@ -305,6 +316,7 @@ const Panel = (() => {
                     <button class="copy-btn" onclick="Panel.copyCode('${esc(cell.code)}')">&#128203;</button>
                 </div>
                 <div class="coords">${cell.center.lat.toFixed(6)}&deg;N, ${cell.center.lng.toFixed(6)}&deg;E</div>
+                ${_hierHTML(cell)}
             </div>
             <div class="loading-section" role="status" aria-live="polite" aria-label="Loading cell data">
                 <div class="spinner"></div>
@@ -402,6 +414,7 @@ const Panel = (() => {
                     <button class="action-btn" id="btn-report" title="Generate PDF Report">&#128196; Report</button>
                 </div>
                 <div class="coords">${cell.center.lat.toFixed(6)}&deg;N, ${cell.center.lng.toFixed(6)}&deg;E</div>
+                ${_hierHTML(cell)}
                 ${addr.fullAddress ? `<div class="address">${esc(addr.area || addr.city)}, ${esc(addr.district)}, ${esc(addr.state)} ${addr.pincode ? '- ' + esc(addr.pincode) : ''}</div>` : ''}
                 <div class="bharatlas-containment" id="bharatlas-containment-${cell.code.replace(/[^A-Za-z0-9]/g,'')}" data-lat="${cell.center.lat}" data-lng="${cell.center.lng}"></div>
             </div>`;

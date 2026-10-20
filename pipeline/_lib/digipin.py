@@ -11,6 +11,7 @@ pipeline/scores/tests/test_digipin_parity.py.
 from __future__ import annotations
 
 import math
+from typing import Optional
 
 GRID = [
     ["F", "C", "9", "8"],
@@ -100,3 +101,77 @@ def format_pin(code: str) -> str:
     if len(clean) <= 6:
         return clean[:3] + "-" + clean[3:]
     return clean[:3] + "-" + clean[3:6] + "-" + clean[6:]
+
+
+# ── Hierarchy (mirror of js/digipin.js; parity: tests/test_digipin_hierarchy.py) ──
+#
+# A level-L cell is one square of a uniform 4**L x 4**L grid over the 36 deg
+# India box, addressed by an integer (row from the south, col from the west).
+
+ALPHABET = "23456789CFJKLMPT"
+MAX_LEVEL = 10
+_SPAN = BOUNDS["maxLat"] - BOUNDS["minLat"]
+M_PER_DEG = 111320
+_DIRS = {"n": (1, 0), "ne": (1, 1), "e": (0, 1), "se": (-1, 1),
+         "s": (-1, 0), "sw": (-1, -1), "w": (0, -1), "nw": (1, -1)}
+
+
+def cell_degrees(level: int) -> float:
+    """Cell edge in degrees at a level: 36 / 4**level (exact in binary)."""
+    return _SPAN / 4 ** level
+
+
+def cell_size_m(level: int) -> float:
+    """North-south cell edge in metres (L6 ~978, L7 ~245, L8 ~61)."""
+    return cell_degrees(level) * M_PER_DEG
+
+
+def normalize(code: str) -> str:
+    c = str(code).replace("-", "").strip().upper()
+    if not (1 <= len(c) <= MAX_LEVEL) or any(ch not in ALPHABET for ch in c):
+        raise ValueError(f"Invalid DIGIPIN '{code}'")
+    return c
+
+
+def to_index(code: str) -> dict:
+    """Code -> {level, row, col}, row 0 = southernmost."""
+    c = normalize(code)
+    row = col = 0
+    for ch in c:
+        r, k = CHAR_TO_POS[ch]
+        row = row * 4 + (3 - r)
+        col = col * 4 + k
+    return {"level": len(c), "row": row, "col": col}
+
+
+def from_index(level: int, row: int, col: int):
+    """(level, row, col) -> dash-less code, or None outside the grid."""
+    n = 4 ** level
+    if not (0 <= row < n and 0 <= col < n):
+        return None
+    out = []
+    for i in range(level - 1, -1, -1):
+        p = 4 ** i
+        out.append(GRID[3 - (row // p) % 4][(col // p) % 4])
+    return "".join(out)
+
+
+def parent(code: str, level: Optional[int] = None):
+    c = normalize(code)
+    lv = len(c) - 1 if level is None else level
+    return c[:lv] if 1 <= lv <= len(c) else None
+
+
+def children(code: str) -> list:
+    c = normalize(code)
+    return [] if len(c) >= MAX_LEVEL else [c + ch for row in GRID for ch in row]
+
+
+def neighbor(code: str, direction: str):
+    dr, dc = _DIRS[direction]
+    i = to_index(code)
+    return from_index(i["level"], i["row"] + dr, i["col"] + dc)
+
+
+def neighbors(code: str) -> dict:
+    return {d: neighbor(code, d) for d in _DIRS}

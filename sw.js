@@ -73,6 +73,7 @@ const LOCAL_ASSETS = [
     './js/i18n.js',
     './js/map.js',
     './js/keyboard-nav.js',
+    './js/cell-hierarchy.js',
     './js/panel.js',
     './js/query-engine.js',
     './js/disha-cache.js',

@@ -160,15 +160,15 @@ const App = (() => {
             const query = searchInput.value.trim();
             if (!query || searching) return;
 
-            const cleaned = query.replace(/-/g, '').toUpperCase();
-            const validChars = new Set('23456789CFJKLMPT'.split(''));
-            const isDigiPin = cleaned.length >= 3 && cleaned.length <= 10 && [...cleaned].every(c => validChars.has(c));
+            // DIGIPIN codes of any level (3–10 symbols), dashes/spaces optional.
+            const cleaned = query.replace(/[-\s]/g, '').toUpperCase();
+            const isDigiPin = cleaned.length >= 3 && DigiPin.isValid(cleaned);
 
             if (isDigiPin) {
                 try {
-                    const decoded = cleaned.length === 10 ? DigiPin.decode(query) : DigiPin.decodePartial(cleaned);
-                    MapModule.flyTo(decoded.lat, decoded.lng, Math.min(18, 8 + cleaned.length));
-                    showToast('DigiPin Found', `${DigiPin.format(cleaned)} \u2192 ${decoded.lat.toFixed(4)}\u00b0N, ${decoded.lng.toFixed(4)}\u00b0E`, 'success');
+                    const cell = DigiPin.cellBounds(cleaned);
+                    MapModule.selectByCode(cleaned);   // fly to its level's zoom, outline, open the panel
+                    showToast('DigiPin Found', `${DigiPin.format(cleaned)} \u00b7 L${cell.level} (${DigiPin.sizeLabel(cell.level, cell.lat)}) \u2192 ${cell.lat.toFixed(4)}\u00b0N, ${cell.lng.toFixed(4)}\u00b0E`, 'success');
                 } catch (e) {
                     showToast('Invalid DigiPin', e.message, 'error');
                 }

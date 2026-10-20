@@ -13,6 +13,11 @@
  * from its legend. Standard overlay contract: idempotent show/hide/toggle,
  * one source + one layer per dataset, cleaned up on hide.
  *
+ * Level of detail: a dataset renders at the DIGIPIN level that suits the zoom
+ * (targetLevel), rolled up the hierarchy by CellStore.loadAt when that is
+ * coarser than the data, so zoomed out you see ~1 km or ~4 km parents and
+ * zoomed in the native cells. The legend's Detail picker pins a level.
+ *
  * Category legends double as filters (click a row to hide that category), and
  * a click opens an inspector that pages through every active dataset's cell
  * under the pointer ("1 of N"), with a copy button and the dataset's source.
@@ -117,6 +122,27 @@ const CellLayers = (() => {
 
     function _map_() { return (typeof MapModule !== 'undefined') ? MapModule.getMap() : null; }
 
+    /**
+     * Level to draw a dataset at for a zoom: one level finer than the grid
+     * (DigiPin.levelForZoom), never finer than the data. `pinned` overrides.
+     */
+    function targetLevel(spec, zoom, pinned) {
+        const native = spec.level;
+        if (pinned) return Math.max(1, Math.min(native, pinned));
+        if (zoom == null || typeof DigiPin === 'undefined' || !DigiPin.levelForZoom) return native;
+        return Math.max(1, Math.min(native, DigiPin.levelForZoom(zoom) + 1));
+    }
+
+    /**
+     * A field spec fit for a rolled-up table: sum/count fields grow with the
+     * parent's size, so their legend domain is re-derived from the data.
+     */
+    function fieldAtLevel(f, table) {
+        if (!f || !table || !table.counts || f.type !== 'number' || !['sum', 'count'].includes(f.agg)) return f;
+        const d = CellStore.dataDomain(f, (table.columns[f.key] || []).flat());
+        return d ? { ...f, domain: d } : f;
+    }
+
     function _domain(f) {
         const d = Array.isArray(f.domain) ? f.domain : null;
         if (f.type !== 'number') return d;
@@ -198,7 +224,8 @@ const CellLayers = (() => {
     /** Plain-text copy of one cell: title, DIGIPIN, then one "label: value" line per field. */
     function inspectorText(spec, props) {
         const p = props || {};
-        const head = `${spec.title} \u00b7 ${p.digipin || ''} \u00b7 L${spec.level}`;
+        const head = `${spec.title} \u00b7 ${p.digipin || ''} \u00b7 L${p.level || spec.level}`
+            + (p.cells ? ` (${p.cells} \u00d7 L${spec.level} cells)` : '');
         const lines = inspectorRows(spec, p).map(r => `${r.label}: ${r.value}`);
         if (spec.source) lines.push(`Source: ${spec.source}${spec.license ? ' (' + spec.license + ')' : ''}`);
         return [head, ...lines].join('\n');
@@ -212,7 +239,7 @@ const CellLayers = (() => {
     // ── map layers ──────────────────────────────────────────────────────────
 
     function _paint(spec, table, state) {
-        const base = CellStore.field(spec, state.field) || spec.fields[0];
+        const base = fieldAtLevel(CellStore.field(spec, state.field) || spec.fields[0], table);
         const f = _temporal(spec) ? fieldAt(base, state.t) : base;
         const src = SRC + spec.id, lyr = LYR + spec.id;
         const data = CellStore.toGeoJSON(spec, table, base.key);
@@ -242,6 +269,7 @@ const CellLayers = (() => {
                 },
             });
         }
+        state.effField = f;
         const filter = filterExpr(f, state.hidden);
         if (filter) _map.setFilter(lyr, filter);
         _map.off('click', lyr, _onClick);
@@ -306,7 +334,8 @@ const CellLayers = (() => {
             box.appendChild(head);
             const sub = document.createElement('div');
             sub.className = 'cell-inspector-sub';
-            sub.textContent = `${props.digipin || ''} \u00b7 L${spec.level}`
+            sub.textContent = `${props.digipin || ''} \u00b7 L${props.level || spec.level}`
+                + (props.cells ? ` \u00b7 rolled up from ${props.cells} L${spec.level} cells` : '')
                 + (temporal ? ` \u00b7 ${spec.time.steps[t]}` : '');
             box.appendChild(sub);
             const dl = document.createElement('dl');
@@ -393,6 +422,8 @@ const CellLayers = (() => {
         const field = opts.field || prev.field || def.field || spec.fields[0].key;
         const state = {
             field,
+            pinned: opts.pinned !== undefined ? opts.pinned : (prev.pinned || null),
+            level: prev.level || spec.level,
             extrude: opts.extrude ?? prev.extrude ?? !!def.extrude,
             // Hidden categories belong to one field; switching field shows all again.
             hidden: field === prev.field ? (opts.hidden || prev.hidden || []) : (opts.hidden || []),
@@ -400,14 +431,17 @@ const CellLayers = (() => {
             t: Math.min(opts.t ?? prev.t ?? defaultStep(spec), Math.max(0, ((spec.time && spec.time.steps) || [0]).length - 1)),
         };
         _active.set(id, state);
-        const table = await CellStore.load(id);
+        _watchZoom();
+        state.level = targetLevel(spec, _map.getZoom ? _map.getZoom() : null, state.pinned);
+        const table = await CellStore.loadAt(id, state.level);
         if (!table) {
             _active.delete(id);
             if (typeof App !== 'undefined') App.showToast(spec.title, 'No data published for this layer yet.', 'info');
             _syncPanel();
             return false;
         }
-        if (!_active.has(id)) return false;   // hidden while loading
+        if (_active.get(id) !== state) return false;   // hidden or re-shown while loading
+        state.level = table.level;
         state.cells = (table.cells && table.cells.length) || 0;
         _paint(spec, table, state);
         _legendFor = id;
@@ -486,12 +520,53 @@ const CellLayers = (() => {
         return !hidden.has(label);
     }
 
+    /** Pin a dataset to a DIGIPIN level (null/0 = follow the zoom). */
+    function setLevel(id, level) { return _active.has(id) ? show(id, { pinned: level ? Number(level) : null }) : Promise.resolve(false); }
+
+    // Re-render datasets whose target level changed after a zoom.
+    let _zoomMap = null;
+    function _watchZoom() {
+        if (!_map || _zoomMap === _map || !_map.on) return;
+        _zoomMap = _map;
+        _map.on('zoomend', _onZoom);
+    }
+
+    function _onZoom() {
+        const map = _map_();
+        if (!map) return;
+        const z = map.getZoom();
+        for (const [id, st] of _active) {
+            const spec = CellStore.get(id);
+            if (spec && targetLevel(spec, z, st.pinned) !== st.level) show(id);
+        }
+    }
+
     function setField(id, key) { return _active.has(id) ? show(id, { field: key }) : Promise.resolve(false); }
     function setExtrude(id, on) { return _active.has(id) ? show(id, { extrude: !!on }) : Promise.resolve(false); }
 
     function hideAll() { active().forEach(hide); }
 
     // ── legend (field picker + 2D/3D switch) ────────────────────────────────
+
+    function _size(L) {
+        return (typeof DigiPin !== 'undefined' && DigiPin.sizeLabel) ? DigiPin.sizeLabel(L) : `L${L}`;
+    }
+
+    /** Detail-picker options: Auto, then the native level and up to 4 coarser ones. */
+    function levelOptions(spec, st) {
+        const s = st || {};
+        const opts = [{ value: 0, label: `Auto (L${s.level || spec.level})`, selected: !s.pinned }];
+        for (let L = spec.level; L >= Math.max(1, spec.level - 4); L--) {
+            opts.push({ value: L, label: `L${L} · ${_size(L)}${L === spec.level ? ' (native)' : ''}`, selected: s.pinned === L });
+        }
+        return opts;
+    }
+
+    /** Footer line, e.g. "DIGIPIN L6 · ~978 m cells · rolled up from L7". */
+    function levelNote(spec, st) {
+        const L = (st && st.level) || spec.level;
+        return `DIGIPIN L${L} · ${_size(L)} cells` + (L < spec.level ? ` · rolled up from L${spec.level}` : '');
+    }
 
     function _palette() {
         if (typeof Theme !== 'undefined' && Theme.palette) return Theme.palette();
@@ -516,7 +591,8 @@ const CellLayers = (() => {
         el.style.cssText = `position:absolute;bottom:36px;right:12px;z-index:5;background:${pal.surface};`
             + `border:1px solid ${pal.border};border-radius:10px;padding:10px 12px;color:${pal.ink};`
             + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.32);backdrop-filter:blur(8px);max-width:260px;';
-        const f = CellStore.field(spec, st.field) || spec.fields[0];
+        const base = CellStore.field(spec, st.field) || spec.fields[0];
+        const f = st.effField && st.effField.key === base.key ? st.effField : base;
         // "0-100"-style units restate the domain; only real units get a suffix.
         const unit = f.unit && !/^[\d.]+\s*[-–]\s*[\d.]+$/.test(f.unit) ? ' ' + _esc(f.unit) : '';
         const options = spec.fields.map(x =>
@@ -546,8 +622,10 @@ const CellLayers = (() => {
                     [[5, '~3.9 km'], [6, '~1 km'], [7, '~244 m'], [8, '~61 m'], [9, '~15 m']].map(([L, m]) =>
                         `<option value="${L}"${L === spec.level ? ' selected' : ''}>L${L} · ${m}</option>`).join('')}</select></label>`
                 : '')
+            + `<label style="display:flex;align-items:center;gap:6px;margin-top:2px;">Detail <select data-act="lod" aria-label="DIGIPIN level shown">${
+                levelOptions(spec, st).map(o => `<option value="${o.value}"${o.selected ? ' selected' : ''}>${_esc(o.label)}</option>`).join('')}</select></label>`
             + swatches
-            + `<div style="margin-top:6px;color:${pal.sub};font-size:11px;">DIGIPIN L${spec.level}${spec.approxCellM ? ` (~${spec.approxCellM} m cells)` : ''}${spec.source ? ' · ' + _esc(spec.source) : ''}</div>`
+            + `<div style="margin-top:6px;color:${pal.sub};font-size:11px;">${_esc(levelNote(spec, st))}${spec.source ? ' · ' + _esc(spec.source) : ''}</div>`
             + (others.length ? `<div style="margin-top:4px;font-size:11px;color:${pal.sub};">Also on: ${others.map(id => `<a href="#" data-act="focus" data-id="${_esc(id)}" style="color:${pal.primary};">${_esc((CellStore.get(id) || {}).title || id)}</a>`).join(', ')}</div>` : '');
         const id = spec.id;
         el.querySelector('[data-act="close"]').onclick = () => hide(id);
@@ -556,6 +634,7 @@ const CellLayers = (() => {
         el.querySelectorAll('[data-act="cat"]').forEach(b => {
             b.onclick = () => toggleCategory(id, b.dataset.cat);
         });
+        el.querySelector('[data-act="lod"]').onchange = (e) => setLevel(id, Number(e.target.value) || null);
         const lvl = el.querySelector('[data-act="level"]');
         if (lvl) lvl.onchange = (e) => CellIngest.rebin(id, Number(e.target.value));
         el.querySelectorAll('[data-act="focus"]').forEach(a => {
@@ -660,8 +739,9 @@ const CellLayers = (() => {
     }
 
     return {
-        show, hide, toggle, hideAll, isVisible, active, state, setField, setExtrude, toggleCategory,
+        show, hide, toggle, hideAll, isVisible, active, state, setField, setExtrude, setLevel, toggleCategory,
         setTime, onChange, defaultStep,
+        targetLevel, fieldAtLevel, levelOptions, levelNote,
         mountPanel, panelGroups, colorExpr, heightExpr, legendStops, categoryColors, RAMPS,
         filterExpr, inspectorRows, inspectorText, propsAt, seriesOf, sparkline, seriesText,
     };

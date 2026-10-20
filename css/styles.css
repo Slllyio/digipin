@@ -4421,3 +4421,52 @@ body.presenting #sidebar { display: none !important; }
 .sun-hours-out.sun-sunny { color: #16a34a; }
 .sun-hours-out.sun-partial { color: #ca8a04; }
 .sun-hours-out.sun-shaded { color: #dc2626; }
+
+/* ── DIGIPIN hierarchy (js/cell-hierarchy.js) + pointer readout (js/map.js) ── */
+.digipin-hier {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+.digipin-hier-crumbs { display: flex; flex-wrap: wrap; gap: 4px; }
+.digipin-hier-chip {
+    font: 600 11px/1 'JetBrains Mono', monospace;
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--wash-05);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+.digipin-hier-chip:hover { background: var(--wash-10); color: var(--text-primary); }
+.digipin-hier-chip.current { background: var(--accent-soft); color: var(--accent-cyan-text); cursor: default; }
+.digipin-hier-chip.finer { border-style: dashed; }
+
+.digipin-readout {
+    position: absolute;
+    left: 50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+    z-index: 4;
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-glass);
+    backdrop-filter: blur(8px);
+    color: var(--text-secondary);
+    font: 12px/1.2 'JetBrains Mono', monospace;
+    cursor: copy;
+    pointer-events: auto;
+    max-width: calc(100% - 32px);
+    white-space: nowrap;
+}
+.digipin-readout strong { color: var(--accent-cyan-text); }
+.digipin-readout-point { color: var(--text-muted); }
+@media (max-width: 600px) { .digipin-readout-point { display: none; } }

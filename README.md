@@ -2,7 +2,7 @@
 
 A browser-based urban-analytics platform built on India Post's **DigiPin** grid.
 Every location in India resolves to a 10-character DigiPin code addressing a
-~4×4 m cell. Click any cell and the app pulls **160+ live urban features** from
+~4×4 m cell; any prefix of it names a coarser cell (level 6 ≈ 1 km, level 7 ≈ 245 m, see [docs/DIGIPIN_LEVELS.md](docs/DIGIPIN_LEVELS.md)). Click any cell and the app pulls **160+ live urban features** from
 free public APIs, computes ~30 intelligence scores, renders heat / growth /
 flood / building overlays, and lets you interrogate the location through a
 grounded LLM assistant (**DISHA**).

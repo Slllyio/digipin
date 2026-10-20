@@ -92,7 +92,7 @@ describe('CellStore catalog + load', () => {
         expect(CS.datasets().map(d => d.id)).toContain('traffic');
         expect(CS.field(CS.get('traffic'), 'los').type).toBe('category');
         const row = await CS.rowAt('traffic', 22.7196, 75.8577);
-        expect(row).toEqual({ digipin: DigiPin.format(CODE), risk: 80, los: 'F' });
+        expect(row).toEqual({ digipin: DigiPin.format(CODE), level: 7, risk: 80, los: 'F' });
         expect(await CS.rowAt('traffic', 22.9, 75.99)).toBeNull();
     });
 

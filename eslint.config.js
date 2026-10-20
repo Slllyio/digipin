@@ -42,6 +42,7 @@ const APP_GLOBALS = {
   PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly',
   CellStore: 'readonly', CellLayers: 'readonly', CellIngest: 'readonly', TimeSlider: 'readonly', Text2Map: 'readonly', Text2MapEmbeddings: 'readonly',
   Text2MapResultsLayer: 'readonly', Provenance: 'readonly', MapSnapshot: 'readonly', OpenDataFinder: 'readonly', SunHours: 'readonly', FloorArea: 'readonly', GltfExport: 'readonly', DishaMentions: 'readonly',
+  CellHierarchy: 'readonly',
   CellProfile: 'readonly',
   Analysis: 'readonly', AnalysesPanel: 'readonly',
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly', I18n: 'readonly',
