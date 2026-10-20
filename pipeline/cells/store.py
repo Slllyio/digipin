@@ -37,10 +37,15 @@ _JSON_DECIMALS = 4
 
 @dataclass
 class CellTable:
-    """A dataset's rows: ``codes[i]`` is the cell, ``columns[key][i]`` its value."""
+    """A dataset's rows: ``codes[i]`` is the cell, ``columns[key][i]`` its value.
+
+    In a temporal table (``times`` set) ``columns[key][i]`` is a list with one
+    value per entry of ``times`` (None where that step has no data).
+    """
     level: int
     codes: list
     columns: dict
+    times: Optional[list] = None
 
     def __len__(self) -> int:
         return len(self.codes)
@@ -169,6 +174,42 @@ def bin_records(records: Iterable[dict], level: int, fields: list) -> CellTable:
     return CellTable(level=level, codes=codes, columns=cols)
 
 
+def series_table(level: int, times: list, rows: dict, keys: list) -> CellTable:
+    """Temporal CellTable from ``{code: {key: [v per step]}}``.
+
+    Codes are truncated to ``level``; non-finite values become None and cells
+    whose every series is all-None are dropped, as in ``bin_records``.
+    """
+    n = len(times)
+    clean = {}
+    for code, series in rows.items():
+        c = cell_code(level, code=code)
+        if c is None:
+            continue
+        out = {}
+        for k in keys:
+            vals = list(series.get(k) or [])
+            if len(vals) != n:
+                raise ValueError(f"cell {c} field {k!r}: {len(vals)} values for {n} steps")
+            out[k] = [None if v is None or not math.isfinite(float(v)) else float(v) for v in vals]
+        if any(v is not None for k in keys for v in out[k]):
+            clean[c] = out
+    codes = sorted(clean)
+    return CellTable(level=level, codes=codes,
+                     columns={k: [clean[c][k] for c in codes] for k in keys}, times=list(times))
+
+
+def _flat(values: list) -> list:
+    """Column values, with temporal series flattened into one list."""
+    out = []
+    for v in values:
+        if isinstance(v, (list, tuple)):
+            out.extend(v)
+        else:
+            out.append(v)
+    return out
+
+
 def _coerce(f: FieldSpec, v):
     if v is None:
         return None
@@ -186,7 +227,7 @@ def _coerce(f: FieldSpec, v):
 
 def data_domain(f: FieldSpec, values: list):
     """[min, max] for numbers, sorted category list for categories, None otherwise."""
-    present = [v for v in values if v is not None]
+    present = [v for v in _flat(values) if v is not None]
     if not present:
         return None
     if f.type == "number":
@@ -211,6 +252,8 @@ def resolved_spec(spec: DatasetSpec, table: CellTable) -> DatasetSpec:
 def _round(v):
     if isinstance(v, float):
         return round(v, _JSON_DECIMALS)
+    if isinstance(v, (list, tuple)):
+        return [_round(x) for x in v]
     return v
 
 
@@ -223,6 +266,7 @@ def write_json(path: Path, spec: DatasetSpec, region: str, table: CellTable) -> 
         "region": region,
         "level": table.level,
         "fields": keys,
+        **({"times": table.times} if table.times is not None else {}),
         "cells": table.codes,
         "columns": {k: [_round(v) for v in table.columns[k]] for k in keys},
     }
@@ -254,6 +298,12 @@ def write_parquet(path: Path, spec: DatasetSpec, table: CellTable) -> None:
     ptype = {"number": pa.float64(), "category": pa.string(), "boolean": pa.bool_()}
     for f in spec.fields:
         vals = table.columns[f.key]
+        if table.times is not None:
+            # One list<double> per cell, aligned with the `times` metadata;
+            # DuckDB: SELECT digipin, unnest(field) … or field[i].
+            arrays[f.key] = pa.array(
+                [[None if x is None else float(x) for x in v] for v in vals], pa.list_(pa.float64()))
+            continue
         if f.type == "number":
             vals = [None if v is None else float(v) for v in vals]
         arrays[f.key] = pa.array(vals, ptype[f.type])
@@ -324,7 +374,8 @@ def shard_table(table: CellTable, prefix_len: int) -> dict:
         key = code[:prefix_len]
         t = out.get(key)
         if t is None:
-            t = out[key] = CellTable(level=table.level, codes=[], columns={k: [] for k in table.columns})
+            t = out[key] = CellTable(level=table.level, codes=[], columns={k: [] for k in table.columns},
+                                     times=table.times)
         t.codes.append(code)
         for k, col in table.columns.items():
             t.columns[k].append(col[i])
@@ -386,6 +437,9 @@ def write_dataset(root, spec: DatasetSpec, region: str, table: CellTable,
     validate(spec)
     if table.level != spec.level:
         raise ValueError(f"table level {table.level} != spec level {spec.level}")
+    steps = list(spec.time.steps) if spec.time is not None else None
+    if (table.times is None) != (steps is None) or (steps is not None and list(table.times) != steps):
+        raise ValueError("table.times must match spec.time.steps (both or neither)")
     root = Path(root)
     explicit = {f.key for f in spec.fields if f.domain is not None}
     spec = resolved_spec(spec, table)
@@ -416,7 +470,8 @@ def write_dataset(root, spec: DatasetSpec, region: str, table: CellTable,
 def read_json(path) -> CellTable:
     """Read a columnar JSON file back into a CellTable."""
     doc = json.loads(Path(path).read_text())
-    return CellTable(level=doc["level"], codes=doc["cells"], columns=doc["columns"])
+    return CellTable(level=doc["level"], codes=doc["cells"], columns=doc["columns"],
+                     times=doc.get("times"))
 
 
 def read_region(root, region_entry: dict) -> CellTable:
@@ -426,7 +481,8 @@ def read_region(root, region_entry: dict) -> CellTable:
     paths = ([root / region_entry["json"].replace("{prefix}", k) for k in sh["keys"]]
              if sh else [root / region_entry["json"]])
     tables = [read_json(p) for p in paths]
-    out = CellTable(level=tables[0].level, codes=[], columns={k: [] for k in tables[0].columns})
+    out = CellTable(level=tables[0].level, codes=[], columns={k: [] for k in tables[0].columns},
+                    times=tables[0].times)
     for t in tables:
         out.codes.extend(t.codes)
         for k in out.columns:

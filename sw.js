@@ -61,6 +61,7 @@ const LOCAL_ASSETS = [
     './js/cell-layers.js',
     './js/cell-ingest.js',
     './js/cell-profile.js',
+    './js/time-slider.js',
     './js/footprint-grid.js',
     './js/building-intelligence.js',
     './js/overture-release.js',

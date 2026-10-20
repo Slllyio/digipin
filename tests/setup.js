@@ -42,6 +42,7 @@ loadGlobalScript('js/cell-store.js', ['CellStore']);
 loadGlobalScript('js/cell-layers.js', ['CellLayers']);
 loadGlobalScript('js/cell-ingest.js', ['CellIngest']);
 loadGlobalScript('js/cell-profile.js', ['CellProfile']);
+loadGlobalScript('js/time-slider.js', ['TimeSlider']);
 loadGlobalScript('js/analysis.js', ['Analysis']);
 loadGlobalScript('js/analyses-panel.js', ['AnalysesPanel']);
 loadGlobalScript('js/growth-score.js', ['GrowthScore']);

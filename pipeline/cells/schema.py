@@ -67,6 +67,28 @@ class FieldSpec:
         return d
 
 
+TIME_UNITS = ("year", "month", "day")
+_STEP_RE = {"year": re.compile(r"^\d{4}$"), "month": re.compile(r"^\d{4}-\d{2}$"),
+            "day": re.compile(r"^\d{4}-\d{2}-\d{2}$")}
+
+
+@dataclass
+class TimeSpec:
+    """Time axis of a temporal dataset: every field holds one value per step.
+
+    unit       "year" | "month" | "day"
+    steps      ISO labels, ascending ("2025-01", …) — the slider's ticks
+    default    step shown first (latest by default)
+    """
+    unit: str
+    steps: list
+    default: Optional[str] = None
+
+    def to_json(self) -> dict:
+        return {"unit": self.unit, "steps": list(self.steps),
+                "default": self.default or self.steps[-1]}
+
+
 @dataclass
 class DatasetSpec:
     """One registry entry (one layer family in the frontend)."""
@@ -81,12 +103,13 @@ class DatasetSpec:
     default_field: Optional[str] = None
     extrude: bool = False           # render as 3D extruded cells by default
     height_m: float = 400.0         # extrusion height at the top of the domain
+    time: Optional[TimeSpec] = None  # set → every column is a per-cell series
 
     def field_keys(self) -> list:
         return [f.key for f in self.fields]
 
     def to_json(self) -> dict:
-        return {
+        d = {
             "id": self.id,
             "title": self.title,
             "description": self.description,
@@ -102,6 +125,9 @@ class DatasetSpec:
                 "heightM": self.height_m,
             },
         }
+        if self.time is not None:
+            d["time"] = self.time.to_json()
+        return d
 
 
 def validate(spec: DatasetSpec) -> None:
@@ -131,3 +157,17 @@ def validate(spec: DatasetSpec) -> None:
             raise ValueError(f"field {f.key!r}: higher_is must be 'better', 'worse' or None")
     if spec.default_field and spec.default_field not in seen:
         raise ValueError(f"default_field {spec.default_field!r} is not a field")
+    if spec.time is not None:
+        t = spec.time
+        if t.unit not in TIME_UNITS:
+            raise ValueError(f"time unit must be one of {TIME_UNITS}")
+        if not t.steps:
+            raise ValueError("time.steps is empty")
+        if any(not _STEP_RE[t.unit].match(str(x)) for x in t.steps):
+            raise ValueError(f"time.steps must be ISO {t.unit} labels")
+        if list(t.steps) != sorted(set(t.steps)):
+            raise ValueError("time.steps must be unique and ascending")
+        if t.default is not None and t.default not in t.steps:
+            raise ValueError(f"time.default {t.default!r} is not a step")
+        if any(f.type != "number" for f in spec.fields):
+            raise ValueError("temporal datasets support number fields only")

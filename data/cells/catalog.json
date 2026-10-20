@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-20T20:07:41Z",
+  "generated": "2026-10-20T20:13:02Z",
   "datasets": [
     {
       "id": "growth",
@@ -99,6 +99,93 @@
       ]
     },
     {
+      "id": "lst_monthly",
+      "title": "Land surface temperature (monthly)",
+      "description": "Monthly mean MODIS Terra+Aqua land surface temperature, day and night. Cloudy monsoon months have gaps.",
+      "source": "MODIS MOD11A2/MYD11A2 v6.1 via Earth Engine (scripts/build_cell_timeseries.py)",
+      "license": "NASA LP DAAC, public domain",
+      "group": "Time series",
+      "level": 6,
+      "approxCellM": 975,
+      "fields": [
+        {
+          "key": "lst_day_c",
+          "label": "Daytime LST",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b0C",
+          "domain": [
+            22.1,
+            44.7
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "lst_night_c",
+          "label": "Night-time LST",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b0C",
+          "domain": [
+            10.4,
+            26.8
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "lst_day_c",
+        "extrude": false,
+        "heightM": 600
+      },
+      "time": {
+        "unit": "month",
+        "steps": [
+          "2024-10",
+          "2024-11",
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04",
+          "2025-05",
+          "2025-06",
+          "2025-07",
+          "2025-08",
+          "2025-09",
+          "2025-10",
+          "2025-11",
+          "2025-12",
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08",
+          "2026-09"
+        ],
+        "default": "2026-09"
+      },
+      "regions": [
+        {
+          "name": "indore_pilot",
+          "cells": 2209,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.4951171875,
+            "east": 76.0068359375,
+            "north": 22.908203125
+          },
+          "json": "lst_monthly/indore_pilot.json",
+          "parquet": "lst_monthly/indore_pilot.parquet"
+        }
+      ]
+    },
+    {
       "id": "mobility",
       "title": "Law & order mobility",
       "description": "Where emergency movement can be choked or sealed off (docs/MOBILITY_MODEL.md).",
@@ -180,6 +267,171 @@
           },
           "json": "mobility/indore_pilot.json",
           "parquet": "mobility/indore_pilot.parquet"
+        }
+      ]
+    },
+    {
+      "id": "ndvi_monthly",
+      "title": "Vegetation NDVI (monthly)",
+      "description": "Monthly mean MODIS 250 m NDVI (Terra+Aqua 16-day composites). Shows the monsoon green-up and the dry-season brown-out.",
+      "source": "MODIS MOD13Q1/MYD13Q1 v6.1 via Earth Engine (scripts/build_cell_timeseries.py)",
+      "license": "NASA LP DAAC, public domain",
+      "group": "Time series",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "ndvi",
+          "label": "NDVI",
+          "type": "number",
+          "agg": "mean",
+          "unit": "index",
+          "domain": [
+            0,
+            0.8
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "ndvi",
+        "extrude": false,
+        "heightM": 300
+      },
+      "time": {
+        "unit": "month",
+        "steps": [
+          "2024-10",
+          "2024-11",
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04",
+          "2025-05",
+          "2025-06",
+          "2025-07",
+          "2025-08",
+          "2025-09",
+          "2025-10",
+          "2025-11",
+          "2025-12",
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08",
+          "2026-09"
+        ],
+        "default": "2026-09"
+      },
+      "regions": [
+        {
+          "name": "indore_pilot",
+          "cells": 33489,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "ndvi_monthly/indore_pilot/{prefix}.json",
+          "parquet": "ndvi_monthly/indore_pilot.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "no2_monthly",
+      "title": "Air quality: NO\u2082 column (monthly)",
+      "description": "Monthly mean Sentinel-5P TROPOMI tropospheric NO\u2082 column. Traffic and combustion raise it; native pixels are ~5.5 \u00d7 3.5 km, so neighbouring cells share values.",
+      "source": "Copernicus Sentinel-5P OFFL L3 NO2 via Earth Engine (scripts/build_cell_timeseries.py)",
+      "license": "Copernicus Sentinel data, free and open",
+      "group": "Time series",
+      "level": 6,
+      "approxCellM": 975,
+      "fields": [
+        {
+          "key": "no2_umol_m2",
+          "label": "Tropospheric NO\u2082",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b5mol/m\u00b2",
+          "domain": [
+            15.0,
+            54.7
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "no2_umol_m2",
+        "extrude": false,
+        "heightM": 600
+      },
+      "time": {
+        "unit": "month",
+        "steps": [
+          "2024-10",
+          "2024-11",
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04",
+          "2025-05",
+          "2025-06",
+          "2025-07",
+          "2025-08",
+          "2025-09",
+          "2025-10",
+          "2025-11",
+          "2025-12",
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08",
+          "2026-09"
+        ],
+        "default": "2026-09"
+      },
+      "regions": [
+        {
+          "name": "indore_pilot",
+          "cells": 2209,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.4951171875,
+            "east": 76.0068359375,
+            "north": 22.908203125
+          },
+          "json": "no2_monthly/indore_pilot.json",
+          "parquet": "no2_monthly/indore_pilot.parquet"
         }
       ]
     },

@@ -202,6 +202,61 @@ Binning parity is locked by `pipeline/cells/tests/bin_parity.json`. Both pytest
 and Vitest assert against this file, so the browser and the pipeline cannot
 drift apart.
 
+## Time series
+
+A dataset with a `time` block holds a **series per cell**: one value per step
+for every field. The Layers panel lists them under **Time series**, and while
+one is on, a slider with play/pause sits at the bottom of the map.
+
+```jsonc
+// catalog.json entry (extra key)
+"time": { "unit": "month", "steps": ["2024-10", …, "2026-09"], "default": "2026-09" }
+
+// <dataset>/<region>.json: `times` + one array per cell
+{ "level": 6, "fields": ["lst_day_c", "lst_night_c"], "times": ["2024-10", …],
+  "cells": ["34PLLM", …], "columns": { "lst_day_c": [[33.7, 30.0, …, null, …], …] } }
+```
+
+- `unit` is `year`, `month` or `day`; steps are ISO labels, unique and
+  ascending. Temporal datasets take number fields only.
+- `null` marks a step with no data for that cell (cloud gaps in the monsoon).
+- The legend domain spans **every step**, so a colour means the same value in
+  every month. `scripts/build_cell_timeseries.py` sets it to the 2nd–98th
+  percentile so a single bad pixel does not wash out the ramp.
+- GeoParquet stores each field as `list<double>` aligned with `time.steps`
+  (in the `digipin_cells` metadata): `SELECT digipin, lst_day_c[7] FROM lst_monthly`
+  in DuckDB is April 2025 (1-based).
+
+**Rendering.** `CellStore.toGeoJSON` writes one property per step
+(`lst_day_c@0 … @23`). `CellLayers.setTime(id, t)` only swaps the colour and
+height expressions to `…@t` with `setPaintProperty`, with no `setData`, so 2D
+fills and 3D extrusions animate smoothly even for the 33k-cell NDVI layer.
+`js/time-slider.js` builds one timeline from the union of the active temporal
+datasets' steps. A dataset missing the current step holds its latest earlier
+step. The keyboard works on the focused bar: ←/→ step, Space plays, Home/End jump.
+
+**Inspector.** Clicking a temporal cell shows the values at the current step
+and an SVG chart of the cell's whole history for the selected field, with the
+current step marked. The chart follows the slider while it is open. **Copy**
+adds the series as CSV.
+
+**Built datasets** (Indore pilot, Oct 2024 to Sep 2026, Earth Engine project
+`van-suraksha-alert`):
+
+| id | level | fields | source |
+|---|---:|---|---|
+| `lst_monthly` | 6 | `lst_day_c`, `lst_night_c` (°C) | MODIS MOD11A2 + MYD11A2 8-day LST, 1 km |
+| `ndvi_monthly` | 7 | `ndvi` | MODIS MOD13Q1 + MYD13Q1 16-day NDVI, 250 m |
+| `no2_monthly` | 6 | `no2_umol_m2` (µmol/m²) | Sentinel-5P TROPOMI OFFL L3 tropospheric NO₂ |
+
+```sh
+python3 scripts/build_cell_timeseries.py --region indore_pilot                 # last 24 complete months
+python3 scripts/build_cell_timeseries.py --start 2024-10 --months 24 ndvi      # one, fixed window
+```
+
+Python: `store.series_table(level, steps, {code: {key: [v…]}}, keys)` builds
+the table, and `DatasetSpec(time=TimeSpec("month", steps))` declares it.
+
 ## Frontend API
 
 ```js

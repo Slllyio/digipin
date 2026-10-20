@@ -12,6 +12,11 @@
  *   <id>/<region>.json         { level, fields, cells:[code], columns:{key:[v]} }
  *   <id>/<region>.parquet      same table as GeoParquet — for sql()
  *
+ * Temporal datasets (spec.time = { unit, steps:[label], default }) hold a
+ * series per cell: columns[key][i] is an array aligned with spec.time.steps.
+ * toGeoJSON() flattens it to one property per step (stepKey(key, t)) so the
+ * renderer can animate by swapping paint expressions, with no setData.
+ *
  * sql() lazily loads DuckDB-WASM and exposes each catalog dataset as a view
  * named after its id, for ad-hoc spatial SQL over the GeoParquet copies.
  *
@@ -81,6 +86,14 @@ const CellStore = (() => {
     function generated() {
         return _enabled ? (_catalog.generated || null) : null;
     }
+
+    /** True when the dataset holds a series per cell (spec.time). */
+    function isTemporal(spec) {
+        return !!(spec && spec.time && Array.isArray(spec.time.steps) && spec.time.steps.length);
+    }
+
+    /** Feature property holding step `t` of a temporal field. */
+    function stepKey(key, t) { return `${key}@${t}`; }
 
     function field(spec, key) {
         if (!spec) return null;
@@ -187,7 +200,7 @@ const CellStore = (() => {
 
     /** [min,max] for numbers, sorted categories for categories, else null. */
     function dataDomain(f, values) {
-        const present = values.filter(v => v != null);
+        const present = values.flat().filter(v => v != null);
         if (!present.length) return null;
         if (f.type === 'number') {
             let lo = Infinity, hi = -Infinity;
@@ -211,12 +224,23 @@ const CellStore = (() => {
     /** Concatenate per-region tables of one dataset (same level + fields). */
     function _concat(parts, spec) {
         const out = { level: spec.level, cells: [], columns: Object.fromEntries(spec.fields.map(f => [f.key, []])) };
+        const steps = isTemporal(spec) ? spec.time.steps : null;
+        if (steps) out.times = steps.slice();
         for (const t of parts) {
             if (!t || !Array.isArray(t.cells)) continue;
             out.cells.push(...t.cells);
             for (const f of spec.fields) {
                 const col = (t.columns && t.columns[f.key]) || [];
-                for (let i = 0; i < t.cells.length; i++) out.columns[f.key].push(col[i] ?? null);
+                for (let i = 0; i < t.cells.length; i++) {
+                    let v = col[i] ?? null;
+                    // Re-align a region's series to the catalog's steps by label.
+                    if (steps) {
+                        const own = t.times || steps;
+                        const arr = Array.isArray(v) ? v : [];
+                        v = steps.map(s => { const j = own.indexOf(s); return j < 0 ? null : (arr[j] ?? null); });
+                    }
+                    out.columns[f.key].push(v);
+                }
             }
         }
         return out;
@@ -357,14 +381,19 @@ const CellStore = (() => {
     function toGeoJSON(spec, table, fieldKey, bbox) {
         const features = [];
         const col = fieldKey ? table.columns[fieldKey] : null;
+        const temporal = isTemporal(spec);
         for (let i = 0; i < table.cells.length; i++) {
-            if (col && col[i] == null) continue;
+            if (col && (temporal ? !(col[i] || []).some(v => v != null) : col[i] == null)) continue;
             const code = table.cells[i];
             let b;
             try { b = DigiPin.decodePartial(code).bounds; } catch { continue; }
             if (bbox && (b.north < bbox.south || b.south > bbox.north || b.east < bbox.west || b.west > bbox.east)) continue;
             const props = { digipin: DigiPin.format(code) };
-            for (const f of spec.fields) props[f.key] = table.columns[f.key][i];
+            for (const f of spec.fields) {
+                const v = table.columns[f.key][i];
+                if (temporal) (v || []).forEach((x, t) => { props[stepKey(f.key, t)] = x; });
+                else props[f.key] = v;
+            }
             features.push({
                 type: 'Feature',
                 id: i,
@@ -442,7 +471,7 @@ const CellStore = (() => {
     }
 
     return {
-        init, isEnabled, base, datasets, get, generated, tableUrl, field, onChange,
+        init, isEnabled, base, datasets, get, generated, tableUrl, field, onChange, isTemporal, stepKey,
         cellCode, binRecords, dataDomain, load, loadCells, regionParts, rowAt,
         register, unregister, isLocal, toGeoJSON,
         sqlSources, viewStatements, sql,

@@ -184,3 +184,64 @@ def test_switching_layout_removes_stale_files(tmp_path):
     # Forcing a prefix length works for small tables too.
     s = store.write_dataset(tmp_path, _spec(level=8), "r", small, parquet=False, shard=3)
     assert s["shards"] == 1
+# ── time series ─────────────────────────────────────────────────────────────
+
+def _tspec(**kw):
+    from pipeline.cells.schema import TimeSpec
+    base = dict(id="lst", title="LST", level=6, fields=[FieldSpec("lst", "LST", unit="°C", ramp="heat")],
+                time=TimeSpec("month", ["2025-01", "2025-02", "2025-03"]))
+    base.update(kw)
+    return DatasetSpec(**base)
+
+
+def test_series_table_truncates_cleans_and_drops_empty():
+    t = store.series_table(6, ["2025-01", "2025-02", "2025-03"], {
+        "34PLLMP": {"lst": [30, float("nan"), 32.5]},
+        "34PLLM": {"lst": [None, None, None]},          # all-null → dropped
+        "34PLLJ": {"lst": [28, 29, None]},
+    }, ["lst"])
+    assert t.codes == ["34PLLJ", "34PLLM"]
+    assert t.times == ["2025-01", "2025-02", "2025-03"]
+    assert t.columns["lst"] == [[28.0, 29.0, None], [30.0, None, 32.5]]
+    with pytest.raises(ValueError):
+        store.series_table(6, ["2025-01"], {"34PLLM": {"lst": [1, 2]}}, ["lst"])
+
+
+@pytest.mark.parametrize("bad", [
+    dict(unit="week"), dict(steps=[]), dict(steps=["2025-02", "2025-01"]),
+    dict(steps=["2025-01", "2025-01"]), dict(steps=["2025/01"]), dict(default="2024-12"),
+])
+def test_validate_rejects_bad_time(bad):
+    from pipeline.cells.schema import TimeSpec
+    t = dict(unit="month", steps=["2025-01", "2025-02"])
+    t.update(bad)
+    with pytest.raises(ValueError):
+        validate(_tspec(time=TimeSpec(**t)))
+
+
+def test_temporal_dataset_rejects_category_fields():
+    with pytest.raises(ValueError):
+        validate(_tspec(fields=[FieldSpec("k", "K", type="category", agg="mode")]))
+
+
+def test_write_temporal_dataset_json_catalog_and_parquet(tmp_path):
+    steps = ["2025-01", "2025-02", "2025-03"]
+    t = store.series_table(6, steps, {"34PLLM": {"lst": [30.123456, None, 41]},
+                                      "34PLLJ": {"lst": [20, 25, 27]}}, ["lst"])
+    with pytest.raises(ValueError):          # table without times for a temporal spec
+        store.write_dataset(tmp_path, _tspec(), "x", store.CellTable(6, t.codes, t.columns), parquet=False)
+    store.write_dataset(tmp_path, _tspec(), "indore_pilot", t, parquet=False)
+    doc = json.loads((tmp_path / "lst" / "indore_pilot.json").read_text())
+    assert doc["times"] == steps
+    assert doc["columns"]["lst"] == [[20, 25, 27], [30.1235, None, 41]]
+    back = store.read_json(tmp_path / "lst" / "indore_pilot.json")
+    assert back.times == steps
+    (d,) = json.loads((tmp_path / "catalog.json").read_text())["datasets"]
+    assert d["time"] == {"unit": "month", "steps": steps, "default": "2025-03"}
+    assert d["fields"][0]["domain"] == [20, 41]                 # over every step
+
+    pq = pytest.importorskip("pyarrow.parquet")
+    store.write_dataset(tmp_path, _tspec(), "indore_pilot", t, parquet=True)
+    tbl = pq.read_table(tmp_path / "lst" / "indore_pilot.parquet")
+    assert tbl.column("lst").to_pylist()[1] == [30.123456, None, 41.0]
+    assert json.loads(tbl.schema.metadata[b"digipin_cells"])["time"]["steps"] == steps

@@ -17,10 +17,16 @@
  * a click opens an inspector that pages through every active dataset's cell
  * under the pointer ("1 of N"), with a copy button and the dataset's source.
  *
+ * Temporal datasets (spec.time) paint step `state.t` by pointing the colour
+ * and height expressions at that step's feature property, so setTime() is a
+ * setPaintProperty call — cheap enough to animate (js/time-slider.js drives
+ * it). Their inspector shows the value at the current step plus an SVG chart
+ * of the cell's whole series.
+ *
  * mountPanel() adds a registry-driven group to the unified Layers dropdown,
  * re-rendered whenever the registry changes (catalog load, file dropped).
- * colorExpr/heightExpr/legendStops/filterExpr/inspectorRows/inspectorText are
- * pure and unit-tested.
+ * colorExpr/heightExpr/legendStops/filterExpr/inspectorRows/inspectorText/
+ * propsAt/seriesOf/sparkline are pure and unit-tested.
  */
 const CellLayers = (() => {
     const SRC = 'cell-layer-src-';
@@ -46,6 +52,68 @@ const CellLayers = (() => {
     let _legendFor = null;       // dataset id the legend currently describes
     let _panel = null;           // { dropdown, group } once mounted
     let _lastClick = null;       // originalEvent of the last handled click (one per click, not per layer)
+    let _rerenderInspector = null;   // re-draws the open inspector (time changes)
+    const _listeners = new Set();    // active-set / time changes (TimeSlider)
+
+    function onChange(fn) { _listeners.add(fn); return () => _listeners.delete(fn); }
+    function _emit() { _listeners.forEach(fn => { try { fn(); } catch { /* listener errors are theirs */ } }); }
+
+    function _temporal(spec) { return typeof CellStore !== 'undefined' && CellStore.isTemporal(spec); }
+
+    /** Index of the step a temporal dataset opens on (time.default, else the latest). */
+    function defaultStep(spec) {
+        if (!spec || !spec.time || !Array.isArray(spec.time.steps) || !spec.time.steps.length) return 0;
+        const i = spec.time.steps.indexOf(spec.time.default);
+        return i >= 0 ? i : spec.time.steps.length - 1;
+    }
+
+    /** The field spec as painted at step t: same styling, key → that step's property. */
+    function fieldAt(f, t) { return { ...f, key: `${f.key}@${t}` }; }
+
+    /** Feature props of a temporal cell reduced to one step: { digipin, key: value }. */
+    function propsAt(spec, props, t) {
+        const p = props || {};
+        const out = { digipin: p.digipin };
+        for (const f of spec.fields || []) {
+            const v = p[`${f.key}@${t}`];
+            out[f.key] = v === 'null' ? null : v;
+        }
+        return out;
+    }
+
+    /** A temporal cell's series for one field, aligned with spec.time.steps. */
+    function seriesOf(spec, props, key) {
+        const n = (spec.time && spec.time.steps && spec.time.steps.length) || 0;
+        const p = props || {};
+        return Array.from({ length: n }, (_, t) => {
+            const v = p[`${key}@${t}`];
+            return v == null || v === 'null' || !isFinite(v) ? null : Number(v);
+        });
+    }
+
+    /**
+     * Line chart geometry for a series with gaps: { path, points, lo, hi }.
+     * points[i] is [x, y] or null; path breaks at nulls. y is flipped (SVG).
+     */
+    function sparkline(values, w, h, domain) {
+        const present = values.filter(v => v != null);
+        let [lo, hi] = Array.isArray(domain) && domain.length === 2 ? domain : [Math.min(...present), Math.max(...present)];
+        if (!present.length) return { path: '', points: values.map(() => null), lo: 0, hi: 1 };
+        lo = Math.min(lo, ...present); hi = Math.max(hi, ...present);
+        if (hi === lo) hi = lo + 1;
+        const n = values.length;
+        const x = i => (n > 1 ? (i * w) / (n - 1) : w / 2);
+        const y = v => h - ((v - lo) / (hi - lo)) * h;
+        const r = v => Math.round(v * 10) / 10;
+        const points = values.map((v, i) => (v == null ? null : [r(x(i)), r(y(v))]));
+        let path = '', pen = false;
+        points.forEach(pt => {
+            if (!pt) { pen = false; return; }
+            path += `${pen ? 'L' : 'M'}${pt[0]} ${pt[1]}`;
+            pen = true;
+        });
+        return { path, points, lo, hi };
+    }
 
     function _map_() { return (typeof MapModule !== 'undefined') ? MapModule.getMap() : null; }
 
@@ -144,9 +212,10 @@ const CellLayers = (() => {
     // ── map layers ──────────────────────────────────────────────────────────
 
     function _paint(spec, table, state) {
-        const f = CellStore.field(spec, state.field) || spec.fields[0];
+        const base = CellStore.field(spec, state.field) || spec.fields[0];
+        const f = _temporal(spec) ? fieldAt(base, state.t) : base;
         const src = SRC + spec.id, lyr = LYR + spec.id;
-        const data = CellStore.toGeoJSON(spec, table, f.key);
+        const data = CellStore.toGeoJSON(spec, table, base.key);
         if (_map.getSource(src)) _map.getSource(src).setData(data);
         else _map.addSource(src, { type: 'geojson', data });
 
@@ -205,8 +274,11 @@ const CellLayers = (() => {
         const box = document.createElement('div');
         box.className = 'cell-inspector';
         const render = () => {
-            const { spec, props } = pages[i];
+            const { spec, props: raw } = pages[i];
             const st = _active.get(spec.id) || {};
+            const temporal = _temporal(spec);
+            const t = st.t ?? defaultStep(spec);
+            const props = temporal ? propsAt(spec, raw, t) : raw;
             box.textContent = '';
             const head = document.createElement('div');
             head.className = 'cell-inspector-head';
@@ -234,7 +306,8 @@ const CellLayers = (() => {
             box.appendChild(head);
             const sub = document.createElement('div');
             sub.className = 'cell-inspector-sub';
-            sub.textContent = `${props.digipin || ''} \u00b7 L${spec.level}`;
+            sub.textContent = `${props.digipin || ''} \u00b7 L${spec.level}`
+                + (temporal ? ` \u00b7 ${spec.time.steps[t]}` : '');
             box.appendChild(sub);
             const dl = document.createElement('dl');
             inspectorRows(spec, props, st.field).forEach(r => {
@@ -246,6 +319,7 @@ const CellLayers = (() => {
                 dl.append(dt, dd);
             });
             box.appendChild(dl);
+            if (temporal) box.appendChild(_chart(spec, raw, st.field || (spec.default || {}).field || spec.fields[0].key, t));
             const foot = document.createElement('div');
             foot.className = 'cell-inspector-foot';
             if (spec.source) {
@@ -257,7 +331,8 @@ const CellLayers = (() => {
             copy.type = 'button';
             copy.textContent = 'Copy';
             copy.onclick = () => {
-                const text = inspectorText(spec, props);
+                const text = inspectorText(spec, props)
+                    + (temporal ? '\n' + seriesText(spec, raw) : '');
                 const done = () => { copy.textContent = 'Copied'; };
                 if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(() => {});
             };
@@ -266,9 +341,45 @@ const CellLayers = (() => {
         };
         render();
         if (_popup) _popup.remove();
+        _rerenderInspector = render;
         if (typeof maplibregl !== 'undefined') {
-            _popup = new maplibregl.Popup({ maxWidth: '280px' }).setLngLat(e.lngLat).setDOMContent(box).addTo(_map);
+            _popup = new maplibregl.Popup({ maxWidth: '300px' }).setLngLat(e.lngLat).setDOMContent(box).addTo(_map);
+            const popup = _popup;
+            popup.on && popup.on('close', () => { if (_popup === popup) _rerenderInspector = null; });
         }
+    }
+
+    /** CSV-ish copy of a temporal cell: "step,field1,field2" rows. */
+    function seriesText(spec, props) {
+        const keys = spec.fields.map(f => f.key);
+        const cols = keys.map(k => seriesOf(spec, props, k));
+        return [['step', ...keys].join(','),
+            ...spec.time.steps.map((s, t) => [s, ...cols.map(c => (c[t] == null ? '' : c[t]))].join(','))].join('\n');
+    }
+
+    /** Inline SVG history chart of one field for the inspector; marks step t. */
+    function _chart(spec, props, key, t) {
+        const f = CellStore.field(spec, key) || spec.fields[0];
+        const W = 240, H = 64, PAD = 4;
+        const vals = seriesOf(spec, props, f.key);
+        // The cell's own range, so its seasonal swing is legible; the map
+        // colours keep the dataset-wide domain for cross-cell comparison.
+        const sp = sparkline(vals, W - 2 * PAD, H - 2 * PAD);
+        const pal = _palette();
+        const steps = spec.time.steps;
+        const cur = sp.points[t];
+        const fmt = v => (Math.abs(v) >= 100 ? Math.round(v) : Math.round(v * 100) / 100);
+        const wrap = document.createElement('div');
+        wrap.className = 'cell-inspector-chart';
+        const dots = sp.points.map((p, i) => (p ? `<circle cx="${p[0]}" cy="${p[1]}" r="${i === t ? 3.5 : 1.6}" fill="${i === t ? pal.primary : 'currentColor'}"/>` : '')).join('');
+        const xt = PAD + (steps.length > 1 ? (t * (W - 2 * PAD)) / (steps.length - 1) : (W - 2 * PAD) / 2);
+        wrap.innerHTML =
+            `<div class="cell-inspector-chart-head"><span>${_esc(f.label || f.key)} history</span><span>${cur ? _esc(_fmtValue(f, vals[t])) : 'no data'}</span></div>`
+            + `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="${_esc(f.label || f.key)} by ${_esc(spec.time.unit)}, ${_esc(steps[0])} to ${_esc(steps[steps.length - 1])}">`
+            + `<line x1="${xt}" x2="${xt}" y1="0" y2="${H}" stroke="${pal.primary}" stroke-opacity="0.45" stroke-dasharray="2 2"/>`
+            + `<g transform="translate(${PAD},${PAD})"><path d="${sp.path}" fill="none" stroke="currentColor" stroke-opacity="0.75" stroke-width="1.5"/>${dots}</g></svg>`
+            + `<div class="cell-inspector-chart-axis"><span>${_esc(steps[0])}</span><span>${_esc(fmt(sp.lo))} – ${_esc(fmt(sp.hi))}</span><span>${_esc(steps[steps.length - 1])}</span></div>`;
+        return wrap;
     }
 
     /** Render a registry dataset. opts: { field, extrude }. Resolves true when painted. */
@@ -286,6 +397,7 @@ const CellLayers = (() => {
             // Hidden categories belong to one field; switching field shows all again.
             hidden: field === prev.field ? (opts.hidden || prev.hidden || []) : (opts.hidden || []),
             cells: prev.cells || 0,
+            t: Math.min(opts.t ?? prev.t ?? defaultStep(spec), Math.max(0, ((spec.time && spec.time.steps) || [0]).length - 1)),
         };
         _active.set(id, state);
         const table = await CellStore.load(id);
@@ -301,6 +413,35 @@ const CellLayers = (() => {
         _legendFor = id;
         _renderLegend();
         _syncPanel();
+        _emit();
+        return true;
+    }
+
+    /**
+     * Point a temporal dataset at step t: two setPaintProperty calls, no
+     * setData, so it's cheap enough to run per animation frame.
+     */
+    function setTime(id, t) {
+        const st = _active.get(id);
+        const spec = CellStore.get(id);
+        if (!st || !_temporal(spec)) return false;
+        const n = spec.time.steps.length;
+        t = Math.max(0, Math.min(n - 1, Math.round(Number(t) || 0)));
+        if (t === st.t) return true;
+        st.t = t;
+        const map = _map_();
+        const lyr = LYR + id;
+        if (map && map.getLayer(lyr)) {
+            const f = fieldAt(CellStore.field(spec, st.field) || spec.fields[0], t);
+            if (st.extrude) {
+                map.setPaintProperty(lyr, 'fill-extrusion-color', colorExpr(f));
+                map.setPaintProperty(lyr, 'fill-extrusion-height', heightExpr(f, spec.default && spec.default.heightM));
+            } else {
+                map.setPaintProperty(lyr, 'fill-color', colorExpr(f));
+            }
+        }
+        if (_legendFor === id) _renderLegend();
+        if (_rerenderInspector) _rerenderInspector();
         return true;
     }
 
@@ -318,6 +459,7 @@ const CellLayers = (() => {
             _renderLegend();
         }
         _syncPanel();
+        _emit();
     }
 
     async function toggle(id, opts) {
@@ -396,6 +538,7 @@ const CellLayers = (() => {
             + `<strong style="color:${pal.primary};font-size:13px;flex:1;">${_esc(spec.title)}</strong>`
             + (st.cells ? `<span style="color:${pal.sub};font-size:11px;">${st.cells.toLocaleString()} cells</span>` : '')
             + `<button type="button" data-act="close" aria-label="Hide ${_esc(spec.title)}" style="background:none;border:none;color:${pal.sub};cursor:pointer;font-size:14px;">✕</button></div>`
+            + (_temporal(spec) ? `<div style="color:${pal.sub};font-size:11px;margin-bottom:4px;">Showing <strong style="color:${pal.ink};">${_esc(spec.time.steps[st.t ?? defaultStep(spec)])}</strong> · colours fixed across all ${spec.time.steps.length} ${_esc(spec.time.unit)}s</div>` : '')
             + `<select data-act="field" aria-label="Field to colour by" style="width:100%;margin-bottom:4px;">${options}</select>`
             + `<label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" data-act="extrude"${st.extrude ? ' checked' : ''}> 3D extruded cells</label>`
             + (rebinnable
@@ -518,8 +661,9 @@ const CellLayers = (() => {
 
     return {
         show, hide, toggle, hideAll, isVisible, active, state, setField, setExtrude, toggleCategory,
+        setTime, onChange, defaultStep,
         mountPanel, panelGroups, colorExpr, heightExpr, legendStops, categoryColors, RAMPS,
-        filterExpr, inspectorRows, inspectorText,
+        filterExpr, inspectorRows, inspectorText, propsAt, seriesOf, sparkline, seriesText,
     };
 })();
 
