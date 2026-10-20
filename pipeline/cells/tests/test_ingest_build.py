@@ -99,4 +99,5 @@ def test_committed_catalog_lists_the_builtins():
     assert set(build.BUILTINS) <= ids
     for d in cat["datasets"]:
         for r in d["regions"]:
-            assert (build.DATA / "cells" / r["json"]).exists()
+            t = store.read_region(build.DATA / "cells", r)    # sharded or single file
+            assert len(t) == r["cells"]

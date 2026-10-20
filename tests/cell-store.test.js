@@ -172,3 +172,56 @@ describe('CellStore SQL view wiring', () => {
         expect(s.url).toMatch(/^https?:\/\/.*data\/cells\/traffic\/indore_pilot\.parquet$/);
     });
 });
+
+describe('CellStore sharded regions', () => {
+    const A = CS.cellCode(7, 22.7196, 75.8577);           // e.g. 34PLL..
+    const B = CS.cellCode(7, 22.75, 75.90);
+    const SH = {
+        ...SPEC, id: 'sharded',
+        regions: [{
+            name: 'indore_pilot', bbox: { south: 22.5, west: 75.6, north: 22.9, east: 76.0 },
+            json: 'sharded/indore_pilot/{prefix}.json',
+            shards: { prefixLen: 4, keys: [A.slice(0, 4), B.slice(0, 4)] },
+        }],
+    };
+    const docA = { level: 7, cells: [A], columns: { risk: [10], los: ['A'] } };
+    const docB = { level: 7, cells: [B], columns: { risk: [90], los: ['F'] } };
+
+    it('expands the {prefix} template into one part per shard', async () => {
+        globalThis.fetch = mockFetch([['catalog.json', { version: 1, datasets: [SH] }]]);
+        await CS.init();
+        const parts = CS.regionParts(SH.regions[0]);
+        expect(parts.map(p => p.key)).toEqual(SH.regions[0].shards.keys);
+        expect(parts[0].url).toBe(`data/cells/sharded/indore_pilot/${A.slice(0, 4)}.json`);
+        expect(CS.regionParts({ name: 'x', json: 'd/x.json' })).toEqual([{ key: '', url: 'data/cells/d/x.json' }]);
+    });
+
+    it('rowAt fetches only the shard holding the cell', async () => {
+        const f = mockFetch([
+            ['catalog.json', { version: 1, datasets: [SH] }],
+            [`/${A.slice(0, 4)}.json`, docA], [`/${B.slice(0, 4)}.json`, docB],
+        ]);
+        globalThis.fetch = f;
+        await CS.init();
+        const row = await CS.rowAt('sharded', 22.7196, 75.8577);
+        expect(row).toMatchObject({ risk: 10, los: 'A' });
+        const urls = f.mock.calls.map(c => String(c[0]));
+        expect(urls.some(u => u.endsWith(`/${A.slice(0, 4)}.json`))).toBe(true);
+        if (A.slice(0, 4) !== B.slice(0, 4)) expect(urls.some(u => u.endsWith(`/${B.slice(0, 4)}.json`))).toBe(false);
+        expect(await CS.rowAt('sharded', 12.9, 77.6)).toBeNull();   // outside the region bbox: no fetch
+    });
+
+    it('loadCells returns just the shards overlapping the prefixes; load returns all', async () => {
+        globalThis.fetch = mockFetch([
+            ['catalog.json', { version: 1, datasets: [SH] }],
+            [`/${A.slice(0, 4)}.json`, docA], [`/${B.slice(0, 4)}.json`, docB],
+        ]);
+        await CS.init();
+        const part = await CS.loadCells('sharded', [A.slice(0, 5)]);
+        expect(part.cells).toContain(A);
+        if (A.slice(0, 4) !== B.slice(0, 4)) expect(part.cells).not.toContain(B);
+        const coarse = await CS.loadCells('sharded', [A.slice(0, 1)]);   // a coarse prefix covers both
+        expect(coarse.cells.sort()).toEqual([A, B].sort());
+        expect((await CS.load('sharded')).cells.sort()).toEqual([A, B].sort());
+    });
+});

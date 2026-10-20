@@ -29,6 +29,9 @@ from pipeline._lib import digipin
 from pipeline.cells.schema import SCHEMA_VERSION, DatasetSpec, FieldSpec, validate
 
 CATALOG = "catalog.json"
+# Regions above this many cells are split into per-prefix shards so the browser
+# fetches only the part it needs (a clicked cell, a viewport).
+SHARD_THRESHOLD = 8192
 _JSON_DECIMALS = 4
 
 
@@ -306,8 +309,31 @@ def _merge_domain(f: dict, old: Optional[dict]) -> None:
         f["domain"] = sorted(set(a) | set(b))
 
 
+def shard_prefix_len(level: int, cells: int) -> Optional[int]:
+    """Auto shard key length: None (one file) for small regions, else
+    ``level - 3`` so each shard spans at most 4**3 x 4**3 = 4,096 cells."""
+    if cells <= SHARD_THRESHOLD or level <= 3:
+        return None
+    return max(1, level - 3)
+
+
+def shard_table(table: CellTable, prefix_len: int) -> dict:
+    """{prefix: CellTable} splitting ``table`` by code prefix (order preserved)."""
+    out: dict[str, CellTable] = {}
+    for i, code in enumerate(table.codes):
+        key = code[:prefix_len]
+        t = out.get(key)
+        if t is None:
+            t = out[key] = CellTable(level=table.level, codes=[], columns={k: [] for k in table.columns})
+        t.codes.append(code)
+        for k, col in table.columns.items():
+            t.columns[k].append(col[i])
+    return out
+
+
 def update_catalog(root: Path, spec: DatasetSpec, region: str, table: CellTable,
-                   has_parquet: bool, explicit_domains: set) -> dict:
+                   has_parquet: bool, explicit_domains: set,
+                   shards: Optional[dict] = None) -> dict:
     """Upsert this dataset/region into catalog.json; returns the dataset entry."""
     path = root / CATALOG
     try:
@@ -329,9 +355,11 @@ def update_catalog(root: Path, spec: DatasetSpec, region: str, table: CellTable,
         "name": region,
         "cells": len(table),
         "bbox": extent,
-        "json": f"{spec.id}/{region}.json",
+        "json": f"{spec.id}/{region}/{{prefix}}.json" if shards else f"{spec.id}/{region}.json",
         "parquet": f"{spec.id}/{region}.parquet" if has_parquet else None,
     }
+    if shards:
+        reg["shards"] = shards
     others = [r for r in (old or {}).get("regions", []) if r.get("name") != region]
     entry["regions"] = sorted(others + [reg], key=lambda r: r["name"])
 
@@ -346,10 +374,13 @@ def update_catalog(root: Path, spec: DatasetSpec, region: str, table: CellTable,
 
 
 def write_dataset(root, spec: DatasetSpec, region: str, table: CellTable,
-                  parquet: bool = True) -> dict:
+                  parquet: bool = True, shard: object = "auto") -> dict:
     """Validate, then write JSON (+ GeoParquet) and register in the catalog.
 
     ``parquet=True`` requires pyarrow; pass False for a JSON-only store.
+    ``shard``: "auto" (split big regions, see ``shard_prefix_len``), None (one
+    file) or an int prefix length. Sharded JSON goes to
+    ``<id>/<region>/<prefix>.json``; the GeoParquet copy is always one file.
     Returns a small summary dict.
     """
     validate(spec)
@@ -358,15 +389,46 @@ def write_dataset(root, spec: DatasetSpec, region: str, table: CellTable,
     root = Path(root)
     explicit = {f.key for f in spec.fields if f.domain is not None}
     spec = resolved_spec(spec, table)
-    write_json(root / spec.id / f"{region}.json", spec, region, table)
+    plen = shard_prefix_len(spec.level, len(table)) if shard == "auto" else shard
+    single = root / spec.id / f"{region}.json"
+    shard_dir = root / spec.id / region
+    # Clear the other layout's files so a re-run can't leave stale data behind.
+    for old in (shard_dir.glob("*.json") if shard_dir.is_dir() else []):
+        old.unlink()
+    shards = None
+    if plen:
+        if single.exists():
+            single.unlink()
+        parts = shard_table(table, plen)
+        for key, part in parts.items():
+            write_json(shard_dir / f"{key}.json", spec, region, part)
+        shards = {"prefixLen": plen, "keys": sorted(parts)}
+    else:
+        write_json(single, spec, region, table)
     if parquet:
         write_parquet(root / spec.id / f"{region}.parquet", spec, table)
-    update_catalog(root, spec, region, table, parquet, explicit)
+    update_catalog(root, spec, region, table, parquet, explicit, shards=shards)
     return {"dataset": spec.id, "region": region, "level": spec.level,
-            "cells": len(table), "fields": len(spec.fields), "parquet": parquet}
+            "cells": len(table), "fields": len(spec.fields), "parquet": parquet,
+            "shards": len(shards["keys"]) if shards else 0}
 
 
 def read_json(path) -> CellTable:
     """Read a columnar JSON file back into a CellTable."""
     doc = json.loads(Path(path).read_text())
     return CellTable(level=doc["level"], codes=doc["cells"], columns=doc["columns"])
+
+
+def read_region(root, region_entry: dict) -> CellTable:
+    """Read a catalog region (sharded or not) back into one CellTable."""
+    root = Path(root)
+    sh = region_entry.get("shards")
+    paths = ([root / region_entry["json"].replace("{prefix}", k) for k in sh["keys"]]
+             if sh else [root / region_entry["json"]])
+    tables = [read_json(p) for p in paths]
+    out = CellTable(level=tables[0].level, codes=[], columns={k: [] for k in tables[0].columns})
+    for t in tables:
+        out.codes.extend(t.codes)
+        for k in out.columns:
+            out.columns[k].extend(t.columns[k])
+    return out

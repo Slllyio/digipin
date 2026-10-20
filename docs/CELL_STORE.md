@@ -100,6 +100,26 @@ null is dropped.
 
 Floats are rounded to 4 decimals. `columns[k][i]` belongs to `cells[i]`.
 
+### Sharding (big regions)
+
+A region with more than 8,192 cells is split by code prefix, so the browser
+fetches only the part it needs. The region entry then carries a `shards`
+block, and `json` becomes a template:
+
+```jsonc
+{ "name": "indore_pilot", "cells": 30611,
+  "json": "growth/indore_pilot/{prefix}.json",            // one columnar file per key
+  "shards": { "prefixLen": 4, "keys": ["34M5", "34M6", …] },
+  "parquet": "growth/indore_pilot.parquet" }             // always a single file
+```
+
+The prefix length is `level - 3`, so each shard holds at most 4,096 cells
+(L7 → 4-character keys, L8 → 5). `write_dataset(…, shard="auto" | None | n)`
+picks or forces the layout. Re-running it removes the files of the other
+layout. `store.read_region(root, entry)` reads either layout back. An
+unsharded region keeps the plain `"json": "<id>/<region>.json"`, so v1
+readers still work.
+
 ### `<dataset>/<region>.parquet` (GeoParquet 1.1)
 
 | column | type | notes |
@@ -187,7 +207,10 @@ drift apart.
 ```js
 await CellStore.init();                         // loads catalog.json (silent no-op on 404)
 CellStore.datasets();                           // registry entries (catalog + runtime)
-await CellStore.rowAt('traffic', lat, lng);     // { digipin, congestion_risk, … } | null
+await CellStore.rowAt('traffic', lat, lng);     // { digipin, congestion_risk, … } | null — fetches ≤ 1 shard
+await CellStore.loadCells('growth', ['34PL']);  // only the shards overlapping these code prefixes
+await CellStore.load('growth');                 // the whole table (every region + shard)
+await CellProfile.profile(lat, lng, { rank: true });  // every dataset's row for one cell
 await CellLayers.show('traffic', { field: 'worst_los', extrude: true });
 CellLayers.setField('traffic', 'congestion_risk');
 CellLayers.hide('traffic');
@@ -200,6 +223,14 @@ await CellStore.sql(`
 The **Layers** panel builds one group per `group` value. Each dataset gets a
 row, with no per-layer code, and the legend has a field picker and a
 **3D extruded cells** switch.
+
+**Cell profile.** Clicking a cell opens the panel, which shows an
+**Everything in this cell** card (`js/cell-profile.js`). It lists every
+registry dataset that covers the cell, including dropped files, with each value
+and its rank among the dataset's cells. The rank is green or red when
+`higherIs` says which end is good, and each dataset has a **Map** button. The
+card paints from local data before the live fetch finishes. A new dataset
+appears there with no code.
 
 Config (`window.DIGIPIN_CONFIG`): `cellStore: false` turns the store off,
 `cellsBase: 'https://…/cells/'` serves it from R2 or a CDN, and `ingestLevel: 8`
@@ -220,12 +251,12 @@ fixes the drop-ingest level.
 
 ## Not done yet
 
-- Cell-panel widgets still sample the old grids. Moving them to
-  `CellStore.rowAt` would let one lookup show every dataset for the clicked
-  cell.
-- Large datasets (L8 city-wide is about 500k cells) need per-prefix sharding of
-  the JSON, as `data/scores/` already does, or PMTiles. The catalog's
-  `regions[]` can describe shards without a schema change.
+- The older traffic, mobility and heat widgets still sample their own grids.
+  The profile card covers the same data through the store, so these widgets
+  can be retired one at a time.
+- Ranks in the profile are computed against all of a dataset's cells, across
+  every region, and the first click loads that dataset's whole table once.
+  Ranking per region would use `loadCells` with the region's shard keys.
 - `CellStore.sql()` loads DuckDB's parquet extension from
   `extensions.duckdb.org` on first use. The deploy must allow that host. The
   app's CSP already does.

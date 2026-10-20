@@ -29,6 +29,7 @@ const CellStore = (() => {
     let _enabled = false;
     const _local = new Map();       // id -> { spec, table } registered at runtime
     const _tables = new Map();      // id -> Promise<table>
+    const _parts = new Map();       // url -> Promise<columnar doc | null> (region file or shard)
     let _duck = null;               // Promise<{ db, conn }>
     const _listeners = new Set();
 
@@ -45,6 +46,7 @@ const CellStore = (() => {
         _catalog = null;
         _enabled = false;
         _tables.clear();
+        _parts.clear();
         if (_cfg().cellStore === false) return false;
         try {
             const resp = await fetch(`${base()}catalog.json`, { cache: 'no-cache', signal: AbortSignal.timeout(8000) });
@@ -224,26 +226,59 @@ const CellStore = (() => {
      * URL of one region file, versioned by the catalog build stamp. Like Aino's
      * version-in-the-path tiles, a new build is a new URL, so the browser can
      * reuse its cached copy for as long as the stamp is unchanged instead of
-     * revalidating every file on every visit.
+     * revalidating every file on every visit. For a sharded region this is the
+     * `{prefix}` template; regionParts() expands it.
      */
     function tableUrl(region) {
-        const v = generated();
-        return base() + region.json + (v ? '?v=' + encodeURIComponent(v) : '');
+        return _versioned(base() + region.json);
     }
 
-    /** The dataset's table (all regions), loaded once. null when unavailable. */
+    function _versioned(url) {
+        const v = generated();
+        return url + (v ? '?v=' + encodeURIComponent(v) : '');
+    }
+
+    /**
+     * The files behind one catalog region: one part for an unsharded region,
+     * one per shard key when the region carries `shards: { prefixLen, keys }`
+     * (json is then a template, "<id>/<region>/{prefix}.json").
+     */
+    function regionParts(region) {
+        if (!region || !region.json) return [];
+        const sh = region.shards;
+        if (sh && Array.isArray(sh.keys)) {
+            return sh.keys.map(key => ({ key, url: _versioned(base() + region.json.replace('{prefix}', key)) }));
+        }
+        return [{ key: '', url: tableUrl(region) }];
+    }
+
+    function _fetchPart(url) {
+        if (!_parts.has(url)) {
+            const p = (async () => {
+                try {
+                    const resp = await fetch(url, { signal: AbortSignal.timeout(15000) });
+                    return resp.ok ? await resp.json() : null;
+                } catch { return null; }
+            })();
+            _parts.set(url, p);
+            p.then(doc => { if (!doc) _parts.delete(url); });   // let a failed part be retried
+        }
+        return _parts.get(url);
+    }
+
+    async function _tableFrom(spec, parts) {
+        const docs = await Promise.all(parts.map(pt => _fetchPart(pt.url)));
+        return _index(_concat(docs, spec));
+    }
+
+    /** The dataset's whole table (every region and shard), loaded once. null when unavailable. */
     function load(id) {
         if (_tables.has(id)) return _tables.get(id);
         const spec = get(id);
         if (!spec) return Promise.resolve(null);
         const p = (async () => {
-            const parts = await Promise.all((spec.regions || []).map(async r => {
-                try {
-                    const resp = await fetch(tableUrl(r), { signal: AbortSignal.timeout(15000) });
-                    return resp.ok ? await resp.json() : null;
-                } catch { return null; }
-            }));
-            const table = _index(_concat(parts, spec));
+            const parts = (spec.regions || []).flatMap(regionParts);
+            const table = await _tableFrom(spec, parts);
             if (!table.cells.length) { _tables.delete(id); return null; }
             return table;
         })();
@@ -251,15 +286,43 @@ const CellStore = (() => {
         return p;
     }
 
-    /** A dataset's row for the cell containing (lat,lng), or null. */
+    /**
+     * Only the parts of a dataset covering `prefixes` (DIGIPIN codes of any
+     * length, e.g. a viewport cover): a sharded region contributes the shards
+     * that overlap a prefix; an unsharded region is included whole. Runtime
+     * datasets return their full table. Never cached as a whole — parts are.
+     */
+    async function loadCells(id, prefixes) {
+        const spec = get(id);
+        if (!spec) return null;
+        if (_local.has(id)) return load(id);
+        const want = (prefixes || []).map(p => String(p).replace(/-/g, '').toUpperCase());
+        const overlaps = (key) => !key || want.some(p => p.startsWith(key) || key.startsWith(p));
+        const parts = (spec.regions || []).flatMap(regionParts).filter(pt => overlaps(pt.key));
+        return _tableFrom(spec, parts);
+    }
+
+    function _inBbox(b, lat, lng) {
+        return !b || (lat >= b.south && lat <= b.north && lng >= b.west && lng <= b.east);
+    }
+
+    /** A dataset's row for the cell containing (lat,lng), or null. Loads at most one shard per region. */
     async function rowAt(id, lat, lng) {
         const spec = get(id);
         if (!spec) return null;
-        const table = await load(id);
-        if (!table) return null;
-        const code = cellCode(table.level, lat, lng);
-        const i = table.index.get(code);
-        if (i === undefined) return null;
+        const code = cellCode(spec.level, lat, lng);
+        if (!code) return null;
+        let table;
+        if (_local.has(id)) {
+            table = await load(id);
+        } else {
+            const regions = (spec.regions || []).filter(r => _inBbox(r.bbox, lat, lng));
+            if (!regions.length) return null;
+            const parts = regions.flatMap(regionParts).filter(pt => !pt.key || code.startsWith(pt.key));
+            table = await _tableFrom(spec, parts);
+        }
+        const i = table && table.index.get(code);
+        if (i === undefined || i === null) return null;
         const row = { digipin: DigiPin.format(code) };
         for (const f of spec.fields) row[f.key] = table.columns[f.key][i];
         return row;
@@ -380,7 +443,7 @@ const CellStore = (() => {
 
     return {
         init, isEnabled, base, datasets, get, generated, tableUrl, field, onChange,
-        cellCode, binRecords, dataDomain, load, rowAt,
+        cellCode, binRecords, dataDomain, load, loadCells, regionParts, rowAt,
         register, unregister, isLocal, toGeoJSON,
         sqlSources, viewStatements, sql,
     };

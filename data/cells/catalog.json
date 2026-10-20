@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-20T19:59:27Z",
+  "generated": "2026-10-20T20:07:41Z",
   "datasets": [
     {
       "id": "growth",
@@ -76,8 +76,25 @@
             "east": 76.000244140625,
             "north": 22.901611328125
           },
-          "json": "growth/indore_pilot.json",
-          "parquet": "growth/indore_pilot.parquet"
+          "json": "growth/indore_pilot/{prefix}.json",
+          "parquet": "growth/indore_pilot.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
         }
       ]
     },

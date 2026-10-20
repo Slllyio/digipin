@@ -139,6 +139,9 @@ const Panel = (() => {
         panelEl.classList.add('open');
         if (typeof FloatingDialogs !== 'undefined') FloatingDialogs.bringToFront(panelEl);
         contentEl.innerHTML = buildLoadingHTML(cell);
+        // The cell-store profile is local data, so it can paint before the
+        // live fetch finishes; update() re-attaches it after the rebuild.
+        if (typeof CellProfile !== 'undefined') CellProfile.attachTo(contentEl, cell);
         if (!panelEl.hasAttribute('tabindex')) panelEl.setAttribute('tabindex', '-1');
         try { panelEl.focus({ preventScroll: true }); } catch { /* older browsers */ }
     }
@@ -159,6 +162,9 @@ const Panel = (() => {
         if (typeof RealEstateWidget !== 'undefined') {
             RealEstateWidget.attachTo(contentEl, data, cell);
         }
+
+        // Every cell-store dataset for this cell (js/cell-profile.js).
+        if (typeof CellProfile !== 'undefined') CellProfile.attachTo(contentEl, cell);
 
         if (typeof HeatWidget !== 'undefined') {
             HeatWidget.attachTo(contentEl, data?.realtime?.heat || null, cell);

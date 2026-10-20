@@ -140,3 +140,47 @@ def test_write_parquet_is_valid_geoparquet(tmp_path):
     spec = json.loads(t.schema.metadata[b"digipin_cells"])
     assert spec["id"] == "demo"
     assert t.column("level").to_pylist() == [7, 7]
+
+
+def _many(n_side=100, level=8):
+    # A dense block of L8 cells (~61 m) -> well over the shard threshold.
+    recs = [{"lat": 22.70 + i * 0.0006, "lng": 75.80 + j * 0.0006, "risk": i, "density": j, "kind": "a"}
+            for i in range(n_side) for j in range(n_side)]
+    return store.bin_records(recs, level, _spec(level=level).fields)
+
+
+def test_shard_prefix_len_auto():
+    assert store.shard_prefix_len(7, 100) is None
+    assert store.shard_prefix_len(7, store.SHARD_THRESHOLD + 1) == 4
+    assert store.shard_prefix_len(8, 10**6) == 5
+
+
+def test_big_regions_are_sharded_and_read_back(tmp_path):
+    t = _many()
+    assert len(t) > store.SHARD_THRESHOLD
+    s = store.write_dataset(tmp_path, _spec(level=8), "r", t, parquet=False)
+    assert s["shards"] > 1
+    (d,) = json.loads((tmp_path / "catalog.json").read_text())["datasets"]
+    (r,) = d["regions"]
+    assert r["json"] == "demo/r/{prefix}.json" and r["shards"]["prefixLen"] == 5
+    for key in r["shards"]["keys"]:
+        part = store.read_json(tmp_path / "demo" / "r" / f"{key}.json")
+        assert part.codes and all(c.startswith(key) for c in part.codes)
+    back = store.read_region(tmp_path, r)
+    assert back.codes == t.codes and back.columns == t.columns
+    assert not (tmp_path / "demo" / "r.json").exists()
+
+
+def test_switching_layout_removes_stale_files(tmp_path):
+    store.write_dataset(tmp_path, _spec(level=8), "r", _many(), parquet=False)
+    small = store.bin_records([{"lat": 22.72, "lng": 75.85, "risk": 1, "density": 1, "kind": "a"}],
+                              8, _spec(level=8).fields)
+    s = store.write_dataset(tmp_path, _spec(level=8), "r", small, parquet=False)
+    assert s["shards"] == 0
+    assert (tmp_path / "demo" / "r.json").exists()
+    assert not list((tmp_path / "demo" / "r").glob("*.json"))
+    (d,) = json.loads((tmp_path / "catalog.json").read_text())["datasets"]
+    assert "shards" not in d["regions"][0]
+    # Forcing a prefix length works for small tables too.
+    s = store.write_dataset(tmp_path, _spec(level=8), "r", small, parquet=False, shard=3)
+    assert s["shards"] == 1
