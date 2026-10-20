@@ -64,6 +64,7 @@ loadGlobalScript('js/area-aggregate.js', ['AreaAggregate']);
 loadGlobalScript('js/compare.js', ['Compare']);
 loadGlobalScript('js/heat-score.js', ['HeatScore']);
 loadGlobalScript('js/heat-widget.js', ['HeatWidget']);
+loadGlobalScript('js/flood-scs.js', ['FloodSCS']);
 loadGlobalScript('js/realtime-flood.js', ['RealtimeFlood']);
 loadGlobalScript('js/flood-inundation.js', ['FloodInundation']);
 loadGlobalScript('js/realtime-alerts.js', ['RealtimeAlerts']);
