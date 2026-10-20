@@ -67,7 +67,7 @@ Easiest is local Ollama (free, no key):
 ```sh
 ollama pull qwen2.5
 ollama serve
-# optionally build the tuned persona:  ollama create disha -f Modelfile
+# optionally build the tuned persona:  ollama create disha -f training-data/Modelfile
 ```
 
 Or open the ⚙ panel in the app and paste a **Groq** key (free tier) or any
@@ -204,7 +204,7 @@ all CDN scripts.
 | `pipeline/` | offline raster/vector extraction (heat, growth, tiles) |
 | `data/realtime/` | committed JSON snapshots from the scrapers |
 | `docs/` | architecture + design notes |
-| `training-data/`, `Modelfile` | DISHA fine-tuning (QLoRA) + Ollama persona |
+| `training-data/` (incl. `Modelfile`) | DISHA fine-tuning (QLoRA) + Ollama persona |
 | `tests/`, `pytest.ini`, `vitest.config.js` | test suites |
 | `extras/` | demo & presentation tooling (video recorder, PPT generator, slide viewer) — **not part of the PWA**; see `extras/README.md` |
 | `guna-twin-city/` | a separate prototype digital-twin for Guna (self-contained sub-project; not part of the main PWA) |

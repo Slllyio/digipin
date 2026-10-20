@@ -5,7 +5,7 @@
 #
 # OPTION B: Use base qwen2.5 with system prompt (no fine-tuning needed)
 #
-# To create: ollama create disha -f Modelfile
+# To create (from training-data/): ollama create disha -f Modelfile
 # To test:   ollama run disha
 
 FROM qwen2.5:latest

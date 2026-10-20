@@ -15,7 +15,7 @@ Usage:
 
 After training, convert to GGUF and import into Ollama:
     python finetune_qlora.py --export_gguf
-    ollama create disha -f ../Modelfile
+    ollama create disha -f Modelfile
 """
 
 import argparse
@@ -184,7 +184,7 @@ def main():
         print(f"GGUF export complete!")
         print(f"\nTo import into Ollama:")
         print(f"  1. Update Modelfile FROM path to: {gguf_dir}")
-        print(f"  2. Run: ollama create disha -f ../Modelfile")
+        print(f"  2. Run: ollama create disha -f Modelfile")
         print(f"  3. Test: ollama run disha")
 
 
