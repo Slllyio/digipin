@@ -30,6 +30,7 @@ const Provenance = (() => {
         '_btn_btn-scenario': { source: 'CA-ML growth prediction + ScenarioModel lens', method: 'Illustrative what-if adjustment, not a re-trained run', ai: true },
         '_btn_btn-traffic': { source: 'OpenStreetMap road network (pipeline/traffic/road_network.py)', method: 'Structural Level-of-Service from betweenness centrality', license: OSM },
         '_btn_btn-mobility': { source: 'OpenStreetMap (pipeline/safety/mobility.py)', method: 'Chokepoints and sole-connector links', license: OSM },
+        '_btn_btn-emergency': { source: 'OpenStreetMap mobility + traffic grids (pipeline/safety, pipeline/traffic)', method: 'Emergency Accessibility Index from police reach, chokepoints and road level-of-service', license: OSM },
         '_btn_btn-heat': { source: 'MODIS land surface temperature 2016-2024 (data/heat/)', method: 'Urban Heat Index per cell' },
         '_btn_btn-ndvi': { source: 'NASA GIBS MODIS/Terra NDVI 8-day, 250 m', method: 'Keyless WMTS tiles', license: 'NASA open data' },
         '_btn_btn-bivariate': { source: 'DigiPin cell scores', method: LIVE + ', two scores binned 3×3' },
