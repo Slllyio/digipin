@@ -151,3 +151,17 @@ def test_shard_prefix_scales_with_level():
     assert build_tile.shard_prefix_for(6) == 2
     assert build_tile.shard_prefix_for(7) == 3
     assert build_tile.shard_prefix_for(8) == 4
+
+
+def test_smoke_check_rejects_near_empty_grid(tmp_path):
+    # A wrong-zone extract leaves a handful of stray features: a few distinct
+    # rows over hundreds of cells must fail, not ship as a "scored" city.
+    out = tmp_path / "scores"
+    build_tile.build("bhopal", level=6, out_dir=str(out))   # 442 cells, no pbf
+    shard = next((out / "bhopal").glob("*.json"))
+    rows = json.loads(shard.read_text())
+    for i, code in enumerate(list(rows)[:3]):
+        rows[code] = [min(100, v + i + 1) for v in rows[code]]
+    shard.write_text(json.dumps(rows))
+    with pytest.raises(smoke_check.SmokeFailure, match="near-empty"):
+        smoke_check.check(out, region="bhopal")
