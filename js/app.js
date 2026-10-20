@@ -43,7 +43,12 @@ const App = (() => {
         // data/scores/coverage.json is absent it stays disabled and the app uses
         // the live path unchanged.
         step('PrecomputedScores', () => {
-            if (typeof PrecomputedScores !== 'undefined') PrecomputedScores.init();
+            if (typeof PrecomputedScores !== 'undefined') {
+                // Once coverage loads, flag the cities that have a score tile.
+                PrecomputedScores.init().then(() => {
+                    if (typeof CitySelector !== 'undefined') CitySelector.refreshCoverage();
+                });
+            }
         });
         // Per-DIGIPIN-cell data store (data/cells/catalog.json): the layer
         // registry behind the "Cell Data" panel group + drag-and-drop ingest.

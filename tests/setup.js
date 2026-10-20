@@ -37,6 +37,7 @@ loadGlobalScript('js/keyboard-nav.js', ['KeyboardNav']);
 loadGlobalScript('js/data-fetcher.js', ['DataFetcher']);
 loadGlobalScript('js/precomputed-scores.js', ['PrecomputedScores']);
 loadGlobalScript('js/score-choropleth.js', ['ScoreChoropleth']);
+loadGlobalScript('js/city-selector.js', ['CitySelector']);
 loadGlobalScript('js/cell-store.js', ['CellStore']);
 loadGlobalScript('js/cell-layers.js', ['CellLayers']);
 loadGlobalScript('js/cell-ingest.js', ['CellIngest']);

@@ -106,6 +106,24 @@ def test_build_pmtiles_produces_valid_archive(tmp_path, fixture_osm):
         assert "scores" in [layer.get("id") for layer in (vl or [])]
 
 
+        # The choropleth colours by score properties, so they must survive the
+        # tiler's property filter (it defaults to a building-only allowlist).
+        import gzip
+        import mapbox_vector_tile as mvt
+        from pmtiles.reader import all_tiles
+        from pmtiles.tile import Compression
+        props = None
+        for _zxy, data in all_tiles(MmapSource(f)):
+            if header.get("tile_compression") == Compression.GZIP:
+                data = gzip.decompress(data)
+            feats = mvt.decode(data).get("scores", {}).get("features", [])
+            if feats:
+                props = feats[0]["properties"]
+                break
+        assert props is not None, "no score features found in any tile"
+        assert "code" in props and "livability" in props
+
+
 def test_smoke_check_validates_pmtiles(tmp_path, fixture_osm):
     pytest.importorskip("geopandas")
     pytest.importorskip("pmtiles")

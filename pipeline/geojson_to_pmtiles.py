@@ -107,8 +107,13 @@ def convert(
     min_zoom: int = 10,
     max_zoom: int = 14,
     layer_name: str = "building",
+    keep_props: set[str] | None = None,
 ):
-    """Convert GeoJSON to PMTiles."""
+    """Convert GeoJSON to PMTiles.
+
+    ``keep_props`` limits which feature properties are written; the default is
+    the building allowlist. Callers whose layer is defined by other properties
+    (e.g. the score choropleth) pass their own set."""
     log.info("Loading GeoJSON: %s", input_path)
     start = time.time()
 
@@ -134,7 +139,8 @@ def convert(
     # Prepare properties — keep only useful columns, reduce size
     prop_columns = [c for c in gdf.columns if c != "geometry"]
     # Limit to essential properties to keep tile sizes small
-    keep_props = {"confidence", "area_in_meters", "class", "height", "num_floors"}
+    if keep_props is None:
+        keep_props = {"confidence", "area_in_meters", "class", "height", "num_floors"}
     prop_columns = [c for c in prop_columns if c in keep_props]
 
     # Collect all tiles
