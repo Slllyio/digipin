@@ -43,9 +43,6 @@ const BuildingIntelligence = (() => {
         17: { name: 'Water',              type: 'natural', cover: 'water',    color: '#6a6aff' }
     };
 
-    // Overture Maps PMTiles (buildings theme)
-    const OVERTURE_BUILDINGS_URL = 'https://overturemaps-tiles-us-west-2-beta.s3.amazonaws.com/2024-08-20/buildings.pmtiles';
-
     // Cache for building data (separate from main DataFetcher cache)
     const _cache = new Map();
     const CACHE_TTL = 10 * 60 * 1000; // 10 min (building data changes slowly)

@@ -1,0 +1,592 @@
+{
+  "version": 1,
+  "generated": "2026-10-20T19:37:12Z",
+  "datasets": [
+    {
+      "id": "mobility",
+      "title": "Law & order mobility",
+      "description": "Where emergency movement can be choked or sealed off (docs/MOBILITY_MODEL.md).",
+      "source": "pipeline/safety/mobility.py",
+      "license": "ODbL (OpenStreetMap)",
+      "group": "Cell Data",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "mobility_risk",
+          "label": "Mobility risk",
+          "type": "number",
+          "agg": "max",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "access_class",
+          "label": "Access class",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "Constrained",
+            "Restricted",
+            "Smooth"
+          ],
+          "colors": {
+            "Smooth": "#31a354",
+            "Constrained": "#fdae61",
+            "Restricted": "#d7191c"
+          }
+        },
+        {
+          "key": "sealable",
+          "label": "In a sealable pocket",
+          "type": "boolean",
+          "agg": "any"
+        },
+        {
+          "key": "on_chokepoint",
+          "label": "On a chokepoint",
+          "type": "boolean",
+          "agg": "any"
+        },
+        {
+          "key": "nearest_police_km",
+          "label": "Nearest police station",
+          "type": "number",
+          "agg": "min",
+          "unit": "km",
+          "domain": [
+            0.04,
+            26.75
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "mobility_risk",
+        "extrude": false,
+        "heightM": 300
+      },
+      "regions": [
+        {
+          "name": "indore_pilot",
+          "cells": 1765,
+          "bbox": {
+            "west": 75.600341796875,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.8994140625
+          },
+          "json": "mobility/indore_pilot.json",
+          "parquet": "mobility/indore_pilot.parquet"
+        }
+      ]
+    },
+    {
+      "id": "scores",
+      "title": "Intelligence scores",
+      "description": "~20 composite urban scores (walkability, livability, flood risk\u2026) precomputed per cell from a bulk OSM extract.",
+      "source": "pipeline/scores/build_tile.py",
+      "license": "ODbL (OpenStreetMap)",
+      "group": "Cell Data",
+      "level": 6,
+      "approxCellM": 975,
+      "fields": [
+        {
+          "key": "walkability",
+          "label": "Walkability Score",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "safety",
+          "label": "Safety Index",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "green",
+          "label": "Green Index",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "connectivity",
+          "label": "Connectivity Score",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "commercial",
+          "label": "Commercial Vibrancy",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "education_score",
+          "label": "Education Index",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "healthcare_access",
+          "label": "Healthcare Access",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "entertainment_score",
+          "label": "Entertainment Score",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "livability",
+          "label": "Livability Index",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "investment",
+          "label": "Investment Potential",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "tourism",
+          "label": "Tourism Appeal",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "infra_maturity",
+          "label": "Infrastructure Maturity",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "noise_estimate",
+          "label": "Quietness (Higher=Better)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "population_proxy",
+          "label": "Population Density",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "food_diversity",
+          "label": "Food Diversity",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "religious_diversity",
+          "label": "Religious Diversity",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "public_service",
+          "label": "Public Service Access",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "real_estate_growth",
+          "label": "Real Estate Growth",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "digital_readiness",
+          "label": "Digital Readiness",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "flood_risk",
+          "label": "Flood Risk (Higher=Riskier)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "livability",
+        "extrude": false,
+        "heightM": 600
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 1368,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.8271484375,
+            "east": 77.7822265625,
+            "north": 13.1435546875
+          },
+          "json": "scores/bengaluru.json",
+          "parquet": "scores/bengaluru.parquet"
+        },
+        {
+          "name": "bhopal",
+          "cells": 442,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.3212890625
+          },
+          "json": "scores/bhopal.json",
+          "parquet": "scores/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 726,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.8974609375,
+            "east": 80.322265625,
+            "north": 13.1875
+          },
+          "json": "scores/chennai.json",
+          "parquet": "scores/chennai.parquet"
+        },
+        {
+          "name": "delhi",
+          "cells": 3304,
+          "bbox": {
+            "west": 76.8330078125,
+            "south": 28.392578125,
+            "east": 77.3515625,
+            "north": 28.884765625
+          },
+          "json": "scores/delhi.json",
+          "parquet": "scores/delhi.parquet"
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1080,
+          "bbox": {
+            "west": 78.2919921875,
+            "south": 17.2919921875,
+            "east": 78.6083984375,
+            "north": 17.5556640625
+          },
+          "json": "scores/hyderabad.json",
+          "parquet": "scores/hyderabad.parquet"
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 2209,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.4951171875,
+            "east": 76.0068359375,
+            "north": 22.908203125
+          },
+          "json": "scores/indore_pilot.json",
+          "parquet": "scores/indore_pilot.parquet"
+        },
+        {
+          "name": "mumbai",
+          "cells": 1125,
+          "bbox": {
+            "west": 72.7724609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.2783203125
+          },
+          "json": "scores/mumbai.json",
+          "parquet": "scores/mumbai.parquet"
+        },
+        {
+          "name": "pune",
+          "cells": 700,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.42578125,
+            "east": 73.994140625,
+            "north": 18.6455078125
+          },
+          "json": "scores/pune.json",
+          "parquet": "scores/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "traffic",
+      "title": "Traffic congestion (structural)",
+      "description": "Road-network betweenness \u2192 level-of-service per cell. Structural congestion, not live delays (docs/TRAFFIC_MODEL.md).",
+      "source": "pipeline/traffic/traffic_grid.py",
+      "license": "ODbL (OpenStreetMap)",
+      "group": "Cell Data",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "congestion_risk",
+          "label": "Congestion risk",
+          "type": "number",
+          "agg": "max",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "worst_los",
+          "label": "Worst level of service",
+          "type": "category",
+          "agg": "max",
+          "domain": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "colors": {
+            "A": "#31a354",
+            "B": "#fdbb84",
+            "C": "#fc8d59",
+            "D": "#ef6548",
+            "E": "#d7301f",
+            "F": "#7f0000"
+          }
+        },
+        {
+          "key": "dominant_class",
+          "label": "Dominant road class",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "primary",
+            "primary_link",
+            "secondary",
+            "secondary_link",
+            "tertiary",
+            "tertiary_link",
+            "trunk",
+            "trunk_link"
+          ]
+        },
+        {
+          "key": "road_density_m",
+          "label": "Road length per 200 m pixel",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m",
+          "domain": [
+            0.0,
+            19754.9
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "has_critical_link",
+          "label": "Has a critical link",
+          "type": "boolean",
+          "agg": "any"
+        },
+        {
+          "key": "transit_stops",
+          "label": "Transit stops",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            15
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "transit_access",
+          "label": "Transit access",
+          "type": "number",
+          "agg": "max",
+          "unit": "0-100",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "congestion_risk",
+        "extrude": false,
+        "heightM": 300
+      },
+      "regions": [
+        {
+          "name": "indore_pilot",
+          "cells": 1991,
+          "bbox": {
+            "west": 75.600341796875,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.8994140625
+          },
+          "json": "traffic/indore_pilot.json",
+          "parquet": "traffic/indore_pilot.parquet"
+        }
+      ]
+    }
+  ]
+}

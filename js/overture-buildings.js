@@ -9,10 +9,17 @@
  *  - Height-coded building coloring
  *  - Click-to-inspect per-building attributes
  *  - Stats aggregation for visible buildings
+ *  - Terrain-aware: with Terrain on (or the light theme) buildings render as a
+ *    MapLibre extrusion of harvested footprints with baked DIGIPIN heights, so
+ *    they sit on the ground surface instead of deck.gl's flat z=0 plane.
  */
 
 const OvertureBuildings = (() => {
-    const PMTILES_URL = 'https://overturemaps-tiles-us-west-2-beta.s3.amazonaws.com/2024-08-20/buildings.pmtiles';
+    // Overture deletes old releases, so the tile URL comes from OvertureRelease
+    // (newest release in the bucket, pinned fallback) rather than a constant.
+    const pmtilesUrl = () => (typeof OvertureRelease !== 'undefined')
+        ? OvertureRelease.url('buildings')
+        : 'https://overturemaps-extras-us-west-2.s3.us-west-2.amazonaws.com/tiles/2026-09-23.1/buildings.pmtiles';
     const LAYER_ID = 'overture-buildings-layer';
     const EDGE_LAYER_ID = 'overture-edges-layer';
     const RINGS_LAYER_ID = 'overture-rings-layer';
@@ -20,6 +27,8 @@ const OvertureBuildings = (() => {
     const SOURCE_ID = 'overture-buildings-source';
     const RINGS_SRC = 'overture-rings-source';
     const HL_SRC = 'overture-highlight-source';
+    const TWIN_SRC = 'overture-twin-source';
+    const TWIN_LAYER_ID = 'overture-twin-layer';
 
     // Range rings drawn around the focused DIGIPIN cell (metres) + the radius
     // within which nearby buildings glow amber as the "selected properties".
@@ -32,6 +41,8 @@ const OvertureBuildings = (() => {
     let _focus = null;          // {lat,lng} of the focused cell, or null
     let _moveBound = false;     // moveend listener attached once
     let _deck = false;          // deck.gl WebGL renderer is driving the view
+    let _twin = false;          // MapLibre twin extrusion (terrain / light) is driving the view
+    let _twinBound = false;     // twin moveend + terrain listeners attached once
 
     // ---- pure geometry helpers (unit-tested) ------------------------------
     /** Great-circle distance between two {lat,lng} points, in metres. */
@@ -155,6 +166,51 @@ const OvertureBuildings = (() => {
         'fill-extrusion-vertical-gradient': true
     };
 
+    /** True while Terrain drapes the map (deck.gl can't follow the ground). */
+    function terrainOn() {
+        return typeof Terrain !== 'undefined' && Terrain.isEnabled && Terrain.isEnabled();
+    }
+
+    /**
+     * Which renderer draws the buildings: 'deck' (dark theme, flat ground,
+     * deck.gl loaded), 'twin' (terrain on or light theme: MapLibre extrusion of
+     * harvested footprints with baked heights), or 'native' (dark without
+     * deck.gl: the PMTiles fill-extrusion itself). Pure.
+     */
+    function chooseRenderer({ light, terrain, deckAvailable }) {
+        if (terrain || light) return 'twin';
+        return deckAvailable ? 'deck' : 'native';
+    }
+
+    /** Twin extrusion paint: white massing on paper, cyan glass on dark; amber selection. */
+    function twinPaint(light) {
+        const ramp = light
+            ? ['interpolate', ['linear'], ['get', 'h'], 0, '#f3f5f7', 45, '#e9edf0', 120, '#dce1e6', 360, '#ccd2d9']
+            : ['interpolate', ['linear'], ['get', 'h'], 0, '#0b4a59', 75, '#0f7d94', 210, '#19b6d6', 480, '#5cf0ff'];
+        return {
+            'fill-extrusion-color': ['case', ['get', 'sel'], light ? '#e0904f' : '#ff9d2e', ramp],
+            'fill-extrusion-base': 0,
+            'fill-extrusion-height': ['get', 'h'],
+            'fill-extrusion-opacity': light ? 0.96 : 0.78,
+            'fill-extrusion-vertical-gradient': true
+        };
+    }
+
+    /**
+     * Deck-style polygon records ({polygon, height, sel}) → GeoJSON for the twin
+     * layer, heights scaled by the display exaggeration. Pure.
+     */
+    function twinGeoJSON(records, exaggeration = 1) {
+        return {
+            type: 'FeatureCollection',
+            features: (records || []).map(r => ({
+                type: 'Feature',
+                properties: { h: +(r.height * exaggeration).toFixed(1), sel: !!r.sel },
+                geometry: { type: 'Polygon', coordinates: [r.polygon] }
+            }))
+        };
+    }
+
     /**
      * Create the native MapLibre PMTiles source and fill-extrusion layer
      */
@@ -163,7 +219,7 @@ const OvertureBuildings = (() => {
 
         map.addSource(SOURCE_ID, {
             type: 'vector',
-            url: `pmtiles://${PMTILES_URL}`
+            url: `pmtiles://${pmtilesUrl()}`
         });
 
         // 1. Glowing footprint edges — a bright cyan outline of every building
@@ -241,6 +297,18 @@ const OvertureBuildings = (() => {
             layout: { 'visibility': 'none' }
         });
 
+        // 5. Twin extrusion: harvested footprints + baked heights, drawn by
+        // MapLibre so it sits on terrain. Filled by _refreshTwin.
+        map.addSource(TWIN_SRC, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+        map.addLayer({
+            id: TWIN_LAYER_ID,
+            type: 'fill-extrusion',
+            source: TWIN_SRC,
+            minzoom: 13,
+            paint: twinPaint(isLight()),
+            layout: { 'visibility': 'none' }
+        });
+
         map.on('click', LAYER_ID, onMapClick);
         map.on('mouseenter', LAYER_ID, () => {
             if (_active) map.getCanvas().style.cursor = 'pointer';
@@ -256,37 +324,76 @@ const OvertureBuildings = (() => {
     function toggle(map) {
         _map = map;
         initLayer(map);
-
         _active = !_active;
+        _apply();
+        return _active;
+    }
+
+    /**
+     * (Re)configure the layers for the current state: on/off, theme, terrain.
+     * Called on toggle and whenever Terrain switches on or off.
+     */
+    function _apply() {
+        const map = _map;
+        if (!map) return;
         const light = isLight();
+        const renderer = _active ? chooseRenderer({
+            light,
+            terrain: terrainOn(),
+            deckAvailable: typeof DeckBuildings !== 'undefined' && DeckBuildings.available && DeckBuildings.available()
+        }) : 'off';
 
-        // Preferred dark-theme renderer: a deck.gl WebGL "digital twin" with true
-        // wireframe-glass volumes (Esri SceneView look). deck.gl reads the
-        // geometry MapLibre already loaded, so we keep the MapLibre extrusion
-        // layer present-but-invisible (opacity ~0, still queryRenderedFeatures-
-        // able) and let deck draw the visuals. Falls back to MapLibre's own
-        // fill-extrusion glass when deck.gl isn't loaded.
-        const useDeck = _active && !light
-            && typeof DeckBuildings !== 'undefined' && DeckBuildings.available && DeckBuildings.available();
+        // Leave whichever renderer was driving before.
+        if (_deck && renderer !== 'deck') {
+            try { DeckBuildings.disable(map); } catch { /* not enabled */ }
+            _deck = false;
+        }
+        if (_twin && renderer !== 'twin') {
+            try { map.setLayoutProperty(TWIN_LAYER_ID, 'visibility', 'none'); } catch { /* layer gone */ }
+            _twin = false;
+        }
+        if (renderer === 'native' || renderer === 'off') {
+            try { map.setPaintProperty(LAYER_ID, 'fill-extrusion-opacity', PAINT_DARK['fill-extrusion-opacity']); } catch { /* stub / layer gone */ }
+        }
 
-        if (useDeck) {
+        if (renderer === 'deck') {
+            // Preferred dark-theme renderer: a deck.gl WebGL "digital twin" with
+            // true wireframe-glass volumes (Esri SceneView look). deck.gl reads the
+            // geometry MapLibre already loaded, so we keep the MapLibre extrusion
+            // layer present-but-invisible (opacity ~0, still queryRenderedFeatures-
+            // able) and let deck draw the visuals.
             map.setLayoutProperty(LAYER_ID, 'visibility', 'visible');
             map.setPaintProperty(LAYER_ID, 'fill-extrusion-opacity', 0.01); // invisible but queryable
             map.setLayoutProperty(EDGE_LAYER_ID, 'visibility', 'none');     // deck draws edges
             clearFocus();                                                   // deck draws rings + amber
-            DeckBuildings.enable(map, () => _focus);
+            if (!_deck) DeckBuildings.enable(map, () => _focus);
             _deck = true;
-            if (!_active && _infoPopup) { _infoPopup.remove(); _infoPopup = null; }
-            return _active;
+            return;
         }
 
-        if (_deck) {   // leaving the deck path (overlay off)
-            try { DeckBuildings.disable(map); } catch { /* not enabled */ }
-            try { map.setPaintProperty(LAYER_ID, 'fill-extrusion-opacity', PAINT_DARK['fill-extrusion-opacity']); } catch { /* layer gone */ }
-            _deck = false;
+        if (renderer === 'twin') {
+            // Same harvest-and-redraw trick as deck, but drawn by MapLibre so the
+            // volumes stand on the terrain and use baked DIGIPIN-cell heights.
+            map.setLayoutProperty(LAYER_ID, 'visibility', 'visible');
+            try { map.setPaintProperty(LAYER_ID, 'fill-extrusion-opacity', 0.01); } catch { /* stub */ }
+            try {
+                for (const [k, v] of Object.entries(twinPaint(light))) map.setPaintProperty(TWIN_LAYER_ID, k, v);
+            } catch { /* stub */ }
+            map.setLayoutProperty(TWIN_LAYER_ID, 'visibility', 'visible');
+            _twin = true;
+            if (!_twinBound) {
+                map.on('moveend', () => { if (_twin) _refreshTwin(); });
+                _twinBound = true;
+            }
+            if (typeof DeckBuildings !== 'undefined' && DeckBuildings.ensureHeights) {
+                DeckBuildings.ensureHeights().then(() => { if (_twin) _refreshTwin(); });
+            }
+            // Tiles may still be loading: harvest once the map settles.
+            if (map.once) map.once('idle', () => { if (_twin) _refreshTwin(); });
+            _refreshTwin();
+        } else {
+            map.setLayoutProperty(LAYER_ID, 'visibility', _active ? 'visible' : 'none');
         }
-
-        map.setLayoutProperty(LAYER_ID, 'visibility', _active ? 'visible' : 'none');
         // Glowing footprint edges are the dark "digital twin" device; the Aino
         // light massing model is a clean white solid, so keep edges hidden there.
         map.setLayoutProperty(EDGE_LAYER_ID, 'visibility', (_active && !light) ? 'visible' : 'none');
@@ -306,8 +413,8 @@ const OvertureBuildings = (() => {
         }
 
         // Range rings + amber highlight are a dark-theme device tied to the
-        // focused cell. Draw them when turning on (dark) over a known focus,
-        // clear them otherwise.
+        // focused cell. The twin colours its own selection amber, so only the
+        // rings are drawn there.
         if (_active && !light && _focus) drawFocus();
         else clearFocus();
 
@@ -315,8 +422,22 @@ const OvertureBuildings = (() => {
             _infoPopup.remove();
             _infoPopup = null;
         }
+    }
 
-        return _active;
+    /** Re-harvest rendered footprints into the twin extrusion source. */
+    function _refreshTwin() {
+        if (!_map || !_twin || typeof DeckBuildings === 'undefined') return;
+        let feats = [];
+        try { feats = _map.queryRenderedFeatures({ layers: [LAYER_ID] }) || []; }
+        catch { /* layer not rendered yet */ }
+        const recs = DeckBuildings.featuresToPolygons(feats, isLight() ? null : _focus);
+        const src = _map.getSource(TWIN_SRC);
+        if (src && src.setData) src.setData(twinGeoJSON(recs, DeckBuildings.getExaggeration()));
+    }
+
+    // Terrain on/off changes which renderer can follow the ground.
+    if (typeof window !== 'undefined') {
+        window.addEventListener('terrain:change', () => { if (_active) _apply(); });
     }
 
     /**
@@ -328,6 +449,7 @@ const OvertureBuildings = (() => {
         _focus = (center && Number.isFinite(center.lat) && Number.isFinite(center.lng))
             ? { lat: center.lat, lng: center.lng } : null;
         if (_deck && typeof DeckBuildings !== 'undefined') { DeckBuildings.setFocus(_focus); return; }
+        if (_twin) { _refreshTwin(); if (!isLight() && _focus) drawFocus(); else clearFocus(); return; }
         if (_map && _active && !isLight() && _focus) drawFocus();
         else if (_map) clearFocus();
     }
@@ -341,10 +463,10 @@ const OvertureBuildings = (() => {
         // Re-pick nearby buildings whenever tiles finish loading/panning, since
         // queryRenderedFeatures only sees what's currently rendered.
         if (!_moveBound) {
-            _map.on('moveend', () => { if (_active && !isLight() && _focus) _refreshHighlight(); });
+            _map.on('moveend', () => { if (_active && !_twin && !isLight() && _focus) _refreshHighlight(); });
             _moveBound = true;
         }
-        _refreshHighlight();
+        if (!_twin) _refreshHighlight();
     }
 
     /** Fill the amber highlight source from the buildings currently rendered. */
@@ -465,5 +587,6 @@ const OvertureBuildings = (() => {
     /** True while the buildings overlay is visible. */
     function isActive() { return _active; }
 
-    return { toggle, isActive, getVisibleStats, focusCell, ringsGeoJSON, nearbyHighlight };
+    return { toggle, isActive, getVisibleStats, focusCell, ringsGeoJSON, nearbyHighlight,
+        chooseRenderer, twinGeoJSON, twinPaint };
 })();

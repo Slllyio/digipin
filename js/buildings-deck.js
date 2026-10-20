@@ -32,27 +32,36 @@ const DeckBuildings = (() => {
     let _focus = null;          // {lat,lng} of the focused DIGIPIN cell
     let _data = [];             // harvested deck polygon records
     let _moveBound = false;
-    let _heightById = null;     // Map<overtureId, metres> of real heights, when loaded
+    let _grid = null;           // { levels:[…], cells: Map<dashless DIGIPIN, metres> }, when loaded
+    let _gridLoad = null;       // in-flight/finished ensureHeights() promise
+    // Baked per-region height grids (scripts/build_building_heights.py). Add a
+    // region's file here once it has been baked.
+    const HEIGHT_GRIDS = ['data/heights/indore_pilot_heights_digipin.json'];
 
     /**
-     * Load a baked per-building height lookup ({ overtureId: metres }) produced
-     * from Google Open Buildings 2.5D (see scripts/build_building_heights.py).
-     * When present, featuresToPolygons uses these real heights; otherwise it
-     * falls back to the footprint-area estimate. Safe to call with a missing
-     * file — a 404 just leaves the estimate in place.
+     * Load a baked DIGIPIN height grid ({ level, cells: { code: metres } })
+     * produced from Google Open Buildings 2.5D (scripts/build_building_heights.py)
+     * and merge it into the lookup. Keyed by cell rather than Overture id, so it
+     * survives Overture releases re-issuing ids. Safe to call with a missing
+     * file — a 404 just leaves the footprint estimate in place.
      */
     async function loadHeights(url) {
         try {
             const res = await fetch(url, { cache: 'force-cache' });
             if (!res.ok) return false;
-            const obj = await res.json();
-            _heightById = new Map(Object.entries(obj));
+            _grid = mergeHeightGrid(_grid, await res.json());
             if (_enabled) refresh();
             return true;
         } catch (e) {
             console.warn('DeckBuildings.loadHeights failed:', e);
             return false;
         }
+    }
+
+    /** Load every baked height grid once; resolves when done (missing files are skipped). */
+    function ensureHeights() {
+        if (!_gridLoad) _gridLoad = Promise.all(HEIGHT_GRIDS.map(loadHeights));
+        return _gridLoad;
     }
 
     /** True when deck.gl (with the pieces we use) is loaded. */
@@ -97,6 +106,25 @@ const DeckBuildings = (() => {
         }
         return Math.abs(a / 2);
     }
+    /** Merge a baked grid file into a lookup (null-safe, returns the lookup). Pure. */
+    function mergeHeightGrid(grid, doc) {
+        if (!doc || !doc.cells || !Number.isInteger(doc.level)) return grid;
+        const out = grid || { levels: [], cells: new Map() };
+        for (const [code, h] of Object.entries(doc.cells)) out.cells.set(code, h);
+        if (!out.levels.includes(doc.level)) out.levels = [...out.levels, doc.level].sort((x, y) => y - x);
+        return out;
+    }
+    /** Baked height (m) of the DIGIPIN cell containing a point, finest level first, or null. Pure. */
+    function cellHeight(grid, lat, lng) {
+        if (!grid || !grid.levels.length || typeof DigiPin === 'undefined') return null;
+        let code;
+        try { code = DigiPin.encode(lat, lng).replace(/-/g, ''); } catch { return null; }   // outside India
+        for (const level of grid.levels) {
+            const h = grid.cells.get(code.slice(0, level));
+            if (h != null && isFinite(+h) && +h > 0) return +h;
+        }
+        return null;
+    }
     /**
      * Display height (m) for a building. Uses Overture's real height/num_floors
      * when present; otherwise — the common case for Indian footprints, which
@@ -118,7 +146,7 @@ const DeckBuildings = (() => {
      * (outer ring + height), de-duped by centroid and tagged `sel` when within
      * `radiusM` of the focus centre. Pure.
      */
-    function featuresToPolygons(features, focus, radiusM = HIGHLIGHT_RADIUS_M, heightById = _heightById) {
+    function featuresToPolygons(features, focus, radiusM = HIGHLIGHT_RADIUS_M, grid = _grid) {
         const out = [];
         const seen = new Set();
         for (const f of (features || [])) {
@@ -137,11 +165,14 @@ const DeckBuildings = (() => {
                 if (seen.has(key)) continue;
                 seen.add(key);
                 const sel = !!focus && _haversineM(focus, { lng: cx, lat: cy }) <= radiusM;
-                // Prefer a real baked height (Open Buildings 2.5D) keyed by the
-                // Overture id; fall back to the footprint-area estimate.
-                const real = heightById && props.id != null ? heightById.get(props.id) : null;
-                const height = (real != null && isFinite(+real) && +real > 0)
-                    ? Math.max(3, +real)
+                // Overture's own height/floors win (they describe this exact
+                // building). Otherwise use the baked Open Buildings 2.5D height of
+                // the building's DIGIPIN cell, jittered ±15% per building so a block
+                // doesn't render as one flat slab; else the footprint estimate.
+                const explicit = props.height != null || props.num_floors != null;
+                const cellH = explicit ? null : cellHeight(grid, cy, cx);
+                const height = cellH != null
+                    ? Math.max(3, cellH * (0.85 + 0.3 * _hash01(key)))
                     : estimateHeight(props, _ringAreaM2(outer, cy), key);
                 out.push({ polygon: outer, height, sel });
             }
@@ -231,7 +262,7 @@ const DeckBuildings = (() => {
         _overlay = new deck.MapboxOverlay({ interleaved: false, layers: [] });
         map.addControl(_overlay);
         if (!_moveBound) { map.on('moveend', refresh); _moveBound = true; }
-        if (!_heightById) loadHeights('data/heights/indore_building_heights.json');   // real heights when available
+        ensureHeights();   // real heights when available
         refresh();
         return true;
     }
@@ -254,14 +285,17 @@ const DeckBuildings = (() => {
 
     /** True while the deck overlay is attached. */
     function isEnabled() { return _enabled; }
+    /** Current 3D vertical exaggeration (display-only). */
+    function getExaggeration() { return _vertExag; }
     /** Set the 3D vertical exaggeration (display-only) and re-render. */
     function setExaggeration(x) {
         if (Number.isFinite(+x) && +x > 0) { _vertExag = +x; if (_enabled) refresh(); }
         return _vertExag;
     }
 
-    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, setExaggeration,
-        featureHeight, estimateHeight, featuresToPolygons, ringPaths };
+    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights,
+        setExaggeration, getExaggeration,
+        featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, cellHeight };
 })();
 
 if (typeof window !== 'undefined') window.DeckBuildings = DeckBuildings;

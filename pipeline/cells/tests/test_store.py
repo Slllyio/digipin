@@ -1,0 +1,142 @@
+"""Cell store: binning, schema validation, writers, catalog upserts."""
+import json
+from pathlib import Path
+
+import pytest
+
+from pipeline.cells import store
+from pipeline.cells.schema import DatasetSpec, FieldSpec, validate
+
+PARITY = Path(__file__).parent / "bin_parity.json"
+
+
+def _fields(doc):
+    return [FieldSpec(key=f["key"], label=f["label"], type=f["type"], agg=f["agg"]) for f in doc["fields"]]
+
+
+def test_bin_records_matches_committed_parity_fixture():
+    # The same fixture is asserted by tests/cell-store.test.js, so the Python
+    # pipeline and the browser drop-ingest bin identically.
+    doc = json.loads(PARITY.read_text())
+    fields = _fields(doc)
+    for case in doc["cases"]:
+        t = store.bin_records(doc["records"], case["level"], fields)
+        assert t.codes == case["cells"]
+        for k, col in case["columns"].items():
+            assert t.columns[k] == pytest.approx(col), (case["level"], k)
+
+
+def test_codes_truncate_to_parent_cells():
+    assert store.cell_code(6, code="34P-LLM-PKT9") == "34PLLM"
+    assert store.cell_code(8, code="34PLLM") is None          # too coarse for L8
+    assert store.cell_code(7, lat=1.0, lng=75.0) is None      # outside India
+    full = store.cell_code(10, lat=22.7196, lng=75.8577)
+    assert store.cell_code(6, lat=22.7196, lng=75.8577) == full[:6]
+
+
+def test_aggs_and_sparse_drop():
+    f = [FieldSpec("v", "V", agg="mean")]
+    t = store.bin_records([{"lat": 22.72, "lng": 75.85, "v": None}], 7, f)
+    assert len(t) == 0                                          # all-null cell dropped
+    t = store.bin_records([{"lat": 22.72, "lng": 75.85, "v": 2},
+                           {"lat": 22.72, "lng": 75.85, "v": 4}], 7, f)
+    assert t.columns["v"] == [3.0]
+    assert t.row(t.codes[0]) == {"v": 3.0}
+
+
+@pytest.mark.parametrize("bad", [
+    dict(id="Bad-Id"), dict(level=11), dict(fields=[]),
+    dict(fields=[FieldSpec("lat", "x")]),
+    dict(fields=[FieldSpec("a", "A", type="vector")]),
+    dict(fields=[FieldSpec("a", "A", agg="median")]),
+    dict(fields=[FieldSpec("a", "A", ramp="rainbow")]),
+    dict(fields=[FieldSpec("a", "A"), FieldSpec("a", "B")]),
+    dict(default_field="nope"),
+])
+def test_validate_rejects(bad):
+    base = dict(id="ok", title="OK", level=7, fields=[FieldSpec("a", "A")])
+    base.update(bad)
+    with pytest.raises(ValueError):
+        validate(DatasetSpec(**base))
+
+
+def _spec(**kw):
+    base = dict(id="demo", title="Demo", level=7, fields=[
+        FieldSpec("risk", "Risk", agg="max", domain=[0, 100], ramp="reds"),
+        FieldSpec("density", "Density", agg="mean"),
+        FieldSpec("kind", "Kind", type="category", agg="mode"),
+    ])
+    base.update(kw)
+    return DatasetSpec(**base)
+
+
+def _table(level=7, lat=22.72):
+    recs = [{"lat": lat, "lng": 75.85, "risk": 40, "density": 2.5, "kind": "a"},
+            {"lat": lat + 0.01, "lng": 75.86, "risk": 90, "density": 7.5, "kind": "b"}]
+    return store.bin_records(recs, level, _spec().fields)
+
+
+def test_write_dataset_json_and_catalog(tmp_path):
+    summary = store.write_dataset(tmp_path, _spec(), "indore_pilot", _table(), parquet=False)
+    assert summary["cells"] == 2
+    doc = json.loads((tmp_path / "demo" / "indore_pilot.json").read_text())
+    assert doc["level"] == 7 and doc["fields"] == ["risk", "density", "kind"]
+    assert len(doc["cells"]) == len(doc["columns"]["risk"]) == 2
+    assert store.read_json(tmp_path / "demo" / "indore_pilot.json").codes == doc["cells"]
+
+    cat = json.loads((tmp_path / "catalog.json").read_text())
+    (d,) = cat["datasets"]
+    assert d["id"] == "demo" and d["approxCellM"] == 244
+    fields = {f["key"]: f for f in d["fields"]}
+    assert fields["risk"]["domain"] == [0, 100]               # explicit kept
+    assert fields["density"]["domain"] == [2.5, 7.5]          # data-derived
+    assert fields["kind"]["domain"] == ["a", "b"]
+    (r,) = d["regions"]
+    assert r["json"] == "demo/indore_pilot.json" and r["parquet"] is None
+    assert r["bbox"]["south"] < r["bbox"]["north"]
+
+
+def test_catalog_upsert_keeps_other_regions_and_widens_domains(tmp_path):
+    store.write_dataset(tmp_path, _spec(), "indore_pilot", _table(), parquet=False)
+    t2 = store.bin_records([{"lat": 23.25, "lng": 77.40, "risk": 10, "density": 50, "kind": "c"}],
+                           7, _spec().fields)
+    store.write_dataset(tmp_path, _spec(), "bhopal", t2, parquet=False)
+    store.write_dataset(tmp_path, _spec(), "bhopal", t2, parquet=False)   # idempotent
+    (d,) = json.loads((tmp_path / "catalog.json").read_text())["datasets"]
+    assert [r["name"] for r in d["regions"]] == ["bhopal", "indore_pilot"]
+    fields = {f["key"]: f for f in d["fields"]}
+    assert fields["density"]["domain"] == [2.5, 50]
+    assert fields["kind"]["domain"] == ["a", "b", "c"]
+    assert fields["risk"]["domain"] == [0, 100]
+
+
+def test_level_mismatch_rejected(tmp_path):
+    with pytest.raises(ValueError):
+        store.write_dataset(tmp_path, _spec(level=8), "x", _table(level=7), parquet=False)
+
+
+def test_polygon_wkb_roundtrip():
+    import struct
+    b = {"west": 75.0, "south": 22.0, "east": 75.5, "north": 22.5}
+    wkb = store._polygon_wkb(b)
+    order, gtype, rings, npts = struct.unpack("<BIII", wkb[:13])
+    assert (order, gtype, rings, npts) == (1, 3, 1, 5)
+    pts = [struct.unpack("<dd", wkb[13 + 16 * i: 29 + 16 * i]) for i in range(5)]
+    assert pts[0] == pts[-1] == (75.0, 22.0)
+
+
+def test_write_parquet_is_valid_geoparquet(tmp_path):
+    pq = pytest.importorskip("pyarrow.parquet")
+    store.write_dataset(tmp_path, _spec(), "indore_pilot", _table(), parquet=True)
+    path = tmp_path / "demo" / "indore_pilot.parquet"
+    t = pq.read_table(path)
+    assert t.column_names[:4] == ["digipin", "level", "lat", "lng"]
+    assert {"risk", "density", "kind", "bbox", "geometry"} <= set(t.column_names)
+    geo = json.loads(t.schema.metadata[b"geo"])
+    assert geo["primary_column"] == "geometry"
+    col = geo["columns"]["geometry"]
+    assert col["encoding"] == "WKB" and col["geometry_types"] == ["Polygon"]
+    assert len(col["bbox"]) == 4
+    spec = json.loads(t.schema.metadata[b"digipin_cells"])
+    assert spec["id"] == "demo"
+    assert t.column("level").to_pylist() == [7, 7]

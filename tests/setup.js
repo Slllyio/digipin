@@ -31,11 +31,16 @@ function loadGlobalScript(relPath, exposeNames) {
 }
 
 loadGlobalScript('js/digipin.js', ['DigiPin']);
+loadGlobalScript('js/overture-release.js', ['OvertureRelease']);
+loadGlobalScript('js/terrain.js', ['Terrain']);
 loadGlobalScript('js/keyboard-nav.js', ['KeyboardNav']);
 loadGlobalScript('js/data-fetcher.js', ['DataFetcher']);
 loadGlobalScript('js/precomputed-scores.js', ['PrecomputedScores']);
 loadGlobalScript('js/score-choropleth.js', ['ScoreChoropleth']);
 loadGlobalScript('js/city-selector.js', ['CitySelector']);
+loadGlobalScript('js/cell-store.js', ['CellStore']);
+loadGlobalScript('js/cell-layers.js', ['CellLayers']);
+loadGlobalScript('js/cell-ingest.js', ['CellIngest']);
 loadGlobalScript('js/growth-score.js', ['GrowthScore']);
 loadGlobalScript('js/realtime-growth.js', ['RealtimeGrowth']);
 loadGlobalScript('js/growth-widget.js', ['GrowthWidget']);

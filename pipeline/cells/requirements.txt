@@ -1,0 +1,3 @@
+# Cell store (pipeline/cells). Only the GeoParquet writer needs pyarrow;
+# `python -m pipeline.cells.build --no-parquet` runs on the stdlib alone.
+pyarrow>=15.0

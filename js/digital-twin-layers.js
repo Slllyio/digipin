@@ -10,7 +10,9 @@
 
 const DigitalTwinLayers = (() => {
     const DATA_BASE = './data';
-    const OVERTURE_BASE = 'https://overturemaps-tiles-us-west-2-beta.s3.amazonaws.com/2024-08-20';
+    // Placeholder swapped for the live Overture release when a source is added
+    // (see _tileUrl): Overture deletes old releases, so the URL can't be pinned.
+    const OVERTURE_BASE = 'overture:';
     const BHUVAN_WMS = 'https://bhuvan-vec2.nrsc.gov.in/bhuvan/wms';
 
     const _layers = {};       // key -> { visible, loading, sourceId, layerIds[] }
@@ -750,6 +752,15 @@ const DigitalTwinLayers = (() => {
 
     // ─── PMTiles Layer Init ────────────────────────────────────────
 
+    /** Resolve an `overture:/<theme>.pmtiles` placeholder to the current release URL. */
+    function _tileUrl(url) {
+        if (!url.startsWith(OVERTURE_BASE)) return url;
+        const path = url.slice(OVERTURE_BASE.length);
+        return (typeof OvertureRelease !== 'undefined')
+            ? `${OvertureRelease.base()}${path}`
+            : `https://overturemaps-extras-us-west-2.s3.us-west-2.amazonaws.com/tiles/2026-09-23.1${path}`;
+    }
+
     function _initPMTilesLayer(key) {
         const def = LAYER_DEFS[key];
         const sourceId = `dt-source-${key}`;
@@ -759,7 +770,7 @@ const DigitalTwinLayers = (() => {
         if (!_map.getSource(sourceId)) {
             _map.addSource(sourceId, {
                 type: 'vector',
-                url: `pmtiles://${def.pmtilesUrl}`
+                url: `pmtiles://${_tileUrl(def.pmtilesUrl)}`
             });
         }
 
