@@ -574,7 +574,7 @@ def building_stock(region):
             h.updateMask(pres.gte(0.5).And(h.gt(0))).rename(f"h{y}"),
         ])
     img = ee.Image.cat([yr(2016), yr(2023)])
-    raw = gee.fetch(gee.to_cells(img, 4), bbox, level, tile=128)
+    raw = gee.fetch(gee.to_cells(img, 4), bbox, level, tile=48)
     rows = {}
     for code, x in raw.items():
         if x.get("n2023") is None:
