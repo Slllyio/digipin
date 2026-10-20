@@ -4,6 +4,36 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-20 — reliability suite in CI (real browser)
+
+**How.** `tests/playwright/{journeys,resilience,perf}.spec.js` now run in the
+`e2e-smoke` CI job on every push to `dev` (real Chromium, real MapLibre and
+tiles), plus `tests/perf-budgets.test.js` in vitest. Locally without CDN
+access: `STUB_MAP=1 npx playwright test` (see `playwright.config.js`).
+
+**First green run:** CI run #103 on 7416b97 — 23 browser specs pass in ~4.5
+min. Boot: 116 own-origin requests, 1.6 MB, interactive in ~1.4 s on the
+runner.
+
+**Found by the suite.**
+
+- `DataFetcher.exportToCSV` threw on a cell whose feature fetch had failed
+  (no `categories`). Fixed; score rows are now written too.
+- `data/heights/index.json` was fetched twice at boot (buildings-deck and
+  city-overview). `DeckBuildings.heightIndex()` is now shared.
+- My own `ci.yml` edit broke the workflow YAML for ~5 min (unquoted colon in
+  a step name). Validate with a YAML loader before pushing workflow edits.
+
+**Error states shipped.** `js/data-status.js`: persistent bottom-centre
+notice for offline (incl. tab opened offline) and for the cell store being
+unreachable, with Retry; covered by `resilience.spec.js`.
+
+**Budgets (see `perf.spec.js` / `perf-budgets.test.js`).** Boot ≤ 4 MB /
+200 requests / 15 s to interactive; any heights file ≤ 6 MB and fetched
+once; largest response ≤ 6 MB; JS heap ≤ 450 MB after a 3D city sweep;
+`data/cells` files ≤ 3 MB; `js/` ≤ 2 MB total; precache list ≤ 4 MB and
+every entry exists on disk.
+
 ## 2026-10-20 — headless pass after the Aino-inspired feature drop
 
 **How.** Static build served with `python3 -m http.server`; Chromium via
