@@ -35,6 +35,7 @@ const Provenance = (() => {
         '_btn_btn-bivariate': { source: 'DigiPin cell scores', method: LIVE + ', two scores binned 3×3' },
         '_btn_btn-kde': { source: 'DigiPin cell scores', method: LIVE + ', Gaussian kernel density' },
         '_btn_btn-viewshed': { source: 'AWS Terrarium DEM tiles (elevation-tiles-prod)', method: 'Line-of-sight sweep from the map centre, z14 (~9 m/px)' },
+        '_btn_btn-terrain': { source: 'AWS Terrarium DEM tiles (elevation-tiles-prod)', method: 'MapLibre raster-dem terrain and hillshade' },
         '_btn_btn-access': { source: 'OpenStreetMap amenities', method: 'Walking time to the nearest amenity per cell', license: OSM },
         '_btn_btn-area': { source: 'DigiPin cell scores', method: 'Average / min / max over the cells in a drawn rectangle' },
         '_btn_btn-roads': { source: OVERTURE + ' (transportation)', method: 'Vector tiles (PMTiles), coloured by road class', license: 'ODbL' },
