@@ -83,3 +83,40 @@ describe('CellLayers.panelGroups()', () => {
         globalThis.CellStore.unregister('user_g');
     });
 });
+
+describe('CellLayers.filterExpr()', () => {
+    const cat = { key: 'los', type: 'category', domain: ['A', 'B'] };
+    it('nothing hidden, or a numeric field → no filter', () => {
+        expect(CL.filterExpr(cat, [])).toBeNull();
+        expect(CL.filterExpr(cat, undefined)).toBeNull();
+        expect(CL.filterExpr({ key: 'v', type: 'number' }, ['A'])).toBeNull();
+    });
+    it('hidden categories are excluded by string value', () => {
+        expect(CL.filterExpr(cat, ['A', 'B'])).toEqual(
+            ['!', ['in', ['to-string', ['get', 'los']], ['literal', ['A', 'B']]]]);
+    });
+});
+
+describe('CellLayers inspector helpers', () => {
+    const spec = {
+        title: 'Walkability', level: 8, source: 'OSM', license: 'ODbL',
+        fields: [
+            { key: 'score', label: 'Score', type: 'number', unit: 'pts' },
+            { key: 'band', label: 'Band', type: 'category' },
+            { key: 'note', label: 'Note', type: 'category' },
+        ],
+    };
+    const props = { digipin: 'ABC-123', score: 61.2345, band: 'High', note: '' };
+
+    it('rows skip empty values, round numbers, add units and flag the active field', () => {
+        const rows = CL.inspectorRows(spec, props, 'score');
+        expect(rows).toEqual([
+            { label: 'Score', value: '61.23 pts', primary: true },
+            { label: 'Band', value: 'High', primary: false },
+        ]);
+    });
+    it('copy text has a header, one line per field and the source', () => {
+        expect(CL.inspectorText(spec, props)).toBe(
+            'Walkability · ABC-123 · L8\nScore: 61.23 pts\nBand: High\nSource: OSM (ODbL)');
+    });
+});
