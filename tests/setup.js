@@ -113,6 +113,7 @@ loadGlobalScript('js/onboarding.js', ['Onboarding']);
 loadGlobalScript('js/text2map-embeddings.js', ['Text2MapEmbeddings']);
 loadGlobalScript('js/pitch-map.js', ['PitchMap']);
 loadGlobalScript('js/sun-study.js', ['SunStudy']);
+loadGlobalScript('js/sun-hours.js', ['SunHours']);
 loadGlobalScript('js/footprint-export.js', ['FootprintExport']);
 loadGlobalScript('js/site-brief.js', ['SiteBrief']);
 loadGlobalScript('js/measure-tool.js', ['MeasureTool']);

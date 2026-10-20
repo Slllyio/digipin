@@ -313,6 +313,8 @@ const SunStudy = (() => {
             </div>
             <div class="sun-access">—</div>
             <canvas class="sun-chart" width="222" height="64" aria-label="Sun-path altitude chart"></canvas>
+            <button class="sun-hours-btn" type="button">Sun hours at map centre</button>
+            <div class="sun-hours-out" aria-live="polite"></div>
             <div class="sun-hint">Enable <b>3D Mode</b> / Buildings to see the cast shadows.</div>`;
         el.querySelector('.sun-close').addEventListener('click', () => toggle());
         const dateEl = el.querySelector('.sun-date');
@@ -320,6 +322,14 @@ const SunStudy = (() => {
         const onInput = () => { _stop(); _setFromSlider(dateEl.value, Number(slider.value)); applyToMap(); };
         dateEl.addEventListener('change', onInput);
         slider.addEventListener('input', onInput);
+        el.querySelector('.sun-hours-btn').addEventListener('click', () => {
+            const out = el.querySelector('.sun-hours-out');
+            const r = (typeof SunHours !== 'undefined') ? SunHours.analyseHere(dateEl.value) : null;
+            if (!r) { out.textContent = 'Sun hours need the map and the Buildings overlay.'; return; }
+            out.className = 'sun-hours-out sun-' + SunHours.band(r.sunHours);
+            out.textContent = SunHours.summary(r, formatHM)
+                + (r.buildingCount ? ` · ${r.buildingCount} buildings in view` : ' · no buildings in view (open sky assumed)');
+        });
         el.querySelector('.sun-play').addEventListener('click', () => (_playing ? _stop() : _play()));
         document.body.appendChild(el);
         _setFromSlider(dateEl.value, Number(slider.value));
