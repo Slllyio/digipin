@@ -142,3 +142,7 @@ cesium-demo.html
 
 # Generated promo video + frames (build via extras/promo-stills.mjs + build-promo.py)
 extras/out/
+
+# Playwright artefacts
+test-results/
+playwright-report/

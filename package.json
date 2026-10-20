@@ -13,6 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "test:py": "pytest -q",
     "test:e2e": "playwright test",
+    "test:e2e:stub": "STUB_MAP=1 playwright test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "check:orphans": "python3 scripts/check-orphan-js.py",

@@ -87,7 +87,7 @@ jobs:
     - name: Install Playwright Chromium
       run: npx playwright install --with-deps chromium
 
-    - name: App-boot smoke (Playwright)
+    - name: Browser suite (Playwright: smoke, journeys, resilience, perf budgets)
       run: npx playwright test
       env:
         CI: 'true'
