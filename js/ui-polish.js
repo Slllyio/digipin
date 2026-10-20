@@ -59,6 +59,8 @@ const UIPolish = (() => {
         chevronRight: '<path d="m9 6 6 6-6 6"/>',
         play: '<path d="M7 4v16l13-8L7 4z"/>',
         close: '<path d="M6 6l12 12M18 6 6 18"/>',
+        radar: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12 18.5 5.5"/><circle cx="12" cy="12" r="1"/>',
+        droplet: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
     };
 
     // toolbar button id → icon key
@@ -74,6 +76,7 @@ const UIPolish = (() => {
         'btn-heat': 'thermo', 'btn-ndvi': 'leaf', 'btn-bivariate': 'palette',
         'btn-viewshed': 'eye', 'btn-kde': 'flame', 'btn-access': 'walk',
         'btn-choropleth': 'grid', 'btn-area': 'area',
+        'btn-insights': 'radar', 'btn-hydrology': 'droplet',
     };
 
     /** Inline SVG markup for an icon key ('' for unknown keys). */

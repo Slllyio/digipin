@@ -191,7 +191,10 @@ const OvertureBuildings = (() => {
      */
     function twinPaint(light, dataColor) {
         const ramp = light
-            ? ['interpolate', ['linear'], ['get', 'h'], 0, '#f3f5f7', 45, '#e9edf0', 120, '#dce1e6', 360, '#ccd2d9']
+            // Cool paper massing that deepens with height: low-rise Indian
+            // cores (most of the stock is 3-15 m) still separate from the
+            // near-white basemap, towers read as darker slate.
+            ? ['interpolate', ['linear'], ['get', 'h'], 0, '#f3f5f7', 15, '#e2e7ec', 45, '#d3dae1', 120, '#bec7d1', 360, '#a3afbc']
             : ['interpolate', ['linear'], ['get', 'h'], 0, '#0b4a59', 75, '#0f7d94', 210, '#19b6d6', 480, '#5cf0ff'];
         const base = dataColor || ['case', ['get', 'sel'], light ? '#e0904f' : '#ff9d2e', ramp];
         return {
