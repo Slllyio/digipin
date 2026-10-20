@@ -84,6 +84,13 @@ const FloodAnimation = (() => {
         const valueEl  = wrap.querySelector('[data-flood-rain]');
         const readoutEl = wrap.querySelector('[data-flood-rain-readout]');
 
+        // Coalesce the expensive on-map frame rebuild to one per animation
+        // frame: 'input' fires dozens of times per second during a slider drag,
+        // and each perturb() rebuilds every animation frame. The cheap text
+        // readout still updates on every event so the UI stays responsive.
+        let perturbRaf = null;
+        let pendingDepth = 0;
+
         function updateSim(rainfallMm) {
             if (!valueEl || !readoutEl) return;
             valueEl.textContent = `+${rainfallMm} mm/day`;
@@ -97,7 +104,16 @@ const FloodAnimation = (() => {
                     `extra depth ${extraDepth.toFixed(2)} m`;
             }
             if (typeof FloodInundation !== 'undefined') {
-                FloodInundation.perturb(extraDepth);
+                pendingDepth = extraDepth;
+                if (perturbRaf == null) {
+                    const raf = (typeof requestAnimationFrame !== 'undefined')
+                        ? requestAnimationFrame
+                        : (cb) => setTimeout(cb, 16);
+                    perturbRaf = raf(() => {
+                        perturbRaf = null;
+                        FloodInundation.perturb(pendingDepth);
+                    });
+                }
             }
         }
 
@@ -177,7 +193,7 @@ const FloodAnimation = (() => {
             }
 
             // 2. zero/baseline horizontal grid line
-            ctx.strokeStyle = 'rgba(148,163,184,0.25)';
+            ctx.strokeStyle = (typeof Theme !== 'undefined') ? Theme.fg(0.18) : 'rgba(148,163,184,0.25)';
             ctx.lineWidth = 1;
             ctx.beginPath();
             const ybase = yFor(forecast.baseline_m3s);
@@ -226,7 +242,7 @@ const FloodAnimation = (() => {
 
             // 5. weekday labels (fade in with line)
             ctx.globalAlpha = lineProgress;
-            ctx.fillStyle = 'rgba(100,116,139,0.85)';
+            ctx.fillStyle = (typeof Theme !== 'undefined') ? Theme.fg(0.6) : 'rgba(100,116,139,0.85)';
             ctx.font = '10px sans-serif';
             ctx.textAlign = 'center';
             forecast.days.forEach((d, i) => {

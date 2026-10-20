@@ -15,26 +15,18 @@ Auth sources: WAQI (free token), TomTom (free key), OpenAQ (free key)
 
 import argparse
 import json
-import logging
-import sys
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 
 import requests
 
 from config import CENTER_LAT, CENTER_LON, BBOX
+from _lib.io import data_dir, setup_logging
 
-OUT_DIR = Path(__file__).parent.parent / "data" / "sensors"
-OUT_DIR.mkdir(parents=True, exist_ok=True)
+OUT_DIR = data_dir("sensors")
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-log = logging.getLogger("sensors")
+log = setup_logging("sensors")
 
 
 @dataclass

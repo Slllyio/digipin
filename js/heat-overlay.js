@@ -1,9 +1,10 @@
 /**
  * HeatOverlay — map heatmap colouring visible cells by Urban Heat Island intensity.
  *
- * Mirrors growth-overlay.js. Requires MODIS LST COG in data/heat/. When
- * absent, no-ops with a one-time toast pointing the user at the pipeline
- * script — no wasted fetches.
+ * Samples an 8x8 grid over the viewport through RealtimeHeat (one shared
+ * read of the MODIS LST COG in data/heat/) and paints each sample by its
+ * UHI score. When the COG is absent a single HEAD probe short-circuits to
+ * a one-time toast instead of 64 doomed reads per refresh.
  */
 const HeatOverlay = (() => {
     const SOURCE_ID = 'heat-overlay-src';
@@ -13,6 +14,7 @@ const HeatOverlay = (() => {
     let _active = false;
     let _dataAvailable = null;
     let _refreshTimer = null;
+    let _warned = false;
 
     function _colorFor(score) {
         if (score == null) return 'rgba(0,0,0,0)';
@@ -55,12 +57,9 @@ const HeatOverlay = (() => {
 
         const available = await _probeDataAvailability();
         if (!available) {
-            if (typeof showToast === 'function') {
-                showToast(
-                    'Heat overlay — data missing',
-                    'MODIS LST COG (data/heat/modis_lst_2016-2024.tif) not generated. Run `python pipeline/heat/extract_modis_lst.py` with GEE credentials.',
-                    'warn',
-                );
+            if (!_warned && typeof App !== 'undefined' && App.showToast) {
+                _warned = true;
+                App.showToast('Urban Heat Island', 'Heat (MODIS LST) data isn’t available in this deployment yet.', 'info');
             }
             return;
         }
@@ -87,7 +86,7 @@ const HeatOverlay = (() => {
             try {
                 const signals = await RealtimeHeat.fetchCell(c.lat, c.lng);
                 const scored = RealtimeHeat.scoreCell(signals);
-                if (scored && scored.composite != null) score = scored.composite;
+                if (scored && scored.uhi_score != null) score = scored.uhi_score;
             } catch { /* leave score null */ }
             return {
                 type: 'Feature',

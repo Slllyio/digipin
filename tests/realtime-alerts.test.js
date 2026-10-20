@@ -7,7 +7,7 @@
  * RealtimeAlerts is loaded as a globalThis property by tests/setup.js.
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

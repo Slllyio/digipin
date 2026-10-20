@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Slllyio/digipin/scrapers/sources/schemas/imd_nowcast.schema.json",
+  "title": "IMD nowcast snapshot",
+  "description": "Contract for data/realtime/imd_nowcast/latest.json — per-district next-3-hour nowcast from the IMD district nowcast API. Records are empty until IMD_API_KEY + IMD_API_TOKEN are configured; the contract still validates the empty snapshot.",
+  "type": "object",
+  "required": ["count", "records"],
+  "properties": {
+    "generated_at_iso": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp (Z-suffixed) when the snapshot was written. Stamped by scrapers/lib/storage.py:write_latest_snapshot()."
+    },
+    "count": { "type": "integer", "minimum": 0 },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "district_id", "category", "color", "severity"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Composite primary key: '<district_id>:<observation_time_or_latest>'."
+          },
+          "district_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "IMD internal district ID (NOT Census code), shared with imd_warnings DEFAULT_DISTRICTS."
+          },
+          "district_name": {
+            "type": "string",
+            "description": "Human-readable district name with state abbreviation, e.g. 'Indore (MP)'."
+          },
+          "observation_time": {
+            "type": "string",
+            "description": "Nowcast issue/observation time as returned by the API (format varies); may be empty."
+          },
+          "category": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 19,
+            "description": "IMD nowcast weather category. 1-19 spans clear sky through extreme thunderstorms; 0 is the parser's default when the API omits the field."
+          },
+          "color": {
+            "type": "string",
+            "enum": ["green", "yellow", "orange", "red"],
+            "description": "Nowcast severity colour (lowercased): green = no warning, yellow = watch, orange = alert, red = warning."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["No Warning", "Watch", "Alert", "Warning", "Unknown"],
+            "description": "Human-readable severity derived from color via imd_warnings.SEVERITY_BY_COLOR. 'Unknown' when the API returns a colour outside the standard legend."
+          },
+          "message": {
+            "type": "string",
+            "description": "Consolidated nowcast message from the IMD API; may be empty."
+          }
+        }
+      }
+    }
+  }
+}

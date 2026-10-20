@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="DigiPin">
+  <!-- Aino-style mark: charcoal tile · faint DIGIPIN grid · coral location pin -->
+  <rect width="512" height="512" rx="112" fill="#292929"/>
+  <g stroke="#ffffff" stroke-opacity="0.12" stroke-width="6" stroke-linecap="round">
+    <path d="M176 112V400 M256 112V400 M336 112V400 M112 176H400 M112 256H400 M112 336H400"/>
+  </g>
+  <path fill="#ff673d" d="M256 116c-64 0-116 52-116 116 0 84 116 184 116 184s116-100 116-184c0-64-52-116-116-116z"/>
+  <circle cx="256" cy="232" r="44" fill="#292929"/>
+</svg>

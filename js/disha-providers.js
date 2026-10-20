@@ -50,23 +50,44 @@ const DISHAProviders = (() => {
 
     // ===== CONFIG =====
 
+    // Coerce any parsed payload into a well-shaped config. A corrupt or legacy
+    // localStorage value (a number, array, or object missing keys/custom) must
+    // not crash provider resolution, which reads .keys[...] and .custom.baseUrl.
+    function normalizeConfig(parsed) {
+        /** True for a plain (non-array) object. */
+        const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
+        const p = isObj(parsed) ? parsed : {};
+        const custom = isObj(p.custom) ? p.custom : {};
+        return {
+            preferred: typeof p.preferred === 'string' ? p.preferred : 'auto',
+            keys: isObj(p.keys) ? p.keys : {},
+            custom: { baseUrl: custom.baseUrl || '', model: custom.model || '' },
+        };
+    }
+
+    /** Load and cache the provider config from localStorage (or a runtime-injected default), normalized. */
     function loadConfig() {
         if (_config) return _config;
+        let parsed = null;
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) _config = JSON.parse(saved);
+            if (saved) parsed = JSON.parse(saved);
         } catch { /* ignore parse errors */ }
 
-        if (!_config) {
-            _config = {
-                preferred: 'auto',    // 'auto' | 'ollama' | 'groq' | 'custom'
-                keys: {},             // { groq: 'gsk_...', custom: '...' }
-                custom: { baseUrl: '', model: '' }
-            };
+        // No user choice saved yet: allow a runtime-injected default provider
+        // (window.DIGIPIN_CONFIG.aiProvider) so an operator can pre-wire a
+        // provider/key at deploy time without committing a secret. An explicit
+        // choice made in Settings is persisted to localStorage and wins here.
+        if (parsed == null && typeof window !== 'undefined'
+            && window.DIGIPIN_CONFIG && window.DIGIPIN_CONFIG.aiProvider) {
+            parsed = window.DIGIPIN_CONFIG.aiProvider;
         }
+
+        _config = normalizeConfig(parsed);
         return _config;
     }
 
+    /** Cache and persist the provider config to localStorage. */
     function saveConfig(config) {
         _config = config;
         try {
@@ -74,6 +95,7 @@ const DISHAProviders = (() => {
         } catch { /* storage full or blocked */ }
     }
 
+    /** Return the current (lazily loaded) provider config. */
     function getConfig() {
         return loadConfig();
     }
@@ -95,6 +117,7 @@ const DISHAProviders = (() => {
         }
     }
 
+    /** Health-check an OpenAI-compatible endpoint by hitting /models; returns {ok, reason?}. */
     async function checkOpenAI(baseUrl, apiKey) {
         if (!baseUrl || !apiKey) return { ok: false, reason: 'Missing URL or API key' };
         try {
@@ -159,6 +182,7 @@ const DISHAProviders = (() => {
         return null;
     }
 
+    /** Resolve the explicitly chosen provider into an active-provider object with a connected/error status. */
     async function resolveExplicit(config) {
         const id = config.preferred;
 
@@ -215,7 +239,7 @@ const DISHAProviders = (() => {
     // ===== STREAMING: OLLAMA =====
 
     async function streamOllama(params) {
-        const { system, prompt, onToken, onDone, onError, signal } = params;
+        const { system, prompt, onToken, onDone, signal } = params;  // onError handled by the stream() wrapper
 
         const resp = await fetch(`${_activeProvider.baseUrl}/api/generate`, {
             method: 'POST',
@@ -273,7 +297,7 @@ const DISHAProviders = (() => {
     // ===== STREAMING: OPENAI-COMPATIBLE (SSE) =====
 
     async function streamOpenAI(params) {
-        const { system, messages, onToken, onDone, onError, signal } = params;
+        const { system, messages, onToken, onDone, signal } = params;  // onError handled by the stream() wrapper
         const apiKey = getApiKey();
 
         const resp = await fetch(`${_activeProvider.baseUrl}/chat/completions`, {
@@ -360,18 +384,22 @@ const DISHAProviders = (() => {
 
     function getActive() { return _activeProvider; }
 
+    /** True when an active provider exists and reports a connected status. */
     function isConnected() {
         return _activeProvider && _activeProvider.status === 'connected';
     }
 
+    /** Return the active provider's type ('ollama'/'openai'), or null. */
     function getProviderType() {
         return _activeProvider?.type || null;
     }
 
+    /** Return the active provider's max context window in tokens (default 8192). */
     function getMaxContext() {
         return _activeProvider?.maxContext || 8192;
     }
 
+    /** Return a shallow copy of the built-in provider definitions. */
     function getBuiltins() {
         return { ...BUILTIN };
     }
@@ -380,6 +408,7 @@ const DISHAProviders = (() => {
         loadConfig,
         saveConfig,
         getConfig,
+        normalizeConfig,
         detectProvider,
         checkOllama,
         checkOpenAI,

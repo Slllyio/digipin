@@ -1,0 +1,3253 @@
+{
+  "match_table": [
+    {
+      "args": [],
+      "out": [
+        [
+          "food",
+          "restaurants",
+          {
+            "amenity": "restaurant"
+          }
+        ],
+        [
+          "food",
+          "cafes",
+          {
+            "amenity": "cafe"
+          }
+        ],
+        [
+          "food",
+          "fast_food",
+          {
+            "amenity": "fast_food"
+          }
+        ],
+        [
+          "food",
+          "bars",
+          {
+            "amenity": "/^(bar|pub)$/"
+          }
+        ],
+        [
+          "food",
+          "food_court",
+          {
+            "amenity": "food_court"
+          }
+        ],
+        [
+          "food",
+          "ice_cream",
+          {
+            "amenity": "ice_cream"
+          }
+        ],
+        [
+          "food",
+          "bakery",
+          {
+            "shop": "bakery"
+          }
+        ],
+        [
+          "food",
+          "butcher",
+          {
+            "shop": "butcher"
+          }
+        ],
+        [
+          "food",
+          "confectionery",
+          {
+            "shop": "confectionery"
+          }
+        ],
+        [
+          "food",
+          "drinking_water",
+          {
+            "amenity": "drinking_water"
+          }
+        ],
+        [
+          "education",
+          "schools",
+          {
+            "amenity": "school"
+          }
+        ],
+        [
+          "education",
+          "colleges",
+          {
+            "amenity": "college"
+          }
+        ],
+        [
+          "education",
+          "universities",
+          {
+            "amenity": "university"
+          }
+        ],
+        [
+          "education",
+          "kindergartens",
+          {
+            "amenity": "kindergarten"
+          }
+        ],
+        [
+          "education",
+          "libraries",
+          {
+            "amenity": "library"
+          }
+        ],
+        [
+          "education",
+          "language_school",
+          {
+            "amenity": "language_school"
+          }
+        ],
+        [
+          "education",
+          "driving_school",
+          {
+            "amenity": "driving_school"
+          }
+        ],
+        [
+          "education",
+          "research",
+          {
+            "amenity": "research_institute"
+          }
+        ],
+        [
+          "healthcare",
+          "hospitals",
+          {
+            "amenity": "hospital"
+          }
+        ],
+        [
+          "healthcare",
+          "clinics",
+          {
+            "amenity": "/^(clinic|doctors)$/"
+          }
+        ],
+        [
+          "healthcare",
+          "pharmacies",
+          {
+            "amenity": "pharmacy"
+          }
+        ],
+        [
+          "healthcare",
+          "dentists",
+          {
+            "amenity": "dentist"
+          }
+        ],
+        [
+          "healthcare",
+          "veterinary",
+          {
+            "amenity": "veterinary"
+          }
+        ],
+        [
+          "healthcare",
+          "blood_bank",
+          {
+            "healthcare": "blood_bank"
+          }
+        ],
+        [
+          "healthcare",
+          "nursing_home",
+          {
+            "amenity": "nursing_home"
+          }
+        ],
+        [
+          "healthcare",
+          "lab",
+          {
+            "healthcare": "laboratory"
+          }
+        ],
+        [
+          "healthcare",
+          "optician",
+          {
+            "shop": "optician"
+          }
+        ],
+        [
+          "healthcare",
+          "alt_medicine",
+          {
+            "healthcare": "alternative"
+          }
+        ],
+        [
+          "finance",
+          "banks",
+          {
+            "amenity": "bank"
+          }
+        ],
+        [
+          "finance",
+          "atms",
+          {
+            "amenity": "atm"
+          }
+        ],
+        [
+          "finance",
+          "exchange",
+          {
+            "amenity": "bureau_de_change"
+          }
+        ],
+        [
+          "finance",
+          "insurance",
+          {
+            "office": "insurance"
+          }
+        ],
+        [
+          "finance",
+          "microfinance",
+          {
+            "amenity": "microfinance"
+          }
+        ],
+        [
+          "finance",
+          "financial",
+          {
+            "office": "financial"
+          }
+        ],
+        [
+          "finance",
+          "tax",
+          {
+            "office": "tax"
+          }
+        ],
+        [
+          "shopping",
+          "mall",
+          {
+            "shop": "mall"
+          }
+        ],
+        [
+          "shopping",
+          "supermarket",
+          {
+            "shop": "supermarket"
+          }
+        ],
+        [
+          "shopping",
+          "convenience",
+          {
+            "shop": "convenience"
+          }
+        ],
+        [
+          "shopping",
+          "clothes",
+          {
+            "shop": "clothes"
+          }
+        ],
+        [
+          "shopping",
+          "electronics",
+          {
+            "shop": "electronics"
+          }
+        ],
+        [
+          "shopping",
+          "mobile",
+          {
+            "shop": "mobile_phone"
+          }
+        ],
+        [
+          "shopping",
+          "hardware",
+          {
+            "shop": "/^(hardware|doityourself)$/"
+          }
+        ],
+        [
+          "shopping",
+          "furniture",
+          {
+            "shop": "furniture"
+          }
+        ],
+        [
+          "shopping",
+          "jewelry",
+          {
+            "shop": "jewelry"
+          }
+        ],
+        [
+          "shopping",
+          "books",
+          {
+            "shop": "books"
+          }
+        ],
+        [
+          "shopping",
+          "stationery",
+          {
+            "shop": "stationery"
+          }
+        ],
+        [
+          "shopping",
+          "department",
+          {
+            "shop": "department_store"
+          }
+        ],
+        [
+          "shopping",
+          "marketplace",
+          {
+            "amenity": "marketplace"
+          }
+        ],
+        [
+          "shopping",
+          "car_dealer",
+          {
+            "shop": "car"
+          }
+        ],
+        [
+          "transport",
+          "bus_stop",
+          {
+            "highway": "bus_stop"
+          }
+        ],
+        [
+          "transport",
+          "railway",
+          {
+            "railway": "/^(station|halt)$/"
+          }
+        ],
+        [
+          "transport",
+          "metro",
+          {
+            "station": "subway"
+          }
+        ],
+        [
+          "transport",
+          "taxi",
+          {
+            "amenity": "taxi"
+          }
+        ],
+        [
+          "transport",
+          "parking",
+          {
+            "amenity": "parking"
+          }
+        ],
+        [
+          "transport",
+          "bicycle_parking",
+          {
+            "amenity": "bicycle_parking"
+          }
+        ],
+        [
+          "transport",
+          "bicycle_rental",
+          {
+            "amenity": "bicycle_rental"
+          }
+        ],
+        [
+          "transport",
+          "fuel",
+          {
+            "amenity": "fuel"
+          }
+        ],
+        [
+          "transport",
+          "ev_charging",
+          {
+            "amenity": "charging_station"
+          }
+        ],
+        [
+          "transport",
+          "car_wash",
+          {
+            "amenity": "car_wash"
+          }
+        ],
+        [
+          "transport",
+          "car_repair",
+          {
+            "shop": "car_repair"
+          }
+        ],
+        [
+          "transport",
+          "auto_rickshaw",
+          {
+            "amenity": "auto_rickshaw_stand"
+          }
+        ],
+        [
+          "government",
+          "police",
+          {
+            "amenity": "police"
+          }
+        ],
+        [
+          "government",
+          "fire",
+          {
+            "amenity": "fire_station"
+          }
+        ],
+        [
+          "government",
+          "post_office",
+          {
+            "amenity": "post_office"
+          }
+        ],
+        [
+          "government",
+          "courthouse",
+          {
+            "amenity": "courthouse"
+          }
+        ],
+        [
+          "government",
+          "govt_office",
+          {
+            "office": "government"
+          }
+        ],
+        [
+          "government",
+          "embassy",
+          {
+            "amenity": "embassy"
+          }
+        ],
+        [
+          "government",
+          "community",
+          {
+            "amenity": "community_centre"
+          }
+        ],
+        [
+          "government",
+          "social",
+          {
+            "amenity": "social_facility"
+          }
+        ],
+        [
+          "government",
+          "toilets",
+          {
+            "amenity": "toilets"
+          }
+        ],
+        [
+          "government",
+          "recycling",
+          {
+            "amenity": "/^(recycling|waste_disposal)$/"
+          }
+        ],
+        [
+          "government",
+          "townhall",
+          {
+            "amenity": "townhall"
+          }
+        ],
+        [
+          "government",
+          "prison",
+          {
+            "amenity": "prison"
+          }
+        ],
+        [
+          "leisure",
+          "parks",
+          {
+            "leisure": "park"
+          }
+        ],
+        [
+          "leisure",
+          "playground",
+          {
+            "leisure": "playground"
+          }
+        ],
+        [
+          "leisure",
+          "garden",
+          {
+            "leisure": "garden"
+          }
+        ],
+        [
+          "leisure",
+          "pitch",
+          {
+            "leisure": "pitch"
+          }
+        ],
+        [
+          "leisure",
+          "swimming",
+          {
+            "leisure": "swimming_pool"
+          }
+        ],
+        [
+          "leisure",
+          "gym",
+          {
+            "leisure": "fitness_centre"
+          }
+        ],
+        [
+          "leisure",
+          "sports_centre",
+          {
+            "leisure": "sports_centre"
+          }
+        ],
+        [
+          "leisure",
+          "stadium",
+          {
+            "leisure": "stadium"
+          }
+        ],
+        [
+          "leisure",
+          "golf",
+          {
+            "leisure": "golf_course"
+          }
+        ],
+        [
+          "leisure",
+          "water_park",
+          {
+            "leisure": "water_park"
+          }
+        ],
+        [
+          "leisure",
+          "dog_park",
+          {
+            "leisure": "dog_park"
+          }
+        ],
+        [
+          "leisure",
+          "nature_reserve",
+          {
+            "leisure": "nature_reserve"
+          }
+        ],
+        [
+          "entertainment",
+          "cinema",
+          {
+            "amenity": "cinema"
+          }
+        ],
+        [
+          "entertainment",
+          "theatre",
+          {
+            "amenity": "theatre"
+          }
+        ],
+        [
+          "entertainment",
+          "museum",
+          {
+            "tourism": "museum"
+          }
+        ],
+        [
+          "entertainment",
+          "gallery",
+          {
+            "tourism": "gallery"
+          }
+        ],
+        [
+          "entertainment",
+          "nightclub",
+          {
+            "amenity": "nightclub"
+          }
+        ],
+        [
+          "entertainment",
+          "arcade",
+          {
+            "leisure": "amusement_arcade"
+          }
+        ],
+        [
+          "entertainment",
+          "theme_park",
+          {
+            "tourism": "theme_park"
+          }
+        ],
+        [
+          "entertainment",
+          "zoo",
+          {
+            "tourism": "zoo"
+          }
+        ],
+        [
+          "entertainment",
+          "monument",
+          {
+            "historic": "/^(monument|memorial)$/"
+          }
+        ],
+        [
+          "entertainment",
+          "worship",
+          {
+            "amenity": "place_of_worship"
+          }
+        ],
+        [
+          "accommodation",
+          "hotel",
+          {
+            "tourism": "hotel"
+          }
+        ],
+        [
+          "accommodation",
+          "guest_house",
+          {
+            "tourism": "guest_house"
+          }
+        ],
+        [
+          "accommodation",
+          "hostel",
+          {
+            "tourism": "hostel"
+          }
+        ],
+        [
+          "accommodation",
+          "motel",
+          {
+            "tourism": "motel"
+          }
+        ],
+        [
+          "accommodation",
+          "attraction",
+          {
+            "tourism": "attraction"
+          }
+        ],
+        [
+          "accommodation",
+          "viewpoint",
+          {
+            "tourism": "viewpoint"
+          }
+        ],
+        [
+          "accommodation",
+          "info",
+          {
+            "tourism": "information"
+          }
+        ],
+        [
+          "accommodation",
+          "picnic",
+          {
+            "tourism": "picnic_site"
+          }
+        ],
+        [
+          "landuse",
+          "residential_area",
+          {
+            "landuse": "residential"
+          }
+        ],
+        [
+          "landuse",
+          "commercial_area",
+          {
+            "landuse": "commercial"
+          }
+        ],
+        [
+          "landuse",
+          "industrial_area",
+          {
+            "landuse": "industrial"
+          }
+        ],
+        [
+          "landuse",
+          "retail_area",
+          {
+            "landuse": "retail"
+          }
+        ],
+        [
+          "landuse",
+          "buildings_total",
+          {
+            "building": "/.*/"
+          }
+        ],
+        [
+          "landuse",
+          "res_buildings",
+          {
+            "building": "/^(residential|house|apartments|detached)$/"
+          }
+        ],
+        [
+          "landuse",
+          "com_buildings",
+          {
+            "building": "/^(commercial|office|retail)$/"
+          }
+        ],
+        [
+          "landuse",
+          "construction",
+          {
+            "landuse": "construction"
+          }
+        ],
+        [
+          "landuse",
+          "vacant",
+          {
+            "landuse": "/^(brownfield|greenfield)$/"
+          }
+        ],
+        [
+          "landuse",
+          "cemetery",
+          {
+            "landuse": "cemetery"
+          }
+        ],
+        [
+          "landuse",
+          "military",
+          {
+            "landuse": "military"
+          }
+        ],
+        [
+          "landuse",
+          "farmland",
+          {
+            "landuse": "/^(farmland|orchard|vineyard)$/"
+          }
+        ],
+        [
+          "infrastructure",
+          "street_lamps",
+          {
+            "highway": "street_lamp"
+          }
+        ],
+        [
+          "infrastructure",
+          "cell_tower",
+          {
+            "man_made": "/^(tower|mast)$/"
+          }
+        ],
+        [
+          "infrastructure",
+          "power",
+          {
+            "power": "/^(substation|line|pole)$/"
+          }
+        ],
+        [
+          "infrastructure",
+          "water_tower",
+          {
+            "man_made": "/^(water_tower|storage_tank)$/"
+          }
+        ],
+        [
+          "infrastructure",
+          "bridge",
+          {
+            "man_made": "bridge"
+          }
+        ],
+        [
+          "infrastructure",
+          "roads",
+          {
+            "highway": "/^(primary|secondary|tertiary|residential|trunk)$/"
+          }
+        ],
+        [
+          "infrastructure",
+          "footpath",
+          {
+            "highway": "/^(footway|path|pedestrian)$/"
+          }
+        ],
+        [
+          "infrastructure",
+          "cycleway",
+          {
+            "highway": "cycleway"
+          }
+        ],
+        [
+          "infrastructure",
+          "water_body",
+          {
+            "natural": "water"
+          }
+        ],
+        [
+          "infrastructure",
+          "river",
+          {
+            "waterway": "/^(river|stream|canal)$/"
+          }
+        ],
+        [
+          "business",
+          "offices",
+          {
+            "office": "/^(yes|company)$/"
+          }
+        ],
+        [
+          "business",
+          "it_company",
+          {
+            "office": "it"
+          }
+        ],
+        [
+          "business",
+          "coworking",
+          {
+            "amenity": "coworking_space"
+          }
+        ],
+        [
+          "business",
+          "estate_agent",
+          {
+            "shop": "estate_agent"
+          }
+        ],
+        [
+          "business",
+          "lawyer",
+          {
+            "office": "lawyer"
+          }
+        ],
+        [
+          "business",
+          "accountant",
+          {
+            "office": "accountant"
+          }
+        ],
+        [
+          "business",
+          "beauty",
+          {
+            "shop": "/^(beauty|hairdresser)$/"
+          }
+        ],
+        [
+          "business",
+          "laundry",
+          {
+            "shop": "/^(laundry|dry_cleaning)$/"
+          }
+        ],
+        [
+          "business",
+          "photo",
+          {
+            "shop": "photo"
+          }
+        ],
+        [
+          "business",
+          "tailor",
+          {
+            "shop": "tailor"
+          }
+        ]
+      ]
+    }
+  ],
+  "classify_elements": [
+    {
+      "args": [
+        [
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "restaurant"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "restaurant",
+              "name": "Guru Kripa"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "cafe"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "school"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "hospital"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "bank"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "atm"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "shop": "bakery"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "restaurant",
+              "shop": "bakery"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "highway": "bus_stop"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "leisure": "park"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "station": "subway"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "building": "yes"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "landuse": "residential"
+            }
+          }
+        ]
+      ],
+      "out": {
+        "restaurants": {
+          "count": 3,
+          "subTypes": {}
+        },
+        "cafes": {
+          "count": 1,
+          "subTypes": {}
+        },
+        "fast_food": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bars": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "food_court": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "ice_cream": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bakery": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "butcher": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "confectionery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "drinking_water": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "schools": {
+          "count": 1,
+          "subTypes": {}
+        },
+        "colleges": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "universities": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "kindergartens": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "libraries": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "language_school": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "driving_school": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "research": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "hospitals": {
+          "count": 1,
+          "subTypes": {}
+        },
+        "clinics": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "pharmacies": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "dentists": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "veterinary": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "blood_bank": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "nursing_home": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "lab": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "optician": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "alt_medicine": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "banks": {
+          "count": 1,
+          "subTypes": {}
+        },
+        "atms": {
+          "count": 1,
+          "subTypes": {}
+        },
+        "exchange": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "insurance": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "microfinance": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "financial": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "tax": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "mall": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "supermarket": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "convenience": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "clothes": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "electronics": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "mobile": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "hardware": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "furniture": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "jewelry": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "books": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "stationery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "department": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "marketplace": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "car_dealer": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bus_stop": {
+          "count": 1,
+          "subTypes": {}
+        },
+        "railway": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "metro": {
+          "count": 1,
+          "subTypes": {}
+        },
+        "taxi": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "parking": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bicycle_parking": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bicycle_rental": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "fuel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "ev_charging": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "car_wash": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "car_repair": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "auto_rickshaw": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "police": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "fire": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "post_office": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "courthouse": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "govt_office": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "embassy": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "community": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "social": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "toilets": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "recycling": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "townhall": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "prison": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "parks": {
+          "count": 1,
+          "subTypes": {}
+        },
+        "playground": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "garden": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "pitch": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "swimming": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "gym": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "sports_centre": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "stadium": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "golf": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "water_park": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "dog_park": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "nature_reserve": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cinema": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "theatre": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "museum": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "gallery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "nightclub": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "arcade": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "theme_park": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "zoo": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "monument": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "worship": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "hotel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "guest_house": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "hostel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "motel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "attraction": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "viewpoint": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "info": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "picnic": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "residential_area": {
+          "count": 1,
+          "subTypes": {}
+        },
+        "commercial_area": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "industrial_area": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "retail_area": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "buildings_total": {
+          "count": 1,
+          "subTypes": {}
+        },
+        "res_buildings": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "com_buildings": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "construction": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "vacant": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cemetery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "military": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "farmland": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "street_lamps": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cell_tower": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "power": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "water_tower": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bridge": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "roads": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "footpath": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cycleway": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "water_body": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "river": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "offices": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "it_company": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "coworking": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "estate_agent": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "lawyer": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "accountant": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "beauty": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "laundry": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "photo": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "tailor": {
+          "count": 0,
+          "subTypes": {}
+        }
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "bar"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "pub"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "clinic"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "doctors"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "shop": "hardware"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "shop": "doityourself"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "railway": "station"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "railway": "halt"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "recycling"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "waste_disposal"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "historic": "monument"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "historic": "memorial"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "building": "residential"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "building": "house"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "building": "apartments"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "building": "detached"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "building": "commercial"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "building": "office"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "building": "retail"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "landuse": "brownfield"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "landuse": "greenfield"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "landuse": "farmland"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "landuse": "orchard"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "landuse": "vineyard"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "man_made": "tower"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "man_made": "mast"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "power": "substation"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "power": "line"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "power": "pole"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "man_made": "water_tower"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "man_made": "storage_tank"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "highway": "primary"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "highway": "secondary"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "highway": "tertiary"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "highway": "residential"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "highway": "trunk"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "highway": "footway"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "highway": "path"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "highway": "pedestrian"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "highway": "cycleway"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "waterway": "river"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "waterway": "stream"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "waterway": "canal"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "office": "yes"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "office": "company"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "shop": "beauty"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "shop": "hairdresser"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "shop": "laundry"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "shop": "dry_cleaning"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "highway": "motorway"
+            }
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "waterway": "drain"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "man_made": "pier"
+            }
+          }
+        ]
+      ],
+      "out": {
+        "restaurants": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cafes": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "fast_food": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bars": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "food_court": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "ice_cream": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bakery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "butcher": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "confectionery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "drinking_water": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "schools": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "colleges": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "universities": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "kindergartens": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "libraries": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "language_school": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "driving_school": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "research": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "hospitals": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "clinics": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "pharmacies": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "dentists": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "veterinary": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "blood_bank": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "nursing_home": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "lab": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "optician": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "alt_medicine": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "banks": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "atms": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "exchange": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "insurance": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "microfinance": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "financial": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "tax": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "mall": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "supermarket": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "convenience": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "clothes": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "electronics": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "mobile": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "hardware": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "furniture": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "jewelry": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "books": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "stationery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "department": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "marketplace": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "car_dealer": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bus_stop": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "railway": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "metro": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "taxi": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "parking": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bicycle_parking": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bicycle_rental": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "fuel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "ev_charging": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "car_wash": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "car_repair": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "auto_rickshaw": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "police": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "fire": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "post_office": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "courthouse": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "govt_office": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "embassy": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "community": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "social": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "toilets": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "recycling": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "townhall": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "prison": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "parks": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "playground": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "garden": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "pitch": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "swimming": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "gym": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "sports_centre": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "stadium": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "golf": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "water_park": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "dog_park": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "nature_reserve": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cinema": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "theatre": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "museum": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "gallery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "nightclub": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "arcade": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "theme_park": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "zoo": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "monument": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "worship": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "hotel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "guest_house": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "hostel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "motel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "attraction": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "viewpoint": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "info": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "picnic": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "residential_area": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "commercial_area": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "industrial_area": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "retail_area": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "buildings_total": {
+          "count": 7,
+          "subTypes": {}
+        },
+        "res_buildings": {
+          "count": 4,
+          "subTypes": {}
+        },
+        "com_buildings": {
+          "count": 3,
+          "subTypes": {}
+        },
+        "construction": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "vacant": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "cemetery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "military": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "farmland": {
+          "count": 3,
+          "subTypes": {}
+        },
+        "street_lamps": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cell_tower": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "power": {
+          "count": 3,
+          "subTypes": {}
+        },
+        "water_tower": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "bridge": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "roads": {
+          "count": 5,
+          "subTypes": {}
+        },
+        "footpath": {
+          "count": 3,
+          "subTypes": {}
+        },
+        "cycleway": {
+          "count": 1,
+          "subTypes": {}
+        },
+        "water_body": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "river": {
+          "count": 3,
+          "subTypes": {}
+        },
+        "offices": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "it_company": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "coworking": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "estate_agent": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "lawyer": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "accountant": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "beauty": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "laundry": {
+          "count": 2,
+          "subTypes": {}
+        },
+        "photo": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "tailor": {
+          "count": 0,
+          "subTypes": {}
+        }
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {}
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8
+          },
+          {
+            "type": "way",
+            "center": {
+              "lat": 22.7,
+              "lon": 75.8
+            },
+            "tags": {
+              "building": ""
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "definitely_not_a_feature"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "place_of_worship"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "place_of_worship",
+              "religion": "Hindu"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "place_of_worship",
+              "religion": "MUSLIM"
+            }
+          },
+          {
+            "type": "node",
+            "lat": 22.7,
+            "lon": 75.8,
+            "tags": {
+              "amenity": "place_of_worship",
+              "religion": "hindu"
+            }
+          }
+        ]
+      ],
+      "out": {
+        "restaurants": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cafes": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "fast_food": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bars": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "food_court": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "ice_cream": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bakery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "butcher": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "confectionery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "drinking_water": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "schools": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "colleges": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "universities": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "kindergartens": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "libraries": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "language_school": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "driving_school": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "research": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "hospitals": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "clinics": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "pharmacies": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "dentists": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "veterinary": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "blood_bank": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "nursing_home": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "lab": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "optician": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "alt_medicine": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "banks": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "atms": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "exchange": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "insurance": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "microfinance": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "financial": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "tax": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "mall": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "supermarket": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "convenience": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "clothes": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "electronics": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "mobile": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "hardware": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "furniture": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "jewelry": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "books": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "stationery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "department": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "marketplace": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "car_dealer": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bus_stop": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "railway": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "metro": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "taxi": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "parking": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bicycle_parking": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bicycle_rental": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "fuel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "ev_charging": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "car_wash": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "car_repair": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "auto_rickshaw": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "police": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "fire": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "post_office": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "courthouse": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "govt_office": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "embassy": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "community": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "social": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "toilets": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "recycling": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "townhall": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "prison": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "parks": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "playground": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "garden": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "pitch": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "swimming": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "gym": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "sports_centre": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "stadium": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "golf": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "water_park": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "dog_park": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "nature_reserve": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cinema": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "theatre": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "museum": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "gallery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "nightclub": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "arcade": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "theme_park": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "zoo": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "monument": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "worship": {
+          "count": 4,
+          "subTypes": {
+            "hindu": 2,
+            "muslim": 1
+          }
+        },
+        "hotel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "guest_house": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "hostel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "motel": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "attraction": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "viewpoint": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "info": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "picnic": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "residential_area": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "commercial_area": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "industrial_area": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "retail_area": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "buildings_total": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "res_buildings": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "com_buildings": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "construction": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "vacant": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cemetery": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "military": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "farmland": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "street_lamps": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cell_tower": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "power": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "water_tower": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "bridge": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "roads": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "footpath": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "cycleway": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "water_body": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "river": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "offices": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "it_company": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "coworking": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "estate_agent": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "lawyer": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "accountant": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "beauty": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "laundry": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "photo": {
+          "count": 0,
+          "subTypes": {}
+        },
+        "tailor": {
+          "count": 0,
+          "subTypes": {}
+        }
+      }
+    }
+  ]
+}

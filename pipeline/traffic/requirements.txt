@@ -1,0 +1,2 @@
+networkx>=3.0   # road-graph betweenness centrality (road_network.py)
+requests>=2.31  # Overpass HTTP client (fetch_osm_roads.py / fetch_osm_transit.py)

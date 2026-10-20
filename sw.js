@@ -1,92 +1,194 @@
 /**
- * Service Worker — offline cache for DigiPin portal
- *
- * Design rules (the previous v3 violated all three):
- *   1. NEVER cache /data/* — those are large, frequently-updated, and
- *      many (PMTiles, COGs) use HTTP Range requests. Caching a 200
- *      response and replaying it against a Range request returns the
- *      whole file with status 200, which PMTiles + georaster choke on.
- *   2. NEVER cache Range requests — they're byte-range partial
- *      responses (206); the cache API doesn't preserve range semantics.
- *      Always go to network for these.
- *   3. NEVER cache non-OK responses. v3 stored 404s on first miss, then
- *      replayed them forever — exactly the bug that hid Heat / Growth
- *      / 3D Buildings while their data files were being added.
- *
- * Cache versioning: bump CACHE_NAME on any rule change so old caches
- * are evicted on the next page load via the 'activate' handler.
+ * Service Worker — Offline cache for DigiPin portal
+ * Caches static assets; API calls use network-first strategy
  */
-const CACHE_NAME = 'digipin-v4';
+const CACHE_NAME = 'digipin-v39';
 
-// Precache shell only — everything else is lazy via the fetch handler.
-// Listing every JS file here forced the previous version to drift; the
-// new approach lets the page+css be available offline and lazy-caches
-// scripts as they get used.
-const SHELL = [
-    './',
+// Full same-origin app shell — EVERY js/ module referenced by app.html, so the
+// app is genuinely usable offline. (Previously only ~19 were precached and the
+// rest were runtime-cached on first online use, which silently broke offline for
+// any feature the user hadn't already opened.) tests/sw-precache.test.js parses
+// app.html and fails CI if a <script> here drifts out of sync.
+const LOCAL_ASSETS = [
+    './',                 // landing page (index.html)
     './index.html',
+    './app.html',         // the live map app shell
+    './css/landing.css',
     './css/styles.css',
+    './assets/icon.svg',
+    './assets/icon-maskable.svg',
     './manifest.json',
+    './js/digipin.js',
+    './js/data-fetcher-cache.js',
+    './js/growth-score.js',
+    './js/realtime-growth.js',
+    './js/growth-widget.js',
+    './js/growth-overlay.js',
+    './js/ca-growth-overlay.js',
+    './js/scenario-model.js',
+    './js/scenario-panel.js',
+    './js/area-aggregate.js',
+    './js/traffic-score.js',
+    './js/traffic-grid.js',
+    './js/realtime-traffic.js',
+    './js/traffic-widget.js',
+    './js/traffic-overlay.js',
+    './js/mobility-score.js',
+    './js/mobility-grid.js',
+    './js/realtime-mobility.js',
+    './js/mobility-widget.js',
+    './js/mobility-overlay.js',
+    './js/heat-score.js',
+    './js/realtime-heat.js',
+    './js/heat-widget.js',
+    './js/heat-overlay.js',
+    './js/flood-scs.js',
+    './js/flood-inundation.js',
+    './js/flood-animation.js',
+    './js/realtime-alerts.js',
+    './js/realtime-imd.js',
+    './js/realtime-quakes.js',
+    './js/realtime-flood.js',
+    './js/utilities.js',
+    './js/data-fetcher.js',
+    './js/precomputed-scores.js',
+    './js/score-choropleth.js',
+    './js/footprint-grid.js',
+    './js/building-intelligence.js',
+    './js/buildings-deck.js',
+    './js/overture-buildings.js',
+    './js/theme.js',
+    './js/i18n.js',
+    './js/map.js',
+    './js/keyboard-nav.js',
+    './js/panel.js',
+    './js/query-engine.js',
+    './js/disha-cache.js',
+    './js/disha-providers.js',
+    './js/disha.js',
+    './js/disha-actions.js',
+    './js/text2map-embeddings.js',
+    './js/text2map.js',
+    './js/text2map-results-layer.js',
+    './js/disha-panel.js',
+    './js/compare.js',
+    './js/isochrone.js',
+    './js/report.js',
+    './js/heatmap-overlay.js',
+    './js/bookmarks.js',
+    './js/city-selector.js',
+    './js/ward-overlay.js',
+    './js/floating-dialogs.js',
+    './js/building-intel-dialog.js',
+    './js/scores-dialog.js',
+    './js/digital-twin-layers.js',
+    './js/training-data-gen.js',
+    './js/bivariate-overlay.js',
+    './js/ndvi-overlay.js',
+    './js/viewshed.js',
+    './js/kde-overlay.js',
+    './js/accessibility-overlay.js',
+    './js/url-state.js',
+    './js/saved-views.js',
+    './js/onboarding.js',
+    './js/layers-panel.js',
+    './js/dtdl-export.js',
+    './js/real-estate-model.js',
+    './js/real-estate-widget.js',
+    './js/export-dialog.js',
+    './js/footprint-export.js',
+    './js/pitch-map.js',
+    './js/sun-study.js',
+    './js/site-brief.js',
+    './js/measure-tool.js',
+    './js/present-mode.js',
+    './js/annotations.js',
+    './js/app.js',
+];
+
+// Third-party libraries the map actually depends on. The app uses MapLibre GL
+// (not Leaflet), and the cross-origin fetch handler below is network-first and
+// never caches these — so precaching them here is what makes the map usable
+// offline. Versions must match the <script>/<link> tags in app.html.
+const CDN_ASSETS = [
+    'https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css',
+    'https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js',
+    'https://unpkg.com/pmtiles@3.0.7/dist/pmtiles.js',
+    'https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js',
 ];
 
 self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => cache.addAll(SHELL))
-            .then(() => self.skipWaiting())
+        caches.open(CACHE_NAME).then(cache =>
+            // Best-effort per asset: a single unreachable URL (e.g. a momentary
+            // CDN blip) must not abort the whole install the way cache.addAll
+            // would — that would leave the user with no offline support at all.
+            Promise.allSettled([...LOCAL_ASSETS, ...CDN_ASSETS].map(url => cache.add(url)))
+        ).then(() => self.skipWaiting())
     );
 });
 
 self.addEventListener('activate', event => {
     event.waitUntil(
-        caches.keys()
-            .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
-            .then(() => self.clients.claim())
+        caches.keys().then(keys =>
+            Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+        ).then(() => self.clients.claim())
     );
 });
 
+// Only full 200s go in the cache. Caching a 404 for a data file that was
+// deployed later pinned the 404 for every visitor until the next SW bump.
+function _cacheIfOk(request, response) {
+    if (response.status !== 200) return;
+    const clone = response.clone();
+    caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+}
+
 self.addEventListener('fetch', event => {
-    const req = event.request;
-    const url = new URL(req.url);
+    const url = new URL(event.request.url);
 
-    // === Rule 1: bypass for everything under /data/ ===
-    // Realtime JSON snapshots, PMTiles, COGs, geojsons — all live data
-    // that should never be cached by the SW. The browser's built-in
-    // HTTP cache (with the no-cache headers the server already sends)
-    // is the right layer for these.
-    if (url.pathname.startsWith('/data/')) return;   // pass-through to network
+    // Range requests (PMTiles, COG readers) expect 206 Partial Content, which
+    // the Cache API can't store — leave them to the network. Same for non-GET.
+    if (event.request.method !== 'GET' || event.request.headers.has('range')) return;
 
-    // === Rule 2: bypass for Range requests ===
-    // PMTiles (and any HTTP-Range-aware client) sends `Range:` headers
-    // expecting 206 Partial Content. The Cache API can't faithfully
-    // round-trip 206 responses — always go straight to network.
-    if (req.headers.has('range')) return;
-
-    // === Rule 3: skip non-GET methods ===
-    if (req.method !== 'GET') return;
-
-    // Network-first for cross-origin requests (CDN scripts, external APIs)
-    if (url.hostname !== self.location.hostname) {
+    // Network-first for API calls
+    if (url.hostname !== location.hostname) {
         event.respondWith(
-            fetch(req).catch(() => caches.match(req))
+            fetch(event.request).catch(() => caches.match(event.request))
         );
         return;
     }
 
-    // Same-origin static assets: cache-first, but never cache errors.
+    // Offline navigation fallback: a deep link to an un-precached route (or any
+    // navigation while offline) should land on the app shell rather than the
+    // browser's offline-error page. ('./', index.html, app.html are precached.)
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request).catch(() =>
+                caches.match(event.request).then(c => c || caches.match('./app.html')))
+        );
+        return;
+    }
+
+    // Precomputed-score manifest: network-first so a monthly tile refresh is
+    // picked up promptly (falls back to cache offline). The score *shards*
+    // themselves fall through to the cache-first + background-revalidate handler
+    // below — instant and offline-capable, refreshed in the background.
+    if (url.pathname.endsWith('/data/scores/coverage.json')) {
+        event.respondWith(
+            fetch(event.request).then(response => {
+                _cacheIfOk(event.request, response);
+                return response;
+            }).catch(() => caches.match(event.request))
+        );
+        return;
+    }
+
+    // Cache-first for static assets
     event.respondWith(
-        caches.match(req).then(cached => {
-            const fetched = fetch(req).then(response => {
-                // === Rule 4: never cache non-OK responses ===
-                // 404 / 500 / opaque redirects all stay out of the cache.
-                // This is the v3 → v4 fix that unblocked Heat + Growth +
-                // 3D Buildings — those features' data files 404'd before
-                // they were copied in, and the SW had pinned the 404
-                // for every subsequent request.
-                if (response.ok && response.status === 200) {
-                    const clone = response.clone();
-                    caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
-                }
+        caches.match(event.request).then(cached => {
+            const fetched = fetch(event.request).then(response => {
+                _cacheIfOk(event.request, response);
                 return response;
             });
             return cached || fetched;

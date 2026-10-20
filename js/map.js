@@ -8,6 +8,7 @@ const MapModule = (() => {
     let _gridDebounceTimer = null;
     let selectedCellId = null;
     let selectedCellCode = null; // DigiPin code of selected cell (persists across grid updates)
+    let _selectEpoch = 0;        // bumped per selection; stale async fetches bail (no panel overwrite)
     let hoveredCellId = null;
     let currentCells = new Map(); // Store cell data by ID
     let codeToCellId = new Map(); // DigiPin code -> numeric feature ID
@@ -24,12 +25,19 @@ const MapModule = (() => {
 
         map = new maplibregl.Map({
             container: 'map',
-            style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+            // Basemap follows the active theme (dark-matter / positron). A theme
+            // change reloads the app, so picking the style at init is enough.
+            style: (typeof Theme !== 'undefined') ? Theme.mapStyleUrl()
+                : 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
             center: [INDORE.lng, INDORE.lat], // MapLibre uses [lng, lat]
             zoom: INITIAL_ZOOM,
             pitch: 0,
             bearing: 0,
-            attributionControl: false
+            attributionControl: false,
+            // Keep the WebGL drawing buffer readable so PitchMap can export the
+            // styled view as a PNG (getCanvas().toBlob). Minor, known perf cost —
+            // acceptable for a client-side map-image export.
+            preserveDrawingBuffer: true
         });
 
         // Controls
@@ -65,6 +73,11 @@ const MapModule = (() => {
     }
 
     function setupGridLayers() {
+        // Grid colours follow the active theme (neon cyan/purple on dark,
+        // coral/violet on paper-light). Theme switches reload, so init-time is enough.
+        const gc = (typeof Theme !== 'undefined') ? Theme.gridColors()
+            : { base: '#00f5ff', selected: '#a855f7' };
+
         // Source for grid polygons
         map.addSource('digipin-grid', {
             type: 'geojson',
@@ -77,7 +90,7 @@ const MapModule = (() => {
             type: 'fill',
             source: 'digipin-grid',
             paint: {
-                'fill-color': ['case', ['boolean', ['feature-state', 'selected'], false], '#a855f7', '#00f5ff'],
+                'fill-color': ['case', ['boolean', ['feature-state', 'selected'], false], gc.selected, gc.base],
                 'fill-opacity': [
                     'case',
                     ['boolean', ['feature-state', 'selected'], false], 0.25,
@@ -93,7 +106,7 @@ const MapModule = (() => {
             type: 'line',
             source: 'digipin-grid',
             paint: {
-                'line-color': ['case', ['boolean', ['feature-state', 'selected'], false], '#a855f7', '#00f5ff'],
+                'line-color': ['case', ['boolean', ['feature-state', 'selected'], false], gc.selected, gc.base],
                 'line-width': [
                     'case',
                     ['boolean', ['feature-state', 'selected'], false], 3,
@@ -109,19 +122,29 @@ const MapModule = (() => {
             }
         });
 
-        // Hover events
-        map.on('mousemove', 'digipin-grid-fill', (e) => {
-            if (e.features.length > 0) {
-                if (hoveredCellId !== null && hoveredCellId !== e.features[0].id) {
-                    map.setFeatureState({ source: 'digipin-grid', id: hoveredCellId }, { hover: false });
-                }
-                hoveredCellId = e.features[0].id;
-                map.setFeatureState({ source: 'digipin-grid', id: hoveredCellId }, { hover: true });
-                map.getCanvas().style.cursor = 'pointer';
+        // Hover events — mousemove fires 60+×/sec; coalesce to one
+        // setFeatureState per animation frame so fast drags don't thrash.
+        let _hoverRaf = null, _pendingHoverId = null;
+        const _applyHover = () => {
+            _hoverRaf = null;
+            const id = _pendingHoverId;
+            if (id == null) return;
+            if (hoveredCellId !== null && hoveredCellId !== id) {
+                map.setFeatureState({ source: 'digipin-grid', id: hoveredCellId }, { hover: false });
             }
+            hoveredCellId = id;
+            map.setFeatureState({ source: 'digipin-grid', id }, { hover: true });
+            map.getCanvas().style.cursor = 'pointer';
+        };
+        map.on('mousemove', 'digipin-grid-fill', (e) => {
+            if (e.features.length === 0) return;
+            _pendingHoverId = e.features[0].id;
+            if (_hoverRaf == null) _hoverRaf = requestAnimationFrame(_applyHover);
         });
 
         map.on('mouseleave', 'digipin-grid-fill', () => {
+            if (_hoverRaf != null) { cancelAnimationFrame(_hoverRaf); _hoverRaf = null; }
+            _pendingHoverId = null;
             if (hoveredCellId !== null) {
                 map.setFeatureState({ source: 'digipin-grid', id: hoveredCellId }, { hover: false });
             }
@@ -246,23 +269,38 @@ const MapModule = (() => {
     }
 
     async function selectCell(cellData) {
+        // Per-selection epoch: a slow fetch for a previously-clicked cell must not
+        // overwrite the panel after the user has already clicked a different cell.
+        const epoch = ++_selectEpoch;
         // Deselect previous
         if (selectedCellId !== null) {
             try { map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: false }); } catch { /* grid may have regenerated */ }
         }
 
-        selectedCellId = cellData.id;
+        selectedCellId = cellData.id != null ? cellData.id : null;
         selectedCellCode = cellData.code;
-        map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: true });
+        // Highlight only when the cell is an actually-rendered grid feature
+        // (deep-linked cells may sit outside the current grid render).
+        if (selectedCellId != null) {
+            try { map.setFeatureState({ source: 'digipin-grid', id: selectedCellId }, { selected: true }); } catch { /* not rendered */ }
+        }
 
         // Show panel
         Panel.show(cellData);
 
+        // Tie the 3D "digital twin" focus (range rings + amber selected
+        // buildings) to the chosen cell — a no-op unless that overlay is on.
+        if (typeof OvertureBuildings !== 'undefined' && OvertureBuildings.focusCell && cellData.center) {
+            OvertureBuildings.focusCell(cellData.center);
+        }
+
         // Fetch data
         try {
             const data = await DataFetcher.fetchAllFeatures(cellData.center.lat, cellData.center.lng, 500);
+            if (epoch !== _selectEpoch) return;   // superseded by a newer selection
             Panel.update(cellData, data);
         } catch (err) {
+            if (epoch !== _selectEpoch) return;
             console.error('Data fetch error:', err);
             Panel.showError(cellData, err.message);
         }
@@ -273,9 +311,11 @@ const MapModule = (() => {
     }
 
     function showHeatmap(results) {
+        const gc = (typeof Theme !== 'undefined') ? Theme.gridColors()
+            : { base: '#00f5ff', selected: '#a855f7' };
         const features = results.map((r, idx) => {
             const intensity = 1 - (idx / results.length);
-            const color = interpolateColor('#a855f7', '#00f5ff', intensity);
+            const color = interpolateColor(gc.selected, gc.base, intensity);
             
             return {
                 type: 'Feature',
@@ -321,5 +361,33 @@ const MapModule = (() => {
 
     function getMap() { return map; }
 
-    return { init, flyTo, showHeatmap, clearHeatmap, getMap, updateGrid };
+    function getSelectedCode() { return selectedCellCode; }
+
+    /**
+     * Deep-link into a DIGIPIN cell by code: fly to it, then (once the grid has
+     * re-rendered) select it — opening the panel and fetching data. The feature
+     * highlight is best-effort (the cell may render at a different precision than
+     * the code's length); the panel + data load are the guaranteed outcome.
+     */
+    function selectByCode(code) {
+        if (!map || !code) return;
+        const clean = code.replace(/-/g, '').toUpperCase();
+        let decoded;
+        try { decoded = DigiPin.decodePartial(clean); } catch { return; }
+        const zoom = Math.min(18, 8 + clean.length);
+        flyTo(decoded.lat, decoded.lng, zoom);
+        map.once('idle', () => {
+            const formatted = DigiPin.format(clean);
+            const fid = codeToCellId.has(formatted) ? codeToCellId.get(formatted)
+                : (codeToCellId.has(clean) ? codeToCellId.get(clean) : null);
+            selectCell({
+                id: fid,
+                code: formatted,
+                center: { lat: decoded.lat, lng: decoded.lng },
+                bounds: decoded.bounds,
+            });
+        });
+    }
+
+    return { init, flyTo, showHeatmap, clearHeatmap, getMap, updateGrid, selectByCode, getSelectedCode };
 })();

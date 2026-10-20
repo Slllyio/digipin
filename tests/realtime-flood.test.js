@@ -6,7 +6,7 @@
  * — only pure logic and cache behavior are tested.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 // RealtimeFlood is loaded as a globalThis property by tests/setup.js
 const RealtimeFlood = globalThis.RealtimeFlood;

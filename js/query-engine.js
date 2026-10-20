@@ -109,58 +109,84 @@ const QueryEngine = (() => {
         if (isRunning) return;
         isRunning = true;
 
-        const query = findQuery(queryId);
-        if (!query) { isRunning = false; return; }
+        // try/finally guarantees isRunning is cleared even if a synchronous
+        // step throws (getMap/getBounds/showHeatmap). Without it, one throw
+        // would wedge the flag and make runQuery a permanent no-op.
+        try {
+            const query = findQuery(queryId);
+            if (!query) return;
 
-        const map = MapModule.getMap();
-        const bounds = map.getBounds();
-        const results = [];
+            const map = MapModule.getMap();
+            const bounds = map.getBounds();
+            const results = [];
 
-        const gridSize = 5;
-        const latStep = (bounds.getNorth() - bounds.getSouth()) / gridSize;
-        const lngStep = (bounds.getEast() - bounds.getWest()) / gridSize;
+            // Precomputed fast path: rank every real DIGIPIN cell in view from
+            // static tiles in one shard read, instead of sampling 25 points live
+            // (~250 upstream calls). Falls through to live sampling on a miss.
+            if (typeof PrecomputedScores !== 'undefined' && PrecomputedScores.isEnabled()) {
+                const vb = { south: bounds.getSouth(), west: bounds.getWest(),
+                    north: bounds.getNorth(), east: bounds.getEast() };
+                const cells = await PrecomputedScores.lookupViewport(vb);
+                if (cells && cells.length) {
+                    const ranked = cells.map(c => ({
+                        lat: c.center.lat, lng: c.center.lng, code: c.code,
+                        score: computeQueryScore(c.scores, query.weights),
+                        data: { scores: c.scores },
+                    }));
+                    ranked.sort((a, b) => b.score - a.score);
+                    if (onProgress) onProgress(cells.length, cells.length);
+                    MapModule.showHeatmap(ranked.slice(0, 10));
+                    return ranked;
+                }
+            }
 
-        const points = [];
-        for (let i = 0; i < gridSize; i++) {
-            for (let j = 0; j < gridSize; j++) {
-                points.push({
-                    lat: bounds.getSouth() + latStep * (i + 0.5),
-                    lng: bounds.getWest() + lngStep * (j + 0.5)
+            const gridSize = 5;
+            const latStep = (bounds.getNorth() - bounds.getSouth()) / gridSize;
+            const lngStep = (bounds.getEast() - bounds.getWest()) / gridSize;
+
+            const points = [];
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    points.push({
+                        lat: bounds.getSouth() + latStep * (i + 0.5),
+                        lng: bounds.getWest() + lngStep * (j + 0.5)
+                    });
+                }
+            }
+
+            const total = points.length;
+            let done = 0;
+
+            for (let batch = 0; batch < total; batch += CONCURRENCY) {
+                const chunk = points.slice(batch, batch + CONCURRENCY);
+
+                const batchResults = await Promise.allSettled(
+                    chunk.map(async (pt) => {
+                        const code = DigiPin.encode(pt.lat, pt.lng);
+                        const data = await DataFetcher.fetchAllFeatures(pt.lat, pt.lng, 400);
+                        const score = computeQueryScore(data.scores, query.weights);
+                        return { lat: pt.lat, lng: pt.lng, code, score, data };
+                    })
+                );
+
+                batchResults.forEach(r => {
+                    if (r.status === 'fulfilled') results.push(r.value);
+                    done++;
+                    if (onProgress) onProgress(done, total);
                 });
+
+                if (batch + CONCURRENCY < total) {
+                    await new Promise(r => setTimeout(r, 300));
+                }
             }
+
+            results.sort((a, b) => b.score - a.score);
+            MapModule.showHeatmap(results.slice(0, 10));
+
+            return results;
+        } finally {
+            isRunning = false;
         }
-
-        const total = points.length;
-        let done = 0;
-
-        for (let batch = 0; batch < total; batch += CONCURRENCY) {
-            const chunk = points.slice(batch, batch + CONCURRENCY);
-
-            const batchResults = await Promise.allSettled(
-                chunk.map(async (pt) => {
-                    const code = DigiPin.encode(pt.lat, pt.lng);
-                    const data = await DataFetcher.fetchAllFeatures(pt.lat, pt.lng, 400);
-                    const score = computeQueryScore(data.scores, query.weights);
-                    return { lat: pt.lat, lng: pt.lng, code, score, data };
-                })
-            );
-
-            batchResults.forEach(r => {
-                if (r.status === 'fulfilled') results.push(r.value);
-                done++;
-                if (onProgress) onProgress(done, total);
-            });
-
-            if (batch + CONCURRENCY < total) {
-                await new Promise(r => setTimeout(r, 300));
-            }
-        }
-
-        results.sort((a, b) => b.score - a.score);
-        MapModule.showHeatmap(results.slice(0, 10));
-
-        isRunning = false;
-        return results;
     }
 
     function findQuery(queryId) {
@@ -172,13 +198,18 @@ const QueryEngine = (() => {
     }
 
     function computeQueryScore(scores, weights) {
+        if (!scores || !weights) return 0;
         let total = 0;
         let weightSum = 0;
 
         for (const [key, weight] of Object.entries(weights)) {
-            const score = scores[key];
-            if (score && score.value !== undefined) {
-                total += score.value * weight;
+            const value = scores[key]?.value;
+            // Only finite values count. Skipping missing keys and null/NaN
+            // values (a) prevents one bad upstream score from poisoning the
+            // whole ranking with NaN, and (b) re-normalises over the scores
+            // that are actually available rather than diluting with zeros.
+            if (Number.isFinite(value)) {
+                total += value * weight;
                 weightSum += Math.abs(weight);
             }
         }

@@ -1,0 +1,496 @@
+{
+  "norm_log": [
+    {
+      "args": [
+        10,
+        80
+      ],
+      "out": 55
+    },
+    {
+      "args": [
+        0,
+        80
+      ],
+      "out": 0
+    },
+    {
+      "args": [
+        500000000,
+        500000000
+      ],
+      "out": 100
+    },
+    {
+      "args": [
+        55,
+        60
+      ],
+      "out": 98
+    },
+    {
+      "args": [
+        1,
+        100
+      ],
+      "out": 15
+    },
+    {
+      "args": [
+        -3,
+        80
+      ],
+      "out": 0
+    }
+  ],
+  "bue_sub_score": [
+    {
+      "args": [
+        {
+          "buildings_temporal": [
+            100,
+            140
+          ],
+          "heights": [
+            8,
+            12
+          ],
+          "osm_construction_count": 3
+        }
+      ],
+      "out": 95.98766960265088
+    },
+    {
+      "args": [
+        {
+          "buildings_temporal": [
+            200,
+            150
+          ]
+        }
+      ],
+      "out": 25.096336733166375
+    },
+    {
+      "args": [
+        {
+          "buildings_temporal": [
+            100
+          ]
+        }
+      ],
+      "out": null
+    },
+    {
+      "args": [
+        {
+          "buildings_temporal": [
+            100,
+            140,
+            210
+          ],
+          "heights": [
+            8,
+            9,
+            15
+          ],
+          "osm_construction_count": 10
+        }
+      ],
+      "out": 99.99962934279772
+    },
+    {
+      "args": [
+        {
+          "buildings_temporal": [
+            0,
+            50
+          ]
+        }
+      ],
+      "out": 50
+    }
+  ],
+  "den_sub_score": [
+    {
+      "args": [
+        {
+          "ghsl_pop_5yr_pct": 12,
+          "osm_commercial_density": 80
+        }
+      ],
+      "out": 76.60091925669623
+    },
+    {
+      "args": [
+        {
+          "ghsl_pop_5yr_pct": -5,
+          "osm_commercial_density": 0
+        }
+      ],
+      "out": 41.962181561709144
+    },
+    {
+      "args": [
+        {
+          "ghsl_pop_5yr_pct": null
+        }
+      ],
+      "out": null
+    },
+    {
+      "args": [
+        {
+          "ghsl_pop_5yr_pct": 40,
+          "osm_commercial_density": 200
+        }
+      ],
+      "out": 89.75976235564202
+    }
+  ],
+  "cap_sub_score": [
+    {
+      "args": [
+        {
+          "rera_projects": null
+        }
+      ],
+      "out": null
+    },
+    {
+      "args": [
+        {
+          "rera_projects": []
+        }
+      ],
+      "out": 0
+    },
+    {
+      "args": [
+        {
+          "rera_projects": [
+            {
+              "value": 100000000,
+              "age_yrs": 1,
+              "distance_km": 0.5
+            },
+            {
+              "value": 50000000,
+              "age_yrs": 3,
+              "distance_km": 2
+            }
+          ]
+        }
+      ],
+      "out": 88
+    },
+    {
+      "args": [
+        {
+          "rera_projects": [
+            {
+              "value": 2000000000,
+              "age_yrs": 0,
+              "distance_km": 0
+            }
+          ]
+        }
+      ],
+      "out": 100
+    }
+  ],
+  "composite": [
+    {
+      "args": [
+        {
+          "bue": 80,
+          "den": 60,
+          "cap": 40
+        },
+        "nowcast"
+      ],
+      "out": {
+        "composite": 62,
+        "effective_weights": {
+          "bue": 0.4,
+          "den": 0.3,
+          "cap": 0.3
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "bue": null,
+          "den": 60,
+          "cap": 40
+        },
+        "year_2"
+      ],
+      "out": {
+        "composite": 45,
+        "effective_weights": {
+          "bue": 0,
+          "den": 0.25,
+          "cap": 0.7499999999999999
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "bue": 70,
+          "den": null,
+          "cap": null
+        },
+        "nowcast"
+      ],
+      "out": {
+        "composite": 70,
+        "effective_weights": {
+          "bue": 1,
+          "den": 0,
+          "cap": 0
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "bue": null,
+          "den": null,
+          "cap": null
+        },
+        "nowcast"
+      ],
+      "out": {
+        "composite": null,
+        "effective_weights": {
+          "bue": 0,
+          "den": 0,
+          "cap": 0
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "bue": 50,
+          "den": 50,
+          "cap": 50
+        },
+        "year_5"
+      ],
+      "out": {
+        "composite": 50,
+        "effective_weights": {
+          "bue": 0.4,
+          "den": 0.3,
+          "cap": 0.3
+        }
+      }
+    }
+  ],
+  "linear_trend": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      ],
+      "out": {
+        "slope": 1,
+        "intercept": 1,
+        "r_squared": 1
+      }
+    },
+    {
+      "args": [
+        [
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      ],
+      "out": {
+        "slope": -1,
+        "intercept": 5,
+        "r_squared": 1
+      }
+    },
+    {
+      "args": [
+        [
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "out": {
+        "slope": 0,
+        "intercept": 3,
+        "r_squared": 1
+      }
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ]
+      ],
+      "out": null
+    },
+    {
+      "args": [
+        [
+          2,
+          1,
+          4,
+          3,
+          6,
+          5
+        ]
+      ],
+      "out": {
+        "slope": 0.8285714285714286,
+        "intercept": 1.4285714285714284,
+        "r_squared": 0.686530612244898
+      }
+    }
+  ],
+  "emerging_class": [
+    {
+      "args": [
+        80,
+        3
+      ],
+      "out": {
+        "category": "intensifying",
+        "color": "#b2182b",
+        "label": "Intensifying Hotspot"
+      }
+    },
+    {
+      "args": [
+        80,
+        -3
+      ],
+      "out": {
+        "category": "diminishing",
+        "color": "#ef8a62",
+        "label": "Diminishing Hotspot"
+      }
+    },
+    {
+      "args": [
+        80,
+        0
+      ],
+      "out": {
+        "category": "persistent",
+        "color": "#d6604d",
+        "label": "Persistent Hotspot"
+      }
+    },
+    {
+      "args": [
+        30,
+        3
+      ],
+      "out": {
+        "category": "emerging",
+        "color": "#fddbc7",
+        "label": "Emerging (new) Hotspot"
+      }
+    },
+    {
+      "args": [
+        30,
+        -3
+      ],
+      "out": {
+        "category": "cooling",
+        "color": "#67a9cf",
+        "label": "Cooling"
+      }
+    },
+    {
+      "args": [
+        30,
+        0
+      ],
+      "out": {
+        "category": "stable",
+        "color": "#f7f7f7",
+        "label": "Stable / no pattern"
+      }
+    },
+    {
+      "args": [
+        null,
+        3
+      ],
+      "out": null
+    },
+    {
+      "args": [
+        50,
+        2,
+        {
+          "hotLevel": 40,
+          "slopeEps": 1
+        }
+      ],
+      "out": {
+        "category": "intensifying",
+        "color": "#b2182b",
+        "label": "Intensifying Hotspot"
+      }
+    }
+  ],
+  "confidence_band": [
+    {
+      "args": [
+        "nowcast",
+        0.9
+      ],
+      "out": 5
+    },
+    {
+      "args": [
+        "year_2",
+        0.5
+      ],
+      "out": 10
+    },
+    {
+      "args": [
+        "year_5",
+        0.9
+      ],
+      "out": 10
+    },
+    {
+      "args": [
+        "year_5",
+        0
+      ],
+      "out": 25
+    },
+    {
+      "args": [
+        "year_5",
+        null
+      ],
+      "out": 25
+    }
+  ]
+}

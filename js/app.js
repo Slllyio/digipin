@@ -3,6 +3,7 @@
  */
 
 const App = (() => {
+    /** Bootstrap the whole app: handle embed mode, then initialise every module/widget in isolated steps. */
     function init() {
         // Embed mode — hide chrome
         const isEmbed = new URLSearchParams(window.location.search).has('embed');
@@ -12,29 +13,114 @@ const App = (() => {
             document.getElementById('toolbar')?.classList.add('hidden');
         }
 
-        MapModule.init();
-        Panel.init();
-        DISHAPanel.init();
-        BuildingIntelDialog.init();
-        ScoresDialog.init();
-        FloatingDialogs.init();
-        CitySelector.init();
-        Bookmarks.init();
-        initSearch();
-        initQueryPanel();
-        initSidebar();
-        initToolbar();
-        registerServiceWorker();
+        // Run each step in isolation: one widget throwing must not skip the
+        // rest of init (e.g. a dialog bug shouldn't block the toolbar or the
+        // service-worker registration that provides offline support).
+        /** Run one init step in isolation; on failure log it and toast a warning without aborting the rest of init. */
+        const step = (name, fn) => {
+            try { fn(); } catch (e) {
+                console.error(`[init] ${name} failed:`, e);
+                // Surface it (not just to the console) so a broken widget is
+                // visible — the rest of init still runs, so it's a warning.
+                try { showToast(`${name} unavailable`, 'This part failed to load; the rest of the app still works.', 'warning'); }
+                catch { /* toast itself unavailable this early — console.error already logged it */ }
+            }
+        };
 
-        const city = CitySelector.getCurrent();
-        showToast('Welcome to DigiPin Urban Intelligence', `${city.name}, ${city.state} \u2022 160+ Features \u2022 Click any grid cell`, 'info');
+        // Theme first: MapModule.init reads Theme for the basemap + grid colours.
+        step('Theme', () => {
+            if (typeof Theme !== 'undefined') Theme.init();
+            // Localize the static chrome (top-bar/toolbar/DISHA) to the saved language.
+            if (typeof I18n !== 'undefined') I18n.init();
+        });
+        step('MapModule', () => MapModule.init());
+        // Kick off precomputed-score coverage load (async, non-blocking). When
+        // data/scores/coverage.json is absent it stays disabled and the app uses
+        // the live path unchanged.
+        step('PrecomputedScores', () => {
+            if (typeof PrecomputedScores !== 'undefined') PrecomputedScores.init();
+        });
+        step('Panel', () => Panel.init());
+        step('DISHAPanel', () => DISHAPanel.init());
+        step('BuildingIntelDialog', () => BuildingIntelDialog.init());
+        step('ScoresDialog', () => ScoresDialog.init());
+        step('FloatingDialogs', () => FloatingDialogs.init());
+        step('CitySelector', () => CitySelector.init());
+        step('Bookmarks', () => Bookmarks.init());
+        step('SavedViews', () => {
+            if (typeof SavedViews !== 'undefined') SavedViews.init();
+        });
+        step('search', () => initSearch());
+        step('queryPanel', () => initQueryPanel());
+        step('sidebar', () => initSidebar());
+        step('toolbar', () => initToolbar());
+        // Deep-link state: wire the Share button + apply any ?cell/?ll/?score/?q.
+        step('URLState', () => {
+            if (typeof URLState !== 'undefined') URLState.init();
+        });
+        step('PresentMode', () => { if (typeof PresentMode !== 'undefined') PresentMode.init(); });
+        step('Annotations', () => { if (typeof Annotations !== 'undefined') Annotations.init(); });
+        step('keyboardNav', () => { if (typeof KeyboardNav !== 'undefined') KeyboardNav.init(); });
+        step('serviceWorker', () => registerServiceWorker());
+
+        // Connectivity feedback: tell the user when live data pauses/resumes so a
+        // wall of "unavailable" sources reads as "offline", not "broken".
+        step('connectivity', () => {
+            window.addEventListener('offline', () =>
+                showToast('You’re offline', 'Showing cached data — live sources are paused.', 'warning'));
+            window.addEventListener('online', () =>
+                showToast('Back online', 'Live data sources reconnected.', 'info'));
+        });
+
+        step('welcome', () => {
+            const city = CitySelector.getCurrent();
+            showToast('Welcome to DigiPin Urban Intelligence', `${city.name}, ${city.state} \u2022 160+ Features \u2022 Click any grid cell`, 'info');
+        });
+
+        // Global Escape-to-close: register every dialog/panel/dropdown with
+        // FloatingDialogs so one Escape press peels back the top-most open
+        // surface, calling each component's own close() (keeping `.open`
+        // state consistent). Priority: dropdown > dialog > side panel > detail.
+        step('EscapeToClose', () => {
+            if (typeof FloatingDialogs === 'undefined' || !FloatingDialogs.registerClosable) return;
+            /** True if the element with the given id exists and has the `open` class. */
+            const hasOpen = (id) => {
+                const el = document.getElementById(id);
+                return !!el && el.classList.contains('open');
+            };
+            /** Remove the `open` class from the element with the given id, if present. */
+            const removeOpen = (id) => document.getElementById(id)?.classList.remove('open');
+            /** Register a closable surface (id + close fn + priority) with FloatingDialogs for Escape-to-close. */
+            const reg = (id, close, priority) =>
+                FloatingDialogs.registerClosable({ isOpen: () => hasOpen(id), close, priority });
+
+            reg('dt-layers-dropdown', () => removeOpen('dt-layers-dropdown'), 40);
+            reg('heatmap-dropdown', () => removeOpen('heatmap-dropdown'), 40);
+            reg('building-intel-dialog', () => BuildingIntelDialog.close(), 30);
+            reg('scores-dialog', () => ScoresDialog.close(), 30);
+            reg('disha-panel', () => DISHAPanel.close(), 20);
+            reg('compare-panel', () => Compare.closePanel(), 20);
+            reg('bookmarks-panel', () => Bookmarks.closePanel(), 20);
+            reg('saved-views-panel', () => SavedViews.closePanel(), 20);
+            reg('detail-panel', () => Panel.close(), 10);
+            reg('results-panel', () => removeOpen('results-panel'), 10);
+        });
+
+        // First-run onboarding: a once-per-visitor card explaining the two
+        // headline interactions. Self-gates on localStorage (no-op on return
+        // visits), so it's safe to call unconditionally.
+        step('Onboarding', () => {
+            if (typeof Onboarding !== 'undefined') Onboarding.init();
+        });
     }
 
+    /** Wire up the search box: resolve DigiPin codes locally or geocode free-text via Nominatim, flying the map to the result. */
     function initSearch() {
         const searchInput = document.getElementById('search-input');
         const searchBtn = document.getElementById('search-btn');
         let searching = false;
 
+        /** Toggle the searching state, disabling the input/button and updating the button's busy indicator. */
         const setSearching = (active) => {
             searching = active;
             searchBtn.disabled = active;
@@ -43,6 +129,7 @@ const App = (() => {
             searchBtn.setAttribute('aria-busy', String(active));
         };
 
+        /** Run the current search: decode a DigiPin code if the query looks like one, otherwise geocode it via Nominatim. */
         const doSearch = async () => {
             const query = searchInput.value.trim();
             if (!query || searching) return;
@@ -62,8 +149,11 @@ const App = (() => {
             } else {
                 setSearching(true);
                 try {
+                    // Cap the geocoder request \u2014 a slow/unreachable Nominatim
+                    // would otherwise leave the search button spinning forever.
                     const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=in&limit=1`, {
-                        headers: { 'User-Agent': 'DigiPinUrbanIntelligence/1.0' }
+                        headers: { 'User-Agent': 'DigiPinUrbanIntelligence/1.0' },
+                        signal: AbortSignal.timeout(8000)
                     });
                     const results = await resp.json();
                     if (results.length > 0) {
@@ -75,7 +165,10 @@ const App = (() => {
                         showToast('Not Found', 'No results for "' + query + '"', 'error');
                     }
                 } catch (e) {
-                    showToast('Search Error', e.message, 'error');
+                    const msg = (e && (e.name === 'TimeoutError' || e.name === 'AbortError'))
+                        ? 'Search timed out \u2014 please try again.'
+                        : (e && e.message) || 'Search failed.';
+                    showToast('Search Error', msg, 'error');
                 } finally {
                     setSearching(false);
                 }
@@ -177,6 +270,7 @@ const App = (() => {
         });
     }
 
+    /** Run a saved urban query over the visible area, showing progress toasts and rendering ranked results. */
     async function runQueryUI(query) {
         if (QueryEngine.isQueryRunning()) {
             showToast('Query Running', 'Please wait for the current query to finish', 'warning');
@@ -213,6 +307,7 @@ const App = (() => {
         }
     }
 
+    /** Render the top query results into the results panel as a ranked, clickable list that flies the map to each cell. */
     function showQueryResults(query, results) {
         const panel = document.getElementById('results-panel');
         panel.classList.add('open');
@@ -275,6 +370,7 @@ const App = (() => {
         panel.appendChild(list);
     }
 
+    /** Wire the sidebar collapse/expand toggle button. */
     function initSidebar() {
         const toggleBtn = document.getElementById('sidebar-toggle');
         const sidebar = document.getElementById('sidebar');
@@ -306,7 +402,7 @@ const App = (() => {
                     if (HeatmapOverlay.getActive() === opt.key) {
                         HeatmapOverlay.clear();
                     } else {
-                        HeatmapOverlay.show(opt.key);
+                        HeatmapOverlay.show(opt.key, { reverse: !!opt.reverse });
                     }
                 });
                 heatmapDrop.appendChild(item);
@@ -349,6 +445,7 @@ const App = (() => {
         if (lczBtn) {
             lczBtn.addEventListener('click', () => {
                 const map = MapModule.getMap();
+                if (!map) { showToast('Map not ready', 'Try again in a moment.', 'warning'); return; }
                 lczActive = !lczActive;
                 if (!lczActive) {
                     if (map.getLayer('lcz-layer')) map.setLayoutProperty('lcz-layer', 'visibility', 'none');
@@ -382,43 +479,21 @@ const App = (() => {
             });
         }
 
-        // Google Open Buildings toggle — cycles: Off → 3D → 2D → Off
+        // Buildings toggle — 3D Overture footprints (streamed from the Overture
+        // S3 PMTiles; no local data file, so it works on GitHub Pages). On/off.
         const buildingsBtn = document.getElementById('btn-buildings');
-        if (buildingsBtn) {
-            let buildingMode = 'off'; // off | 3d | 2d
-            buildingsBtn.addEventListener('click', async () => {
+        if (buildingsBtn && typeof OvertureBuildings !== 'undefined') {
+            buildingsBtn.addEventListener('click', () => {
                 const map = MapModule.getMap();
                 try {
-                    if (buildingMode === 'off') {
-                        // Turn on 3D
-                        await DigitalTwinLayers.toggle('google_buildings', map);
-                        buildingMode = '3d';
-                        buildingsBtn.classList.add('active');
-                        buildingsBtn.querySelector('.tb-label').textContent = '3D';
-                        showToast('Google Open Buildings', '528K footprints — 3D extrusion mode.', 'info');
-                    } else if (buildingMode === '3d') {
-                        // Switch to 2D flat
-                        await DigitalTwinLayers.toggle('google_buildings', map); // turn off 3D
-                        await DigitalTwinLayers.toggle('google_buildings_flat', map); // turn on 2D
-                        buildingMode = '2d';
-                        buildingsBtn.querySelector('.tb-label').textContent = '2D';
-                        showToast('Google Open Buildings', '528K footprints — flat 2D mode.', 'info');
-                    } else {
-                        // Turn off — ensure both layers are hidden
-                        if (DigitalTwinLayers.isVisible('google_buildings_flat')) {
-                            await DigitalTwinLayers.toggle('google_buildings_flat', map);
-                        }
-                        if (DigitalTwinLayers.isVisible('google_buildings')) {
-                            await DigitalTwinLayers.toggle('google_buildings', map);
-                        }
-                        // Defensive: force map-level visibility off
-                        ['dt-layer-google_buildings', 'dt-layer-google_buildings_flat', 'dt-tether-google_buildings'].forEach(id => {
-                            if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
-                        });
-                        buildingMode = 'off';
-                        buildingsBtn.classList.remove('active');
-                        buildingsBtn.querySelector('.tb-label').textContent = 'Buildings';
-                    }
+                    OvertureBuildings.toggle(map);
+                    const on = OvertureBuildings.isActive();
+                    buildingsBtn.classList.toggle('active', on);
+                    const label = buildingsBtn.querySelector('.tb-label');
+                    if (label) label.textContent = on ? '3D' : 'Buildings';
+                    showToast('Overture Buildings',
+                        on ? 'Global 3D building footprints — extrusion on.' : 'Buildings hidden.',
+                        'info');
                 } catch (err) {
                     showToast('Buildings Error', err.message, 'error');
                 }
@@ -431,18 +506,20 @@ const App = (() => {
             let is3d = false;
             btn3d.addEventListener('click', async () => {
                 const map = MapModule.getMap();
+                if (!map) { showToast('Map not ready', 'Try again in a moment.', 'warning'); return; }
                 is3d = !is3d;
                 btn3d.classList.toggle('active', is3d);
                 if (is3d) {
                     map.easeTo({ pitch: 60, duration: 1000 });
-                    // Auto-enable 3D buildings if no buildings layer is active
-                    if (!DigitalTwinLayers.isVisible('google_buildings') && !DigitalTwinLayers.isVisible('google_buildings_flat')) {
+                    // Auto-enable 3D buildings (Overture) if none are showing yet.
+                    if (typeof OvertureBuildings !== 'undefined' && !OvertureBuildings.isActive()) {
                         try {
-                            await DigitalTwinLayers.toggle('google_buildings', map);
+                            OvertureBuildings.toggle(map);
                             const bBtn = document.getElementById('btn-buildings');
                             if (bBtn) {
                                 bBtn.classList.add('active');
-                                bBtn.querySelector('.tb-label').textContent = '3D';
+                                const lbl = bBtn.querySelector('.tb-label');
+                                if (lbl) lbl.textContent = '3D';
                             }
                         } catch { /* silent */ }
                     }
@@ -454,12 +531,56 @@ const App = (() => {
             });
         }
 
+        // Sun & shadow study — toggle the solar-position control (Aino-style
+        // environmental analysis on the 3D massing model).
+        const sunBtn = document.getElementById('btn-sun');
+        if (sunBtn && typeof SunStudy !== 'undefined') {
+            sunBtn.setAttribute('aria-pressed', 'false');
+            sunBtn.addEventListener('click', () => {
+                const on = SunStudy.toggle();
+                sunBtn.classList.toggle('active', on);
+                sunBtn.setAttribute('aria-pressed', String(on));
+            });
+        }
+
+        // Pitch map — export a presentation-ready PNG of the current view.
+        const pitchBtn = document.getElementById('btn-pitch');
+        if (pitchBtn && typeof PitchMap !== 'undefined') {
+            pitchBtn.addEventListener('click', () => PitchMap.open());
+        }
+
+        // Measure tool — distance + area (driven from the Layers panel too).
+        const measureBtn = document.getElementById('btn-measure');
+        if (measureBtn && typeof MeasureTool !== 'undefined') {
+            const syncMeasureBtn = () => {
+                const on = MeasureTool.isVisible();
+                measureBtn.classList.toggle('active', on);
+                measureBtn.setAttribute('aria-pressed', String(on));
+            };
+            measureBtn.setAttribute('aria-pressed', 'false');
+            measureBtn.addEventListener('click', () => { MeasureTool.toggle(); syncMeasureBtn(); });
+            // The tool can also detach via other paths — keep the button honest.
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setTimeout(syncMeasureBtn, 0); });
+        }
+
+        // Annotate — drop labelled notes on the map (driven from the Layers panel too).
+        const annotateBtn = document.getElementById('btn-annotate');
+        if (annotateBtn && typeof Annotations !== 'undefined') {
+            annotateBtn.setAttribute('aria-pressed', 'false');
+            annotateBtn.addEventListener('click', () => {
+                const on = Annotations.toggle();
+                annotateBtn.classList.toggle('active', on);
+                annotateBtn.setAttribute('aria-pressed', String(on));
+            });
+        }
+
         // Bhuvan LULC Overlay toggle (ISRO Land Use / Land Cover via WMS)
         const lulcBtn = document.getElementById('btn-lulc');
         let lulcActive = false;
         if (lulcBtn) {
             lulcBtn.addEventListener('click', () => {
                 const map = MapModule.getMap();
+                if (!map) { showToast('Map not ready', 'Try again in a moment.', 'warning'); return; }
                 lulcActive = !lulcActive;
                 if (!lulcActive) {
                     if (map.getLayer('bhuvan-lulc-layer')) map.setLayoutProperty('bhuvan-lulc-layer', 'visibility', 'none');
@@ -549,7 +670,14 @@ const App = (() => {
                 key: '_heat_' + opt.key, name: 'Heatmap: ' + opt.label, icon: '\u25A0', group: 'Quick Overlays', _heatKey: opt.key
             }));
 
-            const ALL_ENTRIES = [...QUICK_OVERLAYS, ...heatmapEntries, ...layerDefs];
+            const ALL_ENTRIES = [
+                ...QUICK_OVERLAYS,
+                ...heatmapEntries,
+                // Analytics overlays (NDVI, bivariate, viewshed, KDE, growth…)
+                // folded in from their toolbar buttons — see js/layers-panel.js.
+                ...((typeof LayersPanel !== 'undefined') ? LayersPanel.entries() : []),
+                ...layerDefs,
+            ];
 
             // Group entries by group name preserving insertion order
             const groupOrder = [];
@@ -561,6 +689,35 @@ const App = (() => {
                 }
                 groupMap[entry.group].push(entry);
             });
+
+            // Search box — type-filter the ~30 layer rows (LayersPanel.filterMatch).
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.className = 'dt-layer-search';
+            searchInput.placeholder = 'Filter layers…';
+            searchInput.setAttribute('aria-label', 'Filter layers');
+            searchInput.addEventListener('click', (e) => e.stopPropagation());
+            searchInput.addEventListener('input', () => {
+                const q = searchInput.value;
+                dtLayersDrop.querySelectorAll('.dt-layer-group').forEach(group => {
+                    let anyVisible = false;
+                    group.querySelectorAll('.dt-layer-item').forEach(item => {
+                        const name = item.querySelector('.dt-layer-name')?.textContent || '';
+                        const show = LayersPanel.filterMatch(name, q);
+                        item.classList.toggle('dt-hidden', !show);
+                        if (show) anyVisible = true;
+                    });
+                    group.classList.toggle('dt-hidden', !anyVisible);
+                    // While filtering, force-open matching groups so hits are visible.
+                    if (q.trim()) {
+                        group.querySelector('.dt-group-content')?.classList.toggle('open', anyVisible);
+                        group.querySelector('.dt-group-header-btn')?.classList.toggle('expanded', anyVisible);
+                    }
+                });
+            });
+            dtLayersDrop.setAttribute('role', 'group');
+            dtLayersDrop.setAttribute('aria-label', 'Map layers');
+            dtLayersDrop.appendChild(searchInput);
 
             // Render collapsible groups
             groupOrder.forEach((groupName, gIdx) => {
@@ -591,11 +748,13 @@ const App = (() => {
                     contentDiv.classList.add('open');
                     headerBtn.classList.add('expanded');
                 }
+                headerBtn.setAttribute('aria-expanded', String(gIdx < 2));
 
                 headerBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const isOpen = contentDiv.classList.toggle('open');
                     headerBtn.classList.toggle('expanded', isOpen);
+                    headerBtn.setAttribute('aria-expanded', String(isOpen));
                 });
 
                 // Render each layer item with toggle switch
@@ -603,6 +762,12 @@ const App = (() => {
                     const item = document.createElement('div');
                     item.className = 'dt-layer-item';
                     item.dataset.layerKey = ld.key;
+                    // Keyboard + screen-reader: each row is an operable switch
+                    // (was a plain <div> with a tabindex:-1 checkbox = unreachable).
+                    item.tabIndex = 0;
+                    item.setAttribute('role', 'switch');
+                    item.setAttribute('aria-checked', 'false');
+                    item.setAttribute('aria-label', ld.name);
 
                     const iconEl = document.createElement('span');
                     iconEl.className = 'dt-layer-icon';
@@ -618,6 +783,7 @@ const App = (() => {
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.tabIndex = -1;
+                    checkbox.setAttribute('aria-hidden', 'true');   // the row (role=switch) is the control
                     const sliderSpan = document.createElement('span');
                     sliderSpan.className = 'dt-toggle-slider';
                     toggleLabel.appendChild(checkbox);
@@ -658,14 +824,32 @@ const App = (() => {
                     } else if (ld.key === '_lcz') {
                         item.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            lczBtn?.click();
+                            // Non-bubbling: keep the panel open (a bubbled
+                            // synthetic click would hit the outside-click closer).
+                            lczBtn?.dispatchEvent(new MouseEvent('click', { bubbles: false }));
                             setTimeout(() => { checkbox.checked = lczActive; }, 100);
                         });
                     } else if (ld.key === '_lulc') {
                         item.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            lulcBtn?.click();
+                            lulcBtn?.dispatchEvent(new MouseEvent('click', { bubbles: false }));
                             setTimeout(() => { checkbox.checked = lulcActive; }, 100);
+                        });
+                    } else if (ld._btnId) {
+                        // Analytics overlay — drive its (hidden) toolbar button
+                        // so the bespoke toggle logic + multi-state cycles are
+                        // reused, never duplicated (see js/layers-panel.js).
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            LayersPanel.drive(ld._btnId);
+                            setTimeout(() => {
+                                const on = LayersPanel.isActive(ld._btnId);
+                                checkbox.checked = on;
+                                if (ld._stateful) {
+                                    const mode = LayersPanel.stateLabel(ld._btnId);
+                                    nameEl.textContent = on && mode ? `${ld.name} · ${mode}` : ld.name;
+                                }
+                            }, 100);
                         });
                     } else {
                         // DigitalTwinLayers toggle
@@ -691,10 +875,33 @@ const App = (() => {
                                 }
                             } catch (err) {
                                 checkbox.checked = false;
-                                showToast('Layer Unavailable', ld.name + ': ' + err.message, 'error');
+                                // Only a genuine 404 / "no data source" means the
+                                // layer simply isn't deployed (most OSM vector
+                                // layers are pipeline-generated per city) — present
+                                // that as a calm "not available" note. _loadGeoJSON
+                                // throws "Failed to load <name>: <status>" for ANY
+                                // non-OK status, so match the 404 specifically and
+                                // surface 5xx/403/429 etc. as real errors.
+                                const msg = String((err && err.message) || err || '');
+                                const missing = /\b404\b|No data source|Not Found/i.test(msg);
+                                if (missing) {
+                                    showToast('Layer not available', ld.name + ' isn’t available in this deployment yet.', 'info');
+                                } else {
+                                    showToast('Layer Unavailable', ld.name + ': ' + msg, 'error');
+                                }
                             }
                         });
                     }
+
+                    // Enter/Space activate the row (it owns its click handler
+                    // above); mirror the resulting state to aria-checked after the
+                    // handler's own (≤100ms) state update settles.
+                    item.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
+                    });
+                    item.addEventListener('click', () => {
+                        setTimeout(() => item.setAttribute('aria-checked', String(checkbox.checked)), 160);
+                    });
 
                     contentDiv.appendChild(item);
                 });
@@ -704,17 +911,69 @@ const App = (() => {
                 dtLayersDrop.appendChild(groupDiv);
             });
 
+            // Proactively dim Digital-Twin layers whose data file isn't deployed
+            // (most OSM vector layers are generated per-city by the pipeline and
+            // aren't shipped to Pages), so users see "no data" rather than clicking
+            // a dead row. PMTiles/WMS layers always report available. One-shot,
+            // fire-and-forget HEAD probes run once at startup.
+            if (typeof DigitalTwinLayers.checkAvailability === 'function') {
+                layerDefs.forEach(ld => {
+                    DigitalTwinLayers.checkAvailability(ld.key).then(ok => {
+                        if (ok) return;
+                        const item = dtLayersDrop.querySelector('.dt-layer-item[data-layer-key="' + ld.key + '"]');
+                        if (!item) return;
+                        item.classList.add('dt-unavailable');
+                        item.title = 'Not available in this deployment';
+                        const nm = item.querySelector('.dt-layer-name');
+                        if (nm && !/· no data$/.test(nm.textContent)) nm.textContent += ' · no data';
+                    }).catch(() => { /* probe is best-effort */ });
+                });
+            }
+
+            // The COG-backed analytics overlays (Growth/Predict/Scenario read
+            // data/growth/*.tif via RealtimeGrowth; Heat reads data/heat/*.tif via
+            // RealtimeHeat) need raster data that the pipeline generates and that
+            // isn't shipped to Pages. Probe a representative file for each and dim
+            // its panel row, same as the Digital-Twin layers, so the panel is
+            // honest about what's renderable. Row key = '_btn_' + btnId.
+            const COG_PROBES = {
+                '_btn_btn-growth':    'data/growth/ca_urban_prediction.tif',
+                '_btn_btn-ca-growth': 'data/growth/ca_urban_prediction.tif',
+                '_btn_btn-scenario':  'data/growth/ca_urban_prediction.tif',
+                '_btn_btn-heat':      'data/heat/modis_lst_2016-2024.tif',
+            };
+            Object.entries(COG_PROBES).forEach(([key, url]) => {
+                fetch(url, { method: 'HEAD' }).then(r => {
+                    if (r.ok) return;
+                    const item = dtLayersDrop.querySelector('.dt-layer-item[data-layer-key="' + key + '"]');
+                    if (!item) return;
+                    item.classList.add('dt-unavailable');
+                    item.title = 'Not available in this deployment (needs pipeline raster data)';
+                    const nm = item.querySelector('.dt-layer-name');
+                    if (nm && !/· no data$/.test(nm.textContent)) nm.textContent += ' · no data';
+                }).catch(() => { /* probe is best-effort */ });
+            });
+
+            dtLayersBtn.setAttribute('aria-haspopup', 'true');
+            dtLayersBtn.setAttribute('aria-expanded', 'false');
             dtLayersBtn.addEventListener('click', () => {
                 const isOpen = dtLayersDrop.classList.toggle('open');
+                dtLayersBtn.setAttribute('aria-expanded', String(isOpen));
                 if (isOpen) {
                     const rect = dtLayersBtn.getBoundingClientRect();
+                    dtLayersDrop.style.left = 'auto';
                     dtLayersDrop.style.top = rect.top + 'px';
                     dtLayersDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
-                    // Clamp bottom edge within viewport
+                    // Clamp within the viewport (phones: the toolbar wraps and the
+                    // right-anchored menu can spill off the top/left edge).
                     requestAnimationFrame(() => {
                         const dropRect = dtLayersDrop.getBoundingClientRect();
                         if (dropRect.bottom > window.innerHeight - 8) {
                             dtLayersDrop.style.top = Math.max(8, window.innerHeight - dropRect.height - 8) + 'px';
+                        }
+                        if (dropRect.left < 8) {
+                            dtLayersDrop.style.right = 'auto';
+                            dtLayersDrop.style.left = '8px';
                         }
                     });
                 }
@@ -738,14 +997,89 @@ const App = (() => {
         if (bmBtn) {
             bmBtn.addEventListener('click', () => Bookmarks.openPanel());
         }
-    }
 
-    function registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(() => {});
+        // Saved Views & templates
+        const svBtn = document.getElementById('btn-saved-views');
+        if (svBtn) {
+            svBtn.addEventListener('click', () => SavedViews.openPanel());
         }
+
+        // Honest toolbar: a few overlays are backed by heavy pipeline rasters
+        // (data/growth/*.tif, data/heat/*.tif) that aren't published to the
+        // static site, so on Pages they 404 and the button used to toast
+        // "Sampling…" then render nothing — looking broken. HEAD-probe each
+        // button's representative file once; if it's missing, mark the button
+        // unavailable and intercept the click with a clear message instead of a
+        // dead action. (Mirrors the Layers-panel "· no data" treatment.)
+        const TOOLBAR_DATA = {
+            'btn-growth':    'data/growth/ca_urban_prediction.tif',
+            'btn-ca-growth': 'data/growth/ca_urban_prediction.tif',
+            'btn-scenario':  'data/growth/ca_urban_prediction.tif',
+            'btn-heat':      'data/heat/modis_lst_2016-2024.tif',
+        };
+        const toolbarEl = document.getElementById('toolbar');
+        if (toolbarEl) {
+            // Capture-phase guard: a disabled overlay button explains itself
+            // rather than running its (data-less) handler.
+            toolbarEl.addEventListener('click', (e) => {
+                if (!(e.target instanceof Element)) return;
+                const b = e.target.closest('button.tb-unavailable');
+                if (!b) return;
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                showToast('Not available in this deployment',
+                    'This overlay needs pipeline raster data that isn’t published to the static site.',
+                    'warning');
+            }, true);
+        }
+        // De-dupe probes by URL so the four buttons hit two files, not four.
+        const probeCache = {};
+        Object.entries(TOOLBAR_DATA).forEach(([id, url]) => {
+            const b = document.getElementById(id);
+            if (!b) return;
+            (probeCache[url] = probeCache[url] || fetch(url, { method: 'HEAD' }).then(r => r.ok).catch(() => false))
+                .then(ok => {
+                    if (ok) return;
+                    b.classList.add('tb-unavailable');
+                    b.setAttribute('aria-disabled', 'true');
+                    b.title = (b.title ? b.title + ' — ' : '') + 'Not available in this deployment';
+                });
+        });
     }
 
+    /** Register the service worker for offline support and prompt to refresh when an update is installed. */
+    function registerServiceWorker() {
+        if (!('serviceWorker' in navigator)) return;
+        // sw.js uses skipWaiting()+clients.claim(), so a new SW takes control
+        // immediately and fires `controllerchange`. Reload once on that event so
+        // the page runs the fresh shell instead of stale in-memory modules —
+        // but only when this REPLACES an existing controller (an update), never
+        // on the first-ever activation, and guarded against reload loops.
+        let _refreshing = false;
+        const _hadController = !!navigator.serviceWorker.controller;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (_refreshing || !_hadController) return;
+            _refreshing = true;
+            showToast('Updated', 'Loading the latest DigiPin…', 'info');
+            window.location.reload();
+        });
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+            // When a new SW is found and finishes installing while an old one is
+            // still controlling the page, the fresh app shell is cached but not
+            // yet live — nudge the user to refresh rather than serve stale code.
+            reg.addEventListener('updatefound', () => {
+                const sw = reg.installing;
+                if (!sw) return;
+                sw.addEventListener('statechange', () => {
+                    if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+                        showToast('Update ready', 'Refresh to load the latest DigiPin', 'info');
+                    }
+                });
+            });
+        }).catch(() => { /* SW unsupported or registration blocked — app still works online */ });
+    }
+
+    /** Show a transient toast notification (title + message) that auto-dismisses after a few seconds. */
     function showToast(title, message, type = 'info') {
         const container = document.getElementById('toast-container');
         if (!container) return;

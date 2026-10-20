@@ -1,0 +1,32 @@
+{
+  "region": "indore_pilot",
+  "bounds": { "west": 75.6, "south": 22.5, "east": 76.0, "north": 22.9 },
+  "groundwater_level": {
+    "depth_m_bgl": 15,
+    "category": "Over-exploited",
+    "trend": "declining",
+    "note": "Indore assessment unit is CGWB-classified Over-Exploited; value is a representative district depth-to-water (post-monsoon).",
+    "source": "CGWB / India-WRIS (district)"
+  },
+  "groundwater_quality": {
+    "status": "potable_with_caveats",
+    "label": "Generally potable; moderate hardness, local nitrate",
+    "params": {
+      "hardness": "moderate–high",
+      "nitrate": "elevated in pockets",
+      "fluoride": "within limits"
+    },
+    "source": "CGWB groundwater quality (district)"
+  },
+  "gas_png": {
+    "available": true,
+    "operator": "Avantika Gas Ltd (CGD)",
+    "note": "Indore is an authorised City Gas Distribution area; piped natural gas is available across much of the city.",
+    "source": "PNGRB CGD authorisation"
+  },
+  "electricity": {
+    "operator": "MPPKVVCL (West Discom)",
+    "typical": "Overhead LV distribution",
+    "source": "MP Paschim Kshetra Vidyut Vitaran Co."
+  }
+}
