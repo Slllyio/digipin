@@ -14,7 +14,6 @@ const DISHAPanel = (() => {
 
     // ===== INIT =====
     async function init() {
-        const statusEl = document.getElementById('disha-status');
         const inputEl = document.getElementById('disha-input');
 
         const result = await DISHA.checkConnection();
@@ -40,6 +39,7 @@ const DISHAPanel = (() => {
         }
     }
 
+    /** Render the connection status badge (LIVE/cloud/OFF) from a checkConnection result. */
     function updateStatusBadge(result) {
         const statusEl = document.getElementById('disha-status');
         statusEl.classList.remove('connected', 'offline', 'cloud');
@@ -150,6 +150,7 @@ const DISHAPanel = (() => {
         return div;
     }
 
+    /** Build a labelled <select> settings row from an array of {value,label} options. */
     function buildSelectRow(id, labelText, options) {
         const row = document.createElement('div');
         row.className = 'disha-settings-row';
@@ -172,6 +173,7 @@ const DISHAPanel = (() => {
         return row;
     }
 
+    /** Build a labelled <input> settings row of the given type and placeholder. */
     function buildInputRow(id, labelText, placeholder, type) {
         const row = document.createElement('div');
         row.className = 'disha-settings-row';
@@ -191,6 +193,7 @@ const DISHAPanel = (() => {
         return row;
     }
 
+    /** Fill the settings form fields from the saved provider config. */
     function populateSettings() {
         const config = DISHAProviders.getConfig();
         const selectEl = document.getElementById('disha-provider-select');
@@ -211,6 +214,7 @@ const DISHAPanel = (() => {
         document.getElementById('disha-settings-status').textContent = '';
     }
 
+    /** Show/hide the API key, URL, and model rows based on the selected provider. */
     function updateSettingsVisibility(provider) {
         const keyRow = document.getElementById('disha-key-row');
         const customUrlRow = document.getElementById('disha-custom-url-row');
@@ -224,6 +228,7 @@ const DISHAPanel = (() => {
         customModelRow.style.display = isCustom ? '' : 'none';
     }
 
+    /** Probe connectivity for the currently selected provider and report the result in the status line. */
     async function testProvider() {
         const statusEl = document.getElementById('disha-settings-status');
         statusEl.textContent = 'Testing...';
@@ -262,6 +267,7 @@ const DISHAPanel = (() => {
         statusEl.classList.add(check.ok ? 'status-ok' : 'status-err');
     }
 
+    /** Persist the settings form to provider config, re-detect the provider, and auto-close the panel. */
     async function saveSettings() {
         const selectEl = document.getElementById('disha-provider-select');
         const keyEl = document.getElementById('disha-api-key');
@@ -302,17 +308,35 @@ const DISHAPanel = (() => {
 
     // ===== OPEN =====
     function open(cell, data) {
-        _currentCell = cell;
-        _currentData = data;
-        _currentContext = DISHA.buildContext(cell, data);
-
         const panelEl = document.getElementById('disha-panel');
         const messagesEl = document.getElementById('disha-messages');
         const inputEl = document.getElementById('disha-input');
         const sendBtn = document.getElementById('disha-send');
-        const suggestionsEl = document.getElementById('disha-suggestions');
+
+        // Guard: opening without a cell is a UX path (e.g. user clicked
+        // a DISHA-launcher button before clicking the map). Show a
+        // friendly empty state instead of crashing on cell.code below.
+        if (!cell || !cell.code) {
+            panelEl.classList.add('open');
+            if (typeof FloatingDialogs !== 'undefined' && FloatingDialogs.focusInto) FloatingDialogs.focusInto(panelEl);
+            while (messagesEl.firstChild) messagesEl.removeChild(messagesEl.firstChild);
+            inputEl.disabled = true;
+            sendBtn.disabled = true;
+            inputEl.placeholder = 'Click a DigiPin cell on the map first…';
+            const hint = document.createElement('div');
+            hint.className = 'disha-message disha-system';
+            hint.textContent = 'Click any DIGIPIN cell to load India-native location intelligence — then ask in plain English. ' +
+                'City-wide questions ("family-friendly area near good schools, low flood risk") rank DIGIPIN cells instantly. Free and auditable.';
+            messagesEl.appendChild(hint);
+            return;
+        }
+
+        _currentCell = cell;
+        _currentData = data;
+        _currentContext = DISHA.buildContext(cell, data);
 
         panelEl.classList.add('open');
+        if (typeof FloatingDialogs !== 'undefined' && FloatingDialogs.focusInto) FloatingDialogs.focusInto(panelEl);
         while (messagesEl.firstChild) messagesEl.removeChild(messagesEl.firstChild);
         inputEl.disabled = false;
         sendBtn.disabled = false;
@@ -345,25 +369,36 @@ const DISHAPanel = (() => {
             `${featureCount} feature types | ${scoreCount} intelligence scores\n` +
             `AI: ${providerLabel}\n\n` +
             `Ask me anything — from "Is this safe to live?" to "Where should I open a restaurant?"\n` +
-            `I can also scan the city for optimal locations.`
+            `Ask a plain-English question and I'll rank DIGIPIN cells across the city for it — India-native, free, and auditable.`
         );
 
         const suggestions = DISHA.getSuggestions(data);
-        while (suggestionsEl.firstChild) suggestionsEl.removeChild(suggestionsEl.firstChild);
-        suggestionsEl.style.display = '';
-        suggestions.forEach(s => {
-            const btn = document.createElement('button');
-            btn.className = 'disha-suggestion';
-            btn.textContent = s;
-            btn.addEventListener('click', () => askSuggestion(s));
-            suggestionsEl.appendChild(btn);
-        });
+        renderSuggestions(suggestions);
 
         inputEl.focus();
     }
 
+    /** Render the suggestion/follow-up chips (clears + rebuilds the row). */
+    function renderSuggestions(list) {
+        const el = document.getElementById('disha-suggestions');
+        if (!el) return;
+        while (el.firstChild) el.removeChild(el.firstChild);
+        if (!Array.isArray(list) || list.length === 0) { el.style.display = 'none'; return; }
+        el.style.display = '';
+        list.forEach(s => {
+            const btn = document.createElement('button');
+            btn.className = 'disha-suggestion';
+            btn.textContent = s;
+            btn.addEventListener('click', () => askSuggestion(s));
+            el.appendChild(btn);
+        });
+    }
+
+    /** Close the chat panel, abort any in-flight request, and reset streaming/scanning flags. */
     function close() {
-        document.getElementById('disha-panel').classList.remove('open');
+        const panelEl = document.getElementById('disha-panel');
+        panelEl.classList.remove('open');
+        if (typeof FloatingDialogs !== 'undefined' && FloatingDialogs.restoreFocus) FloatingDialogs.restoreFocus(panelEl);
         DISHA.cancel();
         _isStreaming = false;
         _isCityScanning = false;
@@ -398,14 +433,31 @@ const DISHAPanel = (() => {
         }
     }
 
+    /** Populate the input with a suggestion chip's text and submit it. */
     function askSuggestion(question) {
         document.getElementById('disha-input').value = question;
         send();
     }
 
     // ===== CITY SCAN FLOW =====
+    // Current map viewport as a plain {south,west,north,east} for Text2Map's
+    // precomputed-grid lookup. Empty object if the map isn't ready (Text2Map
+    // then degrades to the live sampler).
+    function _cityScanBounds() {
+        if (typeof MapModule === 'undefined' || !MapModule.getMap) return {};
+        const map = MapModule.getMap();
+        if (!map || !map.getBounds) return {};
+        const b = map.getBounds();
+        return { south: b.getSouth(), west: b.getWest(), north: b.getNorth(), east: b.getEast() };
+    }
+
+    /** Run the city-wide scan flow: rank DIGIPIN cells for the question, render results, then stream an AI summary. */
     async function handleCityScan(question) {
         _isCityScanning = true;
+        // Drop any previous answer's highlight before this scan starts.
+        if (typeof Text2MapResultsLayer !== 'undefined') {
+            try { Text2MapResultsLayer.clear(); } catch { /* nothing to clear */ }
+        }
         const sendBtn = document.getElementById('disha-send');
         const inputEl = document.getElementById('disha-input');
         sendBtn.style.display = 'none';
@@ -426,9 +478,27 @@ const DISHAPanel = (() => {
         statusContent.appendChild(scanIndicator);
 
         try {
-            const results = await DISHA.cityScan(question, (status) => {
-                scanText.textContent = status;
-            });
+            // Text2Map: parse the question into a weighting (LLM-required, with a
+            // keyword fallback) and rank the precomputed DIGIPIN grid instantly.
+            // Falls back internally to the live sampler when the viewport isn't
+            // covered. Older path (DISHA.cityScan) kept if Text2Map is absent.
+            let results, label = null;
+            if (typeof Text2Map !== 'undefined') {
+                scanText.textContent = 'Understanding your question...';
+                const bounds = _cityScanBounds();
+                const out = await Text2Map.run(question, bounds, (status) => {
+                    scanText.textContent = status;
+                });
+                results = out ? out.results : null;
+                label = out?.parsed?.label || null;
+                if (out && out.mode === 'precomputed') {
+                    scanText.textContent = 'Ranking the live grid...';
+                }
+            } else {
+                results = await DISHA.cityScan(question, (status) => {
+                    scanText.textContent = status;
+                });
+            }
 
             if (!results || results.length === 0) {
                 applyFormattedResponse(statusContent, 'City scan returned no results. Try zooming into a city area first.');
@@ -437,7 +507,7 @@ const DISHAPanel = (() => {
                 return;
             }
 
-            scanText.textContent = `Scan complete! Found top ${results.length} locations. Analyzing with AI...`;
+            scanText.textContent = `Found top ${results.length}${label ? ' for "' + label + '"' : ''}. Analyzing with AI...`;
 
             const cityScanContext = DISHA.buildCityScanContext(results, question);
 
@@ -445,6 +515,12 @@ const DISHAPanel = (() => {
             _isCityScanning = false;
 
             addScanResultsCard(results, question);
+
+            // Close the "ask → map" loop: paint the ranked cells on the map and
+            // frame them, so the answer is a map, not just a list.
+            if (typeof Text2MapResultsLayer !== 'undefined') {
+                try { Text2MapResultsLayer.show(results); } catch { /* map-highlight is best-effort */ }
+            }
 
             await streamResponse(question, cityScanContext);
         } catch (err) {
@@ -454,6 +530,7 @@ const DISHAPanel = (() => {
         }
     }
 
+    /** Append a chat card listing ranked scan results with score bars, fly-to clicks, and GeoJSON export. */
     function addScanResultsCard(results, question) {
         const messagesEl = document.getElementById('disha-messages');
         const card = document.createElement('div');
@@ -519,9 +596,33 @@ const DISHAPanel = (() => {
         hint.textContent = 'Click a result to fly to that location on the map';
         content.appendChild(hint);
 
+        // Export the ranked cells as GeoJSON (QGIS / geojson.io / gov workflows).
+        if (typeof DataFetcher !== 'undefined' && DataFetcher.exportRankedToGeoJSON) {
+            const geo = document.createElement('button');
+            geo.className = 'disha-scan-export';
+            geo.textContent = 'Download GeoJSON';
+            geo.title = 'Export these ranked DIGIPIN cells as GeoJSON';
+            geo.addEventListener('click', () => DataFetcher.exportRankedToGeoJSON(results, 'digipin_ranked.geojson'));
+            content.appendChild(geo);
+        }
+
         card.appendChild(content);
         messagesEl.appendChild(card);
         scrollToBottom();
+    }
+
+    /** Append ✓/✗ chips confirming the map actions DISHA triggered. */
+    function _renderActionChips(parent, results) {
+        if (!results || !results.length) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'disha-action-chips';
+        results.forEach(r => {
+            const chip = document.createElement('span');
+            chip.className = 'disha-action-chip ' + (r.ok ? 'ok' : 'fail');
+            chip.textContent = (r.ok ? '✓ ' : '✗ ') + (r.ok ? r.label : `${r.type}: ${r.error}`);
+            wrap.appendChild(chip);
+        });
+        parent.appendChild(wrap);
     }
 
     // ===== STREAM RESPONSE =====
@@ -537,19 +638,34 @@ const DISHAPanel = (() => {
 
         const messageEl = addMessage('disha', '');
         const contentEl = messageEl.querySelector('.disha-msg-content');
+        contentEl.classList.add('disha-streaming');   // shows a blinking caret
+        contentEl.textContent = '…';                  // "thinking" until first token
         let fullResponse = '';
+        let lastFmt = 0;
 
         await DISHA.ask(
             _currentContext,
             question,
             (token) => {
                 fullResponse += token;
-                contentEl.textContent = fullResponse;
+                // Format live, but throttle (~8 fps) so we don't re-parse the
+                // whole reply on every token (O(n²)); onDone does the final pass.
+                const now = Date.now();
+                if (now - lastFmt > 120) {
+                    lastFmt = now;
+                    applyFormattedResponse(contentEl, fullResponse);
+                    contentEl.classList.add('disha-streaming');
+                }
                 scrollToBottom();
             },
             (meta) => {
                 _isStreaming = false;
-                applyFormattedResponse(contentEl, fullResponse);
+                contentEl.classList.remove('disha-streaming');
+                // Strip any [ACTION] directives from the text shown to the user,
+                // then execute them and confirm with chips.
+                const hasActions = typeof DISHAActions !== 'undefined';
+                const shown = hasActions ? DISHAActions.stripActions(fullResponse) : fullResponse;
+                applyFormattedResponse(contentEl, shown);
                 // Show cached indicator if response was from cache
                 if (meta && meta.cached) {
                     const badge = document.createElement('span');
@@ -558,10 +674,19 @@ const DISHAPanel = (() => {
                     badge.title = 'This response was served from cache';
                     contentEl.appendChild(badge);
                 }
+                if (hasActions) {
+                    const acts = DISHAActions.parseActions(fullResponse);
+                    if (acts.length) _renderActionChips(contentEl, DISHAActions.executeActions(acts));
+                }
+                // Conversation-aware follow-up chips derived from this reply.
+                if (fullResponse.trim()) {
+                    renderSuggestions(DISHA.getSuggestions(_currentData || {}, shown));
+                }
                 resetInputState();
             },
             (err) => {
                 _isStreaming = false;
+                contentEl.classList.remove('disha-streaming');
                 contentEl.textContent = `Error: ${err.message}`;
                 contentEl.classList.add('disha-error');
                 resetInputState();
@@ -570,6 +695,7 @@ const DISHAPanel = (() => {
         );
     }
 
+    /** Restore the input row to its idle state after a response or scan finishes. */
     function resetInputState() {
         const sendBtn = document.getElementById('disha-send');
         const stopBtn = document.getElementById('disha-stop');
@@ -602,6 +728,7 @@ const DISHAPanel = (() => {
         return div;
     }
 
+    /** Scroll the messages container to the latest message. */
     function scrollToBottom() {
         const el = document.getElementById('disha-messages');
         el.scrollTop = el.scrollHeight;
@@ -708,6 +835,7 @@ const DISHAPanel = (() => {
         });
     }
 
+    /** Append inline-formatted text (bold, score badges, clickable DigiPin codes) to a parent element. */
     function appendRichText(parent, text, _scorePattern) {
         const parts = text.split(/(\*\*[^*]+\*\*)/g);
         parts.forEach(part => {
@@ -754,6 +882,7 @@ const DISHAPanel = (() => {
         });
     }
 
+    /** Map a verdict string to its CSS class (good/moderate/poor). */
     function getVerdictClass(verdict) {
         const v = verdict.toLowerCase();
         if (v.includes('excellent') || v.includes('good') || v.includes('outstanding')) return 'disha-verdict-good';

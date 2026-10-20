@@ -118,6 +118,26 @@ h2{font-size:16px;color:#334155;margin:24px 0 8px;padding-bottom:4px;border-bott
             doc.body.appendChild(row);
         });
 
+        // Utilities & infrastructure (from js/utilities.js, when present)
+        const u = data.utilities;
+        if (u) {
+            doc.body.appendChild(txt(doc, 'h2', 'Utilities & Infrastructure'));
+            const rows = [];
+            if (u.noise) rows.push(['Sound / noise', `${u.noise.value}/100 (${u.noise.band})`]);
+            if (u.groundwater_level) rows.push(['Ground water level', `~${u.groundwater_level.depth_m_bgl} m bgl, ${u.groundwater_level.category}`]);
+            if (u.groundwater_quality) rows.push(['Ground water quality', u.groundwater_quality.label]);
+            if (u.sewer) rows.push(['Sewer lines', u.sewer.count > 0 ? `${u.sewer.count} mapped nearby` : 'none mapped (OSM sparse)']);
+            if (u.water) rows.push(['Water pipelines', u.water.count > 0 ? `${u.water.count} mapped nearby` : 'none mapped (OSM sparse)']);
+            if (u.gas_png) rows.push(['Gas connection (PNG)', u.gas_png.operator || (u.gas_png.available ? 'available' : 'n/a')]);
+            if (u.electricity) rows.push(['Electricity', u.electricity.type + (u.electricity.operator ? ` · ${u.electricity.operator}` : '')]);
+            rows.forEach(([k, v]) => {
+                const row = mk(doc, 'div', 'score-row');
+                row.appendChild(txt(doc, 'div', k, 'score-label'));
+                row.appendChild(txt(doc, 'div', String(v), '', 'flex:1;color:#475569'));
+                doc.body.appendChild(row);
+            });
+        }
+
         // Categories
         doc.body.appendChild(txt(doc, 'h2', 'Feature Categories'));
         const catGrid = mk(doc, 'div', 'cat-grid');

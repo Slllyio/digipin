@@ -31,10 +31,12 @@ from pathlib import Path
 
 log = logging.getLogger("pipeline.growth.ghsl")
 
-INDIA_BBOX = (68.0, 6.5, 97.5, 35.5)
+from pipeline._lib.regions import get_default_bbox, get_default_region_name
+
+INDIA_BBOX = get_default_bbox()   # defaults to Indore pilot; see pipeline/_lib/regions.py
 YEAR = 2020   # latest GHSL epoch on GEE as of 2026-05; bump to 2025 once published
 ASSET_ID_PREFIX = "JRC/GHSL/P2023A/GHS_POP"
-OUTPUT_PATH = Path("data/growth/ghsl_pop_2020.tif")
+OUTPUT_PATH = Path(f"data/growth/ghsl_pop_2020_{get_default_region_name()}.tif")
 SCALE_M = 100   # GHSL native resolution
 
 

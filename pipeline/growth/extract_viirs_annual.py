@@ -19,10 +19,12 @@ from pathlib import Path
 
 log = logging.getLogger("pipeline.growth.viirs")
 
-INDIA_BBOX = (68.0, 6.5, 97.5, 35.5)
+from pipeline._lib.regions import get_default_bbox, get_default_region_name
+
+INDIA_BBOX = get_default_bbox()   # defaults to Indore pilot; see pipeline/_lib/regions.py
 YEARS = list(range(2016, 2025))
 ASSET_ID = "NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG"
-OUTPUT_PATH = Path("data/growth/viirs_2016-2024.tif")
+OUTPUT_PATH = Path(f"data/growth/viirs_2016-2024_{get_default_region_name()}.tif")
 SCALE_M = 100
 
 

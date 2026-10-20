@@ -19,11 +19,15 @@ from pathlib import Path
 
 log = logging.getLogger("pipeline.growth.buildings")
 
-# India bounding box (west, south, east, north) — tight around India main + NE
-INDIA_BBOX = (68.0, 6.5, 97.5, 35.5)
+# Region defaults to Indore pilot (~40 × 45 km). Override with
+# DIGIPIN_REGION=india_full for nationwide exports; not recommended for
+# COGs the frontend will fetch — see pipeline/_lib/regions.py.
+from pipeline._lib.regions import get_default_bbox, get_default_region_name
+
+INDIA_BBOX = get_default_bbox()   # name retained for downstream compat
 YEARS = list(range(2016, 2024))   # 8 inclusive years
 ASSET_ID = "GOOGLE/Research/open-buildings-temporal/v1"
-OUTPUT_PATH = Path("data/growth/buildings_temporal_2016-2023.tif")
+OUTPUT_PATH = Path(f"data/growth/buildings_temporal_2016-2023_{get_default_region_name()}.tif")
 SCALE_M = 4   # GEE export scale; matches DigiPin grain
 
 

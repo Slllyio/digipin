@@ -1,0 +1,2 @@
+networkx>=3.0   # articulation-point / connectivity analysis (mobility.py)
+requests>=2.31  # Overpass HTTP client (fetch_osm_safety.py)

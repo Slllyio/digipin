@@ -1,0 +1,147 @@
+{
+  "lst_raw_to_celsius": [
+    {
+      "args": [
+        null
+      ],
+      "out": null
+    },
+    {
+      "args": [
+        0
+      ],
+      "out": null
+    },
+    {
+      "args": [
+        14000
+      ],
+      "out": 6.850000000000023
+    },
+    {
+      "args": [
+        15000
+      ],
+      "out": 26.850000000000023
+    },
+    {
+      "args": [
+        16225
+      ],
+      "out": 51.35000000000002
+    }
+  ],
+  "uhi_score": [
+    {
+      "args": [
+        {
+          "cell_night_lst_c": 24,
+          "surrounding_night_lst_c": 22
+        }
+      ],
+      "out": 48
+    },
+    {
+      "args": [
+        {
+          "cell_night_lst_c": 20,
+          "surrounding_night_lst_c": 25
+        }
+      ],
+      "out": 0
+    },
+    {
+      "args": [
+        {
+          "cell_night_lst_c": 30,
+          "surrounding_night_lst_c": 22
+        }
+      ],
+      "out": 100
+    },
+    {
+      "args": [
+        {
+          "cell_night_lst_c": null,
+          "surrounding_night_lst_c": 22
+        }
+      ],
+      "out": null
+    }
+  ],
+  "diurnal_range_c": [
+    {
+      "args": [
+        {
+          "day_lst_c": 40,
+          "night_lst_c": 25
+        }
+      ],
+      "out": 15
+    },
+    {
+      "args": [
+        {
+          "day_lst_c": null,
+          "night_lst_c": 25
+        }
+      ],
+      "out": null
+    }
+  ],
+  "night_trend": [
+    {
+      "args": [
+        [
+          20,
+          20.5,
+          21,
+          21.5,
+          22
+        ]
+      ],
+      "out": {
+        "slope_c_per_yr": 0.5,
+        "r_squared": 1
+      }
+    },
+    {
+      "args": [
+        [
+          null,
+          21,
+          22,
+          null,
+          23,
+          24
+        ]
+      ],
+      "out": {
+        "slope_c_per_yr": 1,
+        "r_squared": 1
+      }
+    },
+    {
+      "args": [
+        [
+          20,
+          20
+        ]
+      ],
+      "out": null
+    },
+    {
+      "args": [
+        [
+          22,
+          22,
+          22
+        ]
+      ],
+      "out": {
+        "slope_c_per_yr": 0,
+        "r_squared": 1
+      }
+    }
+  ]
+}

@@ -12,7 +12,7 @@ Usage:
 import os
 import sys
 from functools import partial
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 
 class RangeHTTPRequestHandler(SimpleHTTPRequestHandler):
@@ -75,7 +75,11 @@ def main():
     directory = os.path.dirname(os.path.abspath(__file__))
 
     handler = partial(RangeHTTPRequestHandler, directory=directory)
-    server = HTTPServer(("0.0.0.0", port), handler)
+    # ThreadingHTTPServer so 35 defer-loaded scripts can fetch in parallel
+    # without bottlenecking on the single-threaded HTTPServer (the
+    # bottleneck became visible after PR #22 added `defer` to all script
+    # tags, which causes a request storm at parse time).
+    server = ThreadingHTTPServer(("0.0.0.0", port), handler)
 
     print(f"Serving {directory} on http://localhost:{port}")
     print(f"Range requests enabled (PMTiles compatible)")

@@ -82,13 +82,16 @@ out geom;`;
 
             if (!_map.getSource(SOURCE_ID)) {
                 _map.addSource(SOURCE_ID, { type: 'geojson', data: geojson });
-                
+
+                // Ward boundary colour follows the active theme (added once; a
+                // theme switch reloads): violet on dark, deep-violet on paper.
+                const wardColor = (typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light') ? '#7c3aed' : '#a855f7';
                 _map.addLayer({
                     id: FILL_LAYER_ID,
                     type: 'fill',
                     source: SOURCE_ID,
                     paint: {
-                        'fill-color': '#a855f7',
+                        'fill-color': wardColor,
                         'fill-opacity': 0.05
                     }
                 });
@@ -98,7 +101,7 @@ out geom;`;
                     type: 'line',
                     source: SOURCE_ID,
                     paint: {
-                        'line-color': '#a855f7',
+                        'line-color': wardColor,
                         'line-width': 2,
                         'line-dasharray': [4, 3]
                     }
@@ -106,8 +109,13 @@ out geom;`;
 
                 _map.on('click', FILL_LAYER_ID, (e) => {
                     const props = e.features[0].properties;
-                    let html = `<div style="font-family:Inter,sans-serif;"><strong>${props.name}</strong>`;
-                    if (props.admin_level) html += `<br><span style="font-size:11px;">Admin Level: ${props.admin_level}</span>`;
+                    // GeoJSON props come from external admin-boundary
+                    // sources — escape before interpolating into setHTML.
+                    const esc = (v) => String(v == null ? '' : v)
+                        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                    let html = `<div style="font-family:Inter,sans-serif;"><strong>${esc(props.name)}</strong>`;
+                    if (props.admin_level) html += `<br><span style="font-size:11px;">Admin Level: ${esc(props.admin_level)}</span>`;
                     html += `</div>`;
 
                     if (_popup) _popup.remove();

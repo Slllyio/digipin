@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Slllyio/digipin/scrapers/sources/schemas/ndma_sachet.schema.json",
+  "title": "NDMA SACHET snapshot",
+  "description": "Contract for data/realtime/ndma_sachet/latest.json — All-India CAP disaster alerts aggregated from NDMA's RSS 2.0 feed.",
+  "type": "object",
+  "required": ["count", "records"],
+  "properties": {
+    "generated_at_iso": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp (Z-suffixed) when the snapshot was written. Stamped by scrapers/lib/storage.py:write_latest_snapshot()."
+    },
+    "count": { "type": "integer", "minimum": 0 },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "headline", "severity", "category"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "NDMA event identifier from the cap_xml_url"
+          },
+          "headline": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "area": {
+            "type": "string",
+            "description": "Free-text affected area (may be empty when CAP areaDesc is absent)"
+          },
+          "published_utc": {
+            "type": "string",
+            "description": "RFC-822 timestamp from the RSS pubDate (not strict ISO 8601)"
+          },
+          "cap_xml_url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https?://"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["Minor", "Moderate", "Severe", "Extreme"],
+            "description": "Heuristically inferred from headline+description; CAP <severity> isn't exposed in the RSS"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "Met-Storm", "Met-Heat", "Met-Cyclone", "Met-Flood",
+              "Geo-Earthquake", "Geo-Landslide",
+              "Fire", "Other"
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

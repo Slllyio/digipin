@@ -3,7 +3,11 @@
  */
 const Compare = (() => {
     const MAX_PINS = 3;
-    const COLORS = ['#00f5ff', '#a855f7', '#ec4899'];
+    // Pin colours follow the active theme (a theme switch reloads, so resolving
+    // once at module load is enough): neon on dark, ink-coral on paper.
+    const COLORS = (typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light')
+        ? ['#c2410c', '#7c3aed', '#be185d']
+        : ['#00f5ff', '#a855f7', '#ec4899'];
     let _pinned = []; // { cell, data, marker }
 
     function pin(cell, data) {
@@ -42,6 +46,7 @@ const Compare = (() => {
         App.showToast('Cell Pinned', `${cell.code} added to compare (${_pinned.length}/${MAX_PINS})`, 'success');
     }
 
+    /** Remove a pinned cell (by code), drop its marker and refresh the badge. */
     function unpin(code) {
         const idx = _pinned.findIndex(p => p.cell.code === code);
         if (idx === -1) return;
@@ -50,6 +55,7 @@ const Compare = (() => {
         updateBadge();
     }
 
+    /** Remove all pins and markers and close the compare panel. */
     function clearAll() {
         _pinned.forEach(p => p.marker.remove());
         _pinned = [];
@@ -57,16 +63,89 @@ const Compare = (() => {
         closePanel();
     }
 
+    /** Sync the toolbar badge count and muted/accent state to the pin count. */
     function updateBadge() {
         const badge = document.getElementById('compare-badge');
         if (badge) {
             badge.textContent = String(_pinned.length);
-            badge.style.display = _pinned.length > 0 ? '' : 'none';
+            // Always visible — muted at 0 (advertises Compare), accent when pinned.
+            badge.classList.toggle('toolbar-badge--empty', _pinned.length === 0);
         }
     }
 
+    /** Get the array of pinned entries ({ cell, data, marker }). */
     function getPinned() { return _pinned; }
 
+    /** CSV-escape a field (quote when it contains a comma, quote or newline). Pure. */
+    function _csvEscape(s) {
+        const v = String(s == null ? '' : s);
+        // Neutralise spreadsheet formula injection: a leading =,+,-,@ (after any
+        // whitespace) can execute when opened in Excel/Sheets — prefix a quote.
+        const safe = /^\s*[=+\-@]/.test(v) ? `'${v}` : v;
+        return /[",\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
+    }
+
+    /** Build a comparison CSV string from pinned entries (Metric × cells). Pure. */
+    function buildCSV(pinned) {
+        const rows = [];
+        rows.push(['Metric', ...pinned.map(p => p.cell.code)]);
+        rows.push(['Address', ...pinned.map(p => {
+            const a = p.data.address || {};
+            return [a.area, a.city].filter(Boolean).join(', ') || 'Unknown';
+        })]);
+        rows.push(['Latitude', ...pinned.map(p => p.cell.center ? p.cell.center.lat : '')]);
+        rows.push(['Longitude', ...pinned.map(p => p.cell.center ? p.cell.center.lng : '')]);
+        const keys = new Set();
+        pinned.forEach(p => Object.keys(p.data.scores || {}).forEach(k => keys.add(k)));
+        [...keys].forEach(k => {
+            const label = (pinned.find(p => p.data.scores && p.data.scores[k])
+                || { data: { scores: {} } }).data.scores[k]?.label || k;
+            rows.push([label, ...pinned.map(p => {
+                const v = p.data.scores && p.data.scores[k] ? p.data.scores[k].value : null;
+                return v == null ? '' : v;
+            })]);
+        });
+        return rows.map(r => r.map(_csvEscape).join(',')).join('\n');
+    }
+
+    /** Download the comparison radar chart as a PNG image. */
+    function exportPNG() {
+        const canvas = document.getElementById('compare-radar');
+        if (!canvas || _pinned.length < 2) {
+            App.showToast('Need 2+ Pins', 'Pin at least 2 cells to export the chart', 'warning');
+            return;
+        }
+        try {
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL('image/png');
+            a.download = `digipin-compare-${_pinned.map(p => p.cell.code).join('_')}.png`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        } catch {
+            App.showToast('Export failed', 'Could not render the chart image', 'warning');
+        }
+    }
+
+    /** Download the current comparison as a CSV file. */
+    function exportCSV() {
+        if (_pinned.length < 2) {
+            App.showToast('Need 2+ Pins', 'Pin at least 2 cells to export', 'warning');
+            return;
+        }
+        const csv = buildCSV(_pinned);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `digipin-compare-${_pinned.map(p => p.cell.code).join('_')}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    /** Open the compare panel and render it (requires 2+ pins). */
     function openPanel() {
         if (_pinned.length < 2) {
             App.showToast('Need 2+ Pins', 'Pin at least 2 cells to compare', 'warning');
@@ -78,11 +157,13 @@ const Compare = (() => {
         renderComparison();
     }
 
+    /** Close the compare panel. */
     function closePanel() {
         const panel = document.getElementById('compare-panel');
         if (panel) panel.classList.remove('open');
     }
 
+    /** Rebuild the compare table (verdict rows, per-score rows, overlay radar). */
     function renderComparison() {
         const container = document.getElementById('compare-content');
         if (!container) return;
@@ -123,6 +204,33 @@ const Compare = (() => {
         });
         container.appendChild(headerRow);
 
+        // Actions bar — export the comparison.
+        const actions = document.createElement('div');
+        actions.className = 'compare-actions';
+        const exportBtn = document.createElement('button');
+        exportBtn.className = 'compare-export-btn';
+        exportBtn.type = 'button';
+        exportBtn.textContent = '↓ Export CSV';
+        exportBtn.addEventListener('click', exportCSV);
+        actions.appendChild(exportBtn);
+        const pngBtn = document.createElement('button');
+        pngBtn.className = 'compare-export-btn';
+        pngBtn.type = 'button';
+        pngBtn.textContent = '↓ Chart PNG';
+        pngBtn.addEventListener('click', exportPNG);
+        actions.appendChild(pngBtn);
+        const briefBtn = document.createElement('button');
+        briefBtn.className = 'compare-export-btn';
+        briefBtn.type = 'button';
+        briefBtn.textContent = '📋 Brief';
+        briefBtn.addEventListener('click', openBrief);
+        actions.appendChild(briefBtn);
+        container.appendChild(actions);
+
+        // Property Intelligence verdict rows (answer-first): each cell's growth
+        // score, outlook label and appreciation band, best score highlighted.
+        _appendVerdictRows(container);
+
         // Score rows — collect all score keys
         const allKeys = new Set();
         _pinned.forEach(p => {
@@ -151,13 +259,13 @@ const Compare = (() => {
 
                 if (val != null) {
                     cell.textContent = String(val);
-                    cell.style.color = val >= 70 ? '#22c55e' : val >= 40 ? '#eab308' : '#ef4444';
+                    cell.style.color = (typeof Theme !== 'undefined' && Theme.scoreColor) ? Theme.scoreColor(val) : (val >= 70 ? '#22c55e' : val >= 40 ? '#eab308' : '#ef4444');
                     if (val === maxVal && validValues.length > 1) {
                         cell.classList.add('compare-best');
                     }
                 } else {
                     cell.textContent = '-';
-                    cell.style.color = '#64748b';
+                    cell.style.color = (typeof Theme !== 'undefined' && Theme.palette) ? Theme.palette().sub : '#64748b';
                 }
                 row.appendChild(cell);
             });
@@ -169,6 +277,71 @@ const Compare = (() => {
         renderOverlayRadar();
     }
 
+    /** Top verdict block: growth score / outlook / appreciation per pinned cell. */
+    function _appendVerdictRows(container) {
+        if (typeof RealEstateModel === 'undefined') return;
+        const outlooks = _pinned.map(p => RealEstateModel.outlook(p.data));
+        const sub = (typeof Theme !== 'undefined' && Theme.palette) ? Theme.palette().sub : '#64748b';
+
+        /** Append one labelled verdict row, rendering a cell per pinned outlook. */
+        const addRow = (label, render, opts = {}) => {
+            const row = document.createElement('div');
+            row.className = 'compare-row' + (opts.headerish ? ' compare-verdict-row' : '');
+            const lab = document.createElement('div');
+            lab.className = 'compare-label';
+            lab.textContent = label;
+            row.appendChild(lab);
+            outlooks.forEach((o, i) => {
+                const c = document.createElement('div');
+                c.className = 'compare-value';
+                render(c, o, i);
+                row.appendChild(c);
+            });
+            container.appendChild(row);
+        };
+
+        // Growth score (highlight the best among >1 valid)
+        const scores = outlooks.map(o => (o && o.score != null) ? o.score : null);
+        const valid = scores.filter(v => v != null);
+        const best = valid.length ? Math.max(...valid) : null;
+        addRow('Growth score', (c, o) => {
+            if (o.score == null) { c.textContent = '-'; c.style.color = sub; return; }
+            c.textContent = String(o.score);
+            c.style.color = (typeof Theme !== 'undefined' && Theme.scoreColor) ? Theme.scoreColor(o.score)
+                : (o.score >= 70 ? '#22c55e' : o.score >= 40 ? '#eab308' : '#ef4444');
+            if (o.score === best && valid.length > 1) c.classList.add('compare-best');
+        }, { headerish: true });
+
+        addRow('Outlook', (c, o) => {
+            c.textContent = o.label || '-';
+            c.style.color = sub;
+            c.style.fontSize = '11px';
+        });
+
+        addRow('Est. appreciation', (c, o) => {
+            c.textContent = o.appreciation ? `${o.appreciation.midPct}%/yr` : '-';
+            c.style.color = sub;
+        });
+
+        // Structural traffic (from the per-cell traffic grid), when present.
+        const traffics = _pinned.map(p => p && p.data && p.data.realtime && p.data.realtime.traffic);
+        if (traffics.some(t => t)) {
+            addRow('Congestion (LOS)', (c, o, i) => {
+                const t = traffics[i];
+                if (!t || t.los_grade == null) { c.textContent = '-'; c.style.color = sub; return; }
+                c.textContent = `${t.los_grade}${t.congestion_risk != null ? ' · ' + t.congestion_risk : ''}`;
+                c.style.color = sub;
+            });
+            addRow('Transit access', (c, o, i) => {
+                const t = traffics[i];
+                const a = t && t.transit && t.transit.access_score;
+                c.textContent = (a != null) ? `${a}/100` : '-';
+                c.style.color = sub;
+            });
+        }
+    }
+
+    /** Draw the overlaid radar chart of common scores for all pinned cells. */
     function renderOverlayRadar() {
         const canvas = document.getElementById('compare-radar');
         if (!canvas || _pinned.length < 2) return;
@@ -203,7 +376,7 @@ const Compare = (() => {
                         : ctx.lineTo(cx + rr * Math.cos(angle), cy + rr * Math.sin(angle));
             }
             ctx.closePath();
-            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.strokeStyle = (typeof Theme !== 'undefined') ? Theme.fg(0.06) : 'rgba(255,255,255,0.06)';
             ctx.stroke();
         }
 
@@ -212,7 +385,7 @@ const Compare = (() => {
             const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
             const lx = cx + (r + 22) * Math.cos(angle);
             const ly = cy + (r + 22) * Math.sin(angle);
-            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.fillStyle = (typeof Theme !== 'undefined') ? Theme.fg(0.4) : 'rgba(255,255,255,0.4)';
             ctx.font = '8px Inter';
             ctx.textAlign = Math.abs(Math.cos(angle)) < 0.3 ? 'center' : Math.cos(angle) > 0 ? 'left' : 'right';
             const label = _pinned[0].data.scores[k]?.label || k;
@@ -239,5 +412,113 @@ const Compare = (() => {
         });
     }
 
-    return { pin, unpin, clearAll, openPanel, closePanel, getPinned };
+    // ---------- Comparison Site Brief (Aino-style, printable) ----------
+    /** HTML-escape a value for safe interpolation into the brief markup. */
+    function _esc(v) {
+        return String(v == null ? '' : v).replace(/[&<>"']/g, c =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    /** Row-aligned brief model across the pinned cells (reuses SiteBrief.build). Pure. */
+    function compareBriefModel(pinned) {
+        const list = pinned || [];
+        if (typeof SiteBrief === 'undefined' || !SiteBrief.build) return { cells: [], metricKeys: [] };
+        const cells = list.map(p => {
+            const m = SiteBrief.build(p.data, p.cell);
+            const metrics = {};
+            for (const x of m.metrics) metrics[x.key] = x;
+            return { code: m.code || (p.cell && p.cell.code) || '—', city: m.city, metrics };
+        });
+        const metricKeys = [];
+        const seen = new Set();
+        for (const c of cells) {
+            for (const k of Object.keys(c.metrics)) {
+                if (!seen.has(k)) { seen.add(k); metricKeys.push(k); }
+            }
+        }
+        return { cells, metricKeys };
+    }
+
+    /** Plain-text (tab-separated) rendering of the comparison brief, for the clipboard. */
+    function _briefText(model) {
+        const lines = ['DigiPin Comparison Brief', ''];
+        lines.push(['Metric', ...model.cells.map(c => c.code)].join('\t'));
+        for (const k of model.metricKeys) {
+            const label = model.cells.map(c => c.metrics[k]).find(Boolean)?.label || k;
+            lines.push([label, ...model.cells.map(c => {
+                const m = c.metrics[k];
+                return m ? `${m.value} (${m.band})` : '—';
+            })].join('\t'));
+        }
+        return lines.join('\n');
+    }
+
+    /** Close the comparison-brief dialog and restore focus to the opener. */
+    function _closeBrief() {
+        document.getElementById('compare-brief-backdrop')?.remove();
+        if (_closeBrief._restoreFocus && typeof _closeBrief._restoreFocus.focus === 'function') {
+            try { _closeBrief._restoreFocus.focus({ preventScroll: true }); } catch { /* element gone */ }
+            _closeBrief._restoreFocus = null;
+        }
+    }
+
+    /** Build + show the side-by-side, printable comparison brief. */
+    function openBrief() {
+        if (_pinned.length < 2) {
+            App.showToast('Compare', 'Pin at least two cells to build a comparison brief.', 'warning');
+            return;
+        }
+        _closeBrief();
+        _closeBrief._restoreFocus = (typeof document !== 'undefined') ? document.activeElement : null;
+        const model = compareBriefModel(_pinned);
+        const backdrop = document.createElement('div');
+        backdrop.id = 'compare-brief-backdrop';
+        backdrop.addEventListener('click', (e) => { if (e.target === backdrop) _closeBrief(); });
+
+        const head = `<tr><th>Metric</th>${model.cells.map(c =>
+            `<th>${_esc(c.code)}${c.city ? `<span class="cb-city">${_esc(c.city)}</span>` : ''}</th>`).join('')}</tr>`;
+        const rows = model.metricKeys.map(k => {
+            const label = model.cells.map(c => c.metrics[k]).find(Boolean)?.label || k;
+            const cells = model.cells.map(c => {
+                const m = c.metrics[k];
+                return m
+                    ? `<td><b style="color:${_esc(m.color)}">${m.value}</b><span class="cb-band"> ${_esc(m.band)}</span></td>`
+                    : '<td class="cb-na">—</td>';
+            }).join('');
+            return `<tr><td class="cb-metric">${_esc(label)}</td>${cells}</tr>`;
+        }).join('');
+
+        const card = document.createElement('div');
+        card.className = 'compare-brief';
+        card.setAttribute('role', 'dialog');
+        card.setAttribute('aria-modal', 'true');
+        card.setAttribute('aria-label', 'Comparison brief');
+        card.innerHTML = `
+            <button class="cb-close" aria-label="Close comparison brief">✕</button>
+            <div class="cb-title">Comparison Brief</div>
+            <div class="cb-sub">${model.cells.length} sites · verdict-banded</div>
+            <table class="cb-table">${head}${rows}</table>
+            <div class="cb-foot">Computed from Indian civic &amp; OpenStreetMap data on the DIGIPIN grid — open and auditable.</div>
+            <div class="cb-actions">
+                <button class="cb-btn cb-copy">Copy summary</button>
+                <button class="cb-btn cb-print">Print / PDF</button>
+            </div>`;
+        card.querySelector('.cb-close').addEventListener('click', _closeBrief);
+        card.addEventListener('keydown', (e) => { if (e.key === 'Escape') _closeBrief(); });
+        card.querySelector('.cb-print').addEventListener('click', () => {
+            document.body.classList.add('printing-cbrief');
+            const cleanup = () => { document.body.classList.remove('printing-cbrief'); window.removeEventListener('afterprint', cleanup); };
+            window.addEventListener('afterprint', cleanup);
+            window.print();
+        });
+        card.querySelector('.cb-copy').addEventListener('click', async () => {
+            try { await navigator.clipboard.writeText(_briefText(model)); App.showToast('Compare', 'Comparison summary copied.', 'success'); }
+            catch { App.showToast('Compare', 'Copy failed — clipboard blocked.', 'warning'); }
+        });
+        backdrop.appendChild(card);
+        document.body.appendChild(backdrop);
+        card.querySelector('.cb-close')?.focus();
+    }
+
+    return { pin, unpin, clearAll, openPanel, closePanel, getPinned, buildCSV, exportCSV, exportPNG, compareBriefModel, openBrief };
 })();

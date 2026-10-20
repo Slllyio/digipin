@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Slllyio/digipin/scrapers/sources/schemas/gdacs_disasters.schema.json",
+  "title": "GDACS disasters snapshot",
+  "description": "Contract for data/realtime/gdacs_disasters/latest.json — current global disasters from the GDACS RSS 2.0 feed (UN/JRC).",
+  "type": "object",
+  "required": ["count", "records"],
+  "properties": {
+    "generated_at_iso": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp (Z-suffixed) when the snapshot was written. Stamped by scrapers/lib/storage.py:write_latest_snapshot()."
+    },
+    "count": { "type": "integer", "minimum": 0 },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "event_type", "alert_level", "title"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "GDACS numeric event id (stored as string)."
+          },
+          "event_type": {
+            "type": "string",
+            "enum": ["EQ", "TC", "FL", "VO", "DR", "WF", "WG"],
+            "description": "GDACS event type code: Earthquake, Tropical Cyclone, Flood, Volcano, Drought, Wildfire, Wind."
+          },
+          "event_label": {
+            "type": "string",
+            "description": "Human-readable event type label (e.g. 'Earthquake', 'Flood')."
+          },
+          "alert_score": {
+            "type": "number",
+            "minimum": 0,
+            "description": "GDACS numeric alert score. Observed range 0.0–1.0 in RSS but not formally capped; no maximum enforced."
+          },
+          "alert_level": {
+            "type": "string",
+            "enum": ["Green", "Orange", "Red"],
+            "description": "GDACS colour-coded alert level."
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "description": "HTML-stripped event description from the RSS item."
+          },
+          "country": {
+            "type": "string",
+            "description": "Affected country name as reported by GDACS (may be a region name such as 'Southeast Indian Ridge')."
+          },
+          "published_utc": {
+            "type": "string",
+            "description": "RFC-822 pubDate from the RSS item (not strict ISO 8601)."
+          },
+          "latitude": {
+            "type": ["number", "null"],
+            "minimum": -90,
+            "maximum": 90,
+            "description": "Epicentre / centroid latitude, or null when GDACS omits geo:lat from the RSS item — observed in all current records."
+          },
+          "longitude": {
+            "type": ["number", "null"],
+            "minimum": -180,
+            "maximum": 180,
+            "description": "Epicentre / centroid longitude, or null when GDACS omits geo:long from the RSS item — observed in all current records."
+          },
+          "url": {
+            "type": "string",
+            "description": "GDACS event report page URL."
+          },
+          "glide_number": {
+            "type": "string",
+            "description": "GLIDE number for cross-agency reference, or empty string when GDACS does not assign one."
+          },
+          "population_affected": {
+            "type": "string",
+            "description": "Free-text population impact from GDACS <gdacs:population> element; may be empty."
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Optional <category> tags from the RSS item; usually an empty array."
+          }
+        }
+      }
+    }
+  }
+}

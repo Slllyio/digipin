@@ -15,6 +15,7 @@ from __future__ import annotations
 import csv
 import json
 from dataclasses import asdict, is_dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -70,11 +71,24 @@ def write_csv(records: Iterable[Any], csv_path: Path, fieldnames: list[str]) -> 
 def write_latest_snapshot(records: Iterable[Any], snapshot_path: Path) -> int:
     """Overwrite a `latest.json` snapshot — small enough for the frontend
     to fetch without pagination. Use sparingly (only for sources where
-    the entire feed is a small set, e.g. active disaster alerts)."""
+    the entire feed is a small set, e.g. active disaster alerts).
+
+    Always stamps `generated_at_iso` so downstream timeliness checks
+    (scrapers/lib/quality.py) can detect stale snapshots after a source
+    flap. ISO 8601 with `Z` suffix per spec; not localised."""
     snapshot_path.parent.mkdir(parents=True, exist_ok=True)
     payload = [_to_dict(r) for r in records]
+    generated_at_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     snapshot_path.write_text(
-        json.dumps({"count": len(payload), "records": payload}, ensure_ascii=False, indent=2),
+        json.dumps(
+            {
+                "generated_at_iso": generated_at_iso,
+                "count": len(payload),
+                "records": payload,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
         encoding="utf-8",
     )
     return len(payload)

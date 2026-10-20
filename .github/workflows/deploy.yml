@@ -3,6 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # Redeploy after the precompute job commits a fresh tile (its GITHUB_TOKEN
+  # push doesn't trigger the push event above), so new scores reach Pages.
+  workflow_run:
+    workflows: ["Precompute scores (Indore)"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -21,9 +26,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Stage static site
+        # Upload only the deployable static site, not the whole repo. Uploading
+        # `.` tars ~760 MB (.git ~174M, node_modules ~105M, extras ~481M of promo
+        # media, plus pipeline/scrapers/tests), which overflows/times-out the
+        # Pages artifact step. Copy everything EXCEPT dev/build/media dirs so any
+        # runtime file the app fetches (html, css/, js/, data/, assets/,
+        # manifest.json, sw.js) is preserved while the heavy dirs are dropped.
+        run: |
+          mkdir -p _site
+          rsync -a \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='extras' \
+            --exclude='pipeline' \
+            --exclude='scrapers' \
+            --exclude='tests' \
+            --exclude='guna-twin-city' \
+            --exclude='training-data' \
+            --exclude='proxy' \
+            --exclude='scripts' \
+            --exclude='docs' \
+            --exclude='.github' \
+            --exclude='_site' \
+            ./ _site/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4

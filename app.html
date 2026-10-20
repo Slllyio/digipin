@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DigiPin Urban Intelligence Portal — 160+ urban features for every 4x4m grid cell in India. Powered by OpenStreetMap and India Post DigiPin system.">
+    <title>DigiPin Urban Intelligence — Indore Pilot</title>
+
+    <!-- Content Security Policy — restrict script execution to same-origin
+         + the four pinned CDN files below (covered by their SRI hashes).
+         If a CDN compromise serves modified content, the integrity check
+         fails and the script never executes. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://unpkg.com https://fonts.gstatic.com data:; connect-src 'self' https: wss: data: blob: http://localhost:11434; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
+
+    <!--
+      Optional runtime configuration. Uncomment and fill in to enable:
+        proxyBase          — serverless data proxy URL (proxy/README.md): routes
+                             CORS/key-gated APIs reliably; injects keys server-side.
+        ogdApiKey/waqiToken/ocmApiKey — only needed for direct (no-proxy) use.
+        precomputedScores  — set false to force the live path even when tiles exist.
+        scoresBase         — override data/scores/ base (e.g. a future R2 bucket).
+      Precomputed score tiles are read automatically from data/scores/ when present.
+    -->
+    <!--
+    <script>
+      window.DIGIPIN_CONFIG = {
+        // proxyBase: 'https://digipin-data-proxy.<you>.workers.dev',
+        // ogdApiKey: '', waqiToken: '', ocmApiKey: '',
+        // precomputedScores: true,
+        // scoresBase: 'data/scores/',
+        // Default AI provider for DISHA / Text2Map's LLM parse. Seeds the
+        // provider config only when the user hasn't chosen one in Settings;
+        // keep real keys OUT of the committed file (inject at deploy time).
+        // aiProvider: { preferred: 'groq', keys: { groq: 'YOUR_GROQ_KEY' } },
+      };
+    </script>
+    -->
+
+    <!-- MapLibre GL JS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css"
+          integrity="sha384-m6tadjb5ohv1Fw3GJynIWn5c1scKfW7kxSXuDrhlq1gdXPn7I7UL0sSKDfCUErOb"
+          crossorigin="anonymous" />
+    <script defer src="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js"
+            integrity="sha384-3w1F5OvxlTQbswBbpJFQNorFWnAG1Q1PXQ1vYDhq38n+mse5l7ig3gCDHBEQ3GAN"
+            crossorigin="anonymous"></script>
+
+    <!-- PMTiles v3 — IIFE global build for MapLibre addProtocol -->
+    <script defer src="https://unpkg.com/pmtiles@3.0.7/dist/pmtiles.js"
+            integrity="sha384-MjejsnWXHmuz93aE35YWLh5AbS/6ceRB3Vb+ukOwqFzJRTpQ8vvbkLbNV7I0QK4f"
+            crossorigin="anonymous"></script>
+
+    <!-- GeoRaster for COG/GeoTIFF rendering -->
+    <script defer src="https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js"
+            integrity="sha384-k/E847ELHPuDVPWoArQHQe5LUD8YSFwxlUaH63fF618o/Y0Gnu4FQ1xjuL280spp"
+            crossorigin="anonymous"></script>
+
+    <!-- deck.gl — WebGL 3D layer used for the dark-theme "digital twin" building
+         view (true wireframe-extruded glass volumes that MapLibre can't render).
+         Optional: the buildings overlay falls back to MapLibre fill-extrusion if
+         this fails to load. -->
+    <script defer src="https://unpkg.com/deck.gl@9.0.27/dist.min.js"
+            integrity="sha384-KZR1hNzBrVTMJRamX9VDVN7gzZ9VX8cgIVS33QSfkd0tkEbpL+Xl7q6uWem7hoGt"
+            crossorigin="anonymous"></script>
+
+    <!-- Custom Styles -->
+    <!-- Theme pre-paint: paper-light is the default (matching the landing), so
+         apply it before first paint unless the user explicitly chose dark — no
+         flash either way. Runtime API: js/theme.js. -->
+    <script>
+        try {
+            if (localStorage.getItem('digipin_theme') !== 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+            // Language pre-paint: set <html lang> before first paint so the
+            // html[lang="hi"] rules apply with no flash. The Devanagari webfont
+            // is only loaded for Hindi (here pre-paint, else lazily by I18n) so
+            // English users don't pay a third-party font request. API: js/i18n.js.
+            var lang = localStorage.getItem('digipin_language');
+            document.documentElement.setAttribute('lang', lang === 'hi' ? 'hi' : 'en');
+            if (lang === 'hi') {
+                var _f = document.createElement('link');
+                _f.id = 'i18n-deva-font';
+                _f.rel = 'stylesheet';
+                _f.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap';
+                document.head.appendChild(_f);
+            }
+        } catch (e) { /* storage blocked — fall back to bare dark CSS / en */ }
+    </script>
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <!-- Default theme-color is paper (light default); Theme.apply() swaps it to
+         navy when the user is in dark mode. -->
+    <meta name="theme-color" content="#f4f6f7">
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+</head>
+<body>
+
+    <!-- Keyboard/screen-reader skip link — first focusable element. -->
+    <a href="#map" class="skip-link">Skip to map</a>
+
+    <!-- ===== MAP ===== -->
+    <div id="map" role="application" aria-label="Interactive DigiPin grid map of India" tabindex="-1"></div>
+
+    <!-- ===== TOP BAR ===== -->
+    <div id="top-bar" role="search" aria-label="Search for locations">
+        <a class="logo" href="index.html" title="DigiPin home">
+            <div class="logo-icon">DP</div>
+            <span class="logo-text" data-i18n="app.logo">DigiPin Intelligence</span>
+        </a>
+        <select id="city-select" aria-label="Select city"></select>
+        <label for="search-input" class="sr-only">Search DigiPin code or place name</label>
+        <input type="text" id="search-input" placeholder="Search DigiPin code or place name (e.g. Rajwada, Indore)" data-i18n-placeholder="search.placeholder" autocomplete="off" aria-label="Search DigiPin code or place name">
+        <button id="search-btn" aria-label="Search" data-i18n-aria="btn.search">🔍</button>
+        <button id="share-btn" aria-label="Copy shareable link" title="Copy a shareable link to this view" data-i18n-title="btn.share" data-i18n-aria="btn.share">🔗</button>
+        <button id="theme-toggle-btn" aria-label="Switch theme" title="Switch theme" data-i18n-title="btn.theme" data-i18n-aria="btn.theme">☀️</button>
+        <select id="lang-select" aria-label="Language" title="Language" data-i18n-aria="lang.label" data-i18n-title="lang.label">
+            <option value="en">EN</option>
+            <option value="hi">हिं</option>
+        </select>
+    </div>
+
+    <!-- ===== TOOLBAR ===== -->
+    <div id="toolbar" aria-label="Map tools">
+        <button class="toolbar-btn" id="btn-heatmap" title="Heatmap Overlay">
+            <span class="tb-icon">&#9632;</span>
+            <span class="tb-label" data-i18n="tb.heatmap">Heatmap</span>
+        </button>
+        <!-- heatmap dropdown moved outside toolbar for z-index fix -->
+        <button class="toolbar-btn" id="btn-wards" title="Ward Boundaries">
+            <span class="tb-icon">&#9638;</span>
+            <span class="tb-label" data-i18n="tb.wards">Wards</span>
+        </button>
+        <button class="toolbar-btn" id="btn-lcz" title="Local Climate Zones Overlay">
+            <span class="tb-icon">&#127961;</span>
+            <span class="tb-label" data-i18n="tb.lcz">LCZ</span>
+        </button>
+        <button class="toolbar-btn" id="btn-buildings" title="Overture Buildings Footprints">
+            <span class="tb-icon">&#127970;</span>
+            <span class="tb-label" data-i18n="tb.buildings">Buildings</span>
+        </button>
+        <button class="toolbar-btn" id="btn-3d" title="Toggle 3D Map">
+            <span class="tb-icon">&#128362;</span>
+            <span class="tb-label" data-i18n="tb.3d">3D Mode</span>
+        </button>
+        <button class="toolbar-btn" id="btn-sun" title="Sun &amp; shadow study — light the 3D buildings from the real solar position for a date/time">
+            <span class="tb-icon">&#9728;&#65039;</span>
+            <span class="tb-label" data-i18n="tb.sun">Sun</span>
+        </button>
+        <button class="toolbar-btn" id="btn-pitch" title="Pitch map — export a presentation-ready PNG of the current view">
+            <span class="tb-icon">&#128247;</span>
+            <span class="tb-label" data-i18n="tb.pitch">Pitch</span>
+        </button>
+        <button class="toolbar-btn" id="btn-measure" title="Measure — click points for distance; close 3+ points for area">
+            <span class="tb-icon">&#128207;</span>
+            <span class="tb-label" data-i18n="tb.measure">Measure</span>
+        </button>
+        <button class="toolbar-btn" id="btn-present" title="Presentation mode — distraction-free, shareable stakeholder view">
+            <span class="tb-icon">&#128421;&#65039;</span>
+            <span class="tb-label" data-i18n="tb.present">Present</span>
+        </button>
+        <button class="toolbar-btn" id="btn-annotate" title="Annotate — drop labelled notes on the map (saved locally; export as GeoJSON)">
+            <span class="tb-icon">&#128204;</span>
+            <span class="tb-label" data-i18n="tb.annotate">Annotate</span>
+        </button>
+        <button class="toolbar-btn" id="btn-lulc" title="ISRO Bhuvan Land Use / Land Cover">
+            <span class="tb-icon">&#127758;</span>
+            <span class="tb-label" data-i18n="tb.lulc">LULC</span>
+        </button>
+        <button class="toolbar-btn" id="btn-roads" title="Road Network Overlay">
+            <span class="tb-icon">&#128739;</span>
+            <span class="tb-label" data-i18n="tb.roads">Roads</span>
+        </button>
+        <button class="toolbar-btn" id="btn-dt-layers" title="Digital Twin Data Layers">
+            <span class="tb-icon">&#128202;</span>
+            <span class="tb-label" data-i18n="tb.layers">Layers</span>
+        </button>
+        <button class="toolbar-btn" id="btn-compare" title="Compare Cells">
+            <span class="tb-icon">&#8860;</span>
+            <span class="tb-label" data-i18n="tb.compare">Compare</span>
+            <span class="toolbar-badge toolbar-badge--empty" id="compare-badge">0</span>
+        </button>
+        <button class="toolbar-btn" id="btn-bookmarks" title="Bookmarks">
+            <span class="tb-icon">&#9733;</span>
+            <span class="tb-label" data-i18n="tb.saved">Saved</span>
+        </button>
+        <button class="toolbar-btn" id="btn-saved-views" title="Saved Views &amp; Templates">
+            <span class="tb-icon">&#128193;</span>
+            <span class="tb-label" data-i18n="tb.views">Views</span>
+        </button>
+        <button class="toolbar-btn" id="btn-growth" title="Urban Growth Forecast">
+            <span class="tb-icon">&#128200;</span>
+            <span class="tb-label" data-i18n="tb.growth">Growth</span>
+        </button>
+        <button class="toolbar-btn" id="btn-ca-growth" title="Growth Prediction (CA-ML) — hindcast-validated urbanization probability">
+            <span class="tb-icon">&#129529;</span>
+            <span class="tb-label" data-i18n="tb.predict">Predict</span>
+        </button>
+        <button class="toolbar-btn" id="btn-scenario" title="Growth scenario — interactive what-if lens on the CA-ML prediction">
+            <span class="tb-icon">&#127919;</span>
+            <span class="tb-label" data-i18n="tb.scenario">Scenario</span>
+        </button>
+        <button class="toolbar-btn" id="btn-traffic" title="Traffic — structural congestion (road-network Level of Service) + transit access">
+            <span class="tb-icon">&#128739;</span>
+            <span class="tb-label" data-i18n="tb.traffic">Traffic</span>
+        </button>
+        <button class="toolbar-btn" id="btn-mobility" title="Law &amp; Order Mobility — access chokepoints, sealable pockets &amp; police reach (emergency-planning resilience)">
+            <span class="tb-icon">&#128737;&#65039;</span>
+            <span class="tb-label" data-i18n="tb.mobility">L&amp;O</span>
+        </button>
+        <button class="toolbar-btn" id="btn-heat" title="Urban Heat Island">
+            <span class="tb-icon">&#127777;&#65039;</span>
+            <span class="tb-label" data-i18n="tb.heat">Heat</span>
+        </button>
+        <button class="toolbar-btn" id="btn-ndvi" title="NDVI Vegetation Health (NASA GIBS / MODIS)">
+            <span class="tb-icon">&#127807;</span>
+            <span class="tb-label" data-i18n="tb.ndvi">NDVI</span>
+        </button>
+        <button class="toolbar-btn" id="btn-bivariate" title="Bivariate Map — two scores in one 3&times;3 palette">
+            <span class="tb-icon">&#127912;</span>
+            <span class="tb-label" data-i18n="tb.bivariate">Bivariate</span>
+        </button>
+        <button class="toolbar-btn" id="btn-viewshed" title="Viewshed — line-of-sight from map centre (DEM)">
+            <span class="tb-icon">&#128065;</span>
+            <span class="tb-label" data-i18n="tb.viewshed">Viewshed</span>
+        </button>
+        <button class="toolbar-btn" id="btn-kde" title="Hotspot — kernel-density surface of a score">
+            <span class="tb-icon">&#128293;</span>
+            <span class="tb-label" data-i18n="tb.kde">Hotspot</span>
+        </button>
+        <button class="toolbar-btn" id="btn-access" title="15-minute city — walking-time coverage gaps to amenities">
+            <span class="tb-icon">&#9855;</span>
+            <span class="tb-label" data-i18n="tb.access">15-min</span>
+        </button>
+        <button class="toolbar-btn" id="btn-choropleth" title="Score grid — instant choropleth from precomputed tiles (livability)">
+            <span class="tb-icon">&#129518;</span>
+            <span class="tb-label" data-i18n="tb.grid">Grid</span>
+        </button>
+        <button class="toolbar-btn" id="btn-area" title="Area summary — drag a rectangle to aggregate every cell inside it">
+            <span class="tb-icon">&#11036;</span>
+            <span class="tb-label">Area</span>
+        </button>
+    </div>
+
+    <!-- ===== SIDEBAR — QUERIES ===== -->
+    <nav id="sidebar" aria-label="Urban planning queries">
+        <button id="sidebar-toggle" aria-label="Toggle sidebar" aria-expanded="true">←</button>
+        <div class="sidebar-content">
+            <div class="sidebar-title">🧠 Urban Queries</div>
+            <div id="query-list" role="group" aria-label="Available queries"></div>
+        </div>
+    </nav>
+
+    <!-- ===== DETAIL PANEL (floating, draggable, resizable) ===== -->
+    <aside id="detail-panel" class="floating-dialog" role="dialog" aria-label="Location details">
+        <div class="dialog-titlebar" data-dialog="detail-panel" id="panel-titlebar">
+            <div class="dialog-title-text" id="panel-title-text">Cell Details</div>
+            <button class="close-btn" onclick="Panel.close()" aria-label="Close detail panel">&#10005;</button>
+        </div>
+        <div class="dialog-body" id="panel-content"></div>
+        <div class="dialog-resize-handle" data-dialog="detail-panel"></div>
+    </aside>
+
+    <!-- ===== DISHA CHAT DIALOG (floating, draggable, resizable) ===== -->
+    <aside id="disha-panel" class="floating-dialog" role="dialog" aria-label="DISHA AI Assistant">
+        <div class="dialog-titlebar" data-dialog="disha-panel">
+            <div class="disha-title">
+                <span class="disha-logo" aria-hidden="true">D</span>
+                <span>DISHA</span>
+                <span class="disha-status" id="disha-status" title="Checking provider..." role="status">...</span>
+                <button class="disha-gear-btn" id="disha-settings-btn" title="AI Provider Settings" aria-label="Provider settings">&#9881;</button>
+            </div>
+            <div class="disha-subtitle" data-i18n="disha.subtitle">India-native DIGIPIN intelligence &bull; free &amp; auditable</div>
+            <button class="close-btn" onclick="DISHAPanel.close()" aria-label="Close DISHA panel">&#10005;</button>
+        </div>
+        <div class="disha-body">
+            <div class="disha-messages" id="disha-messages" role="log" aria-live="polite" aria-label="Chat messages"></div>
+            <div class="disha-suggestions" id="disha-suggestions" aria-label="Suggested questions"></div>
+            <div class="disha-input-row">
+                <label for="disha-input" class="sr-only">Ask DISHA about this location</label>
+                <input type="text" id="disha-input" placeholder="Ask about this location..." data-i18n-placeholder="disha.placeholder" disabled aria-label="Ask about this location">
+                <button id="disha-send" onclick="DISHAPanel.send()" disabled aria-label="Send message">-></button>
+                <button id="disha-stop" onclick="DISHA.cancel()" style="display:none" aria-label="Stop generation">||</button>
+            </div>
+        </div>
+        <div class="dialog-resize-handle" data-dialog="disha-panel"></div>
+    </aside>
+
+    <!-- ===== BUILDING INTELLIGENCE DIALOG (floating, draggable, resizable) ===== -->
+    <aside id="building-intel-dialog" class="floating-dialog" role="dialog" aria-label="Building Intelligence">
+        <div class="dialog-titlebar" data-dialog="building-intel-dialog">
+            <div class="dialog-title-text">&#127959;&#65039; Building Intelligence</div>
+            <button class="close-btn" onclick="BuildingIntelDialog.close()" aria-label="Close Building Intelligence">&#10005;</button>
+        </div>
+        <div class="dialog-body" id="building-intel-content"></div>
+        <div class="dialog-resize-handle" data-dialog="building-intel-dialog"></div>
+    </aside>
+
+    <!-- ===== INTELLIGENCE SCORES DIALOG ===== -->
+    <aside id="scores-dialog" class="floating-dialog" role="dialog" aria-label="Intelligence Scores">
+        <div class="dialog-titlebar" data-dialog="scores-dialog">
+            <div class="dialog-title-text">&#129504; Intelligence Scores</div>
+            <button class="close-btn" onclick="ScoresDialog.close()" aria-label="Close Intelligence Scores">&#10005;</button>
+        </div>
+        <div class="dialog-body" id="scores-dialog-content"></div>
+        <div class="dialog-resize-handle" data-dialog="scores-dialog"></div>
+    </aside>
+
+    <!-- ===== RESULTS PANEL ===== -->
+    <div id="results-panel" role="region" aria-label="Query results"></div>
+
+    <!-- ===== QUERY PROGRESS ===== -->
+    <div id="query-progress" role="status" aria-live="polite">
+        <div style="flex:1">
+            <div id="query-progress-text">Analyzing...</div>
+            <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:2px;margin-top:6px;overflow:hidden;">
+                <div id="query-progress-bar" style="width:0%" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== COMPARE PANEL ===== -->
+    <aside id="compare-panel" aria-label="Cell comparison">
+        <div class="compare-panel-header">
+            <h3>Cell Comparison</h3>
+            <button class="close-btn" onclick="Compare.closePanel()" aria-label="Close compare">&#10005;</button>
+        </div>
+        <canvas id="compare-radar"></canvas>
+        <div id="compare-content" class="compare-content"></div>
+        <div class="compare-actions">
+            <button class="compare-clear-btn" onclick="Compare.clearAll()">Clear All Pins</button>
+        </div>
+    </aside>
+
+    <!-- ===== BOOKMARKS PANEL ===== -->
+    <aside id="bookmarks-panel" aria-label="Saved bookmarks">
+        <div class="bm-panel-header">
+            <h3>&#9733; Bookmarks</h3>
+            <button class="close-btn" onclick="Bookmarks.closePanel()" aria-label="Close bookmarks">&#10005;</button>
+        </div>
+        <div id="bookmarks-list" class="bm-list"></div>
+    </aside>
+
+    <!-- ===== SAVED VIEWS PANEL ===== -->
+    <aside id="saved-views-panel" aria-label="Saved views and templates">
+        <div class="bm-panel-header">
+            <h3>&#128193; Saved Views</h3>
+            <button class="close-btn" onclick="SavedViews.closePanel()" aria-label="Close saved views">&#10005;</button>
+        </div>
+        <div id="saved-views-list" class="bm-list"></div>
+    </aside>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script defer src="js/digipin.js"></script>
+    <!-- IndexedDB persistent cache layer (used by data-fetcher) -->
+    <script defer src="js/data-fetcher-cache.js"></script>
+    <!-- Growth feature trio + realtime orchestrator -->
+    <script defer src="js/growth-score.js"></script>
+    <script defer src="js/realtime-growth.js"></script>
+    <script defer src="js/growth-widget.js"></script>
+    <script defer src="js/growth-overlay.js"></script>
+    <script defer src="js/ca-growth-overlay.js"></script>
+    <script defer src="js/scenario-model.js"></script>
+    <script defer src="js/scenario-panel.js"></script>
+    <script defer src="js/area-aggregate.js"></script>
+    <!-- Traffic (structural congestion: OSM betweenness → LOS + GTFS transit) -->
+    <script defer src="js/traffic-score.js"></script>
+    <script defer src="js/traffic-grid.js"></script>
+    <script defer src="js/realtime-traffic.js"></script>
+    <script defer src="js/traffic-widget.js"></script>
+    <script defer src="js/traffic-overlay.js"></script>
+    <!-- Law & Order Mobility (access resilience: chokepoints + sealable pockets + police reach) -->
+    <script defer src="js/mobility-score.js"></script>
+    <script defer src="js/mobility-grid.js"></script>
+    <script defer src="js/realtime-mobility.js"></script>
+    <script defer src="js/mobility-widget.js"></script>
+    <script defer src="js/mobility-overlay.js"></script>
+    <!-- Heat feature trio + realtime orchestrator -->
+    <script defer src="js/heat-score.js"></script>
+    <script defer src="js/realtime-heat.js"></script>
+    <script defer src="js/heat-widget.js"></script>
+    <script defer src="js/heat-overlay.js"></script>
+    <!-- Flood feature trio (SCS-CN runoff + DEM tiles + animation) -->
+    <script defer src="js/flood-scs.js"></script>
+    <script defer src="js/flood-inundation.js"></script>
+    <script defer src="js/flood-animation.js"></script>
+    <!-- Real-time scraper consumers — must load before data-fetcher.js
+         which uses `if (typeof RealtimeX !== 'undefined') ...` checks -->
+    <script defer src="js/realtime-alerts.js"></script>
+    <script defer src="js/realtime-imd.js"></script>
+    <script defer src="js/realtime-quakes.js"></script>
+    <script defer src="js/realtime-flood.js"></script>
+    <script defer src="js/utilities.js"></script>
+    <script defer src="js/data-fetcher.js"></script>
+    <script defer src="js/precomputed-scores.js"></script>
+    <script defer src="js/score-choropleth.js"></script>
+    <script defer src="js/footprint-grid.js"></script>
+    <script defer src="js/building-intelligence.js"></script>
+    <script defer src="js/buildings-deck.js"></script>
+    <script defer src="js/overture-buildings.js"></script>
+    <script defer src="js/theme.js"></script>
+    <script defer src="js/i18n.js"></script>
+    <script defer src="js/real-estate-model.js"></script>
+    <script defer src="js/real-estate-widget.js"></script>
+    <script defer src="js/map.js"></script>
+    <script defer src="js/keyboard-nav.js"></script>
+    <script defer src="js/panel.js"></script>
+    <script defer src="js/query-engine.js"></script>
+    <script defer src="js/disha-cache.js"></script>
+    <script defer src="js/disha-providers.js"></script>
+    <script defer src="js/disha.js"></script>
+    <script defer src="js/disha-actions.js"></script>
+    <script defer src="js/text2map-embeddings.js"></script>
+    <script defer src="js/text2map.js"></script>
+    <script defer src="js/text2map-results-layer.js"></script>
+    <script defer src="js/disha-panel.js"></script>
+    <script defer src="js/compare.js"></script>
+    <script defer src="js/isochrone.js"></script>
+    <script defer src="js/report.js"></script>
+    <script defer src="js/heatmap-overlay.js"></script>
+    <script defer src="js/bookmarks.js"></script>
+    <script defer src="js/city-selector.js"></script>
+    <script defer src="js/ward-overlay.js"></script>
+    <script defer src="js/floating-dialogs.js"></script>
+    <script defer src="js/building-intel-dialog.js"></script>
+    <script defer src="js/scores-dialog.js"></script>
+    <script defer src="js/digital-twin-layers.js"></script>
+    <script defer src="js/training-data-gen.js"></script>
+    <!-- "Must-have map types" overlays: bivariate choropleth, NDVI vegetation, viewshed -->
+    <script defer src="js/bivariate-overlay.js"></script>
+    <script defer src="js/ndvi-overlay.js"></script>
+    <script defer src="js/viewshed.js"></script>
+    <script defer src="js/kde-overlay.js"></script>
+    <script defer src="js/accessibility-overlay.js"></script>
+    <script defer src="js/url-state.js"></script>
+    <script defer src="js/saved-views.js"></script>
+    <script defer src="js/onboarding.js"></script>
+    <script defer src="js/layers-panel.js"></script>
+    <script defer src="js/dtdl-export.js"></script>
+    <script defer src="js/export-dialog.js"></script>
+    <script defer src="js/footprint-export.js"></script>
+    <script defer src="js/pitch-map.js"></script>
+    <script defer src="js/sun-study.js"></script>
+    <script defer src="js/site-brief.js"></script>
+    <script defer src="js/measure-tool.js"></script>
+    <script defer src="js/present-mode.js"></script>
+    <script defer src="js/annotations.js"></script>
+    <script defer src="js/app.js"></script>
+    <script>
+    // Wire the toggle-overlay toolbar buttons: flip the overlay, then reflect
+    // the on/off state via the .active class (styling) and aria-pressed (so
+    // screen readers announce "pressed"/"not pressed").
+    [
+        ['btn-growth',    () => window.GrowthOverlay],
+        ['btn-ca-growth', () => window.CAGrowthOverlay],
+        ['btn-scenario',  () => window.ScenarioPanel],
+        ['btn-traffic',   () => window.TrafficOverlay],
+        ['btn-mobility',  () => window.MobilityOverlay],
+        ['btn-heat',      () => window.HeatOverlay],
+        ['btn-ndvi',      () => window.NDVIOverlay],
+        ['btn-bivariate', () => window.BivariateOverlay],
+        ['btn-viewshed',  () => window.Viewshed],
+        ['btn-kde',       () => window.KDEOverlay],
+        ['btn-access',    () => window.AccessibilityOverlay],
+        ['btn-choropleth', () => window.ScoreChoropleth],
+        ['btn-area',      () => window.AreaAggregate],
+    ].forEach(([id, getMod]) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.setAttribute('aria-pressed', 'false');
+        btn.addEventListener('click', () => {
+            const mod = getMod();
+            if (mod && typeof mod.toggle === 'function') mod.toggle();
+            const on = btn.classList.toggle('active');
+            btn.setAttribute('aria-pressed', String(on));
+        });
+    });
+    </script>
+
+    <!-- Dropdowns placed outside #toolbar to escape overflow:auto clipping -->
+    <div id="heatmap-dropdown" class="toolbar-dropdown"></div>
+    <div id="dt-layers-dropdown" class="toolbar-dropdown dt-layers-menu"></div>
+
+</body>
+</html>

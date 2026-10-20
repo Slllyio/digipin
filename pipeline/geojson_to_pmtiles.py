@@ -17,9 +17,7 @@ Usage:
 
 import argparse
 import json
-import logging
 import math
-import sys
 import time
 from pathlib import Path
 
@@ -29,12 +27,14 @@ from pmtiles.tile import Compression, TileType, zxy_to_tileid
 from pmtiles.writer import Writer as PMTilesWriter
 from shapely.geometry import box, mapping
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-log = logging.getLogger("geojson_to_pmtiles")
+# Dual import: bare when run as a script from pipeline/, package-qualified when
+# imported as pipeline.geojson_to_pmtiles (e.g. by build_tile).
+try:
+    from _lib.io import setup_logging
+except ModuleNotFoundError:  # pragma: no cover - import-context shim
+    from pipeline._lib.io import setup_logging
+
+log = setup_logging("geojson_to_pmtiles")
 
 # Tile coordinate system constants
 EXTENT = 4096  # MVT tile extent (standard)
@@ -96,7 +96,7 @@ def build_mvt_tile(features_in_tile, tile_bbox, layer_name="building"):
     lng_min, lat_min, lng_max, lat_max = tile_bbox
     tile_data = mvt.encode(
         [{"name": layer_name, "features": mvt_features}],
-        quantize_bounds=[lng_min, lat_min, lng_max, lat_max],
+        default_options={"quantize_bounds": [lng_min, lat_min, lng_max, lat_max]},
     )
     return tile_data
 

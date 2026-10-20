@@ -34,14 +34,18 @@ def test_year_range_matches_viirs():
 def test_output_path():
     from pipeline.heat.extract_modis_lst import OUTPUT_PATH
     path = str(OUTPUT_PATH).replace("\\", "/")
-    assert path.endswith("data/heat/modis_lst_2016-2024.tif")
+    # Output path includes a region tag (Week 3 perf scoping).
+    assert "modis_lst_2016-2024_" in path
+    assert path.endswith(".tif")
 
 
 def test_india_bbox():
+    # INDIA_BBOX is region-aware (defaults to Indore pilot). See
+    # pipeline._lib.regions.get_default_bbox.
     from pipeline.heat.extract_modis_lst import INDIA_BBOX
     west, south, east, north = INDIA_BBOX
     assert west < east and south < north
-    assert 60 < west < 80 and 5 < south < 15
+    assert 60 < west < 98 and 5 < south < 36
 
 
 def test_scale_is_modis_native():

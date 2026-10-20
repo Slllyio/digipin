@@ -1,0 +1,17 @@
+# Cloudflare Workers config for the DigiPin data proxy.
+#
+# Deploy:
+#   cd proxy
+#   npx wrangler deploy
+#
+# Set the upstream API keys as secrets (NOT committed here):
+#   npx wrangler secret put OGD_API_KEY     # data.gov.in key
+#   npx wrangler secret put WAQI_TOKEN       # aqicn.org / WAQI token
+#
+# Then point the app at the deployed URL:
+#   window.DIGIPIN_CONFIG = { proxyBase: 'https://digipin-data-proxy.<you>.workers.dev' };
+
+name = "digipin-data-proxy"
+main = "worker.mjs"
+compatibility_date = "2024-09-01"
+workers_dev = true

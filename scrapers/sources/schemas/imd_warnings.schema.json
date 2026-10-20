@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Slllyio/digipin/scrapers/sources/schemas/imd_warnings.schema.json",
+  "title": "IMD warnings snapshot",
+  "description": "Contract for data/realtime/imd_warnings/latest.json — 5-day district colour-coded warnings from the IMD district warning API.",
+  "type": "object",
+  "required": ["count", "records"],
+  "properties": {
+    "generated_at_iso": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp (Z-suffixed) when the snapshot was written. Stamped by scrapers/lib/storage.py:write_latest_snapshot()."
+    },
+    "count": { "type": "integer", "minimum": 0 },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "district_id", "color", "severity"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Composite primary key: '<district_id>:<valid_date_or_day_offset>'."
+          },
+          "district_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "IMD internal district ID (NOT Census code), e.g. '423' for Indore."
+          },
+          "district_name": {
+            "type": "string",
+            "description": "Human-readable district name with state abbreviation, e.g. 'Indore (MP)'."
+          },
+          "day_offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4,
+            "description": "Forecast day offset from today: 0 = today, 1 = tomorrow, up to 4 (5-day window)."
+          },
+          "valid_date": {
+            "type": "string",
+            "description": "Date the warning is valid for, as returned by the IMD API (format varies); may be empty when the API omits it."
+          },
+          "color": {
+            "type": "string",
+            "enum": ["green", "yellow", "orange", "red"],
+            "description": "IMD warning colour: green = no warning, yellow = watch, orange = alert, red = warning."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["No Warning", "Watch", "Alert", "Warning", "Unknown"],
+            "description": "Human-readable severity derived from color. 'Unknown' when the API returns a color not in the standard legend."
+          },
+          "description": {
+            "type": "string",
+            "description": "Warning narrative from the IMD API; may be empty."
+          },
+          "hazards": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of hazard codes or names associated with the warning (may be empty)."
+          }
+        }
+      }
+    }
+  }
+}

@@ -38,6 +38,24 @@ describe('GrowthScore.bueSubScore()', () => {
         });
         expect(s).toBeNull();
     });
+
+    it('returns null (not NaN) when the last temporal band is no-data NaN', () => {
+        const s = globalThis.GrowthScore.bueSubScore({
+            buildings_temporal: [0.5, 0.5, 0.5, NaN],   // COG no-data cell
+            heights: [3, 3, 3, 3],
+            osm_construction_count: 2,
+        });
+        expect(s).toBeNull();
+    });
+
+    it('ignores NaN heights instead of poisoning the score', () => {
+        const s = globalThis.GrowthScore.bueSubScore({
+            buildings_temporal: [0.5, 0.5, 0.5, 0.5],   // flat → 50 anchor
+            heights: [3, 3, 3, NaN],
+            osm_construction_count: 0,
+        });
+        expect(s).toBe(50);
+    });
 });
 
 describe('GrowthScore.denSubScore()', () => {
@@ -60,6 +78,14 @@ describe('GrowthScore.denSubScore()', () => {
     it('returns null when ghsl_pop_5yr_pct is missing', () => {
         const s = globalThis.GrowthScore.denSubScore({
             ghsl_pop_5yr_pct: null,
+            osm_commercial_density: 10,
+        });
+        expect(s).toBeNull();
+    });
+
+    it('returns null (not NaN) when ghsl_pop_5yr_pct is no-data NaN', () => {
+        const s = globalThis.GrowthScore.denSubScore({
+            ghsl_pop_5yr_pct: NaN,
             osm_commercial_density: 10,
         });
         expect(s).toBeNull();
@@ -155,6 +181,39 @@ describe('GrowthScore.linearTrend()', () => {
     });
 });
 
+describe('GrowthScore.emergingClass()', () => {
+    const ec = (l, s, o) => globalThis.GrowthScore.emergingClass(l, s, o);
+
+    it('returns null when level is unknown', () => {
+        expect(ec(null, 1)).toBeNull();
+        expect(ec(NaN, 1)).toBeNull();
+    });
+
+    it('classifies hot cells by trend direction', () => {
+        expect(ec(80, 3).category).toBe('intensifying');   // high + rising
+        expect(ec(80, -3).category).toBe('diminishing');   // high + falling
+        expect(ec(80, 0).category).toBe('persistent');     // high + flat
+    });
+
+    it('classifies cool cells by trend direction', () => {
+        expect(ec(30, 3).category).toBe('emerging');       // low but rising → forming
+        expect(ec(30, -3).category).toBe('cooling');       // low + falling
+        expect(ec(30, 0).category).toBe('stable');         // low + flat
+    });
+
+    it('treats a non-finite slope as flat', () => {
+        expect(ec(80, NaN).category).toBe('persistent');
+        expect(ec(30, undefined).category).toBe('stable');
+    });
+
+    it('honours custom thresholds and yields a colour + label', () => {
+        const r = ec(50, 2, { hotLevel: 40, slopeEps: 1 });
+        expect(r.category).toBe('intensifying');
+        expect(r.color).toMatch(/^#[0-9a-f]{6}$/i);
+        expect(r.label).toBeTruthy();
+    });
+});
+
 describe('GrowthScore.confidenceBand()', () => {
     it('returns 5 for nowcast regardless of r²', () => {
         expect(globalThis.GrowthScore.confidenceBand('nowcast', 0.0)).toBe(5);
@@ -176,5 +235,23 @@ describe('GrowthScore.confidenceBand()', () => {
     it('returns floor ±10 for negative or null r²', () => {
         expect(globalThis.GrowthScore.confidenceBand('year_5', null)).toBe(25);
         expect(globalThis.GrowthScore.confidenceBand('year_5', -0.2)).toBe(25);
+    });
+});
+
+describe('GrowthScore.futureExpansionAdjust()', () => {
+    const F = globalThis.GrowthScore.futureExpansionAdjust;
+    it('is neutral at p=0.5', () => {
+        expect(F(60, 0.5)).toBe(60);
+    });
+    it('lifts the score when expansion is projected (p>0.5)', () => {
+        expect(F(60, 1.0, 20)).toBe(80);
+    });
+    it('lowers the score when built-out/stable (p<0.5)', () => {
+        expect(F(60, 0.0, 20)).toBe(40);
+    });
+    it('clamps to 0..100 and passes through when prob is unavailable', () => {
+        expect(F(95, 1.0, 20)).toBe(100);
+        expect(F(60, null)).toBe(60);
+        expect(F(null, 0.9)).toBeNull();
     });
 });

@@ -10,6 +10,7 @@ const HeatOverlay = (() => {
     const LAYER_ID  = 'heat-overlay-fill';
     let _active = false;
 
+    /** Heat-island colour ramp for a 0–100 intensity score (transparent if null). */
     function _colorFor(score) {
         if (score == null) return 'rgba(0,0,0,0)';
         if (score >= 80) return '#7f1d1d';
@@ -19,6 +20,7 @@ const HeatOverlay = (() => {
         return '#2dba4e';
     }
 
+    /** Ensure the (initially empty) heat source + fill layer exist on the map. */
     function refresh() {
         const map = (typeof MapModule !== 'undefined') ? MapModule.getMap() : null;
         if (!map) return;
@@ -33,11 +35,20 @@ const HeatOverlay = (() => {
         }
     }
 
+    /** Turn the overlay on; warns (no silent no-op) when heat data isn't deployed. */
     function attach() {
         _active = true;
         refresh();
+        // The heat surface is driven by the MODIS LST raster (data/heat/*.tif via
+        // RealtimeHeat), which is pipeline-generated and not shipped to Pages, and
+        // there is no committed heat score to sample. Rather than silently add an
+        // empty layer, tell the user — consistent with GrowthOverlay's messaging.
+        if (typeof App !== 'undefined' && App.showToast) {
+            App.showToast('Urban Heat Island', 'Heat (MODIS LST) data isn’t available in this deployment yet.', 'info');
+        }
     }
 
+    /** Turn the overlay off and remove its map layer + source. */
     function detach() {
         _active = false;
         const map = (typeof MapModule !== 'undefined') ? MapModule.getMap() : null;
@@ -46,6 +57,7 @@ const HeatOverlay = (() => {
         if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
     }
 
+    /** Flip the overlay on/off. */
     function toggle() {
         if (_active) detach();
         else attach();

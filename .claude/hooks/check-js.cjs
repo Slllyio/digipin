@@ -33,12 +33,10 @@ if (!fs.existsSync(filePath)) {
     process.exit(0);   // file was deleted by the tool call
 }
 
-// Skip test files — they use ESM `import` syntax which `node --check`
-// can't parse against this project's CJS-typed package.json. Vitest
-// validates them natively at test-run time.
-if (/[\\/]tests?[\\/]/.test(filePath)
-    || filePath.endsWith('.test.js')
-    || filePath.endsWith('.spec.js')) {
+// Skip ESM test files — `node --check` can't parse `import` against the
+// project's CJS-typed package.json. Vitest runs them as ESM directly.
+const normalised = filePath.replace(/\\/g, '/');
+if (/\/tests\//.test(normalised) || /\.test\.js$/.test(normalised) || /\.spec\.js$/.test(normalised)) {
     process.exit(0);
 }
 
