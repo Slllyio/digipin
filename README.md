@@ -130,7 +130,7 @@ npm install && npm test     # Vitest — frontend unit + regression (136 tests)
 pytest -q                   # Python — scrapers + smoke (33 tests)
 ```
 
-CI (`.github/workflows/webpack.yml`) runs both across Node 18/20/22, rejects
+CI (`.github/workflows/ci.yml`) runs both across Node 18/20/22, rejects
 merge-conflict markers, and runs an **orphan-JS guard** that fails the build if
 a `js/*.js` module is committed but never wired into a `<script>` tag.
 
