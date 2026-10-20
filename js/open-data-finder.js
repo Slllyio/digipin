@@ -7,11 +7,17 @@
  * coverage, and — where DigiPin already draws the same data — names the layer
  * so the result can turn it on instead of sending you off to download it.
  *
- * isQuery()/tokens()/search() are pure (unit-tested); load()/renderResults()
+ * A second, generated catalog (data/open-data/cloud_catalogs.json, built by
+ * pipeline/catalogs/fetch_cloud_catalogs.py from opengeos'
+ * geospatial-data-catalogs) adds every Earth Engine and Planetary Computer
+ * dataset whose extent reaches India. Curated entries rank above it on a tie.
+ *
+ * isQuery()/tokens()/search()/merge() are pure (unit-tested); load()/renderResults()
  * touch the network and DOM.
  */
 const OpenDataFinder = (() => {
     const CATALOG_URL = 'data/open-data/catalog.json';
+    const CLOUD_CATALOG_URL = 'data/open-data/cloud_catalogs.json';
     const MAX_RESULTS = 6;
     const STOP = new Set(['a', 'an', 'the', 'for', 'on', 'of', 'about', 'in', 'to', 'and', 'or', 'any', 'some', 'my', 'me', 'i', 'is', 'are', 'there', 'data', 'dataset', 'datasets', 'open', 'public', 'free', 'source', 'sources', 'india', 'indian', 'city', 'indore']);
     // Words people use → words the catalog uses.
@@ -47,6 +53,11 @@ const OpenDataFinder = (() => {
         return [...out];
     }
 
+    /** Rows generated from the Earth Engine / Planetary Computer catalogs. */
+    function _isCloud(entry) {
+        return /^(ee|pc):/.test(String(entry.id || ''));
+    }
+
     function _score(entry, terms) {
         const tags = (entry.tags || []).map(t => t.toLowerCase());
         const title = String(entry.title || '').toLowerCase();
@@ -61,8 +72,10 @@ const OpenDataFinder = (() => {
             else if (rest.includes(t)) s = 1;
             if (s) { score += s; hit.push(t); }
         });
-        // Datasets DigiPin already draws are more useful than a download link.
+        // Datasets DigiPin already draws are more useful than a download link,
+        // and a hand-checked entry beats a generated cloud-catalog row.
         if (score && (entry.layers || []).length) score += 0.5;
+        if (score && !_isCloud(entry)) score += 0.25;
         return { score, hit };
     }
 
@@ -79,11 +92,31 @@ const OpenDataFinder = (() => {
             .map(r => ({ entry: r.entry, score: r.score, matched: r.hit }));
     }
 
+    /** One catalog from several: concatenated, first id wins. */
+    function merge(...catalogs) {
+        const seen = new Set();
+        const datasets = [];
+        catalogs.forEach(c => ((c && c.datasets) || []).forEach(d => {
+            if (!d || !d.id || seen.has(d.id)) return;
+            seen.add(d.id);
+            datasets.push(d);
+        }));
+        return { datasets };
+    }
+
+    async function _get(url) {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(url + ' ' + res.status);
+        return res.json();
+    }
+
+    /** Curated + cloud catalogs; either may be missing, not both. */
     async function load() {
         if (_catalog) return _catalog;
-        const res = await fetch(CATALOG_URL);
-        if (!res.ok) throw new Error('catalog ' + res.status);
-        _catalog = await res.json();
+        const got = await Promise.allSettled([_get(CATALOG_URL), _get(CLOUD_CATALOG_URL)]);
+        const ok = got.filter(g => g.status === 'fulfilled').map(g => g.value);
+        if (!ok.length) throw got[0].reason;
+        _catalog = merge(...ok);
         return _catalog;
     }
 
@@ -118,8 +151,15 @@ const OpenDataFinder = (() => {
             title.textContent = entry.title;
             const meta = document.createElement('div');
             meta.className = 'odf-meta';
-            meta.textContent = [entry.publisher, entry.format, entry.license, entry.coverage].filter(Boolean).join(' · ');
+            meta.textContent = [entry.platform, entry.publisher, entry.format, entry.license, entry.coverage, entry.years].filter(Boolean).join(' · ');
             card.append(title, meta);
+            if (entry.access) {
+                // The Earth Engine snippet / STAC URL a pipeline needs to pull it per cell.
+                const access = document.createElement('code');
+                access.className = 'odf-access';
+                access.textContent = entry.access;
+                card.appendChild(access);
+            }
             layersFor(entry, candidates).forEach(c => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
@@ -138,7 +178,7 @@ const OpenDataFinder = (() => {
         });
     }
 
-    return { isQuery, tokens, search, load, layersFor, renderResults, CATALOG_URL };
+    return { isQuery, tokens, search, merge, load, layersFor, renderResults, CATALOG_URL, CLOUD_CATALOG_URL };
 })();
 
 if (typeof window !== 'undefined') {
