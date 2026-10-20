@@ -181,7 +181,21 @@ const UIPolish = (() => {
     function _styleAtmosphere(map) {
         const theme = _theme();
         try { if (typeof map.setSky === 'function') map.setSky(skySpec(theme)); } catch { /* style not ready */ }
-        if (theme !== 'light') return;
+        if (theme !== 'light') {
+            // The neon grid at 0.4 turned a zoomed-out city into graph paper;
+            // keep hover/selected states as they were, quieten the rest.
+            try {
+                if (map.getLayer('digipin-grid-line')) {
+                    map.setPaintProperty('digipin-grid-line', 'line-opacity', [
+                        'case',
+                        ['boolean', ['feature-state', 'selected'], false], 1.0,
+                        ['boolean', ['feature-state', 'hover'], false], 0.8,
+                        0.22,
+                    ]);
+                }
+            } catch { /* grid not built yet */ }
+            return;
+        }
         for (const [id, color] of Object.entries(LIGHT_BASEMAP)) {
             try {
                 if (map.getLayer(id)) {

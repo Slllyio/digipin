@@ -91,7 +91,7 @@ html[data-theme="light"] {
     --kpi-good: #2f8f5b;
     --kpi-mid: #b7791f;
     --kpi-low: #c0392b;
-    --text-muted: #7a7a7a;          /* 4.3:1 → 4.6:1 on white */
+    --text-muted: #737373;          /* was #999 (2.8:1); 4.7:1 on white */
     --blur: none;
 }
 
@@ -671,3 +671,26 @@ html[data-theme="light"] #top-bar select {
     #sidebar.collapsed { width: 40px; height: 40px; max-height: 40px; overflow: hidden; border-radius: 12px; }
     #sidebar.collapsed #sidebar-toggle { top: 6px; right: 6px; }
 }
+
+/* ── DISHA chat ────────────────────────────────────────────────────────── */
+.disha-message.disha-system {
+    margin: auto 4px;
+    padding: 16px 18px;
+    border-radius: var(--r-md);
+    border: 1px dashed var(--hairline);
+    background: var(--wash-03);
+    color: var(--text-secondary);
+    font-size: var(--fs-md);
+    line-height: 1.55;
+    text-align: center;
+}
+.disha-msg-content { font-size: var(--fs-md); line-height: 1.55; padding: 9px 13px; border-radius: 14px; }
+.disha-input-row { background: transparent; padding: 10px 12px 12px; gap: 8px; }
+#disha-input { height: 38px; border-radius: 12px; font-size: var(--fs-md); padding: 0 14px; }
+#disha-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px var(--accent-soft); }
+#disha-send, #disha-stop { width: 38px; height: 38px; border-radius: 12px; }
+.disha-suggestion { font-size: var(--fs-xs); padding: 6px 11px; border-radius: var(--r-pill); }
+
+/* Cell readout pill: nothing to say → not drawn. */
+.digipin-readout:empty { display: none; }
+.digipin-readout { box-shadow: var(--elev-1); }
