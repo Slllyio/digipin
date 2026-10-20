@@ -112,11 +112,16 @@ jobs:
       - name: Smoke check (gates the commit)
         run: python -m pipeline.scores.smoke_check data/scores --region "$REGION"
 
+      - name: Mirror scores into the per-cell data store (docs/CELL_STORE.md)
+        run: |
+          pip install -r pipeline/cells/requirements.txt
+          python -m pipeline.cells.build --region "$REGION" scores
+
       - name: Commit refreshed tile
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/scores/
+          git add data/scores/ data/cells/
           if ! git diff --staged --quiet; then
             git commit -m "chore(scores): refresh $REGION tile (level $LEVEL)"
             git push
