@@ -176,21 +176,6 @@
       "path": "data/scores/jaipur/"
     },
     {
-      "name": "lucknow",
-      "level": 6,
-      "shardPrefixLen": 2,
-      "shards": [
-        "37"
-      ],
-      "bbox": {
-        "west": 80.85,
-        "south": 26.75,
-        "east": 81.05,
-        "north": 26.95
-      },
-      "path": "data/scores/lucknow/"
-    },
-    {
       "name": "ahmedabad",
       "level": 6,
       "shardPrefixLen": 2,
@@ -220,8 +205,23 @@
         "north": 22.65
       },
       "path": "data/scores/kolkata/"
+    },
+    {
+      "name": "lucknow",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "37"
+      ],
+      "bbox": {
+        "west": 80.85,
+        "south": 26.75,
+        "east": 81.05,
+        "north": 26.95
+      },
+      "path": "data/scores/lucknow/"
     }
   ],
-  "generated": "2026-10-20T21:52:41Z",
+  "generated": "2026-10-20T22:18:37Z",
   "radiusM": 400.0
 }
