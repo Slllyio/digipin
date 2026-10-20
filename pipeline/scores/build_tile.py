@@ -110,7 +110,7 @@ def build(
                     sorted(shards.keys()))
 
     if pmtiles:
-        _write_pmtiles(out, region, geo_features)
+        _write_pmtiles(out, region, geo_features, fields)
 
     return {"region": region, "level": level, "cells": n_cells,
             "shards": len(shards), "fields": len(fields)}
@@ -132,11 +132,13 @@ def _write_coverage(out: Path, region, level, bbox, fields, radius_m, shard_pref
     path.write_text(json.dumps(cov, indent=2) + "\n")
 
 
-def _write_pmtiles(out: Path, region, geo_features):
+def _write_pmtiles(out: Path, region, geo_features, fields):
     from pipeline.geojson_to_pmtiles import convert
     gj_path = out / region / "_scores.geojson"
     gj_path.write_text(json.dumps({"type": "FeatureCollection", "features": geo_features}))
-    convert(gj_path, out / region / "scores.pmtiles", layer_name="scores")
+    # The choropleth colours cells by these properties, so keep all of them.
+    convert(gj_path, out / region / "scores.pmtiles", layer_name="scores",
+            keep_props={"code", *fields})
     gj_path.unlink()
 
 
