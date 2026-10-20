@@ -40,6 +40,18 @@ const DeckBuildings = (() => {
     // covering the viewed city is fetched; the big metros run to several MB each.
     const HEIGHT_INDEX = 'data/heights/index.json';
 
+    /** The baked-heights index ([{ region, bbox, file }]), fetched once and shared
+     *  with any other module that needs it (city overview) so boot does not
+     *  request it twice. Resolves to [] when missing. */
+    function heightIndex() {
+        if (!_index) {
+            _index = fetch(HEIGHT_INDEX, { cache: 'no-cache' })
+                .then(r => (r.ok ? r.json() : []))
+                .catch(() => []);
+        }
+        return _index;
+    }
+
     /**
      * Load a baked DIGIPIN height grid ({ level, cells: { code: metres } })
      * produced from Google Open Buildings 2.5D (scripts/build_building_heights.py)
@@ -77,12 +89,7 @@ const DeckBuildings = (() => {
             pt = _focus;
             if (!pt && _map && _map.getCenter) { const c = _map.getCenter(); pt = { lat: c.lat, lng: c.lng }; }
         }
-        if (!_index) {
-            _index = fetch(HEIGHT_INDEX, { cache: 'no-cache' })
-                .then(r => (r.ok ? r.json() : []))
-                .catch(() => []);
-        }
-        const files = gridsFor(await _index, pt);
+        const files = gridsFor(await heightIndex(), pt);
         return Promise.all(files.map(f => {
             if (!_gridLoads.has(f)) _gridLoads.set(f, loadHeights(f));
             return _gridLoads.get(f);
@@ -319,7 +326,7 @@ const DeckBuildings = (() => {
         return _vertExag;
     }
 
-    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights,
+    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights, heightIndex,
         setExaggeration, getExaggeration,
         featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, cellHeight, gridsFor };
 })();

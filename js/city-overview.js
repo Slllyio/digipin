@@ -99,9 +99,12 @@ const CityOverview = (() => {
 
     function _heights() {
         if (!_heightsIndex) {
-            _heightsIndex = fetch('data/heights/index.json')
-                .then(r => r.ok ? r.json() : [])
-                .catch(() => []);
+            // Share DeckBuildings' copy when it is loaded — one request at boot, not two.
+            _heightsIndex = (typeof DeckBuildings !== 'undefined' && DeckBuildings.heightIndex)
+                ? DeckBuildings.heightIndex()
+                : fetch('data/heights/index.json')
+                    .then(r => r.ok ? r.json() : [])
+                    .catch(() => []);
         }
         return _heightsIndex;
     }
