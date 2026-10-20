@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-20T21:37:52Z",
+  "generated": "2026-10-20T21:52:50Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -5651,6 +5651,18 @@
       },
       "regions": [
         {
+          "name": "ahmedabad",
+          "cells": 504,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.6845703125,
+            "north": 23.1279296875
+          },
+          "json": "scores/ahmedabad.json",
+          "parquet": "scores/ahmedabad.parquet"
+        },
+        {
           "name": "bengaluru",
           "cells": 1368,
           "bbox": {
@@ -5699,6 +5711,18 @@
           "parquet": "scores/delhi.parquet"
         },
         {
+          "name": "guna",
+          "cells": 100,
+          "bbox": {
+            "west": 77.263671875,
+            "south": 24.595703125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "scores/guna.json",
+          "parquet": "scores/guna.parquet"
+        },
+        {
           "name": "hyderabad",
           "cells": 1080,
           "bbox": {
@@ -5721,6 +5745,42 @@
           },
           "json": "scores/indore_pilot.json",
           "parquet": "scores/indore_pilot.parquet"
+        },
+        {
+          "name": "jaipur",
+          "cells": 624,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.927734375,
+            "north": 27.00390625
+          },
+          "json": "scores/jaipur.json",
+          "parquet": "scores/jaipur.parquet"
+        },
+        {
+          "name": "kolkata",
+          "cells": 480,
+          "bbox": {
+            "west": 88.2763671875,
+            "south": 22.4423828125,
+            "east": 88.4521484375,
+            "north": 22.6533203125
+          },
+          "json": "scores/kolkata.json",
+          "parquet": "scores/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 529,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "scores/lucknow.json",
+          "parquet": "scores/lucknow.parquet"
         },
         {
           "name": "mumbai",

@@ -144,8 +144,84 @@
         "north": 28.88
       },
       "path": "data/scores/delhi/"
+    },
+    {
+      "name": "guna",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "35"
+      ],
+      "bbox": {
+        "west": 77.27,
+        "south": 24.6,
+        "east": 77.35,
+        "north": 24.68
+      },
+      "path": "data/scores/guna/"
+    },
+    {
+      "name": "jaipur",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "33"
+      ],
+      "bbox": {
+        "west": 75.7,
+        "south": 26.8,
+        "east": 75.92,
+        "north": 27.0
+      },
+      "path": "data/scores/jaipur/"
+    },
+    {
+      "name": "lucknow",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "37"
+      ],
+      "bbox": {
+        "west": 80.85,
+        "south": 26.75,
+        "east": 81.05,
+        "north": 26.95
+      },
+      "path": "data/scores/lucknow/"
+    },
+    {
+      "name": "ahmedabad",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "3K",
+        "J6"
+      ],
+      "bbox": {
+        "west": 72.48,
+        "south": 22.95,
+        "east": 72.68,
+        "north": 23.12
+      },
+      "path": "data/scores/ahmedabad/"
+    },
+    {
+      "name": "kolkata",
+      "level": 6,
+      "shardPrefixLen": 2,
+      "shards": [
+        "2T"
+      ],
+      "bbox": {
+        "west": 88.28,
+        "south": 22.45,
+        "east": 88.45,
+        "north": 22.65
+      },
+      "path": "data/scores/kolkata/"
     }
   ],
-  "generated": "2026-10-20T18:35:22Z",
+  "generated": "2026-10-20T21:52:41Z",
   "radiusM": 400.0
 }
