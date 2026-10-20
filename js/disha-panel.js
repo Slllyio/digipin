@@ -418,6 +418,12 @@ const DISHAPanel = (() => {
 
         document.getElementById('disha-suggestions').style.display = 'none';
 
+        // "find open data for flooding" is answered from the catalog, no model needed.
+        if (typeof OpenDataFinder !== 'undefined' && OpenDataFinder.isQuery(question)) {
+            await handleDataSearch(OpenDataFinder.isQuery(question).query);
+            return;
+        }
+
         // `/layer` turns layers on; `@score` pins scores into the ranking.
         const mentions = await _applyMentions(question);
         if (mentions.done) return;
@@ -448,6 +454,28 @@ const DISHAPanel = (() => {
         } else {
             await streamResponse(modelQuestion);
         }
+    }
+
+    /** Answer "find open data for X" with catalog cards (offline-safe). */
+    async function handleDataSearch(query) {
+        const msg = addMessage('disha', '');
+        const content = msg.querySelector('.disha-msg-content');
+        content.textContent = '';
+        if (!query) {
+            content.textContent = 'Tell me the theme, e.g. “find open data for flooding” or “datasets on population”.';
+            return;
+        }
+        try {
+            const catalog = await OpenDataFinder.load();
+            const candidates = (typeof DishaMentions !== 'undefined') ? DishaMentions.layerCandidates() : [];
+            OpenDataFinder.renderResults(content, OpenDataFinder.search(query, catalog), query, {
+                candidates,
+                showLayer: (c) => DishaMentions.showLayer(c),
+            });
+        } catch {
+            content.textContent = 'The dataset catalog could not be loaded (offline?). Try again when you are connected.';
+        }
+        scrollToBottom();
     }
 
     /**

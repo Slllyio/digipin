@@ -4359,7 +4359,6 @@ body.presenting #sidebar { display: none !important; }
 .cell-inspector dd { margin: 0; text-align: right; }
 .cell-inspector dt.primary, .cell-inspector dd.primary { font-weight: 600; opacity: 1; }
 .cell-inspector-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; font-size: 10px; opacity: 0.85; }
-=======
 .heat-widget__msg { color: #cbd5e1; font-size: 11px; }
 
 /* Bharatlas administrative + postal containment chips (panel header) */
@@ -4389,3 +4388,11 @@ body.presenting #sidebar { display: none !important; }
 }
 .bharatlas-containment .bh-source a { color: #38bdf8; text-decoration: none; }
 .bharatlas-containment .bh-source a:hover { text-decoration: underline; }
+
+/* Open-data finder cards in the DISHA chat */
+.odf-head { font-size: 12px; margin-bottom: 6px; opacity: 0.85; }
+.odf-card { border: 1px solid rgba(128,128,128,0.3); border-radius: 8px; padding: 8px 10px; margin: 6px 0; font-size: 12px; }
+.odf-title { font-weight: 600; text-decoration: none; display: block; }
+.odf-title:hover { text-decoration: underline; }
+.odf-meta { opacity: 0.7; margin-top: 2px; font-size: 11px; }
+.odf-layer { margin-top: 6px; background: none; border: 1px solid currentColor; border-radius: 6px; color: inherit; cursor: pointer; font: inherit; font-size: 11px; padding: 2px 8px; }
