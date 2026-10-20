@@ -56,6 +56,9 @@ data/realtime/*/*
 !data/growth/*
 !data/vectors/
 !data/vectors/*
+# Hand-curated open-data finder catalog (js/open-data-finder.js).
+!data/open-data/
+!data/open-data/*
 !data/realtime/*/README.md
 # Precomputed score tiles are committed and served by Pages (like realtime/).
 !data/scores/
