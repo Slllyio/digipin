@@ -301,6 +301,8 @@ const CellLayers = (() => {
         item.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
         });
+        // Source card (ⓘ) from the catalog's source/license — js/provenance.js.
+        if (typeof Provenance !== 'undefined') Provenance.decorateRow(item);
         return item;
     }
 

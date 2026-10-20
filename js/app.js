@@ -836,6 +836,8 @@ const App = (() => {
                     item.appendChild(iconEl);
                     item.appendChild(nameEl);
                     item.appendChild(toggleLabel);
+                    // ⓘ source card: where this layer's data comes from (js/provenance.js).
+                    if (typeof Provenance !== 'undefined') Provenance.decorateRow(item);
 
                     // Click handler by layer type
                     if (ld._heatKey) {
