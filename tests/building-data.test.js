@@ -150,3 +150,54 @@ describe('OvertureBuildings twin integration', () => {
         expect(s).not.toContain('#5cf0ff');
     });
 });
+
+describe('BuildingData.exportGeoJSON', () => {
+    it('joins every dataset\'s fields onto each building, prefixed by dataset id', () => {
+        const c = BD.centroid(ring);
+        const code6 = DP.encode(c.lat, c.lng).replace(/-/g, '').slice(0, 6);
+        const spec = { id: 'scores', level: 6, fields: [{ key: 'walkability' }, { key: 'flood_risk' }] };
+        const table = tableFor(6, { [code6]: { walkability: 71, flood_risk: 12 } });
+        const fc = BD.exportGeoJSON([{ polygon: ring, height: 9.04, pin: 'X', hsrc: 'baked', cls: null }],
+            [{ spec, table }], CS.cellCode);
+        expect(fc.features).toHaveLength(1);
+        expect(fc.features[0].properties).toMatchObject({
+            digipin: 'X', height_m: 9, height_source: 'baked', scores_walkability: 71, scores_flood_risk: 12 });
+        expect(fc.features[0].properties.area_m2).toBeGreaterThan(400);
+        expect(BD.exportGeoJSON(null, [], CS.cellCode).features).toEqual([]);
+    });
+});
+
+describe('URLState building drivers', () => {
+    const US = globalThis.URLState;
+    it('round-trips bc/bh and drops malformed keys', () => {
+        const qs = US.stringify({ bcolor: 'scores:flood_risk', bheight: 'bldg:height_m' });
+        expect(qs).toContain('bc=scores%3Aflood_risk');
+        expect(US.parse('?' + qs)).toMatchObject({ bcolor: 'scores:flood_risk', bheight: 'bldg:height_m' });
+        expect(US.parse('?bc=<script>&bh=x')).not.toHaveProperty('bcolor');
+    });
+});
+
+describe('DISHA colorBuildings action', () => {
+    const DA = globalThis.DISHAActions;
+    const DT = globalThis.DISHATools;
+    it('is parsed with a colon-bearing value and validated', () => {
+        const [a] = DA.parseActions('[ACTION] colorBuildings color:scores:flood_risk');
+        expect(a).toEqual({ type: 'colorbuildings', params: { color: 'scores:flood_risk' } });
+        expect(DT.validateArgs('colorBuildings', a.params).ok).toBe(true);
+    });
+    it('rejects keys that are not <dataset>:<field>', () => {
+        const [r] = DA.executeActions([{ type: 'colorbuildings', params: { color: 'flood' } }]);
+        expect(r.ok).toBe(false);
+    });
+});
+
+describe('BuildingData.stretchField', () => {
+    it('fits a number field\'s domain to the view, leaves others alone', () => {
+        const f = { key: 'k', type: 'number', domain: [0, 100] };
+        expect(BD.stretchField(f, { min: 28, max: 55 }).domain).toEqual([28, 55]);
+        expect(BD.stretchField(f, { min: 40, max: 40 })).toBe(f);
+        expect(BD.stretchField(f, null)).toBe(f);
+        const cat = { key: 'c', type: 'category', domain: ['A'] };
+        expect(BD.stretchField(cat, { min: 1, max: 2 })).toBe(cat);
+    });
+});

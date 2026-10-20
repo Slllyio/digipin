@@ -260,3 +260,24 @@ fixes the drop-ingest level.
 - `CellStore.sql()` loads DuckDB's parquet extension from
   `extensions.duckdb.org` on first use. The deploy must allow that host. The
   app's CSP already does.
+
+## Building-level joins (`js/building-data.js`)
+
+With **Buildings** on, the *Building data* panel colours and/or extrudes every
+Overture footprint by any registry field. Each building's centroid encodes to
+a 10-char DIGIPIN; its first `level` characters are the dataset cell it sits
+in, so the join is a `Map` lookup per building (no spatial index). Per-building
+fields (`bldg:height_m`, `bldg:area_m2`, `bldg:floors`) come from the footprint
+and baked heights themselves.
+
+- Selection keys are `<dataset>:<field>`; share links carry them as `bc=` (colour)
+  and `bh=` (height), and DISHA can set them with
+  `[ACTION] colorBuildings color:scores:flood_risk height:bldg:height_m`.
+- A data driver switches buildings to the MapLibre twin renderer (works on
+  terrain and in both themes). Hover shows the building's DIGIPIN; click lists
+  every dataset row covering it.
+- "Fit colours to buildings in view" stretches a number ramp to the visible
+  range. Cell-level values are shared by every building in the cell, so an
+  L6 score paints ~1 km blocks; finer datasets give finer building colouring.
+- *Export buildings in view* downloads GeoJSON with identity fields plus
+  `<dataset>_<field>` for every catalog dataset.

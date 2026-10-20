@@ -45,6 +45,7 @@ const BuildingData = (() => {
     let _height = null;       // "<dataset>:<field>" or null (real height)
     const _tables = new Map();    // dataset id -> loaded table
     const _listeners = new Set();
+    let _stretch = true;      // fit the colour ramp to the values in view
     let _visible = false;     // panel shown (buildings on)
     let _lastStats = null;
 
@@ -187,6 +188,17 @@ const BuildingData = (() => {
         return [];
     }
 
+    /**
+     * The field with its domain fitted to the values in view, so a city-wide
+     * 0–100 score that only spans 28–55 here still uses the whole ramp.
+     * Numbers only; unchanged when there's no spread. Pure.
+     */
+    function stretchField(f, stats) {
+        if (!f || f.type !== 'number' || !stats || stats.min == null || stats.max == null
+            || !(stats.max > stats.min)) return f;
+        return { ...f, domain: [stats.min, stats.max] };
+    }
+
     /** { buildings, withData, mean, min, max, top } over annotated records' `v`. Pure. */
     function summary(records, f) {
         const recs = records || [];
@@ -210,6 +222,36 @@ const BuildingData = (() => {
         return out;
     }
 
+    /**
+     * GeoJSON of annotated building records with every dataset joined on:
+     * identity (digipin, height, area, class) + `<dataset>_<field>` per
+     * field of each loaded table. `datasets` is [{ spec, table }]. Pure.
+     */
+    function exportGeoJSON(records, datasets, cellCode) {
+        const features = [];
+        for (const r of (records || [])) {
+            if (!r || !r.polygon) continue;
+            const cen = r.cx != null ? { lng: r.cx, lat: r.cy } : centroid(r.polygon);
+            if (!cen) continue;
+            const props = {
+                digipin: r.pin || null,
+                height_m: Math.round(r.height * 10) / 10,
+                height_source: r.hsrc || null,
+                area_m2: Math.round(r.area != null ? r.area : areaM2(r.polygon)),
+                class: r.cls || null,
+            };
+            for (const { spec, table } of (datasets || [])) {
+                if (!spec || !table) continue;
+                for (const f of spec.fields || []) {
+                    props[`${spec.id}_${f.key}`] = cellValue(table, f.key, cen.lat, cen.lng, cellCode);
+                }
+            }
+            features.push({ type: 'Feature', properties: props,
+                geometry: { type: 'Polygon', coordinates: [r.polygon] } });
+        }
+        return { type: 'FeatureCollection', features };
+    }
+
     // ── state ───────────────────────────────────────────────────────────────
 
     function _getSpec(id) {
@@ -219,11 +261,14 @@ const BuildingData = (() => {
     function _restore() {
         try {
             const s = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
-            if (s && typeof s === 'object') { _color = s.color || null; _height = s.height || null; }
+            if (s && typeof s === 'object') {
+                _color = s.color || null; _height = s.height || null;
+                if (typeof s.stretch === 'boolean') _stretch = s.stretch;
+            }
         } catch { /* storage blocked */ }
     }
     function _persist() {
-        try { localStorage.setItem(STORE_KEY, JSON.stringify({ color: _color, height: _height })); }
+        try { localStorage.setItem(STORE_KEY, JSON.stringify({ color: _color, height: _height, stretch: _stretch })); }
         catch { /* storage blocked */ }
     }
 
@@ -248,21 +293,32 @@ const BuildingData = (() => {
         const o = opts || {};
         if ('color' in o) _color = o.color || null;
         if ('height' in o) _height = o.height || null;
+        if ('stretch' in o) _stretch = !!o.stretch;
         _persist();
         await Promise.all([_ensureTable(_color), _ensureTable(_height)]);
         _emit();
         _renderPanel();
     }
 
-    function get() { return { color: _color, height: _height }; }
+    function get() { return { color: _color, height: _height, stretch: _stretch }; }
 
     /** True when any data driver is set (buildings then use the MapLibre twin renderer). */
     function isActive() { return !!(_color || _height); }
 
+    const _pending = new Set();   // dataset ids being fetched for the current selection
+
     function _sel(key) {
         const r = fieldFor(key, _getSpec);
         if (!r) return null;
-        return { ...r, table: _tables.get(r.spec.id) || null };
+        const table = _tables.get(r.spec.id) || null;
+        // Selected before the table arrived (a link opened before the catalog
+        // loaded, a re-registered drop): fetch it and repaint once it's in.
+        if (!table && r.spec.id !== BLDG && !_pending.has(r.spec.id)) {
+            _pending.add(r.spec.id);
+            _ensureTable(key).then(() => { if (_tables.has(r.spec.id)) _emit(); })
+                .finally(() => _pending.delete(r.spec.id));
+        }
+        return { ...r, table };
     }
 
     function _encode(lat, lng) {
@@ -272,19 +328,55 @@ const BuildingData = (() => {
         return (typeof CellStore !== 'undefined') ? CellStore.cellCode(level, lat, lng) : null;
     }
 
+    let _lastRecords = [];
+
     /** Annotate harvested twin records with the current selection. */
     function annotateCurrent(records) {
         const out = annotate(records, { color: _sel(_color), height: _sel(_height), cellCode: _cellCode, encode: _encode });
+        _lastRecords = out;
         const c = _sel(_color);
+        const prev = _lastStats;
         _lastStats = c ? summary(out, c.field) : null;
-        _renderStats();
+        // A stretched ramp's legend follows the view's range.
+        if (_stretch && c && c.field.type === 'number' && _lastStats
+            && (!prev || prev.min !== _lastStats.min || prev.max !== _lastStats.max)) _renderPanel();
+        else _renderStats();
         return out;
     }
 
     /** Colour expression for the current colour driver, or null (theme colours). */
     function currentColorExpr() {
         const c = _sel(_color);
-        return c ? colorExpr(c.field) : null;
+        return c ? colorExpr(_paintField(c.field)) : null;
+    }
+
+    /** The colour field as painted: stretched to the view when that's on. */
+    function _paintField(f) {
+        return _stretch ? stretchField(f, _lastStats) : f;
+    }
+
+    /**
+     * Download the buildings in view as GeoJSON with every catalog dataset
+     * joined on. Returns the feature count (0 when nothing is in view).
+     */
+    async function exportView() {
+        if (!_lastRecords.length || typeof document === 'undefined') return 0;
+        const specs = typeof CellStore !== 'undefined' ? CellStore.datasets() : [];
+        const datasets = [];
+        for (const spec of specs) {
+            const table = await CellStore.load(spec.id).catch(() => null);
+            if (table) datasets.push({ spec, table });
+        }
+        const fc = exportGeoJSON(_lastRecords, datasets, _cellCode);
+        const blob = new Blob([JSON.stringify(fc)], { type: 'application/geo+json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `digipin-buildings-${new Date().toISOString().slice(0, 10)}.geojson`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        return fc.features.length;
     }
 
     // ── inspection ──────────────────────────────────────────────────────────
@@ -408,7 +500,7 @@ const BuildingData = (() => {
         const c = _sel(_color);
         let legendHTML = '';
         if (c) {
-            const stops = legend(c.field);
+            const stops = legend(_paintField(c.field));
             if (c.field.type === 'number' && stops.length) {
                 legendHTML = `<div style="display:flex;height:8px;border-radius:4px;overflow:hidden;">${stops.map(s => `<span style="flex:1;background:${s.color}"></span>`).join('')}</div>`
                     + `<div style="display:flex;justify-content:space-between;color:${pal.sub};font-size:11px;"><span>${_esc(stops[0].label)}</span><span>${_esc(stops[stops.length - 1].label)}${c.field.unit && !/^[\d.]+\s*[-–]\s*[\d.]+$/.test(c.field.unit) ? ' ' + _esc(c.field.unit) : ''}</span></div>`;
@@ -421,13 +513,26 @@ const BuildingData = (() => {
         el.innerHTML = `<div style="display:flex;align-items:center;margin-bottom:6px;"><strong style="color:${pal.primary};font-size:13px;flex:1;">Building data</strong>`
             + `<button type="button" data-act="reset" title="Back to plain massing" style="background:none;border:none;color:${pal.sub};cursor:pointer;font-size:11px;">reset</button></div>`
             + `<label style="color:${pal.sub};font-size:11px;">Colour by</label>${_selectHTML('color', _color, groups, 'Theme massing (no data)')}`
+            + (c && c.field.type === 'number' ? `<label style="display:flex;align-items:center;gap:6px;color:${pal.sub};font-size:11px;margin:-2px 0 4px;cursor:pointer;"><input type="checkbox" data-act="stretch"${_stretch ? ' checked' : ''}> Fit colours to buildings in view</label>` : '')
             + `<label style="color:${pal.sub};font-size:11px;">Height from</label>${_selectHTML('height', _height, groups, 'Real building height')}`
             + legendHTML
             + `<div data-role="stats" style="color:${pal.sub};font-size:11px;margin-top:4px;"></div>`
-            + `<div style="color:${pal.sub};font-size:10px;margin-top:4px;opacity:.8;">Hover a building for its DIGIPIN; click for every dataset covering it.</div>`;
+            + `<div style="color:${pal.sub};font-size:10px;margin-top:4px;opacity:.8;">Hover a building for its DIGIPIN; click for every dataset covering it.</div>`
+            + `<button type="button" data-act="export" title="GeoJSON of the buildings in view with every dataset joined on" style="margin-top:6px;width:100%;padding:4px;border-radius:6px;border:1px solid ${pal.border};background:none;color:${pal.primary};cursor:pointer;font:inherit;">Export buildings in view (GeoJSON)</button>`;
         el.querySelector('[data-act="color"]').onchange = (e) => set({ color: e.target.value });
         el.querySelector('[data-act="height"]').onchange = (e) => set({ height: e.target.value });
+        const st = el.querySelector('[data-act="stretch"]');
+        if (st) st.onchange = (e) => set({ stretch: e.target.checked });
         el.querySelector('[data-act="reset"]').onclick = () => set({ color: null, height: null });
+        el.querySelector('[data-act="export"]').onclick = async (e) => {
+            const btn = e.currentTarget;
+            btn.disabled = true;
+            const n = await exportView().catch(() => 0);
+            btn.disabled = false;
+            if (typeof App !== 'undefined' && App.showToast) {
+                App.showToast('Buildings export', n ? `${n.toLocaleString()} buildings saved as GeoJSON.` : 'No buildings in view yet.', n ? 'success' : 'warning');
+            }
+        };
         _renderStats();
     }
 
@@ -439,8 +544,10 @@ const BuildingData = (() => {
 
     /** Load the persisted selection's tables (call once the cell store is ready). */
     async function init() {
-        _restore();
-        if (typeof CellStore !== 'undefined' && CellStore.onChange) CellStore.onChange(() => _renderPanel());
+        if (!_color && !_height) _restore();   // a share link (URLState) wins
+        if (typeof CellStore !== 'undefined' && CellStore.onChange) {
+            CellStore.onChange(() => { _renderPanel(); if (isActive()) _emit(); });
+        }
         await Promise.all([_ensureTable(_color), _ensureTable(_height)]);
         if (isActive()) _emit();
         _renderPanel();
@@ -448,9 +555,9 @@ const BuildingData = (() => {
 
     return {
         init, set, get, isActive, onChange, annotateCurrent, currentColorExpr,
-        setPanelVisible, describe, popupHTML, tooltipHTML,
+        setPanelVisible, describe, popupHTML, tooltipHTML, exportView, exportGeoJSON,
         parseKey, options, centroid, areaM2, fieldFor, cellValue, heightFromValue,
-        annotate, colorExpr, legend, summary, BUILDING_SPEC,
+        annotate, colorExpr, legend, summary, stretchField, BUILDING_SPEC,
     };
 })();
 

@@ -100,6 +100,23 @@ const DISHAActions = (() => {
             fn();
             return `Toggled ${name} overlay`;
         },
+        colorbuildings(p) {
+            const BD = _g('BuildingData');
+            if (!BD) throw new Error('building data unavailable');
+            const norm = (v) => (v == null || v === '' || v === 'none') ? null : String(v);
+            const color = norm(p.color), height = norm(p.height);
+            for (const k of [color, height]) {
+                if (k && !BD.parseKey(k)) throw new Error(`"${k}" is not <dataset>:<field>`);
+            }
+            BD.set({ color, height });
+            const OB = _g('OvertureBuildings');
+            const map = _g('MapModule') && _g('MapModule').getMap();
+            if ((color || height) && OB && !OB.isActive() && map) {
+                const btn = typeof document !== 'undefined' && document.getElementById('btn-buildings');
+                if (btn) btn.click(); else OB.toggle(map);
+            }
+            return color || height ? `Buildings coloured by ${color || 'height'}${height ? `, height from ${height}` : ''}` : 'Buildings back to plain massing';
+        },
         query(p) {
             if (!p.id) throw new Error('query needs an id');
             if (typeof QueryEngine === 'undefined' || !QueryEngine.runQuery) throw new Error('query engine unavailable');

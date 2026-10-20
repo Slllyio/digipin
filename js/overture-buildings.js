@@ -517,7 +517,14 @@ const OvertureBuildings = (() => {
         catch { /* layer not rendered yet */ }
         const data = _dataDriven();
         let recs = DeckBuildings.featuresToPolygons(feats, (isLight() || data) ? null : _focus);
-        if (typeof BuildingData !== 'undefined') recs = BuildingData.annotateCurrent(recs);
+        if (typeof BuildingData !== 'undefined') {
+            recs = BuildingData.annotateCurrent(recs);
+            // The colour ramp may be fitted to the values just harvested.
+            if (data) {
+                try { _map.setPaintProperty(TWIN_LAYER_ID, 'fill-extrusion-color', twinPaint(isLight(), _dataColor())['fill-extrusion-color']); }
+                catch { /* stub / layer gone */ }
+            }
+        }
         _hoverId = null;   // setData resets generated feature ids
         const src = _map.getSource(TWIN_SRC);
         if (src && src.setData) src.setData(twinGeoJSON(recs, DeckBuildings.getExaggeration()));

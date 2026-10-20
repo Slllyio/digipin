@@ -47,6 +47,14 @@ const DISHATools = (() => {
             desc: 'Run a saved planning query (e.g. best_residential, hospital, flood) and rank cells.',
             example: '[ACTION] query id:best_residential',
         },
+        {
+            name: 'colorBuildings', type: 'colorbuildings', kind: 'state', agentOnly: false,
+            args: { color: { type: 'string' }, height: { type: 'string' } },
+            desc: 'Colour (and optionally extrude) the 3D buildings by a dataset field, as "<dataset>:<field>" '
+                + '(e.g. scores:flood_risk, scores:walkability, traffic:congestion_risk, mobility:mobility_risk, '
+                + 'bldg:height_m). color:none resets.',
+            example: '[ACTION] colorBuildings color:scores:flood_risk height:bldg:height_m',
+        },
         // ---- agent analysis tools (gather evidence, feed results back) ----
         {
             name: 'rankCells', type: 'rankcells', kind: 'state', agentOnly: true,

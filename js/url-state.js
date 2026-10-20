@@ -13,6 +13,8 @@
  *   &q=<question>     a Text2Map question to prefill in DISHA
  *   &layers=<list>    overlays that were on: `heat` (toolbar overlay btn-heat),
  *                     `dt:<key>` (Digital-Twin layer), `cell:<id>` (cell store)
+ *   &bc=<ds:field>    field colouring the 3D buildings (BuildingData)
+ *   &bh=<ds:field>    field driving the 3D buildings' height
  *
  * parse()/stringify() are pure (unit-tested). capture()/apply()/init() touch the
  * running app and degrade quietly when a module or the map isn't ready.
@@ -42,6 +44,11 @@ const URLState = (() => {
         return out;
     }
 
+    /** A BuildingData "<dataset>:<field>" key, or null when malformed. */
+    function _bkey(raw) {
+        return raw && /^[a-z][a-z0-9_]{0,63}:[A-Za-z0-9_]{1,64}$/.test(raw) ? raw : null;
+    }
+
     /** Query string (defaults to the live location) → plain state object. */
     function parse(search) {
         const raw = search != null ? search
@@ -54,6 +61,8 @@ const URLState = (() => {
         if (p.get('present') === '1') state.present = true;
         const layers = parseLayers(p.get('layers'));
         if (layers.length) state.layers = layers;
+        if (_bkey(p.get('bc'))) state.bcolor = p.get('bc');
+        if (_bkey(p.get('bh'))) state.bheight = p.get('bh');
         const an = p.get('an');
         if (an) {
             try {
@@ -84,6 +93,8 @@ const URLState = (() => {
         if (state.present) p.set('present', '1');
         const layers = parseLayers(Array.isArray(state.layers) ? state.layers.join(',') : '');
         if (layers.length) p.set('layers', layers.join(','));
+        if (_bkey(state.bcolor)) p.set('bc', state.bcolor);
+        if (_bkey(state.bheight)) p.set('bh', state.bheight);
         if (Array.isArray(state.annotations) && state.annotations.length) {
             p.set('an', JSON.stringify(state.annotations.map(n =>
                 ({ lat: n.lat, lng: n.lng, text: n.text, color: n.color }))));
@@ -135,6 +146,11 @@ const URLState = (() => {
         }
         const layers = activeLayers();
         if (layers.length) state.layers = layers;
+        if (typeof BuildingData !== 'undefined' && BuildingData.get) {
+            const b = BuildingData.get();
+            if (b.color) state.bcolor = b.color;
+            if (b.height) state.bheight = b.height;
+        }
         return state;
     }
 
@@ -231,6 +247,10 @@ const URLState = (() => {
             } else if (state.ll && MapModule.flyTo) {
                 MapModule.flyTo(state.ll.lat, state.ll.lng, state.z || 15);
             }
+        }
+        // Building colour/height drivers before the buildings layer comes on.
+        if ((state.bcolor || state.bheight) && typeof BuildingData !== 'undefined' && BuildingData.set) {
+            BuildingData.set({ color: state.bcolor || null, height: state.bheight || null });
         }
         if (Array.isArray(state.layers) && state.layers.length) applyLayers(state.layers);
         // A Text2Map question is prefilled (running it needs a selected cell/context).
