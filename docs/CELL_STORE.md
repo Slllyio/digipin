@@ -161,6 +161,12 @@ python -m pipeline.cells.build --no-parquet                      # stdlib only
 The *Precompute scores* workflow runs the `scores` step after each city build,
 so a new city appears in the store automatically.
 
+**Open datasets for all metros.** Population, land cover, vegetation, terrain,
+water/flood, night lights, heat, air quality, rainfall, building stock, soil,
+travel time (Earth Engine) and OSM amenities/roads are baked by
+`pipeline/cells/ee_layers.py` and `osm_layers.py`; see
+[OPEN_DATA_CELLS.md](OPEN_DATA_CELLS.md).
+
 **Raster (GeoTIFF) datasets.** Use `adapters.raster_records` for any EPSG:4326
 GeoTIFF. It picks the sampling method from the resolution. When pixels are
 finer than cells, it emits one record per pixel, and the field's `agg`
