@@ -4,6 +4,20 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-20 — first budget trip on dev (traffic refresh)
+
+The static budgets in tests/perf-budgets.test.js tripped on the traffic + mobility refresh
+(eddd390): `data/traffic/delhi/road_los.geojson` (9.7 MB), `data/traffic/bengaluru/road_los.geojson`
+(7.4 MB) and `data/vectors/osm_roads_delhi.geojson` (7.2 MB) exceed the 6 MB per-file cap.
+These road-level GeoJSONs load only when their layer is toggled for that city, so the cap for
+`data/traffic/**` and `data/vectors/**` is now 10 MB; everything else keeps 6 MB. Delhi road LOS
+is 0.3 MB under the new line — the next refresh should gzip it (the monthly cell series already
+ship as `.json.gz`) or drop coordinate precision rather than raise the cap again.
+
+Same run: tests/analysis.test.js built its Indore store from `regions[0]`, which became Ahmedabad
+once catalog regions were sorted alphabetically. The test now picks the region by name/bbox and
+merges sharded `.json.gz` tables.
+
 ## 2026-10-20 — reliability suite in CI (real browser)
 
 **How.** `tests/playwright/{journeys,resilience,perf}.spec.js` now run in the

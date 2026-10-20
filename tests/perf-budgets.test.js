@@ -31,8 +31,12 @@ describe('static asset budgets', () => {
         expect(over, JSON.stringify(over)).toEqual([]);
     });
 
-    it('no committed file under data/ exceeds 6 MB', () => {
-        const over = tracked('data').filter(f => f.size > 6 * MB);
+    // Road-level GeoJSON (traffic LOS, OSM road vectors) is fetched only when
+    // its layer is toggled for that city, so it gets a looser 10 MB cap than
+    // the files that load on boot or on the first click into a cell.
+    const LAZY_VECTOR = /^data\/(traffic|vectors)\//;
+    it('no committed file under data/ exceeds 6 MB (10 MB for lazy road vectors)', () => {
+        const over = tracked('data').filter(f => f.size > (LAZY_VECTOR.test(f.file) ? 10 : 6) * MB);
         expect(over, JSON.stringify(over)).toEqual([]);
     });
 

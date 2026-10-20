@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { readFileSync } from 'fs';
+import { gunzipSync } from 'zlib';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -15,8 +16,30 @@ const realStore = {
     load: async (id) => {
         const spec = CATALOG.datasets.find(d => d.id === id);
         if (!spec) return null;
-        const t = JSON.parse(readFileSync(path.join(CELLS, spec.regions[0].json), 'utf-8'));
-        return t;
+        // Regions are catalogued alphabetically, so pick the Indore region by
+        // name (bbox match as fallback) rather than trusting the first entry.
+        const regions = spec.regions || [];
+        const region = regions.find(r => r.name === 'indore_pilot')
+            || regions.find(r => r.bbox && r.bbox.south <= 22.7196 && 22.7196 <= r.bbox.north
+                && r.bbox.west <= 75.8577 && 75.8577 <= r.bbox.east)
+            || regions[0];
+        if (!region) return null;
+        const read = (rel) => {
+            const buf = readFileSync(path.join(CELLS, rel));
+            return JSON.parse((rel.endsWith('.gz') ? gunzipSync(buf) : buf).toString('utf-8'));
+        };
+        const keys = region.shards && region.shards.keys;
+        if (!keys) return read(region.json);
+        // Sharded region: concatenate the per-prefix tables into one.
+        const parts = keys.map(k => read(region.json.replace('{prefix}', k)));
+        const merged = { ...parts[0], cells: [], columns: {} };
+        for (const pt of parts) {
+            merged.cells.push(...(pt.cells || []));
+            for (const [f, col] of Object.entries(pt.columns || {})) {
+                (merged.columns[f] = merged.columns[f] || []).push(...col);
+            }
+        }
+        return merged;
     },
 };
 
