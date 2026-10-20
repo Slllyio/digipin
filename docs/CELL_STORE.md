@@ -337,29 +337,29 @@ and switching city hides any active layer the new city doesn't have.
 | `scores` | Bulk OSM extract (Geofabrik) + Copernicus DEM | `precompute-scores.yml` (dispatch with a region list) |
 | `traffic`, `mobility` | OSM via Overpass | `precompute-cells.yml` (all cities, or a region list) |
 | `growth` | Earth Engine: Open Buildings Temporal + CA-ML prediction | `pipeline/growth/*` COGs, then `pipeline.cells.build growth` (needs GEE auth) |
-| `lst_monthly`, `ndvi_monthly`, `no2_monthly` | Earth Engine: MODIS, Sentinel-5P | `scripts/build_cell_timeseries.py --region <city>` (needs GEE auth) |
+| `*_monthly` time series | Earth Engine (MODIS, Sentinel-5P, CHIRPS, VIIRS, …) | `scripts/build_cell_timeseries.py --region <city>` (needs GEE auth) |
 
 Cell counts per region (`python -m pipeline.cells.coverage --write` regenerates this
 table; both precompute workflows run it after a build):
 
 <!-- coverage:start -->
-| City | `growth` L7 | `lst_monthly` L6 | `mobility` L7 | `ndvi_monthly` L7 | `no2_monthly` L6 | `scores` L6 | `traffic` L7 |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| indore_pilot | 30,611 | 2,209 | 1,765 | 33,489 | 2,209 | 2,209 | 1,991 |
-| bhopal | — | — | — | — | — | 442 | — |
-| pune | — | — | — | — | — | 700 | — |
-| mumbai | — | — | — | — | — | 1,125 | — |
-| bengaluru | — | — | — | — | — | 1,368 | — |
-| hyderabad | — | — | — | — | — | 1,080 | — |
-| chennai | — | — | — | — | — | 726 | — |
-| delhi | — | — | — | — | — | 3,304 | — |
-| guna | — | — | — | — | — | — | — |
-| jaipur | — | — | — | — | — | — | — |
-| ahmedabad | — | — | — | — | — | — | — |
-| lucknow | — | — | — | — | — | — | — |
-| kolkata | — | — | — | — | — | — | — |
+| City | `builtup_yearly` L7 | `growth` L7 | `lst_monthly` L6 | `mobility` L7 | `ndvi_monthly` L7 | `nightlights_monthly` L7 | `no2_monthly` L6 | `pm25_monthly` L5 | `rain_monthly` L5 | `scores` L6 | `traffic` L7 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| indore_pilot | 33,489 | 30,611 | 2,209 | 1,765 | 33,489 | 33,489 | 2,209 | 156 | 156 | 2,209 | 1,991 |
+| bhopal | 6,565 | — | 442 | — | 6,565 | 6,565 | 442 | 35 | 35 | 442 | — |
+| pune | 10,767 | — | 700 | — | 10,767 | 10,767 | 700 | 56 | 56 | 700 | — |
+| mumbai | 16,878 | — | 704 | — | 13,438 | 16,878 | 1,125 | 84 | 71 | 1,125 | — |
+| bengaluru | 21,442 | — | 1,368 | — | 21,442 | 21,442 | 1,368 | 110 | 110 | 1,368 | — |
+| hyderabad | 15,870 | — | 1,080 | — | 15,870 | 15,870 | 1,080 | 90 | 90 | 1,080 | — |
+| chennai | 11,136 | — | 575 | — | 9,853 | 11,136 | 726 | 54 | 46 | 726 | — |
+| delhi | 51,027 | — | 3,304 | — | 51,027 | 51,027 | 3,304 | 225 | 225 | 3,304 | — |
+| guna | 1,444 | — | 100 | — | 1,444 | 1,444 | 100 | 9 | 9 | — | — |
+| jaipur | 9,292 | — | 624 | — | 9,292 | 9,292 | 624 | 42 | 42 | — | — |
+| ahmedabad | 7,176 | — | 504 | — | 7,176 | 7,176 | 504 | 42 | 42 | — | — |
+| lucknow | 8,464 | — | 529 | — | 8,464 | 8,464 | 529 | 49 | 49 | — | — |
+| kolkata | 7,268 | — | 480 | — | 7,268 | 7,268 | 480 | 42 | 42 | — | — |
 
-14 of 91 city × dataset slots filled.
+102 of 143 city × dataset slots filled.
 <!-- coverage:end -->
 
 ## Not done yet
