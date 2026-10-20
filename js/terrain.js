@@ -76,6 +76,73 @@ const Terrain = (() => {
             }, _firstSymbolId(map));
         }
         map.setTerrain({ source: SOURCE_ID, exaggeration: _exaggeration });
+        _clampElevationZoom(map);
+        _regroundOnMoveEnd(map);
+    }
+
+    /**
+     * Belt and braces for the same MapLibre 5 issue: if an animation still
+     * finishes with the camera's ground elevation far off the real terrain
+     * (it was sampled before the DEM tile arrived), re-ground it with a no-op
+     * jump, which recomputes the elevation from the now-loaded tile.
+     */
+    function _regroundOnMoveEnd(map) {
+        if (!map || map._digipinReground || typeof map.on !== 'function') return;
+        map._digipinReground = true;
+        // moveend can fire before the DEM tile lands; idle comes after it.
+        const check = () => {
+            if (!_enabled || !map.terrain || typeof map.getCenterElevation !== 'function') return;
+            if (map.isMoving && map.isMoving()) return;
+            try {
+                const want = map.terrain.getElevationForLngLatZoom(map.getCenter(), map.getZoom());
+                if (Number.isFinite(want) && Math.abs(map.getCenterElevation() - want) > 50) {
+                    map.jumpTo({ center: map.getCenter() });
+                }
+            } catch { /* internals changed — leave the camera alone */ }
+        };
+        map.on('moveend', check);
+        map.on('idle', check);
+        map.on('sourcedata', (e) => { if (e && e.sourceId === SOURCE_ID && e.isSourceLoaded) check(); });
+    }
+
+    /**
+     * MapLibre 5 samples the camera's ground elevation during ease/fly
+     * animations at the *render* tile zoom, unclamped. Past the DEM's maxzoom
+     * (15) no tile matches, the lookup returns 0 m, and on a raised city
+     * (Indore ~550 m, ×1.5) the camera ends up under the terrain: a blank map
+     * whenever you animate-zoom past z15 with terrain on. The same happens
+     * mid-flight when the target's DEM tile hasn't loaded yet. So: clamp the
+     * lookup zoom to the DEM maxzoom (MapLibre's own getElevationForLngLat
+     * already does this) and, when that tile has no data yet, fall back to
+     * the nearest coarser loaded tile. Idempotent; a no-op when the
+     * internals are absent.
+     */
+    function _clampElevationZoom(map) {
+        const t = map && map.terrain;
+        if (!t || t._digipinClamped) return;
+        const maxZ = () => (t.tileManager && Number.isFinite(t.tileManager.maxzoom)) ? t.tileManager.maxzoom : 15;
+        for (const fn of ['getElevationForLngLatZoom', 'getMinTileElevationForLngLatZoom']) {
+            if (typeof t[fn] !== 'function') continue;
+            const orig = t[fn].bind(t);
+            t[fn] = (lnglat, zoom) => elevationWithFallback(orig, lnglat, zoom, maxZ());
+        }
+        t._digipinClamped = true;
+    }
+
+    /**
+     * Elevation lookup at min(zoom, maxZ), stepping to coarser zooms (up to 8
+     * levels) while the result is empty (0 / not finite — i.e. no tile yet).
+     * Pure given `lookup(lnglat, z)`.
+     */
+    function elevationWithFallback(lookup, lnglat, zoom, maxZ) {
+        let z = Math.floor(Math.min(zoom, maxZ));
+        const floor = Math.max(0, z - 8);
+        let v = lookup(lnglat, z);
+        while ((!Number.isFinite(v) || v === 0) && z > floor) {
+            z--;
+            v = lookup(lnglat, z);
+        }
+        return Number.isFinite(v) ? v : 0;
     }
 
     function _detach(map) {
@@ -120,7 +187,7 @@ const Terrain = (() => {
     /** True while terrain is draped. */
     function isEnabled() { return _enabled; }
 
-    return { setEnabled, toggle, isEnabled, setExaggeration, demSource, hillshadePaint,
+    return { setEnabled, toggle, isEnabled, setExaggeration, demSource, hillshadePaint, elevationWithFallback,
         SOURCE_ID, HILLSHADE_ID, DEFAULT_EXAGGERATION };
 })();
 

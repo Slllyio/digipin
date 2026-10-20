@@ -213,8 +213,19 @@ const CityOverview = (() => {
         const cam = { center: [city.lng, city.lat], zoom: 15.8, pitch: 68, bearing: -28 };
         // Step aside so the city is the hero; the chip brings the card back.
         _setCollapsed(true, false);
-        if (reduce) map.jumpTo(cam);
-        else map.flyTo({ ...cam, duration: 4200, curve: 1.6, essential: false });
+        const go = () => {
+            if (reduce) map.jumpTo(cam);
+            else map.flyTo({ ...cam, duration: 4200, curve: 1.6, essential: false });
+        };
+        // Fly only once the terrain DEM is in: a flight started in the same
+        // frame as setTerrain keeps a sea-level camera elevation and ends up
+        // under the ground (blank map) on raised cities like Indore (~550 m).
+        if (map.getTerrain && map.getTerrain()) {
+            let done = false;
+            const once = () => { if (!done) { done = true; go(); } };
+            map.once('idle', once);
+            setTimeout(once, 1500);
+        } else go();
     }
 
     function _setCollapsed(on, persist = true) {
@@ -230,7 +241,7 @@ const CityOverview = (() => {
     }
 
     function _watchYield() {
-        const targets = ['detail-panel', 'results-panel'].map(id => document.getElementById(id)).filter(Boolean);
+        const targets = ['detail-panel', 'results-panel', 'dt-layers-dropdown', 'heatmap-dropdown'].map(id => document.getElementById(id)).filter(Boolean);
         const sync = () => {
             const busy = targets.some(t => t.classList.contains('open'));
             _el.classList.toggle('is-yielding', busy);

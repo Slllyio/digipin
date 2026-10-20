@@ -46,3 +46,35 @@ describe('UIPolish.applyIcons()', () => {
         expect(document.querySelector('.sidebar-title svg')).not.toBeNull();
     });
 });
+
+describe('UIPolish.skySpec()', () => {
+    it('gives each theme its own sky and fog colours', () => {
+        const d = U.skySpec('dark'), l = U.skySpec('light');
+        expect(d['sky-color']).not.toBe(l['sky-color']);
+        expect(d['fog-color']).toBeTruthy();
+        expect(U.skySpec('unknown')).toEqual(l);
+    });
+    it('returns a copy callers can mutate safely', () => {
+        const a = U.skySpec('dark'); a['sky-color'] = '#000';
+        expect(U.skySpec('dark')['sky-color']).not.toBe('#000');
+    });
+});
+
+describe('Terrain.elevationWithFallback()', () => {
+    const T = globalThis.Terrain;
+    it('clamps the lookup zoom to the DEM maxzoom', () => {
+        const seen = [];
+        const v = T.elevationWithFallback((ll, z) => { seen.push(z); return 550; }, {}, 16.7, 15);
+        expect(v).toBe(550);
+        expect(seen).toEqual([15]);
+    });
+    it('steps to coarser zooms while the tile has no data yet', () => {
+        const v = T.elevationWithFallback((ll, z) => (z <= 12 ? 820 : 0), {}, 15.8, 15);
+        expect(v).toBe(820);
+    });
+    it('gives up at 0 after eight levels (sea-level or nothing loaded)', () => {
+        const seen = [];
+        expect(T.elevationWithFallback((ll, z) => { seen.push(z); return 0; }, {}, 15, 15)).toBe(0);
+        expect(seen).toHaveLength(9);
+    });
+});

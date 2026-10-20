@@ -5,10 +5,11 @@
  *    for one coherent stroke-icon set (inline SVG, currentColor, so both
  *    themes and hover/active states colour them from CSS). Labels, titles and
  *    i18n attributes are untouched; only the .tb-icon / button glyph changes.
- *  - Atmosphere: a horizon haze that fades in as the camera pitches, so a
- *    tilted 3D city recedes into a sky gradient instead of a hard tile edge
- *    (MapLibre 4.1 has no setSky/setFog). Pure CSS overlay, pointer-events
- *    none, opacity driven by hazeOpacity(pitch).
+ *  - Atmosphere: a theme-tuned sky + distance fog (MapLibre 5 setSky) so a
+ *    tilted 3D city recedes into a horizon instead of a hard tile edge.
+ *    Without setSky (older MapLibre) a CSS horizon haze stands in, its
+ *    opacity driven by hazeOpacity(pitch). The paper-light basemap's
+ *    building fill is also lifted a shade so dense cores read airy.
  *  - Loading: a branded splash that lifts once the map style has loaded.
  *  - Reduced motion: exposes prefersReducedMotion() for camera code.
  *
@@ -152,9 +153,45 @@ const UIPolish = (() => {
     }
 
     // ── Atmosphere ──────────────────────────────────────────────────────────
+    const SKY = {
+        dark: {
+            'sky-color': '#050c22', 'horizon-color': '#1d3b6b', 'fog-color': '#0a1430',
+            'sky-horizon-blend': 0.6, 'horizon-fog-blend': 0.7, 'fog-ground-blend': 0.55,
+            'atmosphere-blend': 0,
+        },
+        light: {
+            'sky-color': '#c9dcec', 'horizon-color': '#eef3f7', 'fog-color': '#f2f4f6',
+            'sky-horizon-blend': 0.7, 'horizon-fog-blend': 0.75, 'fog-ground-blend': 0.6,
+            'atmosphere-blend': 0,
+        },
+    };
+    // Positron's building fills (#dfdfdf / #ededed) turn a dense Indian core
+    // into a grey slab; one shade lighter keeps the paper look.
+    const LIGHT_BASEMAP = { building: '#e9ebee', 'building-top': '#f3f4f6' };
+
+    function _theme() {
+        return (typeof Theme !== 'undefined' && Theme.get) ? Theme.get() : 'light';
+    }
+
+    function skySpec(theme) { return { ...SKY[theme === 'dark' ? 'dark' : 'light'] }; }
+
+    function _styleAtmosphere(map) {
+        const theme = _theme();
+        try { if (typeof map.setSky === 'function') map.setSky(skySpec(theme)); } catch { /* style not ready */ }
+        if (theme !== 'light') return;
+        for (const [id, color] of Object.entries(LIGHT_BASEMAP)) {
+            try {
+                if (map.getLayer(id)) {
+                    map.setPaintProperty(id, 'fill-color', color);
+                    if (id === 'building-top') map.setPaintProperty(id, 'fill-outline-color', '#e4e7ea');
+                }
+            } catch { /* layer shape differs */ }
+        }
+    }
+
     let _haze = null;
     function _syncHaze(map) {
-        if (!_haze || !map) return;
+        if (!_haze || _haze === true || !map) return;
         const o = hazeOpacity(map.getPitch());
         _haze.style.opacity = String(o);
         // Lower the horizon band as the camera tilts up towards it.
@@ -165,11 +202,19 @@ const UIPolish = (() => {
         if (!map || typeof document === 'undefined' || _haze) return;
         const container = map.getContainer ? map.getContainer() : document.getElementById('map');
         if (!container) return;
+        try { if (map.getMaxPitch && map.getMaxPitch() < MAX_PITCH) map.setMaxPitch(MAX_PITCH); } catch { /* older MapLibre */ }
+        if (typeof map.setSky === 'function') {
+            // Re-apply on every style (re)load; the sky lives in the style.
+            if (map.isStyleLoaded && map.isStyleLoaded()) _styleAtmosphere(map);
+            map.on('style.load', () => _styleAtmosphere(map));
+            map.once('load', () => _styleAtmosphere(map));
+            _haze = true;
+            return;
+        }
         _haze = document.createElement('div');
         _haze.className = 'map-horizon-haze';
         _haze.setAttribute('aria-hidden', 'true');
         container.appendChild(_haze);
-        try { if (map.getMaxPitch && map.getMaxPitch() < MAX_PITCH) map.setMaxPitch(MAX_PITCH); } catch { /* older MapLibre */ }
         map.on('pitch', () => _syncHaze(map));
         _syncHaze(map);
     }
@@ -208,7 +253,7 @@ const UIPolish = (() => {
         }
     }
 
-    return { init, icon, applyIcons, hazeOpacity, MAX_PITCH, prefersReducedMotion, attachAtmosphere,
+    return { init, icon, applyIcons, hazeOpacity, skySpec, MAX_PITCH, prefersReducedMotion, attachAtmosphere,
         showSplash, hideSplash, TOOLBAR, PATHS };
 })();
 
