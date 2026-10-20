@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-20T21:37:17Z",
+  "generated": "2026-10-20T21:37:52Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -233,8 +233,8 @@
           "agg": "mean",
           "unit": "\u00b5mol/m\u00b2",
           "domain": [
-            28.2,
-            153.0
+            34.4,
+            105.7
           ],
           "ramp": "reds",
           "higherIs": "worse"
@@ -246,8 +246,8 @@
           "agg": "mean",
           "unit": "mmol/m\u00b2",
           "domain": [
-            31.46,
-            42.67
+            35.82,
+            46.1
           ],
           "ramp": "reds",
           "higherIs": "worse"
@@ -259,8 +259,8 @@
           "agg": "mean",
           "unit": "index",
           "domain": [
-            -0.608,
-            0.165
+            -0.403,
+            0.304
           ],
           "ramp": "reds",
           "higherIs": "worse"
@@ -272,8 +272,8 @@
           "agg": "mean",
           "unit": "\u00b5mol/m\u00b2",
           "domain": [
-            128.6,
-            305.0
+            138.3,
+            275.7
           ],
           "ramp": "reds",
           "higherIs": "worse"
@@ -285,6 +285,18 @@
         "heightM": 400.0
       },
       "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 504,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.6845703125,
+            "north": 23.1279296875
+          },
+          "json": "air_quality/ahmedabad.json",
+          "parquet": "air_quality/ahmedabad.parquet"
+        },
         {
           "name": "bengaluru",
           "cells": 1368,
@@ -334,6 +346,18 @@
           "parquet": "air_quality/delhi.parquet"
         },
         {
+          "name": "guna",
+          "cells": 100,
+          "bbox": {
+            "west": 77.263671875,
+            "south": 24.595703125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "air_quality/guna.json",
+          "parquet": "air_quality/guna.parquet"
+        },
+        {
           "name": "hyderabad",
           "cells": 1080,
           "bbox": {
@@ -356,6 +380,42 @@
           },
           "json": "air_quality/indore_pilot.json",
           "parquet": "air_quality/indore_pilot.parquet"
+        },
+        {
+          "name": "jaipur",
+          "cells": 624,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.927734375,
+            "north": 27.00390625
+          },
+          "json": "air_quality/jaipur.json",
+          "parquet": "air_quality/jaipur.parquet"
+        },
+        {
+          "name": "kolkata",
+          "cells": 480,
+          "bbox": {
+            "west": 88.2763671875,
+            "south": 22.4423828125,
+            "east": 88.4521484375,
+            "north": 22.6533203125
+          },
+          "json": "air_quality/kolkata.json",
+          "parquet": "air_quality/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 529,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "air_quality/lucknow.json",
+          "parquet": "air_quality/lucknow.parquet"
         },
         {
           "name": "mumbai",
@@ -425,7 +485,7 @@
           "unit": "pp of cell",
           "domain": [
             0.0,
-            92.5
+            78.9
           ],
           "ramp": "reds"
         },
@@ -437,7 +497,7 @@
           "unit": "m\u00b3/m\u00b2",
           "domain": [
             0.0,
-            26.32
+            21.09
           ],
           "ramp": "viridis"
         },
@@ -449,7 +509,7 @@
           "unit": "m",
           "domain": [
             2.5,
-            61.6
+            40.5
           ],
           "ramp": "viridis"
         },
@@ -465,8 +525,7 @@
             "Semi-dense urban cluster",
             "Suburban / peri-urban",
             "Urban centre",
-            "Very low-density rural",
-            "Water"
+            "Very low-density rural"
           ],
           "colors": {
             "Urban centre": "#7f0000",
@@ -486,6 +545,18 @@
         "heightM": 400
       },
       "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "built_up/ahmedabad.json",
+          "parquet": "built_up/ahmedabad.parquet"
+        },
         {
           "name": "bengaluru",
           "cells": 21442,
@@ -585,6 +656,18 @@
           }
         },
         {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "built_up/guna.json",
+          "parquet": "built_up/guna.parquet"
+        },
+        {
           "name": "hyderabad",
           "cells": 15870,
           "bbox": {
@@ -636,6 +719,65 @@
               "3MC7",
               "3MC8",
               "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "built_up/jaipur/{prefix}.json.gz",
+          "parquet": "built_up/jaipur.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "built_up/kolkata.json",
+          "parquet": "built_up/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "built_up/lucknow/{prefix}.json.gz",
+          "parquet": "built_up/lucknow.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
             ]
           }
         },
@@ -1509,7 +1651,6 @@
             "Built-up",
             "Cropland",
             "Grassland",
-            "Mangroves",
             "Shrubland",
             "Tree cover",
             "Water",
@@ -1534,6 +1675,18 @@
         "heightM": 400.0
       },
       "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "land_cover/ahmedabad.json.gz",
+          "parquet": "land_cover/ahmedabad.parquet"
+        },
         {
           "name": "bengaluru",
           "cells": 21442,
@@ -1633,6 +1786,18 @@
           }
         },
         {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "land_cover/guna.json",
+          "parquet": "land_cover/guna.parquet"
+        },
+        {
           "name": "hyderabad",
           "cells": 15870,
           "bbox": {
@@ -1684,6 +1849,65 @@
               "3MC7",
               "3MC8",
               "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "land_cover/jaipur/{prefix}.json.gz",
+          "parquet": "land_cover/jaipur.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "land_cover/kolkata.json.gz",
+          "parquet": "land_cover/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "land_cover/lucknow/{prefix}.json.gz",
+          "parquet": "land_cover/lucknow.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
             ]
           }
         },
@@ -2447,6 +2671,18 @@
       },
       "regions": [
         {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "nightlights/ahmedabad.json",
+          "parquet": "nightlights/ahmedabad.parquet"
+        },
+        {
           "name": "bengaluru",
           "cells": 21442,
           "bbox": {
@@ -2545,6 +2781,18 @@
           }
         },
         {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "nightlights/guna.json",
+          "parquet": "nightlights/guna.parquet"
+        },
+        {
           "name": "hyderabad",
           "cells": 15870,
           "bbox": {
@@ -2596,6 +2844,65 @@
               "3MC7",
               "3MC8",
               "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "nightlights/jaipur/{prefix}.json",
+          "parquet": "nightlights/jaipur.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "nightlights/kolkata.json",
+          "parquet": "nightlights/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "nightlights/lucknow/{prefix}.json",
+          "parquet": "nightlights/lucknow.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
             ]
           }
         },
@@ -3455,8 +3762,8 @@
           "agg": "sum",
           "unit": "people",
           "domain": [
-            -581,
-            12789
+            0,
+            24775
           ],
           "ramp": "viridis"
         },
@@ -3467,8 +3774,8 @@
           "agg": "mean",
           "unit": "people/km\u00b2",
           "domain": [
-            -9966.0,
-            226257.0
+            0.0,
+            448156.0
           ],
           "ramp": "heat"
         },
@@ -3491,8 +3798,8 @@
           "agg": "sum",
           "unit": "people",
           "domain": [
-            -581,
-            15101
+            0,
+            28812
           ],
           "ramp": "viridis"
         }
@@ -3503,6 +3810,18 @@
         "heightM": 500
       },
       "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "population/ahmedabad.json",
+          "parquet": "population/ahmedabad.parquet"
+        },
         {
           "name": "bengaluru",
           "cells": 21442,
@@ -3602,6 +3921,18 @@
           }
         },
         {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "population/guna.json",
+          "parquet": "population/guna.parquet"
+        },
+        {
           "name": "hyderabad",
           "cells": 15870,
           "bbox": {
@@ -3653,6 +3984,65 @@
               "3MC7",
               "3MC8",
               "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "population/jaipur/{prefix}.json",
+          "parquet": "population/jaipur.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "population/kolkata.json",
+          "parquet": "population/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "population/lucknow/{prefix}.json",
+          "parquet": "population/lucknow.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
             ]
           }
         },
@@ -3944,8 +4334,8 @@
           "agg": "mean",
           "unit": "mm",
           "domain": [
-            861.0,
-            3586.0
+            973.0,
+            2198.0
           ],
           "ramp": "blues"
         },
@@ -3956,8 +4346,8 @@
           "agg": "mean",
           "unit": "mm",
           "domain": [
-            381.0,
-            3146.0
+            891.0,
+            1666.0
           ],
           "ramp": "blues"
         },
@@ -3968,8 +4358,8 @@
           "agg": "mean",
           "unit": "mm/day",
           "domain": [
-            29.8,
-            309.0
+            41.2,
+            81.8
           ],
           "ramp": "blues",
           "higherIs": "worse"
@@ -3982,7 +4372,7 @@
           "unit": "days",
           "domain": [
             0.0,
-            20.0
+            3.0
           ],
           "ramp": "blues",
           "higherIs": "worse"
@@ -3994,8 +4384,8 @@
           "agg": "mean",
           "unit": "mm",
           "domain": [
-            713.0,
-            3433.0
+            714.0,
+            2014.0
           ],
           "ramp": "blues"
         },
@@ -4018,6 +4408,18 @@
         "heightM": 400.0
       },
       "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 504,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.6845703125,
+            "north": 23.1279296875
+          },
+          "json": "rainfall/ahmedabad.json",
+          "parquet": "rainfall/ahmedabad.parquet"
+        },
         {
           "name": "bengaluru",
           "cells": 1368,
@@ -4067,6 +4469,18 @@
           "parquet": "rainfall/delhi.parquet"
         },
         {
+          "name": "guna",
+          "cells": 100,
+          "bbox": {
+            "west": 77.263671875,
+            "south": 24.595703125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "rainfall/guna.json",
+          "parquet": "rainfall/guna.parquet"
+        },
+        {
           "name": "hyderabad",
           "cells": 1080,
           "bbox": {
@@ -4089,6 +4503,42 @@
           },
           "json": "rainfall/indore_pilot.json",
           "parquet": "rainfall/indore_pilot.parquet"
+        },
+        {
+          "name": "jaipur",
+          "cells": 624,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.927734375,
+            "north": 27.00390625
+          },
+          "json": "rainfall/jaipur.json",
+          "parquet": "rainfall/jaipur.parquet"
+        },
+        {
+          "name": "kolkata",
+          "cells": 480,
+          "bbox": {
+            "west": 88.2763671875,
+            "south": 22.4423828125,
+            "east": 88.4521484375,
+            "north": 22.6533203125
+          },
+          "json": "rainfall/kolkata.json",
+          "parquet": "rainfall/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 529,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "rainfall/lucknow.json",
+          "parquet": "rainfall/lucknow.parquet"
         },
         {
           "name": "mumbai",
@@ -4932,6 +5382,18 @@
       },
       "regions": [
         {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "surface_heat/ahmedabad.json",
+          "parquet": "surface_heat/ahmedabad.parquet"
+        },
+        {
           "name": "bengaluru",
           "cells": 21442,
           "bbox": {
@@ -5030,6 +5492,18 @@
           }
         },
         {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "surface_heat/guna.json",
+          "parquet": "surface_heat/guna.parquet"
+        },
+        {
           "name": "hyderabad",
           "cells": 15870,
           "bbox": {
@@ -5081,6 +5555,65 @@
               "3MC7",
               "3MC8",
               "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "surface_heat/jaipur/{prefix}.json",
+          "parquet": "surface_heat/jaipur.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "surface_heat/kolkata.json",
+          "parquet": "surface_heat/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "surface_heat/lucknow/{prefix}.json",
+          "parquet": "surface_heat/lucknow.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
             ]
           }
         },
@@ -5155,8 +5688,8 @@
           "agg": "mean",
           "unit": "m a.s.l.",
           "domain": [
-            -1.5,
-            959.2
+            -0.1,
+            637.2
           ],
           "ramp": "viridis"
         },
@@ -5168,7 +5701,7 @@
           "unit": "m",
           "domain": [
             0,
-            212.4
+            166.8
           ],
           "ramp": "heat"
         },
@@ -5180,7 +5713,7 @@
           "unit": "\u00b0",
           "domain": [
             0.0,
-            33.65
+            31.37
           ],
           "ramp": "heat"
         },
@@ -5192,7 +5725,7 @@
           "unit": "m",
           "domain": [
             0.0,
-            328.9
+            177.0
           ],
           "ramp": "blues",
           "higherIs": "better"
@@ -5204,6 +5737,18 @@
         "heightM": 300
       },
       "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "terrain/ahmedabad.json",
+          "parquet": "terrain/ahmedabad.parquet"
+        },
         {
           "name": "bengaluru",
           "cells": 21442,
@@ -5303,6 +5848,18 @@
           }
         },
         {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "terrain/guna.json",
+          "parquet": "terrain/guna.parquet"
+        },
+        {
           "name": "hyderabad",
           "cells": 15870,
           "bbox": {
@@ -5354,6 +5911,65 @@
               "3MC7",
               "3MC8",
               "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "terrain/jaipur/{prefix}.json",
+          "parquet": "terrain/jaipur.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "terrain/kolkata.json",
+          "parquet": "terrain/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "terrain/lucknow/{prefix}.json",
+          "parquet": "terrain/lucknow.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
             ]
           }
         },
@@ -5594,7 +6210,7 @@
           "unit": "m",
           "domain": [
             0.0,
-            20.9
+            19.1
           ],
           "ramp": "greens"
         },
@@ -5717,6 +6333,18 @@
           }
         },
         {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "vegetation/guna.json",
+          "parquet": "vegetation/guna.parquet"
+        },
+        {
           "name": "hyderabad",
           "cells": 15870,
           "bbox": {
@@ -5768,6 +6396,65 @@
               "3MC7",
               "3MC8",
               "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "vegetation/jaipur/{prefix}.json",
+          "parquet": "vegetation/jaipur.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "vegetation/kolkata.json",
+          "parquet": "vegetation/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "vegetation/lucknow/{prefix}.json",
+          "parquet": "vegetation/lucknow.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
             ]
           }
         },
@@ -5879,7 +6566,7 @@
           "unit": "m",
           "domain": [
             0.0,
-            12.61
+            14.36
           ],
           "ramp": "blues",
           "higherIs": "worse"
@@ -5917,6 +6604,18 @@
         "heightM": 400.0
       },
       "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "water/ahmedabad.json",
+          "parquet": "water/ahmedabad.parquet"
+        },
         {
           "name": "bengaluru",
           "cells": 21442,
@@ -6016,6 +6715,18 @@
           }
         },
         {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "water/guna.json",
+          "parquet": "water/guna.parquet"
+        },
+        {
           "name": "hyderabad",
           "cells": 15870,
           "bbox": {
@@ -6067,6 +6778,65 @@
               "3MC7",
               "3MC8",
               "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "water/jaipur/{prefix}.json.gz",
+          "parquet": "water/jaipur.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "water/kolkata.json",
+          "parquet": "water/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "water/lucknow/{prefix}.json.gz",
+          "parquet": "water/lucknow.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
             ]
           }
         },
