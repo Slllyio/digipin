@@ -86,6 +86,14 @@ data/utilities/*
 data/utilities/*/*
 !data/utilities/*/*.json
 
+# Alert-triage situational briefs — small, browser/stakeholder-consumed.
+!data/triage/
+data/triage/*
+!data/triage/*/
+data/triage/*/*
+!data/triage/*/latest.json
+!data/triage/*/brief.md
+
 # OSM vector layers (Digital-Twin) — small browser-consumed GeoJSON only.
 # Large vector PMTiles stay ignored (served from S3/Overture, not Pages).
 !data/vectors/

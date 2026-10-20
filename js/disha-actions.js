@@ -123,7 +123,196 @@ const DISHAActions = (() => {
         return results;
     }
 
-    return { parseActions, stripActions, executeActions, _parseParams, OVERLAYS };
+    // ===== AGENT TOOLS =====
+    // The Urban Analyst Agent (js/disha-agent.js) needs read tools that return
+    // data (not just fire-and-forget map actions), and async handlers. These
+    // live in a separate async registry so the sync single-shot path above is
+    // untouched. Handlers may return a string (state change, label only) or
+    // {label, observation} — read tools feed `observation` back to the model.
+
+    // Per-run index of code → {lat,lng}, populated by rankCells so later tools
+    // can resolve codes the model saw in an [OBSERVATION] even when they are
+    // display prefixes DigiPin.decode() would reject. Cleared between runs.
+    const _cellIndex = new Map();
+    /** Normalize a DIGIPIN code for indexing (drop dashes, uppercase). */
+    function _norm(code) { return String(code || '').replace(/-/g, '').toUpperCase(); }
+
+    /** Current map viewport as {south,west,north,east}, or {} when the map isn't ready. */
+    function _bounds() {
+        const MM = _g('MapModule');
+        if (!MM || !MM.getMap) return {};
+        const map = MM.getMap();
+        if (!map || !map.getBounds) return {};
+        const b = map.getBounds();
+        return { south: b.getSouth(), west: b.getWest(), north: b.getNorth(), east: b.getEast() };
+    }
+
+    /** Resolve {lat,lng} from explicit coords, the rankCells index, or DigiPin.decode. Throws if none work. */
+    function _coords(params) {
+        if (Number.isFinite(params.lat) && Number.isFinite(params.lng)) return { lat: params.lat, lng: params.lng };
+        const key = _norm(params.code);
+        if (key && _cellIndex.has(key)) return _cellIndex.get(key);
+        const DP = _g('DigiPin');
+        if (params.code && DP && DP.decode) {
+            const d = DP.decode(String(params.code));   // throws on bad/partial codes
+            return { lat: d.lat, lng: d.lng };
+        }
+        throw new Error('could not resolve a location');
+    }
+
+    /** Cell data via IndexedDB cache, falling back to a live fetch (cached for reuse). */
+    async function _fetchData(lat, lng) {
+        const Cache = _g('DISHACache');
+        if (Cache && Cache.getCellData) {
+            const cached = await Cache.getCellData(lat, lng);
+            if (cached) return cached;
+        }
+        const DF = _g('DataFetcher');
+        if (!DF || !DF.fetchAllFeatures) throw new Error('data fetcher unavailable');
+        const data = await DF.fetchAllFeatures(lat, lng, 400);
+        if (data && Cache && Cache.putCellData) { try { Cache.putCellData(lat, lng, data); } catch { /* cache is best-effort */ } }
+        return data;
+    }
+
+    /** Non-zero score fields as "key=value", strongest first. */
+    function _scoreLine(data) {
+        const scores = (data && data.scores) || {};
+        return Object.entries(scores)
+            .filter(([, s]) => s && s.value > 0)
+            .sort((a, b) => b[1].value - a[1].value)
+            .map(([k, s]) => `${k}=${s.value}`);
+    }
+
+    const AGENT_REGISTRY = {
+        async rankcells(p) {
+            const Text2Map = _g('Text2Map');
+            if (!Text2Map || !Text2Map.run) throw new Error('ranking engine unavailable');
+            const out = await Text2Map.run(p.brief, _bounds());
+            const results = (out && out.results) || [];
+            results.forEach(r => {
+                if (r && r.code && Number.isFinite(r.lat) && Number.isFinite(r.lng)) {
+                    _cellIndex.set(_norm(r.code), { lat: r.lat, lng: r.lng });
+                }
+            });
+            const RL = _g('Text2MapResultsLayer');
+            if (RL && RL.show && results.length) { try { RL.show(results); } catch { /* map paint is best-effort */ } }
+            const top = results.slice(0, 5).map((r, i) => `#${i + 1} ${r.code} (${Math.round(r.score || 0)}${r.area ? ', ' + r.area : ''})`);
+            return {
+                label: `Ranked ${results.length} cells`,
+                observation: `rankCells "${String(p.brief).slice(0, 60)}": ${top.join('; ') || 'no matches in view'}`,
+            };
+        },
+
+        async getcelldata(p) {
+            const { lat, lng } = _coords(p);
+            _cellIndex.set(_norm(p.code), { lat, lng });
+            const data = await _fetchData(lat, lng);
+            const parts = _scoreLine(data);
+            return {
+                label: `Read ${p.code}`,
+                observation: `getCellData ${p.code}: ${parts.join(', ') || 'no scored data'}`,
+            };
+        },
+
+        async comparecells(p) {
+            const Compare = _g('Compare');
+            if (!Compare || !Compare.compareBriefModel) throw new Error('compare unavailable');
+            const codes = String(p.codes).split(',').filter(Boolean).slice(0, 3);
+            const pinned = [];
+            for (const code of codes) {
+                try {
+                    const { lat, lng } = _coords({ code });
+                    const data = await _fetchData(lat, lng);
+                    if (data) pinned.push({ cell: { code, center: { lat, lng } }, data });
+                } catch { /* skip a code we can't resolve */ }
+            }
+            if (pinned.length < 2) throw new Error('need at least 2 resolvable cells to compare');
+            const model = Compare.compareBriefModel(pinned);
+            const lines = model.metricKeys.slice(0, 10).map(k => {
+                const label = model.cells.map(c => c.metrics[k]).find(Boolean)?.label || k;
+                return `${label}: ` + model.cells.map(c => {
+                    const m = c.metrics[k];
+                    return `${c.code}=${m ? m.value : '—'}`;
+                }).join(', ');
+            });
+            return {
+                label: `Compared ${pinned.map(x => x.cell.code).join(' vs ')}`,
+                observation: `compareCells:\n${lines.join('\n')}`,
+            };
+        },
+
+        async generatesitebrief(p) {
+            const SiteBrief = _g('SiteBrief');
+            if (!SiteBrief || !SiteBrief.build) throw new Error('site brief unavailable');
+            const { lat, lng } = _coords(p);
+            const data = await _fetchData(lat, lng);
+            const model = SiteBrief.build(data, { code: p.code, center: { lat, lng } });
+            const narr = SiteBrief.narrative(model);
+            return { label: `Site brief for ${p.code}`, observation: `siteBrief ${p.code}: ${narr}` };
+        },
+
+        runisochrone(p) {
+            const Iso = _g('Isochrone');
+            if (!Iso || !Iso.show) throw new Error('isochrone unavailable');
+            const { lat, lng } = _coords(p);
+            Iso.show(lat, lng);
+            return 'Showing 5/10/15-min walking zones';
+        },
+
+        finish() { return { label: 'done', observation: '' }; },
+    };
+
+    /**
+     * Execute agent tool directives (async). Validates args via DISHATools,
+     * caps state-changing tools per run, and returns [{type, ok, label,
+     * observation?, error?}]. `counters` is mutated so the map-mutation cap
+     * spans the whole run when the caller passes the same object each step.
+     */
+    async function executeAgentActions(actions, opts = {}) {
+        const max = Number.isFinite(opts.max) ? opts.max : 3;
+        const mapMutationCap = Number.isFinite(opts.mapMutationCap) ? opts.mapMutationCap : Infinity;
+        const counters = opts.counters || { mutations: 0 };
+        const results = [];
+
+        for (const a of (actions || []).slice(0, Math.max(0, max))) {
+            const type = String(a.type || '').toLowerCase();
+            const tool = (typeof DISHATools !== 'undefined') ? DISHATools.getTool(type) : null;
+
+            let params = a.params || {};
+            if (tool && typeof DISHATools !== 'undefined') {
+                const v = DISHATools.validateArgs(type, params);
+                if (!v.ok) { results.push({ type, ok: false, error: v.error }); continue; }
+                params = v.args;
+            }
+
+            const isState = tool ? tool.kind === 'state' : true;
+            if (isState && counters.mutations >= mapMutationCap) {
+                results.push({ type, ok: false, error: 'map-change limit reached this run' });
+                continue;
+            }
+
+            const fn = AGENT_REGISTRY[type] || REGISTRY[type];
+            if (!fn) { results.push({ type, ok: false, error: 'unknown action' }); continue; }
+
+            try {
+                const out = await fn(params);
+                if (isState) counters.mutations++;
+                if (out && typeof out === 'object') {
+                    results.push({ type, ok: true, label: out.label || 'done', observation: out.observation });
+                } else {
+                    results.push({ type, ok: true, label: String(out) });
+                }
+            } catch (e) {
+                results.push({ type, ok: false, error: (e && e.message) ? e.message : 'failed' });
+            }
+        }
+        return results;
+    }
+
+    /** Clear the per-run cell-coordinate index (between agent runs and in tests). */
+    function _resetAgentState() { _cellIndex.clear(); }
+
+    return { parseActions, stripActions, executeActions, executeAgentActions, _parseParams, OVERLAYS, _resetAgentState };
 })();
 
 if (typeof window !== 'undefined') window.DISHAActions = DISHAActions;
