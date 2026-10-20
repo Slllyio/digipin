@@ -5,253 +5,253 @@
  "graph_edges": 15110,
  "bridge_count": 5773,
  "los_distribution": {
-  "A": 11469,
-  "E": 188,
-  "F": 1313,
-  "B": 1184,
-  "D": 373,
-  "C": 728
+  "A": 11536,
+  "D": 377,
+  "F": 1294,
+  "B": 1203,
+  "C": 698,
+  "E": 147
  },
  "top_bottlenecks": [
   {
    "osm_id": 435249770,
    "name": "Richmond Road",
    "highway": "primary",
-   "betweenness": 0.048534,
+   "betweenness": 0.048447,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.966217,
-   "lng": 77.606723
+   "lat": 12.96622,
+   "lng": 77.60672
   },
   {
    "osm_id": 328835371,
    "name": "Hosur Road",
    "highway": "primary",
-   "betweenness": 0.046149,
+   "betweenness": 0.046144,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.930215,
-   "lng": 77.614731
+   "lat": 12.93021,
+   "lng": 77.61473
   },
   {
    "osm_id": 363621124,
    "name": "Hosur Road",
    "highway": "primary",
-   "betweenness": 0.045993,
+   "betweenness": 0.045988,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.931341,
-   "lng": 77.614045
+   "lat": 12.93134,
+   "lng": 77.61405
   },
   {
    "osm_id": 1148408385,
    "name": "Raj Bhavan Road",
    "highway": "primary",
-   "betweenness": 0.045695,
+   "betweenness": 0.04567,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.981902,
-   "lng": 77.594642
+   "lat": 12.9819,
+   "lng": 77.59464
   },
   {
    "osm_id": 37898955,
    "name": "JC Road",
    "highway": "primary",
-   "betweenness": 0.045147,
+   "betweenness": 0.04515,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.966757,
+   "lat": 12.96676,
    "lng": 77.58737
   },
   {
    "osm_id": 461556532,
    "name": "Hudson Circle",
    "highway": "primary",
-   "betweenness": 0.044856,
+   "betweenness": 0.04486,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.967274,
-   "lng": 77.587396
+   "lat": 12.96727,
+   "lng": 77.5874
   },
   {
    "osm_id": 503401204,
    "name": "Raj Bhavan Road",
    "highway": "primary",
-   "betweenness": 0.044797,
+   "betweenness": 0.044776,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.981559,
-   "lng": 77.595635
-  },
-  {
-   "osm_id": 760700372,
-   "name": "Cubbon Road",
-   "highway": "primary",
-   "betweenness": 0.04476,
-   "los_grade": "F",
-   "congestion_risk": 100,
-   "is_bridge": false,
-   "criticality": "high",
-   "lat": 12.981457,
-   "lng": 77.595949
-  },
-  {
-   "osm_id": 359476587,
-   "name": "Cubbon Road",
-   "highway": "primary",
-   "betweenness": 0.044738,
-   "los_grade": "F",
-   "congestion_risk": 100,
-   "is_bridge": false,
-   "criticality": "high",
-   "lat": 12.981117,
-   "lng": 77.596956
+   "lat": 12.98156,
+   "lng": 77.59564
   },
   {
    "osm_id": 1214076611,
    "name": "JC Road",
    "highway": "primary",
+   "betweenness": 0.044742,
+   "los_grade": "F",
+   "congestion_risk": 100,
+   "is_bridge": false,
+   "criticality": "high",
+   "lat": 12.96579,
+   "lng": 77.58667
+  },
+  {
+   "osm_id": 760700372,
+   "name": "Cubbon Road",
+   "highway": "primary",
    "betweenness": 0.044738,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.965792,
-   "lng": 77.586666
+   "lat": 12.98146,
+   "lng": 77.59595
+  },
+  {
+   "osm_id": 359476587,
+   "name": "Cubbon Road",
+   "highway": "primary",
+   "betweenness": 0.044717,
+   "los_grade": "F",
+   "congestion_risk": 100,
+   "is_bridge": false,
+   "criticality": "high",
+   "lat": 12.98112,
+   "lng": 77.59696
   },
   {
    "osm_id": 362900184,
    "name": "Cubbon Road",
    "highway": "primary",
-   "betweenness": 0.044078,
+   "betweenness": 0.044063,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.980981,
-   "lng": 77.597182
+   "lat": 12.98098,
+   "lng": 77.59718
   },
   {
    "osm_id": 1052609696,
    "name": "Wheeler Road",
    "highway": "secondary",
-   "betweenness": 0.043931,
+   "betweenness": 0.043924,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.991154,
-   "lng": 77.614191
+   "lat": 12.99115,
+   "lng": 77.61419
   },
   {
    "osm_id": 580771983,
    "name": "Sheshadri Road",
    "highway": "primary",
-   "betweenness": 0.041888,
+   "betweenness": 0.041885,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.980369,
-   "lng": 77.572488
+   "lat": 12.98037,
+   "lng": 77.57249
   },
   {
    "osm_id": 31235669,
    "name": "",
    "highway": "primary",
-   "betweenness": 0.041876,
+   "betweenness": 0.041873,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.980354,
-   "lng": 77.572417
+   "lat": 12.98035,
+   "lng": 77.57242
   },
   {
    "osm_id": 139141579,
    "name": "",
    "highway": "primary",
-   "betweenness": 0.041864,
+   "betweenness": 0.041861,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.980311,
-   "lng": 77.572171
+   "lat": 12.98031,
+   "lng": 77.57217
   },
   {
    "osm_id": 372018380,
    "name": "",
    "highway": "primary",
-   "betweenness": 0.041852,
+   "betweenness": 0.04185,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.980222,
-   "lng": 77.571672
+   "lat": 12.98022,
+   "lng": 77.57167
   },
   {
    "osm_id": 1469037766,
    "name": "Mission Road",
    "highway": "primary",
-   "betweenness": 0.040102,
+   "betweenness": 0.040105,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.965366,
-   "lng": 77.586957
+   "lat": 12.96537,
+   "lng": 77.58696
   },
   {
    "osm_id": 36897705,
    "name": "Mission Road",
    "highway": "primary",
-   "betweenness": 0.040084,
+   "betweenness": 0.040087,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.965142,
-   "lng": 77.587222
+   "lat": 12.96514,
+   "lng": 77.58722
   },
   {
    "osm_id": 763175330,
    "name": "Richmond Road",
    "highway": "primary",
-   "betweenness": 0.039899,
+   "betweenness": 0.039901,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.966391,
-   "lng": 77.607517
+   "lat": 12.96639,
+   "lng": 77.60752
   },
   {
-   "osm_id": 1158621923,
-   "name": "Kamaraj Road",
-   "highway": "tertiary",
-   "betweenness": 0.039789,
+   "osm_id": 1298944073,
+   "name": "Richmond Road",
+   "highway": "primary",
+   "betweenness": 0.039787,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 12.982899,
-   "lng": 77.610627
+   "lat": 12.96665,
+   "lng": 77.60872
   }
  ],
  "critical_links": []

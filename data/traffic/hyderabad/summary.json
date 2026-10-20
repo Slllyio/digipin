@@ -5,12 +5,12 @@
  "graph_edges": 9163,
  "bridge_count": 5156,
  "los_distribution": {
-  "C": 218,
-  "A": 7777,
-  "F": 625,
-  "B": 413,
-  "E": 105,
-  "D": 149
+  "C": 217,
+  "A": 7783,
+  "F": 623,
+  "B": 409,
+  "E": 108,
+  "D": 147
  },
  "top_bottlenecks": [
   {
@@ -22,8 +22,8 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.436157,
-   "lng": 78.456064
+   "lat": 17.43616,
+   "lng": 78.45606
   },
   {
    "osm_id": 166456720,
@@ -34,8 +34,8 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.437914,
-   "lng": 78.456953
+   "lat": 17.43791,
+   "lng": 78.45695
   },
   {
    "osm_id": 432570531,
@@ -46,8 +46,8 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.441773,
-   "lng": 78.458036
+   "lat": 17.44177,
+   "lng": 78.45804
   },
   {
    "osm_id": 166456956,
@@ -58,8 +58,8 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.443037,
-   "lng": 78.459695
+   "lat": 17.44304,
+   "lng": 78.4597
   },
   {
    "osm_id": 314517312,
@@ -70,19 +70,19 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.444982,
-   "lng": 78.464075
+   "lat": 17.44498,
+   "lng": 78.46407
   },
   {
    "osm_id": 1371627408,
    "name": "Sardar Patel Road",
    "highway": "primary",
-   "betweenness": 0.06176,
+   "betweenness": 0.061761,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.444338,
+   "lat": 17.44434,
    "lng": 78.46854
   },
   {
@@ -94,8 +94,8 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.444128,
-   "lng": 78.469951
+   "lat": 17.44413,
+   "lng": 78.46995
   },
   {
    "osm_id": 1424928162,
@@ -106,103 +106,103 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.444107,
-   "lng": 78.470122
+   "lat": 17.44411,
+   "lng": 78.47012
   },
   {
    "osm_id": 313336330,
    "name": "Public Garden Road",
    "highway": "trunk",
-   "betweenness": 0.061497,
+   "betweenness": 0.061493,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.396475,
-   "lng": 78.471136
+   "lat": 17.39647,
+   "lng": 78.47114
   },
   {
    "osm_id": 313221673,
    "name": "Public Garden Road",
    "highway": "trunk",
-   "betweenness": 0.061105,
+   "betweenness": 0.061103,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.401681,
-   "lng": 78.468866
+   "lat": 17.40168,
+   "lng": 78.46887
   },
   {
    "osm_id": 1271351925,
    "name": "Sardar Vallabhai Patel Chowk",
    "highway": "trunk",
-   "betweenness": 0.061102,
+   "betweenness": 0.0611,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.400545,
-   "lng": 78.469959
+   "lat": 17.40055,
+   "lng": 78.46996
   },
   {
    "osm_id": 313221156,
    "name": "",
    "highway": "trunk",
-   "betweenness": 0.061063,
+   "betweenness": 0.06106,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
    "lat": 17.39968,
-   "lng": 78.470589
+   "lng": 78.47059
   },
   {
    "osm_id": 1271363576,
    "name": "",
    "highway": "trunk",
-   "betweenness": 0.061024,
+   "betweenness": 0.06102,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.398958,
-   "lng": 78.470856
+   "lat": 17.39896,
+   "lng": 78.47086
   },
   {
    "osm_id": 207472309,
    "name": "Masab Tank Road",
    "highway": "primary",
-   "betweenness": 0.059059,
+   "betweenness": 0.059066,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.403978,
-   "lng": 78.453935
+   "lat": 17.40398,
+   "lng": 78.45394
   },
   {
    "osm_id": 432570534,
    "name": "Greenlands Road",
    "highway": "primary",
-   "betweenness": 0.058981,
+   "betweenness": 0.058982,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.435192,
-   "lng": 78.455618
+   "lat": 17.43519,
+   "lng": 78.45562
   },
   {
    "osm_id": 1096488864,
    "name": "Mahavir Marg",
    "highway": "trunk",
-   "betweenness": 0.058959,
+   "betweenness": 0.058966,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.403133,
+   "lat": 17.40313,
    "lng": 78.45698
   },
   {
@@ -214,44 +214,44 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.388456,
-   "lng": 78.476352
+   "lat": 17.38846,
+   "lng": 78.47635
   },
   {
    "osm_id": 1476059730,
    "name": "Sardar Patel Road",
    "highway": "primary",
-   "betweenness": 0.048176,
+   "betweenness": 0.048115,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.444094,
-   "lng": 78.470219
+   "lat": 17.44409,
+   "lng": 78.47022
   },
   {
    "osm_id": 314681520,
    "name": "Sardar Patel Road",
    "highway": "primary",
-   "betweenness": 0.048148,
+   "betweenness": 0.048086,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.444084,
-   "lng": 78.470361
+   "lat": 17.44408,
+   "lng": 78.47036
   },
   {
    "osm_id": 28670433,
    "name": "Sardar Patel Road",
    "highway": "primary",
-   "betweenness": 0.048119,
+   "betweenness": 0.048058,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 17.444042,
-   "lng": 78.471599
+   "lat": 17.44404,
+   "lng": 78.4716
   }
  ],
  "critical_links": [
@@ -264,8 +264,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 17.435658,
-   "lng": 78.543585
+   "lat": 17.43566,
+   "lng": 78.54359
   },
   {
    "osm_id": 314669576,
@@ -276,8 +276,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 17.471952,
-   "lng": 78.561986
+   "lat": 17.47195,
+   "lng": 78.56199
   },
   {
    "osm_id": 420684107,
@@ -288,8 +288,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 17.466636,
-   "lng": 78.561159
+   "lat": 17.46664,
+   "lng": 78.56116
   },
   {
    "osm_id": 826400132,
@@ -300,8 +300,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 17.459831,
-   "lng": 78.557608
+   "lat": 17.45983,
+   "lng": 78.55761
   },
   {
    "osm_id": 1214110062,
@@ -312,8 +312,8 @@
    "congestion_risk": 64,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 17.389897,
-   "lng": 78.351869
+   "lat": 17.3899,
+   "lng": 78.35187
   },
   {
    "osm_id": 1274836119,
@@ -324,8 +324,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 17.459251,
-   "lng": 78.557292
+   "lat": 17.45925,
+   "lng": 78.55729
   },
   {
    "osm_id": 1338816373,
@@ -336,8 +336,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 17.465618,
-   "lng": 78.561922
+   "lat": 17.46562,
+   "lng": 78.56192
   }
  ]
 }

@@ -5,43 +5,43 @@
  "graph_edges": 6707,
  "bridge_count": 3243,
  "los_distribution": {
-  "A": 5409,
-  "C": 232,
-  "B": 344,
-  "E": 73,
-  "F": 591,
-  "D": 111
+  "A": 5401,
+  "C": 230,
+  "B": 347,
+  "E": 81,
+  "F": 597,
+  "D": 104
  },
  "top_bottlenecks": [
   {
    "osm_id": 240321177,
    "name": "General Hospital Road",
    "highway": "primary",
-   "betweenness": 0.082521,
+   "betweenness": 0.082825,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.081781,
-   "lng": 80.276353
+   "lat": 13.08178,
+   "lng": 80.27635
   },
   {
    "osm_id": 217848742,
    "name": "Evening Bazaar Road",
    "highway": "secondary",
-   "betweenness": 0.07534,
+   "betweenness": 0.075332,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.082767,
-   "lng": 80.278739
+   "lat": 13.08277,
+   "lng": 80.27874
   },
   {
    "osm_id": 22965366,
    "name": "Evening Bazaar Road",
    "highway": "secondary",
-   "betweenness": 0.075276,
+   "betweenness": 0.075268,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
@@ -53,205 +53,205 @@
    "osm_id": 443502557,
    "name": "Anna Salai (Mount Road)",
    "highway": "primary",
-   "betweenness": 0.073997,
+   "betweenness": 0.074024,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.025863,
+   "lat": 13.02586,
    "lng": 80.23066
   },
   {
    "osm_id": 102457958,
    "name": "Mambalam Canal Bridge",
    "highway": "primary",
-   "betweenness": 0.073948,
+   "betweenness": 0.073975,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.025082,
-   "lng": 80.229421
+   "lat": 13.02508,
+   "lng": 80.22942
   },
   {
    "osm_id": 355461070,
    "name": "Anna Salai (Mount Road)",
    "highway": "primary",
-   "betweenness": 0.073899,
+   "betweenness": 0.073926,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.024843,
-   "lng": 80.229122
+   "lat": 13.02484,
+   "lng": 80.22912
   },
   {
    "osm_id": 1082485667,
    "name": "Anna Salai (Mount Road)",
    "highway": "primary",
-   "betweenness": 0.072194,
+   "betweenness": 0.072221,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.023724,
-   "lng": 80.227658
+   "lat": 13.02372,
+   "lng": 80.22766
   },
   {
    "osm_id": 22977109,
    "name": "Anna Salai (Mount Road)",
    "highway": "primary",
-   "betweenness": 0.072146,
+   "betweenness": 0.072173,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.019773,
-   "lng": 80.224566
+   "lat": 13.01977,
+   "lng": 80.22457
   },
   {
    "osm_id": 23647177,
    "name": "Maraimalai Adigal Bridge",
    "highway": "primary",
-   "betweenness": 0.072098,
+   "betweenness": 0.072125,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.018111,
-   "lng": 80.224685
+   "lat": 13.01811,
+   "lng": 80.22469
   },
   {
    "osm_id": 214413795,
    "name": "Anna Salai (Mount Road)",
    "highway": "primary",
-   "betweenness": 0.072053,
+   "betweenness": 0.07208,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.015759,
-   "lng": 80.225285
+   "lat": 13.01576,
+   "lng": 80.22528
   },
   {
    "osm_id": 1078273883,
    "name": "Anna Salai (Mount Road)",
    "highway": "primary",
-   "betweenness": 0.071622,
+   "betweenness": 0.071649,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.014285,
-   "lng": 80.223724
+   "lat": 13.01429,
+   "lng": 80.22372
   },
   {
    "osm_id": 217845078,
    "name": "Wall Tax Road",
    "highway": "trunk",
-   "betweenness": 0.071588,
+   "betweenness": 0.071575,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.097404,
-   "lng": 80.275284
+   "lat": 13.0974,
+   "lng": 80.27528
   },
   {
    "osm_id": 1082485668,
    "name": "Anna Salai (Mount Road)",
    "highway": "primary",
-   "betweenness": 0.071483,
+   "betweenness": 0.07151,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.015516,
-   "lng": 80.225089
-  },
-  {
-   "osm_id": 1189655636,
-   "name": "Netaji Subhash Chandra Bose Road",
-   "highway": "tertiary",
-   "betweenness": 0.07146,
-   "los_grade": "F",
-   "congestion_risk": 100,
-   "is_bridge": false,
-   "criticality": "high",
-   "lat": 13.088691,
-   "lng": 80.281195
+   "lat": 13.01552,
+   "lng": 80.22509
   },
   {
    "osm_id": 1078273882,
    "name": "Anna Salai (Mount Road)",
    "highway": "primary",
-   "betweenness": 0.071438,
+   "betweenness": 0.071465,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.014639,
-   "lng": 80.224105
+   "lat": 13.01464,
+   "lng": 80.2241
+  },
+  {
+   "osm_id": 1189655636,
+   "name": "Netaji Subhash Chandra Bose Road",
+   "highway": "tertiary",
+   "betweenness": 0.071449,
+   "los_grade": "F",
+   "congestion_risk": 100,
+   "is_bridge": false,
+   "criticality": "high",
+   "lat": 13.08869,
+   "lng": 80.2812
   },
   {
    "osm_id": 1098504489,
    "name": "Netaji Subhash Chandra Bose Road",
    "highway": "tertiary",
-   "betweenness": 0.071402,
+   "betweenness": 0.071392,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.088971,
-   "lng": 80.280248
+   "lat": 13.08897,
+   "lng": 80.28025
   },
   {
    "osm_id": 28275782,
    "name": "Netaji Subhash Chandra Bose Road",
    "highway": "tertiary",
-   "betweenness": 0.071348,
+   "betweenness": 0.071337,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.090537,
-   "lng": 80.277096
+   "lat": 13.09054,
+   "lng": 80.2771
   },
   {
    "osm_id": 1283900228,
    "name": "Wall Tax Road",
    "highway": "trunk",
-   "betweenness": 0.071317,
+   "betweenness": 0.071306,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.092321,
-   "lng": 80.275296
+   "lat": 13.09232,
+   "lng": 80.2753
   },
   {
    "osm_id": 1533873623,
    "name": "Rasappa Chetty Street",
    "highway": "tertiary",
-   "betweenness": 0.071091,
+   "betweenness": 0.071081,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
    "lat": 13.08588,
-   "lng": 80.280801
+   "lng": 80.2808
   },
   {
    "osm_id": 1149817573,
    "name": "Wall Tax Road",
    "highway": "trunk",
-   "betweenness": 0.070917,
+   "betweenness": 0.070905,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 13.102901,
-   "lng": 80.273968
+   "lat": 13.1029,
+   "lng": 80.27397
   }
  ],
  "critical_links": [
@@ -264,8 +264,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.136397,
-   "lng": 80.255195
+   "lat": 13.1364,
+   "lng": 80.25519
   },
   {
    "osm_id": 26524193,
@@ -288,8 +288,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.138347,
-   "lng": 80.281597
+   "lat": 13.13835,
+   "lng": 80.2816
   },
   {
    "osm_id": 125206035,
@@ -300,8 +300,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.126301,
-   "lng": 80.278158
+   "lat": 13.1263,
+   "lng": 80.27816
   },
   {
    "osm_id": 133599500,
@@ -313,7 +313,7 @@
    "is_bridge": true,
    "criticality": "critical",
    "lat": 13.1399,
-   "lng": 80.295126
+   "lng": 80.29513
   },
   {
    "osm_id": 240472104,
@@ -321,23 +321,23 @@
    "highway": "secondary",
    "betweenness": 0.01212,
    "los_grade": "D",
-   "congestion_risk": 75,
+   "congestion_risk": 76,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.063473,
-   "lng": 80.261754
+   "lat": 13.06347,
+   "lng": 80.26175
   },
   {
    "osm_id": 240472105,
    "name": "Commander-In-Chief Bridge",
    "highway": "secondary",
    "betweenness": 0.01202,
-   "los_grade": "C",
+   "los_grade": "D",
    "congestion_risk": 75,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.063657,
-   "lng": 80.260899
+   "lat": 13.06366,
+   "lng": 80.2609
   },
   {
    "osm_id": 240472111,
@@ -345,11 +345,11 @@
    "highway": "secondary",
    "betweenness": 0.01192,
    "los_grade": "C",
-   "congestion_risk": 74,
+   "congestion_risk": 75,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.063938,
-   "lng": 80.260016
+   "lat": 13.06394,
+   "lng": 80.26002
   },
   {
    "osm_id": 837717489,
@@ -360,8 +360,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.136482,
-   "lng": 80.255078
+   "lat": 13.13648,
+   "lng": 80.25508
   },
   {
    "osm_id": 838429807,
@@ -372,8 +372,8 @@
    "congestion_risk": 81,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.158629,
-   "lng": 80.298946
+   "lat": 13.15863,
+   "lng": 80.29895
   },
   {
    "osm_id": 1081264285,
@@ -384,8 +384,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.137422,
-   "lng": 80.247915
+   "lat": 13.13742,
+   "lng": 80.24791
   },
   {
    "osm_id": 1081264286,
@@ -396,8 +396,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.136647,
-   "lng": 80.253111
+   "lat": 13.13665,
+   "lng": 80.25311
   },
   {
    "osm_id": 1122275983,
@@ -408,8 +408,8 @@
    "congestion_risk": 51,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.154209,
-   "lng": 80.300669
+   "lat": 13.15421,
+   "lng": 80.30067
   },
   {
    "osm_id": 1122275984,
@@ -417,11 +417,11 @@
    "highway": "secondary",
    "betweenness": 0.012897,
    "los_grade": "D",
-   "congestion_risk": 80,
+   "congestion_risk": 81,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.158033,
-   "lng": 80.301721
+   "lat": 13.15803,
+   "lng": 80.30172
   },
   {
    "osm_id": 1188800422,
@@ -432,8 +432,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.150477,
-   "lng": 80.287314
+   "lat": 13.15048,
+   "lng": 80.28731
   },
   {
    "osm_id": 1249810080,
@@ -441,10 +441,10 @@
    "highway": "secondary",
    "betweenness": 0.010819,
    "los_grade": "C",
-   "congestion_risk": 67,
+   "congestion_risk": 68,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.132912,
+   "lat": 13.13291,
    "lng": 80.29248
   },
   {
@@ -456,8 +456,8 @@
    "congestion_risk": 74,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.064357,
-   "lng": 80.259143
+   "lat": 13.06436,
+   "lng": 80.25914
   },
   {
    "osm_id": 1293058182,
@@ -468,8 +468,8 @@
    "congestion_risk": 68,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.134579,
-   "lng": 80.293106
+   "lat": 13.13458,
+   "lng": 80.29311
   },
   {
    "osm_id": 1348904623,
@@ -480,8 +480,8 @@
    "congestion_risk": 67,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.132374,
-   "lng": 80.292281
+   "lat": 13.13237,
+   "lng": 80.29228
   },
   {
    "osm_id": 1432703450,
@@ -492,8 +492,8 @@
    "congestion_risk": 51,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.145978,
-   "lng": 80.297518
+   "lat": 13.14598,
+   "lng": 80.29752
   },
   {
    "osm_id": 1522203183,
@@ -504,8 +504,8 @@
    "congestion_risk": 68,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.066935,
-   "lng": 80.255286
+   "lat": 13.06693,
+   "lng": 80.25529
   },
   {
    "osm_id": 1532576390,
@@ -513,11 +513,11 @@
    "highway": "secondary",
    "betweenness": 0.010819,
    "los_grade": "C",
-   "congestion_risk": 67,
+   "congestion_risk": 68,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.067062,
-   "lng": 80.255147
+   "lat": 13.06706,
+   "lng": 80.25515
   },
   {
    "osm_id": 1540007941,
@@ -528,8 +528,8 @@
    "congestion_risk": 69,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.065823,
-   "lng": 80.256573
+   "lat": 13.06582,
+   "lng": 80.25657
   },
   {
    "osm_id": 1540007942,
@@ -537,11 +537,11 @@
    "highway": "secondary",
    "betweenness": 0.01112,
    "los_grade": "C",
-   "congestion_risk": 69,
+   "congestion_risk": 70,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 13.065495,
-   "lng": 80.257003
+   "lat": 13.0655,
+   "lng": 80.257
   }
  ]
 }

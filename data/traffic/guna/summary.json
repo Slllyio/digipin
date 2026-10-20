@@ -22,8 +22,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.656002,
-   "lng": 77.289751
+   "lat": 24.656,
+   "lng": 77.28975
   },
   {
    "osm_id": 906125535,
@@ -35,7 +35,7 @@
    "is_bridge": true,
    "criticality": "critical",
    "lat": 24.65468,
-   "lng": 77.288017
+   "lng": 77.28802
   },
   {
    "osm_id": 906125537,
@@ -46,8 +46,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.656508,
-   "lng": 77.290333
+   "lat": 24.65651,
+   "lng": 77.29033
   },
   {
    "osm_id": 906125536,
@@ -58,8 +58,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.652498,
-   "lng": 77.285371
+   "lat": 24.6525,
+   "lng": 77.28537
   },
   {
    "osm_id": 906125542,
@@ -70,8 +70,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.657694,
-   "lng": 77.291588
+   "lat": 24.65769,
+   "lng": 77.29159
   },
   {
    "osm_id": 906125533,
@@ -82,8 +82,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.650526,
-   "lng": 77.283689
+   "lat": 24.65053,
+   "lng": 77.28369
   },
   {
    "osm_id": 906125541,
@@ -94,8 +94,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.657719,
-   "lng": 77.291615
+   "lat": 24.65772,
+   "lng": 77.29161
   },
   {
    "osm_id": 906125534,
@@ -106,8 +106,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.649209,
-   "lng": 77.282404
+   "lat": 24.64921,
+   "lng": 77.2824
   },
   {
    "osm_id": 906125540,
@@ -118,8 +118,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.658818,
-   "lng": 77.292755
+   "lat": 24.65882,
+   "lng": 77.29275
   },
   {
    "osm_id": 906125531,
@@ -130,8 +130,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.648663,
-   "lng": 77.281722
+   "lat": 24.64866,
+   "lng": 77.28172
   },
   {
    "osm_id": 906125539,
@@ -142,8 +142,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.664473,
-   "lng": 77.297639
+   "lat": 24.66447,
+   "lng": 77.29764
   },
   {
    "osm_id": 906125532,
@@ -154,8 +154,8 @@
    "congestion_risk": 95,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.647892,
-   "lng": 77.280603
+   "lat": 24.64789,
+   "lng": 77.2806
   },
   {
    "osm_id": 908135166,
@@ -166,8 +166,8 @@
    "congestion_risk": 95,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.667846,
-   "lng": 77.303368
+   "lat": 24.66785,
+   "lng": 77.30337
   },
   {
    "osm_id": 909114640,
@@ -178,8 +178,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.648137,
-   "lng": 77.318051
+   "lat": 24.64814,
+   "lng": 77.31805
   },
   {
    "osm_id": 906450516,
@@ -190,8 +190,8 @@
    "congestion_risk": 87,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.644805,
-   "lng": 77.278016
+   "lat": 24.64481,
+   "lng": 77.27802
   },
   {
    "osm_id": 908135167,
@@ -202,8 +202,8 @@
    "congestion_risk": 87,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.670148,
-   "lng": 77.312935
+   "lat": 24.67015,
+   "lng": 77.31293
   },
   {
    "osm_id": 906450517,
@@ -214,8 +214,8 @@
    "congestion_risk": 78,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.638364,
-   "lng": 77.274076
+   "lat": 24.63836,
+   "lng": 77.27408
   },
   {
    "osm_id": 908154472,
@@ -226,8 +226,8 @@
    "congestion_risk": 78,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.675325,
-   "lng": 77.322787
+   "lat": 24.67532,
+   "lng": 77.32279
   },
   {
    "osm_id": 909983407,
@@ -238,8 +238,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.651514,
-   "lng": 77.319893
+   "lat": 24.65151,
+   "lng": 77.31989
   },
   {
    "osm_id": 908036065,
@@ -250,8 +250,8 @@
    "congestion_risk": 68,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.635347,
-   "lng": 77.272179
+   "lat": 24.63535,
+   "lng": 77.27218
   }
  ],
  "critical_links": [
@@ -264,8 +264,8 @@
    "congestion_risk": 47,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.646966,
-   "lng": 77.316704
+   "lat": 24.64697,
+   "lng": 77.3167
   },
   {
    "osm_id": 906125531,
@@ -276,8 +276,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.648663,
-   "lng": 77.281722
+   "lat": 24.64866,
+   "lng": 77.28172
   },
   {
    "osm_id": 906125532,
@@ -288,8 +288,8 @@
    "congestion_risk": 95,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.647892,
-   "lng": 77.280603
+   "lat": 24.64789,
+   "lng": 77.2806
   },
   {
    "osm_id": 906125533,
@@ -300,8 +300,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.650526,
-   "lng": 77.283689
+   "lat": 24.65053,
+   "lng": 77.28369
   },
   {
    "osm_id": 906125534,
@@ -312,8 +312,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.649209,
-   "lng": 77.282404
+   "lat": 24.64921,
+   "lng": 77.2824
   },
   {
    "osm_id": 906125535,
@@ -325,7 +325,7 @@
    "is_bridge": true,
    "criticality": "critical",
    "lat": 24.65468,
-   "lng": 77.288017
+   "lng": 77.28802
   },
   {
    "osm_id": 906125536,
@@ -336,8 +336,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.652498,
-   "lng": 77.285371
+   "lat": 24.6525,
+   "lng": 77.28537
   },
   {
    "osm_id": 906125537,
@@ -348,8 +348,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.656508,
-   "lng": 77.290333
+   "lat": 24.65651,
+   "lng": 77.29033
   },
   {
    "osm_id": 906125538,
@@ -360,8 +360,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.656002,
-   "lng": 77.289751
+   "lat": 24.656,
+   "lng": 77.28975
   },
   {
    "osm_id": 906125539,
@@ -372,8 +372,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.664473,
-   "lng": 77.297639
+   "lat": 24.66447,
+   "lng": 77.29764
   },
   {
    "osm_id": 906125540,
@@ -384,8 +384,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.658818,
-   "lng": 77.292755
+   "lat": 24.65882,
+   "lng": 77.29275
   },
   {
    "osm_id": 906125541,
@@ -396,8 +396,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.657719,
-   "lng": 77.291615
+   "lat": 24.65772,
+   "lng": 77.29161
   },
   {
    "osm_id": 906125542,
@@ -408,8 +408,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.657694,
-   "lng": 77.291588
+   "lat": 24.65769,
+   "lng": 77.29159
   },
   {
    "osm_id": 906450516,
@@ -420,8 +420,8 @@
    "congestion_risk": 87,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.644805,
-   "lng": 77.278016
+   "lat": 24.64481,
+   "lng": 77.27802
   },
   {
    "osm_id": 906450517,
@@ -432,8 +432,8 @@
    "congestion_risk": 78,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.638364,
-   "lng": 77.274076
+   "lat": 24.63836,
+   "lng": 77.27408
   },
   {
    "osm_id": 908036063,
@@ -444,8 +444,8 @@
    "congestion_risk": 45,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.633713,
-   "lng": 77.271141
+   "lat": 24.63371,
+   "lng": 77.27114
   },
   {
    "osm_id": 908036064,
@@ -456,7 +456,7 @@
    "congestion_risk": 57,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.633904,
+   "lat": 24.6339,
    "lng": 77.27126
   },
   {
@@ -468,8 +468,8 @@
    "congestion_risk": 68,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.635347,
-   "lng": 77.272179
+   "lat": 24.63535,
+   "lng": 77.27218
   },
   {
    "osm_id": 908135166,
@@ -480,8 +480,8 @@
    "congestion_risk": 95,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.667846,
-   "lng": 77.303368
+   "lat": 24.66785,
+   "lng": 77.30337
   },
   {
    "osm_id": 908135167,
@@ -492,8 +492,8 @@
    "congestion_risk": 87,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.670148,
-   "lng": 77.312935
+   "lat": 24.67015,
+   "lng": 77.31293
   },
   {
    "osm_id": 908154472,
@@ -504,8 +504,8 @@
    "congestion_risk": 78,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.675325,
-   "lng": 77.322787
+   "lat": 24.67532,
+   "lng": 77.32279
   },
   {
    "osm_id": 909003613,
@@ -516,8 +516,8 @@
    "congestion_risk": 47,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.646382,
-   "lng": 77.327093
+   "lat": 24.64638,
+   "lng": 77.32709
   },
   {
    "osm_id": 909028765,
@@ -528,8 +528,8 @@
    "congestion_risk": 82,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.662107,
-   "lng": 77.326868
+   "lat": 24.66211,
+   "lng": 77.32687
   },
   {
    "osm_id": 909028766,
@@ -540,7 +540,7 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.656263,
+   "lat": 24.65626,
    "lng": 77.32284
   },
   {
@@ -553,7 +553,7 @@
    "is_bridge": true,
    "criticality": "critical",
    "lat": 24.64805,
-   "lng": 77.318098
+   "lng": 77.3181
   },
   {
    "osm_id": 909114640,
@@ -564,8 +564,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.648137,
-   "lng": 77.318051
+   "lat": 24.64814,
+   "lng": 77.31805
   },
   {
    "osm_id": 909114645,
@@ -576,8 +576,8 @@
    "congestion_risk": 47,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.647004,
-   "lng": 77.316023
+   "lat": 24.647,
+   "lng": 77.31602
   },
   {
    "osm_id": 909592092,
@@ -588,8 +588,8 @@
    "congestion_risk": 64,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.650731,
-   "lng": 77.311654
+   "lat": 24.65073,
+   "lng": 77.31165
   },
   {
    "osm_id": 909592093,
@@ -600,8 +600,8 @@
    "congestion_risk": 97,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.648833,
-   "lng": 77.316076
+   "lat": 24.64883,
+   "lng": 77.31608
   },
   {
    "osm_id": 909983407,
@@ -612,8 +612,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.651514,
-   "lng": 77.319893
+   "lat": 24.65151,
+   "lng": 77.31989
   },
   {
    "osm_id": 909983408,
@@ -624,8 +624,8 @@
    "congestion_risk": 97,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.661724,
-   "lng": 77.326613
+   "lat": 24.66172,
+   "lng": 77.32661
   },
   {
    "osm_id": 909983409,
@@ -636,8 +636,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.656843,
-   "lng": 77.323352
+   "lat": 24.65684,
+   "lng": 77.32335
   },
   {
    "osm_id": 910337106,
@@ -648,8 +648,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.648064,
-   "lng": 77.317802
+   "lat": 24.64806,
+   "lng": 77.3178
   },
   {
    "osm_id": 910337107,
@@ -660,8 +660,8 @@
    "congestion_risk": 82,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.650701,
-   "lng": 77.311728
+   "lat": 24.6507,
+   "lng": 77.31173
   },
   {
    "osm_id": 910337108,
@@ -672,8 +672,8 @@
    "congestion_risk": 97,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.649631,
-   "lng": 77.314057
+   "lat": 24.64963,
+   "lng": 77.31406
   },
   {
    "osm_id": 910738801,
@@ -684,8 +684,8 @@
    "congestion_risk": 57,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.675877,
-   "lng": 77.324363
+   "lat": 24.67588,
+   "lng": 77.32436
   },
   {
    "osm_id": 910738802,
@@ -697,7 +697,7 @@
    "is_bridge": true,
    "criticality": "critical",
    "lat": 24.67579,
-   "lng": 77.324119
+   "lng": 77.32412
   },
   {
    "osm_id": 910780631,
@@ -708,8 +708,8 @@
    "congestion_risk": 45,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.677021,
-   "lng": 77.328624
+   "lat": 24.67702,
+   "lng": 77.32862
   },
   {
    "osm_id": 1055641671,
@@ -720,8 +720,8 @@
    "congestion_risk": 64,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 24.662663,
-   "lng": 77.327256
+   "lat": 24.66266,
+   "lng": 77.32726
   }
  ]
 }

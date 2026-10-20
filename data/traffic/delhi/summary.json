@@ -5,50 +5,14 @@
  "graph_edges": 19197,
  "bridge_count": 11221,
  "los_distribution": {
-  "F": 1281,
-  "A": 16295,
-  "C": 507,
-  "D": 287,
-  "B": 916,
-  "E": 109
+  "F": 1285,
+  "A": 16289,
+  "C": 483,
+  "D": 308,
+  "B": 925,
+  "E": 105
  },
  "top_bottlenecks": [
-  {
-   "osm_id": 733803588,
-   "name": "Indra Prasth Marg",
-   "highway": "secondary",
-   "betweenness": 0.02949,
-   "los_grade": "F",
-   "congestion_risk": 100,
-   "is_bridge": false,
-   "criticality": "high",
-   "lat": 28.628097,
-   "lng": 77.2467
-  },
-  {
-   "osm_id": 1453820690,
-   "name": "Indraprastha Marg",
-   "highway": "secondary",
-   "betweenness": 0.028871,
-   "los_grade": "F",
-   "congestion_risk": 100,
-   "is_bridge": false,
-   "criticality": "high",
-   "lat": 28.627741,
-   "lng": 77.24154
-  },
-  {
-   "osm_id": 370543237,
-   "name": "Indraprastha Marg",
-   "highway": "secondary",
-   "betweenness": 0.02886,
-   "los_grade": "F",
-   "congestion_risk": 100,
-   "is_bridge": false,
-   "criticality": "high",
-   "lat": 28.627987,
-   "lng": 77.244937
-  },
   {
    "osm_id": 313547225,
    "name": "",
@@ -58,116 +22,116 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.55781,
-   "lng": 77.132868
+   "lat": 28.55647,
+   "lng": 77.13244
   },
   {
    "osm_id": 264711057,
    "name": "",
    "highway": "trunk",
-   "betweenness": 0.021906,
+   "betweenness": 0.021905,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.593374,
-   "lng": 77.16402
+   "lat": 28.59391,
+   "lng": 77.16521
   },
   {
    "osm_id": 554798484,
    "name": "",
    "highway": "trunk",
-   "betweenness": 0.021892,
+   "betweenness": 0.021891,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.593265,
-   "lng": 77.163775
+   "lat": 28.59326,
+   "lng": 77.16378
   },
   {
    "osm_id": 1312987915,
    "name": "Flyover",
    "highway": "trunk",
-   "betweenness": 0.021878,
+   "betweenness": 0.021877,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.592752,
-   "lng": 77.162327
+   "lat": 28.59275,
+   "lng": 77.16233
   },
   {
    "osm_id": 754391963,
    "name": "Flyover",
    "highway": "trunk",
-   "betweenness": 0.021376,
+   "betweenness": 0.021374,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.592486,
-   "lng": 77.161513
+   "lat": 28.5927,
+   "lng": 77.16216
   },
   {
    "osm_id": 447602096,
    "name": "Sikandra Road",
    "highway": "secondary",
-   "betweenness": 0.021296,
+   "betweenness": 0.021299,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.625698,
-   "lng": 77.233348
+   "lat": 28.62574,
+   "lng": 77.23265
   },
   {
    "osm_id": 447602095,
    "name": "Sikandra Road",
    "highway": "secondary",
-   "betweenness": 0.021291,
+   "betweenness": 0.021295,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.625635,
-   "lng": 77.234574
+   "lat": 28.62564,
+   "lng": 77.23457
   },
   {
    "osm_id": 447602098,
    "name": "",
    "highway": "secondary_link",
-   "betweenness": 0.021291,
+   "betweenness": 0.021295,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.625749,
-   "lng": 77.234361
+   "lat": 28.62575,
+   "lng": 77.23436
   },
   {
    "osm_id": 80499271,
    "name": "Sikandra Road",
    "highway": "secondary",
-   "betweenness": 0.021289,
+   "betweenness": 0.021293,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.625627,
-   "lng": 77.236044
+   "lat": 28.62563,
+   "lng": 77.23558
   },
   {
    "osm_id": 733803585,
    "name": "Vikas Marg",
    "highway": "secondary",
-   "betweenness": 0.021266,
+   "betweenness": 0.021267,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
    "lat": 28.62819,
-   "lng": 77.249689
+   "lng": 77.24969
   },
   {
    "osm_id": 727360271,
@@ -178,8 +142,8 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.552492,
-   "lng": 77.130845
+   "lat": 28.55258,
+   "lng": 77.13087
   },
   {
    "osm_id": 1312967332,
@@ -190,44 +154,44 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.552174,
-   "lng": 77.130716
+   "lat": 28.55196,
+   "lng": 77.1305
   },
   {
    "osm_id": 1312967331,
    "name": "Mahipalpur Flyover",
    "highway": "motorway",
-   "betweenness": 0.021178,
+   "betweenness": 0.021177,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.551692,
-   "lng": 77.130139
+   "lat": 28.55169,
+   "lng": 77.13014
   },
   {
    "osm_id": 40138011,
    "name": "Mahipalpur Flyover",
    "highway": "motorway",
-   "betweenness": 0.02116,
+   "betweenness": 0.021159,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.544773,
-   "lng": 77.120197
+   "lat": 28.54444,
+   "lng": 77.11957
   },
   {
    "osm_id": 1201412916,
    "name": "Mahipalpur Flyover",
    "highway": "motorway",
-   "betweenness": 0.021143,
+   "betweenness": 0.021142,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.540899,
-   "lng": 77.117278
+   "lat": 28.54127,
+   "lng": 77.11744
   },
   {
    "osm_id": 1312967329,
@@ -238,20 +202,56 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.540278,
-   "lng": 77.117008
+   "lat": 28.54028,
+   "lng": 77.11701
   },
   {
    "osm_id": 70255392,
    "name": "Vikas Marg",
    "highway": "secondary",
-   "betweenness": 0.0211,
+   "betweenness": 0.021101,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 28.628206,
-   "lng": 77.250142
+   "lat": 28.6282,
+   "lng": 77.25053
+  },
+  {
+   "osm_id": 70255395,
+   "name": "Vikas Marg",
+   "highway": "secondary",
+   "betweenness": 0.021088,
+   "los_grade": "F",
+   "congestion_risk": 100,
+   "is_bridge": false,
+   "criticality": "high",
+   "lat": 28.6282,
+   "lng": 77.25159
+  },
+  {
+   "osm_id": 1474862453,
+   "name": "Vikas Marg",
+   "highway": "primary",
+   "betweenness": 0.021077,
+   "los_grade": "F",
+   "congestion_risk": 100,
+   "is_bridge": false,
+   "criticality": "high",
+   "lat": 28.62878,
+   "lng": 77.275
+  },
+  {
+   "osm_id": 70255393,
+   "name": "Vikas Marg",
+   "highway": "secondary",
+   "betweenness": 0.021076,
+   "los_grade": "F",
+   "congestion_risk": 100,
+   "is_bridge": false,
+   "criticality": "high",
+   "lat": 28.62823,
+   "lng": 77.25213
   }
  ],
  "critical_links": []

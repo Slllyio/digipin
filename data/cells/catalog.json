@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-20T22:24:56Z",
+  "generated": "2026-10-20T22:41:05Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -3455,7 +3455,7 @@
       "regions": [
         {
           "name": "ahmedabad",
-          "cells": 2357,
+          "cells": 2353,
           "bbox": {
             "west": 72.480224609375,
             "south": 22.949951171875,
@@ -3467,7 +3467,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 5518,
+          "cells": 5393,
           "bbox": {
             "west": 77.450439453125,
             "south": 12.829345703125,
@@ -3478,8 +3478,20 @@
           "parquet": "mobility/bengaluru.parquet"
         },
         {
+          "name": "bhopal",
+          "cells": 811,
+          "bbox": {
+            "west": 77.301025390625,
+            "south": 23.1806640625,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "mobility/bhopal.json",
+          "parquet": "mobility/bhopal.parquet"
+        },
+        {
           "name": "chennai",
-          "cells": 2638,
+          "cells": 2639,
           "bbox": {
             "west": 80.12890625,
             "south": 12.899658203125,
@@ -3491,7 +3503,7 @@
         },
         {
           "name": "delhi",
-          "cells": 8011,
+          "cells": 7344,
           "bbox": {
             "west": 76.839599609375,
             "south": 28.399169921875,
@@ -3515,7 +3527,7 @@
         },
         {
           "name": "hyderabad",
-          "cells": 3576,
+          "cells": 3577,
           "bbox": {
             "west": 78.30078125,
             "south": 17.30078125,
@@ -3539,7 +3551,7 @@
         },
         {
           "name": "jaipur",
-          "cells": 1735,
+          "cells": 1737,
           "bbox": {
             "west": 75.69921875,
             "south": 26.799560546875,
@@ -3551,7 +3563,7 @@
         },
         {
           "name": "kolkata",
-          "cells": 1709,
+          "cells": 1708,
           "bbox": {
             "west": 88.28076171875,
             "south": 22.448974609375,
@@ -3575,7 +3587,7 @@
         },
         {
           "name": "mumbai",
-          "cells": 3289,
+          "cells": 3288,
           "bbox": {
             "west": 72.78125,
             "south": 18.889404296875,
@@ -3587,7 +3599,7 @@
         },
         {
           "name": "pune",
-          "cells": 2470,
+          "cells": 2472,
           "bbox": {
             "west": 73.750244140625,
             "south": 18.43017578125,
@@ -8215,7 +8227,7 @@
           "unit": "m",
           "domain": [
             0.0,
-            19754.9
+            21772.1
           ],
           "ramp": "blues"
         },
@@ -8260,7 +8272,7 @@
       "regions": [
         {
           "name": "ahmedabad",
-          "cells": 2653,
+          "cells": 2651,
           "bbox": {
             "west": 72.480224609375,
             "south": 22.949951171875,
@@ -8272,7 +8284,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 10856,
+          "cells": 10807,
           "bbox": {
             "west": 77.450439453125,
             "south": 12.829345703125,
@@ -8297,8 +8309,20 @@
           }
         },
         {
+          "name": "bhopal",
+          "cells": 969,
+          "bbox": {
+            "west": 77.301025390625,
+            "south": 23.1806640625,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "traffic/bhopal.json",
+          "parquet": "traffic/bhopal.parquet"
+        },
+        {
           "name": "chennai",
-          "cells": 4165,
+          "cells": 4167,
           "bbox": {
             "west": 80.12890625,
             "south": 12.899658203125,
@@ -8310,7 +8334,7 @@
         },
         {
           "name": "delhi",
-          "cells": 11881,
+          "cells": 11473,
           "bbox": {
             "west": 76.839599609375,
             "south": 28.399169921875,
@@ -8383,7 +8407,7 @@
         },
         {
           "name": "jaipur",
-          "cells": 2338,
+          "cells": 2340,
           "bbox": {
             "west": 75.69921875,
             "south": 26.799560546875,
@@ -8395,7 +8419,7 @@
         },
         {
           "name": "kolkata",
-          "cells": 2643,
+          "cells": 2642,
           "bbox": {
             "west": 88.28076171875,
             "south": 22.448974609375,
@@ -8419,7 +8443,7 @@
         },
         {
           "name": "mumbai",
-          "cells": 4984,
+          "cells": 4983,
           "bbox": {
             "west": 72.779052734375,
             "south": 18.889404296875,
@@ -8431,7 +8455,7 @@
         },
         {
           "name": "pune",
-          "cells": 3342,
+          "cells": 3343,
           "bbox": {
             "west": 73.750244140625,
             "south": 18.43017578125,

@@ -5,61 +5,61 @@
  "graph_edges": 6254,
  "bridge_count": 3518,
  "los_distribution": {
-  "A": 5377,
-  "B": 261,
-  "D": 108,
-  "F": 375,
-  "C": 189,
-  "E": 77
+  "A": 5356,
+  "B": 254,
+  "E": 62,
+  "F": 399,
+  "C": 192,
+  "D": 124
  },
  "top_bottlenecks": [
   {
    "osm_id": 661187151,
    "name": "Dr. Rajendra Prasad Path",
    "highway": "trunk",
-   "betweenness": 0.070984,
+   "betweenness": 0.070983,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.528984,
-   "lng": 73.852506
+   "lat": 18.52898,
+   "lng": 73.85251
   },
   {
    "osm_id": 195712757,
    "name": "Dr. Rajendra Prasad Path",
    "highway": "trunk",
-   "betweenness": 0.070967,
+   "betweenness": 0.070966,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.529166,
-   "lng": 73.852688
+   "lat": 18.52917,
+   "lng": 73.85269
   },
   {
    "osm_id": 229970360,
    "name": "Old Pune\u2013Mumbai Highway",
    "highway": "trunk",
-   "betweenness": 0.07095,
+   "betweenness": 0.070949,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.529446,
-   "lng": 73.853136
+   "lat": 18.52945,
+   "lng": 73.85314
   },
   {
    "osm_id": 838145991,
    "name": "Ganeshkhind Road",
    "highway": "trunk",
-   "betweenness": 0.070478,
+   "betweenness": 0.070477,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.530131,
-   "lng": 73.850206
+   "lat": 18.53013,
+   "lng": 73.85021
   },
   {
    "osm_id": 838145992,
@@ -70,56 +70,56 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.529869,
-   "lng": 73.851057
+   "lat": 18.52987,
+   "lng": 73.85106
   },
   {
    "osm_id": 1116174341,
    "name": "Ganeshkhind Road",
    "highway": "primary",
-   "betweenness": 0.069569,
+   "betweenness": 0.06957,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.530249,
-   "lng": 73.849793
+   "lat": 18.53025,
+   "lng": 73.84979
   },
   {
    "osm_id": 311631281,
    "name": "Ganeshkhind Road",
    "highway": "primary",
-   "betweenness": 0.06952,
+   "betweenness": 0.069521,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.530524,
-   "lng": 73.848684
+   "lat": 18.53052,
+   "lng": 73.84868
   },
   {
    "osm_id": 380347405,
    "name": "Mokshagundam Vishweshvarayya Flyover",
    "highway": "trunk",
-   "betweenness": 0.069498,
+   "betweenness": 0.069497,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.529533,
-   "lng": 73.853366
+   "lat": 18.52953,
+   "lng": 73.85337
   },
   {
    "osm_id": 380347398,
    "name": "Mokshagundam Vishweshvarayya Flyover",
    "highway": "trunk",
-   "betweenness": 0.069481,
+   "betweenness": 0.06948,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.529738,
-   "lng": 73.853674
+   "lat": 18.52974,
+   "lng": 73.85367
   },
   {
    "osm_id": 311631280,
@@ -130,8 +130,8 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.531091,
-   "lng": 73.846544
+   "lat": 18.53109,
+   "lng": 73.84654
   },
   {
    "osm_id": 838145996,
@@ -142,8 +142,8 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.531551,
-   "lng": 73.844793
+   "lat": 18.53155,
+   "lng": 73.84479
   },
   {
    "osm_id": 198565141,
@@ -154,8 +154,8 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.531806,
-   "lng": 73.843947
+   "lat": 18.53181,
+   "lng": 73.84395
   },
   {
    "osm_id": 1531362755,
@@ -166,32 +166,32 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.534417,
-   "lng": 73.839546
+   "lat": 18.53442,
+   "lng": 73.83955
   },
   {
    "osm_id": 317550179,
    "name": "Mokshagundam Vishweshvarayya Flyover",
    "highway": "trunk",
-   "betweenness": 0.062682,
+   "betweenness": 0.06268,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.530032,
-   "lng": 73.853994
+   "lat": 18.53003,
+   "lng": 73.85399
   },
   {
    "osm_id": 317550168,
    "name": "Mokshagundam Vishweshvarayya Flyover",
    "highway": "trunk",
-   "betweenness": 0.062626,
+   "betweenness": 0.062625,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.530372,
-   "lng": 73.854977
+   "lat": 18.53037,
+   "lng": 73.85498
   },
   {
    "osm_id": 118265726,
@@ -202,32 +202,32 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.506433,
-   "lng": 73.884059
+   "lat": 18.50643,
+   "lng": 73.88406
   },
   {
    "osm_id": 1453283145,
    "name": "Solapur Road",
    "highway": "trunk",
-   "betweenness": 0.060782,
+   "betweenness": 0.060781,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.506486,
-   "lng": 73.884233
+   "lat": 18.50649,
+   "lng": 73.88423
   },
   {
    "osm_id": 198565144,
    "name": "Ganeshkhind Road",
    "highway": "primary",
-   "betweenness": 0.059424,
+   "betweenness": 0.059425,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.535873,
-   "lng": 73.837507
+   "lat": 18.53587,
+   "lng": 73.83751
   },
   {
    "osm_id": 327073018,
@@ -238,20 +238,20 @@
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.537768,
-   "lng": 73.835208
+   "lat": 18.53777,
+   "lng": 73.83521
   },
   {
    "osm_id": 246580196,
    "name": "Karve Road",
    "highway": "primary",
-   "betweenness": 0.059312,
+   "betweenness": 0.05931,
    "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": false,
    "criticality": "high",
-   "lat": 18.507134,
-   "lng": 73.828453
+   "lat": 18.50713,
+   "lng": 73.82845
   }
  ],
  "critical_links": [
@@ -264,8 +264,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.500498,
-   "lng": 73.854018
+   "lat": 18.5005,
+   "lng": 73.85402
   },
   {
    "osm_id": 86918652,
@@ -276,8 +276,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.538182,
-   "lng": 73.781561
+   "lat": 18.53818,
+   "lng": 73.78156
   },
   {
    "osm_id": 86918661,
@@ -288,7 +288,7 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.536021,
+   "lat": 18.53602,
    "lng": 73.78147
   },
   {
@@ -300,8 +300,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.538353,
-   "lng": 73.783247
+   "lat": 18.53835,
+   "lng": 73.78325
   },
   {
    "osm_id": 127056178,
@@ -309,11 +309,11 @@
    "highway": "primary",
    "betweenness": 0.011527,
    "los_grade": "C",
-   "congestion_risk": 56,
+   "congestion_risk": 58,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.588564,
-   "lng": 73.832162
+   "lat": 18.58856,
+   "lng": 73.83216
   },
   {
    "osm_id": 132474363,
@@ -324,8 +324,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.537577,
-   "lng": 73.787166
+   "lat": 18.53758,
+   "lng": 73.78717
   },
   {
    "osm_id": 199637812,
@@ -336,8 +336,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.501044,
-   "lng": 73.845514
+   "lat": 18.50104,
+   "lng": 73.84551
   },
   {
    "osm_id": 199637816,
@@ -348,8 +348,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.492022,
-   "lng": 73.834157
+   "lat": 18.49202,
+   "lng": 73.83416
   },
   {
    "osm_id": 208089916,
@@ -360,8 +360,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.499135,
-   "lng": 73.852251
+   "lat": 18.49914,
+   "lng": 73.85225
   },
   {
    "osm_id": 212751758,
@@ -373,7 +373,7 @@
    "is_bridge": true,
    "criticality": "critical",
    "lat": 18.49903,
-   "lng": 73.851819
+   "lng": 73.85182
   },
   {
    "osm_id": 212751760,
@@ -384,32 +384,32 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.500364,
-   "lng": 73.849241
+   "lat": 18.50036,
+   "lng": 73.84924
   },
   {
    "osm_id": 251618595,
    "name": "Sutarwadi Road",
    "highway": "tertiary",
    "betweenness": 0.01096,
-   "los_grade": "E",
+   "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.537204,
-   "lng": 73.789124
+   "lat": 18.5372,
+   "lng": 73.78912
   },
   {
    "osm_id": 815893778,
    "name": "Old Pune\u2013Mumbai Highway",
    "highway": "primary",
    "betweenness": 0.011248,
-   "los_grade": "B",
-   "congestion_risk": 55,
+   "los_grade": "C",
+   "congestion_risk": 56,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.580605,
-   "lng": 73.834373
+   "lat": 18.5806,
+   "lng": 73.83437
   },
   {
    "osm_id": 815893780,
@@ -417,11 +417,11 @@
    "highway": "primary",
    "betweenness": 0.011434,
    "los_grade": "C",
-   "congestion_risk": 56,
+   "congestion_risk": 57,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.583637,
-   "lng": 73.833639
+   "lat": 18.58364,
+   "lng": 73.83364
   },
   {
    "osm_id": 815893781,
@@ -429,47 +429,47 @@
    "highway": "primary",
    "betweenness": 0.011341,
    "los_grade": "C",
-   "congestion_risk": 55,
+   "congestion_risk": 57,
    "is_bridge": true,
    "criticality": "critical",
    "lat": 18.58071,
-   "lng": 73.834344
+   "lng": 73.83434
   },
   {
    "osm_id": 838573242,
    "name": "Sutarwadi Road",
    "highway": "tertiary",
    "betweenness": 0.010867,
-   "los_grade": "E",
-   "congestion_risk": 99,
+   "los_grade": "F",
+   "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.536708,
-   "lng": 73.790381
+   "lat": 18.53671,
+   "lng": 73.79038
   },
   {
    "osm_id": 838573243,
    "name": "",
    "highway": "tertiary",
    "betweenness": 0.010775,
-   "los_grade": "E",
-   "congestion_risk": 98,
+   "los_grade": "F",
+   "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.536466,
-   "lng": 73.790967
+   "lat": 18.53647,
+   "lng": 73.79097
   },
   {
    "osm_id": 838573244,
    "name": "",
    "highway": "tertiary",
    "betweenness": 0.010682,
-   "los_grade": "E",
-   "congestion_risk": 97,
+   "los_grade": "F",
+   "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.536355,
-   "lng": 73.791378
+   "lat": 18.53636,
+   "lng": 73.79138
   },
   {
    "osm_id": 858845635,
@@ -477,11 +477,11 @@
    "highway": "primary",
    "betweenness": 0.011807,
    "los_grade": "C",
-   "congestion_risk": 57,
+   "congestion_risk": 59,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.599365,
-   "lng": 73.827197
+   "lat": 18.59937,
+   "lng": 73.8272
   },
   {
    "osm_id": 1011614743,
@@ -492,8 +492,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.535032,
-   "lng": 73.780862
+   "lat": 18.53503,
+   "lng": 73.78086
   },
   {
    "osm_id": 1099319968,
@@ -501,11 +501,11 @@
    "highway": "primary",
    "betweenness": 0.011714,
    "los_grade": "C",
-   "congestion_risk": 57,
+   "congestion_risk": 59,
    "is_bridge": true,
    "criticality": "critical",
    "lat": 18.59363,
-   "lng": 73.829809
+   "lng": 73.82981
   },
   {
    "osm_id": 1099319969,
@@ -513,11 +513,11 @@
    "highway": "primary",
    "betweenness": 0.01162,
    "los_grade": "C",
-   "congestion_risk": 57,
+   "congestion_risk": 58,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.591915,
-   "lng": 73.830601
+   "lat": 18.59191,
+   "lng": 73.8306
   },
   {
    "osm_id": 1207739110,
@@ -528,8 +528,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.499678,
-   "lng": 73.843802
+   "lat": 18.49968,
+   "lng": 73.8438
   },
   {
    "osm_id": 1207739908,
@@ -540,8 +540,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.499533,
-   "lng": 73.843607
+   "lat": 18.49953,
+   "lng": 73.84361
   },
   {
    "osm_id": 1207739909,
@@ -552,7 +552,7 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.499568,
+   "lat": 18.49957,
    "lng": 73.84366
   },
   {
@@ -564,20 +564,20 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.499483,
-   "lng": 73.843533
+   "lat": 18.49948,
+   "lng": 73.84353
   },
   {
    "osm_id": 1434006923,
    "name": "Canal Road",
    "highway": "tertiary",
    "betweenness": 0.010969,
-   "los_grade": "E",
+   "los_grade": "F",
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.483656,
-   "lng": 73.810807
+   "lat": 18.48366,
+   "lng": 73.81081
   },
   {
    "osm_id": 1464087881,
@@ -588,8 +588,8 @@
    "congestion_risk": 100,
    "is_bridge": true,
    "criticality": "critical",
-   "lat": 18.501459,
-   "lng": 73.854132
+   "lat": 18.50146,
+   "lng": 73.85413
   },
   {
    "osm_id": 1510225657,
@@ -597,11 +597,11 @@
    "highway": "primary",
    "betweenness": 0.0119,
    "los_grade": "C",
-   "congestion_risk": 58,
+   "congestion_risk": 60,
    "is_bridge": true,
    "criticality": "critical",
    "lat": 18.60291,
-   "lng": 73.825439
+   "lng": 73.82544
   }
  ]
 }
