@@ -3530,6 +3530,20 @@ html[lang="hi"] textarea {
     border: 1px solid rgb(var(--accent-primary-rgb) / 0.15);
 }
 
+.overture-building-popup .maplibregl-popup-content,
+.building-data-tip .maplibregl-popup-content {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid rgb(var(--accent-primary-rgb) / 0.2);
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.45);
+}
+.building-data-tip .maplibregl-popup-content { padding: 6px 9px; pointer-events: none; }
+.overture-building-popup .maplibregl-popup-close-button { color: var(--text-primary); }
+.overture-building-popup .maplibregl-popup-tip,
+.building-data-tip .maplibregl-popup-tip { display: none; }
+.building-data-popup details summary { color: var(--accent-cyan-text); }
+
 .overture-popup {
     font-family: 'Inter', sans-serif;
     min-width: 180px;

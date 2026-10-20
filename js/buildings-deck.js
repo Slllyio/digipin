@@ -174,7 +174,8 @@ const DeckBuildings = (() => {
                 const height = cellH != null
                     ? Math.max(3, cellH * (0.85 + 0.3 * _hash01(key)))
                     : estimateHeight(props, _ringAreaM2(outer, cy), key);
-                out.push({ polygon: outer, height, sel });
+                const hsrc = explicit ? 'overture' : cellH != null ? 'baked' : 'estimate';
+                out.push({ polygon: outer, height, sel, hsrc, cls: props.class || null });
             }
         }
         return out;

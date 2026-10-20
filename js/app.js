@@ -53,7 +53,12 @@ const App = (() => {
         // Per-DIGIPIN-cell data store (data/cells/catalog.json): the layer
         // registry behind the "Cell Data" panel group + drag-and-drop ingest.
         step('CellStore', () => {
-            if (typeof CellStore !== 'undefined') CellStore.init();
+            if (typeof CellStore !== 'undefined') {
+                CellStore.init().then(() => {
+                    // Building-level joins need the registry loaded first.
+                    if (typeof BuildingData !== 'undefined') BuildingData.init();
+                });
+            }
             if (typeof CellIngest !== 'undefined') CellIngest.wireDropTarget(document.getElementById('map'));
         });
         step('Panel', () => Panel.init());

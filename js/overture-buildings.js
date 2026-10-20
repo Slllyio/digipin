@@ -177,37 +177,52 @@ const OvertureBuildings = (() => {
      * harvested footprints with baked heights), or 'native' (dark without
      * deck.gl: the PMTiles fill-extrusion itself). Pure.
      */
-    function chooseRenderer({ light, terrain, deckAvailable }) {
-        if (terrain || light) return 'twin';
+    function chooseRenderer({ light, terrain, deckAvailable, dataDriven }) {
+        // Data-driven colour/height lives in the twin's GeoJSON properties.
+        if (terrain || light || dataDriven) return 'twin';
         return deckAvailable ? 'deck' : 'native';
     }
 
-    /** Twin extrusion paint: white massing on paper, cyan glass on dark; amber selection. */
-    function twinPaint(light) {
+    /**
+     * Twin extrusion paint: white massing on paper, cyan glass on dark; amber
+     * selection. `dataColor` (a BuildingData colour expression) replaces the
+     * massing ramp when buildings are coloured by a dataset. Hovered buildings
+     * (feature-state) light up either way.
+     */
+    function twinPaint(light, dataColor) {
         const ramp = light
             ? ['interpolate', ['linear'], ['get', 'h'], 0, '#f3f5f7', 45, '#e9edf0', 120, '#dce1e6', 360, '#ccd2d9']
             : ['interpolate', ['linear'], ['get', 'h'], 0, '#0b4a59', 75, '#0f7d94', 210, '#19b6d6', 480, '#5cf0ff'];
+        const base = dataColor || ['case', ['get', 'sel'], light ? '#e0904f' : '#ff9d2e', ramp];
         return {
-            'fill-extrusion-color': ['case', ['get', 'sel'], light ? '#e0904f' : '#ff9d2e', ramp],
+            'fill-extrusion-color': ['case', ['boolean', ['feature-state', 'hover'], false],
+                light ? '#2563eb' : '#ffffff', base],
             'fill-extrusion-base': 0,
             'fill-extrusion-height': ['get', 'h'],
-            'fill-extrusion-opacity': light ? 0.96 : 0.78,
+            'fill-extrusion-opacity': dataColor ? 0.94 : (light ? 0.96 : 0.78),
             'fill-extrusion-vertical-gradient': true
         };
     }
 
     /**
      * Deck-style polygon records ({polygon, height, sel}) → GeoJSON for the twin
-     * layer, heights scaled by the display exaggeration. Pure.
+     * layer, heights scaled by the display exaggeration. Records annotated by
+     * BuildingData also carry their joined data: `hv` (a value-driven height in
+     * metres, used as-is), `v`, `pin`, centroid and footprint area. Pure.
      */
     function twinGeoJSON(records, exaggeration = 1) {
         return {
             type: 'FeatureCollection',
-            features: (records || []).map(r => ({
-                type: 'Feature',
-                properties: { h: +(r.height * exaggeration).toFixed(1), sel: !!r.sel },
-                geometry: { type: 'Polygon', coordinates: [r.polygon] }
-            }))
+            features: (records || []).map(r => {
+                const props = {
+                    h: r.hv != null ? +r.hv.toFixed(1) : +(r.height * exaggeration).toFixed(1),
+                    sel: !!r.sel,
+                    rh: +(+r.height).toFixed(1)
+                };
+                for (const k of ['v', 'hval', 'pin', 'cx', 'cy', 'cls', 'hsrc']) if (r[k] != null) props[k] = r[k];
+                if (r.area != null) props.area = Math.round(r.area);
+                return { type: 'Feature', properties: props, geometry: { type: 'Polygon', coordinates: [r.polygon] } };
+            })
         };
     }
 
@@ -299,7 +314,7 @@ const OvertureBuildings = (() => {
 
         // 5. Twin extrusion: harvested footprints + baked heights, drawn by
         // MapLibre so it sits on terrain. Filled by _refreshTwin.
-        map.addSource(TWIN_SRC, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+        map.addSource(TWIN_SRC, { type: 'geojson', data: { type: 'FeatureCollection', features: [] }, generateId: true });
         map.addLayer({
             id: TWIN_LAYER_ID,
             type: 'fill-extrusion',
@@ -308,6 +323,7 @@ const OvertureBuildings = (() => {
             paint: twinPaint(isLight()),
             layout: { 'visibility': 'none' }
         });
+        _bindTwinInteraction(map);
 
         map.on('click', LAYER_ID, onMapClick);
         map.on('mouseenter', LAYER_ID, () => {
@@ -340,8 +356,10 @@ const OvertureBuildings = (() => {
         const renderer = _active ? chooseRenderer({
             light,
             terrain: terrainOn(),
-            deckAvailable: typeof DeckBuildings !== 'undefined' && DeckBuildings.available && DeckBuildings.available()
+            deckAvailable: typeof DeckBuildings !== 'undefined' && DeckBuildings.available && DeckBuildings.available(),
+            dataDriven: _dataDriven()
         }) : 'off';
+        if (typeof BuildingData !== 'undefined') BuildingData.setPanelVisible(_active);
 
         // Leave whichever renderer was driving before.
         if (_deck && renderer !== 'deck') {
@@ -377,7 +395,7 @@ const OvertureBuildings = (() => {
             map.setLayoutProperty(LAYER_ID, 'visibility', 'visible');
             try { map.setPaintProperty(LAYER_ID, 'fill-extrusion-opacity', 0.01); } catch { /* stub */ }
             try {
-                for (const [k, v] of Object.entries(twinPaint(light))) map.setPaintProperty(TWIN_LAYER_ID, k, v);
+                for (const [k, v] of Object.entries(twinPaint(light, _dataColor()))) map.setPaintProperty(TWIN_LAYER_ID, k, v);
             } catch { /* stub */ }
             map.setLayoutProperty(TWIN_LAYER_ID, 'visibility', 'visible');
             _twin = true;
@@ -422,6 +440,62 @@ const OvertureBuildings = (() => {
             _infoPopup.remove();
             _infoPopup = null;
         }
+        if (!_twin) _clearHover();
+    }
+
+    /** True when BuildingData has a colour or height driver set. */
+    function _dataDriven() {
+        return typeof BuildingData !== 'undefined' && BuildingData.isActive && BuildingData.isActive();
+    }
+    /** BuildingData colour expression for the twin, or null for theme colours. */
+    function _dataColor() {
+        return (typeof BuildingData !== 'undefined' && BuildingData.currentColorExpr)
+            ? BuildingData.currentColorExpr() : null;
+    }
+
+    // ---- twin hover + click (building DIGIPIN and joined cell data) --------
+    let _hoverId = null;
+    let _tip = null;
+    function _clearHover() {
+        if (_map && _hoverId != null) {
+            try { _map.setFeatureState({ source: TWIN_SRC, id: _hoverId }, { hover: false }); } catch { /* source gone */ }
+        }
+        _hoverId = null;
+        if (_tip) { _tip.remove(); _tip = null; }
+    }
+    function _bindTwinInteraction(map) {
+        map.on('mousemove', TWIN_LAYER_ID, (e) => {
+            if (!_twin || !e.features || !e.features.length) return;
+            const f = e.features[0];
+            if (f.id !== _hoverId) {
+                _clearHover();
+                _hoverId = f.id;
+                try { map.setFeatureState({ source: TWIN_SRC, id: f.id }, { hover: true }); } catch { /* no id */ }
+            }
+            map.getCanvas().style.cursor = 'pointer';
+            if (typeof BuildingData === 'undefined' || typeof maplibregl === 'undefined') return;
+            if (!_tip) _tip = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 12, className: 'building-data-tip' });
+            _tip.setLngLat(e.lngLat).setHTML(BuildingData.tooltipHTML(f.properties)).addTo(map);
+        });
+        map.on('mouseleave', TWIN_LAYER_ID, () => {
+            _clearHover();
+            map.getCanvas().style.cursor = '';
+        });
+        map.on('click', TWIN_LAYER_ID, async (e) => {
+            if (!_twin || !e.features || !e.features.length || typeof BuildingData === 'undefined') return;
+            const p = e.features[0].properties || {};
+            const lat = Number.isFinite(+p.cy) ? +p.cy : e.lngLat.lat;
+            const lng = Number.isFinite(+p.cx) ? +p.cx : e.lngLat.lng;
+            if (_tip) { _tip.remove(); _tip = null; }
+            if (_infoPopup) _infoPopup.remove();
+            _infoPopup = new maplibregl.Popup({ className: 'overture-building-popup', maxWidth: '320px' })
+                .setLngLat(e.lngLat)
+                .setHTML(BuildingData.popupHTML(p, null).replace('No cell-store data covers this building.', 'Loading cell data…'))
+                .addTo(map);
+            const popup = _infoPopup;
+            const rows = await BuildingData.describe(lat, lng);
+            if (popup === _infoPopup) popup.setHTML(BuildingData.popupHTML(p, rows));
+        });
     }
 
     /** Re-harvest rendered footprints into the twin extrusion source. */
@@ -430,14 +504,19 @@ const OvertureBuildings = (() => {
         let feats = [];
         try { feats = _map.queryRenderedFeatures({ layers: [LAYER_ID] }) || []; }
         catch { /* layer not rendered yet */ }
-        const recs = DeckBuildings.featuresToPolygons(feats, isLight() ? null : _focus);
+        const data = _dataDriven();
+        let recs = DeckBuildings.featuresToPolygons(feats, (isLight() || data) ? null : _focus);
+        if (typeof BuildingData !== 'undefined') recs = BuildingData.annotateCurrent(recs);
+        _hoverId = null;   // setData resets generated feature ids
         const src = _map.getSource(TWIN_SRC);
         if (src && src.setData) src.setData(twinGeoJSON(recs, DeckBuildings.getExaggeration()));
     }
 
-    // Terrain on/off changes which renderer can follow the ground.
+    // Terrain on/off changes which renderer can follow the ground; a new
+    // BuildingData driver changes renderer, paint and the joined properties.
     if (typeof window !== 'undefined') {
         window.addEventListener('terrain:change', () => { if (_active) _apply(); });
+        window.addEventListener('buildingdata:change', () => { if (_active) _apply(); });
     }
 
     /**
@@ -492,7 +571,7 @@ const OvertureBuildings = (() => {
 
     /** Click handler: show a popup of the clicked building's attributes. */
     function onMapClick(e) {
-        if (!_active) return;
+        if (!_active || _twin) return;   // the twin layer has its own data popup
 
         const features = e.features;
         if (!features || features.length === 0) return;
