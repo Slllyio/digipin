@@ -54,39 +54,8 @@ cells.
 ```
 catalog.json                     the layer registry
 <dataset>/<region>.json          columnar JSON: what the browser reads
-<dataset>/<region>.json.gz       the same, gzipped with quantised integer columns (large regions)
-<dataset>/<region>.parquet       GeoParquet 1.1: DuckDB(-WASM), QGIS, geopandas — generated, not in git
+<dataset>/<region>.parquet       GeoParquet 1.1: DuckDB(-WASM), QGIS, geopandas
 ```
-
-### Compression (`.json.gz`)
-
-Temporal datasets, and any region with more than `GZIP_MIN_VALUES` (50k)
-values, are written as `.json.gz`. Number columns whose values have at most 4
-decimals are stored as integers with a per-field multiplier:
-
-```json
-{ "level": 7, "fields": ["ndvi"], "times": […], "cells": […],
-  "scale": { "ndvi": 0.001 }, "columns": { "ndvi": [[412, 398, null, …], …] } }
-```
-
-The values are exactly the ones written: the builders already round to those
-decimals. Static hosts such as GitHub Pages serve the file as-is.
-`CellStore.decodeDoc` checks the gzip magic bytes, inflates the file with
-`DecompressionStream`, and multiplies the columns back. A host that already
-sent `Content-Encoding: gzip` hands over plain JSON, which passes through.
-`store.read_json` does the same in Python. The files are written with
-`mtime=0`, so identical data gives identical bytes and git diffs stay clean.
-This and zstd-19 Parquet cut `data/cells` from 104 MB to 69 MB before the
-Parquet copies left git.
-
-### GeoParquet copies are generated
-
-The Parquet files duplicate the JSON, and they were more than half of
-`data/cells`, so git ignores them. The JSON is the source of truth.
-`python -m pipeline.cells.parquet` rebuilds every `regions[].parquet` named in
-the catalog (about 2 minutes for everything). The **Deploy to GitHub Pages**
-workflow runs it before publishing, so `CellStore.sql()` works on the site.
-Run it locally before using SQL against `serve.py`.
 
 Both files hold the same table: one row per cell **that has data** (sparse),
 sorted by code.
@@ -380,23 +349,23 @@ Cell counts per region (`python -m pipeline.cells.coverage --write` regenerates 
 table; both precompute workflows run it after a build):
 
 <!-- coverage:start -->
-| City | `air_quality` L6 | `built_up` L7 | `builtup_yearly` L7 | `growth` L7 | `land_cover` L7 | `lst_monthly` L6 | `mobility` L7 | `ndvi_monthly` L7 | `nightlights` L7 | `nightlights_monthly` L7 | `no2_monthly` L6 | `pm25_monthly` L5 | `population` L7 | `rain_monthly` L5 | `rainfall` L6 | `scores` L6 | `surface_heat` L7 | `terrain` L7 | `traffic` L7 | `water` L7 |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| indore_pilot | 2,209 | 33,489 | 33,489 | 30,611 | 33,489 | 2,209 | 1,765 | 33,489 | 33,489 | 33,489 | 2,209 | 156 | 33,489 | 156 | 2,209 | 2,209 | 33,489 | 33,489 | 1,991 | 33,489 |
-| bhopal | 442 | 6,565 | 6,565 | 6,498 | 6,565 | 442 | — | 6,565 | 6,565 | 6,565 | 442 | 35 | 6,565 | 35 | 442 | 442 | 6,565 | 6,565 | — | 6,565 |
-| pune | 700 | 10,767 | 10,767 | 10,767 | 10,767 | 700 | — | 10,767 | 10,767 | 10,767 | 700 | 56 | 10,767 | 56 | 700 | 700 | 10,767 | 10,767 | — | 10,767 |
-| mumbai | 1,125 | 16,878 | 16,878 | 11,372 | 16,878 | 704 | — | 13,438 | 16,878 | 16,878 | 1,125 | 84 | 16,475 | 71 | 988 | 1,125 | 16,878 | 16,878 | — | 16,878 |
-| bengaluru | 1,368 | 21,442 | 21,442 | 21,442 | 21,442 | 1,368 | — | 21,442 | 21,442 | 21,442 | 1,368 | 110 | 21,442 | 110 | 1,368 | 1,368 | 21,442 | 21,442 | — | 21,442 |
-| hyderabad | 1,080 | 15,870 | 15,870 | 15,870 | 15,870 | 1,080 | — | 15,870 | 15,870 | 15,870 | 1,080 | 90 | 15,870 | 90 | 1,080 | 1,080 | 15,870 | 15,870 | — | 15,870 |
-| chennai | 726 | 11,136 | 11,136 | 9,003 | 11,136 | 575 | — | 9,853 | 11,136 | 11,136 | 726 | 54 | 10,493 | 46 | 670 | 726 | 11,136 | 11,136 | — | 11,136 |
-| delhi | 3,304 | 51,027 | 51,027 | 51,027 | 51,027 | 3,304 | — | 51,027 | 51,027 | 51,027 | 3,304 | 225 | 51,027 | 225 | 3,304 | 3,304 | 51,027 | 51,027 | — | 51,027 |
-| guna | — | — | 1,444 | 1,346 | — | 100 | — | 1,444 | — | 1,444 | 100 | 9 | — | 9 | — | — | — | — | — | — |
-| jaipur | — | — | 9,292 | 8,962 | — | 624 | — | 9,292 | — | 9,292 | 624 | 42 | — | 42 | — | — | — | — | — | — |
-| ahmedabad | — | — | 7,176 | 7,176 | — | 504 | — | 7,176 | — | 7,176 | 504 | 42 | — | 42 | — | — | — | — | — | — |
-| lucknow | — | — | 8,464 | 8,457 | — | 529 | — | 8,464 | — | 8,464 | 529 | 49 | — | 49 | — | — | — | — | — | — |
-| kolkata | — | — | 7,268 | 7,243 | — | 480 | — | 7,268 | — | 7,268 | 480 | 42 | — | 42 | — | — | — | — | — | — |
+| City | `accessibility` L6 | `air_quality` L6 | `built_up` L7 | `builtup_yearly` L7 | `growth` L7 | `land_cover` L7 | `lst_monthly` L6 | `mobility` L7 | `ndvi_monthly` L7 | `nightlights` L7 | `nightlights_monthly` L7 | `no2_monthly` L6 | `pm25_monthly` L5 | `population` L7 | `rain_monthly` L5 | `rainfall` L6 | `scores` L6 | `soil` L7 | `surface_heat` L7 | `terrain` L7 | `traffic` L7 | `vegetation` L7 | `water` L7 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| indore_pilot | 2,209 | 2,209 | 33,489 | 33,489 | 30,611 | 33,489 | 2,209 | 1,765 | 33,489 | 33,489 | 33,489 | 2,209 | 156 | 33,489 | 156 | 2,209 | 2,209 | 33,448 | 33,489 | 33,489 | 1,991 | 33,489 | 33,489 |
+| bhopal | 442 | 442 | 6,565 | 6,565 | 6,498 | 6,565 | 442 | — | 6,565 | 6,565 | 6,565 | 442 | 35 | 6,565 | 35 | 442 | 442 | 6,201 | 6,565 | 6,565 | — | 6,565 | 6,565 |
+| pune | 700 | 700 | 10,767 | 10,767 | 10,767 | 10,767 | 700 | — | 10,767 | 10,767 | 10,767 | 700 | 56 | 10,767 | 56 | 700 | 700 | 10,736 | 10,767 | 10,767 | — | 10,767 | 10,767 |
+| mumbai | 821 | 1,125 | 16,878 | 16,878 | 11,372 | 16,878 | 704 | — | 13,438 | 16,878 | 16,878 | 1,125 | 84 | 16,475 | 71 | 988 | 1,125 | 11,499 | 16,878 | 16,878 | — | 16,878 | 16,878 |
+| bengaluru | 1,368 | 1,368 | 21,442 | 21,442 | 21,442 | 21,442 | 1,368 | — | 21,442 | 21,442 | 21,442 | 1,368 | 110 | 21,442 | 110 | 1,368 | 1,368 | 21,318 | 21,442 | 21,442 | — | 21,442 | 21,442 |
+| hyderabad | 1,080 | 1,080 | 15,870 | 15,870 | 15,870 | 15,870 | 1,080 | — | 15,870 | 15,870 | 15,870 | 1,080 | 90 | 15,870 | 90 | 1,080 | 1,080 | 15,483 | 15,870 | 15,870 | — | 15,870 | 15,870 |
+| chennai | 599 | 726 | 11,136 | 11,136 | 9,003 | 11,136 | 575 | — | 9,853 | 11,136 | 11,136 | 726 | 54 | 10,493 | 46 | 670 | 726 | 8,815 | 11,136 | 11,136 | — | 11,136 | 11,136 |
+| delhi | 3,304 | 3,304 | 51,027 | 51,027 | 51,027 | 51,027 | 3,304 | — | 51,027 | 51,027 | 51,027 | 3,304 | 225 | 51,027 | 225 | 3,304 | 3,304 | 50,965 | 51,027 | 51,027 | — | 51,027 | 51,027 |
+| guna | 100 | — | — | 1,444 | 1,346 | — | 100 | — | 1,444 | — | 1,444 | 100 | 9 | — | 9 | — | — | 1,439 | — | — | — | — | — |
+| jaipur | 624 | — | — | 9,292 | 8,962 | — | 624 | — | 9,292 | — | 9,292 | 624 | 42 | — | 42 | — | — | 9,276 | — | — | — | — | — |
+| ahmedabad | 504 | — | — | 7,176 | 7,176 | — | 504 | — | 7,176 | — | 7,176 | 504 | 42 | — | 42 | — | — | 7,171 | — | — | — | — | — |
+| lucknow | 529 | — | — | 8,464 | 8,457 | — | 529 | — | 8,464 | — | 8,464 | 529 | 49 | — | 49 | — | — | 8,463 | — | — | — | — | — |
+| kolkata | 480 | — | — | 7,268 | 7,243 | — | 480 | — | 7,268 | — | 7,268 | 480 | 42 | — | 42 | — | — | 6,848 | — | — | — | — | — |
 
-186 of 260 city × dataset slots filled.
+220 of 299 city × dataset slots filled.
 <!-- coverage:end -->
 
 ## Not done yet

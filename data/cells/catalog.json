@@ -1,7 +1,208 @@
 {
   "version": 1,
-  "generated": "2026-10-20T21:25:03Z",
+  "generated": "2026-10-20T21:37:17Z",
   "datasets": [
+    {
+      "id": "accessibility",
+      "title": "Travel time to services",
+      "description": "Modelled travel time from the Malaria Atlas Project global friction surfaces (1 km): to the nearest health facility (2019) and to the nearest city of 50,000+ (2015).",
+      "source": "Malaria Atlas Project accessibility (Weiss et al. 2018, 2020) via Earth Engine",
+      "license": "CC BY 4.0 (Malaria Atlas Project)",
+      "group": "Open Data (satellite)",
+      "level": 6,
+      "approxCellM": 975,
+      "fields": [
+        {
+          "key": "healthcare_min",
+          "label": "Travel time to a health facility (motorised)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "min",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "city_min",
+          "label": "Travel time to a city of 50k+",
+          "type": "number",
+          "agg": "mean",
+          "unit": "min",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "healthcare_min",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 504,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.6845703125,
+            "north": 23.1279296875
+          },
+          "json": "accessibility/ahmedabad.json",
+          "parquet": "accessibility/ahmedabad.parquet"
+        },
+        {
+          "name": "bengaluru",
+          "cells": 1368,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.8271484375,
+            "east": 77.7822265625,
+            "north": 13.1435546875
+          },
+          "json": "accessibility/bengaluru.json",
+          "parquet": "accessibility/bengaluru.parquet"
+        },
+        {
+          "name": "bhopal",
+          "cells": 442,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.3212890625
+          },
+          "json": "accessibility/bhopal.json",
+          "parquet": "accessibility/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 599,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.8974609375,
+            "east": 80.322265625,
+            "north": 13.1875
+          },
+          "json": "accessibility/chennai.json",
+          "parquet": "accessibility/chennai.parquet"
+        },
+        {
+          "name": "delhi",
+          "cells": 3304,
+          "bbox": {
+            "west": 76.8330078125,
+            "south": 28.392578125,
+            "east": 77.3515625,
+            "north": 28.884765625
+          },
+          "json": "accessibility/delhi.json",
+          "parquet": "accessibility/delhi.parquet"
+        },
+        {
+          "name": "guna",
+          "cells": 100,
+          "bbox": {
+            "west": 77.263671875,
+            "south": 24.595703125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "accessibility/guna.json",
+          "parquet": "accessibility/guna.parquet"
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1080,
+          "bbox": {
+            "west": 78.2919921875,
+            "south": 17.2919921875,
+            "east": 78.6083984375,
+            "north": 17.5556640625
+          },
+          "json": "accessibility/hyderabad.json",
+          "parquet": "accessibility/hyderabad.parquet"
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 2209,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.4951171875,
+            "east": 76.0068359375,
+            "north": 22.908203125
+          },
+          "json": "accessibility/indore_pilot.json",
+          "parquet": "accessibility/indore_pilot.parquet"
+        },
+        {
+          "name": "jaipur",
+          "cells": 624,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.927734375,
+            "north": 27.00390625
+          },
+          "json": "accessibility/jaipur.json",
+          "parquet": "accessibility/jaipur.parquet"
+        },
+        {
+          "name": "kolkata",
+          "cells": 480,
+          "bbox": {
+            "west": 88.2763671875,
+            "south": 22.4423828125,
+            "east": 88.4521484375,
+            "north": 22.6533203125
+          },
+          "json": "accessibility/kolkata.json",
+          "parquet": "accessibility/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 529,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "accessibility/lucknow.json",
+          "parquet": "accessibility/lucknow.parquet"
+        },
+        {
+          "name": "mumbai",
+          "cells": 821,
+          "bbox": {
+            "west": 72.7724609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.2783203125
+          },
+          "json": "accessibility/mumbai.json",
+          "parquet": "accessibility/mumbai.parquet"
+        },
+        {
+          "name": "pune",
+          "cells": 700,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.42578125,
+            "east": 73.994140625,
+            "north": 18.6455078125
+          },
+          "json": "accessibility/pune.json",
+          "parquet": "accessibility/pune.parquet"
+        }
+      ]
+    },
     {
       "id": "air_quality",
       "title": "Air quality (satellite)",
@@ -4291,6 +4492,377 @@
       ]
     },
     {
+      "id": "soil",
+      "title": "Soil (OpenLandMap)",
+      "description": "Topsoil (0 cm) clay, sand, organic carbon, pH and USDA texture class from OpenLandMap machine-learning soil maps (250 m). Under built-up land these are predicted, not sampled, values.",
+      "source": "OpenLandMap soil v02 (Hengl et al., EnvirometriX) via Earth Engine",
+      "license": "CC BY-SA 4.0 (OpenLandMap)",
+      "group": "Open Data (satellite)",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "clay_pct",
+          "label": "Clay content (topsoil)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "sand_pct",
+          "label": "Sand content (topsoil)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            80
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "organic_carbon_gkg",
+          "label": "Soil organic carbon",
+          "type": "number",
+          "agg": "mean",
+          "unit": "g/kg",
+          "domain": [
+            0.0,
+            160.0
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "ph",
+          "label": "Soil pH (in water)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "pH",
+          "domain": [
+            5,
+            9
+          ],
+          "ramp": "diverging"
+        },
+        {
+          "key": "texture",
+          "label": "USDA texture class",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "Clay",
+            "Clay loam",
+            "Loam",
+            "Loamy sand",
+            "Sandy clay",
+            "Sandy clay loam",
+            "Sandy loam",
+            "Silty clay",
+            "Silty clay loam"
+          ]
+        }
+      ],
+      "default": {
+        "field": "texture",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7171,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "soil/ahmedabad.json",
+          "parquet": "soil/ahmedabad.parquet"
+        },
+        {
+          "name": "bengaluru",
+          "cells": 21318,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "soil/bengaluru/{prefix}.json.gz",
+          "parquet": "soil/bengaluru.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 6201,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "soil/bhopal.json",
+          "parquet": "soil/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 8815,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.31787109375,
+            "north": 13.180908203125
+          },
+          "json": "soil/chennai/{prefix}.json",
+          "parquet": "soil/chennai.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 50965,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "soil/delhi/{prefix}.json.gz",
+          "parquet": "soil/delhi.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 1439,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "soil/guna.json",
+          "parquet": "soil/guna.parquet"
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15483,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "soil/hyderabad/{prefix}.json.gz",
+          "parquet": "soil/hyderabad.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 33448,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "soil/indore_pilot/{prefix}.json.gz",
+          "parquet": "soil/indore_pilot.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9276,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "soil/jaipur/{prefix}.json",
+          "parquet": "soil/jaipur.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 6848,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "soil/kolkata.json",
+          "parquet": "soil/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 8463,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "soil/lucknow/{prefix}.json",
+          "parquet": "soil/lucknow.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 11499,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "soil/mumbai/{prefix}.json.gz",
+          "parquet": "soil/mumbai.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10736,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "soil/pune/{prefix}.json.gz",
+          "parquet": "soil/pune.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
       "id": "surface_heat",
       "title": "Land surface temperature",
       "description": "Pre-monsoon (Mar\u2013Jun 2025) median surface temperature from Landsat 8/9 thermal (30 m, ~10:30 local), its anomaly against the city median (urban heat island), and MODIS day/night means (1 km). Surface, not air, temperature.",
@@ -4962,6 +5534,294 @@
           },
           "json": "traffic/indore_pilot.json",
           "parquet": "traffic/indore_pilot.parquet"
+        }
+      ]
+    },
+    {
+      "id": "vegetation",
+      "title": "Vegetation & tree canopy",
+      "description": "Sentinel-2 NDVI medians for 2025 (cloud-masked, annual, dry and post-monsoon) and Meta/WRI 1 m canopy height (mean height, share \u2265 5 m).",
+      "source": "Copernicus Sentinel-2 L2A + Meta/WRI High Resolution Canopy Height via Earth Engine",
+      "license": "Copernicus open licence; canopy height CC BY 4.0",
+      "group": "Open Data (satellite)",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "ndvi",
+          "label": "NDVI (median 2025)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "index",
+          "domain": [
+            -0.2,
+            0.8
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "ndvi_dry",
+          "label": "NDVI, dry season (Mar\u2013May)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "index",
+          "domain": [
+            -0.2,
+            0.8
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "ndvi_wet",
+          "label": "NDVI, post-monsoon (Aug\u2013Oct)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "index",
+          "domain": [
+            -0.2,
+            0.8
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "canopy_m",
+          "label": "Mean canopy height",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m",
+          "domain": [
+            0.0,
+            20.9
+          ],
+          "ramp": "greens"
+        },
+        {
+          "key": "tree_canopy_pct",
+          "label": "Tree canopy \u2265 5 m",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of cell",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "ndvi",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "vegetation/bengaluru/{prefix}.json.gz",
+          "parquet": "vegetation/bengaluru.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 6565,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "vegetation/bhopal.json",
+          "parquet": "vegetation/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 11136,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.320068359375,
+            "north": 13.180908203125
+          },
+          "json": "vegetation/chennai/{prefix}.json.gz",
+          "parquet": "vegetation/chennai.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "vegetation/delhi/{prefix}.json.gz",
+          "parquet": "vegetation/delhi.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "vegetation/hyderabad/{prefix}.json.gz",
+          "parquet": "vegetation/hyderabad.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 33489,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "vegetation/indore_pilot/{prefix}.json.gz",
+          "parquet": "vegetation/indore_pilot.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 16878,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "vegetation/mumbai/{prefix}.json.gz",
+          "parquet": "vegetation/mumbai.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK4",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKM",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "vegetation/pune/{prefix}.json.gz",
+          "parquet": "vegetation/pune.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
         }
       ]
     },
