@@ -35,6 +35,8 @@ const ExportDialog = (() => {
         // CAD footprint tabs export the visible buildings, not the cell-data object.
         if (format === 'footgeo') return `digipin_footprints_${clean}.geojson`;
         if (format === 'footdxf') return `digipin_footprints_${clean}.dxf`;
+        if (format === 'glb') return typeof GltfExport !== 'undefined'
+            ? GltfExport.filename(code) : `digipin_buildings_${clean}.glb`;
         if (format === 'png') return typeof MapSnapshot !== 'undefined'
             ? MapSnapshot.filename(clean) : `digipin_map_${clean}.png`;
         const ext = format === 'csv' ? 'csv' : format === 'geojson' ? 'geojson' : 'json';
@@ -103,6 +105,16 @@ const ExportDialog = (() => {
             },
         },
         {
+            id: 'glb', label: '3D model',
+            desc: 'The visible buildings as an extruded glTF (.glb) — opens in Blender, Rhino, Unity, Sketchfab and AR viewers',
+            items: (s, cell) => {
+                const n = _footprintCount();
+                return n > 0
+                    ? [`${n.toLocaleString()} buildings extruded to their heights`, `Metres, origin at the centre of ${cell.code}, +Y up, −Z north`]
+                    : ['0 building footprints visible', 'Enable the Buildings overlay and zoom in first'];
+            },
+        },
+        {
             id: 'footgeo', label: 'CAD GeoJSON',
             desc: 'Visible 3D building footprints (+ heights) + the cell — for QGIS / Rhino / AutoCAD',
             items: (s, cell) => {
@@ -127,6 +139,18 @@ const ExportDialog = (() => {
     /** Dispatch the chosen format to the matching DataFetcher/DTDLExport writer. */
     function _doExport(format, cell, data) {
         const name = filename(format, cell.code);
+        if (format === 'glb') {
+            if (typeof GltfExport === 'undefined') {
+                if (typeof App !== 'undefined') App.showToast('Export', '3D exporter unavailable', 'error');
+                return;
+            }
+            const n = GltfExport.download(cell);
+            if (typeof App !== 'undefined') {
+                if (n) App.showToast('3D export', `${n.toLocaleString()} buildings exported as glTF.`, 'success');
+                else App.showToast('3D export', 'No buildings visible — enable the Buildings overlay and zoom in first.', 'warning');
+            }
+            return;
+        }
         if (format === 'png') {
             if (typeof MapSnapshot === 'undefined') {
                 if (typeof App !== 'undefined') App.showToast('Export', 'Map export unavailable', 'error');

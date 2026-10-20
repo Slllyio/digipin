@@ -121,6 +121,7 @@ const LOCAL_ASSETS = [
     './js/sun-study.js',
     './js/sun-hours.js',
     './js/floor-area.js',
+    './js/gltf-export.js',
     './js/site-brief.js',
     './js/measure-tool.js',
     './js/present-mode.js',
