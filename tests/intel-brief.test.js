@@ -86,3 +86,51 @@ describe('IntelBrief briefs', () => {
         expect(html).toContain('href="https://example.org/app.html?cell=');
     }, 60000);
 });
+
+describe('Drawn areas and what changed', () => {
+    it('polygon areas: point-in-polygon, km², link token, insights', async () => {
+        const U = globalThis.UrbanInsights;
+        const sq = [[0, 0], [1, 0], [1, 1], [0, 1]];
+        expect(U.pointInPolygon(sq, 0.5, 0.5)).toBe(true);
+        expect(U.pointInPolygon(sq, 1.5, 0.5)).toBe(false);
+        expect(U.polygonKm2([[73.8, 18.5], [73.81, 18.5], [73.81, 18.51], [73.8, 18.51]])).toBeCloseTo(1.17, 1);
+        const poly = [[73.83, 18.5], [73.88, 18.5], [73.87, 18.55], [73.84, 18.54]];
+        const tok = B.areaToken({ polygon: poly });
+        expect(tok.startsWith('g:')).toBe(true);
+        expect(B.parseAreaToken(tok).polygon).toEqual(poly);
+        expect(B.parseAreaToken('g:1,2;3,4')).toBeNull();
+        const s = await store();
+        const r = await U.areaInsights({ polygon: poly }, s, { limit: 5 });
+        expect(r.area.kind).toBe('polygon');
+        expect(r.city).toBe('pune');
+        expect(r.coverage.length).toBeGreaterThan(3);
+        // Fewer cells than the polygon's bounding box.
+        const box = await U.areaInsights({ bbox: { west: 73.83, south: 18.5, east: 73.88, north: 18.55 } }, s, { limit: 5 });
+        const n = (x) => Math.max(...x.coverage.map(c => c.cells));
+        expect(n(r)).toBeLessThan(n(box));
+    }, 60000);
+
+    it('changes() ranks the latest step of every series against a year earlier', async () => {
+        const U = globalThis.UrbanInsights;
+        const s = await store();
+        const r = await U.changes(s, { city: 'pune', limit: 6 });
+        expect(r.kind).toBe('changes');
+        expect(r.items.length).toBeGreaterThan(2);
+        expect(r.latest).toMatch(/^\d{4}/);
+        for (const x of r.items) {
+            expect(x.delta).toBeCloseTo(x.latest - x.prev, 1);
+            expect(s.get(x.dataset)).toBeTruthy();
+            expect(r.sources.some(src => src.id === x.dataset)).toBe(true);
+        }
+        const sal = r.items.map(x => x.salience);
+        expect([...sal].sort((a, b) => b - a)).toEqual(sal);
+        expect(U.toText(r)).toContain('What changed in Pune');
+    }, 60000);
+
+    it('DISHA routes "what changed" questions', () => {
+        const D = globalThis.DishaIntel;
+        const cities = [{ name: 'pune', label: 'Pune' }];
+        expect(D.match('What changed in Pune this month?', cities)).toEqual({ type: 'changes', city: 'pune' });
+        expect(D.match("what's new here", cities)).toEqual({ type: 'changes' });
+    });
+});

@@ -9,6 +9,7 @@
  *             &intel=<tab>          city | here | compare | whatif
  *             &ic=<region>          the city (cell-store region name)
  *             &ia=<area> &ib=<area> area tokens: city:<region> | p:<prefix> | b:w,s,e,n
+ *                                   | g:lng,lat;lng,lat;… (a drawn polygon, ≤ 60 vertices)
  *             &wi=<scenario>        park:<code>:<boost> | density:<code>:<factor> | flood:<level>
  *
  *   Briefs  a self-contained HTML document (no scripts, no network) for a city
@@ -23,6 +24,7 @@ const IntelBrief = (() => {
     const FLOOD = ['moderate', 'severe', 'extreme'];
     const REGION_RE = /^[a-z][a-z0-9_]{0,63}$/;
     const CODE_RE = /^[2-9CFJKLMPT]{1,10}$/;
+    const MAX_VERTS = 60;
 
     function _num(v) { const n = Number(v); return Number.isFinite(n) ? n : null; }
 
@@ -34,6 +36,10 @@ const IntelBrief = (() => {
         if (a.city && REGION_RE.test(a.city)) return `city:${a.city}`;
         const code = a.code ? String(a.code).replace(/-/g, '').toUpperCase() : '';
         if (CODE_RE.test(code)) return `p:${code}`;
+        if (Array.isArray(a.polygon) && a.polygon.length >= 3 && a.polygon.length <= MAX_VERTS
+            && a.polygon.every(p => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1]))) {
+            return `g:${a.polygon.map(p => `${Math.round(p[0] * 1e5) / 1e5},${Math.round(p[1] * 1e5) / 1e5}`).join(';')}`;
+        }
         const b = a.bbox;
         if (b && [b.west, b.south, b.east, b.north].every(Number.isFinite)) {
             return `b:${[b.west, b.south, b.east, b.north].map(v => Math.round(v * 1e5) / 1e5).join(',')}`;
@@ -44,7 +50,7 @@ const IntelBrief = (() => {
     /** Link token → area object (with a readable label), or null. */
     function parseAreaToken(s) {
         if (!s) return null;
-        const m = /^(city|p|b):(.+)$/.exec(String(s).trim());
+        const m = /^(city|p|b|g):(.+)$/.exec(String(s).trim());
         if (!m) return null;
         if (m[1] === 'city') return REGION_RE.test(m[2]) ? { city: m[2] } : null;
         if (m[1] === 'p') {
@@ -52,6 +58,12 @@ const IntelBrief = (() => {
             if (!CODE_RE.test(code)) return null;
             const label = typeof DigiPin !== 'undefined' && DigiPin.format ? DigiPin.format(code) : code;
             return { code, label: `${code.length <= 5 ? 'Neighbourhood' : 'Cell'} ${label}` };
+        }
+        if (m[1] === 'g') {
+            const pts = m[2].split(';').map(x => x.split(',').map(_num));
+            if (pts.length < 3 || pts.length > MAX_VERTS) return null;
+            if (pts.some(q => q.length !== 2 || q[0] == null || q[1] == null || Math.abs(q[0]) > 180 || Math.abs(q[1]) > 90)) return null;
+            return { polygon: pts };
         }
         const v = m[2].split(',').map(_num);
         if (v.length !== 4 || v.some(x => x == null)) return null;
@@ -125,10 +137,11 @@ const IntelBrief = (() => {
         const city = opts.city || (dash.cities[0] || {}).region || null;
         const row = dash.cities.find(c => c.region === city) || null;
         const cityIns = city ? await UI.areaInsights({ city }, store, { limit: 8, now: () => now }) : null;
+        const changes = city && UI.changes ? await UI.changes(store, { city, limit: 8, now: () => now }).catch(() => null) : null;
         const areaIns = opts.area && !opts.area.city ? await UI.areaInsights(opts.area, store, { limit: 8, city, now: () => now }) : null;
         const seen = new Set();
         const sources = [];
-        for (const r of [dash, cityIns, areaIns, opts.whatif]) {
+        for (const r of [dash, cityIns, changes, areaIns, opts.whatif]) {
             for (const s of (r && r.sources) || []) {
                 const id = typeof s === 'string' ? s : s.id;
                 if (seen.has(id)) continue;
@@ -140,7 +153,7 @@ const IntelBrief = (() => {
         return {
             schema: SCHEMA, ranAt: now.toISOString(), city, cityLabel: UI.cityLabel(city),
             dashboard: { dataset: dash.dataset, fields: dash.fields, cities: dash.cities, row, method: dash.method },
-            cityInsights: cityIns, areaInsights: areaIns, whatif: opts.whatif || null,
+            cityInsights: cityIns, changes, areaInsights: areaIns, whatif: opts.whatif || null,
             link: opts.link || null, sources,
         };
     }
@@ -256,6 +269,15 @@ const IntelBrief = (() => {
             + (s.generated ? `<dt>Store built</dt><dd>${_esc(s.generated)}</dd>` : '')
             + '</dl></div>').join('');
 
+        const ch = brief.changes && brief.changes.items.length
+            ? `<section><h2>What changed · latest data ${_esc(brief.changes.latest)}</h2><ul class="find">`
+                + brief.changes.items.map(x => {
+                    const tone = x.good === true ? 'k-strength' : x.good === false ? 'k-concern' : 'k-trend';
+                    return `<li class="${tone}"><b>${_esc(x.title)}</b><br><span class="muted">${_esc(x.detail)}</span>`
+                        + (x.anomalies && x.anomalies.length ? `<br><span class="muted">Unusual cells: ${x.anomalies.slice(0, 3).map(a => _cell(a.digipin, link)).join(', ')}</span>` : '')
+                        + _spark(x.series, 220, 28) + ` <a class="src" href="#src-${_esc(x.dataset)}">source</a></li>`;
+                }).join('') + `</ul><p class="muted">${_esc(brief.changes.method)}</p></section>`
+            : '';
         const method = (brief.cityInsights || area || {}).method;
         return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             + `<title>${_esc(title)} · DigiPin brief</title><style>${CSS}</style></head><body><main>`
@@ -265,6 +287,7 @@ const IntelBrief = (() => {
             + (area ? `<section><h2>What stands out in ${_esc(area.area.label || 'this area')}</h2>${_findings(area, link)}</section>` : '')
             + _whatif(brief.whatif, link)
             + kpi
+            + ch
             + (brief.cityInsights ? `<section><h2>What stands out in ${_esc(brief.cityLabel)}</h2>${_findings(brief.cityInsights, link)}</section>` : '')
             + rank
             + `<section><h2>Sources</h2><div class="cards">${cards || '<p class="muted">No datasets were used.</p>'}</div>`

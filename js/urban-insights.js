@@ -12,9 +12,12 @@
  *   whatIf(scenario)     park / density / flood-event scenarios: affected
  *                        cells and buildings, with the formula and assumptions
  *   evidence(lat, lng)   a cited text block that grounds DISHA's answers
+ *   changes(store, city) "what changed": each monthly field's latest step vs the
+ *                        same step a year earlier, with the cells that moved most
  *
  * Areas are what Analysis.parseArea accepts (a DIGIPIN prefix or a bbox), plus
- * { city: '<region>' } for a whole city. The store is injected ({ datasets,
+ * { city: '<region>' } for a whole city and { polygon: [[lng, lat], …] } for a
+ * drawn shape (cells whose centre is inside). The store is injected ({ datasets,
  * get, load, generated }), so everything here is pure and unit-tested on the
  * committed data; js/insights-panel.js owns the DOM and the map.
  *
@@ -185,7 +188,41 @@ const UrbanInsights = (() => {
      * Normalise an area: Analysis.parseArea forms, or { city }. A city area
      * keeps its region name so the city's own cells are used, not just a bbox.
      */
+    /** Even-odd point-in-polygon on a [[lng, lat], …] ring. */
+    function pointInPolygon(ring, lng, lat) {
+        let inside = false;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+            const [xi, yi] = ring[i], [xj, yj] = ring[j];
+            if ((yi > lat) !== (yj > lat) && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) inside = !inside;
+        }
+        return inside;
+    }
+
+    /** Approximate area of a lng/lat ring in km² (equirectangular, fine at city scale). */
+    function polygonKm2(ring) {
+        if (!ring || ring.length < 3) return 0;
+        const lat0 = ring.reduce((a, p) => a + p[1], 0) / ring.length;
+        const kx = 111.32 * Math.cos((lat0 * Math.PI) / 180), ky = 110.57;
+        let a = 0;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) a += (ring[j][0] * kx) * (ring[i][1] * ky) - (ring[i][0] * kx) * (ring[j][1] * ky);
+        return Math.abs(a) / 2;
+    }
+
+    function _polygonArea(a) {
+        const ring = (a.polygon || []).filter(p => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1])
+            && Math.abs(p[1]) <= 90 && Math.abs(p[0]) <= 180).map(p => [Number(p[0]), Number(p[1])]);
+        if (ring.length > 1 && ring[0][0] === ring[ring.length - 1][0] && ring[0][1] === ring[ring.length - 1][1]) ring.pop();
+        if (ring.length < 3) return null;
+        const xs = ring.map(p => p[0]), ys = ring.map(p => p[1]);
+        const bbox = { west: Math.min(...xs), south: Math.min(...ys), east: Math.max(...xs), north: Math.max(...ys) };
+        if (!(bbox.east > bbox.west && bbox.north > bbox.south)) return null;
+        const km2 = polygonKm2(ring);
+        return { kind: 'polygon', polygon: ring, bbox, km2: _round(km2, 2),
+            label: a.label || `Drawn area (~${km2 >= 10 ? Math.round(km2) : _round(km2, 1)} km²)` };
+    }
+
     function resolveArea(a, store) {
+        if (a && typeof a === 'object' && Array.isArray(a.polygon)) return _polygonArea(a);
         if (a && typeof a === 'object' && a.city) {
             const c = cities(store).find(x => x.name === a.city);
             if (!c) return null;
@@ -221,6 +258,16 @@ const UrbanInsights = (() => {
 
     function cellsIn(spec, table, area) {
         if (area.kind === 'city') return cellsInRegion(spec, table, area.city);
+        if (area.kind === 'polygon') {
+            const box = Analysis.cellsInArea(table, { kind: 'bbox', bbox: area.bbox });
+            const hit = box.filter(i => {
+                let c;
+                try { c = DigiPin.decodePartial(table.cells[i]); } catch { return false; }
+                return pointInPolygon(area.polygon, c.lng, c.lat);
+            });
+            // A shape smaller than the data's cells: fall back to the cells in its box.
+            return hit.length ? hit : box;
+        }
         return Analysis.cellsInArea(table, area);
     }
 
@@ -1120,6 +1167,75 @@ const UrbanInsights = (() => {
     }
 
     /** Plain-text rendering of any result (offline DISHA answers, copy, export). */
+    // ── what changed ────────────────────────────────────────────────────────
+
+    /**
+     * "What changed": for every temporal field covering the city, the city mean
+     * at its latest step vs the same step one window (a year, for monthly data)
+     * earlier, how unusual that move is against the series' own year-on-year
+     * swings, and the cells whose own change stands out (|z| ≥ 2).
+     */
+    async function changes(store, opts = {}) {
+        const city = opts.city || null;
+        const items = [], used = [];
+        for (const spec of _usable(store).filter(_isTemporal)) {
+            if (city && !(spec.regions || []).some(r => r.name === city)) continue;
+            const table = await _load(store, spec.id, city ? _regionBbox(spec, city) : null).catch(() => null);
+            if (!table || !table.cells || !table.cells.length) continue;
+            const idx = city ? cellsInRegion(spec, table, city) : table.cells.map((_, i) => i);
+            if (idx.length < 5) continue;
+            let usedHere = false;
+            for (const f of spec.fields) {
+                if (f.type && f.type !== 'number') continue;
+                const tr = trendOf(spec, table, f, idx, idx);
+                if (!tr) continue;
+                const ser = tr.city.series;
+                let t = ser.length - 1;
+                while (t >= 0 && !_isNum(ser[t])) t--;
+                const w = tr.window;
+                if (t < w || !_isNum(ser[t - w])) continue;
+                const latest = ser[t], prev = ser[t - w];
+                const delta = latest - prev;
+                // Typical size of a same-step-a-year-apart move in this series.
+                const swings = [];
+                for (let k = w; k < ser.length; k++) if (_isNum(ser[k]) && _isNum(ser[k - w])) swings.push(Math.abs(ser[k] - ser[k - w]));
+                const typical = _mean(swings) || 0;
+                const meta = _fieldMeta(spec, f);
+                const good = meta.higherIs === 'better' ? delta > 0 : meta.higherIs === 'worse' ? delta < 0 : null;
+                const z = typical > 0 ? Math.abs(delta) / typical : 0;
+                const share = tr.anomalyCount / idx.length;
+                const label = meta.label;
+                const step = tr.steps[t], vs = tr.steps[t - w];
+                const yrs = /^\d{4}$/.test(step) && /^\d{4}$/.test(vs) ? Number(step) - Number(vs) : null;
+                const per = tr.unit === 'month' ? 'same-month' : yrs ? `${yrs}-year` : `${w}-step`;
+                const pct = Math.abs(prev) > 1e-9 ? (delta / Math.abs(prev)) * 100 : null;
+                items.push({
+                    ...meta, step, vs, latest: _round(latest, 3), prev: _round(prev, 3), delta: _round(delta, 3),
+                    pct: _round(pct, 1), good, unusual: _round(z, 2), cells: idx.length,
+                    anomalyCount: tr.anomalyCount, anomalies: tr.anomalies,
+                    series: ser, steps: tr.steps,
+                    salience: _round(Math.min(3, z) + Math.min(1, share * 10), 3),
+                    title: `${label} in ${step}: ${fmt(latest, meta.unit)}, ${delta >= 0 ? 'up' : 'down'} ${fmt(Math.abs(delta), meta.unit)} on ${vs}`,
+                    detail: `${z >= 1.5 ? 'A bigger move than usual' : z >= 0.75 ? 'A typical-sized move' : 'A small move'} for ${cityLabel(city)} `
+                        + `(typical ${per} change ${fmt(typical, meta.unit)})`
+                        + (tr.anomalyCount ? `; ${tr.anomalyCount} cell${tr.anomalyCount === 1 ? '' : 's'} changed unusually.` : '.'),
+                    sources: [spec.id],
+                });
+                usedHere = true;
+            }
+            if (usedHere) used.push(sourceOf(spec, store));
+        }
+        items.sort((a, b) => b.salience - a.salience);
+        const latest = items.reduce((m, x) => (x.step > m ? x.step : m), '');
+        return {
+            schema: SCHEMA, kind: 'changes', ranAt: (opts.now ? opts.now() : new Date()).toISOString(),
+            city, cityLabel: cityLabel(city), latest, items: items.slice(0, opts.limit || 12), more: Math.max(0, items.length - (opts.limit || 12)),
+            sources: used,
+            method: 'City mean at each series’ latest step vs the same step one year earlier. “Unusual” compares that move with the '
+                + 'series’ typical same-month change; flagged cells changed 2+ SD more than the city’s cells did.',
+        };
+    }
+
     function toText(r) {
         if (!r) return '';
         if (r.kind === 'insights') {
@@ -1128,6 +1244,7 @@ const UrbanInsights = (() => {
         }
         if (r.kind === 'compare') return [r.summary, ...r.rows.slice(0, 8).map(x => `• ${x.label}: ${fmt(x.a, x.unit)} vs ${fmt(x.b, x.unit)}`)].join('\n');
         if (r.kind === 'whatif') return [r.summary, ...r.metrics.map(m => `• ${m.label}: ${m.value != null ? m.value : `${m.before} → ${m.after}`}`), `Formula: ${r.formula}`].join('\n');
+        if (r.kind === 'changes') return [`What changed in ${r.cityLabel}:`, ...r.items.map(x => `• ${x.title}. ${x.detail}`)].join('\n');
         if (r.kind === 'dashboard') {
             return r.cities.map(c => `${c.rank}. ${c.label}: urban index ${c.index}; best at ${c.strengths.map(s => lc(s.label)).join(', ')}; weakest at ${c.weaknesses.map(s => lc(s.label)).join(', ')}`).join('\n');
         }
@@ -1159,8 +1276,8 @@ const UrbanInsights = (() => {
     return {
         SCHEMA, HEADLINE, COMPOSITES, FLOOD_LEVELS,
         stats, percentile, quantile, cityLabel, fmt, cities, cityAt, resolveArea, cellsInRegion, scalarColumn,
-        activeCells, trendOf, neighbours, sourceOf,
-        areaInsights, headline, cityDashboard, compare, whatIf, toLayer, evidence, toText, loadHeights,
+        activeCells, trendOf, neighbours, sourceOf, pointInPolygon, polygonKm2,
+        areaInsights, changes, headline, cityDashboard, compare, whatIf, toLayer, evidence, toText, loadHeights,
     };
 })();
 

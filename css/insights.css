@@ -233,3 +233,18 @@ html[data-theme="light"] {
 }
 .disha-cite + .source-card { margin: 4px 0; }
 .disha-cite-sources { margin-top: 8px; font-size: 10.5px; color: var(--text-muted); }
+
+/* What changed (City tab) */
+.ui-chg-list { display: grid; gap: 6px; }
+.ui-chg { background: var(--wash-03); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 8px 10px; }
+.ui-chg.is-big { border-color: var(--ui-anomaly, #a78bfa); box-shadow: inset 3px 0 0 var(--ui-anomaly, #a78bfa); }
+.ui-chg-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.ui-chg-lbl { font-weight: 600; font-size: 12px; }
+.ui-chg .ui-spark { height: 30px; margin-top: 4px; }
+
+/* New-data dot on the Intel toolbar button */
+#btn-insights { position: relative; }
+#btn-insights.has-new::after {
+    content: ''; position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--ui-anomaly, #a78bfa); box-shadow: 0 0 0 2px var(--bg-panel, #fff);
+}

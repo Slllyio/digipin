@@ -20,6 +20,7 @@ const DishaIntel = (() => {
         flood: /\b(flood(s|ed|ing)? (event|scenario|hits?|happens?)|if it floods|heavy rain|cloudburst|(severe|extreme|moderate) flood|inundat\w*)\b/i,
         dashboard: /\b(rank(ing|ed)? (the )?cities|which city is (best|better|most|least)|city (dashboard|rankings?|league)|best city|compare (all )?cities)\b/i,
         compare: /\b(compare|vs\.?|versus|better than)\b/i,
+        changes: /\b(what('?s| has| have)? changed|what changed|latest (month|data|changes?)|this month|recent(ly)? chang\w*|what'?s new)\b/i,
     };
 
     function _cities() {
@@ -48,6 +49,7 @@ const DishaIntel = (() => {
         if (!q.trim()) return null;
         const named = citiesIn(q, cities);
         if (RE.dashboard.test(q)) return { type: 'dashboard' };
+        if (RE.changes.test(q)) return named.length ? { type: 'changes', city: named[0] } : { type: 'changes' };
         if (RE.compare.test(q) && named.length >= 2) return { type: 'compare', a: { city: named[0] }, b: { city: named[1] } };
         if (/\bwhat[\s-]?if\b|\bimagine\b|\bsimulate\b|\bscenario\b|\bif (we|they|i)\b/i.test(q) || RE.park.test(q) || RE.flood.test(q)) {
             if (RE.park.test(q)) return { type: 'whatif', scenario: 'park' };
@@ -99,6 +101,13 @@ const DishaIntel = (() => {
         return b;
     }
 
+    function _viewCenter() {
+        const m = typeof MapModule !== 'undefined' && MapModule.getMap ? MapModule.getMap() : null;
+        if (!m || !m.getCenter) return null;
+        const c = m.getCenter();
+        return { lat: c.lat, lng: c.lng };
+    }
+
     /**
      * Answer an intent from the engine into chat element `el`. ctx = { cell }.
      * Returns the plain-text result (for the model to narrate) or '' on failure.
@@ -116,6 +125,14 @@ const DishaIntel = (() => {
             if (intent.type === 'insights') {
                 const code = cell ? cell.code.replace(/-/g, '').slice(0, 5) : null;
                 r = await UrbanInsights.areaInsights(code ? { code, label: `The area around ${DigiPin.format(code)}` } : { bbox: _bbox(), label: 'The map view' }, CellStore, { limit: 6 });
+            } else if (intent.type === 'changes') {
+                let city = intent.city;
+                if (!city) {
+                    const p = center || _viewCenter();
+                    city = p ? UrbanInsights.cityAt(CellStore, p.lat, p.lng) : null;
+                }
+                if (!city) { el.textContent = 'Pan the map to a city (or name one) and ask again.'; return ''; }
+                r = await UrbanInsights.changes(CellStore, { city, limit: 6 });
             } else if (intent.type === 'dashboard') {
                 r = await UrbanInsights.cityDashboard(CellStore);
             } else if (intent.type === 'compare') {
@@ -154,6 +171,11 @@ const DishaIntel = (() => {
             el.appendChild(_el('div', 'ui-headline', r.headline));
             if (P) r.findings.forEach(f => el.appendChild(P.findingCard(f, { compact: true })));
             el.appendChild(_openButton('Open full insights', 'here'));
+        } else if (r.kind === 'changes') {
+            head.textContent = `What changed in ${r.cityLabel} · latest ${r.latest}`;
+            el.appendChild(head);
+            r.items.forEach(x => el.appendChild(_el('div', 'disha-scan-row', `${x.title}. ${x.detail}`)));
+            el.appendChild(_openButton('Open the city dashboard', 'city'));
         } else if (r.kind === 'dashboard') {
             head.textContent = 'City rankings';
             el.appendChild(head);

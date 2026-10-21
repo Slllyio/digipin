@@ -43,3 +43,15 @@ The Intel dialog's **Share** button (and the app-wide share link / saved views) 
 (`js/intel-brief.js`, schema `digipin.brief/1`, no scripts or network): the city's index, key indicators with
 rank and best city, monthly environment sparklines, zones, what stands out, the city ranking, the area or
 scenario in view, and a source card for every dataset used. Print it to save a PDF.
+
+## Drawn areas and what changed
+
+- **Draw**: the Here tab's ✏ Draw button outlines any shape (click points; click the first point or double-click to
+  finish; Esc cancels). The engine accepts `{ polygon: [[lng, lat], …] }` and keeps the cells whose centre is
+  inside (falling back to the shape's box when it is smaller than the data's cells). The drag-a-box Area summary
+  has a "What stands out here" button too. Share links carry a shape as `ia=g:lng,lat;…`.
+- **What changed** (`UrbanInsights.changes`): for each temporal field in a city, the city mean at its latest step
+  vs the same step one window earlier (a year for monthly data), how big that move is against the series' own
+  typical same-step change, and the cells whose change was 2+ SD from the city's. Shown on the City tab, in briefs,
+  and to DISHA ("what changed in Pune?"). The Intel button shows a dot when the store has a newer month than the
+  one you last saw.

@@ -335,6 +335,8 @@ const InsightsPanel = (() => {
         if (dlg) dlg.classList.remove('open');
         document.getElementById('btn-insights')?.classList.remove('active');
         _clearHighlight();
+        if (_drawing) _stopDraw();
+        _clearDraw();
     }
 
     function toggle() { return isOpen() ? close() : open(); }
@@ -443,6 +445,10 @@ const InsightsPanel = (() => {
             body.appendChild(env);
         }
 
+        const chWrap = _el('div', 'ui-changes');
+        body.appendChild(chWrap);
+        _renderChanges(store, cur.region, chWrap, seq);
+
         body.appendChild(_el('h4', 'ui-h', 'How the cities rank'));
         const tbl = _el('div', 'ui-rank-wrap');
         const table = _el('table', 'ui-rank');
@@ -500,9 +506,193 @@ const InsightsPanel = (() => {
         body.appendChild(_sourcesFooter(d.sources));
     }
 
+    // ── What changed (City tab) ─────────────────────────────────────────────
+
+    const _changes = new Map();    // region -> changes() result
+
+    async function _renderChanges(store, region, wrap, seq) {
+        wrap.appendChild(_el('div', 'ui-empty', 'Checking the latest month of every series…'));
+        let r = _changes.get(region);
+        if (!r) {
+            try { r = await UrbanInsights.changes(store, { city: region, limit: 8 }); } catch { r = null; }
+            if (r) _changes.set(region, r);
+        }
+        if (seq !== _seq || !wrap.isConnected) return;
+        wrap.replaceChildren();
+        if (!r || !r.items.length) return;
+        _markSeen(r.latest);
+        wrap.appendChild(_el('h4', 'ui-h', `What changed · latest data ${r.latest}`));
+        const list = _el('div', 'ui-chg-list');
+        r.items.slice(0, 6).forEach(x => {
+            const card = _el('div', `ui-chg${x.unusual >= 1.5 ? ' is-big' : ''}`);
+            const tone = x.good === true ? 'is-good' : x.good === false ? 'is-bad' : '';
+            const head = _el('div', 'ui-chg-head');
+            head.appendChild(_el('span', 'ui-chg-lbl', x.label));
+            head.appendChild(_el('span', `ui-yoy ${tone}`, `${x.delta >= 0 ? '▲ +' : '▼ '}${UrbanInsights.fmt(x.delta, x.unit)}`));
+            card.appendChild(head);
+            card.appendChild(_el('div', 'ui-muted', `${UrbanInsights.fmt(x.latest, x.unit)} in ${x.step} vs ${UrbanInsights.fmt(x.prev, x.unit)} in ${x.vs}. ${x.detail}`));
+            const sp = sparkline([{ values: x.series, cls: 'is-area' }], { label: `${x.label} by step`, w: 220, h: 30 });
+            if (sp) card.appendChild(sp);
+            const act = _el('div', 'ui-actions');
+            act.appendChild(_btn(`Map ${x.step}`, async () => {
+                if (typeof TimeSlider !== 'undefined' && TimeSlider.want) TimeSlider.want(x.step);
+                await _showField(x.dataset, x.key);
+            }, 'ui-chip', 'Show this field on the map at its latest step'));
+            if (x.anomalies && x.anomalies.length) {
+                act.appendChild(_btn(x.anomalyCount > x.anomalies.length ? `Outline the ${x.anomalies.length} most unusual of ${x.anomalyCount}` : `Outline ${x.anomalyCount} unusual cell${x.anomalyCount === 1 ? '' : 's'}`,
+                    () => highlight(x.anomalies.map(a => ({ code: a.code, kind: 'anomaly' })), { fit: true }), 'ui-chip',
+                    'Cells whose change was 2+ SD from the city’s (top 5 shown)'));
+            }
+            act.appendChild(_sourceToggle(x.sources));
+            card.appendChild(act);
+            list.appendChild(card);
+        });
+        wrap.appendChild(list);
+        wrap.appendChild(_el('p', 'ui-method', r.method));
+    }
+
+    // ── new-data badge ──────────────────────────────────────────────────────
+
+    const SEEN_KEY = 'digipin_intel_seen';
+
+    function _seen() { try { return localStorage.getItem(SEEN_KEY) || ''; } catch { return ''; } }
+
+    function _markSeen(step) {
+        if (!step) return;
+        try { if (step > _seen()) localStorage.setItem(SEEN_KEY, step); } catch { /* storage blocked */ }
+        const b = document.getElementById('btn-insights');
+        if (b) { b.classList.remove('has-new'); b.removeAttribute('data-new'); }
+    }
+
+    /** Latest step across the store's temporal datasets (catalog only, no data load). */
+    function latestStep(store) {
+        let best = '';
+        for (const sp of store.datasets()) {
+            const st = sp && sp.time && sp.time.steps;
+            if (Array.isArray(st) && st.length && /^\d{4}-\d{2}/.test(st[st.length - 1]) && st[st.length - 1] > best) best = st[st.length - 1];
+        }
+        return best;
+    }
+
+    async function _checkNew() {
+        await _storeReady();
+        const store = _store();
+        if (!store) return;
+        const latest = latestStep(store);
+        const seen = _seen();
+        if (!latest) return;
+        if (!seen) { try { localStorage.setItem(SEEN_KEY, latest); } catch { /* storage blocked */ } return; }
+        if (latest > seen) {
+            const b = document.getElementById('btn-insights');
+            if (b) { b.classList.add('has-new'); b.setAttribute('data-new', latest); b.title = `${b.title.split(' · New data')[0]} · New data: ${latest}`; }
+        }
+    }
+
     // ── Here tab ────────────────────────────────────────────────────────────
 
-    let _hereArea = null;      // explicit area (a zone clicked on the City tab)
+    let _hereArea = null;      // explicit area (a zone clicked on the City tab, or a drawn shape)
+
+    // ── polygon draw ────────────────────────────────────────────────────────
+
+    const DRAW_SRC = 'urban-insights-draw';
+    let _drawing = false;
+    let _pts = [];
+    let _hover = null;
+
+    function _drawData() {
+        const ring = _hover ? [..._pts, _hover] : _pts;
+        const feats = ring.map(p => ({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: p } }));
+        if (ring.length >= 3) feats.push({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[...ring, ring[0]]] } });
+        else if (ring.length === 2) feats.push({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: ring } });
+        return { type: 'FeatureCollection', features: feats };
+    }
+
+    function _drawLayer() {
+        const m = _map();
+        if (!m) return null;
+        if (!m.getSource(DRAW_SRC)) {
+            m.addSource(DRAW_SRC, { type: 'geojson', data: _drawData() });
+            m.addLayer({ id: `${DRAW_SRC}-fill`, type: 'fill', source: DRAW_SRC, filter: ['==', ['geometry-type'], 'Polygon'], paint: { 'fill-color': '#dd6b4a', 'fill-opacity': 0.12 } });
+            m.addLayer({ id: `${DRAW_SRC}-line`, type: 'line', source: DRAW_SRC, filter: ['!=', ['geometry-type'], 'Point'], paint: { 'line-color': '#dd6b4a', 'line-width': 2, 'line-dasharray': [2, 1] } });
+            m.addLayer({ id: `${DRAW_SRC}-pt`, type: 'circle', source: DRAW_SRC, filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-radius': 4, 'circle-color': '#fff', 'circle-stroke-color': '#dd6b4a', 'circle-stroke-width': 2 } });
+        } else m.getSource(DRAW_SRC).setData(_drawData());
+        return m;
+    }
+
+    function _clearDraw() {
+        const m = _map();
+        if (!m) return;
+        [`${DRAW_SRC}-pt`, `${DRAW_SRC}-line`, `${DRAW_SRC}-fill`].forEach(id => { if (m.getLayer(id)) m.removeLayer(id); });
+        if (m.getSource(DRAW_SRC)) m.removeSource(DRAW_SRC);
+    }
+
+    function _onDrawClick(e) {
+        const p = [e.lngLat.lng, e.lngLat.lat];
+        const m = _map();
+        if (_pts.length >= 3 && m) {
+            const a = m.project(_pts[0]), b = m.project(p);
+            if (Math.hypot(a.x - b.x, a.y - b.y) < 12) { _finishDraw(); return; }
+        }
+        if (_pts.length >= 60) { _finishDraw(); return; }
+        _pts.push(p);
+        _drawLayer();
+    }
+    function _onDrawMove(e) { if (_pts.length) { _hover = [e.lngLat.lng, e.lngLat.lat]; _drawLayer(); } }
+    function _onDrawDbl(e) { if (e.preventDefault) e.preventDefault(); _finishDraw(); }
+    function _onDrawKey(e) { if (e.key === 'Escape') { e.stopPropagation(); _stopDraw(); } }
+
+    function _startDraw() {
+        const m = _map();
+        if (!m) return;
+        _clearDraw();
+        _drawing = true; _pts = []; _hover = null;
+        m.on('click', _onDrawClick);
+        m.on('mousemove', _onDrawMove);
+        m.on('dblclick', _onDrawDbl);
+        if (m.doubleClickZoom) m.doubleClickZoom.disable();
+        if (m.getCanvas) m.getCanvas().style.cursor = 'crosshair';
+        document.addEventListener('keydown', _onDrawKey, true);
+        _toast('Draw an area', 'Click points on the map. Click the first point or double-click to finish.', 'info');
+        render();
+    }
+
+    function _stopDraw(keep) {
+        const m = _map();
+        _drawing = false; _hover = null;
+        if (m) {
+            m.off('click', _onDrawClick);
+            m.off('mousemove', _onDrawMove);
+            m.off('dblclick', _onDrawDbl);
+            if (m.doubleClickZoom) setTimeout(() => m.doubleClickZoom.enable(), 300);
+            if (m.getCanvas) m.getCanvas().style.cursor = '';
+        }
+        document.removeEventListener('keydown', _onDrawKey, true);
+        if (!keep) { _pts = []; _clearDraw(); }
+        if (isOpen()) render();
+    }
+
+    function _finishDraw() {
+        // A double-click also fires two clicks: drop a duplicate closing vertex.
+        const ring = _pts.filter((p, i) => i === 0 || p[0] !== _pts[i - 1][0] || p[1] !== _pts[i - 1][1]);
+        if (ring.length < 3) { _toast('Need three points', 'Click at least three points to outline an area.', 'warning'); return; }
+        _pts = ring;
+        _hover = null;
+        _drawLayer();
+        const km2 = UrbanInsights.polygonKm2(ring);
+        setArea({ polygon: ring, label: `Your drawn area (~${km2 >= 10 ? Math.round(km2) : Math.round(km2 * 10) / 10} km²)` });
+        _stopDraw(true);
+    }
+
+    /** Show insights for any area (a prefix, bbox, city or { polygon }) on the Here tab. */
+    function setArea(area) {
+        _hereArea = area || null;
+        if (area && area.polygon) {
+            _pts = area.polygon.slice();
+            _drawLayer();
+        }
+        _tab = 'here';
+        return isOpen() ? render() : open('here');
+    }
 
     function _hereChoice() {
         if (_hereArea) return _hereArea;
@@ -521,11 +711,15 @@ const InsightsPanel = (() => {
         const modes = _el('div', 'ui-seg');
         const sel = _selected();
         [['hood', 'Area · 4 km'], ['cell', 'Cell · 1 km'], ['view', 'Map view']].forEach(([m, label]) => {
-            const b = _btn(label, () => { _hereMode = m; _hereArea = null; render(); },
+            const b = _btn(label, () => { _hereMode = m; _hereArea = null; _clearDraw(); render(); },
                 `ui-seg-btn${!_hereArea && _hereMode === m ? ' active' : ''}`);
             if (m !== 'view' && !sel) { b.disabled = true; b.title = 'Click a cell on the map first'; }
             modes.appendChild(b);
         });
+        const drawn = _hereArea && _hereArea.polygon;
+        const d = _btn(_drawing ? 'Drawing… (Esc to cancel)' : '✏ Draw', () => (_drawing ? _stopDraw() : _startDraw()),
+            `ui-seg-btn${drawn || _drawing ? ' active' : ''}`, 'Click points on the map to outline any area; click the first point or double-click to finish');
+        modes.appendChild(d);
         body.appendChild(modes);
         const area = _hereChoice();
         if (!area) { body.appendChild(_el('div', 'ui-empty', 'Click a cell on the map, or pan to an area, to see what is notable there.')); return; }
@@ -857,8 +1051,14 @@ const InsightsPanel = (() => {
         if (!st || !st.tab) return;
         if (st.city) _city = st.city;
         if (st.tab === 'here' && st.a) {
-            if (st.a.code || st.a.bbox) _hereArea = st.a;
-            else if (st.a.city) _hereArea = st.a;
+            if (st.a.code || st.a.bbox || st.a.city) _hereArea = st.a;
+            else if (st.a.polygon) {
+                const km2 = UrbanInsights.polygonKm2(st.a.polygon);
+                _hereArea = { polygon: st.a.polygon, label: `Shared area (~${km2 >= 10 ? Math.round(km2) : Math.round(km2 * 10) / 10} km²)` };
+                _pts = st.a.polygon.slice();
+                const m = _map();
+                if (m && m.loaded && m.loaded()) _drawLayer();
+            }
         }
         if (st.tab === 'compare' && (st.a || st.b)) _cmp = { a: st.a || null, b: st.b || null };
         if (st.tab === 'whatif' && st.scenario) {
@@ -929,7 +1129,8 @@ const InsightsPanel = (() => {
     function init() {
         const btn = document.getElementById('btn-insights');
         if (btn) btn.addEventListener('click', toggle);
-        if (typeof CellStore !== 'undefined' && CellStore.onChange) CellStore.onChange(() => { _dash = null; });
+        if (typeof CellStore !== 'undefined' && CellStore.onChange) CellStore.onChange(() => { _dash = null; _changes.clear(); });
+        _checkNew().catch(() => { /* badge is best-effort */ });
         // Keyboard: "i" opens the dialog when focus is not in a field.
         document.addEventListener('keydown', (e) => {
             if (e.key !== 'i' || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -941,7 +1142,8 @@ const InsightsPanel = (() => {
 
     return {
         init, open, close, toggle, isOpen, render, attachTo, highlight, clear,
-        findingCard, sparkline, linkState, applyLink, shareLink, openBrief,
+        findingCard, sparkline, linkState, applyLink, shareLink, openBrief, setArea, latestStep,
+        isDrawing: () => _drawing,
         get lastInsights() { return _lastInsights; },
     };
 })();
