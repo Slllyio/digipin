@@ -39,19 +39,27 @@ test.describe('resilience', () => {
     await expect.poll(() => page.evaluate(() => MapModule.getSelectedCode()), { timeout: 15_000 }).toBe('34P-LL5-4L7');
   });
 
-  test('a layer whose parts fail mid-session names the layer, keeps what loaded, and retries', async ({ page }) => {
+  test('a layer whose parts fail mid-session names the layer and retries', async ({ page }) => {
     await page.goto('/app.html');
     await waitForApp(page);
     await settle(page, 500);
-    // Half the layer's parts drop on the floor (a flaky link), the rest load.
-    let n = 0;
-    await page.route('**/data/cells/population/**', (r) => (n++ % 2 ? r.abort('failed') : r.continue()));
+    // The link drops every part of the layer (how many parts a view needs
+    // depends on the real map's bounds, so "half of them" is not a stable
+    // recipe; the partial-gap bookkeeping is covered by tests/cell-store.test.js).
+    // Boot already decoded some of this city's parts (profile, overview);
+    // re-init empties the store's in-memory part cache so the layer must fetch.
+    expect(await page.evaluate(() => CellStore.init())).toBe(true);
+    let dropped = 0;
+    await page.route('**/data/cells/population/**', (r) => { dropped++; r.abort('failed'); });
     const shown = await page.evaluate(() => CellLayers.show('population'));
+    expect(shown).toBe(false);
+    expect(dropped).toBeGreaterThan(0);
     const row = page.locator('#data-status .data-status-row[data-key="cellgaps:population"]');
     await expect(row).toBeVisible({ timeout: 30_000 });
     await expect(row).toContainText(/did not load/);
+    const last = await page.evaluate(() => CellStore.lastLoad('population'));
+    expect(last.unreachable).toBe(last.of);
     expect(await page.evaluate(() => CellStore.failedParts().length)).toBeGreaterThan(0);
-    if (shown) expect(await page.evaluate(() => CellLayers.isVisible('population'))).toBe(true);   // partial data still paints
     expect(await page.evaluate(() => CrashGuard.count())).toBe(0);
     // Link back: Retry refetches only the failed parts and the notice clears.
     await page.unroute('**/data/cells/population/**');

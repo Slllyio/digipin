@@ -444,6 +444,9 @@ const CellLayers = (() => {
         try { table = await CellStore.loadAt(id, state.level, view); }
         finally { _loading.delete(id); }
         const miss = (CellStore.lastLoad && CellStore.lastLoad(id)) || null;
+        // A view whose every part failed is an empty table, not null: treat it
+        // as the failure it is rather than painting nothing and reporting success.
+        if (table && !(table.cells && table.cells.length) && miss && miss.unreachable) table = null;
         if (!table) {
             _active.delete(id);
             if (miss && miss.unreachable) _reportGaps(id, spec, miss);
