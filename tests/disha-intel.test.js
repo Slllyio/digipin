@@ -43,3 +43,22 @@ describe('DishaIntel citations', () => {
         expect(el.querySelector('.disha-cite-sources').textContent).toMatch(/Intelligence scores/);
     });
 });
+
+describe('DishaIntel.match() → urban lenses', () => {
+    const C = [{ name: 'pune', label: 'Pune' }, { name: 'delhi', label: 'Delhi' }];
+    const M = (q) => globalThis.DishaIntel.match(q, C);
+    it('routes combined-dataset questions to a lens', () => {
+        expect(M('Who is most heat vulnerable in Delhi?')).toEqual({ type: 'lens', lens: 'heat', city: 'delhi' });
+        expect(M('How many people live in the floodplain?')).toEqual({ type: 'lens', lens: 'flood' });
+        expect(M('Is Pune a 15-minute city?')).toEqual({ type: 'lens', lens: 'fifteen', city: 'pune' });
+        expect(M('Where are the healthcare deserts?')).toEqual({ type: 'lens', lens: 'health' });
+        expect(M('How many people breathe PM2.5 above the standard?')).toEqual({ type: 'lens', lens: 'air' });
+        expect(M('What do night lights say about the economy?')).toEqual({ type: 'lens', lens: 'lights' });
+        expect(M('Show me compound risk')).toEqual({ type: 'lens', lens: 'burden' });
+        expect(M('How unequal is Delhi?')).toEqual({ type: 'lens', lens: null, city: 'delhi' });
+    });
+    it('leaves what-if floods and notable questions alone', () => {
+        expect(M('What if a severe flood hits?').type).toBe('whatif');
+        expect(M("What's notable here?")).toEqual({ type: 'insights' });
+    });
+});

@@ -57,7 +57,19 @@ const LensesPanel = (() => {
             CellStore.register(layer.spec, layer.table);
             _painted = r.city;
         }
+        _flyToCity(r.city);
         return CellLayers.show(LAYER_ID, { field, extrude: true });
+    }
+
+    /** Frame the city when the map is looking somewhere else. */
+    function _flyToCity(city) {
+        const map = (typeof MapModule !== 'undefined' && MapModule.getMap) ? MapModule.getMap() : null;
+        const spec = typeof CellStore !== 'undefined' ? CellStore.get('population') : null;
+        const b = ((spec && spec.regions) || []).find(x => x.name === city)?.bbox;
+        if (!map || !b || !map.getCenter) return;
+        const c = map.getCenter();
+        if (c.lat >= b.south && c.lat <= b.north && c.lng >= b.west && c.lng <= b.east) return;
+        try { map.fitBounds([[b.west, b.south], [b.east, b.north]], { padding: 60, duration: 900 }); } catch { /* not ready */ }
     }
 
     /** Remove the lens layer (InsightsPanel.clear calls this). */

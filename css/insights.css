@@ -257,8 +257,9 @@ html[data-theme="light"] {
 .ui-lens-title { font-weight: 700; font-size: 13.5px; }
 .ui-lens .ui-headline { font-size: 12.5px; }
 .ui-lens .ui-kpi-val { font-size: 14px; }
-.ui-lens-read { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin-top: 8px; }
-.ui-lens-eq { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ui-lens-read { display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 8px; }
+.ui-lens-eq { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ui-lens-eq > div { flex: 1; min-width: 0; }
 .ui-lens-eq .ui-spark { width: 120px; height: 44px; flex: none; }
 .ui-lens-num { font-weight: 700; font-size: 12.5px; }
 .ui-lens-lisa:empty { display: none; }

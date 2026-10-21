@@ -41,15 +41,15 @@ new data.
 
 | # | Lens | Answers | Data ready? | Effort | Status |
 |---|---|---|---|---|---|
-| 1 | Heat vulnerability index | Who suffers most in a heatwave? | Yes | S | Building |
-| 2 | Flood exposure | How many people and buildings sit in the 100-year floodplain? | Yes | S | Building |
-| 3 | 15-minute completeness + land-use mix | Can people reach daily needs on foot? | Yes (OSM) | S | Building |
-| 4 | Healthcare access (E2SFCA) | Where is care scarce relative to demand? | Yes | S | Building |
-| 5 | Hotspots (Getis-Ord Gi\*, LISA, Moran's I) | Is this a real cluster or noise? | Any field | S | Building |
-| 6 | Equity of access (Gini, Lorenz, bottom-20 %) | Is the city fair? Who is left behind? | Yes | S | Building |
-| 7 | Air pollution exposure | How many people breathe above the standard? | Yes | S | Building |
-| 8 | Night lights vs people | Where is activity above (or below) what residents explain? | Yes | S | Building |
-| 9 | Compound risk ("triple burden") | Which neighbourhoods carry heat, flood and air at once? | Yes | S | Building |
+| 1 | Heat vulnerability index | Who suffers most in a heatwave? | Yes | S | **Shipped** |
+| 2 | Flood exposure | How many people and buildings sit in the 100-year floodplain? | Yes | S | **Shipped** |
+| 3 | 15-minute completeness + land-use mix | Can people reach daily needs on foot? | Yes (OSM) | S | **Shipped** |
+| 4 | Healthcare access (E2SFCA) | Where is care scarce relative to demand? | Yes | S | **Shipped** |
+| 5 | Hotspots (Getis-Ord Gi\*, LISA, Moran's I) | Is this a real cluster or noise? | Any field | S | **Shipped** |
+| 6 | Equity of access (Gini, Lorenz, bottom-20 %) | Is the city fair? Who is left behind? | Yes | S | **Shipped** |
+| 7 | Air pollution exposure | How many people breathe above the standard? | Yes | S | **Shipped** |
+| 8 | Night lights vs people | Where is activity above (or below) what residents explain? | Yes | S | **Shipped** |
+| 9 | Compound risk ("triple burden") | Which neighbourhoods carry heat, flood and air at once? | Yes | S | **Shipped** |
 | 10 | Sprawl and compactness | Is growth infill, edge or leapfrog? How steep is the density gradient? | Yes | M | Next |
 | 11 | Walkability index (Frank et al.) | Is the street fabric walkable, independent of POIs? | Yes | S | Next |
 | 12 | 3-30-300 green rule | Does each neighbourhood meet the tree / canopy / park rule? | Partly (no parks layer) | S–M | Next |

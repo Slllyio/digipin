@@ -22,6 +22,17 @@ const DishaIntel = (() => {
         flood: /\b(flood(s|ed|ing)? (event|scenario|hits?|happens?)|if it floods|heavy rain|cloudburst|(severe|extreme|moderate) flood|inundat\w*)\b/i,
         dashboard: /\b(rank(ing|ed)? (the )?cities|which city is (best|better|most|least)|city (dashboard|rankings?|league)|best city|compare (all )?cities)\b/i,
         compare: /\b(compare|vs\.?|versus|better than)\b/i,
+        // Urban lenses (js/urban-lenses.js): combined-dataset questions about people.
+        lens: {
+            heat: /\b(heat[\s-]?(vulnerab\w*|risk|wave|stress|exposure)|hottest neighbourhoods?|who (suffers|is most at risk) .{0,20}heat)\b/i,
+            flood: /\b(flood\s?plain|flood (exposure|exposed)|(how many|people|residents|population|who)\b.{0,30}\b(flood(ed|s|ing)?|floodplain)\b.{0,20}\b(live|exposed|risk|zone|area))/i,
+            fifteen: /\b(15|fifteen)[\s-]?min(ute)?s?\b|\bwalk(ing|able)? (to|distance (to|of)) (daily|essentials?|shops|amenities)|\bdaily needs\b|\bland[\s-]?use mix\b/i,
+            health: /\b(health\s?care|hospitals?|clinics?|doctors?)\b.{0,15}\b(access|accessibility|deserts?|scarc\w*|shortages?|reach)\b|\baccess to (health\s?care|hospitals?|clinics?|doctors?)\b|\bcare deserts?\b|\b2sfca\b/i,
+            air: /\b(pm\s?2\.?5|air[\s-]?pollution exposure|breathe|dirty air|(people|residents|who)\b.{0,25}\b(polluted|pollution)\b)/i,
+            lights: /\b(night[\s-]?lights?|luminosity|economic activity)\b/i,
+            burden: /\b(compound (risk|hazard)s?|multi[\s-]?hazard|triple burden|most at risk overall)\b/i,
+            all: /\b(equity|inequal\w*|unequal|unfair|gini|fairness|left behind|urban lens(es)?|lenses)\b/i,
+        },
         changes: /\b(what('?s| has| have)? changed|what changed|latest (month|data|changes?)|this month|recent(ly)? chang\w*|what'?s new)\b/i,
     };
 
@@ -73,6 +84,12 @@ const DishaIntel = (() => {
         if (RE.density.test(q) && /\bwhat|happen|impact|effect\b/i.test(q)) {
             const m = /(\d+(?:\.\d+)?)\s*(x|×|times)/i.exec(q);
             return { type: 'whatif', scenario: 'density', factor: m ? Number(m[1]) : /\btriple\b/i.test(q) ? 3 : /\bdouble\b/i.test(q) ? 2 : 1.5 };
+        }
+        for (const [id, re] of Object.entries(RE.lens)) {
+            if (!re.test(q)) continue;
+            const out = { type: 'lens', lens: id === 'all' ? null : id };
+            if (named.length) out.city = named[0];
+            return out;
         }
         if (RE.insights.test(q)) return { type: 'insights' };
         return null;
@@ -140,6 +157,17 @@ const DishaIntel = (() => {
                 }
                 if (!city) { el.textContent = 'Pan the map to a city (or name one) and ask again.'; return ''; }
                 r = await UrbanInsights.changes(CellStore, { city, limit: 6 });
+            } else if (intent.type === 'lens') {
+                let city = intent.city;
+                if (!city) {
+                    const p = center || _viewCenter();
+                    city = p ? UrbanInsights.cityAt(CellStore, p.lat, p.lng) : null;
+                }
+                if (!city) { el.textContent = 'Pan the map to a city (or name one) and ask again.'; return ''; }
+                if (typeof UrbanLenses === 'undefined') { el.textContent = 'The lenses module did not load.'; return ''; }
+                const run = typeof LensesPanel !== 'undefined' ? LensesPanel.result(city, CellStore) : UrbanLenses.run(city, CellStore);
+                const res = await run;
+                r = { ...res, only: intent.lens ? [intent.lens] : null };
             } else if (intent.type === 'dashboard') {
                 r = await UrbanInsights.cityDashboard(CellStore);
             } else if (intent.type === 'compare') {
@@ -167,7 +195,7 @@ const DishaIntel = (() => {
         }
         if (!r) return '';
         _render(el, r);
-        return UrbanInsights.toText(r);
+        return r.kind === 'lenses' ? UrbanLenses.toText(r, r.only) : UrbanInsights.toText(r);
     }
 
     function _render(el, r) {
@@ -196,6 +224,19 @@ const DishaIntel = (() => {
             r.rows.slice(0, 6).forEach(x => el.appendChild(_el('div', 'disha-scan-row',
                 `${x.label}: ${UrbanInsights.fmt(x.a, x.unit)} vs ${UrbanInsights.fmt(x.b, x.unit)}${x.winner === 'a' ? ` (${r.a.label})` : x.winner === 'b' ? ` (${r.b.label})` : ''}`)));
             el.appendChild(_openButton('Open the comparison', 'compare'));
+        } else if (r.kind === 'lenses') {
+            head.textContent = `Urban lenses · ${r.cityLabel}`;
+            el.appendChild(head);
+            for (const l of r.lenses.filter(x => !r.only || r.only.includes(x.id))) {
+                el.appendChild(_el('div', 'ui-headline', `${l.icon} ${l.title}`));
+                el.appendChild(_el('div', 'disha-scan-row', l.headline));
+                const bits = [];
+                if (l.equity && l.equity.gini != null) bits.push(`Gini ${l.equity.gini} across residents`);
+                if (l.hotspots && l.hotspots.moranI != null) bits.push(`${l.hotspots.reading} (Moran’s I ${l.hotspots.moranI})`);
+                if (bits.length) el.appendChild(_el('div', 'disha-scan-hint', bits.join(' · ')));
+                if (r.only) el.appendChild(_el('div', 'disha-scan-hint', `Method: ${l.method}`));
+            }
+            el.appendChild(_openButton('Open the lenses', 'lenses'));
         } else if (r.kind === 'whatif') {
             head.textContent = r.title;
             el.appendChild(head);

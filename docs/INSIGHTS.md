@@ -74,3 +74,27 @@ scenario in view, and a source card for every dataset used. Print it to save a P
 What-if tab runs them together (`UrbanInsights.runPlan`): each scenario keeps its own model, and the plan reports
 the ~1 km cells hit by more than one, flagging a ⚖ trade-off where a benefit (park, trees) and a burden (flood,
 road closure) land on the same place. Plans travel in share links as `wp=<scenario>|<scenario>|…` and print in briefs.
+
+## Lenses (combined-dataset indicators)
+
+`js/urban-lenses.js` + `js/lenses-panel.js` (Intel → **Lenses**). Each lens combines several datasets with an
+established method and answers in people; the ranked plan and the methods with references are in
+[ROADMAP_INSIGHTS.md](ROADMAP_INSIGHTS.md).
+
+| Lens | Combines | Method |
+|---|---|---|
+| Heat vulnerability | LST day + night, density, built-up, canopy, NDVI, travel time to care | exposure × sensitivity × (1 − adaptive capacity), city percentile ranks |
+| Flood exposure | GloFAS 100/10-yr share and depth, HAND, population, built-up | hazard × exposure; people and built km² in the floodplain |
+| 15-minute completeness | 7 OSM amenity categories, population | essentials within 1.2 km; Shannon mix within 500 m |
+| Healthcare access | OSM healthcare, population | E2SFCA, Gaussian decay, 2 km catchment |
+| Air exposure | PM2.5, NO₂, population | population-weighted mean; residents above NAAQS / WHO |
+| Night lights vs people | VIIRS radiance, population | residual of ln(radiance) on ln(population) |
+| Compound risk | the heat, flood and air lenses | hazards in the city's worst fifth, per resident |
+
+Every lens gets a population-weighted Gini, Lorenz curve and Palma ratio (access lenses), global Moran's I
+and Getis-Ord Gi* hot/cold spots (500 m distance band), and on demand Local Moran's I clusters and outliers
+(99 seeded permutations). The engine builds a **city frame** first: every needed field on the population
+L7 grid, coarser datasets broadcast from their parent cell. "Map" registers the runtime dataset `lenses`
+(3D cells, building colouring, exports). DISHA routes "heat vulnerable", "floodplain", "15-minute",
+"healthcare desert", "PM2.5", "night lights", "compound risk" and "how unequal" questions to it.
+A big city (Delhi, 37k cells) takes about 3 s in the browser, yielding between lenses.
