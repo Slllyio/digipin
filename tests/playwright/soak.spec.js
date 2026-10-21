@@ -81,7 +81,7 @@ test.describe('soak', () => {
           await page.waitForFunction((code) => {
             const t = document.getElementById('panel-title-text');
             return !!document.querySelector('[data-cell-profile]') && !!t && t.textContent.trim() === code;
-          }, code, { timeout: 60_000 });   // the profile is ~60 fetches; on software GL the thread is ~95% busy drawing
+          }, code, { timeout: round === 0 ? 120_000 : 60_000 });   // ~60 fetches per profile; a city's first visit also pulls its cell parts, and on software GL the thread is ~95% busy drawing (Bengaluru cold: 94 s seen)
           profiles++;
         } catch { missed.push(`${id}#${round + 1}`); }
         timings.push(`${id} ${((Date.now() - tCity) / 1000).toFixed(0)}s`);

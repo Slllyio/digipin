@@ -4,6 +4,12 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — soak: cold-city profile window
+
+- Run 203 (4831f28) missed one of twelve profiles: Bengaluru's first visit took 94 s (second visit 29 s); every other city was under 60 s. Run 204/205 (1141daf) passed all 31 specs including soak.
+- Cause: a city's first selection also pulls all its cell parts; on CI's SwiftShader the main thread is ~95% busy drawing 3D so fetch callbacks queue behind frames.
+- Fix: the profile wait is 120 s on the first round, 60 s afterwards. The per-city timing line in the log stays so the next adjustment is from numbers.
+
 ## 2026-10-21 — soak in CI: no GPU means 2-4 s per 3D frame
 
 - **Found by:** the main-thread freeze budget added to tests/playwright/soak.spec.js. In CI (Chromium on SwiftShader) every frame with the 3D buildings layer on is a 2.5-3.9 s long task, back to back (420 s blocked out of 439 s). It also made a fixed-wait soak read the old city's centre, so twelve selections all hit Indore.
