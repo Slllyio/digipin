@@ -29,6 +29,8 @@ const OvertureBuildings = (() => {
     const HL_SRC = 'overture-highlight-source';
     const TWIN_SRC = 'overture-twin-source';
     const TWIN_LAYER_ID = 'overture-twin-layer';
+    const EARLY_HARVEST_MS = 6000;   // twin re-harvest spacing while footprint tiles are still streaming
+    let _lastTwinSig = null;         // footprint count + camera of the last twin draw
 
     // Range rings drawn around the focused DIGIPIN cell (metres) + the radius
     // within which nearby buildings glow amber as the "selected properties".
@@ -427,14 +429,16 @@ const OvertureBuildings = (() => {
                 // 'idle', which an animated layer can postpone forever); the
                 // flag stops our own setData from re-looping.
                 // A tilted camera over terrain can keep far tiles streaming so
-                // the source never reports loaded; then harvest anyway, 6 s
-                // apart and at most 3 times per camera move (each setData
-                // restarts the GeoJSON tiling, so more often never finishes),
-                // or a 3D switch without a pan after it shows an empty city.
+                // the source never reports loaded; then harvest anyway, at most
+                // every 6 s and only while tiles are still arriving (the flag is
+                // cleared by each harvest and set again by the next tile). The
+                // harvest only redraws when the set of footprints changed, so
+                // the poll costs a query, not a GeoJSON re-tiling. An earlier
+                // cap of three early harvests left a city empty on a slow tile
+                // link: the fourth tile batch landed after the cap and nothing
+                // asked for it again until the next pan (docs/QA_LOG.md).
                 let _tilesDirty = false;
                 let _lastHarvest = 0;
-                let _early = 0;
-                map.on('movestart', () => { _early = 0; });
                 map.on('sourcedata', (e) => {
                     if (_twin && e && e.sourceId === SOURCE_ID && e.tile) _tilesDirty = true;
                 });
@@ -443,12 +447,10 @@ const OvertureBuildings = (() => {
                     let loaded = true;
                     try { loaded = map.isSourceLoaded(SOURCE_ID); } catch { /* source gone */ }
                     const now = Date.now();
-                    if (!loaded) {
-                        if (_early >= 3 || now - _lastHarvest < 6000) return;
-                        _early++;
-                    } else _tilesDirty = false;
+                    if (!loaded && now - _lastHarvest < EARLY_HARVEST_MS) return;
+                    _tilesDirty = false;
                     _lastHarvest = now;
-                    setTimeout(() => { if (_twin) _refreshTwin(); }, 300);
+                    setTimeout(() => { if (_twin) _refreshTwin({ onlyIfChanged: !loaded }); }, 300);
                 });
                 _twinBound = true;
             }
@@ -556,13 +558,31 @@ const OvertureBuildings = (() => {
         });
     }
 
-    /** Re-harvest rendered footprints into the twin extrusion source. */
-    function _refreshTwin() {
+    /** Camera + footprint-count key of a harvest: the same key means the same buildings. */
+    function _twinSig(feats) {
+        let cam = '';
+        try {
+            const c = _map.getCenter ? _map.getCenter() : null;
+            cam = `${c ? c.lng.toFixed(5) : ''},${c ? c.lat.toFixed(5) : ''},${_map.getZoom ? _map.getZoom().toFixed(2) : ''},${_map.getBearing ? Math.round(_map.getBearing()) : ''},${_map.getPitch ? Math.round(_map.getPitch()) : ''}`;
+        } catch { /* stub */ }
+        return `${feats.length}|${cam}`;
+    }
+
+    /**
+     * Re-harvest rendered footprints into the twin extrusion source.
+     * `onlyIfChanged`: skip the redraw (and the GeoJSON re-tiling it starts)
+     * when the camera and the number of rendered footprints are those of the
+     * last draw; used by the tile-streaming poll.
+     */
+    function _refreshTwin({ onlyIfChanged = false } = {}) {
         if (!_map || !_twin || typeof DeckBuildings === 'undefined') return;
         const t0 = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
         let feats = [];
         try { feats = _map.queryRenderedFeatures({ layers: [LAYER_ID] }) || []; }
         catch { /* layer not rendered yet */ }
+        const sig = _twinSig(feats);
+        if (onlyIfChanged && sig === _lastTwinSig) return;
+        _lastTwinSig = sig;
         const data = _dataDriven();
         let recs = DeckBuildings.featuresToPolygons(feats, (isLight() || data) ? null : _focus);
         if (typeof BuildingData !== 'undefined') {

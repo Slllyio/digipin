@@ -4,6 +4,13 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — 3D city empty after a fly-to on a slow tile link
+
+- **Finding (CI, perf sweep with per-city diagnostics):** with 3D on in the light theme, Delhi and Mumbai drew within 5 s of the fly-to (8,529 and 3,633 footprints), but Bengaluru, Hyderabad, Chennai and Kolkata drew nothing in 30 s: 2-4 harvests of 2-3 ms each (empty), the footprint source never reporting loaded, zoom 13 / pitch 60 as expected. The twin's tile-streaming poll harvested at most three times, 6 s apart, while the source was not loaded, then stopped; on a link where the tiles land later than that, nothing asked for them again until the next pan. A user on a slow connection switching city with 3D on saw an empty city.
+- **Fix:** the poll runs for as long as footprint tiles keep arriving (the dirty flag is cleared by each harvest and set again by the next tile), still 6 s apart, and a poll harvest only redraws when the camera or the number of rendered footprints changed, so an unchanged poll costs one query and does not restart the GeoJSON tiling. A harvest after the source reports loaded still redraws unconditionally.
+- **Also seen:** Delhi's longest harvest + redraw was 3.2 s on the software renderer (8.5k polygons through setData), against a 5 s budget; a real GPU is far lower, but the twin's redraw size is the next thing to trim if that number grows.
+- **Guards:** unit test driving the stub map's `sourcedata` / `render` events: six tile batches give six redraws (the old cap gave three), an unchanged batch gives a query and no redraw, polls stay 6 s apart, and the loaded-state harvest redraws.
+
 ## 2026-10-21 — a CDN library that fails to download is a visible state
 
 - **Gap:** since georaster moved off the boot path (entry below), a user on a bad link who opens a realtime heat/growth overlay or the hydrology tool while the CDN is unreachable got nothing at all: the loader rejected, the callers returned `null`, and the only trace was a console warning. Nothing told the user why the overlay was empty or offered a way to try again.

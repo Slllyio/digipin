@@ -88,11 +88,13 @@ test.describe('performance budgets', () => {
     // One line per city so a regression in draw cost is visible in the CI log
     // before it is a failure: polygons / vertices handed to deck.gl, and the
     // longest harvest + layer build (ms) for that city.
-    // First real baseline (CI, 2026-10-21): Delhi peak 8,529 polygons / 51,609
-    // vertices (8,454 with baked heights), longest refresh 280 ms; the other
-    // five cities had no footprint tiles rendered within 60 s of the fly-to
-    // (Overture PMTiles range requests behind software-GL frames), so zoom,
-    // pitch and the footprint source's loaded state are logged with each line.
+    // Baseline (CI, 2026-10-21): Delhi peak 8,529 polygons / 51,609 vertices
+    // (8,454 with baked heights), longest refresh 0.3-3.2 s; Mumbai 3,633.
+    // Four cities drew nothing within 30 s: the twin's tile-streaming poll
+    // gave up after three empty harvests and the footprint source never
+    // reported loaded, so nothing re-harvested when the tiles finally landed
+    // (fixed: the poll now runs while tiles arrive). Zoom, pitch and the
+    // source's loaded state stay on each line for the next such finding.
     for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s`);
     if (!STUB) {
       // Light theme draws through the MapLibre "twin" source, dark through the
