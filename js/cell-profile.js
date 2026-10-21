@@ -202,12 +202,18 @@ const CellProfile = (() => {
     async function attachTo(containerEl, cell) {
         if (!containerEl || !cell || typeof CellStore === 'undefined' || !CellStore.isEnabled()) return null;
         const seq = ++_seq;
+        // Say at once that cell data is on its way: on a slow link the ~60
+        // fetches behind a profile can take tens of seconds, and an empty slot
+        // reads as "nothing here". The placeholder carries the same attribute
+        // (value "loading") so it is replaced, never duplicated, and so tests
+        // can tell it from the real card.
+        const place = _slot(containerEl, 'loading');
+        place.setAttribute('aria-busy', 'true');
+        place.innerHTML = `<div class="growth-widget__title">📇 Everything in this cell</div>
+            <div class="growth-widget__msg">Loading cell data for ${_esc(cell.code)}…</div>`;
         const sections = await profile(cell.center.lat, cell.center.lng, { rank: true });
         if (seq !== _seq || !containerEl.isConnected) return null;
-        containerEl.querySelectorAll(`[${ATTR}]`).forEach(e => e.remove());
-        const wrap = document.createElement('div');
-        wrap.setAttribute(ATTR, '');
-        wrap.className = 'growth-widget';
+        const wrap = _slot(containerEl, '');
         wrap.innerHTML = _html(sections, cell);
         wrap.querySelectorAll('.cell-profile__show').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -215,11 +221,22 @@ const CellProfile = (() => {
                 if (typeof CellLayers !== 'undefined') CellLayers.show(btn.dataset.id);
             });
         });
-        // Sit with the other analytic cards, ahead of them: first card slot.
+        return sections;
+    }
+
+    /**
+     * The profile's card element, fresh: drops any earlier profile card and
+     * puts a new one ahead of the other analytic cards (first card slot).
+     */
+    function _slot(containerEl, state) {
+        containerEl.querySelectorAll(`[${ATTR}]`).forEach(e => e.remove());
+        const wrap = document.createElement('div');
+        wrap.setAttribute(ATTR, state);
+        wrap.className = 'growth-widget';
         const firstCard = containerEl.querySelector('.growth-widget');
         if (firstCard) containerEl.insertBefore(wrap, firstCard);
         else containerEl.appendChild(wrap);
-        return sections;
+        return wrap;
     }
 
     /** Drop cached rank columns (e.g. after a dataset is re-registered). */

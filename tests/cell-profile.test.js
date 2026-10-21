@@ -106,6 +106,21 @@ describe('CellProfile.attachTo()', () => {
         el.remove();
     });
 
+    it('shows a loading placeholder until the data lands', async () => {
+        const el = document.createElement('div');
+        document.body.appendChild(el);
+        const p = CP.attachTo(el, { code: 'a', center: { lat: LAT, lng: LNG } });
+        const place = el.querySelector('[data-cell-profile="loading"]');
+        expect(place).not.toBeNull();
+        expect(place.getAttribute('aria-busy')).toBe('true');
+        expect(place.textContent).toContain('Loading cell data for a');
+        await p;
+        expect(el.querySelectorAll('[data-cell-profile]')).toHaveLength(1);
+        expect(el.querySelector('[data-cell-profile="loading"]')).toBeNull();
+        expect(el.querySelector('[data-cell-profile=""]')).not.toBeNull();
+        el.remove();
+    });
+
     it('drops a stale result when a newer cell was clicked meanwhile', async () => {
         const el = document.createElement('div');
         document.body.appendChild(el);

@@ -80,7 +80,7 @@ test.describe('soak', () => {
         try {
           await page.waitForFunction((code) => {
             const t = document.getElementById('panel-title-text');
-            return !!document.querySelector('[data-cell-profile]') && !!t && t.textContent.trim() === code;
+            return !!document.querySelector('[data-cell-profile=""]') && !!t && t.textContent.trim() === code;   // the real card, not the loading placeholder
           }, code, { timeout: round === 0 ? 120_000 : 60_000 });   // ~60 fetches per profile; a city's first visit also pulls its cell parts, and on software GL the thread is ~95% busy drawing (Bengaluru cold: 94 s seen)
           profiles++;
         } catch { missed.push(`${id}#${round + 1}`); }
