@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-10-21T04:45:02Z",
-  "count": 22,
+  "generated_at_iso": "2026-10-21T09:41:18Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us6000u3t6",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-10-21T08:37:41.317000+00:00",
+      "latitude": 13.0297,
+      "longitude": 125.5898,
+      "depth_km": 10.0,
+      "place": "68 km NE of Cabatuan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3t6",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000u3t4",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-10-21T07:44:16.055000+00:00",
+      "latitude": -7.5619,
+      "longitude": 128.1355,
+      "depth_km": 122.687,
+      "place": "164 km NE of Lospalos, Timor Leste",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3t4",
+      "tsunami": 0,
+      "significance": 400
+    },
     {
       "id": "us6000u3sj",
       "magnitude": 4.7,
@@ -96,7 +120,7 @@
       "place": "39 km W of Mosteiros, Portugal",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3p1",
       "tsunami": 0,
-      "significance": 405
+      "significance": 406
     },
     {
       "id": "us6000u3nn",
@@ -193,78 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3lf",
       "tsunami": 1,
       "significance": 386
-    },
-    {
-      "id": "us6000u3l3",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-20T08:58:37.177000+00:00",
-      "latitude": -15.1536,
-      "longitude": -178.4627,
-      "depth_km": 417.492,
-      "place": "100 km SSW of Alo, Wallis and Futuna",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3l3",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000u3l0",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-20T08:39:56.237000+00:00",
-      "latitude": -13.9692,
-      "longitude": 165.5875,
-      "depth_km": 10.0,
-      "place": "199 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3l0",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u3kg",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-20T07:09:08.960000+00:00",
-      "latitude": 18.8377,
-      "longitude": 145.5173,
-      "depth_km": 250.025,
-      "place": "Pagan region, Northern Mariana Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3kg",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u3ka",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-20T06:41:23.116000+00:00",
-      "latitude": 37.9037,
-      "longitude": 95.6436,
-      "depth_km": 10.0,
-      "place": "263 km WSW of Yanglong, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3ka",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000u3k5",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-10-20T06:29:22.432000+00:00",
-      "latitude": -13.857,
-      "longitude": 165.5874,
-      "depth_km": 10.0,
-      "place": "206 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3k5",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000u3k7",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-20T06:04:19.173000+00:00",
-      "latitude": 11.7067,
-      "longitude": 125.5048,
-      "depth_km": 10.0,
-      "place": "7 km SE of San Julian, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3k7",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
