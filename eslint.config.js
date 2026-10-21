@@ -45,7 +45,7 @@ const APP_GLOBALS = {
   CellHierarchy: 'readonly',
   CellProfile: 'readonly',
   Analysis: 'readonly', AnalysesPanel: 'readonly', UrbanInsights: 'readonly', UrbanLenses: 'readonly', LensesPanel: 'readonly', InsightsPanel: 'readonly', IntelBrief: 'readonly', ScenarioLenses: 'readonly', UrbanAgents: 'readonly', AgentsPanel: 'readonly', DishaIntel: 'readonly',
-  URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly', I18n: 'readonly',
+  URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly', I18n: 'readonly', I18nUI: 'readonly',
   LayersPanel: 'readonly', ExportDialog: 'readonly', DTDLExport: 'readonly', Onboarding: 'readonly',
   PitchMap: 'readonly', SunStudy: 'readonly', FootprintExport: 'readonly', SiteBrief: 'readonly',
   MeasureTool: 'readonly', PresentMode: 'readonly', Annotations: 'readonly',

@@ -75,6 +75,7 @@ const LOCAL_ASSETS = [
     './js/building-data.js',
     './js/overture-buildings.js',
     './js/theme.js',
+    './js/i18n-ui.js',
     './js/i18n.js',
     './js/map.js',
     './js/keyboard-nav.js',

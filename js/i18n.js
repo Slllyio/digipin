@@ -213,10 +213,142 @@ const I18n = (() => {
         });
     }
 
+    // ── Rendered-panel translation ────────────────────────────────────────
+    // The analysis dialogs (Intel, Lenses, What-if, Agents) render English
+    // literals; translateTree() swaps their text nodes and title/aria/
+    // placeholder attributes through the I18nUI phrase table. Each node
+    // remembers the English it came from and what we wrote, so switching back
+    // restores English and a renderer rewriting a node is picked up as new
+    // English rather than re-translated Hindi.
+    const _textMemo = new WeakMap();   // Text node → { en, out }
+    const _attrMemo = new WeakMap();   // Element → { attr: { en, out } }
+    const ATTRS = ['title', 'aria-label', 'placeholder'];
+
+    function _table(l) {
+        return (typeof I18nUI !== 'undefined' && I18nUI[l]) || null;
+    }
+
+    /** Translate one English UI phrase; unknown phrases come back unchanged. Pure. */
+    function phrase(en, lang) {
+        const l = normalize(lang !== undefined ? lang : get());
+        const table = _table(l);
+        if (!table || typeof en !== 'string') return en;
+        const core = en.trim();
+        if (!core) return en;
+        const out = _lookup(core, table, 0);
+        if (out === undefined || out === core) return en;
+        return en.slice(0, en.indexOf(core)) + out + en.slice(en.indexOf(core) + core.length);
+    }
+
+    function _lookup(core, table, depth) {
+        if (Object.prototype.hasOwnProperty.call(table.phrases, core)) return table.phrases[core];
+        if (depth > 3) return undefined;
+        const tr = s => { const r = _lookup(s, table, depth + 1); return r === undefined ? s : r; };
+        for (const [re, fn] of table.patterns) {
+            const m = core.match(re);
+            if (!m) continue;
+            const r = fn(m, tr);
+            if (r !== undefined) return r;
+        }
+        // Leading symbol or emoji ("➕ Add to plan", "ⓘ Source"), then trailing punctuation.
+        const lead = core.match(/^([^\p{L}\p{N}#←]+)(\p{L}.*)$/u);
+        if (lead) { const r = _lookup(lead[2], table, depth + 1); if (r !== undefined) return lead[1] + r; }
+        const tail = core.match(/^(.*?\p{L})([:.…]+)$/u);
+        if (tail) { const r = _lookup(tail[1], table, depth + 1); if (r !== undefined) return r + tail[2]; }
+        return undefined;
+    }
+
+    // Hindi → English for nodes another module rebuilt from already-translated
+    // text (so they carry no memo), e.g. UIPolish splitting a chip's emoji off.
+    let _reverse = null;
+    function _unphrase(text) {
+        const table = _table('hi');
+        if (!table || !/[\u0900-\u097F]/.test(text)) return text;
+        if (!_reverse) {
+            _reverse = new Map();
+            for (const [en, hi] of Object.entries(table.phrases)) if (!_reverse.has(hi)) _reverse.set(hi, en);
+        }
+        const core = text.trim();
+        const en = _reverse.get(core);
+        return en === undefined ? text : text.replace(core, en);
+    }
+
+    function _swapText(node, l) {
+        const memo = _textMemo.get(node);
+        const en = memo && node.nodeValue === memo.out ? memo.en : _unphrase(node.nodeValue);
+        const out = l === 'en' ? en : phrase(en, l);
+        if (node.nodeValue !== out) node.nodeValue = out;
+        if (out !== en) _textMemo.set(node, { en, out });
+        else _textMemo.delete(node);
+    }
+
+    function _swapAttrs(el, l) {
+        let memo = _attrMemo.get(el);
+        for (const a of ATTRS) {
+            const v = el.getAttribute(a);
+            if (v === null) continue;
+            const m = memo && memo[a];
+            const en = m && v === m.out ? m.en : v;
+            const out = l === 'en' ? en : phrase(en, l);
+            if (v !== out) el.setAttribute(a, out);
+            if (out !== en) { memo = memo || {}; memo[a] = { en, out }; _attrMemo.set(el, memo); }
+            else if (m) delete memo[a];
+        }
+    }
+
+    /** Translate (or restore to English) every text node and label under root. */
+    function translateTree(root, lang) {
+        if (!root || typeof document === 'undefined') return;
+        const l = normalize(lang !== undefined ? lang : get());
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        const nodes = [];
+        for (let n = walker.nextNode(); n; n = walker.nextNode()) nodes.push(n);
+        nodes.forEach(n => {
+            const p = n.parentNode;
+            if (p && (p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE' || p.isContentEditable)) return;
+            _swapText(n, l);
+        });
+        if (root.nodeType === 1) _swapAttrs(root, l);
+        if (root.querySelectorAll) root.querySelectorAll('[title],[aria-label],[placeholder]').forEach(el => _swapAttrs(el, l));
+    }
+
+    const PANEL_SELECTOR = '.ui-dialog, #aino-right';
+    const _watched = new WeakSet();
+    let _bodyObserver = null;
+
+    function _watchPanel(el) {
+        if (_watched.has(el) || typeof MutationObserver === 'undefined') return;
+        _watched.add(el);
+        // Runs as a microtask after each render, before paint, so English never
+        // flashes; takeRecords() drops the records our own writes produce.
+        const obs = new MutationObserver(() => {
+            if (get() === 'en') return;
+            translateTree(el);
+            obs.takeRecords();
+        });
+        obs.observe(el, { childList: true, subtree: true, characterData: true });
+        if (get() !== 'en') translateTree(el);
+    }
+
+    /** Keep every analysis dialog (present and future) in the active language. */
+    function watchPanels() {
+        if (typeof document === 'undefined' || !document.body) return;
+        document.querySelectorAll(PANEL_SELECTOR).forEach(_watchPanel);
+        if (_bodyObserver || typeof MutationObserver === 'undefined') return;
+        _bodyObserver = new MutationObserver(recs => recs.forEach(r => r.addedNodes.forEach(n => {
+            if (n.nodeType === 1 && n.matches && n.matches(PANEL_SELECTOR)) _watchPanel(n);
+        })));
+        _bodyObserver.observe(document.body, { childList: true });
+    }
+
     function set(lang) {
         const l = normalize(lang);
         try { localStorage.setItem(STORAGE_KEY, l); } catch { /* blocked */ }
         apply(l);
+        if (typeof document !== 'undefined') {
+            document.querySelectorAll(PANEL_SELECTOR).forEach(el => translateTree(el, l));
+            try { document.dispatchEvent(new CustomEvent('digipin:language', { detail: { lang: l } })); } catch { /* old browsers */ }
+        }
         return l;
     }
 
@@ -225,6 +357,7 @@ const I18n = (() => {
         const current = get();
         apply(current);
         if (typeof document === 'undefined') return;
+        watchPanels();
         const sel = document.getElementById('lang-select');
         if (sel) {
             sel.value = current;
@@ -232,7 +365,7 @@ const I18n = (() => {
         }
     }
 
-    return { init, get, set, apply, normalize, t, langName, langNameEn, LANGS };
+    return { init, get, set, apply, normalize, t, phrase, translateTree, watchPanels, langName, langNameEn, LANGS };
 })();
 
 if (typeof window !== 'undefined') {

@@ -115,6 +115,7 @@ loadGlobalScript('js/open-data-finder.js', ['OpenDataFinder']);
 loadGlobalScript('js/disha-mentions.js', ['DishaMentions']);
 loadGlobalScript('js/url-state.js', ['URLState']);
 loadGlobalScript('js/theme.js', ['Theme']);
+loadGlobalScript('js/i18n-ui.js', ['I18nUI']);
 loadGlobalScript('js/i18n.js', ['I18n']);
 loadGlobalScript('js/digital-twin-layers.js', ['DigitalTwinLayers']);
 loadGlobalScript('js/saved-views.js', ['SavedViews']);
