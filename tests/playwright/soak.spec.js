@@ -10,6 +10,7 @@ const { STUB, prepare, waitForApp, settle, toggleRow, longTasks } = require('./h
 // the profile + insights engines, which is the churn this soak is after.
 const CITIES = ['indore', 'delhi', 'mumbai', 'bengaluru', 'hyderabad', 'chennai'];
 const ROUNDS = 2;
+const PROFILE_WAIT = 180_000;   // per-profile window on CI's software renderer; see the note at the wait
 const GROWTH_MB = 120;   // allowed heap growth between round 1 and round 2 (caches warm by then)
 const HEAP_MB = 450;     // absolute ceiling after the soak (matches perf.spec.js)
 // Main-thread freeze budget after boot: one city switch + cell click may not
@@ -40,7 +41,7 @@ test.describe('soak', () => {
     // profile 120 s), so the test window is their sum plus boot: a slow
     // runner took 572 s for the loop alone (frames of up to 8.8 s under
     // software GL) and tripped a 600 s window after every profile rendered.
-    test.setTimeout(ROUNDS * CITIES.length * (60_000 + 120_000 + 5_000) + 120_000);
+    test.setTimeout(ROUNDS * CITIES.length * (60_000 + PROFILE_WAIT + 5_000) + 120_000);
     await page.goto('/app.html');
     await waitForApp(page);
     const available = await page.$$eval('#city-select option', (os) => os.map((o) => o.value));
@@ -85,7 +86,7 @@ test.describe('soak', () => {
           await page.waitForFunction((code) => {
             const t = document.getElementById('panel-title-text');
             return !!document.querySelector('[data-cell-profile=""]') && !!t && t.textContent.trim() === code;   // the real card, not the loading placeholder
-          }, code, { timeout: 120_000 });   // ~60 fetches per profile behind 2-4 s software-GL frames: 94 s seen cold (Bengaluru), a 60 s miss seen warm (Mumbai). The window is generous because the claim is "every profile renders", not "within N s"; per-city times are logged below.
+          }, code, { timeout: PROFILE_WAIT });   // ~60 fetches per profile behind 2-4 s software-GL frames: 94 s then 135 s seen cold (Bengaluru, the latter with the 3D journey sharing the runner), a 60 s miss seen warm (Mumbai). The window is generous because the claim is "every profile renders", not "within N s"; per-city times are logged below.
           profiles++;
         } catch { missed.push(`${id}#${round + 1}`); }
         timings.push(`${id} ${((Date.now() - tCity) / 1000).toFixed(0)}s`);
