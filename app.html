@@ -252,6 +252,10 @@
             <span class="tb-icon">&#128065;</span>
             <span class="tb-label" data-i18n="tb.viewshed">Viewshed</span>
         </button>
+        <button class="toolbar-btn" id="btn-swipe" title="Swipe compare — two layers side by side with a draggable divider">
+            <span class="tb-icon">&#8596;</span>
+            <span class="tb-label" data-i18n="tb.swipe">Swipe</span>
+        </button>
         <button class="toolbar-btn" id="btn-hydrology" title="Hydrology — where rain ponds and runs, from the DEM (Whitebox in the browser)">
             <span class="tb-icon">&#128167;</span>
             <span class="tb-label" data-i18n="tb.hydrology">Hydrology</span>
@@ -498,6 +502,7 @@
     <script defer src="js/ndvi-overlay.js"></script>
     <script defer src="js/viewshed.js"></script>
     <script defer src="js/terrain-hydrology.js"></script>
+    <script defer src="js/layer-swipe.js"></script>
     <script defer src="js/kde-overlay.js"></script>
     <script defer src="js/accessibility-overlay.js"></script>
     <script defer src="js/url-state.js"></script>
@@ -546,6 +551,7 @@
         ['btn-bivariate', () => window.BivariateOverlay],
         ['btn-viewshed',  () => window.Viewshed],
         ['btn-hydrology', () => window.TerrainHydrology],
+        ['btn-swipe',     () => window.LayerSwipe],
         ['btn-kde',       () => window.KDEOverlay],
         ['btn-access',    () => window.AccessibilityOverlay],
         ['btn-choropleth', () => window.ScoreChoropleth],

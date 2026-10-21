@@ -4543,3 +4543,16 @@ body.presenting #sidebar { display: none !important; }
     background: var(--bg-secondary, #fff);
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
 }
+
+/* LayerSwipe: right-hand comparison map, clipped beside a draggable divider. */
+.layer-swipe-wrap { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.layer-swipe-map { position: absolute; inset: 0; }
+.layer-swipe-divider { position: absolute; top: 0; bottom: 0; width: 4px; margin-left: -2px; background: var(--accent-cyan); box-shadow: 0 0 0 1px rgba(0,0,0,.35); cursor: ew-resize; pointer-events: auto; touch-action: none; }
+.layer-swipe-divider::after { content: '\2194'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-cyan); color: var(--bg-primary); font-size: 15px; }
+.layer-swipe-divider:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.layer-swipe-panel { position: absolute; left: 50%; bottom: 72px; transform: translateX(-50%); z-index: 20; display: grid; grid-template-columns: repeat(2, minmax(140px, 1fr)); gap: 8px 12px; padding: 10px 12px; border-radius: 10px; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); font-size: 12px; box-shadow: 0 6px 24px rgba(0,0,0,.35); max-width: calc(100vw - 32px); }
+.layer-swipe-title { grid-column: 1 / -1; font-weight: 600; }
+.layer-swipe-field { display: grid; gap: 4px; }
+.layer-swipe-field select { font: inherit; max-width: 100%; }
+.layer-swipe-hint { grid-column: 1 / -1; opacity: .75; }
+.layer-swipe-close { grid-column: 1 / -1; justify-self: end; font: inherit; cursor: pointer; }

@@ -112,6 +112,7 @@ const LOCAL_ASSETS = [
     './js/ndvi-overlay.js',
     './js/viewshed.js',
     './js/terrain-hydrology.js',
+    './js/layer-swipe.js',
     './js/kde-overlay.js',
     './js/accessibility-overlay.js',
     './js/url-state.js',
