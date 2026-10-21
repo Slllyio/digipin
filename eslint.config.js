@@ -44,7 +44,7 @@ const APP_GLOBALS = {
   Text2MapResultsLayer: 'readonly', Provenance: 'readonly', MapSnapshot: 'readonly', OpenDataFinder: 'readonly', SunHours: 'readonly', FloorArea: 'readonly', GltfExport: 'readonly', DishaMentions: 'readonly',
   CellHierarchy: 'readonly',
   CellProfile: 'readonly',
-  Analysis: 'readonly', AnalysesPanel: 'readonly', UrbanInsights: 'readonly', InsightsPanel: 'readonly', IntelBrief: 'readonly', DishaIntel: 'readonly',
+  Analysis: 'readonly', AnalysesPanel: 'readonly', UrbanInsights: 'readonly', UrbanLenses: 'readonly', LensesPanel: 'readonly', InsightsPanel: 'readonly', IntelBrief: 'readonly', DishaIntel: 'readonly',
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly', I18n: 'readonly',
   LayersPanel: 'readonly', ExportDialog: 'readonly', DTDLExport: 'readonly', Onboarding: 'readonly',
   PitchMap: 'readonly', SunStudy: 'readonly', FootprintExport: 'readonly', SiteBrief: 'readonly',

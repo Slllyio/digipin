@@ -20,7 +20,7 @@
  */
 const IntelBrief = (() => {
     const SCHEMA = 'digipin.brief/1';
-    const TABS = ['city', 'here', 'compare', 'whatif'];
+    const TABS = ['city', 'here', 'lenses', 'compare', 'whatif'];
     const FLOOD = ['moderate', 'severe', 'extreme'];
     const REGION_RE = /^[a-z][a-z0-9_]{0,63}$/;
     const CODE_RE = /^[2-9CFJKLMPT]{1,10}$/;

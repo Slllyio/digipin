@@ -1,11 +1,12 @@
 /**
  * InsightsPanel — the Urban Intelligence dialog over js/urban-insights.js.
  *
- * Four tabs, all computed in the browser from the cell store:
+ * Five tabs, all computed in the browser from the cell store:
  *   City       key indicators, the city's rank among every covered city, its
  *              monthly environment series, a ranking heat-table, best/worst zones
  *   Here       "what's notable here" for the selected cell's neighbourhood (or
  *              the map view): ranked findings, hotspots, trends and anomalies
+ *   Lenses     urban-analytics lenses that combine datasets (js/lenses-panel.js)
  *   Compare    two areas or cities side by side, indicator by indicator
  *   What-if    a new park, more density, or a flood event: affected cells and
  *              buildings, painted as a 3D cell layer and onto the buildings
@@ -142,6 +143,7 @@ const InsightsPanel = (() => {
     function clear() {
         _clearHighlight();
         _clearWhatIf();
+        if (typeof LensesPanel !== 'undefined') LensesPanel.clear();
     }
 
     async function _showField(dataset, field) {
@@ -305,7 +307,7 @@ const InsightsPanel = (() => {
         head.append(title, tools);
         const tabs = _el('div', 'ui-tabs');
         tabs.setAttribute('role', 'tablist');
-        [['city', 'City'], ['here', 'Here'], ['compare', 'Compare'], ['whatif', 'What-if']].forEach(([id, label]) => {
+        [['city', 'City'], ['here', 'Here'], ['lenses', 'Lenses'], ['compare', 'Compare'], ['whatif', 'What-if']].forEach(([id, label]) => {
             const t = _btn(label, () => { _tab = id; render(); }, 'ui-tab');
             t.dataset.tab = id;
             t.setAttribute('role', 'tab');
@@ -364,7 +366,7 @@ const InsightsPanel = (() => {
         const sub = _dialog().querySelector('.ui-sub');
         sub.textContent = UrbanInsights.cityLabel(_city);
         try {
-            const draw = { city: _renderCity, here: _renderHere, compare: _renderCompare, whatif: _renderWhatIf }[_tab] || _renderCity;
+            const draw = { city: _renderCity, here: _renderHere, lenses: _renderLenses, compare: _renderCompare, whatif: _renderWhatIf }[_tab] || _renderCity;
             await draw(store, seq);
         } catch (e) {
             if (seq === _seq) _body(`Could not compute this: ${e && e.message ? e.message : e}`);
@@ -772,6 +774,25 @@ const InsightsPanel = (() => {
         a.href = url; a.download = name;
         document.body.appendChild(a); a.click(); a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    // ── Lenses tab (js/lenses-panel.js) ─────────────────────────────────────
+
+    async function _renderLenses(store, seq) {
+        const body = _body();
+        if (typeof LensesPanel === 'undefined' || typeof UrbanLenses === 'undefined') {
+            body.appendChild(_el('div', 'ui-empty', 'The lenses module did not load.'));
+            return;
+        }
+        const pop = store.get('population');
+        const cities = ((pop && pop.regions) || []).map(r => ({ name: r.name, label: UrbanInsights.cityLabel(r.name) }));
+        if (!cities.some(c => c.name === _city) && cities.length) _city = cities[0].name;
+        _dialog().querySelector('.ui-sub').textContent = UrbanInsights.cityLabel(_city);
+        await LensesPanel.render(body, {
+            store, city: _city, cities, isCurrent: () => seq === _seq,
+            setCity: (c) => { _city = c; render(); },
+            highlight, clearHighlight: _clearHighlight, sourcesFooter: _sourcesFooter, sparkline, toast: _toast, copy: _copy,
+        });
     }
 
     // ── Compare tab ─────────────────────────────────────────────────────────

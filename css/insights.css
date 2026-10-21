@@ -248,3 +248,21 @@ html[data-theme="light"] {
     content: ''; position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; border-radius: 50%;
     background: var(--ui-anomaly, #a78bfa); box-shadow: 0 0 0 2px var(--bg-panel, #fff);
 }
+
+/* Lenses tab (js/lenses-panel.js) */
+.ui-lens-intro { margin-bottom: 6px; }
+.ui-lens { margin-top: 12px; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--bg-card); }
+.ui-lens-head { display: flex; gap: 10px; align-items: center; }
+.ui-lens-icon { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border-radius: 50%; background: var(--gradient-subtle); font-size: 15px; }
+.ui-lens-title { font-weight: 700; font-size: 13.5px; }
+.ui-lens .ui-headline { font-size: 12.5px; }
+.ui-lens .ui-kpi-val { font-size: 14px; }
+.ui-lens-read { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin-top: 8px; }
+.ui-lens-eq { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ui-lens-eq .ui-spark { width: 120px; height: 44px; flex: none; }
+.ui-lens-num { font-weight: 700; font-size: 12.5px; }
+.ui-lens-lisa:empty { display: none; }
+.ui-lens-lisa { margin-top: 6px; }
+.ui-lens-method { margin-top: 8px; font-size: 11.5px; color: var(--text-secondary); }
+.ui-lens-method summary { cursor: pointer; color: var(--text-muted); font-size: 11px; }
+.ui-lens-method > div { margin-top: 6px; }

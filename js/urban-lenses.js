@@ -68,7 +68,7 @@ const UrbanLenses = (() => {
             needs: ['nightlights.radiance'],
             method: 'OLS of ln(radiance + 0.1) on ln(population + 1) over populated cells; the standardised residual. Above +1: lit beyond its residents (commerce, industry, hubs). Below −1 in dense cells: under-lit for its population, a flag worth checking (energy poverty, informal housing), not a label.',
             refs: 'Henderson, Storeygard & Weil 2012; Chen & Nordhaus 2011' },
-        { id: 'burden', equity: true, title: 'Compound risk', icon: '⚠',
+        { id: 'burden', title: 'Compound risk', icon: '⚠',
             question: 'Where do heat, flood and dirty air stack up?',
             field: { key: 'burden', label: 'Hazards in the worst fifth', unit: 'of 3', higherIs: 'worse', ramp: 'reds' },
             needs: [],
@@ -598,11 +598,13 @@ const UrbanLenses = (() => {
         const parts = [['heat', 'hvi'], ['flood', 'flood_hazard'], ['air', 'pm25']].map(([id, k]) => done[id] && done[id].columns[k]).filter(Boolean);
         if (parts.length < 2) return null;
         const idx = _residents(fr), n = fr.grid.n, pop = fr.cols['population.population'];
-        const cut = parts.map(v => wquantile(v, null, idx, 0.8));
+        // Percentile ranks with ties averaged, so a coarse field (PM2.5 at
+        // ~1 km) cannot put a whole tied block into the worst fifth.
+        const ranks = parts.map(v => prank(v, idx));
         const out = new Float64Array(n).fill(NaN);
         for (const i of idx) {
             let k = 0;
-            parts.forEach((v, p) => { if (_fin(v[i]) && v[i] >= cut[p] && v[i] > 0) k++; });
+            parts.forEach((v, p) => { if (ranks[p][i] >= 0.8 && v[i] > 0) k++; });
             out[i] = k;
         }
         const two = _sumOver(pop, idx, i => out[i] >= 2), all = _sumOver(pop, idx, i => out[i] >= parts.length);

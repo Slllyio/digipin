@@ -50,6 +50,7 @@ loadGlobalScript('js/analysis.js', ['Analysis']);
 loadGlobalScript('js/analyses-panel.js', ['AnalysesPanel']);
 loadGlobalScript('js/urban-insights.js', ['UrbanInsights']);
 loadGlobalScript('js/urban-lenses.js', ['UrbanLenses']);
+loadGlobalScript('js/lenses-panel.js', ['LensesPanel']);
 loadGlobalScript('js/intel-brief.js', ['IntelBrief']);
 loadGlobalScript('js/insights-panel.js', ['InsightsPanel']);
 loadGlobalScript('js/disha-intel.js', ['DishaIntel']);
