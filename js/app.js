@@ -129,6 +129,7 @@ const App = (() => {
         step('sidebar', () => initSidebar());
         step('toolbar', () => initToolbar());
         step('CameraPresets', () => { if (typeof CameraPresets !== 'undefined') CameraPresets.init(); });
+        step('ViewHandoff', () => { if (typeof ViewHandoff !== 'undefined') ViewHandoff.init(); });
         // Deep-link state: wire the Share button + apply any ?cell/?ll/?score/?q.
         step('URLState', () => {
             if (typeof URLState !== 'undefined') URLState.init();

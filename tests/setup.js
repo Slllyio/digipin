@@ -134,6 +134,7 @@ loadGlobalScript('js/pitch-map.js', ['PitchMap']);
 loadGlobalScript('js/sun-shadows.js', ['SunShadows']);
 loadGlobalScript('js/sun-study.js', ['SunStudy']);
 loadGlobalScript('js/camera-presets.js', ['CameraPresets']);
+loadGlobalScript('js/view-handoff.js', ['ViewHandoff']);
 loadGlobalScript('js/sun-hours.js', ['SunHours']);
 loadGlobalScript('js/floor-area.js', ['FloorArea']);
 loadGlobalScript('js/gltf-export.js', ['GltfExport']);

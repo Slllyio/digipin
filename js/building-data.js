@@ -195,6 +195,57 @@ const BuildingData = (() => {
         return [];
     }
 
+    function _unitOf(f) {
+        return f && f.unit ? String(f.unit) : '';
+    }
+    function _tick(v) {
+        const x = Number(v);
+        if (!Number.isFinite(x)) return String(v);
+        if (Math.abs(x) >= 1000) return Math.round(x).toLocaleString('en-IN');
+        if (Math.abs(x) >= 100 || Number.isInteger(x)) return String(Math.round(x));
+        return (Math.round(x * 10) / 10).toString();
+    }
+
+    /**
+     * What the 3D legend shows for the current drivers. c/h: { spec, field }
+     * (c.field already stretched when fitted). Returns { color, height }, each
+     * null when that driver is off:
+     *   color  { kind: 'ramp'|'swatches', title, unit, stops, ticks (low, mid, high), note, aria }
+     *   height { title, unit, range }   (values map onto 4–MAX m). Pure.
+     */
+    function legendModel(c, h, fitted) {
+        const out = { color: null, height: null };
+        if (c && c.field) {
+            const f = c.field;
+            const stops = legend(f);
+            const unit = _unitOf(f);
+            const title = f.label || f.key;
+            if (f.type === 'number' && stops.length) {
+                const d = Array.isArray(f.domain) && f.domain.length === 2 ? f.domain : null;
+                const lo = d ? d[0] : Number(stops[0].label), hi = d ? d[1] : Number(stops[stops.length - 1].label);
+                const ticks = [_tick(lo), _tick((lo + hi) / 2), _tick(hi)];
+                out.color = { kind: 'ramp', title, unit, stops, ticks,
+                    note: fitted ? 'Colours fitted to the buildings in view' : '',
+                    aria: `${title}: ${ticks[0]} to ${ticks[2]}${unit ? ' ' + unit : ''}` };
+            } else {
+                out.color = { kind: 'swatches', title, unit: '', stops, ticks: [], note: '',
+                    aria: `${title}: ${stops.map(x => x.label).join(', ')}` };
+            }
+        }
+        if (h && h.field) {
+            const f = h.field;
+            const unit = _unitOf(f);
+            let range;
+            if (f.type === 'number') {
+                const d = Array.isArray(f.domain) && f.domain.length === 2 ? f.domain : [0, 1];
+                range = `${_tick(d[0])} → 4 m · ${_tick(d[1])} → ${MAX_VALUE_HEIGHT_M} m`;
+            } else if (f.type === 'boolean') range = `no → 4 m · yes → ${MAX_VALUE_HEIGHT_M} m`;
+            else range = `taller = later category, up to ${MAX_VALUE_HEIGHT_M} m`;
+            out.height = { title: f.label || f.key, unit, range };
+        }
+        return out;
+    }
+
     /**
      * The field with its domain fitted to the values in view, so a city-wide
      * 0–100 score that only spans 28–55 here still uses the whole ramp.
@@ -522,17 +573,32 @@ const BuildingData = (() => {
             + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.32);backdrop-filter:blur(8px);';
         const groups = options(typeof CellStore !== 'undefined' ? CellStore.datasets() : []);
         const c = _sel(_color);
+        const hsel = _sel(_height);
+        const lm = legendModel(c && { ...c, field: _paintField(c.field) }, hsel, _stretch && !!(c && c.field.type === 'number'));
         let legendHTML = '';
-        if (c) {
-            const stops = legend(_paintField(c.field));
-            if (c.field.type === 'number' && stops.length) {
-                legendHTML = `<div style="display:flex;height:8px;border-radius:4px;overflow:hidden;">${stops.map(s => `<span style="flex:1;background:${s.color}"></span>`).join('')}</div>`
-                    + `<div style="display:flex;justify-content:space-between;color:${pal.sub};font-size:11px;"><span>${_esc(stops[0].label)}</span><span>${_esc(stops[stops.length - 1].label)}${c.field.unit && !/^[\d.]+\s*[-–]\s*[\d.]+$/.test(c.field.unit) ? ' ' + _esc(c.field.unit) : ''}</span></div>`;
+        if (lm.color) {
+            const L = lm.color;
+            legendHTML += `<div class="bd-legend" role="img" aria-label="${_esc(L.aria)}" style="margin-top:2px;">`
+                + `<div class="bd-legend-title" style="font-size:11px;font-weight:600;margin-bottom:3px;">Colour: ${_esc(L.title)}${L.unit ? ` <span style="color:${pal.sub};font-weight:400;">(${_esc(L.unit)})</span>` : ''}</div>`;
+            if (L.kind === 'ramp') {
+                legendHTML += `<div style="display:flex;height:8px;border-radius:4px;overflow:hidden;">${L.stops.map(st => `<span style="flex:1;background:${st.color}"></span>`).join('')}</div>`
+                    + `<div style="display:flex;justify-content:space-between;color:${pal.sub};font-size:11px;font-variant-numeric:tabular-nums;">${L.ticks.map(t => `<span>${_esc(t)}</span>`).join('')}</div>`;
             } else {
-                legendHTML = stops.map(s => `<div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:2px;background:${s.color};"></span><span style="color:${pal.sub};">${_esc(s.label)}</span></div>`).join('');
+                legendHTML += L.stops.map(st => `<div style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:2px;background:${st.color};"></span><span style="color:${pal.sub};">${_esc(st.label)}</span></div>`).join('');
             }
+            legendHTML += `<div style="display:flex;align-items:center;gap:6px;color:${pal.sub};font-size:11px;margin-top:2px;"><span style="width:10px;height:10px;border-radius:2px;background:#9ca3af;"></span>No data</div>`
+                + (L.note ? `<div style="color:${pal.sub};font-size:11px;margin-top:2px;">${_esc(L.note)}</div>` : '')
+                + '</div>';
+        }
+        if (lm.height) {
+            const H = lm.height;
+            legendHTML += `<div class="bd-legend bd-legend-h" style="margin-top:6px;"><div style="font-size:11px;font-weight:600;margin-bottom:3px;">Height: ${_esc(H.title)}${H.unit ? ` <span style="color:${pal.sub};font-weight:400;">(${_esc(H.unit)})</span>` : ''}</div>`
+                + `<div style="display:flex;align-items:flex-end;gap:3px;height:22px;">${[0.2, 0.45, 0.7, 1].map(k => `<span style="width:8px;height:${Math.round(22 * k)}px;background:${pal.sub};opacity:.55;border-radius:1px;"></span>`).join('')}`
+                + `<span style="color:${pal.sub};font-size:11px;margin-left:6px;">${_esc(H.range)}</span></div></div>`;
+        }
+        if (c) {
             const lvl = c.spec.level;
-            legendHTML += `<div style="color:${pal.sub};font-size:11px;margin-top:4px;">${c.spec.id === BLDG ? 'Per building, from its footprint' : `Joined by DIGIPIN L${lvl}${c.spec.approxCellM ? ` (~${c.spec.approxCellM} m cells)` : ''}: every building in a cell shares its value; grey = no data`}</div>`;
+            legendHTML += `<div style="color:${pal.sub};font-size:11px;margin-top:4px;">${c.spec.id === BLDG ? 'Per building, from its footprint' : `Joined by DIGIPIN L${lvl}${c.spec.approxCellM ? ` (~${c.spec.approxCellM} m cells)` : ''}: every building in a cell shares its value`}</div>`;
         }
         el.innerHTML = `<div style="display:flex;align-items:center;margin-bottom:6px;"><strong style="color:${pal.primary};font-size:13px;flex:1;">Building data</strong>`
             + `<button type="button" data-act="reset" title="Back to plain massing" style="background:none;border:none;color:${pal.sub};cursor:pointer;font-size:11px;">reset</button></div>`
@@ -581,7 +647,7 @@ const BuildingData = (() => {
         init, set, get, isActive, onChange, annotateCurrent, currentColorExpr,
         setPanelVisible, describe, popupHTML, tooltipHTML, exportView, exportGeoJSON,
         parseKey, options, centroid, areaM2, fieldFor, cellValue, heightFromValue,
-        annotate, colorExpr, legend, summary, stretchField, BUILDING_SPEC,
+        annotate, colorExpr, legend, legendModel, summary, stretchField, BUILDING_SPEC,
     };
 })();
 

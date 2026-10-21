@@ -240,6 +240,13 @@ const CellLayers = (() => {
 
     // ── map layers ──────────────────────────────────────────────────────────
 
+    /** Id of the first 3D-building layer in the style (flat layers go under it), or undefined. */
+    function _belowBuildings() {
+        const layers = (_map.getStyle && _map.getStyle() && _map.getStyle().layers) || [];
+        const l = layers.find(x => x.type === 'fill-extrusion' && !x.id.startsWith(LYR));
+        return l ? l.id : undefined;
+    }
+
     function _paint(spec, table, state) {
         const base = fieldAtLevel(CellStore.field(spec, state.field) || spec.fields[0], table);
         const f = _temporal(spec) ? fieldAt(base, state.t) : base;
@@ -262,6 +269,8 @@ const CellLayers = (() => {
             });
             if (_map.getPitch && _map.getPitch() < 30 && _map.easeTo) _map.easeTo({ pitch: 55, duration: 600 });
         } else {
+            // A flat fill isn't depth-tested: drawn after the 3D buildings it
+            // would paint straight over them, so it goes beneath the first one.
             _map.addLayer({
                 id: lyr, type: 'fill', source: src,
                 paint: {
@@ -269,7 +278,7 @@ const CellLayers = (() => {
                     'fill-opacity': 0.6,
                     'fill-outline-color': 'rgba(255,255,255,0.25)',
                 },
-            });
+            }, _belowBuildings());
         }
         state.effField = f;
         const filter = filterExpr(f, state.hidden);

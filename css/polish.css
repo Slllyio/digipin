@@ -1149,3 +1149,21 @@ html[data-theme="light"] #camera-presets .cp-btn[aria-pressed="true"] .cp-detail
     #camera-presets .cp-detail, #camera-presets .cp-label { display: none; }
     #camera-presets .cp-btn { padding: 8px 10px; }
 }
+/* The monthly time slider shares the bottom edge: lift the shot bar over it. */
+body:has(#cell-time-slider) #camera-presets,
+html[data-theme="light"] body:has(#cell-time-slider) #camera-presets { bottom: 96px; }
+@media (max-width: 768px) {
+    body:has(#cell-time-slider) #camera-presets,
+    html[data-theme="light"] body:has(#cell-time-slider) #camera-presets { bottom: 170px; }
+}
+#camera-presets.is-compact .cp-detail { display: none; }
+#camera-presets .cp-sep { width: 1px; margin: 6px 2px; background: currentColor; opacity: 0.18; }
+#camera-presets.is-recording .cp-rec { color: #e5484d; }
+#camera-presets.is-recording .cp-btn[data-preset] { opacity: 0.55; cursor: default; }
+html[data-theme="light"] #camera-presets .cp-sep { background: var(--aino-line); opacity: 1; }
+/* An open detail panel (420 px at the right edge) would cover the cell-layer
+   legend: park the legend just left of it, in both themes. */
+@media (min-width: 769px) {
+    body:has(#detail-panel.open) #cell-layer-legend,
+    html[data-theme="light"] body:has(#detail-panel.open) #cell-layer-legend { right: 448px !important; }
+}

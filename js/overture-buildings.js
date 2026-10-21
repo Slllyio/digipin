@@ -207,6 +207,13 @@ const OvertureBuildings = (() => {
         };
     }
 
+    /** Flag records whose DIGIPIN falls inside the cell `code` (any level) as `sel`. Pure. */
+    function markSelected(records, code) {
+        const pre = code ? String(code).toUpperCase() : '';
+        for (const r of records || []) r.sel = !!(pre && r.pin && String(r.pin).toUpperCase().startsWith(pre));
+        return records;
+    }
+
     /**
      * Deck-style polygon records ({polygon, height, sel}) → GeoJSON for the twin
      * layer, heights scaled by the display exaggeration. Records annotated by
@@ -419,7 +426,15 @@ const OvertureBuildings = (() => {
                 // frame after the footprint source has finished loading (not on
                 // 'idle', which an animated layer can postpone forever); the
                 // flag stops our own setData from re-looping.
+                // A tilted camera over terrain can keep far tiles streaming so
+                // the source never reports loaded; then harvest anyway, 6 s
+                // apart and at most 3 times per camera move (each setData
+                // restarts the GeoJSON tiling, so more often never finishes),
+                // or a 3D switch without a pan after it shows an empty city.
                 let _tilesDirty = false;
+                let _lastHarvest = 0;
+                let _early = 0;
+                map.on('movestart', () => { _early = 0; });
                 map.on('sourcedata', (e) => {
                     if (_twin && e && e.sourceId === SOURCE_ID && e.tile) _tilesDirty = true;
                 });
@@ -427,8 +442,12 @@ const OvertureBuildings = (() => {
                     if (!_twin || !_tilesDirty) return;
                     let loaded = true;
                     try { loaded = map.isSourceLoaded(SOURCE_ID); } catch { /* source gone */ }
-                    if (!loaded) return;
-                    _tilesDirty = false;
+                    const now = Date.now();
+                    if (!loaded) {
+                        if (_early >= 3 || now - _lastHarvest < 6000) return;
+                        _early++;
+                    } else _tilesDirty = false;
+                    _lastHarvest = now;
                     setTimeout(() => { if (_twin) _refreshTwin(); }, 300);
                 });
                 _twinBound = true;
@@ -552,6 +571,9 @@ const OvertureBuildings = (() => {
                 catch { /* stub / layer gone */ }
             }
         }
+        // Light theme has no amber rings, so the selected DIGIPIN cell shows as
+        // its own buildings tinted (matched on each building's L10 DIGIPIN).
+        if (isLight() && !data) markSelected(recs, typeof MapModule !== 'undefined' && MapModule.getSelectedCode ? MapModule.getSelectedCode() : null);
         _hoverId = null;   // setData resets generated feature ids
         const src = _map.getSource(TWIN_SRC);
         if (src && src.setData) src.setData(twinGeoJSON(recs, DeckBuildings.getExaggeration()));
@@ -712,5 +734,5 @@ const OvertureBuildings = (() => {
     function isActive() { return _active; }
 
     return { toggle, isActive, getVisibleStats, focusCell, ringsGeoJSON, nearbyHighlight,
-        chooseRenderer, twinGeoJSON, twinPaint };
+        chooseRenderer, twinGeoJSON, twinPaint, markSelected };
 })();
