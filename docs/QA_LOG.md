@@ -4,6 +4,12 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — selectByCode silently did nothing with 3D buildings on
+
+- **Found by:** the first real-browser run of tests/playwright/soak.spec.js. It passed, but the cache stats it printed showed zero cell-store parts loaded over twelve city selections.
+- **Cause:** `MapModule.selectByCode` waited for the map's `idle` event after `flyTo`; with the deck.gl buildings overlay active the map never went idle, so the panel never opened. Search, keyboard navigation, hierarchy links and DISHA actions all go through this path.
+- **Fix (681394a):** wait for `moveend`, then the next `idle` or 1.5 s, with a 5 s backstop. The soak now waits for the profile card after every selection and asserts parts were loaded, so a no-op cannot pass again.
+
 ## 2026-10-21 — soak test, crash guard, basemap fallback (reliability round 2)
 
 **How:** new tests/playwright/soak.spec.js (two rounds over the six big cities with 3D on and a
