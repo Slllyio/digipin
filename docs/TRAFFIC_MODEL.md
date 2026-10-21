@@ -59,6 +59,39 @@ neighbourhood) — `coverage_access` (4+ nearby stops ≈ 100). This is an hones
 timetable frequency; headway/route fields stay null and the widget labels it
 "(OSM coverage)". Swap in a real GTFS feed later for true frequency.
 
+### 5. Demand-driven peak-hour load (`demand_model.py`)
+
+Betweenness treats every pair of junctions as equally likely to swap
+traffic. The demand model puts people behind the flows with a four-step
+model built only from data already in the repo:
+
+| step | how | assumption |
+|---|---|---|
+| Generation | residents per ~1 km DIGIPIN L6 zone (GHSL, cell store) | 0.9 motorised trips / person / day |
+| Attraction | GHSL non-residential built surface + 25% of residential + 400 m² per OSM amenity | jobs and activity floor space |
+| Distribution | singly-constrained gravity, exp(−0.10 · minutes) | mean trip ≈ 10–15 min (5–7 km) |
+| Vehicles | 0.37 PCU per trip (2W 40%, car 15%, auto 15%, bus 30%; IRC 106 PCUs) | one Indian mode mix |
+| Peak | 9% of the day in the morning peak hour (IRC SP 41: 8–10%) | homes → destinations |
+| Assignment | incremental (40/30/20/10%) all-or-nothing on the arterial graph, BPR t = t₀(1 + 0.15 (V/C)⁴) between increments | free-flow speeds and IRC 106 per-direction capacities by OSM class |
+
+The graph is the arterial OSM network in `road_los.geojson`, split at shared
+vertices with dangling ends snapped (≤ 25 m) onto the road they meet. Each
+road gets `pcu_peak` (busier direction, PCU/h; demand, so it can exceed
+capacity), `vc_peak`, `los_peak`, `speed_peak` (km/h after BPR) and
+`pcu_daily`; reported speeds floor at a quarter of free flow (BPR runs away past V/C ≈ 2); the per-city `summary.json` gains a `demand_model` block. The cell
+store gets `traffic_load` (L7): busiest-road V/C, LOS and demand, vehicle-km
+weighted speed and delay, and daily vehicle-km per cell. The **Traffic** map
+layer colours roads by the peak LOS, widens them with traffic and animates the
+busiest; the **Traffic load** lens counts residents within 250 m of an
+arterial at LOS E/F.
+
+What it does not know: signals, lane counts, one-way rules, local streets,
+parking, buses' own routes, or today's events. Treat it as where commuting
+demand meets thin capacity, then check against counts or a live feed (TomTom,
+HERE or Mappls, which need a key).
+
+    python -m pipeline.traffic.demand_model --region all     # ~1 min Delhi
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

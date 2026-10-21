@@ -79,6 +79,7 @@ jobs:
                 python -m pipeline.traffic.osm_transit
                 python -m pipeline.safety.mobility
                 python -m pipeline.cells.build --region "$DIGIPIN_REGION" traffic mobility
+                python -m pipeline.traffic.demand_model --region "$DIGIPIN_REGION"
               '; then
               git add data/vectors/ data/traffic/ data/safety/ data/cells/
               git diff --staged --quiet || git commit -qm "chore(cells): refresh traffic + mobility for $r"

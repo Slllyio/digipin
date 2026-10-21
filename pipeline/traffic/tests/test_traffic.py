@@ -173,3 +173,37 @@ def test_merge_into_grid_adds_transit_arrays():
         out = gt.merge_into_grid(grid, d)
     assert "transit_access" in out and "transit_stops" in out
     assert sum(out["transit_stops"]) == 1
+
+
+def test_demand_model_helpers():
+    from pipeline.traffic import demand_model as dm
+    assert dm.road_params("primary") == (45, 1800)
+    assert dm.road_params("nonsense") == dm.DEFAULT_ROAD
+    assert dm.los_grade(0.3) == "A" and dm.los_grade(0.95) == "E" and dm.los_grade(1.2) == "F"
+    assert dm.bpr_time(10, 0, 1000) == 10
+    assert abs(dm.bpr_time(10, 1000, 1000) - 11.5) < 1e-9
+    trips = dm.gravity(100, {"a": 1, "b": 1, "c": 0}, {"a": 5, "b": 25, "c": 1})
+    assert abs(sum(trips.values()) - 100) < 1e-9 and trips["a"] > trips["b"] and "c" not in trips
+
+
+def test_demand_model_network_assigns_flow():
+    pytest.importorskip("scipy")
+    from pipeline.traffic import demand_model as dm
+    # A plus-shaped arterial: the east-west road crosses the north-south one mid-way.
+    feats = [
+        {"type": "Feature", "properties": {"highway": "primary"},
+         "geometry": {"type": "LineString", "coordinates": [[75.80, 22.70], [75.81, 22.70], [75.82, 22.70]]}},
+        {"type": "Feature", "properties": {"highway": "secondary"},
+         "geometry": {"type": "LineString", "coordinates": [[75.81, 22.69], [75.81, 22.70], [75.81, 22.71]]}},
+    ]
+    net = dm.Network(feats)
+    assert net.n == 5 and all(net.main)          # crossing vertex shared → one component
+    zs = {"W": {"pop": 10000, "attr": 0, "lon": 75.80, "lat": 22.70},
+          "N": {"pop": 0, "attr": 5000, "lon": 75.81, "lat": 22.71}}
+    flow, times, n_orig, n_conn = dm.run_model(net, zs, log=lambda *_: None)
+    assert n_orig == 1 and n_conn == 2
+    peak = 10000 * dm.TRIPS_PER_CAPITA * dm.PCU_PER_TRIP * dm.PEAK_SHARE
+    assert abs(max(flow) - peak) < 1e-6           # all trips W → N cross the junction
+    rows = dm.summarise(net, feats, flow, times)
+    assert feats[0]["properties"]["pcu_peak"] == round(peak)
+    assert all(r["peak_los"] in "ABCDEF" for r in rows.values())

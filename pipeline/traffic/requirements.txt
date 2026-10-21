@@ -1,2 +1,4 @@
 networkx>=3.0   # road-graph betweenness centrality (road_network.py)
 requests>=2.31  # Overpass HTTP client (fetch_osm_roads.py / fetch_osm_transit.py)
+numpy>=1.24
+scipy>=1.10   # shortest-path trees for the demand model (demand_model.py)
