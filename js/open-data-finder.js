@@ -53,9 +53,9 @@ const OpenDataFinder = (() => {
         return [...out];
     }
 
-    /** Rows generated from the Earth Engine / Planetary Computer catalogs. */
+    /** Rows generated from the cloud catalogs (Earth Engine, Planetary Computer, NASA CMR, Copernicus, AWS). */
     function _isCloud(entry) {
-        return /^(ee|pc):/.test(String(entry.id || ''));
+        return /^(ee|pc|cmr|cds|ewds|aws):/.test(String(entry.id || ''));
     }
 
     function _score(entry, terms, phrase) {

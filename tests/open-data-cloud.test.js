@@ -4,14 +4,14 @@ import fs from 'node:fs';
 const OD = globalThis.OpenDataFinder;
 const cloud = JSON.parse(fs.readFileSync('data/open-data/cloud_catalogs.json', 'utf8'));
 
-describe('cloud catalogs (Earth Engine + Planetary Computer)', () => {
+describe('cloud catalogs (Earth Engine, Planetary Computer, NASA, Copernicus, AWS)', () => {
     it('every row has the fields a result card needs', () => {
         const ids = new Set();
         expect(cloud.datasets.length).toBeGreaterThan(100);
         cloud.datasets.forEach(d => {
             expect(ids.has(d.id), d.id).toBe(false);
             ids.add(d.id);
-            expect(d.id).toMatch(/^(ee|pc):/);
+            expect(d.id).toMatch(/^(ee|pc|cmr|cds|ewds|aws):/);
             ['title', 'publisher', 'url', 'license', 'coverage', 'platform', 'access'].forEach(k => expect(d[k], d.id + '.' + k).toBeTruthy());
             expect(d.url.startsWith('https://')).toBe(true);
             expect(d.tags.length).toBeGreaterThan(0);
@@ -22,6 +22,14 @@ describe('cloud catalogs (Earth Engine + Planetary Computer)', () => {
         const lc = OD.search('land cover', cloud, 20).map(r => r.entry.id);
         expect(lc).toEqual(expect.arrayContaining(['ee:ESA/WorldCover/v200']));
         expect(OD.search('night lights', cloud, 20).some(r => /VIIRS|DMSP/i.test(r.entry.id))).toBe(true);
+    });
+
+    it('reaches NASA Earthdata, Copernicus and AWS entries too', () => {
+        const platforms = new Set(cloud.datasets.map(d => d.platform));
+        ['NASA Earthdata', 'Copernicus', 'AWS Open Data'].forEach(p => expect(platforms.has(p), p).toBe(true));
+        expect(OD.search('insat', cloud, 20).some(r => r.entry.id.startsWith('cmr:'))).toBe(true);
+        expect(OD.search('era5', cloud, 20).some(r => r.entry.id === 'cds:reanalysis-era5-land')).toBe(true);
+        expect(OD.search('brick kilns', cloud, 5).some(r => r.entry.id.startsWith('aws:'))).toBe(true);
     });
 });
 
