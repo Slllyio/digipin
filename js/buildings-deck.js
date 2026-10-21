@@ -43,11 +43,17 @@ const DeckBuildings = (() => {
     /** The baked-heights index ([{ region, bbox, file }]), fetched once and shared
      *  with any other module that needs it (city overview) so boot does not
      *  request it twice. Resolves to [] when missing. */
+    // A stalled link (no bytes, no error) would otherwise leave a grid "loading"
+    // forever: no row, no Retry, estimates with no explanation. Grids are a few
+    // MB, so give them longer than the index.
+    const INDEX_TIMEOUT_MS = 10000;
+    const GRID_TIMEOUT_MS = 45000;
+
     function heightIndex() {
         if (!_index) {
             // A 404 means no grids are baked (final for this build); a failed
             // or 5xx fetch is forgotten so the next call asks again.
-            _index = fetch(HEIGHT_INDEX, { cache: 'no-cache' })
+            _index = fetch(HEIGHT_INDEX, { cache: 'no-cache', signal: AbortSignal.timeout(INDEX_TIMEOUT_MS) })
                 .then(r => { if (r.ok) return r.json(); if (r.status !== 404) _index = null; return []; })
                 .catch(() => { _index = null; return []; });
         }
@@ -70,12 +76,6 @@ const DeckBuildings = (() => {
         });
     }
 
-    /**
-     * Refetch every grid whose last load failed (not only the ones under the
-     * current view: a grid the camera has since left would otherwise keep the
-     * row up), plus whatever the view needs now. True when nothing is failed
-     * afterwards, which is what lets the row clear.
-     */
     /** Forget every grid, failure and the index (tests; a republished index). */
     function resetHeights() {
         _index = null;
@@ -86,6 +86,12 @@ const DeckBuildings = (() => {
         _reportHeights();
     }
 
+    /**
+     * Refetch every grid whose last load failed (not only the ones under the
+     * current view: a grid the camera has since left would otherwise keep the
+     * row up), plus whatever the view needs now. True when nothing is failed
+     * afterwards, which is what lets the row clear.
+     */
     async function retryHeights() {
         const urls = [..._failedGrids.keys()];
         await Promise.all(urls.map(u => {
@@ -115,7 +121,7 @@ const DeckBuildings = (() => {
 
     async function loadHeights(url) {
         try {
-            const res = await fetch(url, { cache: 'force-cache' });
+            const res = await fetch(url, { cache: 'force-cache', signal: AbortSignal.timeout(GRID_TIMEOUT_MS) });
             if (!res.ok) {
                 // 404: not baked for this city, the estimate stays (nothing to
                 // retry). Anything else is a link that failed: forget the load
@@ -140,7 +146,7 @@ const DeckBuildings = (() => {
             return true;
         } catch (e) {
             console.warn('DeckBuildings.loadHeights failed:', e);
-            _failedGrids.set(url, 'network');
+            _failedGrids.set(url, e && e.name === 'TimeoutError' ? 'timeout' : 'network');
             _gridLoads.delete(url);
             _reportHeights();
             return false;
@@ -417,7 +423,7 @@ const DeckBuildings = (() => {
     }
 
     /** Grids currently held, for tests / diagnostics. */
-    function heightsCacheStats() { return { grids: _gridDocs.size, max: MAX_GRIDS, cells: _grid ? _grid.cells.size : 0, failed: _failedGrids.size }; }
+    function heightsCacheStats() { return { grids: _gridDocs.size, max: MAX_GRIDS, cells: _grid ? _grid.cells.size : 0, failed: _failedGrids.size, failedReasons: Object.fromEntries(_failedGrids) }; }
 
     return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights, retryHeights, resetHeights, heightIndex, heightsCacheStats,
         setExaggeration, getExaggeration,

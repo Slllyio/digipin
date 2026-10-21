@@ -181,6 +181,25 @@ describe('DeckBuildings baked heights on a failing link', () => {
     beforeEach(() => { realFetch = globalThis.fetch; DS.reset(); DB.resetHeights(); });
     afterEach(() => { globalThis.fetch = realFetch; DS.reset(); });
 
+    it('a stalled grid fetch times out, is reported as such, and Retry asks again', async () => {
+        const signals = [];
+        let stalled = true;
+        globalThis.fetch = (url, opts) => {
+            signals.push(opts && opts.signal);
+            if (!stalled) return Promise.resolve(okRes(grid));
+            // Simulate the link hanging until the per-fetch timeout aborts it.
+            return Promise.reject(Object.assign(new Error('timed out'), { name: 'TimeoutError' }));
+        };
+        expect(await DB.loadHeights('data/heights/stall.json')).toBe(false);
+        expect(signals[0]).toBeInstanceOf(AbortSignal);
+        expect(DB.heightsCacheStats().failedReasons).toEqual({ 'data/heights/stall.json': 'timeout' });
+        expect(DS.has('heights')).toBe(true);
+        stalled = false;
+        expect(await DB.retryHeights()).toBe(true);
+        expect(DB.heightsCacheStats().failed).toBe(0);
+        expect(DS.has('heights')).toBe(false);
+    });
+
     it('a 5xx grid is reported with Retry and refetched; success clears the row', async () => {
         const calls = [];
         globalThis.fetch = async (url) => { calls.push(url); return calls.length === 1 ? errRes(503) : okRes(grid); };
