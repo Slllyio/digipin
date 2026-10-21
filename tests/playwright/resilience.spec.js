@@ -98,6 +98,25 @@ test.describe('resilience', () => {
     await expect(page.locator('#detail-panel')).toHaveClass(/open/, { timeout: 20_000 });
   });
 
+  test('hostile or malformed deep-link parameters boot cleanly and open nothing', async ({ page }) => {
+    const q = [
+      'cell=%3Cscript%3Ealert(1)%3C%2Fscript%3E', 'q=%00%ff', 'score=../../etc', 'layers=,,,%3Cb%3E,' + 'x'.repeat(2000),
+      'bc=__proto__', 'bh=constructor', 't=20xx-99', 'an=' + encodeURIComponent('[{"lat":"x","lng":null},1,"s"]'),
+      'z=NaN', 'll=a,b', 'intel=%7B',
+    ].join('&');
+    await page.goto(`/app.html?${q}`);
+    await waitForApp(page);
+    await settle(page, 500);
+    await expect(page.locator('#detail-panel')).not.toHaveClass(/open/);
+    await expect(page.locator('#data-status .data-status-row[data-key="crash"]')).toHaveCount(0);
+    expect(await page.evaluate(() => CrashGuard.count())).toBe(0);
+    // Nothing from the query string was written into the DOM as markup.
+    expect(await page.evaluate(() => document.body.innerHTML.includes('<script>alert(1)'))).toBe(false);
+    await page.fill('#search-input', '34P-LL5-4L7');
+    await page.press('#search-input', 'Enter');
+    await expect(page.locator('#detail-panel')).toHaveClass(/open/, { timeout: 20_000 });
+  });
+
   test('an uncaught runtime error shows the crash notice with a Reload action', async ({ page }) => {
     await page.goto('/app.html');
     await waitForApp(page);

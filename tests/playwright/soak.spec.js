@@ -4,7 +4,7 @@
 // performance.memory); the stub run still checks console/uncaught errors.
 // CommonJS form — package.json is "type": "commonjs".
 const { test, expect } = require('@playwright/test');
-const { STUB, prepare, waitForApp, settle, toggleRow } = require('./helpers/app');
+const { STUB, prepare, waitForApp, settle, toggleRow, longTasks } = require('./helpers/app');
 
 // The six heaviest cities: a cell click there pulls ~60 dataset views through
 // the profile + insights engines, which is the churn this soak is after.
@@ -12,6 +12,9 @@ const CITIES = ['indore', 'delhi', 'mumbai', 'bengaluru', 'hyderabad', 'chennai'
 const ROUNDS = 2;
 const GROWTH_MB = 120;   // allowed heap growth between round 1 and round 2 (caches warm by then)
 const HEAP_MB = 450;     // absolute ceiling after the soak (matches perf.spec.js)
+// Main-thread freeze budget after boot: one city switch + cell click may not
+// lock the page for longer than this in one go (the rank freeze was 3-5 s).
+const FREEZE_MS = 1500;
 const NOISE = /Failed to load resource|net::ERR_|the server responded with a status of|WebGL|deprecated/i;
 
 async function heapMb(page) {
@@ -39,6 +42,8 @@ test.describe('soak', () => {
     expect(cities.length, 'cities in the picker').toBeGreaterThan(3);
     await toggleRow(page, 'btn-buildings');
     await toggleRow(page, 'btn-3d');
+    await settle(page, 500);
+    await longTasks(page, true);   // boot and layer setup are measured by perf.spec.js, not here
     const heaps = [];
     let profiles = 0;
     const t0 = Date.now();
@@ -72,10 +77,13 @@ test.describe('soak', () => {
         cells: (typeof CellStore !== 'undefined' && CellStore.cacheStats) ? CellStore.cacheStats() : null,
         heights: (typeof DeckBuildings !== 'undefined' && DeckBuildings.heightsCacheStats) ? DeckBuildings.heightsCacheStats() : null,
       }));
-      console.log(`soak round ${round + 1}: heap ${heaps.at(-1).toFixed(0)} MB, caches ${JSON.stringify(cache)}`);
+      const lt = await longTasks(page);
+      console.log(`soak round ${round + 1}: heap ${heaps.at(-1).toFixed(0)} MB, long tasks ${lt.count} (longest ${lt.longest} ms, blocking ${lt.blocking} ms), caches ${JSON.stringify(cache)}`);
     }
     console.log(`soak: ${ROUNDS} rounds × ${cities.length} cities in ${((Date.now() - t0) / 1000).toFixed(0)} s`);
     expect(profiles, 'cell profiles rendered (one per city selection)').toBe(ROUNDS * cities.length);
+    const freeze = await longTasks(page);
+    expect(freeze.longest, `longest main-thread freeze ms (tasks: ${JSON.stringify(freeze.tasks.filter((t) => t.ms >= 300))})`).toBeLessThan(FREEZE_MS);
     expect(await page.evaluate(() => CrashGuard.count()), 'CrashGuard count').toBe(0);
     expect(await page.evaluate(() => DataStatus.active()), 'degraded-state notices').toEqual([]);
     const cache = await page.evaluate(() => (typeof CellStore !== 'undefined' && CellStore.cacheStats) ? CellStore.cacheStats() : null);

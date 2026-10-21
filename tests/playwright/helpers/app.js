@@ -27,6 +27,14 @@ async function prepare(page) {
   page.on('pageerror', (err) => errors.push(String((err && err.message) || err)));
   await page.addInitScript(() => {
     try { localStorage.setItem('digipin_onboarded', 'done'); } catch { /* storage blocked */ }
+    // Main-thread freezes: every long task (> 50 ms) since page start, for
+    // the freeze budget in soak.spec.js. Read with longTasks(page).
+    window.__longTasks = [];
+    try {
+      new PerformanceObserver((list) => {
+        for (const e of list.getEntries()) window.__longTasks.push({ t: Math.round(e.startTime), ms: Math.round(e.duration) });
+      }).observe({ type: 'longtask', buffered: true });
+    } catch { /* no Long Tasks API */ }
   });
   if (STUB) {
     await page.addInitScript({ path: path.join(__dirname, 'stub-map.js') });
@@ -66,4 +74,15 @@ async function toggleRow(page, btnId) {
   await page.locator(`[data-layer-key="_btn_${btnId}"]`).click();
 }
 
-module.exports = { STUB, SAMPLE_CELL, SAMPLE_DATA, prepare, waitForApp, settle, openLayersPanel, toggleRow };
+/** Long tasks recorded so far (ms each) and the longest; cleared when `reset` is true. */
+async function longTasks(page, reset = false) {
+  return page.evaluate((reset) => {
+    const tasks = (window.__longTasks || []).slice();
+    if (reset) window.__longTasks = [];
+    const longest = tasks.reduce((m, t) => Math.max(m, t.ms), 0);
+    const blocking = tasks.reduce((a, t) => a + Math.max(0, t.ms - 50), 0);
+    return { count: tasks.length, longest, blocking, tasks };
+  }, reset);
+}
+
+module.exports = { STUB, SAMPLE_CELL, SAMPLE_DATA, prepare, waitForApp, settle, openLayersPanel, toggleRow, longTasks };
