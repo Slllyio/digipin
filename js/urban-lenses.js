@@ -83,6 +83,14 @@ const UrbanLenses = (() => {
             needs: ['growth.built_2016_pct', 'growth.built_2023_pct', 'nightlights.radiance'],
             method: `Landscape expansion index for every cell that gained ≥ 5 points of built-up cover 2016→2023: the share of the cells within 500 m that were already urban (≥ ${URBAN_PCT}% built-up) in 2016. ≥ 50 is infill, 2–50 edge expansion, below 2 outlying (leapfrog). Plus Clark’s density gradient (slope of ln density on distance from the night-lights peak, the CBD) and population-weighted density.`,
             refs: 'Liu et al. 2010 (LEI); Clark 1951; Craig 1984; Bertaud & Malpezzi 2003' },
+        { id: 'types', title: 'Neighbourhood archetypes', icon: '🧩',
+            question: 'What kinds of places make up this city?',
+            field: { key: 'archetype', label: 'Neighbourhood archetype', type: 'category' },
+            needs: ['built_up.built_pct', 'built_up.avg_height_m', 'vegetation.tree_canopy_pct', 'nightlights.radiance',
+                'growth.built_2016_pct', 'growth.built_2023_pct', 'osm_roads.junctions_km2'],
+            after: ['fifteen'],
+            method: 'k-means (k-means++ seeding, fixed seed) on the urban fabric (cells at ≥ 1 500 people/km², the DEGURBA urban-centre density): standardised log density, built-up share, building height, land-use mix, tree canopy, log night lights, log junction density and 2016–2023 built-up gain ; k = 4–7 chosen by the mean silhouette of a sample. Each cluster is named from its centroid.',
+            refs: 'MacQueen 1967; Arthur & Vassilvitskii 2007; Rousseeuw 1987; Stewart & Oke 2012 (Local Climate Zones, the climate analogue)' },
         { id: 'burden', title: 'Compound risk', icon: '⚠',
             question: 'Where do heat, flood and dirty air stack up?',
             field: { key: 'burden', label: 'Hazards in the worst fifth', unit: 'of 3', higherIs: 'worse', ramp: 'reds' },
@@ -753,7 +761,159 @@ const UrbanLenses = (() => {
         };
     }
 
-    const RUN = { heat, flood, fifteen, health, air, lights, walk, sprawl, burden };
+    /**
+     * k-means with k-means++ seeding on rows of `X` (arrays of equal length).
+     * Deterministic for a seed. Returns { labels, centroids, inertia }.
+     */
+    function kmeans(X, k, opts = {}) {
+        const n = X.length, d = n ? X[0].length : 0, rnd = _rng(opts.seed || 7);
+        if (n < k) return null;
+        const dist2 = (a, b) => { let s = 0; for (let t = 0; t < d; t++) { const u = a[t] - b[t]; s += u * u; } return s; };
+        const C = [X[Math.floor(rnd() * n)].slice()];
+        const D = new Float64Array(n).fill(Infinity);
+        while (C.length < k) {
+            let tot = 0;
+            for (let i = 0; i < n; i++) { D[i] = Math.min(D[i], dist2(X[i], C[C.length - 1])); tot += D[i]; }
+            let r = rnd() * tot, pick = n - 1;
+            for (let i = 0; i < n; i++) { r -= D[i]; if (r <= 0) { pick = i; break; } }
+            C.push(X[pick].slice());
+        }
+        const lab = new Int32Array(n);
+        let inertia = 0;
+        for (let it = 0; it < (opts.iterations || 40); it++) {
+            let moved = 0;
+            inertia = 0;
+            for (let i = 0; i < n; i++) {
+                let best = 0, bd = Infinity;
+                for (let c = 0; c < k; c++) { const v = dist2(X[i], C[c]); if (v < bd) { bd = v; best = c; } }
+                if (lab[i] !== best) { lab[i] = best; moved++; }
+                inertia += bd;
+            }
+            const sum = Array.from({ length: k }, () => new Float64Array(d)), cnt = new Int32Array(k);
+            for (let i = 0; i < n; i++) { cnt[lab[i]]++; for (let t = 0; t < d; t++) sum[lab[i]][t] += X[i][t]; }
+            for (let c = 0; c < k; c++) if (cnt[c]) for (let t = 0; t < d; t++) C[c][t] = sum[c][t] / cnt[c];
+            if (!moved && it) break;
+        }
+        return { labels: lab, centroids: C, inertia };
+    }
+
+    /** Mean silhouette of a labelled sample (Rousseeuw 1987). */
+    function silhouette(X, labels, k) {
+        const n = X.length;
+        if (n < 3) return null;
+        const dist = (a, b) => { let s = 0; for (let t = 0; t < a.length; t++) { const u = a[t] - b[t]; s += u * u; } return Math.sqrt(s); };
+        let tot = 0;
+        for (let i = 0; i < n; i++) {
+            const sum = new Float64Array(k), cnt = new Int32Array(k);
+            for (let j = 0; j < n; j++) if (j !== i) { sum[labels[j]] += dist(X[i], X[j]); cnt[labels[j]]++; }
+            const a = cnt[labels[i]] ? sum[labels[i]] / cnt[labels[i]] : 0;
+            let b = Infinity;
+            for (let c = 0; c < k; c++) if (c !== labels[i] && cnt[c]) b = Math.min(b, sum[c] / cnt[c]);
+            tot += (b === Infinity || Math.max(a, b) === 0) ? 0 : (b - a) / Math.max(a, b);
+        }
+        return tot / n;
+    }
+
+    const TRAITS = {
+        dens: ['sparser', 'denser'], built: ['less built-up', 'more built-up'], height: ['low-rise', 'taller'], mix: ['single-use', 'mixed-use'],
+        canopy: ['bare', 'greener'], lights: ['darker', 'brighter'], jx: ['fewer junctions', 'finer street grid'], growth: ['settled', 'fast-growing'],
+    };
+    const URBAN_DENSITY = 1500;   // DEGURBA urban-centre density (Dijkstra et al. 2021)
+    const RURAL_TYPE = 'Below urban density';
+    const TYPE_COLORS = ['#7f0000', '#d7301f', '#fc8d59', '#fdcc8a', '#41ab5d', '#2c7fb8', '#807dba', '#bdbdbd'];
+
+    /** A plain name for a cluster centroid (z-scores by feature). */
+    function archetypeName(cz) {
+        if (cz.dens < -0.8 && cz.built < -0.6) return 'Urban fringe';
+        if (cz.growth > 0.8) return 'New growth edge';
+        if (cz.height > 1) return cz.dens > 0.3 ? 'High-rise core' : 'High-rise district';
+        if (cz.dens > 0.6 && cz.jx > 0.4 && cz.mix > 0.2) return 'Dense mixed core';
+        if (cz.lights > 0.8 && cz.dens < 0.4) return 'Activity hub (commerce / industry)';
+        if (cz.canopy > 0.8) return 'Leafy neighbourhood';
+        if (cz.dens > 0.4) return 'Dense residential';
+        if (cz.dens > -0.4) return 'Mid-density residential';
+        return 'Low-density suburb';
+    }
+
+    function types(fr, done) {
+        const c = fr.cols, res = _residents(fr);
+        const densAll = c['population.density_km2'];
+        // Cluster the urban fabric only (DEGURBA's urban-centre density,
+        // 1 500 /km²); the rest is one fixed class, else urban vs rural
+        // swamps every other difference.
+        const idx = densAll ? res.filter(i => densAll[i] >= URBAN_DENSITY) : res;
+        const rural = densAll ? res.filter(i => densAll[i] < URBAN_DENSITY) : [];
+        const b16 = c['growth.built_2016_pct'], b23 = c['growth.built_2023_pct'];
+        const mix = done.fifteen && done.fifteen.columns.mix;
+        const feats = {
+            dens: c['population.density_km2'] && c['population.density_km2'].map(v => Math.log1p(Math.max(0, v))),
+            built: c['built_up.built_pct'], height: c['built_up.avg_height_m'], mix,
+            canopy: c['vegetation.tree_canopy_pct'],
+            lights: c['nightlights.radiance'] && c['nightlights.radiance'].map(v => Math.log1p(Math.max(0, v))),
+            jx: c['osm_roads.junctions_km2'] && c['osm_roads.junctions_km2'].map(v => Math.log1p(Math.max(0, v))),
+            growth: b16 && b23 ? b23.map((v, i) => v - b16[i]) : null,
+        };
+        const keys = Object.keys(feats).filter(k => feats[k]);
+        if (keys.length < 4 || idx.length < 50) return null;
+        const Z = keys.map(k => _z(feats[k], idx));
+        const X = idx.map(i => Z.map(z => (_fin(z[i]) ? Math.max(-4, Math.min(4, z[i])) : 0)));
+        // Pick k by silhouette on a fixed sample.
+        const rnd = _rng(99), S = Math.min(700, X.length);
+        const sample = Array.from({ length: S }, () => Math.floor(rnd() * X.length));
+        let best = null;
+        for (let k = 4; k <= 7; k++) {
+            const km = kmeans(X, k, { seed: 11 });
+            if (!km) continue;
+            const sil = silhouette(sample.map(i => X[i]), sample.map(i => km.labels[i]), k);
+            if (!best || sil > best.sil) best = { k, km, sil };
+        }
+        if (!best) return null;
+        const pop = c['population.population'];
+        const groups = best.km.centroids.map((cen, g) => {
+            const cz = {};
+            keys.forEach((k, t) => { cz[k] = cen[t]; });
+            for (const k of Object.keys(TRAITS)) if (cz[k] == null) cz[k] = 0;
+            return { g, cz, name: archetypeName(cz), people: 0, cells: 0 };
+        });
+        idx.forEach((i, p) => { const gr = groups[best.km.labels[p]]; gr.people += pop[i]; gr.cells++; });
+        const ruralPeople = _sumOver(pop, rural, () => true);
+        // Same name twice: add each one's most distinctive other trait.
+        const seen = new Map();
+        for (const gr of groups) seen.set(gr.name, (seen.get(gr.name) || 0) + 1);
+        for (const gr of groups) {
+            if (seen.get(gr.name) < 2) continue;
+            const k = keys.filter(x => x !== 'dens').sort((a, b) => Math.abs(gr.cz[b]) - Math.abs(gr.cz[a]))[0];
+            gr.name = `${gr.name}, ${TRAITS[k][gr.cz[k] >= 0 ? 1 : 0]}`;
+        }
+        groups.sort((a, b) => b.people - a.people);
+        const order = new Map(groups.map((gr, r) => [gr.g, r]));
+        const lab = new Float64Array(fr.grid.n).fill(NaN);
+        idx.forEach((i, p) => { lab[i] = order.get(best.km.labels[p]); });
+        const total = (groups.reduce((a, g2) => a + g2.people, 0) + ruralPeople) || 1;
+        const domain = groups.map(g2 => g2.name);
+        if (rural.length) {
+            domain.push(RURAL_TYPE);
+            for (const i of rural) lab[i] = domain.length - 1;
+        }
+        const colors = {};
+        domain.forEach((nm, r) => { colors[nm] = nm === RURAL_TYPE ? '#d9d9d9' : TYPE_COLORS[r % TYPE_COLORS.length]; });
+        const describe = (gr) => keys.filter(k => Math.abs(gr.cz[k]) >= 0.5).sort((a, b) => Math.abs(gr.cz[b]) - Math.abs(gr.cz[a])).slice(0, 3)
+            .map(k => TRAITS[k][gr.cz[k] >= 0 ? 1 : 0]).join(', ') || 'close to the city average';
+        return {
+            columns: { archetype: lab }, idx: res, noHotspots: true,
+            categories: { archetype: { domain, colors } },
+            headline: `The urban fabric (${idx.length.toLocaleString('en-IN')} cells at ≥ ${URBAN_DENSITY.toLocaleString('en-IN')} people/km²) sorts into ${best.k} kinds of place; `
+                + `the most lived-in are “${groups[0].name}” (${_round(100 * groups[0].people / total)}% of residents)`
+                + (groups[1] ? ` and “${groups[1].name}” (${_round(100 * groups[1].people / total)}%).` : '.'),
+            stats: [
+                ...groups.map(gr => ({ label: `${gr.name}: ${describe(gr)}`, value: `${_round(100 * gr.people / total)}% of residents · ${gr.cells} cells` })),
+                ...(rural.length ? [{ label: `${RURAL_TYPE} (not clustered)`, value: `${_round(100 * ruralPeople / total)}% of residents · ${rural.length} cells` }] : []),
+            ],
+            fit: { k: best.k, silhouette: _round(best.sil, 3), features: keys },
+        };
+    }
+
+    const RUN = { heat, flood, fifteen, health, air, lights, walk, sprawl, types, burden };
 
     // ── spatial statistics ──────────────────────────────────────────────────
 
@@ -898,7 +1058,7 @@ const UrbanLenses = (() => {
             };
             const hsKey = r.weightKey || key;
             const hs = opts.hotspots === false || r.noHotspots ? null : hotspots(fr.grid, r.columns[hsKey], r.idx, { permutations: opts.permutations ?? 0 });
-            const fields = [L.field, ...(L.extra || [])];
+            const fields = [L.field, ...(L.extra || [])].map(f => (r.categories && r.categories[f.key] ? { ...f, ...r.categories[f.key] } : f));
             for (const f of fields) if (r.columns[f.key]) layerCols[f.key] = r.columns[f.key];
             const srcIds = new Set(L.needs.map(k => k.split('.')[0]).concat(L.after ? L.after.flatMap(a => BY_ID.get(a).needs.map(k => k.split('.')[0])) : []).concat(['population']));
             out.push({
@@ -947,13 +1107,21 @@ const UrbanLenses = (() => {
         const fields = [];
         for (const l of result.lenses) for (const f of l.fields) {
             if (!result.layer.columns[f.key] || fields.some(x => x.key === f.key)) continue;
+            if (f.type === 'category') {
+                fields.push({ key: f.key, label: f.label, type: 'category', agg: 'mode', domain: f.domain.slice().sort(), colors: f.colors });
+                continue;
+            }
             fields.push({ key: f.key, label: f.label, type: 'number', agg: f.unit === 'people' ? 'sum' : 'mean', unit: f.unit,
                 ramp: f.ramp, higherIs: f.higherIs || undefined });
         }
         if (!fields.length) return null;
         const order = result.layer.cells.map((c, i) => i).sort((a, b) => (result.layer.cells[a] < result.layer.cells[b] ? -1 : 1));
         const columns = {};
-        for (const f of fields) columns[f.key] = order.map(i => result.layer.columns[f.key][i]);
+        for (const f of fields) {
+            const src = result.layer.columns[f.key];
+            const names = f.type === 'category' ? result.lenses.flatMap(l => l.fields).find(x => x.key === f.key).domain : null;
+            columns[f.key] = order.map(i => (names ? (src[i] == null ? null : names[src[i]]) : src[i]));
+        }
         return {
             spec: { id, title: `Urban lenses: ${result.cityLabel}`, description: 'Heat vulnerability, flood exposure, 15-minute access, healthcare access, air exposure, night lights and compound risk, computed in the browser.',
                 source: 'js/urban-lenses.js', license: 'Derived from the cell store', group: 'Urban lenses', level: result.layer.level,
@@ -972,7 +1140,7 @@ const UrbanLenses = (() => {
     return {
         SCHEMA, LENSES, ESSENTIALS, CELL_DEG,
         prank, wmean, wquantile, gini, lorenz, palma, ols, pearson, grid, frameFrom, frame, allNeeds,
-        e2sfca, hotspots, run, clusters, toLayer, toText,
+        e2sfca, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
         _lenses: RUN,
     };
 })();

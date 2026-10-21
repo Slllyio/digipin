@@ -57,6 +57,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('Show me compound risk')).toEqual({ type: 'lens', lens: 'burden' });
         expect(M('Is Pune sprawling or growing by infill?')).toEqual({ type: 'lens', lens: 'sprawl', city: 'pune' });
         expect(M('How walkable is Delhi?')).toEqual({ type: 'lens', lens: 'walk', city: 'delhi' });
+        expect(M('What kinds of neighbourhoods does Pune have?')).toEqual({ type: 'lens', lens: 'types', city: 'pune' });
         expect(M('How unequal is Delhi?')).toEqual({ type: 'lens', lens: null, city: 'delhi' });
     });
     it('leaves what-if floods and notable questions alone', () => {

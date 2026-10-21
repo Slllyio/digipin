@@ -32,6 +32,7 @@ const DishaIntel = (() => {
             lights: /\b(night[\s-]?lights?|luminosity|economic activity)\b/i,
             walk: /\b(walkability index|how walkable|walkable (streets?|city|fabric)|intersection density|street connectivity)\b/i,
             sprawl: /\b(sprawl\w*|compact(ness)?|infill|leapfrog\w*|density gradient|urban (expansion|growth pattern))\b/i,
+            types: /\b(archetypes?|typolog\w*|kinds? of (places?|neighbou?rhoods?)|types? of neighbou?rhoods?|neighbou?rhood types?|cluster(s|ing)? of neighbou?rhoods?)\b/i,
             burden: /\b(compound (risk|hazard)s?|multi[\s-]?hazard|triple burden|most at risk overall)\b/i,
             all: /\b(equity|inequal\w*|unequal|unfair|gini|fairness|left behind|urban lens(es)?|lenses)\b/i,
         },

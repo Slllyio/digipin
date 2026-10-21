@@ -48,7 +48,7 @@ const LensesPanel = (() => {
         return { hot: 'anomaly', cold: 'trend' };
     }
 
-    async function _paint(r, field) {
+    async function _paint(r, field, extrude = true) {
         if (typeof CellStore === 'undefined' || typeof CellLayers === 'undefined') return false;
         if (_painted !== r.city || !CellStore.isLocal(LAYER_ID)) {
             const layer = UrbanLenses.toLayer(r, LAYER_ID);
@@ -58,7 +58,7 @@ const LensesPanel = (() => {
             _painted = r.city;
         }
         _flyToCity(r.city);
-        return CellLayers.show(LAYER_ID, { field, extrude: true });
+        return CellLayers.show(LAYER_ID, { field, extrude });
     }
 
     /** Frame the city when the map is looking somewhere else. */
@@ -141,7 +141,7 @@ const LensesPanel = (() => {
         const acts = _el('div', 'ui-actions');
         for (const f of l.fields) {
             acts.appendChild(_btn(`▦ Map ${l.fields.length > 1 ? f.label.toLowerCase() : 'in 3D'}`, async () => {
-                const ok = await _paint(r, f.key);
+                const ok = await _paint(r, f.key, f.type !== 'category');
                 if (!ok && kit.toast) kit.toast('Layer unavailable', 'Could not paint this lens here.', 'warning');
             }, 'ui-chip', `Show ${f.label} as a 3D cell layer`));
         }

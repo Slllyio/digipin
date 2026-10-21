@@ -53,6 +53,18 @@ describe('UrbanLenses maths', () => {
         expect(lz[2][1]).toBeCloseTo(0.3, 3);
     });
 
+    it('k-means separates two blobs and names centroids', () => {
+        const X = [];
+        for (let i = 0; i < 40; i++) X.push([i % 2 ? 5 + (i % 5) * 0.1 : -5 - (i % 3) * 0.1, (i % 7) * 0.05]);
+        const km = L.kmeans(X, 2, { seed: 3 });
+        const a = km.labels[0], b = km.labels[1];
+        expect(a).not.toBe(b);
+        X.forEach((x, i) => expect(km.labels[i]).toBe(x[0] > 0 ? b : a));
+        expect(L.silhouette(X, Array.from(km.labels), 2)).toBeGreaterThan(0.9);
+        expect(L.archetypeName({ dens: 1, built: 1, height: 0, mix: 0.5, canopy: 0, lights: 0, jx: 1, growth: 0 })).toBe('Dense mixed core');
+        expect(L.archetypeName({ dens: 0, built: 0, height: 0, mix: 0, canopy: 0, lights: 0, jx: 0, growth: 1.2 })).toBe('New growth edge');
+    });
+
     it('fits OLS', () => {
         const x = [1, 2, 3, 4, 5], y = x.map(v => 2 + 3 * v);
         const f = L.ols(x, y, [0, 1, 2, 3, 4]);
@@ -146,7 +158,7 @@ describe('UrbanLenses on committed city data', () => {
         expect(r.schema).toBe('digipin.lenses/1');
         expect(r.residents).toBeGreaterThan(1e6);
         const ids = r.lenses.map(l => l.id);
-        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'burden']));
+        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'types', 'burden']));
         const sp = r.lenses.find(l => l.id === 'sprawl');
         expect(sp.headline).toMatch(/infill/);
         expect(sp.fit.gradient).toBeGreaterThan(0);              // density falls away from the centre
@@ -164,7 +176,11 @@ describe('UrbanLenses on committed city data', () => {
         const cl = L.clusters(r, 'health');
         expect(cl.HH.length + cl.LL.length).toBeGreaterThan(0);
         const layer = L.toLayer(r);
-        expect(layer.spec.fields.map(f => f.key)).toEqual(expect.arrayContaining(['hvi', 'flood_people', 'fifteen_min', 'health_access', 'pm25', 'ntl_resid', 'walk_index', 'lei', 'burden']));
+        expect(layer.spec.fields.map(f => f.key)).toEqual(expect.arrayContaining(['hvi', 'flood_people', 'fifteen_min', 'health_access', 'pm25', 'ntl_resid', 'walk_index', 'lei', 'archetype', 'burden']));
+        const arch = layer.spec.fields.find(f => f.key === 'archetype');
+        expect(arch.type).toBe('category');
+        expect(arch.domain.length).toBeGreaterThanOrEqual(4);
+        expect(arch.domain).toContain(layer.table.columns.archetype.find(v => v != null));
         expect(layer.table.cells.length).toBe(r.cells);
         expect(L.toText(r)).toMatch(/Heat vulnerability/);
     }, 60000);

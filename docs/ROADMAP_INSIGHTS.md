@@ -53,7 +53,7 @@ new data.
 | 10 | Sprawl and compactness | Is growth infill, edge or leapfrog? How steep is the density gradient? | Yes | M | **Shipped** |
 | 11 | Walkability index (Frank et al.) | Is the street fabric walkable, independent of POIs? | Yes | S | **Shipped** |
 | 12 | 3-30-300 green rule | Does each neighbourhood meet the tree / canopy / park rule? | Partly (no parks layer) | S–M | Next |
-| 13 | Neighbourhood archetypes (k-means) | What kinds of places make up this city? | Yes | M | Next |
+| 13 | Neighbourhood archetypes (k-means) | What kinds of places make up this city? | Yes | M | **Shipped** |
 | 14 | Siting suitability (MCDA / AHP presets) | Where should the next clinic, school, park or cool roof go? | Yes | M | Next |
 | 15 | Rooftop solar and cooling potential | How much energy could the roofs make? | Yes (heights, sun-hours) | M | Later |
 | 16 | Network isochrones | True 15-minute reach on the road graph | Roads lazy-loaded | M–L | Later |
