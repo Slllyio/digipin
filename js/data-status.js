@@ -79,8 +79,19 @@ const DataStatus = (() => {
         if (!key) return;
         const prev = _entries.get(key);
         const text = String(opts.text || '');
+        const kind = opts.kind || 'warning';
+        const action = opts.action || null;
         const dismissed = !!(prev && prev.dismissed && prev.text === text);
-        _entries.set(key, { text, kind: opts.kind || 'warning', action: opts.action || null, dismissed });
+        // Same text, kind and button on a row already shown: keep the DOM as it
+        // is (only refresh the action callback). A module that reports the same
+        // condition on every failed part would otherwise rebuild the strip each
+        // time, which drops focus and detaches a Retry the user is clicking.
+        if (prev && !prev.dismissed && prev.text === text && prev.kind === kind
+            && !!prev.action === !!action && (!action || (prev.action.label || 'Retry') === (action.label || 'Retry'))) {
+            prev.action = action;
+            return;
+        }
+        _entries.set(key, { text, kind, action, dismissed });
         _render();
     }
 

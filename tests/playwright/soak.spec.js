@@ -10,7 +10,7 @@ const { STUB, prepare, waitForApp, settle, toggleRow, longTasks } = require('./h
 // the profile + insights engines, which is the churn this soak is after.
 const CITIES = ['indore', 'delhi', 'mumbai', 'bengaluru', 'hyderabad', 'chennai'];
 const ROUNDS = 2;
-const PROFILE_WAIT = 180_000;   // per-profile window on CI's software renderer; see the note at the wait
+const PROFILE_WAIT = 240_000;   // per-profile window on CI's software renderer; see the note at the wait (198 s seen on a run whose longest frame was 14.6 s)
 const GROWTH_MB = 120;   // allowed heap growth between round 1 and round 2 (caches warm by then)
 const HEAP_MB = 450;     // absolute ceiling after the soak (matches perf.spec.js)
 // Main-thread freeze budget after boot: one city switch + cell click may not

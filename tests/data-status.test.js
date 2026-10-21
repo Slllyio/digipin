@@ -56,6 +56,21 @@ describe('DataStatus', () => {
         expect(DataStatus.has('cellstore')).toBe(false);    // second succeeded → cleared
     });
 
+    it('re-setting an unchanged row keeps its DOM (a Retry being clicked is not detached)', async () => {
+        let runs = 0;
+        DataStatus.set('heights', { text: 'estimates', action: { label: 'Retry', run: async () => { runs++; return false; } } });
+        const before = document.querySelector('.data-status-row[data-key="heights"]');
+        const btn = before.querySelector('.ds-action');
+        DataStatus.set('heights', { text: 'estimates', action: { label: 'Retry', run: async () => { runs += 10; return false; } } });
+        expect(document.querySelector('.data-status-row[data-key="heights"]')).toBe(before);
+        expect(before.querySelector('.ds-action')).toBe(btn);
+        btn.click();
+        await new Promise(r => setTimeout(r, 0));
+        expect(runs).toBe(10);   // the latest callback runs, through the same button
+        DataStatus.set('heights', { text: 'estimates (2)', action: { label: 'Retry', run: async () => false } });
+        expect(document.querySelector('.data-status-row[data-key="heights"]')).not.toBe(before);   // new text → re-rendered
+    });
+
     it('never injects text as HTML', () => {
         DataStatus.set('x', { text: '<img src=x onerror=alert(1)>' });
         expect(document.querySelector('#data-status img')).toBeNull();
