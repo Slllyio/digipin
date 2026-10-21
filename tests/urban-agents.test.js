@@ -25,9 +25,9 @@ async function store() {
 const HOOD = { code: globalThis.DigiPin.encode(22.7186, 75.8553).replace(/-/g, '').slice(0, 5) };
 
 describe('UrbanAgents catalogue and plans', () => {
-    it('offers the eight agents with unique ids', () => {
+    it('offers the thirteen agents with unique ids', () => {
         const ids = A.TEMPLATES.map(t => t.id);
-        expect(ids).toEqual(['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes', 'health']);
+        expect(ids).toEqual(['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes', 'air', 'green', 'solar', 'risk', 'programme', 'health']);
         expect(new Set(ids).size).toBe(ids.length);
     });
 
@@ -125,6 +125,35 @@ describe('UrbanAgents runs on the committed store', () => {
             expect(A.toText(report)).toContain(report.title);
         }
     }, 120000);
+});
+
+describe('Lens-backed agents', () => {
+    it('slice air, green, solar and compound risk to a neighbourhood', async () => {
+        const s = await store();
+        const out = {};
+        for (const id of ['air', 'green', 'solar', 'risk']) {
+            const { report, layer } = await A.run({ agent: id, area: HOOD }, s);
+            out[id] = report;
+            expect(layer && layer.table.cells.length, id).toBeGreaterThan(0);
+            expect(layer.table.cells.every(c => A.inArea(c, { kind: 'prefix', code: HOOD.code })), id).toBe(true);
+            if (process.env.AGENT_DEBUG) console.log(id, report.summary, report.metrics, report.findings.slice(0, 2));
+        }
+        expect(out.air.summary).toMatch(/PM2\.5|µg\/m³/);
+        expect(out.solar.summary).toMatch(/MWh\/yr/);
+        expect(out.solar.findings[0].kind).toBe('strength');
+        expect(out.green.metrics[0].label).toBe('Residents in the area');
+    }, 60000);
+
+    it('programme siting keeps sites inside the area or falls back to the city', async () => {
+        const s = await store();
+        const city = await A.run({ agent: 'programme', area: { city: 'indore_pilot' }, params: { preset: 'ev_charging' } }, s);
+        expect(city.report.findings.length).toBeGreaterThan(0);
+        expect(city.report.summary).toMatch(/EV charging hub/);
+        expect(city.report.metrics.some(m => m.label.startsWith('Weight:'))).toBe(true);
+        const hood = await A.run({ agent: 'programme', area: HOOD, params: { preset: 'cool_roofs' } }, s);
+        expect(hood.report.summary).toMatch(/cool-roof/);
+        if (process.env.AGENT_DEBUG) console.log(city.report.summary, hood.report.summary, hood.report.metrics);
+    }, 60000);
 });
 
 describe('Data health agent (Pipeline Steward)', () => {

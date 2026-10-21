@@ -22,7 +22,7 @@ test.describe('agents', () => {
     await page.click('#btn-agents');
     const dlg = page.locator('#agents-dialog');
     await expect(dlg).toBeVisible();
-    await expect(dlg.locator('.ag-card')).toHaveCount(8);
+    await expect(dlg.locator('.ag-card')).toHaveCount(13);
 
     // Setup shows the plan before anything runs.
     await dlg.locator('.ag-card[data-agent="site"]').click();
@@ -79,6 +79,7 @@ test.describe('agents', () => {
     await waitForApp(page);
     await page.click('#btn-agents');
     const dlg = page.locator('#agents-dialog');
+    if (process.env.AGENT_SHOTS) await dlg.screenshot({ path: process.env.AGENT_SHOTS + '/8-gallery-13.png' });
     await dlg.locator('.ag-card[data-agent="health"]').click();
     await expect(dlg.locator('.ui-seg-btn', { hasText: 'Whole city' })).toHaveCount(0);
     await expect(dlg.locator('.ag-area')).toHaveText('All live feeds');

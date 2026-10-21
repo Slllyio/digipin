@@ -105,11 +105,13 @@ const DISHATools = (() => {
         {
             name: 'runAgent', type: 'runagent', kind: 'state', agentOnly: true,
             args: {
-                agent: { type: 'enum', values: ['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes', 'health'], required: true },
+                agent: { type: 'enum', values: ['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes', 'air', 'green', 'solar', 'risk', 'programme', 'health'], required: true },
                 use: { type: 'enum', values: ['housing', 'clinic', 'school', 'retail', 'park'] },
             },
             desc: 'Run a saved analysis agent on the selected neighbourhood (or the map view) and paint its result layer: '
-                + 'brief, site (with use:housing|clinic|school|retail|park), flood, heat, access (15-minute), growth, changes. '
+                + 'brief, site (with use:housing|clinic|school|retail|park), flood, heat, access (15-minute), growth, changes, '
+                + 'air (PM2.5 exposure), green (3-30-300), solar (rooftop potential), risk (compound hazards), programme (cool-roof or EV siting), '
+                + 'health (live data feeds; no area needed). '
                 + 'Returns the report summary and top findings.',
             example: '[ACTION] runAgent agent:site use:clinic',
         },

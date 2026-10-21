@@ -25,6 +25,8 @@ Shipped on this branch and covered by unit + loop-integration tests (`npm test`)
 
 **Data health agent (Pipeline Steward in the UI):** an eighth gallery agent with `scope: 'project'` (no area). It reads `data/steward/report.json`, re-grades every `data/realtime/<id>/latest.json` in the browser with the steward's own windows (stale after 6h, 24h for `imd_cityforecast`, dead after 7 days, empty flagged), adds the steward's wiring/contract/drift findings, and names the missing Actions secret when a keyed feed is empty. The live re-check matters because the steward workflow only runs on `main`.
 
+**Lens-backed agents:** air exposure, 3-30-300 green, rooftop solar and compound risk wrap the matching `UrbanLenses` lens and slice it to the area (residents, a fixed threshold where the field is coarse or bounded, area vs city mean, worst cells or, for solar, the best roofs). Programme siting wraps `UrbanLenses.lens('siting', city, store, { preset })` for cool roofs or EV charging hubs and keeps the sites inside the area, falling back to the city's best.
+
 The Alert Triage agent (§5.1) and the Pipeline Steward (§5.2, `pipeline/steward/`) are shipped too. Not yet built: the Tier-3 automation (§6).
 
 ## 0. Why this document

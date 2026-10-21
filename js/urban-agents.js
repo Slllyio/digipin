@@ -84,6 +84,36 @@ const UrbanAgents = (() => {
             params: [],
         },
         {
+            id: 'air', title: 'Air exposure', icon: '🌫', lens: 'air',
+            question: 'How many people breathe air above the standard?',
+            blurb: 'Population-weighted PM2.5 against India’s NAAQS and the WHO guideline, and the worst-exposed cells.',
+            params: [],
+        },
+        {
+            id: 'green', title: '3-30-300 green', icon: '🌳', lens: 'green',
+            question: 'Does every home have canopy and a park nearby?',
+            blurb: '30% tree canopy within 500 m and green space within 300 m of home, and who misses both.',
+            params: [],
+        },
+        {
+            id: 'solar', title: 'Rooftop solar', icon: '☀', lens: 'solar',
+            question: 'How much power could these roofs make?',
+            blurb: 'Usable roof area × NASA POWER irradiance, against what residents use, and the best roofs to start with.',
+            params: [],
+        },
+        {
+            id: 'risk', title: 'Compound risk', icon: '⚠', lens: 'burden',
+            question: 'Where do heat, flood and dirty air stack up?',
+            blurb: 'Cells in the city’s worst fifth for two or three hazards at once, and the people living there.',
+            params: [],
+        },
+        {
+            id: 'programme', title: 'Programme siting', icon: '📍',
+            question: 'Where should a city programme start?',
+            blurb: 'AHP-weighted multi-criteria siting for cool roofs or EV charging hubs, spaced apart, with why each site ranks.',
+            params: [{ key: 'preset', label: 'Programme', options: [{ value: 'cool_roofs', label: 'Cool roofs' }, { value: 'ev_charging', label: 'EV charging' }], default: 'cool_roofs' }],
+        },
+        {
             id: 'health', title: 'Data health', icon: '♥', scope: 'project',
             question: 'Can I trust the live feeds right now?',
             blurb: 'The Pipeline Steward: freshness, emptiness and wiring of every live feed, with what to fix.',
@@ -195,7 +225,26 @@ const UrbanAgents = (() => {
 
     // ── plans ───────────────────────────────────────────────────────────────
 
+    const _lensPlan = (lensId, what) => () => [
+        { tool: 'lens', label: `Run the ${what} lens for the city`, detail: _lensMethod(lensId) },
+        { tool: 'slice', label: 'Slice it to the area: residents, the city’s worst tenth, the cells that stand out' },
+        { tool: 'layer', label: `Paint ${what} as a layer` },
+    ];
+    function _lensMethod(id) {
+        const l = typeof UrbanLenses !== 'undefined' && UrbanLenses.catalog ? UrbanLenses.catalog().find(x => x.id === id) : null;
+        return l ? l.method : '';
+    }
+
     const PLANS = {
+        air: _lensPlan('air', 'air-pollution exposure'),
+        green: _lensPlan('green', '3-30-300 green rule'),
+        solar: _lensPlan('solar', 'rooftop solar potential'),
+        risk: _lensPlan('burden', 'compound-risk'),
+        programme: (p) => [
+            { tool: 'lens', label: `Run the ${p.preset === 'ev_charging' ? 'EV charging hub' : 'cool-roof programme'} siting lens for the city`, detail: 'AHP weights from a pairwise matrix; each criterion a within-city percentile rank' },
+            { tool: 'pickSites', label: 'Keep the best-ranked sites inside the area, at least 1.5 km apart' },
+            { tool: 'layer', label: 'Paint suitability (0–100) as a layer' },
+        ],
         health: () => [
             { tool: 'stewardReport', label: "Read the Pipeline Steward's last report", detail: 'data/steward/report.json, written every 6 hours by the steward workflow' },
             { tool: 'liveCheck', label: 'Re-check every live snapshot now (age and row count)', detail: `stale after ${STALE_H}h (imd_cityforecast ${STALE_H_SLOW}h), dead after ${DEAD_D} days` },
@@ -662,7 +711,105 @@ const UrbanAgents = (() => {
         };
     }
 
-    const RUNNERS = { health: _health, brief: _brief, site: _site, flood: _flood, heat: _heat, access: _access, growth: _growth, changes: _changes };
+    // ── lens-backed agents (air, green, solar, compound risk, programme siting) ──
+
+    const _SUM_UNITS = new Set(['people', 'MWh/yr']);
+    const _num = (x, unit) => (unit === 'people' ? _people(x) : `${_round(x, x >= 100 ? 0 : 1).toLocaleString('en-IN')}${unit && !unit.startsWith('0-') && unit !== 'z' ? ` ${unit}` : ''}`);
+
+    // A fixed threshold reads better than "the city's worst tenth" for coarse
+    // or bounded fields (PM2.5 is ~1 km, the rule counts are 0–3).
+    const LENS_BAD = {
+        air: { test: (v) => v > 40, label: 'Above India’s annual PM2.5 standard', phrase: 'breathe PM2.5 above India’s annual standard (40 µg/m³)' },
+        green: { test: (v) => v === 0, label: 'Meeting neither rule', phrase: 'have neither 30% canopy around home nor green space within 300 m' },
+        burden: { test: (v) => v >= 2, label: 'Facing two or more hazards', phrase: 'face two or more of heat, flood and dirty air at their city’s worst' },
+    };
+
+    /** A lens sliced to the area: one runner for every single-field lens. */
+    function _lensAgent(lensId) {
+        return async (ctx, store, step) => {
+            const { res, lens, slice, layer, field } = await _lensSlice(ctx, store, step, lensId);
+            const vals = res._work.done[lensId].columns[field.key];
+            const pop = res._work.frame.cols['population.population'] || [];
+            const better = field.higherIs === 'better';
+            const sum = _SUM_UNITS.has(field.unit);
+            const total = sum ? slice.idx.reduce((a, i) => a + (_fin(vals[i]) ? Number(vals[i]) : 0), 0) : null;
+            const rule = LENS_BAD[lensId];
+            const badPeople = rule ? slice.idx.reduce((a, i) => a + (_fin(vals[i]) && rule.test(Number(vals[i])) ? Number(pop[i]) || 0 : 0), 0) : slice.badPeople;
+            const share = slice.people ? (100 * badPeople) / slice.people : 0;
+            const city = ctx.area.kind === 'city';
+            const tail = better ? 'lowest' : 'worst';
+            const badLabel = rule ? rule.label : `In the city’s ${tail} tenth`;
+            const avg = `the area averages ${_num(slice.mean, field.unit)} against ${_num(slice.cityMean, field.unit)} city-wide`;
+            const summary = city ? _sentence(lens.headline)
+                : sum
+                    ? _sentence(`${ctx.area.label} adds up to ${_num(total, field.unit)} of ${field.label.toLowerCase()} across ${_people(slice.people)} residents`)
+                    : rule
+                        ? _sentence(`${_people(badPeople)} of ${_people(slice.people)} residents in ${ctx.area.label} (${_pct(share)}) ${rule.phrase}; ${avg}`)
+                        : _sentence(`${_people(badPeople)} of ${_people(slice.people)} residents in ${ctx.area.label} (${_pct(share)}) are in ${ctx.cityLabel}’s ${tail} tenth for ${field.label}; ${avg}`);
+            // Solar's interesting cells are the best roofs; everyone else's are the worst-off.
+            const findings = better && sum
+                ? slice.idx.slice().sort((a, b) => (Number(vals[b]) || 0) - (Number(vals[a]) || 0)).slice(0, MAX_CELLS).map(i => ({
+                    kind: 'strength', title: `${DigiPin.format(res._work.frame.grid.codes[i])}: ${_num(Number(vals[i]), field.unit)}`,
+                    detail: 'Among the best roofs in the area; start a rooftop programme here.', cells: [res._work.frame.grid.codes[i]], sources: lens.sources,
+                }))
+                : slice.worst.map(w => ({
+                    kind: 'concern', title: `${DigiPin.format(w.code)}: ${field.label} ${_num(w.value, field.unit)}`,
+                    detail: `${_people(w.people)} residents.`, cells: [w.code], sources: lens.sources,
+                }));
+            if (slice.hot.length) findings.push({ kind: 'notable', title: `${slice.hot.length} hotspot cells`, detail: `Getis-Ord Gi* clusters (${lens.hotspots.reading}).`, cells: slice.hot.slice(0, MAX_CELLS), sources: lens.sources });
+            const metrics = [{ label: 'Residents in the area', value: _people(slice.people) }];
+            if (sum) metrics.push({ label: field.label, value: _num(total, field.unit) });
+            else {
+                metrics.push({ label: badLabel, value: `${_people(badPeople)} (${_pct(share)})` });
+                metrics.push({ label: 'Area vs city mean', value: `${_num(slice.mean, field.unit)} vs ${_num(slice.cityMean, field.unit)}` });
+            }
+            for (const st of lens.stats.slice(0, 2)) metrics.push({ label: `${ctx.cityLabel}: ${st.label.charAt(0).toLowerCase()}${st.label.slice(1)}`, value: st.value });
+            return {
+                summary, metrics, findings,
+                layers: layer ? [{ id: layer.spec.id, title: layer.spec.title, field: field.key, unit: field.unit, runtime: true }] : [],
+                sources: res.sources.filter(x => lens.sources.includes(x.id)), method: lens.method, refs: lens.refs, layer,
+            };
+        };
+    }
+
+    async function _programme(ctx, store, step) {
+        if (!ctx.city) throw new Error('This area is outside the cities the data covers.');
+        const preset = ctx.params.preset;
+        const r = await step('lens', () => UrbanLenses.lens('siting', ctx.city, store, { preset, sites: 24 }),
+            (x) => `${(x.sites || []).length} candidate sites in ${x.cityLabel}`);
+        const all = r.sites || [];
+        const inside = all.filter(x => inArea(x.code, ctx.area));
+        const picks = await step('pickSites', () => (inside.length ? inside : all).slice(0, MAX_CELLS - 1),
+            (p) => (inside.length ? `${p.length} sites inside the area` : `none inside the area; showing the city's best ${p.length}`));
+        const key = r.layer.spec.fields[0].key;
+        const t = r.layer.table, col = t.columns[key];
+        const rows = t.cells.map((c, i) => ({ code: c, value: col[i] })).filter(x => _fin(x.value) && inArea(x.code, ctx.area));
+        const f = r.layer.spec.fields[0];
+        const layer = _layerFrom(`${LAYER_PREFIX}${ctx.agent}`, `Agent: ${r.title}`, `${r.title} for ${ctx.area.label}`, t.level, rows,
+            { key, label: f.label, unit: f.unit, ramp: f.ramp, higherIs: f.higherIs });
+        await step('layer', () => layer, () => `${rows.length} cells`);
+        const name = preset === 'ev_charging' ? 'EV charging hub' : 'cool-roof programme';
+        const summary = picks.length
+            ? _sentence(`${inside.length ? `The best ${name} site${picks.length === 1 ? '' : 's'} in ${ctx.area.label}` : `No top-ranked ${name} site falls inside ${ctx.area.label}; the city's best`} ${picks.length === 1 ? 'is' : 'are'} ${picks.map(x => DigiPin.format(x.code)).join(', ')}`)
+            : 'No cell passes the siting constraints here.';
+        const findings = picks.map(x => ({
+            kind: 'notable', title: `Site ${x.rank}: ${DigiPin.format(x.code)} (score ${x.score})`,
+            detail: `${_people(x.people)} residents in the cell; ranks on ${x.why}.`, cells: [x.code], sources: r.sources.map(s => s.id || s),
+        }));
+        return {
+            summary,
+            metrics: [
+                { label: 'Candidate sites in the city', value: String(all.length) },
+                { label: 'Inside the area', value: String(inside.length) },
+                ...(r.weights || []).map(w => ({ label: `Weight: ${w.label}`, value: `${Math.round(100 * w.weight)}%` })),
+                ...(r.consistency != null ? [{ label: 'AHP consistency ratio', value: String(r.consistency) }] : []),
+            ],
+            findings, layers: layer ? [{ id: layer.spec.id, title: layer.spec.title, field: key, unit: f.unit, runtime: true }] : [],
+            sources: r.sources || [], method: r.method, refs: r.refs, layer,
+        };
+    }
+
+    const RUNNERS = { air: _lensAgent('air'), green: _lensAgent('green'), solar: _lensAgent('solar'), risk: _lensAgent('burden'), programme: _programme, health: _health, brief: _brief, site: _site, flood: _flood, heat: _heat, access: _access, growth: _growth, changes: _changes };
 
     /**
      * Run an agent. hooks.onStep({ i, tool, label, status, detail, ms }) fires as
