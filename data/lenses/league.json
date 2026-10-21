@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 56,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 34.5,
@@ -117,6 +123,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 20.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 65.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -210,6 +222,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 16.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 48,
@@ -297,6 +315,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 39.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -390,6 +414,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 38,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 57.1,
@@ -477,6 +507,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 26.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 5.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -570,6 +606,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 29.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 78.5,
@@ -657,6 +699,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 21,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 30.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -750,6 +798,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 21.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 53.3,
@@ -837,6 +891,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 43.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 58.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -930,6 +990,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 23.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 41.1,
@@ -1020,6 +1086,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 67.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 92,
@@ -1107,6 +1179,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "traffic": {
+     "label": "Residents beside a jammed arterial",
+     "value": 34.8,
      "unit": "%",
      "higherIs": "worse"
     },
