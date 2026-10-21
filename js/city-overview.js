@@ -246,15 +246,30 @@ const CityOverview = (() => {
         if (persist) { try { localStorage.setItem(COLLAPSE_KEY, on ? '1' : '0'); } catch { /* blocked */ } }
     }
 
+    // Panels that open over the ribbon. Docked in the light right-hand column
+    // (#aino-right) only the right-side ones collide with it.
+    const YIELD_RIGHT = ['detail-panel', 'results-panel', 'disha-panel'];
+    const YIELD_LEFT = ['dt-layers-dropdown', 'heatmap-dropdown', 'insights-dialog', 'agents-dialog'];
+
     function _watchYield() {
-        const targets = ['detail-panel', 'results-panel', 'dt-layers-dropdown', 'heatmap-dropdown', 'disha-panel'].map(id => document.getElementById(id)).filter(Boolean);
+        const watched = new Set();
+        const mo = new MutationObserver(() => sync());
         const sync = () => {
-            const busy = targets.some(t => t.classList.contains('open'));
+            const docked = _el.parentNode && _el.parentNode.id === 'aino-right';
+            const ids = docked ? YIELD_RIGHT : YIELD_RIGHT.concat(YIELD_LEFT);
+            const busy = ids.some(id => { const t = document.getElementById(id); return !!t && t.classList.contains('open'); });
             _el.classList.toggle('is-yielding', busy);
         };
-        const mo = new MutationObserver(sync);
-        targets.forEach(t => mo.observe(t, { attributes: true, attributeFilter: ['class'] }));
-        sync();
+        const attach = () => {
+            for (const id of YIELD_RIGHT.concat(YIELD_LEFT)) {
+                const t = document.getElementById(id);
+                if (t && !watched.has(t)) { watched.add(t); mo.observe(t, { attributes: true, attributeFilter: ['class'] }); }
+            }
+            sync();
+        };
+        // Intel/Agents dialogs are created on first open.
+        new MutationObserver(attach).observe(document.body, { childList: true });
+        attach();
     }
 
     function init() {

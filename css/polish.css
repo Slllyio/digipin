@@ -725,6 +725,11 @@ html[data-theme="light"] {
     --accent-soft: var(--aino-active);
     --accent-softer: var(--aino-hover);
     --focus-ring: 0 0 0 3px rgba(41, 41, 41, 0.18);
+    /* Aino has no blue: the interactive accent is charcoal too. */
+    --accent-cyan: var(--aino-ink);
+    --accent-primary-rgb: 41 41 41;
+    --gradient-subtle: var(--aino-paper);
+    --btn-glow: none;
 }
 html[data-theme="light"] body { color: var(--aino-ink); }
 
@@ -1056,3 +1061,37 @@ html[data-theme="light"] .query-card { padding-left: 12px; }
         border-radius: var(--aino-r) !important; box-shadow: var(--aino-shadow) !important; border: 1px solid var(--aino-line) !important;
     }
 }
+
+/* Intel / Lenses / What-if / Agents dialogs in light: Aino cards and charcoal. */
+html[data-theme="light"] .ui-dialog {
+    background: var(--aino-card); border: 1px solid var(--aino-line);
+    border-radius: var(--aino-r); box-shadow: var(--aino-shadow-lg); backdrop-filter: none;
+}
+@media (min-width: 769px) { html[data-theme="light"] .ui-dialog { left: 84px; top: 80px; } }
+html[data-theme="light"] .ui-title { font-weight: 600; letter-spacing: -0.01em; color: var(--aino-ink); }
+html[data-theme="light"] .ui-logo { background: var(--aino-ink); color: #fff; border-radius: 50%; }
+html[data-theme="light"] .ui-tabs { border-bottom-color: var(--aino-line); }
+html[data-theme="light"] .ui-tab { color: var(--aino-ink-2); }
+html[data-theme="light"] .ui-tab[aria-selected="true"], html[data-theme="light"] .ui-tab.active, html[data-theme="light"] .ui-tab.is-active { color: var(--aino-ink); border-bottom-color: var(--aino-ink) !important; }
+html[data-theme="light"] .ui-chip, html[data-theme="light"] .ui-seg-btn {
+    background: #fff; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px; color: var(--aino-ink);
+}
+html[data-theme="light"] .ui-chip:hover, html[data-theme="light"] .ui-seg-btn:hover { background: var(--aino-paper); }
+html[data-theme="light"] .ui-chip.active, html[data-theme="light"] .ui-chip.is-active, html[data-theme="light"] .ui-chip[aria-pressed="true"],
+html[data-theme="light"] .ui-seg-btn.active, html[data-theme="light"] .ui-seg-btn.is-active, html[data-theme="light"] .ui-seg-btn[aria-pressed="true"] {
+    background: var(--aino-ink); border-color: var(--aino-ink); color: #fff;
+}
+html[data-theme="light"] .ui-btn--primary { background: var(--aino-ink); border-color: var(--aino-ink); color: #fff; }
+html[data-theme="light"] .ui-btn--primary:disabled { background: var(--aino-paper); border-color: var(--aino-line); color: var(--aino-ink-3); }
+html[data-theme="light"] .ui-hero, html[data-theme="light"] .ui-kpi, html[data-theme="light"] .ui-finding, html[data-theme="light"] .ui-zone {
+    background: var(--aino-paper); border: 1px solid transparent; border-radius: 12px;
+}
+html[data-theme="light"] .ui-kpi-fill { background: #8a8a86; }
+html[data-theme="light"] .ui-h { color: var(--aino-ink-3); }
+html[data-theme="light"] .ag-card { background: #fff; border: 1px solid var(--aino-line); border-radius: 12px; }
+html[data-theme="light"] .ag-card:hover, html[data-theme="light"] .ag-card:focus-visible { border-color: rgba(0, 0, 0, 0.25); box-shadow: var(--aino-shadow); }
+html[data-theme="light"] .ag-card-icon, html[data-theme="light"] .ag-head-icon { filter: grayscale(1); background: var(--aino-paper); }
+html[data-theme="light"] .ag-card-title, html[data-theme="light"] .ag-head-title { font-weight: 600; color: var(--aino-ink); }
+html[data-theme="light"] .ag-back { color: var(--aino-ink); }
+html[data-theme="light"] .ag-area { background: var(--aino-paper); }
+html[data-theme="light"] .toolbar-btn.active { border-color: transparent !important; box-shadow: none !important; }

@@ -387,6 +387,31 @@ const UIPolish = (() => {
         });
     }
 
+    /** Light: drop the leading emoji from text-only chips in the Intel/Agents dialogs. */
+    function stripButtonEmoji(root) {
+        if (!root || _theme() !== 'light') return;
+        root.querySelectorAll('.ui-chip, .ui-seg-btn, .ui-btn').forEach(el => {
+            if (el.childElementCount || el.dataset.aino) return;
+            const { emoji, text } = splitEmoji(el.textContent);
+            el.dataset.aino = '1';
+            if (emoji && text) el.textContent = text;
+        });
+    }
+
+    function watchDialogs(doc) {
+        doc = doc || document;
+        if (_theme() !== 'light' || typeof MutationObserver === 'undefined') return;
+        const seen = new WeakSet();
+        const hook = () => doc.querySelectorAll('.ui-dialog').forEach(d => {
+            stripButtonEmoji(d);
+            if (seen.has(d)) return;
+            seen.add(d);
+            new MutationObserver(() => stripButtonEmoji(d)).observe(d, { childList: true, subtree: true });
+        });
+        hook();
+        new MutationObserver(hook).observe(doc.body, { childList: true });
+    }
+
     function watchSidebar(doc) {
         doc = doc || document;
         const sb = doc.getElementById('sidebar');
@@ -559,6 +584,7 @@ const UIPolish = (() => {
         addAiOrb();
         watchLayerRows();
         watchSidebar();
+        watchDialogs();
         ainoAssistant();
         mountRightPanel();
         const map = (typeof MapModule !== 'undefined' && MapModule.getMap) ? MapModule.getMap() : null;
