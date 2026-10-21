@@ -19,6 +19,7 @@
  *   &p=<pitch>&b=<bearing>   the 3D camera; p ≥ 10 turns 3D on and lands
  *                     on exactly this centre/zoom/pitch/bearing
  *   &sun=<YYYY-MM-DDTHH:MM>  the sun study's date and hour (solar time)
+ *   &ms=<json>        sketched proposed buildings (MassingSketch.toParam)
  *   &intel=<tab>&ic&ia&ib&wi   the open Urban Intelligence view (js/intel-brief.js)
  *   &ag=<agent>&aa=<area>&ap=  an agent run to re-run on open (js/agents-panel.js)
  *
@@ -106,6 +107,10 @@ const URLState = (() => {
         if (Number.isFinite(bearing)) state.bearing = ((bearing % 360) + 540) % 360 - 180;
         const sun = _sun(p.get('sun'));
         if (sun) state.sun = sun;
+        if (p.get('ms') && typeof MassingSketch !== 'undefined') {
+            const ms = MassingSketch.parseParam(p.get('ms'));
+            if (ms.length) state.massing = ms;
+        }
         const ll = p.get('ll');
         if (ll) {
             const [lat, lng] = ll.split(',').map(Number);
@@ -131,6 +136,9 @@ const URLState = (() => {
         if (Array.isArray(state.annotations) && state.annotations.length) {
             p.set('an', JSON.stringify(state.annotations.map(n =>
                 ({ lat: n.lat, lng: n.lng, text: n.text, color: n.color }))));
+        }
+        if (Array.isArray(state.massing) && state.massing.length && typeof MassingSketch !== 'undefined') {
+            p.set('ms', MassingSketch.toParam(state.massing));
         }
         if (Number.isFinite(state.z)) p.set('z', String(round(state.z, 2)));
         if (Number.isFinite(state.pitch) && state.pitch >= 10) {
@@ -198,6 +206,10 @@ const URLState = (() => {
             const b = BuildingData.get();
             if (b.color) state.bcolor = b.color;
             if (b.height) state.bheight = b.height;
+        }
+        if (typeof MassingSketch !== 'undefined' && MassingSketch.list) {
+            const ms = MassingSketch.list();
+            if (ms.length) state.massing = ms;
         }
         if (typeof SunStudy !== 'undefined' && SunStudy.getState) {
             const sun = SunStudy.getState();
@@ -290,6 +302,9 @@ const URLState = (() => {
         // Presentation mode (carried in share links / saved views) — enter when set.
         if (state.present && typeof PresentMode !== 'undefined' && PresentMode.enter) {
             PresentMode.enter();
+        }
+        if (Array.isArray(state.massing) && typeof MassingSketch !== 'undefined' && MassingSketch.setAll) {
+            MassingSketch.setAll(state.massing);
         }
         if (Array.isArray(state.annotations) && typeof Annotations !== 'undefined' && Annotations.setAll) {
             Annotations.setAll(state.annotations);

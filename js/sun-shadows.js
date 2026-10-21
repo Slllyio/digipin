@@ -152,13 +152,15 @@ const SunShadows = (() => {
                 }
             } catch { /* tiles not loaded */ }
         }
+        // Sketched proposals always cast, ahead of the nearest-first cut.
+        if (typeof MassingSketch !== 'undefined' && MassingSketch.footprints) out.unshift(...MassingSketch.footprints());
         const cap = typeof Quality3D !== 'undefined' ? Quality3D.limits().shadows : MAX_BUILDINGS;
         if (out.length <= cap) return out;
         // Too many: keep the ones nearest the camera target, where the eye is.
         const c = map.getCenter();
         const k = Math.cos(c.lat * RAD);
         for (const b of out) { const dx = (b.ring[0][0] - c.lng) * k, dy = b.ring[0][1] - c.lat; b.d = dx * dx + dy * dy; }
-        out.sort((a, b) => a.d - b.d);
+        out.sort((a, b) => (b.p ? 1 : 0) - (a.p ? 1 : 0) || a.d - b.d);
         return out.slice(0, cap);
     }
 

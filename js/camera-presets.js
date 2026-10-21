@@ -252,7 +252,7 @@ const CameraPresets = (() => {
     /**
      * Centre [left, width] for the bar in the free bottom gap between the left
      * rail and the right-hand obstacles (lefts of the detail panel, cell
-     * legend), or null when it fits centred anyway. Pure.
+     * legend, zoom controls), or null when it fits centred anyway. Pure.
      */
     function placeIn(vw, railRight, rights, barW) {
         const right = Math.min(vw, ...rights.filter(x => x > vw / 2));
@@ -270,7 +270,7 @@ const CameraPresets = (() => {
             const r = el && el.getBoundingClientRect();
             return r && r.width > 0 && r.height > 0 ? r : null;
         };
-        const rights = [box('#detail-panel.open'), box('#cell-layer-legend')].filter(Boolean).map(r => r.left);
+        const rights = [box('#detail-panel.open'), box('#cell-layer-legend'), box('.maplibregl-ctrl-bottom-right')].filter(Boolean).map(r => r.left);
         const rail = box('#aino-toolbar, #toolbar');
         _bar.classList.remove('is-compact');
         _bar.style.left = ''; _bar.style.transform = '';

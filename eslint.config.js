@@ -48,7 +48,7 @@ const APP_GLOBALS = {
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly', I18n: 'readonly', I18nUI: 'readonly',
   LayersPanel: 'readonly', ExportDialog: 'readonly', DTDLExport: 'readonly', Onboarding: 'readonly',
   PitchMap: 'readonly', SunStudy: 'readonly', SunShadows: 'readonly', CameraPresets: 'readonly',
-  ViewHandoff: 'readonly', Quality3D: 'readonly', FootprintExport: 'readonly', SiteBrief: 'readonly',
+  ViewHandoff: 'readonly', Quality3D: 'readonly', MassingSketch: 'readonly', FootprintExport: 'readonly', SiteBrief: 'readonly',
   MeasureTool: 'readonly', PresentMode: 'readonly', Annotations: 'readonly',
   RealEstateModel: 'readonly', RealEstateWidget: 'readonly', FootprintGrid: 'readonly',
   UIPolish: 'readonly', CityOverview: 'readonly', Trees3D: 'readonly',

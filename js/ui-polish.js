@@ -62,6 +62,7 @@ const UIPolish = (() => {
         play: '<path d="M7 4v16l13-8L7 4z"/>',
         close: '<path d="M6 6l12 12M18 6 6 18"/>',
         radar: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12 18.5 5.5"/><circle cx="12" cy="12" r="1"/>',
+        massing: '<path d="M3 21h18"/><path d="M5 21V10l5-3v14"/><path d="M10 21V4l6 3v14"/><path d="M16 21v-9l3-1.5V21"/>',
         droplet: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
     };
 
@@ -69,7 +70,7 @@ const UIPolish = (() => {
     const TOOLBAR = {
         'btn-heatmap': 'heatmap', 'btn-wards': 'wards', 'btn-lcz': 'city',
         'btn-buildings': 'building', 'btn-3d': 'cube', 'btn-terrain': 'mountain',
-        'btn-sun': 'sun', 'btn-pitch': 'camera', 'btn-measure': 'ruler',
+        'btn-sun': 'sun', 'btn-massing': 'massing', 'btn-pitch': 'camera', 'btn-measure': 'ruler',
         'btn-present': 'present', 'btn-annotate': 'pin', 'btn-lulc': 'globe',
         'btn-roads': 'road', 'btn-dt-layers': 'layers', 'btn-compare': 'compare',
         'btn-bookmarks': 'star', 'btn-saved-views': 'folder', 'btn-analyses': 'clipboard',

@@ -1185,3 +1185,42 @@ html[data-theme="light"] #camera-presets .cp-sep { background: var(--aino-line);
     /* Clear of the sidebar toggle that sits at the top-left on phones. */
     #building-data-panel { top: 110px !important; }
 }
+/* ── Proposed massing card (MassingSketch) ─────────────────────────────── */
+.massing-panel {
+    /* Top-left, under the sidebar toggle and clear of Building data (left 330+)
+       and the sun card (from ~380 px down); the right side is the detail panel's. */
+    position: fixed; top: 140px; left: 70px; z-index: 960; width: 250px; max-height: 232px; overflow: auto;
+    background: rgba(12, 18, 32, 0.9); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px; padding: 12px 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px);
+    font: 13px/1.45 var(--font-sans);
+}
+.massing-panel .ms-head { display: flex; align-items: center; margin-bottom: 8px; }
+.massing-panel .ms-title { flex: 1; font-weight: 600; font-size: 14px; }
+.massing-panel .ms-close, .massing-panel .ms-del { background: none; border: 0; color: var(--text-muted); cursor: pointer; font-size: 14px; padding: 2px 6px; border-radius: 6px; }
+.massing-panel .ms-item { border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 0; }
+.massing-panel .ms-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.massing-panel .ms-name { flex: 1; min-width: 0; font: 600 13px var(--font-sans); background: transparent; border: 1px solid transparent; color: inherit; border-radius: 6px; padding: 3px 6px; }
+.massing-panel .ms-name:hover, .massing-panel .ms-name:focus { border-color: rgba(255, 255, 255, 0.18); }
+.massing-panel .ms-floors { width: 64px; margin-left: 4px; }
+.massing-panel .ms-use { flex: 1; }
+.massing-panel .ms-facts, .massing-panel .ms-hint, .massing-panel .ms-note { color: var(--text-muted); font-size: 12px; }
+.massing-panel .ms-hint { margin: 4px 0 8px; }
+.massing-panel .ms-actions { display: flex; gap: 8px; margin-top: 8px; }
+.massing-panel .ms-actions button { flex: 1; padding: 7px 10px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.14); background: none; color: inherit; font: 500 12.5px var(--font-sans); cursor: pointer; }
+.massing-panel .ms-actions .ms-primary { background: #e0734d; border-color: #e0734d; color: #fff; }
+.massing-panel .ms-note { margin-top: 6px; }
+html[data-theme="light"] .massing-panel {
+    left: 84px; width: 300px; background: #fff; color: var(--aino-ink); border: 1px solid var(--aino-line);
+    border-radius: var(--aino-r); box-shadow: var(--aino-shadow); backdrop-filter: none;
+}
+html[data-theme="light"] .massing-panel .ms-item { border-top-color: var(--aino-line); }
+html[data-theme="light"] .massing-panel .ms-name:hover, html[data-theme="light"] .massing-panel .ms-name:focus { border-color: var(--aino-line); }
+html[data-theme="light"] .massing-panel .ms-actions button { border-color: var(--aino-line); }
+html[data-theme="light"] .massing-panel .ms-actions .ms-primary { background: var(--aino-ink); border-color: var(--aino-ink); color: #fff; }
+html[data-theme="light"] .massing-panel .ms-close:hover, html[data-theme="light"] .massing-panel .ms-del:hover { background: var(--aino-hover); color: var(--aino-ink); }
+@media (max-width: 768px) {
+    /* Over the Building data card at the top: the lower map stays free to tap corners on. */
+    .massing-panel, html[data-theme="light"] .massing-panel {
+        top: 110px; right: 10px; left: 10px; bottom: auto; width: auto; max-height: 34vh;
+    }
+}

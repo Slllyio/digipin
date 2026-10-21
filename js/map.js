@@ -250,6 +250,7 @@ const MapModule = (() => {
         map.on('click', 'digipin-grid-fill', (e) => {
             // A drawing tool owns clicks while it is active.
             if (typeof InsightsPanel !== 'undefined' && InsightsPanel.isDrawing && InsightsPanel.isDrawing()) return;
+            if (typeof MassingSketch !== 'undefined' && MassingSketch.isDrawing()) return;
             if (e.features.length > 0) {
                 const feature = e.features[0];
                 const cellData = currentCells.get(feature.id);

@@ -540,6 +540,7 @@ const OvertureBuildings = (() => {
         });
         map.on('click', TWIN_LAYER_ID, async (e) => {
             if (!_twin || !e.features || !e.features.length || typeof BuildingData === 'undefined') return;
+            if (typeof MassingSketch !== 'undefined' && MassingSketch.isDrawing()) return;
             const p = e.features[0].properties || {};
             const lat = Number.isFinite(+p.cy) ? +p.cy : e.lngLat.lat;
             const lng = Number.isFinite(+p.cx) ? +p.cx : e.lngLat.lng;
@@ -642,6 +643,7 @@ const OvertureBuildings = (() => {
     /** Click handler: show a popup of the clicked building's attributes. */
     function onMapClick(e) {
         if (!_active || _twin) return;   // the twin layer has its own data popup
+        if (typeof MassingSketch !== 'undefined' && MassingSketch.isDrawing()) return;
 
         const features = e.features;
         if (!features || features.length === 0) return;
