@@ -18,6 +18,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
+     "value": 1.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 34.5,
@@ -93,6 +99,12 @@
     "flood": {
      "label": "Residents in the 100-year floodplain",
      "value": 0.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
+     "value": 0,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -252,6 +264,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
+     "value": 1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 73.5,
@@ -327,6 +345,12 @@
     "flood": {
      "label": "Residents in the 100-year floodplain",
      "value": 28.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
+     "value": 2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -486,6 +510,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 78.5,
@@ -560,6 +590,12 @@
     },
     "flood": {
      "label": "Residents in the 100-year floodplain",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
@@ -720,6 +756,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
+     "value": 1.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 61.6,
@@ -795,6 +837,12 @@
     "flood": {
      "label": "Residents in the 100-year floodplain",
      "value": 12.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
+     "value": 0.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -876,6 +924,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
+     "value": 0.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 92,
@@ -951,6 +1005,12 @@
     "flood": {
      "label": "Residents in the 100-year floodplain",
      "value": 4.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
+     "value": 0.2,
      "unit": "%",
      "higherIs": "worse"
     },

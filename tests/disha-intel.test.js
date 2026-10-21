@@ -52,6 +52,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('How many people live in the floodplain?')).toEqual({ type: 'lens', lens: 'flood' });
         expect(M('Is Pune a 15-minute city?')).toEqual({ type: 'lens', lens: 'fifteen', city: 'pune' });
         expect(M('Where are the healthcare deserts?')).toEqual({ type: 'lens', lens: 'health' });
+        expect(M('Who gets cut off from hospitals in a flood?')).toEqual({ type: 'lens', lens: 'cutoff' });
         expect(M('How many people can walk to a bus stop?')).toEqual({ type: 'lens', lens: 'transit' });
         expect(M('public transport access in Delhi')).toMatchObject({ type: 'lens', lens: 'transit' });
         expect(M('How many people breathe PM2.5 above the standard?')).toEqual({ type: 'lens', lens: 'air' });

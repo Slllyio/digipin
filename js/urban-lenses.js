@@ -35,6 +35,11 @@ const UrbanLenses = (() => {
     const KWH_PER_CAPITA = 1395;  // CEA per-capita electricity consumption, 2023-24 (all sectors)
     const URBAN_PCT = 15;     // a cell counts as urban for the LEI at ≥ 15% built-up
     const SHED_KM = 1;
+    const FLOOD_WADE_M = 0.3;   // floodwater above ~0.3 m knocks pedestrians over at modest velocity
+    const FLOOD_SHARE = 50;     // % of the cell in the floodplain to treat it as impassable
+    const FLOOD_DETOUR_M = 250;
+    const CUTOFF_DOMAIN = ['Cut off from care', 'Longer walk to care', 'Flooded', 'Unaffected', 'No care in reach anyway'];
+    const CUTOFF_COLORS = { 'Cut off from care': '#c0392b', 'Longer walk to care': '#f39c12', Flooded: '#2e86c1', Unaffected: '#cfd8dc', 'No care in reach anyway': '#8e8e8e' };
     const STOP_KM = 0.5, RAPID_KM = 1;   // SDG 11.2.1: 500 m to a bus stop, 1 km to rail / BRT / terminal
     const TRANSIT = 'osm_transit';       // vector points (data/vectors/osm_transit_<city>.geojson), binned per cell
     const RAPID_KINDS = new Set(['station', 'bus_station', 'subway_entrance', 'halt', 'tram_stop']);        // pedestrian-shed radius for route directness
@@ -60,6 +65,13 @@ const UrbanLenses = (() => {
             needs: ['water.flood_rp100_pct', 'water.flood_rp100_depth_m', 'water.flood_rp10_pct', 'terrain.hand_m', 'built_up.built_pct'],
             method: 'Risk = hazard × exposure. Hazard: share of the cell in the GloFAS 100-year floodplain, scaled by depth (1 m or more counts fully), or half weight for low-lying land (height above nearest drainage under 5 m) as a ponding proxy. People exposed = residents × floodplain share.',
             refs: 'UNDRR Sendai risk framing; Nobre et al. 2011 (HAND)' },
+        { id: 'cutoff', title: 'Cut off by floods', icon: '🛶',
+            question: 'Who loses walking access to healthcare when the 100-year flood comes?',
+            field: { key: 'flood_access', label: 'Healthcare access in a 100-year flood', type: 'category' },
+            extra: [{ key: 'flood_detour_m', label: 'Extra walk to care in a flood', unit: 'm', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['water.flood_rp100_pct', 'water.flood_rp100_depth_m', 'osm_amenities.healthcare', WALK_LINKS],
+            method: `Nearest mapped healthcare place within ${CATCH_KM} km on the walking network, today and with the 100-year flood: cells at least half inside the GloFAS 100-year floodplain with water at least ${FLOOD_WADE_M} m deep (too deep to wade safely) are removed from the graph, and their facilities with them. Residents are then “cut off” (care in reach today, none in a flood), “longer walk” (care still reachable, at least ${FLOOD_DETOUR_M} m further), “flooded” (their own cell is under water) or unaffected.`,
+            refs: 'GloFAS / JRC flood hazard maps (Baugh et al. 2024); Russo et al. 2008 & Xia et al. 2014 on pedestrian stability in floodwater; Coles et al. 2017 (flood impacts on emergency service accessibility)' },
         { id: 'fifteen', equity: true, title: '15-minute completeness', icon: '🚶',
             question: 'Can people reach daily needs on foot?',
             field: { key: 'fifteen_min', label: '15-minute completeness', unit: '0-100', higherIs: 'better', ramp: 'greens' },
@@ -314,14 +326,22 @@ const UrbanLenses = (() => {
      * mask from osm_walk; reach(i, km) runs Dijkstra from cell i (step cost =
      * the centre-to-centre distance) and returns { js, ds, len, net } with
      * buffers reused between calls. Cells without links fall back to the
-     * straight-line disk (net = false). Exported for tests.
+     * straight-line disk (net = false). `blocked` cells (e.g. flooded) are
+     * never entered; reach(i, km, stop) halts at the first cell where
+     * stop(j) is true, so ds of the last entry is the nearest such cell.
+     * Exported for tests.
      */
-    function walkNet(g, links) {
+    function walkNet(g, links, blocked = null) {
         const has = !!links && links.some(v => v > 0);
         const step = DIRS.map(([a, b]) => Math.hypot(a * g.dy, b * g.dx));
         const dist = new Float64Array(g.n).fill(Infinity);
         let js = new Int32Array(64), ds = new Float64Array(64);
         let hd = new Float64Array(64), hj = new Int32Array(64);
+        let tch = new Int32Array(64), tn = 0;   // cells whose dist was set, to reset after a search
+        const touch = (k) => {
+            if (tn === tch.length) { const t2 = new Int32Array(tn * 2); t2.set(tch); tch = t2; }
+            tch[tn++] = k;
+        };
         const euc = new Map();
         function euclid(i, km) {
             if (!euc.has(km)) euc.set(km, g.offsets(km));
@@ -330,12 +350,22 @@ const UrbanLenses = (() => {
             if (js.length < off.length) { js = new Int32Array(off.length * 2); ds = new Float64Array(off.length * 2); }
             for (const [a, b, d] of off) {
                 const j = g.cellAt(i, a, b);
-                if (j >= 0) { js[len] = j; ds[len++] = d; }
+                if (j >= 0 && !(blocked && blocked[j] && j !== i)) { js[len] = j; ds[len++] = d; }
             }
             return { js, ds, len, net: false };
         }
-        function reach(i, km) {
-            if (!has || !(links[i] > 0)) return euclid(i, km);
+        function reach(i, km, stop = null) {
+            if (!has || !(links[i] > 0)) {
+                const r = euclid(i, km);
+                if (stop) {
+                    // Offsets are not sorted by distance: keep only the nearest hit.
+                    let best = -1;
+                    for (let t = 0; t < r.len; t++) if (stop(r.js[t]) && (best < 0 || r.ds[t] < r.ds[best])) best = t;
+                    if (best >= 0) { r.js[0] = r.js[best]; r.ds[0] = r.ds[best]; r.len = 1; } else r.len = 0;
+                    r.hit = best >= 0;
+                }
+                return r;
+            }
             let hn = 0, len = 0;
             const push = (d, j) => {
                 if (hn === hd.length) {
@@ -363,7 +393,8 @@ const UrbanLenses = (() => {
                 hd[k] = ld; hj[k] = lj;
                 return [d, j];
             };
-            dist[i] = 0; push(0, i);
+            tn = 0;
+            dist[i] = 0; touch(i); push(0, i);
             while (hn) {
                 const [d, j] = pop();
                 if (d > dist[j]) continue;
@@ -372,18 +403,21 @@ const UrbanLenses = (() => {
                     a2.set(js); b2.set(ds); js = a2; ds = b2;
                 }
                 js[len] = j; ds[len++] = d;
+                if (stop && stop(j)) { hn = 0; break; }
                 const m = links[j];
                 if (!(m > 0)) continue;
                 for (let b = 0; b < 8; b++) {
                     if (!((m >> b) & 1)) continue;
                     const k = g.cellAt(j, DIRS[b][0], DIRS[b][1]);
-                    if (k < 0) continue;
+                    if (k < 0 || (blocked && blocked[k])) continue;
                     const nd = d + step[b];
-                    if (nd <= km + 1e-9 && nd < dist[k]) { dist[k] = nd; push(nd, k); }
+                    if (nd <= km + 1e-9 && nd < dist[k]) { if (dist[k] === Infinity) touch(k); dist[k] = nd; push(nd, k); }
                 }
             }
-            for (let q = 0; q < len; q++) dist[js[q]] = Infinity;
-            return { js, ds, len, net: true };
+            // Clear every touched cell (queued ones too, if the search stopped early).
+            for (let q = 0; q < tn; q++) dist[tch[q]] = Infinity;
+            const hit = !!stop && len > 0 && stop(js[len - 1]);
+            return { js, ds, len, net: true, hit };
         }
         return { reach, has };
     }
@@ -627,6 +661,61 @@ const UrbanLenses = (() => {
                 { label: 'People in the 10-year floodplain', value: rp10 ? _people(p10) : '–', raw: Math.round(p10) },
                 { label: 'Built-up land in the floodplain', value: `${_round(builtKm2, 2)} km²` },
                 { label: 'People near drainage level (HAND < 2 m, waterlogging-prone)', value: ponding != null ? _people(ponding) : '–' },
+            ],
+        };
+    }
+
+    function cutoff(fr) {
+        const c = fr.cols, g = fr.grid, idx = _residents(fr), n = g.n;
+        const rp = c['water.flood_rp100_pct'], depth = c['water.flood_rp100_depth_m'], care = c['osm_amenities.healthcare'];
+        const pop = c['population.population'];
+        if (!rp || !care) return null;
+        const wet = new Uint8Array(n);
+        let nWet = 0, wetCare = 0, allCare = 0;
+        for (let i = 0; i < n; i++) {
+            const deep = !depth || !_fin(depth[i]) || depth[i] >= FLOOD_WADE_M;
+            if (_fin(rp[i]) && rp[i] >= FLOOD_SHARE && deep) { wet[i] = 1; nWet++; if (care[i] > 0) wetCare += care[i]; }
+            if (care[i] > 0) allCare += care[i];
+        }
+        if (!nWet) return null;
+        const links = c[WALK_LINKS];
+        const dry = _net(fr), flooded = walkNet(g, links, wet);
+        const hasCare = j => care[j] > 0, hasDryCare = j => care[j] > 0 && !wet[j];
+        const cls = new Float64Array(n).fill(NaN), detour = new Float64Array(n).fill(NaN);
+        const sum = new Float64Array(CUTOFF_DOMAIN.length);
+        for (const i of idx) {
+            const a = dry.reach(i, CATCH_KM, hasCare);
+            const d0 = a.hit ? a.ds[a.len - 1] : Infinity;
+            let k;
+            if (wet[i]) k = 2;
+            else if (!_fin(d0)) k = 4;
+            else {
+                const b = flooded.reach(i, CATCH_KM, hasDryCare);
+                const d1 = b.hit ? b.ds[b.len - 1] : Infinity;
+                if (!_fin(d1)) k = 0;
+                else {
+                    detour[i] = 1000 * (d1 - d0);
+                    k = detour[i] >= FLOOD_DETOUR_M - 1e-6 ? 1 : 3;
+                }
+            }
+            cls[i] = k;
+            sum[k] += pop[i];
+        }
+        const total = _sumOver(pop, idx, () => true);
+        const pct = v => _round(100 * v / (total || 1), 1);
+        return {
+            columns: { flood_access: cls, flood_detour_m: detour }, idx, weightKey: 'flood_detour_m',
+            categories: { flood_access: { domain: CUTOFF_DOMAIN, colors: CUTOFF_COLORS } },
+            metric: { label: 'Residents cut off from healthcare in a 100-year flood', value: pct(sum[0]), unit: '%', higherIs: 'worse' },
+            headline: `In a 100-year flood ${_people(sum[0])} people (${pct(sum[0])}%) would lose walking access to every mapped healthcare place within ${CATCH_KM} km, `
+                + `${_people(sum[1])} more face a longer walk, and ${_people(sum[2])} live where the water itself is too deep to wade; `
+                + `${Math.round(wetCare)} of ${Math.round(allCare)} healthcare places sit in deep floodwater.`,
+            stats: [
+                { label: 'Cut off from care', value: _people(sum[0]), raw: Math.round(sum[0]) },
+                { label: `Longer walk to care (≥ ${FLOOD_DETOUR_M} m more)`, value: _people(sum[1]), raw: Math.round(sum[1]) },
+                { label: 'Living in deep floodwater', value: _people(sum[2]), raw: Math.round(sum[2]) },
+                { label: 'Healthcare places in deep floodwater', value: `${Math.round(wetCare)} of ${Math.round(allCare)}` },
+                { label: 'Impassable cells', value: `${nWet.toLocaleString('en-IN')} (${_round(nWet * g.cellKm2, 1)} km²)` },
             ],
         };
     }
@@ -1352,7 +1441,7 @@ const UrbanLenses = (() => {
             metric: pmRes != null ? { label: 'Months a year above 60 µg/m³ PM2.5', value: _round(pmRes, 1), unit: 'months', higherIs: 'worse' } : null };
     }
 
-    const RUN = { heat, flood, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
+    const RUN = { heat, flood, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
 
     // ── siting suitability (MCDA with AHP weights) ──────────────────────────
 

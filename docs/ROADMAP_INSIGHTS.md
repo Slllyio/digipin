@@ -63,6 +63,7 @@ new data.
 | 20 | Area profile through every lens | How does my neighbourhood compare on each lens? | Yes | S | **Shipped** |
 | 21 | Seasonal exposure | How many months a year are residents exposed? Is it warming? | Yes (monthly series) | S | **Shipped** |
 | 22 | Public transport coverage (SDG 11.2.1) | How many people can walk to a bus stop (500 m) or a station (1 km)? | Yes (OSM stops + `osm_walk`) | S | **Shipped** |
+| 23 | Cut off by floods | Who loses walking access to healthcare in a 100-year flood? | Yes (GloFAS + `osm_walk` + OSM healthcare) | S | **Shipped** |
 
 Excluded here because other work owns them: draw-an-area building insights,
 the "what changed this month" feed, and performance/reliability.
@@ -268,6 +269,27 @@ of residents covered (the league metric), people left out, stops per 10k.
 **Limits.** OSM bus-stop mapping is uneven (Delhi and Lucknow are under-
 mapped), and without GTFS this is coverage, not frequency: a stop served
 twice a day counts like one served every 5 minutes.
+
+## 23. Cut off by floods
+
+**Question.** When the 100-year flood comes, who can no longer walk to care?
+
+**Method.** Nearest mapped healthcare within 2 km on the `osm_walk` graph,
+twice: as is, and with every cell at least half in the GloFAS 100-year
+floodplain and at least 0.3 m deep removed (pedestrians lose footing in
+moving water around that depth; Russo et al. 2008, Xia et al. 2014),
+together with the clinics inside them. Residents are classed cut off,
+longer walk (≥ 250 m more), flooded, unaffected, or no care in reach anyway.
+`walkNet(g, links, blocked).reach(i, km, stop)` stops at the first match, so
+the two searches per cell stay cheap (Delhi ≈ 1.7 s).
+
+**User sees.** A five-class map, the extra walk per cell, people cut off
+(the league metric), people living in deep water, clinics under water.
+
+**Limits.** GloFAS depth is a ~1 km product resampled to cells, so small
+drains and underpasses are invisible; urban waterlogging (pluvial) is not in
+the hazard. Without a walking graph the lens only removes flooded clinics,
+it cannot model the water as a barrier.
 
 ## How it is built
 

@@ -185,6 +185,37 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.transit(fr, {})).toBeNull();       // no transit points → no lens
     });
 
+    it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {
+        const rp = new Array(n).fill(0), depth = new Array(n).fill(0);
+        for (let r = 0; r < SIZE; r++) { rp[r * SIZE + 3] = 100; depth[r * SIZE + 3] = 1; }   // column 3 floods
+        const care = new Array(n).fill(0);
+        care[0] = 1;
+        const links = codes.map(() => 1 | 4 | 16 | 64);                     // N/E/S/W street grid
+        const f = L.frameFrom(codes, { 'population.population': pop, 'water.flood_rp100_pct': rp, 'water.flood_rp100_depth_m': depth, 'osm_amenities.healthcare': care, 'osm_walk.links': links });
+        const r = L._lenses.cutoff(f, {});
+        const cls = r.columns.flood_access, dom = r.categories.flood_access.domain;
+        expect(dom[cls[3]]).toBe('Flooded');
+        expect(dom[cls[1]]).toBe('Unaffected');
+        expect(dom[cls[4]]).toBe('Cut off from care');                   // ~1 km east of the clinic, across the water
+        expect(dom[cls[n - 1]]).toBe('No care in reach anyway');
+        expect(r.metric.value).toBeGreaterThan(0);
+        // Shallow water (< 0.3 m) does not block.
+        const f2 = L.frameFrom(codes, { 'population.population': pop, 'water.flood_rp100_pct': rp, 'water.flood_rp100_depth_m': depth.map(d => d * 0.1), 'osm_amenities.healthcare': care });
+        expect(L._lenses.cutoff(f2, {})).toBeNull();
+    });
+
+    it('walkNet stop: the search halts at the nearest match', () => {
+        const net = L.walkNet(fr.grid, null);
+        const r = net.reach(SIZE * 2 + 2, 2, j => j === 0 || j === SIZE * 2 + 4);
+        expect(r.hit).toBe(true);
+        expect(r.js[r.len - 1]).toBe(SIZE * 2 + 4);                        // 2 cells east beats 2 diagonals NW
+        const grid4 = L.walkNet(fr.grid, Float64Array.from(codes, () => 1 | 4 | 16 | 64));
+        const q = grid4.reach(SIZE * 2 + 2, 2, j => j === 0 || j === SIZE * 2 + 4);
+        expect(q.net && q.hit).toBe(true);
+        expect(q.js[q.len - 1]).toBe(SIZE * 2 + 4);
+        expect(q.ds[q.len - 1]).toBeCloseTo(2 * fr.grid.dx, 6);
+    });
+
     it('health lens counts the people beyond the catchment', () => {
         const r = L._lenses.health(fr, {});
         expect(r.stats[1].raw).toBeGreaterThan(0);
