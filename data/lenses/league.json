@@ -20,13 +20,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 42.5,
+     "value": 34.5,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 2,
+     "value": 4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -92,13 +92,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 90,
+     "value": 84.4,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 2.5,
+     "value": 4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -164,13 +164,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 56.4,
+     "value": 48,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 2.8,
+     "value": 5.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -236,13 +236,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 81.7,
+     "value": 73.5,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 0.7,
+     "value": 4.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -308,13 +308,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 65.1,
+     "value": 57.1,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 6.4,
+     "value": 11.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -386,7 +386,7 @@
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 7.4,
+     "value": 15.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -452,13 +452,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 86.2,
+     "value": 78.5,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 0.7,
+     "value": 2.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -524,13 +524,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 56.9,
+     "value": 50.2,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 13.2,
+     "value": 17.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -596,13 +596,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 65.7,
+     "value": 53.3,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 2.2,
+     "value": 4.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -668,13 +668,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 71.6,
+     "value": 61.6,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 1,
+     "value": 2.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -740,13 +740,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 50.6,
+     "value": 41.1,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 4,
+     "value": 6.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -812,13 +812,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 95.7,
+     "value": 92,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 0.7,
+     "value": 3.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -830,7 +830,7 @@
     },
     "walk": {
      "label": "Residents below 54 junctions/km²",
-     "value": 9.1,
+     "value": 9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -884,13 +884,13 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 89.1,
+     "value": 78.4,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 0.8,
+     "value": 2.9,
      "unit": "%",
      "higherIs": "worse"
     },
