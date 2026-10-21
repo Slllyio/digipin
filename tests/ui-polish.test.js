@@ -140,3 +140,14 @@ describe('UIPolish emoji split', () => {
         expect(UIPolish.splitEmoji('Residential')).toEqual({ emoji: '', text: 'Residential' });
     });
 });
+
+describe('UIPolish Aino right panel', () => {
+    it('lists only the layers that are on', () => {
+        document.body.innerHTML = '<div id="dt-layers-dropdown">'
+            + '<div class="dt-layer-item" data-layer-key="a" aria-checked="true"><span class="dt-layer-name">LST</span><span class="dt-layer-src">USGS · L7</span></div>'
+            + '<div class="dt-layer-item" data-layer-key="b" aria-checked="false"><span class="dt-layer-name">Wards</span></div></div>';
+        const rows = UIPolish.activeLayerRows(document.getElementById('dt-layers-dropdown'));
+        expect(rows).toEqual([{ key: 'a', name: 'LST', src: 'USGS · L7', dot: '' }]);
+        expect(UIPolish.activeLayerRows(null)).toEqual([]);
+    });
+});

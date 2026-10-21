@@ -440,6 +440,96 @@ const UIPolish = (() => {
         });
     }
 
+    // ── Aino right-hand panel (light, wide screens) ─────────────────────────
+    // Aino keeps a "Layers" card and a "Context overview" card in one column
+    // on the right. We build the Layers card (a mirror of the layers that are
+    // on, each with an eye to switch it off, and "+ Add layer") and dock the
+    // city overview under it. Narrow screens keep the bottom ribbon.
+    const RIGHT_MQ = '(min-width: 1100px)';
+
+    /** Rows for the Layers card from the layers-menu items that are on. Pure-ish. */
+    function activeLayerRows(drop) {
+        if (!drop) return [];
+        return [...drop.querySelectorAll('.dt-layer-item[aria-checked="true"]')].map(it => ({
+            key: it.dataset.layerKey || '',
+            name: (it.querySelector('.dt-layer-name') || it).textContent.trim(),
+            src: ((it.querySelector('.dt-layer-src') || {}).textContent || '').trim(),
+            dot: it.style.getPropertyValue('--dot') || '',
+        }));
+    }
+
+    function _renderLayersCard(card, drop) {
+        const rows = activeLayerRows(drop);
+        const list = card.querySelector('.ar-list');
+        list.textContent = '';
+        if (!rows.length) {
+            const empty = document.createElement('div');
+            empty.className = 'ar-empty';
+            empty.textContent = 'No layers on. Add one to colour the map.';
+            list.appendChild(empty);
+            return;
+        }
+        for (const r of rows) {
+            const row = document.createElement('div');
+            row.className = 'ar-row';
+            row.innerHTML = '<span class="ar-dot"></span><span class="ar-text"><span class="ar-name"></span><span class="ar-src"></span></span>'
+                + '<button type="button" class="ar-eye" aria-pressed="true"></button>';
+            row.querySelector('.ar-dot').style.background = r.dot || '#a9a9a6';
+            row.querySelector('.ar-name').textContent = r.name;
+            row.querySelector('.ar-src').textContent = r.src;
+            const eye = row.querySelector('.ar-eye');
+            eye.setAttribute('aria-label', 'Hide ' + r.name);
+            eye.title = 'Hide layer';
+            eye.addEventListener('click', () => {
+                const it = drop.querySelector('.dt-layer-item[data-layer-key="' + (window.CSS && CSS.escape ? CSS.escape(r.key) : r.key) + '"]');
+                if (it) it.click();
+            });
+            list.appendChild(row);
+        }
+    }
+
+    function mountRightPanel(doc) {
+        doc = doc || document;
+        if (_theme() !== 'light' || doc.getElementById('aino-right')) return null;
+        const drop = doc.getElementById('dt-layers-dropdown');
+        const panel = doc.createElement('aside');
+        panel.id = 'aino-right';
+        panel.setAttribute('aria-label', 'Layers and city overview');
+        panel.innerHTML = '<section class="ar-card ar-layers"><div class="ar-head"><h2>Layers</h2>'
+            + '<button type="button" class="ar-add">+ Add layer</button></div><div class="ar-list"></div></section>';
+        doc.body.appendChild(panel);
+        const card = panel.querySelector('.ar-layers');
+        card.querySelector('.ar-add').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const b = doc.getElementById('btn-dt-layers');
+            if (b) b.click();
+        });
+        _renderLayersCard(card, drop);
+        if (drop && typeof MutationObserver !== 'undefined') {
+            let t = null;
+            new MutationObserver(() => { clearTimeout(t); t = setTimeout(() => _renderLayersCard(card, drop), 120); })
+                .observe(drop, { subtree: true, attributes: true, attributeFilter: ['aria-checked'], childList: true });
+        }
+        // Dock the city overview under the Layers card on wide screens.
+        const dock = () => {
+            const co = doc.getElementById('city-overview');
+            if (!co) return;
+            const wide = !window.matchMedia || window.matchMedia(RIGHT_MQ).matches;
+            if (wide && co.parentNode !== panel) panel.appendChild(co);
+            else if (!wide && co.parentNode === panel) doc.body.appendChild(co);
+            panel.classList.toggle('is-wide', wide);
+        };
+        dock();
+        if (typeof MutationObserver !== 'undefined') {
+            new MutationObserver(dock).observe(doc.body, { childList: true });
+        }
+        if (window.matchMedia) {
+            const mq = window.matchMedia(RIGHT_MQ);
+            if (mq.addEventListener) mq.addEventListener('change', dock);
+        }
+        return panel;
+    }
+
     // ── AI orb ──────────────────────────────────────────────────────────────
     // Aino opens every session from a round sparkle button above the tool
     // rail. Ours opens DISHA on the selected cell (or its empty state).
@@ -470,6 +560,7 @@ const UIPolish = (() => {
         watchLayerRows();
         watchSidebar();
         ainoAssistant();
+        mountRightPanel();
         const map = (typeof MapModule !== 'undefined' && MapModule.getMap) ? MapModule.getMap() : null;
         if (!map) { hideSplash(); return; }
         attachAtmosphere(map);
@@ -482,7 +573,7 @@ const UIPolish = (() => {
     }
 
     return { init, icon, applyIcons, hazeOpacity, skySpec, MAX_PITCH, prefersReducedMotion, attachAtmosphere,
-        showSplash, hideSplash, ainoPaint, addAiOrb, splitLevel, shortSource, decorateLayerRow, splitEmoji, ainoAssistant, TOOLBAR, PATHS };
+        showSplash, hideSplash, ainoPaint, addAiOrb, splitLevel, shortSource, decorateLayerRow, splitEmoji, ainoAssistant, activeLayerRows, mountRightPanel, TOOLBAR, PATHS };
 })();
 
 if (typeof window !== 'undefined') {

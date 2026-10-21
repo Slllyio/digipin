@@ -994,3 +994,65 @@ html[data-theme="light"] .query-icon,
 html[data-theme="light"] .sector-emoji { display: none; }
 html[data-theme="light"] .sector-header-left { filter: none; }
 html[data-theme="light"] .query-card { padding-left: 12px; }
+
+/* ── Aino right-hand panel (light, ≥1100 px): Layers card + city overview ── */
+#aino-right { display: none; }
+@media (min-width: 1100px) {
+    html[data-theme="light"] #aino-right {
+        display: flex; flex-direction: column; gap: 12px;
+        position: fixed; z-index: 950;
+        top: 80px; right: 16px; width: 340px;
+        max-height: calc(100vh - 160px);
+        transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+    }
+    html[data-theme="light"] #aino-right:has(#city-overview.is-yielding),
+    html[data-theme="light"] body.presenting #aino-right { opacity: 0; pointer-events: none; transform: translateX(12px); }
+    html[data-theme="light"] .ar-card {
+        background: var(--aino-card); border: 1px solid var(--aino-line);
+        border-radius: var(--aino-r); box-shadow: var(--aino-shadow); padding: 14px 14px 8px;
+    }
+    html[data-theme="light"] .ar-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    html[data-theme="light"] .ar-head h2 { margin: 0; font: 600 15px/1.2 var(--font-sans); color: var(--aino-ink); letter-spacing: -0.01em; }
+    html[data-theme="light"] .ar-add {
+        border: 1px solid rgba(0, 0, 0, 0.1); background: #fff; border-radius: 8px;
+        padding: 5px 9px; font: 500 12px/1 var(--font-sans); color: var(--aino-ink); cursor: pointer;
+    }
+    html[data-theme="light"] .ar-add:hover { background: var(--aino-paper); }
+    html[data-theme="light"] .ar-list { max-height: 230px; overflow-y: auto; scrollbar-width: thin; }
+    html[data-theme="light"] .ar-row { display: flex; align-items: center; gap: 10px; padding: 8px 2px; border-top: 1px solid var(--aino-line); }
+    html[data-theme="light"] .ar-row:first-child { border-top: none; }
+    html[data-theme="light"] .ar-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 10px; }
+    html[data-theme="light"] .ar-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    html[data-theme="light"] .ar-name { font: 500 13px/1.2 var(--font-sans); color: var(--aino-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    html[data-theme="light"] .ar-src { font-size: 11px; color: var(--aino-ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    html[data-theme="light"] .ar-eye {
+        width: 26px; height: 26px; border: none; border-radius: 6px; cursor: pointer;
+        background: no-repeat center / 18px 18px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23292929' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+    }
+    html[data-theme="light"] .ar-eye:hover { background-color: var(--aino-hover); }
+    html[data-theme="light"] .ar-empty { padding: 6px 2px 10px; font-size: 12px; color: var(--aino-ink-3); }
+
+    /* The city overview as Aino's "Context overview" card. */
+    html[data-theme="light"] #aino-right #city-overview {
+        position: relative; transform: none; left: auto; bottom: auto;
+        width: auto; animation: none;
+        grid-template-columns: 1fr; grid-template-areas: "head" "body" "actions";
+        padding: 14px; border-radius: var(--aino-r) !important; box-shadow: var(--aino-shadow) !important;
+        overflow-y: auto;
+    }
+    html[data-theme="light"] #aino-right #city-overview.is-yielding { opacity: 1; transform: none; }
+    html[data-theme="light"] #aino-right .co-name { font-size: 22px; }
+    html[data-theme="light"] #aino-right .co-body { padding-right: 0; }
+    html[data-theme="light"] #aino-right .co-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; }
+    html[data-theme="light"] #aino-right .co-fact-value { font-size: 17px; }
+    html[data-theme="light"] #aino-right .co-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    html[data-theme="light"] #aino-right .co-actions { align-self: stretch; }
+    html[data-theme="light"] #aino-right .co-actions .co-btn { flex: 1; justify-content: center; }
+    html[data-theme="light"] #aino-right #city-overview.is-collapsed { padding: 10px 46px 10px 14px; border-radius: var(--aino-r) !important; }
+    /* Zoom/grid controls and the building-data card move out of its way. */
+    html[data-theme="light"] .maplibregl-ctrl-bottom-right { right: 362px; }
+    html[data-theme="light"] #cell-layer-legend {
+        right: 412px !important; bottom: 36px !important;
+        border-radius: var(--aino-r) !important; box-shadow: var(--aino-shadow) !important; border: 1px solid var(--aino-line) !important;
+    }
+}
