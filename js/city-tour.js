@@ -43,6 +43,38 @@ const CityTour = (() => {
         try { return await UrbanInsights.zoneRanking(store, { city, dataset, field }); } catch { return null; }
     }
 
+    /**
+     * Where people carry the most hazards at once (the compound-risk lens):
+     * the ~4 km zone with most residents in cells among the city's worst fifth
+     * for two or more of heat, flood and air.
+     */
+    async function _riskStop(city, store) {
+        if (typeof UrbanLenses === 'undefined') return null;
+        let r;
+        try {
+            r = typeof LensesPanel !== 'undefined' && LensesPanel.result ? await LensesPanel.result(city, store)
+                : await UrbanLenses.run(city, store, { only: ['burden'], hotspots: false });
+        } catch { return null; }
+        const l = r && r.lenses.find(x => x.id === 'burden');
+        const layer = l && UrbanLenses.toLayer(r, LAYER_ID, ['burden']);
+        if (!layer) return null;
+        const b = layer.table.columns.burden, pop = layer.table.columns.population || null;
+        const byZone = new Map();
+        layer.table.cells.forEach((c, i) => {
+            if (!(b[i] >= 2)) return;
+            const z = String(c).slice(0, 5);
+            byZone.set(z, (byZone.get(z) || 0) + (pop ? Number(pop[i]) || 0 : 1));
+        });
+        if (!byZone.size) return null;
+        const [zone] = [...byZone.entries()].sort((x, y) => y[1] - x[1])[0];
+        const hit = layer.table.cells.filter((c, i) => b[i] >= 2 && String(c).startsWith(zone));
+        layer.spec.title = 'Tour: compound risk';
+        return { id: 'risk', label: `People most at risk · ${DigiPin.format(zone)}`,
+            caption: `${l.headline} The tallest red blocks carry the most; this zone holds the most such cells.`,
+            bounds: _boundsOf([zone]), layer: { kind: 'table', spec: layer.spec, table: layer.table, field: 'burden' },
+            outline: hit.slice(0, 40).map(code => ({ code, kind: 'concern' })), zoneFrame: true };
+    }
+
     /** The tour for a city region: [{ id, label, caption, bounds, layer, outline, pitch }]. */
     async function buildStops(city, store) {
         const U = UrbanInsights;
@@ -79,6 +111,8 @@ const CityTour = (() => {
                 caption: `Flood risk ${U.fmt(f.mean)} /100, the highest of ${flood.zones.length} zones (city mean ${U.fmt(flood.cityMean)}).`,
                 bounds: _boundsOf([f.code]), layer: zonesLayer(flood), outline: [{ code: f.code, kind: 'concern' }] });
         }
+        const risk = await _riskStop(city, store);
+        if (risk) stops.push(risk);
         let ch = null;
         try { ch = await U.changes(store, { city, limit: 6 }); } catch { ch = null; }
         const x = ch && ch.items.find(it => it.anomalies && it.anomalies.length && /^\d{4}-\d{2}/.test(it.step));
@@ -107,7 +141,7 @@ const CityTour = (() => {
         if (!map || !st.bounds) return null;
         let b = st.bounds;
         // A single zone fills the screen; widen to its neighbours so the contrast reads.
-        if (st.layer && st.layer.kind === 'zones' && st.id !== 'overview') {
+        if (st.layer && (st.layer.kind === 'zones' || st.zoneFrame) && st.id !== 'overview') {
             const dx = (b.east - b.west) * 0.9, dy = (b.north - b.south) * 0.9;
             b = { west: b.west - dx, east: b.east + dx, south: b.south - dy, north: b.north + dy };
         }
@@ -134,6 +168,10 @@ const CityTour = (() => {
                 default: { field: 'zone_mean', extrude: true, heightM: 450 } },
             { level: r.level, cells: zs.map(z => z.code), columns: { zone_mean: zs.map(z => z.mean) } });
             await CellLayers.show(LAYER_ID, { field: 'zone_mean', extrude: true });
+        } else if (L.kind === 'table') {
+            if (CellLayers.isVisible(LAYER_ID)) CellLayers.hide(LAYER_ID);
+            CellStore.register(L.spec, L.table);
+            await CellLayers.show(LAYER_ID, { field: L.field, extrude: true });
         } else {
             if (CellLayers.isVisible(LAYER_ID)) CellLayers.hide(LAYER_ID);
             if (L.step && typeof TimeSlider !== 'undefined' && TimeSlider.want) TimeSlider.want(L.step);

@@ -281,14 +281,18 @@ describe('City tour', () => {
         const stops = await globalThis.CityTour.buildStops('pune', s);
         const ids = stops.map(x => x.id);
         expect(ids[0]).toBe('overview');
-        expect(ids).toEqual(expect.arrayContaining(['best', 'worst', 'heat', 'flood', 'end']));
+        expect(ids).toEqual(expect.arrayContaining(['best', 'worst', 'heat', 'flood', 'risk', 'end']));
         for (const st of stops) {
             expect(st.bounds && st.bounds.east > st.bounds.west).toBe(true);
             expect(st.caption.length).toBeGreaterThan(10);
-            expect(['zones', 'cells']).toContain(st.layer.kind);
+            expect(['zones', 'cells', 'table']).toContain(st.layer.kind);
         }
+        const risk = stops.find(x => x.id === 'risk');
+        expect(risk.caption).toMatch(/two or more/);
+        expect(risk.outline.length).toBeGreaterThan(0);
+        expect(risk.outline.every(o => o.code.startsWith(risk.label.split('· ')[1].replace('-', '')))).toBe(true);
         expect(stops.find(x => x.id === 'overview').caption).toMatch(/of 13 cities/);
         const best = stops.find(x => x.id === 'best'), worst = stops.find(x => x.id === 'worst');
         expect(best.layer.ranking.zones[0].mean).toBeGreaterThanOrEqual(worst.layer.ranking.zones.at(-1).mean);
-    }, 60000);
+    }, 120000);
 });

@@ -126,7 +126,8 @@ ROADMAP_INSIGHTS.md). A big city (Delhi, 37k cells) takes about 3 s in the brows
 
 - `js/city-tour.js` (`CityTour.start(city)`, "▶ 3D tour of the city" on the City tab) flies a narrated 3D tour:
   overview of every ~4 km zone, best and weakest liveable zone, hottest zone, most flood-exposed zone, and the
-  biggest recent change, then back out. Each stop extrudes its layer (runtime dataset `tour`, with legend),
+  zone where most people carry two or more of the worst heat, flood and air burdens (compound-risk lens),
+  and the biggest recent change, then back out. Each stop extrudes its layer (runtime dataset `tour`, with legend),
   outlines the zone and frames it with neighbours. Caption card: ◀ ▶/❚❚ ▶|, dots, arrow keys, Esc.
 - "● Record" hands the stops to the fly-through recorder (`CameraPresets.record({shots, orbit, fileName})`),
   so the tour saves as MP4/WebM with captions; there is no second camera system.
