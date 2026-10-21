@@ -122,6 +122,13 @@ const BuildingData = (() => {
         const i = table.index.get(code);
         if (i === undefined) return null;
         const v = table.columns[fieldKey][i];
+        // Time-series columns hold one array per cell (monthly LST, NDVI…):
+        // a building takes the latest value. A raw array would fail
+        // `to-number` in the colour expression and paint the city black.
+        if (Array.isArray(v)) {
+            for (let k = v.length - 1; k >= 0; k--) if (v[k] != null) return v[k];
+            return null;
+        }
         return v == null ? null : v;
     }
 

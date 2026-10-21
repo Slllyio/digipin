@@ -933,3 +933,8 @@ html[data-theme="light"] #btn-dt-layers:not(.active) { background: transparent; 
 @media (min-width: 769px) and (max-width: 1279px) {
     html[data-theme="light"] #city-overview { left: 400px; width: min(640px, calc(100vw - 400px - 80px)); }
 }
+
+/* Collapsed query sidebar on desktop: a small corner button, not a full-height strip. */
+@media (min-width: 769px) {
+    #sidebar.collapsed { height: 44px; max-height: 44px; overflow: hidden; }
+}

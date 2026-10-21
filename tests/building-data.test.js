@@ -89,6 +89,13 @@ describe('BuildingData.annotate (the cell join)', () => {
         expect(r.hv).toBeUndefined();
     });
 
+    it('takes the latest value of a time-series cell, not the raw array', () => {
+        const ts = { id: 'lst_monthly', title: 'LST', level: 7, fields: [{ key: 'lst', type: 'number', domain: [19, 45] }] };
+        const t = tableFor(7, { [code7]: { lst: [33.5, 29.9, 31.7, null] } });
+        const [r] = BD.annotate([{ polygon: ring, height: 9 }], ctx({ spec: ts, field: ts.fields[0], table: t }, null));
+        expect(r.v).toBe(31.7);
+    });
+
     it('gives null (no-data grey) for buildings outside every cell', () => {
         const far = ring.map(([x, y]) => [x + 0.05, y + 0.05]);
         const [r] = BD.annotate([{ polygon: far, height: 9 }], ctx(sel('congestion_risk'), null));

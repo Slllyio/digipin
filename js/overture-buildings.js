@@ -155,10 +155,10 @@ const OvertureBuildings = (() => {
     const PAINT_LIGHT = {
         'fill-extrusion-color': [
             'interpolate', ['linear'], REAL_HEIGHT,
-            0, '#f3f5f7',
-            15, '#e9edf0',
-            40, '#dce1e6',
-            120, '#ccd2d9'
+            0, '#fbfaf8',
+            15, '#f2f1ee',
+            40, '#e7e6e2',
+            120, '#d9d8d4'
         ],
         'fill-extrusion-base': ['coalesce', ['get', 'min_height'], 0],
         'fill-extrusion-height': REAL_HEIGHT,
@@ -191,15 +191,15 @@ const OvertureBuildings = (() => {
      */
     function twinPaint(light, dataColor) {
         const ramp = light
-            // Cool paper massing that deepens with height: low-rise Indian
-            // cores (most of the stock is 3-15 m) still separate from the
-            // near-white basemap, towers read as darker slate.
-            ? ['interpolate', ['linear'], ['get', 'h'], 0, '#f3f5f7', 15, '#e2e7ec', 45, '#d3dae1', 120, '#bec7d1', 360, '#a3afbc']
+            // Aino's warm off-white massing that deepens a little with height:
+            // low-rise Indian cores (most of the stock is 3-15 m) still separate
+            // from the paper basemap, towers read as soft warm grey.
+            ? ['interpolate', ['linear'], ['get', 'h'], 0, '#fbfaf8', 15, '#f1f0ec', 45, '#e5e4df', 120, '#d6d5d0', 360, '#c2c1bc']
             : ['interpolate', ['linear'], ['get', 'h'], 0, '#0b4a59', 75, '#0f7d94', 210, '#19b6d6', 480, '#5cf0ff'];
-        const base = dataColor || ['case', ['get', 'sel'], light ? '#e0904f' : '#ff9d2e', ramp];
+        const base = dataColor || ['case', ['get', 'sel'], light ? '#ea8f73' : '#ff9d2e', ramp];
         return {
             'fill-extrusion-color': ['case', ['boolean', ['feature-state', 'hover'], false],
-                light ? '#2563eb' : '#ffffff', base],
+                light ? '#f3b7a3' : '#ffffff', base],
             'fill-extrusion-base': 0,
             'fill-extrusion-height': ['get', 'h'],
             'fill-extrusion-opacity': dataColor ? 0.94 : (light ? 0.96 : 0.78),
@@ -413,6 +413,24 @@ const OvertureBuildings = (() => {
                             .then(() => { if (_twin) _refreshTwin(); });
                     }
                 });
+                // Footprint tiles keep streaming in after the camera stops (a
+                // fly-in lands before most of them); re-harvest once they settle,
+                // or the twin stays a few blocks wide. Re-harvest on the first
+                // frame after the footprint source has finished loading (not on
+                // 'idle', which an animated layer can postpone forever); the
+                // flag stops our own setData from re-looping.
+                let _tilesDirty = false;
+                map.on('sourcedata', (e) => {
+                    if (_twin && e && e.sourceId === SOURCE_ID && e.tile) _tilesDirty = true;
+                });
+                map.on('render', () => {
+                    if (!_twin || !_tilesDirty) return;
+                    let loaded = true;
+                    try { loaded = map.isSourceLoaded(SOURCE_ID); } catch { /* source gone */ }
+                    if (!loaded) return;
+                    _tilesDirty = false;
+                    setTimeout(() => { if (_twin) _refreshTwin(); }, 300);
+                });
                 _twinBound = true;
             }
             if (typeof DeckBuildings !== 'undefined' && DeckBuildings.ensureHeights) {
@@ -440,7 +458,7 @@ const OvertureBuildings = (() => {
         // light in place rather than clearing the other's shading.
         if (_active && light) {
             try {
-                map.setLight({ anchor: 'map', position: [1.4, 210, 38], color: '#ffffff', intensity: 0.45 });
+                map.setLight({ anchor: 'map', position: [1.4, 210, 42], color: '#ffffff', intensity: 0.3 });
             } catch { /* older MapLibre without setLight — vertical gradient still applies */ }
         }
 

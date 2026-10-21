@@ -32,7 +32,7 @@ describe('DigitalTwinLayers paper-theme paints', () => {
         expect(DTL.paintFor(b)).toBe(b.paintLight);
         // Aino cool-white massing model, not the neon confidence ramp
         expect(JSON.stringify(b.paintLight)).toContain('vertical-gradient');
-        expect(JSON.stringify(b.paintLight)).toContain('#f3f5f7');
+        expect(JSON.stringify(b.paintLight)).toContain('#fbfaf8');
         expect(JSON.stringify(b.paint)).toContain('#a78bfa'); // dark stays neon
     });
 

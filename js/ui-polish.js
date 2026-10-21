@@ -163,7 +163,8 @@ const UIPolish = (() => {
             'atmosphere-blend': 0,
         },
         light: {
-            'sky-color': '#c9dcec', 'horizon-color': '#eef3f7', 'fog-color': '#f2f4f6',
+            // Aino: the city fades into warm paper at the horizon, no blue sky.
+            'sky-color': '#efeeea', 'horizon-color': '#f5f4f2', 'fog-color': '#f3f3f1',
             'sky-horizon-blend': 0.7, 'horizon-fog-blend': 0.75, 'fog-ground-blend': 0.6,
             'atmosphere-blend': 0,
         },

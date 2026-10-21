@@ -92,7 +92,7 @@ describe('OvertureBuildings renderer choice', () => {
     });
 
     it('colours the twin per theme with an amber selection', () => {
-        expect(JSON.stringify(OB.twinPaint(true)['fill-extrusion-color'])).toContain('#f3f5f7');
+        expect(JSON.stringify(OB.twinPaint(true)['fill-extrusion-color'])).toContain('#fbfaf8');
         expect(JSON.stringify(OB.twinPaint(false)['fill-extrusion-color'])).toContain('#5cf0ff');
         expect(OB.twinPaint(false)['fill-extrusion-height']).toEqual(['get', 'h']);
     });
