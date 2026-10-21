@@ -101,6 +101,13 @@ test.describe('performance budgets', () => {
   test('Delhi-size 3D city and a city sweep stay within memory and file budgets', async ({ page }) => {
     test.setTimeout(400_000);   // the per-city draw wait below can take half a minute on CI's software renderer
     const own = track(page);
+    // A smaller canvas than the default 1280×720: on the hosted runner's
+    // software renderer the main thread spends 93% of each city's wait
+    // rasterising the pitched 3D scene, and worker tile replies only get a
+    // turn in the gaps (docs/QA_LOG.md, 2026-10-21). Raster cost scales with
+    // pixels, so 960×600 (1.6× fewer) buys the runner gaps; the budgets are
+    // ceilings, so a smaller view's lower polygon counts still gate.
+    await page.setViewportSize({ width: 960, height: 600 });
     await page.goto('/app.html');
     await waitForApp(page);
     await toggleRow(page, 'btn-buildings');
