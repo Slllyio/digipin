@@ -4,6 +4,12 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — first tile handoffs measured on the runner (960×600 sweep)
+
+- **Finding (runs 39684637866 / 39684646688, 13a0742):** with the sweep on a 960×600 canvas the runner delivered footprint tiles to the map for the first time since the counters went in. Bundled job: Delhi 1 tile in 3.5 s, Kolkata 8 of 11 handed tiles in 15.2 s and drew 5,786 polygons, Bengaluru all 15 in 23.2 s (too late for a harvest before the 33 s window closed); Mumbai, Hyderabad and Chennai still 0 of 8–23. Source job: Delhi only. Every arrival in a batch carries the same timestamp to the millisecond (23214–23217 ms), so the replies queue behind the main thread and are released together, not trickled: the starvation model holds. Main thread still blocked for 90–95 % of each window (longest task 1.5–3.5 s), GPU syncs 4–8 per city against the budget of 24.
+- **Before (24669de at 1280×720):** 0 arrivals in every city but Delhi in both jobs.
+- **Conclusion:** the smaller canvas buys the runner a few gaps and nothing more; a real GPU draws all six cities in 3–12 s. The conditional draw gate stays. Not pursued further: dropping terrain or hillshade for the sweep would stop it checking the terrain path; a GPU runner is a repo setting, not a test change.
+
 ## 2026-10-21 — the browser jobs no longer depend on one CDN download
 
 - **Finding (run 39684495148, `e2e-smoke`):** the job failed before a single test ran. `npx playwright install` fetches Chromium from cdn.playwright.dev, and that host answered with a certificate for `*.azureedge.net`, so Node refused the download and the step exited 1. Nothing in the tree was involved; the sibling `e2e-bundled` job of the same commit, started seconds earlier, got its browser.
