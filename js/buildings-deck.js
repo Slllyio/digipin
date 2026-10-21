@@ -47,7 +47,7 @@ const DeckBuildings = (() => {
     // forever: no row, no Retry, estimates with no explanation. Grids are a few
     // MB, so give them longer than the index.
     const INDEX_TIMEOUT_MS = 10000;
-    const GRID_TIMEOUT_MS = 45000;
+    const GRID_TIMEOUT_MS = 120000;   // Delhi's grid is 5 MB: ~25 s on slow 3G, and CI's software renderer stalls the body read behind 3-7 s frames (a 45 s cap tripped there)
 
     function heightIndex() {
         if (!_index) {
