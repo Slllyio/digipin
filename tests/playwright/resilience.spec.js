@@ -39,6 +39,13 @@ test.describe('resilience', () => {
     await expect.poll(() => page.evaluate(() => MapModule.getSelectedCode()), { timeout: 15_000 }).toBe('34P-LL5-4L7');
   });
 
+  test.describe('without the service worker', () => {
+    // sw.js claims the page and answers every same-origin GET itself, and a
+    // request the worker handles never reaches page.route(): the first CI runs
+    // of this test saw no abort at all. Blocking the worker puts the route back
+    // in the path. (The in-memory part cache is reset below for the same reason.)
+    test.use({ serviceWorkers: 'block' });
+
   test('a layer whose parts fail mid-session names the layer and retries', async ({ page }) => {
     await page.goto('/app.html');
     await waitForApp(page);
@@ -67,6 +74,7 @@ test.describe('resilience', () => {
     await expect(row).toHaveCount(0, { timeout: 60_000 });
     expect(await page.evaluate(() => CellStore.failedParts().length)).toBe(0);
     expect(await page.evaluate(() => CellLayers.isVisible('population'))).toBe(true);
+  });
   });
 
   test('going offline shows a persistent notice that clears on reconnect', async ({ page, context }) => {
