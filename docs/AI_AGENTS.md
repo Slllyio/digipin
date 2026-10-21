@@ -21,7 +21,7 @@ Shipped on this branch and covered by unit + loop-integration tests (`npm test`)
 
 **Native function-calling (P1, shipped):** on OpenAI-type providers (Groq, OpenAI, any compatible API) the agent sends `DISHATools.toOpenAI({agent:true})` as the `tools` array; `streamOpenAI` stitches the streamed `tool_calls` fragments (`mergeToolCallDeltas`) and `DISHA.completeTurn` returns `{text, toolCalls}`. Each result goes back as a `role:"tool"` message (every call is answered, including ones past the per-step cap), the final synthesis turn runs with `tool_choice:"none"`, and the same budget/mutation caps and `validateArgs` gate apply. Text `[ACTION]` lines are still accepted as a fallback, and if the provider rejects `tools` on the first turn the run drops back to the text protocol. Ollama keeps the text protocol. Tests: `tests/disha-agent.test.js` (native helpers + scripted loop), `tests/disha-providers-tools.test.js` (mocked SSE).
 
-The Alert Triage agent (§5.1) is shipped too. Not yet built: the Pipeline Steward (§5.2) and the Tier-3 automation (§6).
+The Alert Triage agent (§5.1) and the Pipeline Steward (§5.2, `pipeline/steward/`) are shipped too. Not yet built: the Tier-3 automation (§6).
 
 ## 0. Why this document
 
@@ -229,6 +229,8 @@ Existing `flyto` / `selectcell` / `overlay` / `query` are unchanged (state-chang
 **Trust boundary:** this drafts and *notifies*; it does not actuate city systems. Keep a human approval step before any external dispatch integration.
 
 ### 5.2 Pipeline Steward Agent
+
+> **Status: implemented** in `pipeline/steward/` (wiring, contract, freshness, row-count and null-rate drift checks; one self-closing tracking issue via `.github/workflows/pipeline-steward.yml`; `python -m pipeline.steward scaffold` for new sources). See `pipeline/steward/README.md`.
 **Run as** CI (on cron-run completion) + an on-demand "onboard a source" action.
 **Supervise:** after each `realtime-scrape.yml` / `precompute-scores.yml` run, check freshness (`generated_at_iso`), re-run `scrapers/lib/quality.py` contracts, and detect drift (row-count / null-rate deltas vs. the previous snapshot); on failure, open an issue or a fix PR.
 **Scaffold:** given a dataset URL, generate a conforming `scrapers/sources/<name>.py` (`SOURCE_ID`, `FEED_URL`, a `Record` dataclass with `csv_fields()`, `fetch(client)`, `key_for()`) + `schemas/<name>.schema.json`, wire the CI matrix entry, run it once, and open a PR — the `scrapers/README.md` convention is the spec the agent follows.
