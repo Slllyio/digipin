@@ -171,6 +171,28 @@ const UIPolish = (() => {
     // Positron's building fills (#dfdfdf / #ededed) turn a dense Indian core
     // into a grey slab; one shade lighter keeps the paper look.
     const LIGHT_BASEMAP = { building: '#e9ebee', 'building-top': '#f3f4f6' };
+    // Aino's map palette: warm paper ground, sage parks, blue-grey water and
+    // white streets. Matched by Positron layer id, so a missing layer is a no-op.
+    const AINO_PAINT = [
+        [/^background$/, 'background-color', '#f3f3f1'],
+        [/^(landcover|park)/, 'fill-color', '#dfe8d6'],
+        [/^landuse$/, 'fill-color', '#ecebe7'],
+        [/^landuse_residential$/, 'fill-color', 'rgba(0,0,0,0)'],
+        [/^water/, 'fill-color', '#cfd9e2'],
+        [/^waterway/, 'line-color', '#cfd9e2'],
+        [/^(road|tunnel|bridge|highway).*_fill$/, 'line-color', '#ffffff'],
+        [/^(road|tunnel|bridge|highway).*_case$/, 'line-color', '#e6e5e1'],
+    ];
+
+    function ainoPaint(layers) {
+        const out = [];
+        for (const l of layers || []) {
+            for (const [re, prop, color] of AINO_PAINT) {
+                if (re.test(l.id) && prop.split('-')[0] === l.type) { out.push([l.id, prop, color]); break; }
+            }
+        }
+        return out;
+    }
 
     function _theme() {
         return (typeof Theme !== 'undefined' && Theme.get) ? Theme.get() : 'light';
@@ -196,6 +218,17 @@ const UIPolish = (() => {
             } catch { /* grid not built yet */ }
             return;
         }
+        try {
+            for (const [id, prop, color] of ainoPaint(map.getStyle().layers)) map.setPaintProperty(id, prop, color);
+            if (map.getLayer('digipin-grid-line')) {
+                map.setPaintProperty('digipin-grid-line', 'line-opacity', [
+                    'case',
+                    ['boolean', ['feature-state', 'selected'], false], 1.0,
+                    ['boolean', ['feature-state', 'hover'], false], 0.8,
+                    0.35,
+                ]);
+            }
+        } catch { /* style not ready */ }
         for (const [id, color] of Object.entries(LIGHT_BASEMAP)) {
             try {
                 if (map.getLayer(id)) {
@@ -256,10 +289,33 @@ const UIPolish = (() => {
         setTimeout(() => s.remove(), prefersReducedMotion() ? 0 : 600);
     }
 
+    // ── AI orb ──────────────────────────────────────────────────────────────
+    // Aino opens every session from a round sparkle button above the tool
+    // rail. Ours opens DISHA on the selected cell (or its empty state).
+    function addAiOrb(doc) {
+        doc = doc || document;
+        const bar = doc.getElementById('toolbar');
+        if (!bar || doc.getElementById('ai-orb')) return null;
+        const b = doc.createElement('button');
+        b.id = 'ai-orb';
+        b.type = 'button';
+        b.title = 'Ask DISHA, the AI urban analyst';
+        b.setAttribute('aria-label', 'Ask DISHA, the AI urban analyst');
+        b.innerHTML = icon('sparkle', 20);
+        b.addEventListener('click', () => {
+            if (typeof DISHAPanel === 'undefined' || !DISHAPanel.open) return;
+            const P = typeof Panel !== 'undefined' ? Panel : null;
+            DISHAPanel.open(P && P.getCurrentCell ? P.getCurrentCell() : null, P && P.getCurrentData ? P.getCurrentData() : null);
+        });
+        bar.parentNode.insertBefore(b, bar);
+        return b;
+    }
+
     function init() {
         if (typeof document === 'undefined') return;
         document.documentElement.classList.add('ui-polish');
         applyIcons();
+        addAiOrb();
         const map = (typeof MapModule !== 'undefined' && MapModule.getMap) ? MapModule.getMap() : null;
         if (!map) { hideSplash(); return; }
         attachAtmosphere(map);
@@ -271,7 +327,7 @@ const UIPolish = (() => {
     }
 
     return { init, icon, applyIcons, hazeOpacity, skySpec, MAX_PITCH, prefersReducedMotion, attachAtmosphere,
-        showSplash, hideSplash, TOOLBAR, PATHS };
+        showSplash, hideSplash, ainoPaint, addAiOrb, TOOLBAR, PATHS };
 })();
 
 if (typeof window !== 'undefined') {

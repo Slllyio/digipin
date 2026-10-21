@@ -247,7 +247,7 @@ const CityOverview = (() => {
     }
 
     function _watchYield() {
-        const targets = ['detail-panel', 'results-panel', 'dt-layers-dropdown', 'heatmap-dropdown'].map(id => document.getElementById(id)).filter(Boolean);
+        const targets = ['detail-panel', 'results-panel', 'dt-layers-dropdown', 'heatmap-dropdown', 'disha-panel'].map(id => document.getElementById(id)).filter(Boolean);
         const sync = () => {
             const busy = targets.some(t => t.classList.contains('open'));
             _el.classList.toggle('is-yielding', busy);

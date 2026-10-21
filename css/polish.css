@@ -694,3 +694,242 @@ html[data-theme="light"] #top-bar select {
 /* Cell readout pill: nothing to say → not drawn. */
 .digipin-readout:empty { display: none; }
 .digipin-readout { box-shadow: var(--elev-1); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   AINO APP — light theme
+   Modelled on the app.aino.world product UI: all-sans Inter, charcoal
+   (#292929) ink and filled actions, white floating cards with a hairline and
+   a soft shadow, neutral grey selection (no blue), a round AI orb over a
+   left icon rail. Light only; the dark theme keeps its night-ops look.
+   ══════════════════════════════════════════════════════════════════════════ */
+html[data-theme="light"] {
+    --aino-ink: #292929;
+    --aino-ink-2: #636363;
+    --aino-ink-3: #8a8a8a;
+    --aino-paper: #f5f4f2;
+    --aino-card: #ffffff;
+    --aino-line: rgba(0, 0, 0, 0.07);
+    --aino-hover: rgba(0, 0, 0, 0.045);
+    --aino-active: rgba(0, 0, 0, 0.075);
+    --aino-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.07);
+    --aino-shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.05), 0 18px 48px rgba(0, 0, 0, 0.1);
+    --aino-r: 16px;
+    --text-primary: var(--aino-ink);
+    --text-secondary: var(--aino-ink-2);
+    --surface: var(--aino-card);
+    --hairline: var(--aino-line);
+    --elev-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --elev-2: var(--aino-shadow);
+    --elev-3: var(--aino-shadow-lg);
+    --accent-cyan-text: var(--aino-ink);
+    --accent-soft: var(--aino-active);
+    --accent-softer: var(--aino-hover);
+    --focus-ring: 0 0 0 3px rgba(41, 41, 41, 0.18);
+}
+html[data-theme="light"] body { color: var(--aino-ink); }
+
+/* Type: sans everywhere (replaces the coral display serif). */
+html[data-theme="light"] .logo-text,
+html[data-theme="light"] .dialog-title-text,
+html[data-theme="light"] .section-title,
+html[data-theme="light"] .data-card-title,
+html[data-theme="light"] .disha-title,
+html[data-theme="light"] .results-header h3,
+html[data-theme="light"] .compare-panel-header h3,
+html[data-theme="light"] .bm-panel-header h3,
+html[data-theme="light"] .cat-section h3,
+html[data-theme="light"] .onboarding-title,
+html[data-theme="light"] .ed-title,
+html[data-theme="light"] .dt-group-title,
+html[data-theme="light"] .overture-stats-title,
+html[data-theme="light"] .splash-title,
+html[data-theme="light"] .co-name {
+    font-family: var(--font-sans);
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--aino-ink);
+    -webkit-text-fill-color: currentColor;
+}
+html[data-theme="light"] .logo-text { font-size: 15px; letter-spacing: -0.015em; }
+html[data-theme="light"] .section-title,
+html[data-theme="light"] .results-header h3 { font-size: 15px; }
+html[data-theme="light"] .co-name { font-size: 26px; letter-spacing: -0.025em; }
+html[data-theme="light"] .splash-title { font-size: 18px; }
+html[data-theme="light"] .co-eyebrow,
+html[data-theme="light"] .sidebar-title { color: var(--aino-ink-3); }
+html[data-theme="light"] .logo-icon { background: var(--aino-ink); color: #fff; border-radius: 50%; }
+
+/* Cards */
+html[data-theme="light"] #top-bar,
+html[data-theme="light"] #sidebar,
+html[data-theme="light"] #toolbar,
+html[data-theme="light"] #city-overview,
+html[data-theme="light"] .floating-dialog,
+html[data-theme="light"] .toolbar-dropdown,
+html[data-theme="light"] #building-data-panel {
+    background: var(--aino-card) !important;
+    border: 1px solid var(--aino-line) !important;
+    border-radius: var(--aino-r) !important;
+    box-shadow: var(--aino-shadow) !important;
+}
+html[data-theme="light"] #city-overview { border-radius: 18px !important; box-shadow: var(--aino-shadow-lg) !important; }
+html[data-theme="light"] #city-overview.is-collapsed { border-radius: var(--r-pill) !important; }
+html[data-theme="light"] .floating-dialog { box-shadow: var(--aino-shadow-lg) !important; }
+
+/* Buttons: charcoal fill for the primary action, white outline otherwise. */
+html[data-theme="light"] #search-btn,
+html[data-theme="light"] .co-btn--primary,
+html[data-theme="light"] #disha-send,
+html[data-theme="light"] .btn-primary {
+    background: var(--aino-ink) !important;
+    color: #fff !important;
+    border-color: var(--aino-ink) !important;
+    box-shadow: none !important;
+}
+html[data-theme="light"] #search-btn:hover,
+html[data-theme="light"] .co-btn--primary:hover,
+html[data-theme="light"] #disha-send:hover { background: #000 !important; filter: none; }
+html[data-theme="light"] .co-btn { background: #fff; border-color: rgba(0, 0, 0, 0.12); border-radius: 8px; }
+html[data-theme="light"] .co-btn:hover { background: var(--aino-paper); }
+html[data-theme="light"] .co-btn--primary { border-radius: 8px; }
+html[data-theme="light"] .co-btn[aria-pressed="true"] { border-color: var(--aino-ink); color: var(--aino-ink); background: var(--aino-active); }
+
+/* Inputs */
+html[data-theme="light"] #search-input,
+html[data-theme="light"] #disha-input,
+html[data-theme="light"] #top-bar select {
+    background-color: var(--aino-card) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    color: var(--aino-ink);
+}
+html[data-theme="light"] #search-input:focus,
+html[data-theme="light"] #disha-input:focus { border-color: var(--aino-ink) !important; box-shadow: var(--focus-ring) !important; }
+
+/* Switches: Aino's dark pill toggles. */
+html[data-theme="light"] .dt-toggle-switch { width: 30px; height: 16px; }
+html[data-theme="light"] .dt-toggle-slider { background: #d9d9d6; border-radius: 8px; }
+html[data-theme="light"] .dt-toggle-slider::before { width: 12px; height: 12px; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
+html[data-theme="light"] .dt-toggle-switch input:checked + .dt-toggle-slider { background: var(--aino-ink); }
+html[data-theme="light"] .dt-toggle-switch input:checked + .dt-toggle-slider::before { background: #fff; transform: translateX(14px); }
+html[data-theme="light"] input[type="checkbox"],
+html[data-theme="light"] input[type="radio"],
+html[data-theme="light"] input[type="range"] { accent-color: var(--aino-ink); }
+
+/* Layers menu rows: name in ink, roomy rows divided by hairlines. */
+html[data-theme="light"] .dt-layers-menu { padding: 6px; }
+html[data-theme="light"] .dt-group-title { font-size: 13px; text-transform: none; }
+html[data-theme="light"] .dt-layer-item { padding: 9px 10px; border-radius: 8px; }
+html[data-theme="light"] .dt-layer-item:hover { background: var(--aino-hover); }
+html[data-theme="light"] .dt-layer-name { color: var(--aino-ink); font-size: 13px; }
+html[data-theme="light"] .dt-layer-group { border-bottom-color: var(--aino-line); }
+html[data-theme="light"] .dt-group-count { background: var(--aino-paper); color: var(--aino-ink-2); border: 1px solid var(--aino-line); }
+html[data-theme="light"] .dt-layer-icon { filter: grayscale(1); opacity: 0.55; }
+
+/* Sidebar list: neutral states. */
+html[data-theme="light"] .sector-header:hover,
+html[data-theme="light"] .query-card:hover { background: var(--aino-hover); }
+html[data-theme="light"] .query-card.active,
+html[data-theme="light"] .query-card.selected { background: var(--aino-active); border-color: transparent; }
+html[data-theme="light"] .sector-badge { background: var(--aino-paper); color: var(--aino-ink-2); border: 1px solid var(--aino-line); }
+
+/* Aino uses one monochrome icon set; take the colour out of the emoji. */
+html[data-theme="light"] .query-icon { filter: grayscale(1); opacity: 0.7; }
+html[data-theme="light"] .sector-header-left { filter: grayscale(1); }
+
+/* City overview: quiet, monochrome numbers like Aino's context card. */
+html[data-theme="light"] .co-kpi { background: var(--aino-paper); border-color: transparent; border-radius: 10px; }
+html[data-theme="light"] .co-dist { color: #9a9a96; }
+html[data-theme="light"] .co-kpi--good .co-kpi-bar i { background: #5f8a5a; }
+html[data-theme="light"] .co-kpi--mid .co-kpi-bar i { background: #b8a27a; }
+html[data-theme="light"] .co-kpi--low .co-kpi-bar i { background: #d98f7a; }
+html[data-theme="light"] .co-kpi-bar { background: rgba(0, 0, 0, 0.06); }
+
+/* DISHA: assistant panel with a sparkle header and a calm input. */
+html[data-theme="light"] .disha-message.disha-system { border-style: solid; border-color: var(--aino-line); background: var(--aino-paper); }
+html[data-theme="light"] .disha-msg-content { background: var(--aino-paper); color: var(--aino-ink); }
+html[data-theme="light"] .disha-user .disha-msg-content { background: var(--aino-ink); color: #fff; }
+html[data-theme="light"] .disha-suggestion { background: #fff; border: 1px solid rgba(0, 0, 0, 0.1); color: var(--aino-ink); }
+html[data-theme="light"] .disha-suggestion:hover { background: var(--aino-paper); }
+
+html[data-theme="light"] #building-data-panel strong { color: var(--aino-ink) !important; font-weight: 600; }
+html[data-theme="light"] #building-data-panel button[data-act="export"] {
+    background: var(--aino-ink) !important; color: #fff !important; border-color: var(--aino-ink) !important; border-radius: 8px !important;
+}
+html[data-theme="light"] #building-data-panel button[data-act="export"]:hover { background: #000 !important; }
+
+/* Map chrome: white cards for zoom/scale. */
+html[data-theme="light"] .maplibregl-ctrl-group { border-radius: 12px !important; box-shadow: var(--aino-shadow) !important; border: 1px solid var(--aino-line); }
+html[data-theme="light"] .maplibregl-ctrl-scale {
+    background: #fff; border: 1px solid var(--aino-line); border-top: none;
+    border-radius: 8px; box-shadow: var(--elev-1);
+    color: var(--aino-ink-2); padding: 3px 8px 2px; font: 500 10px/1.2 var(--font-sans);
+}
+html[data-theme="light"] .maplibregl-ctrl-attrib { background: rgba(255, 255, 255, 0.8) !important; color: var(--aino-ink-3); border-radius: 6px; }
+html[data-theme="light"] .digipin-readout { background: #fff; border: 1px solid var(--aino-line); color: var(--aino-ink); border-radius: var(--r-pill); }
+
+html[data-theme="light"] #btn-insights:not(.active) { background: transparent; border-color: transparent; color: var(--aino-ink-2); font-weight: 500; }
+html[data-theme="light"] #btn-dt-layers:not(.active) { background: transparent; color: var(--aino-ink-2); }
+
+/* ── Left icon rail + AI orb (desktop) ─────────────────────────────────── */
+#ai-orb { display: none; }
+@media (min-width: 769px) {
+    html[data-theme="light"] #ai-orb {
+        display: grid; place-items: center;
+        position: fixed; z-index: 1001;
+        left: 16px; top: 80px;
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        border: none;
+        background: #3a3a3a;
+        background: radial-gradient(circle at 35% 30%, #4a4a4a, #262626 70%);
+        color: #fff;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        cursor: pointer;
+        transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+    }
+    html[data-theme="light"] #ai-orb:hover { transform: scale(1.05); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26); }
+    html[data-theme="light"] #ai-orb:focus-visible { outline: none; box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--aino-ink); }
+    html[data-theme="light"] body.presenting #ai-orb { display: none; }
+
+    html[data-theme="light"] #toolbar {
+        left: 18px !important; right: auto !important;
+        top: 144px;
+        width: 48px;
+        padding: 6px !important;
+        gap: 4px;
+        align-items: center;
+        max-height: calc(100vh - 170px);
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+    html[data-theme="light"] .toolbar-btn {
+        width: 36px; height: 36px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 10px;
+        color: var(--aino-ink-2);
+        flex: 0 0 auto;
+    }
+    html[data-theme="light"] .toolbar-btn .tb-label { display: none; }
+    html[data-theme="light"] .toolbar-btn:hover { background: var(--aino-hover); color: var(--aino-ink); }
+    html[data-theme="light"] .toolbar-btn.active,
+    html[data-theme="light"] #btn-dt-layers.active {
+        background: var(--aino-active);
+        color: var(--aino-ink);
+        border-color: transparent;
+    }
+    html[data-theme="light"] .toolbar-btn.active::before { left: -6px; top: 10px; bottom: 10px; background: var(--aino-ink); }
+    html[data-theme="light"] #btn-dt-layers { background: transparent; color: var(--aino-ink-2); margin-bottom: 0; font-weight: 500; }
+    html[data-theme="light"] .tb-icon { width: 20px; height: 20px; }
+    html[data-theme="light"] .tb-icon svg { width: 19px; height: 19px; }
+    html[data-theme="light"] .toolbar-badge { top: 1px; right: 1px; }
+
+    /* Everything that sat at the left edge moves past the rail. */
+    html[data-theme="light"] #sidebar { left: 84px; max-height: calc(100vh - 330px); }
+    html[data-theme="light"] .ui-dialog { left: 84px; }
+    html[data-theme="light"] #building-data-panel { left: 400px !important; }
+}
+@media (min-width: 769px) and (max-width: 1279px) {
+    html[data-theme="light"] #city-overview { left: 400px; width: min(640px, calc(100vw - 400px - 80px)); }
+}

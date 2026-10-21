@@ -78,3 +78,34 @@ describe('Terrain.elevationWithFallback()', () => {
         expect(seen).toHaveLength(9);
     });
 });
+
+describe('UIPolish Aino light basemap + AI orb', () => {
+    it('maps Positron layer ids to the Aino palette by type', () => {
+        const out = UIPolish.ainoPaint([
+            { id: 'background', type: 'background' },
+            { id: 'park_national_park', type: 'fill' },
+            { id: 'landuse_residential', type: 'fill' },
+            { id: 'water', type: 'fill' },
+            { id: 'road_minor_fill', type: 'line' },
+            { id: 'road_minor_case', type: 'line' },
+            { id: 'place_city', type: 'symbol' },
+        ]);
+        const byId = Object.fromEntries(out.map(([id, prop, c]) => [id, [prop, c]]));
+        expect(byId.background).toEqual(['background-color', '#f3f3f1']);
+        expect(byId.park_national_park[0]).toBe('fill-color');
+        expect(byId.landuse_residential[1]).toBe('rgba(0,0,0,0)');
+        expect(byId.road_minor_fill).toEqual(['line-color', '#ffffff']);
+        expect(byId.road_minor_case[0]).toBe('line-color');
+        expect(byId.place_city).toBeUndefined();
+        expect(UIPolish.ainoPaint(undefined)).toEqual([]);
+    });
+
+    it('adds one AI orb before the toolbar', () => {
+        document.body.innerHTML = '<div id="toolbar"></div>';
+        const b = UIPolish.addAiOrb(document);
+        expect(b.id).toBe('ai-orb');
+        expect(b.nextElementSibling.id).toBe('toolbar');
+        expect(b.querySelector('svg')).toBeTruthy();
+        expect(UIPolish.addAiOrb(document)).toBeNull();
+    });
+});

@@ -464,7 +464,13 @@ const App = (() => {
                 if (isOpen) {
                     const rect = heatmapBtn.getBoundingClientRect();
                     heatmapDrop.style.top = rect.top + 'px';
-                    heatmapDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
+                    if (rect.left < window.innerWidth / 2) {
+                        heatmapDrop.style.right = 'auto';
+                        heatmapDrop.style.left = (rect.right + 18) + 'px';
+                    } else {
+                        heatmapDrop.style.left = 'auto';
+                        heatmapDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
+                    }
                 }
             });
 
@@ -1051,9 +1057,15 @@ const App = (() => {
                 dtLayersBtn.setAttribute('aria-expanded', String(isOpen));
                 if (isOpen) {
                     const rect = dtLayersBtn.getBoundingClientRect();
-                    dtLayersDrop.style.left = 'auto';
                     dtLayersDrop.style.top = rect.top + 'px';
-                    dtLayersDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
+                    if (rect.left < window.innerWidth / 2) {
+                        // Left tool rail (light theme): open beside it, not under it.
+                        dtLayersDrop.style.right = 'auto';
+                        dtLayersDrop.style.left = (rect.right + 18) + 'px';
+                    } else {
+                        dtLayersDrop.style.left = 'auto';
+                        dtLayersDrop.style.right = (window.innerWidth - rect.left + 6) + 'px';
+                    }
                     // Clamp within the viewport (phones: the toolbar wraps and the
                     // right-anchored menu can spill off the top/left edge).
                     requestAnimationFrame(() => {
