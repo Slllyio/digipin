@@ -147,3 +147,16 @@ def test_walk_dataset_rows():
     assert spec.id == "osm_walk"
     assert table.columns["links"] == [5] and table.columns["degree"] == [2]
     assert table.columns["walk_km_km2"][0] > 0
+
+
+def test_waterlogging_helpers():
+    from pipeline.cells import ee_layers as el
+    assert el._ramp01(5, 10, 0) == 0.5                     # inverted: HAND 5 m is half-way
+    assert el._ramp01(-3, 10, 0) == 1.0 and el._ramp01(20, 10, 0) == 0.0
+    assert el._ramp01(None, 0, 1) is None
+    ranks = el._pct_rank({"a": 1.0, "b": 2.0, "c": 2.0, "d": 3.0, "e": None})
+    assert ranks == {"a": 0.0, "b": 0.5, "c": 0.5, "d": 1.0}
+    assert set(el.LAYERS) >= {"waterlogging", "demographics", "wealth", "climate_zones",
+                              "humid_heat"}
+    # The class cut-offs match the lens (js/urban-lenses.js WLOG_HIGH / WLOG_VERY).
+    assert [c for c, _ in el._WLOG_CLASSES[:3]] == [25, 45, 65]

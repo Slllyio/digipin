@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import statistics
 import time
 from pathlib import Path
@@ -701,12 +702,394 @@ def accessibility(region):
     return spec, _table(level, rows, specs)
 
 
+
+# ── rain waterlogging (Sentinel-1 + DEM + MERIT Hydro + GHSL) ───────────────
+
+WATERLOG_YEARS = (2021, 2025)
+# Wet-season window per city: the south-west monsoon everywhere except the
+# Coromandel coast, whose heavy rain comes with the north-east monsoon.
+_WET_MONTHS = {"chennai": (10, 12)}
+_WLOG_CLASSES = [(25, "Low"), (45, "Moderate"), (65, "High"), (101, "Very high")]
+_WLOG_COLORS = {"Low": "#c6dbef", "Moderate": "#6baed6", "High": "#2171b5",
+                "Very high": "#08306b"}
+
+
+def _ramp01(v, lo, hi):
+    """Linear 0..1 between lo and hi (lo may be > hi to invert), clamped."""
+    if v is None:
+        return None
+    t = (v - lo) / (hi - lo)
+    return 0.0 if t < 0 else 1.0 if t > 1 else t
+
+
+def _pct_rank(values: dict) -> dict:
+    """{code: v} → {code: tie-averaged percentile 0..1} over non-None values."""
+    items = sorted((v, c) for c, v in values.items() if v is not None)
+    out, i, n = {}, 0, len(items)
+    while i < n:
+        j = i
+        while j + 1 < n and items[j + 1][0] == items[i][0]:
+            j += 1
+        p = ((i + j) / 2) / (n - 1) if n > 1 else 0.5
+        for k in range(i, j + 1):
+            out[items[k][1]] = p
+        i = j + 1
+    return out
+
+
+def waterlogging(region):
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    m0, m1 = _WET_MONTHS.get(region, (6, 9))
+    y0, y1 = WATERLOG_YEARS
+    s1 = (ee.ImageCollection("COPERNICUS/S1_GRD").filterBounds(geom)
+          .filter(ee.Filter.eq("instrumentMode", "IW"))
+          .filter(ee.Filter.listContains("transmitterReceiverPolarisation", "VV"))
+          .select("VV"))
+    wet = s1.filterDate(f"{y0}-01-01", f"{y1 + 1}-01-01") \
+        .filter(ee.Filter.calendarRange(m0, m1, "month"))
+    dry = s1.filterDate(f"{y0}-01-01", f"{y1 + 1}-01-01") \
+        .filter(ee.Filter.calendarRange(2, 4, "month")).median()
+    # Standing water is a change: a pass counts when the ground is dark
+    # (VV < −16 dB) *and* at least 3 dB darker than its own dry-season median,
+    # so surfaces that are always dark (sand, tarmac, tanks) do not count.
+    gsw = ee.Image("JRC/GSW1_4/GlobalSurfaceWater").select("occurrence").unmask(0)
+    land = gsw.lt(50)
+
+    def flag(im):
+        vv = im.focalMedian(30, "circle", "meters")
+        return vv.lt(-16).And(vv.subtract(dry).lt(-3)).rename("w")
+    freq = wet.map(flag).mean().unmask(0).updateMask(land).rename("obs")
+
+    col = ee.ImageCollection("COPERNICUS/DEM/GLO30_2024_1").filterBounds(geom).select("DEM")
+    dem = col.mosaic().setDefaultProjection(col.first().projection())
+    # Hollow depth: how far a pixel sits below the mean ground within 300 m.
+    hollow = dem.focalMean(300, "circle", "meters").subtract(dem).max(0).rename("hollow")
+    mh = ee.Image("MERIT/Hydro/v1_0_1")
+    tanb = ee.Terrain.slope(mh.select("elv")).multiply(3.14159265 / 180).tan().max(0.001)
+    twi = mh.select("upa").multiply(1e6).divide(90).divide(tanb).log().rename("twi")
+    built = ee.Image("JRC/GHSL/P2023A/GHS_BUILT_S/2020").select("built_surface") \
+        .divide(ee.Image.pixelArea()).rename("imperv")
+
+    a = gee.fetch(gee.to_cells(freq, 20), bbox, level, tile=64)
+    b = gee.fetch(gee.to_cells(hollow, 30), bbox, level)
+    c = gee.fetch(gee.to_cells(ee.Image.cat([twi, mh.select("hnd").rename("hand")]), 90),
+                  bbox, level)
+    d = gee.fetch(gee.to_cells(mh.select("upa").rename("upa"), 90, "max"), bbox, level)
+    e = gee.fetch(gee.to_cells(built, 100), bbox, level)
+    x = gee.merge(a, b, c, d, e)
+    twi_rank = _pct_rank({k: v.get("twi") for k, v in x.items()})
+    rows = {}
+    for code, v in x.items():
+        if v.get("hollow") is None and v.get("hand") is None:
+            continue
+        parts = [(0.25, _ramp01(v.get("hand"), 10, 0)),        # near drainage level
+                 (0.15, _ramp01(v.get("hollow"), 0, 2)),        # sits in a hollow
+                 (0.20, twi_rank.get(code)),                     # collects runoff
+                 (0.15, v.get("imperv")),                        # rain cannot soak in
+                 (0.25, _ramp01(v.get("obs"), 0, 0.1))]          # seen wet by radar
+        got = [(w, s) for w, s in parts if s is not None]
+        idx = 100 * sum(w * s for w, s in got) / sum(w for w, _ in got) if got else None
+        rows[code] = {
+            "waterlogging_index": _r(idx),
+            "waterlogging_class": next(lbl for cut, lbl in _WLOG_CLASSES if idx < cut)
+            if idx is not None else None,
+            "monsoon_water_pct": _r(100 * v["obs"]) if v.get("obs") is not None else None,
+            "hollow_depth_m": _r(v.get("hollow"), 2),
+            "wetness_index": _r(v.get("twi"), 2),
+            "upstream_km2": _r(v.get("upa"), 2),
+            "impervious_pct": _r(100 * v["imperv"]) if v.get("imperv") is not None else None,
+        }
+    specs = [
+        FieldSpec("waterlogging_index", "Rain waterlogging susceptibility", agg="mean",
+                  unit="0-100", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("waterlogging_class", "Waterlogging class", type="category", agg="mode",
+                  colors=_WLOG_COLORS),
+        FieldSpec("monsoon_water_pct", f"Seen waterlogged by radar, wet seasons {y0}–{y1}",
+                  agg="mean", unit="% of passes", domain=[0, 30], ramp="blues",
+                  higher_is="worse"),
+        FieldSpec("hollow_depth_m", "Depth below surrounding ground (300 m)", agg="mean",
+                  unit="m", domain=[0, 3], ramp="blues", higher_is="worse"),
+        FieldSpec("wetness_index", "Topographic wetness index", agg="mean", unit="ln(m)",
+                  ramp="blues", higher_is="worse"),
+        FieldSpec("upstream_km2", "Largest upstream catchment draining through", agg="max",
+                  unit="km²", ramp="blues"),
+        FieldSpec("impervious_pct", "Sealed (built) surface", agg="mean", unit="% of cell",
+                  domain=[0, 100], ramp="reds", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="waterlogging", title="Rain waterlogging", level=level, fields=specs, group=GROUP,
+        description=f"Where heavy rain pools, independent of rivers. Combines Sentinel-1 radar "
+                    f"passes that saw standing water on normally dry land in the wet seasons "
+                    f"{y0}–{y1} (VV under −16 dB and 3 dB darker than the Feb–Apr median after a "
+                    "30 m median filter, outside JRC water), hollows below the surrounding 300 m "
+                    "(Copernicus DEM), the topographic wetness index and height above drainage "
+                    "(MERIT Hydro) and sealed surface (GHSL). The index weights near-drainage "
+                    "25%, radar-observed water 25%, wetness 20%, hollows 15%, sealing 15%. "
+                    "Radar misses water between tall buildings (double bounce), so dense cores "
+                    "lean on terrain; drains and pumping are not modelled.",
+        source="Copernicus Sentinel-1 GRD + Copernicus DEM GLO-30 + MERIT Hydro + JRC GSW + "
+               "GHSL GHS-BUILT-S via Earth Engine",
+        license="Copernicus open licence; MERIT Hydro CC BY-NC 4.0; GHSL/GSW CC BY 4.0",
+        default_field="waterlogging_index")
+    return spec, _table(level, rows, specs)
+
+
+# ── age and sex (WorldPop) ──────────────────────────────────────────────────
+
+def demographics(region):
+    ee = gee.init()
+    _, bbox = _bbox(region)
+    level = 7
+    wp = ee.ImageCollection("WorldPop/GP/100m/pop_age_sex") \
+        .filter(ee.Filter.eq("country", "IND")).filter(ee.Filter.eq("year", 2020)).first()
+
+    def total(ages, sexes=("M", "F")):
+        return ee.Image.cat([wp.select(f"{s}_{a}") for s in sexes for a in ages]) \
+            .reduce(ee.Reducer.sum())
+    under5, child = (0, 1), (0, 1, 5, 10)
+    old = (60, 65, 70, 75, 80)
+    allages = (0, 1) + tuple(range(5, 81, 5))
+    km2 = ee.Image.pixelArea().divide(1e6)
+    img = ee.Image.cat([wp.select("population").rename("tot"), total(under5).rename("u5"),
+                        total(child).rename("u15"), total(old).rename("o60"),
+                        total(allages, ("F",)).rename("fem")]).divide(km2)
+    raw = gee.fetch(gee.to_cells(img, 100), bbox, level)
+    rows = {}
+    for code, x in raw.items():
+        if x.get("tot") is None:
+            continue
+        a = gee.cell_area_km2(code)
+        tot, u15, o60 = x["tot"] * a, x["u15"] * a, x["o60"] * a
+        work = tot - u15 - o60
+        ok = tot >= 20   # shares from a handful of modelled people are noise
+        rows[code] = {
+            "under5": round(x["u5"] * a), "elderly_60plus": round(o60),
+            "children_pct": _r(100 * u15 / tot) if ok else None,
+            "elderly_pct": _r(100 * o60 / tot) if ok else None,
+            "women_pct": _r(100 * x["fem"] * a / tot) if ok else None,
+            "dependency_ratio": _r(100 * (u15 + o60) / work) if ok and work > 0 else None,
+            "wp_population": round(tot),
+        }
+    specs = [
+        FieldSpec("under5", "Children under 5", agg="sum", unit="people", ramp="viridis"),
+        FieldSpec("elderly_60plus", "People aged 60+", agg="sum", unit="people", ramp="viridis"),
+        FieldSpec("children_pct", "Children 0–14", agg="mean", unit="% of residents",
+                  domain=[15, 35], ramp="viridis"),
+        FieldSpec("elderly_pct", "Aged 60+", agg="mean", unit="% of residents",
+                  domain=[4, 14], ramp="viridis"),
+        FieldSpec("women_pct", "Women", agg="mean", unit="% of residents", domain=[44, 52],
+                  ramp="diverging"),
+        FieldSpec("dependency_ratio", "Dependency ratio (0–14 and 60+ per 100 aged 15–59)",
+                  agg="mean", unit="per 100", domain=[30, 70], ramp="reds"),
+        FieldSpec("wp_population", "Residents (WorldPop 2020)", agg="sum", unit="people",
+                  ramp="viridis"),
+    ]
+    spec = DatasetSpec(
+        id="demographics", title="Age & sex (WorldPop)", level=level, fields=specs, group=GROUP,
+        description="Age and sex structure per cell from WorldPop 2020 constrained-to-settlement "
+                    "estimates (100 m): children under 5, people 60+, shares of children, "
+                    "elderly and women, and the dependency ratio. Census 2011 district age "
+                    "profiles spread by a model: the age and sex shares are set per district, so they "
+                    "separate cities and districts, not streets; the totals differ "
+                    "from GHSL residents.",
+        source="WorldPop Global Project Population Data: age/sex structures 2020 (100 m) via "
+               "Earth Engine",
+        license="CC BY 4.0 (WorldPop, University of Southampton)",
+        default_field="elderly_60plus")
+    return spec, _table(level, rows, specs)
+
+
+# ── relative wealth (Meta RWI) ──────────────────────────────────────────────
+
+def wealth(region):
+    ee = gee.init()
+    _, bbox = _bbox(region)
+    level = 6
+    w, s, e, n = gee.aligned_bbox(bbox, level)
+    pad = 0.03
+    fc = ee.FeatureCollection("projects/sat-io/open-datasets/facebook/relative_wealth_index") \
+        .filterBounds(ee.Geometry.Rectangle([w - pad, s - pad, e + pad, n + pad]))
+    pts = [(f["geometry"]["coordinates"][0], f["geometry"]["coordinates"][1],
+            f["properties"]["rwi"], f["properties"].get("error"))
+           for f in fc.getInfo()["features"]]
+    if not pts:
+        raise RuntimeError("no RWI tiles in bbox")
+    lat_step, lon_step = gee.cell_step(level)
+    from pipeline._lib import digipin
+    rows, rad2 = {}, 0.016 ** 2   # a zoom-14 tile is ~0.022°; stay inside one
+    for i in range(round((n - s) / lat_step)):
+        lat = s + (i + 0.5) * lat_step
+        for j in range(round((e - w) / lon_step)):
+            lng = w + (j + 0.5) * lon_step
+            d2, p = min((((x - lng) * math.cos(math.radians(lat))) ** 2 + (y - lat) ** 2, (x, y, r, er))
+                        for x, y, r, er in pts)
+            if d2 > rad2:
+                continue
+            code = digipin.encode(lat, lng).replace("-", "")[:level]
+            rows[code] = {"rwi": _r(p[2], 3), "rwi_error": _r(p[3], 3)}
+    vals = sorted(v["rwi"] for v in rows.values())
+    cuts = [vals[int(len(vals) * q / 5)] for q in range(1, 5)]
+    for v in rows.values():
+        q = 1 + sum(v["rwi"] >= c for c in cuts)
+        v["wealth_quintile"] = ["Poorest fifth", "Second", "Middle", "Fourth",
+                                "Richest fifth"][q - 1]
+    specs = [
+        FieldSpec("rwi", "Relative wealth index", agg="mean", unit="index (India = 0)",
+                  domain=[-1.5, 1.5], ramp="viridis", higher_is="better"),
+        FieldSpec("rwi_error", "RWI uncertainty", agg="mean", unit="± index", ramp="reds"),
+        FieldSpec("wealth_quintile", "Wealth fifth within the city", type="category",
+                  agg="mode", colors={"Poorest fifth": "#b2182b", "Second": "#ef8a62",
+                                      "Middle": "#f7f7f7", "Fourth": "#67a9cf",
+                                      "Richest fifth": "#2166ac"}),
+    ]
+    spec = DatasetSpec(
+        id="wealth", title="Relative wealth (Meta RWI)", level=level, fields=specs, group=GROUP,
+        description="Meta Data for Good Relative Wealth Index: asset-based wealth predicted from "
+                    "satellite imagery and connectivity data, trained on DHS surveys, on ~2.4 km "
+                    "Bing tiles (zoom 14). Relative within India (0 = national average). Cells "
+                    "take the tile they fall in, so neighbouring cells share values; the quintile "
+                    "is within this city's extent.",
+        source="Meta Data for Good Relative Wealth Index (Chi et al. 2022, PNAS) via the "
+               "awesome-gee-community-catalog",
+        license="CC BY-NC 4.0 (Meta Data for Good)",
+        default_field="rwi")
+    return spec, _table(level, rows, specs)
+
+
+# ── local climate zones (WUDAPT / RUB global LCZ map) ───────────────────────
+
+# Stewart & Oke (2012) classes with the WUDAPT colour key.
+_LCZ = {1: ("Compact high-rise", "#8c0000"), 2: ("Compact mid-rise", "#d10000"),
+        3: ("Compact low-rise", "#ff0000"), 4: ("Open high-rise", "#bf4d00"),
+        5: ("Open mid-rise", "#ff6600"), 6: ("Open low-rise", "#ff9955"),
+        7: ("Lightweight low-rise", "#faee05"), 8: ("Large low-rise", "#bcbcbc"),
+        9: ("Sparsely built", "#ffccaa"), 10: ("Heavy industry", "#555555"),
+        11: ("Dense trees", "#006a00"), 12: ("Scattered trees", "#00aa00"),
+        13: ("Bush, scrub", "#648525"), 14: ("Low plants", "#b9db79"),
+        15: ("Bare rock or paved", "#000000"), 16: ("Bare soil or sand", "#fbf7ae"),
+        17: ("Water", "#6a6aff")}
+_LCZ_GROUPS = {"compact": (1, 2, 3), "open": (4, 5, 6), "lightweight": (7,),
+               "industrial": (8, 10), "natural": (11, 12, 13, 14, 16, 17)}
+
+
+def climate_zones(region):
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    lcz = ee.ImageCollection("RUB/RUBCLIM/LCZ/global_lcz_map/latest").filterBounds(geom) \
+        .mosaic().select("LCZ_Filter")
+    shares = ee.Image.cat([lcz.remap(list(v), [1] * len(v), 0).rename(k)
+                           for k, v in _LCZ_GROUPS.items()])
+    a = gee.fetch(gee.to_cells(shares, 100), bbox, level)
+    b = gee.fetch(gee.to_cells(lcz.rename("lcz"), 100, "mode"), bbox, level)
+    rows = {}
+    for code, x in gee.merge(a, b).items():
+        z = x.get("lcz")
+        if z is None:
+            continue
+        rows[code] = {"lcz": _LCZ.get(int(round(z)), (None,))[0],
+                      **{f"{k}_pct": _r(100 * x[k]) if x.get(k) is not None else None
+                         for k in _LCZ_GROUPS}}
+    specs = [
+        FieldSpec("lcz", "Local climate zone", type="category", agg="mode",
+                  colors={n: c for n, c in _LCZ.values()}),
+        FieldSpec("compact_pct", "Compact built form (LCZ 1–3)", agg="mean", unit="% of cell",
+                  domain=[0, 100], ramp="reds"),
+        FieldSpec("open_pct", "Open built form (LCZ 4–6)", agg="mean", unit="% of cell",
+                  domain=[0, 100], ramp="heat"),
+        FieldSpec("lightweight_pct", "Lightweight low-rise (LCZ 7)", agg="mean",
+                  unit="% of cell", domain=[0, 100], ramp="heat"),
+        FieldSpec("industrial_pct", "Large low-rise and industry (LCZ 8, 10)", agg="mean",
+                  unit="% of cell", domain=[0, 100], ramp="viridis"),
+        FieldSpec("natural_pct", "Natural cover (LCZ A–G)", agg="mean", unit="% of cell",
+                  domain=[0, 100], ramp="greens", higher_is="better"),
+    ]
+    spec = DatasetSpec(
+        id="climate_zones", title="Local climate zones", level=level, fields=specs,
+        group=GROUP,
+        description="Stewart & Oke Local Climate Zones from the global WUDAPT-based map "
+                    "(Demuzere et al. 2022, 100 m, ~2018): the standard urban-form classes "
+                    "used in heat studies (compact/open high-, mid- and low-rise, lightweight "
+                    "low-rise, industry, trees, water). Lightweight low-rise often marks "
+                    "informal or temporary housing, but it is a remote-sensing class, not a "
+                    "slum census. Typical classification accuracy is ~70–80%.",
+        source="RUB Climatology global LCZ map v1 via Earth Engine",
+        license="CC BY 4.0 (Demuzere et al. 2022)",
+        default_field="lcz")
+    return spec, _table(level, rows, specs)
+
+
+# ── humid heat (ERA5-Land) ──────────────────────────────────────────────────
+
+def _wetbulb(t, rh):
+    """Stull (2011) wet-bulb temperature, °C, from air °C and RH % (ee.Image)."""
+    return (t.multiply(rh.add(8.313659).sqrt().multiply(0.151977).atan())
+            .add(t.add(rh).atan()).subtract(rh.subtract(1.676331).atan())
+            .add(rh.pow(1.5).multiply(0.00391838).multiply(rh.multiply(0.023101).atan()))
+            .subtract(4.686035))
+
+
+def humid_heat(region):
+    ee = gee.init()
+    _, bbox = _bbox(region)
+    level = 5
+    col = _year(ee.ImageCollection("ECMWF/ERA5_LAND/DAILY_AGGR"))
+
+    def day(im):
+        tx = im.select("temperature_2m_max").subtract(273.15)
+        tn = im.select("temperature_2m_min").subtract(273.15)
+        td = im.select("dewpoint_temperature_2m").subtract(273.15)
+        # Afternoon humidity: the day's mean dew point against its maximum temperature.
+        es = lambda x: x.multiply(17.625).divide(x.add(243.04)).exp()
+        rh = es(td).divide(es(tx)).multiply(100).min(100)
+        tw = _wetbulb(tx, rh)
+        return ee.Image.cat([tx.gte(40).rename("hot"), tn.gte(28).rename("warm"),
+                             tw.gte(28).rename("humid"), tx.rename("tx"), tw.rename("tw")])
+    d = col.map(day)
+    img = ee.Image.cat([d.select(["hot", "warm", "humid"]).sum(),
+                        d.select(["tx", "tw"]).max()])
+    raw = gee.fetch(gee.to_cells(img, 11000), bbox, level)
+    rows = {c: {"hot_days_40c": round(x["hot"]), "warm_nights_28c": round(x["warm"]),
+                "humid_heat_days": round(x["humid"]), "peak_tmax_c": _r(x.get("tx")),
+                "peak_wetbulb_c": _r(x.get("tw"))}
+            for c, x in raw.items() if x.get("hot") is not None}
+    specs = [
+        FieldSpec("hot_days_40c", f"Days ≥ 40 °C ({YEAR})", agg="mean", unit="days",
+                  ramp="heat", higher_is="worse"),
+        FieldSpec("warm_nights_28c", f"Nights ≥ 28 °C ({YEAR})", agg="mean", unit="nights",
+                  ramp="heat", higher_is="worse"),
+        FieldSpec("humid_heat_days", f"Humid-heat days, wet-bulb ≥ 28 °C ({YEAR})", agg="mean",
+                  unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("peak_tmax_c", f"Hottest day ({YEAR})", agg="max", unit="°C",
+                  domain=[34, 48], ramp="heat", higher_is="worse"),
+        FieldSpec("peak_wetbulb_c", f"Peak afternoon wet-bulb ({YEAR})", agg="max", unit="°C",
+                  domain=[24, 32], ramp="heat", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="humid_heat", title="Heat & humid heat (ERA5-Land)", level=level, fields=specs,
+        group=GROUP,
+        description=f"Air-temperature heat stress for {YEAR} from ERA5-Land daily aggregates "
+                    "(~9 km reanalysis): days with a maximum ≥ 40 °C (the IMD plains heatwave "
+                    "threshold), nights with a minimum ≥ 28 °C, and afternoon wet-bulb (Stull "
+                    "2011, daily max temperature with mean dew point) — humid-heat days are "
+                    "wet-bulb ≥ 28 °C. Reanalysis smooths the urban heat island and usually "
+                    "reads 1–2 °C below city stations; use Land surface temperature for "
+                    "street-scale contrast.",
+        source="ECMWF ERA5-Land daily aggregated via Earth Engine",
+        license="Copernicus licence (ECMWF / C3S)",
+        default_field="hot_days_40c")
+    return spec, _table(level, rows, specs)
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
     "nightlights": nightlights, "surface_heat": heat, "air_quality": air_quality,
     "rainfall": rainfall, "building_stock": building_stock, "soil": soil,
-    "accessibility": accessibility,
+    "accessibility": accessibility, "waterlogging": waterlogging,
+    "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
+    "humid_heat": humid_heat,
 }
 
 
