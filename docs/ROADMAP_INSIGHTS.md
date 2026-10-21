@@ -50,8 +50,8 @@ new data.
 | 7 | Air pollution exposure | How many people breathe above the standard? | Yes | S | **Shipped** |
 | 8 | Night lights vs people | Where is activity above (or below) what residents explain? | Yes | S | **Shipped** |
 | 9 | Compound risk ("triple burden") | Which neighbourhoods carry heat, flood and air at once? | Yes | S | **Shipped** |
-| 10 | Sprawl and compactness | Is growth infill, edge or leapfrog? How steep is the density gradient? | Yes | M | Next |
-| 11 | Walkability index (Frank et al.) | Is the street fabric walkable, independent of POIs? | Yes | S | Next |
+| 10 | Sprawl and compactness | Is growth infill, edge or leapfrog? How steep is the density gradient? | Yes | M | **Shipped** |
+| 11 | Walkability index (Frank et al.) | Is the street fabric walkable, independent of POIs? | Yes | S | **Shipped** |
 | 12 | 3-30-300 green rule | Does each neighbourhood meet the tree / canopy / park rule? | Partly (no parks layer) | S–M | Next |
 | 13 | Neighbourhood archetypes (k-means) | What kinds of places make up this city? | Yes | M | Next |
 | 14 | Siting suitability (MCDA / AHP presets) | Where should the next clinic, school, park or cool roof go? | Yes | M | Next |

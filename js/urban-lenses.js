@@ -25,6 +25,8 @@ const UrbanLenses = (() => {
     const BAND_KM = 0.5;      // hotspot distance band (~12 neighbours at L7)
     const ESSENTIALS = ['food', 'shopping', 'healthcare', 'education', 'transport', 'leisure', 'finance'];
     const PM25_NAAQS = 40, PM25_WHO = 5;
+    const URBAN_PCT = 15;     // a cell counts as urban for the LEI at ≥ 15% built-up
+    const LEED_JX = 54;       // LEED-ND connectivity bar: 140 intersections / sq mi ≈ 54 / km²
 
     // ── catalogue of lenses ─────────────────────────────────────────────────
 
@@ -68,6 +70,19 @@ const UrbanLenses = (() => {
             needs: ['nightlights.radiance'],
             method: 'OLS of ln(radiance + 0.1) on ln(population + 1) over populated cells; the standardised residual. Above +1: lit beyond its residents (commerce, industry, hubs). Below −1 in dense cells: under-lit for its population, a flag worth checking (energy poverty, informal housing), not a label.',
             refs: 'Henderson, Storeygard & Weil 2012; Chen & Nordhaus 2011' },
+        { id: 'walk', title: 'Walkability index', icon: '👣', equity: true,
+            question: 'Is the street fabric walkable, beyond counting shops?',
+            field: { key: 'walk_index', label: 'Walkability index', unit: '0-100', higherIs: 'better', ramp: 'greens' },
+            needs: ['osm_roads.junctions_km2', 'scores.walkability'],
+            after: ['fifteen'],
+            method: 'Frank et al. walkability index: 2 × z(intersection density) + z(residential density) + z(land-use mix), over the city’s populated cells, reported as a city percentile. Retail floor-area ratio, the fourth term, has no open data here. The correlation with the OSM-based walkability score says whether the two agree.',
+            refs: 'Frank et al. 2010 (Br J Sports Med); Frank et al. 2006' },
+        { id: 'sprawl', title: 'Sprawl and compactness', icon: '🏙',
+            question: 'Is the city growing by infill, at its edge, or by leapfrogging?',
+            field: { key: 'lei', label: 'Landscape expansion index (new built-up)', unit: '0-100', higherIs: null, ramp: 'viridis' },
+            needs: ['growth.built_2016_pct', 'growth.built_2023_pct', 'nightlights.radiance'],
+            method: `Landscape expansion index for every cell that gained ≥ 5 points of built-up cover 2016→2023: the share of the cells within 500 m that were already urban (≥ ${URBAN_PCT}% built-up) in 2016. ≥ 50 is infill, 2–50 edge expansion, below 2 outlying (leapfrog). Plus Clark’s density gradient (slope of ln density on distance from the night-lights peak, the CBD) and population-weighted density.`,
+            refs: 'Liu et al. 2010 (LEI); Clark 1951; Craig 1984; Bertaud & Malpezzi 2003' },
         { id: 'burden', title: 'Compound risk', icon: '⚠',
             question: 'Where do heat, flood and dirty air stack up?',
             field: { key: 'burden', label: 'Hazards in the worst fifth', unit: 'of 3', higherIs: 'worse', ramp: 'reds' },
@@ -619,7 +634,126 @@ const UrbanLenses = (() => {
         };
     }
 
-    const RUN = { heat, flood, fifteen, health, air, lights, burden };
+    /** Pearson correlation over idx. */
+    function pearson(x, y, idx) {
+        const f = ols(x, y, idx);
+        if (!f) return null;
+        return Math.sign(f.b) * Math.sqrt(Math.max(0, f.r2));
+    }
+
+    function _z(values, idx) {
+        let n = 0, s = 0, q = 0;
+        for (const i of idx) if (_fin(values[i])) { n++; s += values[i]; q += values[i] * values[i]; }
+        const m = n ? s / n : 0, sd = n ? Math.sqrt(Math.max(0, q / n - m * m)) : 0;
+        return Float64Array.from(values, v => (_fin(v) && sd > 0 ? (v - m) / sd : NaN));
+    }
+
+    function walk(fr, done) {
+        const c = fr.cols, idx = _residents(fr), n = fr.grid.n;
+        const jx = c['osm_roads.junctions_km2'], dens = c['population.density_km2'];
+        const mix = done.fifteen && done.fifteen.columns.mix;
+        if (!jx || !dens) return null;
+        const zj = _z(jx, idx), zd = _z(dens.map(v => Math.log1p(Math.max(0, v))), idx), zm = mix ? _z(mix.map(v => (_fin(v) ? v : 0)), idx) : null;
+        const raw = new Float64Array(n).fill(NaN);
+        for (const i of idx) {
+            if (!_fin(zj[i]) || !_fin(zd[i])) continue;
+            raw[i] = 2 * zj[i] + zd[i] + (zm && _fin(zm[i]) ? zm[i] : 0);
+        }
+        const out = prank(raw, idx).map(x => (_fin(x) ? x * 100 : NaN));
+        const pop = c['population.population'];
+        const total = _sumOver(pop, idx, () => true);
+        const sparse = _sumOver(pop, idx, i => _fin(jx[i]) && jx[i] < LEED_JX);
+        const low = sparse;
+        const osm = c['scores.walkability'];
+        const r = osm ? pearson(out, osm, idx.filter(i => _fin(out[i]) && _fin(osm[i]) && osm[i] > 0)) : null;
+        const jTop = wmean(jx, pop, idx.filter(i => out[i] >= 80)), jLow = wmean(jx, pop, idx.filter(i => out[i] < 20));
+        return {
+            columns: { walk_index: out }, idx,
+            headline: `${_people(low)} people (${_round(100 * low / (total || 1))}%) live where streets have fewer than ${LEED_JX} junctions per km² (the LEED-ND connectivity bar); `
+                + `the most walkable fifth of cells has ${_round(jTop)} per km², the least ${_round(jLow)}.`
+                + (r != null ? ` The index ${Math.abs(r) >= 0.5 ? 'agrees with' : Math.abs(r) >= 0.25 ? 'partly agrees with' : 'differs from'} the OSM walkability score (r = ${_round(r, 2)}).` : ''),
+            stats: [
+                { label: `Residents below ${LEED_JX} junctions / km²`, value: _people(low), raw: Math.round(low) },
+                { label: 'Mean index per resident', value: `${_round(wmean(out, pop, idx))} / 100` },
+                { label: 'Junctions / km²: top vs bottom fifth', value: `${_round(jTop)} vs ${_round(jLow)}` },
+                { label: 'Correlation with OSM walkability score', value: r != null ? String(_round(r, 2)) : '–' },
+            ],
+        };
+    }
+
+    function sprawl(fr) {
+        const c = fr.cols, g = fr.grid, n = g.n;
+        const b16 = c['growth.built_2016_pct'], b23 = c['growth.built_2023_pct'];
+        if (!b16 || !b23) return null;
+        const ring = g.offsets(0.5).filter(([a, b]) => a || b);
+        const lei = new Float64Array(n).fill(NaN);
+        let infill = 0, edge = 0, out = 0;
+        const grew = [];
+        for (let i = 0; i < n; i++) {
+            const gain = b23[i] - b16[i];
+            if (!(gain >= 5)) continue;
+            // LEI on the cell lattice: the share of ring cells that were
+            // already urban (≥ URBAN_PCT built) in 2016, as Liu et al. do with
+            // urban-patch pixels in a buffer.
+            let s = 0, k = 0;
+            for (const [a, b] of ring) {
+                const j = g.cellAt(i, a, b);
+                if (j < 0 || !_fin(b16[j])) continue;
+                if (b16[j] >= URBAN_PCT) s++;
+                k++;
+            }
+            if (!k) continue;
+            lei[i] = 100 * s / k;
+            grew.push(i);
+            const area = gain / 100 * g.cellKm2;
+            if (lei[i] >= 50) infill += area; else if (lei[i] >= 2) edge += area; else out += area;
+        }
+        const tot = infill + edge + out;
+        // Clark (1951): ln D(x) = ln D0 − b·x, x = km from the night-lights peak.
+        const idx = _residents(fr), pop = c['population.population'], dens = c['population.density_km2'];
+        const rad = c['nightlights.radiance'];
+        let cbd = -1, best = -Infinity;
+        if (rad) {
+            const near = g.offsets(1);
+            for (const i of idx) {
+                let s = 0;
+                for (const [a, b] of near) { const j = g.cellAt(i, a, b); if (j >= 0 && _fin(rad[j])) s += rad[j]; }
+                if (s > best) { best = s; cbd = i; }
+            }
+        }
+        let fit = null;
+        if (cbd >= 0 && dens) {
+            const x = new Float64Array(n).fill(NaN), y = new Float64Array(n).fill(NaN);
+            const use = idx.filter(i => dens[i] > 50);
+            for (const i of use) {
+                x[i] = Math.hypot((g.row[i] - g.row[cbd]) * g.dy, (g.col[i] - g.col[cbd]) * g.dx);
+                y[i] = Math.log(dens[i]);
+            }
+            fit = ols(x, y, use);
+        }
+        const pwd = dens ? wmean(dens, pop, idx) : null;
+        const total = _sumOver(pop, idx, () => true);
+        const gross = total / ((idx.length || 1) * g.cellKm2);
+        const share = (v) => (tot ? _round(100 * v / tot) : null);
+        const verdict = !tot ? 'little measurable growth' : share(infill) >= 50 ? 'mostly infill (compact)' : share(out) >= 25 ? 'leapfrogging (sprawling)' : 'mostly edge expansion';
+        return {
+            columns: { lei }, idx: grew.length >= 10 ? grew : idx, diverging: false,
+            headline: tot
+                ? `${_round(tot, 1)} km² of land was newly built 2016–2023, ${verdict}: ${share(infill)}% infill, ${share(edge)}% at the edge, ${share(out)}% leapfrog.`
+                    + (fit ? ` Density falls ${_round(100 * (1 - Math.exp(fit.b)))}% per km from the centre (Clark gradient ${_round(-fit.b, 3)}/km).` : '')
+                : 'Too little new built-up land 2016–2023 to classify growth.',
+            stats: [
+                { label: 'Newly built 2016–2023', value: `${_round(tot, 2)} km²` },
+                { label: 'Infill / edge / leapfrog', value: tot ? `${share(infill)} / ${share(edge)} / ${share(out)}%` : '–' },
+                { label: 'Clark density gradient', value: fit ? `${_round(-fit.b, 3)} per km (R² ${_round(fit.r2, 2)})` : '–' },
+                { label: 'Population-weighted vs gross density', value: pwd != null ? `${Math.round(pwd).toLocaleString('en-IN')} vs ${Math.round(gross).toLocaleString('en-IN')} /km²` : '–' },
+            ],
+            fit: fit ? { gradient: _round(-fit.b, 4), r2: _round(fit.r2, 3), centre: g.codes[cbd] } : null,
+            noHotspots: grew.length < 10,
+        };
+    }
+
+    const RUN = { heat, flood, fifteen, health, air, lights, walk, sprawl, burden };
 
     // ── spatial statistics ──────────────────────────────────────────────────
 
@@ -763,7 +897,7 @@ const UrbanLenses = (() => {
                 mean: _round(wmean(v, pop, eqIdx), 2),
             };
             const hsKey = r.weightKey || key;
-            const hs = opts.hotspots === false ? null : hotspots(fr.grid, r.columns[hsKey], r.idx, { permutations: opts.permutations ?? 0 });
+            const hs = opts.hotspots === false || r.noHotspots ? null : hotspots(fr.grid, r.columns[hsKey], r.idx, { permutations: opts.permutations ?? 0 });
             const fields = [L.field, ...(L.extra || [])];
             for (const f of fields) if (r.columns[f.key]) layerCols[f.key] = r.columns[f.key];
             const srcIds = new Set(L.needs.map(k => k.split('.')[0]).concat(L.after ? L.after.flatMap(a => BY_ID.get(a).needs.map(k => k.split('.')[0])) : []).concat(['population']));
@@ -837,7 +971,7 @@ const UrbanLenses = (() => {
 
     return {
         SCHEMA, LENSES, ESSENTIALS, CELL_DEG,
-        prank, wmean, wquantile, gini, lorenz, palma, ols, grid, frameFrom, frame, allNeeds,
+        prank, wmean, wquantile, gini, lorenz, palma, ols, pearson, grid, frameFrom, frame, allNeeds,
         e2sfca, hotspots, run, clusters, toLayer, toText,
         _lenses: RUN,
     };

@@ -89,6 +89,8 @@ established method and answers in people; the ranked plan and the methods with r
 | Healthcare access | OSM healthcare, population | E2SFCA, Gaussian decay, 2 km catchment |
 | Air exposure | PM2.5, NO₂, population | population-weighted mean; residents above NAAQS / WHO |
 | Night lights vs people | VIIRS radiance, population | residual of ln(radiance) on ln(population) |
+| Walkability index | OSM junctions, density, land-use mix, OSM walkability score | Frank et al.: 2·z(intersections) + z(density) + z(mix); residents below the LEED-ND 54 junctions/km² bar |
+| Sprawl and compactness | GHSL-style built-up 2016 / 2023, night lights, density | Landscape expansion index (infill / edge / leapfrog), Clark density gradient from the night-lights peak, population-weighted density |
 | Compound risk | the heat, flood and air lenses | hazards in the city's worst fifth, per resident |
 
 Every lens gets a population-weighted Gini, Lorenz curve and Palma ratio (access lenses), global Moran's I

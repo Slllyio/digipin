@@ -110,6 +110,24 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(hs.cold).not.toContain(SIZE + 1);
     });
 
+    it('LEI classes new built-up as infill, edge or leapfrog', () => {
+        const b16 = new Array(n).fill(0), b23 = new Array(n).fill(0);
+        // An old core in the NW 5×5; one infill cell inside it, one edge cell
+        // beside it, one leapfrog cell in the far SE corner.
+        for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) { b16[r * SIZE + c] = 60; b23[r * SIZE + c] = 60; }
+        const infill = 2 * SIZE + 2, edge = 2 * SIZE + 5, far = n - 1;
+        b16[infill] = 10; b23[infill] = 50;
+        b23[edge] = 30;
+        b23[far] = 30;
+        const f3 = L.frameFrom(codes, { 'population.population': pop, 'population.density_km2': pop, 'growth.built_2016_pct': b16, 'growth.built_2023_pct': b23 });
+        const r = L._lenses.sprawl(f3, {});
+        expect(r.columns.lei[infill]).toBeGreaterThanOrEqual(50);
+        expect(r.columns.lei[edge]).toBeGreaterThan(2);
+        expect(r.columns.lei[edge]).toBeLessThan(50);
+        expect(r.columns.lei[far]).toBe(0);
+        expect(r.headline).toMatch(/infill/);
+    });
+
     it('15-minute completeness counts essentials in walking reach', () => {
         const cols = { 'population.population': pop, 'population.density_km2': pop };
         for (const k of L.ESSENTIALS) cols[`osm_amenities.${k}`] = new Array(n).fill(0);
@@ -128,7 +146,10 @@ describe('UrbanLenses on committed city data', () => {
         expect(r.schema).toBe('digipin.lenses/1');
         expect(r.residents).toBeGreaterThan(1e6);
         const ids = r.lenses.map(l => l.id);
-        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'fifteen', 'health', 'air', 'lights', 'burden']));
+        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'burden']));
+        const sp = r.lenses.find(l => l.id === 'sprawl');
+        expect(sp.headline).toMatch(/infill/);
+        expect(sp.fit.gradient).toBeGreaterThan(0);              // density falls away from the centre
         for (const l of r.lenses) {
             expect(l.headline.length).toBeGreaterThan(20);
             expect(l.sources).toContain('population');
@@ -143,7 +164,7 @@ describe('UrbanLenses on committed city data', () => {
         const cl = L.clusters(r, 'health');
         expect(cl.HH.length + cl.LL.length).toBeGreaterThan(0);
         const layer = L.toLayer(r);
-        expect(layer.spec.fields.map(f => f.key)).toEqual(expect.arrayContaining(['hvi', 'flood_people', 'fifteen_min', 'health_access', 'pm25', 'ntl_resid', 'burden']));
+        expect(layer.spec.fields.map(f => f.key)).toEqual(expect.arrayContaining(['hvi', 'flood_people', 'fifteen_min', 'health_access', 'pm25', 'ntl_resid', 'walk_index', 'lei', 'burden']));
         expect(layer.table.cells.length).toBe(r.cells);
         expect(L.toText(r)).toMatch(/Heat vulnerability/);
     }, 60000);
