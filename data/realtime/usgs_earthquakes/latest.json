@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-10-20T21:16:23Z",
+  "generated_at_iso": "2026-10-21T00:00:58Z",
   "count": 23,
   "records": [
+    {
+      "id": "us6000u3r3",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-10-20T23:24:26.555000+00:00",
+      "latitude": -25.5451,
+      "longitude": 179.5284,
+      "depth_km": 517.082,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3r3",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000u3r1",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-20T23:16:43.934000+00:00",
+      "latitude": 37.3012,
+      "longitude": 75.121,
+      "depth_km": 65.601,
+      "place": "115 km NNE of Barishal, Pakistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3r1",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000u3pq",
       "magnitude": 4.9,
@@ -253,30 +277,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3j1",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us6000u3ic",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-19T22:42:47.298000+00:00",
-      "latitude": -4.8147,
-      "longitude": 152.1972,
-      "depth_km": 76.122,
-      "place": "52 km S of Kokopo, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3ic",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u3i2",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-19T21:43:36.577000+00:00",
-      "latitude": 48.4485,
-      "longitude": 153.6468,
-      "depth_km": 102.09,
-      "place": "Kuril Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3i2",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
