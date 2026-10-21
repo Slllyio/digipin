@@ -62,8 +62,8 @@ describe('OvertureBuildings Aino-theme rendering', () => {
         // A directional "sun" is set so the volumes read as a lit model
         expect(map._calls.setLight).toBeTruthy();
         expect(map._calls.setLight.anchor).toBe('map');
-        // Glowing edges stay hidden — the light model is a clean white solid
-        expect(map._visibility[EDGE_LAYER_ID]).toBe('none');
+        // Aino's fine warm-grey footprint lines (not the dark theme's cyan glow)
+        expect(map._visibility[EDGE_LAYER_ID]).toBe('visible');
     });
 
     it('under dark theme grounds a translucent cyan-glass twin with glowing edges', () => {

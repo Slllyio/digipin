@@ -139,4 +139,5 @@ loadGlobalScript('js/measure-tool.js', ['MeasureTool']);
 loadGlobalScript('js/present-mode.js', ['PresentMode']);
 loadGlobalScript('js/annotations.js', ['Annotations']);
 loadGlobalScript('js/ui-polish.js', ['UIPolish']);
+loadGlobalScript('js/trees-3d.js', ['Trees3D']);
 loadGlobalScript('js/city-overview.js', ['CityOverview']);

@@ -50,7 +50,7 @@ const APP_GLOBALS = {
   PitchMap: 'readonly', SunStudy: 'readonly', FootprintExport: 'readonly', SiteBrief: 'readonly',
   MeasureTool: 'readonly', PresentMode: 'readonly', Annotations: 'readonly',
   RealEstateModel: 'readonly', RealEstateWidget: 'readonly', FootprintGrid: 'readonly',
-  UIPolish: 'readonly', CityOverview: 'readonly',
+  UIPolish: 'readonly', CityOverview: 'readonly', Trees3D: 'readonly',
   DIGIPIN_CONFIG: 'readonly',
   // third-party libraries loaded from CDN
   maplibregl: 'readonly', pmtiles: 'readonly', parseGeoraster: 'readonly', GeoRaster: 'readonly',

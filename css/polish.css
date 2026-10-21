@@ -938,3 +938,21 @@ html[data-theme="light"] #btn-dt-layers:not(.active) { background: transparent; 
 @media (min-width: 769px) {
     #sidebar.collapsed { height: 44px; max-height: 44px; overflow: hidden; }
 }
+
+/* Sun & shadow study: Aino card controls (light). */
+html[data-theme="light"] .sun-study-panel .sun-hours-btn {
+    background: #fff; border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 8px;
+    color: var(--aino-ink); font: 500 12px/1 var(--font-sans); padding: 8px 10px;
+}
+html[data-theme="light"] .sun-study-panel .sun-hours-btn:hover { background: var(--aino-paper); }
+html[data-theme="light"] .sun-study-panel .sun-play {
+    background: var(--aino-ink); color: #fff; border-color: var(--aino-ink);
+}
+html[data-theme="light"] .sun-study-panel .sun-date { border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px; background: #fff; color: var(--aino-ink); }
+html[data-theme="light"] .sun-study-panel .sun-chart { background: var(--aino-paper); border-radius: 8px; }
+html[data-theme="light"] .sun-study-panel .sun-title { font-weight: 600; color: var(--aino-ink); }
+html[data-theme="light"] .sun-study-panel {
+    background: var(--aino-card); border: 1px solid var(--aino-line);
+    border-radius: var(--aino-r); box-shadow: var(--aino-shadow-lg); color: var(--aino-ink);
+}
+@media (min-width: 769px) { html[data-theme="light"] .sun-study-panel { left: 84px; } }

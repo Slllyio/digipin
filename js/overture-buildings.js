@@ -446,7 +446,13 @@ const OvertureBuildings = (() => {
         }
         // Glowing footprint edges are the dark "digital twin" device; the Aino
         // light massing model is a clean white solid, so keep edges hidden there.
-        map.setLayoutProperty(EDGE_LAYER_ID, 'visibility', (_active && !light) ? 'visible' : 'none');
+        // Light: Aino's fine warm-grey footprint lines, so dense blocks read
+        // as separate buildings where the white massing meets the ground.
+        map.setLayoutProperty(EDGE_LAYER_ID, 'visibility', _active ? 'visible' : 'none');
+        try {
+            map.setPaintProperty(EDGE_LAYER_ID, 'line-color', light ? '#c9c6bd' : '#7df4ff');
+            map.setPaintProperty(EDGE_LAYER_ID, 'line-opacity', light ? 0.8 : 0.55);
+        } catch { /* stub */ }
 
         // Aino light: give the white volumes a fixed directional "sun" so they
         // read with a consistent lit/shadow side (anchor:'map' keeps the light

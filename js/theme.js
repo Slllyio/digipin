@@ -49,11 +49,10 @@ const Theme = (() => {
             success: '#22c55e', warn: '#eab308', danger: '#ef4444',
         },
         light: {
-            // Aino (aino.world): blue interactive primary + coral brand, charcoal
-            // ink. `primary` (blue) drives interactive JS surfaces (markers, scan
-            // header, legends) to match the UI; `brand` (coral) is for headline
-            // accents drawn in JS.
-            primary: '#0099ff', primarySoft: 'rgba(0,153,255,0.18)',
+            // Aino app (app.aino.world): charcoal ink is the interactive
+            // primary too (panel titles, chart lines, markers, buttons), with
+            // coral `brand` for the occasional accent drawn in JS.
+            primary: '#292929', primarySoft: 'rgba(41,41,41,0.12)',
             brand: '#ff673d',
             secondary: '#292929', ink: '#292929', sub: '#636363',
             surface: 'rgba(255,255,255,0.96)', surfaceSolid: '#ffffff',

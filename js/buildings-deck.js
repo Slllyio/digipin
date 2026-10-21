@@ -315,7 +315,22 @@ const DeckBuildings = (() => {
         }
         _overlay = new deck.MapboxOverlay({ interleaved: false, layers: [] });
         map.addControl(_overlay);
-        if (!_moveBound) { map.on('moveend', () => { ensureHeights(); refresh(); }); _moveBound = true; }
+        if (!_moveBound) {
+            map.on('moveend', () => { ensureHeights(); refresh(); });
+            // Footprint tiles keep streaming in after the camera stops: harvest
+            // again on the first frame after the source has finished loading.
+            let dirty = false;
+            map.on('sourcedata', (e) => { if (_enabled && e && e.sourceId === 'overture-buildings-source' && e.tile) dirty = true; });
+            map.on('render', () => {
+                if (!_enabled || !dirty) return;
+                let loaded = true;
+                try { loaded = map.isSourceLoaded('overture-buildings-source'); } catch { /* source gone */ }
+                if (!loaded) return;
+                dirty = false;
+                setTimeout(() => { if (_enabled) refresh(); }, 300);
+            });
+            _moveBound = true;
+        }
         ensureHeights();   // real heights when available
         refresh();
         return true;
