@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-10-21T14:40:46Z",
-  "count": 15,
+  "generated_at_iso": "2026-10-21T18:56:12Z",
+  "count": 16,
   "records": [
+    {
+      "id": "us6000u3wh",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-10-21T18:12:35.440000+00:00",
+      "latitude": -52.8338,
+      "longitude": 27.5329,
+      "depth_km": 10.0,
+      "place": "south of Africa",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3wh",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000u3w6",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-21T17:19:33.362000+00:00",
+      "latitude": 49.2528,
+      "longitude": 158.0282,
+      "depth_km": 10.0,
+      "place": "208 km SE of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3w6",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000u3uk",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-21T15:22:33.566000+00:00",
+      "latitude": -14.1338,
+      "longitude": 165.3793,
+      "depth_km": 10.0,
+      "place": "208 km WNW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3uk",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000u3ue",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-21T14:56:27.447000+00:00",
+      "latitude": -14.105,
+      "longitude": 165.5402,
+      "depth_km": 10.0,
+      "place": "194 km WNW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3ue",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000u3uc",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-21T14:40:50.748000+00:00",
+      "latitude": 42.573,
+      "longitude": 142.6247,
+      "depth_km": 94.112,
+      "place": "33 km NE of Shizunai-furukawachō, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3uc",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000u3ub",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-21T14:35:51.111000+00:00",
+      "latitude": -14.0069,
+      "longitude": 165.4684,
+      "depth_km": 10.0,
+      "place": "207 km WNW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3ub",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us6000u3tn",
       "magnitude": 4.5,
@@ -121,66 +193,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3pm",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000u3p1",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-20T18:07:18.131000+00:00",
-      "latitude": 37.9575,
-      "longitude": -26.2588,
-      "depth_km": 10.0,
-      "place": "39 km W of Mosteiros, Portugal",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3p1",
-      "tsunami": 0,
-      "significance": 406
-    },
-    {
-      "id": "us6000u3nn",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-20T17:18:36.707000+00:00",
-      "latitude": 6.0926,
-      "longitude": -82.6622,
-      "depth_km": 10.0,
-      "place": "215 km S of Burica, Panama",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3nn",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000u3nl",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-10-20T17:05:48.338000+00:00",
-      "latitude": 6.3226,
-      "longitude": -82.5693,
-      "depth_km": 10.0,
-      "place": "192 km S of Burica, Panama",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3nl",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us6000u3nd",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-20T16:29:43.678000+00:00",
-      "latitude": -24.1803,
-      "longitude": -177.0103,
-      "depth_km": 109.548,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3nd",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000u3nc",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-20T16:29:38.818000+00:00",
-      "latitude": 4.0005,
-      "longitude": 95.993,
-      "depth_km": 75.876,
-      "place": "21 km SW of Meulaboh, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3nc",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }
