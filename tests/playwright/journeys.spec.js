@@ -38,7 +38,11 @@ test.describe('journeys', () => {
   });
 
   test('3D city: buildings + terrain + 3D toggle on and off together', async ({ page }) => {
-    test.setTimeout(120_000);
+    // 67 s alone on CI's software GL; with the Delhi perf journey or the soak
+    // on the other worker every 3D frame is a 3-7 s task and each evaluate
+    // waits behind one (two 120 s timeouts seen). The claim is "it works",
+    // not "within N s", so the window is wide.
+    test.setTimeout(300_000);
     await page.goto('/app.html');
     await waitForApp(page);
     for (const id of ['btn-buildings', 'btn-terrain', 'btn-3d']) await toggleRow(page, id);
@@ -113,7 +117,7 @@ test.describe('journeys', () => {
   });
 
   test('share link round trip restores layers, zoom and position', async ({ page }) => {
-    test.setTimeout(120_000);
+    test.setTimeout(300_000);   // 89 s seen alongside the soak (same software-GL contention as above)
     await page.goto('/app.html');
     await waitForApp(page);
     await toggleRow(page, 'btn-3d');
