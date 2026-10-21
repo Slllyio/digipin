@@ -100,9 +100,11 @@ const UIPolish = (() => {
         return Math.min(1, (p - 35) / 35);
     }
 
-    // MapLibre caps pitch at 60° by default; 75° lets the cinematic camera
-    // reach the horizon (the haze then stands in for a sky).
-    const MAX_PITCH = 75;
+    // MapLibre caps pitch at 60° by default; 70° lets the cinematic camera
+    // reach the horizon (the haze then stands in for a sky). Above ~71° over
+    // terrain MapLibre 5 stops drawing the building extrusions altogether
+    // (checked in Chromium, Indore z17.9: 27k rendered at 70°, none at 72°).
+    const MAX_PITCH = 70;
 
     function prefersReducedMotion() {
         try {
@@ -261,7 +263,7 @@ const UIPolish = (() => {
         if (!map || typeof document === 'undefined' || _haze) return;
         const container = map.getContainer ? map.getContainer() : document.getElementById('map');
         if (!container) return;
-        try { if (map.getMaxPitch && map.getMaxPitch() < MAX_PITCH) map.setMaxPitch(MAX_PITCH); } catch { /* older MapLibre */ }
+        try { if (map.getMaxPitch && map.getMaxPitch() !== MAX_PITCH) map.setMaxPitch(MAX_PITCH); } catch { /* older MapLibre */ }
         if (typeof map.setSky === 'function') {
             // Re-apply on every style (re)load; the sky lives in the style.
             if (map.isStyleLoaded && map.isStyleLoaded()) _styleAtmosphere(map);

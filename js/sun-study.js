@@ -178,6 +178,7 @@ const SunStudy = (() => {
         const { lat, lng } = _latlng();
         const { altitude, azimuth } = solarPosition(lat, lng, _date);
         try { _map.setLight(lightFor(altitude, azimuth)); } catch { return false; }
+        if (typeof SunShadows !== 'undefined') SunShadows.apply(_map, altitude, azimuth);
         _updateReadout(altitude, azimuth);
         _updateAccess();
         _drawChart();
@@ -317,7 +318,7 @@ const SunStudy = (() => {
             <div class="sun-hours-out" aria-live="polite"></div>
             <button class="sun-hours-btn sun-far-btn" type="button">Density (FAR) of selected cell</button>
             <div class="sun-far-out sun-hours-out" aria-live="polite"></div>
-            <div class="sun-hint">Enable <b>3D Mode</b> / Buildings to see the cast shadows.</div>`;
+            <div class="sun-hint">Turn on <b>3D</b> to see buildings cast shadows; the sky follows the hour.</div>`;
         el.querySelector('.sun-close').addEventListener('click', () => toggle());
         const dateEl = el.querySelector('.sun-date');
         const slider = el.querySelector('.sun-time');
@@ -351,6 +352,7 @@ const SunStudy = (() => {
             _stop();
             _panel.remove();
             _panel = null;
+            if (typeof SunShadows !== 'undefined') SunShadows.clear(_map);
             return false;
         }
         if (_map && typeof _map.setLight !== 'function') {

@@ -405,14 +405,31 @@ const BuildingData = (() => {
     }
 
     /** Short hover text for a twin feature's properties. */
+    const CLASS_LABEL = {
+        residential: 'Residential', commercial: 'Commercial', industrial: 'Industrial', education: 'Education',
+        religious: 'Religious', civic: 'Civic', medical: 'Medical', transportation: 'Transport', agricultural: 'Agricultural',
+        entertainment: 'Entertainment', military: 'Military', outbuilding: 'Outbuilding', service: 'Service',
+    };
+
+    /** Hover card for a 3D building: title, DIGIPIN, height/floors, footprint, the coloured value. */
     function tooltipHTML(props) {
         const p = props || {};
         const c = _sel(_color);
-        let html = `<div style="font:600 12px system-ui,sans-serif;">${_esc(p.pin || 'Building')}</div>`;
-        html += `<div style="font:11px system-ui,sans-serif;opacity:.8;">${_fmt({ type: 'number', unit: 'm' }, p.rh)} tall`;
-        if (c && c.spec.id !== BLDG) html += ` · ${_esc(c.field.label || c.field.key)}: <b>${_esc(_fmt(c.field, p.v))}</b>`;
-        else if (c) html += ` · ${_esc(c.field.label)}: <b>${_esc(_fmt(c.field, p.v))}</b>`;
-        return html + '</div>';
+        const cls = p.cls && CLASS_LABEL[String(p.cls).toLowerCase()];
+        const h = Number(p.rh);
+        const rows = [];
+        if (Number.isFinite(h)) {
+            const floors = Math.max(1, Math.round(h / 3.2));
+            rows.push(['Height', `${_fmt({ type: 'number', unit: 'm' }, h)} · ~${floors} floor${floors === 1 ? '' : 's'}`]);
+        }
+        if (Number.isFinite(Number(p.area))) rows.push(['Footprint', `${Math.round(Number(p.area)).toLocaleString('en-IN')} m²`]);
+        if (c && p.v != null) rows.push([c.field.label || c.field.key, _fmt(c.field, p.v), true]);
+        let html = `<div class="bt-head"><span class="bt-title">${_esc(cls ? `${cls} building` : 'Building')}</span>`
+            + (p.pin ? `<span class="bt-pin">${_esc(p.pin)}</span>` : '') + '</div>';
+        for (const [k, v, strong] of rows) {
+            html += `<div class="bt-row"><span>${_esc(k)}</span>${strong ? `<b>${_esc(v)}</b>` : `<span>${_esc(v)}</span>`}</div>`;
+        }
+        return html + '<div class="bt-hint">Click for every dataset here</div>';
     }
 
     /**

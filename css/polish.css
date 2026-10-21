@@ -1104,3 +1104,48 @@ html[data-theme="light"] .ui-head-tools .ui-chip .ui-icon { flex: none; }
     html[data-theme="light"] .ui-head-tools .ui-chip { width: 30px; height: 30px; justify-content: center; padding: 0; border-radius: 10px; }
     html[data-theme="light"] .ui-head-tools .ui-chip .ui-chip-label { display: none; }
 }
+
+/* ── 3D building hover card ────────────────────────────────────────────── */
+.building-data-tip .maplibregl-popup-content { min-width: 170px; padding: 9px 11px 8px; font: 12px/1.35 var(--font-sans); }
+.building-data-tip .bt-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 5px; }
+.building-data-tip .bt-title { font-weight: 600; font-size: 12.5px; }
+.building-data-tip .bt-pin { font: 500 10.5px var(--font-mono, ui-monospace, monospace); color: var(--text-muted); letter-spacing: .02em; }
+.building-data-tip .bt-row { display: flex; justify-content: space-between; gap: 14px; color: var(--text-muted); }
+.building-data-tip .bt-row b, .building-data-tip .bt-row span + span { color: var(--text-primary); font-weight: 500; }
+.building-data-tip .bt-hint { margin-top: 5px; font-size: 10.5px; color: var(--text-muted); }
+html[data-theme="light"] .building-data-tip .maplibregl-popup-content {
+    background: #fff; color: var(--aino-ink); border: 1px solid var(--aino-line); border-radius: 12px; box-shadow: var(--aino-shadow);
+}
+
+/* ── 3D camera shots (CameraPresets) ───────────────────────────────────── */
+#camera-presets {
+    /* dark keeps the collapsed city chip at bottom centre, so sit above it */
+    position: fixed; left: 50%; bottom: 78px; transform: translateX(-50%); z-index: 950;
+    display: flex; gap: 2px; padding: 4px; border-radius: 14px;
+    background: rgba(12, 18, 32, 0.78); border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+#camera-presets[hidden] { display: none; }
+#camera-presets .cp-btn {
+    display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px 7px 10px; border: 0; border-radius: 10px;
+    background: transparent; color: var(--text-secondary, #b8c2d6); font: 500 12.5px var(--font-sans); cursor: pointer; white-space: nowrap;
+}
+#camera-presets .cp-btn:hover { background: rgba(255, 255, 255, 0.07); color: var(--text-primary); }
+#camera-presets .cp-btn[aria-pressed="true"] { background: rgba(92, 240, 255, 0.14); color: #fff; }
+#camera-presets .cp-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+#camera-presets .cp-detail { color: var(--text-muted); font-weight: 400; }
+html[data-theme="light"] #camera-presets {
+    bottom: 40px;
+    background: #fff; border: 1px solid var(--aino-line); box-shadow: var(--aino-shadow); backdrop-filter: none;
+}
+html[data-theme="light"] #camera-presets .cp-btn { color: var(--aino-ink-2); }
+html[data-theme="light"] #camera-presets .cp-btn:hover { background: var(--aino-hover); color: var(--aino-ink); }
+html[data-theme="light"] #camera-presets .cp-btn[aria-pressed="true"] { background: var(--aino-ink); color: #fff; }
+html[data-theme="light"] #camera-presets .cp-btn[aria-pressed="true"] .cp-detail { color: rgba(255, 255, 255, 0.7); }
+@media (max-width: 768px) {
+    /* icon-only, on the city chip's row so the zoom stack stays clear */
+    #camera-presets, html[data-theme="light"] #camera-presets { left: 128px; bottom: 120px; transform: none; }
+    #camera-presets .cp-detail, #camera-presets .cp-label { display: none; }
+    #camera-presets .cp-btn { padding: 8px 10px; }
+}

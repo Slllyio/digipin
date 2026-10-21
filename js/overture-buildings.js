@@ -199,7 +199,7 @@ const OvertureBuildings = (() => {
         const base = dataColor || ['case', ['get', 'sel'], light ? '#ea8f73' : '#ff9d2e', ramp];
         return {
             'fill-extrusion-color': ['case', ['boolean', ['feature-state', 'hover'], false],
-                light ? '#f3b7a3' : '#ffffff', base],
+                light ? '#ef9a7d' : '#ffffff', base],
             'fill-extrusion-base': 0,
             'fill-extrusion-height': ['get', 'h'],
             'fill-extrusion-opacity': dataColor ? 0.94 : (light ? 0.96 : 0.78),
