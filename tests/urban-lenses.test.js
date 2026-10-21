@@ -131,6 +131,41 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(s).toBeCloseTo(2, 6);
     });
 
+    it('walking network: a river with one far bridge cuts the clinic off from the far bank', () => {
+        // N/E/S/W street grid; no links across the river between columns 2 and 3 except on the last row.
+        const N = 1, E = 4, S = 16, W = 64;
+        const links = codes.map((_, i) => {
+            const r = Math.floor(i / SIZE), c = i % SIZE;
+            let m = 0;
+            if (r > 0) m |= N;                           // block rows run north → south
+            if (r < SIZE - 1) m |= S;
+            if (c > 0 && (c !== 3 || r === SIZE - 1)) m |= W;
+            if (c < SIZE - 1 && (c !== 2 || r === SIZE - 1)) m |= E;
+            return m;
+        });
+        const net = L.walkNet(fr.grid, Float64Array.from(links));
+        expect(net.has).toBe(true);
+        const r = net.reach(0, 2);
+        expect(r.net).toBe(true);
+        const d = new Map(Array.from({ length: r.len }, (_, t) => [r.js[t], r.ds[t]]));
+        expect(d.get(0)).toBe(0);
+        expect(d.get(2)).toBeCloseTo(2 * fr.grid.dx, 6);      // two blocks east, same as straight line
+        expect(d.has(3)).toBe(false);                          // across the river: > 2 km round by the bridge
+        expect(d.get(SIZE + 1)).toBeCloseTo(fr.grid.dx + fr.grid.dy, 6);   // Manhattan, not diagonal
+        const Anet = L.e2sfca(fr.grid, health, pop, 2, net), Aeuc = L.e2sfca(fr.grid, health, pop, 2);
+        expect(Aeuc[3]).toBeGreaterThan(0);
+        expect(Anet[3]).toBe(0);
+        expect(Anet.reduce((a, v, i) => a + v * pop[i], 0)).toBeCloseTo(2, 6);
+        // Cells with no links fall back to the straight-line disk.
+        const sparse = L.walkNet(fr.grid, Float64Array.from(links, (m, i) => (i === 5 ? 0 : m)));
+        expect(sparse.reach(5, 1).net).toBe(false);
+        // Pedestrian shed: the river halves what the corner cells reach.
+        const frNet = L.frameFrom(codes, { 'population.population': pop, 'osm_walk.links': links });
+        const shed = L.pedShed(frNet, 1);
+        expect(shed[SIZE * 5 + 2]).toBeLessThan(shed[SIZE * 5 + 7]);
+        expect(shed[SIZE * 5 + 7]).toBeLessThanOrEqual(1);
+    });
+
     it('health lens counts the people beyond the catchment', () => {
         const r = L._lenses.health(fr, {});
         expect(r.stats[1].raw).toBeGreaterThan(0);

@@ -56,7 +56,7 @@ new data.
 | 13 | Neighbourhood archetypes (k-means) | What kinds of places make up this city? | Yes | M | **Shipped** |
 | 14 | Siting suitability (MCDA / AHP presets) | Where should the next clinic, school, park or cool roof go? | Yes | M | **Shipped** |
 | 15 | Rooftop solar and cooling potential | How much energy could the roofs make? | Yes (heights, sun-hours) | M | **Shipped** |
-| 16 | Network isochrones | True 15-minute reach on the road graph | No: `data/vectors/osm_roads_*` holds tertiary and above only; walking needs residential/footway edges baked by `pipeline/cells/osm_layers.py` in Actions | M–L | Data needed |
+| 16 | Network isochrones | True 15-minute reach on the walking graph | Yes: `osm_walk` (L7, 8-direction cell links from every street, footway and path but motorways) baked by `pipeline/cells/osm_layers.py` in Actions | M | Shipped (falls back to straight line until a city is baked) |
 | 17 | Transit job access | How many jobs within 45 min by bus/metro? | No (GTFS + jobs) | L | Data needed |
 | 18 | Socio-economic sensitivity | Who is poor, old, young (census)? | No (Census / SHRUG) | L | Data needed |
 | 19 | Data confidence layer | How much should I trust this cell? | Yes (coverage) | S | **Shipped** |
@@ -128,7 +128,10 @@ normalised Shannon entropy H = −Σ pᵢ ln pᵢ / ln K of the same categories 
 neighbourhoods (≥ 6 of 7), the missing category most often absent, mix.
 
 **Limits.** OSM completeness varies a lot between Indian cities; Euclidean
-radius overstates reach across rivers and rail (item 16 fixes this).
+reach is measured on the `osm_walk` cell graph (item 16), so rivers and rail
+without a crossing cut it off; at 244 m cells the graph resolves which
+neighbouring blocks connect, not individual footpaths. Cities without a baked
+walking graph fall back to the straight-line radius, and the card says which.
 
 ## 4. Healthcare access (Enhanced 2SFCA)
 
@@ -234,8 +237,15 @@ quintile (HVI, flood risk, PM2.5), weighted by population.
   building cover), EV chargers. Extends `analysis.js` "index" sections.
 - **Rooftop solar.** Building footprints × sun-hours × panel yield;
   per-cell kWh and share of demand.
-- **Network isochrones.** Replace the Euclidean radius of lenses 3–4 with
-  walking time on the OSM road graph (detour index 1.3 as an interim factor).
+- **Network isochrones (shipped).** `osm_walk` stores one byte per L7 cell:
+  which of its 8 neighbours a mapped street, footway or path leads into
+  (densified to a quarter cell; motorways, `foot=no` and private access
+  excluded). `UrbanLenses.walkNet(grid, links).reach(i, km)` runs Dijkstra
+  over those links with centre-to-centre step costs. The 15-minute lens and
+  E2SFCA use it for their 1.2 km and 2 km reach, and the walkability index
+  averages intersection density with the pedestrian-shed ratio (cells reached
+  within 1 km on foot ÷ cells in the 1 km circle; Dill 2004, Porta & Renne
+  2005). Cells with no links fall back to the straight-line disk.
 - **Transit job access** and **socio-economic sensitivity** need GTFS feeds,
   an employment proxy, and Census 2011 / SHRUG joins via Bharatlas.
 - **Data confidence.** Per-cell completeness: OSM building cover vs Open

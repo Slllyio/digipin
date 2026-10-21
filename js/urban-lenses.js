@@ -34,6 +34,10 @@ const UrbanLenses = (() => {
     const PERF_RATIO = 0.75;
     const KWH_PER_CAPITA = 1395;  // CEA per-capita electricity consumption, 2023-24 (all sectors)
     const URBAN_PCT = 15;     // a cell counts as urban for the LEI at ≥ 15% built-up
+    const SHED_KM = 1;        // pedestrian-shed radius for route directness
+    const WALK_LINKS = 'osm_walk.links';
+    // Walk-link mask bit i = neighbour DIRS[i] as [dRow, dCol] (pipeline/cells/osm_layers.py).
+    const DIRS = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
     const LEED_JX = 54;       // LEED-ND connectivity bar: 140 intersections / sq mi ≈ 54 / km²
 
     // ── catalogue of lenses ─────────────────────────────────────────────────
@@ -57,14 +61,14 @@ const UrbanLenses = (() => {
             question: 'Can people reach daily needs on foot?',
             field: { key: 'fifteen_min', label: '15-minute completeness', unit: '0-100', higherIs: 'better', ramp: 'greens' },
             extra: [{ key: 'mix', label: 'Land-use mix (entropy)', unit: '0-100', higherIs: 'better', ramp: 'viridis' }],
-            needs: ESSENTIALS.map(c => `osm_amenities.${c}`),
-            method: `Share of seven essentials (${ESSENTIALS.join(', ')}) with at least one place within ${WALK_KM} km (a 15-minute walk, straight line). Land-use mix is the normalised Shannon entropy of the same categories within ${MIX_KM * 1000} m.`,
+            needs: [...ESSENTIALS.map(c => `osm_amenities.${c}`), WALK_LINKS],
+            method: `Share of seven essentials (${ESSENTIALS.join(', ')}) with at least one place within ${WALK_KM} km (a 15-minute walk) along the OpenStreetMap walking network: Dijkstra over cell-to-cell street and footpath links, straight line only where no walking graph is baked. Land-use mix is the normalised Shannon entropy of the same categories within ${MIX_KM * 1000} m.`,
             refs: 'Moreno et al. 2021; Frank et al. 2006 (entropy mix)' },
         { id: 'health', equity: true, title: 'Healthcare access', icon: '🏥',
             question: 'Where is care scarce for the people who need it?',
             field: { key: 'health_access', label: 'Healthcare places per 10k in reach', unit: 'per 10k', higherIs: 'better', ramp: 'greens' },
-            needs: ['osm_amenities.healthcare'],
-            method: `Enhanced two-step floating catchment (E2SFCA): each facility’s supply is shared among the residents within ${CATCH_KM} km with Gaussian distance decay, then each cell sums the ratios it can reach. Facilities per 10 000 residents in reach.`,
+            needs: ['osm_amenities.healthcare', WALK_LINKS],
+            method: `Enhanced two-step floating catchment (E2SFCA): each facility’s supply is shared among the residents within ${CATCH_KM} km walking distance on the OpenStreetMap street and footpath network (straight line where no walking graph is baked) with Gaussian distance decay, then each cell sums the ratios it can reach. Facilities per 10 000 residents in reach.`,
             refs: 'Luo & Wang 2003; Luo & Qi 2009; Dai 2010' },
         { id: 'air', title: 'Air pollution exposure', icon: '🌫',
             question: 'How many people breathe air above the standard?',
@@ -81,10 +85,10 @@ const UrbanLenses = (() => {
         { id: 'walk', title: 'Walkability index', icon: '👣', equity: true,
             question: 'Is the street fabric walkable, beyond counting shops?',
             field: { key: 'walk_index', label: 'Walkability index', unit: '0-100', higherIs: 'better', ramp: 'greens' },
-            needs: ['osm_roads.junctions_km2', 'scores.walkability'],
+            needs: ['osm_roads.junctions_km2', 'scores.walkability', WALK_LINKS],
             after: ['fifteen'],
-            method: 'Frank et al. walkability index: 2 × z(intersection density) + z(residential density) + z(land-use mix), over the city’s populated cells, reported as a city percentile. Retail floor-area ratio, the fourth term, has no open data here. The correlation with the OSM-based walkability score says whether the two agree.',
-            refs: 'Frank et al. 2010 (Br J Sports Med); Frank et al. 2006' },
+            method: 'Frank et al. walkability index: 2 × z(connectivity) + z(residential density) + z(land-use mix), over the city’s populated cells, reported as a city percentile. Connectivity is intersection density, averaged with the pedestrian-shed ratio (area reachable within 1 km on the walking network ÷ the 1 km circle) where the OpenStreetMap walking graph is baked. Retail floor-area ratio, the fourth term, has no open data here. The correlation with the OSM-based walkability score says whether the two agree.',
+            refs: 'Frank et al. 2010 (Br J Sports Med); Frank et al. 2006; Dill 2004 and Porta & Renne 2005 (pedestrian shed ratio)' },
         { id: 'sprawl', title: 'Sprawl and compactness', icon: '🏙',
             question: 'Is the city growing by infill, at its edge, or by leapfrogging?',
             field: { key: 'lei', label: 'Landscape expansion index (new built-up)', unit: '0-100', higherIs: null, ramp: 'viridis' },
@@ -293,6 +297,90 @@ const UrbanLenses = (() => {
             return j == null ? -1 : j;
         }
         return { n, codes, row, col, lat, lng, dx, dy, cellKm2: dx * dy, offsets, cellAt };
+    }
+
+    /**
+     * Walking distances on the cell graph. `links` is the per-cell 8-direction
+     * mask from osm_walk; reach(i, km) runs Dijkstra from cell i (step cost =
+     * the centre-to-centre distance) and returns { js, ds, len, net } with
+     * buffers reused between calls. Cells without links fall back to the
+     * straight-line disk (net = false). Exported for tests.
+     */
+    function walkNet(g, links) {
+        const has = !!links && links.some(v => v > 0);
+        const step = DIRS.map(([a, b]) => Math.hypot(a * g.dy, b * g.dx));
+        const dist = new Float64Array(g.n).fill(Infinity);
+        let js = new Int32Array(64), ds = new Float64Array(64);
+        let hd = new Float64Array(64), hj = new Int32Array(64);
+        const euc = new Map();
+        function euclid(i, km) {
+            if (!euc.has(km)) euc.set(km, g.offsets(km));
+            let len = 0;
+            const off = euc.get(km);
+            if (js.length < off.length) { js = new Int32Array(off.length * 2); ds = new Float64Array(off.length * 2); }
+            for (const [a, b, d] of off) {
+                const j = g.cellAt(i, a, b);
+                if (j >= 0) { js[len] = j; ds[len++] = d; }
+            }
+            return { js, ds, len, net: false };
+        }
+        function reach(i, km) {
+            if (!has || !(links[i] > 0)) return euclid(i, km);
+            let hn = 0, len = 0;
+            const push = (d, j) => {
+                if (hn === hd.length) {
+                    const d2 = new Float64Array(hn * 2), j2 = new Int32Array(hn * 2);
+                    d2.set(hd); j2.set(hj); hd = d2; hj = j2;
+                }
+                let k = hn++;
+                while (k > 0) {
+                    const p = (k - 1) >> 1;
+                    if (hd[p] <= d) break;
+                    hd[k] = hd[p]; hj[k] = hj[p]; k = p;
+                }
+                hd[k] = d; hj[k] = j;
+            };
+            const pop = () => {
+                const d = hd[0], j = hj[0], ld = hd[--hn], lj = hj[hn];
+                let k = 0;
+                for (;;) {
+                    let c = 2 * k + 1;
+                    if (c >= hn) break;
+                    if (c + 1 < hn && hd[c + 1] < hd[c]) c++;
+                    if (hd[c] >= ld) break;
+                    hd[k] = hd[c]; hj[k] = hj[c]; k = c;
+                }
+                hd[k] = ld; hj[k] = lj;
+                return [d, j];
+            };
+            dist[i] = 0; push(0, i);
+            while (hn) {
+                const [d, j] = pop();
+                if (d > dist[j]) continue;
+                if (len === js.length) {
+                    const a2 = new Int32Array(len * 2), b2 = new Float64Array(len * 2);
+                    a2.set(js); b2.set(ds); js = a2; ds = b2;
+                }
+                js[len] = j; ds[len++] = d;
+                const m = links[j];
+                if (!(m > 0)) continue;
+                for (let b = 0; b < 8; b++) {
+                    if (!((m >> b) & 1)) continue;
+                    const k = g.cellAt(j, DIRS[b][0], DIRS[b][1]);
+                    if (k < 0) continue;
+                    const nd = d + step[b];
+                    if (nd <= km + 1e-9 && nd < dist[k]) { dist[k] = nd; push(nd, k); }
+                }
+            }
+            for (let q = 0; q < len; q++) dist[js[q]] = Infinity;
+            return { js, ds, len, net: true };
+        }
+        return { reach, has };
+    }
+
+    function _net(fr) {
+        if (!fr._net) Object.defineProperty(fr, '_net', { value: walkNet(fr.grid, fr.cols[WALK_LINKS]), enumerable: false });
+        return fr._net;
     }
 
     /** A frame from in-memory columns (tests, ingested data). */
@@ -506,7 +594,8 @@ const UrbanLenses = (() => {
         const cats = ESSENTIALS.filter(k => c[`osm_amenities.${k}`]);
         if (cats.length < 3) return null;
         const has = cats.map(k => c[`osm_amenities.${k}`]);
-        const walk = g.offsets(WALK_KM), near = g.offsets(MIX_KM);
+        const near = g.offsets(MIX_KM), net = _net(fr);
+        let onNet = 0;
         const score = new Float64Array(n), mix = new Float64Array(n);
         const missCount = new Float64Array(cats.length);
         const pop = c['population.population'];
@@ -515,12 +604,11 @@ const UrbanLenses = (() => {
         const cnt = new Float64Array(cats.length);
         for (let i = 0; i < n; i++) {
             let k = 0;
+            const r = net.reach(i, WALK_KM);
+            if (r.net && isRes[i]) onNet += pop[i];
             for (let q = 0; q < cats.length; q++) {
                 let found = false;
-                for (const [a, b] of walk) {
-                    const j = g.cellAt(i, a, b);
-                    if (j >= 0 && has[q][j] > 0) { found = true; break; }
-                }
+                for (let t = 0; t < r.len; t++) if (has[q][r.js[t]] > 0) { found = true; break; }
                 if (found) k++;
                 else if (isRes[i]) missCount[q] += pop[i];
             }
@@ -551,6 +639,7 @@ const UrbanLenses = (() => {
                 { label: `Residents with ≥ ${cats.length - 1} of ${cats.length}`, value: _people(complete), raw: Math.round(complete) },
                 { label: 'Residents with none in reach', value: _people(none), raw: Math.round(none) },
                 { label: 'Most-missing essential', value: cats[worstQ] },
+                _distStat(onNet, total),
             ],
         };
     }
@@ -559,34 +648,51 @@ const UrbanLenses = (() => {
      * E2SFCA accessibility. `supply`, `demand` per cell; returns A per cell
      * (supply per person in reach). Gaussian decay, catchment d0 km.
      */
-    function e2sfca(g, supply, demand, d0 = CATCH_KM) {
-        const off = g.offsets(d0);
+    function e2sfca(g, supply, demand, d0 = CATCH_KM, net = null) {
+        net = net || walkNet(g, null);
         const e = Math.exp(-0.5);
-        const G = off.map(([, , d]) => (Math.exp(-0.5 * (d / d0) ** 2) - e) / (1 - e));
+        const G = d => (Math.exp(-0.5 * (d / d0) ** 2) - e) / (1 - e);
         const A = new Float64Array(g.n);
         for (let j = 0; j < g.n; j++) {
             const s = supply[j];
             if (!(s > 0)) continue;
+            // Walking distance is symmetric, so one search from the facility serves both steps.
+            const r = net.reach(j, d0);
             let den = 0;
-            for (let o = 0; o < off.length; o++) {
-                const k = g.cellAt(j, off[o][0], off[o][1]);
-                if (k >= 0 && demand[k] > 0) den += G[o] * demand[k];
-            }
+            for (let t = 0; t < r.len; t++) { const k = r.js[t]; if (demand[k] > 0) den += G(r.ds[t]) * demand[k]; }
             if (!(den > 0)) continue;
             const R = s / den;
-            for (let o = 0; o < off.length; o++) {
-                const k = g.cellAt(j, off[o][0], off[o][1]);
-                if (k >= 0) A[k] += G[o] * R;
-            }
+            for (let t = 0; t < r.len; t++) A[r.js[t]] += G(r.ds[t]) * R;
         }
         return A;
+    }
+
+    /** Pedestrian-shed ratio per cell: cells reachable within km on foot ÷ cells in the km circle. */
+    function pedShed(fr, km = SHED_KM) {
+        const g = fr.grid, net = _net(fr), out = new Float64Array(g.n).fill(NaN);
+        if (!net.has) return null;
+        const links = fr.cols[WALK_LINKS];
+        const disk = g.offsets(km);
+        for (let i = 0; i < g.n; i++) {
+            if (!(links[i] > 0)) continue;
+            let all = 0;
+            for (const [a, b] of disk) if (g.cellAt(i, a, b) >= 0) all++;
+            out[i] = all ? net.reach(i, km).len / all : NaN;
+        }
+        return out;
+    }
+
+    function _distStat(onNet, total) {
+        return { label: 'Distances measured', value: onNet > 0 ? `on the walking network for ${_round(100 * onNet / (total || 1))}% of residents` : 'straight line (no walking graph baked)' };
     }
 
     function health(fr) {
         const c = fr.cols, idx = _residents(fr);
         const sup = c['osm_amenities.healthcare'], pop = c['population.population'];
         if (!sup || !pop) return null;
-        const A = e2sfca(fr.grid, sup, pop).map(x => x * 1e4);
+        const net = _net(fr);
+        const A = e2sfca(fr.grid, sup, pop, CATCH_KM, net).map(x => x * 1e4);
+        const links = fr.cols[WALK_LINKS];
         const total = _sumOver(pop, idx, () => true);
         const med = wquantile(A, pop, idx, 0.5);
         const desert = _sumOver(pop, idx, i => A[i] === 0);
@@ -600,6 +706,7 @@ const UrbanLenses = (() => {
                 { label: 'Median places per 10k residents in reach', value: med != null ? String(_round(med, 2)) : '–' },
                 { label: `No healthcare within ${CATCH_KM} km`, value: _people(desert), raw: Math.round(desert) },
                 { label: 'Below a quarter of the median', value: low != null ? _people(low) : '–' },
+                _distStat(net.has ? _sumOver(pop, idx, i => links[i] > 0) : 0, total),
             ],
         };
     }
@@ -720,7 +827,10 @@ const UrbanLenses = (() => {
         const jx = c['osm_roads.junctions_km2'], dens = c['population.density_km2'];
         const mix = done.fifteen && done.fifteen.columns.mix;
         if (!jx || !dens) return null;
-        const zj = _z(jx, idx), zd = _z(dens.map(v => Math.log1p(Math.max(0, v))), idx), zm = mix ? _z(mix.map(v => (_fin(v) ? v : 0)), idx) : null;
+        const shed = pedShed(fr);
+        const zj0 = _z(jx, idx), zs = shed ? _z(shed, idx) : null;
+        const zj = zs ? zj0.map((v, i) => (_fin(zs[i]) && _fin(v) ? (v + zs[i]) / 2 : v)) : zj0;
+        const zd = _z(dens.map(v => Math.log1p(Math.max(0, v))), idx), zm = mix ? _z(mix.map(v => (_fin(v) ? v : 0)), idx) : null;
         const raw = new Float64Array(n).fill(NaN);
         for (const i of idx) {
             if (!_fin(zj[i]) || !_fin(zd[i])) continue;
@@ -745,6 +855,7 @@ const UrbanLenses = (() => {
                 { label: 'Mean index per resident', value: `${_round(wmean(out, pop, idx))} / 100` },
                 { label: 'Junctions / km²: top vs bottom fifth', value: `${_round(jTop)} vs ${_round(jLow)}` },
                 { label: 'Correlation with OSM walkability score', value: r != null ? String(_round(r, 2)) : '–' },
+                ...(shed ? [{ label: `Pedestrian-shed ratio (${SHED_KM} km on foot ÷ circle), per resident`, value: String(_round(wmean(shed, pop, idx.filter(i => _fin(shed[i]))), 2)) }] : []),
             ],
         };
     }
@@ -1646,7 +1757,7 @@ const UrbanLenses = (() => {
         SCHEMA, LENS_SCHEMA, LENSES, PRESETS, ESSENTIALS, CELL_DEG, GHI,
         catalog, lens, site, areaProfile, leagueFor, ahp, within,
         prank, wmean, wquantile, gini, lorenz, palma, ols, pearson, grid, frameFrom, frame, allNeeds,
-        e2sfca, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
+        e2sfca, walkNet, pedShed, DIRS, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
         _lenses: RUN,
     };
 })();
