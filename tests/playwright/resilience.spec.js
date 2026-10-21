@@ -98,7 +98,9 @@ test.describe('resilience', () => {
     await expect(row).toContainText(/estimated heights/);
     expect(dropped).toBeGreaterThan(0);
     expect(await page.evaluate(() => DeckBuildings.heightsCacheStats().failed)).toBeGreaterThan(0);
-    expect(await page.evaluate(() => DeckBuildings.isEnabled())).toBe(true);   // the city still draws
+    // The city still draws: both layers stay on (which renderer draws them is
+    // the theme's choice: deck.gl in dark, MapLibre extrusions in light).
+    expect(await page.evaluate(() => ['btn-buildings', 'btn-3d'].map((id) => LayersPanel.isActive(id)))).toEqual([true, true]);
     expect(await page.evaluate(() => CrashGuard.count())).toBe(0);
     // Link back: Retry fetches the grid and the row goes.
     await page.unroute('**/data/heights/*_heights_digipin.json*');
