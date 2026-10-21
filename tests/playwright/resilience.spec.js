@@ -110,6 +110,28 @@ test.describe('resilience', () => {
     expect(stats.failed).toBe(0);
     expect(stats.grids).toBeGreaterThan(0);
   });
+
+  test('the point-cloud viewer failing to download says so and frees the panel', async ({ page }) => {
+    // The viewer library is an ESM download from jsdelivr at first use. With
+    // it refused, the sample button must end in an error toast, with the
+    // panel's controls enabled again and no uncaught error. (Inside the no-SW
+    // block: sw.js also fronts cross-origin fetches, so with it on the route
+    // never saw the import and the real library loaded in CI.)
+    await page.route(/maplibre-gl-lidar|hobu-lidar/, (r) => r.abort('failed'));
+    await page.goto('/app.html');
+    await waitForApp(page);
+    expect(await page.evaluate(() => PointCloud.open())).toBe(true);
+    const panel = page.locator('#point-cloud-panel');
+    await expect(panel).toBeVisible();
+    await panel.locator('.point-cloud-sample').click();
+    await expect(page.locator('#toast-container .toast-error .toast-title', { hasText: 'Point cloud' })).toBeVisible({ timeout: 20_000 });
+    await expect(panel).toHaveAttribute('aria-busy', 'false');
+    await expect(panel.locator('.point-cloud-sample')).toBeEnabled();
+    expect(await page.evaluate(() => PointCloud.isBusy())).toBe(false);
+    expect(await page.evaluate(() => CrashGuard.count())).toBe(0);
+    await panel.locator('.point-cloud-close').click();
+    await expect(panel).toHaveCount(0);
+  });
   });
 
   test('going offline shows a persistent notice that clears on reconnect', async ({ page, context }) => {
@@ -161,26 +183,6 @@ test.describe('resilience', () => {
     // Once the map is up the splash goes (the stub map reports loaded at once).
     await expect(splash).toBeHidden({ timeout: 20_000 });
     expect(await page.evaluate(() => CrashGuard.count())).toBe(0);
-  });
-
-  test('the point-cloud viewer failing to download says so and frees the panel', async ({ page }) => {
-    // The viewer library is an ESM download from jsdelivr at first use. With
-    // it refused, the sample button must end in an error toast, with the
-    // panel's controls enabled again and no uncaught error.
-    await page.route(/maplibre-gl-lidar/, (r) => r.abort('failed'));
-    await page.goto('/app.html');
-    await waitForApp(page);
-    expect(await page.evaluate(() => PointCloud.open())).toBe(true);
-    const panel = page.locator('#point-cloud-panel');
-    await expect(panel).toBeVisible();
-    await panel.locator('.point-cloud-sample').click();
-    await expect(page.locator('#toast-container .toast-error .toast-title', { hasText: 'Point cloud' })).toBeVisible({ timeout: 20_000 });
-    await expect(panel).toHaveAttribute('aria-busy', 'false');
-    await expect(panel.locator('.point-cloud-sample')).toBeEnabled();
-    expect(await page.evaluate(() => PointCloud.isBusy())).toBe(false);
-    expect(await page.evaluate(() => CrashGuard.count())).toBe(0);
-    await panel.locator('.point-cloud-close').click();
-    await expect(panel).toHaveCount(0);
   });
 
   test('a failing upstream feature fetch shows a cell without crashing', async ({ page }) => {
