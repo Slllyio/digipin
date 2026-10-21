@@ -103,6 +103,17 @@ const DISHATools = (() => {
             example: '[ACTION] compareCities a:indore b:pune',
         },
         {
+            name: 'runAgent', type: 'runagent', kind: 'state', agentOnly: true,
+            args: {
+                agent: { type: 'enum', values: ['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes'], required: true },
+                use: { type: 'enum', values: ['housing', 'clinic', 'school', 'retail', 'park'] },
+            },
+            desc: 'Run a saved analysis agent on the selected neighbourhood (or the map view) and paint its result layer: '
+                + 'brief, site (with use:housing|clinic|school|retail|park), flood, heat, access (15-minute), growth, changes. '
+                + 'Returns the report summary and top findings.',
+            example: '[ACTION] runAgent agent:site use:clinic',
+        },
+        {
             name: 'runIsochrone', type: 'runisochrone', kind: 'state', agentOnly: true,
             args: { code: { type: 'digipin' }, lat: { type: 'number' }, lng: { type: 'number' } },
             desc: 'Show 5/10/15-minute walking zones around a cell or point.',

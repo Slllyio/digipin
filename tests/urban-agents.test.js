@@ -1,0 +1,128 @@
+import { describe, it, expect } from 'vitest';
+import { readFileSync, existsSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// UrbanAgents, UrbanLenses, UrbanInsights and DigiPin are exposed by tests/setup.js.
+const A = globalThis.UrbanAgents;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.join(__dirname, '..');
+
+let realStore = null;
+async function store() {
+    if (realStore) return realStore;
+    globalThis.fetch = async (url) => {
+        const f = path.join(ROOT, String(url).split('?')[0]);
+        if (!existsSync(f)) return new Response('not found', { status: 404 });
+        return new Response(readFileSync(f), { status: 200 });
+    };
+    await globalThis.CellStore.init();
+    realStore = globalThis.CellStore;
+    return realStore;
+}
+
+// Rajwada, central Indore, as a level-5 neighbourhood.
+const HOOD = { code: globalThis.DigiPin.encode(22.7186, 75.8553).replace(/-/g, '').slice(0, 5) };
+
+describe('UrbanAgents catalogue and plans', () => {
+    it('offers the seven agents with unique ids', () => {
+        const ids = A.TEMPLATES.map(t => t.id);
+        expect(ids).toEqual(['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes']);
+        expect(new Set(ids).size).toBe(ids.length);
+    });
+
+    it('plans before running, with defaults filled and bad params replaced', () => {
+        const p = A.plan({ agent: 'site', params: { use: 'nonsense' } });
+        expect(p.params.use).toBe('clinic');
+        expect(p.steps.map(s => s.tool)).toEqual(['loadData', 'rankSites', 'pickSites', 'layer']);
+        expect(p.steps[1].detail).toContain('healthcare_access');
+        expect(A.plan({ agent: 'site', params: { use: 'park' } }).steps[1].label).toContain('park');
+        expect(() => A.plan({ agent: 'nope' })).toThrow(/Unknown agent/);
+    });
+});
+
+describe('UrbanAgents helpers', () => {
+    it('ranks within a set, averaging ties', () => {
+        const r = A.prank([5, 1, 5, 9], [0, 1, 2, 3]);
+        expect(r[1]).toBe(0);
+        expect(r[0]).toBeCloseTo(0.5);
+        expect(r[2]).toBeCloseTo(0.5);
+        expect(r[3]).toBe(1);
+    });
+
+    it('spreads picks one per parent cell', () => {
+        const picks = A.spread([{ code: 'AB1' }, { code: 'AB2' }, { code: 'AC1' }, { code: 'AD1' }], 2, 2);
+        expect(picks.map(p => p.code)).toEqual(['AB1', 'AC1']);
+    });
+
+    it('tests cell membership for prefix, bbox and polygon areas', () => {
+        const code = globalThis.DigiPin.encode(22.7186, 75.8553).replace(/-/g, '');
+        expect(A.inArea(code.slice(0, 7), { kind: 'prefix', code: code.slice(0, 5) })).toBe(true);
+        expect(A.inArea('2222222', { kind: 'prefix', code: code.slice(0, 5) })).toBe(false);
+        const bbox = { west: 75.85, south: 22.71, east: 75.86, north: 22.73 };
+        expect(A.inArea(code.slice(0, 8), { kind: 'bbox', bbox })).toBe(true);
+        const ring = [[75.80, 22.70], [75.80, 22.74], [75.84, 22.74], [75.84, 22.70]];
+        expect(A.inArea(code.slice(0, 8), { kind: 'polygon', bbox: { west: 75.8, south: 22.7, east: 75.84, north: 22.74 }, polygon: ring })).toBe(false);
+    });
+});
+
+describe('UrbanAgents runs on the committed store', () => {
+    it('site suitability ranks cells inside the area, one site per neighbourhood, with a layer', async () => {
+        const s = await store();
+        const steps = [];
+        const { report, layer } = await A.run({ agent: 'site', area: HOOD, params: { use: 'clinic' } }, s, { onStep: (x) => steps.push(`${x.tool}:${x.status}`) });
+        expect(report.schema).toBe('digipin.agent-report/1');
+        expect(report.summary).toMatch(/best clinic site/);
+        expect(report.findings.length).toBeGreaterThan(0);
+        for (const f of report.findings) expect(f.cells[0].startsWith(HOOD.code)).toBe(true);
+        expect(report.findings.length).toBeGreaterThan(1);
+        const parents = report.findings.map(f => f.cells[0].slice(0, 6));
+        expect(new Set(parents).size).toBe(parents.length);
+        expect(layer.spec.id).toBe('agent_site');
+        expect(layer.table.cells.every(c => c.startsWith(HOOD.code))).toBe(true);
+        const vals = layer.table.columns.suitability;
+        expect(vals.every(v => v >= 0 && v <= 100)).toBe(true);
+        expect(steps).toEqual(['loadData:running', 'loadData:done', 'rankSites:running', 'rankSites:done', 'pickSites:running', 'pickSites:done', 'layer:running', 'layer:done']);
+        expect(report.steps.every(x => x.status === 'done')).toBe(true);
+        expect(report.sources.map(x => x.id)).toContain('scores');
+        expect(JSON.parse(JSON.stringify(report))).toEqual(report);   // plain JSON: savable and shareable
+    }, 60000);
+
+    it('heat vulnerability slices the city lens to the area', async () => {
+        const s = await store();
+        const { report, layer } = await A.run({ agent: 'heat', area: HOOD }, s);
+        expect(report.summary).toMatch(/most heat-vulnerable tenth/);
+        expect(report.metrics[0].label).toBe('Residents in the area');
+        expect(layer.spec.fields[0].key).toBe('hvi');
+        expect(layer.table.cells.every(c => c.startsWith(HOOD.code))).toBe(true);
+        expect(report.findings.filter(f => f.kind === 'concern').length).toBeGreaterThan(0);
+    }, 60000);
+
+    it('city-wide access ignores near-empty cells when naming the worst gaps', async () => {
+        const s = await store();
+        const { report } = await A.run({ agent: 'access', area: { city: 'indore_pilot' } }, s);
+        const gaps = report.findings.filter(f => f.kind === 'concern');
+        expect(gaps.length).toBeGreaterThan(0);
+        for (const g of gaps) expect(Number(g.detail.match(/^([\d,]+) residents/)[1].replace(/,/g, ''))).toBeGreaterThanOrEqual(50);
+        expect(report.metrics.find(m => m.label === 'In the least walkable tenth').value).not.toMatch(/^0 /);
+    }, 60000);
+
+    it('marks a failing step failed and rethrows', async () => {
+        const s = await store();
+        const steps = [];
+        await expect(A.run({ agent: 'site', area: { code: '22222' } }, s, { onStep: (x) => steps.push(`${x.tool}:${x.status}`) })).rejects.toThrow();
+        expect(steps.filter(x => x.endsWith(':failed'))).toHaveLength(1);
+        expect(steps).not.toContain('layer:done');
+        await expect(A.run({ agent: 'brief', area: null }, s)).rejects.toThrow(/Pick an area/);
+    }, 60000);
+
+    it('every agent produces a report for a neighbourhood', async () => {
+        const s = await store();
+        for (const t of A.TEMPLATES) {
+            const { report } = await A.run({ agent: t.id, area: HOOD }, s);
+            expect(report.summary, t.id).toBeTruthy();
+            expect(report.steps.some(x => x.status === 'failed'), t.id).toBe(false);
+            expect(A.toText(report)).toContain(report.title);
+        }
+    }, 120000);
+});

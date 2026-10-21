@@ -121,6 +121,9 @@ const App = (() => {
         step('InsightsPanel', () => {
             if (typeof InsightsPanel !== 'undefined') InsightsPanel.init();
         });
+        step('AgentsPanel', () => {
+            if (typeof AgentsPanel !== 'undefined') AgentsPanel.init();
+        });
         step('search', () => initSearch());
         step('queryPanel', () => initQueryPanel());
         step('sidebar', () => initSidebar());

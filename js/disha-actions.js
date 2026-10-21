@@ -313,6 +313,13 @@ const DISHAActions = (() => {
             return { label: `Compared ${r.a.label} vs ${r.b.label}`, observation: `compare:\n${UI.toText(r)}` };
         },
 
+        async runagent(p) {
+            const AP = _g('AgentsPanel'), UA = _g('UrbanAgents');
+            if (!AP || !UA) throw new Error('agents unavailable');
+            const r = await AP.runFor(p.agent, p.use ? { use: p.use } : {});
+            return { label: `${r.title}: ${r.area.label}`, observation: `runAgent ${p.agent}:\n${UA.toText(r)}` };
+        },
+
         finish() { return { label: 'done', observation: '' }; },
     };
 

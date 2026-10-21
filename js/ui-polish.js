@@ -76,7 +76,7 @@ const UIPolish = (() => {
         'btn-heat': 'thermo', 'btn-ndvi': 'leaf', 'btn-bivariate': 'palette',
         'btn-viewshed': 'eye', 'btn-kde': 'flame', 'btn-access': 'walk',
         'btn-choropleth': 'grid', 'btn-area': 'area',
-        'btn-insights': 'radar', 'btn-hydrology': 'droplet',
+        'btn-insights': 'radar', 'btn-hydrology': 'droplet', 'btn-agents': 'sparkle',
     };
 
     /** Inline SVG markup for an icon key ('' for unknown keys). */

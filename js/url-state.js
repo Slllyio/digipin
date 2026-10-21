@@ -17,6 +17,7 @@
  *   &bh=<ds:field>    field driving the 3D buildings' height
  *   &t=<step>         time-slider step for temporal cell layers ("2025-04")
  *   &intel=<tab>&ic&ia&ib&wi   the open Urban Intelligence view (js/intel-brief.js)
+ *   &ag=<agent>&aa=<area>&ap=  an agent run to re-run on open (js/agents-panel.js)
  *
  * parse()/stringify() are pure (unit-tested). capture()/apply()/init() touch the
  * running app and degrade quietly when a module or the map isn't ready.
@@ -73,6 +74,8 @@ const URLState = (() => {
         if (_step(p.get('t'))) state.t = p.get('t');
         const intel = typeof IntelBrief !== 'undefined' ? IntelBrief.parseParams(p) : null;
         if (intel) state.intel = intel;
+        const agent = typeof AgentsPanel !== 'undefined' ? AgentsPanel.parseParams(p) : null;
+        if (agent) state.agent = agent;
         const an = p.get('an');
         if (an) {
             try {
@@ -107,6 +110,7 @@ const URLState = (() => {
         if (_bkey(state.bheight)) p.set('bh', state.bheight);
         if (_step(state.t)) p.set('t', state.t);
         if (state.intel && typeof IntelBrief !== 'undefined') IntelBrief.toParams(state.intel).forEach(([k, v]) => p.set(k, v));
+        if (state.agent && typeof AgentsPanel !== 'undefined') AgentsPanel.toParams(state.agent).forEach(([k, v]) => p.set(k, v));
         if (Array.isArray(state.annotations) && state.annotations.length) {
             p.set('an', JSON.stringify(state.annotations.map(n =>
                 ({ lat: n.lat, lng: n.lng, text: n.text, color: n.color }))));
@@ -169,6 +173,10 @@ const URLState = (() => {
         if (typeof InsightsPanel !== 'undefined' && InsightsPanel.linkState) {
             const intel = InsightsPanel.linkState();
             if (intel) state.intel = intel;
+        }
+        if (typeof AgentsPanel !== 'undefined' && AgentsPanel.linkState) {
+            const agent = AgentsPanel.linkState();
+            if (agent) state.agent = agent;
         }
         return state;
     }
@@ -282,6 +290,9 @@ const URLState = (() => {
         // The Intel dialog last, once the cell/view it reads is in place.
         if (state.intel && typeof InsightsPanel !== 'undefined' && InsightsPanel.applyLink) {
             Promise.resolve(InsightsPanel.applyLink(state.intel)).catch(() => { /* best-effort */ });
+        }
+        if (state.agent && typeof AgentsPanel !== 'undefined' && AgentsPanel.applyLink) {
+            Promise.resolve(AgentsPanel.applyLink(state.agent)).catch(() => { /* best-effort */ });
         }
     }
 
