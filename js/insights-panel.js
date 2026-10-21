@@ -505,8 +505,87 @@ const InsightsPanel = (() => {
         zones.append(zoneCol('Most livable', z.best, 'strength', 'Livability'), zoneCol('Least livable', z.worst, 'concern', 'Livability'),
             zoneCol('Flood hotspots', z.flood, 'concern', 'Flood risk'));
         body.appendChild(zones);
+        const lb = _el('div', 'ui-leader');
+        body.appendChild(lb);
+        _renderLeaderboard(store, cur.region, lb, seq);
         body.appendChild(_el('p', 'ui-method', d.method));
         body.appendChild(_sourcesFooter(d.sources));
+    }
+
+    // ── Zone leaderboard (City tab) ─────────────────────────────────────────
+
+    const ZONES_ID = 'zones';
+    let _lbField = 'scores.livability';
+
+    async function _renderLeaderboard(store, region, wrap, seq) {
+        const fields = UrbanInsights.rankableFields(store, region);
+        if (!fields.length) return;
+        if (!fields.some(f => `${f.dataset}.${f.key}` === _lbField)) _lbField = `${fields[0].dataset}.${fields[0].key}`;
+        const head = _el('div', 'ui-leader-head');
+        head.appendChild(_el('h4', 'ui-h', 'Zone leaderboard'));
+        const sel = document.createElement('select');
+        sel.className = 'ui-select';
+        sel.setAttribute('aria-label', 'Rank zones by');
+        const groups = new Map();
+        fields.forEach(f => { if (!groups.has(f.group)) groups.set(f.group, []); groups.get(f.group).push(f); });
+        for (const [g, fs] of groups) {
+            const og = document.createElement('optgroup');
+            og.label = g;
+            fs.forEach(f => { const o = document.createElement('option'); o.value = `${f.dataset}.${f.key}`; o.textContent = f.label; og.appendChild(o); });
+            sel.appendChild(og);
+        }
+        sel.value = _lbField;
+        sel.addEventListener('change', () => { _lbField = sel.value; wrap.replaceChildren(); _renderLeaderboard(store, region, wrap, _seq); });
+        head.appendChild(sel);
+        wrap.appendChild(head);
+        const [dataset, field] = _lbField.split('.');
+        let r;
+        try { r = await UrbanInsights.zoneRanking(store, { city: region, dataset, field }); } catch (e) { wrap.appendChild(_el('div', 'ui-empty', e.message)); return; }
+        if (seq !== _seq || !wrap.isConnected) return;
+        if (!r.zones.length) { wrap.appendChild(_el('div', 'ui-empty', 'No zone has enough cells for this field.')); return; }
+        const n = r.zones.length;
+        const lo = Math.min(...r.zones.map(z => z.mean)), hi = Math.max(...r.zones.map(z => z.mean));
+        const list = _el('ol', 'ui-leader-list');
+        const show = n <= 12 ? r.zones : [...r.zones.slice(0, 8), null, ...r.zones.slice(-3)];
+        show.forEach(z => {
+            if (!z) { list.appendChild(_el('li', 'ui-leader-gap', `… ${n - 11} more`)); return; }
+            const li = _el('li', 'ui-leader-row');
+            li.value = z.rank;
+            const b = _btn('', () => {
+                highlight([{ code: z.code, kind: z.rank <= Math.ceil(n / 3) ? (r.higherIs ? 'strength' : 'notable') : z.rank > n - Math.ceil(n / 3) ? (r.higherIs ? 'concern' : 'notable') : 'notable' }]);
+                frame3D([z.code]);
+                _hereArea = { code: z.code, label: `Zone ${z.digipin}` };
+            }, 'ui-leader-btn', `Zone ${z.digipin}: ${UrbanInsights.fmt(z.mean, r.unit)} over ${z.cells} cells. Click to fly there; open Here for its insights.`);
+            b.appendChild(_el('span', 'ui-leader-rank', `#${z.rank}`));
+            b.appendChild(_el('span', 'ui-zone-code', z.digipin));
+            const bar = _el('span', 'ui-leader-bar');
+            const fill = _el('span', `ui-leader-fill${r.higherIs === 'worse' ? ' is-worse' : ''}`);
+            fill.style.width = `${hi > lo ? Math.max(3, ((z.mean - lo) / (hi - lo)) * 100) : 100}%`;
+            bar.appendChild(fill);
+            b.appendChild(bar);
+            b.appendChild(_el('span', 'ui-leader-val', UrbanInsights.fmt(z.mean, r.unit)));
+            li.appendChild(b);
+            list.appendChild(li);
+        });
+        wrap.appendChild(list);
+        const act = _el('div', 'ui-actions');
+        act.appendChild(_btn('Show all zones in 3D', () => _paintZones(r), 'ui-chip ui-chip--primary'));
+        wrap.appendChild(act);
+        wrap.appendChild(_el('p', 'ui-method', `${n} zones · ${r.cityLabel} mean ${UrbanInsights.fmt(r.cityMean, r.unit)}. ${r.method}`));
+    }
+
+    async function _paintZones(r) {
+        if (typeof CellStore === 'undefined' || typeof CellLayers === 'undefined') return;
+        const zs = r.zones.slice().sort((a, b) => (a.code < b.code ? -1 : 1));
+        const ramp = r.higherIs === 'worse' ? 'reds' : r.higherIs === 'better' ? 'greens' : 'viridis';
+        if (CellLayers.isVisible(ZONES_ID)) CellLayers.hide(ZONES_ID);
+        CellStore.register({ id: ZONES_ID, title: `Zones of ${r.cityLabel}: ${r.label}`, description: r.method, source: 'js/urban-insights.js',
+            license: 'Derived from the cell store', group: 'Urban intelligence', level: r.level,
+            fields: [{ key: 'zone_mean', label: r.label, type: 'number', agg: 'mean', unit: r.unit, ramp, higherIs: r.higherIs || undefined }],
+            default: { field: 'zone_mean', extrude: true, heightM: 1200 } },
+        { level: r.level, cells: zs.map(z => z.code), columns: { zone_mean: zs.map(z => z.mean) } });
+        await CellLayers.show(ZONES_ID, { field: 'zone_mean', extrude: true });
+        frame3D(zs.map(z => z.code), { wide: true });
     }
 
     // ── What changed (City tab) ─────────────────────────────────────────────
@@ -997,6 +1076,53 @@ const InsightsPanel = (() => {
         }
     }
 
+    /** "Through the lenses": the scenario's effect in heat, access and exposure terms (js/scenario-lenses.js). */
+    function _lensCard(results) {
+        const card = _el('div', 'ui-lens-impact');
+        const list = (Array.isArray(results) ? results : [results]).filter(Boolean);
+        if (typeof ScenarioLenses === 'undefined' || !list.length) return card;
+        card.appendChild(_el('div', 'ui-h', 'Through the lenses'));
+        const wait = _el('div', 'ui-empty', 'Re-running the city’s lenses with this change…');
+        card.appendChild(wait);
+        const store = _store();
+        ScenarioLenses.impact(list, store).then(im => {
+            _lastLens = im;
+            wait.remove();
+            card.appendChild(_el('div', 'ui-headline ui-lens-sum', im.summary));
+            card.appendChild(_el('div', 'ui-muted', im.residentsText));
+            for (const l of im.lenses) {
+                const box = _el('div', 'ui-lens-row');
+                const h = _el('div', 'ui-lens-h');
+                h.appendChild(_el('span', null, `${l.icon} ${l.title}`));
+                if (l.gini && l.gini.before != null) {
+                    const better = l.gini.after < l.gini.before, same = l.gini.after === l.gini.before;
+                    h.appendChild(_el('span', `ui-yoy ${same ? '' : better ? 'is-good' : 'is-bad'}`, `Gini ${l.gini.before} → ${l.gini.after}`));
+                }
+                box.appendChild(h);
+                l.rows.forEach(x => {
+                    const row = _el('div', `ui-metric${x.flag ? ' is-flag' : ''}`);
+                    row.appendChild(_el('span', 'ui-metric-lbl', x.label));
+                    if (x.value != null) row.appendChild(_el('span', 'ui-metric-val', x.value));
+                    else {
+                        const v = _el('span', 'ui-metric-val');
+                        const fmt = (y) => (x.unit ? UrbanInsights.fmt(y, x.unit) : Number(y).toLocaleString('en-IN'));
+                        v.appendChild(_el('span', 'ui-before', fmt(x.before)));
+                        v.appendChild(document.createTextNode(' → '));
+                        v.appendChild(_el('strong', x.better === true ? 'is-good' : x.better === false ? 'is-bad' : null, fmt(x.after)));
+                        row.appendChild(v);
+                    }
+                    box.appendChild(row);
+                });
+                box.title = l.method;
+                card.appendChild(box);
+            }
+            card.appendChild(_el('p', 'ui-method', im.method));
+        }).catch(e => { wait.textContent = `Lenses unavailable here: ${e && e.message ? e.message : e}`; });
+        return card;
+    }
+
+    let _lastLens = null;
+
     function _drawPlan(out, r) {
         out.replaceChildren();
         out.appendChild(_el('div', 'ui-whatif-title', `Plan · ${r.items.length} scenarios`));
@@ -1022,11 +1148,13 @@ const InsightsPanel = (() => {
             [...(x.closed || []), ...(x.cells || []).slice(0, 30)].forEach(c => hl.push({ code: c.code, kind }));
         });
         r.overlaps.filter(o => o.tradeOff).forEach(o => hl.push({ code: o.code, kind: 'anomaly' }));
-        highlight(hl, { fit: true });
+        highlight(hl, { fit: false });
         const act = _el('div', 'ui-actions');
         act.appendChild(_btn('Copy as text', () => _copy(UrbanInsights.toText(r)), 'ui-chip'));
         act.appendChild(_btn('Printable brief', () => openBrief({ plan: r }), 'ui-chip'));
         out.appendChild(act);
+        out.insertBefore(_lensCard(r.items.filter(x => x.kind === 'whatif')), act);
+        _paintPlan(r);
         out.appendChild(_el('p', 'ui-method', r.method));
         out.appendChild(_sourcesFooter(r.sources));
     }
@@ -1073,7 +1201,70 @@ const InsightsPanel = (() => {
         const top = r.type === 'closure'
             ? [...(r.closed || []).map(c => ({ code: c.code, kind: 'concern' })), ...r.cells.slice(0, 40).map(c => ({ code: c.code, kind: 'notable' }))]
             : r.cells.slice(0, 40).map(c => ({ code: c.code, kind: bad ? 'concern' : 'strength' }));
-        highlight(top, { fit: r.type !== 'flood' });
+        highlight(top, { fit: false });
+        frame3D([...(r.closed || []), ...r.cells].map(c => c.code), { wide: r.type === 'flood' });
+    }
+
+    // ── 3D: plan layer + camera ─────────────────────────────────────────────
+
+    const PLAN_SIGN = { park: -1, cool: -1, density: 0.5, flood: 1, closure: 1 };
+
+    /** One L7 layer for a plan: + where it adds burden (flood, closure, density), − where it adds benefit. */
+    function planLayer(r) {
+        const acc = new Map();
+        r.items.filter(x => x.kind === 'whatif').forEach(x => {
+            const w = PLAN_SIGN[x.type] || 0;
+            for (const c of [...(x.closed || []), ...(x.cells || [])]) {
+                const code = String(c.code).replace(/-/g, '');
+                const kids = code.length >= 7 ? [code.slice(0, 7)] : code.length === 6 ? [...DigiPin.ALPHABET].map(k => code + k) : [];
+                kids.forEach(k => acc.set(k, (acc.get(k) || 0) + w));
+            }
+        });
+        const cells = [...acc.keys()].sort();
+        if (!cells.length) return null;
+        return {
+            spec: { id: WHATIF_ID, title: `Plan: ${r.items.length} scenarios`, description: r.summary, source: 'js/urban-insights.js', license: 'Derived from the cell store',
+                group: 'What-if scenarios', level: 7,
+                fields: [{ key: 'plan_pressure', label: 'Plan: burden (+) vs benefit (−)', type: 'number', agg: 'mean', unit: 'scenarios', ramp: 'diverging', higherIs: 'worse' }],
+                default: { field: 'plan_pressure', extrude: true, heightM: 500 } },
+            table: { level: 7, cells, columns: { plan_pressure: cells.map(c => acc.get(c)) } },
+        };
+    }
+
+    async function _paintPlan(r) {
+        const layer = planLayer(r);
+        if (!layer || typeof CellStore === 'undefined' || typeof CellLayers === 'undefined') return;
+        _clearWhatIf();
+        CellStore.register(layer.spec, layer.table);
+        await CellLayers.show(WHATIF_ID, { field: 'plan_pressure', extrude: true });
+        frame3D(layer.table.cells);
+    }
+
+    /**
+     * Fly the camera to a set of cells in an oblique 3D view, leaving room for
+     * the Intel window (left on desktop, bottom sheet on phones).
+     */
+    function frame3D(codes, opts = {}) {
+        const map = _map();
+        if (!map || !codes || !codes.length) return;
+        let w = Infinity, s = Infinity, e = -Infinity, n = -Infinity;
+        for (const c of codes.slice(0, 4000)) {
+            let b;
+            try { b = DigiPin.decodePartial(String(c).replace(/-/g, '')).bounds; } catch { continue; }
+            w = Math.min(w, b.west); s = Math.min(s, b.south); e = Math.max(e, b.east); n = Math.max(n, b.north);
+        }
+        if (!Number.isFinite(w)) return;
+        const dlg = document.getElementById(DIALOG_ID);
+        const box = dlg && isOpen() ? dlg.getBoundingClientRect() : null;
+        const phone = window.innerWidth <= 640;
+        const padding = { top: 90, right: 60, bottom: 220, left: 60 };
+        if (box && phone) padding.bottom = Math.min(window.innerHeight * 0.6, window.innerHeight - box.top + 20);
+        else if (box) padding.left = Math.min(window.innerWidth * 0.5, box.right + 30);
+        try {
+            const cam = map.cameraForBounds([[w, s], [e, n]], { padding, maxZoom: opts.wide ? 14 : 15 });
+            if (!cam) return;
+            map.easeTo({ ...cam, pitch: 55, bearing: -20, duration: 1400, essential: true });
+        } catch { /* map not ready */ }
     }
 
     function _drawWhatIf(out, r) {
@@ -1116,6 +1307,7 @@ const InsightsPanel = (() => {
         act.appendChild(_btn('Printable brief', () => openBrief({ whatif: r, area: r.area && !r.area.city ? r.area : null }), 'ui-chip'));
         act.appendChild(_btn('➕ Add to plan', () => addToPlan(r), 'ui-chip', 'Keep this scenario and stack it with others'));
         out.appendChild(act);
+        out.insertBefore(_lensCard(r), act);
         const how = _el('details', 'ui-how');
         how.appendChild(_el('summary', null, 'How this is computed'));
         how.appendChild(_el('div', 'ui-formula', r.formula));
@@ -1241,7 +1433,7 @@ const InsightsPanel = (() => {
         _toast('Building the brief', `Reading every dataset for ${UrbanInsights.cityLabel(_city)}…`, 'info');
         let html;
         try {
-            const b = await IntelBrief.build({ city: (opts.whatif && opts.whatif.city) || _city, area: opts.area || null, whatif: opts.whatif || null, plan: opts.plan || null, link: _shareUrl() }, store);
+            const b = await IntelBrief.build({ city: (opts.whatif && opts.whatif.city) || _city, area: opts.area || null, whatif: opts.whatif || null, plan: opts.plan || null, lens: (opts.whatif || opts.plan) ? _lastLens : null, link: _shareUrl() }, store);
             html = IntelBrief.toHTML(b);
         } catch (e) {
             _toast('Brief failed', e && e.message ? e.message : String(e), 'error');
@@ -1277,7 +1469,7 @@ const InsightsPanel = (() => {
     return {
         init, open, close, toggle, isOpen, render, attachTo, highlight, clear,
         findingCard, sparkline, linkState, applyLink, shareLink, openBrief, setArea, latestStep, addToPlan,
-        isDrawing: () => _drawing,
+        isDrawing: () => _drawing, frame3D, planLayer,
         get lastInsights() { return _lastInsights; },
     };
 })();

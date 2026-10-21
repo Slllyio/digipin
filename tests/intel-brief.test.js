@@ -202,3 +202,48 @@ describe('Plans (stacked what-ifs)', () => {
         expect(html).not.toMatch(/<script/i);
     }, 60000);
 });
+
+describe('Scenarios through the lenses', () => {
+    it('trees lower the site’s heat vulnerability; density thins healthcare access; flood reads exposure', async () => {
+        const U = globalThis.UrbanInsights, S = globalThis.ScenarioLenses;
+        const s = await store();
+        const cool = await U.whatIf({ type: 'cool', code: '4FP3PP', trees: 30 }, s);
+        const a = await S.impact(cool, s);
+        const heat = a.lenses.find(l => l.id === 'heat');
+        const site = heat.rows.find(x => /site/.test(x.label));
+        expect(site.after).toBeLessThan(site.before);
+        expect(heat.gini.before).toBeGreaterThan(0);
+        expect(a.residents).toBeGreaterThan(0);
+        const dens = await U.whatIf({ type: 'density', code: '4FP49M', factor: 3 }, s);
+        const d = await S.impact(dens, s);
+        const h = d.lenses.find(l => l.id === 'health').rows.find(x => /site/.test(x.label));
+        expect(h.after).toBeLessThan(h.before);
+        const fl = await U.whatIf({ type: 'flood', level: 'severe', city: 'pune' }, s);
+        const f = await S.impact(fl, s);
+        expect(f.lenses.every(l => l.read)).toBe(true);
+        expect(f.summary).toMatch(/^Of the .* residents in the affected cells/);
+        // A plan applies both changes to one frame.
+        const both = await S.impact([cool, dens], s);
+        expect(both.lenses.map(l => l.id)).toEqual(expect.arrayContaining(['heat', 'health', 'fifteen']));
+        const html = B.toHTML(await B.build({ city: 'pune', whatif: cool, lens: a }, s));
+        expect(html).toContain('Through the urban lenses');
+    }, 120000);
+});
+
+describe('Zone leaderboard', () => {
+    it('ranks a city’s zones best-first on any field', async () => {
+        const U = globalThis.UrbanInsights;
+        const s = await store();
+        const fields = U.rankableFields(s, 'pune');
+        expect(fields.some(f => f.dataset === 'scores' && f.key === 'livability')).toBe(true);
+        const liv = await U.zoneRanking(s, { city: 'pune', dataset: 'scores', field: 'livability' });
+        expect(liv.zones.length).toBeGreaterThan(5);
+        expect(liv.zones[0].rank).toBe(1);
+        expect(liv.zones[0].mean).toBeGreaterThanOrEqual(liv.zones[1].mean);
+        const heat = await U.zoneRanking(s, { city: 'pune', dataset: 'surface_heat', field: 'lst_day_c' });
+        expect(heat.higherIs).toBe('worse');
+        expect(heat.zones[0].mean).toBeLessThanOrEqual(heat.zones[heat.zones.length - 1].mean);
+        expect(heat.zones.every(z => z.code.length === 5 && z.cells >= 3)).toBe(true);
+        await expect(U.zoneRanking(s, { city: 'pune', dataset: 'scores', field: 'nope' })).rejects.toThrow(/No field/);
+    }, 60000);
+});

@@ -163,7 +163,7 @@ const IntelBrief = (() => {
         return {
             schema: SCHEMA, ranAt: now.toISOString(), city, cityLabel: UI.cityLabel(city),
             dashboard: { dataset: dash.dataset, fields: dash.fields, cities: dash.cities, row, method: dash.method },
-            cityInsights: cityIns, changes, areaInsights: areaIns, plan: opts.plan || null, whatif: opts.whatif || null,
+            cityInsights: cityIns, changes, areaInsights: areaIns, plan: opts.plan || null, lens: opts.lens || null, whatif: opts.whatif || null,
             link: opts.link || null, sources,
         };
     }
@@ -219,6 +219,15 @@ const IntelBrief = (() => {
             + `<p class="muted"><b>How:</b> ${_esc(w.formula)}</p>`
             + (w.assumptions && w.assumptions.length ? `<ul class="muted">${w.assumptions.map(a => `<li>${_esc(a)}</li>`).join('')}</ul>` : '')
             + '</section>';
+    }
+
+    function _lens(im) {
+        if (!im || !im.lenses || !im.lenses.length) return '';
+        return `<section><h2>Through the urban lenses</h2><p class="lead">${_esc(im.summary)}</p><p class="muted">${_esc(im.residentsText)}</p>`
+            + im.lenses.map(l => `<h3>${_esc(l.icon)} ${_esc(l.title)}${l.gini && l.gini.before != null ? ` <span class="muted">· Gini ${_esc(l.gini.before)} → ${_esc(l.gini.after)}</span>` : ''}</h3>`
+                + `<table><tbody>${l.rows.map(x => `<tr${x.flag ? ' class="flag"' : ''}><td>${_esc(x.label)}</td><td class="num">${x.value != null ? `<b>${_esc(x.value)}</b>` : `${_esc(x.before)} → <b>${_esc(x.after)}</b>`}</td></tr>`).join('')}</tbody></table>`
+                + `<p class="muted">${_esc(l.method)}</p>`).join('')
+            + `<p class="muted">${_esc(im.method)}</p></section>`;
     }
 
     function _plan(p, link) {
@@ -306,6 +315,7 @@ const IntelBrief = (() => {
             + (area ? `<section><h2>What stands out in ${_esc(area.area.label || 'this area')}</h2>${_findings(area, link)}</section>` : '')
             + _whatif(brief.whatif, link)
             + _plan(brief.plan, link)
+            + _lens(brief.lens)
             + kpi
             + ch
             + (brief.cityInsights ? `<section><h2>What stands out in ${_esc(brief.cityLabel)}</h2>${_findings(brief.cityInsights, link)}</section>` : '')

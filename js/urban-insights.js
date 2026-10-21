@@ -50,7 +50,7 @@ const UrbanInsights = (() => {
         },
     };
     // Runtime layers this module (or the analyses) painted: never analysed.
-    const OWN_LAYERS = new Set(['whatif', 'insights_hotspots', 'analysis_result']);
+    const OWN_LAYERS = new Set(['whatif', 'insights_hotspots', 'analysis_result', 'zones', 'lenses']);
     const FLOOD_LEVELS = { moderate: 0.9, severe: 0.75, extreme: 0.5 };
     const TREND_WINDOW = 12;
 
@@ -765,6 +765,68 @@ const UrbanInsights = (() => {
         const liv = roll('livability').sort((a, b) => b.mean - a.mean);
         const flood = roll('flood_risk').sort((a, b) => b.mean - a.mean);
         return { level: lvl, best: liv.slice(0, 3), worst: liv.slice(-3).reverse(), flood: flood.slice(0, 3) };
+    }
+
+    // ── zone leaderboard ────────────────────────────────────────────────────
+
+    /** Numeric fields a city can be ranked on: [{ dataset, key, label, unit, higherIs, group }]. */
+    function rankableFields(store, city) {
+        const out = [];
+        for (const spec of _usable(store)) {
+            if (city && !(spec.regions || []).some(r => r.name === city)) continue;
+            if (!(spec.level >= 6)) continue;
+            for (const f of spec.fields) {
+                if (f.type && f.type !== 'number') continue;
+                const m = _fieldMeta(spec, f);
+                out.push({ dataset: spec.id, key: f.key, label: m.label, unit: m.unit, higherIs: m.higherIs, group: spec.title || spec.id });
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Rank a city's zones (DIGIPIN level 5, ~4 km by default) on one field:
+     * the mean of their cells (built-up cells only for the scores grid; a
+     * monthly series reads as its last-12-step mean). Rank 1 is the best
+     * zone when the field has a direction, else the highest.
+     */
+    async function zoneRanking(store, opts = {}) {
+        const { city, dataset, field } = opts;
+        const spec = store.get(dataset);
+        if (!spec) throw new Error(`No dataset "${dataset}".`);
+        const f = spec.fields.find(x => x.key === field);
+        if (!f) throw new Error(`No field "${field}" in ${dataset}.`);
+        const table = await _load(store, dataset, city ? _regionBbox(spec, city) : null);
+        if (!table || !table.cells) throw new Error(`No ${dataset} data here.`);
+        const lvl = Math.max(1, Math.min(opts.level || 5, table.level - 1));
+        let idx = city ? cellsInRegion(spec, table, city) : table.cells.map((_, i) => i);
+        if (dataset === 'scores') idx = activeCells(table, idx);
+        const col = scalarColumn(spec, table, field);
+        const minCells = opts.minCells || 3;
+        const acc = new Map();
+        for (const i of idx) {
+            if (!_isNum(col[i])) continue;
+            const k = table.cells[i].slice(0, lvl);
+            const a = acc.get(k) || { n: 0, s: 0 };
+            a.n++; a.s += Number(col[i]);
+            acc.set(k, a);
+        }
+        const meta = _fieldMeta(spec, f);
+        const sign = meta.higherIs === 'worse' ? 1 : -1;
+        const zones = [...acc].filter(([, a]) => a.n >= minCells)
+            .map(([k, a]) => ({ code: k, digipin: _code(k), mean: _round(a.s / a.n, 3), cells: a.n }))
+            .sort((a, b) => sign * (a.mean - b.mean));
+        const sorted = sortedFinite(zones.map(z => z.mean));
+        zones.forEach((z, i) => { z.rank = i + 1; z.pct = _round(percentile(sorted, z.mean), 3); });
+        const cityMean = _round(stats(idx.map(i => col[i])).mean, 3);
+        return {
+            schema: SCHEMA, kind: 'zones', city, cityLabel: cityLabel(city), ...meta, level: lvl,
+            zones, cityMean, temporal: _isTemporal(spec),
+            sources: [sourceOf(spec, store)],
+            method: `Mean of each zone’s ${spec.approxCellM ? `~${spec.approxCellM} m ` : ''}cells (zones with at least ${minCells} cells)`
+                + (dataset === 'scores' ? ', built-up cells only' : '') + (_isTemporal(spec) ? ', reading the series as its last-12-step mean' : '')
+                + `. Rank 1 is ${meta.higherIs ? 'the best' : 'the highest'}.`,
+        };
     }
 
     // ── compare ─────────────────────────────────────────────────────────────
@@ -1510,7 +1572,7 @@ const UrbanInsights = (() => {
         SCHEMA, HEADLINE, COMPOSITES, FLOOD_LEVELS,
         stats, percentile, quantile, cityLabel, fmt, cities, cityAt, resolveArea, cellsInRegion, scalarColumn,
         activeCells, trendOf, neighbours, sourceOf, pointInPolygon, polygonKm2, ols2,
-        areaInsights, changes, runPlan, headline, cityDashboard, compare, whatIf, toLayer, evidence, toText, loadHeights,
+        areaInsights, changes, runPlan, rankableFields, zoneRanking, headline, cityDashboard, compare, whatIf, toLayer, evidence, toText, loadHeights,
     };
 })();
 

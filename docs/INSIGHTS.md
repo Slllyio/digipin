@@ -101,3 +101,17 @@ L7 grid, coarser datasets broadcast from their parent cell. "Map" registers the 
 (3D cells, building colouring, exports). DISHA routes "heat vulnerable", "floodplain", "15-minute",
 "healthcare desert", "PM2.5", "night lights", "compound risk" and "how unequal" questions to it.
 A big city (Delhi, 37k cells) takes about 3 s in the browser, yielding between lenses.
+
+## Scenarios through the lenses, 3D framing, zone leaderboard
+
+- `js/scenario-lenses.js` (`ScenarioLenses.impact(results)`) applies a what-if's change to the lenses' ~244 m frame
+  (js/urban-lenses.js) and re-runs the lenses it can move: trees → heat vulnerability (canopy up, LST down); park →
+  heat and 15-minute (canopy, one leisure place); density → healthcare access (E2SFCA), heat and 15-minute
+  (residents × factor). Flood and road closure change no lens input, so they report who lives in the affected
+  cells (heat-vulnerable, already in the floodplain, no care within 2 km). Equity lenses show the
+  population-weighted Gini before → after. A plan applies every change to one frame. Shown under each what-if
+  and plan ("Through the lenses") and printed in briefs.
+- Every what-if and plan lands as an extruded runtime layer with its legend (plans: `plan_pressure`, + burden /
+  − benefit, diverging), and `InsightsPanel.frame3D` tilts the camera (pitch 55°) to frame it beside the window.
+- Zone leaderboard on the City tab: `UrbanInsights.zoneRanking` ranks a city's ~4 km zones on any numeric field
+  (direction-aware, built-up cells for scores, 12-month mean for series); "Show all zones in 3D" extrudes them.
