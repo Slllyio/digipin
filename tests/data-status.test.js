@@ -76,4 +76,35 @@ describe('DataStatus', () => {
         expect(document.querySelector('#data-status img')).toBeNull();
         expect(document.querySelector('.ds-text').textContent).toContain('<img');
     });
+
+    it('another key arriving or clearing leaves existing rows\' DOM nodes in place', async () => {
+        let runs = 0;
+        DataStatus.set('heights', { text: 'heights missing', action: { label: 'Retry', run: async () => { runs++; return false; } } });
+        const row = document.querySelector('#data-status [data-key="heights"]');
+        const btn = row.querySelector('.ds-action');
+        DataStatus.set('tiles', { text: 'tiles slow' });
+        DataStatus.set('cellgaps:x', { text: 'gaps', kind: 'error' });
+        expect(document.querySelector('#data-status [data-key="heights"]')).toBe(row);
+        expect(row.querySelector('.ds-action')).toBe(btn);
+        expect([...document.querySelectorAll('#data-status .data-status-row')].map((r) => r.dataset.key)).toEqual(['heights', 'tiles', 'cellgaps:x']);
+        DataStatus.clear('tiles');
+        expect(document.querySelector('#data-status [data-key="heights"]')).toBe(row);
+        expect([...document.querySelectorAll('#data-status .data-status-row')].map((r) => r.dataset.key)).toEqual(['heights', 'cellgaps:x']);
+        // A failed Retry keeps the node and hands the button back.
+        btn.click();
+        await new Promise((r) => setTimeout(r, 0));
+        expect(runs).toBe(1);
+        expect(btn.disabled).toBe(false);
+        expect(btn.textContent).toBe('Retry');
+        expect(row.isConnected).toBe(true);
+        // Changed text rebuilds only that row.
+        const gaps = document.querySelector('#data-status [data-key="cellgaps:x"]');
+        DataStatus.set('heights', { text: 'heights missing (2 grids)', action: { label: 'Retry', run: async () => true } });
+        expect(document.querySelector('#data-status [data-key="heights"]')).not.toBe(row);
+        expect(document.querySelector('#data-status [data-key="cellgaps:x"]')).toBe(gaps);
+        // Dismiss removes the node; the rest stay.
+        gaps.querySelector('.ds-dismiss').click();
+        expect(document.querySelector('#data-status [data-key="cellgaps:x"]')).toBeNull();
+        expect(document.querySelectorAll('#data-status .data-status-row').length).toBe(1);
+    });
 });

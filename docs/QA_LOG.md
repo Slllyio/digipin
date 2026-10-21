@@ -4,6 +4,12 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — status strip: rows keep their DOM
+
+- **Gap (CI, twice):** the resilience spec's click on the `heights` Retry button kept finding the button "detached from the DOM" for the whole 300 s window. The first fix (an idempotent `DataStatus.set()` for an unchanged row) was not enough: any other row arriving or clearing (`tiles`, `cellgaps:<id>` while a 3D city loads on the software renderer) rebuilt the whole strip, so the button was replaced between the locator resolving it and the click landing. A user mid-click would lose it the same way, and a screen-reader focus with it.
+- **Fix:** `_render()` is incremental: a row whose text, kind and button label have not changed keeps its node; only changed rows are rebuilt, removed rows are dropped, order is kept. A failed Retry no longer re-renders either: the row stays and the button is handed back enabled.
+- **Guards:** unit test that other keys arriving and clearing, a failed Retry, a text change and a dismiss each leave the untouched rows' nodes in place.
+
 ## 2026-10-21 — 3D draw cost on record
 
 - **Why:** the design thread is adding to the 3D city (trees, edge lines, soft walls, legends, fly-through) and CI's software renderer cannot tell a 3 s frame from a 15 s one in any useful way. What can be measured on any machine is how much geometry each refresh hands deck.gl, and how long the CPU-only harvest + layer build holds the main thread.
