@@ -401,7 +401,8 @@ html[data-theme="light"] .dialog-title-text { font-size: var(--fs-lg); }
 html[data-theme="light"] .splash-mark { background: #292929; color: #fff; box-shadow: var(--elev-2); }
 .splash-title { font: 600 var(--fs-xl)/1.2 var(--font-sans); letter-spacing: -0.01em; margin-top: 8px; }
 html[data-theme="light"] .splash-title { font-family: var(--font-display); font-style: italic; font-weight: 500; color: var(--accent-coral); font-size: 22px; }
-.splash-sub { font-size: var(--fs-sm); color: var(--text-muted); }
+.splash-sub { font-size: var(--fs-sm); color: var(--text-muted); max-width: 320px; text-align: center; padding: 0 16px; }
+.splash-sub.is-slow { color: var(--text-primary); }
 .splash-bar { width: 160px; height: 3px; border-radius: 3px; background: var(--wash-08); overflow: hidden; margin-top: 10px; }
 .splash-bar span { display: block; width: 40%; height: 100%; border-radius: 3px; background: var(--accent-cyan); animation: splash-slide 1.2s var(--ease-in-out) infinite; }
 @keyframes splash-pulse { 50% { transform: scale(0.94); } }

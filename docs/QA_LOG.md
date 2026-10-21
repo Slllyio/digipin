@@ -4,6 +4,13 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — first load on a slow link: a splash that arrives with the page
+
+- **Measured** (Playwright + CDP shaping, stub map, local server, no compression): the app is usable 1.1 s after navigation on an unshaped link, 13 s on fast 3G (1.6 Mbps / 150 ms) and 52 s on slow 3G (400 kbps / 400 ms). 160 requests, 2.9 MB uncompressed (GitHub Pages gzips, so the wire is ~0.8 MB; the 136 `<script>` tags and the round trips they cost dominate on a high-latency link).
+- **Gap:** the loading splash was created by js/ui-polish.js, one of the last deferred scripts, so it appeared only once every script had arrived: body painted at 3 s and the splash at 13.5 s on fast 3G. For 10-50 s the user saw a still skeleton with nothing moving.
+- **Fix:** the splash is static HTML at the top of `<body>` (ui-polish reuses it; hideSplash removes it on map load, after 8 s, or when the engine is missing). An inline timer changes the sub-line to "Still loading — the connection looks slow" at 6 s if the scripts have not run yet, and to a reload hint at 40 s. Resilience spec: fast-3G shaping, splash visible within 8 s of commit, slow note shown while scripts are in flight, splash gone once the app is up.
+- **Not done (bigger than this thread):** fewer requests. A single concatenated bundle (or HTTP/2 push on the host) would take slow-3G first load from ~50 s to ~20 s; noted in tests/perf-budgets.test.js.
+
 ## 2026-10-21 — 3D heights on a flaky link; CI timing on the software renderer
 
 - **Gap:** a baked height grid (1-5 MB per city) that timed out, hit a 5xx or lost the connection was silently replaced by footprint estimates, and the failed load was cached for the session so the real heights never came back. The index had the same one-shot cache. Now a non-404 failure is forgotten (the next pan or Retry refetches), one persistent DataStatus row (`heights`) says the city is drawing estimated heights, and it clears when every grid lands; `DeckBuildings.heightsCacheStats().failed` counts them. 404 stays silent: not baked is not a failure.

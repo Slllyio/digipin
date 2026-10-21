@@ -142,6 +142,27 @@ test.describe('resilience', () => {
     expect(interactiveMs, `interactive after ${interactiveMs} ms`).toBeLessThan(20_000);
   });
 
+  test('a slow link shows the loading splash with the page, not after the scripts', async ({ page, context }) => {
+    // Fast-3G shaping via CDP (Chromium only): the deferred scripts take
+    // ~13 s to arrive, during which the user used to see a still skeleton.
+    const cdp = await context.newCDPSession(page);
+    await cdp.send('Network.enable');
+    await cdp.send('Network.emulateNetworkConditions', { offline: false, downloadThroughput: 1.6e6 / 8, uploadThroughput: 750e3 / 8, latency: 150 });
+    const t0 = Date.now();
+    await page.goto('/app.html', { waitUntil: 'commit' });
+    const splash = page.locator('#app-splash');
+    await expect(splash).toBeVisible({ timeout: 8000 });
+    const shownAfter = Date.now() - t0;
+    expect(shownAfter, `splash visible after ${shownAfter} ms`).toBeLessThan(8000);
+    // The slow-link note replaces the sub-line while the scripts are still in flight.
+    await expect(splash.locator('.splash-sub')).toContainText(/connection looks slow/, { timeout: 12_000 });
+    await cdp.send('Network.emulateNetworkConditions', { offline: false, downloadThroughput: -1, uploadThroughput: -1, latency: 0 });
+    await waitForApp(page);
+    // Once the map is up the splash goes (the stub map reports loaded at once).
+    await expect(splash).toBeHidden({ timeout: 20_000 });
+    expect(await page.evaluate(() => CrashGuard.count())).toBe(0);
+  });
+
   test('a failing upstream feature fetch shows a cell without crashing', async ({ page }) => {
     // Everything that is not our own origin or the map CDNs is refused.
     await page.route((url) => !/localhost|127\.0\.0\.1|unpkg\.com|jsdelivr|cartocdn|fonts\.g/.test(url.hostname), (r) => r.abort());
