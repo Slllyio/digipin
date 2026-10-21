@@ -38,6 +38,7 @@ const UrbanLenses = (() => {
     const FLOOD_WADE_M = 0.3;   // floodwater above ~0.3 m knocks pedestrians over at modest velocity
     const FLOOD_SHARE = 50;     // % of the cell in the floodplain to treat it as impassable
     const FLOOD_DETOUR_M = 250;
+    const WATERLOG_BLOCK = 65;  // waterlogging_index "Very high" class
     const WLOG_HIGH = 45, WLOG_VERY = 65;   // waterlogging index cut-offs for High / Very high (pipeline/cells/ee_layers.py)
     const CUTOFF_DOMAIN = ['Cut off from care', 'Longer walk to care', 'Flooded', 'Unaffected', 'No care in reach anyway'];
     const CUTOFF_COLORS = { 'Cut off from care': '#c0392b', 'Longer walk to care': '#f39c12', Flooded: '#2e86c1', Unaffected: '#cfd8dc', 'No care in reach anyway': '#8e8e8e' };
@@ -71,8 +72,8 @@ const UrbanLenses = (() => {
             question: 'Who loses walking access to healthcare when the 100-year flood comes?',
             field: { key: 'flood_access', label: 'Healthcare access in a 100-year flood', type: 'category' },
             extra: [{ key: 'flood_detour_m', label: 'Extra walk to care in a flood', unit: 'm', higherIs: 'worse', ramp: 'reds' }],
-            needs: ['water.flood_rp100_pct', 'water.flood_rp100_depth_m', 'osm_amenities.healthcare', WALK_LINKS],
-            method: `Nearest mapped healthcare place within ${CATCH_KM} km on the walking network, today and with the 100-year flood: cells at least half inside the GloFAS 100-year floodplain with water at least ${FLOOD_WADE_M} m deep (too deep to wade safely) are removed from the graph, and their facilities with them. Residents are then “cut off” (care in reach today, none in a flood), “longer walk” (care still reachable, at least ${FLOOD_DETOUR_M} m further), “flooded” (their own cell is under water) or unaffected.`,
+            needs: ['water.flood_rp100_pct', 'water.flood_rp100_depth_m', 'waterlogging.waterlogging_index', 'osm_amenities.healthcare', WALK_LINKS],
+            method: `Nearest mapped healthcare place within ${CATCH_KM} km on the walking network, today and with the 100-year flood: cells at least half inside the GloFAS 100-year floodplain with water at least ${FLOOD_WADE_M} m deep (too deep to wade safely), and cells whose monsoon waterlogging index is ${WATERLOG_BLOCK} or more (very high: hollows that pond after heavy rain), are removed from the graph, and their facilities with them. Residents are then “cut off” (care in reach today, none in a flood), “longer walk” (care still reachable, at least ${FLOOD_DETOUR_M} m further), “flooded” (their own cell is under water) or unaffected.`,
             refs: 'GloFAS / JRC flood hazard maps (Baugh et al. 2024); Russo et al. 2008 & Xia et al. 2014 on pedestrian stability in floodwater; Coles et al. 2017 (flood impacts on emergency service accessibility)' },
         { id: 'waterlog', equity: true, title: 'Rain waterlogging', icon: '🌧',
             question: 'Who lives where heavy rain pools?',
@@ -736,13 +737,15 @@ const UrbanLenses = (() => {
     function cutoff(fr) {
         const c = fr.cols, g = fr.grid, idx = _residents(fr), n = g.n;
         const rp = c['water.flood_rp100_pct'], depth = c['water.flood_rp100_depth_m'], care = c['osm_amenities.healthcare'];
-        const pop = c['population.population'];
-        if (!rp || !care) return null;
+        const pop = c['population.population'], wl = c['waterlogging.waterlogging_index'];
+        if ((!rp && !wl) || !care) return null;
         const wet = new Uint8Array(n);
-        let nWet = 0, wetCare = 0, allCare = 0;
+        let nWet = 0, nLog = 0, wetCare = 0, allCare = 0;
         for (let i = 0; i < n; i++) {
             const deep = !depth || !_fin(depth[i]) || depth[i] >= FLOOD_WADE_M;
-            if (_fin(rp[i]) && rp[i] >= FLOOD_SHARE && deep) { wet[i] = 1; nWet++; if (care[i] > 0) wetCare += care[i]; }
+            const river = !!rp && _fin(rp[i]) && rp[i] >= FLOOD_SHARE && deep;
+            const ponds = !!wl && _fin(wl[i]) && wl[i] >= WATERLOG_BLOCK;
+            if (river || ponds) { wet[i] = 1; nWet++; if (!river) nLog++; if (care[i] > 0) wetCare += care[i]; }
             if (care[i] > 0) allCare += care[i];
         }
         if (!nWet) return null;
@@ -783,7 +786,7 @@ const UrbanLenses = (() => {
                 { label: `Longer walk to care (≥ ${FLOOD_DETOUR_M} m more)`, value: _people(sum[1]), raw: Math.round(sum[1]) },
                 { label: 'Living in deep floodwater', value: _people(sum[2]), raw: Math.round(sum[2]) },
                 { label: 'Healthcare places in deep floodwater', value: `${Math.round(wetCare)} of ${Math.round(allCare)}` },
-                { label: 'Impassable cells', value: `${nWet.toLocaleString('en-IN')} (${_round(nWet * g.cellKm2, 1)} km²)` },
+                { label: 'Impassable cells (of which waterlogging only)', value: `${nWet.toLocaleString('en-IN')} (${_round(nWet * g.cellKm2, 1)} km²; ${nLog.toLocaleString('en-IN')} waterlogging)` },
             ],
         };
     }

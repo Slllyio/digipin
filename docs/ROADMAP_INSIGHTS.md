@@ -279,7 +279,8 @@ twice a day counts like one served every 5 minutes.
 twice: as is, and with every cell at least half in the GloFAS 100-year
 floodplain and at least 0.3 m deep removed (pedestrians lose footing in
 moving water around that depth; Russo et al. 2008, Xia et al. 2014),
-together with the clinics inside them. Residents are classed cut off,
+and every cell with a monsoon `waterlogging_index` ≥ 65 (very high), together
+with the clinics inside them. Residents are classed cut off,
 longer walk (≥ 250 m more), flooded, unaffected, or no care in reach anyway.
 `walkNet(g, links, blocked).reach(i, km, stop)` stops at the first match, so
 the two searches per cell stay cheap (Delhi ≈ 1.7 s).
@@ -288,8 +289,9 @@ the two searches per cell stay cheap (Delhi ≈ 1.7 s).
 (the league metric), people living in deep water, clinics under water.
 
 **Limits.** GloFAS depth is a ~1 km product resampled to cells, so small
-drains and underpasses are invisible; urban waterlogging (pluvial) is not in
-the hazard. Without a walking graph the lens only removes flooded clinics,
+drains and underpasses are invisible; waterlogging comes from the
+`waterlogging` index (HAND, Sentinel-1 standing water, wetness, hollows,
+sealing), which radar under-reads inside dense cores. Without a walking graph the lens only removes flooded clinics,
 it cannot model the water as a barrier.
 
 ## 24. Rain waterlogging

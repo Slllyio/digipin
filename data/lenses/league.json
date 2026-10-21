@@ -198,6 +198,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 18.6,
@@ -374,7 +380,7 @@
     },
     "cutoff": {
      "label": "Residents cut off from healthcare in a 100-year flood",
-     "value": 2,
+     "value": 1.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -458,6 +464,12 @@
     },
     "flood": {
      "label": "Residents in the 100-year floodplain",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
@@ -722,6 +734,12 @@
     },
     "flood": {
      "label": "Residents in the 100-year floodplain",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "cutoff": {
+     "label": "Residents cut off from healthcare in a 100-year flood",
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
