@@ -271,7 +271,9 @@ self.onmessage = async ({ data }) => {
     }
 
     async function _readBand(bytes) {
-        const g = await parseGeoraster(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
+        // georaster is a CDN library loaded on first use (js/lazy-libs.js).
+        const parse = typeof LazyLibs !== 'undefined' ? await LazyLibs.load('georaster') : parseGeoraster;
+        const g = await parse(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
         const rows = g.values[0];
         const out = new Float32Array(g.width * g.height);
         for (let r = 0; r < g.height; r++) out.set(rows[r], r * g.width);

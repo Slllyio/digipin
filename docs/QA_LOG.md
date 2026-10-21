@@ -4,6 +4,13 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — boot-time CDN libraries: georaster loads on first use
+
+- **Gap:** app.html loaded four CDN libraries with the page. MapLibre, PMTiles and deck.gl are used at boot (or by the 3D view a share link can open into), but georaster, the COG/GeoTIFF parser, is only read by the realtime growth and heat overlays and the hydrology tool, all user actions. Every `defer` script delays the first usable frame on a slow link, and this one is a few hundred KB (the sandbox cannot reach unpkg, so the exact wire size and the first-load gain are not measured here; the CI runs download it).
+- **Change:** `js/lazy-libs.js` keeps the pinned URL and integrity hash and injects the tag on first `LazyLibs.load('georaster')`; concurrent callers share one download, a failed load is forgotten so the next call retries, and a load that never fires rejects after 60 s. The three call sites await it (and fall back to a page-loaded `parseGeoraster` where LazyLibs is absent, for the unit-test contexts). sw.js still precaches the URL, so an installed app has it offline: the injected tag is answered from the service-worker cache.
+- **Not changed:** deck.gl stays on the boot path. DeckBuildings decides synchronously whether deck.gl is available and falls back to MapLibre extrusions otherwise, and 3D is the feature Akkshay wants prominent, so taking it off boot needs an async hand-off in the 3D code (the design thread's area), not a loader.
+- **Guards:** tests/lazy-libs.test.js (tag injected once with its hash, resolves to the global, error path retries, unknown library rejects, URL precached by sw.js and absent from app.html); the sw precache ↔ app.html test now also accepts a lazy library.
+
 ## 2026-10-21 — one script bundle for the published site
 
 - **Correction to the entry two below:** those 13 s / 52 s figures came from the dev server, which did not compress. GitHub Pages gzips, so the honest baseline (serve.py `--gzip`, stub map, cold visit, `scripts/measure-first-load.js`) is: usable at 1.0 s unshaped, **5.6 s on fast 3G, 19.5 s on slow 3G** (138 requests, 2.4 MB raw / ~0.7 MB on the wire).

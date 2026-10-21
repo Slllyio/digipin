@@ -35,11 +35,14 @@ const RealtimeHeat = (() => {
         if (_grPromise) return _grPromise;
         _grPromise = (async () => {
             try {
-                if (typeof parseGeoraster !== 'function') return null;
+                // georaster is a CDN library loaded on first use (js/lazy-libs.js).
+                const parse = typeof LazyLibs !== 'undefined' ? await LazyLibs.load('georaster')
+                    : (typeof parseGeoraster === 'function' ? parseGeoraster : null);
+                if (typeof parse !== 'function') return null;
                 const resp = await fetch(COG_LST, { cache: 'force-cache', signal: AbortSignal.timeout(15000) });
                 if (!resp.ok) return null;
                 const buf = await resp.arrayBuffer();
-                return await parseGeoraster(buf);
+                return await parse(buf);
             } catch (e) {
                 console.warn('[RealtimeHeat] COG load failed', e);
                 return null;

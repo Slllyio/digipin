@@ -71,10 +71,7 @@
             integrity="sha384-MjejsnWXHmuz93aE35YWLh5AbS/6ceRB3Vb+ukOwqFzJRTpQ8vvbkLbNV7I0QK4f"
             crossorigin="anonymous"></script>
 
-    <!-- GeoRaster for COG/GeoTIFF rendering -->
-    <script defer src="https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js"
-            integrity="sha384-k/E847ELHPuDVPWoArQHQe5LUD8YSFwxlUaH63fF618o/Y0Gnu4FQ1xjuL280spp"
-            crossorigin="anonymous"></script>
+    <!-- georaster (COG/GeoTIFF) is loaded on first use by js/lazy-libs.js, not here. -->
 
     <!-- deck.gl — WebGL 3D layer used for the dark-theme "digital twin" building
          view (true wireframe-extruded glass volumes that MapLibre can't render).
@@ -445,6 +442,8 @@
 
     <!-- ===== SCRIPTS ===== -->
     <script defer src="js/digipin.js"></script>
+    <!-- CDN libraries loaded on first use (georaster) -->
+    <script defer src="js/lazy-libs.js"></script>
     <!-- IndexedDB persistent cache layer (used by data-fetcher) -->
     <script defer src="js/data-fetcher-cache.js"></script>
     <!-- Growth feature trio + realtime orchestrator -->

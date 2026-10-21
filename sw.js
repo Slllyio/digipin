@@ -23,6 +23,7 @@ const LOCAL_ASSETS = [
     './assets/icon-maskable.svg',
     './manifest.json',
     './js/digipin.js',
+    './js/lazy-libs.js',
     './js/data-fetcher-cache.js',
     './js/growth-score.js',
     './js/realtime-growth.js',
