@@ -178,7 +178,7 @@ describe('DeckBuildings baked heights on a failing link', () => {
     const errRes = (status) => ({ ok: false, status, json: async () => { throw new Error('no body'); } });
     const grid = { level: 7, cells: { ABCDEFG: 12 } };
     let realFetch;
-    beforeEach(() => { realFetch = globalThis.fetch; DS.reset(); });
+    beforeEach(() => { realFetch = globalThis.fetch; DS.reset(); DB.resetHeights(); });
     afterEach(() => { globalThis.fetch = realFetch; DS.reset(); });
 
     it('a 5xx grid is reported with Retry and refetched; success clears the row', async () => {
@@ -206,6 +206,27 @@ describe('DeckBuildings baked heights on a failing link', () => {
     it('a 404 grid is "not baked", not a failure: no row, nothing to retry', async () => {
         globalThis.fetch = async () => errRes(404);
         expect(await DB.loadHeights('data/heights/z.json')).toBe(false);
+        expect(DB.heightsCacheStats().failed).toBe(0);
+        expect(DS.has('heights')).toBe(false);
+    });
+
+    it('retryHeights refetches every failed grid, not only the ones under the current view', async () => {
+        // Two grids failed (the camera passed over both); the view now covers
+        // only the second. Retry must clear both or the row would stay up.
+        const index = [
+            { region: 'a', bbox: [75, 22, 76, 23], file: 'data/heights/a.json' },
+            { region: 'b', bbox: [77, 12, 78, 13], file: 'data/heights/b.json' },
+        ];
+        let failing = true;
+        globalThis.fetch = async (url) => {
+            if (String(url).endsWith('index.json')) return okRes(index);
+            return failing ? errRes(503) : okRes(grid);
+        };
+        expect(await DB.ensureHeights({ lat: 22.5, lng: 75.5 })).toEqual([false]);
+        expect(await DB.ensureHeights({ lat: 12.5, lng: 77.5 })).toEqual([false]);
+        expect(DB.heightsCacheStats().failed).toBe(2);
+        failing = false;
+        expect(await DB.retryHeights()).toBe(true);
         expect(DB.heightsCacheStats().failed).toBe(0);
         expect(DS.has('heights')).toBe(false);
     });

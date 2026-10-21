@@ -66,8 +66,33 @@ const DeckBuildings = (() => {
         DataStatus.set(HEIGHTS_KEY, {
             kind: 'warning',
             text: '3D building heights did not load — buildings show estimated heights until they do.',
-            action: { label: 'Retry', busy: 'Loading…', run: () => ensureHeights().then(r => r.every(Boolean)) },
+            action: { label: 'Retry', busy: 'Loading…', run: retryHeights },
         });
+    }
+
+    /**
+     * Refetch every grid whose last load failed (not only the ones under the
+     * current view: a grid the camera has since left would otherwise keep the
+     * row up), plus whatever the view needs now. True when nothing is failed
+     * afterwards, which is what lets the row clear.
+     */
+    /** Forget every grid, failure and the index (tests; a republished index). */
+    function resetHeights() {
+        _index = null;
+        _gridLoads.clear();
+        _gridDocs.clear();
+        _failedGrids.clear();
+        _grid = null;
+        _reportHeights();
+    }
+
+    async function retryHeights() {
+        const urls = [..._failedGrids.keys()];
+        await Promise.all(urls.map(u => {
+            if (!_gridLoads.has(u)) _gridLoads.set(u, loadHeights(u));
+            return _gridLoads.get(u);
+        }).concat([ensureHeights()]));
+        return _failedGrids.size === 0;
     }
 
     /**
@@ -394,7 +419,7 @@ const DeckBuildings = (() => {
     /** Grids currently held, for tests / diagnostics. */
     function heightsCacheStats() { return { grids: _gridDocs.size, max: MAX_GRIDS, cells: _grid ? _grid.cells.size : 0, failed: _failedGrids.size }; }
 
-    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights, heightIndex, heightsCacheStats,
+    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights, retryHeights, resetHeights, heightIndex, heightsCacheStats,
         setExaggeration, getExaggeration,
         featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, cellHeight, gridsFor };
 })();
