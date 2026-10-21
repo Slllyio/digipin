@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-10-21T09:41:18Z",
-  "count": 18,
+  "generated_at_iso": "2026-10-21T14:40:46Z",
+  "count": 15,
   "records": [
+    {
+      "id": "us6000u3tn",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-21T12:03:56.497000+00:00",
+      "latitude": 53.4261,
+      "longitude": -163.4612,
+      "depth_km": 20.471,
+      "place": "158 km S of False Pass, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3tn",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000u3t6",
       "magnitude": 5.2,
@@ -169,54 +181,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3nc",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us6000u3m7",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-20T14:20:49.305000+00:00",
-      "latitude": -5.3459,
-      "longitude": 152.1448,
-      "depth_km": 57.367,
-      "place": "111 km S of Kokopo, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3m7",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000u3lx",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-20T13:27:24.320000+00:00",
-      "latitude": -3.7134,
-      "longitude": 139.9987,
-      "depth_km": 10.0,
-      "place": "142 km SSW of Abepura, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3lx",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000u3li",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-20T11:40:10.539000+00:00",
-      "latitude": -13.991,
-      "longitude": 165.7462,
-      "depth_km": 10.0,
-      "place": "184 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3li",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u3lf",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-20T10:40:40.968000+00:00",
-      "latitude": 54.6088,
-      "longitude": -160.3291,
-      "depth_km": 35.0,
-      "place": "81 km S of Sand Point, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3lf",
-      "tsunami": 1,
-      "significance": 386
     }
   ]
 }

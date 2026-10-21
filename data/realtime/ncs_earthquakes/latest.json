@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-21T09:41:25Z",
+  "generated_at_iso": "2026-10-21T14:40:54Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-21 19:43:40|36.231,70.176",
+      "magnitude": 3.5,
+      "origin_time": "2026-10-21 19:43:40",
+      "latitude": 36.231,
+      "longitude": 70.176,
+      "depth_km": 155.0,
+      "region": "Afghanistan",
+      "location": "102km SSW of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-21 14:45:58|18.287,73.898",
       "magnitude": 2.6,
@@ -1639,17 +1650,6 @@
       "depth_km": 179.0,
       "region": "Afghanistan",
       "location": "106km ESE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-06 00:53:56|27.193,89.041",
-      "magnitude": 2.6,
-      "origin_time": "2026-10-06 00:53:56",
-      "latitude": 27.193,
-      "longitude": 89.041,
-      "depth_km": 5.0,
-      "region": "Bhutan",
-      "location": "45km ESE of Gangtok, Sikkim",
       "review_status": "Reviewed"
     }
   ]
