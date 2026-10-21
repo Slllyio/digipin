@@ -4,7 +4,7 @@ name: Open data cells
 # docs/CELL_STORE.md) for every registered metro and commits them back to the
 # branch it runs on.
 #
-#   osm  pipeline/cells/osm_layers.py — Geofabrik extracts → osm_amenities, osm_roads
+#   osm  pipeline/cells/osm_layers.py — Geofabrik extracts → osm_amenities, osm_roads, osm_walk
 #   ee   pipeline/cells/ee_layers.py  — Earth Engine rasters → population, land cover,
 #        NDVI, terrain, water/flood, night lights, LST, air quality, rainfall …
 #        Needs the GEE_SERVICE_ACCOUNT_KEY secret (service-account key JSON with

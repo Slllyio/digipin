@@ -106,3 +106,44 @@ def test_catalog_merge_keeps_untouched_regions():
     assert a["title"] == "new" and [r["name"] for r in a["regions"]] == ["x", "y"]
     assert a["regions"][1]["cells"] == 2
     assert {d["id"] for d in out["datasets"]} == {"a", "b"}
+
+
+def test_walkable_tags():
+    from pipeline.cells import osm_layers as o
+    assert o.walkable({"highway": "residential"}) and o.walkable({"highway": "footway"})
+    assert not o.walkable({"highway": "motorway"})
+    assert not o.walkable({"highway": "service", "access": "private"})
+    assert o.walkable({"highway": "service", "access": "private", "foot": "yes"})
+    assert not o.walkable({"highway": "path", "foot": "no"})
+    assert not o.walkable({"building": "yes"})
+
+
+def test_walk_links_bits():
+    from pipeline.cells import osm_layers as o
+    d = o.CELL_DEG
+    lat, lon = o.LAT0 + 1000.5 * d, o.LON0 + 2000.5 * d      # centre of cell (1000, 2000)
+    # East along 3 cells, then a diagonal step north-east.
+    links = o.walk_links([(lat, lon), (lat, lon + 2 * d), (lat + d, lon + 3 * d)])
+    E, W, NE, SW = (o._BIT[x] for x in [(0, 1), (0, -1), (1, 1), (-1, -1)])
+    assert links[(1000, 2000)] == E
+    assert links[(1000, 2001)] == E | W
+    assert links[(1000, 2002)] == W | NE
+    assert links[(1001, 2003)] == SW
+    # Masks are symmetric: every bit has its opposite on the neighbour.
+    for (r, c), m in links.items():
+        for i, (dr, dc) in enumerate(o.DIRS):
+            if m >> i & 1:
+                assert links[(r + dr, c + dc)] & o._BIT[(-dr, -dc)]
+    # The lattice agrees with DIGIPIN codes: neighbours are distinct L7 cells.
+    assert o.cell_of((1000, 2000)) != o.cell_of((1000, 2001))
+    assert len(o.cell_of((1000, 2000))) == 7
+
+
+def test_walk_dataset_rows():
+    from collections import Counter
+    from pipeline.cells import osm_layers as o
+    code = o.cell_of(o._rc(23.25, 77.40))
+    spec, table = o.walk_dataset({code: Counter({"walk_links": 0b101, "walk_m": 500})})
+    assert spec.id == "osm_walk"
+    assert table.columns["links"] == [5] and table.columns["degree"] == [2]
+    assert table.columns["walk_km_km2"][0] > 0

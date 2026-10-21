@@ -11,6 +11,11 @@ One streaming pyosmium pass over a bbox-clipped extract fills two datasets:
 * ``osm_roads`` (L7): road length per km² by class (each segment is credited to
   the cell holding its midpoint), junction count, building count and
   building-footprint cover.
+* ``osm_walk`` (L7): a compact walking graph. Every walkable way (residential
+  streets, footways, paths, and every road class except motorways) is
+  densified and each step that crosses into a neighbouring cell sets one bit
+  of an 8-direction link mask on both cells. The app runs Dijkstra over these
+  links for network walking distance (js/urban-lenses.js), one byte per cell.
 
 Without ``--pbf`` the Geofabrik zone extract is downloaded once per zone and
 clipped per city with the ``osmium`` CLI, like pipeline/scores/build_cities.py.
@@ -55,6 +60,56 @@ ROAD_CLASS = {
 }
 _M_PER_DEG = 111_320.0
 
+# Walking graph. Ways a pedestrian can use: every class except motorways.
+NO_WALK = {"motorway", "motorway_link"}
+CELL_DEG = 36 / 4 ** LEVEL                 # L7 lattice step (DIGIPIN 4×4 subdivision)
+LAT0, LON0 = 2.5, 63.5                     # DIGIPIN bounding-box origin
+# Bit i of a link mask = neighbour DIRS[i] as (drow, dcol); rows increase northward.
+DIRS = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
+_BIT = {d: 1 << i for i, d in enumerate(DIRS)}
+
+
+def walkable(tags: dict) -> bool:
+    hw = tags.get("highway")
+    if hw not in ROAD_CLASS or hw in NO_WALK or tags.get("area") == "yes":
+        return False
+    if tags.get("foot") in ("no", "private"):
+        return False
+    if tags.get("access") in ("no", "private"):
+        return tags.get("foot") in ("yes", "designated", "permissive")
+    return True
+
+
+def _rc(lat, lon):
+    return math.floor((lat - LAT0) / CELL_DEG), math.floor((lon - LON0) / CELL_DEG)
+
+
+def walk_links(pts, links=None) -> dict:
+    """OR the cell-to-cell links one polyline makes into ``links`` {(row, col): mask}.
+
+    The line is densified to a quarter cell so no step skips a cell; a step
+    into a diagonal neighbour sets the diagonal bit.
+    """
+    links = {} if links is None else links
+    prev = None
+    for a, b in zip(pts, pts[1:]):
+        n = max(1, math.ceil(max(abs(b[0] - a[0]), abs(b[1] - a[1])) / (CELL_DEG / 4)))
+        for i in range(0 if prev is None else 1, n + 1):
+            rc = _rc(a[0] + (b[0] - a[0]) * i / n, a[1] + (b[1] - a[1]) * i / n)
+            links.setdefault(rc, 0)
+            if prev is not None and rc != prev:
+                d = (rc[0] - prev[0], rc[1] - prev[1])
+                if d in _BIT:
+                    links[prev] |= _BIT[d]
+                    links[rc] |= _BIT[(-d[0], -d[1])]
+            prev = rc
+    return links
+
+
+def cell_of(rc):
+    """DIGIPIN L7 code of a lattice (row, col)."""
+    return _code(LAT0 + (rc[0] + 0.5) * CELL_DEG, LON0 + (rc[1] + 0.5) * CELL_DEG)
+
 
 def _code(lat, lon):
     try:
@@ -83,13 +138,15 @@ def scan(pbf_path: str, bbox=None) -> dict:
     """{code: Counter} of per-cell tallies from one pass over an extract.
 
     Keys: ``cat:<category>`` POI counts, ``poi`` (any classified feature),
-    ``road_<class>_m`` lengths, ``junctions``, ``buildings``, ``bldg_m2``.
+    ``road_<class>_m`` lengths, ``junctions``, ``buildings``, ``bldg_m2``,
+    ``walk_m`` (walkable length) and ``walk_links`` (8-direction link mask).
     """
     import osmium
 
     cells: dict = defaultdict(Counter)
     node_use: Counter = Counter()          # road-node reference counts → junctions
     node_loc: dict = {}
+    links: dict = {}                       # (row, col) → walk link mask
 
     def inside(lat, lon):
         return bbox is None or (bbox[0] <= lon <= bbox[2] and bbox[1] <= lat <= bbox[3])
@@ -130,6 +187,10 @@ def scan(pbf_path: str, bbox=None) -> dict:
                 code = _code(*mid)
                 if code:
                     cells[code][f"road_{cls}_m"] += _seg_m(a, b)
+                    if walkable(tags):
+                        cells[code]["walk_m"] += _seg_m(a, b)
+            if walkable(tags):
+                walk_links([(p[0], p[1]) for p in pts], links)
             if cls != "path":
                 for p in {p[2]: p for p in pts}.values():
                     node_use[p[2]] += 1
@@ -151,6 +212,11 @@ def scan(pbf_path: str, bbox=None) -> dict:
             code = _code(*node_loc[ref])
             if code and inside(*node_loc[ref]):
                 cells[code]["junctions"] += 1
+    for rc, mask in links.items():
+        lat, lon = LAT0 + (rc[0] + 0.5) * CELL_DEG, LON0 + (rc[1] + 0.5) * CELL_DEG
+        code = _code(lat, lon) if inside(lat, lon) else None
+        if code and mask:
+            cells[code]["walk_links"] = mask
     return cells
 
 
@@ -229,11 +295,42 @@ def roads_dataset(cells: dict):
     return spec, store.bin_records(rows, LEVEL, specs)
 
 
+def walk_dataset(cells: dict):
+    specs = [
+        FieldSpec("links", "Walking links (8-direction mask)", agg="max", unit="bitmask",
+                  domain=[0, 255]),
+        FieldSpec("degree", "Walkable neighbour cells", agg="max", unit="of 8",
+                  domain=[0, 8], ramp="greens", higher_is="better"),
+        FieldSpec("walk_km_km2", "Walkable street & path density", agg="mean",
+                  unit="km/km²", ramp="greens", higher_is="better"),
+    ]
+    rows = []
+    for code, t in cells.items():
+        mask = int(t.get("walk_links", 0))
+        if not mask and not t.get("walk_m"):
+            continue
+        rows.append({"digipin": code, "links": mask, "degree": mask.bit_count(),
+                     "walk_km_km2": round(t.get("walk_m", 0) / 1000 / cell_area_km2(code), 2)})
+    spec = DatasetSpec(
+        id="osm_walk", title="Walking network (OpenStreetMap)", level=LEVEL, fields=specs,
+        group=GROUP,
+        description="A compact walking graph: which of the 8 neighbouring cells a "
+                    "pedestrian can reach along a mapped street, footway or path "
+                    "(everything but motorways; foot=no and private access excluded), "
+                    "plus walkable length per km². The lenses run Dijkstra over these "
+                    "links for network walking distance.",
+        source="OpenStreetMap via Geofabrik extract (pipeline/cells/osm_layers.py)",
+        license="ODbL (© OpenStreetMap contributors)",
+        default_field="degree")
+    return spec, store.bin_records(rows, LEVEL, specs)
+
+
 def build_region(region: str, pbf: str, out: str, parquet: bool = True) -> list:
     bbox = regions.bbox_for(region)
     cells = scan(pbf, bbox)
     return [store.write_dataset(out, spec, region, table, parquet=parquet)
-            for spec, table in (amenity_dataset(cells), roads_dataset(cells))]
+            for spec, table in (amenity_dataset(cells), roads_dataset(cells),
+                                walk_dataset(cells))]
 
 
 def main(argv=None) -> int:
