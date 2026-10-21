@@ -48,9 +48,12 @@ test.describe('soak', () => {
     await longTasks(page, true);   // boot and layer setup are measured by perf.spec.js, not here
     const heaps = [];
     let profiles = 0;
+    const missed = [];
+    const timings = [];
     const t0 = Date.now();
     for (let round = 0; round < ROUNDS; round++) {
       for (const id of cities) {
+        const tCity = Date.now();
         await page.selectOption('#city-select', id);
         // Wait until the fly-to has actually landed (not settle(): with 3D
         // on the real map never reports idle; not a fixed wait: on a GPU-less
@@ -78,9 +81,10 @@ test.describe('soak', () => {
           await page.waitForFunction((code) => {
             const t = document.getElementById('panel-title-text');
             return !!document.querySelector('[data-cell-profile]') && !!t && t.textContent.trim() === code;
-          }, code, { timeout: 30_000 });
+          }, code, { timeout: 60_000 });   // the profile is ~60 fetches; on software GL the thread is ~95% busy drawing
           profiles++;
-        } catch { /* counted below */ }
+        } catch { missed.push(`${id}#${round + 1}`); }
+        timings.push(`${id} ${((Date.now() - tCity) / 1000).toFixed(0)}s`);
         await page.waitForTimeout(STUB ? 400 : 800);
       }
       // Force a full GC through CDP so the heap number is retained memory, not garbage.
@@ -94,8 +98,8 @@ test.describe('soak', () => {
       const lt = await longTasks(page);
       console.log(`soak round ${round + 1}: heap ${heaps.at(-1).toFixed(0)} MB, long tasks ${lt.count} (longest ${lt.longest} ms, blocking ${lt.blocking} ms), caches ${JSON.stringify(cache)}`);
     }
-    console.log(`soak: ${ROUNDS} rounds × ${cities.length} cities in ${((Date.now() - t0) / 1000).toFixed(0)} s`);
-    expect(profiles, 'cell profiles rendered (one per city selection)').toBe(ROUNDS * cities.length);
+    console.log(`soak: ${ROUNDS} rounds × ${cities.length} cities in ${((Date.now() - t0) / 1000).toFixed(0)} s (${timings.join(', ')})`);
+    expect(profiles, `cell profiles rendered (one per city selection; missed: ${missed.join(', ') || 'none'})`).toBe(ROUNDS * cities.length);
     const freeze = await longTasks(page);
     // Without a GPU (CI's SwiftShader) every 3D frame is a 2-4 s task, which
     // says nothing about real machines: report, don't gate, in that case.
