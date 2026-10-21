@@ -23,13 +23,18 @@ describe('LensesPanel', () => {
         const st = await store();
         const body = document.createElement('div');
         const highlight = vi.fn();
+        const r0 = await globalThis.UrbanLenses.run('bhopal', st);
+        const sel = r0.layer.cells[Math.floor(r0.layer.cells.length / 2)].slice(0, 6);
         const show = vi.spyOn(globalThis.CellLayers, 'show').mockResolvedValue(true);
         let city = null;
         await P.render(body, {
             store: st, city: 'bhopal', cities: [{ name: 'bhopal', label: 'Bhopal' }, { name: 'pune', label: 'Pune' }],
-            isCurrent: () => true, setCity: (c) => { city = c; }, highlight,
+            isCurrent: () => true, setCity: (c) => { city = c; }, highlight, selected: () => sel,
             sparkline: () => document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
         });
+        const area = body.querySelector('[data-lens="area"]');
+        expect(area.querySelectorAll('.ui-lens-arow').length).toBeGreaterThan(5);
+        expect(area.textContent).toMatch(/better off than \d/);
         const cards = body.querySelectorAll('.ui-lens');
         expect(cards.length).toBeGreaterThanOrEqual(6);
         const heat = body.querySelector('[data-lens="heat"]');

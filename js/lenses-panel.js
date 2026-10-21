@@ -84,6 +84,28 @@ const LensesPanel = (() => {
         _painted = null;
     }
 
+    /** The selected ~1 km cell read through every lens, against its city. */
+    function _areaCard(r, prefix) {
+        const prof = UrbanLenses.areaProfile(r, prefix);
+        if (!prof || !prof.rows.length) return null;
+        const card = _el('section', 'ui-lens ui-lens--area');
+        card.dataset.lens = 'area';
+        card.appendChild(_el('div', 'ui-lens-title', `Your selection: ${DigiPin.format(prof.prefix)} (~1 km, ${prof.people.toLocaleString('en-IN')} residents)`));
+        card.appendChild(_el('div', 'ui-muted', 'Each lens here against the whole city. “Better off than” is the share of the city’s residents this place beats.'));
+        const tbl = _el('div', 'ui-lens-area');
+        for (const x of prof.rows) {
+            const row = _el('div', 'ui-lens-arow');
+            row.appendChild(_el('span', null, `${x.icon} ${x.label}`));
+            row.appendChild(_el('span', 'ui-lens-num', `${x.area} vs ${x.city}${x.unit && x.unit !== '0-100' ? ` ${x.unit}` : ''}`));
+            const b = _el('span', `ui-muted${x.betterThan != null ? (x.betterThan >= 60 ? ' is-good' : x.betterThan <= 40 ? ' is-bad' : '') : ''}`,
+                x.betterThan != null ? `better off than ${x.betterThan}%` : '');
+            row.appendChild(b);
+            tbl.appendChild(row);
+        }
+        card.appendChild(tbl);
+        return card;
+    }
+
     /** The siting card: preset chips, AHP weights, candidate sites. */
     function _sitingCard(kit, r) {
         const card = _el('section', 'ui-lens');
@@ -287,6 +309,11 @@ const LensesPanel = (() => {
         tools.appendChild(_btn('✕ Clear map', () => { clear(); if (kit.clearHighlight) kit.clearHighlight(); }, 'ui-chip'));
         intro.appendChild(tools);
         body.appendChild(intro);
+        const sel = kit.selected ? kit.selected() : null;
+        if (sel) {
+            const card = _areaCard(r, String(sel).replace(/-/g, '').slice(0, 6));
+            if (card) body.appendChild(card);
+        }
         for (const l of r.lenses) body.appendChild(_card(kit, r, l));
         body.appendChild(_sitingCard(kit, r));
     }

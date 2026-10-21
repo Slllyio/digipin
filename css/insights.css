@@ -308,3 +308,8 @@ html[data-theme="light"] {
 .ui-leader-gap { font-size: 11px; color: var(--text-secondary); padding: 2px 8px; }
 .ui-lens-sites { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
 .ui-lens-sites li { font-size: 11.5px; }
+.ui-lens-area { display: grid; gap: 3px; margin-top: 8px; }
+.ui-lens-arow { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: 11.5px; padding: 3px 0; border-bottom: 1px solid var(--border-color); }
+.ui-lens-arow .ui-muted { grid-column: 1 / -1; }
+.ui-lens-arow .is-good { color: var(--ui-strength); }
+.ui-lens-arow .is-bad { color: var(--ui-concern); }

@@ -1428,6 +1428,42 @@ const UrbanLenses = (() => {
             ...ls.map(l => `- ${l.title}: ${l.headline}${l.equity && l.equity.gini != null ? ` Gini ${l.equity.gini}.` : ''}${l.hotspots && l.hotspots.moranI != null ? ` ${l.hotspots.reading} (Moran’s I ${l.hotspots.moranI}).` : ''}`)].join('\n');
     }
 
+    /**
+     * Every lens read for one area (a DIGIPIN prefix, e.g. the ~1 km cell of
+     * a selection) against its city: population-weighted area value, city
+     * value, the share of the city's residents doing better, and residents
+     * in the area. Rows: [{ id, title, key, label, unit, higherIs, area,
+     * city, betterThan, worseThan, people }].
+     */
+    function areaProfile(result, prefix) {
+        const w = result && result._work;
+        if (!w || !prefix) return null;
+        const p = String(prefix).replace(/-/g, '').toUpperCase();
+        const fr = w.frame, g = fr.grid, pop = fr.cols['population.population'];
+        const res = _residents(fr);
+        const inA = res.filter(i => g.codes[i].startsWith(p));
+        if (!inA.length) return { prefix: p, people: 0, rows: [] };
+        const rows = [];
+        for (const l of result.lenses) {
+            const f = l.fields[0];
+            if (f.type === 'category' || !w.done[l.id]) continue;
+            const v = w.done[l.id].columns[f.key];
+            const a = wmean(v, pop, inA), cty = wmean(v, pop, res);
+            if (a == null || cty == null) continue;
+            let lo = 0, hi = 0, tot = 0;
+            for (const i of res) {
+                if (!_fin(v[i]) || !(pop[i] > 0)) continue;
+                tot += pop[i];
+                if (v[i] < a) lo += pop[i]; else if (v[i] > a) hi += pop[i];
+            }
+            const better = f.higherIs === 'worse' ? lo : f.higherIs === 'better' ? hi : null;
+            rows.push({ id: l.id, title: l.title, icon: l.icon, key: f.key, label: f.label, unit: f.unit, higherIs: f.higherIs || null,
+                area: _round(a, 2), city: _round(cty, 2), betterThan: better == null || !tot ? null : _round(100 * (1 - better / tot)),
+                people: Math.round(_sumOver(pop, inA, () => true)) });
+        }
+        return { prefix: p, cells: inA.length, people: Math.round(_sumOver(pop, inA, () => true)), rows };
+    }
+
     // ── stable entry points (agents, DISHA, other modules) ──────────────────
 
     /** The lens catalogue: [{ id, title, question, method, refs, fields, params }]. */
@@ -1485,7 +1521,7 @@ const UrbanLenses = (() => {
 
     return {
         SCHEMA, LENS_SCHEMA, LENSES, PRESETS, ESSENTIALS, CELL_DEG, GHI,
-        catalog, lens, site, ahp, within,
+        catalog, lens, site, areaProfile, ahp, within,
         prank, wmean, wquantile, gini, lorenz, palma, ols, pearson, grid, frameFrom, frame, allNeeds,
         e2sfca, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
         _lenses: RUN,

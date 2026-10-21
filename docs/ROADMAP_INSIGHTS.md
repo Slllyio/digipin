@@ -56,10 +56,11 @@ new data.
 | 13 | Neighbourhood archetypes (k-means) | What kinds of places make up this city? | Yes | M | **Shipped** |
 | 14 | Siting suitability (MCDA / AHP presets) | Where should the next clinic, school, park or cool roof go? | Yes | M | **Shipped** |
 | 15 | Rooftop solar and cooling potential | How much energy could the roofs make? | Yes (heights, sun-hours) | M | **Shipped** |
-| 16 | Network isochrones | True 15-minute reach on the road graph | Roads lazy-loaded | M–L | Later |
+| 16 | Network isochrones | True 15-minute reach on the road graph | No: `data/vectors/osm_roads_*` holds tertiary and above only; walking needs residential/footway edges baked by `pipeline/cells/osm_layers.py` in Actions | M–L | Data needed |
 | 17 | Transit job access | How many jobs within 45 min by bus/metro? | No (GTFS + jobs) | L | Data needed |
 | 18 | Socio-economic sensitivity | Who is poor, old, young (census)? | No (Census / SHRUG) | L | Data needed |
 | 19 | Data confidence layer | How much should I trust this cell? | Yes (coverage) | S | **Shipped** |
+| 20 | Area profile through every lens | How does my neighbourhood compare on each lens? | Yes | S | **Shipped** |
 
 Excluded here because other work owns them: draw-an-area building insights,
 the "what changed this month" feed, and performance/reliability.

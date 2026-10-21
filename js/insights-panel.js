@@ -871,7 +871,7 @@ const InsightsPanel = (() => {
         await LensesPanel.render(body, {
             store, city: _city, cities, isCurrent: () => seq === _seq,
             setCity: (c) => { _city = c; render(); },
-            highlight, clearHighlight: _clearHighlight, sourcesFooter: _sourcesFooter, sparkline, toast: _toast, copy: _copy,
+            highlight, clearHighlight: _clearHighlight, sourcesFooter: _sourcesFooter, sparkline, toast: _toast, copy: _copy, selected: _selected,
         });
     }
 
