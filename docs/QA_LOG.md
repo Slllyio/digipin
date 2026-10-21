@@ -4,6 +4,12 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — blocked map CDN left a blank page
+
+- **Found by:** running the real app in a sandbox with unpkg.com unreachable (what a content blocker, captive portal or first offline visit does).
+- **Symptom:** MapLibre never arrived, `MapModule.init` threw, the boot splash sat on screen and the only hint was a toast saying "the rest of the app still works".
+- **Fix:** js/app.js detects the missing engine before map init, hides the splash, shows a persistent error notice with Retry and a centred card in the map box, and skips the map init (no misleading toast). Covered by a resilience spec case that aborts the MapLibre script in the real browser.
+
 ## 2026-10-21 — selectByCode silently did nothing with 3D buildings on
 
 - **Found by:** the first real-browser run of tests/playwright/soak.spec.js. It passed, but the cache stats it printed showed zero cell-store parts loaded over twelve city selections.

@@ -38,7 +38,34 @@ const App = (() => {
             // Localize the static chrome (top-bar/toolbar/DISHA) to the saved language.
             if (typeof I18n !== 'undefined') I18n.init();
         });
-        step('MapModule', () => MapModule.init());
+        // Without the map engine there is no app: say so in a persistent
+        // notice (plus a message in the map box) instead of a silent blank
+        // page. The engine comes from unpkg.com, which a blocker, captive
+        // portal or first offline visit can withhold.
+        const engineMissing = typeof maplibregl === 'undefined';
+        if (engineMissing) {
+            step('MapEngine', () => {
+                if (typeof UIPolish !== 'undefined' && UIPolish.hideSplash) UIPolish.hideSplash();
+                const text = 'The map engine (MapLibre) could not be loaded from unpkg.com. Check the connection or a content blocker, then retry.';
+                if (typeof DataStatus !== 'undefined') {
+                    DataStatus.set('engine', { text, kind: 'error', action: { label: 'Retry', run: () => window.location.reload() } });
+                }
+                const box = document.getElementById('map');
+                if (box && !box.querySelector('.map-engine-missing')) {
+                    const msg = document.createElement('div');
+                    msg.className = 'map-engine-missing';
+                    msg.setAttribute('role', 'alert');
+                    const card = document.createElement('div');
+                    card.className = 'map-engine-missing-card';
+                    card.textContent = text;
+                    msg.appendChild(card);
+                    box.appendChild(msg);
+                }
+            });
+        }
+        // (MapModule.init would only throw "maplibregl is not defined" and
+        // raise a misleading "the rest of the app still works" toast.)
+        if (!engineMissing) step('MapModule', () => MapModule.init());
         // Find the newest Overture tile release (old ones are deleted upstream)
         // before any building/road overlay is switched on. Non-blocking.
         step('OvertureRelease', () => {

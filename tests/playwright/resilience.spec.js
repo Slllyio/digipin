@@ -117,6 +117,17 @@ test.describe('resilience', () => {
     await expect(page.locator('#detail-panel')).toHaveClass(/open/, { timeout: 20_000 });
   });
 
+  test('a missing map engine (CDN blocked) says so instead of a blank page', async ({ page }) => {
+    test.skip(STUB, 'the stub defines maplibregl itself');
+    await page.route(/unpkg\.com\/maplibre-gl/, (r) => r.abort());
+    await page.goto('/app.html');
+    const row = page.locator('#data-status .data-status-row[data-key="engine"]');
+    await expect(row).toBeVisible({ timeout: 15_000 });
+    await expect(row.locator('.ds-action')).toHaveText('Retry');
+    await expect(page.locator('#map .map-engine-missing')).toBeVisible();
+    expect(await page.evaluate(() => CrashGuard.count())).toBe(0);
+  });
+
   test('an uncaught runtime error shows the crash notice with a Reload action', async ({ page }) => {
     await page.goto('/app.html');
     await waitForApp(page);

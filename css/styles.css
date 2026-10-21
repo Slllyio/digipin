@@ -4520,3 +4520,26 @@ body.presenting #sidebar { display: none !important; }
     #data-status { bottom: 72px; }
     .data-status-row { font-size: 12px; }
 }
+
+/* Shown inside #map when the MapLibre script never arrived (js/app.js). */
+.map-engine-missing {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--bg-primary, #f5f4f0);
+    z-index: 1;
+}
+.map-engine-missing-card {
+    max-width: 420px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-primary, #222);
+    background: var(--bg-secondary, #fff);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+}
