@@ -368,7 +368,31 @@ const SunStudy = (() => {
 
     function isActive() { return !!_panel; }
 
-    return { toggle, isActive, applyToMap, solarPosition, lightFor, toJulian, sunTimes, formatHM,
+    /** { date: 'YYYY-MM-DD', min } of the open study (slider minutes, solar time), or null. */
+    function getState() {
+        if (!_panel) return null;
+        const d = _panel.querySelector('.sun-date'), t = _panel.querySelector('.sun-time');
+        return d && t && d.value ? { date: d.value, min: Number(t.value) } : null;
+    }
+
+    /** Open the study (through its toolbar button, so that stays in step) at a date and minute. */
+    function setState(st) {
+        if (!st || !/^\d{4}-\d{2}-\d{2}$/.test(st.date || '') || !(st.min >= 0 && st.min < 1440)) return false;
+        if (!_panel) {
+            const btn = typeof document !== 'undefined' && document.getElementById('btn-sun');
+            if (btn) btn.click(); else toggle();
+        }
+        if (!_panel) return false;
+        const d = _panel.querySelector('.sun-date'), t = _panel.querySelector('.sun-time');
+        d.value = st.date;
+        t.value = String(Math.round(st.min / 5) * 5);
+        _stop();
+        _setFromSlider(d.value, Number(t.value));
+        applyToMap();
+        return true;
+    }
+
+    return { toggle, isActive, getState, setState, applyToMap, solarPosition, lightFor, toJulian, sunTimes, formatHM,
         dayAltitudes, peakAltitude };
 })();
 

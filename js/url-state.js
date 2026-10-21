@@ -16,6 +16,9 @@
  *   &bc=<ds:field>    field colouring the 3D buildings (BuildingData)
  *   &bh=<ds:field>    field driving the 3D buildings' height
  *   &t=<step>         time-slider step for temporal cell layers ("2025-04")
+ *   &p=<pitch>&b=<bearing>   the 3D camera; p ≥ 10 turns 3D on and lands
+ *                     on exactly this centre/zoom/pitch/bearing
+ *   &sun=<YYYY-MM-DDTHH:MM>  the sun study's date and hour (solar time)
  *   &intel=<tab>&ic&ia&ib&wi   the open Urban Intelligence view (js/intel-brief.js)
  *   &ag=<agent>&aa=<area>&ap=  an agent run to re-run on open (js/agents-panel.js)
  *
@@ -57,6 +60,14 @@ const URLState = (() => {
         return raw && /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/.test(raw) ? raw : null;
     }
 
+    /** "2026-10-21T08:30" → { date, min }, or null when malformed. */
+    function _sun(raw) {
+        const m = raw && /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})$/.exec(raw);
+        if (!m) return null;
+        const min = Number(m[2]) * 60 + Number(m[3]);
+        return Number(m[2]) < 24 && Number(m[3]) < 60 ? { date: m[1], min } : null;
+    }
+
     /** Query string (defaults to the live location) → plain state object. */
     function parse(search) {
         const raw = search != null ? search
@@ -89,6 +100,12 @@ const URLState = (() => {
         }
         const z = parseFloat(p.get('z'));
         if (Number.isFinite(z)) state.z = z;
+        const pitch = parseFloat(p.get('p'));
+        if (Number.isFinite(pitch) && pitch >= 0 && pitch <= 85) state.pitch = pitch;
+        const bearing = parseFloat(p.get('b'));
+        if (Number.isFinite(bearing)) state.bearing = ((bearing % 360) + 540) % 360 - 180;
+        const sun = _sun(p.get('sun'));
+        if (sun) state.sun = sun;
         const ll = p.get('ll');
         if (ll) {
             const [lat, lng] = ll.split(',').map(Number);
@@ -116,6 +133,13 @@ const URLState = (() => {
                 ({ lat: n.lat, lng: n.lng, text: n.text, color: n.color }))));
         }
         if (Number.isFinite(state.z)) p.set('z', String(round(state.z, 2)));
+        if (Number.isFinite(state.pitch) && state.pitch >= 10) {
+            p.set('p', String(round(state.pitch, 1)));
+            if (Number.isFinite(state.bearing) && Math.abs(state.bearing) >= 0.05) p.set('b', String(round(state.bearing, 1)));
+        }
+        if (state.sun && _sun(`${state.sun.date}T${String(Math.floor(state.sun.min / 60)).padStart(2, '0')}:${String(state.sun.min % 60).padStart(2, '0')}`)) {
+            p.set('sun', `${state.sun.date}T${String(Math.floor(state.sun.min / 60)).padStart(2, '0')}:${String(state.sun.min % 60).padStart(2, '0')}`);
+        }
         if (state.ll && Number.isFinite(state.ll.lat) && Number.isFinite(state.ll.lng)) {
             p.set('ll', `${round(state.ll.lat, 5)},${round(state.ll.lng, 5)}`);
         }
@@ -139,6 +163,11 @@ const URLState = (() => {
                 const c = map.getCenter();
                 state.ll = { lat: c.lat, lng: c.lng };
                 state.z = map.getZoom();
+                const btn3d = typeof document !== 'undefined' && document.getElementById('btn-3d');
+                if (btn3d && btn3d.classList.contains('active') && map.getPitch) {
+                    state.pitch = map.getPitch();
+                    state.bearing = map.getBearing ? map.getBearing() : 0;
+                }
             }
             if (MapModule.getSelectedCode && MapModule.getSelectedCode()) {
                 state.cell = MapModule.getSelectedCode();
@@ -169,6 +198,10 @@ const URLState = (() => {
             const b = BuildingData.get();
             if (b.color) state.bcolor = b.color;
             if (b.height) state.bheight = b.height;
+        }
+        if (typeof SunStudy !== 'undefined' && SunStudy.getState) {
+            const sun = SunStudy.getState();
+            if (sun) state.sun = sun;
         }
         if (typeof InsightsPanel !== 'undefined' && InsightsPanel.linkState) {
             const intel = InsightsPanel.linkState();
@@ -281,7 +314,13 @@ const URLState = (() => {
         }
         // The step first: temporal layers load async and open on it when they arrive.
         if (state.t && typeof TimeSlider !== 'undefined' && TimeSlider.want) TimeSlider.want(state.t);
-        if (Array.isArray(state.layers) && state.layers.length) applyLayers(state.layers);
+        // The 3D camera and sun study are restored exactly below; their toolbar
+        // tokens in `layers` would toggle the same buttons a second time.
+        const skip = new Set([...(state.pitch >= 10 ? ['3d'] : []), ...(state.sun ? ['sun'] : [])]);
+        const layers = Array.isArray(state.layers) ? state.layers.filter(t => !skip.has(t)) : [];
+        if (layers.length) applyLayers(layers);
+        if (Number.isFinite(state.pitch) && state.pitch >= 10) apply3D(state);
+        else if (state.sun && typeof SunStudy !== 'undefined' && SunStudy.setState) SunStudy.setState(state.sun);
         // A Text2Map question is prefilled (running it needs a selected cell/context).
         if (state.q && typeof document !== 'undefined') {
             const input = document.getElementById('disha-input');
@@ -294,6 +333,29 @@ const URLState = (() => {
         if (state.agent && typeof AgentsPanel !== 'undefined' && AgentsPanel.applyLink) {
             Promise.resolve(AgentsPanel.applyLink(state.agent)).catch(() => { /* best-effort */ });
         }
+    }
+
+    /**
+     * Turn 3D on and land on the link's exact camera. The selection fly and
+     * the 3D tilt both animate first, so the final jump waits for them (and
+     * for the terrain DEM, or the camera can end up under raised ground).
+     */
+    function apply3D(state) {
+        const map = (typeof MapModule !== 'undefined' && MapModule.getMap) ? MapModule.getMap() : null;
+        if (!map || typeof document === 'undefined') return;
+        const btn3d = document.getElementById('btn-3d');
+        if (btn3d && !btn3d.classList.contains('active')) btn3d.click();
+        const cam = { pitch: state.pitch, bearing: Number.isFinite(state.bearing) ? state.bearing : 0 };
+        if (state.ll) cam.center = [state.ll.lng, state.ll.lat];
+        if (Number.isFinite(state.z)) cam.zoom = state.z;
+        let done = false;
+        const land = () => {
+            if (done) return;
+            done = true;
+            map.jumpTo(cam);
+            if (state.sun && typeof SunStudy !== 'undefined' && SunStudy.setState) SunStudy.setState(state.sun);
+        };
+        setTimeout(() => { if (map.once) map.once('idle', land); setTimeout(land, 2500); }, state.cell ? 2200 : 1200);
     }
 
     function _copyShareLink() {
@@ -326,7 +388,7 @@ const URLState = (() => {
         else run();
     }
 
-    return { parse, parseLayers, stringify, buildUrl, capture, activeLayers, apply, applyLayers, sync, init };
+    return { parse, parseLayers, stringify, buildUrl, capture, activeLayers, apply, apply3D, applyLayers, sync, init };
 })();
 
 if (typeof window !== 'undefined') {

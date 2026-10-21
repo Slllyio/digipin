@@ -214,7 +214,8 @@ const Trees3D = (() => {
 
     function refresh() {
         if (!_map) return;
-        if (!_wanted()) {
+        const q = typeof Quality3D !== 'undefined' ? Quality3D.limits() : null;
+        if (!_wanted() || (q && !q.parkTrees && !q.streetTrees)) {
             if (_map.getLayer && _map.getLayer(LAYER)) _map.setLayoutProperty(LAYER, 'visibility', 'none');
             _lastKey = '';
             return;
@@ -239,12 +240,13 @@ const Trees3D = (() => {
         }
         let bfeats = [];
         try { bfeats = _map.querySourceFeatures('overture-buildings-source', { sourceLayer: 'building' }) || []; } catch { /* buildings off */ }
-        const key = bbox.map(v => v.toFixed(4)).join() + ':' + green.length + ':' + streets.length + ':' + bfeats.length;
+        const key = bbox.map(v => v.toFixed(4)).join() + ':' + green.length + ':' + streets.length + ':' + bfeats.length + ':' + (q ? q.tier : '');
         if (key === _lastKey) return;
         _lastKey = key;
-        const pts = treePoints(green.map(f => f.geometry), bbox);
+        // Quality3D trims the tree budget on weaker devices.
+        const pts = treePoints(green.map(f => f.geometry), bbox, SPACING_M, q ? q.parkTrees : MAX_TREES);
         const occ = occupancy(bfeats.map(f => f.geometry), (bbox[1] + bbox[3]) / 2);
-        const street = streetTreePoints(streets, bbox, occ);
+        const street = streetTreePoints(streets, bbox, occ, STREET_SPACING_M, q ? q.streetTrees : MAX_STREET_TREES);
         _map.getSource(SRC).setData(treeFeatures(pts.concat(street)));
         _map.setLayoutProperty(LAYER, 'visibility', 'visible');
     }
@@ -261,6 +263,7 @@ const Trees3D = (() => {
         if (typeof document !== 'undefined') document.addEventListener('click', (e) => {
             if (e.target && e.target.closest && e.target.closest('#btn-3d, #btn-buildings, .co-btn')) setTimeout(_schedule, 600);
         }, true);
+        if (typeof Quality3D !== 'undefined' && Quality3D.onChange) Quality3D.onChange(() => { _lastKey = ''; _schedule(); });
         _schedule();
     }
 

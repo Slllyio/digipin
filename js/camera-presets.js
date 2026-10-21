@@ -229,6 +229,7 @@ const CameraPresets = (() => {
             + `${_icon(p.id)}<span class="cp-label">${p.label}</span><span class="cp-detail">${p.detail}</span></button>`).join('')
             + '<span class="cp-sep" aria-hidden="true"></span>'
             + `<button type="button" class="cp-btn cp-rec" data-act="record" aria-pressed="false" aria-label="Record a fly-through video of these shots" title="Record a fly-through video of these shots">${_icon('record')}<span class="cp-label">Record</span></button>`;
+        if (typeof Quality3D !== 'undefined' && Quality3D.mount) Quality3D.mount(_bar);
     }
 
     function _sync() {

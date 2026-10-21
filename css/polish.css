@@ -1167,3 +1167,21 @@ html[data-theme="light"] #camera-presets .cp-sep { background: var(--aino-line);
     body:has(#detail-panel.open) #cell-layer-legend,
     html[data-theme="light"] body:has(#detail-panel.open) #cell-layer-legend { right: 448px !important; }
 }
+/* 3D detail picker on the shot bar (Quality3D). */
+#camera-presets .cp-quality { display: inline-flex; align-items: center; gap: 6px; padding: 0 6px 0 8px; font: 500 12px var(--font-sans); color: var(--text-muted); }
+#camera-presets .cp-quality select { width: auto; margin: 0; padding: 4px 22px 4px 8px; font: inherit; border-radius: 8px; }
+#camera-presets.is-compact .cp-quality .cp-label { display: none; }
+@media (max-width: 768px) { #camera-presets .cp-quality { padding: 0 4px; } }
+@media (max-width: 768px) {
+    /* Own row above the city chip, clear of the zoom stack on the right. */
+    #camera-presets, html[data-theme="light"] #camera-presets {
+        left: 10px; bottom: 168px; transform: none; max-width: calc(100vw - 72px);
+    }
+    body:has(#cell-time-slider) #camera-presets,
+    html[data-theme="light"] body:has(#cell-time-slider) #camera-presets { bottom: 216px; }
+    #camera-presets .cp-quality select { max-width: 96px; text-overflow: ellipsis; }
+}
+@media (max-width: 768px) {
+    /* Clear of the sidebar toggle that sits at the top-left on phones. */
+    #building-data-panel { top: 110px !important; }
+}

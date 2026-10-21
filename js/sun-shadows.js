@@ -19,7 +19,7 @@ const SunShadows = (() => {
     const LAYER = 'sun-shadows-layer';
     const MIN_ALT = 2;            // below this the shadows run to the horizon; hide them
     const MAX_LEN_M = 450;        // cap very low-sun shadows so they stay readable
-    const MAX_BUILDINGS = 9000;     // nearest to the view centre win
+    const MAX_BUILDINGS = 9000;     // nearest to the view centre win (Quality3D may lower it)
     const M_PER_DEG = 111320;
 
     /** Ground offset [dLng, dLat] in degrees of the shadow tip for height h (m). */
@@ -113,6 +113,7 @@ const SunShadows = (() => {
     let _bound = null;        // map we listen to for moveend
     let _timer = 0;
     let _count = 0;           // shadows in the last draw (stats())
+    let _retries = 0;         // empty draws retried while tiles load
 
     function _theme() {
         return (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light') ? 'light' : 'dark';
@@ -151,13 +152,14 @@ const SunShadows = (() => {
                 }
             } catch { /* tiles not loaded */ }
         }
-        if (out.length <= MAX_BUILDINGS) return out;
+        const cap = typeof Quality3D !== 'undefined' ? Quality3D.limits().shadows : MAX_BUILDINGS;
+        if (out.length <= cap) return out;
         // Too many: keep the ones nearest the camera target, where the eye is.
         const c = map.getCenter();
         const k = Math.cos(c.lat * RAD);
         for (const b of out) { const dx = (b.ring[0][0] - c.lng) * k, dy = b.ring[0][1] - c.lat; b.d = dx * dx + dy * dy; }
         out.sort((a, b) => a.d - b.d);
-        return out.slice(0, MAX_BUILDINGS);
+        return out.slice(0, cap);
     }
 
     function _firstExtrusion(map) {
@@ -171,13 +173,20 @@ const SunShadows = (() => {
         const map = _bound;
         if (!map || !_sun) return;
         const features = [];
-        if (_sun.altitude >= MIN_ALT && map.getZoom() >= 14) {
+        const allowed = typeof Quality3D === 'undefined' || Quality3D.limits().shadows > 0;
+        if (allowed && _sun.altitude >= MIN_ALT && map.getZoom() >= 14) {
             for (const b of _buildings(map)) {
                 const ring = shadowRing(b.ring, b.h, _sun.altitude, _sun.azimuth);
                 if (ring) features.push({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring] } });
             }
         }
         _count = features.length;
+        // Nothing to cast from yet (tiles still arriving after a fly-in or a
+        // restored link, and a tilted camera may never go idle): look again.
+        if (!features.length && allowed && _sun.altitude >= MIN_ALT && map.getZoom() >= 14 && _retries < 6) {
+            _retries++;
+            _schedule(1500);
+        } else if (features.length) _retries = 0;
         const data = { type: 'FeatureCollection', features };
         try {
             const src = map.getSource(SRC);
@@ -204,7 +213,7 @@ const SunShadows = (() => {
         if (_timer) return;
         _timer = setTimeout(_draw, delay);
     }
-    const _onMove = () => _schedule(250);
+    const _onMove = () => { _retries = 0; _schedule(250); };
 
     /** Light the scene for a sun position: sky now, shadows on the next tick. */
     function apply(map, altitude, azimuth) {
@@ -240,6 +249,8 @@ const SunShadows = (() => {
             if (typeof map.setSky === 'function' && typeof UIPolish !== 'undefined' && UIPolish.skySpec) map.setSky(UIPolish.skySpec(_theme()));
         } catch { /* style not ready */ }
     }
+
+    if (typeof Quality3D !== 'undefined' && Quality3D.onChange) Quality3D.onChange(() => { if (_sun && _bound) _schedule(50); });
 
     function stats() { return { shadows: _count, active: !!_sun }; }
 
