@@ -15,15 +15,38 @@
  * source+layers cleaned up on detach, theme-aware legend. colorFor/gradeForRoad
  * are pure and unit-tested.
  *
- * Honest framing: structural congestion, NOT real-time delays. docs/TRAFFIC_MODEL.md
+ * Where pipeline/traffic/demand_model.py has run, each road also carries a
+ * modelled morning-peak load (pcu_peak, vc_peak, los_peak, speed_peak): trips
+ * from homes to jobs routed on the arterials. Roads are then coloured by that
+ * peak LOS, drawn wider with more traffic, and animated dashes show the
+ * direction-free movement on the busiest links.
+ *
+ * Honest framing: modelled / structural congestion, NOT real-time delays.
+ * docs/TRAFFIC_MODEL.md
  */
 const TrafficOverlay = (() => {
     const SOURCE_ID = 'traffic-overlay-src';
     const LINE_ID   = 'traffic-overlay-line';
+    const FLOW_ID   = 'traffic-overlay-flow';
     const CRIT_ID   = 'traffic-overlay-critical';
     const LEGEND_ID = 'traffic-legend';
-    const REGION    = 'indore_pilot';
-    const GEOJSON_URL = `./data/traffic/${REGION}/road_los.geojson`;
+    const DEFAULT_REGION = 'indore_pilot';
+    const FLOW_MIN_PCU = 1200;      // animate movement on roads busier than this in the peak hour
+    // Dash pattern frames for the movement animation (MapLibre "ant path").
+    const DASHES = [[0, 4, 3], [0.5, 4, 2.5], [1, 4, 2], [1.5, 4, 1.5], [2, 4, 1], [2.5, 4, 0.5], [3, 4, 0],
+        [0, 0.5, 3, 3.5], [0, 1, 3, 3], [0, 1.5, 3, 2.5], [0, 2, 3, 2], [0, 2.5, 3, 1.5], [0, 3, 3, 1], [0, 3.5, 3, 0.5]];
+
+    /** Region whose road file to load: the selected city's cell-store region. */
+    function region() {
+        try {
+            if (typeof CitySelector !== 'undefined' && CitySelector.currentArea) {
+                const a = CitySelector.currentArea();
+                if (a && a.region) return a.region;
+            }
+        } catch { /* selector not ready */ }
+        return DEFAULT_REGION;
+    }
+    function geojsonUrl(r) { return `./data/traffic/${r || region()}/road_los.geojson`; }
     const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
 
     // LOS A (free-flow, green) → F (breakdown, deep red). Sequential ramp.
@@ -42,6 +65,9 @@ const TrafficOverlay = (() => {
     let _abort = null;
     let _mode = 'precomputed';   // or 'class_based' (Overpass fallback)
     let _popup = null;
+    let _modelled = false;      // roads carry demand-model peak fields
+    let _anim = null;
+    let _unsub = null;
 
     /** Colour for a LOS grade ('A'..'F'), transparent when unknown. */
     function colorFor(grade) {
@@ -51,6 +77,7 @@ const TrafficOverlay = (() => {
     /** Derive a LOS grade for a road feature from its props. Uses the precomputed
      *  los_grade if present, else a class-capacity-only grade (fallback path). */
     function gradeForRoad(props) {
+        if (props && props.los_peak) return props.los_peak;
         if (props && props.los_grade) return props.los_grade;
         if (typeof TrafficScore === 'undefined') return null;
         const cap = TrafficScore.capacityForClass(props && props.highway);
@@ -70,8 +97,21 @@ const TrafficOverlay = (() => {
                 id: LINE_ID, type: 'line', source: SOURCE_ID,
                 paint: {
                     'line-color': ['get', 'color'],
-                    'line-width': ['interpolate', ['linear'], ['zoom'], 10, 1.2, 16, 4],
+                    'line-width': ['interpolate', ['linear'], ['zoom'],
+                        10, ['*', 1.2, ['get', 'w']], 16, ['*', 4, ['get', 'w']]],
                     'line-opacity': 0.85,
+                },
+            });
+            // Moving dashes on the busiest roads: where the modelled peak traffic flows.
+            _map.addLayer({
+                id: FLOW_ID, type: 'line', source: SOURCE_ID,
+                filter: ['>=', ['coalesce', ['get', 'pcu_peak'], 0], FLOW_MIN_PCU],
+                layout: { 'line-cap': 'butt' },
+                paint: {
+                    'line-color': '#ffffff',
+                    'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.8, 16, 2.2],
+                    'line-opacity': 0.75,
+                    'line-dasharray': DASHES[0],
                 },
             });
             // Critical / bottleneck links emphasised on top.
@@ -107,9 +147,18 @@ const TrafficOverlay = (() => {
         const grade = gradeForRoad(p);
         let html = `<div style="font-family:Inter,sans-serif;font-size:12px;">`
             + `<strong>${esc(p.name) || esc(p.highway) || 'Road'}</strong>`
-            + `<br>LOS <strong>${esc(grade || '—')}</strong>`;
-        if (p.congestion_risk != null) html += ` · risk ${esc(p.congestion_risk)}/100`;
-        if (p.betweenness != null) html += `<br>betweenness ${esc(p.betweenness)}`;
+            + `<br>${p.los_peak ? 'Morning peak LOS' : 'LOS'} <strong>${esc(grade || '—')}</strong>`;
+        if (p.pcu_peak != null) {
+            html += `<br>~${esc(Number(p.pcu_peak).toLocaleString('en-IN'))} PCU/h in the busier direction`
+                + ` · V/C ${esc(p.vc_peak)}`
+                + (p.speed_peak != null ? `<br>peak speed ~${esc(p.speed_peak)} km/h` : '')
+                + (p.pcu_daily != null ? ` · ~${esc(Number(p.pcu_daily).toLocaleString('en-IN'))} PCU/day` : '')
+                + `<br><span style="opacity:.7">modelled (homes → jobs), not counts</span>`;
+            if (p.los_grade) html += `<br>structural LOS ${esc(p.los_grade)}`;
+        } else {
+            if (p.congestion_risk != null) html += ` · risk ${esc(p.congestion_risk)}/100`;
+            if (p.betweenness != null) html += `<br>betweenness ${esc(p.betweenness)}`;
+        }
         if (p.is_bridge) html += `<br>⚠ critical link (single point of failure)`;
         html += '</div>';
         if (_popup) _popup.remove();
@@ -123,6 +172,7 @@ const TrafficOverlay = (() => {
         for (const f of features) {
             const p = f.properties || (f.properties = {});
             p.color = colorFor(gradeForRoad(p));
+            p.w = widthFor(p.pcu_peak);
             // Emphasise only genuinely critical links (high-betweenness bridges),
             // not every graph bridge — an arterial-only network has many of those.
             p.is_critical = (p.criticality === 'critical');
@@ -130,13 +180,21 @@ const TrafficOverlay = (() => {
         return features;
     }
 
+    /** Line-width multiplier for a road's peak flow (1 when unknown). */
+    function widthFor(pcu) {
+        const v = Number(pcu);
+        if (!Number.isFinite(v) || v <= 0) return 1;
+        return 0.7 + Math.min(v, 6000) / 2000;
+    }
+
     /** Fetch the precomputed LOS GeoJSON artifact, or null when absent/unreachable. */
     async function _loadPrecomputed(signal) {
         try {
-            const r = await fetch(GEOJSON_URL, { cache: 'force-cache', signal });
+            const r = await fetch(geojsonUrl(), { cache: 'force-cache', signal });
             if (!r.ok) return null;
             const gj = await r.json();
             _decorate(gj.features || []);
+            _modelled = (gj.features || []).some(f => f.properties && f.properties.pcu_peak != null);
             return gj;
         } catch { return null; }
     }
@@ -191,11 +249,25 @@ const TrafficOverlay = (() => {
         if (signal.aborted || !_active) return;
         _paint(gj);
         _renderLegend();
+        _animate();
         if (typeof App !== 'undefined') {
             App.showToast('Traffic',
-                `${(gj.features || []).length} roads (${_mode === 'precomputed' ? 'LOS · betweenness' : 'class-based, no centrality'}).`,
+                `${(gj.features || []).length} roads (${_mode !== 'precomputed' ? 'class-based, no centrality' : _modelled ? 'modelled morning peak' : 'LOS · betweenness'}).`,
                 'success');
         }
+    }
+
+    /** Step the dash pattern so traffic visibly moves; stops when hidden or reduced motion. */
+    function _animate() {
+        if (_anim || !_modelled || !_map || !_map.getLayer(FLOW_ID)) return;
+        const reduce = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduce) return;
+        let i = 0;
+        _anim = setInterval(() => {
+            if (!_active || !_map || !_map.getLayer(FLOW_ID)) { clearInterval(_anim); _anim = null; return; }
+            i = (i + 1) % DASHES.length;
+            _map.setPaintProperty(FLOW_ID, 'line-dasharray', DASHES[i]);
+        }, 90);
     }
 
     // ---- legend ----
@@ -216,29 +288,39 @@ const TrafficOverlay = (() => {
             document.body.appendChild(el);
         }
         const pal = _palette();
-        el.style.cssText = `position:absolute;bottom:24px;left:24px;z-index:5;background:${pal.surface};`
+        el.style.cssText = `position:absolute;bottom:24px;left:96px;z-index:5;background:${pal.surface};`
             + `border:1px solid ${pal.border};border-radius:10px;padding:12px 14px;color:${pal.ink};`
             + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.32);backdrop-filter:blur(8px);';
         const rows = BANDS.map(b => `<div style="display:flex;align-items:center;gap:6px;margin:2px 0;">`
             + `<span style="width:16px;height:4px;border-radius:2px;background:${b.color};flex:none;"></span>`
             + `<span style="color:${pal.sub};">${b.label}</span></div>`).join('');
-        const note = _mode === 'precomputed'
-            ? 'Structural congestion · betweenness ÷ road capacity → LOS'
-            : 'Class-based estimate (no centrality) · run the pipeline for full LOS';
-        el.innerHTML = `<div style="font-weight:600;font-size:15px;margin-bottom:8px;color:${pal.primary};">Traffic — Level of Service</div>`
+        const note = _mode !== 'precomputed'
+            ? 'Class-based estimate (no centrality) · run the pipeline for full LOS'
+            : _modelled
+                ? 'Modelled morning peak hour: trips from homes to jobs routed on the arterials (volume ÷ capacity → LOS). Wider = more traffic; moving dashes = busiest roads. Not live counts.'
+                : 'Structural congestion · betweenness ÷ road capacity → LOS';
+        el.innerHTML = `<div style="font-weight:600;font-size:15px;margin-bottom:8px;color:${pal.primary};">Traffic — ${_modelled ? 'peak-hour load' : 'Level of Service'}</div>`
             + rows
             + `<div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><span style="width:16px;height:4px;background:#000;opacity:.55;flex:none;"></span><span style="color:${pal.sub};">critical link</span></div>`
-            + `<div style="margin-top:6px;color:${pal.sub};font-size:11px;">${note}</div>`;
+            + `<div style="margin-top:6px;color:${pal.sub};font-size:11px;max-width:240px;">${note}</div>`;
     }
     /** Remove the legend element if present. */
     function _removeLegend() { const el = document.getElementById(LEGEND_ID); if (el) el.remove(); }
 
     /** Activate the overlay and load data. */
-    function attach() { _active = true; refresh(); }
+    function attach() {
+        _active = true;
+        if (!_unsub && typeof CitySelector !== 'undefined' && CitySelector.onChange) {
+            _unsub = CitySelector.onChange(() => { if (_active) refresh(); });
+        }
+        refresh();
+    }
     /** Deactivate the overlay: abort fetches, drop the popup/legend, and remove layers/source. */
     function detach() {
         _active = false;
         if (_abort) { _abort.abort(); _abort = null; }
+        if (_anim) { clearInterval(_anim); _anim = null; }
+        if (_unsub) { _unsub(); _unsub = null; }
         if (_popup) { _popup.remove(); _popup = null; }
         _removeLegend();
         const map = _map_();
@@ -246,6 +328,7 @@ const TrafficOverlay = (() => {
         map.off('click', LINE_ID, _onClick);
         map.off('mouseenter', LINE_ID, _onEnter);
         map.off('mouseleave', LINE_ID, _onLeave);
+        if (map.getLayer(FLOW_ID)) map.removeLayer(FLOW_ID);
         if (map.getLayer(CRIT_ID)) map.removeLayer(CRIT_ID);
         if (map.getLayer(LINE_ID)) map.removeLayer(LINE_ID);
         if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
@@ -255,7 +338,7 @@ const TrafficOverlay = (() => {
     /** Whether the overlay is currently active. */
     function isVisible() { return _active; }
 
-    return { attach, detach, toggle, isVisible, refresh, colorFor, gradeForRoad, BANDS };
+    return { attach, detach, toggle, isVisible, refresh, colorFor, gradeForRoad, widthFor, geojsonUrl, BANDS };
 })();
 
 if (typeof window !== 'undefined') window.TrafficOverlay = TrafficOverlay;

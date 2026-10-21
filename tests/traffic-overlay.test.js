@@ -35,3 +35,18 @@ describe('TrafficOverlay.BANDS — legend', () => {
         for (const b of O.BANDS) expect(b.label).toBeTruthy();
     });
 });
+
+describe('TrafficOverlay demand-model fields', () => {
+    const O = globalThis.TrafficOverlay;
+    it('prefers the modelled peak LOS over the structural grade', () => {
+        expect(O.gradeForRoad({ los_peak: 'F', los_grade: 'A' })).toBe('F');
+    });
+    it('widens roads with more peak traffic, capped', () => {
+        expect(O.widthFor(undefined)).toBe(1);
+        expect(O.widthFor(2000)).toBeGreaterThan(O.widthFor(500));
+        expect(O.widthFor(60000)).toBe(O.widthFor(6000));
+    });
+    it('loads the road file of the given region', () => {
+        expect(O.geojsonUrl('delhi')).toBe('./data/traffic/delhi/road_los.geojson');
+    });
+});

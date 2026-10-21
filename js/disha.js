@@ -99,7 +99,7 @@ MAP ACTIONS — in addition to your normal answer, you MAY emit up to 3 machine-
   [ACTION] selectCell code:39J-49L-L8T4
   [ACTION] overlay name:heat   (names: growth, prediction, scenario, traffic, mobility, heat, ndvi, bivariate, kde, access, grid, wards, buildings)
   [ACTION] query id:best_residential
-  [ACTION] colorBuildings color:scores:flood_risk height:bldg:height_m   (fields as <dataset>:<field>; datasets: scores, traffic, mobility, growth, bldg; color:none resets)
+  [ACTION] colorBuildings color:scores:flood_risk height:bldg:height_m   (fields as <dataset>:<field>; datasets: scores, traffic, traffic_load (peak_vc, peak_los, peak_speed_kmh), mobility, growth, waterlogging, climate_zones, bldg; color:none resets)
 Keep each directive on its own line; the rest of your reply should read normally without them.`;
 
     // ===== SMART CONTEXT SECTIONS =====

@@ -203,6 +203,21 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(fl.stats.some(s => /rain pools/.test(s.label))).toBe(true);
     });
 
+    it('traffic lens: residents within 500 m of an over-capacity arterial', () => {
+        const vc = codes.map((_, i) => (i === 0 ? 1.4 : i === n - 1 ? 0.3 : NaN));   // one jammed road NW, one quiet SE
+        const sp = codes.map((_, i) => (i === 0 ? 8 : i === n - 1 ? 40 : NaN));
+        const vkm = codes.map((_, i) => (i === 0 ? 3000 : i === n - 1 ? 1000 : NaN));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'traffic_load.peak_vc': vc, 'traffic_load.peak_speed_kmh': sp, 'traffic_load.daily_vkm': vkm });
+        const r = L._lenses.traffic(f, {});
+        expect(r.columns.traffic_vc[0]).toBe(1.4);
+        expect(r.columns.traffic_vc[1]).toBe(1.4);                 // next cell (~244 m): still beside the jam
+        expect(r.columns.traffic_vc[n - 1]).toBe(0.3);
+        expect(Number.isNaN(r.columns.traffic_vc[Math.floor(SIZE / 2) * SIZE + 6])).toBe(true);   // no arterial within 500 m
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.headline).toMatch(/16 km\/h/);                    // (8·3000 + 40·1000) / 4000
+        expect(L._lenses.traffic(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {
         const rp = new Array(n).fill(0), depth = new Array(n).fill(0);
         for (let r = 0; r < SIZE; r++) { rp[r * SIZE + 3] = 100; depth[r * SIZE + 3] = 1; }   // column 3 floods
@@ -288,7 +303,7 @@ describe('UrbanLenses on committed city data', () => {
         expect(r.schema).toBe('digipin.lenses/1');
         expect(r.residents).toBeGreaterThan(1e6);
         const ids = r.lenses.map(l => l.id);
-        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'waterlog', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'types', 'green', 'solar', 'confidence', 'seasons', 'burden']));
+        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'waterlog', 'traffic', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'types', 'green', 'solar', 'confidence', 'seasons', 'burden']));
         const se = r.lenses.find(l => l.id === 'seasons');
         expect(se.series.lst.values.length).toBe(24);
         expect(se.headline).toMatch(/PM2\.5/);

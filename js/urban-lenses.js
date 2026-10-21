@@ -40,6 +40,7 @@ const UrbanLenses = (() => {
     const FLOOD_DETOUR_M = 250;
     const WATERLOG_BLOCK = 65;  // waterlogging_index "Very high" class
     const WLOG_HIGH = 45, WLOG_VERY = 65;   // waterlogging index cut-offs for High / Very high (pipeline/cells/ee_layers.py)
+    const ROAD_KM = 0.25, JAM_VC = 0.9;     // residents within 250 m (own or next cell) of an arterial at LOS E/F
     const CUTOFF_DOMAIN = ['Cut off from care', 'Longer walk to care', 'Flooded', 'Unaffected', 'No care in reach anyway'];
     const CUTOFF_COLORS = { 'Cut off from care': '#c0392b', 'Longer walk to care': '#f39c12', Flooded: '#2e86c1', Unaffected: '#cfd8dc', 'No care in reach anyway': '#8e8e8e' };
     const STOP_KM = 0.5, RAPID_KM = 1;   // SDG 11.2.1: 500 m to a bus stop, 1 km to rail / BRT / terminal
@@ -83,6 +84,13 @@ const UrbanLenses = (() => {
             needs: ['waterlogging.waterlogging_index', 'waterlogging.monsoon_water_pct', 'demographics.under5', 'demographics.elderly_60plus', 'wealth.rwi'],
             method: `Residents of cells whose waterlogging susceptibility is High (≥ ${WLOG_HIGH}) or Very high (≥ ${WLOG_VERY}). The index blends height above drainage, Sentinel-1 radar passes that saw standing water in the wet seasons 2021–2025, the topographic wetness index, hollows below the surrounding 300 m and sealed surface. Drains and pumps are not modelled. The poorest-fifth share uses the Meta Relative Wealth Index, population-weighted within the city.`,
             refs: 'Beven & Kirkby 1979 (TWI); Nobre et al. 2011 (HAND); Tiwari et al. 2020 (Sentinel-1 urban flood mapping); Chi et al. 2022 (RWI)' },
+        { id: 'traffic', equity: true, title: 'Traffic load', icon: '🚦',
+            question: 'Who lives next to roads that jam in the morning peak?',
+            field: { key: 'traffic_vc', label: 'Worst peak-hour V/C within 250 m', unit: 'ratio', higherIs: 'worse', ramp: 'heat' },
+            extra: [{ key: 'traffic_speed', label: 'Peak-hour arterial speed nearby', unit: 'km/h', higherIs: 'better', ramp: 'heat' }],
+            needs: ['traffic_load.peak_vc', 'traffic_load.peak_speed_kmh', 'traffic_load.delay_pct', 'traffic_load.daily_vkm'],
+            method: `Morning peak hour from the demand model (pipeline/traffic/demand_model.py): residents make motorised trips to jobs and activity floor space, distributed by a gravity model and routed on the OpenStreetMap arterials with BPR congestion feedback. For each home cell, the worst volume/capacity ratio on any arterial within ${ROAD_KM * 1000} m (its own or a neighbouring cell); at or above ${JAM_VC} is Level of Service E/F (at or over capacity). Speeds and delay are vehicle-km weighted. A strategic model with stated assumptions, not traffic counts.`,
+            refs: 'Ortúzar & Willumsen, Modelling Transport (4-step model); BPR (1964) link performance; IRC 106-1990 urban road capacities; HCM LOS' },
         { id: 'fifteen', equity: true, title: '15-minute completeness', icon: '🚶',
             question: 'Can people reach daily needs on foot?',
             field: { key: 'fifteen_min', label: '15-minute completeness', unit: '0-100', higherIs: 'better', ramp: 'greens' },
@@ -730,6 +738,50 @@ const UrbanLenses = (() => {
             headline: `${_people(pHigh)} people (${_round(100 * pHigh / total)}% of residents) live where heavy rain is likely to pool`
                 + (pVery ? `, ${_people(pVery)} of them in the most waterlogging-prone cells` : '')
                 + (poorShare != null ? `; ${_round(poorShare)}% of them are in the city’s poorest fifth of neighbourhoods.` : '.'),
+            stats,
+        };
+    }
+
+    function traffic(fr) {
+        const c = fr.cols, g = fr.grid, idx = _residents(fr), n = g.n;
+        const vc = c['traffic_load.peak_vc'], sp = c['traffic_load.peak_speed_kmh'];
+        const delay = c['traffic_load.delay_pct'], vkm = c['traffic_load.daily_vkm'];
+        const pop = c['population.population'];
+        if (!vc) return null;
+        const near = new Float64Array(n).fill(NaN), speed = new Float64Array(n).fill(NaN);
+        const off = g.offsets(ROAD_KM);
+        for (const i of idx) {
+            let worst = -1, sSum = 0, sW = 0;
+            for (const [a, b] of off) {
+                const j = g.cellAt(i, a, b);
+                if (j < 0 || !_fin(vc[j])) continue;
+                if (vc[j] > worst) worst = vc[j];
+                if (sp && _fin(sp[j])) { const w = vkm && vkm[j] > 0 ? vkm[j] : 1; sSum += sp[j] * w; sW += w; }
+            }
+            if (worst >= 0) near[i] = worst;
+            if (sW) speed[i] = sSum / sW;
+        }
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const jam = _sumOver(pop, idx, i => near[i] >= JAM_VC);
+        const nearRoad = _sumOver(pop, idx, i => _fin(near[i]));
+        const all = [];
+        for (let i = 0; i < n; i++) if (_fin(vc[i])) all.push(i);
+        const vSpeed = sp ? wmean(sp, vkm, all) : null, vDelay = delay ? wmean(delay, vkm, all) : null;
+        let km = 0;
+        if (vkm) for (const i of all) km += vkm[i] > 0 ? vkm[i] : 0;
+        const stats = [
+            { label: 'Residents within 250 m of an arterial at LOS E/F', value: `${_people(jam)} (${_round(100 * jam / total)}%)`, raw: Math.round(jam) },
+            { label: 'Residents within 250 m of any modelled arterial', value: `${_people(nearRoad)} (${_round(100 * nearRoad / total)}%)` },
+        ];
+        if (vSpeed != null) stats.push({ label: 'Average peak-hour arterial speed (per vehicle-km)', value: `${_round(vSpeed)} km/h` });
+        if (vDelay != null) stats.push({ label: 'Peak-hour delay over free flow (per vehicle-km)', value: `+${_round(vDelay)}% (${_round(1 + vDelay / 100, 1)}× the time)` });
+        if (km) stats.push({ label: 'Vehicle-km on arterials per day (PCU)', value: `${_people(km)} km` });
+        return {
+            columns: { traffic_vc: near, traffic_speed: speed }, idx, weightKey: 'traffic_vc',
+            metric: { label: 'Residents beside a jammed arterial', value: _round(100 * jam / total), unit: '%', higherIs: 'worse' },
+            headline: `${_people(jam)} people (${_round(100 * jam / total)}% of residents) live within 250 m of an arterial that runs at or over capacity in the morning peak`
+                + (vSpeed != null ? `; arterial traffic averages ${_round(vSpeed)} km/h` : '')
+                + (vDelay != null ? ` and a peak trip on them takes ${_round(1 + vDelay / 100, 1)}× its free-flow time.` : '.'),
             stats,
         };
     }
@@ -1512,7 +1564,7 @@ const UrbanLenses = (() => {
             metric: pmRes != null ? { label: 'Months a year above 60 µg/m³ PM2.5', value: _round(pmRes, 1), unit: 'months', higherIs: 'worse' } : null };
     }
 
-    const RUN = { heat, flood, waterlog, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
+    const RUN = { heat, flood, waterlog, traffic, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
 
     // ── siting suitability (MCDA with AHP weights) ──────────────────────────
 
