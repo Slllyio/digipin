@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-21T20:35:59Z",
+  "generated": "2026-10-21T21:24:19Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -9795,6 +9795,266 @@
           },
           "json": "traffic/pune.json",
           "parquet": "traffic/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "traffic_load",
+      "title": "Traffic load (peak-hour model)",
+      "description": "Modelled morning peak hour on the arterial roads: residents (GHSL) make 0.9 motorised trips a day toward jobs and activity floor space (GHSL non-residential built-up, OSM amenities), distributed by a gravity model and routed on the OSM arterial network with BPR congestion feedback; 9% of the day falls in the peak, 0.37 PCU per trip for an Indian mode mix, IRC 106 capacities. A strategic model, not traffic counts: no signals, lane counts, one-way rules or local streets.",
+      "source": "pipeline/traffic/demand_model.py over OSM arterials (data/traffic) + GHSL + OSM amenities",
+      "license": "ODbL (OpenStreetMap) + CC BY 4.0 (GHSL)",
+      "group": "Traffic & mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "peak_vc",
+          "label": "Peak-hour volume / capacity (busiest road)",
+          "type": "number",
+          "agg": "max",
+          "unit": "ratio",
+          "domain": [
+            0,
+            1.5
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "peak_los",
+          "label": "Peak-hour Level of Service",
+          "type": "category",
+          "agg": "max",
+          "domain": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "colors": {
+            "A": "#31a354",
+            "B": "#fdbb84",
+            "C": "#fc8d59",
+            "D": "#ef6548",
+            "E": "#d7301f",
+            "F": "#7f0000"
+          }
+        },
+        {
+          "key": "peak_pcu",
+          "label": "Peak-hour demand on the busiest road",
+          "type": "number",
+          "agg": "max",
+          "unit": "PCU/h",
+          "domain": [
+            0,
+            18066
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "peak_speed_kmh",
+          "label": "Peak-hour arterial speed",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km/h",
+          "domain": [
+            5,
+            50
+          ],
+          "ramp": "heat",
+          "higherIs": "better"
+        },
+        {
+          "key": "delay_pct",
+          "label": "Peak-hour delay over free flow",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            200
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "daily_vkm",
+          "label": "Vehicle-km driven per day",
+          "type": "number",
+          "agg": "sum",
+          "unit": "PCU-km/day",
+          "domain": [
+            0,
+            960439
+          ],
+          "ramp": "heat"
+        }
+      ],
+      "default": {
+        "field": "peak_vc",
+        "extrude": true,
+        "heightM": 300
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 3073,
+          "bbox": {
+            "west": 72.467041015625,
+            "south": 22.927978515625,
+            "east": 72.70654296875,
+            "north": 23.134521484375
+          },
+          "json": "traffic_load/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 5929,
+          "bbox": {
+            "west": 77.428466796875,
+            "south": 12.816162109375,
+            "east": 77.793212890625,
+            "north": 13.1611328125
+          },
+          "json": "traffic_load/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 996,
+          "bbox": {
+            "west": 77.2900390625,
+            "south": 23.152099609375,
+            "east": 77.52734375,
+            "north": 23.323486328125
+          },
+          "json": "traffic_load/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 3017,
+          "bbox": {
+            "west": 80.109130859375,
+            "south": 12.873291015625,
+            "east": 80.31787109375,
+            "north": 13.1962890625
+          },
+          "json": "traffic_load/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 7010,
+          "bbox": {
+            "west": 76.82861328125,
+            "south": 28.377197265625,
+            "east": 77.3955078125,
+            "north": 28.900146484375
+          },
+          "json": "traffic_load/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 81,
+          "bbox": {
+            "west": 77.265869140625,
+            "south": 24.593505859375,
+            "east": 77.353759765625,
+            "north": 24.685791015625
+          },
+          "json": "traffic_load/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 4063,
+          "bbox": {
+            "west": 78.276611328125,
+            "south": 17.27001953125,
+            "east": 78.62158203125,
+            "north": 17.56884765625
+          },
+          "json": "traffic_load/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 2162,
+          "bbox": {
+            "west": 75.569580078125,
+            "south": 22.4248046875,
+            "east": 76.017822265625,
+            "north": 22.9345703125
+          },
+          "json": "traffic_load/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 2117,
+          "bbox": {
+            "west": 75.67724609375,
+            "south": 26.790771484375,
+            "east": 75.938720703125,
+            "north": 27.021484375
+          },
+          "json": "traffic_load/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 1971,
+          "bbox": {
+            "west": 88.2587890625,
+            "south": 22.431396484375,
+            "east": 88.46533203125,
+            "north": 22.66650390625
+          },
+          "json": "traffic_load/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 1825,
+          "bbox": {
+            "west": 80.8232421875,
+            "south": 26.73583984375,
+            "east": 81.06494140625,
+            "north": 26.992919921875
+          },
+          "json": "traffic_load/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 3495,
+          "bbox": {
+            "west": 72.78125,
+            "south": 18.8828125,
+            "east": 73.00537109375,
+            "north": 19.280517578125
+          },
+          "json": "traffic_load/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 2596,
+          "bbox": {
+            "west": 73.732666015625,
+            "south": 18.42138671875,
+            "east": 73.99853515625,
+            "north": 18.654296875
+          },
+          "json": "traffic_load/pune.json",
+          "parquet": null
         }
       ]
     },
