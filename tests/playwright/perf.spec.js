@@ -56,7 +56,7 @@ test.describe('performance budgets', () => {
   });
 
   test('Delhi-size 3D city and a city sweep stay within memory and file budgets', async ({ page }) => {
-    test.setTimeout(520_000);   // the per-city draw wait below can take a minute on CI's software renderer
+    test.setTimeout(400_000);   // the per-city draw wait below can take half a minute on CI's software renderer
     const own = track(page);
     await page.goto('/app.html');
     await waitForApp(page);
@@ -72,16 +72,28 @@ test.describe('performance budgets', () => {
       // Wait for one draw (not for idle: with 3D on the map never reports it).
       // A harvest between tiles can be empty (the first CI run logged 0
       // polygons for every city), so wait for a draw that has buildings.
+      const tWait = Date.now();
       if (!STUB) {
-        await page.waitForFunction(() => typeof DeckBuildings !== 'undefined' && DeckBuildings.renderStats().peakPolygons > 0, null, { timeout: 60_000 }).catch(() => {});
+        await page.waitForFunction(() => typeof DeckBuildings !== 'undefined' && DeckBuildings.renderStats().peakPolygons > 0, null, { timeout: 30_000 }).catch(() => {});
       }
-      const r = await page.evaluate(() => (typeof DeckBuildings !== 'undefined' && DeckBuildings.renderStats) ? DeckBuildings.renderStats() : null);
-      if (r) draw.push({ id, ...r });
+      const r = await page.evaluate(() => {
+        if (typeof DeckBuildings === 'undefined' || !DeckBuildings.renderStats) return null;
+        const m = typeof MapModule !== 'undefined' && MapModule.getMap ? MapModule.getMap() : null;
+        let loaded = null;
+        try { loaded = m ? m.isSourceLoaded('overture-buildings-source') : null; } catch { loaded = null; }
+        return { ...DeckBuildings.renderStats(), zoom: m && m.getZoom ? +m.getZoom().toFixed(2) : null, pitch: m && m.getPitch ? Math.round(m.getPitch()) : null, tilesLoaded: loaded };
+      });
+      if (r) draw.push({ id, waitedMs: Date.now() - tWait, ...r });
     }
     // One line per city so a regression in draw cost is visible in the CI log
     // before it is a failure: polygons / vertices handed to deck.gl, and the
     // longest harvest + layer build (ms) for that city.
-    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms`);
+    // First real baseline (CI, 2026-10-21): Delhi peak 8,529 polygons / 51,609
+    // vertices (8,454 with baked heights), longest refresh 280 ms; the other
+    // five cities had no footprint tiles rendered within 60 s of the fly-to
+    // (Overture PMTiles range requests behind software-GL frames), so zoom,
+    // pitch and the footprint source's loaded state are logged with each line.
+    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s`);
     if (!STUB) {
       // Light theme draws through the MapLibre "twin" source, dark through the
       // deck.gl overlay; both report here. A city whose buildings did not land
