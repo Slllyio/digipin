@@ -1005,6 +1005,190 @@ const UrbanInsights = (() => {
         };
     }
 
+    const _truthy = (v) => v === true || v === 1 || v === '1' || v === 'true' || v === 'yes';
+
+    /** Load a dataset over a city (or a bbox) and index it by cell code. */
+    async function _byCode(store, id, bbox) {
+        if (!store.get(id)) return null;
+        const t = await _load(store, id, bbox).catch(() => null);
+        if (!t || !t.cells) return null;
+        const m = new Map();
+        t.cells.forEach((c, i) => m.set(c, i));
+        return { t, m, col: (k) => (t.columns && t.columns[k]) || [] };
+    }
+
+    /** Least squares y = a + b1·x1 + b2·x2 (normal equations). Null when degenerate. */
+    function ols2(rows) {
+        const n = rows.length;
+        if (n < 10) return null;
+        let s1 = 0, s2 = 0, sy = 0;
+        for (const [x1, x2, y] of rows) { s1 += x1; s2 += x2; sy += y; }
+        const m1 = s1 / n, m2 = s2 / n, my = sy / n;
+        let a11 = 0, a12 = 0, a22 = 0, b1 = 0, b2 = 0, syy = 0;
+        for (const [x1, x2, y] of rows) {
+            const d1 = x1 - m1, d2 = x2 - m2, dy = y - my;
+            a11 += d1 * d1; a12 += d1 * d2; a22 += d2 * d2; b1 += d1 * dy; b2 += d2 * dy; syy += dy * dy;
+        }
+        const det = a11 * a22 - a12 * a12;
+        if (!(Math.abs(det) > 1e-9) || syy <= 0) return null;
+        const k1 = (b1 * a22 - b2 * a12) / det, k2 = (a11 * b2 - a12 * b1) / det;
+        const r2 = (k1 * b1 + k2 * b2) / syy;
+        return { b1: k1, b2: k2, a: my - k1 * m1 - k2 * m2, r2, n };
+    }
+
+    /** Trees for heat: city-fitted cooling per point of tree cover, applied to a ~1 km site. */
+    async function _cool(sc, store) {
+        const code = String(sc.code || '').replace(/-/g, '').toUpperCase().slice(0, 6);
+        if (code.length < 6) throw new Error('Pick a cell (at least 6 DIGIPIN characters) to green.');
+        const trees = Math.max(5, Math.min(60, Number(sc.trees) || 20));
+        const heat = store.get('surface_heat'), lc_ = store.get('land_cover');
+        if (!heat || !lc_) throw new Error('The cooling scenario needs the surface heat and land cover layers.');
+        const ctr = DigiPin.decodePartial(code);
+        const city = cityAt(store, ctr.lat, ctr.lng);
+        const H = await _byCode(store, 'surface_heat', city ? _regionBbox(heat, city) : DigiPin.decodePartial(code).bounds);
+        const L = await _byCode(store, 'land_cover', city ? _regionBbox(lc_, city) : DigiPin.decodePartial(code).bounds);
+        if (!H || !L) throw new Error('No heat or land-cover data here.');
+        const lst = H.col('lst_day_c'), uhi = H.col('uhi_anomaly_c');
+        const tree = L.col('tree_pct'), built = L.col('built_pct'), water = L.col('water_pct');
+        const cityIdx = city ? cellsInRegion(heat, H.t, city) : H.t.cells.map((_, i) => i);
+        const rows = [];
+        for (const i of cityIdx) {
+            const j = L.m.get(H.t.cells[i]);
+            if (j == null || !_isNum(lst[i]) || !_isNum(tree[j]) || !_isNum(built[j])) continue;
+            rows.push([Number(tree[j]), Number(built[j]), Number(lst[i])]);
+        }
+        const fit = ols2(rows);
+        const slope = fit && fit.b1 < 0 ? fit.b1 : 0;
+        const sortedLst = sortedFinite(cityIdx.map(i => lst[i]));
+        const hot = quantile(sortedLst, 0.9);
+        const P = await _byCode(store, 'population', DigiPin.decodePartial(code).bounds);
+        const cells = [];
+        for (let i = 0; i < H.t.cells.length; i++) {
+            const c = H.t.cells[i];
+            if (!c.startsWith(code) || !_isNum(lst[i])) continue;
+            const j = L.m.get(c);
+            const t0 = j != null && _isNum(tree[j]) ? Number(tree[j]) : 0;
+            const w0 = j != null && _isNum(water[j]) ? Number(water[j]) : 0;
+            const add = Math.max(0, Math.min(trees, 100 - t0 - w0));
+            const d = slope * add;
+            const pi = P ? P.m.get(c) : null;
+            cells.push({ code: c, digipin: _code(c), tree0: _round(t0), add: _round(add, 1),
+                before: _round(Number(lst[i]), 2), after: _round(Number(lst[i]) + d, 2), delta: _round(-d, 2),
+                uhi0: _isNum(uhi[i]) ? Number(uhi[i]) : null, people: pi != null ? Number(P.col('population')[pi]) || 0 : 0 });
+        }
+        if (!cells.length) throw new Error(`No surface temperature for ${_code(code)}: pick a cell inside a covered city.`);
+        const mb = _mean(cells.map(c => c.before)), ma = _mean(cells.map(c => c.after));
+        const uh = cells.filter(c => c.uhi0 != null);
+        const hotB = cells.filter(c => c.before >= hot).length, hotA = cells.filter(c => c.after >= hot).length;
+        const people = Math.round(cells.reduce((a, c) => a + c.people, 0));
+        const per10 = _round(-slope * 10, 2);
+        const sources = [sourceOf(heat, store), sourceOf(lc_, store)];
+        if (P) sources.push(sourceOf(store.get('population'), store));
+        return {
+            title: `+${trees} pts tree cover at ${_code(code)}`,
+            summary: slope < 0
+                ? `Adding up to ${trees} points of tree cover across ${cells.length} cells at ${_code(code)} would cool daytime surfaces by about ${_round(mb - ma, 1)} °C `
+                    + `(${_round(mb, 1)} → ${_round(ma, 1)} °C)${hotB ? `, taking ${hotB - hotA} of ${hotB} cells out of ${cityLabel(city)}’s hottest 10%` : ''}`
+                    + (people ? ` for about ${people.toLocaleString('en-IN')} residents.` : '.')
+                : `${cityLabel(city)}’s own data shows no cooling from tree cover once built-up share is accounted for, so this scenario predicts no change.`,
+            metrics: [
+                { label: 'Daytime surface temp (mean)', before: _round(mb, 1), after: _round(ma, 1) },
+                ...(uh.length ? [{ label: 'Urban heat island anomaly', before: _round(_mean(uh.map(c => c.uhi0)), 1), after: _round(_mean(uh.map(c => c.uhi0 - c.delta)), 1) }] : []),
+                ...(hotB ? [{ label: `Cells in the city’s hottest 10% (≥ ${_round(hot, 1)} °C)`, before: hotB, after: hotA }] : []),
+                { label: 'Cooling per +10 pts tree cover (fitted)', value: `${per10} °C · R² ${fit ? _round(fit.r2, 2) : '—'} · ${fit ? fit.n : 0} cells` },
+                ...(people ? [{ label: 'Residents in the site', value: people.toLocaleString('en-IN') }] : []),
+            ],
+            cells: cells.sort((a, b) => b.delta - a.delta),
+            layer: { key: 'cooling_c', label: 'Daytime cooling', unit: '°C', higherIs: 'better', level: H.t.level, values: cells.map(c => [c.code, c.delta]) },
+            formula: `Δ LST = b × Δ tree %, with b = ${fit ? _round(fit.b1, 4) : '—'} °C per point fitted on ${cityLabel(city)}: LST ~ tree % + built %`,
+            assumptions: [
+                `Each ~244 m cell gains up to ${trees} points of tree cover (never past 100% with water).`,
+                'Built-up share is held fixed: the trees go on streets, yards and open land.',
+                'The slope is the city’s own cross-sectional association, not a measured experiment; shade and evapotranspiration at street level can differ.',
+                'Landsat daytime land surface temperature, not air temperature.',
+            ],
+            sources, city,
+        };
+    }
+
+    /** Road closure: roads in the closed cells divert onto the roads two rings around them. */
+    async function _closure(sc, store) {
+        const raw = String(sc.code || '').replace(/-/g, '').toUpperCase();
+        const code = raw.slice(0, Math.min(7, raw.length));
+        if (code.length < 6) throw new Error('Pick a cell (at least 6 DIGIPIN characters) to close.');
+        const tr = store.get('traffic');
+        if (!tr) throw new Error('The road closure scenario needs the traffic layer.');
+        const ctr = DigiPin.decodePartial(code);
+        const city = cityAt(store, ctr.lat, ctr.lng);
+        const b = DigiPin.decodePartial(code).bounds;
+        const pad = 0.012;
+        const box = { west: b.west - pad, south: b.south - pad, east: b.east + pad, north: b.north + pad };
+        const T = await _byCode(store, 'traffic', box);
+        if (!T) throw new Error('No road data here.');
+        const lvl = T.t.level;
+        const closed = T.t.cells.filter(c => c.startsWith(code));
+        if (!closed.length) throw new Error(`No mapped roads in ${_code(code)}.`);
+        const closedSet = new Set(closed);
+        let ring = new Set(closed);
+        for (let k = 0; k < 2; k++) {
+            const next = new Set(ring);
+            for (const c of ring) for (const n of neighbours(c.slice(0, lvl))) next.add(n);
+            ring = next;
+        }
+        const around = [...ring].filter(c => !closedSet.has(c) && T.m.has(c));
+        const len = T.col('road_density_m'), cong = T.col('congestion_risk'), crit = T.col('has_critical_link');
+        const stops = T.col('transit_stops');
+        const L = (c) => Number(len[T.m.get(c)]) || 0;
+        const closedLen = closed.reduce((a, c) => a + L(c), 0);
+        const aroundLen = around.reduce((a, c) => a + L(c), 0);
+        const extra = aroundLen > 0 ? closedLen / aroundLen : 0;
+        const M = await _byCode(store, 'mobility', box);
+        const P = await _byCode(store, 'population', box);
+        const mob = (c, k) => (M && M.m.has(c) ? M.col(k)[M.m.get(c)] : null);
+        const ppl = (c) => (P && P.m.has(c) ? Number(P.col('population')[P.m.get(c)]) || 0 : 0);
+        const cells = around.map(c => {
+            const c0 = Number(cong[T.m.get(c)]) || 0;
+            const c1 = Math.min(100, c0 * (1 + extra));
+            return { code: c, digipin: _code(c), before: _round(c0), after: _round(c1), delta: _round(c1 - c0, 1), roadM: Math.round(L(c)) };
+        }).filter(x => x.roadM > 0).sort((x, y) => y.delta - x.delta);
+        const jamB = cells.filter(x => x.before >= 70).length, jamA = cells.filter(x => x.after >= 70).length;
+        const critClosed = closed.filter(c => _truthy(crit[T.m.get(c)])).length;
+        const chokes = closed.filter(c => _truthy(mob(c, 'on_chokepoint'))).length;
+        const sealNear = [...closed, ...around].filter(c => _truthy(mob(c, 'sealable')));
+        const cutPeople = Math.round(sealNear.reduce((a, c) => a + ppl(c), 0));
+        const stopsLost = closed.reduce((a, c) => a + (Number(stops[T.m.get(c)]) || 0), 0);
+        const sources = [sourceOf(tr, store)];
+        if (M) sources.push(sourceOf(store.get('mobility'), store));
+        if (P) sources.push(sourceOf(store.get('population'), store));
+        return {
+            title: `Road closure at ${_code(code)}`,
+            summary: `Closing ${closedLen < 1000 ? `${Math.round(closedLen)} m` : `${Math.round(closedLen / 100) / 10} km`} of road in ${closed.length} cell${closed.length === 1 ? '' : 's'} at ${_code(code)} pushes about ${Math.round(extra * 100)}% more traffic onto `
+                + `${cells.length} surrounding road cells: ${jamA} would run congested (risk ≥ 70), up from ${jamB}`
+                + (critClosed ? `; ${critClosed} closed cell${critClosed === 1 ? '' : 's'} carr${critClosed === 1 ? 'ies' : 'y'} a critical link` : '')
+                + (chokes ? `; ${chokes} sit${chokes === 1 ? 's' : ''} on a chokepoint` : '')
+                + (cutPeople ? `; about ${cutPeople.toLocaleString('en-IN')} people live in sealable pockets nearby` : '') + '.',
+            metrics: [
+                { label: 'Road closed', value: `${closedLen < 1000 ? `${Math.round(closedLen)} m` : `${Math.round(closedLen / 100) / 10} km`} in ${closed.length} cells` },
+                { label: 'Extra load on nearby roads', value: `+${Math.round(extra * 100)}%` },
+                { label: 'Nearby road cells congested (≥ 70)', before: jamB, after: jamA, flag: jamA > jamB },
+                { label: 'Mean congestion risk nearby', before: _round(_mean(cells.map(x => x.before))), after: _round(_mean(cells.map(x => x.after))) },
+                { label: 'Critical links closed', value: critClosed, flag: critClosed > 0 },
+                ...(M ? [{ label: 'Chokepoints closed', value: chokes, flag: chokes > 0 }] : []),
+                ...(stopsLost ? [{ label: 'Transit stops inside the closure', value: stopsLost }] : []),
+                ...(P && M ? [{ label: 'People in sealable pockets nearby', value: cutPeople.toLocaleString('en-IN') }] : []),
+            ],
+            cells, closed: closed.map(c => ({ code: c, digipin: _code(c) })),
+            layer: { key: 'congestion_delta', label: 'Extra congestion risk', unit: 'points', higherIs: 'worse', level: lvl, values: cells.map(x => [x.code, x.delta]) },
+            formula: 'Diverted share = closed road length ÷ road length in the two rings of cells around it; congestion after = congestion × (1 + share), capped at 100',
+            assumptions: [
+                'Traffic on the closed roads spreads over nearby roads in proportion to their length; trips are not cancelled or rerouted further out.',
+                'Congestion risk is the pipeline’s structural score (road class, density, junctions), not live traffic.',
+                'Sealable pockets and chokepoints come from the law & order mobility layer (pipeline/safety/mobility.py).',
+            ],
+            sources, city,
+        };
+    }
+
     async function _flood(sc, store, opts) {
         const spec = _scoresCtx(store);
         const table = await store.load('scores');
@@ -1076,14 +1260,15 @@ const UrbanInsights = (() => {
 
     /**
      * Run a what-if scenario. { type: 'park', code, boost } |
-     * { type: 'density', code, factor } | { type: 'flood', level, area|city|lat,lng }.
+     * { type: 'density', code, factor } | { type: 'flood', level, area|city|lat,lng } |
+     * { type: 'cool', code, trees } | { type: 'closure', code }.
      * opts.heights = a baked height grid ({ level, cells }) for building counts.
      */
     async function whatIf(scenario, store, opts = {}) {
         store = store || (typeof CellStore !== 'undefined' ? CellStore : null);
         if (!scenario || !store) throw new Error('No scenario.');
-        const run = { park: _park, density: _density, flood: _flood }[scenario.type];
-        if (!run) throw new Error(`Unknown scenario "${scenario.type}". Try park, density or flood.`);
+        const run = { park: _park, density: _density, flood: _flood, cool: _cool, closure: _closure }[scenario.type];
+        if (!run) throw new Error(`Unknown scenario "${scenario.type}". Try park, density, flood, cool or closure.`);
         const res = await run(scenario, store, opts);
         return { schema: SCHEMA, kind: 'whatif', type: scenario.type, scenario, ranAt: (opts.now ? opts.now() : new Date()).toISOString(), ...res };
     }
@@ -1276,7 +1461,7 @@ const UrbanInsights = (() => {
     return {
         SCHEMA, HEADLINE, COMPOSITES, FLOOD_LEVELS,
         stats, percentile, quantile, cityLabel, fmt, cities, cityAt, resolveArea, cellsInRegion, scalarColumn,
-        activeCells, trendOf, neighbours, sourceOf, pointInPolygon, polygonKm2,
+        activeCells, trendOf, neighbours, sourceOf, pointInPolygon, polygonKm2, ols2,
         areaInsights, changes, headline, cityDashboard, compare, whatIf, toLayer, evidence, toText, loadHeights,
     };
 })();

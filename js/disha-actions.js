@@ -290,6 +290,7 @@ const DISHAActions = (() => {
             const sc = { type: p.scenario };
             if (p.code) sc.code = _norm(p.code);
             if (p.factor) sc.factor = p.factor;
+            if (p.trees) sc.trees = p.trees;
             if (p.scenario === 'flood') {
                 sc.level = p.level || 'severe';
                 const b = _bounds();

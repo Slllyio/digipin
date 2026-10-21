@@ -134,3 +134,50 @@ describe('Drawn areas and what changed', () => {
         expect(D.match("what's new here", cities)).toEqual({ type: 'changes' });
     });
 });
+
+describe('Trees-for-heat and road-closure scenarios', () => {
+    it('ols2 recovers a known plane', () => {
+        const rows = [];
+        for (let i = 0; i < 40; i++) { const x1 = i % 10, x2 = Math.floor(i / 10) * 3; rows.push([x1, x2, 5 - 0.5 * x1 + 2 * x2]); }
+        const f = globalThis.UrbanInsights.ols2(rows);
+        expect(f.b1).toBeCloseTo(-0.5, 6);
+        expect(f.b2).toBeCloseTo(2, 6);
+        expect(f.r2).toBeCloseTo(1, 6);
+        expect(globalThis.UrbanInsights.ols2(rows.slice(0, 5))).toBeNull();
+    });
+
+    it('cool: city-fitted slope, cooler after, never past 100% cover', async () => {
+        const U = globalThis.UrbanInsights;
+        const s = await store();
+        const r = await U.whatIf({ type: 'cool', code: '4FP3PP', trees: 20 }, s);
+        expect(r.city).toBe('pune');
+        expect(r.cells.length).toBeGreaterThan(5);
+        for (const c of r.cells) {
+            expect(c.after).toBeLessThanOrEqual(c.before);
+            expect(c.tree0 + c.add).toBeLessThanOrEqual(100.01);
+        }
+        expect(r.sources.map(x => x.id)).toEqual(expect.arrayContaining(['surface_heat', 'land_cover']));
+        expect(r.formula).toMatch(/fitted on Pune/);
+        expect(U.toLayer(r).spec.fields[0].key).toBe('cooling_c');
+    }, 60000);
+
+    it('closure: diverts onto the surrounding roads and flags critical links', async () => {
+        const U = globalThis.UrbanInsights;
+        const s = await store();
+        const r = await U.whatIf({ type: 'closure', code: '4FP49M' }, s);
+        expect(r.cells.length).toBeGreaterThan(5);
+        expect(r.cells.every(c => !c.code.startsWith('4FP49M'))).toBe(true);
+        expect(r.cells.every(c => c.after >= c.before && c.after <= 100)).toBe(true);
+        const jam = r.metrics.find(m => /congested/.test(m.label));
+        expect(jam.after).toBeGreaterThanOrEqual(jam.before);
+        await expect(U.whatIf({ type: 'closure', code: '4FP' }, s)).rejects.toThrow(/at least 6/);
+    }, 60000);
+
+    it('links and DISHA know the new scenarios', () => {
+        expect(B.parseScenarioToken(B.scenarioToken({ type: 'cool', code: '4FP3PP', trees: 30 }))).toEqual({ type: 'cool', code: '4FP3PP', trees: 30 });
+        expect(B.parseScenarioToken('closure:4FP3PPT')).toEqual({ type: 'closure', code: '4FP3PPT' });
+        const D = globalThis.DishaIntel;
+        expect(D.match('what if we plant trees here, 30% more', [])).toEqual({ type: 'whatif', scenario: 'cool', trees: 30 });
+        expect(D.match('what happens if we close this road?', [])).toEqual({ type: 'whatif', scenario: 'closure' });
+    });
+});

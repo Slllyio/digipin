@@ -35,7 +35,8 @@ const InsightsPanel = (() => {
     let _tab = 'city';
     let _city = null;          // dashboard city (region name)
     let _hereMode = 'hood';    // 'hood' (L5 of selection) | 'cell' (L6) | 'view'
-    let _scenario = { type: 'park', boost: 40, factor: 1.5, level: 'severe' };
+    let _scenario = { type: 'park', boost: 40, factor: 1.5, level: 'severe', trees: 20 };
+    const SITE_TYPES = new Set(['park', 'density', 'cool', 'closure']);
     let _cmp = { a: null, b: null };
     let _dash = null;          // cached dashboard
     let _seq = 0;
@@ -896,17 +897,21 @@ const InsightsPanel = (() => {
     async function _renderWhatIf(store, seq) {
         const body = _body();
         const seg = _el('div', 'ui-seg');
-        [['park', '🌳 New park'], ['density', '🏢 More density'], ['flood', '🌊 Flood event']].forEach(([t, label]) => {
+        [['park', '🌳 New park'], ['density', '🏢 More density'], ['flood', '🌊 Flood event'], ['cool', '🌡 Trees for heat'], ['closure', '🚧 Road closure']].forEach(([t, label]) => {
             seg.appendChild(_btn(label, () => { _scenario.type = t; render(); }, `ui-seg-btn${_scenario.type === t ? ' active' : ''}`));
         });
         body.appendChild(seg);
         const sel = _selected() || _scenario.code || null;
         const form = _el('div', 'ui-form');
         const t = _scenario.type;
-        if (t === 'park' || t === 'density') {
-            form.appendChild(_el('div', 'ui-muted', sel ? `Site: the ~1 km cell ${DigiPin.format(sel.replace(/-/g, '').slice(0, 6))} (the selected cell).` : 'Click a cell on the map to pick the site.'));
+        if (SITE_TYPES.has(t)) {
+            const c = sel ? sel.replace(/-/g, '') : '';
+            const site = t === 'closure' && c.length >= 7 ? `the ~250 m cell ${DigiPin.format(c.slice(0, 7))}` : `the ~1 km cell ${DigiPin.format(c.slice(0, 6))}`;
+            form.appendChild(_el('div', 'ui-muted', sel ? `Site: ${site} (the selected cell).` : 'Click a cell on the map to pick the site.'));
             if (t === 'park') form.appendChild(_slider('Green boost in the park cell', 'boost', 10, 80, 5, ' pts'));
-            else form.appendChild(_slider('Residents', 'factor', 1.2, 4, 0.1, '×'));
+            else if (t === 'density') form.appendChild(_slider('Residents', 'factor', 1.2, 4, 0.1, '×'));
+            else if (t === 'cool') form.appendChild(_slider('Tree cover added', 'trees', 5, 60, 5, ' pts'));
+            else form.appendChild(_el('div', 'ui-muted', 'Every road in the site closes; traffic diverts onto the roads two cells around it. Zoom in and click a street cell for a single-block closure.'));
         } else {
             const s = document.createElement('select');
             s.className = 'ui-select';
@@ -921,7 +926,7 @@ const InsightsPanel = (() => {
             form.appendChild(_el('div', 'ui-muted', `Area: the map view, within ${UrbanInsights.cityLabel(_city)}.`));
         }
         const run = _btn('Run scenario', () => _runScenario(store, out), 'ui-btn ui-btn--primary');
-        if ((t === 'park' || t === 'density') && !sel) run.disabled = true;
+        if (SITE_TYPES.has(t) && !sel) run.disabled = true;
         form.appendChild(run);
         body.appendChild(form);
         const out = _el('div', 'ui-whatif-out');
@@ -939,9 +944,11 @@ const InsightsPanel = (() => {
         const sc = { type: _scenario.type };
         let heights = null;
         try {
-            if (sc.type === 'park' || sc.type === 'density') {
+            if (SITE_TYPES.has(sc.type)) {
                 sc.code = (sel || _scenario.code || '').replace(/-/g, '');
-                if (sc.type === 'park') sc.boost = _scenario.boost; else sc.factor = _scenario.factor;
+                if (sc.type === 'park') sc.boost = _scenario.boost;
+                else if (sc.type === 'density') sc.factor = _scenario.factor;
+                else if (sc.type === 'cool') sc.trees = _scenario.trees;
                 if (sc.type === 'density') {
                     const c = DigiPin.decodePartial(sc.code);
                     heights = await UrbanInsights.loadHeights(c.lat, c.lng);
@@ -969,7 +976,10 @@ const InsightsPanel = (() => {
         _clearWhatIf();
         CellStore.register(layer.spec, layer.table);
         await CellLayers.show(WHATIF_ID, { field: layer.spec.fields[0].key, extrude: true });
-        const top = r.cells.slice(0, 40).map(c => ({ code: c.code, kind: r.type === 'flood' ? 'concern' : 'strength' }));
+        const bad = r.type === 'flood' || r.type === 'closure';
+        const top = r.type === 'closure'
+            ? [...(r.closed || []).map(c => ({ code: c.code, kind: 'concern' })), ...r.cells.slice(0, 40).map(c => ({ code: c.code, kind: 'notable' }))]
+            : r.cells.slice(0, 40).map(c => ({ code: c.code, kind: bad ? 'concern' : 'strength' }));
         highlight(top, { fit: r.type !== 'flood' });
     }
 
@@ -993,9 +1003,10 @@ const InsightsPanel = (() => {
         });
         out.appendChild(tbl);
         if (r.cells && r.cells.length) {
-            out.appendChild(_el('h4', 'ui-h', r.type === 'flood' ? `Most exposed cells (${r.cells.length})` : 'Cells affected'));
+            out.appendChild(_el('h4', 'ui-h', r.type === 'flood' ? `Most exposed cells (${r.cells.length})` : r.type === 'closure' ? `Roads taking the diverted traffic (${r.cells.length})` : 'Cells affected'));
             const chips = _el('div', 'ui-actions');
-            r.cells.slice(0, 12).forEach(c => chips.appendChild(_codeChip(c.digipin, `${c.digipin}${c.delta != null ? ` +${c.delta}` : c.exposure != null ? ` · ${c.exposure}` : ''}`)));
+            const unit = r.type === 'cool' ? ' °C' : '';
+            r.cells.slice(0, 12).forEach(c => chips.appendChild(_codeChip(c.digipin, `${c.digipin}${c.delta != null ? ` ${r.type === 'cool' ? '−' : '+'}${c.delta}${unit}` : c.exposure != null ? ` · ${c.exposure}` : ''}`)));
             out.appendChild(chips);
         }
         const act = _el('div', 'ui-actions');
@@ -1060,8 +1071,9 @@ const InsightsPanel = (() => {
         } else if (_tab === 'whatif') {
             const sel = _selected();
             const s = { ..._scenario };
-            if (sel) s.code = sel.replace(/-/g, '').slice(0, 6);
-            else if (s.code) s.code = s.code.slice(0, 6);
+            const n = s.type === 'closure' ? 7 : 6;
+            if (sel) s.code = sel.replace(/-/g, '').slice(0, n);
+            else if (s.code) s.code = s.code.slice(0, n);
             st.scenario = s;
         }
         return st;

@@ -55,3 +55,15 @@ scenario in view, and a source card for every dataset used. Print it to save a P
   typical same-step change, and the cells whose change was 2+ SD from the city's. Shown on the City tab, in briefs,
   and to DISHA ("what changed in Pune?"). The Intel button shows a dot when the store has a newer month than the
   one you last saw.
+
+## Trees for heat and road closure
+
+- **Trees for heat** (`cool`): fits daytime land surface temperature on tree cover and built-up share over the
+  city's ~244 m cells (`ols2`, least squares), then applies the tree-cover slope to the added points in each cell
+  of the ~1 km site (capped so tree + water ≤ 100%). Reports surface temperature and UHI anomaly before/after,
+  cells leaving the city's hottest 10%, residents (GHSL), and the fitted slope with R². If the city's data shows
+  no cooling from trees, it predicts no change and says so.
+- **Road closure** (`closure`): closes every road in the selected cell (~250 m at level 7, or the 16 children of a
+  ~1 km cell); the closed road length spreads over the roads in the two rings of cells around it in proportion to
+  their length (congestion × (1 + share), capped at 100). Reports congested cells before/after, critical links
+  and chokepoints closed, transit stops inside, and people in sealable pockets nearby.

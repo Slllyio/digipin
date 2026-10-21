@@ -11,6 +11,7 @@
  *             &ia=<area> &ib=<area> area tokens: city:<region> | p:<prefix> | b:w,s,e,n
  *                                   | g:lng,lat;lng,lat;… (a drawn polygon, ≤ 60 vertices)
  *             &wi=<scenario>        park:<code>:<boost> | density:<code>:<factor> | flood:<level>
+ *                                   | cool:<code>:<trees> | closure:<code>
  *
  *   Briefs  a self-contained HTML document (no scripts, no network) for a city
  *           and optionally an area and a what-if: headline, key indicators and
@@ -79,16 +80,20 @@ const IntelBrief = (() => {
         if (s.type === 'park' && CODE_RE.test(code)) return `park:${code}:${_num(s.boost) ?? 30}`;
         if (s.type === 'density' && CODE_RE.test(code)) return `density:${code}:${_num(s.factor) ?? 2}`;
         if (s.type === 'flood' && FLOOD.includes(s.level)) return `flood:${s.level}`;
+        if (s.type === 'cool' && CODE_RE.test(code)) return `cool:${code}:${_num(s.trees) ?? 20}`;
+        if (s.type === 'closure' && CODE_RE.test(code)) return `closure:${code}`;
         return '';
     }
 
     function parseScenarioToken(s) {
         const p = String(s || '').split(':');
         if (p[0] === 'flood') return FLOOD.includes(p[1]) ? { type: 'flood', level: p[1] } : null;
-        if (p[0] !== 'park' && p[0] !== 'density') return null;
+        if (!['park', 'density', 'cool', 'closure'].includes(p[0])) return null;
         const code = (p[1] || '').toUpperCase();
         if (!CODE_RE.test(code)) return null;
         const v = _num(p[2]);
+        if (p[0] === 'closure') return { type: 'closure', code };
+        if (p[0] === 'cool') return { type: 'cool', code, trees: v != null ? Math.max(5, Math.min(60, v)) : 20 };
         if (p[0] === 'park') return { type: 'park', code, boost: v != null ? Math.max(10, Math.min(80, v)) : 30 };
         return { type: 'density', code, factor: v != null ? Math.max(1.1, Math.min(4, v)) : 2 };
     }

@@ -15,6 +15,8 @@
 const DishaIntel = (() => {
     const RE = {
         insights: /\b(what('?s| is)? (notable|special|unusual|interesting)|stands? out|insights?|hotspots?|anomal(y|ies)|what('?s| is) (going on|happening)|trends? (here|in this))\b/i,
+        cool: /\b(plant(ing)?|add(ing)?|more)\b.{0,20}\btrees?\b|\btree cover\b|\bcool(ing)? (down )?(the |this )?(area|street|neighbourhood|neighborhood|city)\b/i,
+        closure: /\b(close|closing|closed|shut(ting)?|block(ed|ing)?)\b.{0,25}\b(road|roads|street|junction|flyover|bridge)\b|\broad closure\b/i,
         park: /\b(add(ing)?|new|build(ing)?|create|plant(ing)?)\b.{0,20}\b(park|garden|green space|forest)\b|\bpark here\b/i,
         density: /\b(double|triple|more|increase|densif\w*|(\d(\.\d)?)\s*x)\b.{0,25}\b(density|population|residents|people|housing|homes|units)\b/i,
         flood: /\b(flood(s|ed|ing)? (event|scenario|hits?|happens?)|if it floods|heavy rain|cloudburst|(severe|extreme|moderate) flood|inundat\w*)\b/i,
@@ -51,7 +53,12 @@ const DishaIntel = (() => {
         if (RE.dashboard.test(q)) return { type: 'dashboard' };
         if (RE.changes.test(q)) return named.length ? { type: 'changes', city: named[0] } : { type: 'changes' };
         if (RE.compare.test(q) && named.length >= 2) return { type: 'compare', a: { city: named[0] }, b: { city: named[1] } };
-        if (/\bwhat[\s-]?if\b|\bimagine\b|\bsimulate\b|\bscenario\b|\bif (we|they|i)\b/i.test(q) || RE.park.test(q) || RE.flood.test(q)) {
+        if (/\bwhat[\s-]?if\b|\bimagine\b|\bsimulate\b|\bscenario\b|\bif (we|they|i)\b/i.test(q) || RE.park.test(q) || RE.flood.test(q) || RE.cool.test(q) || RE.closure.test(q)) {
+            if (RE.closure.test(q)) return { type: 'whatif', scenario: 'closure' };
+            if (RE.cool.test(q)) {
+                const m = /(\d{1,2})\s*(%|percent|pts|points)/i.exec(q);
+                return { type: 'whatif', scenario: 'cool', trees: m ? Number(m[1]) : 20 };
+            }
             if (RE.park.test(q)) return { type: 'whatif', scenario: 'park' };
             if (RE.flood.test(q) || /\bflood/i.test(q)) {
                 const level = /\bextreme|worst|cloudburst\b/i.test(q) ? 'extreme' : /\bmoderate|minor|light\b/i.test(q) ? 'moderate' : 'severe';
@@ -149,6 +156,7 @@ const DishaIntel = (() => {
                     if (!cell) { el.textContent = 'Click a cell on the map first, then ask again: the scenario needs a site.'; return ''; }
                     sc.code = cell.code.replace(/-/g, '');
                     if (intent.factor) sc.factor = intent.factor;
+                    if (intent.trees) sc.trees = intent.trees;
                     if (intent.scenario === 'density' && center) heights = await UrbanInsights.loadHeights(center.lat, center.lng);
                 }
                 r = await UrbanInsights.whatIf(sc, CellStore, { heights });

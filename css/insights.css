@@ -70,8 +70,8 @@ html[data-theme="light"] {
 .ui-chip--code { font-family: ui-monospace, Menlo, Consolas, monospace; }
 .ui-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; align-items: flex-start; }
 
-.ui-seg { display: flex; gap: 4px; margin-bottom: 8px; }
-.ui-seg-btn { flex: 1; padding: 6px 4px; font-size: 11.5px; }
+.ui-seg { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.ui-seg-btn { flex: 1 1 0; min-width: 88px; padding: 6px 4px; font-size: 11.5px; white-space: nowrap; }
 .ui-seg-btn.active { background: var(--accent-soft); border-color: var(--accent-cyan); color: var(--accent-cyan-text); font-weight: 600; }
 
 /* City tab */
