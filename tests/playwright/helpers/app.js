@@ -32,6 +32,16 @@ async function prepare(page) {
     // Main-thread freezes: every long task (> 50 ms) since page start, for
     // the freeze budget in soak.spec.js. Read with longTasks(page).
     window.__longTasks = [];
+    // GPU syncs: every readPixels forces the GPU to finish all queued work
+    // before the call returns, so the count per city is a budget the perf
+    // sweep can hold (a terrain pick per harvest corner once cost 1.8 s of a
+    // fly-in). Read and reset through window.__gl.
+    window.__gl = { readPixels: 0 };
+    for (const C of [window.WebGLRenderingContext, window.WebGL2RenderingContext]) {
+      if (!C || !C.prototype || typeof C.prototype.readPixels !== 'function') continue;
+      const orig = C.prototype.readPixels;
+      C.prototype.readPixels = function (...args) { window.__gl.readPixels++; return orig.apply(this, args); };
+    }
     try {
       new PerformanceObserver((list) => {
         for (const e of list.getEntries()) window.__longTasks.push({ t: Math.round(e.startTime), ms: Math.round(e.duration) });

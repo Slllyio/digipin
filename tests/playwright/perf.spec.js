@@ -57,6 +57,11 @@ const BUDGET = {
   polygons: 60_000,              // building polygons in one 3D view
   vertices: 1_000_000,           // their outer-ring vertices
   refreshMs: 5_000,              // longest single harvest + layer build (real GPU only; see the gate)
+  // GPU syncs (readPixels calls) during one city's fly-in and wait. Each one
+  // makes the GPU finish everything queued before returning; a fly-in costs
+  // MapLibre about six of its own. The twin harvest once added a terrain pick
+  // per corner of its query box, 1.8 s of a Delhi fly-in on software GL.
+  gpuSyncs: 24,
 };
 
 function track(page) {
@@ -135,7 +140,7 @@ test.describe('performance budgets', () => {
     })}`);
     const draw = [];
     for (const id of ['delhi', 'mumbai', 'bengaluru', 'hyderabad', 'chennai', 'kolkata']) {
-      await page.evaluate(() => { if (typeof DeckBuildings !== 'undefined') DeckBuildings.resetRenderStats(); window.__fp = { tile: 0, any: 0, kinds: {}, errors: [], bySource: {}, arrived: {}, t0: Date.now(), p0: performance.now() }; });
+      await page.evaluate(() => { if (typeof DeckBuildings !== 'undefined') DeckBuildings.resetRenderStats(); window.__fp = { tile: 0, any: 0, kinds: {}, errors: [], bySource: {}, arrived: {}, t0: Date.now(), p0: performance.now() }; if (window.__gl) window.__gl.readPixels = 0; });
       const t0 = { ...tiles, byFile: { ...tiles.byFile } };
       // PW_PROFILE=1: sample the main thread through the city's fly-to and
       // wait, and print the top self-time functions per city, to name what
@@ -186,7 +191,8 @@ test.describe('performance budgets', () => {
         const lt = (window.__longTasks || []).filter((x) => x.t >= window.__fp.p0);
         const busy = { longTasks: lt.length, blockedMs: lt.reduce((a, x) => a + x.ms, 0), longestMs: lt.reduce((a, x) => Math.max(a, x.ms), 0), windowMs: Math.round(performance.now() - window.__fp.p0) };
         const latency = { handed: lat.n, arrived: lat.ms.length, lost: lat.lost, minMs: lat.ms[0] ?? null, medianMs: lat.ms[Math.floor(lat.ms.length / 2)] ?? null, maxMs: lat.ms[lat.ms.length - 1] ?? null };
-        return { latency, busy, cpus: navigator.hardwareConcurrency, workers: typeof maplibregl !== 'undefined' ? maplibregl.workerCount : null, ...DeckBuildings.renderStats(), zoom: m && m.getZoom ? +m.getZoom().toFixed(2) : null, pitch: m && m.getPitch ? Math.round(m.getPitch()) : null, tilesLoaded: loaded, allTiles, events: window.__fp, rangeReads: typeof OvertureRelease !== 'undefined' && OvertureRelease.rangeStats ? OvertureRelease.rangeStats() : null, protocol: typeof OvertureRelease !== 'undefined' && OvertureRelease.protocolStats ? OvertureRelease.protocolStats() : null, layerVis: layer ? (vis || 'visible') : 'missing' };
+        const gpuSyncs = window.__gl ? window.__gl.readPixels : null;
+        return { gpuSyncs, latency, busy, cpus: navigator.hardwareConcurrency, workers: typeof maplibregl !== 'undefined' ? maplibregl.workerCount : null, ...DeckBuildings.renderStats(), zoom: m && m.getZoom ? +m.getZoom().toFixed(2) : null, pitch: m && m.getPitch ? Math.round(m.getPitch()) : null, tilesLoaded: loaded, allTiles, events: window.__fp, rangeReads: typeof OvertureRelease !== 'undefined' && OvertureRelease.rangeStats ? OvertureRelease.rangeStats() : null, protocol: typeof OvertureRelease !== 'undefined' && OvertureRelease.protocolStats ? OvertureRelease.protocolStats() : null, layerVis: layer ? (vis || 'visible') : 'missing' };
       });
       if (profiler) {
         const { profile } = await profiler.send('Profiler.stop');
@@ -206,7 +212,7 @@ test.describe('performance budgets', () => {
     // reported loaded, so nothing re-harvested when the tiles finally landed
     // (fixed: the poll now runs while tiles arrive). Zoom, pitch and the
     // source's loaded state stay on each line for the next such finding.
-    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s; tile requests ${d.reqStarted} started / ${d.reqDone} done / ${d.reqFailed} failed [${d.files}], source events ${d.events.any} (${d.events.tile} tile; ${JSON.stringify(d.events.kinds)}), all tiles loaded ${d.allTiles}, layer ${d.layerVis}, map errors ${JSON.stringify(d.events.errors.slice(0, 3))}; tile events by source ${JSON.stringify(d.events.bySource)}, range reads ${JSON.stringify(d.rangeReads)}, protocol ${JSON.stringify(d.protocol)}, handoff latency ${JSON.stringify(d.latency)} (${d.cpus} cpus, ${d.workers} workers), main thread ${JSON.stringify(d.busy)}`);
+    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s; tile requests ${d.reqStarted} started / ${d.reqDone} done / ${d.reqFailed} failed [${d.files}], source events ${d.events.any} (${d.events.tile} tile; ${JSON.stringify(d.events.kinds)}), all tiles loaded ${d.allTiles}, layer ${d.layerVis}, map errors ${JSON.stringify(d.events.errors.slice(0, 3))}; tile events by source ${JSON.stringify(d.events.bySource)}, range reads ${JSON.stringify(d.rangeReads)}, protocol ${JSON.stringify(d.protocol)}, handoff latency ${JSON.stringify(d.latency)} (${d.cpus} cpus, ${d.workers} workers), main thread ${JSON.stringify(d.busy)}, GPU syncs (readPixels) ${d.gpuSyncs}`);
     if (!STUB) {
       // Light theme draws through the MapLibre "twin" source, dark through the
       // deck.gl overlay; both report here. A city whose buildings did not land
@@ -236,6 +242,7 @@ test.describe('performance budgets', () => {
       });
       const softwareGl = /swiftshader|llvmpipe|software|mesa offscreen/i.test(renderer);
       if (softwareGl) console.log(`3D draw: renderer "${renderer}", redraw-time budget not enforced (software GL)`);
+      for (const d of draw) if (d.gpuSyncs != null) expect(d.gpuSyncs, `${d.id}: GPU syncs (readPixels) during the fly-in and wait`).toBeLessThanOrEqual(BUDGET.gpuSyncs);
       for (const d of live) {
         expect(d.peakPolygons, `${d.id}: polygons in one 3D view`).toBeLessThan(BUDGET.polygons);
         expect(d.peakVertices, `${d.id}: vertices in one 3D view`).toBeLessThan(BUDGET.vertices);
