@@ -36,7 +36,11 @@ test.describe('soak', () => {
   });
 
   test('two rounds over the big cities with 3D on and a cell selected stay error-free and do not leak', async ({ page }) => {
-    test.setTimeout(600_000);   // ~20 s per city in the real browser × 12, with headroom
+    // The loop below is bounded by its own per-visit waits (fly-to 60 s,
+    // profile 120 s), so the test window is their sum plus boot: a slow
+    // runner took 572 s for the loop alone (frames of up to 8.8 s under
+    // software GL) and tripped a 600 s window after every profile rendered.
+    test.setTimeout(ROUNDS * CITIES.length * (60_000 + 120_000 + 5_000) + 120_000);
     await page.goto('/app.html');
     await waitForApp(page);
     const available = await page.$$eval('#city-select option', (os) => os.map((o) => o.value));
