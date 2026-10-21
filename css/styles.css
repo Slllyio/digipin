@@ -475,6 +475,10 @@ body {
 #sidebar.collapsed .sidebar-content {
     opacity: 0;
     pointer-events: none;
+    /* Hidden content must leave the tab order and the accessibility tree too;
+       the delay lets the opacity fade finish first. */
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0s linear 0.2s;
 }
 
 #sidebar-toggle {

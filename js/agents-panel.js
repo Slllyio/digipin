@@ -191,6 +191,7 @@ const AgentsPanel = (() => {
         dlg = _el('aside', 'ui-dialog ag-dialog');
         dlg.id = DIALOG_ID;
         dlg.setAttribute('role', 'dialog');
+        dlg.tabIndex = -1;
         dlg.setAttribute('aria-label', 'Agents');
         const head = _el('div', 'ui-head');
         const title = _el('div', 'ui-title');
@@ -213,6 +214,8 @@ const AgentsPanel = (() => {
         return dlg;
     }
 
+    let _opener = null;   // focused before the dialog opened; focus returns there on close
+
     function isOpen() {
         const d = document.getElementById(DIALOG_ID);
         return !!d && d.classList.contains('open');
@@ -221,15 +224,22 @@ const AgentsPanel = (() => {
     async function open(view) {
         if (view) { _view = view; _tab = view === 'runs' ? 'runs' : 'gallery'; }
         const dlg = _dialog();
+        const wasOpen = dlg.classList.contains('open');
+        if (!wasOpen) _opener = document.activeElement;
         dlg.classList.add('open');
         document.getElementById('btn-agents')?.classList.add('active');
         if (typeof FloatingDialogs !== 'undefined' && FloatingDialogs.bringToFront) FloatingDialogs.bringToFront(dlg);
         await render();
+        // Keyboard users land on the active tab, not back on the toolbar.
+        if (!wasOpen) (dlg.querySelector('.ui-tab.active') || dlg.querySelector('.ui-tab') || dlg).focus({ preventScroll: true });
     }
 
     function close() {
         const dlg = document.getElementById(DIALOG_ID);
         if (dlg) dlg.classList.remove('open');
+        const lost = !document.activeElement || document.activeElement === document.body;
+        if (dlg && (lost || dlg.contains(document.activeElement)) && _opener && _opener.isConnected) _opener.focus({ preventScroll: true });
+        _opener = null;
         document.getElementById('btn-agents')?.classList.remove('active');
     }
 

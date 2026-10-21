@@ -91,7 +91,7 @@ html[data-theme="light"] {
     --kpi-good: #2f8f5b;
     --kpi-mid: #b7791f;
     --kpi-low: #c0392b;
-    --text-muted: #737373;          /* was #999 (2.8:1); 4.7:1 on white */
+    --text-muted: #636363;          /* 5.9:1 on white, 5.4:1 on the #f5f4f2 cards */
     --blur: none;
 }
 
@@ -705,7 +705,7 @@ html[data-theme="light"] #top-bar select {
 html[data-theme="light"] {
     --aino-ink: #292929;
     --aino-ink-2: #636363;
-    --aino-ink-3: #8a8a8a;
+    --aino-ink-3: #6e6e6e;          /* 5.1:1 on white, 4.7:1 on the paper cards (WCAG AA) */
     --aino-paper: #f5f4f2;
     --aino-card: #ffffff;
     --aino-line: rgba(0, 0, 0, 0.07);

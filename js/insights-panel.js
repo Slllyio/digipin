@@ -293,6 +293,7 @@ const InsightsPanel = (() => {
         dlg = _el('aside', 'ui-dialog');
         dlg.id = DIALOG_ID;
         dlg.setAttribute('role', 'dialog');
+        dlg.tabIndex = -1;
         dlg.setAttribute('aria-label', 'Urban Intelligence');
         const head = _el('div', 'ui-head');
         const title = _el('div', 'ui-title');
@@ -319,6 +320,8 @@ const InsightsPanel = (() => {
         return dlg;
     }
 
+    let _opener = null;   // focused before the dialog opened; focus returns there on close
+
     function isOpen() {
         const d = document.getElementById(DIALOG_ID);
         return !!d && d.classList.contains('open');
@@ -327,15 +330,22 @@ const InsightsPanel = (() => {
     async function open(tab) {
         if (tab) _tab = tab;
         const dlg = _dialog();
+        const wasOpen = dlg.classList.contains('open');
+        if (!wasOpen) _opener = document.activeElement;
         dlg.classList.add('open');
         document.getElementById('btn-insights')?.classList.add('active');
         if (typeof FloatingDialogs !== 'undefined' && FloatingDialogs.bringToFront) FloatingDialogs.bringToFront(dlg);
         await render();
+        // Keyboard users land on the active tab, not back on the toolbar.
+        if (!wasOpen) (dlg.querySelector('.ui-tab.active') || dlg.querySelector('.ui-tab') || dlg).focus({ preventScroll: true });
     }
 
     function close() {
         const dlg = document.getElementById(DIALOG_ID);
         if (dlg) dlg.classList.remove('open');
+        const lost = !document.activeElement || document.activeElement === document.body;
+        if (dlg && (lost || dlg.contains(document.activeElement)) && _opener && _opener.isConnected) _opener.focus({ preventScroll: true });
+        _opener = null;
         document.getElementById('btn-insights')?.classList.remove('active');
         _clearHighlight();
         if (_drawing) _stopDraw();
@@ -454,6 +464,10 @@ const InsightsPanel = (() => {
 
         body.appendChild(_el('h4', 'ui-h', 'How the cities rank'));
         const tbl = _el('div', 'ui-rank-wrap');
+        // Scrolls sideways on narrow screens, so it must be keyboard-reachable.
+        tbl.tabIndex = 0;
+        tbl.setAttribute('role', 'region');
+        tbl.setAttribute('aria-label', 'How the cities rank');
         const table = _el('table', 'ui-rank');
         const hr = _el('tr');
         hr.appendChild(_el('th', null, 'City'));

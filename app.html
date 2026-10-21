@@ -107,9 +107,6 @@
     <!-- Keyboard/screen-reader skip link — first focusable element. -->
     <a href="#map" class="skip-link">Skip to map</a>
 
-    <!-- ===== MAP ===== -->
-    <div id="map" role="application" aria-label="Interactive DigiPin grid map of India" tabindex="-1"></div>
-
     <!-- ===== TOP BAR ===== -->
     <div id="top-bar" role="search" aria-label="Search for locations">
         <a class="logo" href="index.html" title="DigiPin home">
@@ -290,6 +287,11 @@
             <div id="query-list" role="group" aria-label="Available queries"></div>
         </div>
     </nav>
+
+    <!-- ===== MAP =====
+         After the chrome in the DOM so Tab reaches search, tools and queries
+         before the map's own controls (it sits underneath them via z-index). -->
+    <div id="map" role="application" aria-label="Interactive DigiPin grid map of India" tabindex="-1"></div>
 
     <!-- ===== DETAIL PANEL (floating, draggable, resizable) ===== -->
     <aside id="detail-panel" class="floating-dialog" role="dialog" aria-label="Location details">

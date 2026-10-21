@@ -188,6 +188,7 @@ const App = (() => {
             reg('analysis-report-dialog', () => AnalysesPanel.closeDialog(), 30);
             reg('analyses-panel', () => AnalysesPanel.closePanel(), 20);
             reg('insights-dialog', () => InsightsPanel.close(), 25);
+            if (typeof AgentsPanel !== 'undefined') reg('agents-dialog', () => AgentsPanel.close(), 25);
             reg('detail-panel', () => Panel.close(), 10);
             reg('results-panel', () => removeOpen('results-panel'), 10);
         });
