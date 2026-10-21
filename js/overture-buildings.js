@@ -558,6 +558,7 @@ const OvertureBuildings = (() => {
     /** Re-harvest rendered footprints into the twin extrusion source. */
     function _refreshTwin() {
         if (!_map || !_twin || typeof DeckBuildings === 'undefined') return;
+        const t0 = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
         let feats = [];
         try { feats = _map.queryRenderedFeatures({ layers: [LAYER_ID] }) || []; }
         catch { /* layer not rendered yet */ }
@@ -577,6 +578,8 @@ const OvertureBuildings = (() => {
         _hoverId = null;   // setData resets generated feature ids
         const src = _map.getSource(TWIN_SRC);
         if (src && src.setData) src.setData(twinGeoJSON(recs, DeckBuildings.getExaggeration()));
+        // Draw-cost record for the perf spec (DeckBuildings.renderStats()).
+        if (DeckBuildings.noteDraw) DeckBuildings.noteDraw('twin', recs, ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - t0);
     }
 
     // Terrain on/off changes which renderer can follow the ground; a new

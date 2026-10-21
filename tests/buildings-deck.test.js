@@ -280,12 +280,28 @@ describe('DeckBuildings.polygonStats / renderStats', () => {
         expect(DB.polygonStats(data)).toEqual({ polygons: 4, vertices: 16, selected: 1, bySource: { overture: 1, baked: 1, estimate: 1 } });
         expect(DB.polygonStats([])).toEqual({ polygons: 0, vertices: 0, selected: 0, bySource: { overture: 0, baked: 0, estimate: 0 } });
     });
-    it('reports zero cost while the overlay is off (no deck.gl under jsdom)', () => {
+    it('reports zero cost while nothing has drawn (no deck.gl under jsdom)', () => {
         DB.resetRenderStats();
         const r = DB.renderStats();
+        expect(r.mode).toBe('off');
         expect(r.enabled).toBe(false);
         expect(r.polygons).toBe(0);
         expect(r.refreshes).toBe(0);
         expect(r.maxRefreshMs).toBe(0);
+    });
+    it('records draws from the twin (MapLibre) path too, keeping the longest time', () => {
+        DB.resetRenderStats();
+        const sq = [[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]];
+        DB.noteDraw('twin', [{ polygon: sq, height: 10, sel: false, hsrc: 'baked' }], 120.4);
+        DB.noteDraw('twin', [{ polygon: sq, height: 10, sel: false, hsrc: 'baked' }, { polygon: sq, height: 8, sel: false, hsrc: 'estimate' }], 40);
+        const r = DB.renderStats();
+        expect(r.mode).toBe('twin');
+        expect(r.refreshes).toBe(2);
+        expect(r.polygons).toBe(2);
+        expect(r.vertices).toBe(10);
+        expect(r.lastRefreshMs).toBe(40);
+        expect(r.maxRefreshMs).toBe(120);
+        DB.resetRenderStats();
+        expect(DB.renderStats().refreshes).toBe(0);
     });
 });

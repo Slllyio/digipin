@@ -33,7 +33,7 @@ const DeckBuildings = (() => {
     let _data = [];             // harvested deck polygon records
     // Draw-cost record for the perf spec: how much geometry each refresh hands
     // deck.gl and how long the harvest + layer build held the main thread.
-    let _refreshes = 0, _lastRefreshMs = 0, _maxRefreshMs = 0;
+    let _refreshes = 0, _lastRefreshMs = 0, _maxRefreshMs = 0, _drawMode = 'off', _drawData = [];
     let _moveBound = false;
     let _grid = null;           // { levels:[…], cells: Map<dashless DIGIPIN, metres> }, when loaded
     const _gridLoads = new Map();   // grid url -> in-flight/finished loadHeights() promise
@@ -366,7 +366,19 @@ const DeckBuildings = (() => {
         catch { /* layer not rendered yet */ }
         _data = featuresToPolygons(feats, _focus, HIGHLIGHT_RADIUS_M);
         _overlay.setProps({ layers: _layers() });
-        _lastRefreshMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - t0;
+        noteDraw('deck', _data, ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - t0);
+    }
+
+    /**
+     * Record one draw of building geometry: `mode` is 'deck' (this overlay)
+     * or 'twin' (OvertureBuildings' MapLibre extrusion source, which harvests
+     * through featuresToPolygons too), `data` the polygon records, `ms` the
+     * harvest + build time. renderStats() reports the last one.
+     */
+    function noteDraw(mode, data, ms) {
+        _drawMode = mode || 'off';
+        _drawData = Array.isArray(data) ? data : [];
+        _lastRefreshMs = Math.max(0, Number(ms) || 0);
         _maxRefreshMs = Math.max(_maxRefreshMs, _lastRefreshMs);
         _refreshes++;
     }
@@ -383,14 +395,14 @@ const DeckBuildings = (() => {
         return out;
     }
 
-    /** Current draw cost: geometry in the overlay plus refresh timings since the last reset. */
+    /** Current draw cost: geometry of the last draw (deck overlay or twin source) plus refresh timings since the last reset. */
     function renderStats() {
-        return Object.assign(polygonStats(_data), {
-            enabled: _enabled, refreshes: _refreshes,
+        return Object.assign(polygonStats(_drawData), {
+            mode: _drawMode, enabled: _enabled, refreshes: _refreshes,
             lastRefreshMs: Math.round(_lastRefreshMs), maxRefreshMs: Math.round(_maxRefreshMs),
         });
     }
-    function resetRenderStats() { _refreshes = 0; _lastRefreshMs = 0; _maxRefreshMs = 0; }
+    function resetRenderStats() { _refreshes = 0; _lastRefreshMs = 0; _maxRefreshMs = 0; _drawMode = 'off'; _drawData = []; }
 
     /** Attach the deck overlay to the map. Returns false if deck is unavailable. */
     function enable(map, getFocus) {
@@ -454,7 +466,7 @@ const DeckBuildings = (() => {
     function heightsCacheStats() { return { grids: _gridDocs.size, max: MAX_GRIDS, cells: _grid ? _grid.cells.size : 0, failed: _failedGrids.size, failedReasons: Object.fromEntries(_failedGrids) }; }
 
     return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights, retryHeights, resetHeights, heightIndex, heightsCacheStats,
-        polygonStats, renderStats, resetRenderStats,
+        polygonStats, renderStats, resetRenderStats, noteDraw,
         setExaggeration, getExaggeration,
         featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, cellHeight, gridsFor };
 })();

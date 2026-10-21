@@ -56,7 +56,7 @@ test.describe('performance budgets', () => {
   });
 
   test('Delhi-size 3D city and a city sweep stay within memory and file budgets', async ({ page }) => {
-    test.setTimeout(180_000);
+    test.setTimeout(400_000);   // the per-city draw wait below can take most of a minute on CI's software renderer
     const own = track(page);
     await page.goto('/app.html');
     await waitForApp(page);
@@ -67,16 +67,25 @@ test.describe('performance budgets', () => {
       await page.evaluate(() => { if (typeof DeckBuildings !== 'undefined') DeckBuildings.resetRenderStats(); });
       await page.selectOption('#city-select', id);
       await settle(page, 1500);
+      // The harvest runs on moveend and again when footprint tiles land; on
+      // the software renderer that can be tens of seconds after the fly-to.
+      // Wait for one draw (not for idle: with 3D on the map never reports it).
+      if (!STUB) {
+        await page.waitForFunction(() => typeof DeckBuildings !== 'undefined' && DeckBuildings.renderStats().refreshes > 0, null, { timeout: 45_000 }).catch(() => {});
+      }
       const r = await page.evaluate(() => (typeof DeckBuildings !== 'undefined' && DeckBuildings.renderStats) ? DeckBuildings.renderStats() : null);
       if (r) draw.push({ id, ...r });
     }
     // One line per city so a regression in draw cost is visible in the CI log
     // before it is a failure: polygons / vertices handed to deck.gl, and the
     // longest harvest + layer build (ms) for that city.
-    for (const d of draw) console.log(`3D draw ${d.id}: ${d.polygons} polygons, ${d.vertices} vertices (${d.bySource.overture} overture / ${d.bySource.baked} baked / ${d.bySource.estimate} estimated heights), ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms`);
+    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: ${d.polygons} polygons, ${d.vertices} vertices (${d.bySource.overture} overture / ${d.bySource.baked} baked / ${d.bySource.estimate} estimated heights), ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms`);
     if (!STUB) {
-      const live = draw.filter((d) => d.enabled);
-      expect(live.length, '3D overlay enabled for the sweep').toBeGreaterThan(0);
+      // Light theme draws through the MapLibre "twin" source, dark through the
+      // deck.gl overlay; both report here. A city whose draw did not land in
+      // the wait is logged with 0 refreshes and not gated.
+      const live = draw.filter((d) => d.refreshes > 0);
+      expect(live.length, `cities that drew 3D buildings (${draw.map((d) => `${d.id}:${d.refreshes}`).join(' ')})`).toBeGreaterThan(0);
       for (const d of live) {
         expect(d.polygons, `${d.id}: polygons in one 3D view`).toBeLessThan(BUDGET.polygons);
         expect(d.vertices, `${d.id}: vertices in one 3D view`).toBeLessThan(BUDGET.vertices);
