@@ -12,6 +12,7 @@
  *                                   | g:lng,lat;lng,lat;… (a drawn polygon, ≤ 60 vertices)
  *             &wi=<scenario>        park:<code>:<boost> | density:<code>:<factor> | flood:<level>
  *                                   | cool:<code>:<trees> | closure:<code>
+ *             &wp=<s>|<s>|…        a plan: up to 8 scenario tokens
  *
  *   Briefs  a self-contained HTML document (no scripts, no network) for a city
  *           and optionally an area and a what-if: headline, key indicators and
@@ -113,6 +114,8 @@ const IntelBrief = (() => {
         if (b) st.b = b;
         const sc = parseScenarioToken(q.get('wi'));
         if (sc) st.scenario = sc;
+        const plan = String(q.get('wp') || '').split('|').map(parseScenarioToken).filter(Boolean).slice(0, 8);
+        if (plan.length) st.plan = plan;
         return st;
     }
 
@@ -126,6 +129,8 @@ const IntelBrief = (() => {
         if (b) out.push(['ib', b]);
         const w = scenarioToken(st.scenario);
         if (w) out.push(['wi', w]);
+        const plan = (st.plan || []).map(scenarioToken).filter(Boolean).slice(0, 8);
+        if (plan.length) out.push(['wp', plan.join('|')]);
         return out;
     }
 
@@ -146,7 +151,7 @@ const IntelBrief = (() => {
         const areaIns = opts.area && !opts.area.city ? await UI.areaInsights(opts.area, store, { limit: 8, city, now: () => now }) : null;
         const seen = new Set();
         const sources = [];
-        for (const r of [dash, cityIns, changes, areaIns, opts.whatif]) {
+        for (const r of [dash, cityIns, changes, areaIns, opts.whatif, ...((opts.plan && opts.plan.items) || [])]) {
             for (const s of (r && r.sources) || []) {
                 const id = typeof s === 'string' ? s : s.id;
                 if (seen.has(id)) continue;
@@ -158,7 +163,7 @@ const IntelBrief = (() => {
         return {
             schema: SCHEMA, ranAt: now.toISOString(), city, cityLabel: UI.cityLabel(city),
             dashboard: { dataset: dash.dataset, fields: dash.fields, cities: dash.cities, row, method: dash.method },
-            cityInsights: cityIns, changes, areaInsights: areaIns, whatif: opts.whatif || null,
+            cityInsights: cityIns, changes, areaInsights: areaIns, plan: opts.plan || null, whatif: opts.whatif || null,
             link: opts.link || null, sources,
         };
     }
@@ -214,6 +219,15 @@ const IntelBrief = (() => {
             + `<p class="muted"><b>How:</b> ${_esc(w.formula)}</p>`
             + (w.assumptions && w.assumptions.length ? `<ul class="muted">${w.assumptions.map(a => `<li>${_esc(a)}</li>`).join('')}</ul>` : '')
             + '</section>';
+    }
+
+    function _plan(p, link) {
+        if (!p) return '';
+        const ov = p.overlaps.length
+            ? `<h3>Where they overlap</h3><ul class="plain">${p.overlaps.slice(0, 10).map(o => `<li class="${o.tradeOff ? 'k-concern' : 'k-trend'}">${_cell(o.digipin, link)} `
+                + `${_esc(o.scenarios.join(' + '))}${o.tradeOff ? ' <b>(benefit and burden)</b>' : ''}</li>`).join('')}</ul>` : '';
+        return `<section><h2>Plan: ${_esc(p.items.length)} scenarios</h2><p class="lead">${_esc(p.summary)}</p>${ov}<p class="muted">${_esc(p.method)}</p></section>`
+            + p.items.map(r => (r.kind === 'whatif' ? _whatif(r, link) : `<section><h2>${_esc(r.type)}</h2><p class="muted">${_esc(r.error)}</p></section>`)).join('');
     }
 
     /** Self-contained HTML document for a brief from build(). */
@@ -291,6 +305,7 @@ const IntelBrief = (() => {
             + `<p class="muted noscreen">Print this page (Ctrl/⌘ P) to save it as a PDF.</p></header>`
             + (area ? `<section><h2>What stands out in ${_esc(area.area.label || 'this area')}</h2>${_findings(area, link)}</section>` : '')
             + _whatif(brief.whatif, link)
+            + _plan(brief.plan, link)
             + kpi
             + ch
             + (brief.cityInsights ? `<section><h2>What stands out in ${_esc(brief.cityLabel)}</h2>${_findings(brief.cityInsights, link)}</section>` : '')

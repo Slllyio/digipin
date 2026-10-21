@@ -896,6 +896,8 @@ const InsightsPanel = (() => {
 
     async function _renderWhatIf(store, seq) {
         const body = _body();
+        const out = _el('div', 'ui-whatif-out');
+        if (_plan.length) body.appendChild(_planBar(store, out));
         const seg = _el('div', 'ui-seg');
         [['park', '🌳 New park'], ['density', '🏢 More density'], ['flood', '🌊 Flood event'], ['cool', '🌡 Trees for heat'], ['closure', '🚧 Road closure']].forEach(([t, label]) => {
             seg.appendChild(_btn(label, () => { _scenario.type = t; render(); }, `ui-seg-btn${_scenario.type === t ? ' active' : ''}`));
@@ -929,14 +931,105 @@ const InsightsPanel = (() => {
         if (SITE_TYPES.has(t) && !sel) run.disabled = true;
         form.appendChild(run);
         body.appendChild(form);
-        const out = _el('div', 'ui-whatif-out');
         body.appendChild(out);
-        if (_autoRun) { _autoRun = false; await _runScenario(store, out); }
+        if (_autoPlan && _plan.length) { _autoPlan = false; _autoRun = false; await _runPlan(store, out); }
+        else if (_autoRun) { _autoRun = false; await _runScenario(store, out); }
+        else if (_lastPlan && _plan.length) _drawPlan(out, _lastPlan);
         else if (_lastWhatIf && _lastWhatIf.type === t) _drawWhatIf(out, _lastWhatIf);
     }
 
     let _lastWhatIf = null;
     let _autoRun = false;      // a shared what-if link runs its scenario on open
+    let _autoPlan = false;     // …and a shared plan runs the plan
+    let _lastPlan = null;
+
+    // ── plan: saved, stacked scenarios ──────────────────────────────────────
+
+    const PLAN_KEY = 'digipin_intel_plan';
+    let _plan = (() => {
+        try { const v = JSON.parse(localStorage.getItem(PLAN_KEY) || '[]'); return Array.isArray(v) ? v.slice(0, 8) : []; } catch { return []; }
+    })();
+
+    function _savePlan() {
+        try { localStorage.setItem(PLAN_KEY, JSON.stringify(_plan)); } catch { /* storage blocked: the plan lives for this session */ }
+    }
+
+    function _scLabel(sc) {
+        const code = sc.code ? DigiPin.format(sc.code) : '';
+        return sc.label || ({ park: `Park at ${code}`, density: `${sc.factor}× density at ${code}`, flood: `${sc.level} flood`,
+            cool: `+${sc.trees} pts trees at ${code}`, closure: `Road closure at ${code}` }[sc.type] || sc.type);
+    }
+
+    function addToPlan(r) {
+        if (!r || !r.scenario) return;
+        if (_plan.length >= 8) { _toast('Plan is full', 'A plan holds up to 8 scenarios.', 'warning'); return; }
+        const { area: _a, ...sc } = r.scenario;
+        _plan.push({ ...sc, label: r.title });
+        _savePlan();
+        _toast('Added to the plan', `${r.title} · ${_plan.length} in the plan`, 'success');
+        render();
+    }
+
+    function _planBar(store, out) {
+        const bar = _el('div', 'ui-plan');
+        bar.appendChild(_el('div', 'ui-plan-h', `📋 Plan · ${_plan.length} scenario${_plan.length === 1 ? '' : 's'}`));
+        const chips = _el('div', 'ui-actions');
+        _plan.forEach((sc, k) => {
+            const c = _btn(`${_scLabel(sc)} ✕`, () => { _plan.splice(k, 1); _savePlan(); _lastPlan = null; render(); }, 'ui-chip', 'Remove from the plan');
+            chips.appendChild(c);
+        });
+        bar.appendChild(chips);
+        const act = _el('div', 'ui-actions');
+        act.appendChild(_btn('Run plan', () => _runPlan(store, out), 'ui-chip ui-chip--primary'));
+        act.appendChild(_btn('Clear plan', () => { _plan = []; _savePlan(); _lastPlan = null; clear(); render(); }, 'ui-chip'));
+        bar.appendChild(act);
+        return bar;
+    }
+
+    async function _runPlan(store, out) {
+        out.replaceChildren(_el('div', 'ui-empty', `Running ${_plan.length} scenarios…`));
+        try {
+            const r = await UrbanInsights.runPlan(_plan, store);
+            _lastPlan = r;
+            _drawPlan(out, r);
+        } catch (e) {
+            out.replaceChildren(_el('div', 'ui-empty', e && e.message ? e.message : String(e)));
+        }
+    }
+
+    function _drawPlan(out, r) {
+        out.replaceChildren();
+        out.appendChild(_el('div', 'ui-whatif-title', `Plan · ${r.items.length} scenarios`));
+        out.appendChild(_el('div', 'ui-headline', r.summary));
+        r.items.forEach(x => {
+            const row = _el('div', `ui-metric${x.kind !== 'whatif' ? ' is-flag' : ''}`);
+            row.appendChild(_el('span', 'ui-metric-lbl', x.kind === 'whatif' ? `${x.title}: ${x.summary}` : `${_scLabel(x.scenario)}: ${x.error}`));
+            out.appendChild(row);
+        });
+        if (r.overlaps.length) {
+            out.appendChild(_el('h4', 'ui-h', 'Where they overlap'));
+            const chips = _el('div', 'ui-actions');
+            r.overlaps.slice(0, 12).forEach(o => {
+                const c = _codeChip(o.digipin, `${o.digipin}${o.tradeOff ? ' ⚖' : ''}`);
+                c.title = `${o.scenarios.join(' + ')}${o.tradeOff ? ' (benefit and burden on the same place)' : ''}`;
+                chips.appendChild(c);
+            });
+            out.appendChild(chips);
+        }
+        const hl = [];
+        r.items.filter(x => x.kind === 'whatif').forEach(x => {
+            const kind = x.type === 'flood' || x.type === 'closure' ? 'concern' : x.type === 'density' ? 'notable' : 'strength';
+            [...(x.closed || []), ...(x.cells || []).slice(0, 30)].forEach(c => hl.push({ code: c.code, kind }));
+        });
+        r.overlaps.filter(o => o.tradeOff).forEach(o => hl.push({ code: o.code, kind: 'anomaly' }));
+        highlight(hl, { fit: true });
+        const act = _el('div', 'ui-actions');
+        act.appendChild(_btn('Copy as text', () => _copy(UrbanInsights.toText(r)), 'ui-chip'));
+        act.appendChild(_btn('Printable brief', () => openBrief({ plan: r }), 'ui-chip'));
+        out.appendChild(act);
+        out.appendChild(_el('p', 'ui-method', r.method));
+        out.appendChild(_sourcesFooter(r.sources));
+    }
 
     async function _runScenario(store, out) {
         out.replaceChildren(_el('div', 'ui-empty', 'Running the scenario…'));
@@ -1021,6 +1114,7 @@ const InsightsPanel = (() => {
         act.appendChild(_btn('Clear', () => { clear(); _lastWhatIf = null; out.replaceChildren(); }, 'ui-chip'));
         act.appendChild(_btn('Copy as text', () => _copy(UrbanInsights.toText(r)), 'ui-chip'));
         act.appendChild(_btn('Printable brief', () => openBrief({ whatif: r, area: r.area && !r.area.city ? r.area : null }), 'ui-chip'));
+        act.appendChild(_btn('➕ Add to plan', () => addToPlan(r), 'ui-chip', 'Keep this scenario and stack it with others'));
         out.appendChild(act);
         const how = _el('details', 'ui-how');
         how.appendChild(_el('summary', null, 'How this is computed'));
@@ -1075,6 +1169,7 @@ const InsightsPanel = (() => {
             if (sel) s.code = sel.replace(/-/g, '').slice(0, n);
             else if (s.code) s.code = s.code.slice(0, n);
             st.scenario = s;
+            if (_plan.length) st.plan = _plan;
         }
         return st;
     }
@@ -1094,6 +1189,11 @@ const InsightsPanel = (() => {
             }
         }
         if (st.tab === 'compare' && (st.a || st.b)) _cmp = { a: st.a || null, b: st.b || null };
+        if (st.tab === 'whatif' && st.plan && st.plan.length) {
+            _plan = st.plan.slice(0, 8);
+            _savePlan();
+            _autoPlan = true;
+        }
         if (st.tab === 'whatif' && st.scenario) {
             _scenario = { ..._scenario, ...st.scenario };
             _autoRun = st.scenario.type === 'flood' || !!st.scenario.code;
@@ -1110,6 +1210,7 @@ const InsightsPanel = (() => {
     /** What the header Brief button adds to the city: the Here area or the last what-if. */
     function _briefContext() {
         if (_tab === 'here') { const a = _hereChoice(); return a && !a.city ? { area: a } : {}; }
+        if (_tab === 'whatif' && _lastPlan && _plan.length) return { plan: _lastPlan };
         if (_tab === 'whatif' && _lastWhatIf && _lastWhatIf.type === _scenario.type) return { whatif: _lastWhatIf };
         return {};
     }
@@ -1140,7 +1241,7 @@ const InsightsPanel = (() => {
         _toast('Building the brief', `Reading every dataset for ${UrbanInsights.cityLabel(_city)}…`, 'info');
         let html;
         try {
-            const b = await IntelBrief.build({ city: (opts.whatif && opts.whatif.city) || _city, area: opts.area || null, whatif: opts.whatif || null, link: _shareUrl() }, store);
+            const b = await IntelBrief.build({ city: (opts.whatif && opts.whatif.city) || _city, area: opts.area || null, whatif: opts.whatif || null, plan: opts.plan || null, link: _shareUrl() }, store);
             html = IntelBrief.toHTML(b);
         } catch (e) {
             _toast('Brief failed', e && e.message ? e.message : String(e), 'error');
@@ -1175,7 +1276,7 @@ const InsightsPanel = (() => {
 
     return {
         init, open, close, toggle, isOpen, render, attachTo, highlight, clear,
-        findingCard, sparkline, linkState, applyLink, shareLink, openBrief, setArea, latestStep,
+        findingCard, sparkline, linkState, applyLink, shareLink, openBrief, setArea, latestStep, addToPlan,
         isDrawing: () => _drawing,
         get lastInsights() { return _lastInsights; },
     };

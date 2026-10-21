@@ -181,3 +181,24 @@ describe('Trees-for-heat and road-closure scenarios', () => {
         expect(D.match('what happens if we close this road?', [])).toEqual({ type: 'whatif', scenario: 'closure' });
     });
 });
+
+describe('Plans (stacked what-ifs)', () => {
+    it('runs each scenario, finds overlaps and trade-offs, and travels in links', async () => {
+        const U = globalThis.UrbanInsights;
+        const s = await store();
+        const plan = [{ type: 'cool', code: '4FP3PP', trees: 20 }, { type: 'closure', code: '4FP3PP' }, { type: 'park', code: 'NOPE' }];
+        const r = await U.runPlan(plan, s);
+        expect(r.kind).toBe('plan');
+        expect(r.items.filter(x => x.kind === 'whatif').length).toBe(2);
+        expect(r.items[2].kind).toBe('error');
+        const o = r.overlaps.find(x => x.code === '4FP3PP');
+        expect(o && o.tradeOff).toBe(true);
+        expect(r.summary).toMatch(/could not run/);
+        await expect(U.runPlan([], s)).rejects.toThrow(/empty/);
+        const qs = new URLSearchParams(B.toParams({ tab: 'whatif', plan: plan.slice(0, 2) })).toString();
+        expect(B.parseParams(qs).plan).toEqual([{ type: 'cool', code: '4FP3PP', trees: 20 }, { type: 'closure', code: '4FP3PP' }]);
+        const html = B.toHTML(await B.build({ city: 'pune', plan: r }, s));
+        expect(html).toContain('Where they overlap');
+        expect(html).not.toMatch(/<script/i);
+    }, 60000);
+});

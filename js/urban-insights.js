@@ -1273,6 +1273,53 @@ const UrbanInsights = (() => {
         return { schema: SCHEMA, kind: 'whatif', type: scenario.type, scenario, ranAt: (opts.now ? opts.now() : new Date()).toISOString(), ...res };
     }
 
+    const BENEFIT = { park: true, cool: true, density: null, flood: false, closure: false };
+
+    /**
+     * A plan: several what-ifs run together. Each runs on its own (their models
+     * do not interact), then the plan reports where they overlap, which is
+     * where a benefit and a burden land on the same place.
+     */
+    async function runPlan(scenarios, store, opts = {}) {
+        const list = (scenarios || []).slice(0, 8);
+        if (!list.length) throw new Error('The plan is empty: add a scenario first.');
+        const items = [];
+        for (const sc of list) {
+            try { items.push(await whatIf(sc, store, opts)); } catch (e) { items.push({ kind: 'error', type: sc.type, scenario: sc, title: sc.type, error: e && e.message ? e.message : String(e) }); }
+        }
+        const ok = items.filter(r => r.kind === 'whatif');
+        // Cells touched, keyed at level 6 (~1 km) so park/heat (L6) and road/flood (L7) cells meet.
+        const touch = new Map();
+        ok.forEach((r, k) => {
+            const cells = [...(r.cells || []), ...(r.closed || [])];
+            for (const c of cells) {
+                const key = String(c.code).slice(0, 6);
+                if (!touch.has(key)) touch.set(key, new Set());
+                touch.get(key).add(k);
+            }
+        });
+        const overlaps = [];
+        for (const [code, ks] of touch) {
+            if (ks.size < 2) continue;
+            const types = [...ks].map(k => ok[k].type);
+            const good = types.some(t => BENEFIT[t] === true), bad = types.some(t => BENEFIT[t] === false);
+            overlaps.push({ code, digipin: _code(code), scenarios: [...ks].map(k => ok[k].title), tradeOff: good && bad });
+        }
+        overlaps.sort((a, b) => (b.tradeOff - a.tradeOff) || (b.scenarios.length - a.scenarios.length));
+        const seen = new Set(), sources = [];
+        ok.forEach(r => (r.sources || []).forEach(x => { if (!seen.has(x.id)) { seen.add(x.id); sources.push(x); } }));
+        const trade = overlaps.filter(o => o.tradeOff).length;
+        const failed = items.length - ok.length;
+        return {
+            schema: SCHEMA, kind: 'plan', ranAt: (opts.now ? opts.now() : new Date()).toISOString(),
+            items, overlaps: overlaps.slice(0, 20), cells: touch.size, sources,
+            summary: `${ok.length} scenario${ok.length === 1 ? '' : 's'} touch ${touch.size} ~1 km cell${touch.size === 1 ? '' : 's'}`
+                + (overlaps.length ? `; ${overlaps.length} cell${overlaps.length === 1 ? ' is' : 's are'} hit by more than one scenario${trade ? `, and ${trade === 1 ? 'it mixes' : `${trade} of them mix`} a benefit with a burden` : ''}` : '; none overlap')
+                + (failed ? ` (${failed} could not run)` : '') + '.',
+            method: 'Each scenario runs with its own model and inputs; they are not chained. Overlaps are counted on ~1 km cells.',
+        };
+    }
+
     /** A what-if or hotspot result as a runtime cell-store dataset ({ spec, table }). */
     function toLayer(result, id = 'whatif') {
         const l = result && result.layer;
@@ -1429,6 +1476,7 @@ const UrbanInsights = (() => {
         }
         if (r.kind === 'compare') return [r.summary, ...r.rows.slice(0, 8).map(x => `• ${x.label}: ${fmt(x.a, x.unit)} vs ${fmt(x.b, x.unit)}`)].join('\n');
         if (r.kind === 'whatif') return [r.summary, ...r.metrics.map(m => `• ${m.label}: ${m.value != null ? m.value : `${m.before} → ${m.after}`}`), `Formula: ${r.formula}`].join('\n');
+        if (r.kind === 'plan') return [`Plan: ${r.summary}`, ...r.items.map(x => (x.kind === 'whatif' ? `• ${x.summary}` : `• ${x.type}: ${x.error}`))].join('\n');
         if (r.kind === 'changes') return [`What changed in ${r.cityLabel}:`, ...r.items.map(x => `• ${x.title}. ${x.detail}`)].join('\n');
         if (r.kind === 'dashboard') {
             return r.cities.map(c => `${c.rank}. ${c.label}: urban index ${c.index}; best at ${c.strengths.map(s => lc(s.label)).join(', ')}; weakest at ${c.weaknesses.map(s => lc(s.label)).join(', ')}`).join('\n');
@@ -1462,7 +1510,7 @@ const UrbanInsights = (() => {
         SCHEMA, HEADLINE, COMPOSITES, FLOOD_LEVELS,
         stats, percentile, quantile, cityLabel, fmt, cities, cityAt, resolveArea, cellsInRegion, scalarColumn,
         activeCells, trendOf, neighbours, sourceOf, pointInPolygon, polygonKm2, ols2,
-        areaInsights, changes, headline, cityDashboard, compare, whatIf, toLayer, evidence, toText, loadHeights,
+        areaInsights, changes, runPlan, headline, cityDashboard, compare, whatIf, toLayer, evidence, toText, loadHeights,
     };
 })();
 

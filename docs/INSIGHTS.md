@@ -67,3 +67,10 @@ scenario in view, and a source card for every dataset used. Print it to save a P
   ~1 km cell); the closed road length spreads over the roads in the two rings of cells around it in proportion to
   their length (congestion × (1 + share), capped at 100). Reports congested cells before/after, critical links
   and chokepoints closed, transit stops inside, and people in sealable pockets nearby.
+
+## Plans (stacked scenarios)
+
+"➕ Add to plan" under any what-if result keeps the scenario (up to 8, saved in this browser). The plan bar on the
+What-if tab runs them together (`UrbanInsights.runPlan`): each scenario keeps its own model, and the plan reports
+the ~1 km cells hit by more than one, flagging a ⚖ trade-off where a benefit (park, trees) and a burden (flood,
+road closure) land on the same place. Plans travel in share links as `wp=<scenario>|<scenario>|…` and print in briefs.
