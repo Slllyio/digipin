@@ -42,3 +42,30 @@ describe('Trees3D placement', () => {
         expect(T.paint(true)['fill-extrusion-base']).toEqual(['get', 'b']);
     });
 });
+
+describe('Trees3D street trees', () => {
+    const street = { kind: 'residential', coords: [[75.856, 22.719], [75.858, 22.719]] };   // ~205 m E-W
+
+    it('plants both verges of residential streets at a regular spacing', () => {
+        const pts = T.streetTreePoints([street], bbox, null);
+        expect(pts.length).toBeGreaterThan(20);
+        expect(pts.length).toBeLessThan(34);
+        const north = pts.filter(p => p.lat > 22.719), south = pts.filter(p => p.lat < 22.719);
+        expect(north.length).toBeGreaterThan(8);
+        expect(south.length).toBeGreaterThan(8);
+        for (const p of pts) expect(Math.abs(p.lat - 22.719) * 111320).toBeCloseTo(5.5, 0);
+        expect(T.streetTreePoints([street, street], bbox, null)).toEqual(pts);   // tile duplicates collapse
+    });
+
+    it('skips footways/primary roads, the cap, and spots inside buildings', () => {
+        expect(T.streetTreePoints([{ ...street, kind: 'footway' }, { ...street, kind: 'primary' }], bbox, null)).toEqual([]);
+        expect(T.streetTreePoints([street], bbox, null, 13, 3)).toHaveLength(3);
+        // A building row along the north verge
+        const row = { type: 'Polygon', coordinates: [[[75.8555, 22.71903], [75.8585, 22.71903], [75.8585, 22.7192], [75.8555, 22.7192], [75.8555, 22.71903]]] };
+        const occ = T.occupancy([row], 22.719);
+        expect(occ(75.857, 22.71911)).toBe(true);
+        expect(occ(75.857, 22.7186)).toBe(false);
+        const pts = T.streetTreePoints([street], bbox, occ);
+        expect(pts.every(p => p.lat < 22.719)).toBe(true);
+    });
+});
