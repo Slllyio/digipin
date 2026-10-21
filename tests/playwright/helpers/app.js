@@ -6,8 +6,10 @@
 // exists; with the real library it also waits for the canvas.
 //
 // CommonJS form — package.json is "type": "commonjs".
+const fs = require('node:fs');
 const path = require('node:path');
 
+const LOCAL_LIBS = process.env.LOCAL_LIBS || '';
 const STUB = process.env.STUB_MAP === '1';
 // Minimal cell + data objects for exercising the Export dialog without a
 // live upstream fetch (which Overpass / GEE may refuse in CI).
@@ -40,6 +42,15 @@ async function prepare(page) {
     await page.addInitScript({ path: path.join(__dirname, 'stub-map.js') });
     // Don't wait on CDNs that can't be reached.
     await page.route(/unpkg\.com|cdn\.jsdelivr\.net|fonts\.g(oogleapis|static)\.com|basemaps\.cartocdn\.com/, (r) => r.abort());
+  } else if (LOCAL_LIBS) {
+    // Real map libraries from a local folder (npm pack maplibre-gl deck.gl
+    // pmtiles, then copy maplibre-gl.js/.css, dist.min.js and pmtiles.js into
+    // it) for a sandbox that can reach the tile buckets but not the CDNs. A
+    // CDN file that isn't in the folder is aborted rather than fetched.
+    await page.route(/unpkg\.com|cdn\.jsdelivr\.net/, (r) => {
+      const file = path.join(LOCAL_LIBS, path.basename(new URL(r.request().url()).pathname));
+      return fs.existsSync(file) ? r.fulfill({ path: file }) : r.abort();
+    });
   }
   return errors;
 }

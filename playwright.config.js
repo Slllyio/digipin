@@ -8,9 +8,13 @@
 //
 // Local sandboxes without CDN access: `STUB_MAP=1 npx playwright test` swaps
 // in tests/playwright/helpers/stub-map.js (no WebGL, no tiles); point
-// CHROMIUM_PATH at a system Chromium if the bundled one is missing. The
-// webServer block boots the same Range-capable static server used for local
-// dev. (CommonJS form — package.json is "type": "commonjs".)
+// CHROMIUM_PATH at a system Chromium if the bundled one is missing. For the
+// real map in such a sandbox: LOCAL_LIBS=<dir> serves maplibre-gl.js/.css,
+// deck.gl's dist.min.js and pmtiles.js from that folder (npm pack them) in
+// place of the CDN, and PW_PROXY=http://host:port sends the browser through
+// the sandbox's egress proxy so the tile buckets load. The webServer block
+// boots the same Range-capable static server used for local dev. (CommonJS
+// form — package.json is "type": "commonjs".)
 const { defineConfig, devices } = require('@playwright/test');
 
 module.exports = defineConfig({
@@ -34,7 +38,13 @@ module.exports = defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         // Local sandboxes may only have a system Chromium; CI installs its own.
-        ...(process.env.CHROMIUM_PATH ? { launchOptions: { executablePath: process.env.CHROMIUM_PATH } } : {}),
+        launchOptions: {
+          ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}),
+          // PW_PROXY=http://host:port sends the browser through an egress
+          // proxy (sandboxes whose network is proxied); its TLS interception
+          // is accepted so the tile buckets load.
+          ...(process.env.PW_PROXY ? { proxy: { server: process.env.PW_PROXY, bypass: 'localhost,127.0.0.1' }, args: ['--ignore-certificate-errors'] } : {}),
+        },
       },
     },
   ],

@@ -110,19 +110,13 @@ test.describe('performance budgets', () => {
         const m = typeof MapModule !== 'undefined' && MapModule.getMap ? MapModule.getMap() : null;
         let loaded = null;
         try { loaded = m ? m.isSourceLoaded('overture-buildings-source') : null; } catch { loaded = null; }
-        // Tile states of the footprint source (MapLibre internals, log only;
-        // v3+ keys the caches `other:<id>` / `symbol:<id>`): e.g.
-        // {loaded: 12, loading: 30} says the requests are out and slow.
-        const states = {};
-        try {
-          const caches = (m && m.style && m.style.sourceCaches) || {};
-          Object.keys(caches).filter((k) => k === 'overture-buildings-source' || k.endsWith(':overture-buildings-source')).forEach((k) => {
-            Object.values(caches[k]._tiles || {}).forEach((t) => { states[t.state] = (states[t.state] || 0) + 1; });
-          });
-        } catch { /* internals moved */ }
+        // Whether every tile of every source is in (public API; the per-source
+        // cache internals are minified away in MapLibre 5).
+        let allTiles = null;
+        try { allTiles = m && m.areTilesLoaded ? m.areTilesLoaded() : null; } catch { allTiles = null; }
         const layer = m && m.getLayer ? m.getLayer('overture-buildings-layer') : null;
         const vis = layer && m.getLayoutProperty ? m.getLayoutProperty('overture-buildings-layer', 'visibility') : null;
-        return { ...DeckBuildings.renderStats(), zoom: m && m.getZoom ? +m.getZoom().toFixed(2) : null, pitch: m && m.getPitch ? Math.round(m.getPitch()) : null, tilesLoaded: loaded, states, events: window.__fp, layerVis: layer ? (vis || 'visible') : 'missing' };
+        return { ...DeckBuildings.renderStats(), zoom: m && m.getZoom ? +m.getZoom().toFixed(2) : null, pitch: m && m.getPitch ? Math.round(m.getPitch()) : null, tilesLoaded: loaded, allTiles, events: window.__fp, layerVis: layer ? (vis || 'visible') : 'missing' };
       });
       const files = Object.entries(tiles.byFile).map(([k, n]) => [k, n - (t0.byFile[k] || 0)]).filter(([, n]) => n > 0).map(([k, n]) => `${k}×${n}`).join(', ');
       if (r) draw.push({ id, waitedMs: Date.now() - tWait, reqStarted: tiles.started - t0.started, reqDone: tiles.done - t0.done, reqFailed: tiles.failed - t0.failed, files, ...r });
@@ -137,7 +131,7 @@ test.describe('performance budgets', () => {
     // reported loaded, so nothing re-harvested when the tiles finally landed
     // (fixed: the poll now runs while tiles arrive). Zoom, pitch and the
     // source's loaded state stay on each line for the next such finding.
-    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s; tile requests ${d.reqStarted} started / ${d.reqDone} done / ${d.reqFailed} failed [${d.files}], source events ${d.events.any} (${d.events.tile} tile; ${JSON.stringify(d.events.kinds)}), states ${JSON.stringify(d.states)}, layer ${d.layerVis}, map errors ${JSON.stringify(d.events.errors.slice(0, 3))}`);
+    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s; tile requests ${d.reqStarted} started / ${d.reqDone} done / ${d.reqFailed} failed [${d.files}], source events ${d.events.any} (${d.events.tile} tile; ${JSON.stringify(d.events.kinds)}), all tiles loaded ${d.allTiles}, layer ${d.layerVis}, map errors ${JSON.stringify(d.events.errors.slice(0, 3))}`);
     if (!STUB) {
       // Light theme draws through the MapLibre "twin" source, dark through the
       // deck.gl overlay; both report here. A city whose buildings did not land
