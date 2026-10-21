@@ -116,6 +116,7 @@ jobs:
       run: npx playwright test
       env:
         CI: 'true'
+        PW_SKIP_SOAK: '1'   # the soak has its own job below
 
     # On a red run keep what Playwright wrote: error-context.md per failure and
     # the trace of the retry (trace: on-first-retry), so a flake can be read
@@ -125,6 +126,66 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: playwright-results
+        path: test-results/
+        retention-days: 7
+        if-no-files-found: ignore
+
+  # The soak (two rounds over the six big cities with 3D on and a cell
+  # selected: no errors, no leak) takes ~10 min on the runner's software GL,
+  # so it runs beside e2e-smoke instead of after it.
+  e2e-soak:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+
+    - name: Set up Python (serve.py webServer)
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Playwright version
+      id: pw
+      run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Playwright Chromium
+      id: pw-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-chromium-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
+    - name: Install Playwright Chromium
+      if: steps.pw-cache.outputs.cache-hit != 'true'
+      run: |
+        for i in 1 2 3; do
+          npx playwright install --with-deps chromium && exit 0
+          echo "::warning::Playwright browser download failed (attempt $i)"; sleep $((i * 20))
+        done
+        exit 1
+
+    - name: Install Chromium system libraries (browser from cache)
+      if: steps.pw-cache.outputs.cache-hit == 'true'
+      run: npx playwright install-deps chromium
+
+    - name: "Soak (Playwright: two rounds over six cities with 3D on)"
+      run: npx playwright test tests/playwright/soak.spec.js
+      env:
+        CI: 'true'
+        PW_ONLY_SOAK: '1'
+
+    - name: Upload Playwright results
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-results-soak
         path: test-results/
         retention-days: 7
         if-no-files-found: ignore

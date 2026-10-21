@@ -23,6 +23,10 @@ module.exports = defineConfig({
   // realtime-panels / growth-widget specs depend on live upstream data and are
   // kept for local use, so they're excluded.
   testMatch: /(smoke|workflows|offline|a11y|journeys|resilience|perf|soak|agents)\.spec\.js/,
+  // CI runs the soak (two rounds over six cities, ~10 min on software GL)
+  // in its own job so the other specs report in a third of the time;
+  // PW_SKIP_SOAK=1 leaves it out of a run, PW_ONLY_SOAK=1 runs only it.
+  testIgnore: process.env.PW_SKIP_SOAK ? /soak\.spec\.js/ : (process.env.PW_ONLY_SOAK ? /(smoke|workflows|offline|a11y|journeys|resilience|perf|agents)\.spec\.js/ : []),
   timeout: 60_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
