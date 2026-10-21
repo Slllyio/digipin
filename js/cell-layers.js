@@ -183,6 +183,11 @@ const CellLayers = (() => {
         const get = ['get', f.key];
         if (f.type === 'number') {
             const [lo, hi] = _domain(f);
+            // Change layers (height: 'abs'): height follows the size of the move either way.
+            if (f.height === 'abs') {
+                const m = Math.max(Math.abs(lo), Math.abs(hi)) || 1;
+                return ['*', h, ['max', 0.02, ['min', 1, ['/', ['abs', ['to-number', get, 0]], m]]]];
+            }
             // Floor at 2% so the lowest cells still read as solid blocks.
             return ['*', h, ['max', 0.02, ['min', 1, ['/', ['-', ['to-number', get, lo], lo], hi - lo]]]];
         }

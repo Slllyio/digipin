@@ -50,7 +50,7 @@ const UrbanInsights = (() => {
         },
     };
     // Runtime layers this module (or the analyses) painted: never analysed.
-    const OWN_LAYERS = new Set(['whatif', 'insights_hotspots', 'analysis_result', 'zones', 'lenses', 'tour']);
+    const OWN_LAYERS = new Set(['whatif', 'insights_hotspots', 'analysis_result', 'zones', 'lenses', 'tour', 'change']);
     const FLOOD_LEVELS = { moderate: 0.9, severe: 0.75, extreme: 0.5 };
     const TREND_WINDOW = 12;
 
@@ -1530,6 +1530,52 @@ const UrbanInsights = (() => {
         };
     }
 
+    /**
+     * Per-cell change of a temporal field between a step and the same step one
+     * window earlier, as a runtime layer: { spec, table, step, vs, rose, fell, n }.
+     * Colour is diverging around 0 (blue fell, red rose), domain ± the 95th
+     * percentile of |change| so one outlier cell does not wash the map out.
+     */
+    async function changeLayer(store, { city, dataset, field, step } = {}) {
+        const spec = store.get(dataset);
+        if (!spec || !_isTemporal(spec)) return null;
+        const f = spec.fields.find(x => x.key === field);
+        if (!f) return null;
+        const table = await _load(store, dataset, city ? _regionBbox(spec, city) : null);
+        if (!table || !table.cells) return null;
+        const steps = table.times || spec.time.steps;
+        const T = steps.length;
+        const w = Math.min(TREND_WINDOW, Math.floor(T / 2));
+        let t = step ? steps.indexOf(step) : T - 1;
+        if (t < 0) t = T - 1;
+        const col = table.columns[f.key] || [];
+        const idx = city ? cellsInRegion(spec, table, city) : table.cells.map((_, i) => i);
+        // Walk back to the latest step that most cells have both ends of.
+        const pairs = (k) => idx.filter(i => _isNum((col[i] || [])[k]) && _isNum((col[i] || [])[k - w])).length;
+        while (t >= w && pairs(t) < idx.length / 2) t--;
+        if (t < w) return null;
+        const cells = [], vals = [];
+        for (const i of idx) {
+            const a = (col[i] || [])[t], b = (col[i] || [])[t - w];
+            if (!_isNum(a) || !_isNum(b)) continue;
+            cells.push(table.cells[i]);
+            vals.push(_round(a - b, 4));
+        }
+        if (cells.length < 3) return null;
+        const m = quantile(vals.map(Math.abs).sort((x, y) => x - y), 0.95) || Math.max(...vals.map(Math.abs)) || 1;
+        const meta = _fieldMeta(spec, f);
+        const rose = vals.filter(v => v > 0).length, fell = vals.filter(v => v < 0).length;
+        return {
+            step: steps[t], vs: steps[t - w], rose, fell, n: cells.length,
+            spec: { id: 'change', title: `Change in ${meta.label}, ${steps[t - w]} → ${steps[t]}`,
+                description: `Each cell's ${lc(meta.label)} in ${steps[t]} minus ${steps[t - w]}. Red rose, blue fell; height is the size of the change.`,
+                source: dataset, license: spec.license || 'See source dataset', group: 'Urban intelligence', level: table.level || spec.level,
+                fields: [{ key: 'change', label: `Change in ${meta.label}`, type: 'number', agg: 'mean', unit: meta.unit, ramp: 'diverging', height: 'abs', domain: [-_round(m, 4), _round(m, 4)] }],
+                default: { field: 'change', extrude: true, heightM: 600 } },
+            table: { level: table.level || spec.level, cells, columns: { change: vals } },
+        };
+    }
+
     function toText(r) {
         if (!r) return '';
         if (r.kind === 'insights') {
@@ -1572,7 +1618,7 @@ const UrbanInsights = (() => {
         SCHEMA, HEADLINE, COMPOSITES, FLOOD_LEVELS,
         stats, percentile, quantile, cityLabel, fmt, cities, cityAt, resolveArea, cellsInRegion, scalarColumn,
         activeCells, trendOf, neighbours, sourceOf, pointInPolygon, polygonKm2, ols2,
-        areaInsights, changes, runPlan, rankableFields, zoneRanking, headline, cityDashboard, compare, whatIf, toLayer, evidence, toText, loadHeights,
+        areaInsights, changes, changeLayer, runPlan, rankableFields, zoneRanking, headline, cityDashboard, compare, whatIf, toLayer, evidence, toText, loadHeights,
     };
 })();
 

@@ -643,6 +643,8 @@ const InsightsPanel = (() => {
                     () => highlight(x.anomalies.map(a => ({ code: a.code, kind: 'anomaly' })), { fit: true }), 'ui-chip',
                     'Cells whose change was 2+ SD from the city’s (top 5 shown)'));
             }
+            act.appendChild(_btn('Δ Change in 3D', () => showChange({ city: region, dataset: x.dataset, field: x.key, step: x.step }), 'ui-chip ui-chip--primary',
+                `Extrude each cell's change since ${x.vs}: red rose, blue fell`));
             if (typeof CityTour !== 'undefined' && x.unit !== undefined && /^\d{4}-\d{2}/.test(x.step)) {
                 act.appendChild(_btn('▶ Time-lapse in 3D', () => CityTour.timelapse({ dataset: x.dataset, field: x.key, city: region }), 'ui-chip', 'Play the last two years in 3D while the camera orbits'));
                 act.appendChild(_btn('● Record', () => CityTour.timelapse({ dataset: x.dataset, field: x.key, city: region, record: true }), 'ui-chip', 'Save the 3D time-lapse as a video'));
@@ -1253,6 +1255,20 @@ const InsightsPanel = (() => {
         };
     }
 
+    /** Map a temporal field's year-on-year change per cell as a diverging 3D layer. */
+    async function showChange(opts) {
+        if (typeof CellStore === 'undefined' || typeof CellLayers === 'undefined') return null;
+        let L = null;
+        try { L = await UrbanInsights.changeLayer(CellStore, opts); } catch { L = null; }
+        if (!L) { _toast('Change in 3D', 'Not enough cells with both years to map the change.', 'warning'); return null; }
+        if (CellLayers.isVisible(L.spec.id)) CellLayers.hide(L.spec.id);
+        CellStore.register(L.spec, L.table);
+        await CellLayers.show(L.spec.id, { field: 'change', extrude: true });
+        frame3D(L.table.cells, { wide: true });
+        _toast('Change in 3D', `${L.rose} cells rose and ${L.fell} fell between ${L.vs} and ${L.step}.`);
+        return L;
+    }
+
     async function _paintPlan(r) {
         const layer = planLayer(r);
         if (!layer || typeof CellStore === 'undefined' || typeof CellLayers === 'undefined') return;
@@ -1491,7 +1507,7 @@ const InsightsPanel = (() => {
     return {
         init, open, close, toggle, isOpen, render, attachTo, highlight, clear,
         findingCard, sparkline, linkState, applyLink, shareLink, openBrief, setArea, latestStep, addToPlan,
-        isDrawing: () => _drawing, frame3D, planLayer,
+        isDrawing: () => _drawing, frame3D, showChange, planLayer,
         get lastInsights() { return _lastInsights; },
     };
 })();

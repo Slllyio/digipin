@@ -134,3 +134,7 @@ ROADMAP_INSIGHTS.md). A big city (Delhi, 37k cells) takes about 3 s in the brows
   through the TimeSlider (`CityTour.timelapse`); "● Record" saves it as video.
 - DISHA: "give me a tour of Pune", "fly me through the city", "show me around" list the stops in chat and fly the
   tour; "city overview of …" lists them with a "▶ Fly the 3D tour" button. Offered as a cell suggestion.
+- "Δ Change in 3D" on a "What changed" card (`InsightsPanel.showChange`, `UrbanInsights.changeLayer`) registers
+  runtime dataset `change`: each cell's value at the latest step minus the same step a year (or window) earlier,
+  diverging colour around 0 (domain ± the 95th percentile of |change|), extruded by the size of the change
+  (field `height: 'abs'` in CellLayers).

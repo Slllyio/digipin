@@ -50,6 +50,12 @@ describe('CellLayers.heightExpr()', () => {
         expect(CL.heightExpr({ key: 'f', type: 'boolean' }, 200)).toEqual(['case', ['==', ['get', 'f'], true], 200, 0]);
         expect(CL.heightExpr({ key: 'c', type: 'category' }, 200)).toBe(70);
     });
+    it("height: 'abs' extrudes by the size of a change either side of 0", () => {
+        const e = JSON.stringify(CL.heightExpr({ key: 'd', type: 'number', height: 'abs', domain: [-4, 4] }, 600));
+        expect(e).toContain('"abs"');
+        expect(e).toContain('600');
+        expect(e).toContain(',4]');
+    });
 });
 
 describe('CellLayers.legendStops()', () => {

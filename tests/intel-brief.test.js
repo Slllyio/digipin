@@ -127,6 +127,23 @@ describe('Drawn areas and what changed', () => {
         expect(U.toText(r)).toContain('What changed in Pune');
     }, 60000);
 
+    it('changeLayer maps each cell\'s year-on-year change on a symmetric diverging scale', async () => {
+        const U = globalThis.UrbanInsights;
+        const s = await store();
+        const r = await U.changes(s, { city: 'pune', limit: 3 });
+        const x = r.items[0];
+        const L = await U.changeLayer(s, { city: 'pune', dataset: x.dataset, field: x.key });
+        expect(L.step).toBe(x.step);
+        expect(L.vs).toBe(x.vs);
+        expect(L.table.cells.length).toBe(L.n);
+        expect(L.rose + L.fell).toBeLessThanOrEqual(L.n);
+        const [lo, hi] = L.spec.fields[0].domain;
+        expect(lo).toBe(-hi);
+        expect(L.spec.fields[0].ramp).toBe('diverging');
+        const mean = L.table.columns.change.reduce((a, b) => a + b, 0) / L.n;
+        expect(Math.abs(mean - x.delta)).toBeLessThan(Math.abs(x.delta) * 0.5 + 0.5);
+    }, 60000);
+
     it('DISHA routes "what changed" questions', () => {
         const D = globalThis.DishaIntel;
         const cities = [{ name: 'pune', label: 'Pune' }];
