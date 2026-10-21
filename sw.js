@@ -115,6 +115,7 @@ const LOCAL_ASSETS = [
     './js/terrain-hydrology.js',
     './js/layer-swipe.js',
     './js/sentinel-imagery.js',
+    './js/point-cloud.js',
     './js/kde-overlay.js',
     './js/accessibility-overlay.js',
     './js/url-state.js',

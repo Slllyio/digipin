@@ -4588,3 +4588,12 @@ body.presenting #sidebar { display: none !important; }
 .dt-layer-item.dt-loading .dt-layer-icon { animation: dt-loading-pulse 1s ease-in-out infinite; }
 @keyframes dt-loading-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 @media (prefers-reduced-motion: reduce) { .dt-layer-item.dt-loading .dt-layer-icon { animation: none; opacity: 0.6; } }
+/* PointCloud: file / link picker for LiDAR and drone surveys. */
+.point-cloud-panel { position: absolute; left: 50%; bottom: 72px; transform: translateX(-50%); z-index: 20; display: grid; gap: 8px; width: min(360px, calc(100vw - 32px)); padding: 10px 12px; border-radius: 10px; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); font-size: 12px; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
+.point-cloud-title { font-weight: 600; }
+.point-cloud-hint { color: var(--text-secondary); }
+.point-cloud-row { display: flex; gap: 6px; }
+.point-cloud-row input { flex: 1; min-width: 0; font: inherit; }
+.point-cloud-panel button, .point-cloud-panel input[type=file] { font: inherit; cursor: pointer; }
+.point-cloud-sample { justify-self: start; }
+.point-cloud-close { justify-self: end; }

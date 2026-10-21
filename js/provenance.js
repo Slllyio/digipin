@@ -36,6 +36,7 @@ const Provenance = (() => {
         '_btn_btn-bivariate': { source: 'DigiPin cell scores', method: LIVE + ', two scores binned 3×3' },
         '_btn_btn-kde': { source: 'DigiPin cell scores', method: LIVE + ', Gaussian kernel density' },
         '_btn_btn-sentinel': { source: 'Copernicus Sentinel-2 L2A (ESA) via Microsoft Planetary Computer STAC + tiler', method: 'Newest scene under 20% cloud in the last 120 days covering the selected cell; true colour, NIR false colour or NDVI' },
+        '_btn_btn-pointcloud': { source: 'Your own LAS / LAZ / COPC / EPT point cloud (no open Indian LiDAR yet)', method: 'opengeos/maplibre-gl-lidar 0.21 (MIT): deck.gl point cloud, CRS reprojected to WGS84, COPC streamed by viewport' },
         '_btn_btn-swipe': { source: 'Whatever layers are on (each keeps its own source line)', method: 'Second map from a style snapshot, same camera, clipped beside a draggable divider' },
         '_btn_btn-hydrology': { source: 'AWS Terrarium DEM tiles (SRTM, z13 ~18 m/px)', method: 'Whitebox depth_in_sink, breach + D8 flow accumulation, slope and TWI via geolibre-wasm, binned to DIGIPIN L8' },
         '_btn_btn-viewshed': { source: 'AWS Terrarium DEM tiles (elevation-tiles-prod)', method: 'Line-of-sight sweep from the map centre, z14 (~9 m/px)' },
