@@ -84,3 +84,23 @@ describe('I18n.translateTree', () => {
         expect(d.querySelector('.ui-tab').textContent).toBe('City');
     });
 });
+
+describe('I18n.phrase — lens findings', () => {
+    it('translates a multi-sentence finding sentence by sentence', () => {
+        const en = 'Night lights rise 0.43% for each 1% more residents (R² 0.4). 1928 cells glow well above their residents (activity hubs); 178 dense cells with 1.4 lakh people are under-lit for their size.';
+        const hi = I.phrase(en, 'hi');
+        expect(hi).toContain('0.43%');
+        expect(hi).toContain('1.4 लाख');
+        expect(hi).not.toMatch(/Night lights|cells glow/);
+    });
+
+    it('leaves a paragraph in English when any sentence is unknown', () => {
+        const en = 'Night lights rise 0.43% for each 1% more residents (R² 0.4). Something nobody has translated yet.';
+        expect(I.phrase(en, 'hi')).toBe(en);
+    });
+
+    it('translates sidebar queries and catalog field labels', () => {
+        expect(I.phrase('Run query: Best Mall Location', 'hi')).toBe('क्वेरी चलाएँ: मॉल के लिए सबसे अच्छी जगह');
+        expect(I.phrase('PM2.5, annual mean (2022)', 'hi')).toBe('PM2.5, वार्षिक औसत (2022)');
+    });
+});

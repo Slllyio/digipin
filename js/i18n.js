@@ -252,14 +252,47 @@ const I18n = (() => {
         return en.slice(0, en.indexOf(core)) + out + en.slice(en.indexOf(core) + core.length);
     }
 
+    // Insight sentences lower-case field labels mid-sentence ("night-time LST");
+    // index the phrase table the same way (UrbanInsights' lc rule) so those resolve.
+    const _lcIndexes = new WeakMap();
+    function _lcKey(str) {
+        const cut = str.indexOf('(');
+        const head = cut < 0 ? str : str.slice(0, cut), tail = cut < 0 ? '' : str.slice(cut);
+        const keep = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/;
+        return head.split(' ').map(w => ((/^[A-Z][a-z]/.test(w) || /^[A-Z]$/.test(w)) && !keep.test(w) ? w.toLowerCase() : w)).join(' ') + tail;
+    }
+    function _lcLookup(text, table) {
+        let idx = _lcIndexes.get(table);
+        if (!idx) {
+            idx = new Map();
+            for (const [en, hi] of Object.entries(table.phrases)) { const k = _lcKey(en); if (k !== en && !idx.has(k)) idx.set(k, hi); }
+            _lcIndexes.set(table, idx);
+        }
+        return idx.get(text);
+    }
+
     function _lookup(core, table, depth) {
         if (Object.prototype.hasOwnProperty.call(table.phrases, core)) return table.phrases[core];
+        if (depth > 0) { const lcHit = _lcLookup(core, table); if (lcHit !== undefined) return lcHit; }
         if (depth > 3) return undefined;
         const tr = s => { const r = _lookup(s, table, depth + 1); return r === undefined ? s : r; };
         for (const [re, fn] of table.patterns) {
             const m = core.match(re);
             if (!m) continue;
             const r = fn(m, tr);
+            if (r !== undefined) return r;
+        }
+        // Several sentences: translate each, but only if every one has a
+        // translation, so a paragraph never comes out half Hindi.
+        if (depth === 0) {
+            const clauses = (text, sep, re) => {
+                const parts = text.split(re);
+                if (parts.length < 2) return undefined;
+                const out = parts.map(part => _lookup(part, table, 1)
+                    ?? (sep === ' ' ? clauses(part, '; ', /(?<=;)\s+/) : undefined));
+                return out.every(o => o !== undefined) ? out.join(sep) : undefined;
+            };
+            const r = clauses(core, ' ', /(?<=\.)\s+(?=[A-Z0-9“])/) ?? clauses(core, '; ', /(?<=;)\s+/);
             if (r !== undefined) return r;
         }
         // Leading symbol or emoji ("➕ Add to plan", "ⓘ Source"), then trailing punctuation.
@@ -324,7 +357,7 @@ const I18n = (() => {
         if (root.querySelectorAll) root.querySelectorAll('[title],[aria-label],[placeholder]').forEach(el => _swapAttrs(el, l));
     }
 
-    const PANEL_SELECTOR = '.ui-dialog, #aino-right';
+    const PANEL_SELECTOR = '.ui-dialog, #aino-right, #sidebar, #detail-panel';
     const _watched = new WeakSet();
     let _bodyObserver = null;
 
