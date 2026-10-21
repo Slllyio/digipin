@@ -4,6 +4,13 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — one script bundle for the published site
+
+- **Correction to the entry two below:** those 13 s / 52 s figures came from the dev server, which did not compress. GitHub Pages gzips, so the honest baseline (serve.py `--gzip`, stub map, cold visit, `scripts/measure-first-load.js`) is: usable at 1.0 s unshaped, **5.6 s on fast 3G, 19.5 s on slow 3G** (138 requests, 2.4 MB raw / ~0.7 MB on the wire).
+- **Change:** `scripts/build_bundle.py` runs in deploy.yml (next to the GeoParquet step) and concatenates the 129 local modules, in app.html order, into one `js/app.bundle.js` (2.14 MB raw, 575 kB gzipped); the published app.html loads that one file where the first module was and the published sw.js precaches it instead of the modules. Nothing changes in git: the source tree, the other threads and the browser suite keep the module-per-file layout. The script refuses to run if a local tag is not `defer`, a CDN `defer` tag sits between local ones, a module is listed twice or is missing; a `;` between files keeps an IIFE from being parsed as a call on the previous file's last expression, and a marker comment per module keeps error lines traceable.
+- **After (same method):** usable at **3.9 s on fast 3G (from 5.6), 14.6 s on slow 3G (from 19.5)**; 22-29 requests instead of 138-157. The rest of the slow-3G time is bytes, not round trips: 0.7 MB over 400 kbps is 14 s. The next cut would be lazy-loading the dialogs that boot does not need (Intel, Agents, Lenses, DISHA: ~400 kB raw), which is a code change, not a build step.
+- **Guards:** tests/build-bundle.test.js builds into a temporary copy and checks every module is present once and in order, the tags and precache are rewritten as intended, and Node parses the bundle; a new CI job `e2e-bundled` runs smoke, offline, workflows, a11y and perf in real Chromium on the bundled tree.
+
 ## 2026-10-21 — point-cloud viewer on a bad link
 
 - **Read-through of the new LiDAR tool (js/point-cloud.js):** the viewer library is an ESM download from jsdelivr at first use and the sample is an 80 MB COPC on S3; neither had a timeout, so a stalled link left the panel waiting with no word, and a second click started a second load. Now the download times out at 30 s and a load at 180 s (both end in the existing error toast), the panel is aria-busy with its load controls disabled while a load runs, and `PointCloud.isBusy()` is exposed. Resilience spec: library download refused → error toast, controls enabled again, panel closes, no uncaught error.

@@ -154,3 +154,4 @@ playwright-report/
 # Lens league (scripts/build_lens_league.js)
 !data/lenses/
 !data/lenses/*
+js/app.bundle.js

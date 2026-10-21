@@ -165,11 +165,12 @@ test.describe('resilience', () => {
   });
 
   test('a slow link shows the loading splash with the page, not after the scripts', async ({ page, context }) => {
-    // Fast-3G shaping via CDP (Chromium only): the deferred scripts take
-    // ~13 s to arrive, during which the user used to see a still skeleton.
+    // Slow-3G shaping via CDP (Chromium only): the deferred scripts take
+    // well over 6 s to arrive (module tree or deploy bundle, with or without
+    // gzip), during which the user used to see a still skeleton.
     const cdp = await context.newCDPSession(page);
     await cdp.send('Network.enable');
-    await cdp.send('Network.emulateNetworkConditions', { offline: false, downloadThroughput: 1.6e6 / 8, uploadThroughput: 750e3 / 8, latency: 150 });
+    await cdp.send('Network.emulateNetworkConditions', { offline: false, downloadThroughput: 400e3 / 8, uploadThroughput: 400e3 / 8, latency: 400 });
     const t0 = Date.now();
     await page.goto('/app.html', { waitUntil: 'commit' });
     const splash = page.locator('#app-splash');

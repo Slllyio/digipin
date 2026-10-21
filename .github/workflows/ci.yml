@@ -104,6 +104,47 @@ jobs:
         retention-days: 7
         if-no-files-found: ignore
 
+  # The published site is the bundled tree (deploy.yml runs
+  # scripts/build_bundle.py), so boot, offline shell, core workflows and the
+  # perf budgets are checked on that tree too, in the same real Chromium.
+  e2e-bundled:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+
+    - name: Set up Python (bundler + serve.py webServer)
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Install Playwright Chromium
+      run: npx playwright install --with-deps chromium
+
+    - name: Bundle app scripts (as deploy.yml does)
+      run: python scripts/build_bundle.py
+
+    - name: "Browser suite on the bundled tree (smoke, offline, workflows, a11y, perf)"
+      run: npx playwright test tests/playwright/smoke.spec.js tests/playwright/offline.spec.js tests/playwright/workflows.spec.js tests/playwright/a11y.spec.js tests/playwright/perf.spec.js
+      env:
+        CI: 'true'
+
+    - name: Upload Playwright results
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-results-bundled
+        path: test-results/
+        retention-days: 7
+        if-no-files-found: ignore
+
   lint:
     runs-on: ubuntu-latest
     steps:
