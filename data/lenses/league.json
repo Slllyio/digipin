@@ -1,0 +1,942 @@
+{
+ "schema": "digipin.lens-league/1",
+ "generated": "2026-10-21",
+ "cities": {
+  "ahmedabad": {
+   "label": "Ahmedabad",
+   "residents": 7954301,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 43.9,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 29.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 42.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 51.1,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 8.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 40.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 23.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 32.7,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 9.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 0,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "bengaluru": {
+   "label": "Bengaluru",
+   "residents": 13252113,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 38.5,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 0.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 90,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 2.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 37.2,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 3.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 37.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 71.8,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 45.3,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 32.3,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 0,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "bhopal": {
+   "label": "Bhopal",
+   "residents": 2485358,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 42.1,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 56.4,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 2.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 43.6,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 5.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 37.4,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 58.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 42.4,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 29.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 0,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "chennai": {
+   "label": "Chennai",
+   "residents": 8687996,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 41.7,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 27.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 81.7,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 0.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 35.5,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 6.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 78.4,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 57.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 43.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 20.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 0,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "delhi": {
+   "label": "Delhi",
+   "residents": 29420982,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 39.5,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 28.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 65.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 6.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 94.1,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 6.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 47.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 58.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 32.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 11.3,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 11,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "guna": {
+   "label": "Guna",
+   "residents": 300935,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 43.7,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 7.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 35.8,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 10.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 17.7,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 57,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 39.7,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 0.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 0,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "hyderabad": {
+   "label": "Hyderabad",
+   "residents": 9070685,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 39.3,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 0.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 86.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 0.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 42.2,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 3.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 39.7,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 62.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 59.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 31.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 0,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "indore_pilot": {
+   "label": "Indore",
+   "residents": 4359773,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 41.8,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 56.9,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 13.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 46.2,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 12.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 20.3,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 61.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 49.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 36.7,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 0,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "jaipur": {
+   "label": "Jaipur",
+   "residents": 4199878,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 43.1,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 65.7,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 2.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 54.5,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 5.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 37.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 45,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 61.4,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 3.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 1,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "kolkata": {
+   "label": "Kolkata",
+   "residents": 13548737,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 37.4,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 33.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 71.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 47.3,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 4.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 72.8,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 71.7,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 19.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 28.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 4,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "lucknow": {
+   "label": "Lucknow",
+   "residents": 4668948,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 38.4,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 12.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 50.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 87.5,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 5.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 35.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 63.4,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 47.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 0.9,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 5,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "mumbai": {
+   "label": "Mumbai",
+   "residents": 17686907,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 40.6,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 8.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 95.7,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 0.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 43.5,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 9.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 49.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 84.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 11.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 14.8,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 1,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  },
+  "pune": {
+   "label": "Pune",
+   "residents": 6445372,
+   "metrics": {
+    "heat": {
+     "label": "Daytime surface temperature per resident",
+     "value": 42.6,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
+    "flood": {
+     "label": "Residents in the 100-year floodplain",
+     "value": 4.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fifteen": {
+     "label": "Residents with 6+ of 7 essentials on foot",
+     "value": 89.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "health": {
+     "label": "Residents with no healthcare within 2 km",
+     "value": 0.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "air": {
+     "label": "PM2.5 per resident",
+     "value": 44.7,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
+    "walk": {
+     "label": "Residents below 54 junctions/km²",
+     "value": 7.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sprawl": {
+     "label": "New built-up land that is infill",
+     "value": 34.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "green": {
+     "label": "Residents with green space within 300 m",
+     "value": 74.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "solar": {
+     "label": "Rooftop solar vs residents’ use",
+     "value": 36.3,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "confidence": {
+     "label": "OSM building completeness per resident",
+     "value": 22.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "seasons": {
+     "label": "Months a year above 60 µg/m³ PM2.5",
+     "value": 0,
+     "unit": "months",
+     "higherIs": "worse"
+    }
+   }
+  }
+ }
+}

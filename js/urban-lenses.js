@@ -458,6 +458,7 @@ const UrbanLenses = (() => {
         ];
         return {
             columns: { hvi }, idx,
+            metric: { label: 'Daytime surface temperature per resident', value: _round(dayAll), unit: '°C', higherIs: 'worse' },
             headline: `${_people(topPeople)} people (${_round(100 * topPeople / (total || 1))}% of residents) live in the city’s most heat-vulnerable tenth of neighbourhoods`
                 + (dayTop != null ? `, where surfaces run ${_round(Math.abs(dayTop - dayAll))} °C ${dayTop >= dayAll ? 'hotter' : 'cooler'} by day` : '')
                 + (canTop != null ? ` and tree canopy is ${_round(canTop)}% against ${_round(canAll)}% city-wide.` : '.'),
@@ -488,6 +489,7 @@ const UrbanLenses = (() => {
         const ponding = hand ? _sumOver(pop, idx, i => hand[i] < 2) : null;
         return {
             columns: { flood_people: people, flood_hazard: hazard }, idx, weightKey: 'flood_hazard',
+            metric: { label: 'Residents in the 100-year floodplain', value: _round(100 * p100 / (total || 1)), unit: '%', higherIs: 'worse' },
             headline: `${_people(p100)} people (${_round(100 * p100 / (total || 1))}% of residents) live in the 100-year floodplain`
                 + (rp10 ? `, ${_people(p10)} of them where floods come about once a decade` : '') + '.',
             stats: [
@@ -541,6 +543,7 @@ const UrbanLenses = (() => {
         const worstQ = [...missCount.keys()].sort((a, b) => missCount[b] - missCount[a])[0];
         return {
             columns: { fifteen_min: score, mix }, idx,
+            metric: { label: 'Residents with 6+ of 7 essentials on foot', value: _round(100 * complete / (total || 1)), unit: '%', higherIs: 'better' },
             headline: `${_round(100 * complete / (total || 1))}% of residents can walk to at least ${cats.length - 1} of ${cats.length} daily essentials within 15 minutes; `
                 + `${cats[worstQ]} is the one most often out of reach (${_people(missCount[worstQ])} people).`,
             stats: [
@@ -590,6 +593,7 @@ const UrbanLenses = (() => {
         const low = med ? _sumOver(pop, idx, i => A[i] < med * 0.25) : null;
         return {
             columns: { health_access: A }, idx,
+            metric: { label: 'Residents with no healthcare within 2 km', value: _round(100 * desert / (total || 1)), unit: '%', higherIs: 'worse' },
             headline: `${_people(desert)} people (${_round(100 * desert / (total || 1))}% of residents) have no mapped healthcare within ${CATCH_KM} km; `
                 + `the typical resident shares each nearby facility with ${med ? _people(1e4 / med) : '–'} others.`,
             stats: [
@@ -611,6 +615,7 @@ const UrbanLenses = (() => {
         const no2 = c['air_quality.no2_umol_m2'];
         return {
             columns: { pm25: Float64Array.from(pm) }, idx,
+            metric: { label: 'PM2.5 per resident', value: _round(pw), unit: 'µg/m³', higherIs: 'worse' },
             headline: `The average resident breathes ${_round(pw)} µg/m³ of PM2.5 (${_round(pw / PM25_WHO, 1)}× the WHO guideline); `
                 + `${_people(above)} people (${_round(100 * above / (total || 1))}%) live above India’s annual standard of ${PM25_NAAQS}.`,
             stats: [
@@ -731,6 +736,7 @@ const UrbanLenses = (() => {
         const jTop = wmean(jx, pop, idx.filter(i => out[i] >= 80)), jLow = wmean(jx, pop, idx.filter(i => out[i] < 20));
         return {
             columns: { walk_index: out }, idx,
+            metric: { label: `Residents below ${LEED_JX} junctions/km²`, value: _round(100 * low / (total || 1)), unit: '%', higherIs: 'worse' },
             headline: `${_people(low)} people (${_round(100 * low / (total || 1))}%) live where streets have fewer than ${LEED_JX} junctions per km² (the LEED-ND connectivity bar); `
                 + `the most walkable fifth of cells has ${_round(jTop)} per km², the least ${_round(jLow)}.`
                 + (r != null ? ` The index ${Math.abs(r) >= 0.5 ? 'agrees with' : Math.abs(r) >= 0.25 ? 'partly agrees with' : 'differs from'} the OSM walkability score (r = ${_round(r, 2)}).` : ''),
@@ -800,6 +806,7 @@ const UrbanLenses = (() => {
         const verdict = !tot ? 'little measurable growth' : share(infill) >= 50 ? 'mostly infill (compact)' : share(out) >= 25 ? 'leapfrogging (sprawling)' : 'mostly edge expansion';
         return {
             columns: { lei }, idx: grew.length >= 10 ? grew : idx, diverging: false,
+            metric: tot ? { label: 'New built-up land that is infill', value: share(infill), unit: '%', higherIs: 'better' } : null,
             headline: tot
                 ? `${_round(tot, 1)} km² of land was newly built 2016–2023, ${verdict}: ${share(infill)}% infill, ${share(edge)}% at the edge, ${share(out)}% leapfrog.`
                     + (fit ? ` Density falls ${_round(100 * (1 - Math.exp(fit.b)))}% per km from the centre (Clark gradient ${_round(-fit.b, 3)}/km).` : '')
@@ -1002,6 +1009,7 @@ const UrbanLenses = (() => {
         const both = _sumOver(pop, idx, i => rules[i] === 2), none = _sumOver(pop, idx, i => rules[i] === 0);
         return {
             columns: { green_rules: rules, canopy_500m: can500 }, idx, weightKey: 'canopy_500m',
+            metric: { label: 'Residents with green space within 300 m', value: _round(100 * r300 / total), unit: '%', higherIs: 'better' },
             headline: `${_round(100 * r30 / total)}% of residents have 30% tree canopy around home and ${_round(100 * r300 / total)}% have green space within 300 m; `
                 + `${_people(none)} people (${_round(100 * none / total)}%) meet neither.`,
             stats: [
@@ -1038,6 +1046,7 @@ const UrbanLenses = (() => {
         for (let i = 0; i < n; i++) if (_fin(mwh[i])) use.push(i);
         return {
             columns: { solar_mwh: mwh }, idx: use,
+            metric: { label: 'Rooftop solar vs residents’ use', value: _round(100 * energy / (demandMwh || 1)), unit: '%', higherIs: 'better' },
             headline: `Roofs covering ${_round(roofKm2, 1)} km² could host about ${_round(kwp / 1e6, 2)} GW of solar and make ${_round(energy / 1e3, 0).toLocaleString('en-IN')} GWh a year, `
                 + `${_round(100 * energy / (demandMwh || 1))}% of what the city’s residents use (at ${KWH_PER_CAPITA.toLocaleString('en-IN')} kWh each).`,
             stats: [
@@ -1069,6 +1078,7 @@ const UrbanLenses = (() => {
         const mc = wmean(comp, pop, idx);
         return {
             columns: { confidence: conf, osm_complete: comp }, idx,
+            metric: { label: 'OSM building completeness per resident', value: _round(mc), unit: '%', higherIs: 'better' },
             headline: `OpenStreetMap maps about ${_round(mc)}% of the buildings Open Buildings sees where the average resident lives; `
                 + `${_people(low)} people (${_round(100 * low / total)}%) live where it maps under half, so amenity-based lenses there are lower bounds.`,
             stats: [
@@ -1141,7 +1151,9 @@ const UrbanLenses = (() => {
             head += `${_people(hotPeople)} people (${_round(100 * hotPeople / total)}%) live where the month-average daytime surface tops 40 °C in three or more months`
                 + (dN != null ? `; nights ran ${_round(Math.abs(dN), 2)} °C ${dN >= 0 ? 'warmer' : 'cooler'} than the year before.` : '.');
         }
-        return { columns: { hot_months: hot, pm_months: pmm }, idx, weightKey: day ? 'hot_months' : 'pm_months', headline: head.trim(), stats, series };
+        const pmRes = pm ? wmean(pmm, pop, idx) : null;
+        return { columns: { hot_months: hot, pm_months: pmm }, idx, weightKey: day ? 'hot_months' : 'pm_months', headline: head.trim(), stats, series,
+            metric: pmRes != null ? { label: 'Months a year above 60 µg/m³ PM2.5', value: _round(pmRes, 1), unit: 'months', higherIs: 'worse' } : null };
     }
 
     const RUN = { heat, flood, fifteen, health, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
@@ -1443,7 +1455,7 @@ const UrbanLenses = (() => {
             const srcIds = new Set(L.needs.map(k => k.split('.')[0]).concat(L.after ? L.after.flatMap(a => BY_ID.get(a).needs.map(k => k.split('.')[0])) : []).concat(['population']));
             out.push({
                 id: L.id, title: L.title, icon: L.icon, question: L.question, method: L.method, refs: L.refs,
-                fields, headline: r.headline, stats: r.stats, equity, fit: r.fit || null, series: r.series || null,
+                fields, headline: r.headline, stats: r.stats, equity, fit: r.fit || null, series: r.series || null, metric: r.metric || null,
                 hotspots: hs ? { field: hsKey, moranI: hs.moranI, z: hs.z, reading: hs.reading, km: hs.km,
                     hot: hs.hot.map(i => fr.grid.codes[i]), cold: hs.cold.map(i => fr.grid.codes[i]), lisa: hs.lisaCounts } : null,
                 sources: fr.sources.filter(s => srcIds.has(s.id)).map(s => s.id),
@@ -1553,6 +1565,28 @@ const UrbanLenses = (() => {
         return { prefix: p, cells: inA.length, people: Math.round(_sumOver(pop, inA, () => true)), rows };
     }
 
+    /**
+     * Rank a city on every lens metric in a league file
+     * (data/lenses/league.json, scripts/build_lens_league.js). Rank 1 is
+     * best. Returns [{ id, label, value, unit, higherIs, rank, of, best, worst }].
+     */
+    function leagueFor(league, city) {
+        const me = league && league.cities && league.cities[city];
+        if (!me) return [];
+        const out = [];
+        for (const [id, m] of Object.entries(me.metrics)) {
+            const rows = Object.entries(league.cities).map(([name, c]) => ({ name, label: c.label, v: c.metrics[id] && c.metrics[id].value }))
+                .filter(x => _fin(x.v));
+            if (rows.length < 2) continue;
+            const sign = m.higherIs === 'worse' ? 1 : -1;
+            rows.sort((x, y) => sign * (x.v - y.v));
+            const rank = rows.findIndex(x => x.name === city) + 1;
+            out.push({ id, label: m.label, value: m.value, unit: m.unit, higherIs: m.higherIs, rank, of: rows.length,
+                best: { city: rows[0].label, value: rows[0].v }, worst: { city: rows[rows.length - 1].label, value: rows[rows.length - 1].v } });
+        }
+        return out;
+    }
+
     // ── stable entry points (agents, DISHA, other modules) ──────────────────
 
     /** The lens catalogue: [{ id, title, question, method, refs, fields, params }]. */
@@ -1610,7 +1644,7 @@ const UrbanLenses = (() => {
 
     return {
         SCHEMA, LENS_SCHEMA, LENSES, PRESETS, ESSENTIALS, CELL_DEG, GHI,
-        catalog, lens, site, areaProfile, ahp, within,
+        catalog, lens, site, areaProfile, leagueFor, ahp, within,
         prank, wmean, wquantile, gini, lorenz, palma, ols, pearson, grid, frameFrom, frame, allNeeds,
         e2sfca, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
         _lenses: RUN,

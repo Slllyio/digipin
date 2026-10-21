@@ -314,3 +314,4 @@ html[data-theme="light"] {
 .ui-lens-arow .is-good { color: var(--ui-strength); }
 .ui-lens-arow .is-bad { color: var(--ui-concern); }
 .ui-lens-series { margin-top: 6px; } .ui-lens-series .ui-spark { width: 100%; height: 40px; }
+.ui-lens-arow .ui-lens-num.is-good { color: var(--ui-strength); } .ui-lens-arow .ui-lens-num.is-bad { color: var(--ui-concern); }

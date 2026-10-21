@@ -93,6 +93,25 @@ describe('UrbanLenses maths', () => {
     });
 });
 
+describe('UrbanLenses league', () => {
+    it('ranks a city on each metric, direction-aware', () => {
+        const lg = { cities: {
+            a: { label: 'A', metrics: { air: { label: 'PM', value: 40, unit: 'µg/m³', higherIs: 'worse' }, fifteen: { label: 'x', value: 80, unit: '%', higherIs: 'better' } } },
+            b: { label: 'B', metrics: { air: { label: 'PM', value: 90, unit: 'µg/m³', higherIs: 'worse' }, fifteen: { label: 'x', value: 50, unit: '%', higherIs: 'better' } } },
+        } };
+        const r = L.leagueFor(lg, 'b');
+        expect(r.find(x => x.id === 'air')).toMatchObject({ rank: 2, of: 2, best: { city: 'A', value: 40 } });
+        expect(r.find(x => x.id === 'fifteen').rank).toBe(2);
+        expect(L.leagueFor(lg, 'a').every(x => x.rank === 1)).toBe(true);
+    });
+    it('the committed league file covers every city with the current metrics', () => {
+        const lg = JSON.parse(readFileSync(path.join(ROOT, 'data/lenses/league.json'), 'utf-8'));
+        expect(lg.schema).toBe('digipin.lens-league/1');
+        expect(Object.keys(lg.cities).length).toBeGreaterThanOrEqual(13);
+        expect(L.leagueFor(lg, 'delhi').length).toBeGreaterThanOrEqual(8);
+    });
+});
+
 describe('UrbanLenses methods on a hand-made grid', () => {
     const SIZE = 12;
     const codes = block(22.72, 75.86, SIZE);

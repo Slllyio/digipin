@@ -84,6 +84,35 @@ const LensesPanel = (() => {
         _painted = null;
     }
 
+    let _league = null;
+    function _loadLeague() {
+        if (!_league) {
+            _league = fetch('data/lenses/league.json').then(r => (r.ok ? r.json() : null)).catch(() => null);
+        }
+        return _league;
+    }
+
+    /** "Across the cities": the city's rank on each lens metric. */
+    async function _leagueCard(r) {
+        const data = await _loadLeague();
+        const rows = UrbanLenses.leagueFor(data, r.city);
+        if (!rows.length) return null;
+        const card = _el('section', 'ui-lens');
+        card.dataset.lens = 'league';
+        card.appendChild(_el('div', 'ui-lens-title', `${r.cityLabel} across ${rows[0].of} cities`));
+        card.appendChild(_el('div', 'ui-muted', `Rank 1 is best. Precomputed ${data.generated} with the same lenses.`));
+        const tbl = _el('div', 'ui-lens-area');
+        for (const x of rows) {
+            const row = _el('div', 'ui-lens-arow');
+            row.appendChild(_el('span', null, x.label));
+            row.appendChild(_el('span', `ui-lens-num${x.rank === 1 ? ' is-good' : x.rank === x.of ? ' is-bad' : ''}`, `#${x.rank} · ${x.value}${x.unit === '%' ? '%' : ` ${x.unit}`}`));
+            row.appendChild(_el('span', 'ui-muted', x.rank === 1 ? `best of ${x.of}; worst ${x.worst.city} (${x.worst.value})` : `best ${x.best.city} (${x.best.value})`));
+            tbl.appendChild(row);
+        }
+        card.appendChild(tbl);
+        return card;
+    }
+
     /** The selected ~1 km cell read through every lens, against its city. */
     function _areaCard(r, prefix) {
         const prof = UrbanLenses.areaProfile(r, prefix);
@@ -323,6 +352,9 @@ const LensesPanel = (() => {
             const card = _areaCard(r, String(sel).replace(/-/g, '').slice(0, 6));
             if (card) body.appendChild(card);
         }
+        const leagueSlot = _el('div');
+        body.appendChild(leagueSlot);
+        _leagueCard(r).then(c => { if (c && kit.isCurrent()) leagueSlot.replaceWith(c); }).catch(() => {});
         for (const l of r.lenses) body.appendChild(_card(kit, r, l));
         body.appendChild(_sitingCard(kit, r));
     }
