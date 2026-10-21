@@ -411,6 +411,10 @@ const InsightsPanel = (() => {
         txt.appendChild(_el('div', 'ui-hero-rank', `#${cur.rank} of ${d.cities.length} cities`));
         txt.appendChild(_el('div', null, `Best at ${cur.strengths.map(s => s.label.toLowerCase()).join(' and ')}; weakest at ${cur.weaknesses.map(s => s.label.toLowerCase()).join(' and ')}.`));
         txt.appendChild(_el('div', 'ui-muted', `${cur.active.toLocaleString('en-IN')} built-up cells (~${cur.areaKm2.toLocaleString('en-IN')} km²) of ${cur.cells.toLocaleString('en-IN')} on the grid`));
+        if (typeof CityTour !== 'undefined') {
+            const tour = _btn('▶ 3D tour of the city', () => CityTour.play(cur.region), 'ui-chip ui-chip--primary ui-tour-btn', 'Fly through this city’s key findings in 3D (can be recorded as a video)');
+            txt.appendChild(tour);
+        }
         hero.append(big, txt);
         body.appendChild(hero);
 
@@ -638,6 +642,10 @@ const InsightsPanel = (() => {
                 act.appendChild(_btn(x.anomalyCount > x.anomalies.length ? `Outline the ${x.anomalies.length} most unusual of ${x.anomalyCount}` : `Outline ${x.anomalyCount} unusual cell${x.anomalyCount === 1 ? '' : 's'}`,
                     () => highlight(x.anomalies.map(a => ({ code: a.code, kind: 'anomaly' })), { fit: true }), 'ui-chip',
                     'Cells whose change was 2+ SD from the city’s (top 5 shown)'));
+            }
+            if (typeof CityTour !== 'undefined' && x.unit !== undefined && /^\d{4}-\d{2}/.test(x.step)) {
+                act.appendChild(_btn('▶ Time-lapse in 3D', () => CityTour.timelapse({ dataset: x.dataset, field: x.key, city: region }), 'ui-chip', 'Play the last two years in 3D while the camera orbits'));
+                act.appendChild(_btn('● Record', () => CityTour.timelapse({ dataset: x.dataset, field: x.key, city: region, record: true }), 'ui-chip', 'Save the 3D time-lapse as a video'));
             }
             act.appendChild(_sourceToggle(x.sources));
             card.appendChild(act);

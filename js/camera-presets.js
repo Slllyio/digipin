@@ -112,11 +112,17 @@ const CameraPresets = (() => {
      * download it. The map canvas is copied each frame onto a 2D canvas with
      * a caption and the map credits (the credits are DOM, not in the WebGL
      * picture). Resolves { bytes, type, name, ms } or null when unsupported.
+     *
+     * Other modules record their own sequences through the same recorder:
+     * opts.shots = [{ caption, camera?, enter?: async () => camera|void, holdMs? }],
+     * opts.orbit = false skips the closing orbit, opts.fileName names the file
+     * (js/city-tour.js records its tours and time-lapses this way).
      */
     async function record(opts = {}) {
         const map = typeof MapModule !== 'undefined' && MapModule.getMap ? MapModule.getMap() : null;
         const city = typeof CitySelector !== 'undefined' ? CitySelector.getCurrent() : null;
-        const shots = presetsFor(city, _maxPitch());
+        const custom = Array.isArray(opts.shots) && opts.shots.length > 0;
+        const shots = custom ? opts.shots : presetsFor(city, _maxPitch());
         const mime = typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported ? pickMime(m => MediaRecorder.isTypeSupported(m)) : null;
         const src = map && map.getCanvas ? map.getCanvas() : null;
         if (!map || !shots.length || !mime || !src || typeof document === 'undefined') {
@@ -168,13 +174,17 @@ const CameraPresets = (() => {
             const fly = opts.flyMs || 3200, hold = opts.holdMs || 1200;
             for (const p of shots) {
                 if (cancelled) break;
-                caption = `${p.label} · ${p.detail}`;
-                _mark(p.id);
-                map.flyTo({ ...p.camera, duration: fly, curve: 1.4, essential: true });
-                await _wait(map, fly + 800);
-                await new Promise(r => setTimeout(r, hold));
+                caption = p.caption || `${p.label} · ${p.detail}`;
+                if (!custom) _mark(p.id);
+                let cam = p.camera;
+                if (p.enter) { const c = await p.enter(); if (c) cam = c; }
+                if (cam) {
+                    map.flyTo({ ...cam, duration: fly, curve: 1.4, essential: true });
+                    await _wait(map, fly + 800);
+                }
+                await new Promise(r => setTimeout(r, p.holdMs != null ? p.holdMs : hold));
             }
-            if (!cancelled) {
+            if (!cancelled && opts.orbit !== false) {
                 caption = 'Orbit';
                 map.easeTo({ bearing: map.getBearing() + 90, duration: opts.orbitMs || 5000, easing: t => t, essential: true });
                 await _wait(map, (opts.orbitMs || 5000) + 800);
@@ -190,7 +200,7 @@ const CameraPresets = (() => {
             _setRecording(false);
         }
         const blob = new Blob(chunks, { type: mime.split(';')[0] });
-        const name = fileName(city, mime);
+        const name = opts.fileName ? `${opts.fileName}.${/mp4/.test(mime) ? 'mp4' : 'webm'}` : fileName(city, mime);
         if (opts.download !== false && blob.size) {
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -309,7 +319,10 @@ const CameraPresets = (() => {
         _sync();
     }
 
-    return { init, go, record, presetsFor, placeIn, pickMime, fileName, LANDMARKS };
+    function isRecording() { return !!_rec; }
+    function stopRecording() { if (_rec) _rec.stop(); }
+
+    return { init, go, record, isRecording, stopRecording, presetsFor, placeIn, pickMime, fileName, LANDMARKS };
 })();
 
 if (typeof window !== 'undefined') {

@@ -53,6 +53,7 @@ loadGlobalScript('js/urban-lenses.js', ['UrbanLenses']);
 loadGlobalScript('js/urban-agents.js', ['UrbanAgents']);
 loadGlobalScript('js/lenses-panel.js', ['LensesPanel']);
 loadGlobalScript('js/scenario-lenses.js', ['ScenarioLenses']);
+loadGlobalScript('js/city-tour.js', ['CityTour']);
 loadGlobalScript('js/intel-brief.js', ['IntelBrief']);
 loadGlobalScript('js/insights-panel.js', ['InsightsPanel']);
 loadGlobalScript('js/agents-panel.js', ['AgentsPanel']);

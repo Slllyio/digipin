@@ -121,3 +121,14 @@ ROADMAP_INSIGHTS.md). A big city (Delhi, 37k cells) takes about 3 s in the brows
   − benefit, diverging), and `InsightsPanel.frame3D` tilts the camera (pitch 55°) to frame it beside the window.
 - Zone leaderboard on the City tab: `UrbanInsights.zoneRanking` ranks a city's ~4 km zones on any numeric field
   (direction-aware, built-up cells for scores, 12-month mean for series); "Show all zones in 3D" extrudes them.
+
+## 3D city tour and time-lapses
+
+- `js/city-tour.js` (`CityTour.start(city)`, "▶ 3D tour of the city" on the City tab) flies a narrated 3D tour:
+  overview of every ~4 km zone, best and weakest liveable zone, hottest zone, most flood-exposed zone, and the
+  biggest recent change, then back out. Each stop extrudes its layer (runtime dataset `tour`, with legend),
+  outlines the zone and frames it with neighbours. Caption card: ◀ ▶/❚❚ ▶|, dots, arrow keys, Esc.
+- "● Record" hands the stops to the fly-through recorder (`CameraPresets.record({shots, orbit, fileName})`),
+  so the tour saves as MP4/WebM with captions; there is no second camera system.
+- "▶ Time-lapse in 3D" on a "What changed" card plays the last 24 months of that field as extruded cells
+  through the TimeSlider (`CityTour.timelapse`); "● Record" saves it as video.

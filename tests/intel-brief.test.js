@@ -247,3 +247,21 @@ describe('Zone leaderboard', () => {
         await expect(U.zoneRanking(s, { city: 'pune', dataset: 'scores', field: 'nope' })).rejects.toThrow(/No field/);
     }, 60000);
 });
+
+describe('City tour', () => {
+    it('builds overview → zones → heat → flood → change → end, each with a place and a layer', async () => {
+        const s = await store();
+        const stops = await globalThis.CityTour.buildStops('pune', s);
+        const ids = stops.map(x => x.id);
+        expect(ids[0]).toBe('overview');
+        expect(ids).toEqual(expect.arrayContaining(['best', 'worst', 'heat', 'flood', 'end']));
+        for (const st of stops) {
+            expect(st.bounds && st.bounds.east > st.bounds.west).toBe(true);
+            expect(st.caption.length).toBeGreaterThan(10);
+            expect(['zones', 'cells']).toContain(st.layer.kind);
+        }
+        expect(stops.find(x => x.id === 'overview').caption).toMatch(/of 13 cities/);
+        const best = stops.find(x => x.id === 'best'), worst = stops.find(x => x.id === 'worst');
+        expect(best.layer.ranking.zones[0].mean).toBeGreaterThanOrEqual(worst.layer.ranking.zones.at(-1).mean);
+    }, 60000);
+});

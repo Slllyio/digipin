@@ -50,7 +50,7 @@ const UrbanInsights = (() => {
         },
     };
     // Runtime layers this module (or the analyses) painted: never analysed.
-    const OWN_LAYERS = new Set(['whatif', 'insights_hotspots', 'analysis_result', 'zones', 'lenses']);
+    const OWN_LAYERS = new Set(['whatif', 'insights_hotspots', 'analysis_result', 'zones', 'lenses', 'tour']);
     const FLOOD_LEVELS = { moderate: 0.9, severe: 0.75, extreme: 0.5 };
     const TREND_WINDOW = 12;
 
