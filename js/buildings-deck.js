@@ -86,6 +86,7 @@ const DeckBuildings = (() => {
         _gridDocs.clear();
         _failedGrids.clear();
         _grid = null;
+        _gridGen++;
         _reportHeights();
     }
 
@@ -117,9 +118,21 @@ const DeckBuildings = (() => {
     const MAX_GRIDS = 3;
     const _gridDocs = new Map();    // grid url -> parsed doc
 
-    function _rebuildGrid() {
-        _grid = null;
-        for (const doc of _gridDocs.values()) _grid = mergeHeightGrid(_grid, doc);
+    // Merges run one after another and in slices (mergeHeightGridSliced), so a
+    // Delhi-size grid (350k cells) no longer holds the main thread for most of
+    // a second while footprint tiles wait to be announced; a reset in between
+    // (generation bump) makes a merge in flight drop its result.
+    let _mergeChain = Promise.resolve();
+    let _gridGen = 0;
+    function _queueMerge(doc, rebuilt) {
+        const gen = _gridGen;
+        _mergeChain = _mergeChain.then(async () => {
+            let g;
+            if (rebuilt) { g = null; for (const d of _gridDocs.values()) g = await mergeHeightGridSliced(g, d); }
+            else g = await mergeHeightGridSliced(_grid, doc);
+            if (gen === _gridGen) _grid = g;
+        }).catch((e) => console.warn('DeckBuildings: height grid merge failed:', e));
+        return _mergeChain;
     }
 
     async function loadHeights(url) {
@@ -144,7 +157,7 @@ const DeckBuildings = (() => {
                 _gridLoads.delete(old);      // reloadable later (force-cache makes it cheap)
                 rebuilt = true;
             }
-            if (rebuilt) _rebuildGrid(); else _grid = mergeHeightGrid(_grid, doc);
+            await _queueMerge(doc, rebuilt);
             if (_enabled) refresh();
             return true;
         } catch (e) {
@@ -226,9 +239,32 @@ const DeckBuildings = (() => {
     function mergeHeightGrid(grid, doc) {
         if (!doc || !doc.cells || !Number.isInteger(doc.level)) return grid;
         const out = grid || { levels: [], cells: new Map() };
-        for (const [code, h] of Object.entries(doc.cells)) out.cells.set(code, h);
-        if (!out.levels.includes(doc.level)) out.levels = [...out.levels, doc.level].sort((x, y) => y - x);
+        const cells = doc.cells;
+        for (const code in cells) out.cells.set(code, cells[code]);
+        _addLevel(out, doc.level);
         return out;
+    }
+    /**
+     * mergeHeightGrid in slices of `slice` cells with the main thread released
+     * between them (a city grid runs to 350k cells, most of a second in one
+     * go). The level is announced only once every cell is in, so lookups never
+     * see a half-merged level. Resolves to the lookup.
+     */
+    const MERGE_SLICE = 25000;
+    async function mergeHeightGridSliced(grid, doc, slice = MERGE_SLICE) {
+        if (!doc || !doc.cells || !Number.isInteger(doc.level)) return grid;
+        const out = grid || { levels: [], cells: new Map() };
+        const cells = doc.cells, keys = Object.keys(cells);
+        for (let i = 0; i < keys.length; i += slice) {
+            if (i) await new Promise((r) => setTimeout(r, 0));
+            const end = Math.min(keys.length, i + slice);
+            for (let j = i; j < end; j++) out.cells.set(keys[j], cells[keys[j]]);
+        }
+        _addLevel(out, doc.level);
+        return out;
+    }
+    function _addLevel(out, level) {
+        if (!out.levels.includes(level)) out.levels = [...out.levels, level].sort((x, y) => y - x);
     }
     /** Baked height (m) of the DIGIPIN cell containing a point, finest level first, or null. Pure. */
     function cellHeight(grid, lat, lng) {
@@ -473,7 +509,7 @@ const DeckBuildings = (() => {
     return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights, retryHeights, resetHeights, heightIndex, heightsCacheStats,
         polygonStats, renderStats, resetRenderStats, noteDraw,
         setExaggeration, getExaggeration,
-        featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, cellHeight, gridsFor };
+        featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, mergeHeightGridSliced, cellHeight, gridsFor };
 })();
 
 if (typeof window !== 'undefined') window.DeckBuildings = DeckBuildings;

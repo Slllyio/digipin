@@ -148,5 +148,7 @@ describe('OvertureRelease.wrapProtocol', () => {
         expect(after.empty - before.empty).toBe(1);
         expect(after.pending).toBe(before.pending);
         expect(OR.wrapProtocol(null)).toBeNull();
+        const last = OR.protocolLog().slice(-1)[0];
+        expect(last).toMatchObject({ u: 'pmtiles://x/1/2/3', n: 3 });
     });
 });

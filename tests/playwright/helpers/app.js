@@ -52,6 +52,14 @@ async function prepare(page) {
       return fs.existsSync(file) ? r.fulfill({ path: file }) : r.abort();
     });
   }
+  // PW_CPU_THROTTLE=<n> slows the page's CPU n-fold through DevTools, to
+  // bring a fast machine down to a hosted runner when chasing a stall that
+  // only shows there.
+  const throttle = Number(process.env.PW_CPU_THROTTLE || 0);
+  if (throttle > 1) {
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send('Emulation.setCPUThrottlingRate', { rate: throttle });
+  }
   return errors;
 }
 

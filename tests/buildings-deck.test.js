@@ -112,6 +112,20 @@ describe('DeckBuildings height grid', () => {
         expect(DB.cellHeight(null, 22.7196, 75.8577)).toBeNull();
         expect(DB.mergeHeightGrid(null, { cells: {} })).toBeNull();   // malformed file ignored
     });
+
+    it('mergeHeightGridSliced yields between slices and announces the level only once every cell is in', async () => {
+        const cells = {}; for (let i = 0; i < 7; i++) cells['ABCDEFG' + i] = 10 + i;
+        const p = DB.mergeHeightGridSliced(null, { level: 8, cells }, 3);
+        await Promise.resolve();                                       // first slice ran synchronously
+        const g = await p;
+        expect(g.levels).toEqual([8]);
+        expect(g.cells.size).toBe(7);
+        expect(g.cells.get('ABCDEFG6')).toBe(16);
+        // same result as the one-go merge, and malformed input passes through
+        const sync = DB.mergeHeightGrid(null, { level: 8, cells });
+        expect([...g.cells.entries()]).toEqual([...sync.cells.entries()]);
+        expect(await DB.mergeHeightGridSliced(null, { cells })).toBeNull();
+    });
     it('ships an Indore grid that covers central Indore with plausible heights', async () => {
         const { readFileSync } = await import('fs');
         const doc = JSON.parse(readFileSync('data/heights/indore_pilot_heights_digipin.json', 'utf-8'));

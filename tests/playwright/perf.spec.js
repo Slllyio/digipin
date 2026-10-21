@@ -5,6 +5,23 @@
 const { test, expect } = require('@playwright/test');
 const { STUB, prepare, waitForApp, settle, toggleRow } = require('./helpers/app');
 
+/** Top self-time entries of a CDP CPU profile, by file and by function. */
+function summarizeProfile(profile, k = 12) {
+  const base = (u) => (u || '').split('/').pop() || '(native)';
+  const nodes = new Map(profile.nodes.map((n) => [n.id, n]));
+  const byFile = new Map(); const byFn = new Map(); let total = 0;
+  profile.samples.forEach((sid, i) => {
+    const n = nodes.get(sid); const d = profile.timeDeltas[i] || 0; total += d;
+    const cf = n.callFrame; const fn = cf.functionName || '(anon)';
+    if (fn === '(idle)') return;
+    byFile.set(base(cf.url) || fn, (byFile.get(base(cf.url) || fn) || 0) + d);
+    const key = `${fn} ${base(cf.url)}:${cf.lineNumber + 1}`;
+    byFn.set(key, (byFn.get(key) || 0) + d);
+  });
+  const fmt = (m) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, k).map(([n, us]) => `  ${String(Math.round(us / 1000)).padStart(6)} ms ${(100 * us / total).toFixed(1).padStart(5)}%  ${n}`).join('\n');
+  return `  sampled ${Math.round(total / 1000)} ms\n by file:\n${fmt(byFile)}\n by function:\n${fmt(byFn)}`;
+}
+
 const BUDGET = {
   bootBytes: 4 * 1024 * 1024,    // own-origin bytes before first interaction
   bootRequests: 200,             // own-origin requests at boot
@@ -73,11 +90,15 @@ test.describe('performance budgets', () => {
     page.on('requestfailed', (r) => { if (isTiles(r.url())) tiles.failed++; });
     await page.evaluate(() => {
       const m = typeof MapModule !== 'undefined' && MapModule.getMap ? MapModule.getMap() : null;
-      window.__fp = { tile: 0, any: 0, kinds: {}, errors: [], bySource: {} };
+      window.__fp = { tile: 0, any: 0, kinds: {}, errors: [], bySource: {}, arrived: {}, t0: Date.now(), p0: performance.now() };
       if (m && m.on) {
         m.on('sourcedata', (e) => {
           if (e && e.tile && e.sourceId) window.__fp.bySource[e.sourceId] = (window.__fp.bySource[e.sourceId] || 0) + 1;
           if (!e || e.sourceId !== 'overture-buildings-source') return;
+          if (e.tile) {
+            const c = (e.coord && e.coord.canonical) || (e.tile.tileID && e.tile.tileID.canonical);
+            if (c) window.__fp.arrived[`${c.z}/${c.x}/${c.y}`] = Date.now();
+          }
           window.__fp.any++;
           if (e.tile) window.__fp.tile++;
           const k = `${e.dataType || '?'}/${e.sourceDataType || '-'}`;
@@ -93,8 +114,13 @@ test.describe('performance budgets', () => {
     })}`);
     const draw = [];
     for (const id of ['delhi', 'mumbai', 'bengaluru', 'hyderabad', 'chennai', 'kolkata']) {
-      await page.evaluate(() => { if (typeof DeckBuildings !== 'undefined') DeckBuildings.resetRenderStats(); window.__fp = { tile: 0, any: 0, kinds: {}, errors: [], bySource: {} }; });
+      await page.evaluate(() => { if (typeof DeckBuildings !== 'undefined') DeckBuildings.resetRenderStats(); window.__fp = { tile: 0, any: 0, kinds: {}, errors: [], bySource: {}, arrived: {}, t0: Date.now(), p0: performance.now() }; });
       const t0 = { ...tiles, byFile: { ...tiles.byFile } };
+      // PW_PROFILE=1: sample the main thread through the city's fly-to and
+      // wait, and print the top self-time functions per city, to name what
+      // keeps the main thread busy (and worker replies waiting) on a slow box.
+      const profiler = process.env.PW_PROFILE && !STUB ? await page.context().newCDPSession(page) : null;
+      if (profiler) { await profiler.send('Profiler.enable'); await profiler.send('Profiler.setSamplingInterval', { interval: 2000 }); await profiler.send('Profiler.start'); }
       await page.selectOption('#city-select', id);
       await settle(page, 1500);
       // The harvest runs on moveend and again when footprint tiles land; on
@@ -117,8 +143,35 @@ test.describe('performance budgets', () => {
         try { allTiles = m && m.areTilesLoaded ? m.areTilesLoaded() : null; } catch { allTiles = null; }
         const layer = m && m.getLayer ? m.getLayer('overture-buildings-layer') : null;
         const vis = layer && m.getLayoutProperty ? m.getLayoutProperty('overture-buildings-layer', 'visibility') : null;
-        return { ...DeckBuildings.renderStats(), zoom: m && m.getZoom ? +m.getZoom().toFixed(2) : null, pitch: m && m.getPitch ? Math.round(m.getPitch()) : null, tilesLoaded: loaded, allTiles, events: window.__fp, rangeReads: typeof OvertureRelease !== 'undefined' && OvertureRelease.rangeStats ? OvertureRelease.rangeStats() : null, protocol: typeof OvertureRelease !== 'undefined' && OvertureRelease.protocolStats ? OvertureRelease.protocolStats() : null, layerVis: layer ? (vis || 'visible') : 'missing' };
+        // Handoff-to-map latency per footprint tile of this city: the time
+        // from the protocol handler resolving with data to the map's tile
+        // event for the same z/x/y; tiles handed over but never announced
+        // count as lost. Tells a starved worker from a dropped tile.
+        const lat = { n: 0, lost: 0, ms: [] };
+        try {
+          const log = typeof OvertureRelease !== 'undefined' && OvertureRelease.protocolLog ? OvertureRelease.protocolLog() : [];
+          for (const rec of log) {
+            if (rec.t < window.__fp.t0 || !/buildings\.pmtiles\/(\d+)\/(\d+)\/(\d+)/.test(rec.u || '')) continue;
+            const k = RegExp.$1 + '/' + RegExp.$2 + '/' + RegExp.$3;
+            lat.n++;
+            const at = window.__fp.arrived[k];
+            if (at) lat.ms.push(at - rec.t); else lat.lost++;
+          }
+          lat.ms.sort((a, b) => a - b);
+        } catch { /* diagnostics only */ }
+        // Main-thread freezes during this city's wait (helper's Long Tasks
+        // observer): a main thread that is busy most of the time delays every
+        // worker reply, whatever the worker's own speed.
+        const lt = (window.__longTasks || []).filter((x) => x.t >= window.__fp.p0);
+        const busy = { longTasks: lt.length, blockedMs: lt.reduce((a, x) => a + x.ms, 0), longestMs: lt.reduce((a, x) => Math.max(a, x.ms), 0), windowMs: Math.round(performance.now() - window.__fp.p0) };
+        const latency = { handed: lat.n, arrived: lat.ms.length, lost: lat.lost, minMs: lat.ms[0] ?? null, medianMs: lat.ms[Math.floor(lat.ms.length / 2)] ?? null, maxMs: lat.ms[lat.ms.length - 1] ?? null };
+        return { latency, busy, cpus: navigator.hardwareConcurrency, workers: typeof maplibregl !== 'undefined' ? maplibregl.workerCount : null, ...DeckBuildings.renderStats(), zoom: m && m.getZoom ? +m.getZoom().toFixed(2) : null, pitch: m && m.getPitch ? Math.round(m.getPitch()) : null, tilesLoaded: loaded, allTiles, events: window.__fp, rangeReads: typeof OvertureRelease !== 'undefined' && OvertureRelease.rangeStats ? OvertureRelease.rangeStats() : null, protocol: typeof OvertureRelease !== 'undefined' && OvertureRelease.protocolStats ? OvertureRelease.protocolStats() : null, layerVis: layer ? (vis || 'visible') : 'missing' };
       });
+      if (profiler) {
+        const { profile } = await profiler.send('Profiler.stop');
+        await profiler.detach();
+        console.log(`profile ${id}:\n${summarizeProfile(profile)}`);
+      }
       const files = Object.entries(tiles.byFile).map(([k, n]) => [k, n - (t0.byFile[k] || 0)]).filter(([, n]) => n > 0).map(([k, n]) => `${k}×${n}`).join(', ');
       if (r) draw.push({ id, waitedMs: Date.now() - tWait, reqStarted: tiles.started - t0.started, reqDone: tiles.done - t0.done, reqFailed: tiles.failed - t0.failed, files, ...r });
     }
@@ -132,7 +185,7 @@ test.describe('performance budgets', () => {
     // reported loaded, so nothing re-harvested when the tiles finally landed
     // (fixed: the poll now runs while tiles arrive). Zoom, pitch and the
     // source's loaded state stay on each line for the next such finding.
-    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s; tile requests ${d.reqStarted} started / ${d.reqDone} done / ${d.reqFailed} failed [${d.files}], source events ${d.events.any} (${d.events.tile} tile; ${JSON.stringify(d.events.kinds)}), all tiles loaded ${d.allTiles}, layer ${d.layerVis}, map errors ${JSON.stringify(d.events.errors.slice(0, 3))}; tile events by source ${JSON.stringify(d.events.bySource)}, range reads ${JSON.stringify(d.rangeReads)}, protocol ${JSON.stringify(d.protocol)}`);
+    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s; tile requests ${d.reqStarted} started / ${d.reqDone} done / ${d.reqFailed} failed [${d.files}], source events ${d.events.any} (${d.events.tile} tile; ${JSON.stringify(d.events.kinds)}), all tiles loaded ${d.allTiles}, layer ${d.layerVis}, map errors ${JSON.stringify(d.events.errors.slice(0, 3))}; tile events by source ${JSON.stringify(d.events.bySource)}, range reads ${JSON.stringify(d.rangeReads)}, protocol ${JSON.stringify(d.protocol)}, handoff latency ${JSON.stringify(d.latency)} (${d.cpus} cpus, ${d.workers} workers), main thread ${JSON.stringify(d.busy)}`);
     if (!STUB) {
       // Light theme draws through the MapLibre "twin" source, dark through the
       // deck.gl overlay; both report here. A city whose buildings did not land

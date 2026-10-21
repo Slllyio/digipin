@@ -155,6 +155,7 @@ const OvertureRelease = (() => {
     // tells a read that never came back from a tile that was read and then
     // lost between decompression and the map's worker.
     const _protoStats = { calls: 0, pending: 0, resolved: 0, rejected: 0, maxMs: 0, empty: 0 };
+    const _protoLog = [];
 
     /** Wrap a MapLibre protocol handler (`(request, controller) => Promise`) with call/settlement counts. */
     function wrapProtocol(fn) {
@@ -171,6 +172,7 @@ const OvertureRelease = (() => {
                     _protoStats.pending--; _protoStats.resolved++;
                     _protoStats.maxMs = Math.max(_protoStats.maxMs, Date.now() - t0);
                     if (!r || !r.data || !r.data.byteLength) _protoStats.empty++;
+                    else { _protoLog.push({ u: request && request.url, t: Date.now(), n: r.data.byteLength }); if (_protoLog.length > 600) _protoLog.shift(); }
                     return r;
                 },
                 (e) => {
@@ -183,8 +185,10 @@ const OvertureRelease = (() => {
 
     /** Counts of protocol calls, pending, resolved (and empty), rejected, longest. */
     function protocolStats() { return { ..._protoStats }; }
+    /** Tiles handed to the map with data, newest last: { u: url, t: ms, n: bytes }. */
+    function protocolLog() { return _protoLog.slice(); }
 
-    return { resolve, base, url, current, latestFromListing, FALLBACK_RELEASE, guardRangeReads, rangeStats, wrapProtocol, protocolStats, RANGE_TIMEOUT_MS };
+    return { resolve, base, url, current, latestFromListing, FALLBACK_RELEASE, guardRangeReads, rangeStats, wrapProtocol, protocolStats, protocolLog, RANGE_TIMEOUT_MS };
 })();
 
 if (typeof window !== 'undefined') window.OvertureRelease = OvertureRelease;
