@@ -29,6 +29,9 @@ const MapModule = (() => {
         if (typeof maplibregl !== 'undefined' && typeof pmtiles !== 'undefined') {
             const protocol = new pmtiles.Protocol();
             maplibregl.addProtocol('pmtiles', protocol.tile);
+            // Cap and retry stalled range reads, or one hung directory read
+            // silently empties every PMTiles source for the session.
+            if (typeof OvertureRelease !== 'undefined' && OvertureRelease.guardRangeReads) OvertureRelease.guardRangeReads(pmtiles);
         }
 
         const styleUrl = (typeof Theme !== 'undefined') ? Theme.mapStyleUrl()

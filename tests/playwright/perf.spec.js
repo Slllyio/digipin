@@ -73,9 +73,10 @@ test.describe('performance budgets', () => {
     page.on('requestfailed', (r) => { if (isTiles(r.url())) tiles.failed++; });
     await page.evaluate(() => {
       const m = typeof MapModule !== 'undefined' && MapModule.getMap ? MapModule.getMap() : null;
-      window.__fp = { tile: 0, any: 0, kinds: {}, errors: [] };
+      window.__fp = { tile: 0, any: 0, kinds: {}, errors: [], bySource: {} };
       if (m && m.on) {
         m.on('sourcedata', (e) => {
+          if (e && e.tile && e.sourceId) window.__fp.bySource[e.sourceId] = (window.__fp.bySource[e.sourceId] || 0) + 1;
           if (!e || e.sourceId !== 'overture-buildings-source') return;
           window.__fp.any++;
           if (e.tile) window.__fp.tile++;
@@ -92,7 +93,7 @@ test.describe('performance budgets', () => {
     })}`);
     const draw = [];
     for (const id of ['delhi', 'mumbai', 'bengaluru', 'hyderabad', 'chennai', 'kolkata']) {
-      await page.evaluate(() => { if (typeof DeckBuildings !== 'undefined') DeckBuildings.resetRenderStats(); window.__fp = { tile: 0, any: 0, kinds: {}, errors: [] }; });
+      await page.evaluate(() => { if (typeof DeckBuildings !== 'undefined') DeckBuildings.resetRenderStats(); window.__fp = { tile: 0, any: 0, kinds: {}, errors: [], bySource: {} }; });
       const t0 = { ...tiles, byFile: { ...tiles.byFile } };
       await page.selectOption('#city-select', id);
       await settle(page, 1500);
@@ -116,7 +117,7 @@ test.describe('performance budgets', () => {
         try { allTiles = m && m.areTilesLoaded ? m.areTilesLoaded() : null; } catch { allTiles = null; }
         const layer = m && m.getLayer ? m.getLayer('overture-buildings-layer') : null;
         const vis = layer && m.getLayoutProperty ? m.getLayoutProperty('overture-buildings-layer', 'visibility') : null;
-        return { ...DeckBuildings.renderStats(), zoom: m && m.getZoom ? +m.getZoom().toFixed(2) : null, pitch: m && m.getPitch ? Math.round(m.getPitch()) : null, tilesLoaded: loaded, allTiles, events: window.__fp, layerVis: layer ? (vis || 'visible') : 'missing' };
+        return { ...DeckBuildings.renderStats(), zoom: m && m.getZoom ? +m.getZoom().toFixed(2) : null, pitch: m && m.getPitch ? Math.round(m.getPitch()) : null, tilesLoaded: loaded, allTiles, events: window.__fp, rangeReads: typeof OvertureRelease !== 'undefined' && OvertureRelease.rangeStats ? OvertureRelease.rangeStats() : null, layerVis: layer ? (vis || 'visible') : 'missing' };
       });
       const files = Object.entries(tiles.byFile).map(([k, n]) => [k, n - (t0.byFile[k] || 0)]).filter(([, n]) => n > 0).map(([k, n]) => `${k}×${n}`).join(', ');
       if (r) draw.push({ id, waitedMs: Date.now() - tWait, reqStarted: tiles.started - t0.started, reqDone: tiles.done - t0.done, reqFailed: tiles.failed - t0.failed, files, ...r });
@@ -131,7 +132,7 @@ test.describe('performance budgets', () => {
     // reported loaded, so nothing re-harvested when the tiles finally landed
     // (fixed: the poll now runs while tiles arrive). Zoom, pitch and the
     // source's loaded state stay on each line for the next such finding.
-    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s; tile requests ${d.reqStarted} started / ${d.reqDone} done / ${d.reqFailed} failed [${d.files}], source events ${d.events.any} (${d.events.tile} tile; ${JSON.stringify(d.events.kinds)}), all tiles loaded ${d.allTiles}, layer ${d.layerVis}, map errors ${JSON.stringify(d.events.errors.slice(0, 3))}`);
+    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s; tile requests ${d.reqStarted} started / ${d.reqDone} done / ${d.reqFailed} failed [${d.files}], source events ${d.events.any} (${d.events.tile} tile; ${JSON.stringify(d.events.kinds)}), all tiles loaded ${d.allTiles}, layer ${d.layerVis}, map errors ${JSON.stringify(d.events.errors.slice(0, 3))}; tile events by source ${JSON.stringify(d.events.bySource)}, range reads ${JSON.stringify(d.rangeReads)}`);
     if (!STUB) {
       // Light theme draws through the MapLibre "twin" source, dark through the
       // deck.gl overlay; both report here. A city whose buildings did not land
