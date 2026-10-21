@@ -31,6 +31,9 @@ const DeckBuildings = (() => {
     let _enabled = false;
     let _focus = null;          // {lat,lng} of the focused DIGIPIN cell
     let _data = [];             // harvested deck polygon records
+    // Draw-cost record for the perf spec: how much geometry each refresh hands
+    // deck.gl and how long the harvest + layer build held the main thread.
+    let _refreshes = 0, _lastRefreshMs = 0, _maxRefreshMs = 0;
     let _moveBound = false;
     let _grid = null;           // { levels:[…], cells: Map<dashless DIGIPIN, metres> }, when loaded
     const _gridLoads = new Map();   // grid url -> in-flight/finished loadHeights() promise
@@ -357,12 +360,37 @@ const DeckBuildings = (() => {
     /** Re-harvest the rendered buildings and push fresh layers to the overlay. */
     function refresh() {
         if (!_enabled || !_map || !_overlay) return;
+        const t0 = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
         let feats = [];
         try { feats = _map.queryRenderedFeatures({ layers: [SRC_LAYER_ID] }) || []; }
         catch { /* layer not rendered yet */ }
         _data = featuresToPolygons(feats, _focus, HIGHLIGHT_RADIUS_M);
         _overlay.setProps({ layers: _layers() });
+        _lastRefreshMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - t0;
+        _maxRefreshMs = Math.max(_maxRefreshMs, _lastRefreshMs);
+        _refreshes++;
     }
+
+    /** Geometry handed to deck.gl for a polygon record list. Pure. */
+    function polygonStats(data) {
+        const out = { polygons: 0, vertices: 0, selected: 0, bySource: { overture: 0, baked: 0, estimate: 0 } };
+        for (const d of (data || [])) {
+            out.polygons++;
+            out.vertices += d.polygon ? d.polygon.length : 0;
+            if (d.sel) out.selected++;
+            if (d.hsrc in out.bySource) out.bySource[d.hsrc]++;
+        }
+        return out;
+    }
+
+    /** Current draw cost: geometry in the overlay plus refresh timings since the last reset. */
+    function renderStats() {
+        return Object.assign(polygonStats(_data), {
+            enabled: _enabled, refreshes: _refreshes,
+            lastRefreshMs: Math.round(_lastRefreshMs), maxRefreshMs: Math.round(_maxRefreshMs),
+        });
+    }
+    function resetRenderStats() { _refreshes = 0; _lastRefreshMs = 0; _maxRefreshMs = 0; }
 
     /** Attach the deck overlay to the map. Returns false if deck is unavailable. */
     function enable(map, getFocus) {
@@ -426,6 +454,7 @@ const DeckBuildings = (() => {
     function heightsCacheStats() { return { grids: _gridDocs.size, max: MAX_GRIDS, cells: _grid ? _grid.cells.size : 0, failed: _failedGrids.size, failedReasons: Object.fromEntries(_failedGrids) }; }
 
     return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights, retryHeights, resetHeights, heightIndex, heightsCacheStats,
+        polygonStats, renderStats, resetRenderStats,
         setExaggeration, getExaggeration,
         featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, cellHeight, gridsFor };
 })();

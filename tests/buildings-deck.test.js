@@ -267,3 +267,25 @@ describe('DeckBuildings baked heights on a failing link', () => {
         expect(calls.filter(u => u === 'data/heights/r.json').length).toBe(2);
     });
 });
+
+describe('DeckBuildings.polygonStats / renderStats', () => {
+    it('counts polygons, vertices, selection and height sources for the draw-cost log', () => {
+        const sq = [[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]];
+        const data = [
+            { polygon: sq, height: 10, sel: true, hsrc: 'overture' },
+            { polygon: sq.concat([[0, 0]]), height: 12, sel: false, hsrc: 'baked' },
+            { polygon: sq, height: 9, sel: false, hsrc: 'estimate' },
+            { polygon: null, height: 9, sel: false, hsrc: 'weird' },
+        ];
+        expect(DB.polygonStats(data)).toEqual({ polygons: 4, vertices: 16, selected: 1, bySource: { overture: 1, baked: 1, estimate: 1 } });
+        expect(DB.polygonStats([])).toEqual({ polygons: 0, vertices: 0, selected: 0, bySource: { overture: 0, baked: 0, estimate: 0 } });
+    });
+    it('reports zero cost while the overlay is off (no deck.gl under jsdom)', () => {
+        DB.resetRenderStats();
+        const r = DB.renderStats();
+        expect(r.enabled).toBe(false);
+        expect(r.polygons).toBe(0);
+        expect(r.refreshes).toBe(0);
+        expect(r.maxRefreshMs).toBe(0);
+    });
+});

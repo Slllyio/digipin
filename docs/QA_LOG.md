@@ -4,6 +4,12 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — 3D draw cost on record
+
+- **Why:** the design thread is adding to the 3D city (trees, edge lines, soft walls, legends, fly-through) and CI's software renderer cannot tell a 3 s frame from a 15 s one in any useful way. What can be measured on any machine is how much geometry each refresh hands deck.gl, and how long the CPU-only harvest + layer build holds the main thread.
+- **Change:** `DeckBuildings.renderStats()` reports polygons, outer-ring vertices, selected count, height sources (overture / baked / estimate), refresh count and the last / longest refresh time; `resetRenderStats()` starts a window. The perf spec's six-city 3D sweep logs one line per city (`3D draw delhi: … polygons, … vertices, longest … ms`) and gates each view at 60,000 polygons, 1,000,000 vertices and a 5 s longest refresh (real browser only; the stub has no deck.gl). The budgets are deliberately loose until a few CI runs give the baseline; the log lines are the point.
+- **Guards:** unit tests for `polygonStats` and the zero-cost state; the perf spec under the stub still passes (zero geometry, no gate).
+
 ## 2026-10-21 — boot-time CDN libraries: georaster loads on first use
 
 - **Gap:** app.html loaded four CDN libraries with the page. MapLibre, PMTiles and deck.gl are used at boot (or by the 3D view a share link can open into), but georaster, the COG/GeoTIFF parser, is only read by the realtime growth and heat overlays and the hydrology tool, all user actions. Every `defer` script delays the first usable frame on a slow link, and this one is a few hundred KB (the sandbox cannot reach unpkg, so the exact wire size and the first-load gain are not measured here; the CI runs download it).
