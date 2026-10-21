@@ -43,6 +43,7 @@ const DishaIntel = (() => {
             all: /\b(equity|inequal\w*|unequal|unfair|gini|fairness|left behind|urban lens(es)?|lenses)\b/i,
         },
         tour: /\b(tour|fly (me )?(through|over|around)|show me around|walk me through (the |this )?city|city overview|overview of (the |this )?city)\b/i,
+        where: /\bwhere\b.{0,40}\b(hotter|warmer|cooler|colder|greener|less green|browner|drier|wetter|rainier|more polluted|cleaner|dirtier|chang(ed|e) (the )?most|moved most)\b/i,
         changes: /\b(what('?s| has| have)? changed|what changed|latest (month|data|changes?)|this month|recent(ly)? chang\w*|what'?s new)\b/i,
     };
 
@@ -72,6 +73,13 @@ const DishaIntel = (() => {
         if (!q.trim()) return null;
         const named = citiesIn(q, cities);
         if (RE.dashboard.test(q)) return { type: 'dashboard' };
+        if (RE.where.test(q)) {
+            const w = RE.where.exec(q)[1].toLowerCase();
+            const topic = /hott|warm|cool|cold/.test(w) ? 'heat' : /green|brown/.test(w) ? 'green' : /dri|wet|rain/.test(w) ? 'rain' : /pollut|clean|dirt/.test(w) ? 'air' : null;
+            const out = { type: 'where', topic, dir: /cool|cold|less green|brown|dri|clean/.test(w) ? 'down' : /hott|warm|green|wet|rain|pollut|dirt/.test(w) ? 'up' : null };
+            if (named.length) out.city = named[0];
+            return out;
+        }
         if (RE.tour.test(q)) {
             const out = { type: 'tour', play: /\b(tour|fly|show me around|walk me)\b/i.test(q) };
             if (named.length) out.city = named[0];
@@ -180,6 +188,15 @@ const DishaIntel = (() => {
                 }
                 if (!city) { el.textContent = 'Pan the map to a city (or name one) and ask again.'; return ''; }
                 r = await UrbanInsights.changes(CellStore, { city, limit: 6 });
+            } else if (intent.type === 'where') {
+                let city = intent.city;
+                if (!city) {
+                    const p = center || _viewCenter();
+                    city = p ? UrbanInsights.cityAt(CellStore, p.lat, p.lng) : null;
+                }
+                if (!city) { el.textContent = 'Pan the map to a city (or name one) and ask again.'; return ''; }
+                r = await whereChanged(CellStore, { city, topic: intent.topic, dir: intent.dir });
+                if (!r) { el.textContent = 'No series here has a year-earlier step to compare with.'; return ''; }
             } else if (intent.type === 'tour') {
                 let city = intent.city;
                 if (!city) {
@@ -233,12 +250,38 @@ const DishaIntel = (() => {
         }
         if (!r) return '';
         _render(el, r);
+        if (r.kind === 'where') {
+            if (typeof InsightsPanel !== 'undefined' && InsightsPanel.showChange) InsightsPanel.showChange({ city: r.city, dataset: r.item.dataset, field: r.item.key, step: r.item.step });
+            const u = r.item.unit;
+            return `${r.item.label} in ${r.cityLabel}, ${r.layer.vs} → ${r.layer.step}: city mean ${UrbanInsights.fmt(r.item.prev, u)} → ${UrbanInsights.fmt(r.item.latest, u)}. `
+                + `${r.layer.rose} cells rose, ${r.layer.fell} fell. Largest ${r.dir === 'up' ? 'rises' : 'falls'}: ${r.top.map(t => `${t.digipin} (${t.change > 0 ? '+' : ''}${UrbanInsights.fmt(t.change, u)})`).join(', ')}. The change is now mapped in 3D (red rose, blue fell).`;
+        }
         if (r.kind === 'tour') {
             if (r.play) CityTour.play(r.city, CellStore);
             return `Briefing on ${r.cityLabel}${r.play ? ' (the 3D tour is now flying through these stops)' : ''}:\n${r.stops.map((x, i) => `${i + 1}. ${x.label}: ${x.caption}`).join('\n')}`;
         }
         if (r.kind === 'siting') return `${r.st.title} in ${r.cityLabel}: ${r.st.headline}\n${r.st.sites.map(x => `${x.rank}. ${x.code} (score ${x.score}): ${x.why}`).join('\n')}`;
         return r.kind === 'lenses' ? UrbanLenses.toText(r, r.only) : UrbanInsights.toText(r);
+    }
+
+    const TOPIC = { heat: /lst|surface temp|heat/i, green: /ndvi|green|vegetation|tree/i, rain: /rain|precip/i, air: /no2|no₂|pm|aerosol|pollut|air/i };
+
+    /**
+     * Where a series moved most across a city: picks the latest change on the
+     * topic (or the most unusual one), builds its per-cell change layer and
+     * names the cells that moved most in the asked direction.
+     */
+    async function whereChanged(store, { city, topic, dir }) {
+        const ch = await UrbanInsights.changes(store, { city, limit: 40 });
+        const pool = topic ? ch.items.filter(x => TOPIC[topic].test(`${x.dataset} ${x.key} ${x.label}`)) : ch.items;
+        const x = pool[0] || (topic ? null : ch.items[0]);
+        if (!x) return null;
+        const L = await UrbanInsights.changeLayer(store, { city, dataset: x.dataset, field: x.key, step: x.step });
+        if (!L) return null;
+        const d = dir || (x.delta >= 0 ? 'up' : 'down');
+        const order = L.table.cells.map((c, i) => i).sort((a, b) => (d === 'up' ? L.table.columns.change[b] - L.table.columns.change[a] : L.table.columns.change[a] - L.table.columns.change[b]));
+        const top = order.slice(0, 5).map(i => ({ code: L.table.cells[i], digipin: DigiPin.format(L.table.cells[i]), change: L.table.columns.change[i] }));
+        return { kind: 'where', city, cityLabel: UrbanInsights.cityLabel(city), item: x, layer: L, dir: d, top };
     }
 
     function _render(el, r) {
@@ -255,6 +298,16 @@ const DishaIntel = (() => {
             el.appendChild(head);
             r.items.forEach(x => el.appendChild(_el('div', 'disha-scan-row', `${x.title}. ${x.detail}`)));
             el.appendChild(_openButton('Open the city dashboard', 'city'));
+        } else if (r.kind === 'where') {
+            const u = r.item.unit;
+            head.textContent = `Where ${r.item.label} ${r.dir === 'up' ? 'rose' : 'fell'} most · ${r.cityLabel}, ${r.layer.vs} → ${r.layer.step}`;
+            el.appendChild(head);
+            el.appendChild(_el('div', 'ui-headline', `City mean ${UrbanInsights.fmt(r.item.prev, u)} → ${UrbanInsights.fmt(r.item.latest, u)}; ${r.layer.rose} cells rose and ${r.layer.fell} fell.`));
+            r.top.forEach(t => el.appendChild(_el('div', 'disha-scan-row', `${t.digipin} · ${t.change > 0 ? '+' : ''}${UrbanInsights.fmt(t.change, u)}`)));
+            const b = _el('button', 'ui-chip', 'Outline these cells');
+            b.type = 'button';
+            b.addEventListener('click', () => { if (typeof InsightsPanel !== 'undefined') InsightsPanel.highlight(r.top.map(t => ({ code: t.code, kind: !r.item.higherIs ? 'anomaly' : (r.dir === 'up') === (r.item.higherIs === 'worse') ? 'concern' : 'strength' })), { fit: true }); });
+            el.appendChild(b);
         } else if (r.kind === 'tour') {
             head.textContent = `Briefing · ${r.cityLabel}`;
             el.appendChild(head);
@@ -358,7 +411,7 @@ const DishaIntel = (() => {
         return used;
     }
 
-    return { match, citiesIn, citeTags, answer, evidence, decorate, cities: _cities };
+    return { match, citiesIn, citeTags, answer, evidence, decorate, whereChanged, cities: _cities };
 })();
 
 if (typeof window !== 'undefined') {

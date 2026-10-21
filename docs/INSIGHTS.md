@@ -139,3 +139,6 @@ ROADMAP_INSIGHTS.md). A big city (Delhi, 37k cells) takes about 3 s in the brows
   runtime dataset `change`: each cell's value at the latest step minus the same step a year (or window) earlier,
   diverging colour around 0 (domain ± the 95th percentile of |change|), extruded by the size of the change
   (field `height: 'abs'` in CellLayers).
+- DISHA "where did Pune get hotter / greener / drier / more polluted", "where did things change most"
+  (`DishaIntel.whereChanged`): picks the topic's latest change, maps it with "Δ Change in 3D" and names the five
+  cells that moved most in the asked direction.

@@ -151,6 +151,20 @@ describe('Drawn areas and what changed', () => {
         expect(D.match("what's new here", cities)).toEqual({ type: 'changes' });
     });
 
+    it('DISHA answers "where did it get hotter" with the per-cell change', async () => {
+        const D = globalThis.DishaIntel;
+        const cities = [{ name: 'pune', label: 'Pune' }];
+        expect(D.match('Where did Pune get hotter?', cities)).toEqual({ type: 'where', topic: 'heat', dir: 'up', city: 'pune' });
+        expect(D.match('where has it become less green', cities)).toEqual({ type: 'where', topic: 'green', dir: 'down' });
+        expect(D.match('where did things change most', cities)).toEqual({ type: 'where', topic: null, dir: null });
+        const s = await store();
+        const r = await D.whereChanged(s, { city: 'pune', topic: 'heat', dir: 'up' });
+        expect(r.item.label).toMatch(/LST|temperature/i);
+        expect(r.top).toHaveLength(5);
+        expect(r.top[0].change).toBeGreaterThanOrEqual(r.top[4].change);
+        expect(Math.max(...r.layer.table.columns.change)).toBe(r.top[0].change);
+    }, 60000);
+
     it('DISHA routes tour and briefing requests', () => {
         const D = globalThis.DishaIntel;
         const cities = [{ name: 'pune', label: 'Pune' }];
