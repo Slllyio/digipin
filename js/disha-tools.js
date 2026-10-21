@@ -13,6 +13,9 @@
  * uses (js/disha-agent.js); the four map actions are also offered in normal
  * single-shot chat. `kind` is 'read' (no side effects the user sees) or
  * 'state' (moves the map / paints a layer) — the agent caps state tools per run.
+ * `confirm` marks the slow or heavy ones (a few seconds of compute, a repainted
+ * 3D city): the agent asks the user before running them (GeoAgent's pattern),
+ * see needsConfirm / describeCall.
  */
 const DISHATools = (() => {
     // Same alphabet the DIGIPIN encoder and disha-panel's code linkifier use.
@@ -48,7 +51,7 @@ const DISHATools = (() => {
             example: '[ACTION] query id:best_residential',
         },
         {
-            name: 'colorBuildings', type: 'colorbuildings', kind: 'state', agentOnly: false,
+            name: 'colorBuildings', type: 'colorbuildings', kind: 'state', agentOnly: false, confirm: true,
             args: { color: { type: 'string' }, height: { type: 'string' } },
             desc: 'Colour (and optionally extrude) the 3D buildings by a dataset field, as "<dataset>:<field>" '
                 + '(e.g. scores:flood_risk, scores:walkability, traffic:congestion_risk, mobility:mobility_risk, '
@@ -103,7 +106,7 @@ const DISHATools = (() => {
             example: '[ACTION] compareCities a:indore b:pune',
         },
         {
-            name: 'runAgent', type: 'runagent', kind: 'state', agentOnly: true,
+            name: 'runAgent', type: 'runagent', kind: 'state', agentOnly: true, confirm: true,
             args: {
                 agent: { type: 'enum', values: ['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes', 'air', 'green', 'solar', 'risk', 'programme', 'compare', 'health'], required: true },
                 use: { type: 'enum', values: ['housing', 'clinic', 'school', 'retail', 'park'] },
@@ -118,7 +121,7 @@ const DISHATools = (() => {
             example: '[ACTION] runAgent agent:site use:clinic',
         },
         {
-            name: 'runIsochrone', type: 'runisochrone', kind: 'state', agentOnly: true,
+            name: 'runIsochrone', type: 'runisochrone', kind: 'state', agentOnly: true, confirm: true,
             args: { code: { type: 'digipin' }, lat: { type: 'number' }, lng: { type: 'number' } },
             desc: 'Show 5/10/15-minute walking zones around a cell or point.',
             example: '[ACTION] runIsochrone code:39J-49L-L8T4',
@@ -135,6 +138,29 @@ const DISHATools = (() => {
     function getTool(nameOrType) {
         const k = String(nameOrType || '').toLowerCase();
         return TOOLS.find(t => t.type === k || t.name.toLowerCase() === k) || null;
+    }
+
+    /** True when the agent must ask the user before running this tool. */
+    function needsConfirm(nameOrType) {
+        const t = getTool(nameOrType);
+        return !!(t && t.confirm);
+    }
+
+    /** One plain sentence for the confirmation prompt: what the step will do. Pure. */
+    function describeCall(nameOrType, params = {}) {
+        const t = getTool(nameOrType);
+        if (!t) return `Run ${nameOrType}`;
+        const p = params || {};
+        const where = p.code ? ` around ${p.code}` : '';
+        switch (t.type) {
+        case 'runagent': {
+            const extra = p.use || p.preset || (p.vs ? `vs ${p.vs}` : '');
+            return `Run the ${p.agent || 'analysis'}${extra ? ` (${extra})` : ''} agent and paint its result layer`;
+        }
+        case 'runisochrone': return `Compute 5/10/15-minute walking zones${where}`;
+        case 'colorbuildings': return `Recolour the 3D buildings by ${p.color || 'a dataset'}${p.height ? `, heights from ${p.height}` : ''}`;
+        default: return t.desc.replace(/\.$/, '');
+        }
     }
 
     /** True for a DIGIPIN-shaped token (dashes ignored, alphabet-checked). */
@@ -212,7 +238,7 @@ const DISHATools = (() => {
         });
     }
 
-    return { TOOLS, getTool, validateArgs, renderSystemPrompt, toOpenAI };
+    return { TOOLS, getTool, needsConfirm, describeCall, validateArgs, renderSystemPrompt, toOpenAI };
 })();
 
 if (typeof window !== 'undefined') window.DISHATools = DISHATools;

@@ -93,6 +93,7 @@ const DISHAAgent = (() => {
             iter: 0,
             calls: 0,
             counters: { mutations: 0 },
+            approved: new Set(),  // tool types the user allowed for the rest of this run
         };
     }
 
@@ -204,13 +205,37 @@ const DISHAAgent = (() => {
         return text;
     }
 
+    /**
+     * Ask before a `confirm` tool runs, when the UI gave a confirm hook. The hook
+     * resolves true (once), 'always' (this tool for the rest of the run) or false
+     * (skip), or rejects with an AbortError to stop the run. No hook keeps the
+     * old behaviour: run without asking.
+     */
+    async function _approve(state, a, confirm) {
+        if (!confirm || typeof DISHATools === 'undefined' || !DISHATools.needsConfirm(a.type)) return true;
+        if (state.approved.has(a.type)) return true;
+        let ans = false;
+        try {
+            ans = await confirm({ type: a.type, name: a.name || a.type, params: a.params || {}, text: DISHATools.describeCall(a.type, a.params) });
+        } catch (e) {
+            if (e && e.name === 'AbortError') throw e;   // Stop while the prompt was up
+            ans = false;
+        }
+        if (ans === 'always') state.approved.add(a.type);
+        return !!ans;
+    }
+
     /** Execute a turn's actions within the run budget; malformed native args fail without running. */
-    async function _execute(state, actionable) {
+    async function _execute(state, actionable, confirm) {
         if (!actionable.length || state.calls >= AGENT_BUDGET) return [];
         const cap = Math.min(ACTIONS_PER_STEP, AGENT_BUDGET - state.calls);
         const results = [];
         for (const a of actionable.slice(0, cap)) {
             if (a.badArgs) { results.push({ type: a.type, ok: false, error: 'arguments were not a valid JSON object' }); continue; }
+            if (!(await _approve(state, a, confirm))) {
+                results.push({ type: a.type, ok: false, skipped: true, error: 'the user skipped this step; answer without it or suggest it' });
+                continue;
+            }
             const [r] = await DISHAActions.executeAgentActions([a], {
                 max: 1, mapMutationCap: MAP_MUTATION_CAP, counters: state.counters,
             });
@@ -224,7 +249,8 @@ const DISHAAgent = (() => {
      * Run the agent loop.
      * @param {string} question
      * @param {{cell?,data?,context?,bounds?}} ground  selected-cell grounding
-     * @param {{onAssistant?,onChips?,native?}} hooks  UI callbacks (per iteration);
+     * @param {{onAssistant?,onChips?,confirm?,native?}} hooks  UI callbacks (per iteration);
+     *        `confirm(step)` is asked before slow/heavy tools (see _approve);
      *        `native` forces function-calling on/off (default: auto-detect)
      * @returns {Promise<string>} the final answer text
      */
@@ -262,7 +288,7 @@ const DISHAAgent = (() => {
             // Run this turn's tool directives FIRST — even on a final turn — so a
             // closing "generateSiteBrief + selectCell + [DONE]" still executes and
             // renders chips instead of being silently dropped.
-            const results = await _execute(state, actionable);
+            const results = await _execute(state, actionable, hooks.confirm);
             if (results.length) onChips(results);
 
             // How this turn and its results go back to the model.

@@ -9,6 +9,7 @@ const DISHAPanel = (() => {
     let _currentData = null;
     let _currentContext = '';
     let _isStreaming = false;
+    let _agentStop = null;        // AbortController for the running agent (Stop / close end it)
     let _isCityScanning = false;
     let _settingsOpen = false;
 
@@ -403,6 +404,7 @@ const DISHAPanel = (() => {
         panelEl.classList.remove('open');
         if (typeof FloatingDialogs !== 'undefined' && FloatingDialogs.restoreFocus) FloatingDialogs.restoreFocus(panelEl);
         DISHA.cancel();
+        if (_agentStop) _agentStop.abort();
         _isStreaming = false;
         _isCityScanning = false;
     }
@@ -922,10 +924,58 @@ const DISHAPanel = (() => {
         results.forEach(r => {
             const chip = document.createElement('span');
             chip.className = 'disha-action-chip ' + (r.ok ? 'ok' : 'fail');
-            chip.textContent = (r.ok ? '✓ ' : '✗ ') + (r.ok ? r.label : `${r.type}: ${r.error}`);
+            chip.textContent = r.skipped ? `Skipped ${r.type}` : (r.ok ? '✓ ' : '✗ ') + (r.ok ? r.label : `${r.type}: ${r.error}`);
             wrap.appendChild(chip);
         });
         parent.appendChild(wrap);
+    }
+
+    /**
+     * Ask the user before a slow/heavy agent step (DISHATools `confirm` tools).
+     * Resolves true (once), 'always' (this step type for the rest of the run) or
+     * false (skip); rejects with an AbortError when Stop is pressed meanwhile.
+     */
+    function _askConfirm(step, signal) {
+        return new Promise((resolve, reject) => {
+            const el = addMessage('disha', '');
+            const content = el.querySelector('.disha-msg-content');
+            while (content.firstChild) content.removeChild(content.firstChild);
+            content.classList.add('disha-confirm');
+            const q = document.createElement('div');
+            q.className = 'disha-confirm-text';
+            q.textContent = `Next step: ${step.text}. Go ahead?`;
+            const row = document.createElement('div');
+            row.className = 'disha-confirm-actions';
+            const done = (label, value, err) => {
+                row.remove();
+                const chip = document.createElement('span');
+                chip.className = 'disha-action-chip ' + (value ? 'ok' : 'fail');
+                chip.textContent = label;
+                content.appendChild(chip);
+                if (signal) signal.removeEventListener('abort', onAbort);
+                if (err) reject(err); else resolve(value);
+            };
+            const onAbort = () => {
+                const e = new Error('stopped'); e.name = 'AbortError';
+                done('Stopped', false, e);
+            };
+            [['Allow', true, 'Allowed'], ['Allow for this chat', 'always', 'Allowed for this chat'], ['Skip', false, 'Skipped']]
+                .forEach(([text, value, label]) => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'disha-confirm-btn' + (value === true ? ' primary' : '');
+                    b.textContent = text;
+                    b.addEventListener('click', () => done(label, value));
+                    row.appendChild(b);
+                });
+            content.append(q, row);
+            if (signal) {
+                if (signal.aborted) { onAbort(); return; }
+                signal.addEventListener('abort', onAbort);
+            }
+            scrollToBottom();
+            row.querySelector('button').focus();
+        });
     }
 
     // ===== STREAM RESPONSE =====
@@ -1023,7 +1073,13 @@ const DISHAPanel = (() => {
             bounds: _cityScanBounds(),
         };
 
+        // Stop (or closing the panel) while a confirmation is up ends the run.
+        const stopCtl = new AbortController();
+        _agentStop = stopCtl;
+        const onStop = () => stopCtl.abort();
+        stopBtn.addEventListener('click', onStop);
         const hooks = {
+            confirm: (step) => { clearThinking(); return _askConfirm(step, stopCtl.signal); },
             onAssistant: (text, meta) => {
                 clearThinking();
                 const el = addMessage('disha', '');
@@ -1062,6 +1118,8 @@ const DISHAPanel = (() => {
                 content.classList.add('disha-error');
             }
         } finally {
+            stopBtn.removeEventListener('click', onStop);
+            _agentStop = null;
             if (typeof DISHAActions !== 'undefined' && DISHAActions._resetAgentState) DISHAActions._resetAgentState();
             _isStreaming = false;
             resetInputState();

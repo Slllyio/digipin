@@ -4564,3 +4564,18 @@ body.presenting #sidebar { display: none !important; }
 .sentinel-field select { font: inherit; max-width: 100%; }
 .sentinel-credit { color: var(--text-secondary); font-size: 11px; }
 .sentinel-close { justify-self: end; font: inherit; cursor: pointer; }
+
+/* DISHA: ask before slow/heavy agent steps (DISHATools `confirm`). */
+.disha-confirm-text { margin-bottom: 8px; }
+.disha-confirm-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.disha-confirm-btn {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card, transparent);
+    color: inherit;
+    cursor: pointer;
+}
+.disha-confirm-btn.primary { border-color: var(--accent-green); color: var(--accent-green-text); }
+.disha-confirm-btn:focus-visible { outline: 2px solid var(--accent-green); outline-offset: 1px; }
