@@ -18,7 +18,7 @@ const BUDGET = {
   // (no GL), so its time is gated too, loosely.
   polygons: 60_000,              // building polygons in one 3D view
   vertices: 1_000_000,           // their outer-ring vertices
-  refreshMs: 5_000,              // longest single harvest + layer build
+  refreshMs: 5_000,              // longest single harvest + layer build (real GPU only; see the gate)
 };
 
 function track(page) {
@@ -124,10 +124,23 @@ test.describe('performance budgets', () => {
       // the 3D city draws nothing, which is a failure.
       const live = draw.filter((d) => d.peakPolygons > 0);
       expect(live.length, `cities that drew 3D buildings (${draw.map((d) => `${d.id}:${d.peakPolygons}`).join(' ')})`).toBeGreaterThan(0);
+      // The redraw time is wall-clock on a runner whose frames take seconds
+      // under SwiftShader (Delhi: 0.2 s on one run, 5.1 s on the next, same
+      // code), so like the soak's freeze budget it is only enforced with a
+      // real GPU; the geometry counts are machine-independent and always gate.
+      const renderer = await page.evaluate(() => {
+        try {
+          const gl = document.createElement('canvas').getContext('webgl');
+          const ext = gl && gl.getExtension('WEBGL_debug_renderer_info');
+          return ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : 'unknown';
+        } catch { return 'unknown'; }
+      });
+      const softwareGl = /swiftshader|llvmpipe|software|mesa offscreen/i.test(renderer);
+      if (softwareGl) console.log(`3D draw: renderer "${renderer}", redraw-time budget not enforced (software GL)`);
       for (const d of live) {
         expect(d.peakPolygons, `${d.id}: polygons in one 3D view`).toBeLessThan(BUDGET.polygons);
         expect(d.peakVertices, `${d.id}: vertices in one 3D view`).toBeLessThan(BUDGET.vertices);
-        expect(d.maxRefreshMs, `${d.id}: longest harvest + layer build ms`).toBeLessThan(BUDGET.refreshMs);
+        if (!softwareGl) expect(d.maxRefreshMs, `${d.id}: longest harvest + layer build ms`).toBeLessThan(BUDGET.refreshMs);
       }
     }
     const heights = own.filter((r) => /\/data\/heights\//.test(r.url));
