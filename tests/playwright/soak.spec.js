@@ -22,6 +22,8 @@ async function heapMb(page) {
 }
 
 test.describe('soak', () => {
+  // A retry would double a 5-10 min job; a real regression shows up on the next push anyway.
+  test.describe.configure({ retries: 0 });
   let errors = [];
   const consoleErrors = [];
   test.beforeEach(async ({ page }) => {
@@ -34,7 +36,7 @@ test.describe('soak', () => {
   });
 
   test('two rounds over the big cities with 3D on and a cell selected stay error-free and do not leak', async ({ page }) => {
-    test.setTimeout(480_000);
+    test.setTimeout(600_000);   // ~20 s per city in the real browser × 12, with headroom
     await page.goto('/app.html');
     await waitForApp(page);
     const available = await page.$$eval('#city-select option', (os) => os.map((o) => o.value));
@@ -50,7 +52,10 @@ test.describe('soak', () => {
     for (let round = 0; round < ROUNDS; round++) {
       for (const id of cities) {
         await page.selectOption('#city-select', id);
-        await settle(page, STUB ? 150 : 700);
+        // Not settle(): with 3D buildings on the real map never reports
+        // idle, so each settle() burnt its whole 6 s fallback (12 of them
+        // put the first CI run past the test timeout).
+        await page.waitForTimeout(STUB ? 150 : 1200);
         // Select a cell at the city centre to exercise the detail panel each
         // time. Fire-and-forget: the upstream feature fetch may hang in a
         // sandbox without network, and the point is the churn, not the data.
@@ -67,7 +72,7 @@ test.describe('soak', () => {
           await page.waitForFunction(() => !!document.querySelector('[data-cell-profile]'), null, { timeout: 20_000 });
           profiles++;
         } catch { /* counted below */ }
-        await settle(page, STUB ? 400 : 600);
+        await page.waitForTimeout(STUB ? 400 : 800);
       }
       // Force a full GC through CDP so the heap number is retained memory, not garbage.
       try { const cdp = await page.context().newCDPSession(page); await cdp.send('HeapProfiler.collectGarbage'); await cdp.detach(); } catch { /* not Chromium */ }
