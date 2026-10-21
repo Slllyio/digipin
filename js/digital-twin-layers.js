@@ -808,7 +808,7 @@ const DigitalTwinLayers = (() => {
             const light = typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'light';
             if (light && def.type === 'fill-extrusion') {
                 try {
-                    _map.setLight({ anchor: 'map', position: [1.4, 210, 42], color: '#ffffff', intensity: 0.3 });
+                    _map.setLight({ anchor: 'map', position: [1.4, 210, 42], color: '#ffffff', intensity: 0.2 });
                 } catch { /* older MapLibre without setLight — vertical gradient still applies */ }
             }
         } else {

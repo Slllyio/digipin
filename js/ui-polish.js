@@ -43,6 +43,7 @@ const UIPolish = (() => {
         trend: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
         sparkle: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16z"/>',
         target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+        send: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
         traffic: '<rect x="8" y="2" width="8" height="20" rx="3"/><circle cx="12" cy="7" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="17" r="1.5"/>',
         shield: '<path d="M12 3 5 6v6c0 4.4 3 7.9 7 9 4-1.1 7-4.6 7-9V6l-7-3z"/>',
         siren: '<path d="M7 18v-6a5 5 0 0 1 10 0v6"/><path d="M5 21h14v-3H5zM12 3v2M4.2 6.2l1.4 1.4M19.8 6.2l-1.4 1.4"/>',
@@ -226,7 +227,13 @@ const UIPolish = (() => {
                     'case',
                     ['boolean', ['feature-state', 'selected'], false], 1.0,
                     ['boolean', ['feature-state', 'hover'], false], 0.8,
-                    0.35,
+                    0.16,
+                ]);
+                map.setPaintProperty('digipin-grid-line', 'line-width', [
+                    'case',
+                    ['boolean', ['feature-state', 'selected'], false], 2.5,
+                    ['boolean', ['feature-state', 'hover'], false], 1.5,
+                    0.6,
                 ]);
             }
         } catch { /* style not ready */ }
@@ -290,6 +297,149 @@ const UIPolish = (() => {
         setTimeout(() => s.remove(), prefersReducedMotion() ? 0 : 600);
     }
 
+    // ── Aino layer rows ─────────────────────────────────────────────────────
+    // Aino lists layers as: colour dot · friendly name over a grey source line ·
+    // eye toggle. Rows are built in app.js / cell-layers.js; this only adds the
+    // dot colour and the source line (CSS draws the dot and the eye, light only).
+    const DOTS = ['#3f3f3f', '#ef9a80', '#a9a9a6', '#8f9f86', '#c9b79c', '#7f95a8', '#d98f7a', '#b6c2a6'];
+
+    function shortSource(src) {
+        if (!src) return '';
+        const s = String(src).split(/\s+[—–(]\s*|;\s*|,\s+via\s+/)[0].trim();
+        return s.length > 44 ? s.slice(0, 42).trimEnd() + '…' : s;
+    }
+
+    /** Split "Title · L6" into { name: "Title", level: "L6" }. Pure. */
+    function splitLevel(name) {
+        const m = /^(.*?)\s*·\s*(L\d+)$/.exec(String(name || '').trim());
+        return m ? { name: m[1], level: m[2] } : { name: String(name || '').trim(), level: '' };
+    }
+
+    function decorateLayerRow(item) {
+        if (!item || item.dataset.aino === '1') return;
+        const nameEl = item.querySelector('.dt-layer-name');
+        if (!nameEl) return;
+        item.dataset.aino = '1';
+        const key = item.dataset.layerKey || nameEl.textContent;
+        let h = 0;
+        for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) | 0;
+        item.style.setProperty('--dot', DOTS[Math.abs(h) % DOTS.length]);
+        const { name, level } = splitLevel(nameEl.textContent);
+        const meta = (typeof Provenance !== 'undefined' && Provenance.forKey) ? Provenance.forKey(item.dataset.layerKey) : null;
+        const src = [shortSource(meta && meta.source), level].filter(Boolean).join(' · ');
+        const text = document.createElement('span');
+        text.className = 'dt-layer-text';
+        nameEl.replaceWith(text);
+        nameEl.textContent = name;
+        text.appendChild(nameEl);
+        if (src) {
+            const sub = document.createElement('span');
+            sub.className = 'dt-layer-src';
+            sub.textContent = src;
+            text.appendChild(sub);
+        }
+    }
+
+    function watchLayerRows(doc) {
+        doc = doc || document;
+        const drop = doc.getElementById('dt-layers-dropdown');
+        if (!drop) return;
+        drop.querySelectorAll('.dt-layer-item').forEach(decorateLayerRow);
+        if (typeof MutationObserver === 'undefined') return;
+        new MutationObserver(() => drop.querySelectorAll('.dt-layer-item:not([data-aino])').forEach(decorateLayerRow))
+            .observe(drop, { childList: true, subtree: true });
+    }
+
+    // ── Aino "AI assistant" header + emoji-free query list (light) ─────────
+    function ainoAssistant(doc) {
+        doc = doc || document;
+        if (_theme() !== 'light') return;
+        const title = doc.querySelector('#disha-panel .disha-title');
+        if (title && !title.dataset.aino) {
+            title.dataset.aino = '1';
+            const logo = title.querySelector('.disha-logo');
+            if (logo) logo.innerHTML = icon('sparkle', 16);
+            const name = [...title.querySelectorAll('span')].find(sp => !sp.className && /DISHA/.test(sp.textContent));
+            if (name) { name.textContent = 'AI assistant'; name.className = 'disha-name'; }
+        }
+        const send = doc.getElementById('disha-send');
+        if (send && !send.querySelector('svg')) send.innerHTML = icon('send', 16);
+    }
+
+    /** Leading emoji / symbols of a label, split from its text. Pure. */
+    function splitEmoji(label) {
+        const m = /^([^\p{L}\p{N}]+)\s*(.*)$/u.exec(String(label || ''));
+        return m ? { emoji: m[1].trim(), text: m[2] } : { emoji: '', text: String(label || '') };
+    }
+
+    function stripSectorEmoji(doc) {
+        doc = doc || document;
+        doc.querySelectorAll('.sector-header-left:not([data-aino])').forEach(el => {
+            el.dataset.aino = '1';
+            const { emoji, text } = splitEmoji(el.textContent);
+            if (!emoji) return;
+            el.textContent = '';
+            const e = doc.createElement('span');
+            e.className = 'sector-emoji';
+            e.setAttribute('aria-hidden', 'true');
+            e.textContent = emoji + ' ';
+            el.append(e, text);
+        });
+    }
+
+    function watchSidebar(doc) {
+        doc = doc || document;
+        const sb = doc.getElementById('sidebar');
+        stripSectorEmoji(doc);
+        if (!sb || typeof MutationObserver === 'undefined') return;
+        new MutationObserver(() => stripSectorEmoji(doc)).observe(sb, { childList: true, subtree: true });
+    }
+
+    // ── DigiPin grid toggle (map control under the zoom buttons) ───────────
+    const GRID_KEY = 'digipin_grid_hidden';
+    const GRID_LAYERS = ['digipin-grid-line', 'digipin-grid-fill'];
+
+    function _gridHidden() { try { return localStorage.getItem(GRID_KEY) === '1'; } catch { return false; } }
+
+    function setGridVisible(map, on) {
+        for (const id of GRID_LAYERS) {
+            try { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none'); } catch { /* style reloading */ }
+        }
+        try { localStorage.setItem(GRID_KEY, on ? '0' : '1'); } catch { /* private mode */ }
+        const b = document.getElementById('grid-toggle');
+        if (b) { b.setAttribute('aria-pressed', String(on)); b.title = on ? 'Hide the DigiPin grid (g)' : 'Show the DigiPin grid (g)'; }
+    }
+
+    function addGridToggle(map) {
+        if (!map || typeof document === 'undefined' || document.getElementById('grid-toggle') || typeof map.addControl !== 'function') return;
+        const ctl = {
+            onAdd() {
+                const box = document.createElement('div');
+                box.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+                const b = document.createElement('button');
+                b.id = 'grid-toggle';
+                b.type = 'button';
+                b.setAttribute('aria-label', 'Toggle the DigiPin grid');
+                b.innerHTML = icon('grid', 16);
+                b.addEventListener('click', () => setGridVisible(map, b.getAttribute('aria-pressed') !== 'true'));
+                box.appendChild(b);
+                return box;
+            },
+            onRemove() {},
+        };
+        try { map.addControl(ctl, 'bottom-right'); } catch { return; }
+        const apply = () => setGridVisible(map, !_gridHidden());
+        map.on('style.load', apply);
+        if (map.isStyleLoaded && map.isStyleLoaded()) apply(); else map.once('load', apply);
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'g' || e.metaKey || e.ctrlKey || e.altKey) return;
+            const t = e.target;
+            if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+            const b = document.getElementById('grid-toggle');
+            if (b) b.click();
+        });
+    }
+
     // ── AI orb ──────────────────────────────────────────────────────────────
     // Aino opens every session from a round sparkle button above the tool
     // rail. Ours opens DISHA on the selected cell (or its empty state).
@@ -317,9 +467,13 @@ const UIPolish = (() => {
         document.documentElement.classList.add('ui-polish');
         applyIcons();
         addAiOrb();
+        watchLayerRows();
+        watchSidebar();
+        ainoAssistant();
         const map = (typeof MapModule !== 'undefined' && MapModule.getMap) ? MapModule.getMap() : null;
         if (!map) { hideSplash(); return; }
         attachAtmosphere(map);
+        addGridToggle(map);
         if (map.loaded && map.loaded()) hideSplash();
         else {
             map.once('load', hideSplash);
@@ -328,7 +482,7 @@ const UIPolish = (() => {
     }
 
     return { init, icon, applyIcons, hazeOpacity, skySpec, MAX_PITCH, prefersReducedMotion, attachAtmosphere,
-        showSplash, hideSplash, ainoPaint, addAiOrb, TOOLBAR, PATHS };
+        showSplash, hideSplash, ainoPaint, addAiOrb, splitLevel, shortSource, decorateLayerRow, splitEmoji, ainoAssistant, TOOLBAR, PATHS };
 })();
 
 if (typeof window !== 'undefined') {

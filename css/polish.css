@@ -824,7 +824,6 @@ html[data-theme="light"] .dt-layer-item:hover { background: var(--aino-hover); }
 html[data-theme="light"] .dt-layer-name { color: var(--aino-ink); font-size: 13px; }
 html[data-theme="light"] .dt-layer-group { border-bottom-color: var(--aino-line); }
 html[data-theme="light"] .dt-group-count { background: var(--aino-paper); color: var(--aino-ink-2); border: 1px solid var(--aino-line); }
-html[data-theme="light"] .dt-layer-icon { filter: grayscale(1); opacity: 0.55; }
 
 /* Sidebar list: neutral states. */
 html[data-theme="light"] .sector-header:hover,
@@ -956,3 +955,42 @@ html[data-theme="light"] .sun-study-panel {
     border-radius: var(--aino-r); box-shadow: var(--aino-shadow-lg); color: var(--aino-ink);
 }
 @media (min-width: 769px) { html[data-theme="light"] .sun-study-panel { left: 84px; } }
+
+/* ── Layer rows (UIPolish.decorateLayerRow adds .dt-layer-text/.dt-layer-src) ── */
+.dt-layer-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.dt-layer-text .dt-layer-name { flex: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dt-layer-src { font-size: 10px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Light (Aino): colour dot · name over source · eye. */
+html[data-theme="light"] .dt-layer-item { gap: 10px; padding: 8px 10px 8px 12px; margin: 0; border-radius: 8px; border-bottom: 1px solid var(--aino-line); }
+html[data-theme="light"] .dt-layer-item:last-child { border-bottom: none; }
+html[data-theme="light"] .dt-layer-icon {
+    width: 10px; height: 10px; flex: 0 0 10px; border-radius: 50%;
+    background: var(--dot, #a9a9a6); font-size: 0; color: transparent; filter: none; opacity: 1;
+}
+html[data-theme="light"] .dt-layer-name { font-size: 13px; font-weight: 500; color: var(--aino-ink); }
+html[data-theme="light"] .dt-layer-src { font-size: 11px; color: var(--aino-ink-3); }
+html[data-theme="light"] .dt-source-btn { opacity: 0; transition: opacity var(--dur-fast); }
+html[data-theme="light"] .dt-layer-item:hover .dt-source-btn,
+html[data-theme="light"] .dt-source-btn:focus-visible,
+html[data-theme="light"] .dt-source-btn[aria-expanded="true"] { opacity: 1; }
+/* The switch becomes Aino's eye: open + ink when on, struck + grey when off. */
+html[data-theme="light"] .dt-toggle-switch {
+    width: 18px; height: 18px; flex: 0 0 18px;
+    background: no-repeat center / 18px 18px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M3 3l18 18'/%3E%3C/svg%3E");
+}
+html[data-theme="light"] .dt-toggle-switch:has(input:checked) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23292929' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+}
+html[data-theme="light"] .dt-toggle-switch .dt-toggle-slider { display: none; }
+html[data-theme="light"] .dt-layer-item[aria-checked="true"] { background: var(--aino-hover); }
+
+/* Light: Aino "AI assistant" header, emoji-free query list. */
+html[data-theme="light"] .disha-logo { background: transparent !important; color: var(--aino-ink) !important; box-shadow: none !important; width: 18px; display: inline-grid; place-items: center; }
+html[data-theme="light"] .disha-name { font-weight: 600; font-size: 15px; color: var(--aino-ink); letter-spacing: -0.01em; }
+html[data-theme="light"] #disha-panel .disha-subtitle { display: none; }
+html[data-theme="light"] .disha-status { background: var(--aino-paper) !important; color: var(--aino-ink-3) !important; border: 1px solid var(--aino-line) !important; }
+html[data-theme="light"] .query-icon,
+html[data-theme="light"] .sector-emoji { display: none; }
+html[data-theme="light"] .sector-header-left { filter: none; }
+html[data-theme="light"] .query-card { padding-left: 12px; }

@@ -464,7 +464,7 @@ const OvertureBuildings = (() => {
         // light in place rather than clearing the other's shading.
         if (_active && light) {
             try {
-                map.setLight({ anchor: 'map', position: [1.4, 210, 42], color: '#ffffff', intensity: 0.3 });
+                map.setLight({ anchor: 'map', position: [1.4, 210, 42], color: '#ffffff', intensity: 0.2 });
             } catch { /* older MapLibre without setLight — vertical gradient still applies */ }
         }
 

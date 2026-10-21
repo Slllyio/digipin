@@ -109,3 +109,34 @@ describe('UIPolish Aino light basemap + AI orb', () => {
         expect(UIPolish.addAiOrb(document)).toBeNull();
     });
 });
+
+describe('UIPolish Aino layer rows', () => {
+    it('splits the level off a layer title', () => {
+        expect(UIPolish.splitLevel('Travel time to services · L6')).toEqual({ name: 'Travel time to services', level: 'L6' });
+        expect(UIPolish.splitLevel('Wards')).toEqual({ name: 'Wards', level: '' });
+    });
+
+    it('shortens a source to its first clause', () => {
+        expect(UIPolish.shortSource('Google Earth Engine — MODIS MOD11A2; 1 km')).toBe('Google Earth Engine');
+        expect(UIPolish.shortSource('')).toBe('');
+        expect(UIPolish.shortSource('x'.repeat(60)).length).toBeLessThanOrEqual(43);
+    });
+
+    it('wraps the name with a source line and sets a dot colour, once', () => {
+        document.body.innerHTML = '<div class="dt-layer-item" data-layer-key="_cell_x"><span class="dt-layer-icon">▦</span><span class="dt-layer-name">LST · L6</span><label class="dt-toggle-switch"></label></div>';
+        const item = document.querySelector('.dt-layer-item');
+        UIPolish.decorateLayerRow(item);
+        UIPolish.decorateLayerRow(item);
+        expect(item.querySelectorAll('.dt-layer-text')).toHaveLength(1);
+        expect(item.querySelector('.dt-layer-name').textContent).toBe('LST');
+        expect(item.querySelector('.dt-layer-src').textContent).toContain('L6');
+        expect(item.style.getPropertyValue('--dot')).toMatch(/^#/);
+    });
+});
+
+describe('UIPolish emoji split', () => {
+    it('splits leading emoji from a sector label', () => {
+        expect(UIPolish.splitEmoji('🏢 Commercial & Business')).toEqual({ emoji: '🏢', text: 'Commercial & Business' });
+        expect(UIPolish.splitEmoji('Residential')).toEqual({ emoji: '', text: 'Residential' });
+    });
+});
