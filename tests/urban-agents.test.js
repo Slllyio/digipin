@@ -25,9 +25,9 @@ async function store() {
 const HOOD = { code: globalThis.DigiPin.encode(22.7186, 75.8553).replace(/-/g, '').slice(0, 5) };
 
 describe('UrbanAgents catalogue and plans', () => {
-    it('offers the seven agents with unique ids', () => {
+    it('offers the eight agents with unique ids', () => {
         const ids = A.TEMPLATES.map(t => t.id);
-        expect(ids).toEqual(['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes']);
+        expect(ids).toEqual(['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes', 'health']);
         expect(new Set(ids).size).toBe(ids.length);
     });
 
@@ -125,4 +125,55 @@ describe('UrbanAgents runs on the committed store', () => {
             expect(A.toText(report)).toContain(report.title);
         }
     }, 120000);
+});
+
+describe('Data health agent (Pipeline Steward)', () => {
+    const NOW = Date.parse('2026-10-21T12:00:00Z');
+    const iso = (h) => new Date(NOW - h * 36e5).toISOString();
+
+    it('grades feeds with the steward windows', () => {
+        expect(A.gradeFeed('usgs_earthquakes', { generated_at_iso: iso(1), records: [{}] }, NOW).status).toBe('ok');
+        expect(A.gradeFeed('usgs_earthquakes', { generated_at_iso: iso(8), records: [{}] }, NOW).status).toBe('warn');
+        expect(A.gradeFeed('imd_cityforecast', { generated_at_iso: iso(8), records: [{}] }, NOW).status).toBe('ok');
+        const dead = A.gradeFeed('ncs_earthquakes', { generated_at_iso: iso(24 * 9), records: [{}] }, NOW);
+        expect(dead.status).toBe('fail');
+        expect(dead.issues[0]).toMatch(/9d ago; the feed looks dead/);
+        const empty = A.gradeFeed('openaq_india', { generated_at_iso: iso(1), records: [] }, NOW);
+        expect(empty).toMatchObject({ status: 'warn', rows: 0, issues: ['snapshot is empty'] });
+        expect(A.gradeFeed('x', null, NOW).status).toBe('fail');
+    });
+
+    it('runs without an area, re-checks live snapshots and keeps steward-only findings', async () => {
+        const files = {
+            'data/steward/report.json': {
+                status: 'warn', generated_at: iso(3),
+                sources: { a_feed: { required_env: [] }, b_feed: { required_env: ['B_KEY'] }, c_feed: { required_env: [] } },
+                findings: [
+                    { source: 'a_feed', check: 'freshness', severity: 'warn', message: 'old', hint: 'check the scraper' },
+                    { source: 'c_feed', check: 'wiring', severity: 'warn', message: 'not in the scrape matrix', hint: 'add it to the workflow' },
+                ],
+            },
+            'data/realtime/a_feed/latest.json': { generated_at_iso: iso(30), records: [{}, {}] },
+            'data/realtime/b_feed/latest.json': { generated_at_iso: iso(1), records: [] },
+            'data/realtime/c_feed/latest.json': { generated_at_iso: iso(1), records: [{}] },
+        };
+        const fake = async (url) => (files[url] ? { ok: true, json: async () => files[url] } : { ok: false });
+        const steps = [];
+        const { report, layer } = await A.run({ agent: 'health' }, {}, { fetch: fake, now: () => NOW, onStep: s => steps.push(s.status) });
+        expect(layer).toBeNull();
+        expect(report.area.label).toBe('All live feeds');
+        expect(report.summary).toBe('2 of 3 live feeds need attention; worst is a_feed (last refreshed 30h ago, older than the 6h window).');
+        const titles = report.findings.map(f => f.title);
+        expect(titles[0]).toMatch(/^a_feed: last refreshed 30h ago/);
+        expect(report.findings[0].detail).toBe('check the scraper');
+        expect(report.findings.find(f => f.title.startsWith('b_feed')).detail).toContain('B_KEY');
+        expect(titles).toContain('c_feed: not in the scrape matrix');
+        expect(titles.at(-1)).toBe('Healthy: c_feed');
+        expect(report.metrics.find(m => m.label === 'Steward report age').value).toBe('3h');
+        expect(report.steps.every(s => s.status === 'done')).toBe(true);
+    });
+
+    it('fails clearly when the steward has never run and no feeds are known', async () => {
+        await expect(A.run({ agent: 'health' }, {}, { fetch: async () => ({ ok: false }), now: () => NOW })).rejects.toThrow(/steward has not run/);
+    });
 });

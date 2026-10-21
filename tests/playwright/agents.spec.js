@@ -22,7 +22,7 @@ test.describe('agents', () => {
     await page.click('#btn-agents');
     const dlg = page.locator('#agents-dialog');
     await expect(dlg).toBeVisible();
-    await expect(dlg.locator('.ag-card')).toHaveCount(7);
+    await expect(dlg.locator('.ag-card')).toHaveCount(8);
 
     // Setup shows the plan before anything runs.
     await dlg.locator('.ag-card[data-agent="site"]').click();
@@ -71,5 +71,20 @@ test.describe('agents', () => {
       return res;
     });
     for (const [id, ok, failed] of out) expect([id, ok, failed]).toEqual([id, true, 0]);
+  });
+
+  test('data health checks the live feeds without an area', async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.goto('/app.html');
+    await waitForApp(page);
+    await page.click('#btn-agents');
+    const dlg = page.locator('#agents-dialog');
+    await dlg.locator('.ag-card[data-agent="health"]').click();
+    await expect(dlg.locator('.ui-seg-btn', { hasText: 'Whole city' })).toHaveCount(0);
+    await expect(dlg.locator('.ag-area')).toHaveText('All live feeds');
+    await dlg.getByRole('button', { name: 'Run agent' }).click();
+    await expect(dlg.locator('.ag-summary')).toContainText('live feeds', { timeout: 30_000 });
+    await expect(dlg.locator('.ui-finding').first()).toBeVisible();
+    if (process.env.AGENT_SHOTS) await dlg.screenshot({ path: process.env.AGENT_SHOTS + '/7-data-health.png' });
   });
 });

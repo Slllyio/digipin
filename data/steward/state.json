@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-10-21T07:30:42+00:00",
+  "profiles": {
+    "gdacs_disasters": {
+      "count": 155,
+      "generated_at": "2026-10-05T19:47:25Z",
+      "null_rates": {
+        "alert_level": 0.0,
+        "alert_score": 0.0,
+        "country": 0.0129,
+        "description": 0.0,
+        "event_label": 0.0,
+        "event_type": 0.0,
+        "glide_number": 1.0,
+        "id": 0.0,
+        "latitude": 1.0,
+        "longitude": 1.0,
+        "population_affected": 0.0839,
+        "published_utc": 0.0,
+        "tags": 1.0,
+        "title": 0.0,
+        "url": 0.0
+      }
+    },
+    "imd_cityforecast": {
+      "count": 0,
+      "generated_at": "2026-10-19T06:51:14Z",
+      "null_rates": {}
+    },
+    "imd_nowcast": {
+      "count": 0,
+      "generated_at": "2026-10-20T07:32:35Z",
+      "null_rates": {}
+    },
+    "imd_warnings": {
+      "count": 0,
+      "generated_at": "2026-10-20T12:59:30Z",
+      "null_rates": {}
+    },
+    "ncs_earthquakes": {
+      "count": 150,
+      "generated_at": "2026-08-23T21:45:05Z",
+      "null_rates": {
+        "depth_km": 0.0,
+        "id": 0.0,
+        "latitude": 0.0,
+        "location": 0.0,
+        "longitude": 0.0,
+        "magnitude": 0.0,
+        "origin_time": 0.0,
+        "region": 0.0,
+        "review_status": 0.0
+      }
+    },
+    "ndma_sachet": {
+      "count": 99,
+      "generated_at": "2026-10-10T15:30:38Z",
+      "null_rates": {
+        "area": 1.0,
+        "cap_xml_url": 0.0,
+        "category": 0.0,
+        "description": 1.0,
+        "headline": 0.0,
+        "id": 0.0,
+        "published_utc": 0.0,
+        "severity": 0.0,
+        "tags": 1.0
+      }
+    },
+    "openaq_india": {
+      "count": 0,
+      "generated_at": "2026-10-20T17:54:03Z",
+      "null_rates": {}
+    },
+    "usgs_earthquakes": {
+      "count": 30,
+      "generated_at": "2026-10-20T02:05:52Z",
+      "null_rates": {
+        "depth_km": 0.0,
+        "id": 0.0,
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "magnitude": 0.0,
+        "origin_time_utc": 0.0,
+        "place": 0.0,
+        "significance": 0.0,
+        "tsunami": 0.0,
+        "url": 0.0
+      }
+    }
+  }
+}

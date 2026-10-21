@@ -23,6 +23,8 @@ Shipped on this branch and covered by unit + loop-integration tests (`npm test`)
 
 **Agents gallery (user-facing, shipped 2026-10-21):** the Aino.world pattern of named analysis agents run on an area. `js/urban-agents.js` holds seven templates (area brief, site suitability, flood exposure, heat vulnerability, 15-minute access, growth hotspots, what changed), each with `plan()` shown before it runs and `run()` that executes the steps over UrbanInsights / UrbanLenses and returns a `digipin.agent-report/1` report (summary, metrics, findings with cells, layers, sources, method, run log) plus a runtime cell layer. `js/agents-panel.js` is the toolbar dialog (Gallery · My runs): live step ticks, the result painted as a 3D cell layer, runs saved in the browser, share links (`ag`, `aa`, `ap` via URLState) that re-run on open, a printable HTML report, and an optional "DISHA's read" narration. DISHA can launch any of them with the `runAgent` tool. Tests: `tests/urban-agents.test.js` (on the committed store), `tests/agents-panel.test.js`, `tests/playwright/agents.spec.js`.
 
+**Data health agent (Pipeline Steward in the UI):** an eighth gallery agent with `scope: 'project'` (no area). It reads `data/steward/report.json`, re-grades every `data/realtime/<id>/latest.json` in the browser with the steward's own windows (stale after 6h, 24h for `imd_cityforecast`, dead after 7 days, empty flagged), adds the steward's wiring/contract/drift findings, and names the missing Actions secret when a keyed feed is empty. The live re-check matters because the steward workflow only runs on `main`.
+
 The Alert Triage agent (§5.1) and the Pipeline Steward (§5.2, `pipeline/steward/`) are shipped too. Not yet built: the Tier-3 automation (§6).
 
 ## 0. Why this document

@@ -116,8 +116,13 @@ const AgentsPanel = (() => {
 
     // ── area ────────────────────────────────────────────────────────────────
 
+    // Agents that check the whole project (data health) take no area.
+    const PROJECT_AREA = { project: true, label: 'All live feeds' };
+    const _projectScope = (id) => { const t = UrbanAgents.template(id); return !!(t && t.scope === 'project'); };
+
     /** The area the setup's choice points at, or null with a reason. */
     function _area(store) {
+        if (_projectScope(_agent)) return { area: PROJECT_AREA };
         if (_areaMode === 'city') {
             const c = _city || _viewCity(store);
             return c ? { area: { city: c, label: UrbanInsights.cityLabel(c) } } : { why: 'No covered city is in view.' };
@@ -297,6 +302,33 @@ const AgentsPanel = (() => {
         body.appendChild(head);
         body.appendChild(_el('div', 'ag-blurb', t.blurb));
 
+        if (!_projectScope(_agent)) _areaPicker(body, store);
+        const a = _area(store);
+        if (_projectScope(_agent)) body.appendChild(_el('div', 'ag-area', a.area.label));
+
+
+        for (const p of t.params) {
+            body.appendChild(_el('div', 'ui-h', p.label));
+            const ps = _el('div', 'ui-seg');
+            for (const o of p.options) {
+                const on = _params[p.key] === o.value;
+                const b = _btn(o.label, () => { _params[p.key] = o.value; render(); }, `ui-seg-btn${on ? ' active' : ''}`);
+                b.setAttribute('aria-pressed', String(on));
+                ps.appendChild(b);
+            }
+            body.appendChild(ps);
+        }
+
+        body.appendChild(_el('div', 'ui-h', 'Plan'));
+        const pl = UrbanAgents.plan({ agent: _agent, params: _params });
+        body.appendChild(_planList(pl.steps.map(s => ({ ...s, status: 'pending' }))));
+
+        const go = _btn('Run agent', () => run(), 'ui-btn ui-btn--primary ag-run');
+        go.disabled = !a.area || _running;
+        body.appendChild(go);
+    }
+
+    function _areaPicker(body, store) {
         body.appendChild(_el('div', 'ui-h', 'Area'));
         const seg = _el('div', 'ui-seg');
         for (const [mode, label] of AREA_MODES) {
@@ -319,26 +351,6 @@ const AgentsPanel = (() => {
         }
         const a = _area(store);
         body.appendChild(_el('div', `ag-area${a.area ? '' : ' is-missing'}`, a.area ? a.area.label : a.why));
-
-        for (const p of t.params) {
-            body.appendChild(_el('div', 'ui-h', p.label));
-            const ps = _el('div', 'ui-seg');
-            for (const o of p.options) {
-                const on = _params[p.key] === o.value;
-                const b = _btn(o.label, () => { _params[p.key] = o.value; render(); }, `ui-seg-btn${on ? ' active' : ''}`);
-                b.setAttribute('aria-pressed', String(on));
-                ps.appendChild(b);
-            }
-            body.appendChild(ps);
-        }
-
-        body.appendChild(_el('div', 'ui-h', 'Plan'));
-        const pl = UrbanAgents.plan({ agent: _agent, params: _params });
-        body.appendChild(_planList(pl.steps.map(s => ({ ...s, status: 'pending' }))));
-
-        const go = _btn('Run agent', () => run(), 'ui-btn ui-btn--primary ag-run');
-        go.disabled = !a.area || _running;
-        body.appendChild(go);
     }
 
     function _planList(steps) {
@@ -619,6 +631,7 @@ const AgentsPanel = (() => {
         await _storeReady();
         _agent = input.agent;
         _params = { ...(input.params || {}) };
+        if (!input.area && _projectScope(input.agent)) input = { ...input, area: PROJECT_AREA };
         if (!input.area) { pick(input.agent, input.params); return open(); }
         _steps = UrbanAgents.plan(input).steps.map(s => ({ ...s, status: 'pending' }));
         await open('run');

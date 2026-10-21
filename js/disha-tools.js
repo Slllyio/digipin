@@ -105,7 +105,7 @@ const DISHATools = (() => {
         {
             name: 'runAgent', type: 'runagent', kind: 'state', agentOnly: true,
             args: {
-                agent: { type: 'enum', values: ['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes'], required: true },
+                agent: { type: 'enum', values: ['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes', 'health'], required: true },
                 use: { type: 'enum', values: ['housing', 'clinic', 'school', 'retail', 'park'] },
             },
             desc: 'Run a saved analysis agent on the selected neighbourhood (or the map view) and paint its result layer: '

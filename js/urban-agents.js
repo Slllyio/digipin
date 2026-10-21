@@ -83,6 +83,12 @@ const UrbanAgents = (() => {
             blurb: 'Each monthly and yearly series against a year earlier, with the cells that changed unusually.',
             params: [],
         },
+        {
+            id: 'health', title: 'Data health', icon: '♥', scope: 'project',
+            question: 'Can I trust the live feeds right now?',
+            blurb: 'The Pipeline Steward: freshness, emptiness and wiring of every live feed, with what to fix.',
+            params: [],
+        },
     ];
     const BY_ID = new Map(TEMPLATES.map(t => [t.id, t]));
 
@@ -190,6 +196,11 @@ const UrbanAgents = (() => {
     // ── plans ───────────────────────────────────────────────────────────────
 
     const PLANS = {
+        health: () => [
+            { tool: 'stewardReport', label: "Read the Pipeline Steward's last report", detail: 'data/steward/report.json, written every 6 hours by the steward workflow' },
+            { tool: 'liveCheck', label: 'Re-check every live snapshot now (age and row count)', detail: `stale after ${STALE_H}h (imd_cityforecast ${STALE_H_SLOW}h), dead after ${DEAD_D} days` },
+            { tool: 'report', label: 'List what is broken and how to fix it' },
+        ],
         brief: () => [
             { tool: 'areaInsights', label: 'Rank every dataset for the area against its city' },
             { tool: 'hotspots', label: 'Find hotspot cells for the top findings' },
@@ -561,7 +572,97 @@ const UrbanAgents = (() => {
         };
     }
 
-    const RUNNERS = { brief: _brief, site: _site, flood: _flood, heat: _heat, access: _access, growth: _growth, changes: _changes };
+    // ── data health (Pipeline Steward) ───────────────────────────────────────
+
+    // Same windows as pipeline/steward/checks.py.
+    const STALE_H = 6, STALE_H_SLOW = 24, DEAD_D = 7;
+    const SLOW_FEEDS = new Set(['imd_cityforecast']);
+    const STEWARD_REPORT = 'data/steward/report.json';
+    const SEV = { ok: 0, info: 1, warn: 2, fail: 3 };
+
+    function _ago(h) {
+        if (h < 1) return `${Math.max(1, Math.round(h * 60))} min`;
+        if (h < 48) return `${Math.round(h)}h`;
+        return `${Math.round(h / 24)}d`;
+    }
+
+    /** Grade one snapshot's age and size against the steward's windows. Pure. */
+    function gradeFeed(id, snap, nowMs) {
+        const at = snap && (snap.generated_at_iso || snap.generated_at);
+        const t = at ? Date.parse(at) : NaN;
+        const rows = snap ? (Array.isArray(snap.records) ? snap.records.length : Number(snap.count) || 0) : 0;
+        if (!snap) return { id, status: 'fail', rows: 0, ageH: null, issues: ['snapshot is missing'] };
+        const issues = [];
+        let status = 'ok';
+        const bump = (sev, msg) => { issues.push(msg); if (SEV[sev] > SEV[status]) status = sev; };
+        if (!Number.isFinite(t)) bump('warn', 'snapshot has no timestamp');
+        const ageH = Number.isFinite(t) ? Math.max(0, (nowMs - t) / 36e5) : null;
+        const limit = SLOW_FEEDS.has(id) ? STALE_H_SLOW : STALE_H;
+        if (ageH != null && ageH > DEAD_D * 24) bump('fail', `last refreshed ${_ago(ageH)} ago; the feed looks dead`);
+        else if (ageH != null && ageH > limit) bump('warn', `last refreshed ${_ago(ageH)} ago, older than the ${limit}h window`);
+        if (!rows) bump('warn', 'snapshot is empty');
+        return { id, status, rows, ageH, issues };
+    }
+
+    async function _getJSON(fetcher, url) {
+        const res = await fetcher(url, { cache: 'no-store' });
+        if (!res || !res.ok) return null;
+        try { return await res.json(); } catch { return null; }
+    }
+
+    async function _health(ctx, store, step) {
+        const fetcher = ctx.fetch;
+        if (!fetcher) throw new Error('Fetching is not available here.');
+        const nowMs = ctx.now();
+        const rep = await step('stewardReport', () => _getJSON(fetcher, STEWARD_REPORT),
+            (r) => (r ? `${String(r.status || '?').toUpperCase()} at ${String(r.generated_at || '').slice(0, 16).replace('T', ' ')}Z, ${(r.findings || []).length} findings` : 'no steward report yet; checking the feeds directly'));
+        const ids = rep && rep.sources ? Object.keys(rep.sources) : ctx.feeds || [];
+        if (!ids.length) throw new Error('No live feeds are listed: the steward has not run yet.');
+        const graded = await step('liveCheck', () => Promise.all(ids.map(async id => gradeFeed(id, await _getJSON(fetcher, `data/realtime/${id}/latest.json`), nowMs))),
+            (g) => `${g.filter(x => x.status === 'ok').length} of ${g.length} feeds healthy`);
+        await step('report', () => true, () => 'done');
+
+        const bad = graded.filter(g => g.status === 'fail'), warn = graded.filter(g => g.status === 'warn');
+        const ok = graded.filter(g => g.status === 'ok');
+        const env = (id) => ((rep && rep.sources && rep.sources[id] && rep.sources[id].required_env) || []);
+        const hints = new Map();
+        for (const f of (rep && rep.findings) || []) if (f.hint && !hints.has(f.source)) hints.set(f.source, f.hint);
+        const order = [...bad, ...warn].sort((a, b) => SEV[b.status] - SEV[a.status] || (b.ageH || 0) - (a.ageH || 0));
+        const findings = order.map(g => {
+            const keys = env(g.id);
+            const fix = !g.rows && keys.length ? `needs ${keys.join(', ')} in the Actions secrets` : hints.get(g.id) || '';
+            return {
+                kind: 'concern', title: `${g.id}: ${g.issues[0]}`,
+                detail: [g.issues.slice(1).join('; '), fix].filter(Boolean).join(' — '),
+                sources: [g.id], cells: [],
+            };
+        });
+        // Steward-only findings (wiring, contract, drift, products) the live check cannot see.
+        for (const f of (rep && rep.findings) || []) {
+            if (f.check === 'freshness' || f.check === 'volume') continue;
+            findings.push({ kind: f.severity === 'fail' ? 'concern' : 'note', title: `${f.source}: ${f.message}`, detail: f.hint || '', sources: [f.source], cells: [] });
+        }
+        if (ok.length) findings.push({ kind: 'strength', title: `Healthy: ${ok.map(g => g.id).join(', ')}`, detail: 'Fresh within their window and not empty.', sources: ok.map(g => g.id), cells: [] });
+
+        const repAgeH = rep && rep.generated_at ? (nowMs - Date.parse(rep.generated_at)) / 36e5 : null;
+        const verdict = bad.length ? `${bad.length} of ${graded.length} live feeds are failing` : warn.length ? `${warn.length} of ${graded.length} live feeds need attention` : `All ${graded.length} live feeds are healthy`;
+        const worst = order[0];
+        return {
+            summary: _sentence(`${verdict}${worst ? `; worst is ${worst.id} (${worst.issues[0]})` : ''}`),
+            metrics: [
+                { label: 'Feeds checked', value: String(graded.length) },
+                { label: 'Failing', value: String(bad.length) },
+                { label: 'Need attention', value: String(warn.length) },
+                { label: 'Healthy', value: String(ok.length) },
+                { label: 'Steward report age', value: repAgeH == null ? 'none yet' : _ago(repAgeH) },
+            ],
+            findings,
+            sources: [{ id: 'steward', title: 'Pipeline Steward (pipeline/steward)' }, ...graded.map(g => ({ id: g.id, title: `data/realtime/${g.id}/latest.json` }))],
+            method: `Each live snapshot is re-read in the browser and graded with the steward's windows: stale after ${STALE_H}h (${STALE_H_SLOW}h for slow feeds), dead after ${DEAD_D} days, and empty snapshots flagged. Wiring, contract and drift findings come from the steward's last report.`,
+        };
+    }
+
+    const RUNNERS = { health: _health, brief: _brief, site: _site, flood: _flood, heat: _heat, access: _access, growth: _growth, changes: _changes };
 
     /**
      * Run an agent. hooks.onStep({ i, tool, label, status, detail, ms }) fires as
@@ -573,10 +674,14 @@ const UrbanAgents = (() => {
         if (!store) throw new Error('The cell store is not available.');
         const p = plan(input);
         const t = template(p.agent);
-        const ctx = { agent: t.id, input, params: p.params, ...resolve(input, store) };
+        const now = hooks.now || (() => Date.now());
+        const fetcher = hooks.fetch || (typeof fetch === 'function' ? fetch.bind(globalThis) : null);
+        const where = t.scope === 'project'
+            ? { area: { kind: 'project', label: 'All live feeds' }, city: null, cityLabel: '' }
+            : resolve(input, store);
+        const ctx = { agent: t.id, input, params: p.params, now, fetch: fetcher, ...where };
         const steps = p.steps.map((s, i) => ({ i, ...s, status: 'pending', detail: s.detail || '' }));
         const emit = (s) => { if (hooks.onStep) { try { hooks.onStep({ ...s }); } catch { /* UI errors are the UI's */ } } };
-        const now = hooks.now || (() => Date.now());
 
         async function step(tool, fn, describe) {
             const s = steps.find(x => x.tool === tool && x.status === 'pending');
@@ -633,7 +738,7 @@ const UrbanAgents = (() => {
         return lines.join('\n');
     }
 
-    return { SCHEMA, LAYER_PREFIX, TEMPLATES, SITE_USES, template, plan, run, resolve, inArea, prank, spread, toText };
+    return { SCHEMA, LAYER_PREFIX, TEMPLATES, SITE_USES, template, plan, run, resolve, inArea, prank, spread, gradeFeed, toText };
 })();
 
 if (typeof window !== 'undefined') {
