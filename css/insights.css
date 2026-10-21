@@ -272,3 +272,13 @@ html[data-theme="light"] {
 .ui-plan { border: 1px dashed var(--accent-cyan); border-radius: var(--radius-sm); padding: 8px 10px; margin-bottom: 10px; background: var(--wash-03); }
 .ui-plan-h { font-weight: 600; font-size: 12px; margin-bottom: 4px; }
 .ui-chip--primary { background: var(--accent-soft); border-color: var(--accent-cyan); color: var(--accent-cyan-text); font-weight: 600; }
+
+/* Header tools: the shared .close-btn is absolutely placed; keep it in the row. */
+.ui-head-tools .close-btn { position: static; inset: auto; margin-left: 2px; flex: none; }
+.ui-head .ui-title { min-width: 0; }
+.ui-head .ui-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 480px) {
+    .ui-head-tools .ui-chip { font-size: 0; padding: 4px 6px; }
+    .ui-head-tools .ui-chip::first-letter { font-size: 14px; }
+    .ui-tabs .ui-tab { padding-left: 2px; padding-right: 2px; font-size: 11.5px; }
+}
