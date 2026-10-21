@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-10-21T18:56:12Z",
-  "count": 16,
+  "generated_at_iso": "2026-10-21T22:09:21Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us6000u3yj",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-10-21T21:38:55.441000+00:00",
+      "latitude": 56.8137,
+      "longitude": -34.1689,
+      "depth_km": 10.0,
+      "place": "Reykjanes Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3yj",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us6000u3y1",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-21T20:34:50.454000+00:00",
+      "latitude": -19.7855,
+      "longitude": 14.7284,
+      "depth_km": 10.0,
+      "place": "68 km NNW of Khorixas, Namibia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3y1",
+      "tsunami": 0,
+      "significance": 370
+    },
+    {
+      "id": "us6000u3x2",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-21T19:06:06.706000+00:00",
+      "latitude": 57.1591,
+      "longitude": -33.9973,
+      "depth_km": 10.0,
+      "place": "Reykjanes Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3x2",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000u3xx",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-21T18:41:04.974000+00:00",
+      "latitude": -14.1796,
+      "longitude": 165.4616,
+      "depth_km": 10.0,
+      "place": "198 km WNW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3xx",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000u3ws",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-21T18:40:31.851000+00:00",
+      "latitude": -14.1592,
+      "longitude": 165.431,
+      "depth_km": 10.0,
+      "place": "202 km WNW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3ws",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000u3wh",
       "magnitude": 5.1,
@@ -169,30 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3r1",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000u3pq",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-20T20:03:26.613000+00:00",
-      "latitude": -14.0479,
-      "longitude": 165.6598,
-      "depth_km": 10.0,
-      "place": "187 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3pq",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u3pm",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-20T19:53:59.721000+00:00",
-      "latitude": 46.2196,
-      "longitude": 152.9149,
-      "depth_km": 28.746,
-      "place": "Kuril Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3pm",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
