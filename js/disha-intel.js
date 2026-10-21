@@ -27,6 +27,7 @@ const DishaIntel = (() => {
             heat: /\b(heat[\s-]?(vulnerab\w*|risk|wave|stress|exposure)|hottest neighbourhoods?|who (suffers|is most at risk) .{0,20}heat)\b/i,
             flood: /\b(flood\s?plain|flood (exposure|exposed)|(how many|people|residents|population|who)\b.{0,30}\b(flood(ed|s|ing)?|floodplain)\b.{0,20}\b(live|exposed|risk|zone|area))/i,
             fifteen: /\b(15|fifteen)[\s-]?min(ute)?s?\b|\bwalk(ing|able)? (to|distance (to|of)) (daily|essentials?|shops|amenities)|\bdaily needs\b|\bland[\s-]?use mix\b/i,
+            waterlog: /\b(water[\s-]?log\w*|rain(water)? (pools?|pooling|collects?|stagnat\w*)|pluvial|urban flood\w*|stagnant water|where (does )?(the )?rain(water)? (collect|pool|stand)s?)\b/i,
             cutoff: /\b(cut off|stranded|isolated|lose access|cannot reach)\b.{0,40}\bfloods?\b|\bfloods?\b.{0,40}\b(cut off|stranded|isolat\w*|lose access|access to (hospitals?|health\s?care|clinics?))\b/i,
             transit: /\b(public transport|transit|bus stops?|metro|stations?)\b.{0,20}\b(access|accessibility|coverage|reach|walk\w*|near\w*|far)\b|\b(access|walk\w*|near\w*|far) to (a |the )?(public transport|transit|bus stops?|metro|stations?)\b|\bsdg 11\.2\b/i,
             health: /\b(health\s?care|hospitals?|clinics?|doctors?)\b.{0,15}\b(access|accessibility|deserts?|scarc\w*|shortages?|reach)\b|\baccess to (health\s?care|hospitals?|clinics?|doctors?)\b|\bcare deserts?\b|\b2sfca\b/i,

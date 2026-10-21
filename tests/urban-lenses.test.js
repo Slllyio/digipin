@@ -185,6 +185,24 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.transit(fr, {})).toBeNull();       // no transit points → no lens
     });
 
+    it('waterlog lens: counts residents of High cells and the poorest-fifth share', () => {
+        const wl = codes.map((_, i) => (i % SIZE < 2 ? 70 : i % SIZE < 4 ? 50 : 10));    // two very high, two high columns
+        const rwi = codes.map((_, i) => (i % SIZE < 2 ? -1 : 1));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'waterlogging.waterlogging_index': wl, 'wealth.rwi': rwi });
+        const r = L._lenses.waterlog(f, {});
+        const total = pop.reduce((a, b) => a + b, 0);
+        const high = pop.filter((_, i) => i % SIZE < 4).reduce((a, b) => a + b, 0);
+        expect(r.metric.value).toBeCloseTo(100 * high / total, 0);
+        expect(r.columns.waterlog_people[0]).toBe(pop[0]);
+        expect(r.columns.waterlog_people[SIZE - 1]).toBe(0);
+        expect(r.headline).toMatch(/poorest fifth/);
+        expect(L._lenses.waterlog(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+        // The flood lens takes its rain-pooling hazard from the same index.
+        const fl = L._lenses.flood(f, {});
+        expect(fl.columns.flood_hazard[0]).toBeCloseTo(35, 6);
+        expect(fl.stats.some(s => /rain pools/.test(s.label))).toBe(true);
+    });
+
     it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {
         const rp = new Array(n).fill(0), depth = new Array(n).fill(0);
         for (let r = 0; r < SIZE; r++) { rp[r * SIZE + 3] = 100; depth[r * SIZE + 3] = 1; }   // column 3 floods
@@ -270,7 +288,7 @@ describe('UrbanLenses on committed city data', () => {
         expect(r.schema).toBe('digipin.lenses/1');
         expect(r.residents).toBeGreaterThan(1e6);
         const ids = r.lenses.map(l => l.id);
-        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'types', 'green', 'solar', 'confidence', 'seasons', 'burden']));
+        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'waterlog', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'types', 'green', 'solar', 'confidence', 'seasons', 'burden']));
         const se = r.lenses.find(l => l.id === 'seasons');
         expect(se.series.lst.values.length).toBe(24);
         expect(se.headline).toMatch(/PM2\.5/);

@@ -38,6 +38,7 @@ const UrbanLenses = (() => {
     const FLOOD_WADE_M = 0.3;   // floodwater above ~0.3 m knocks pedestrians over at modest velocity
     const FLOOD_SHARE = 50;     // % of the cell in the floodplain to treat it as impassable
     const FLOOD_DETOUR_M = 250;
+    const WLOG_HIGH = 45, WLOG_VERY = 65;   // waterlogging index cut-offs for High / Very high (pipeline/cells/ee_layers.py)
     const CUTOFF_DOMAIN = ['Cut off from care', 'Longer walk to care', 'Flooded', 'Unaffected', 'No care in reach anyway'];
     const CUTOFF_COLORS = { 'Cut off from care': '#c0392b', 'Longer walk to care': '#f39c12', Flooded: '#2e86c1', Unaffected: '#cfd8dc', 'No care in reach anyway': '#8e8e8e' };
     const STOP_KM = 0.5, RAPID_KM = 1;   // SDG 11.2.1: 500 m to a bus stop, 1 km to rail / BRT / terminal
@@ -55,15 +56,16 @@ const UrbanLenses = (() => {
             question: 'Who suffers most in a heatwave?',
             field: { key: 'hvi', label: 'Heat vulnerability', unit: '0-100', higherIs: 'worse', ramp: 'reds' },
             needs: ['surface_heat.lst_day_c', 'surface_heat.modis_night_c', 'population.density_km2', 'built_up.built_pct',
-                'vegetation.tree_canopy_pct', 'vegetation.ndvi', 'accessibility.healthcare_min'],
-            method: 'HVI = exposure × sensitivity × (1 − adaptive capacity), each a within-city percentile rank. Exposure: day and night land-surface temperature. Sensitivity: population density and built-up share. Adaptive capacity: tree canopy, NDVI and travel time to healthcare (inverted). Reported as a city percentile.',
-            refs: 'IPCC AR5 vulnerability framing; Reid et al. 2009; Wolf & McGregor 2013' },
+                'vegetation.tree_canopy_pct', 'vegetation.ndvi', 'accessibility.healthcare_min', 'wealth.rwi',
+                'demographics.under5', 'demographics.elderly_60plus', 'humid_heat.hot_days_40c', 'humid_heat.humid_heat_days'],
+            method: 'HVI = exposure × sensitivity × (1 − adaptive capacity), each a within-city percentile rank. Exposure: day and night land-surface temperature. Sensitivity: population density and built-up share. Adaptive capacity: tree canopy, NDVI, travel time to healthcare (inverted) and household wealth (Meta Relative Wealth Index, ~2.4 km). Reported as a city percentile. Children under 5 and people 60+ in the worst tenth come from WorldPop; air-temperature heat days from ERA5-Land.',
+            refs: 'IPCC AR5 vulnerability framing; Reid et al. 2009; Wolf & McGregor 2013; Chi et al. 2022 (RWI)' },
         { id: 'flood', title: 'Flood exposure', icon: '🌊',
             question: 'How many people live in the floodplain?',
             field: { key: 'flood_people', label: 'People in the 100-yr floodplain', unit: 'people', higherIs: 'worse', ramp: 'blues' },
             extra: [{ key: 'flood_hazard', label: 'Flood hazard', unit: '0-100', higherIs: 'worse', ramp: 'blues' }],
-            needs: ['water.flood_rp100_pct', 'water.flood_rp100_depth_m', 'water.flood_rp10_pct', 'terrain.hand_m', 'built_up.built_pct'],
-            method: 'Risk = hazard × exposure. Hazard: share of the cell in the GloFAS 100-year floodplain, scaled by depth (1 m or more counts fully), or half weight for low-lying land (height above nearest drainage under 5 m) as a ponding proxy. People exposed = residents × floodplain share.',
+            needs: ['water.flood_rp100_pct', 'water.flood_rp100_depth_m', 'water.flood_rp10_pct', 'terrain.hand_m', 'built_up.built_pct', 'waterlogging.waterlogging_index'],
+            method: 'Risk = hazard × exposure. Hazard: share of the cell in the GloFAS 100-year floodplain, scaled by depth (1 m or more counts fully), or, for rain that pools away from rivers, half the waterlogging susceptibility (Rain waterlogging layer; height above nearest drainage under 5 m where it is not baked). People exposed = residents × floodplain share.',
             refs: 'UNDRR Sendai risk framing; Nobre et al. 2011 (HAND)' },
         { id: 'cutoff', title: 'Cut off by floods', icon: '🛶',
             question: 'Who loses walking access to healthcare when the 100-year flood comes?',
@@ -72,6 +74,14 @@ const UrbanLenses = (() => {
             needs: ['water.flood_rp100_pct', 'water.flood_rp100_depth_m', 'osm_amenities.healthcare', WALK_LINKS],
             method: `Nearest mapped healthcare place within ${CATCH_KM} km on the walking network, today and with the 100-year flood: cells at least half inside the GloFAS 100-year floodplain with water at least ${FLOOD_WADE_M} m deep (too deep to wade safely) are removed from the graph, and their facilities with them. Residents are then “cut off” (care in reach today, none in a flood), “longer walk” (care still reachable, at least ${FLOOD_DETOUR_M} m further), “flooded” (their own cell is under water) or unaffected.`,
             refs: 'GloFAS / JRC flood hazard maps (Baugh et al. 2024); Russo et al. 2008 & Xia et al. 2014 on pedestrian stability in floodwater; Coles et al. 2017 (flood impacts on emergency service accessibility)' },
+        { id: 'waterlog', equity: true, title: 'Rain waterlogging', icon: '🌧',
+            question: 'Who lives where heavy rain pools?',
+            field: { key: 'waterlog_people', label: 'Residents where rain pools', unit: 'people', higherIs: 'worse', ramp: 'blues' },
+            extra: [{ key: 'waterlog_index', label: 'Waterlogging susceptibility', unit: '0-100', higherIs: 'worse', ramp: 'blues' }],
+            equityKey: 'waterlog_index',
+            needs: ['waterlogging.waterlogging_index', 'waterlogging.monsoon_water_pct', 'demographics.under5', 'demographics.elderly_60plus', 'wealth.rwi'],
+            method: `Residents of cells whose waterlogging susceptibility is High (≥ ${WLOG_HIGH}) or Very high (≥ ${WLOG_VERY}). The index blends height above drainage, Sentinel-1 radar passes that saw standing water in the wet seasons 2021–2025, the topographic wetness index, hollows below the surrounding 300 m and sealed surface. Drains and pumps are not modelled. The poorest-fifth share uses the Meta Relative Wealth Index, population-weighted within the city.`,
+            refs: 'Beven & Kirkby 1979 (TWI); Nobre et al. 2011 (HAND); Tiwari et al. 2020 (Sentinel-1 urban flood mapping); Chi et al. 2022 (RWI)' },
         { id: 'fifteen', equity: true, title: '15-minute completeness', icon: '🚶',
             question: 'Can people reach daily needs on foot?',
             field: { key: 'fifteen_min', label: '15-minute completeness', unit: '0-100', higherIs: 'better', ramp: 'greens' },
@@ -597,7 +607,7 @@ const UrbanLenses = (() => {
         };
         const E = [R('surface_heat.lst_day_c'), R('surface_heat.modis_night_c')];
         const S = [R('population.density_km2'), R('built_up.built_pct')];
-        const A = [R('vegetation.tree_canopy_pct'), R('vegetation.ndvi'), R('accessibility.healthcare_min', true)];
+        const A = [R('vegetation.tree_canopy_pct'), R('vegetation.ndvi'), R('accessibility.healthcare_min', true), R('wealth.rwi')];
         if (!E.some(Boolean) || !S.some(Boolean)) return null;
         const raw = new Float64Array(n).fill(NaN);
         for (const i of idx) {
@@ -620,6 +630,17 @@ const UrbanLenses = (() => {
             { label: 'Daytime surface temp there vs city', value: dayTop != null ? `${_round(dayTop)} vs ${_round(dayAll)} °C` : '–' },
             { label: 'Tree canopy there vs city', value: canTop != null ? `${_round(canTop)}% vs ${_round(canAll)}%` : '–' },
         ];
+        const u5 = c['demographics.under5'], old = c['demographics.elderly_60plus'];
+        if (u5 && old) {
+            stats.push({ label: 'Children under 5 / people 60+ in that tenth (WorldPop)',
+                value: `${_people(_sumOver(u5, top, () => true))} / ${_people(_sumOver(old, top, () => true))}` });
+        }
+        const hot40 = c['humid_heat.hot_days_40c'], humid = c['humid_heat.humid_heat_days'];
+        if (hot40) {
+            const hd = wmean(hot40, pop, idx), hu = humid ? wmean(humid, pop, idx) : null;
+            stats.push({ label: 'Air-temperature days ≥ 40 °C per resident (ERA5-Land)',
+                value: `${_round(hd, 0)}${hu != null ? ` · humid-heat days ${_round(hu, 0)}` : ''}` });
+        }
         return {
             columns: { hvi }, idx,
             metric: { label: 'Daytime surface temperature per resident', value: _round(dayAll), unit: '°C', higherIs: 'worse' },
@@ -634,14 +655,16 @@ const UrbanLenses = (() => {
         const c = fr.cols, idx = _residents(fr), n = fr.grid.n;
         const rp100 = c['water.flood_rp100_pct'], depth = c['water.flood_rp100_depth_m'], rp10 = c['water.flood_rp10_pct'];
         const hand = c['terrain.hand_m'], built = c['built_up.built_pct'], pop = c['population.population'];
-        if (!rp100 && !hand) return null;
+        const wlog = c['waterlogging.waterlogging_index'];
+        if (!rp100 && !hand && !wlog) return null;
         const hazard = new Float64Array(n).fill(NaN), people = new Float64Array(n).fill(NaN);
         let p100 = 0, p10 = 0, builtKm2 = 0;
         for (let i = 0; i < n; i++) {
             const share = rp100 && _fin(rp100[i]) ? Math.max(0, Math.min(1, rp100[i] / 100)) : 0;
             const d = depth && _fin(depth[i]) ? Math.min(1, Math.max(0.25, depth[i])) : 1;
             const fluvial = share * d;
-            const pluvial = hand && _fin(hand[i]) && hand[i] < 5 ? 0.5 * (1 - Math.max(0, hand[i]) / 5) : 0;
+            const pluvial = wlog && _fin(wlog[i]) ? 0.5 * Math.min(1, Math.max(0, wlog[i]) / 100)
+                : hand && _fin(hand[i]) && hand[i] < 5 ? 0.5 * (1 - Math.max(0, hand[i]) / 5) : 0;
             hazard[i] = 100 * Math.max(fluvial, pluvial);
             const pp = pop && pop[i] > 0 ? pop[i] : 0;
             people[i] = pp * share;
@@ -651,6 +674,7 @@ const UrbanLenses = (() => {
         }
         const total = _sumOver(pop, idx, () => true);
         const ponding = hand ? _sumOver(pop, idx, i => hand[i] < 2) : null;
+        const pooled = wlog ? _sumOver(pop, idx, i => wlog[i] >= WLOG_HIGH) : null;
         return {
             columns: { flood_people: people, flood_hazard: hazard }, idx, weightKey: 'flood_hazard',
             metric: { label: 'Residents in the 100-year floodplain', value: _round(100 * p100 / (total || 1)), unit: '%', higherIs: 'worse' },
@@ -661,7 +685,51 @@ const UrbanLenses = (() => {
                 { label: 'People in the 10-year floodplain', value: rp10 ? _people(p10) : '–', raw: Math.round(p10) },
                 { label: 'Built-up land in the floodplain', value: `${_round(builtKm2, 2)} km²` },
                 { label: 'People near drainage level (HAND < 2 m, waterlogging-prone)', value: ponding != null ? _people(ponding) : '–' },
+                ...(pooled != null ? [{ label: 'People where rain pools (waterlogging High or Very high)', value: _people(pooled), raw: Math.round(pooled) }] : []),
             ],
+        };
+    }
+
+    function waterlog(fr) {
+        const c = fr.cols, idx = _residents(fr), n = fr.grid.n;
+        const wl = c['waterlogging.waterlogging_index'], seen = c['waterlogging.monsoon_water_pct'];
+        const pop = c['population.population'];
+        if (!wl) return null;
+        const people = new Float64Array(n).fill(NaN), index = new Float64Array(n).fill(NaN);
+        for (const i of idx) {
+            if (!_fin(wl[i])) continue;
+            index[i] = wl[i];
+            people[i] = wl[i] >= WLOG_HIGH ? pop[i] : 0;
+        }
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const high = idx.filter(i => wl[i] >= WLOG_HIGH), very = idx.filter(i => wl[i] >= WLOG_VERY);
+        const pHigh = _sumOver(pop, high, () => true), pVery = _sumOver(pop, very, () => true);
+        const stats = [
+            { label: 'Residents where rain pools (High or Very high)', value: `${_people(pHigh)} (${_round(100 * pHigh / total)}%)`, raw: Math.round(pHigh) },
+            { label: 'Of them in Very high cells', value: _people(pVery), raw: Math.round(pVery) },
+        ];
+        if (seen) {
+            const sHigh = wmean(seen, pop, high), sAll = wmean(seen, pop, idx);
+            if (sHigh != null) stats.push({ label: 'Radar passes that saw standing water there vs city', value: `${_round(sHigh)}% vs ${_round(sAll)}%` });
+        }
+        const u5 = c['demographics.under5'], old = c['demographics.elderly_60plus'];
+        if (u5 && old) stats.push({ label: 'Children under 5 / people 60+ there (WorldPop)', value: `${_people(_sumOver(u5, high, () => true))} / ${_people(_sumOver(old, high, () => true))}` });
+        let poorShare = null;
+        const rwi = c['wealth.rwi'];
+        if (rwi && pHigh > 0) {
+            const q20 = wquantile(rwi, pop, idx, 0.2);
+            if (q20 != null) {
+                poorShare = 100 * _sumOver(pop, high, i => rwi[i] <= q20) / pHigh;
+                stats.push({ label: 'Share of them in the poorest fifth (RWI; 20% if even)', value: `${_round(poorShare)}%` });
+            }
+        }
+        return {
+            columns: { waterlog_people: people, waterlog_index: index }, idx, weightKey: 'waterlog_index',
+            metric: { label: 'Residents where rain pools', value: _round(100 * pHigh / total), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pHigh)} people (${_round(100 * pHigh / total)}% of residents) live where heavy rain is likely to pool`
+                + (pVery ? `, ${_people(pVery)} of them in the most waterlogging-prone cells` : '')
+                + (poorShare != null ? `; ${_round(poorShare)}% of them are in the city’s poorest fifth of neighbourhoods.` : '.'),
+            stats,
         };
     }
 
@@ -1441,7 +1509,7 @@ const UrbanLenses = (() => {
             metric: pmRes != null ? { label: 'Months a year above 60 µg/m³ PM2.5', value: _round(pmRes, 1), unit: 'months', higherIs: 'worse' } : null };
     }
 
-    const RUN = { heat, flood, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
+    const RUN = { heat, flood, waterlog, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
 
     // ── siting suitability (MCDA with AHP weights) ──────────────────────────
 

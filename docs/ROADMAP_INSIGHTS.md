@@ -58,12 +58,13 @@ new data.
 | 15 | Rooftop solar and cooling potential | How much energy could the roofs make? | Yes (heights, sun-hours) | M | **Shipped** |
 | 16 | Network isochrones | True 15-minute reach on the walking graph | Yes: `osm_walk` (L7, 8-direction cell links from every street, footway and path but motorways) baked by `pipeline/cells/osm_layers.py` in Actions | M | Shipped (falls back to straight line until a city is baked) |
 | 17 | Transit job access | How many jobs within 45 min by bus/metro? | No (GTFS + jobs); stop coverage shipped as item 22 | L | Data needed |
-| 18 | Socio-economic sensitivity | Who is poor, old, young (census)? | No (Census / SHRUG) | L | Data needed |
+| 18 | Socio-economic sensitivity | Who is poor, old, young (census)? | Partly: `demographics` (WorldPop under-5 / 60+, district shares) and `wealth` (Meta RWI, ~2.4 km) feed the heat and waterlogging lenses; ward-level census still needed | L | Partly shipped |
 | 19 | Data confidence layer | How much should I trust this cell? | Yes (coverage) | S | **Shipped** |
 | 20 | Area profile through every lens | How does my neighbourhood compare on each lens? | Yes | S | **Shipped** |
 | 21 | Seasonal exposure | How many months a year are residents exposed? Is it warming? | Yes (monthly series) | S | **Shipped** |
 | 22 | Public transport coverage (SDG 11.2.1) | How many people can walk to a bus stop (500 m) or a station (1 km)? | Yes (OSM stops + `osm_walk`) | S | **Shipped** |
 | 23 | Cut off by floods | Who loses walking access to healthcare in a 100-year flood? | Yes (GloFAS + `osm_walk` + OSM healthcare) | S | **Shipped** |
+| 24 | Rain waterlogging | Who lives where heavy rain pools, and are they poorer? | Yes (`waterlogging`: Sentinel-1 + DEM + MERIT Hydro + GHSL) | S | **Shipped** |
 
 Excluded here because other work owns them: draw-an-area building insights,
 the "what changed this month" feed, and performance/reliability.
@@ -290,6 +291,22 @@ the two searches per cell stay cheap (Delhi ≈ 1.7 s).
 drains and underpasses are invisible; urban waterlogging (pluvial) is not in
 the hazard. Without a walking graph the lens only removes flooded clinics,
 it cannot model the water as a barrier.
+
+## 24. Rain waterlogging
+
+Residents of cells whose `waterlogging.waterlogging_index` is High (≥ 45) or Very
+high (≥ 65); see [OPEN_DATA_CELLS.md](OPEN_DATA_CELLS.md#rain-waterlogging) for
+the index. The lens adds the radar-seen standing-water share there against the
+city, WorldPop children under 5 and people 60+ there, and the share of those
+residents in the city's poorest fifth by the Meta Relative Wealth Index
+(population-weighted 20th percentile; 20% would be an even spread). The
+**Flood exposure** lens now takes its pluvial hazard from the same index
+(half weight, as the HAND proxy before it), and the **Heat vulnerability**
+lens adds RWI to adaptive capacity and reports under-5 / 60+ counts and
+ERA5-Land days ≥ 40 °C.
+
+DISHA routes "where does rainwater pool", "waterlogging" and "pluvial / urban
+flooding" here.
 
 ## How it is built
 
