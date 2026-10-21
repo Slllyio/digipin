@@ -7,15 +7,15 @@ import vm from 'vm';
 // first use. The loader is exercised against jsdom's <script> elements by
 // firing load/error by hand (jsdom does not fetch cross-origin scripts).
 function fresh() {
-    const ctx = { window: globalThis, document, globalThis, setTimeout, clearTimeout, console };
+    const ctx = { window: globalThis, document, globalThis, setTimeout, clearTimeout, console, DataStatus: globalThis.DataStatus };
     vm.runInNewContext(readFileSync(path.join(process.cwd(), 'js/lazy-libs.js'), 'utf-8'), ctx);
     return globalThis.LazyLibs;
 }
 const tag = () => document.head.querySelector('script[src*="georaster"]');
 
 describe('LazyLibs', () => {
-    beforeEach(() => { document.head.innerHTML = ''; });
-    afterEach(() => { document.head.innerHTML = ''; });
+    beforeEach(() => { document.head.innerHTML = ''; DataStatus.reset(); });
+    afterEach(() => { document.head.innerHTML = ''; DataStatus.reset(); });
 
     it('injects the pinned tag once with its integrity hash and resolves to the global', async () => {
         const L = fresh();
@@ -50,6 +50,34 @@ describe('LazyLibs', () => {
         expect(tag()).not.toBeNull();
         tag().onerror();
         await expect(p2).rejects.toThrow();
+    });
+
+    it('shows a status row with Retry when the CDN fails and clears it once the library loads', async () => {
+        const L = fresh();
+        const p = L.load('georaster');
+        tag().onerror();
+        await expect(p).rejects.toThrow();
+        await Promise.resolve();
+        expect(DataStatus.has('lib-georaster')).toBe(true);
+        const row = document.querySelector('#data-status [data-key="lib-georaster"]');
+        expect(row && row.textContent).toMatch(/satellite-image reader/);
+        const btn = row.querySelector('button.ds-action');
+        expect(btn).not.toBeNull();
+        // Retry is the same load(): a second failure keeps the row (button handed back).
+        btn.click();
+        await Promise.resolve();
+        tag().onerror();
+        await new Promise((r) => setTimeout(r, 0));
+        expect(DataStatus.has('lib-georaster')).toBe(true);
+        expect(btn.disabled).toBe(false);
+        // Third try succeeds: the row goes.
+        btn.click();
+        await Promise.resolve();
+        globalThis.parseGeoraster = () => 'parsed';
+        tag().onload();
+        await new Promise((r) => setTimeout(r, 0));
+        expect(DataStatus.has('lib-georaster')).toBe(false);
+        delete globalThis.parseGeoraster;
     });
 
     it('rejects a tag that ran but defined nothing, and an unknown library', async () => {

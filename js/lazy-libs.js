@@ -19,10 +19,27 @@ const LazyLibs = (() => {
             url: 'https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js',
             integrity: 'sha384-k/E847ELHPuDVPWoArQHQe5LUD8YSFwxlUaH63fF618o/Y0Gnu4FQ1xjuL280spp',
             global: 'parseGeoraster',
+            label: 'satellite-image reader',   // named in the status strip when the CDN fails
         },
     };
     const TIMEOUT_MS = 60000;   // a slow link downloads a few hundred KB in well under this
     const _pending = new Map();
+    const _statusKey = (name) => `lib-${name}`;
+
+    /** A failed download is a user-visible state, not a console line: the
+     *  realtime overlays and the hydrology tool just show nothing without
+     *  the library. The row offers Retry, which is the same load() call. */
+    function _reportFailure(name, lib) {
+        if (typeof DataStatus === 'undefined' || !DataStatus.set) return;
+        DataStatus.set(_statusKey(name), {
+            text: `The ${lib.label || name} library could not be downloaded — satellite overlays and hydrology are off until it loads`,
+            kind: 'error',
+            action: { label: 'Retry', busy: 'Loading…', run: () => load(name).then(() => true, () => false) },
+        });
+    }
+    function _clearFailure(name) {
+        if (typeof DataStatus !== 'undefined' && DataStatus.clear) DataStatus.clear(_statusKey(name));
+    }
 
     function _present(lib) {
         return typeof globalThis !== 'undefined' && typeof globalThis[lib.global] !== 'undefined' ? globalThis[lib.global] : undefined;
@@ -61,6 +78,7 @@ const LazyLibs = (() => {
         if (_pending.has(name)) return _pending.get(name);
         const p = _inject(lib).finally(() => _pending.delete(name));
         _pending.set(name, p);
+        p.then(() => _clearFailure(name), () => _reportFailure(name, lib));
         return p;
     }
 

@@ -4,6 +4,12 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — a CDN library that fails to download is a visible state
+
+- **Gap:** since georaster moved off the boot path (entry below), a user on a bad link who opens a realtime heat/growth overlay or the hydrology tool while the CDN is unreachable got nothing at all: the loader rejected, the callers returned `null`, and the only trace was a console warning. Nothing told the user why the overlay was empty or offered a way to try again.
+- **Fix:** `LazyLibs.load()` reports a failed download on the status strip (`lib-<name>`, error, "The satellite-image reader library could not be downloaded …") with a Retry that is the same `load()` call; a later successful load clears the row. The callers are unchanged.
+- **Guards:** unit test for the row appearing on failure, Retry handing the button back on a second failure, and the row clearing when the third try loads.
+
 ## 2026-10-21 — status strip: rows keep their DOM
 
 - **Gap (CI, twice):** the resilience spec's click on the `heights` Retry button kept finding the button "detached from the DOM" for the whole 300 s window. The first fix (an idempotent `DataStatus.set()` for an unchanged row) was not enough: any other row arriving or clearing (`tiles`, `cellgaps:<id>` while a 3D city loads on the software renderer) rebuilt the whole strip, so the button was replaced between the locator resolving it and the click landing. A user mid-click would lose it the same way, and a screen-reader focus with it.
