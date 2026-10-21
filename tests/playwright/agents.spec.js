@@ -22,7 +22,7 @@ test.describe('agents', () => {
     await page.click('#btn-agents');
     const dlg = page.locator('#agents-dialog');
     await expect(dlg).toBeVisible();
-    await expect(dlg.locator('.ag-card')).toHaveCount(13);
+    await expect(dlg.locator('.ag-card')).toHaveCount(14);
 
     // Setup shows the plan before anything runs.
     await dlg.locator('.ag-card[data-agent="site"]').click();
@@ -62,9 +62,11 @@ test.describe('agents', () => {
     await waitForApp(page);
     const out = await page.evaluate(async () => {
       const res = [];
+      const other = UrbanInsights.cities(CellStore).map((c) => c.name).find((n) => n !== 'indore_pilot');
       for (const t of UrbanAgents.TEMPLATES) {
         try {
-          const { report } = await UrbanAgents.run({ agent: t.id, area: { city: 'indore_pilot' }, params: {} });
+          const params = t.id === 'compare' ? { vs: other } : {};
+          const { report } = await UrbanAgents.run({ agent: t.id, area: { city: 'indore_pilot' }, params });
           res.push([t.id, !!report.summary, report.steps.filter((s) => s.status === 'failed').length]);
         } catch (e) { res.push([t.id, false, String(e.message)]); }
       }

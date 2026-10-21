@@ -27,6 +27,8 @@ Shipped on this branch and covered by unit + loop-integration tests (`npm test`)
 
 **Lens-backed agents:** air exposure, 3-30-300 green, rooftop solar and compound risk wrap the matching `UrbanLenses` lens and slice it to the area (residents, a fixed threshold where the field is coarse or bounded, area vs city mean, worst cells or, for solar, the best roofs). Programme siting wraps `UrbanLenses.lens('siting', city, store, { preset })` for cool roofs or EV charging hubs and keeps the sites inside the area, falling back to the city's best.
 
+**Compare agent:** wraps `UrbanInsights.compare` to put the area against its own city or any other covered city (a `dynamic: 'cities'` param rendered as a select), listing the clearest leads on each side.
+
 The Alert Triage agent (§5.1) and the Pipeline Steward (§5.2, `pipeline/steward/`) are shipped too. Not yet built: the Tier-3 automation (§6).
 
 ## 0. Why this document

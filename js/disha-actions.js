@@ -316,7 +316,9 @@ const DISHAActions = (() => {
         async runagent(p) {
             const AP = _g('AgentsPanel'), UA = _g('UrbanAgents');
             if (!AP || !UA) throw new Error('agents unavailable');
-            const r = await AP.runFor(p.agent, p.use ? { use: p.use } : {});
+            const params = {};
+            for (const k of ['use', 'preset', 'vs']) if (p[k]) params[k] = String(p[k]).toLowerCase();
+            const r = await AP.runFor(p.agent, params);
             return { label: `${r.title}: ${r.area.label}`, observation: `runAgent ${p.agent}:\n${UA.toText(r)}` };
         },
 

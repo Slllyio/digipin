@@ -309,6 +309,20 @@ const AgentsPanel = (() => {
 
         for (const p of t.params) {
             body.appendChild(_el('div', 'ui-h', p.label));
+            if (p.dynamic === 'cities') {
+                const sel = _el('select', 'ag-select');
+                sel.setAttribute('aria-label', p.label);
+                const opts = [...p.options, ...UrbanInsights.cities(store).map(c => ({ value: c.name, label: c.label }))];
+                for (const o of opts) {
+                    const el = _el('option', null, o.label);
+                    el.value = o.value;
+                    if (o.value === _params[p.key]) el.selected = true;
+                    sel.appendChild(el);
+                }
+                sel.addEventListener('change', () => { _params[p.key] = sel.value; render(); });
+                body.appendChild(sel);
+                continue;
+            }
             const ps = _el('div', 'ui-seg');
             for (const o of p.options) {
                 const on = _params[p.key] === o.value;

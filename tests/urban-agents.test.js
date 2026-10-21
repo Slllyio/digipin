@@ -25,9 +25,9 @@ async function store() {
 const HOOD = { code: globalThis.DigiPin.encode(22.7186, 75.8553).replace(/-/g, '').slice(0, 5) };
 
 describe('UrbanAgents catalogue and plans', () => {
-    it('offers the thirteen agents with unique ids', () => {
+    it('offers the fourteen agents with unique ids', () => {
         const ids = A.TEMPLATES.map(t => t.id);
-        expect(ids).toEqual(['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes', 'air', 'green', 'solar', 'risk', 'programme', 'health']);
+        expect(ids).toEqual(['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes', 'air', 'green', 'solar', 'risk', 'programme', 'compare', 'health']);
         expect(new Set(ids).size).toBe(ids.length);
     });
 
@@ -154,6 +154,24 @@ describe('Lens-backed agents', () => {
         expect(hood.report.summary).toMatch(/cool-roof/);
         if (process.env.AGENT_DEBUG) console.log(city.report.summary, hood.report.summary, hood.report.metrics);
     }, 60000);
+});
+
+describe('Compare agent', () => {
+    it('compares a neighbourhood with its own city and a city with another', async () => {
+        const s = await store();
+        const own = await A.run({ agent: 'compare', area: HOOD, params: { vs: 'own' } }, s);
+        expect(own.report.summary).toMatch(/ahead|evenly matched/);
+        expect(own.report.metrics.find(m => m.label === 'Fields compared').value).not.toBe('0');
+        expect(own.report.findings.length).toBeGreaterThan(0);
+        const other = A.plan({ agent: 'compare', params: { vs: 'pune' } });
+        expect(other.params.vs).toBe('pune');
+        expect(A.plan({ agent: 'compare', params: { vs: 'Bad City!' } }).params.vs).toBe('own');
+        await expect(A.run({ agent: 'compare', area: { city: 'indore_pilot' }, params: { vs: 'own' } }, s)).rejects.toThrow(/another city/);
+        const cities = globalThis.UrbanInsights.cities(s).map(c => c.name).filter(n => n !== 'indore_pilot');
+        const vsCity = await A.run({ agent: 'compare', area: { city: 'indore_pilot' }, params: { vs: cities[0] } }, s);
+        expect(vsCity.report.summary.length).toBeGreaterThan(20);
+        if (process.env.AGENT_DEBUG) console.log(own.report.summary, own.report.findings.slice(0, 3), vsCity.report.summary);
+    }, 90000);
 });
 
 describe('Data health agent (Pipeline Steward)', () => {

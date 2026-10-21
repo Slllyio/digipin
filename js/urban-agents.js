@@ -114,6 +114,12 @@ const UrbanAgents = (() => {
             params: [{ key: 'preset', label: 'Programme', options: [{ value: 'cool_roofs', label: 'Cool roofs' }, { value: 'ev_charging', label: 'EV charging' }], default: 'cool_roofs' }],
         },
         {
+            id: 'compare', title: 'Compare', icon: '⇄',
+            question: 'How does this place stack up?',
+            blurb: 'Every shared dataset, side by side with its own city or another city, and where each side is clearly ahead.',
+            params: [{ key: 'vs', label: 'Compare with', dynamic: 'cities', options: [{ value: 'own', label: 'Its own city' }], default: 'own' }],
+        },
+        {
             id: 'health', title: 'Data health', icon: '♥', scope: 'project',
             question: 'Can I trust the live feeds right now?',
             blurb: 'The Pipeline Steward: freshness, emptiness and wiring of every live feed, with what to fix.',
@@ -140,7 +146,8 @@ const UrbanAgents = (() => {
         const out = {};
         for (const p of t.params) {
             const v = params && params[p.key];
-            out[p.key] = p.options.some(o => o.value === v) ? v : p.default;
+            // Dynamic options (cities) are checked when the run resolves them.
+            out[p.key] = p.options.some(o => o.value === v) || (p.dynamic && /^[a-z0-9_]+$/.test(String(v || ''))) ? v : p.default;
         }
         return out;
     }
@@ -244,6 +251,11 @@ const UrbanAgents = (() => {
             { tool: 'lens', label: `Run the ${p.preset === 'ev_charging' ? 'EV charging hub' : 'cool-roof programme'} siting lens for the city`, detail: 'AHP weights from a pairwise matrix; each criterion a within-city percentile rank' },
             { tool: 'pickSites', label: 'Keep the best-ranked sites inside the area, at least 1.5 km apart' },
             { tool: 'layer', label: 'Paint suitability (0–100) as a layer' },
+        ],
+        compare: (p) => [
+            { tool: 'resolve', label: `Set the other side: ${p.vs === 'own' ? 'the area’s own city' : (typeof UrbanInsights !== 'undefined' ? UrbanInsights.cityLabel(p.vs) : p.vs)}` },
+            { tool: 'compare', label: 'Compare every dataset both sides have, mean against mean', detail: 'a side is ahead on a field when it is better by 5% of the field’s range' },
+            { tool: 'report', label: 'List the clearest leads on each side' },
         ],
         health: () => [
             { tool: 'stewardReport', label: "Read the Pipeline Steward's last report", detail: 'data/steward/report.json, written every 6 hours by the steward workflow' },
@@ -809,7 +821,47 @@ const UrbanAgents = (() => {
         };
     }
 
-    const RUNNERS = { air: _lensAgent('air'), green: _lensAgent('green'), solar: _lensAgent('solar'), risk: _lensAgent('burden'), programme: _programme, health: _health, brief: _brief, site: _site, flood: _flood, heat: _heat, access: _access, growth: _growth, changes: _changes };
+    async function _compare(ctx, store, step) {
+        const vs = ctx.params.vs;
+        const B = await step('resolve', () => {
+            if (vs === 'own') {
+                if (ctx.area.kind === 'city') throw new Error('Pick another city to compare a whole city with.');
+                if (!ctx.city) throw new Error('This area is outside the cities the data covers.');
+                return { city: ctx.city, label: ctx.cityLabel };
+            }
+            if (!UrbanInsights.cities(store).some(c => c.name === vs)) throw new Error(`Unknown city "${vs}".`);
+            if (ctx.area.kind === 'city' && ctx.city === vs) throw new Error('Pick a different city to compare with.');
+            return { city: vs, label: UrbanInsights.cityLabel(vs) };
+        }, (b) => b.label);
+        const aIn = ctx.area.kind === 'city' ? { city: ctx.city, label: ctx.cityLabel } : { ...ctx.input.area, label: ctx.area.label };
+        const r = await step('compare', () => UrbanInsights.compare(aIn, B, store),
+            (x) => `${x.rows.length} fields compared; ${x.wins.a}–${x.wins.b} on those with a better direction`);
+        await step('report', () => true, () => 'done');
+        const L = { a: r.a.label, b: r.b.label };
+        const fmt = (v, row) => `${_round(v, Math.abs(v) >= 100 ? 0 : 1)}${row.unit && !String(row.unit).startsWith('0-') ? ` ${row.unit}` : ''}`;
+        const lead = (side, kind) => r.rows.filter(x => x.winner === side).slice(0, 4).map(x => ({
+            kind, title: `${x.label}: ${fmt(x.a, x)} vs ${fmt(x.b, x)}`,
+            detail: `${side === 'a' ? L.a : L.b} is ahead (${x.higherIs === 'better' ? 'higher is better' : 'lower is better'}).`,
+            cells: [], sources: [x.dataset].filter(Boolean),
+        }));
+        const findings = [...lead('a', 'strength'), ...lead('b', 'concern')];
+        const close = r.rows.filter(x => x.winner === 'tie' && x.higherIs).slice(0, 2);
+        if (close.length) findings.push({ kind: 'notable', title: `Level on ${close.map(x => lc(x.label)).join(' and ')}`, detail: 'Within 5% of the field’s range.', cells: [], sources: close.map(x => x.dataset).filter(Boolean) });
+        return {
+            summary: r.summary,
+            metrics: [
+                { label: `${L.a} ahead`, value: String(r.wins.a) },
+                { label: `${L.b} ahead`, value: String(r.wins.b) },
+                { label: 'Level', value: String(r.wins.tie) },
+                { label: 'Fields compared', value: String(r.rows.length) },
+            ],
+            findings, sources: r.sources,
+            method: 'Mean of each side’s cells for every numeric field both sides have (built-up cells only for the scores grid). A side is ahead on a field with a better direction when its mean is better by at least 5% of the field’s range.',
+        };
+    }
+    const lc = (t) => (t ? t.charAt(0).toLowerCase() + t.slice(1) : t);
+
+    const RUNNERS = { compare: _compare, air: _lensAgent('air'), green: _lensAgent('green'), solar: _lensAgent('solar'), risk: _lensAgent('burden'), programme: _programme, health: _health, brief: _brief, site: _site, flood: _flood, heat: _heat, access: _access, growth: _growth, changes: _changes };
 
     /**
      * Run an agent. hooks.onStep({ i, tool, label, status, detail, ms }) fires as
