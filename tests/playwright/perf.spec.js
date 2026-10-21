@@ -18,8 +18,29 @@ function summarizeProfile(profile, k = 12) {
     const key = `${fn} ${base(cf.url)}:${cf.lineNumber + 1}`;
     byFn.set(key, (byFn.get(key) || 0) + d);
   });
+  // Who calls the costly native frames (readPixels, bufferData, ...): the
+  // nearest script frame above each, so a sync GPU stall can be traced to
+  // the app or library function that asks for it.
+  const parent = new Map();
+  for (const n of profile.nodes) for (const c of (n.children || [])) parent.set(c, n.id);
+  const viaScript = new Map(); const viaApp = new Map();
+  const vendor = /maplibre|deck|pmtiles|\/lib\//;
+  profile.samples.forEach((sid, i) => {
+    const n = nodes.get(sid); const cf = n.callFrame;
+    if (cf.url || !cf.functionName || /^\(/.test(cf.functionName)) return;
+    const d = profile.timeDeltas[i] || 0;
+    let p = parent.get(sid), hops = 0, script = null, app = null;
+    while (p != null && hops++ < 60 && !(script && app)) {
+      const pc = nodes.get(p).callFrame;
+      if (pc.url) { const key = `${pc.functionName || '(anon)'} ${base(pc.url)}:${pc.lineNumber + 1}`; if (!script) script = key; if (!app && !vendor.test(pc.url)) app = key; }
+      p = parent.get(p);
+    }
+    if (script) viaScript.set(`${cf.functionName} <- ${script}`, (viaScript.get(`${cf.functionName} <- ${script}`) || 0) + d);
+    const ak = `${cf.functionName} <- ${app || '(library or browser only)'}`;
+    viaApp.set(ak, (viaApp.get(ak) || 0) + d);
+  });
   const fmt = (m) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, k).map(([n, us]) => `  ${String(Math.round(us / 1000)).padStart(6)} ms ${(100 * us / total).toFixed(1).padStart(5)}%  ${n}`).join('\n');
-  return `  sampled ${Math.round(total / 1000)} ms\n by file:\n${fmt(byFile)}\n by function:\n${fmt(byFn)}`;
+  return `  sampled ${Math.round(total / 1000)} ms\n by file:\n${fmt(byFile)}\n by function:\n${fmt(byFn)}\n native frames by calling script function:\n${fmt(viaScript)}\n native frames by app caller:\n${fmt(viaApp)}`;
 }
 
 const BUDGET = {

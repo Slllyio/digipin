@@ -34,7 +34,9 @@ function makeStubMap() {
         setPaintProperty: () => {},
         setLight: () => {},
         getCanvas: () => ({ style: {} }),
-        queryRenderedFeatures: vi.fn(() => map.rendered),
+        queryRenderedFeatures: vi.fn(() => { map.terrainSeen.push(map.style.tileManagers[SOURCE_ID].terrain); return map.rendered; }),
+        style: { tileManagers: { [SOURCE_ID]: { terrain: null } } },
+        terrainSeen: [],
         isSourceLoaded: () => map.loaded,
         getCenter: () => ({ lng: 77.2, lat: 28.6 }),
         getZoom: () => 13,
@@ -113,5 +115,37 @@ describe('twin re-harvest while footprint tiles stream in', () => {
         map.loaded = true;
         tileThenFrame(map, 100);   // loaded: no spacing, and the draw is not skipped as unchanged
         expect(map.twin.setData.mock.calls.length).toBe(after + 1);
+    });
+});
+
+describe('harvest with terrain on: the rendered query runs without terrain picks', () => {
+    // The real Terrain module, switched on against a minimal map of its own
+    // (the twin's stub map has no style to drape).
+    function terrainMap() {
+        const sources = {}, layers = {};
+        return { getSource: (id) => sources[id], addSource: (id, d) => { sources[id] = d; }, getLayer: (id) => layers[id], addLayer: (d) => { layers[d.id] = d; }, removeLayer: (id) => { delete layers[id]; }, getStyle: () => ({ layers: [] }), setTerrain: () => {} };
+    }
+    const picks = { pointCoordinate: () => null };
+    beforeEach(() => { map.terrainSeen = []; map.style.tileManagers[SOURCE_ID].terrain = picks; });
+    afterEach(() => { Terrain.setEnabled(terrainMap(), false); map.style.tileManagers[SOURCE_ID].terrain = null; });
+
+    it("unsets the footprint tile manager's terrain for the query and restores it after", async () => {
+        Terrain.setEnabled(terrainMap(), true);
+        expect(Terrain.isEnabled()).toBe(true);
+        map.rendered = [square(0), square(1)];
+        OB.toggle(map);
+        await vi.runOnlyPendingTimersAsync();
+        expect(map.terrainSeen.length).toBeGreaterThan(0);
+        expect(map.terrainSeen.every((t) => t === null)).toBe(true);     // no terrain picks during the query
+        expect(map.style.tileManagers[SOURCE_ID].terrain).toBe(picks);    // put back
+        expect(map.twin.setData.mock.calls.at(-1)[0].features.length).toBe(2);
+    });
+
+    it('leaves the terrain alone when terrain is off', async () => {
+        map.rendered = [square(0)];
+        OB.toggle(map);
+        await vi.runOnlyPendingTimersAsync();
+        expect(map.terrainSeen.length).toBeGreaterThan(0);
+        expect(map.terrainSeen.every((t) => t === picks)).toBe(true);
     });
 });

@@ -574,12 +574,30 @@ const OvertureBuildings = (() => {
      * when the camera and the number of rendered footprints are those of the
      * last draw; used by the tile-streaming poll.
      */
+    /**
+     * The footprints to extrude: what MapLibre has rendered of the footprint
+     * layer. With terrain on, MapLibre projects every corner of the query box
+     * through the terrain's coordinate framebuffer, a `readPixels` per corner
+     * and each one a full GPU sync (1.8 s of a Delhi fly-in on a software
+     * renderer, a visible hitch on real GPUs), only to find which tiles the
+     * box touches. The harvest wants a whole-view box, for which the flat
+     * projection is just as good, so the source's tile manager is queried
+     * with its terrain unset for the duration of the (synchronous) call and
+     * restored after. Internals absent (another MapLibre): the plain query.
+     */
+    function _harvestFootprints() {
+        const tm = terrainOn() && _map.style && _map.style.tileManagers ? _map.style.tileManagers[SOURCE_ID] : null;
+        const picks = tm && tm.terrain ? tm.terrain : null;
+        if (picks) tm.terrain = null;
+        try { return _map.queryRenderedFeatures({ layers: [LAYER_ID] }) || []; }
+        catch { return []; }   // layer not rendered yet
+        finally { if (picks) tm.terrain = picks; }
+    }
+
     function _refreshTwin({ onlyIfChanged = false } = {}) {
         if (!_map || !_twin || typeof DeckBuildings === 'undefined') return;
         const t0 = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-        let feats = [];
-        try { feats = _map.queryRenderedFeatures({ layers: [LAYER_ID] }) || []; }
-        catch { /* layer not rendered yet */ }
+        const feats = _harvestFootprints();
         const sig = _twinSig(feats);
         if (onlyIfChanged && sig === _lastTwinSig) return;
         _lastTwinSig = sig;
