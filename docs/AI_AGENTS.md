@@ -19,7 +19,9 @@ Shipped on this branch and covered by unit + loop-integration tests (`npm test`)
 1. The agent tools live in a **separate async `executeAgentActions` / `AGENT_REGISTRY`** rather than being merged into the sync `REGISTRY` — so the single-shot path and its existing tests are untouched.
 2. The inline `[ACTION]` block in `disha.js`'s `SYSTEM_PROMPT` (single-shot chat) is **left in place**; the agent composes its own system prompt from `DISHATools.renderSystemPrompt({agent:true})` at runtime (avoids a load-order coupling on a module-eval constant). The tool schema is still the single source of truth for the *agent*.
 
-Not yet built (future phases): native function-calling in `streamOpenAI` (P1), and the Tier-2/3 agents (§5–6).
+**Native function-calling (P1, shipped):** on OpenAI-type providers (Groq, OpenAI, any compatible API) the agent sends `DISHATools.toOpenAI({agent:true})` as the `tools` array; `streamOpenAI` stitches the streamed `tool_calls` fragments (`mergeToolCallDeltas`) and `DISHA.completeTurn` returns `{text, toolCalls}`. Each result goes back as a `role:"tool"` message (every call is answered, including ones past the per-step cap), the final synthesis turn runs with `tool_choice:"none"`, and the same budget/mutation caps and `validateArgs` gate apply. Text `[ACTION]` lines are still accepted as a fallback, and if the provider rejects `tools` on the first turn the run drops back to the text protocol. Ollama keeps the text protocol. Tests: `tests/disha-agent.test.js` (native helpers + scripted loop), `tests/disha-providers-tools.test.js` (mocked SSE).
+
+The Alert Triage agent (§5.1) is shipped too. Not yet built: the Pipeline Steward (§5.2) and the Tier-3 automation (§6).
 
 ## 0. Why this document
 

@@ -171,3 +171,144 @@ describe('DISHAAgent.run (loop mechanics, scripted model)', () => {
         expect(chips[0]).toMatchObject({ type: 'getcelldata', ok: true });
     });
 });
+
+describe('DISHAAgent native function-calling helpers', () => {
+    it('maps native tool calls to registry actions, keeping or synthesizing ids', () => {
+        const acts = AG.toolCallsToActions([
+            { id: 'c1', name: 'getCellData', arguments: '{"code":"39J49LL8T4"}' },
+            { name: 'rankCells', arguments: '' },
+        ], 2);
+        expect(acts[0]).toMatchObject({ type: 'getcelldata', id: 'c1', params: { code: '39J49LL8T4' } });
+        expect(acts[1]).toMatchObject({ type: 'rankcells', id: 'call_2_1', params: {} });
+        expect(acts[1].badArgs).toBeUndefined();
+    });
+
+    it('flags arguments that are not a JSON object', () => {
+        const acts = AG.toolCallsToActions([
+            { id: 'a', name: 'getCellData', arguments: '{oops' },
+            { id: 'b', name: 'getCellData', arguments: '[1,2]' },
+        ]);
+        expect(acts.every(a => a.badArgs)).toBe(true);
+    });
+
+    it('answers every call with a tool message, including calls past the cap', () => {
+        const acts = AG.toolCallsToActions([
+            { id: 'x', name: 'getCellData', arguments: '{"code":"39J"}' },
+            { id: 'y', name: 'rankCells', arguments: '{}' },
+        ]);
+        const out = AG.nextMessagesNative([{ role: 'user', content: 'q' }], '', acts,
+            [{ type: 'getcelldata', ok: true, observation: 'safety=81' }]);
+        expect(out).toHaveLength(4);
+        expect(out[1]).toMatchObject({ role: 'assistant', content: null });
+        expect(out[1].tool_calls.map(c => c.id)).toEqual(['x', 'y']);
+        expect(out[1].tool_calls[1].function).toEqual({ name: 'rankCells', arguments: '{}' });
+        expect(out[2]).toEqual({ role: 'tool', tool_call_id: 'x', content: 'safety=81' });
+        expect(out[3]).toMatchObject({ role: 'tool', tool_call_id: 'y' });
+        expect(out[3].content).toContain('not run');
+    });
+
+    it('leaves the [ACTION] catalog out of the native system prompt', () => {
+        const text = AG.buildSystemPrompt();
+        const native = AG.buildSystemPrompt({ native: true });
+        expect(text).toContain('[ACTION]');
+        expect(native).not.toContain('[ACTION] getCellData');
+        expect(native).toContain('call the provided tools');
+    });
+
+    it('carries the OpenAI tools array in native run state', () => {
+        const st = AG.initState('q', null, { native: true });
+        expect(st.native).toBe(true);
+        expect(st.tools.map(t => t.function.name)).toContain('getCellData');
+        expect(AG.initState('q', null).tools).toBeNull();
+    });
+});
+
+describe('DISHAAgent.run (native function-calling, scripted model)', () => {
+    let origComplete, origCompleteTurn, origDigiPin, origDataFetcher;
+    beforeEach(() => {
+        globalThis.DISHAActions._resetAgentState();
+        origComplete = globalThis.DISHA.complete;
+        origCompleteTurn = globalThis.DISHA.completeTurn;
+        origDigiPin = globalThis.DigiPin;
+        origDataFetcher = globalThis.DataFetcher;
+        globalThis.DigiPin = { decode: () => ({ lat: 22.7, lng: 75.8 }) };
+        globalThis.DataFetcher = {
+            fetchAllFeatures: async () => ({ scores: { safety: { value: 81, label: 'Safety' } } }),
+        };
+    });
+    afterEach(() => {
+        globalThis.DISHA.complete = origComplete;
+        globalThis.DISHA.completeTurn = origCompleteTurn;
+        globalThis.DigiPin = origDigiPin;
+        globalThis.DataFetcher = origDataFetcher;
+        globalThis.DISHAActions._resetAgentState();
+    });
+
+    it('sends tools, runs structured calls, and returns results as tool messages', async () => {
+        const turns = [
+            { text: 'Checking the cell.', toolCalls: [{ id: 'call_a', name: 'getCellData', arguments: '{"code":"39J49LL8T4"}' }] },
+            { text: 'Safety is strong, so it is a good candidate.', toolCalls: [] },
+        ];
+        const seen = [];
+        let i = 0;
+        globalThis.DISHA.completeTurn = async (req) => { seen.push(req); return turns[i++]; };
+        globalThis.DISHA.complete = async () => { throw new Error('text path should not be used'); };
+
+        let chips = null;
+        const final = await AG.run('Where should a clinic go?', { context: 'CTX' }, {
+            native: true, onChips: (r) => { chips = r; },
+        });
+
+        expect(final).toContain('good candidate');
+        expect(i).toBe(2);
+        expect(seen[0].tools.length).toBeGreaterThan(0);
+        expect(seen[0].system).not.toContain('[ACTION] getCellData');
+        expect(chips[0]).toMatchObject({ type: 'getcelldata', ok: true });
+        const msgs = seen[1].messages;
+        expect(msgs[msgs.length - 2].tool_calls[0].id).toBe('call_a');
+        expect(msgs[msgs.length - 1]).toMatchObject({ role: 'tool', tool_call_id: 'call_a' });
+        expect(msgs[msgs.length - 1].content).toContain('safety=81');
+    });
+
+    it('reports malformed arguments back to the model without executing', async () => {
+        const turns = [
+            { text: '', toolCalls: [{ id: 'bad', name: 'getCellData', arguments: '{not json' }] },
+            { text: 'I could not read that cell.', toolCalls: [] },
+        ];
+        let i = 0;
+        let second = null;
+        globalThis.DISHA.completeTurn = async (req) => { if (i === 1) second = req; return turns[i++]; };
+        let chips = null;
+        await AG.run('Assess.', null, { native: true, onChips: (r) => { chips = r; } });
+        expect(chips[0]).toMatchObject({ type: 'getcelldata', ok: false });
+        expect(second.messages[second.messages.length - 1].content).toContain('not a valid JSON object');
+    });
+
+    it('falls back to the text protocol when the provider rejects tools', async () => {
+        globalThis.DISHA.completeTurn = async () => { throw new Error('API 400: tools not supported'); };
+        let textCalls = 0;
+        globalThis.DISHA.complete = async ({ system }) => {
+            textCalls++;
+            expect(system).toContain('[ACTION]');
+            return 'Here is the answer.';
+        };
+        const final = await AG.run('Assess.', null, { native: true });
+        expect(final).toBe('Here is the answer.');
+        expect(textCalls).toBe(1);
+    });
+
+    it('synthesizes with tools off when the budget runs out', async () => {
+        const call = (n) => ({ text: '', toolCalls: [{ id: `c${n}`, name: 'getCellData', arguments: '{"code":"39J49LL8T4"}' }] });
+        let i = 0;
+        let last = null;
+        globalThis.DISHA.completeTurn = async (req) => {
+            last = req;
+            i++;
+            return req.toolChoice === 'none' ? { text: 'Final synthesis.', toolCalls: [] } : call(i);
+        };
+        const final = await AG.run('Keep digging.', null, { native: true });
+        expect(final).toBe('Final synthesis.');
+        expect(last.toolChoice).toBe('none');
+        expect(i).toBe(AG.MAX_ITERS + 1);
+    });
+});

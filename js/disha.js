@@ -966,6 +966,17 @@ Keep each directive on its own line; the rest of your reply should read normally
      * (DISHA.cancel()) aborts an in-flight agent turn too.
      */
     async function complete({ system, messages }) {
+        return (await completeTurn({ system, messages })).text;
+    }
+
+    /**
+     * complete() plus native function-calling: with `tools` (an OpenAI tools
+     * array) on an OpenAI-type provider, resolves to `{ text, toolCalls }` where
+     * toolCalls is `[{id, name, arguments}]` (arguments = raw JSON string). On
+     * Ollama, or without tools, toolCalls is always []. `toolChoice` is passed
+     * through ('auto' by default; 'none' for a tools-off synthesis turn).
+     */
+    async function completeTurn({ system, messages, tools, toolChoice }) {
         const provider = DISHAProviders.getActive();
         if (!provider) throw new Error('No AI provider available');
 
@@ -973,6 +984,7 @@ Keep each directive on its own line; the rest of your reply should read normally
         _abortController = new AbortController();
         const signal = _abortController.signal;
 
+        let toolCalls = [];
         try {
             let text;
             if (provider.type === 'ollama') {
@@ -985,6 +997,7 @@ Keep each directive on its own line; the rest of your reply should read normally
             } else {
                 text = await DISHAProviders.stream({
                     system, messages: messages || [], onToken: () => {}, signal,
+                    tools, toolChoice, onToolCalls: (calls) => { toolCalls = calls; },
                 });
             }
             // DISHAProviders.stream swallows AbortError (returns ''); surface it so
@@ -995,7 +1008,7 @@ Keep each directive on its own line; the rest of your reply should read normally
                 err.name = 'AbortError';
                 throw err;
             }
-            return text;
+            return { text, toolCalls };
         } finally {
             _abortController = null;
         }
@@ -1134,6 +1147,7 @@ Keep each directive on its own line; the rest of your reply should read normally
         buildCityScanContext,
         ask,
         complete,
+        completeTurn,
         cancel,
         getSuggestions,
         offlineSummary,
