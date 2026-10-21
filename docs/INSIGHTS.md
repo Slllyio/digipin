@@ -96,6 +96,7 @@ established method and answers in people; the ranked plan and the methods with r
 | Rooftop solar | Open Buildings cover (else OSM), NASA POWER irradiance per city | 30% of roof usable, 10 m²/kWp (MNRE), PR 0.75; vs 1,395 kWh per resident (CEA 2023-24) |
 | Siting suitability | heat, flood, healthcare access, walkability, OSM schools/leisure, roads, lights | weighted-overlay MCDA, AHP weights (CR < 0.1), top cells ≥ 1.5 km apart; presets clinic, school, park, cool roofs, EV charging |
 | Data confidence | OSM vs Open Buildings building counts, input coverage | half OSM completeness, half share of inputs present; flags where amenity lenses are lower bounds |
+| Seasonal exposure | monthly MODIS LST day/night, CAMS PM2.5 | per-cell months ≥ 40 °C surface and > 60 µg/m³ in the last 12; population-weighted monthly series; last-12 vs previous-12 warming |
 | Compound risk | the heat, flood and air lenses | hazards in the city's worst fifth, per resident |
 
 Every lens gets a population-weighted Gini, Lorenz curve and Palma ratio (access lenses), global Moran's I

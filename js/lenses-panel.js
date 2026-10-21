@@ -209,6 +209,15 @@ const LensesPanel = (() => {
         }
         card.appendChild(kpis);
 
+        if (l.series && kit.sparkline) {
+            for (const sr of Object.values(l.series)) {
+                const sv = kit.sparkline([{ values: sr.values }], { w: 380, h: 40, label: sr.label });
+                if (!sv) continue;
+                const box = _el('div', 'ui-lens-series');
+                box.append(_el('div', 'ui-muted', `${sr.label}, ${sr.steps[0] || ''} to ${sr.steps[sr.steps.length - 1] || ''}`), sv);
+                card.appendChild(box);
+            }
+        }
         const read = _el('div', 'ui-lens-read');
         if (l.equity && l.equity.gini != null) {
             const eq = _el('div', 'ui-lens-eq');

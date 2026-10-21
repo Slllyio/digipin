@@ -120,6 +120,13 @@ const UrbanLenses = (() => {
             needs: ['osm_roads.buildings', 'building_stock.buildings_2023'],
             method: 'Half OSM completeness (OSM buildings ÷ Open Buildings 2023 buildings in the cell, capped at 100%; amenity-based lenses inherit OSM’s gaps), half input coverage (share of the lens inputs with a value in the cell). Low confidence means read the 15-minute, healthcare and walkability lenses there as lower bounds.',
             refs: 'Barrington-Leigh & Millard-Ball 2017 (OSM completeness); Herfort et al. 2023' },
+        { id: 'seasons', title: 'Seasonal exposure', icon: '📅',
+            question: 'How many months a year are residents exposed?',
+            field: { key: 'hot_months', label: 'Months with mean day surface ≥ 40 °C (last 12)', unit: 'months', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'pm_months', label: 'Months with PM2.5 > 60 µg/m³ (last 12)', unit: 'months', higherIs: 'worse', ramp: 'heat' }],
+            needs: ['lst_monthly.lst_day_c@series', 'lst_monthly.lst_night_c@series', 'pm25_monthly.pm25_ugm3@series'],
+            method: 'Monthly series per cell (MODIS land-surface temperature, CAMS PM2.5). For the last 12 months: months whose mean daytime surface temperature is ≥ 40 °C, and months whose mean PM2.5 exceeds 60 µg/m³ (India’s 24-hour standard, used as a monthly bar). Population-weighted city series give the worst month; warming compares the last 12 months with the 12 before, so seasons cancel.',
+            refs: 'CPCB NAAQS 2009; Wan 2014 (MODIS LST); CAMS global reanalysis' },
         { id: 'burden', title: 'Compound risk', icon: '⚠',
             question: 'Where do heat, flood and dirty air stack up?',
             field: { key: 'burden', label: 'Hazards in the worst fifth', unit: 'of 3', higherIs: 'worse', ramp: 'reds' },
@@ -328,7 +335,7 @@ const UrbanLenses = (() => {
             const idx = UrbanInsights.cellsInRegion(popSpec, popT, city);
             const codes = idx.map(i => String(popT.cells[i]).replace(/-/g, '')).filter(c => c.length === LEVEL);
             const g = grid(codes);
-            const cols = {}, sources = [], missing = [];
+            const cols = {}, sources = [], missing = [], steps = {};
             const byDs = new Map();
             for (const nd of needs) {
                 const [ds, f] = nd.split('.');
@@ -352,6 +359,24 @@ const UrbanLenses = (() => {
                 }
                 let used = false;
                 for (const f of fields) {
+                    // 'field@series' keeps a temporal field's per-cell arrays.
+                    if (f.endsWith('@series')) {
+                        const k = f.slice(0, -7);
+                        const col = table.columns && table.columns[k];
+                        if (!col || !spec.time) { missing.push(`${ds}.${f}`); continue; }
+                        const out = new Array(g.n);
+                        let any = 0;
+                        for (let i = 0; i < g.n; i++) {
+                            const a = rowOf[i] < 0 ? null : col[rowOf[i]];
+                            out[i] = Array.isArray(a) ? a : null;
+                            if (out[i]) any++;
+                        }
+                        if (!any) { missing.push(`${ds}.${f}`); continue; }
+                        cols[`${ds}.${f}`] = out;
+                        steps[ds] = spec.time.steps;
+                        used = true;
+                        continue;
+                    }
                     const meta = spec.fields.find(x => x.key === f);
                     if (!meta) { missing.push(`${ds}.${f}`); continue; }
                     const src = UrbanInsights.scalarColumn(spec, table, f);
@@ -369,7 +394,7 @@ const UrbanLenses = (() => {
                 }
                 if (used) sources.push(UrbanInsights.sourceOf(spec, store));
             }
-            return { city, level: LEVEL, grid: g, cols, sources, missing };
+            return { city, level: LEVEL, grid: g, cols, steps, sources, missing };
         })();
         _frames.set(key, p);
         p.catch(() => _frames.delete(key));
@@ -1055,7 +1080,71 @@ const UrbanLenses = (() => {
         };
     }
 
-    const RUN = { heat, flood, fifteen, health, air, lights, walk, sprawl, types, green, solar, confidence, burden };
+    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const _month = (step) => { const m = /^(\d{4})-(\d{2})/.exec(step || ''); return m ? `${MONTHS[Number(m[2]) - 1]} ${m[1]}` : String(step); };
+
+    /** Population-weighted mean of each step of a series column over idx. */
+    function _pwSeries(col, pop, idx) {
+        let len = 0;
+        for (const i of idx) if (col[i]) { len = Math.max(len, col[i].length); }
+        const out = [];
+        for (let t = 0; t < len; t++) {
+            let s = 0, w = 0;
+            for (const i of idx) {
+                const v = col[i] && col[i][t];
+                if (v == null || !Number.isFinite(Number(v)) || !(pop[i] > 0)) continue;
+                s += Number(v) * pop[i]; w += pop[i];
+            }
+            out.push(w ? s / w : null);
+        }
+        return out;
+    }
+
+    function seasons(fr) {
+        const c = fr.cols, n = fr.grid.n, idx = _residents(fr), pop = c['population.population'];
+        const day = c['lst_monthly.lst_day_c@series'], night = c['lst_monthly.lst_night_c@series'], pm = c['pm25_monthly.pm25_ugm3@series'];
+        if (!day && !pm) return null;
+        const last12 = (a) => (a ? a.slice(-12) : []);
+        const count = (a, thr) => { let k = 0, seen = 0; for (const v of last12(a)) if (v != null && Number.isFinite(Number(v))) { seen++; if (Number(v) >= thr) k++; } return seen ? k : NaN; };
+        const hot = new Float64Array(n).fill(NaN), pmm = new Float64Array(n).fill(NaN);
+        for (const i of idx) {
+            if (day) hot[i] = count(day[i], 40);
+            if (pm) pmm[i] = count(pm[i], 60.0001);
+        }
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const series = {};
+        const stats = [];
+        let head = '';
+        if (pm) {
+            const sPm = _pwSeries(pm, pop, idx), st = fr.steps.pm25_monthly || [];
+            const tail = sPm.slice(-12), off = sPm.length - tail.length;
+            const worst = tail.reduce((b, v, t) => (v != null && (b < 0 || v > tail[b]) ? t : b), -1);
+            const perRes = wmean(pmm, pop, idx);
+            series.pm25 = { label: 'PM2.5 per resident (µg/m³)', values: sPm.map(v => _round(v, 1)), steps: st };
+            stats.push({ label: 'Months a year above 60 µg/m³ (per resident)', value: String(_round(perRes, 1)) });
+            if (worst >= 0) stats.push({ label: 'Worst month for PM2.5', value: `${_month(st[off + worst])}: ${_round(tail[worst])} µg/m³` });
+            head += `The average resident lives through ${_round(perRes, 1)} month(s) a year when PM2.5 averages over 60 µg/m³`
+                + (worst >= 0 ? ` (worst ${_month(st[off + worst])}, ${_round(tail[worst])} µg/m³)` : '') + '. ';
+        }
+        if (day) {
+            const sD = _pwSeries(day, pop, idx), st = fr.steps.lst_monthly || [];
+            const hotPeople = _sumOver(pop, idx, i => hot[i] >= 3);
+            series.lst = { label: 'Daytime surface °C per resident', values: sD.map(v => _round(v, 1)), steps: st };
+            stats.push({ label: 'Residents with ≥ 3 months of ≥ 40 °C surfaces', value: _people(hotPeople), raw: Math.round(hotPeople) });
+            const warm = (s) => {
+                const a = s.slice(-12).filter(v => v != null), b = s.slice(-24, -12).filter(v => v != null);
+                return a.length >= 6 && b.length >= 6 ? a.reduce((x, y) => x + y, 0) / a.length - b.reduce((x, y) => x + y, 0) / b.length : null;
+            };
+            const dD = warm(sD), dN = night ? warm(_pwSeries(night, pop, idx)) : null;
+            if (dD != null) stats.push({ label: 'Day surface change, last 12 vs previous 12 months', value: `${dD >= 0 ? '+' : ''}${_round(dD, 2)} °C` });
+            if (dN != null) stats.push({ label: 'Night surface change, last 12 vs previous 12 months', value: `${dN >= 0 ? '+' : ''}${_round(dN, 2)} °C` });
+            head += `${_people(hotPeople)} people (${_round(100 * hotPeople / total)}%) live where the month-average daytime surface tops 40 °C in three or more months`
+                + (dN != null ? `; nights ran ${_round(Math.abs(dN), 2)} °C ${dN >= 0 ? 'warmer' : 'cooler'} than the year before.` : '.');
+        }
+        return { columns: { hot_months: hot, pm_months: pmm }, idx, weightKey: day ? 'hot_months' : 'pm_months', headline: head.trim(), stats, series };
+    }
+
+    const RUN = { heat, flood, fifteen, health, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
 
     // ── siting suitability (MCDA with AHP weights) ──────────────────────────
 
@@ -1354,7 +1443,7 @@ const UrbanLenses = (() => {
             const srcIds = new Set(L.needs.map(k => k.split('.')[0]).concat(L.after ? L.after.flatMap(a => BY_ID.get(a).needs.map(k => k.split('.')[0])) : []).concat(['population']));
             out.push({
                 id: L.id, title: L.title, icon: L.icon, question: L.question, method: L.method, refs: L.refs,
-                fields, headline: r.headline, stats: r.stats, equity, fit: r.fit || null,
+                fields, headline: r.headline, stats: r.stats, equity, fit: r.fit || null, series: r.series || null,
                 hotspots: hs ? { field: hsKey, moranI: hs.moranI, z: hs.z, reading: hs.reading, km: hs.km,
                     hot: hs.hot.map(i => fr.grid.codes[i]), cold: hs.cold.map(i => fr.grid.codes[i]), lisa: hs.lisaCounts } : null,
                 sources: fr.sources.filter(s => srcIds.has(s.id)).map(s => s.id),

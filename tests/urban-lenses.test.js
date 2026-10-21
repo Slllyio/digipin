@@ -166,7 +166,10 @@ describe('UrbanLenses on committed city data', () => {
         expect(r.schema).toBe('digipin.lenses/1');
         expect(r.residents).toBeGreaterThan(1e6);
         const ids = r.lenses.map(l => l.id);
-        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'types', 'green', 'solar', 'confidence', 'burden']));
+        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'types', 'green', 'solar', 'confidence', 'seasons', 'burden']));
+        const se = r.lenses.find(l => l.id === 'seasons');
+        expect(se.series.lst.values.length).toBe(24);
+        expect(se.headline).toMatch(/PM2\.5/);
         const sp = r.lenses.find(l => l.id === 'sprawl');
         expect(sp.headline).toMatch(/infill/);
         expect(sp.fit.gradient).toBeGreaterThan(0);              // density falls away from the centre
