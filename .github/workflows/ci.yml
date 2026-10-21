@@ -92,6 +92,18 @@ jobs:
       env:
         CI: 'true'
 
+    # On a red run keep what Playwright wrote: error-context.md per failure and
+    # the trace of the retry (trace: on-first-retry), so a flake can be read
+    # after the fact instead of guessed at.
+    - name: Upload Playwright results
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-results
+        path: test-results/
+        retention-days: 7
+        if-no-files-found: ignore
+
   lint:
     runs-on: ubuntu-latest
     steps:

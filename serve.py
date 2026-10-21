@@ -7,6 +7,7 @@ needs to fetch individual tile byte ranges from the archive.
 Usage:
     python serve.py          # default port 8080
     python serve.py 3000     # custom port
+    python serve.py 8000 --quiet   # no per-request log lines (CI)
 """
 
 import os
@@ -70,11 +71,20 @@ class RangeHTTPRequestHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
 
+class QuietRangeHTTPRequestHandler(RangeHTTPRequestHandler):
+    """Same server, no per-request log line (CI: a browser run makes ~30k)."""
+
+    def log_message(self, format, *args):  # noqa: A002 - stdlib signature
+        pass
+
+
 def main():
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
+    args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    quiet = '--quiet' in sys.argv[1:]
+    port = int(args[0]) if args else 8080
     directory = os.path.dirname(os.path.abspath(__file__))
 
-    handler = partial(RangeHTTPRequestHandler, directory=directory)
+    handler = partial(QuietRangeHTTPRequestHandler if quiet else RangeHTTPRequestHandler, directory=directory)
     # ThreadingHTTPServer so 35 defer-loaded scripts can fetch in parallel
     # without bottlenecking on the single-threaded HTTPServer (the
     # bottleneck became visible after PR #22 added `defer` to all script

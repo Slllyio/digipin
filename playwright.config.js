@@ -39,7 +39,7 @@ module.exports = defineConfig({
     },
   ],
   webServer: {
-    command: 'python serve.py 8000',
+    command: 'python serve.py 8000 --quiet',   // per-request lines would drown the CI log
     url: 'http://localhost:8000',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
