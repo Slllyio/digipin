@@ -55,9 +55,13 @@ test.describe('resilience', () => {
     // recipe; the partial-gap bookkeeping is covered by tests/cell-store.test.js).
     // Boot already decoded some of this city's parts (profile, overview);
     // re-init empties the store's in-memory part cache so the layer must fetch.
-    expect(await page.evaluate(() => CellStore.init())).toBe(true);
+    // The route goes in first: a boot-time loop (city overview, insights) is
+    // still fetching parts at this point, and one that lands between the
+    // cache reset and the route would be served from memory again (seen in
+    // CI: show() returned true with nothing dropped).
     let dropped = 0;
     await page.route('**/data/cells/population/**', (r) => { dropped++; r.abort('failed'); });
+    expect(await page.evaluate(() => CellStore.init())).toBe(true);
     const shown = await page.evaluate(() => CellLayers.show('population'));
     expect(shown).toBe(false);
     expect(dropped).toBeGreaterThan(0);
@@ -72,7 +76,9 @@ test.describe('resilience', () => {
     await page.unroute('**/data/cells/population/**');
     await row.locator('.ds-action').click();
     await expect(row).toHaveCount(0, { timeout: 60_000 });
-    expect(await page.evaluate(() => CellStore.failedParts().length)).toBe(0);
+    // Only the view's parts are refetched; a boot-time fetch the route also
+    // dropped may still be listed, so the claim is about this load.
+    expect((await page.evaluate(() => CellStore.lastLoad('population'))).unreachable).toBe(0);
     expect(await page.evaluate(() => CellLayers.isVisible('population'))).toBe(true);
   });
   });
