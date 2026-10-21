@@ -42,6 +42,7 @@ const DishaIntel = (() => {
             burden: /\b(compound (risk|hazard)s?|multi[\s-]?hazard|triple burden|most at risk overall)\b/i,
             all: /\b(equity|inequal\w*|unequal|unfair|gini|fairness|left behind|urban lens(es)?|lenses)\b/i,
         },
+        tour: /\b(tour|fly (me )?(through|over|around)|show me around|walk me through (the |this )?city|city overview|overview of (the |this )?city)\b/i,
         changes: /\b(what('?s| has| have)? changed|what changed|latest (month|data|changes?)|this month|recent(ly)? chang\w*|what'?s new)\b/i,
     };
 
@@ -71,6 +72,11 @@ const DishaIntel = (() => {
         if (!q.trim()) return null;
         const named = citiesIn(q, cities);
         if (RE.dashboard.test(q)) return { type: 'dashboard' };
+        if (RE.tour.test(q)) {
+            const out = { type: 'tour', play: /\b(tour|fly|show me around|walk me)\b/i.test(q) };
+            if (named.length) out.city = named[0];
+            return out;
+        }
         if (RE.changes.test(q)) return named.length ? { type: 'changes', city: named[0] } : { type: 'changes' };
         if (RE.compare.test(q) && named.length >= 2) return { type: 'compare', a: { city: named[0] }, b: { city: named[1] } };
         const siting = /\bwhere (should|to|could|would|can)\b.{0,40}\b(clinics?|hospitals?|health (centre|center)s?|schools?|parks?|cool roofs?|ev|charg\w*)\b|\b(best|ideal|suitable) (locations?|sites?|places?) for\b|\bsite (selection|suitability)\b|\bsiting\b/i;
@@ -174,6 +180,17 @@ const DishaIntel = (() => {
                 }
                 if (!city) { el.textContent = 'Pan the map to a city (or name one) and ask again.'; return ''; }
                 r = await UrbanInsights.changes(CellStore, { city, limit: 6 });
+            } else if (intent.type === 'tour') {
+                let city = intent.city;
+                if (!city) {
+                    const p = center || _viewCenter();
+                    city = p ? UrbanInsights.cityAt(CellStore, p.lat, p.lng) : null;
+                }
+                if (!city) { el.textContent = 'Pan the map to a city (or name one) and ask again.'; return ''; }
+                if (typeof CityTour === 'undefined') { el.textContent = 'The tour module did not load.'; return ''; }
+                const stops = await CityTour.buildStops(city, CellStore);
+                if (!stops.length) { el.textContent = 'Not enough data in this city for a tour.'; return ''; }
+                r = { kind: 'tour', city, cityLabel: UrbanInsights.cityLabel(city), stops, play: !!intent.play };
             } else if (intent.type === 'lens') {
                 let city = intent.city;
                 if (!city) {
@@ -216,6 +233,10 @@ const DishaIntel = (() => {
         }
         if (!r) return '';
         _render(el, r);
+        if (r.kind === 'tour') {
+            if (r.play) CityTour.play(r.city, CellStore);
+            return `Briefing on ${r.cityLabel}${r.play ? ' (the 3D tour is now flying through these stops)' : ''}:\n${r.stops.map((x, i) => `${i + 1}. ${x.label}: ${x.caption}`).join('\n')}`;
+        }
         if (r.kind === 'siting') return `${r.st.title} in ${r.cityLabel}: ${r.st.headline}\n${r.st.sites.map(x => `${x.rank}. ${x.code} (score ${x.score}): ${x.why}`).join('\n')}`;
         return r.kind === 'lenses' ? UrbanLenses.toText(r, r.only) : UrbanInsights.toText(r);
     }
@@ -234,6 +255,14 @@ const DishaIntel = (() => {
             el.appendChild(head);
             r.items.forEach(x => el.appendChild(_el('div', 'disha-scan-row', `${x.title}. ${x.detail}`)));
             el.appendChild(_openButton('Open the city dashboard', 'city'));
+        } else if (r.kind === 'tour') {
+            head.textContent = `Briefing · ${r.cityLabel}`;
+            el.appendChild(head);
+            r.stops.filter(x => x.id !== 'end').forEach(x => el.appendChild(_el('div', 'disha-scan-row', `${x.label}: ${x.caption}`)));
+            const b = _el('button', 'ui-chip ui-chip--primary', r.play ? '▶ Replay the 3D tour' : '▶ Fly the 3D tour');
+            b.type = 'button';
+            b.addEventListener('click', () => CityTour.play(r.city, CellStore));
+            el.appendChild(b);
         } else if (r.kind === 'dashboard') {
             head.textContent = 'City rankings';
             el.appendChild(head);

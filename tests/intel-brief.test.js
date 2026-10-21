@@ -133,6 +133,16 @@ describe('Drawn areas and what changed', () => {
         expect(D.match('What changed in Pune this month?', cities)).toEqual({ type: 'changes', city: 'pune' });
         expect(D.match("what's new here", cities)).toEqual({ type: 'changes' });
     });
+
+    it('DISHA routes tour and briefing requests', () => {
+        const D = globalThis.DishaIntel;
+        const cities = [{ name: 'pune', label: 'Pune' }];
+        expect(D.match('Give me a tour of Pune', cities)).toEqual({ type: 'tour', play: true, city: 'pune' });
+        expect(D.match('city overview of Pune', cities)).toEqual({ type: 'tour', play: false, city: 'pune' });
+        expect(D.match('Give me a full urban intelligence briefing', cities)).toBeNull();
+        expect(D.match('fly me through the city', cities)).toEqual({ type: 'tour', play: true });
+        expect(D.match('tourism potential in Pune', cities)?.type).not.toBe('tour');
+    });
 });
 
 describe('Trees-for-heat and road-closure scenarios', () => {

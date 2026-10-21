@@ -132,3 +132,5 @@ ROADMAP_INSIGHTS.md). A big city (Delhi, 37k cells) takes about 3 s in the brows
   so the tour saves as MP4/WebM with captions; there is no second camera system.
 - "▶ Time-lapse in 3D" on a "What changed" card plays the last 24 months of that field as extruded cells
   through the TimeSlider (`CityTour.timelapse`); "● Record" saves it as video.
+- DISHA: "give me a tour of Pune", "fly me through the city", "show me around" list the stops in chat and fly the
+  tour; "city overview of …" lists them with a "▶ Fly the 3D tour" button. Offered as a cell suggestion.

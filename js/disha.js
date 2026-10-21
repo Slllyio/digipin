@@ -1051,6 +1051,7 @@ Keep each directive on its own line; the rest of your reply should read normally
         const suggestions = [];
         suggestions.push('Give me a full urban intelligence briefing');
         suggestions.push('What should be built here? Development recommendations');
+        suggestions.push('Give me a 3D tour of this city');
 
         if ((scores.livability?.value || 0) > 60) {
             suggestions.push('Rate this area for residential living');
