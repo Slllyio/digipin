@@ -62,9 +62,23 @@ test.describe('performance budgets', () => {
     await waitForApp(page);
     await toggleRow(page, 'btn-buildings');
     await toggleRow(page, 'btn-3d');
+    // Footprint tile traffic per city: the PMTiles archive is read by HTTP
+    // range requests, so a city that never draws is either not asking for
+    // tiles, or asking and not getting them. Both show here.
+    const tiles = { started: 0, done: 0, failed: 0 };
+    const isTiles = (u) => /\.pmtiles(\?|$)/i.test(u);
+    page.on('request', (r) => { if (isTiles(r.url())) tiles.started++; });
+    page.on('response', (r) => { if (isTiles(r.url())) tiles.done++; });
+    page.on('requestfailed', (r) => { if (isTiles(r.url())) tiles.failed++; });
+    await page.evaluate(() => {
+      const m = typeof MapModule !== 'undefined' && MapModule.getMap ? MapModule.getMap() : null;
+      window.__fpEvents = 0;
+      if (m && m.on) m.on('sourcedata', (e) => { if (e && e.sourceId === 'overture-buildings-source' && e.tile) window.__fpEvents++; });
+    });
     const draw = [];
     for (const id of ['delhi', 'mumbai', 'bengaluru', 'hyderabad', 'chennai', 'kolkata']) {
-      await page.evaluate(() => { if (typeof DeckBuildings !== 'undefined') DeckBuildings.resetRenderStats(); });
+      await page.evaluate(() => { if (typeof DeckBuildings !== 'undefined') DeckBuildings.resetRenderStats(); window.__fpEvents = 0; });
+      const t0 = { ...tiles };
       await page.selectOption('#city-select', id);
       await settle(page, 1500);
       // The harvest runs on moveend and again when footprint tiles land; on
@@ -81,9 +95,16 @@ test.describe('performance budgets', () => {
         const m = typeof MapModule !== 'undefined' && MapModule.getMap ? MapModule.getMap() : null;
         let loaded = null;
         try { loaded = m ? m.isSourceLoaded('overture-buildings-source') : null; } catch { loaded = null; }
-        return { ...DeckBuildings.renderStats(), zoom: m && m.getZoom ? +m.getZoom().toFixed(2) : null, pitch: m && m.getPitch ? Math.round(m.getPitch()) : null, tilesLoaded: loaded };
+        // Tile states of the footprint source (MapLibre internals, log only):
+        // e.g. {loaded: 12, loading: 30} says the requests are out and slow.
+        const states = {};
+        try {
+          const sc = m && m.style && m.style.sourceCaches && m.style.sourceCaches['overture-buildings-source'];
+          Object.values((sc && sc._tiles) || {}).forEach((t) => { states[t.state] = (states[t.state] || 0) + 1; });
+        } catch { /* internals moved */ }
+        return { ...DeckBuildings.renderStats(), zoom: m && m.getZoom ? +m.getZoom().toFixed(2) : null, pitch: m && m.getPitch ? Math.round(m.getPitch()) : null, tilesLoaded: loaded, states, events: window.__fpEvents };
       });
-      if (r) draw.push({ id, waitedMs: Date.now() - tWait, ...r });
+      if (r) draw.push({ id, waitedMs: Date.now() - tWait, reqStarted: tiles.started - t0.started, reqDone: tiles.done - t0.done, reqFailed: tiles.failed - t0.failed, ...r });
     }
     // One line per city so a regression in draw cost is visible in the CI log
     // before it is a failure: polygons / vertices handed to deck.gl, and the
@@ -95,7 +116,7 @@ test.describe('performance budgets', () => {
     // reported loaded, so nothing re-harvested when the tiles finally landed
     // (fixed: the poll now runs while tiles arrive). Zoom, pitch and the
     // source's loaded state stay on each line for the next such finding.
-    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s`);
+    for (const d of draw) console.log(`3D draw ${d.id} [${d.mode}]: peak ${d.peakPolygons} polygons, ${d.peakVertices} vertices (${d.peakBySource.overture} overture / ${d.peakBySource.baked} baked / ${d.peakBySource.estimate} estimated heights), last draw ${d.polygons}, ${d.refreshes} refreshes, longest ${d.maxRefreshMs} ms; z${d.zoom} pitch ${d.pitch}, tiles loaded ${d.tilesLoaded}, waited ${Math.round(d.waitedMs / 1000)} s; tile requests ${d.reqStarted} started / ${d.reqDone} done / ${d.reqFailed} failed, ${d.events} source events, states ${JSON.stringify(d.states)}`);
     if (!STUB) {
       // Light theme draws through the MapLibre "twin" source, dark through the
       // deck.gl overlay; both report here. A city whose buildings did not land
