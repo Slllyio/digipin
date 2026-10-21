@@ -88,7 +88,9 @@ describe('UrbanInsights.areaInsights() on a hand-made city', () => {
     });
 });
 
-describe('UrbanInsights on the committed data', () => {
+// Loads the committed Indore tables: ~4 s on its own, longer under a full
+// parallel run, so it gets a timeout of its own instead of vitest's 5 s.
+describe('UrbanInsights on the committed data', { timeout: 30_000 }, () => {
     it('ranks findings for an Indore neighbourhood with trends from the monthly series', async () => {
         const scores = await (await store()).load('scores');
         const city = U.cellsInRegion(CATALOG.datasets.find(d => d.id === 'scores'), scores, 'indore_pilot');
