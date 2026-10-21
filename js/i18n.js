@@ -198,7 +198,7 @@ const I18n = (() => {
         if (typeof document === 'undefined') return;
         const l = normalize(lang !== undefined ? lang : get());
         document.documentElement.setAttribute('lang', l);
-        if (l === 'hi') _ensureFont();
+        if (l === 'hi') { _ensureFont(); _ensurePhrases(l); }
         document.querySelectorAll('[data-i18n]').forEach(el => {
             el.textContent = t(el.getAttribute('data-i18n'), l);
         });
@@ -225,7 +225,17 @@ const I18n = (() => {
     const ATTRS = ['title', 'aria-label', 'placeholder'];
 
     function _table(l) {
-        return (typeof I18nUI !== 'undefined' && I18nUI[l]) || null;
+        return (typeof I18nUI !== 'undefined' && I18nUI.table) ? I18nUI.table(l) : null;
+    }
+
+    // Fetch the phrase table for a non-English language, then re-run the
+    // open panels through it (the first switch to Hindi lands a beat later).
+    function _ensurePhrases(l) {
+        if (l === 'en' || typeof I18nUI === 'undefined' || !I18nUI.load || _table(l)) return;
+        I18nUI.load(l).then(t => {
+            if (!t || get() !== l || typeof document === 'undefined') return;
+            document.querySelectorAll(PANEL_SELECTOR).forEach(el => translateTree(el, l));
+        });
     }
 
     /** Translate one English UI phrase; unknown phrases come back unchanged. Pure. */

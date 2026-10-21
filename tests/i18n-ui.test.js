@@ -1,7 +1,12 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeAll } from 'vitest';
+import { readFileSync } from 'node:fs';
 
 // Phrase-level translation of the rendered analysis dialogs (I18nUI + I18n.translateTree).
 const I = globalThis.I18n;
+
+beforeAll(() => {
+    globalThis.I18nUI.register('hi', JSON.parse(readFileSync('data/i18n/hi-ui.json', 'utf8')));
+});
 
 describe('I18n.phrase', () => {
     it('translates exact phrases and keeps surrounding whitespace', () => {
@@ -28,6 +33,12 @@ describe('I18n.phrase', () => {
     it('keeps a leading emoji or symbol and trailing punctuation', () => {
         expect(I.phrase('➕ Add to plan', 'hi')).toBe('➕ योजना में जोड़ें');
         expect(I.phrase('Plan:', 'hi')).toBe('योजना:');
+    });
+});
+
+describe('I18nUI.load', () => {
+    it('resolves null when the table cannot be fetched', async () => {
+        expect(await globalThis.I18nUI.load('xx')).toBe(null);
     });
 });
 

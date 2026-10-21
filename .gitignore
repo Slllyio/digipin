@@ -59,6 +59,8 @@ data/realtime/*/*
 # Pipeline Steward health report + drift state (pipeline/steward), committed by CI.
 !data/steward/
 !data/steward/*
+!data/i18n/
+!data/i18n/*
 # Hand-curated open-data finder catalog (js/open-data-finder.js).
 !data/open-data/
 !data/open-data/*
