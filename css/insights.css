@@ -35,6 +35,8 @@ html[data-theme="light"] {
 @media (prefers-reduced-motion: reduce) { .ui-dialog.open { animation: none; } }
 
 .ui-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 8px; }
+.ui-head-tools { display: flex; align-items: center; gap: 6px; }
+.ui-head-tools .ui-chip { padding: 3px 8px; font-size: 11px; }
 .ui-title { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
 .ui-logo {
     width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%;

@@ -16,6 +16,7 @@
  *   &bc=<ds:field>    field colouring the 3D buildings (BuildingData)
  *   &bh=<ds:field>    field driving the 3D buildings' height
  *   &t=<step>         time-slider step for temporal cell layers ("2025-04")
+ *   &intel=<tab>&ic&ia&ib&wi   the open Urban Intelligence view (js/intel-brief.js)
  *
  * parse()/stringify() are pure (unit-tested). capture()/apply()/init() touch the
  * running app and degrade quietly when a module or the map isn't ready.
@@ -70,6 +71,8 @@ const URLState = (() => {
         if (_bkey(p.get('bc'))) state.bcolor = p.get('bc');
         if (_bkey(p.get('bh'))) state.bheight = p.get('bh');
         if (_step(p.get('t'))) state.t = p.get('t');
+        const intel = typeof IntelBrief !== 'undefined' ? IntelBrief.parseParams(p) : null;
+        if (intel) state.intel = intel;
         const an = p.get('an');
         if (an) {
             try {
@@ -103,6 +106,7 @@ const URLState = (() => {
         if (_bkey(state.bcolor)) p.set('bc', state.bcolor);
         if (_bkey(state.bheight)) p.set('bh', state.bheight);
         if (_step(state.t)) p.set('t', state.t);
+        if (state.intel && typeof IntelBrief !== 'undefined') IntelBrief.toParams(state.intel).forEach(([k, v]) => p.set(k, v));
         if (Array.isArray(state.annotations) && state.annotations.length) {
             p.set('an', JSON.stringify(state.annotations.map(n =>
                 ({ lat: n.lat, lng: n.lng, text: n.text, color: n.color }))));
@@ -161,6 +165,10 @@ const URLState = (() => {
             const b = BuildingData.get();
             if (b.color) state.bcolor = b.color;
             if (b.height) state.bheight = b.height;
+        }
+        if (typeof InsightsPanel !== 'undefined' && InsightsPanel.linkState) {
+            const intel = InsightsPanel.linkState();
+            if (intel) state.intel = intel;
         }
         return state;
     }
@@ -270,6 +278,10 @@ const URLState = (() => {
         if (state.q && typeof document !== 'undefined') {
             const input = document.getElementById('disha-input');
             if (input) input.value = state.q;
+        }
+        // The Intel dialog last, once the cell/view it reads is in place.
+        if (state.intel && typeof InsightsPanel !== 'undefined' && InsightsPanel.applyLink) {
+            Promise.resolve(InsightsPanel.applyLink(state.intel)).catch(() => { /* best-effort */ });
         }
     }
 

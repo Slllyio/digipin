@@ -298,7 +298,11 @@ const InsightsPanel = (() => {
         title.appendChild(_el('span', 'ui-sub', ''));
         const x = _btn('✕', close, 'close-btn', 'Close');
         x.setAttribute('aria-label', 'Close Urban Intelligence');
-        head.append(title, x);
+        const tools = _el('div', 'ui-head-tools');
+        const share = _btn('🔗 Share', shareLink, 'ui-chip', 'Copy a link that reopens this exact Intel view');
+        const brief = _btn('📄 Brief', () => openBrief(_briefContext()), 'ui-chip', 'Open a printable brief of this city (and area or scenario) with sources');
+        tools.append(share, brief, x);
+        head.append(title, tools);
         const tabs = _el('div', 'ui-tabs');
         tabs.setAttribute('role', 'tablist');
         [['city', 'City'], ['here', 'Here'], ['compare', 'Compare'], ['whatif', 'What-if']].forEach(([id, label]) => {
@@ -553,6 +557,7 @@ const InsightsPanel = (() => {
         const tools = _el('div', 'ui-actions');
         tools.appendChild(_btn('Copy as text', () => _copy(UrbanInsights.toText(r)), 'ui-chip'));
         tools.appendChild(_btn('Download JSON', () => _download(`insights_${(area.code || 'view')}.json`, JSON.stringify(r, null, 2)), 'ui-chip'));
+        tools.appendChild(_btn('Printable brief', () => openBrief({ area }), 'ui-chip'));
         if (area.code) tools.appendChild(_btn('Compare with the city', () => { _cmp = { a: { code: area.code, label: area.label }, b: { city: r.city } }; _tab = 'compare'; render(); }, 'ui-chip'));
         body.appendChild(tools);
         body.appendChild(_el('p', 'ui-method', r.method));
@@ -680,7 +685,7 @@ const InsightsPanel = (() => {
             seg.appendChild(_btn(label, () => { _scenario.type = t; render(); }, `ui-seg-btn${_scenario.type === t ? ' active' : ''}`));
         });
         body.appendChild(seg);
-        const sel = _selected();
+        const sel = _selected() || _scenario.code || null;
         const form = _el('div', 'ui-form');
         const t = _scenario.type;
         if (t === 'park' || t === 'density') {
@@ -706,10 +711,12 @@ const InsightsPanel = (() => {
         body.appendChild(form);
         const out = _el('div', 'ui-whatif-out');
         body.appendChild(out);
-        if (_lastWhatIf && _lastWhatIf.type === t) _drawWhatIf(out, _lastWhatIf);
+        if (_autoRun) { _autoRun = false; await _runScenario(store, out); }
+        else if (_lastWhatIf && _lastWhatIf.type === t) _drawWhatIf(out, _lastWhatIf);
     }
 
     let _lastWhatIf = null;
+    let _autoRun = false;      // a shared what-if link runs its scenario on open
 
     async function _runScenario(store, out) {
         out.replaceChildren(_el('div', 'ui-empty', 'Running the scenario…'));
@@ -718,7 +725,7 @@ const InsightsPanel = (() => {
         let heights = null;
         try {
             if (sc.type === 'park' || sc.type === 'density') {
-                sc.code = sel.replace(/-/g, '');
+                sc.code = (sel || _scenario.code || '').replace(/-/g, '');
                 if (sc.type === 'park') sc.boost = _scenario.boost; else sc.factor = _scenario.factor;
                 if (sc.type === 'density') {
                     const c = DigiPin.decodePartial(sc.code);
@@ -787,6 +794,7 @@ const InsightsPanel = (() => {
         }
         act.appendChild(_btn('Clear', () => { clear(); _lastWhatIf = null; out.replaceChildren(); }, 'ui-chip'));
         act.appendChild(_btn('Copy as text', () => _copy(UrbanInsights.toText(r)), 'ui-chip'));
+        act.appendChild(_btn('Printable brief', () => openBrief({ whatif: r, area: r.area && !r.area.city ? r.area : null }), 'ui-chip'));
         out.appendChild(act);
         const how = _el('details', 'ui-how');
         how.appendChild(_el('summary', null, 'How this is computed'));
@@ -823,6 +831,99 @@ const InsightsPanel = (() => {
         return r;
     }
 
+    // ── share links + briefs ────────────────────────────────────────────────
+
+    /** The open dialog's state for a share link (IntelBrief params), or null. */
+    function linkState() {
+        if (!isOpen()) return null;
+        const st = { tab: _tab, city: _city };
+        if (_tab === 'here') {
+            const a = _hereChoice();
+            if (a) st.a = a;
+        } else if (_tab === 'compare') {
+            st.a = _cmp.a; st.b = _cmp.b;
+        } else if (_tab === 'whatif') {
+            const sel = _selected();
+            const s = { ..._scenario };
+            if (sel) s.code = sel.replace(/-/g, '').slice(0, 6);
+            else if (s.code) s.code = s.code.slice(0, 6);
+            st.scenario = s;
+        }
+        return st;
+    }
+
+    /** Reopen the dialog from a share link's state. */
+    async function applyLink(st) {
+        if (!st || !st.tab) return;
+        if (st.city) _city = st.city;
+        if (st.tab === 'here' && st.a) {
+            if (st.a.code || st.a.bbox) _hereArea = st.a;
+            else if (st.a.city) _hereArea = st.a;
+        }
+        if (st.tab === 'compare' && (st.a || st.b)) _cmp = { a: st.a || null, b: st.b || null };
+        if (st.tab === 'whatif' && st.scenario) {
+            _scenario = { ..._scenario, ...st.scenario };
+            _autoRun = st.scenario.type === 'flood' || !!st.scenario.code;
+        }
+        // A link's fly-to is still animating: the Here view and a flood event read
+        // the map extent, so let the camera land first (bounded wait).
+        const m = _map();
+        if (m && m.isMoving && m.isMoving()) {
+            await new Promise(res => { const t = setTimeout(res, 6000); m.once('moveend', () => { clearTimeout(t); res(); }); });
+        }
+        await open(st.tab);
+    }
+
+    /** What the header Brief button adds to the city: the Here area or the last what-if. */
+    function _briefContext() {
+        if (_tab === 'here') { const a = _hereChoice(); return a && !a.city ? { area: a } : {}; }
+        if (_tab === 'whatif' && _lastWhatIf && _lastWhatIf.type === _scenario.type) return { whatif: _lastWhatIf };
+        return {};
+    }
+
+    function _shareUrl() {
+        if (typeof URLState !== 'undefined' && URLState.buildUrl && URLState.capture) return URLState.buildUrl(URLState.capture());
+        const qs = new URLSearchParams(IntelBrief.toParams(linkState())).toString();
+        return `${location.origin}${location.pathname}${qs ? `?${qs}` : ''}`;
+    }
+
+    function shareLink() {
+        const url = _shareUrl();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url)
+                .then(() => _toast('Link copied', 'Anyone with the link opens this Intel view.', 'success'))
+                .catch(() => window.prompt('Copy this link:', url));
+        } else window.prompt('Copy this link:', url);
+        return url;
+    }
+
+    /**
+     * Build a brief for the current city (plus opts.area / opts.whatif) and open
+     * it in a new tab for printing; falls back to a download if pop-ups are blocked.
+     */
+    async function openBrief(opts = {}) {
+        const store = _store();
+        if (!store || typeof IntelBrief === 'undefined') return null;
+        _toast('Building the brief', `Reading every dataset for ${UrbanInsights.cityLabel(_city)}…`, 'info');
+        let html;
+        try {
+            const b = await IntelBrief.build({ city: (opts.whatif && opts.whatif.city) || _city, area: opts.area || null, whatif: opts.whatif || null, link: _shareUrl() }, store);
+            html = IntelBrief.toHTML(b);
+        } catch (e) {
+            _toast('Brief failed', e && e.message ? e.message : String(e), 'error');
+            return null;
+        }
+        const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+        const w = window.open(url, '_blank');
+        if (!w) {
+            const a = document.createElement('a');
+            a.href = url; a.download = `digipin_brief_${_city || 'city'}.html`;
+            document.body.appendChild(a); a.click(); a.remove();
+        }
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+        return html;
+    }
+
     // ── init ────────────────────────────────────────────────────────────────
 
     function init() {
@@ -840,7 +941,7 @@ const InsightsPanel = (() => {
 
     return {
         init, open, close, toggle, isOpen, render, attachTo, highlight, clear,
-        findingCard, sparkline,
+        findingCard, sparkline, linkState, applyLink, shareLink, openBrief,
         get lastInsights() { return _lastInsights; },
     };
 })();

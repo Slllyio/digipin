@@ -31,3 +31,15 @@ narrates the computed result citing `[C#]` tags. The agent gets three tools:
 Limits: scores are OSM-derived and sparse outside city cores, flood risk is a
 terrain score rather than a hydraulic model, and population is an index, not a
 head count. The panel says so next to each method.
+
+## Share links and briefs
+
+The Intel dialog's **Share** button (and the app-wide share link / saved views) carry the open Intel view:
+`&intel=<city|here|compare|whatif>&ic=<city>&ia=<area>&ib=<area>&wi=<scenario>`. Area tokens are
+`city:<region>`, `p:<DIGIPIN prefix>` or `b:west,south,east,north`; scenarios are `park:<code>:<boost>`,
+`density:<code>:<factor>` or `flood:<level>`. A what-if link re-runs its scenario when it opens.
+
+**Brief** (header, or "Printable brief" under Here / What-if results) builds a self-contained HTML page
+(`js/intel-brief.js`, schema `digipin.brief/1`, no scripts or network): the city's index, key indicators with
+rank and best city, monthly environment sparklines, zones, what stands out, the city ranking, the area or
+scenario in view, and a source card for every dataset used. Print it to save a PDF.

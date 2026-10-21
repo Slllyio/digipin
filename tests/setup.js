@@ -48,6 +48,7 @@ loadGlobalScript('js/time-slider.js', ['TimeSlider']);
 loadGlobalScript('js/analysis.js', ['Analysis']);
 loadGlobalScript('js/analyses-panel.js', ['AnalysesPanel']);
 loadGlobalScript('js/urban-insights.js', ['UrbanInsights']);
+loadGlobalScript('js/intel-brief.js', ['IntelBrief']);
 loadGlobalScript('js/insights-panel.js', ['InsightsPanel']);
 loadGlobalScript('js/disha-intel.js', ['DishaIntel']);
 loadGlobalScript('js/growth-score.js', ['GrowthScore']);
