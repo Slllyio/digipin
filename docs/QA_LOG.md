@@ -4,6 +4,12 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — the browser jobs no longer depend on one CDN download
+
+- **Finding (run 39684495148, `e2e-smoke`):** the job failed before a single test ran. `npx playwright install` fetches Chromium from cdn.playwright.dev, and that host answered with a certificate for `*.azureedge.net`, so Node refused the download and the step exited 1. Nothing in the tree was involved; the sibling `e2e-bundled` job of the same commit, started seconds earlier, got its browser.
+- **Fix (ci.yml):** both browser jobs cache `~/.cache/ms-playwright` keyed on the installed Playwright version (`actions/cache@v4`); on a cache hit only the system libraries are installed (`playwright install-deps`, apt, no CDN). On a miss the download is retried three times with 20/40 s back-off, each failure a workflow warning. A CDN outage now costs a run its cache miss, not its result.
+- **Not ours:** the `Precompute cell datasets` workflow went red on db417e9 (`cities failed: bhopal`) after pushing its own refresh commit 9e0371e; that is the data pipeline of the traffic thread, not the browser suite.
+
 ## 2026-10-21 — the twin harvest no longer reads terrain pixels
 
 - **Finding (sweep profiler, native frames by app caller):** with terrain on, the twin's `queryRenderedFeatures` on the footprint layer made MapLibre project every corner of the view box, and of the camera box a fill-extrusion query adds, through the terrain coordinate framebuffer: a `readPixels` per corner, each a full GPU sync. 1.8 s of a Delhi fly-in on the software renderer (9.6% of samples), and a hitch of several frames per harvest on a real GPU, several harvests per city as tiles stream.
