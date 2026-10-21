@@ -39,6 +39,28 @@ test.describe('resilience', () => {
     await expect.poll(() => page.evaluate(() => MapModule.getSelectedCode()), { timeout: 15_000 }).toBe('34P-LL5-4L7');
   });
 
+  test('a layer whose parts fail mid-session names the layer, keeps what loaded, and retries', async ({ page }) => {
+    await page.goto('/app.html');
+    await waitForApp(page);
+    await settle(page, 500);
+    // Half the layer's parts drop on the floor (a flaky link), the rest load.
+    let n = 0;
+    await page.route('**/data/cells/population/**', (r) => (n++ % 2 ? r.abort('failed') : r.continue()));
+    const shown = await page.evaluate(() => CellLayers.show('population'));
+    const row = page.locator('#data-status .data-status-row[data-key="cellgaps:population"]');
+    await expect(row).toBeVisible({ timeout: 30_000 });
+    await expect(row).toContainText(/did not load/);
+    expect(await page.evaluate(() => CellStore.failedParts().length)).toBeGreaterThan(0);
+    if (shown) expect(await page.evaluate(() => CellLayers.isVisible('population'))).toBe(true);   // partial data still paints
+    expect(await page.evaluate(() => CrashGuard.count())).toBe(0);
+    // Link back: Retry refetches only the failed parts and the notice clears.
+    await page.unroute('**/data/cells/population/**');
+    await row.locator('.ds-action').click();
+    await expect(row).toHaveCount(0, { timeout: 60_000 });
+    expect(await page.evaluate(() => CellStore.failedParts().length)).toBe(0);
+    expect(await page.evaluate(() => CellLayers.isVisible('population'))).toBe(true);
+  });
+
   test('going offline shows a persistent notice that clears on reconnect', async ({ page, context }) => {
     await page.goto('/app.html');
     await waitForApp(page);

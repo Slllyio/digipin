@@ -225,6 +225,43 @@ describe('CellStore sharded regions', () => {
         expect((await CS.load('sharded')).cells.sort()).toEqual([A, B].sort());
     });
 
+    it('reports parts that did not load (not 404s) and refetches them on the next load', async () => {
+        let bDown = true;
+        globalThis.fetch = vi.fn(async (url) => {
+            const u = String(url);
+            if (u.includes('catalog.json')) return new Response(JSON.stringify({ version: 1, datasets: [SH] }), { status: 200 });
+            if (u.includes(`/${A.slice(0, 4)}.json`)) return new Response(JSON.stringify(docA), { status: 200 });
+            if (u.includes(`/${B.slice(0, 4)}.json`)) {
+                if (bDown) throw new TypeError('Failed to fetch');
+                return new Response(JSON.stringify(docB), { status: 200 });
+            }
+            return new Response('nf', { status: 404 });
+        });
+        await CS.init();
+        const t1 = await CS.load('sharded');
+        expect(t1.cells).toEqual([A]);
+        expect(CS.lastLoad('sharded')).toEqual({ parts: 1, of: 2, unreachable: 1 });
+        expect(CS.failedParts()).toEqual([{ url: `data/cells/sharded/indore_pilot/${B.slice(0, 4)}.json`, reason: 'network' }]);
+        bDown = false;
+        const t2 = await CS.load('sharded');           // degraded table was not kept
+        expect(t2.cells.length).toBe(2);
+        expect(CS.lastLoad('sharded')).toEqual({ parts: 0, of: 2, unreachable: 0 });
+        expect(CS.failedParts()).toEqual([]);
+    });
+
+    it('counts an unpublished (404) part as a gap, not a failure', async () => {
+        globalThis.fetch = mockFetch([
+            ['catalog.json', { version: 1, datasets: [SH] }],
+            [`/${A.slice(0, 4)}.json`, docA],
+        ]);
+        await CS.init();
+        const t = await CS.load('sharded');
+        expect(t.cells).toEqual([A]);
+        expect(CS.lastLoad('sharded')).toEqual({ parts: 1, of: 2, unreachable: 0 });
+        expect(CS.failedParts()).toEqual([]);
+        expect(await CS.load('sharded')).toBe(t);     // kept: nothing to refetch
+    });
+
     it('evicts least-recently-used decoded parts past the cell budget and refetches on demand', async () => {
         const f = mockFetch([
             ['catalog.json', { version: 1, datasets: [SH] }],

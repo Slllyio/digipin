@@ -4,6 +4,12 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — slow or flaky link: what the user sees while cell data arrives
+
+- **Gap 1:** the "Everything in this cell" card appeared only once its ~60 fetches landed; until then the slot was empty. Now a placeholder card ("Loading cell data for <code>…", aria-busy) shows at once and is replaced by the real card.
+- **Gap 2:** a cell part that timed out, hit a 5xx or lost the connection was indistinguishable from "not published" (both null). The layer painted with silent holes, or toasted "No data published for this layer yet." for a network failure. The store now records the reason per part (`CellStore.failedParts()`, `CellStore.lastLoad(id)`), does not keep a degraded table, and the layer code posts a persistent DataStatus row ("<layer>: 3 of 9 data parts did not load — the map has gaps") with Retry, which refetches only the failed parts. The Layers row pulses (aria-busy) while parts load.
+- **Tests:** unit tests for the failure bookkeeping and the 404-vs-failure split; resilience spec aborts every second part of a layer mid-session and checks the row, the partial paint, the Retry and a clean crash count.
+
 ## 2026-10-21 — soak: cold-city profile window
 
 - Run 203 (4831f28) missed one of twelve profiles: Bengaluru's first visit took 94 s (second visit 29 s); every other city was under 60 s. Run 204/205 (1141daf) passed all 31 specs including soak.

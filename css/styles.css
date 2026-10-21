@@ -4579,3 +4579,8 @@ body.presenting #sidebar { display: none !important; }
 }
 .disha-confirm-btn.primary { border-color: var(--accent-green); color: var(--accent-green-text); }
 .disha-confirm-btn:focus-visible { outline: 2px solid var(--accent-green); outline-offset: 1px; }
+
+/* A cell layer whose parts are still arriving (js/cell-layers.js show()). */
+.dt-layer-item.dt-loading .dt-layer-icon { animation: dt-loading-pulse 1s ease-in-out infinite; }
+@keyframes dt-loading-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .dt-layer-item.dt-loading .dt-layer-icon { animation: none; opacity: 0.6; } }

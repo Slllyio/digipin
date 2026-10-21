@@ -336,6 +336,13 @@ const CellStore = (() => {
         }
     }
 
+    // Parts that did not load, by url → 'timeout' | 'network' | HTTP status.
+    // A 404 means "not published"; anything else is a link that failed, which
+    // the UI reports differently and can retry (a failed part is forgotten,
+    // so the next load refetches it).
+    const _failed = new Map();
+    const _lastLoad = new Map();   // dataset id → { parts, of, unreachable } of its latest table build
+
     function _fetchPart(url) {
         if (_parts.has(url)) {
             // Touch: most recently used goes last.
@@ -347,8 +354,14 @@ const CellStore = (() => {
         const p = (async () => {
             try {
                 const resp = await fetch(url, { signal: AbortSignal.timeout(15000) });
-                return resp.ok ? decodeDoc(await resp.arrayBuffer()) : null;
-            } catch { return null; }
+                if (!resp.ok) { _failed.set(url, resp.status); return null; }
+                const doc = decodeDoc(await resp.arrayBuffer());
+                _failed.delete(url);
+                return doc;
+            } catch (e) {
+                _failed.set(url, e && e.name === 'TimeoutError' ? 'timeout' : 'network');
+                return null;
+            }
         })();
         _parts.set(url, p);
         p.then(doc => {
@@ -362,6 +375,14 @@ const CellStore = (() => {
         return p;
     }
 
+    /** Parts whose last fetch failed for a reason other than 404: [{ url, reason }]. */
+    function failedParts() {
+        return [..._failed.entries()].filter(([, r]) => r !== 404).map(([url, reason]) => ({ url, reason }));
+    }
+
+    /** How the dataset's latest table build went: { parts, of, unreachable } or null. */
+    function lastLoad(id) { return _lastLoad.get(id) || null; }
+
     /** Decoded-part cache size, for tests and diagnostics. */
     function cacheStats() {
         return { parts: _parts.size, bytes: _partCellTotal, budget: _partBudget(), views: _views.size, viewBytes: [..._viewBytes.values()].reduce((a, b) => a + b, 0), tables: _tables.size };
@@ -372,6 +393,13 @@ const CellStore = (() => {
         const table = _index(_concat(docs, spec));
         // Source bytes behind this table, for the view cache's memory budget.
         Object.defineProperty(table, 'bytes', { value: docs.reduce((a, d) => a + ((d && d.bytes) || 0), 0), enumerable: false });
+        // What did not arrive: unpublished (404) parts are expected gaps,
+        // unreachable ones (timeout, network, 5xx) are a degraded load.
+        const miss = parts.filter((pt, i) => !docs[i]);
+        const unreachable = miss.filter(pt => _failed.get(pt.url) !== 404).length;
+        const missing = { parts: miss.length, of: parts.length, unreachable };
+        Object.defineProperty(table, 'missing', { value: missing, enumerable: false });
+        _lastLoad.set(spec.id, missing);
         return table;
     }
 
@@ -383,8 +411,9 @@ const CellStore = (() => {
         const p = (async () => {
             const parts = (spec.regions || []).flatMap(regionParts);
             const table = await _tableFrom(spec, parts);
-            if (!table.cells.length) { _tables.delete(id); return null; }
-            return table;
+            // A degraded table is not kept: the next load refetches the failed parts.
+            if (!table.cells.length || table.missing.unreachable) _tables.delete(id);
+            return table.cells.length ? table : null;
         })();
         _tables.set(id, p);
         return p;
@@ -546,6 +575,7 @@ const CellStore = (() => {
         _views.set(key, p);
         p.then(t => {
             if (!_views.has(key)) return;
+            if (t && t.missing && t.missing.unreachable) { _views.delete(key); return; }   // degraded: refetch next time
             _viewBytes.set(key, (t && t.bytes) || 0);
             _evictViews();
         }, () => { _views.delete(key); });
@@ -727,7 +757,7 @@ const CellStore = (() => {
 
     return {
         init, isEnabled, base, datasets, get, generated, tableUrl, field, onChange, isTemporal, stepKey,
-        cellCode, binRecords, dataDomain, decodeDoc, load, loadCells, regionParts, viewParts, loadView, loadAt, rollup, rowAt, cacheStats,
+        cellCode, binRecords, dataDomain, decodeDoc, load, loadCells, regionParts, viewParts, loadView, loadAt, rollup, rowAt, cacheStats, failedParts, lastLoad,
         register, unregister, isLocal, toGeoJSON, coversCity, datasetsFor,
         sqlSources, viewStatements, sql,
     };

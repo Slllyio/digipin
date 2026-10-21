@@ -52,6 +52,8 @@ const CellLayers = (() => {
         '#e6ab02', '#a6761d', '#666666', '#1f78b4', '#b2df8a', '#fb9a99', '#cab2d6'];
 
     const _active = new Map();   // id -> { field, extrude, hidden:[category], cells }
+    const _loading = new Set();   // ids whose parts are being fetched (Layers panel shows them busy)
+    const GAPS = 'cellgaps:';          // DataStatus key prefix for a layer whose parts did not all load
     let _map = null;
     let _popup = null;
     let _legendFor = null;       // dataset id the legend currently describes
@@ -436,14 +438,22 @@ const CellLayers = (() => {
         // Only the regions / shards in view (plus a margin) are fetched.
         const view = _viewBbox();
         state.viewKey = _viewKey(spec, view);
-        const table = await CellStore.loadAt(id, state.level, view);
+        _loading.add(id);
+        _syncPanel();
+        let table = null;
+        try { table = await CellStore.loadAt(id, state.level, view); }
+        finally { _loading.delete(id); }
+        const miss = (CellStore.lastLoad && CellStore.lastLoad(id)) || null;
         if (!table) {
             _active.delete(id);
-            if (typeof App !== 'undefined') App.showToast(spec.title, 'No data published for this layer yet.', 'info');
+            if (miss && miss.unreachable) _reportGaps(id, spec, miss);
+            else if (typeof App !== 'undefined') App.showToast(spec.title, 'No data published for this layer yet.', 'info');
             _syncPanel();
             return false;
         }
         if (_active.get(id) !== state) return false;   // hidden or re-shown while loading
+        if (miss && miss.unreachable) _reportGaps(id, spec, miss);
+        else if (typeof DataStatus !== 'undefined') DataStatus.clear(GAPS + id);
         state.level = table.level;
         state.cells = (table.cells && table.cells.length) || 0;
         _paint(spec, table, state);
@@ -482,8 +492,23 @@ const CellLayers = (() => {
         return true;
     }
 
+    /**
+     * Part of a layer's data did not arrive (timeout, dropped connection,
+     * 5xx): say which layer and how much, persistently, with a Retry that
+     * refetches just the failed parts (the store forgets them).
+     */
+    function _reportGaps(id, spec, miss) {
+        if (typeof DataStatus === 'undefined') return;
+        const all = miss.unreachable >= miss.of;
+        const text = all
+            ? `${spec.title}: the cell data did not load — check the connection.`
+            : `${spec.title}: ${miss.unreachable} of ${miss.of} data parts did not load — the map has gaps.`;
+        DataStatus.set(GAPS + id, { kind: 'warning', text, action: { label: 'Retry', busy: 'Loading…', run: () => show(id) } });
+    }
+
     function hide(id) {
         _active.delete(id);
+        if (typeof DataStatus !== 'undefined') DataStatus.clear(GAPS + id);
         const map = _map_();
         if (map) {
             map.off('click', LYR + id, _onClick);
@@ -765,6 +790,9 @@ const CellLayers = (() => {
         _panel.dropdown.querySelectorAll('.dt-layer-item[data-layer-key^="_cell_"]').forEach(item => {
             const id = item.dataset.layerKey.slice('_cell_'.length);
             const on = _active.has(id);
+            const busy = _loading.has(id);
+            item.classList.toggle('dt-loading', busy);
+            if (busy) item.setAttribute('aria-busy', 'true'); else item.removeAttribute('aria-busy');
             const cb = item.querySelector('input[type=checkbox]');
             if (cb) cb.checked = on;
             if (item.getAttribute('role') === 'switch') item.setAttribute('aria-checked', String(on));
