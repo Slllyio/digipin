@@ -35,6 +35,7 @@ const DishaIntel = (() => {
             types: /\b(archetypes?|typolog\w*|kinds? of (places?|neighbou?rhoods?)|types? of neighbou?rhoods?|neighbou?rhood types?|cluster(s|ing)? of neighbou?rhoods?)\b/i,
             green: /\b(3[\s-]?30[\s-]?300|tree canopy (rule|target|cover)|green space within|enough (trees|green))\b/i,
             solar: /\b(roof\s?top solar|solar (potential|roofs?|power|capacity)|how much solar)\b/i,
+            confidence: /\b(data (confidence|quality|completeness)|how (reliable|accurate|complete) is (the|this) data|osm completeness|can i trust)\b/i,
             burden: /\b(compound (risk|hazard)s?|multi[\s-]?hazard|triple burden|most at risk overall)\b/i,
             all: /\b(equity|inequal\w*|unequal|unfair|gini|fairness|left behind|urban lens(es)?|lenses)\b/i,
         },

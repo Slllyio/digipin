@@ -113,6 +113,13 @@ const UrbanLenses = (() => {
             needs: ['building_stock.cover_2023_pct', 'osm_roads.building_cover_pct'],
             method: `Roof area = building cover (Open Buildings 2023, else OSM) × cell area; ${ROOF_USABLE * 100}% usable; ${M2_PER_KWP} m² per kWp (MNRE); yield = kWp × NASA POWER annual irradiance × 365 × performance ratio ${PERF_RATIO}. Compared with ${KWH_PER_CAPITA.toLocaleString('en-IN')} kWh per resident per year (CEA 2023-24). Shading, roof slope and structure are ignored; the per-building sun-hours tool refines a site.`,
             refs: 'Gagnon et al. 2016 (NREL rooftop PV); MNRE rooftop guidelines; NASA POWER; CEA General Review 2024' },
+        { id: 'confidence', title: 'Data confidence', icon: '🔎',
+            question: 'How far can I trust the lenses here?',
+            field: { key: 'confidence', label: 'Data confidence', unit: '0-100', higherIs: 'better', ramp: 'viridis' },
+            extra: [{ key: 'osm_complete', label: 'OSM building completeness', unit: '%', higherIs: 'better', ramp: 'greens' }],
+            needs: ['osm_roads.buildings', 'building_stock.buildings_2023'],
+            method: 'Half OSM completeness (OSM buildings ÷ Open Buildings 2023 buildings in the cell, capped at 100%; amenity-based lenses inherit OSM’s gaps), half input coverage (share of the lens inputs with a value in the cell). Low confidence means read the 15-minute, healthcare and walkability lenses there as lower bounds.',
+            refs: 'Barrington-Leigh & Millard-Ball 2017 (OSM completeness); Herfort et al. 2023' },
         { id: 'burden', title: 'Compound risk', icon: '⚠',
             question: 'Where do heat, flood and dirty air stack up?',
             field: { key: 'burden', label: 'Hazards in the worst fifth', unit: 'of 3', higherIs: 'worse', ramp: 'reds' },
@@ -1018,7 +1025,37 @@ const UrbanLenses = (() => {
         };
     }
 
-    const RUN = { heat, flood, fifteen, health, air, lights, walk, sprawl, types, green, solar, burden };
+    function confidence(fr) {
+        const c = fr.cols, n = fr.grid.n, idx = _residents(fr);
+        const osm = c['osm_roads.buildings'], ob = c['building_stock.buildings_2023'];
+        const inputs = Object.keys(c).filter(k => !k.startsWith('population.'));
+        if (!inputs.length) return null;
+        const comp = new Float64Array(n).fill(NaN), conf = new Float64Array(n).fill(NaN);
+        for (const i of idx) {
+            let have = 0;
+            for (const k of inputs) if (_fin(c[k][i])) have++;
+            const cov = have / inputs.length;
+            if (osm && ob && ob[i] > 0) comp[i] = 100 * Math.min(1, (osm[i] || 0) / ob[i]);
+            conf[i] = _fin(comp[i]) ? 50 * cov + 0.5 * comp[i] : 100 * cov;
+        }
+        const pop = c['population.population'];
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const low = _sumOver(pop, idx, i => _fin(comp[i]) && comp[i] < 50);
+        const mc = wmean(comp, pop, idx);
+        return {
+            columns: { confidence: conf, osm_complete: comp }, idx,
+            headline: `OpenStreetMap maps about ${_round(mc)}% of the buildings Open Buildings sees where the average resident lives; `
+                + `${_people(low)} people (${_round(100 * low / total)}%) live where it maps under half, so amenity-based lenses there are lower bounds.`,
+            stats: [
+                { label: 'OSM building completeness (per resident)', value: `${_round(mc)}%` },
+                { label: 'Residents where OSM maps < 50%', value: _people(low), raw: Math.round(low) },
+                { label: 'Mean confidence (per resident)', value: `${_round(wmean(conf, pop, idx))} / 100` },
+                { label: 'Inputs missing for this city', value: fr.missing.length ? fr.missing.join(', ') : 'none' },
+            ],
+        };
+    }
+
+    const RUN = { heat, flood, fifteen, health, air, lights, walk, sprawl, types, green, solar, confidence, burden };
 
     // ── siting suitability (MCDA with AHP weights) ──────────────────────────
 

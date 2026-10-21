@@ -59,7 +59,7 @@ new data.
 | 16 | Network isochrones | True 15-minute reach on the road graph | Roads lazy-loaded | M–L | Later |
 | 17 | Transit job access | How many jobs within 45 min by bus/metro? | No (GTFS + jobs) | L | Data needed |
 | 18 | Socio-economic sensitivity | Who is poor, old, young (census)? | No (Census / SHRUG) | L | Data needed |
-| 19 | Data confidence layer | How much should I trust this cell? | Yes (coverage) | S | Later |
+| 19 | Data confidence layer | How much should I trust this cell? | Yes (coverage) | S | **Shipped** |
 
 Excluded here because other work owns them: draw-an-area building insights,
 the "what changed this month" feed, and performance/reliability.
