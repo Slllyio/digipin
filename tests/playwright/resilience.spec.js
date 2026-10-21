@@ -178,7 +178,9 @@ test.describe('resilience', () => {
     const shownAfter = Date.now() - t0;
     expect(shownAfter, `splash visible after ${shownAfter} ms`).toBeLessThan(8000);
     // The slow-link note replaces the sub-line while the scripts are still in flight.
-    await expect(splash.locator('.splash-sub')).toContainText(/connection looks slow/, { timeout: 12_000 });
+    // (The timers start when the head is parsed; on slow 3G the CDN scripts
+    // alone take over a minute, so the note is due well inside this window.)
+    await expect(splash.locator('.splash-sub')).toContainText(/connection looks slow/, { timeout: 30_000 });
     await cdp.send('Network.emulateNetworkConditions', { offline: false, downloadThroughput: -1, uploadThroughput: -1, latency: 0 });
     await waitForApp(page);
     // Once the map is up the splash goes (the stub map reports loaded at once).

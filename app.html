@@ -36,6 +36,27 @@
     </script>
     -->
 
+    <!-- Slow-link notes for the loading splash (markup at the top of <body>).
+         In the head, before the stylesheets: a body script would wait for the
+         CSS, which on a slow link is itself seconds. Elements are looked up
+         when each timer fires. -->
+    <script>
+        (function () {
+            var sub = function () { return document.querySelector('#app-splash .splash-sub'); };
+            var alive = function () { var s = document.getElementById('app-splash'); return s && !s.classList.contains('is-done'); };
+            // UIPolish is defined by one of the last deferred scripts: while it is
+            // missing the scripts are still arriving, which is the link, not the map.
+            setTimeout(function () {
+                var el = sub();
+                if (alive() && el && typeof window.UIPolish === 'undefined') { el.textContent = 'Still loading — the connection looks slow. The app works offline after its first full load.'; el.classList.add('is-slow'); }
+            }, 6000);
+            setTimeout(function () {
+                var el = sub();
+                if (alive() && el) { el.textContent = 'This is taking longer than usual. Keep waiting, or reload to try again.'; }
+            }, 40000);
+        })();
+    </script>
+
     <!-- MapLibre GL JS -->
     <link rel="stylesheet"
           href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css"
@@ -108,29 +129,15 @@
          deferred scripts run only once they have all arrived (13 s on a
          fast-3G link, ~50 s on slow 3G), and js/ui-polish.js reuses this
          element rather than creating one. UIPolish.hideSplash() removes it
-         when the map has loaded (or the engine is missing). The inline timer
-         below says so when the link is slow: a page that shows nothing
-         moving for half a minute reads as broken. -->
+         when the map has loaded (or the engine is missing). The timers in the
+         head say so when the link is slow: a page that shows nothing moving
+         for half a minute reads as broken. -->
     <div id="app-splash" role="status" aria-live="polite">
         <div class="splash-mark" aria-hidden="true">DP</div>
         <div class="splash-title">DigiPin Intelligence</div>
         <div class="splash-sub">Loading the city grid…</div>
         <div class="splash-bar" aria-hidden="true"><span></span></div>
     </div>
-    <script>
-        (function () {
-            var sub = document.querySelector('#app-splash .splash-sub');
-            var alive = function () { var s = document.getElementById('app-splash'); return s && !s.classList.contains('is-done'); };
-            // UIPolish is defined by one of the last deferred scripts: while it is
-            // missing the scripts are still arriving, which is the link, not the map.
-            setTimeout(function () {
-                if (alive() && sub && typeof window.UIPolish === 'undefined') { sub.textContent = 'Still loading — the connection looks slow. The app works offline after its first full load.'; sub.classList.add('is-slow'); }
-            }, 6000);
-            setTimeout(function () {
-                if (alive() && sub) { sub.textContent = 'This is taking longer than usual. Keep waiting, or reload to try again.'; }
-            }, 40000);
-        })();
-    </script>
 
     <!-- Keyboard/screen-reader skip link — first focusable element. -->
     <a href="#map" class="skip-link">Skip to map</a>
