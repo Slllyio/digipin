@@ -4,6 +4,12 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — soak in CI: no GPU means 2-4 s per 3D frame
+
+- **Found by:** the main-thread freeze budget added to tests/playwright/soak.spec.js. In CI (Chromium on SwiftShader) every frame with the 3D buildings layer on is a 2.5-3.9 s long task, back to back (420 s blocked out of 439 s). It also made a fixed-wait soak read the old city's centre, so twelve selections all hit Indore.
+- **Meaning:** this is the software rasteriser, not something a user with a GPU sees; the stub run's longest task is ~350 ms. The soak now waits for the fly-to to land, selects each city's own centre, checks the panel shows that code, and only enforces the freeze budget when the WebGL renderer is not software.
+- **Open:** measure the 3D frame cost on real hardware (DeckBuildings.heightsCacheStats reports ~110k cells for Indore); if it is more than a frame, the layer needs decimation at low zoom.
+
 ## 2026-10-21 — blocked map CDN left a blank page
 
 - **Found by:** running the real app in a sandbox with unpkg.com unreachable (what a content blocker, captive portal or first offline visit does).
