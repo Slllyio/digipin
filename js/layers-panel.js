@@ -28,6 +28,7 @@ const LayersPanel = (() => {
         { btnId: 'btn-bivariate', name: 'Bivariate Map', icon: '\u{1F3A8}' },
         { btnId: 'btn-kde', name: 'Hotspot Density', icon: '\u{1F525}' },
         { btnId: 'btn-viewshed', name: 'Viewshed', icon: '\u{1F441}' },
+        { btnId: 'btn-sentinel', name: 'Sentinel-2 Imagery (latest)', icon: '\u{1F6F0}' },
         { btnId: 'btn-swipe', name: 'Swipe Compare (two layers)', icon: '\u{2194}' },
         { btnId: 'btn-hydrology', name: 'Terrain Hydrology (ponding)', icon: '\u{1F4A7}' },
         { btnId: 'btn-access', name: 'Accessibility Gaps', icon: '♿' },

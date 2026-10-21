@@ -4556,3 +4556,11 @@ body.presenting #sidebar { display: none !important; }
 .layer-swipe-field select { font: inherit; max-width: 100%; }
 .layer-swipe-hint { grid-column: 1 / -1; opacity: .75; }
 .layer-swipe-close { grid-column: 1 / -1; justify-self: end; font: inherit; cursor: pointer; }
+
+/* SentinelImagery: scene date / view picker. */
+.sentinel-panel { position: absolute; right: 64px; top: 96px; z-index: 20; display: grid; gap: 8px; width: min(280px, calc(100vw - 32px)); padding: 10px 12px; border-radius: 10px; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); font-size: 12px; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
+.sentinel-title { font-weight: 600; }
+.sentinel-field { display: grid; gap: 4px; }
+.sentinel-field select { font: inherit; max-width: 100%; }
+.sentinel-credit { color: var(--text-secondary); font-size: 11px; }
+.sentinel-close { justify-self: end; font: inherit; cursor: pointer; }

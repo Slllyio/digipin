@@ -252,6 +252,10 @@
             <span class="tb-icon">&#128065;</span>
             <span class="tb-label" data-i18n="tb.viewshed">Viewshed</span>
         </button>
+        <button class="toolbar-btn" id="btn-sentinel" title="Sentinel-2 — latest clear satellite scene over the selected cell (10 m, live)">
+            <span class="tb-icon">&#128752;</span>
+            <span class="tb-label" data-i18n="tb.sentinel">Sentinel-2</span>
+        </button>
         <button class="toolbar-btn" id="btn-swipe" title="Swipe compare — two layers side by side with a draggable divider">
             <span class="tb-icon">&#8596;</span>
             <span class="tb-label" data-i18n="tb.swipe">Swipe</span>
@@ -503,6 +507,7 @@
     <script defer src="js/viewshed.js"></script>
     <script defer src="js/terrain-hydrology.js"></script>
     <script defer src="js/layer-swipe.js"></script>
+    <script defer src="js/sentinel-imagery.js"></script>
     <script defer src="js/kde-overlay.js"></script>
     <script defer src="js/accessibility-overlay.js"></script>
     <script defer src="js/url-state.js"></script>
@@ -552,6 +557,7 @@
         ['btn-viewshed',  () => window.Viewshed],
         ['btn-hydrology', () => window.TerrainHydrology],
         ['btn-swipe',     () => window.LayerSwipe],
+        ['btn-sentinel',  () => window.SentinelImagery],
         ['btn-kde',       () => window.KDEOverlay],
         ['btn-access',    () => window.AccessibilityOverlay],
         ['btn-choropleth', () => window.ScoreChoropleth],
