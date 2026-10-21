@@ -2,7 +2,7 @@
 // when data is missing, broken or slow. Offline-shell coverage lives in
 // offline.spec.js. CommonJS form — package.json is "type": "commonjs".
 const { test, expect } = require('@playwright/test');
-const { STUB, prepare, waitForApp, openLayersPanel, settle } = require('./helpers/app');
+const { STUB, prepare, waitForApp, openLayersPanel, settle, toggleRow } = require('./helpers/app');
 
 test.describe('resilience', () => {
   let errors = [];
@@ -80,6 +80,33 @@ test.describe('resilience', () => {
     // dropped may still be listed, so the claim is about this load.
     expect((await page.evaluate(() => CellStore.lastLoad('population'))).unreachable).toBe(0);
     expect(await page.evaluate(() => CellLayers.isVisible('population'))).toBe(true);
+  });
+
+  test('3D heights that fail to load say so, draw estimates, and Retry recovers', async ({ page }) => {
+    test.skip(STUB, 'deck.gl is not loaded under the stub map');
+    test.setTimeout(300_000);   // 3D on CI's software GL: see journeys.spec.js
+    await page.goto('/app.html');
+    await waitForApp(page);
+    // The baked height grids (one ~1-5 MB file per city) never arrive; the
+    // index does, so the layer knows what it is missing.
+    let dropped = 0;
+    await page.route('**/data/heights/*_heights_digipin.json*', (r) => { dropped++; r.abort('failed'); });
+    await toggleRow(page, 'btn-buildings');
+    await toggleRow(page, 'btn-3d');
+    const row = page.locator('#data-status .data-status-row[data-key="heights"]');
+    await expect(row).toBeVisible({ timeout: 120_000 });
+    await expect(row).toContainText(/estimated heights/);
+    expect(dropped).toBeGreaterThan(0);
+    expect(await page.evaluate(() => DeckBuildings.heightsCacheStats().failed)).toBeGreaterThan(0);
+    expect(await page.evaluate(() => DeckBuildings.isEnabled())).toBe(true);   // the city still draws
+    expect(await page.evaluate(() => CrashGuard.count())).toBe(0);
+    // Link back: Retry fetches the grid and the row goes.
+    await page.unroute('**/data/heights/*_heights_digipin.json*');
+    await row.locator('.ds-action').click();
+    await expect(row).toHaveCount(0, { timeout: 120_000 });
+    const stats = await page.evaluate(() => DeckBuildings.heightsCacheStats());
+    expect(stats.failed).toBe(0);
+    expect(stats.grids).toBeGreaterThan(0);
   });
   });
 

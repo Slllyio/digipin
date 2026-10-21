@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // DeckBuildings is exposed on globalThis by tests/setup.js. deck.gl itself is
 // absent under jsdom, so available() is false and the GL paths are inert — we
@@ -169,5 +169,61 @@ describe('DeckBuildings.available', () => {
         expect(DB.available()).toBe(false);
         expect(DB.enable({}, () => null)).toBe(false);
         expect(DB.isEnabled()).toBe(false);
+    });
+});
+
+describe('DeckBuildings baked heights on a failing link', () => {
+    const DS = globalThis.DataStatus;
+    const okRes = (body) => ({ ok: true, status: 200, json: async () => body });
+    const errRes = (status) => ({ ok: false, status, json: async () => { throw new Error('no body'); } });
+    const grid = { level: 7, cells: { ABCDEFG: 12 } };
+    let realFetch;
+    beforeEach(() => { realFetch = globalThis.fetch; DS.reset(); });
+    afterEach(() => { globalThis.fetch = realFetch; DS.reset(); });
+
+    it('a 5xx grid is reported with Retry and refetched; success clears the row', async () => {
+        const calls = [];
+        globalThis.fetch = async (url) => { calls.push(url); return calls.length === 1 ? errRes(503) : okRes(grid); };
+        expect(await DB.loadHeights('data/heights/x.json')).toBe(false);
+        expect(DB.heightsCacheStats().failed).toBe(1);
+        expect(DS.has('heights')).toBe(true);
+        expect(await DB.loadHeights('data/heights/x.json')).toBe(true);
+        expect(DB.heightsCacheStats().failed).toBe(0);
+        expect(DS.has('heights')).toBe(false);
+        expect(calls.length).toBe(2);
+    });
+
+    it('a dropped connection is reported the same way', async () => {
+        globalThis.fetch = async () => { throw new TypeError('Failed to fetch'); };
+        expect(await DB.loadHeights('data/heights/y.json')).toBe(false);
+        expect(DB.heightsCacheStats().failed).toBe(1);
+        expect(DS.has('heights')).toBe(true);
+        globalThis.fetch = async () => okRes(grid);
+        expect(await DB.loadHeights('data/heights/y.json')).toBe(true);
+        expect(DS.has('heights')).toBe(false);
+    });
+
+    it('a 404 grid is "not baked", not a failure: no row, nothing to retry', async () => {
+        globalThis.fetch = async () => errRes(404);
+        expect(await DB.loadHeights('data/heights/z.json')).toBe(false);
+        expect(DB.heightsCacheStats().failed).toBe(0);
+        expect(DS.has('heights')).toBe(false);
+    });
+
+    it('ensureHeights asks again for a grid that failed, not for one that loaded', async () => {
+        const index = [{ region: 'r', bbox: [75, 22, 76, 23], file: 'data/heights/r.json' }];
+        const calls = [];
+        globalThis.fetch = async (url) => {
+            calls.push(url);
+            if (String(url).endsWith('index.json')) return okRes(index);
+            return calls.filter(u => u === url).length === 1 ? errRes(502) : okRes(grid);
+        };
+        const pt = { lat: 22.7, lng: 75.8 };
+        expect(await DB.ensureHeights(pt)).toEqual([false]);
+        expect(DS.has('heights')).toBe(true);
+        expect(await DB.ensureHeights(pt)).toEqual([true]);      // retried
+        expect(DS.has('heights')).toBe(false);
+        expect(await DB.ensureHeights(pt)).toEqual([true]);      // cached, no third fetch
+        expect(calls.filter(u => u === 'data/heights/r.json').length).toBe(2);
     });
 });

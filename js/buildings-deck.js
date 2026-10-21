@@ -45,11 +45,29 @@ const DeckBuildings = (() => {
      *  request it twice. Resolves to [] when missing. */
     function heightIndex() {
         if (!_index) {
+            // A 404 means no grids are baked (final for this build); a failed
+            // or 5xx fetch is forgotten so the next call asks again.
             _index = fetch(HEIGHT_INDEX, { cache: 'no-cache' })
-                .then(r => (r.ok ? r.json() : []))
-                .catch(() => []);
+                .then(r => { if (r.ok) return r.json(); if (r.status !== 404) _index = null; return []; })
+                .catch(() => { _index = null; return []; });
         }
         return _index;
+    }
+
+    // Grids whose last fetch failed for a reason other than 404 (url -> status
+    // or 'network'). While any is listed the user sees one DataStatus row: the
+    // 3D city is drawing estimated heights, and Retry refetches just those.
+    const HEIGHTS_KEY = 'heights';
+    const _failedGrids = new Map();
+
+    function _reportHeights() {
+        if (typeof DataStatus === 'undefined') return;
+        if (!_failedGrids.size) { DataStatus.clear(HEIGHTS_KEY); return; }
+        DataStatus.set(HEIGHTS_KEY, {
+            kind: 'warning',
+            text: '3D building heights did not load — buildings show estimated heights until they do.',
+            action: { label: 'Retry', busy: 'Loading…', run: () => ensureHeights().then(r => r.every(Boolean)) },
+        });
     }
 
     /**
@@ -73,8 +91,16 @@ const DeckBuildings = (() => {
     async function loadHeights(url) {
         try {
             const res = await fetch(url, { cache: 'force-cache' });
-            if (!res.ok) return false;
+            if (!res.ok) {
+                // 404: not baked for this city, the estimate stays (nothing to
+                // retry). Anything else is a link that failed: forget the load
+                // so the next ensureHeights() asks again, and say so.
+                if (res.status !== 404) { _failedGrids.set(url, res.status); _gridLoads.delete(url); _reportHeights(); }
+                return false;
+            }
             const doc = await res.json();
+            _failedGrids.delete(url);
+            _reportHeights();
             _gridDocs.delete(url);
             _gridDocs.set(url, doc);
             let rebuilt = false;
@@ -89,6 +115,9 @@ const DeckBuildings = (() => {
             return true;
         } catch (e) {
             console.warn('DeckBuildings.loadHeights failed:', e);
+            _failedGrids.set(url, 'network');
+            _gridLoads.delete(url);
+            _reportHeights();
             return false;
         }
     }
@@ -363,7 +392,7 @@ const DeckBuildings = (() => {
     }
 
     /** Grids currently held, for tests / diagnostics. */
-    function heightsCacheStats() { return { grids: _gridDocs.size, max: MAX_GRIDS, cells: _grid ? _grid.cells.size : 0 }; }
+    function heightsCacheStats() { return { grids: _gridDocs.size, max: MAX_GRIDS, cells: _grid ? _grid.cells.size : 0, failed: _failedGrids.size }; }
 
     return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights, heightIndex, heightsCacheStats,
         setExaggeration, getExaggeration,

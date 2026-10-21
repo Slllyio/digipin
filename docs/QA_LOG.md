@@ -4,6 +4,12 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — 3D heights on a flaky link; CI timing on the software renderer
+
+- **Gap:** a baked height grid (1-5 MB per city) that timed out, hit a 5xx or lost the connection was silently replaced by footprint estimates, and the failed load was cached for the session so the real heights never came back. The index had the same one-shot cache. Now a non-404 failure is forgotten (the next pan or Retry refetches), one persistent DataStatus row (`heights`) says the city is drawing estimated heights, and it clears when every grid lands; `DeckBuildings.heightsCacheStats().failed` counts them. 404 stays silent: not baked is not a failure.
+- **Tests:** unit tests for 5xx / dropped connection / 404 and the ensureHeights retry; a resilience spec case aborts every grid in the real browser with 3D on, checks the row and that the city still draws, then lets the grids through and clicks Retry.
+- **CI timing (same day):** all of today's reds were the test harness, not the app. The layer-gaps test raced a boot-time profile load (a part fetched between the cache reset and the route was served from memory); the route now goes in first. The 3D-city journey (67 s alone), the share-link round trip (89 s) and the soak loop (572 s) all overran fixed windows when another 3D test shared the two-worker runner, where software-GL frames run 3-9 s. Windows are now 300 s for the journeys and, for the soak, the sum of its own per-visit waits; every profile rendered in every run.
+
 ## 2026-10-21 — slow or flaky link: what the user sees while cell data arrives
 
 - **Gap 1:** the "Everything in this cell" card appeared only once its ~60 fetches landed; until then the slot was empty. Now a placeholder card ("Loading cell data for <code>…", aria-busy) shows at once and is replaced by the real card.
