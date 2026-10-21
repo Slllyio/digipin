@@ -40,6 +40,7 @@ test.describe('soak', () => {
     await toggleRow(page, 'btn-buildings');
     await toggleRow(page, 'btn-3d');
     const heaps = [];
+    let profiles = 0;
     const t0 = Date.now();
     for (let round = 0; round < ROUNDS; round++) {
       for (const id of cities) {
@@ -51,8 +52,16 @@ test.describe('soak', () => {
         await page.evaluate(() => {
           const c = MapModule.getMap().getCenter();
           const code = DigiPin.encode(c.lat, c.lng);
+          document.querySelectorAll('[data-cell-profile]').forEach((e) => e.remove());
           Promise.resolve().then(() => MapModule.selectByCode(code)).catch(() => {});
         });
+        // The profile card proves the panel opened and the cell store was hit;
+        // the first CI run showed zero cell-store parts loaded because the
+        // selection waited on a map 'idle' that never came with 3D on.
+        try {
+          await page.waitForFunction(() => !!document.querySelector('[data-cell-profile]'), null, { timeout: 20_000 });
+          profiles++;
+        } catch { /* counted below */ }
         await settle(page, STUB ? 400 : 600);
       }
       // Force a full GC through CDP so the heap number is retained memory, not garbage.
@@ -66,10 +75,14 @@ test.describe('soak', () => {
       console.log(`soak round ${round + 1}: heap ${heaps.at(-1).toFixed(0)} MB, caches ${JSON.stringify(cache)}`);
     }
     console.log(`soak: ${ROUNDS} rounds × ${cities.length} cities in ${((Date.now() - t0) / 1000).toFixed(0)} s`);
+    expect(profiles, 'cell profiles rendered (one per city selection)').toBe(ROUNDS * cities.length);
     expect(await page.evaluate(() => CrashGuard.count()), 'CrashGuard count').toBe(0);
     expect(await page.evaluate(() => DataStatus.active()), 'degraded-state notices').toEqual([]);
     const cache = await page.evaluate(() => (typeof CellStore !== 'undefined' && CellStore.cacheStats) ? CellStore.cacheStats() : null);
-    if (cache) expect(cache.bytes, 'decoded cell-store parts stay within budget').toBeLessThanOrEqual(cache.budget);
+    if (cache) {
+      expect(cache.parts, 'cell-store parts were actually loaded by the selections').toBeGreaterThan(0);
+      expect(cache.bytes, 'decoded cell-store parts stay within budget').toBeLessThanOrEqual(cache.budget);
+    }
     if (heaps.length === ROUNDS && heaps[0] > 0) {
       expect(heaps[1] - heaps[0], `heap growth MB round1→round2 (${heaps.map((h) => h.toFixed(0)).join(' → ')})`).toBeLessThan(GROWTH_MB);
       expect(heaps[1], 'heap after the soak').toBeLessThan(HEAP_MB);

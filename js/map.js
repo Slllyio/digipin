@@ -534,7 +534,7 @@ const MapModule = (() => {
         const zoom = DigiPin.zoomForLevel ? DigiPin.zoomForLevel(clean.length) : Math.min(18, 8 + clean.length);
         _drawSelected(clean);
         flyTo(decoded.lat, decoded.lng, zoom);
-        map.once('idle', () => {
+        _afterFly(() => {
             const formatted = DigiPin.format(clean);
             const fid = codeToCellId.has(formatted) ? codeToCellId.get(formatted)
                 : (codeToCellId.has(clean) ? codeToCellId.get(clean) : null);
@@ -544,6 +544,24 @@ const MapModule = (() => {
                 center: { lat: decoded.lat, lng: decoded.lng },
                 bounds: decoded.bounds,
             });
+        });
+    }
+
+    /**
+     * Run cb once the flyTo has landed and the grid had a chance to render.
+     * 'idle' alone was the trigger before, but with the 3D buildings overlay
+     * (or a tile that keeps retrying) the map can stay busy for a long time
+     * and the selection never opened; so wait for moveend, then the next
+     * idle or 1.5 s, whichever is first, with a hard 5 s backstop.
+     */
+    function _afterFly(cb) {
+        let done = false;
+        const fire = () => { if (done) return; done = true; clearTimeout(hard); map.off('idle', fire); cb(); };
+        const hard = setTimeout(fire, 5000);
+        map.once('moveend', () => {
+            if (done) return;
+            map.once('idle', fire);
+            setTimeout(fire, 1500);
         });
     }
 
