@@ -29,6 +29,7 @@ const UIPolish = (() => {
         compare: '<rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/>',
         star: '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3z"/>',
         folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/>',
+        doc: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
         clipboard: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
         heatmap: '<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/>',
         wards: '<path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z"/><path d="M9 3v15M15 6v15"/>',
@@ -388,13 +389,24 @@ const UIPolish = (() => {
     }
 
     /** Light: drop the leading emoji from text-only chips in the Intel/Agents dialogs. */
+    // Emoji that carry meaning on icon-only chips (the Intel header collapses
+    // to icons on phones) get a line icon instead of being dropped.
+    const CHIP_ICONS = { '🔗': 'link', '📄': 'doc', '📋': 'clipboard', '⭐': 'star', '🎯': 'target' };
+
     function stripButtonEmoji(root) {
         if (!root || _theme() !== 'light') return;
         root.querySelectorAll('.ui-chip, .ui-seg-btn, .ui-btn').forEach(el => {
             if (el.childElementCount || el.dataset.aino) return;
             const { emoji, text } = splitEmoji(el.textContent);
             el.dataset.aino = '1';
-            if (emoji && text) el.textContent = text;
+            if (!emoji || !text) return;
+            const ico = CHIP_ICONS[emoji];
+            if (!ico) { el.textContent = text; return; }
+            const label = el.ownerDocument.createElement('span');
+            label.className = 'ui-chip-label';
+            label.textContent = text;
+            el.innerHTML = icon(ico, 14);
+            el.appendChild(label);
         });
     }
 

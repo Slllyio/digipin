@@ -1095,3 +1095,11 @@ html[data-theme="light"] .ag-card-title, html[data-theme="light"] .ag-head-title
 html[data-theme="light"] .ag-back { color: var(--aino-ink); }
 html[data-theme="light"] .ag-area { background: var(--aino-paper); }
 html[data-theme="light"] .toolbar-btn.active { border-color: transparent !important; box-shadow: none !important; }
+
+/* Intel header chips: line icon + label in light; icon-only on phones */
+html[data-theme="light"] .ui-head-tools .ui-chip { display: inline-flex; align-items: center; gap: 5px; }
+html[data-theme="light"] .ui-head-tools .ui-chip .ui-icon { flex: none; }
+@media (max-width: 480px) {
+    html[data-theme="light"] .ui-head-tools .ui-chip { width: 30px; height: 30px; justify-content: center; padding: 0; border-radius: 10px; }
+    html[data-theme="light"] .ui-head-tools .ui-chip .ui-chip-label { display: none; }
+}
