@@ -33,7 +33,7 @@ const DeckBuildings = (() => {
     let _data = [];             // harvested deck polygon records
     // Draw-cost record for the perf spec: how much geometry each refresh hands
     // deck.gl and how long the harvest + layer build held the main thread.
-    let _refreshes = 0, _lastRefreshMs = 0, _maxRefreshMs = 0, _drawMode = 'off', _drawData = [];
+    let _refreshes = 0, _lastRefreshMs = 0, _maxRefreshMs = 0, _drawMode = 'off', _drawData = [], _peakData = [];
     let _moveBound = false;
     let _grid = null;           // { levels:[…], cells: Map<dashless DIGIPIN, metres> }, when loaded
     const _gridLoads = new Map();   // grid url -> in-flight/finished loadHeights() promise
@@ -378,6 +378,9 @@ const DeckBuildings = (() => {
     function noteDraw(mode, data, ms) {
         _drawMode = mode || 'off';
         _drawData = Array.isArray(data) ? data : [];
+        // A harvest between tiles can be empty; the fullest draw of the window
+        // is what the view cost, so keep it beside the last one.
+        if (_drawData.length > _peakData.length) _peakData = _drawData;
         _lastRefreshMs = Math.max(0, Number(ms) || 0);
         _maxRefreshMs = Math.max(_maxRefreshMs, _lastRefreshMs);
         _refreshes++;
@@ -397,12 +400,14 @@ const DeckBuildings = (() => {
 
     /** Current draw cost: geometry of the last draw (deck overlay or twin source) plus refresh timings since the last reset. */
     function renderStats() {
+        const peak = polygonStats(_peakData);
         return Object.assign(polygonStats(_drawData), {
             mode: _drawMode, enabled: _enabled, refreshes: _refreshes,
             lastRefreshMs: Math.round(_lastRefreshMs), maxRefreshMs: Math.round(_maxRefreshMs),
+            peakPolygons: peak.polygons, peakVertices: peak.vertices, peakBySource: peak.bySource,
         });
     }
-    function resetRenderStats() { _refreshes = 0; _lastRefreshMs = 0; _maxRefreshMs = 0; _drawMode = 'off'; _drawData = []; }
+    function resetRenderStats() { _refreshes = 0; _lastRefreshMs = 0; _maxRefreshMs = 0; _drawMode = 'off'; _drawData = []; _peakData = []; }
 
     /** Attach the deck overlay to the map. Returns false if deck is unavailable. */
     function enable(map, getFocus) {
