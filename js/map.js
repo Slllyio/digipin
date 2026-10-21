@@ -31,12 +31,13 @@ const MapModule = (() => {
             maplibregl.addProtocol('pmtiles', protocol.tile);
         }
 
+        const styleUrl = (typeof Theme !== 'undefined') ? Theme.mapStyleUrl()
+            : 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
         map = new maplibregl.Map({
             container: 'map',
             // Basemap follows the active theme (dark-matter / positron). A theme
             // change reloads the app, so picking the style at init is enough.
-            style: (typeof Theme !== 'undefined') ? Theme.mapStyleUrl()
-                : 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+            style: styleUrl,
             center: [INDORE.lng, INDORE.lat], // MapLibre uses [lng, lat]
             zoom: INITIAL_ZOOM,
             pitch: 0,
@@ -64,6 +65,8 @@ const MapModule = (() => {
             customAttribution: '&copy; DigiPin by India Post | &copy; Overture Maps | &copy; CARTO'
         }), 'bottom-left');
 
+        installBasemapGuard(styleUrl);
+
         map.on('load', () => {
             setupGridLayers();
             setupHeatmapLayers();
@@ -86,6 +89,72 @@ const MapModule = (() => {
 
         return map;
     }
+
+    /**
+     * Basemap resilience. If the CARTO style itself cannot be fetched (CDN
+     * blocked, captive portal, offline first visit) MapLibre never fires
+     * `load`, so no grid or data layer would ever appear. Swap in a plain
+     * inline style so the DIGIPIN grid and every own-origin layer still work,
+     * and say so. Once the style is up, a burst of tile failures gets a
+     * dismissible notice instead of a silently blank map.
+     */
+    const FALLBACK_STYLE = () => ({
+        version: 8,
+        name: 'digipin-fallback',
+        glyphs: 'https://basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf',
+        sources: {},
+        layers: [{
+            id: 'background', type: 'background',
+            paint: { 'background-color': (typeof Theme !== 'undefined' && Theme.get() === 'light') ? '#e9e6df' : '#0b0e14' },
+        }],
+    });
+
+    function installBasemapGuard(styleUrl) {
+        let styleOk = false;
+        let fellBack = false;
+        let tileErrors = 0;
+        let tileWindowStart = 0;
+        const status = (key, opts) => { if (typeof DataStatus !== 'undefined') { if (opts) DataStatus.set(key, opts); else DataStatus.clear(key); } };
+
+        map.on('style.load', () => { styleOk = true; });
+
+        map.on('error', (e) => {
+            const err = (e && e.error) || {};
+            if (!styleOk && !fellBack && !e.sourceId) {
+                // Style document failed → fall back so `load` can fire.
+                fellBack = true;
+                console.warn('[map] basemap style failed, using fallback:', err.message || err);
+                try { map.setStyle(FALLBACK_STYLE()); } catch (ex) { console.error('[map] fallback style failed too', ex); return; }
+                status('basemap', {
+                    text: 'Basemap could not be loaded. Showing the grid and data layers on a plain background.',
+                    kind: 'warning',
+                    action: { label: 'Retry', run: () => { try { window.location.reload(); } catch { /* ignore */ } } },
+                });
+                return;
+            }
+            if (styleOk && e.sourceId && !fellBack) {
+                const now = Date.now();
+                if (now - tileWindowStart > 15000) { tileWindowStart = now; tileErrors = 0; }
+                tileErrors += 1;
+                if (tileErrors === 8) {
+                    status('tiles', {
+                        text: 'Map tiles are not loading right now. Data layers still work.',
+                        kind: 'warning',
+                    });
+                }
+            }
+        });
+        // A tile that does arrive means the network is back → drop the notice.
+        map.on('data', (e) => {
+            if (e && e.dataType === 'source' && e.tile && tileErrors > 0) {
+                tileErrors = 0;
+                status('tiles');
+            }
+        });
+        // Expose for tests / diagnostics.
+        _basemapState = () => ({ styleOk, fellBack, tileErrors, styleUrl });
+    }
+    let _basemapState = () => ({ styleOk: false, fellBack: false, tileErrors: 0 });
 
     function setupGridLayers() {
         // Grid colours follow the active theme (neon cyan/purple on dark,
@@ -480,5 +549,6 @@ const MapModule = (() => {
 
     function getGridLevel() { return gridLevel; }
 
-    return { init, flyTo, showHeatmap, clearHeatmap, getMap, updateGrid, selectByCode, getSelectedCode, getGridLevel };
+    return { init, flyTo, showHeatmap, clearHeatmap, getMap, updateGrid, selectByCode, getSelectedCode, getGridLevel,
+        basemapState: () => _basemapState() };
 })();

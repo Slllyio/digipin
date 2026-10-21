@@ -59,11 +59,32 @@ const DeckBuildings = (() => {
      * survives Overture releases re-issuing ids. Safe to call with a missing
      * file — a 404 just leaves the footprint estimate in place.
      */
+    // Baked grids kept in memory, most recent last. One Delhi-size grid is a
+    // few hundred thousand Map entries; merging every visited city into one
+    // grid forever made a city sweep leak. Three covers a city plus neighbours.
+    const MAX_GRIDS = 3;
+    const _gridDocs = new Map();    // grid url -> parsed doc
+
+    function _rebuildGrid() {
+        _grid = null;
+        for (const doc of _gridDocs.values()) _grid = mergeHeightGrid(_grid, doc);
+    }
+
     async function loadHeights(url) {
         try {
             const res = await fetch(url, { cache: 'force-cache' });
             if (!res.ok) return false;
-            _grid = mergeHeightGrid(_grid, await res.json());
+            const doc = await res.json();
+            _gridDocs.delete(url);
+            _gridDocs.set(url, doc);
+            let rebuilt = false;
+            while (_gridDocs.size > MAX_GRIDS) {
+                const old = _gridDocs.keys().next().value;
+                _gridDocs.delete(old);
+                _gridLoads.delete(old);      // reloadable later (force-cache makes it cheap)
+                rebuilt = true;
+            }
+            if (rebuilt) _rebuildGrid(); else _grid = mergeHeightGrid(_grid, doc);
             if (_enabled) refresh();
             return true;
         } catch (e) {
@@ -326,7 +347,10 @@ const DeckBuildings = (() => {
         return _vertExag;
     }
 
-    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights, heightIndex,
+    /** Grids currently held, for tests / diagnostics. */
+    function heightsCacheStats() { return { grids: _gridDocs.size, max: MAX_GRIDS, cells: _grid ? _grid.cells.size : 0 }; }
+
+    return { available, enable, disable, setFocus, refresh, isEnabled, loadHeights, ensureHeights, heightIndex, heightsCacheStats,
         setExaggeration, getExaggeration,
         featureHeight, estimateHeight, featuresToPolygons, ringPaths, mergeHeightGrid, cellHeight, gridsFor };
 })();

@@ -224,6 +224,26 @@ describe('CellStore sharded regions', () => {
         expect(coarse.cells.sort()).toEqual([A, B].sort());
         expect((await CS.load('sharded')).cells.sort()).toEqual([A, B].sort());
     });
+
+    it('evicts least-recently-used decoded parts past the cell budget and refetches on demand', async () => {
+        const f = mockFetch([
+            ['catalog.json', { version: 1, datasets: [SH] }],
+            [`/${A.slice(0, 4)}.json`, docA], [`/${B.slice(0, 4)}.json`, docB],
+        ]);
+        globalThis.fetch = f;
+        window.DIGIPIN_CONFIG = { partByteBudget: JSON.stringify(docB).length + 1 };   // room for one part
+        await CS.init();
+        const t = await CS.load('sharded');
+        expect(t.cells.length).toBe(2);
+        const st = CS.cacheStats();
+        expect(st.budget).toBe(JSON.stringify(docB).length + 1);
+        expect(st.parts).toBe(1);                // one of the two parts was dropped
+        const before = f.mock.calls.length;
+        await CS.loadCells('sharded', [A.slice(0, 1)]);   // needs both parts again
+        expect(f.mock.calls.length).toBe(before + 1);     // exactly the evicted one is refetched
+        expect(CS.cacheStats().parts).toBe(1);
+        delete window.DIGIPIN_CONFIG;
+    });
 });
 
 describe('CellStore.coversCity() / datasetsFor()', () => {

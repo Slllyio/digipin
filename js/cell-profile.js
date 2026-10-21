@@ -67,14 +67,48 @@ const CellProfile = (() => {
         return `bottom ${bottom}%`;
     }
 
-    function _sortedColumn(id, key) {
-        const k = `${id}|${key}`;
+    /** Let the event loop breathe between heavy columns (keeps the UI responsive). */
+    const _yield = () => new Promise(res => {
+        if (typeof scheduler !== 'undefined' && scheduler.yield) scheduler.yield().then(res, res);
+        else setTimeout(res, 0);
+    });
+
+    /** The catalog region (city) whose bbox contains the point, or null. */
+    function _regionAt(spec, lat, lng) {
+        for (const r of (spec && spec.regions) || []) {
+            const b = r.bbox;
+            if (b && lat >= b.south && lat <= b.north && lng >= b.west && lng <= b.east) return r;
+        }
+        return null;
+    }
+
+    /**
+     * Sorted finite values of one column, for ranking. The comparison set is
+     * the cell's own region (city): loading every region of every dataset to
+     * rank one cell pulled ~3.4 M rows into memory and froze the page for
+     * seconds. Sorting happens in its own task per column, on a typed array.
+     */
+    let _sortedRegion = null;
+    function _sortedColumn(id, key, lat, lng) {
+        const spec = CellStore.get(id);
+        const region = _regionAt(spec, lat, lng);
+        const name = region ? region.name : '*';
+        // Sorted columns are per city; moving to another city drops the old
+        // ones (a city's worth is ~100 typed arrays of up to 50k values).
+        if (name !== _sortedRegion) { _sorted.clear(); _sortedRegion = name; }
+        const k = `${id}|${key}|${name}`;
         if (!_sorted.has(k)) {
             _sorted.set(k, (async () => {
-                const t = await CellStore.load(id);
+                const t = region && CellStore.loadView ? await CellStore.loadView(id, region.bbox) : await CellStore.load(id);
                 if (!t) return null;
-                return (t.columns[key] || []).filter(v => v != null && Number.isFinite(Number(v)))
-                    .map(Number).sort((a, b) => a - b);
+                await _yield();
+                const col = t.columns[key] || [];
+                const vals = [];
+                for (let i = 0; i < col.length; i++) {
+                    const v = col[i];
+                    if (v != null && Number.isFinite(Number(v))) vals.push(Number(v));
+                }
+                return Float64Array.from(vals).sort();
             })());
         }
         return _sorted.get(k);
@@ -116,7 +150,7 @@ const CellProfile = (() => {
                 const item = { key: f.key, label: f.label, type: f.type, value: v, text: formatValue(f, v) + when, higherIs: f.higherIs || null };
                 // Ranking needs the whole dataset; series datasets span every city, so skip them.
                 if (opts.rank && f.type === 'number' && !temporal) {
-                    item.rank = rankOf(await _sortedColumn(spec.id, f.key), Number(v));
+                    item.rank = rankOf(await _sortedColumn(spec.id, f.key, lat, lng), Number(v));
                     item.rankText = rankLabel(f, item.rank);
                 }
                 fields.push(item);
@@ -189,7 +223,7 @@ const CellProfile = (() => {
     }
 
     /** Drop cached rank columns (e.g. after a dataset is re-registered). */
-    function reset() { _sorted.clear(); }
+    function reset() { _sorted.clear(); _sortedRegion = null; }
 
     if (typeof CellStore !== 'undefined' && CellStore.onChange) CellStore.onChange(reset);
 

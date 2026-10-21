@@ -293,6 +293,14 @@ const UrbanInsights = (() => {
      * 13 cities, so loading everything is never an option). Uses the store's
      * viewport loader when it has one; plain stores load the whole table.
      */
+    /** Give the event loop a turn between heavy datasets. */
+    function _breathe() {
+        return new Promise(res => {
+            if (typeof scheduler !== 'undefined' && scheduler.yield) scheduler.yield().then(res, res);
+            else setTimeout(res, 0);
+        });
+    }
+
     function _load(store, id, bbox) {
         if (bbox && store.loadView) return store.loadView(id, bbox);
         return store.load(id);
@@ -529,6 +537,9 @@ const UrbanInsights = (() => {
         for (let k = 0; k < specs.length; k++) {
             const spec = specs[k], table = tables[k];
             if (!table || !table.cells || !table.cells.length) continue;
+            // One dataset per task: ~30 datasets of stats in one go froze the
+            // page for over a second on a cell click.
+            if (k) await _breathe();
             const idxA = cellsIn(spec, table, area);
             if (!idxA.length) continue;
             let idxC = city ? cellsInRegion(spec, table, city) : [];
@@ -1137,6 +1148,10 @@ const UrbanInsights = (() => {
         if (!g) return null;
         if (!_hGrids.has(g.file)) {
             _hGrids.set(g.file, fetch(g.file, { cache: 'force-cache' }).then(r => (r.ok ? r.json() : null)).catch(() => null));
+            // Keep the two most recent cities only: each grid is tens of MB parsed.
+            while (_hGrids.size > 2) _hGrids.delete(_hGrids.keys().next().value);
+        } else {
+            const p = _hGrids.get(g.file); _hGrids.delete(g.file); _hGrids.set(g.file, p);   // touch
         }
         return _hGrids.get(g.file);
     }

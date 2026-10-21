@@ -34,7 +34,18 @@ const CellStore = (() => {
     let _enabled = false;
     const _local = new Map();       // id -> { spec, table } registered at runtime
     const _tables = new Map();      // id -> Promise<table>
-    const _parts = new Map();       // url -> Promise<columnar doc | null> (region file or shard)
+    const _parts = new Map();       // url -> Promise<columnar doc | null> (region file or shard), LRU order
+    const _partCells = new Map();   // url -> decoded JSON bytes of that part (for the memory budget)
+    // Decoded parts kept in memory, measured as JSON text bytes (the live
+    // objects weigh roughly 3-5× that). A city sweep with the profile open
+    // pulls in every region of every dataset (3.4 M cells, many with monthly
+    // series); without a cap the heap passed 800 MB.
+    const PART_BYTE_BUDGET = 48 * 1024 * 1024;
+    let _partCellTotal = 0;
+    const _partBudget = () => {
+        const c = (typeof window !== 'undefined' && window.DIGIPIN_CONFIG) || {};
+        return Number.isFinite(c.partByteBudget) ? c.partByteBudget : PART_BYTE_BUDGET;
+    };
     let _duck = null;               // Promise<{ db, conn }>
     const _listeners = new Set();
 
@@ -52,7 +63,10 @@ const CellStore = (() => {
         _enabled = false;
         _tables.clear();
         _parts.clear();
+        _partCells.clear();
+        _partCellTotal = 0;
         _views.clear();
+        _viewBytes.clear();
         if (_cfg().cellStore === false) return false;
         try {
             const resp = await fetch(`${base()}catalog.json`, { cache: 'no-cache', signal: AbortSignal.timeout(8000) });
@@ -229,7 +243,8 @@ const CellStore = (() => {
         if (steps) out.times = steps.slice();
         for (const t of parts) {
             if (!t || !Array.isArray(t.cells)) continue;
-            out.cells.push(...t.cells);
+            // No spread: a 50k-cell region would overflow the argument limit.
+            for (let i = 0; i < t.cells.length; i++) out.cells.push(t.cells[i]);
             for (const f of spec.fields) {
                 const col = (t.columns && t.columns[f.key]) || [];
                 for (let i = 0; i < t.cells.length; i++) {
@@ -298,29 +313,66 @@ const CellStore = (() => {
             bytes = new Uint8Array(await new Response(stream).arrayBuffer());
         }
         const doc = JSON.parse(new TextDecoder().decode(bytes));
+        Object.defineProperty(doc, 'bytes', { value: bytes.byteLength, enumerable: false });
         for (const [k, sc] of Object.entries(doc.scale || {})) {
             if (doc.columns && doc.columns[k]) doc.columns[k] = _dequantise(doc.columns[k], sc);
         }
         return doc;
     }
 
-    function _fetchPart(url) {
-        if (!_parts.has(url)) {
-            const p = (async () => {
-                try {
-                    const resp = await fetch(url, { signal: AbortSignal.timeout(15000) });
-                    return resp.ok ? decodeDoc(await resp.arrayBuffer()) : null;
-                } catch { return null; }
-            })();
-            _parts.set(url, p);
-            p.then(doc => { if (!doc) _parts.delete(url); });   // let a failed part be retried
+    function _forgetPart(url) {
+        _parts.delete(url);
+        _partCellTotal -= _partCells.get(url) || 0;
+        _partCells.delete(url);
+    }
+
+    /** Drop least-recently-used decoded parts until the cell budget holds. */
+    function _evictParts() {
+        const budget = _partBudget();
+        for (const url of _parts.keys()) {
+            if (_partCellTotal <= budget) break;
+            if (!_partCells.has(url)) continue;   // still loading
+            _forgetPart(url);
         }
-        return _parts.get(url);
+    }
+
+    function _fetchPart(url) {
+        if (_parts.has(url)) {
+            // Touch: most recently used goes last.
+            const p = _parts.get(url);
+            _parts.delete(url);
+            _parts.set(url, p);
+            return p;
+        }
+        const p = (async () => {
+            try {
+                const resp = await fetch(url, { signal: AbortSignal.timeout(15000) });
+                return resp.ok ? decodeDoc(await resp.arrayBuffer()) : null;
+            } catch { return null; }
+        })();
+        _parts.set(url, p);
+        p.then(doc => {
+            if (!doc) { _forgetPart(url); return; }      // let a failed part be retried
+            if (!_parts.has(url)) return;                 // evicted or reset while loading
+            const n = doc.bytes || 0;
+            _partCells.set(url, n);
+            _partCellTotal += n;
+            _evictParts();
+        });
+        return p;
+    }
+
+    /** Decoded-part cache size, for tests and diagnostics. */
+    function cacheStats() {
+        return { parts: _parts.size, bytes: _partCellTotal, budget: _partBudget(), views: _views.size, viewBytes: [..._viewBytes.values()].reduce((a, b) => a + b, 0), tables: _tables.size };
     }
 
     async function _tableFrom(spec, parts) {
         const docs = await Promise.all(parts.map(pt => _fetchPart(pt.url)));
-        return _index(_concat(docs, spec));
+        const table = _index(_concat(docs, spec));
+        // Source bytes behind this table, for the view cache's memory budget.
+        Object.defineProperty(table, 'bytes', { value: docs.reduce((a, d) => a + ((d && d.bytes) || 0), 0), enumerable: false });
+        return table;
     }
 
     /** The dataset's whole table (every region and shard), loaded once. null when unavailable. */
@@ -459,6 +511,21 @@ const CellStore = (() => {
     }
 
     const _views = new Map();    // `${id}|${urls}` -> Promise<table>, most recent last
+    const _viewBytes = new Map(); // key -> source bytes of the resolved table
+    // Concatenated view tables are copies of their parts (series re-aligned
+    // per cell), so they are budgeted too: by count and by source bytes.
+    const VIEW_BYTE_BUDGET = 40 * 1024 * 1024;
+    const MAX_VIEWS = 24;
+    function _evictViews() {
+        let total = 0;
+        for (const v of _viewBytes.values()) total += v;
+        for (const key of _views.keys()) {
+            if (_views.size <= MAX_VIEWS && total <= VIEW_BYTE_BUDGET) break;
+            total -= _viewBytes.get(key) || 0;
+            _views.delete(key);
+            _viewBytes.delete(key);
+        }
+    }
 
     /**
      * The dataset's cells for a viewport (see viewParts). The same set of
@@ -471,11 +538,19 @@ const CellStore = (() => {
         if (_local.has(id) || !bbox) return load(id);
         const parts = viewParts(spec, bbox);
         const key = id + '|' + parts.map(p => p.url).join(',');
-        if (!_views.has(key)) {
-            _views.set(key, _tableFrom(spec, parts));
-            while (_views.size > 24) _views.delete(_views.keys().next().value);
+        if (_views.has(key)) {
+            const p = _views.get(key); _views.delete(key); _views.set(key, p);   // touch (LRU)
+            return p;
         }
-        return _views.get(key);
+        const p = _tableFrom(spec, parts);
+        _views.set(key, p);
+        p.then(t => {
+            if (!_views.has(key)) return;
+            _viewBytes.set(key, (t && t.bytes) || 0);
+            _evictViews();
+        }, () => { _views.delete(key); });
+        _evictViews();
+        return p;
     }
 
     const _rolled = new Map();   // `${id}@${level}` -> { src, table }
@@ -652,7 +727,7 @@ const CellStore = (() => {
 
     return {
         init, isEnabled, base, datasets, get, generated, tableUrl, field, onChange, isTemporal, stepKey,
-        cellCode, binRecords, dataDomain, decodeDoc, load, loadCells, regionParts, viewParts, loadView, loadAt, rollup, rowAt,
+        cellCode, binRecords, dataDomain, decodeDoc, load, loadCells, regionParts, viewParts, loadView, loadAt, rollup, rowAt, cacheStats,
         register, unregister, isLocal, toGeoJSON, coversCity, datasetsFor,
         sqlSources, viewStatements, sql,
     };

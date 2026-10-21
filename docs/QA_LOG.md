@@ -4,6 +4,33 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — soak test, crash guard, basemap fallback (reliability round 2)
+
+**How:** new tests/playwright/soak.spec.js (two rounds over the six big cities with 3D on and a
+cell selected each time; forced GC via CDP, heap + cache stats per round) plus CPU/allocation
+sampling through the Chrome DevTools protocol in the no-network sandbox (STUB_MAP=1).
+
+**Found:**
+- Clicking a cell froze the page for 3–5 s. The profile card ranked each value against *every
+  region of every dataset* (3.4 M cells), loading and sorting all of it on the main thread. Ranks
+  are now computed against the cell's own city (`CellStore.loadView` on the region bbox), sorted
+  as typed arrays in their own task. `UrbanInsights.areaInsights` yields between datasets.
+- Memory grew without bound across cities: decoded cell-store parts were cached forever, view
+  tables kept 24 concatenated copies (series re-aligned per cell), the deck.gl height grid merged
+  every visited city, and insights kept every city's height grid. Heap hit 1.1 GB after two city
+  rounds. Budgets now: parts ≤ 48 MB of source JSON (LRU), views ≤ 24 and ≤ 40 MB source, three
+  height grids in the 3D layer, two in insights, rank columns for the current city only.
+  After the fix the soak ends at ~250 MB after GC.
+- `_concat` used `push(...cells)`; a 51k-cell region is near the argument-count limit. Loop now.
+- A cell click still costs ~10 s of background CPU in the sandbox (insights over ~60 dataset
+  views). Non-blocking now, but worth a per-city cache in the Intel engine.
+
+**Shipped:** js/crash-guard.js (uncaught errors/rejections → persistent notice with Reload, ring
+buffer `CrashGuard.recent()`), basemap fallback in js/map.js (inline plain style when the CARTO
+style cannot load so the grid and data layers still draw; tile-failure notice), `CellStore.cacheStats()`,
+`DeckBuildings.heightsCacheStats()`, `MapModule.basemapState()`; resilience cases for the crash
+notice and the basemap fallback (the latter real-browser only); soak spec in CI.
+
 ## 2026-10-20 — first budget trip on dev (traffic refresh)
 
 The static budgets in tests/perf-budgets.test.js tripped on the traffic + mobility refresh

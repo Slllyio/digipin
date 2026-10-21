@@ -60,6 +60,7 @@ const LOCAL_ASSETS = [
     './js/precomputed-scores.js',
     './js/score-choropleth.js',
     './js/data-status.js',
+    './js/crash-guard.js',
     './js/cell-store.js',
     './js/cell-layers.js',
     './js/cell-ingest.js',

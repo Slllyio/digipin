@@ -40,7 +40,7 @@ const APP_GLOBALS = {
   BivariateOverlay: 'readonly', NDVIOverlay: 'readonly', Viewshed: 'readonly', TerrainHydrology: 'readonly',
   KDEOverlay: 'readonly', AccessibilityOverlay: 'readonly',
   PrecomputedScores: 'readonly', ScoreChoropleth: 'readonly',
-  DataStatus: 'readonly', CellStore: 'readonly', CellLayers: 'readonly', CellIngest: 'readonly', TimeSlider: 'readonly', Text2Map: 'readonly', Text2MapEmbeddings: 'readonly',
+  DataStatus: 'readonly', CrashGuard: 'readonly', CellStore: 'readonly', CellLayers: 'readonly', CellIngest: 'readonly', TimeSlider: 'readonly', Text2Map: 'readonly', Text2MapEmbeddings: 'readonly',
   Text2MapResultsLayer: 'readonly', Provenance: 'readonly', MapSnapshot: 'readonly', OpenDataFinder: 'readonly', SunHours: 'readonly', FloorArea: 'readonly', GltfExport: 'readonly', DishaMentions: 'readonly',
   CellHierarchy: 'readonly',
   CellProfile: 'readonly',

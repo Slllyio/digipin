@@ -27,6 +27,11 @@ const App = (() => {
             }
         };
 
+        // Error capture first, so anything that breaks below still gets a notice.
+        step('CrashGuard', () => {
+            if (typeof CrashGuard !== 'undefined') CrashGuard.init();
+        });
+
         // Theme first: MapModule.init reads Theme for the basemap + grid colours.
         step('Theme', () => {
             if (typeof Theme !== 'undefined') Theme.init();
