@@ -15,6 +15,7 @@ checked, what was found, and what shipped as a result.
 - Run 203 (4831f28) missed one of twelve profiles: Bengaluru's first visit took 94 s (second visit 29 s); every other city was under 60 s. Run 204/205 (1141daf) passed all 31 specs including soak.
 - Cause: a city's first selection also pulls all its cell parts; on CI's SwiftShader the main thread is ~95% busy drawing 3D so fetch callbacks queue behind frames.
 - Fix: the profile wait is 120 s on the first round, 60 s afterwards. The per-city timing line in the log stays so the next adjustment is from numbers.
+- Follow-up (run 1032032): a warm second visit also missed at 60 s (Mumbai, 83 s) while the 3D frame cost was unchanged. Every profile wait is now 120 s: the soak's claim is that each profile renders, not that it renders within a number that depends on the runner's software rasteriser.
 
 ## 2026-10-21 — soak in CI: no GPU means 2-4 s per 3D frame
 

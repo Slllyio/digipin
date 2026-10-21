@@ -77,6 +77,14 @@ class QuietRangeHTTPRequestHandler(RangeHTTPRequestHandler):
     def log_message(self, format, *args):  # noqa: A002 - stdlib signature
         pass
 
+    def copyfile(self, source, outputfile):
+        # A browser test that aborts or navigates away mid-transfer closes the
+        # socket; the stdlib would print a full traceback for each one.
+        try:
+            super().copyfile(source, outputfile)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
+
 
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--')]

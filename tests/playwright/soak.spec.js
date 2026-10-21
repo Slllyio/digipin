@@ -81,7 +81,7 @@ test.describe('soak', () => {
           await page.waitForFunction((code) => {
             const t = document.getElementById('panel-title-text');
             return !!document.querySelector('[data-cell-profile=""]') && !!t && t.textContent.trim() === code;   // the real card, not the loading placeholder
-          }, code, { timeout: round === 0 ? 120_000 : 60_000 });   // ~60 fetches per profile; a city's first visit also pulls its cell parts, and on software GL the thread is ~95% busy drawing (Bengaluru cold: 94 s seen)
+          }, code, { timeout: 120_000 });   // ~60 fetches per profile behind 2-4 s software-GL frames: 94 s seen cold (Bengaluru), a 60 s miss seen warm (Mumbai). The window is generous because the claim is "every profile renders", not "within N s"; per-city times are logged below.
           profiles++;
         } catch { missed.push(`${id}#${round + 1}`); }
         timings.push(`${id} ${((Date.now() - tCity) / 1000).toFixed(0)}s`);
