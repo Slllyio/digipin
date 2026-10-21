@@ -23,6 +23,26 @@ const PointCloud = (() => {
     let _control = null;
     let _lib = null;
     let _panel = null;
+    let _busy = false;
+
+    // A CDN or object-store link that stalls (no bytes, no error) would leave
+    // the panel waiting with no word; these turn a stall into the error toast.
+    const IMPORT_TIMEOUT_MS = 30000;
+    const LOAD_TIMEOUT_MS = 180000;   // COPC/EPT stream on demand; a whole LAS can be hundreds of MB
+
+    function _withTimeout(promise, ms, what) {
+        let timer;
+        const gate = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`${what} timed out after ${Math.round(ms / 1000)} s`)), ms); });
+        return Promise.race([promise, gate]).finally(() => clearTimeout(timer));
+    }
+
+    /** Disable the panel's load controls while a load runs (aria-busy on the panel). */
+    function _setBusy(on) {
+        _busy = on;
+        if (!_panel) return;
+        _panel.setAttribute('aria-busy', String(on));
+        _panel.querySelectorAll('button, input').forEach((el) => { if (!el.classList.contains('point-cloud-close')) el.disabled = on; });
+    }
 
     // ---------- pure ----------
 
@@ -60,7 +80,7 @@ const PointCloud = (() => {
             const saved = { deck: globalThis.deck, luma: globalThis.luma };
             try {
                 delete globalThis.deck; delete globalThis.luma;
-                _lib = await import(MODULE_URL);
+                _lib = await _withTimeout(import(MODULE_URL), IMPORT_TIMEOUT_MS, 'The point-cloud viewer download');
             } finally {
                 Object.entries(saved).forEach(([k, v]) => { if (v) globalThis[k] = v; });
             }
@@ -91,15 +111,19 @@ const PointCloud = (() => {
     }
 
     async function load(source) {
+        if (_busy) return false;
+        _setBusy(true);
         try {
             const c = await _ensureControl();
             if (_map.getPitch() < 45) _map.easeTo({ pitch: 60 });
-            await c.loadPointCloud(source);
+            await _withTimeout(c.loadPointCloud(source), LOAD_TIMEOUT_MS, 'Loading the point cloud');
             return true;
         } catch (e) {
             console.warn('PointCloud:', e);
             _toast('Point cloud', e.message || 'The viewer could not start.', 'error');
             return false;
+        } finally {
+            _setBusy(false);
         }
     }
 
@@ -183,9 +207,10 @@ const PointCloud = (() => {
     }
 
     function isActive() { return !!_panel; }
+    function isBusy() { return _busy; }
     function toggle() { if (_panel) closeViewer(); else open(); }
 
-    return { open, close: closeViewer, toggle, isActive, load, isPointCloudName, normaliseUrl, SAMPLE_URL };
+    return { open, close: closeViewer, toggle, isActive, isBusy, load, isPointCloudName, normaliseUrl, SAMPLE_URL };
 })();
 
 if (typeof window !== 'undefined') window.PointCloud = PointCloud;

@@ -4,6 +4,11 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-21 — point-cloud viewer on a bad link
+
+- **Read-through of the new LiDAR tool (js/point-cloud.js):** the viewer library is an ESM download from jsdelivr at first use and the sample is an 80 MB COPC on S3; neither had a timeout, so a stalled link left the panel waiting with no word, and a second click started a second load. Now the download times out at 30 s and a load at 180 s (both end in the existing error toast), the panel is aria-busy with its load controls disabled while a load runs, and `PointCloud.isBusy()` is exposed. Resilience spec: library download refused → error toast, controls enabled again, panel closes, no uncaught error.
+- **Not measured here:** heap with a real cloud loaded and after Close. The sandbox has no CDN access and CI's software renderer cannot draw a 10-million-point cloud; this needs a GPU machine (a Remote Control run on Akkshay's device, or a GPU runner).
+
 ## 2026-10-21 — first load on a slow link: a splash that arrives with the page
 
 - **Measured** (Playwright + CDP shaping, stub map, local server, no compression): the app is usable 1.1 s after navigation on an unshaped link, 13 s on fast 3G (1.6 Mbps / 150 ms) and 52 s on slow 3G (400 kbps / 400 ms). 160 requests, 2.9 MB uncompressed (GitHub Pages gzips, so the wire is ~0.8 MB; the 136 `<script>` tags and the round trips they cost dominate on a high-latency link).
