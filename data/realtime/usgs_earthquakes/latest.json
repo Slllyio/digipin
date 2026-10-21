@@ -1,18 +1,54 @@
 {
-  "generated_at_iso": "2026-10-21T00:00:58Z",
-  "count": 23,
+  "generated_at_iso": "2026-10-21T04:45:02Z",
+  "count": 22,
   "records": [
     {
+      "id": "us6000u3sj",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-21T04:23:28.083000+00:00",
+      "latitude": -14.035,
+      "longitude": 165.8331,
+      "depth_km": 10.0,
+      "place": "173 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3sj",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000u3rr",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-21T01:20:02.961000+00:00",
+      "latitude": 4.5985,
+      "longitude": -82.7031,
+      "depth_km": 10.0,
+      "place": "south of Panama",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3rr",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000u3rn",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-21T01:04:29.196000+00:00",
+      "latitude": 35.7245,
+      "longitude": 139.9836,
+      "depth_km": 90.274,
+      "place": "2 km N of Honchō, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3rn",
+      "tsunami": 0,
+      "significance": 314
+    },
+    {
       "id": "us6000u3r3",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-20T23:24:26.555000+00:00",
-      "latitude": -25.5451,
-      "longitude": 179.5284,
-      "depth_km": 517.082,
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-20T23:24:27.101000+00:00",
+      "latitude": -25.502,
+      "longitude": 179.592,
+      "depth_km": 529.781,
       "place": "south of the Fiji Islands",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3r3",
       "tsunami": 0,
-      "significance": 400
+      "significance": 369
     },
     {
       "id": "us6000u3r1",
@@ -60,7 +96,7 @@
       "place": "39 km W of Mosteiros, Portugal",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3p1",
       "tsunami": 0,
-      "significance": 404
+      "significance": 405
     },
     {
       "id": "us6000u3nn",
@@ -229,54 +265,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3k7",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000u3jl",
-      "magnitude": 6.3,
-      "origin_time_utc": "2026-10-20T04:20:38.737000+00:00",
-      "latitude": -13.9906,
-      "longitude": 165.5892,
-      "depth_km": 16.0,
-      "place": "197 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3jl",
-      "tsunami": 1,
-      "significance": 611
-    },
-    {
-      "id": "us6000u3jd",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-20T02:54:15.972000+00:00",
-      "latitude": 18.2529,
-      "longitude": 146.0345,
-      "depth_km": 129.361,
-      "place": "Pagan region, Northern Mariana Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3jd",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000u3j5",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-20T00:56:32.769000+00:00",
-      "latitude": 40.6375,
-      "longitude": 84.1295,
-      "depth_km": 10.0,
-      "place": "156 km SE of Kuqa, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3j5",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000u3j1",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-20T00:38:28.008000+00:00",
-      "latitude": -13.9476,
-      "longitude": 165.5285,
-      "depth_km": 10.0,
-      "place": "205 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3j1",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }

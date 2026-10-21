@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-21T00:01:01Z",
+  "generated_at_iso": "2026-10-21T04:45:05Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-21 06:34:01|34.913,76.978",
+      "magnitude": 3.6,
+      "origin_time": "2026-10-21 06:34:01",
+      "latitude": 34.913,
+      "longitude": 76.978,
+      "depth_km": 10.0,
+      "region": "Leh, Ladakh",
+      "location": "80km NNW of Alchi(Leh),Ladakh,India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-21 04:46:42|37.193,74.984",
       "magnitude": 4.5,
@@ -1639,17 +1650,6 @@
       "depth_km": 140.0,
       "region": "Myanmar",
       "location": "310km E of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-05 20:37:51|36.364,70.859",
-      "magnitude": 4.6,
-      "origin_time": "2026-10-05 20:37:51",
-      "latitude": 36.364,
-      "longitude": 70.859,
-      "depth_km": 190.0,
-      "region": "Afghanistan",
-      "location": "86km SSE of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]
