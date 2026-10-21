@@ -306,3 +306,5 @@ html[data-theme="light"] {
 .ui-leader-fill.is-worse { background: var(--ui-concern); }
 .ui-leader-val { font-variant-numeric: tabular-nums; font-weight: 600; }
 .ui-leader-gap { font-size: 11px; color: var(--text-secondary); padding: 2px 8px; }
+.ui-lens-sites { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+.ui-lens-sites li { font-size: 11.5px; }

@@ -65,6 +65,14 @@ describe('UrbanLenses maths', () => {
         expect(L.archetypeName({ dens: 0, built: 0, height: 0, mix: 0, canopy: 0, lights: 0, jx: 0, growth: 1.2 })).toBe('New growth edge');
     });
 
+    it('AHP gives proportional weights and CR 0 for a consistent matrix', () => {
+        const r = L.ahp([[1, 2, 4], [1 / 2, 1, 2], [1 / 4, 1 / 2, 1]]);
+        expect(r.weights[0]).toBeCloseTo(4 / 7, 5);
+        expect(r.weights[2]).toBeCloseTo(1 / 7, 5);
+        expect(r.cr).toBeLessThan(1e-6);
+        for (const P of Object.values(L.PRESETS)) expect(L.ahp(P.pairwise).cr).toBeLessThan(0.1);
+    });
+
     it('fits OLS', () => {
         const x = [1, 2, 3, 4, 5], y = x.map(v => 2 + 3 * v);
         const f = L.ols(x, y, [0, 1, 2, 3, 4]);
@@ -158,7 +166,7 @@ describe('UrbanLenses on committed city data', () => {
         expect(r.schema).toBe('digipin.lenses/1');
         expect(r.residents).toBeGreaterThan(1e6);
         const ids = r.lenses.map(l => l.id);
-        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'types', 'burden']));
+        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'types', 'green', 'solar', 'burden']));
         const sp = r.lenses.find(l => l.id === 'sprawl');
         expect(sp.headline).toMatch(/infill/);
         expect(sp.fit.gradient).toBeGreaterThan(0);              // density falls away from the centre
@@ -183,5 +191,22 @@ describe('UrbanLenses on committed city data', () => {
         expect(arch.domain).toContain(layer.table.columns.archetype.find(v => v != null));
         expect(layer.table.cells.length).toBe(r.cells);
         expect(L.toText(r)).toMatch(/Heat vulnerability/);
+    }, 60000);
+
+    it('exposes one lens and siting through the stable lens() contract', async () => {
+        const st = await store();
+        const h = await L.lens('heat', 'indore_pilot', st);
+        expect(h.schema).toBe('digipin.lens/1');
+        expect(h.layer.spec.fields.map(f => f.key)).toEqual(['hvi']);
+        expect(h.findings.length).toBeGreaterThan(2);
+        expect(h.sources.map(x => x.id)).toContain('surface_heat');
+        expect(h.text).toMatch(/Heat vulnerability/);
+        const s2 = await L.lens('siting', 'indore_pilot', st, { preset: 'clinic', sites: 5 });
+        expect(s2.sites).toHaveLength(5);
+        expect(s2.consistency).toBeLessThan(0.1);
+        expect(s2.weights.reduce((a, w) => a + w.weight, 0)).toBeCloseTo(1, 2);
+        expect(s2.layer.table.cells.length).toBeGreaterThan(1000);
+        await expect(L.lens('nope', 'indore_pilot', st)).rejects.toThrow(/Unknown lens/);
+        expect(L.catalog().map(c => c.id)).toContain('siting');
     }, 60000);
 });

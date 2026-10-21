@@ -25,6 +25,14 @@ const UrbanLenses = (() => {
     const BAND_KM = 0.5;      // hotspot distance band (~12 neighbours at L7)
     const ESSENTIALS = ['food', 'shopping', 'healthcare', 'education', 'transport', 'leisure', 'finance'];
     const PM25_NAAQS = 40, PM25_WHO = 5;
+    // NASA POWER all-sky surface shortwave (GHI) climatology 2001–2020, annual
+    // mean kWh/m²/day at each city's grid centre (fetched 2026-10-21).
+    const GHI = { ahmedabad: 5.53, bengaluru: 5.48, bhopal: 5.22, chennai: 5.22, delhi: 4.89, guna: 5.26, hyderabad: 5.36,
+        indore_pilot: 5.25, jaipur: 5.44, kolkata: 4.57, lucknow: 4.88, mumbai: 5.29, pune: 5.13 };
+    const ROOF_USABLE = 0.3;      // share of roof area usable for PV (tanks, stairs, shade, setbacks)
+    const M2_PER_KWP = 10;        // MNRE rule of thumb: ~10 m² shade-free roof per kWp
+    const PERF_RATIO = 0.75;
+    const KWH_PER_CAPITA = 1395;  // CEA per-capita electricity consumption, 2023-24 (all sectors)
     const URBAN_PCT = 15;     // a cell counts as urban for the LEI at ≥ 15% built-up
     const LEED_JX = 54;       // LEED-ND connectivity bar: 140 intersections / sq mi ≈ 54 / km²
 
@@ -91,6 +99,20 @@ const UrbanLenses = (() => {
             after: ['fifteen'],
             method: 'k-means (k-means++ seeding, fixed seed) on the urban fabric (cells at ≥ 1 500 people/km², the DEGURBA urban-centre density): standardised log density, built-up share, building height, land-use mix, tree canopy, log night lights, log junction density and 2016–2023 built-up gain ; k = 4–7 chosen by the mean silhouette of a sample. Each cluster is named from its centroid.',
             refs: 'MacQueen 1967; Arthur & Vassilvitskii 2007; Rousseeuw 1987; Stewart & Oke 2012 (Local Climate Zones, the climate analogue)' },
+        { id: 'green', title: '3-30-300 green rule', icon: '🌳', equity: true,
+            question: 'Does each neighbourhood meet the 3-30-300 rule?',
+            field: { key: 'green_rules', label: '3-30-300 rules met (30 and 300)', unit: 'of 2', higherIs: 'better', ramp: 'greens' },
+            extra: [{ key: 'canopy_500m', label: 'Tree canopy within 500 m', unit: '%', higherIs: 'better', ramp: 'greens' }],
+            equityKey: 'canopy_500m',
+            needs: ['vegetation.tree_canopy_pct', 'land_cover.tree_pct', 'land_cover.grass_pct', 'osm_amenities.leisure'],
+            method: 'Konijnendijk’s 3-30-300 rule. 30: tree canopy averaged over 500 m around home is at least 30%. 300: a green space within 300 m (a cell at least 40% trees or grass, or a mapped leisure place). The "3 trees visible from home" part needs street-level imagery and is not measured.',
+            refs: 'Konijnendijk 2021 (3-30-300); Browning et al. 2024' },
+        { id: 'solar', title: 'Rooftop solar potential', icon: '☀',
+            question: 'How much power could the city’s roofs make?',
+            field: { key: 'solar_mwh', label: 'Rooftop solar potential', unit: 'MWh/yr', higherIs: 'better', ramp: 'heat' },
+            needs: ['building_stock.cover_2023_pct', 'osm_roads.building_cover_pct'],
+            method: `Roof area = building cover (Open Buildings 2023, else OSM) × cell area; ${ROOF_USABLE * 100}% usable; ${M2_PER_KWP} m² per kWp (MNRE); yield = kWp × NASA POWER annual irradiance × 365 × performance ratio ${PERF_RATIO}. Compared with ${KWH_PER_CAPITA.toLocaleString('en-IN')} kWh per resident per year (CEA 2023-24). Shading, roof slope and structure are ignored; the per-building sun-hours tool refines a site.`,
+            refs: 'Gagnon et al. 2016 (NREL rooftop PV); MNRE rooftop guidelines; NASA POWER; CEA General Review 2024' },
         { id: 'burden', title: 'Compound risk', icon: '⚠',
             question: 'Where do heat, flood and dirty air stack up?',
             field: { key: 'burden', label: 'Hazards in the worst fifth', unit: 'of 3', higherIs: 'worse', ramp: 'reds' },
@@ -273,7 +295,7 @@ const UrbanLenses = (() => {
     function _loadView(store, id, bbox) { return (bbox && store.loadView) ? store.loadView(id, bbox) : store.load(id); }
 
     function allNeeds(ids) {
-        const set = new Set(['population.population', 'population.density_km2']);
+        const set = new Set(['population.population', 'population.density_km2', ...SITING_NEEDS]);
         for (const id of ids) for (const k of (BY_ID.get(id) || {}).needs || []) set.add(k);
         return [...set];
     }
@@ -913,7 +935,239 @@ const UrbanLenses = (() => {
         };
     }
 
-    const RUN = { heat, flood, fifteen, health, air, lights, walk, sprawl, types, burden };
+    /** Sum (or mean) of `values` within `km` of each cell. */
+    function within(g, values, km, mean = false) {
+        const off = g.offsets(km), out = new Float64Array(g.n);
+        for (let i = 0; i < g.n; i++) {
+            let s = 0, k = 0;
+            for (const [a, b] of off) {
+                const j = g.cellAt(i, a, b);
+                if (j < 0 || !_fin(values[j])) continue;
+                s += values[j]; k++;
+            }
+            out[i] = mean ? (k ? s / k : NaN) : s;
+        }
+        return out;
+    }
+
+    function green(fr) {
+        const c = fr.cols, g = fr.grid, n = g.n, idx = _residents(fr);
+        const can = c['vegetation.tree_canopy_pct'];
+        if (!can) return null;
+        const tree = c['land_cover.tree_pct'], grass = c['land_cover.grass_pct'], leis = c['osm_amenities.leisure'];
+        const isGreen = new Float64Array(n);
+        for (let i = 0; i < n; i++) {
+            const lc = (tree && _fin(tree[i]) ? tree[i] : 0) + (grass && _fin(grass[i]) ? grass[i] : 0);
+            isGreen[i] = lc >= 40 || (leis && leis[i] > 0) ? 1 : 0;
+        }
+        const can500 = within(g, can, 0.5, true);
+        const near = within(g, isGreen, 0.3);
+        const rules = new Float64Array(n).fill(NaN);
+        for (const i of idx) rules[i] = (can500[i] >= 30 ? 1 : 0) + (near[i] > 0 ? 1 : 0);
+        const pop = c['population.population'];
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const r30 = _sumOver(pop, idx, i => can500[i] >= 30), r300 = _sumOver(pop, idx, i => near[i] > 0);
+        const both = _sumOver(pop, idx, i => rules[i] === 2), none = _sumOver(pop, idx, i => rules[i] === 0);
+        return {
+            columns: { green_rules: rules, canopy_500m: can500 }, idx, weightKey: 'canopy_500m',
+            headline: `${_round(100 * r30 / total)}% of residents have 30% tree canopy around home and ${_round(100 * r300 / total)}% have green space within 300 m; `
+                + `${_people(none)} people (${_round(100 * none / total)}%) meet neither.`,
+            stats: [
+                { label: '30% canopy within 500 m', value: `${_people(r30)} (${_round(100 * r30 / total)}%)`, raw: Math.round(r30) },
+                { label: 'Green space within 300 m', value: `${_people(r300)} (${_round(100 * r300 / total)}%)`, raw: Math.round(r300) },
+                { label: 'Both', value: _people(both), raw: Math.round(both) },
+                { label: 'Canopy around the average home', value: `${_round(wmean(can500, pop, idx))}%` },
+            ],
+        };
+    }
+
+    function solar(fr) {
+        const c = fr.cols, g = fr.grid, n = g.n, idx = _residents(fr);
+        const cover = c['building_stock.cover_2023_pct'] || c['osm_roads.building_cover_pct'];
+        const ghi = GHI[fr.city];
+        if (!cover || !ghi) return null;
+        const yieldKwh = ghi * 365 * PERF_RATIO;             // per kWp per year
+        const mwh = new Float64Array(n).fill(NaN);
+        let kwp = 0, energy = 0, roofKm2 = 0;
+        for (let i = 0; i < n; i++) {
+            if (!_fin(cover[i]) || cover[i] <= 0) continue;
+            const roof = (cover[i] / 100) * g.cellKm2 * 1e6;  // m²
+            const cap = roof * ROOF_USABLE / M2_PER_KWP;
+            mwh[i] = cap * yieldKwh / 1000;
+            kwp += cap; energy += mwh[i]; roofKm2 += roof / 1e6;
+        }
+        if (!energy) return null;
+        const pop = c['population.population'];
+        const total = _sumOver(pop, idx, () => true);
+        const demandMwh = total * KWH_PER_CAPITA / 1000;
+        const selfSuff = idx.filter(i => _fin(mwh[i]) && pop[i] > 0 && mwh[i] * 1000 >= pop[i] * KWH_PER_CAPITA);
+        const ssPeople = _sumOver(pop, selfSuff, () => true);
+        const use = [];
+        for (let i = 0; i < n; i++) if (_fin(mwh[i])) use.push(i);
+        return {
+            columns: { solar_mwh: mwh }, idx: use,
+            headline: `Roofs covering ${_round(roofKm2, 1)} km² could host about ${_round(kwp / 1e6, 2)} GW of solar and make ${_round(energy / 1e3, 0).toLocaleString('en-IN')} GWh a year, `
+                + `${_round(100 * energy / (demandMwh || 1))}% of what the city’s residents use (at ${KWH_PER_CAPITA.toLocaleString('en-IN')} kWh each).`,
+            stats: [
+                { label: 'Potential capacity', value: `${_round(kwp / 1e6, 2)} GW` },
+                { label: 'Annual generation', value: `${Math.round(energy / 1e3).toLocaleString('en-IN')} GWh` },
+                { label: 'Share of residents’ consumption', value: `${_round(100 * energy / (demandMwh || 1))}%` },
+                { label: 'Residents in cells whose roofs out-produce them', value: _people(ssPeople), raw: Math.round(ssPeople) },
+                { label: 'Irradiance (NASA POWER)', value: `${ghi} kWh/m²/day · ${Math.round(yieldKwh)} kWh/kWp/yr` },
+            ],
+        };
+    }
+
+    const RUN = { heat, flood, fifteen, health, air, lights, walk, sprawl, types, green, solar, burden };
+
+    // ── siting suitability (MCDA with AHP weights) ──────────────────────────
+
+    const SITING_NEEDS = ['osm_amenities.education', 'osm_amenities.leisure', 'osm_amenities.healthcare', 'osm_roads.junctions_km2',
+        'osm_roads.major_km_km2', 'building_stock.cover_2023_pct', 'nightlights.radiance', 'vegetation.tree_canopy_pct'];
+
+    /**
+     * AHP weights from a reciprocal pairwise matrix (Saaty 1980): principal
+     * eigenvector by power iteration, and the consistency ratio (≤ 0.1 is
+     * acceptable).
+     */
+    function ahp(M) {
+        const n = M.length;
+        let w = new Array(n).fill(1 / n);
+        for (let it = 0; it < 100; it++) {
+            const v = M.map(row => row.reduce((a, x, j) => a + x * w[j], 0));
+            const s = v.reduce((a, x) => a + x, 0);
+            w = v.map(x => x / s);
+        }
+        const lam = M.reduce((a, row, i) => a + row.reduce((b, x, j) => b + x * w[j], 0) / w[i], 0) / n;
+        const RI = [0, 0, 0, 0.58, 0.9, 1.12, 1.24, 1.32][n] || 1.41;
+        const ci = n > 2 ? (lam - n) / (n - 1) : 0;
+        return { weights: w, lambda: lam, cr: RI ? ci / RI : 0 };
+    }
+
+    // Criteria read from the frame (`c`) and the lens results (`d`), with the
+    // direction that makes a site better. Pairwise matrices rows/cols follow
+    // the criteria order.
+    const PRESETS = {
+        clinic: { title: 'New clinic', icon: '🏥', serveKm: CATCH_KM,
+            why: 'many people, little healthcare in reach, good road access, out of the floodplain',
+            criteria: [
+                { label: 'residents per km²', get: (c) => c['population.density_km2'], dir: 1 },
+                { label: 'healthcare places per 10k in reach', get: (c, d) => d.health && d.health.columns.health_access, dir: -1 },
+                { label: 'junctions per km²', get: (c) => c['osm_roads.junctions_km2'], dir: 1 },
+                { label: 'flood hazard', get: (c, d) => d.flood && d.flood.columns.flood_hazard, dir: -1 },
+            ],
+            pairwise: [[1, 1 / 2, 3, 2], [2, 1, 4, 3], [1 / 3, 1 / 4, 1, 1 / 2], [1 / 2, 1 / 3, 2, 1]],
+            exclude: (c, d, i) => d.flood && d.flood.columns.flood_hazard[i] >= 60 },
+        school: { title: 'New school', icon: '🏫', serveKm: WALK_KM,
+            why: 'dense, few schools within a walk, walkable streets, out of the floodplain',
+            criteria: [
+                { label: 'residents per km²', get: (c) => c['population.density_km2'], dir: 1 },
+                { label: 'schools within 1.2 km', get: (c, d, g) => c['osm_amenities.education'] && within(g, c['osm_amenities.education'], WALK_KM), dir: -1 },
+                { label: 'walkability index', get: (c, d) => d.walk && d.walk.columns.walk_index, dir: 1 },
+                { label: 'flood hazard', get: (c, d) => d.flood && d.flood.columns.flood_hazard, dir: -1 },
+            ],
+            pairwise: [[1, 1 / 2, 2, 2], [2, 1, 3, 3], [1 / 2, 1 / 3, 1, 1], [1 / 2, 1 / 3, 1, 1]],
+            exclude: (c, d, i) => d.flood && d.flood.columns.flood_hazard[i] >= 60 },
+        park: { title: 'New park', icon: '🌳', serveKm: 0.5,
+            why: 'heat-vulnerable, few trees, dense, no leisure space nearby',
+            criteria: [
+                { label: 'heat vulnerability', get: (c, d) => d.heat && d.heat.columns.hvi, dir: 1 },
+                { label: 'tree canopy %', get: (c) => c['vegetation.tree_canopy_pct'], dir: -1 },
+                { label: 'residents per km²', get: (c) => c['population.density_km2'], dir: 1 },
+                { label: 'leisure places within 1.2 km', get: (c, d, g) => c['osm_amenities.leisure'] && within(g, c['osm_amenities.leisure'], WALK_KM), dir: -1 },
+            ],
+            pairwise: [[1, 2, 2, 3], [1 / 2, 1, 1, 2], [1 / 2, 1, 1, 2], [1 / 3, 1 / 2, 1 / 2, 1]] },
+        cool_roofs: { title: 'Cool-roof programme', icon: '🏠', serveKm: 0,
+            why: 'heat-vulnerable, roof-dense, many residents',
+            criteria: [
+                { label: 'heat vulnerability', get: (c, d) => d.heat && d.heat.columns.hvi, dir: 1 },
+                { label: 'building cover %', get: (c) => c['building_stock.cover_2023_pct'], dir: 1 },
+                { label: 'residents per km²', get: (c) => c['population.density_km2'], dir: 1 },
+            ],
+            pairwise: [[1, 2, 3], [1 / 2, 1, 2], [1 / 3, 1 / 2, 1]] },
+        ev_charging: { title: 'EV charging hub', icon: '🔌', serveKm: 1,
+            why: 'busy (bright at night), on major roads, many residents',
+            criteria: [
+                { label: 'night-time lights', get: (c) => c['nightlights.radiance'], dir: 1 },
+                { label: 'major road km per km²', get: (c) => c['osm_roads.major_km_km2'], dir: 1 },
+                { label: 'residents per km²', get: (c) => c['population.density_km2'], dir: 1 },
+            ],
+            pairwise: [[1, 1, 2], [1, 1, 2], [1 / 2, 1 / 2, 1]] },
+    };
+
+    /**
+     * Rank every populated cell for a facility (weighted-overlay MCDA, AHP
+     * weights) from a run's frame and lens results, and pick up to `sites`
+     * candidates at least `spacingKm` apart. Returns a lens-shaped object with
+     * its own layer ({ spec, table }).
+     */
+    function site(result, presetId = 'clinic', opts = {}) {
+        const w = result && result._work, P = PRESETS[presetId];
+        if (!w || !P) return null;
+        const fr = w.frame, c = fr.cols, g = fr.grid, d = w.done, idx = _residents(fr);
+        const crit = P.criteria.map(cr => ({ ...cr, values: cr.get(c, d, g) })).filter(cr => cr.values);
+        if (crit.length < 2) return null;
+        const keep = P.criteria.map(cr => crit.some(x => x.label === cr.label));
+        const M = P.pairwise.filter((_, i) => keep[i]).map(row => row.filter((_, j) => keep[j]));
+        const { weights, cr } = ahp(M);
+        const ranks = crit.map(x => prank(x.dir > 0 ? x.values : Float64Array.from(x.values, v => -v), idx));
+        const score = new Float64Array(g.n).fill(NaN);
+        for (const i of idx) {
+            if (P.exclude && P.exclude(c, d, i)) continue;
+            let s = 0, ws = 0;
+            ranks.forEach((r, k) => { if (_fin(r[i])) { s += weights[k] * r[i]; ws += weights[k]; } });
+            if (ws > 0.5) score[i] = 100 * s / ws;
+        }
+        const order = idx.filter(i => _fin(score[i])).sort((a, b) => score[b] - score[a]);
+        const spacing = opts.spacingKm || 1.5, want = opts.sites || 8;
+        const picks = [];
+        for (const i of order) {
+            if (picks.length >= want) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < spacing)) continue;
+            picks.push(i);
+        }
+        const pop = c['population.population'];
+        const served = new Uint8Array(g.n);
+        if (P.serveKm) for (const i of picks) for (const [a, b] of g.offsets(P.serveKm)) { const j = g.cellAt(i, a, b); if (j >= 0) served[j] = 1; }
+        else for (const i of picks) served[i] = 1;
+        const reach = _sumOver(pop, idx, i => served[i] === 1);
+        const sites = picks.map((i, r) => {
+            const parts = crit.map((x, k) => ({ label: x.label, value: x.values[i], part: weights[k] * (ranks[k][i] || 0) }))
+                .sort((a, b) => b.part - a.part).slice(0, 2);
+            return { rank: r + 1, code: g.codes[i], score: _round(score[i]), people: Math.round(pop[i] || 0),
+                why: parts.map(p => `${p.label} ${_fin(p.value) ? _round(p.value, 1) : '–'}`).join('; ') };
+        });
+        const key = `suit_${presetId}`;
+        const field = { key, label: `${P.title} suitability`, unit: '0-100', higherIs: 'better', ramp: 'viridis' };
+        const lay = { level: fr.level, cells: [], columns: { [key]: [] } };
+        idx.filter(i => _fin(score[i])).sort((a, b) => (g.codes[a] < g.codes[b] ? -1 : 1)).forEach(i => { lay.cells.push(g.codes[i]); lay.columns[key].push(_round(score[i], 1)); });
+        const srcIds = new Set(['population', ...SITING_NEEDS.map(k => k.split('.')[0])]);
+        return {
+            id: 'siting', preset: presetId, title: `Siting: ${P.title}`, icon: P.icon, question: `Where should the next ${P.title.toLowerCase().replace(/^new /, '')} go?`,
+            fields: [field], sites,
+            weights: crit.map((x, k) => ({ label: x.label, weight: _round(weights[k], 3), direction: x.dir > 0 ? 'higher is better' : 'lower is better' })),
+            consistency: _round(cr, 3),
+            headline: picks.length
+                ? `The ${picks.length} best-placed sites (≥ ${spacing} km apart) favour ${P.why}; `
+                    + (P.serveKm ? `together they would sit within ${P.serveKm} km of ${_people(reach)} residents.` : `their cells hold ${_people(reach)} residents.`)
+                : 'No cell passes the constraints.',
+            stats: [
+                ...crit.map((x, k) => ({ label: `Weight: ${x.label} (${x.dir > 0 ? '↑' : '↓'})`, value: `${Math.round(100 * weights[k])}%` })),
+                { label: 'AHP consistency ratio', value: `${_round(cr, 3)} ${cr <= 0.1 ? '(consistent)' : '(review weights)'}` },
+            ],
+            method: `Weighted-overlay multi-criteria decision analysis: each criterion is a within-city percentile rank (direction-corrected), weighted by AHP from a pairwise comparison matrix (consistency ratio ${_round(cr, 3)}); flood-prone cells (hazard ≥ 60) are excluded where it matters. Candidate sites are the top-scoring cells at least ${spacing} km apart.`,
+            refs: 'Saaty 1980 (AHP); Malczewski 2006 (GIS-MCDA); Luo & Qi 2009 for the access term',
+            sources: result.sources.filter(x => srcIds.has(x.id)).map(x => x.id),
+            equity: null, hotspots: null, missing: [],
+            layer: {
+                spec: { id: opts.layerId || 'siting', title: `Siting: ${P.title} · ${result.cityLabel}`, description: P.why, source: 'js/urban-lenses.js',
+                    license: 'Derived from the cell store', group: 'Urban lenses', level: fr.level,
+                    fields: [{ key, label: field.label, type: 'number', agg: 'max', unit: '0-100', ramp: 'viridis', higherIs: 'better' }],
+                    default: { field: key, extrude: true, heightM: 600 } },
+                table: lay,
+            },
+        };
+    }
 
     // ── spatial statistics ──────────────────────────────────────────────────
 
@@ -1048,7 +1302,7 @@ const UrbanLenses = (() => {
             if (!r) continue;
             done[L.id] = r;
             if (!ids.includes(L.id)) continue;
-            const key = L.field.key, v = r.columns[key];
+            const key = L.equityKey || L.field.key, v = r.columns[key];
             const eqIdx = r.idx.filter(i => _fin(v[i]));
             const equity = !L.equity ? null : {
                 gini: _round(gini(v, pop, eqIdx), 3),
@@ -1102,10 +1356,10 @@ const UrbanLenses = (() => {
     }
 
     /** The runtime cell-store dataset for a run (id 'lenses'). */
-    function toLayer(result, id = 'lenses') {
+    function toLayer(result, id = 'lenses', only = null) {
         if (!result || !result.layer || !result.layer.cells.length) return null;
         const fields = [];
-        for (const l of result.lenses) for (const f of l.fields) {
+        for (const l of result.lenses.filter(x => !only || only.includes(x.id))) for (const f of l.fields) {
             if (!result.layer.columns[f.key] || fields.some(x => x.key === f.key)) continue;
             if (f.type === 'category') {
                 fields.push({ key: f.key, label: f.label, type: 'category', agg: 'mode', domain: f.domain.slice().sort(), colors: f.colors });
@@ -1137,8 +1391,64 @@ const UrbanLenses = (() => {
             ...ls.map(l => `- ${l.title}: ${l.headline}${l.equity && l.equity.gini != null ? ` Gini ${l.equity.gini}.` : ''}${l.hotspots && l.hotspots.moranI != null ? ` ${l.hotspots.reading} (Moran’s I ${l.hotspots.moranI}).` : ''}`)].join('\n');
     }
 
+    // ── stable entry points (agents, DISHA, other modules) ──────────────────
+
+    /** The lens catalogue: [{ id, title, question, method, refs, fields, params }]. */
+    function catalog() {
+        return [
+            ...LENSES.map(l => ({ id: l.id, title: l.title, icon: l.icon, question: l.question, method: l.method, refs: l.refs,
+                fields: [l.field, ...(l.extra || [])].map(f => f.key), params: {} })),
+            { id: 'siting', title: 'Siting suitability', icon: '📍', question: 'Where should the next facility go?',
+                method: 'Weighted-overlay MCDA with AHP weights; see siting presets.', refs: 'Saaty 1980; Malczewski 2006',
+                fields: Object.keys(PRESETS).map(k => `suit_${k}`),
+                params: { preset: Object.keys(PRESETS), sites: 'number (default 8)', spacingKm: 'number (default 1.5)' } },
+        ];
+    }
+
+    const LENS_SCHEMA = 'digipin.lens/1';
+
+    /**
+     * Run one lens for a city: the contract other modules wrap.
+     *   await UrbanLenses.lens('heat', 'delhi')
+     *   await UrbanLenses.lens('siting', 'pune', null, { preset: 'clinic' })
+     * Returns { schema, id, title, question, city, cityLabel, ranAt, headline,
+     * findings: [{ label, value }], stats, equity, hotspots, sites?, weights?,
+     * method, refs, sources: [source cards], layer: { spec, table }, text }.
+     */
+    async function lens(id, city, store, opts = {}) {
+        store = _store(store);
+        if (id === 'siting') {
+            const base = opts.base || await run(city, store, { only: ['heat', 'flood', 'health', 'fifteen', 'walk'], hotspots: false, now: opts.now });
+            const st = site(base, opts.preset || 'clinic', opts);
+            if (!st) throw new Error(`Unknown or empty siting preset: ${opts.preset}`);
+            return _report(base, st, st.layer, opts);
+        }
+        if (!BY_ID.has(id)) throw new Error(`Unknown lens: ${id}`);
+        const r = opts.base || await run(city, store, { only: [id], now: opts.now });
+        const l = r.lenses.find(x => x.id === id);
+        if (!l) throw new Error(`${BY_ID.get(id).title} needs data ${UrbanInsights.cityLabel(city)} does not have.`);
+        return _report(r, l, toLayer(r, opts.layerId || `lens_${id}`, [id]), opts);
+    }
+
+    function _report(r, l, layer, opts) {
+        const findings = l.stats.map(s => ({ label: s.label, value: s.value }));
+        if (l.equity && l.equity.gini != null) findings.push({ label: 'Gini across residents', value: String(l.equity.gini) });
+        if (l.hotspots && l.hotspots.moranI != null) findings.push({ label: 'Spatial pattern', value: `${l.hotspots.reading} (Moran’s I ${l.hotspots.moranI})` });
+        if (l.sites) l.sites.forEach(x => findings.push({ label: `Site ${x.rank}: ${x.code}`, value: `score ${x.score}; ${x.why}` }));
+        const sources = r.sources.filter(x => l.sources.includes(x.id));
+        return {
+            schema: LENS_SCHEMA, id: l.id, preset: l.preset || null, title: l.title, question: l.question,
+            city: r.city, cityLabel: r.cityLabel, ranAt: (opts.now ? opts.now() : new Date()).toISOString(),
+            headline: l.headline, findings, stats: l.stats, equity: l.equity || null, hotspots: l.hotspots || null,
+            sites: l.sites || null, weights: l.weights || null, consistency: l.consistency ?? null,
+            method: l.method, refs: l.refs, sources, layer,
+            text: `${l.title} — ${r.cityLabel}: ${l.headline}\n${findings.map(f => `- ${f.label}: ${f.value}`).join('\n')}\nMethod: ${l.method}`,
+        };
+    }
+
     return {
-        SCHEMA, LENSES, ESSENTIALS, CELL_DEG,
+        SCHEMA, LENS_SCHEMA, LENSES, PRESETS, ESSENTIALS, CELL_DEG, GHI,
+        catalog, lens, site, ahp, within,
         prank, wmean, wquantile, gini, lorenz, palma, ols, pearson, grid, frameFrom, frame, allNeeds,
         e2sfca, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
         _lenses: RUN,

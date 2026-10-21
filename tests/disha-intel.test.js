@@ -58,6 +58,11 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('Is Pune sprawling or growing by infill?')).toEqual({ type: 'lens', lens: 'sprawl', city: 'pune' });
         expect(M('How walkable is Delhi?')).toEqual({ type: 'lens', lens: 'walk', city: 'delhi' });
         expect(M('What kinds of neighbourhoods does Pune have?')).toEqual({ type: 'lens', lens: 'types', city: 'pune' });
+        expect(M('Where should a new clinic go in Delhi?')).toEqual({ type: 'lens', lens: 'siting', preset: 'clinic', city: 'delhi' });
+        expect(M('Where should we build a new park?')).toEqual({ type: 'lens', lens: 'siting', preset: 'park' });
+        expect(M('Best locations for EV charging')).toEqual({ type: 'lens', lens: 'siting', preset: 'ev_charging' });
+        expect(M('What is the rooftop solar potential of Pune?')).toEqual({ type: 'lens', lens: 'solar', city: 'pune' });
+        expect(M('Does Delhi meet the 3-30-300 rule?')).toEqual({ type: 'lens', lens: 'green', city: 'delhi' });
         expect(M('How unequal is Delhi?')).toEqual({ type: 'lens', lens: null, city: 'delhi' });
     });
     it('leaves what-if floods and notable questions alone', () => {

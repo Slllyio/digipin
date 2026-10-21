@@ -45,6 +45,10 @@ describe('LensesPanel', () => {
         expect(highlight.mock.calls[0][0][0].kind).toBe('concern');
         [...body.querySelectorAll('.ui-citypick button')].find(b => b.textContent === 'Pune').click();
         expect(city).toBe('pune');
+        const siting = body.querySelector('[data-lens="siting"]');
+        expect(siting.querySelectorAll('.ui-lens-sites li').length).toBeGreaterThan(0);
+        [...siting.querySelectorAll('button')].find(b => b.textContent.includes('New school')).click();
+        expect(body.querySelector('[data-lens="siting"] .ui-headline').textContent).toMatch(/schools within a walk/);
         P.clear();
         expect(globalThis.CellStore.isLocal('lenses')).toBe(false);
         show.mockRestore();

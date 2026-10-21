@@ -92,6 +92,9 @@ established method and answers in people; the ranked plan and the methods with r
 | Walkability index | OSM junctions, density, land-use mix, OSM walkability score | Frank et al.: 2·z(intersections) + z(density) + z(mix); residents below the LEED-ND 54 junctions/km² bar |
 | Sprawl and compactness | GHSL-style built-up 2016 / 2023, night lights, density | Landscape expansion index (infill / edge / leapfrog), Clark density gradient from the night-lights peak, population-weighted density |
 | Neighbourhood archetypes | density, built-up, height, mix, canopy, lights, junctions, growth | k-means++ on the urban fabric (≥ 1 500 people/km², DEGURBA), k = 4–7 by silhouette, clusters named from centroids; a category layer |
+| 3-30-300 green rule | canopy, land cover trees/grass, OSM leisure | 30% canopy within 500 m; green space within 300 m (the "3 trees" part needs street imagery) |
+| Rooftop solar | Open Buildings cover (else OSM), NASA POWER irradiance per city | 30% of roof usable, 10 m²/kWp (MNRE), PR 0.75; vs 1,395 kWh per resident (CEA 2023-24) |
+| Siting suitability | heat, flood, healthcare access, walkability, OSM schools/leisure, roads, lights | weighted-overlay MCDA, AHP weights (CR < 0.1), top cells ≥ 1.5 km apart; presets clinic, school, park, cool roofs, EV charging |
 | Compound risk | the heat, flood and air lenses | hazards in the city's worst fifth, per resident |
 
 Every lens gets a population-weighted Gini, Lorenz curve and Palma ratio (access lenses), global Moran's I
@@ -100,7 +103,8 @@ and Getis-Ord Gi* hot/cold spots (500 m distance band), and on demand Local Mora
 L7 grid, coarser datasets broadcast from their parent cell. "Map" registers the runtime dataset `lenses`
 (3D cells, building colouring, exports). DISHA routes "heat vulnerable", "floodplain", "15-minute",
 "healthcare desert", "PM2.5", "night lights", "compound risk" and "how unequal" questions to it.
-A big city (Delhi, 37k cells) takes about 3 s in the browser, yielding between lenses.
+Other modules call one lens through `UrbanLenses.lens(id, city, store, opts)` (contract in
+ROADMAP_INSIGHTS.md). A big city (Delhi, 37k cells) takes about 3 s in the browser, yielding between lenses.
 
 ## Scenarios through the lenses, 3D framing, zone leaderboard
 

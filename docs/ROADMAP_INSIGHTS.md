@@ -52,10 +52,10 @@ new data.
 | 9 | Compound risk ("triple burden") | Which neighbourhoods carry heat, flood and air at once? | Yes | S | **Shipped** |
 | 10 | Sprawl and compactness | Is growth infill, edge or leapfrog? How steep is the density gradient? | Yes | M | **Shipped** |
 | 11 | Walkability index (Frank et al.) | Is the street fabric walkable, independent of POIs? | Yes | S | **Shipped** |
-| 12 | 3-30-300 green rule | Does each neighbourhood meet the tree / canopy / park rule? | Partly (no parks layer) | S–M | Next |
+| 12 | 3-30-300 green rule | Does each neighbourhood meet the tree / canopy / park rule? | Partly (no parks layer) | S–M | **Shipped** |
 | 13 | Neighbourhood archetypes (k-means) | What kinds of places make up this city? | Yes | M | **Shipped** |
-| 14 | Siting suitability (MCDA / AHP presets) | Where should the next clinic, school, park or cool roof go? | Yes | M | Next |
-| 15 | Rooftop solar and cooling potential | How much energy could the roofs make? | Yes (heights, sun-hours) | M | Later |
+| 14 | Siting suitability (MCDA / AHP presets) | Where should the next clinic, school, park or cool roof go? | Yes | M | **Shipped** |
+| 15 | Rooftop solar and cooling potential | How much energy could the roofs make? | Yes (heights, sun-hours) | M | **Shipped** |
 | 16 | Network isochrones | True 15-minute reach on the road graph | Roads lazy-loaded | M–L | Later |
 | 17 | Transit job access | How many jobs within 45 min by bus/metro? | No (GTFS + jobs) | L | Data needed |
 | 18 | Socio-economic sensitivity | Who is poor, old, young (census)? | No (Census / SHRUG) | L | Data needed |
@@ -248,3 +248,17 @@ lens over that frame. Results register as the runtime dataset `lenses`, so
 they extrude in 3D, colour buildings (`lenses:<field>`) and appear in exports
 like any other layer. The Intel dialog's **Lenses** tab shows each lens's
 headline in people, equity, clusters, method and sources.
+
+## Calling a lens from code (agents, DISHA, other modules)
+
+```js
+const r = await UrbanLenses.lens('heat', 'delhi');                       // any id from UrbanLenses.catalog()
+const s = await UrbanLenses.lens('siting', 'pune', null, { preset: 'clinic', sites: 8 });
+// → { schema: 'digipin.lens/1', id, preset, title, question, city, cityLabel, ranAt, headline,
+//     findings: [{label, value}], stats, equity, hotspots, sites?, weights?, consistency?,
+//     method, refs, sources: [source cards], layer: { spec, table }, text }
+CellStore.register(r.layer.spec, r.layer.table);                          // paint it
+```
+
+Siting presets (`UrbanLenses.PRESETS`): `clinic`, `school`, `park`, `cool_roofs`, `ev_charging`; each is a
+criteria list with directions and an AHP pairwise matrix (all consistency ratios < 0.1, tested).

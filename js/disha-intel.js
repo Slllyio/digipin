@@ -33,6 +33,8 @@ const DishaIntel = (() => {
             walk: /\b(walkability index|how walkable|walkable (streets?|city|fabric)|intersection density|street connectivity)\b/i,
             sprawl: /\b(sprawl\w*|compact(ness)?|infill|leapfrog\w*|density gradient|urban (expansion|growth pattern))\b/i,
             types: /\b(archetypes?|typolog\w*|kinds? of (places?|neighbou?rhoods?)|types? of neighbou?rhoods?|neighbou?rhood types?|cluster(s|ing)? of neighbou?rhoods?)\b/i,
+            green: /\b(3[\s-]?30[\s-]?300|tree canopy (rule|target|cover)|green space within|enough (trees|green))\b/i,
+            solar: /\b(roof\s?top solar|solar (potential|roofs?|power|capacity)|how much solar)\b/i,
             burden: /\b(compound (risk|hazard)s?|multi[\s-]?hazard|triple burden|most at risk overall)\b/i,
             all: /\b(equity|inequal\w*|unequal|unfair|gini|fairness|left behind|urban lens(es)?|lenses)\b/i,
         },
@@ -67,6 +69,14 @@ const DishaIntel = (() => {
         if (RE.dashboard.test(q)) return { type: 'dashboard' };
         if (RE.changes.test(q)) return named.length ? { type: 'changes', city: named[0] } : { type: 'changes' };
         if (RE.compare.test(q) && named.length >= 2) return { type: 'compare', a: { city: named[0] }, b: { city: named[1] } };
+        const siting = /\bwhere (should|to|could|would|can)\b.{0,40}\b(clinics?|hospitals?|health (centre|center)s?|schools?|parks?|cool roofs?|ev|charg\w*)\b|\b(best|ideal|suitable) (locations?|sites?|places?) for\b|\bsite (selection|suitability)\b|\bsiting\b/i;
+        if (siting.test(q)) {
+            const preset = /\bschool/i.test(q) ? 'school' : /\bpark|garden|green/i.test(q) ? 'park' : /\bcool roof/i.test(q) ? 'cool_roofs'
+                : /\bev\b|charg/i.test(q) ? 'ev_charging' : 'clinic';
+            const out = { type: 'lens', lens: 'siting', preset };
+            if (named.length) out.city = named[0];
+            return out;
+        }
         if (/\bwhat[\s-]?if\b|\bimagine\b|\bsimulate\b|\bscenario\b|\bif (we|they|i)\b/i.test(q) || RE.park.test(q) || RE.flood.test(q) || RE.cool.test(q) || RE.closure.test(q)) {
             if (RE.closure.test(q)) return { type: 'whatif', scenario: 'closure' };
             if (RE.cool.test(q)) {
@@ -170,7 +180,11 @@ const DishaIntel = (() => {
                 if (typeof UrbanLenses === 'undefined') { el.textContent = 'The lenses module did not load.'; return ''; }
                 const run = typeof LensesPanel !== 'undefined' ? LensesPanel.result(city, CellStore) : UrbanLenses.run(city, CellStore);
                 const res = await run;
-                r = { ...res, only: intent.lens ? [intent.lens] : null };
+                if (intent.lens === 'siting') {
+                    const st = UrbanLenses.site(res, intent.preset || 'clinic');
+                    if (!st) { el.textContent = 'Not enough data in this city to site that.'; return ''; }
+                    r = { kind: 'siting', cityLabel: res.cityLabel, st, sources: res.sources.filter(x => st.sources.includes(x.id)) };
+                } else r = { ...res, only: intent.lens ? [intent.lens] : null };
             } else if (intent.type === 'dashboard') {
                 r = await UrbanInsights.cityDashboard(CellStore);
             } else if (intent.type === 'compare') {
@@ -198,6 +212,7 @@ const DishaIntel = (() => {
         }
         if (!r) return '';
         _render(el, r);
+        if (r.kind === 'siting') return `${r.st.title} in ${r.cityLabel}: ${r.st.headline}\n${r.st.sites.map(x => `${x.rank}. ${x.code} (score ${x.score}): ${x.why}`).join('\n')}`;
         return r.kind === 'lenses' ? UrbanLenses.toText(r, r.only) : UrbanInsights.toText(r);
     }
 
@@ -227,6 +242,13 @@ const DishaIntel = (() => {
             r.rows.slice(0, 6).forEach(x => el.appendChild(_el('div', 'disha-scan-row',
                 `${x.label}: ${UrbanInsights.fmt(x.a, x.unit)} vs ${UrbanInsights.fmt(x.b, x.unit)}${x.winner === 'a' ? ` (${r.a.label})` : x.winner === 'b' ? ` (${r.b.label})` : ''}`)));
             el.appendChild(_openButton('Open the comparison', 'compare'));
+        } else if (r.kind === 'siting') {
+            head.textContent = `${r.st.title} · ${r.cityLabel}`;
+            el.appendChild(head);
+            el.appendChild(_el('div', 'ui-headline', r.st.headline));
+            r.st.sites.slice(0, 5).forEach(x => el.appendChild(_el('div', 'disha-scan-row', `${x.rank}. ${DigiPin.format(x.code)} · score ${x.score} · ${x.why}`)));
+            el.appendChild(_el('div', 'disha-scan-hint', `Weights (AHP, CR ${r.st.consistency}): ${r.st.weights.map(w => `${w.label} ${Math.round(w.weight * 100)}%`).join(', ')}`));
+            el.appendChild(_openButton('Open the lenses', 'lenses'));
         } else if (r.kind === 'lenses') {
             head.textContent = `Urban lenses · ${r.cityLabel}`;
             el.appendChild(head);

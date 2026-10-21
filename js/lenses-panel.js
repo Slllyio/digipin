@@ -15,6 +15,8 @@ const LensesPanel = (() => {
     const _runs = new Map();    // city -> Promise<result>
     let _open = null;           // lens id whose details are expanded
     let _painted = null;        // city whose layer is registered
+    let _preset = 'clinic';     // siting preset on show
+    const SITING_ID = 'siting';
 
     function _el(tag, cls, text) {
         const e = document.createElement(tag);
@@ -77,7 +79,75 @@ const LensesPanel = (() => {
         if (typeof CellLayers !== 'undefined' && CellLayers.isVisible(LAYER_ID)) CellLayers.hide(LAYER_ID);
         if (typeof BuildingData !== 'undefined' && BuildingData.get && String(BuildingData.get().color || '').startsWith(`${LAYER_ID}:`)) BuildingData.set({ color: null });
         if (typeof CellStore !== 'undefined' && CellStore.isLocal(LAYER_ID)) CellStore.unregister(LAYER_ID);
+        if (typeof CellLayers !== 'undefined' && CellLayers.isVisible(SITING_ID)) CellLayers.hide(SITING_ID);
+        if (typeof CellStore !== 'undefined' && CellStore.isLocal(SITING_ID)) CellStore.unregister(SITING_ID);
         _painted = null;
+    }
+
+    /** The siting card: preset chips, AHP weights, candidate sites. */
+    function _sitingCard(kit, r) {
+        const card = _el('section', 'ui-lens');
+        card.dataset.lens = 'siting';
+        const draw = () => {
+            card.replaceChildren();
+            const st = UrbanLenses.site(r, _preset, { layerId: SITING_ID });
+            const head = _el('div', 'ui-lens-head');
+            head.appendChild(_el('span', 'ui-lens-icon', '📍'));
+            const ttl = _el('div', 'ui-lens-ttl');
+            ttl.appendChild(_el('div', 'ui-lens-title', 'Siting suitability'));
+            ttl.appendChild(_el('div', 'ui-muted', 'Where should the next facility go? Weighted overlay with AHP weights.'));
+            head.appendChild(ttl);
+            card.appendChild(head);
+            const chips = _el('div', 'ui-actions');
+            for (const [id, P] of Object.entries(UrbanLenses.PRESETS)) {
+                chips.appendChild(_btn(`${P.icon} ${P.title}`, () => { _preset = id; draw(); }, `ui-chip${id === _preset ? ' active' : ''}`));
+            }
+            card.appendChild(chips);
+            if (!st) { card.appendChild(_el('div', 'ui-muted', 'Not enough data in this city for this preset.')); return; }
+            card.appendChild(_el('div', 'ui-headline', st.headline));
+            const kpis = _el('div', 'ui-kpis');
+            for (const x of st.stats) {
+                const t = _el('div', 'ui-kpi');
+                t.appendChild(_el('div', 'ui-kpi-lbl', x.label));
+                t.appendChild(_el('div', 'ui-kpi-val', x.value));
+                kpis.appendChild(t);
+            }
+            card.appendChild(kpis);
+            card.appendChild(_el('div', 'ui-lens-num', 'Candidate sites'));
+            const list = _el('ol', 'ui-lens-sites');
+            for (const x of st.sites) {
+                const li = _el('li');
+                li.appendChild(_btn(x.code, () => {
+                    if (typeof MapModule !== 'undefined' && MapModule.selectByCode) MapModule.selectByCode(x.code);
+                }, 'ui-chip ui-chip--code', `Open ${x.code}`));
+                li.appendChild(_el('span', 'ui-muted', ` score ${x.score} · ${x.why}`));
+                list.appendChild(li);
+            }
+            card.appendChild(list);
+            const acts = _el('div', 'ui-actions');
+            acts.appendChild(_btn('▦ Map suitability in 3D', async () => {
+                if (typeof CellStore === 'undefined' || typeof CellLayers === 'undefined') return;
+                if (CellLayers.isVisible(SITING_ID)) CellLayers.hide(SITING_ID);
+                CellStore.register(st.layer.spec, st.layer.table);
+                _flyToCity(r.city);
+                const ok = await CellLayers.show(SITING_ID, { field: st.fields[0].key, extrude: true });
+                if (!ok && kit.toast) kit.toast('Layer unavailable', 'Could not paint the suitability layer.', 'warning');
+            }, 'ui-chip'));
+            acts.appendChild(_btn('◉ Outline sites', () => kit.highlight(st.sites.map(x => ({ code: x.code, kind: 'strength' })), { fit: true }), 'ui-chip'));
+            if (kit.copy) acts.appendChild(_btn('⧉ Copy', () => kit.copy(st.headline + '\n' + st.sites.map(x => `${x.rank}. ${x.code} (score ${x.score}): ${x.why}`).join('\n')), 'ui-chip'));
+            card.appendChild(acts);
+            const det = _el('details', 'ui-lens-method');
+            det.appendChild(_el('summary', null, 'Method and sources'));
+            det.appendChild(_el('div', null, st.method));
+            det.appendChild(_el('div', 'ui-muted', `References: ${st.refs}`));
+            if (kit.sourcesFooter) {
+                const srcs = r.sources.filter(x => st.sources.includes(x.id));
+                if (srcs.length) det.appendChild(kit.sourcesFooter(srcs));
+            }
+            card.appendChild(det);
+        };
+        draw();
+        return card;
     }
 
     function _lorenz(kit, lz) {
@@ -218,6 +288,7 @@ const LensesPanel = (() => {
         intro.appendChild(tools);
         body.appendChild(intro);
         for (const l of r.lenses) body.appendChild(_card(kit, r, l));
+        body.appendChild(_sitingCard(kit, r));
     }
 
     return { render, result, clear, LAYER_ID };
