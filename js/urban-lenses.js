@@ -34,7 +34,10 @@ const UrbanLenses = (() => {
     const PERF_RATIO = 0.75;
     const KWH_PER_CAPITA = 1395;  // CEA per-capita electricity consumption, 2023-24 (all sectors)
     const URBAN_PCT = 15;     // a cell counts as urban for the LEI at ≥ 15% built-up
-    const SHED_KM = 1;        // pedestrian-shed radius for route directness
+    const SHED_KM = 1;
+    const STOP_KM = 0.5, RAPID_KM = 1;   // SDG 11.2.1: 500 m to a bus stop, 1 km to rail / BRT / terminal
+    const TRANSIT = 'osm_transit';       // vector points (data/vectors/osm_transit_<city>.geojson), binned per cell
+    const RAPID_KINDS = new Set(['station', 'bus_station', 'subway_entrance', 'halt', 'tram_stop']);        // pedestrian-shed radius for route directness
     const WALK_LINKS = 'osm_walk.links';
     // Walk-link mask bit i = neighbour DIRS[i] as [dRow, dCol] (pipeline/cells/osm_layers.py).
     const DIRS = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
@@ -70,6 +73,13 @@ const UrbanLenses = (() => {
             needs: ['osm_amenities.healthcare', WALK_LINKS],
             method: `Enhanced two-step floating catchment (E2SFCA): each facility’s supply is shared among the residents within ${CATCH_KM} km walking distance on the OpenStreetMap street and footpath network (straight line where no walking graph is baked) with Gaussian distance decay, then each cell sums the ratios it can reach. Facilities per 10 000 residents in reach.`,
             refs: 'Luo & Wang 2003; Luo & Qi 2009; Dai 2010' },
+        { id: 'transit', equity: true, title: 'Public transport access', icon: '🚌',
+            question: 'How many people can walk to a bus stop or station?',
+            field: { key: 'transit_m', label: 'Walk to the nearest stop', unit: 'm', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'rapid_m', label: 'Walk to the nearest station or terminal', unit: 'm', higherIs: 'worse', ramp: 'reds' }],
+            needs: [`${TRANSIT}.stops`, `${TRANSIT}.rapid`, WALK_LINKS],
+            method: `UN SDG indicator 11.2.1: a resident has convenient access when a bus stop is within ${STOP_KM * 1000} m, or a rail, metro or BRT station or bus terminal within ${RAPID_KM} km, walking along the OpenStreetMap network (Dijkstra over the walking-graph cells; straight line where none is baked). Stops and stations are OpenStreetMap points. Distances are cell centre to cell centre, so anything in the same ~244 m cell counts as 0. Service frequency is not known without GTFS, so this measures coverage, not service quality.`,
+            refs: 'UN-Habitat SDG 11.2.1 metadata (2018); TfL PTAL methodology (2015) for the 640 m / 960 m walk bands' },
         { id: 'air', title: 'Air pollution exposure', icon: '🌫',
             question: 'How many people breathe air above the standard?',
             field: { key: 'pm25', label: 'PM2.5 where people live', unit: 'µg/m³', higherIs: 'worse', ramp: 'heat' },
@@ -431,6 +441,14 @@ const UrbanLenses = (() => {
                 byDs.get(ds).push(f);
             }
             for (const [ds, fields] of byDs) {
+                if (ds === TRANSIT) {
+                    const t = await _transitCols(city, g);
+                    if (!t) { fields.forEach(f => missing.push(`${ds}.${f}`)); continue; }
+                    for (const f of fields) cols[`${ds}.${f}`] = t[f];
+                    sources.push({ id: TRANSIT, title: 'Transit stops and stations (OpenStreetMap)', source: `data/vectors/osm_transit_${city}.geojson`,
+                        license: 'ODbL (© OpenStreetMap contributors)', level: null, approxCellM: null, generated: null, period: null, local: false });
+                    continue;
+                }
                 const spec = store.get(ds);
                 const covers = spec && (spec.regions || []).some(r => r.name === city || (r.bbox && bbox && r.bbox.west <= bbox.east && r.bbox.east >= bbox.west && r.bbox.south <= bbox.north && r.bbox.north >= bbox.south));
                 const table = covers ? await _loadView(store, ds, bbox).catch(() => null) : null;
@@ -488,6 +506,30 @@ const UrbanLenses = (() => {
         p.catch(() => _frames.delete(key));
         if (_frames.size > 6) _frames.delete(_frames.keys().next().value);
         return p;
+    }
+
+    /** Bus stops / rapid-transit points per frame cell from the city's OSM transit vector, or null. */
+    async function _transitCols(city, g) {
+        if (typeof fetch !== 'function') return null;
+        let gj;
+        try {
+            const r = await fetch(`data/vectors/osm_transit_${city}.geojson`);
+            if (!r.ok) return null;
+            gj = await r.json();
+        } catch { return null; }
+        const stops = new Float64Array(g.n), rapid = new Float64Array(g.n);
+        const at = new Map();
+        for (let i = 0; i < g.n; i++) at.set(g.row[i] * 1e6 + g.col[i], i);
+        let any = 0;
+        for (const f of (gj && gj.features) || []) {
+            const c = f.geometry && f.geometry.type === 'Point' && f.geometry.coordinates;
+            if (!c) continue;
+            const i = at.get(Math.floor((c[1] - 2.5) / CELL_DEG) * 1e6 + Math.floor((c[0] - 63.5) / CELL_DEG));
+            if (i == null) continue;
+            if (RAPID_KINDS.has((f.properties || {}).kind)) rapid[i]++; else stops[i]++;
+            any++;
+        }
+        return any ? { stops, rapid } : null;
     }
 
     function _residents(fr) {
@@ -707,6 +749,49 @@ const UrbanLenses = (() => {
                 { label: `No healthcare within ${CATCH_KM} km`, value: _people(desert), raw: Math.round(desert) },
                 { label: 'Below a quarter of the median', value: low != null ? _people(low) : '–' },
                 _distStat(net.has ? _sumOver(pop, idx, i => links[i] > 0) : 0, total),
+            ],
+        };
+    }
+
+    function transit(fr) {
+        const c = fr.cols, g = fr.grid, idx = _residents(fr);
+        const stops = c[`${TRANSIT}.stops`], rapid = c[`${TRANSIT}.rapid`], pop = c['population.population'];
+        if (!stops || !rapid) return null;
+        const net = _net(fr);
+        const near = new Float64Array(g.n).fill(NaN), nearRapid = new Float64Array(g.n).fill(NaN);
+        let onNet = 0;
+        for (const i of idx) {
+            const r = net.reach(i, RAPID_KM);
+            if (r.net) onNet += pop[i];
+            let ds = Infinity, dr = Infinity;
+            for (let t = 0; t < r.len; t++) {
+                const j = r.js[t], d = r.ds[t];
+                if (stops[j] > 0 || rapid[j] > 0) ds = Math.min(ds, d);
+                if (rapid[j] > 0) dr = Math.min(dr, d);
+            }
+            // Beyond the search radius: report "over 1 km" as the radius plus one cell.
+            const cap = RAPID_KM + Math.max(g.dx, g.dy);
+            near[i] = 1000 * Math.min(ds, cap);
+            nearRapid[i] = 1000 * Math.min(dr, cap);
+        }
+        const ok = i => near[i] <= STOP_KM * 1000 + 1e-6 || nearRapid[i] <= RAPID_KM * 1000 + 1e-6;
+        const total = _sumOver(pop, idx, () => true);
+        const covered = _sumOver(pop, idx, ok);
+        const rapidOk = _sumOver(pop, idx, i => nearRapid[i] <= RAPID_KM * 1000 + 1e-6);
+        let nStops = 0, nRapid = 0;
+        for (let i = 0; i < g.n; i++) { nStops += stops[i]; nRapid += rapid[i]; }
+        const pct = _round(100 * covered / (total || 1));
+        return {
+            columns: { transit_m: near, rapid_m: nearRapid }, idx,
+            metric: { label: 'Residents with convenient public transport (SDG 11.2.1)', value: pct, unit: '%', higherIs: 'better' },
+            headline: `${pct}% of residents can walk to a bus stop within ${STOP_KM * 1000} m or a station within ${RAPID_KM} km (UN SDG 11.2.1); `
+                + `${_people(total - covered)} people cannot, and ${_round(100 * rapidOk / (total || 1))}% live within ${RAPID_KM} km of rapid transit.`,
+            stats: [
+                { label: 'Residents without convenient access', value: _people(total - covered), raw: Math.round(total - covered) },
+                { label: `Within ${RAPID_KM} km walk of a station or terminal`, value: _people(rapidOk), raw: Math.round(rapidOk) },
+                { label: 'Median walk to the nearest stop', value: `${_round(wquantile(near, pop, idx, 0.5))} m` },
+                { label: 'Mapped stops / stations per 10k residents', value: `${_round(1e4 * nStops / (total || 1), 1)} / ${_round(1e4 * nRapid / (total || 1), 2)}` },
+                _distStat(onNet, total),
             ],
         };
     }
@@ -1267,7 +1352,7 @@ const UrbanLenses = (() => {
             metric: pmRes != null ? { label: 'Months a year above 60 µg/m³ PM2.5', value: _round(pmRes, 1), unit: 'months', higherIs: 'worse' } : null };
     }
 
-    const RUN = { heat, flood, fifteen, health, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
+    const RUN = { heat, flood, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
 
     // ── siting suitability (MCDA with AHP weights) ──────────────────────────
 

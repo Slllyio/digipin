@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 40.8,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "air": {
      "label": "PM2.5 per resident",
      "value": 51.1,
@@ -101,6 +107,12 @@
      "value": 4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 93.1,
+     "unit": "%",
+     "higherIs": "better"
     },
     "air": {
      "label": "PM2.5 per resident",
@@ -174,6 +186,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 29.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "air": {
      "label": "PM2.5 per resident",
      "value": 43.6,
@@ -245,6 +263,12 @@
      "value": 4.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 78.8,
+     "unit": "%",
+     "higherIs": "better"
     },
     "air": {
      "label": "PM2.5 per resident",
@@ -318,6 +342,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 60.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "air": {
      "label": "PM2.5 per resident",
      "value": 94.1,
@@ -389,6 +419,12 @@
      "value": 15.8,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 14.3,
+     "unit": "%",
+     "higherIs": "better"
     },
     "air": {
      "label": "PM2.5 per resident",
@@ -462,6 +498,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 50.4,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "air": {
      "label": "PM2.5 per resident",
      "value": 42.2,
@@ -533,6 +575,12 @@
      "value": 17.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 29.4,
+     "unit": "%",
+     "higherIs": "better"
     },
     "air": {
      "label": "PM2.5 per resident",
@@ -606,6 +654,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 45.9,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "air": {
      "label": "PM2.5 per resident",
      "value": 54.5,
@@ -677,6 +731,12 @@
      "value": 2.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 70.3,
+     "unit": "%",
+     "higherIs": "better"
     },
     "air": {
      "label": "PM2.5 per resident",
@@ -750,6 +810,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 25.8,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "air": {
      "label": "PM2.5 per resident",
      "value": 87.5,
@@ -822,6 +888,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 92.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "air": {
      "label": "PM2.5 per resident",
      "value": 43.5,
@@ -893,6 +965,12 @@
      "value": 2.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "transit": {
+     "label": "Residents with convenient public transport (SDG 11.2.1)",
+     "value": 64.8,
+     "unit": "%",
+     "higherIs": "better"
     },
     "air": {
      "label": "PM2.5 per resident",

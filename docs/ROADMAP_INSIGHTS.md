@@ -57,11 +57,12 @@ new data.
 | 14 | Siting suitability (MCDA / AHP presets) | Where should the next clinic, school, park or cool roof go? | Yes | M | **Shipped** |
 | 15 | Rooftop solar and cooling potential | How much energy could the roofs make? | Yes (heights, sun-hours) | M | **Shipped** |
 | 16 | Network isochrones | True 15-minute reach on the walking graph | Yes: `osm_walk` (L7, 8-direction cell links from every street, footway and path but motorways) baked by `pipeline/cells/osm_layers.py` in Actions | M | Shipped (falls back to straight line until a city is baked) |
-| 17 | Transit job access | How many jobs within 45 min by bus/metro? | No (GTFS + jobs) | L | Data needed |
+| 17 | Transit job access | How many jobs within 45 min by bus/metro? | No (GTFS + jobs); stop coverage shipped as item 22 | L | Data needed |
 | 18 | Socio-economic sensitivity | Who is poor, old, young (census)? | No (Census / SHRUG) | L | Data needed |
 | 19 | Data confidence layer | How much should I trust this cell? | Yes (coverage) | S | **Shipped** |
 | 20 | Area profile through every lens | How does my neighbourhood compare on each lens? | Yes | S | **Shipped** |
 | 21 | Seasonal exposure | How many months a year are residents exposed? Is it warming? | Yes (monthly series) | S | **Shipped** |
+| 22 | Public transport coverage (SDG 11.2.1) | How many people can walk to a bus stop (500 m) or a station (1 km)? | Yes (OSM stops + `osm_walk`) | S | **Shipped** |
 
 Excluded here because other work owns them: draw-an-area building insights,
 the "what changed this month" feed, and performance/reliability.
@@ -250,6 +251,23 @@ quintile (HVI, flood risk, PM2.5), weighted by population.
   an employment proxy, and Census 2011 / SHRUG joins via Bharatlas.
 - **Data confidence.** Per-cell completeness: OSM building cover vs Open
   Buildings, source resolution, and age, shown as hatch on any lens.
+
+## 22. Public transport coverage (UN SDG 11.2.1)
+
+**Question.** How many people can walk to public transport?
+
+**Method.** The UN-Habitat SDG 11.2.1 definition: convenient access means a
+low-capacity stop (bus stop, platform) within 500 m, or a high-capacity one
+(rail, metro, BRT station, bus terminal) within 1 km, walking. Distances run
+on the `osm_walk` cell graph (item 16). Stops come from
+`data/vectors/osm_transit_<city>.geojson`, binned to L7 cells in the frame.
+
+**User sees.** Walk to the nearest stop and nearest station per cell, share
+of residents covered (the league metric), people left out, stops per 10k.
+
+**Limits.** OSM bus-stop mapping is uneven (Delhi and Lucknow are under-
+mapped), and without GTFS this is coverage, not frequency: a stop served
+twice a day counts like one served every 5 minutes.
 
 ## How it is built
 

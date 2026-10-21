@@ -166,6 +166,25 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(shed[SIZE * 5 + 7]).toBeLessThanOrEqual(1);
     });
 
+    it('transit lens: SDG 11.2.1 coverage from a bus stop (500 m) and a station (1 km)', () => {
+        const stops = new Array(n).fill(0), rapid = new Array(n).fill(0);
+        stops[0] = 1;                                // a bus stop in the NW corner
+        rapid[n - 1] = 1;                            // a station in the SE corner
+        const f = L.frameFrom(codes, { 'population.population': pop, 'osm_transit.stops': stops, 'osm_transit.rapid': rapid });
+        const r = L._lenses.transit(f, {});
+        const m = r.columns.transit_m, k = r.columns.rapid_m;
+        expect(m[0]).toBe(0);
+        expect(m[1]).toBeCloseTo(1000 * f.grid.dx, 6);
+        expect(k[n - 1]).toBe(0);
+        const ok = i => m[i] <= 500 || k[i] <= 1000;
+        const want = pop.reduce((a, p, i) => a + (ok(i) ? p : 0), 0);
+        const total = pop.reduce((a, p) => a + p, 0);
+        expect(r.metric.value).toBeCloseTo(100 * want / total, 1);
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.metric.value).toBeLessThan(50);           // the middle of a 3 km block is out of reach
+        expect(L._lenses.transit(fr, {})).toBeNull();       // no transit points → no lens
+    });
+
     it('health lens counts the people beyond the catchment', () => {
         const r = L._lenses.health(fr, {});
         expect(r.stats[1].raw).toBeGreaterThan(0);
