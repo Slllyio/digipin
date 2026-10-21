@@ -87,7 +87,7 @@ const OvertureRelease = (() => {
     // and retries it once past the HTTP cache; a second failure is an error
     // MapLibre reports like any other tile failure.
     const RANGE_TIMEOUT_MS = 30000;
-    const _rangeStats = { reads: 0, timeouts: 0, retried: 0, recovered: 0, failed: 0 };
+    const _rangeStats = { reads: 0, pending: 0, timeouts: 0, retried: 0, recovered: 0, failed: 0, maxMs: 0, bytes: 0 };
 
     /**
      * Wrap `lib.FetchSource.prototype.getBytes` (the pmtiles library's HTTP
@@ -102,6 +102,8 @@ const OvertureRelease = (() => {
         Src.prototype.getBytes = function (offset, length, signal, etag) {
             const once = () => {
                 _rangeStats.reads++;
+                _rangeStats.pending++;
+                const t0 = Date.now();
                 const ctrl = new AbortController();
                 let timedOut = false;
                 const timer = setTimeout(() => { timedOut = true; ctrl.abort(); }, timeoutMs);
@@ -114,7 +116,13 @@ const OvertureRelease = (() => {
                 try { p = Promise.resolve(orig.call(this, offset, length, ctrl.signal, etag)); }
                 catch (e) { p = Promise.reject(e); }
                 return p
-                    .finally(() => { clearTimeout(timer); if (signal) signal.removeEventListener('abort', onAbort); })
+                    .finally(() => {
+                        clearTimeout(timer);
+                        if (signal) signal.removeEventListener('abort', onAbort);
+                        _rangeStats.pending--;
+                        _rangeStats.maxMs = Math.max(_rangeStats.maxMs, Date.now() - t0);
+                    })
+                    .then((r) => { if (r && r.data && r.data.byteLength) _rangeStats.bytes += r.data.byteLength; return r; })
                     .catch((e) => {
                         if (!timedOut) throw e;
                         _rangeStats.timeouts++;
@@ -141,7 +149,42 @@ const OvertureRelease = (() => {
     /** Counts of guarded reads, timeouts, retries, recoveries and failures. */
     function rangeStats() { return { ..._rangeStats }; }
 
-    return { resolve, base, url, current, latestFromListing, FALLBACK_RELEASE, guardRangeReads, rangeStats, RANGE_TIMEOUT_MS };
+    // ---- Protocol accounting --------------------------------------------
+    // The pmtiles protocol handler sits between MapLibre's tile requests and
+    // the range reads above. Counting its calls and settlements separately
+    // tells a read that never came back from a tile that was read and then
+    // lost between decompression and the map's worker.
+    const _protoStats = { calls: 0, pending: 0, resolved: 0, rejected: 0, maxMs: 0, empty: 0 };
+
+    /** Wrap a MapLibre protocol handler (`(request, controller) => Promise`) with call/settlement counts. */
+    function wrapProtocol(fn) {
+        if (typeof fn !== 'function') return fn;
+        return function (request, controller) {
+            _protoStats.calls++;
+            _protoStats.pending++;
+            const t0 = Date.now();
+            let p;
+            try { p = Promise.resolve(fn.call(this, request, controller)); }
+            catch (e) { p = Promise.reject(e); }
+            return p.then(
+                (r) => {
+                    _protoStats.pending--; _protoStats.resolved++;
+                    _protoStats.maxMs = Math.max(_protoStats.maxMs, Date.now() - t0);
+                    if (!r || !r.data || !r.data.byteLength) _protoStats.empty++;
+                    return r;
+                },
+                (e) => {
+                    _protoStats.pending--; _protoStats.rejected++;
+                    _protoStats.maxMs = Math.max(_protoStats.maxMs, Date.now() - t0);
+                    throw e;
+                });
+        };
+    }
+
+    /** Counts of protocol calls, pending, resolved (and empty), rejected, longest. */
+    function protocolStats() { return { ..._protoStats }; }
+
+    return { resolve, base, url, current, latestFromListing, FALLBACK_RELEASE, guardRangeReads, rangeStats, wrapProtocol, protocolStats, RANGE_TIMEOUT_MS };
 })();
 
 if (typeof window !== 'undefined') window.OvertureRelease = OvertureRelease;

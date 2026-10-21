@@ -131,3 +131,22 @@ describe('OvertureRelease.guardRangeReads', () => {
         expect(stats().retried).toBe(before.retried);
     });
 });
+
+describe('OvertureRelease.wrapProtocol', () => {
+    it('counts calls, settlements, empties and the longest call; passes results and errors through', async () => {
+        const before = OR.protocolStats();
+        const ok = OR.wrapProtocol(async () => ({ data: new Uint8Array(3) }));
+        const empty = OR.wrapProtocol(async () => ({ data: new Uint8Array(0) }));
+        const bad = OR.wrapProtocol(() => { throw new Error('boom'); });
+        expect((await ok({ url: 'pmtiles://x/1/2/3' }, new AbortController())).data.byteLength).toBe(3);
+        expect((await empty({ url: 'pmtiles://x/1/2/3' }, new AbortController())).data.byteLength).toBe(0);
+        await expect(bad({ url: 'pmtiles://x' }, new AbortController())).rejects.toThrow('boom');
+        const after = OR.protocolStats();
+        expect(after.calls - before.calls).toBe(3);
+        expect(after.resolved - before.resolved).toBe(2);
+        expect(after.rejected - before.rejected).toBe(1);
+        expect(after.empty - before.empty).toBe(1);
+        expect(after.pending).toBe(before.pending);
+        expect(OR.wrapProtocol(null)).toBeNull();
+    });
+});

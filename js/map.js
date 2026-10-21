@@ -28,10 +28,13 @@ const MapModule = (() => {
         // Add PMTiles protocol globally
         if (typeof maplibregl !== 'undefined' && typeof pmtiles !== 'undefined') {
             const protocol = new pmtiles.Protocol();
-            maplibregl.addProtocol('pmtiles', protocol.tile);
+            const guard = (typeof OvertureRelease !== 'undefined') ? OvertureRelease : null;
+            // Counted handler, so a tile that was read but never reached the
+            // map is visible (OvertureRelease.protocolStats()).
+            maplibregl.addProtocol('pmtiles', guard && guard.wrapProtocol ? guard.wrapProtocol(protocol.tile) : protocol.tile);
             // Cap and retry stalled range reads, or one hung directory read
             // silently empties every PMTiles source for the session.
-            if (typeof OvertureRelease !== 'undefined' && OvertureRelease.guardRangeReads) OvertureRelease.guardRangeReads(pmtiles);
+            if (guard && guard.guardRangeReads) guard.guardRangeReads(pmtiles);
         }
 
         const styleUrl = (typeof Theme !== 'undefined') ? Theme.mapStyleUrl()
