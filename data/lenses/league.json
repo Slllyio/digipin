@@ -137,6 +137,12 @@
      "value": 0,
      "unit": "months",
      "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 29.9,
+     "unit": "%",
+     "higherIs": "worse"
     }
    }
   },
@@ -275,6 +281,12 @@
      "value": 0,
      "unit": "months",
      "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 14.1,
+     "unit": "%",
+     "higherIs": "worse"
     }
    }
   },
@@ -406,6 +418,12 @@
      "label": "Months a year above 60 µg/m³ PM2.5",
      "value": 0,
      "unit": "months",
+     "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 6.7,
+     "unit": "%",
      "higherIs": "worse"
     }
    }
@@ -545,6 +563,12 @@
      "value": 0,
      "unit": "months",
      "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 33.1,
+     "unit": "%",
+     "higherIs": "worse"
     }
    }
   },
@@ -683,6 +707,12 @@
      "value": 11,
      "unit": "months",
      "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 26.7,
+     "unit": "%",
+     "higherIs": "worse"
     }
    }
   },
@@ -814,6 +844,12 @@
      "label": "Months a year above 60 µg/m³ PM2.5",
      "value": 0,
      "unit": "months",
+     "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 7.4,
+     "unit": "%",
      "higherIs": "worse"
     }
    }
@@ -953,6 +989,12 @@
      "value": 0,
      "unit": "months",
      "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 14.6,
+     "unit": "%",
+     "higherIs": "worse"
     }
    }
   },
@@ -1091,6 +1133,12 @@
      "value": 0,
      "unit": "months",
      "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 8.1,
+     "unit": "%",
+     "higherIs": "worse"
     }
    }
   },
@@ -1223,6 +1271,12 @@
      "value": 1,
      "unit": "months",
      "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 18.4,
+     "unit": "%",
+     "higherIs": "worse"
     }
    }
   },
@@ -1354,6 +1408,12 @@
      "label": "Months a year above 60 µg/m³ PM2.5",
      "value": 4,
      "unit": "months",
+     "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 35.2,
+     "unit": "%",
      "higherIs": "worse"
     }
    }
@@ -1493,6 +1553,12 @@
      "value": 5,
      "unit": "months",
      "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 25.9,
+     "unit": "%",
+     "higherIs": "worse"
     }
    }
   },
@@ -1631,6 +1697,12 @@
      "value": 1,
      "unit": "months",
      "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 26.4,
+     "unit": "%",
+     "higherIs": "worse"
     }
    }
   },
@@ -1768,6 +1840,12 @@
      "label": "Months a year above 60 µg/m³ PM2.5",
      "value": 0,
      "unit": "months",
+     "higherIs": "worse"
+    },
+    "monsoon": {
+     "label": "Arterial km prone to monsoon waterlogging",
+     "value": 17,
+     "unit": "%",
      "higherIs": "worse"
     }
    }

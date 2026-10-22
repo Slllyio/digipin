@@ -379,6 +379,24 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.roadsafety(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
+        const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
+        const league = { generated: '2026-10-22', cities: {
+            a: { label: 'A', metrics: { metro: m(40, 'better'), traffic: m(20, 'worse'), roadsafety: m(10, 'worse'), shade: m(50, 'worse') } },
+            b: { label: 'B', metrics: { metro: m(10, 'better'), traffic: m(60, 'worse'), roadsafety: m(30, 'worse'), shade: m(80, 'worse') } },
+            c: { label: 'C', metrics: { metro: m(25, 'better'), traffic: m(40, 'worse'), roadsafety: m(20, 'worse') } },
+        } };
+        const sc = L.scorecard(league);
+        expect(sc.cities.map(x => x.city)).toEqual(['a', 'c', 'b']);
+        expect(sc.cities[0].overall).toBe(100);
+        expect(sc.cities[2].overall).toBe(0);
+        expect(sc.cities[1].pillars.walk).toBeNull();                  // C has no shade metric
+        expect(sc.cities[1].scores.metro).toBe(50);
+        expect(sc.pillars.find(p => p.id === 'access').metrics).toEqual(['metro']);
+        expect(L.scorecardText(sc, 'c')).toMatch(/^C ranks 2 of 3/);
+        expect(L.scorecard({ cities: { a: league.cities.a } })).toBeNull();
+    });
+
     it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {
         const rp = new Array(n).fill(0), depth = new Array(n).fill(0);
         for (let r = 0; r < SIZE; r++) { rp[r * SIZE + 3] = 100; depth[r * SIZE + 3] = 1; }   // column 3 floods

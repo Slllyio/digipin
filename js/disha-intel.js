@@ -103,6 +103,8 @@ const DishaIntel = (() => {
         const q = String(question || '');
         if (!q.trim()) return null;
         const named = citiesIn(q, cities);
+        const mob = /\b(mobility|transport|transit|commut\w*|traffic)\b.{0,30}\b(scorecard|score|rank\w*|league|across (the |all )?cities|which city)\b|\b(scorecard|rank\w*|league|which city|best city|worst city|compare (all )?cities)\b.{0,40}\b(mobility|transport|transit|commut\w*|traffic|getting around)\b|\bmobility scorecard\b/i;
+        if (mob.test(q) && named.length < 2) return named.length ? { type: 'mobilityscore', city: named[0] } : { type: 'mobilityscore' };
         if (RE.dashboard.test(q)) return { type: 'dashboard' };
         if (RE.where.test(q)) {
             const w = RE.where.exec(q)[1].toLowerCase();
@@ -286,6 +288,12 @@ const DishaIntel = (() => {
                     if (!st) { el.textContent = 'Not enough data in this city to site that.'; return ''; }
                     r = { kind: 'siting', cityLabel: res.cityLabel, st, sources: res.sources.filter(x => st.sources.includes(x.id)) };
                 } else r = { ...res, only: intent.lens ? [intent.lens] : null };
+            } else if (intent.type === 'mobilityscore') {
+                if (typeof UrbanLenses === 'undefined' || !UrbanLenses.scorecard) { el.textContent = 'The lenses module did not load.'; return ''; }
+                const league = await fetch('data/lenses/league.json').then(x => (x.ok ? x.json() : null)).catch(() => null);
+                const sc = UrbanLenses.scorecard(league);
+                if (!sc) { el.textContent = 'The cross-city mobility scorecard is not available.'; return ''; }
+                r = { kind: 'mobilityscore', sc, city: intent.city || null };
             } else if (intent.type === 'dashboard') {
                 r = await UrbanInsights.cityDashboard(CellStore);
             } else if (intent.type === 'compare') {
@@ -359,6 +367,7 @@ const DishaIntel = (() => {
         }
         if (r.kind === 'roadwhatif') return RoadWhatIf.askText(r.a);
         if (r.kind === 'stationwhatif') return stationText(r);
+        if (r.kind === 'mobilityscore') return UrbanLenses.scorecardText(r.sc, r.city);
         if (r.kind === 'siting') return `${r.st.title} in ${r.cityLabel}: ${r.st.headline}\n${r.st.sites.map(x => `${x.rank}. ${x.code} (score ${x.score}): ${x.why}`).join('\n')}`;
         return r.kind === 'lenses' ? UrbanLenses.toText(r, r.only) : UrbanInsights.toText(r);
     }
@@ -446,6 +455,16 @@ const DishaIntel = (() => {
                 if (bits.length) el.appendChild(_el('div', 'disha-scan-hint', bits.join(' · ')));
                 if (r.only) el.appendChild(_el('div', 'disha-scan-hint', `Method: ${l.method}`));
             }
+            el.appendChild(_openButton('Open the lenses', 'lenses'));
+        } else if (r.kind === 'mobilityscore') {
+            head.textContent = `Mobility scorecard · ${r.sc.cities.length} cities`;
+            el.appendChild(head);
+            const me = r.city && r.sc.cities.find(x => x.city === r.city);
+            el.appendChild(_el('div', 'ui-headline', me ? `${me.label} ranks ${me.rank} of ${r.sc.cities.length} (${me.overall}/100); strongest on ${me.best.label.replace(/^./, ch => ch.toLowerCase())}, weakest on ${me.worst.label.replace(/^./, ch => ch.toLowerCase())}.`
+                : `${r.sc.cities[0].label} leads (${r.sc.cities[0].overall}/100); ${r.sc.cities[r.sc.cities.length - 1].label} trails (${r.sc.cities[r.sc.cities.length - 1].overall}/100).`));
+            r.sc.cities.forEach(x => el.appendChild(_el('div', `disha-scan-row${x.city === r.city ? ' is-current' : ''}`,
+                `${x.rank}. ${x.label} ${x.overall} · ${r.sc.pillars.map(p => `${p.label} ${x.pillars[p.id] ?? '–'}`).join(' · ')}`)));
+            el.appendChild(_el('div', 'disha-scan-hint', `Each measure scores 0–100 between the worst and best city; pillars average their measures (${r.sc.pillars.map(p => `${p.label}: ${p.metrics.map(id => r.sc.metrics[id].label.replace(/^./, ch => ch.toLowerCase())).join(', ')}`).join('; ')}).`));
             el.appendChild(_openButton('Open the lenses', 'lenses'));
         } else if (r.kind === 'stationwhatif') {
             head.textContent = `Metro station what-if · ${r.cityLabel}`;

@@ -68,6 +68,10 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('is the walk to the metro shaded in Delhi?')).toEqual({ type: 'lens', lens: 'shade', city: 'delhi' });
         expect(M('which walking routes to school have no shade')).toEqual({ type: 'lens', lens: 'shade' });
         expect(M('which busy corridors have no frequent bus')).toEqual({ type: 'lens', lens: 'busgap' });
+        expect(M('mobility scorecard')).toEqual({ type: 'mobilityscore' });
+        expect(M('which city has the best public transport')).toEqual({ type: 'mobilityscore' });
+        expect(M('how does Delhi rank on traffic across cities')).toEqual({ type: 'mobilityscore', city: 'delhi' });
+        expect(M('rank the cities')).toEqual({ type: 'dashboard' });
         expect(M('which children have to cross busy roads to walk to school')).toEqual({ type: 'lens', lens: 'roadsafety' });
         expect(M('pedestrian safety near schools in Delhi')).toEqual({ type: 'lens', lens: 'roadsafety', city: 'delhi' });
         expect(M('how much tree shade is there on the walk to school')).toEqual({ type: 'lens', lens: 'shade' });

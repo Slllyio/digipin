@@ -595,6 +595,71 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // ── mobility scorecard across the cities ────────────────────────────────
+
+    // Pillars over the lens league (data/lenses/league.json). EV charging is
+    // left out: open charger data covers too little of India's network to rank on.
+    const PILLARS = [
+        { id: 'access', label: 'Access', metrics: ['metro', 'transit', 'busgap', 'ambulance'] },
+        { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon'] },
+        { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise'] },
+        { id: 'walk', label: 'Walking', metrics: ['fifteen', 'shade', 'walk'] },
+    ];
+
+    /**
+     * Rank the cities on mobility. Each metric scores 0–100 between the worst
+     * and the best city (direction-aware); a pillar is the mean of its metrics,
+     * the overall score the mean of the pillars. Pure given the league.
+     */
+    function scorecard(league) {
+        const cities = league && league.cities ? Object.entries(league.cities) : [];
+        if (cities.length < 2) return null;
+        const meta = {}, score = {};
+        for (const p of PILLARS) {
+            for (const id of p.metrics) {
+                const vals = cities.map(([, c]) => c.metrics[id] && c.metrics[id].value).filter(_fin);
+                if (vals.length < 2) continue;
+                const m = cities.map(([, c]) => c.metrics[id]).find(Boolean);
+                const lo = Math.min(...vals), hi = Math.max(...vals);
+                meta[id] = { label: m.label, unit: m.unit, higherIs: m.higherIs, pillar: p.id };
+                for (const [name, c] of cities) {
+                    const v = c.metrics[id] && c.metrics[id].value;
+                    if (!_fin(v)) continue;
+                    const t = hi > lo ? (v - lo) / (hi - lo) : 0.5;
+                    (score[name] = score[name] || {})[id] = Math.round(100 * (m.higherIs === 'worse' ? 1 - t : t));
+                }
+            }
+        }
+        const rows = cities.map(([name, c]) => {
+            const sc = score[name] || {}, pillars = {};
+            for (const p of PILLARS) {
+                const xs = p.metrics.filter(id => sc[id] != null).map(id => sc[id]);
+                pillars[p.id] = xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) : null;
+            }
+            const ps = Object.values(pillars).filter(v => v != null);
+            const ids = Object.keys(sc).sort((a, b) => sc[b] - sc[a]);
+            const pick = (id) => id && { id, label: meta[id].label, value: c.metrics[id].value, unit: meta[id].unit, score: sc[id] };
+            return { city: name, label: c.label || name, overall: ps.length ? Math.round(ps.reduce((a, b) => a + b, 0) / ps.length) : null,
+                pillars, scores: sc, best: pick(ids[0]), worst: pick(ids[ids.length - 1]) };
+        }).filter(r => r.overall != null).sort((a, b) => b.overall - a.overall);
+        rows.forEach((r, i) => { r.rank = i + 1; });
+        return { generated: league.generated, pillars: PILLARS.map(p => ({ id: p.id, label: p.label, metrics: p.metrics.filter(id => meta[id]) })), metrics: meta, cities: rows };
+    }
+
+    /** The scorecard as plain text (DISHA answers, copy). */
+    function scorecardText(sc, city) {
+        if (!sc) return 'The cross-city mobility scorecard is not available.';
+        const fmt = (x) => `${x.value}${x.unit === '%' ? '%' : ` ${x.unit}`}`;
+        const lines = [`Mobility scorecard, ${sc.cities.length} cities (0–100, 100 = best of the cities on every measure; ${sc.pillars.map(p => p.label.toLowerCase()).join(', ')}):`];
+        for (const r of sc.cities) {
+            lines.push(`${r.rank}. ${r.label} ${r.overall}/100 · ${sc.pillars.map(p => `${p.label.toLowerCase()} ${r.pillars[p.id] ?? '–'}`).join(', ')}`
+                + ` · strongest: ${r.best.label.replace(/^./, ch => ch.toLowerCase())} (${fmt(r.best)}); weakest: ${r.worst.label.replace(/^./, ch => ch.toLowerCase())} (${fmt(r.worst)})`);
+        }
+        const me = city && sc.cities.find(r => r.city === city);
+        if (me) lines.unshift(`${me.label} ranks ${me.rank} of ${sc.cities.length} on mobility (${me.overall}/100).`);
+        return lines.join('\n');
+    }
+
     const ENTRIES = [
         { id: 'roadsafety', equity: true, title: 'Road danger on the school walk', icon: '🚸',
             question: 'Which children have to cross a fast, busy road to walk to school?',
@@ -658,7 +723,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, fatalRisk });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

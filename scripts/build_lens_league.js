@@ -36,6 +36,9 @@ for (const [file, name] of [['js/digipin.js', 'DigiPin'], ['js/analysis.js', 'An
         const res = await L.run(r.name, S, { hotspots: false });
         const row = { label: U.cityLabel(r.name), residents: res.residents, metrics: {} };
         for (const l of res.lenses) if (l.metric && l.metric.value != null) row.metrics[l.id] = l.metric;
+        const summ = path.join(ROOT, 'data/traffic', r.name, 'summary.json');
+        const rf = fs.existsSync(summ) && JSON.parse(fs.readFileSync(summ, 'utf-8')).road_flood;
+        if (rf && rf.pct_high_or_worse != null) row.metrics.monsoon = { label: 'Arterial km prone to monsoon waterlogging', value: rf.pct_high_or_worse, unit: '%', higherIs: 'worse' };
         out.cities[r.name] = row;
         process.stdout.write(`${r.name}: ${Object.keys(row.metrics).length} metrics, ${Date.now() - t} ms\n`);
     }

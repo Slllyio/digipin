@@ -322,6 +322,23 @@ open data, so this ranks exposure, not crashes. Children whose walk crosses a
 fast, busy arterial: Mumbai 34.5%, Bengaluru 28.8%, Kolkata 27%, Delhi 13.2%;
 schools within 250 m of one: Mumbai 59%, Bengaluru 38%, Delhi 24%.
 
+### 15. Mobility scorecard across the cities (`UrbanLenses.scorecard`)
+
+Built from the lens league (`data/lenses/league.json`, `node
+scripts/build_lens_league.js`), which now also carries `monsoon`: the share of
+modelled arterial km in High-or-worse waterlogging cells (road_flood). Each
+measure scores 0–100 between the worst and best of the 13 cities, direction-
+aware; four pillars average their measures (Access: metro, SDG 11.2.1
+transit, bus gaps, hospital at rush hour; Traffic flow: jammed arterials,
+monsoon roads; Safety & health: school-walk danger, road noise; Walking:
+15-minute essentials, shaded walks, junction density) and the overall score
+averages the pillars. EV charging is left out because open charger data is
+too partial to rank on. Scores are relative to these 13 cities, so small
+towns (Guna) score well on flow simply by having little traffic. It shows in
+the Lenses panel and answers "mobility scorecard" / "which city has the best
+public transport" in DISHA. October 2026: Hyderabad 67, Bhopal 65, Pune 62 …
+Mumbai 48, Kolkata 44, Ahmedabad 30.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

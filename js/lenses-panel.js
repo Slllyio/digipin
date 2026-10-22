@@ -113,6 +113,29 @@ const LensesPanel = (() => {
         return card;
     }
 
+    /** Mobility scorecard: every city on access, flow, safety and walking (0–100 between worst and best city). */
+    async function _mobilityCard(r) {
+        if (!UrbanLenses.scorecard) return null;
+        const sc = UrbanLenses.scorecard(await _loadLeague());
+        if (!sc) return null;
+        const me = sc.cities.find(x => x.city === r.city);
+        const card = _el('section', 'ui-lens');
+        card.dataset.lens = 'mobility';
+        card.appendChild(_el('div', 'ui-lens-title', `🚦 Mobility scorecard${me ? `: ${r.cityLabel} #${me.rank} of ${sc.cities.length}` : ''}`));
+        card.appendChild(_el('div', 'ui-muted', `0–100 between the worst and best city on each measure; ${sc.pillars.map(p => `${p.label.toLowerCase()} = ${p.metrics.map(id => sc.metrics[id].label.replace(/^./, ch => ch.toLowerCase())).join(', ')}`).join('; ')}.`));
+        const tbl = _el('div', 'ui-lens-area');
+        for (const x of sc.cities) {
+            const row = _el('div', 'ui-lens-arow');
+            row.appendChild(_el('span', null, `${x.rank}. ${x.label}`));
+            row.appendChild(_el('span', `ui-lens-num${x.rank === 1 ? ' is-good' : x.rank === sc.cities.length ? ' is-bad' : ''}${x.city === r.city ? ' is-current' : ''}`, `${x.overall}/100`));
+            row.appendChild(_el('span', 'ui-muted', sc.pillars.map(p => `${p.label} ${x.pillars[p.id] ?? '–'}`).join(' · ')));
+            tbl.appendChild(row);
+        }
+        card.appendChild(tbl);
+        if (me) card.appendChild(_el('div', 'ui-muted', `${r.cityLabel} is strongest on ${me.best.label.replace(/^./, ch => ch.toLowerCase())} and weakest on ${me.worst.label.replace(/^./, ch => ch.toLowerCase())}.`));
+        return card;
+    }
+
     /** The selected ~1 km cell read through every lens, against its city. */
     function _areaCard(r, prefix) {
         const prof = UrbanLenses.areaProfile(r, prefix);
@@ -355,6 +378,9 @@ const LensesPanel = (() => {
         const leagueSlot = _el('div');
         body.appendChild(leagueSlot);
         _leagueCard(r).then(c => { if (c && kit.isCurrent()) leagueSlot.replaceWith(c); }).catch(() => {});
+        const mobSlot = _el('div');
+        body.appendChild(mobSlot);
+        _mobilityCard(r).then(c => { if (c && kit.isCurrent()) mobSlot.replaceWith(c); }).catch(() => {});
         for (const l of r.lenses) body.appendChild(_card(kit, r, l));
         body.appendChild(_sitingCard(kit, r));
     }

@@ -2320,6 +2320,8 @@ body {
     transition: var(--transition);
     margin-bottom: 4px;
 }
+.disha-scan-row.is-current { font-weight: 600; }
+
 
 .disha-scan-row:hover {
     background: var(--accent-softer);
