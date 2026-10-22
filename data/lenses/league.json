@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 26.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 45,
@@ -159,6 +165,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 20.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 28.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -294,6 +306,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 13.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 46.3,
@@ -417,6 +435,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 21.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -552,6 +576,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 13.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 17.3,
@@ -684,6 +714,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 13.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 75.5,
@@ -807,6 +843,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 25.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 18.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -942,6 +984,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 14.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 49.4,
@@ -1074,6 +1122,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 14.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 21.5,
@@ -1200,6 +1254,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 27,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 13.4,
@@ -1323,6 +1383,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 12,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1458,6 +1524,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 34.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 4,
@@ -1587,6 +1659,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "roadsafety": {
+     "label": "Children whose walk to school crosses a fast, busy road",
+     "value": 24,
      "unit": "%",
      "higherIs": "worse"
     },

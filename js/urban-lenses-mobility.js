@@ -513,7 +513,97 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // ── road danger on the walk to school ───────────────────────────────────
+
+    const FAST_KMH = 40, BUSY_PCU = 600, SAFE_KMH = 30;
+
+    /** Pedestrian fatality risk when hit at `v` km/h (Rosén & Sander 2009 logistic). */
+    function fatalRisk(v) { return 1 / (1 + Math.exp(6.9 - 0.090 * v)); }
+
+    /**
+     * Max of `haz` along each cell's route down a walk tree (the cell itself
+     * included), pure given the tree.
+     */
+    function routeMax(tree, haz) {
+        const n = tree.dist.length, out = new Float64Array(n).fill(NaN), order = [];
+        for (let i = 0; i < n; i++) if (_fin(tree.dist[i])) order.push(i);
+        order.sort((a, b) => tree.dist[a] - tree.dist[b]);
+        for (const i of order) {
+            const p = tree.pred[i], h = _fin(haz[i]) ? haz[i] : 0;
+            out[i] = p >= 0 && _fin(out[p]) ? Math.max(out[p], h) : h;
+        }
+        return out;
+    }
+
+    function roadsafety(fr) {
+        const c = fr.cols, g = fr.grid, n = g.n, idx = _residents(fr), pop = c['population.population'];
+        const pcu = c['traffic_load.peak_pcu'], spd = c['traffic_load.peak_speed_kmh'], dly = c['traffic_load.delay_pct'];
+        const sch = c['emergency_access.schools'], hos = c['emergency_access.hospitals'];
+        if (!pcu || !spd || !sch || !sch.some(v => v > 0)) return null;
+        // Free-flow speed from the peak speed and its delay: the speed traffic reaches off-peak and after school.
+        const ffs = new Float64Array(n).fill(NaN), haz = new Float64Array(n).fill(NaN), danger = new Uint8Array(n);
+        for (let i = 0; i < n; i++) {
+            if (!(pcu[i] > 0) || !_fin(spd[i])) continue;
+            ffs[i] = Math.min(80, spd[i] * (1 + (dly && _fin(dly[i]) ? dly[i] : 0) / 100));
+            haz[i] = fatalRisk(ffs[i]);
+            if (ffs[i] >= FAST_KMH && pcu[i] >= BUSY_PCU) danger[i] = 1;
+        }
+        const near = g.offsets(ROAD_KM);
+        const beside = (i) => { for (const [a, b] of near) { const j = g.cellAt(i, a, b); if (j >= 0 && danger[j]) return true; } return false; };
+        const stats = [];
+        for (const [col, label] of [[sch, 'Schools'], [hos, 'Hospitals']]) {
+            if (!col) continue;
+            let all = 0, hit = 0;
+            for (let i = 0; i < n; i++) if (col[i] > 0) { all += col[i]; if (beside(i)) hit += col[i]; }
+            if (all) stats.push({ label: `${label} within ${ROAD_KM * 1000} m of a fast, busy arterial`, value: `${_people(hit)} of ${_people(all)} (${_round(100 * hit / all)}%)`, raw: hit });
+        }
+        // Children walk the network to the nearest school; a route that crosses a danger cell counts.
+        const tree = walkTree(fr, i => sch[i] > 0);
+        const kpct = c['demographics.children_pct'];
+        const kids = new Float64Array(n);
+        for (const i of idx) kids[i] = (pop[i] || 0) * (kpct && _fin(kpct[i]) ? kpct[i] / 100 : 0.25);
+        const reach = idx.filter(i => _fin(tree.dist[i]));
+        const kAll = _sumOver(kids, reach, () => true);
+        if (!kAll) return null;
+        const flag = new Float64Array(n);
+        for (let i = 0; i < n; i++) flag[i] = danger[i];
+        const crosses = routeMax(tree, flag), worst = routeMax(tree, haz);
+        const kHit = _sumOver(kids, reach, i => crosses[i] > 0);
+        const route = new Float64Array(n).fill(NaN);
+        for (const i of reach) route[i] = _round(100 * worst[i], 1);
+        const load = walkerLoad(tree, kids, reach);
+        const prio = new Float64Array(n).fill(NaN), order = [];
+        for (let i = 0; i < n; i++) if (danger[i] && load[i] > 0) { prio[i] = load[i] * haz[i]; order.push(i); }
+        order.sort((a, b) => prio[b] - prio[a]);
+        const picks = [];
+        for (const i of order) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 0.75)) continue;
+            picks.push(i);
+        }
+        const pct = _round(100 * kHit / kAll);
+        stats.unshift({ label: `Children within a ${Math.round(SHADE_KM * 12.5)}-minute walk of a school`, value: _people(kAll) },
+            { label: `… whose walk crosses or follows a road at ${FAST_KMH}+ km/h and ${BUSY_PCU}+ PCU/h`, value: `${_people(kHit)} (${pct}%)`, raw: Math.round(kHit) });
+        stats.push({ label: `Fatality risk if hit at ${SAFE_KMH} / ${FAST_KMH} / 60 km/h`, value: `${_round(100 * fatalRisk(SAFE_KMH), 1)}% / ${_round(100 * fatalRisk(FAST_KMH), 1)}% / ${_round(100 * fatalRisk(60))}%` });
+        picks.forEach((i, r) => stats.push({ label: `Safe crossing ${r + 1}: ${g.codes[i]}`, value: `${_people(load[i])} children walk through, road ${_round(ffs[i])} km/h free-flow, ${_people(pcu[i])} PCU/h at peak` }));
+        return {
+            columns: { walk_risk: route, crossing_priority: prio }, idx: reach, weightKey: 'walk_risk',
+            metric: { label: 'Children whose walk to school crosses a fast, busy road', value: pct, unit: '%', higherIs: 'worse' },
+            headline: `${pct}% of children within walking distance of a school (${_people(kHit)}) have to cross or walk along an arterial that runs at ${FAST_KMH}+ km/h with ${BUSY_PCU}+ vehicles an hour at peak`
+                + (picks.length ? `; the busiest such crossing carries ${_people(load[picks[0]])} children's walks, a first candidate for a signalised crossing and a ${SAFE_KMH} km/h school zone.` : '.'),
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'roadsafety', equity: true, title: 'Road danger on the school walk', icon: '🚸',
+            question: 'Which children have to cross a fast, busy road to walk to school?',
+            field: { key: 'walk_risk', label: 'Worst fatality risk if hit on the walk to school', unit: '%', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'crossing_priority', label: 'Children walking through × fatality risk (fix this crossing first)', unit: 'children', higherIs: 'worse', ramp: 'heat' }],
+            needs: ['traffic_load.peak_pcu', 'traffic_load.peak_speed_kmh', 'traffic_load.delay_pct', 'emergency_access.schools', 'emergency_access.hospitals',
+                'osm_walk.links', 'demographics.children_pct', 'wealth.rwi'],
+            method: `Each child (residents × WorldPop share under 15, 25% where missing) walks the OpenStreetMap walking network to the nearest school (Overture Maps), out to ${SHADE_KM} km. A road cell is dangerous when the demand model's arterial has a free-flow speed of ${FAST_KMH}+ km/h (peak speed × (1 + peak delay), the speed traffic reaches outside the rush) and ${BUSY_PCU}+ PCU in the peak hour. The map shows the worst fatality risk along each child's route if struck at that speed (Rosén & Sander 2009: about ${_round(100 * fatalRisk(SAFE_KMH))}% at ${SAFE_KMH} km/h, ${_round(100 * fatalRisk(60))}% at 60 km/h); crossing priority is children walking through × that risk. No crossings, signals, footbridges or crash records in the open data, so it ranks exposure, not crashes.`,
+            refs: 'Rosén & Sander 2009 (pedestrian fatality risk and impact speed); WHO 2023 Global status report on road safety; IRC SP 32-2023 (road safety for children near schools); Stockholm Declaration 2020 (30 km/h)' },
         { id: 'busgap', equity: true, title: 'Bus gaps on busy roads', icon: '🚌',
             question: 'Which busy commute corridors have no frequent bus?',
             field: { key: 'corridor_pcu', label: 'Peak-hour traffic on the nearest busy arterial', unit: 'PCU/h', higherIs: 'worse', ramp: 'heat' },
@@ -568,7 +658,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, fatalRisk });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

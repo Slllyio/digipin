@@ -307,6 +307,21 @@ cells (≥ 1.5 km apart) are listed as candidates for new or more frequent
 routes. Bengaluru: 4.9% of the 55.6 lakh people beside busy arterials lack a
 frequent bus; Delhi (stops only): 17.3% have no stop at all.
 
+### 14. Road danger on the school walk (Urban lens `roadsafety`)
+
+Every child (residents × WorldPop under-15 share) walks the OSM walking
+network to the nearest Overture school, out to 1.6 km. A road cell is
+dangerous when its modelled arterial reaches 40+ km/h at free flow (peak
+speed × (1 + peak delay)) and carries 600+ PCU in the peak hour. The map
+shows the worst pedestrian fatality risk along each child's route if struck
+at that speed (Rosén & Sander 2009 logistic: 1.5% at 30 km/h, 3.6% at 40,
+18% at 60); crossing priority is children walking through × that risk, and
+the top five cells (≥ 750 m apart) are listed for signalised crossings and
+30 km/h school zones. There are no crossings, footbridges or crash records in
+open data, so this ranks exposure, not crashes. Children whose walk crosses a
+fast, busy arterial: Mumbai 34.5%, Bengaluru 28.8%, Kolkata 27%, Delhi 13.2%;
+schools within 250 m of one: Mumbai 59%, Bengaluru 38%, Delhi 24%.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

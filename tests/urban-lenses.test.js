@@ -356,6 +356,29 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.busgap(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('roadsafety lens: children whose walk to school crosses a fast, busy arterial', () => {
+        // A fast arterial runs down the middle column; the school is on the west edge.
+        const mid = Math.floor(SIZE / 2);
+        const pcu = codes.map((_, i) => (i % SIZE === mid ? 2000 : 0));
+        const spd = codes.map((_, i) => (i % SIZE === mid ? 40 : 0));
+        const dly = codes.map((_, i) => (i % SIZE === mid ? 25 : 0));      // free flow 50 km/h
+        const sch = codes.map((_, i) => (i === 0 ? 1 : 0));
+        const hos = codes.map((_, i) => (i === mid ? 1 : 0));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'traffic_load.peak_pcu': pcu, 'traffic_load.peak_speed_kmh': spd,
+            'traffic_load.delay_pct': dly, 'emergency_access.schools': sch, 'emergency_access.hospitals': hos });
+        const r = L._lenses.roadsafety(f, {});
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.metric.value).toBeLessThan(100);                        // the west half reaches school without crossing
+        expect(r.columns.walk_risk[0]).toBe(0);
+        expect(r.stats.find(x => x.label.startsWith('Hospitals')).value).toMatch(/^1 of 1/);
+        expect(r.stats.some(x => x.label.startsWith('Safe crossing 1'))).toBe(true);
+        expect(L.fatalRisk(30)).toBeLessThan(L.fatalRisk(50));
+        expect(L.fatalRisk(50)).toBeCloseTo(0.083, 2);
+        const t = { dist: Float64Array.from([0, 1, 2]), pred: Int32Array.from([-1, 0, 1]) };
+        expect([...L.routeMax(t, [0, 5, 1])]).toEqual([0, 5, 5]);
+        expect(L._lenses.roadsafety(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {
         const rp = new Array(n).fill(0), depth = new Array(n).fill(0);
         for (let r = 0; r < SIZE; r++) { rp[r * SIZE + 3] = 100; depth[r * SIZE + 3] = 1; }   // column 3 floods
