@@ -69,6 +69,9 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('which walking routes to school have no shade')).toEqual({ type: 'lens', lens: 'shade' });
         expect(M('which busy corridors have no frequent bus')).toEqual({ type: 'lens', lens: 'busgap' });
         expect(M('mobility scorecard')).toEqual({ type: 'mobilityscore' });
+        expect(M('real estate scorecard')).toEqual({ type: 'mobilityscore', board: 'realestate' });
+        expect(M('how does Delhi rank on real estate across cities')).toEqual({ type: 'mobilityscore', board: 'realestate', city: 'delhi' });
+        expect(M('property report for this block')).toEqual({ type: 'propreport' });
         expect(M('how much exhaust do children breathe on the walk to school')).toEqual({ type: 'lens', lens: 'cleanwalk' });
         expect(M('how many jobs can people reach within 45 minutes by metro')).toEqual({ type: 'lens', lens: 'jobaccess' });
         expect(M('job accessibility by public transport in Delhi')).toEqual({ type: 'lens', lens: 'jobaccess', city: 'delhi' });

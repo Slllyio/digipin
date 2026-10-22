@@ -580,7 +580,7 @@ const UrbanLensesRealEstate = (() => {
         for (const i of cells) if (rlv[i] > cap) rlv[i] = cap;
         return {
             columns: { rlv, redev_gain: gain, tod_uplift: tod }, idx: cells, weightKey: 'rlv',
-            metric: { label: `Blocks where building pays at FAR ${far}`, value: _round(100 * viable / cells.length), unit: '%', higherIs: null },
+            metric: { label: 'Blocks where building pays at the base FAR', value: _round(100 * viable / cells.length), unit: '%', higherIs: null },
             headline: `At the city's base FAR of ${far}, new building pays in ${_round(100 * viable / cells.length)}% of blocks; ${med > 0 ? `the median plot is worth about ${_rs(med * 1e3)} per m² to a developer` : 'at the median price, apartment building does not cover its cost and margin, so plotted houses dominate'}${rough ? ' (prices here are rough placeholders)' : ''}.`,
             stats,
         };
@@ -626,6 +626,74 @@ const UrbanLensesRealEstate = (() => {
                 : `Upcoming stations put ${_people(people)} residents in ${newly.toLocaleString('en-IN')} blocks within a ${STATION_WALK}-minute walk of metro${worth > 0 ? `, adding about ₹${_people(worth / 1e7)} crore to existing property` : ''}; past openings drew no extra building nearby, so new homes there need a TOD FAR.`,
             stats,
         };
+    }
+
+    // ── real-estate scorecard across the cities ────────────────────────────
+    const RE_PILLARS = [
+        { id: 'momentum', label: 'Momentum', metrics: ['buildhot', 'redevelop', 'nextgrowth', 'metroboost'] },
+        { id: 'supply', label: 'Supply & affordability', metrics: ['housinggap', 'affordability', 'landvalue', 'vacant'] },
+        { id: 'returns', label: 'Development returns', metrics: ['feasible', 'undervalued', 'rentdemand'] },
+        { id: 'risk', label: 'Climate & encroachment', metrics: ['floodloss', 'encroach'] },
+    ];
+    // Direction for scoring where the lens metric is neutral on the map; housing pace counts up to 1.5× need.
+    const RE_DIR = { vacant: 'better', redevelop: 'better', nextgrowth: 'better', feasible: 'better', undervalued: 'better', rentdemand: 'better' };
+    const RE_CAP = { housinggap: 1.5 };
+
+    /**
+     * Rank the cities on real estate. Each measure scores by rank among the cities that have it (0 = worst,
+     * 100 = best), so one outlier cannot flatten the rest; pillars average their measures, the overall score
+     * the pillars. Pure given the league.
+     */
+    function reScorecard(league) {
+        const cities = league && league.cities ? Object.entries(league.cities) : [];
+        if (cities.length < 2) return null;
+        const meta = {}, score = {};
+        for (const p of RE_PILLARS) {
+            for (const id of p.metrics) {
+                const have = cities.filter(([, c]) => c.metrics[id] && _fin(c.metrics[id].value));
+                if (have.length < 3) continue;
+                const m = have[0][1].metrics[id], dir = RE_DIR[id] || m.higherIs;
+                if (dir !== 'better' && dir !== 'worse') continue;
+                meta[id] = { label: m.label, unit: m.unit, higherIs: dir, pillar: p.id };
+                const v = ([, c]) => Math.min(c.metrics[id].value, RE_CAP[id] ?? Infinity);
+                for (const x of have) {
+                    const below = have.filter(y => v(y) < v(x)).length, same = have.filter(y => v(y) === v(x)).length - 1;
+                    const t = (below + same / 2) / (have.length - 1);
+                    (score[x[0]] = score[x[0]] || {})[id] = Math.round(100 * (dir === 'worse' ? 1 - t : t));
+                }
+            }
+        }
+        const rows = cities.map(([name, c]) => {
+            const sc = score[name] || {}, pillars = {};
+            for (const p of RE_PILLARS) {
+                const xs = p.metrics.filter(id => sc[id] != null).map(id => sc[id]);
+                pillars[p.id] = xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) : null;
+            }
+            const ps = Object.values(pillars).filter(v => v != null);
+            const ids = Object.keys(sc).sort((a, b) => sc[b] - sc[a]);
+            const pick = (id) => id && { id, label: meta[id].label, value: c.metrics[id].value, unit: meta[id].unit, score: sc[id] };
+            return { city: name, label: c.label || name, overall: ps.length ? Math.round(ps.reduce((a, b) => a + b, 0) / ps.length) : null,
+                pillars, scores: sc, best: pick(ids[0]), worst: pick(ids[ids.length - 1]) };
+        }).filter(r => r.overall != null).sort((a, b) => b.overall - a.overall);
+        rows.forEach((r, i) => { r.rank = i + 1; });
+        return { kind: 'realestate', title: 'Real-estate scorecard', icon: '🏠', topic: 'real estate', generated: league.generated,
+            note: 'Each measure scores by rank among the cities (100 = best); pillars average their measures.',
+            pillars: RE_PILLARS.map(p => ({ id: p.id, label: p.label, metrics: p.metrics.filter(id => meta[id]) })), metrics: meta, cities: rows };
+    }
+
+    /** The real-estate scorecard as plain text (DISHA answers, copy). */
+    function reScorecardText(sc, city) {
+        if (!sc) return 'The cross-city real-estate scorecard is not available.';
+        const fmt = (x) => `${x.value}${x.unit === '%' ? '%' : ` ${x.unit}`}`;
+        const lc = (t) => t.replace(/^./, ch => ch.toLowerCase());
+        const lines = [`Real-estate scorecard, ${sc.cities.length} cities (rank-based, 100 = best; ${sc.pillars.map(p => p.label.toLowerCase()).join(', ')}):`];
+        for (const r of sc.cities) {
+            lines.push(`${r.rank}. ${r.label} ${r.overall}/100 · ${sc.pillars.map(p => `${p.label.toLowerCase()} ${r.pillars[p.id] ?? '–'}`).join(', ')}`
+                + ` · strongest: ${lc(r.best.label)} (${fmt(r.best)}); weakest: ${lc(r.worst.label)} (${fmt(r.worst)})`);
+        }
+        const me = city && sc.cities.find(r => r.city === city);
+        if (me) lines.unshift(`${me.label} ranks ${me.rank} of ${sc.cities.length} on real estate (${me.overall}/100).`);
+        return lines.join('\n');
     }
 
     // Features for "places like this": each block's percentile within its own city, so a match means the same
@@ -776,8 +844,8 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice }, 'tod');
-    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT };
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText }, 'tod');
+    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText };
 })();
 
 if (typeof window !== 'undefined') {

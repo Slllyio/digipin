@@ -116,13 +116,23 @@ const LensesPanel = (() => {
     /** Mobility scorecard: every city on access, flow, safety and walking (0–100 between worst and best city). */
     async function _mobilityCard(r) {
         if (!UrbanLenses.scorecard) return null;
-        const sc = UrbanLenses.scorecard(await _loadLeague());
+        return _scoreCard(r, UrbanLenses.scorecard(await _loadLeague()), '🚦', 'Mobility scorecard', 'mobility');
+    }
+
+    /** Real-estate scorecard: momentum, supply, returns and risk, ranked across the cities. */
+    async function _realEstateCard(r) {
+        if (!UrbanLenses.reScorecard) return null;
+        const sc = UrbanLenses.reScorecard(await _loadLeague());
+        return sc ? _scoreCard(r, sc, sc.icon, sc.title, 'realestate') : null;
+    }
+
+    function _scoreCard(r, sc, icon, title, key) {
         if (!sc) return null;
         const me = sc.cities.find(x => x.city === r.city);
         const card = _el('section', 'ui-lens');
-        card.dataset.lens = 'mobility';
-        card.appendChild(_el('div', 'ui-lens-title', `🚦 Mobility scorecard${me ? `: ${r.cityLabel} #${me.rank} of ${sc.cities.length}` : ''}`));
-        card.appendChild(_el('div', 'ui-muted', `0–100 between the worst and best city on each measure; ${sc.pillars.map(p => `${p.label.toLowerCase()} = ${p.metrics.map(id => sc.metrics[id].label.replace(/^./, ch => ch.toLowerCase())).join(', ')}`).join('; ')}.`));
+        card.dataset.lens = key;
+        card.appendChild(_el('div', 'ui-lens-title', `${icon} ${title}${me ? `: ${r.cityLabel} #${me.rank} of ${sc.cities.length}` : ''}`));
+        card.appendChild(_el('div', 'ui-muted', `${sc.note || '0–100 between the worst and best city on each measure;'} ${sc.pillars.map(p => `${p.label.toLowerCase()} = ${p.metrics.map(id => sc.metrics[id].label.replace(/^./, ch => ch.toLowerCase())).join(', ')}`).join('; ')}.`));
         const tbl = _el('div', 'ui-lens-area');
         for (const x of sc.cities) {
             const row = _el('div', 'ui-lens-arow');
@@ -381,6 +391,9 @@ const LensesPanel = (() => {
         const mobSlot = _el('div');
         body.appendChild(mobSlot);
         _mobilityCard(r).then(c => { if (c && kit.isCurrent()) mobSlot.replaceWith(c); }).catch(() => {});
+        const reSlot = _el('div');
+        body.appendChild(reSlot);
+        _realEstateCard(r).then(c => { if (c && kit.isCurrent()) reSlot.replaceWith(c); }).catch(() => {});
         for (const l of r.lenses) body.appendChild(_card(kit, r, l));
         body.appendChild(_sitingCard(kit, r));
     }

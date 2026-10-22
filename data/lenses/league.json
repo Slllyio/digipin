@@ -205,7 +205,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 2.7",
+     "label": "Blocks where building pays at the base FAR",
      "value": 95.9,
      "unit": "%",
      "higherIs": null
@@ -499,7 +499,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 2.25",
+     "label": "Blocks where building pays at the base FAR",
      "value": 99,
      "unit": "%",
      "higherIs": null
@@ -799,7 +799,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 1.5",
+     "label": "Blocks where building pays at the base FAR",
      "value": 66.9,
      "unit": "%",
      "higherIs": null
@@ -1093,7 +1093,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 2",
+     "label": "Blocks where building pays at the base FAR",
      "value": 98.4,
      "unit": "%",
      "higherIs": null
@@ -1393,7 +1393,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 2",
+     "label": "Blocks where building pays at the base FAR",
      "value": 85.6,
      "unit": "%",
      "higherIs": null
@@ -1687,7 +1687,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 1.5",
+     "label": "Blocks where building pays at the base FAR",
      "value": 1.5,
      "unit": "%",
      "higherIs": null
@@ -1975,7 +1975,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 3",
+     "label": "Blocks where building pays at the base FAR",
      "value": 99.1,
      "unit": "%",
      "higherIs": null
@@ -2275,7 +2275,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 1.5",
+     "label": "Blocks where building pays at the base FAR",
      "value": 49.4,
      "unit": "%",
      "higherIs": null
@@ -2575,7 +2575,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 2",
+     "label": "Blocks where building pays at the base FAR",
      "value": 90.3,
      "unit": "%",
      "higherIs": null
@@ -2863,7 +2863,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 2",
+     "label": "Blocks where building pays at the base FAR",
      "value": 84.8,
      "unit": "%",
      "higherIs": null
@@ -3157,7 +3157,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 2",
+     "label": "Blocks where building pays at the base FAR",
      "value": 92.7,
      "unit": "%",
      "higherIs": null
@@ -3451,7 +3451,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 2.5",
+     "label": "Blocks where building pays at the base FAR",
      "value": 100,
      "unit": "%",
      "higherIs": null
@@ -3751,7 +3751,7 @@
      "higherIs": "worse"
     },
     "feasible": {
-     "label": "Blocks where building pays at FAR 2",
+     "label": "Blocks where building pays at the base FAR",
      "value": 98.6,
      "unit": "%",
      "higherIs": null

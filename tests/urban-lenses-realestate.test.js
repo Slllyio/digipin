@@ -183,6 +183,21 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(L._lenses.metroboost(L.frameFrom(codes, base), {})).toBeNull();
     });
 
+    it('reScorecard(): rank-based pillars, capped housing pace, neutral metrics given a direction', () => {
+        const city = (label, hg, fl, fe) => ({ label, metrics: { housinggap: { label: 'pace', unit: '×', higherIs: 'better', value: hg },
+            floodloss: { label: 'flood', unit: '%/yr', higherIs: 'worse', value: fl }, feasible: { label: 'viable', unit: '%', higherIs: null, value: fe } } });
+        const sc = RE.reScorecard({ generated: 'x', cities: { a: city('A', 9.8, 0.1, 90), b: city('B', 1.6, 0.3, 50), c: city('C', 0.6, 0.2, 70) } });
+        expect(sc.kind).toBe('realestate');
+        const by = Object.fromEntries(sc.cities.map(r => [r.city, r]));
+        expect(by.a.scores.housinggap).toBe(by.b.scores.housinggap);          // both capped at 1.5×: a tie
+        expect(by.c.scores.housinggap).toBe(0);
+        expect(by.a.scores.floodloss).toBe(100);
+        expect(by.a.scores.feasible).toBe(100);                               // neutral on the map, better here
+        expect(sc.cities[0].city).toBe('a');
+        expect(RE.reScorecardText(sc, 'b')).toMatch(/^B ranks \d of 3 on real estate/);
+        expect(RE.reScorecard({ cities: { a: city('A', 1, 1, 1) } })).toBeNull();
+    });
+
     it('similarText(): reference profile and ranked matches', () => {
         const t = RE.similarText({ fromCity: 'delhi', toCity: 'pune', ref: { code: '39J4M98', profile: [{ label: 'land value', pct: 98 }, { label: 'density', pct: 50 }, { label: 'wealth', pct: 3 }] },
             matches: [{ code: '4FP4C73', similarity: 94, differs: [] }, { code: '4FP493F', similarity: 90, differs: ['more high-rise'] }] });
