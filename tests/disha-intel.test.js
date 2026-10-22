@@ -140,6 +140,12 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('where should the next metro station go in Pune')).toEqual({ type: 'stationwhatif', here: false, city: 'pune' });
         expect(M('how far is the nearest bus stop to walk to')).toEqual({ type: 'lens', lens: 'transit' });
         // Named-road what-ifs go to the road model; generic closures stay cell scenarios.
+        expect(M('When is the next satellite pass over here?')).toEqual({ type: 'satpasses' });
+        expect(M('when will sentinel-2 next image this ward')).toEqual({ type: 'satpasses', only: 'sentinel2' });
+        expect(M('next Landsat overpass?')).toEqual({ type: 'satpasses', only: 'landsat' });
+        expect(M('when is the next radar satellite pass for flood mapping')).toEqual({ type: 'satpasses', only: 'radar' });
+        expect(M('show the satellite map')).toBeNull();
+        expect(M('Is this a good place to pass the time?')).toBeNull();
         expect(M('What if MG Road closes at 6 pm in Pune?')).toEqual({ type: 'roadwhatif', action: 'close', road: 'MG Road', period: 'pm', city: 'pune' });
         expect(M('close AB Road')).toEqual({ type: 'roadwhatif', action: 'close', road: 'AB Road', period: 'am' });
         expect(M('what happens if we widen the Outer Ring Road')).toEqual({ type: 'roadwhatif', action: 'widen', road: 'Outer Ring Road', period: 'am' });

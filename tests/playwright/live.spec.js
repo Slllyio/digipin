@@ -282,5 +282,25 @@ test.describe('live feeds', () => {
     await expect(next).toContainText('Next pass: Sentinel-2A, Thu 22 Oct, 11:11 IST');
     await page.evaluate(() => SentinelImagery.detach());
   });
+
+  test('DISHA answers "when is the next satellite pass" from the orbit model', async ({ page }) => {
+    test.setTimeout(90_000);
+    const fixture = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'celestrak-gp.json'), 'utf8'));
+    await page.route(/celestrak\.org/, (r) => r.fulfill({ json: /GROUP=stations/.test(r.request().url()) ? [] : fixture, headers: CORS }));
+    await page.clock.setFixedTime(new Date('2026-10-21T20:00:00Z'));
+    await page.goto('/app.html');
+    await waitForApp(page);
+    await page.evaluate(() => {
+      const code = DigiPin.encode(28.6139, 77.209);
+      DISHAPanel.open({ code, center: { lat: 28.6139, lng: 77.209 } }, {});
+    });
+    await page.fill('#disha-input', 'When will Sentinel-2 next image this block?');
+    await page.press('#disha-input', 'Enter');
+    const msgs = page.locator('#disha-messages');
+    await expect(msgs).toContainText('Next satellite passes', { timeout: 20_000 });
+    await expect(msgs).toContainText('Sentinel-2A is next');
+    await expect(msgs).toContainText('Thu 22 Oct, 11:11 IST');
+    await shot(page, 'disha-sat-passes');
+  });
 });
 

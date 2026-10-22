@@ -143,6 +143,12 @@ const DISHATools = (() => {
             example: '[ACTION] runIsochrone code:39J-49L-L8T4',
         },
         {
+            name: 'satellitePasses', type: 'satellitepasses', kind: 'read', agentOnly: true,
+            args: { code: { type: 'digipin' }, kind: { type: 'enum', values: ['all', 'optical', 'radar'] } },
+            desc: 'When Earth-observation satellites (Sentinel-2, Landsat, Sentinel-1 radar, Resourcesat, Cartosat-3, Sentinel-3/5P) next pass over a cell or the map centre in the next 7 days, with the cloud forecast for each pass.',
+            example: '[ACTION] satellitePasses code:39J-49L-L8T4 kind:optical',
+        },
+        {
             name: 'finish', type: 'finish', kind: 'read', agentOnly: true,
             args: {},
             desc: 'Call when you have enough evidence to give the final answer.',

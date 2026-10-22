@@ -133,6 +133,11 @@ const DishaIntel = (() => {
         const q = String(question || '');
         if (!q.trim()) return null;
         const named = citiesIn(q, cities);
+        const sat = /\b(next|when|due|upcoming)\b.{0,40}\b(satellites?|sentinel[\s-]?[123]?|landsat|resourcesat|cartosat|imagery|overpass(es)?)\b|\bsatellite (pass(es)?|overpass(es)?)\b|\boverpass(es)?\b|\b(satellites?|sentinel[\s-]?[123]?|landsat)\b.{0,30}\b(next|pass(es)?|due|overhead)\b/i;
+        if (sat.test(q)) {
+            const only = /\b(radar|sar|sentinel[\s-]?1)\b/i.test(q) ? 'radar' : /\bsentinel[\s-]?2\b/i.test(q) ? 'sentinel2' : /\blandsat\b/i.test(q) ? 'landsat' : null;
+            return only ? { type: 'satpasses', only } : { type: 'satpasses' };
+        }
         const mob = /\b(mobility|transport|transit|commut\w*|traffic)\b.{0,30}\b(scorecard|score|rank\w*|league|across (the |all )?cities|which city)\b|\b(scorecard|rank\w*|league|which city|best city|worst city|compare (all )?cities)\b.{0,40}\b(mobility|transport|transit|commut\w*|traffic|getting around)\b|\bmobility scorecard\b/i;
         if (mob.test(q) && named.length < 2) return named.length ? { type: 'mobilityscore', city: named[0] } : { type: 'mobilityscore' };
         const re = /\b(real[\s-]?estate|property|housing|land)\b.{0,30}\b(scorecard|rank\w*|league|across (the |all )?cities|which city)\b|\b(scorecard|rank\w*|league|which city|best city|worst city|compare (all )?cities)\b.{0,40}\b(real[\s-]?estate|property|housing|invest\w*)\b|\breal[\s-]?estate scorecard\b/i;
@@ -296,6 +301,7 @@ const DishaIntel = (() => {
      */
     async function answer(el, intent, ctx = {}) {
         el.textContent = '';
+        if (intent.type === 'satpasses') return _satAnswer(el, intent, ctx.cell);
         if (typeof UrbanInsights === 'undefined' || typeof CellStore === 'undefined' || !CellStore.isEnabled()) {
             el.textContent = 'The per-cell data store is not loaded, so I cannot compute this yet.';
             return '';
@@ -498,6 +504,31 @@ const DishaIntel = (() => {
         const order = L.table.cells.map((c, i) => i).sort((a, b) => (d === 'up' ? L.table.columns.change[b] - L.table.columns.change[a] : L.table.columns.change[a] - L.table.columns.change[b]));
         const top = order.slice(0, 5).map(i => ({ code: L.table.cells[i], digipin: DigiPin.format(L.table.cells[i]), change: L.table.columns.change[i] }));
         return { kind: 'where', city, cityLabel: UrbanInsights.cityLabel(city), item: x, layer: L, dir: d, top };
+    }
+
+    /** Next Earth-observation satellite passes over the selected cell or the view (js/sat-passes.js). */
+    async function _satAnswer(el, intent, cell) {
+        if (typeof SatPasses === 'undefined' || !SatPasses.passes) { el.textContent = 'The satellite pass module did not load.'; return ''; }
+        const at = (cell && cell.center) || _viewCenter();
+        if (!at) { el.textContent = 'The map is not ready yet; try again in a moment.'; return ''; }
+        const re = { radar: /^Sentinel-1/, sentinel2: /^Sentinel-2/, landsat: /^Landsat/ }[intent.only] || null;
+        let rows;
+        try { rows = await SatPasses.passes(at.lat, at.lng, re); } catch {
+            el.textContent = 'CelesTrak (the orbit source) did not answer; try again in a moment.';
+            return '';
+        }
+        const where = cell && cell.code ? DigiPin.format(cell.code) : 'the map centre';
+        el.appendChild(_el('div', 'disha-scan-header', `Next satellite passes · ${where}`));
+        const now = Date.now();
+        if (!rows.length) {
+            el.appendChild(_el('div', 'ui-headline', 'No imaging pass in the next 7 days.'));
+        } else {
+            const f = rows[0];
+            el.appendChild(_el('div', 'ui-headline', `${f.label} is next, ${SatPasses.fmtIn(f.t - now)} (${SatPasses.fmtIst(f.t)})${f.outlook ? `: ${f.outlook.charAt(0).toLowerCase()}${f.outlook.slice(1)}` : ''}.`));
+            rows.slice(0, 8).forEach(r => el.appendChild(_el('div', 'disha-scan-row', `${r.label} · ${SatPasses.fmtIst(r.t)} · ${r.meta.res}${r.outlook ? ` · ${r.outlook}` : ''}`)));
+        }
+        el.appendChild(_el('div', 'disha-scan-hint', 'Orbits: CelesTrak elements, accurate to a few km. Clouds: Open-Meteo hourly forecast. Sentinel-1 and Cartosat follow acquisition plans, so their passes are chances. Turn on Satellites in Layers to see the tracks.'));
+        return `Next satellite passes over ${where}:\n${SatPasses.toText(rows, now)}`;
     }
 
     function _render(el, r) {

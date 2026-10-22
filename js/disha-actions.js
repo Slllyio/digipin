@@ -349,6 +349,23 @@ const DISHAActions = (() => {
             return { label: `${a.action === 'widen' ? 'Widened' : 'Closed'} ${a.road}`, observation: `roadWhatIf:\n${RW.askText(a)}` };
         },
 
+        async satellitepasses(p) {
+            const SP = _g('SatPasses');
+            if (!SP || !SP.passes) throw new Error('satellite passes unavailable');
+            let at;
+            if (p.code) at = _coords(p);
+            else {
+                const MM = _g('MapModule'), map = MM && MM.getMap && MM.getMap();
+                if (!map) throw new Error('could not resolve a location');
+                const c = map.getCenter();
+                at = { lat: c.lat, lng: c.lng };
+            }
+            const want = { optical: ['optical'], radar: ['sar'] }[p.kind];
+            const rows = (await SP.passes(at.lat, at.lng)).filter(r => !want || want.includes(r.meta.kind));
+            const where = p.code ? _norm(p.code) : 'the map centre';
+            return { label: `Satellite passes over ${where}`, observation: `satellitePasses ${where}:\n${SP.toText(rows)}` };
+        },
+
         finish() { return { label: 'done', observation: '' }; },
     };
 

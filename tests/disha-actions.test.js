@@ -203,6 +203,31 @@ describe('DISHAActions.executeAgentActions (agent tools, async)', () => {
         expect(res[0]).toMatchObject({ type: 'runisochrone', ok: true });
         expect(shown).toEqual([22.7, 75.8]);
     });
+
+    it('satellitePasses lists the next passes over a cell, filtered by kind', async () => {
+        const SP = globalThis.SatPasses;
+        const realPasses = SP.passes;
+        let asked = null;
+        const t = Date.now() + 26 * 3600e3;
+        SP.passes = async (lat, lng) => {
+            asked = [lat, lng];
+            return [
+                { label: 'Sentinel-2B', meta: SP.metaFor('SENTINEL-2B'), t, offsetKm: 40.2, covers: 'all', outlook: 'Likely clear (12% cloud forecast)' },
+                { label: 'Sentinel-1A', meta: SP.metaFor('SENTINEL-1A'), t: t + 3600e3, offsetKm: 110, covers: 'part', outlook: 'Radar: cloud does not matter' },
+            ];
+        };
+        try {
+            const res = await DA.executeAgentActions([{ type: 'satellitepasses', params: { code: '39J49LL8T4', kind: 'optical' } }]);
+            expect(res[0]).toMatchObject({ type: 'satellitepasses', ok: true });
+            expect(asked).toEqual([22.7, 75.8]);
+            expect(res[0].observation).toMatch(/Sentinel-2B \(10 m, 290 km swath\): .* IST, in 26 h; 40 km off the ground track, whole view covered; Likely clear/);
+            expect(res[0].observation).not.toMatch(/Sentinel-1A/);
+            const all = await DA.executeAgentActions([{ type: 'satellitepasses', params: { code: '39J49LL8T4' } }]);
+            expect(all[0].observation).toMatch(/Sentinel-1A .*swath edge; Radar/);
+        } finally {
+            SP.passes = realPasses;
+        }
+    });
 });
 
 describe('DISHAActions trafficHour', () => {
