@@ -91,6 +91,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('where should I invest in Delhi')).toEqual({ type: 'lens', lens: 'undervalued', city: 'delhi' });
         expect(M('which old colonies are being redeveloped in Delhi')).toEqual({ type: 'lens', lens: 'redevelop', city: 'delhi' });
         expect(M('where will the city grow next')).toEqual({ type: 'lens', lens: 'nextgrowth' });
+        expect(M('where is the housing shortage in Delhi')).toEqual({ type: 'lens', lens: 'housinggap', city: 'delhi' });
         expect(M('show projected built-up by 2030 in Pune')).toEqual({ type: 'lens', lens: 'nextgrowth', city: 'pune' });
         expect(M('where do trucks run through neighbourhoods in Pune')).toEqual({ type: 'lens', lens: 'freight', city: 'pune' });
         expect(M('what if 20% of car trips moved to the metro in Delhi')).toEqual({ type: 'modeshift', pct: 20, scope: 'stations', period: 'am', city: 'delhi' });

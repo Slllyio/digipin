@@ -192,6 +192,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 1.8,
+     "unit": "×",
+     "higherIs": "better"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 18.4,
@@ -461,6 +467,12 @@
      "value": 9.2,
      "unit": "km²",
      "higherIs": null
+    },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 2.17,
+     "unit": "×",
+     "higherIs": "better"
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -732,6 +744,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 2.18,
+     "unit": "×",
+     "higherIs": "better"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 8.8,
@@ -995,6 +1013,12 @@
      "value": 2.3,
      "unit": "km²",
      "higherIs": null
+    },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 3.43,
+     "unit": "×",
+     "higherIs": "better"
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -1266,6 +1290,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 1.54,
+     "unit": "×",
+     "higherIs": "better"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 12.3,
@@ -1530,6 +1560,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 6.74,
+     "unit": "×",
+     "higherIs": "better"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 2.9,
@@ -1793,6 +1829,12 @@
      "value": 5.7,
      "unit": "km²",
      "higherIs": null
+    },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 7.06,
+     "unit": "×",
+     "higherIs": "better"
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -2064,6 +2106,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 3.34,
+     "unit": "×",
+     "higherIs": "better"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 14.4,
@@ -2334,6 +2382,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 2.42,
+     "unit": "×",
+     "higherIs": "better"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 9.6,
@@ -2598,6 +2652,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 0.65,
+     "unit": "×",
+     "higherIs": "better"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 36.3,
@@ -2861,6 +2921,12 @@
      "value": 2.1,
      "unit": "km²",
      "higherIs": null
+    },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 2.69,
+     "unit": "×",
+     "higherIs": "better"
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -3132,6 +3198,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 0.62,
+     "unit": "×",
+     "higherIs": "better"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 35.1,
@@ -3401,6 +3473,12 @@
      "value": 4,
      "unit": "km²",
      "higherIs": null
+    },
+    "housinggap": {
+     "label": "Building pace vs projected housing need to 2030",
+     "value": 9.82,
+     "unit": "×",
+     "higherIs": "better"
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",

@@ -8,13 +8,14 @@
 const UrbanLensesRealEstate = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people, _sumOver, _residents, wquantile } = UrbanLenses._kit;
+    const { _fin, _round, _people, _sumOver, _residents, wquantile, within } = UrbanLenses._kit;
     const prank = UrbanLenses.prank;
 
     const STATION_WALK = 10, SPACING_KM = 1.5, TOP = 5;
     const HOME_M2 = 60, RESI_EFF = 0.6, DEFAULT_FAR = 2.0;
     const GAP_VALUE = 0.8, GAP_WEALTH = 0.4, POCKET_POP = 200;
     const UPSIDE_MIN = 0.25, MAX_VALUE_RANK = 0.6;
+    const COUNT_BIAS = 1.5, NET_EFF = 0.7, HH_SIZE = 4.3, HOME_FLOOR = 50, RESI_SHARE = 0.75, BUILD_YEARS = 7, YEARS_TO_2030 = 7, LOCAL_KM = 1, GAP_MIN = 200;
     const OLD_YEAR = 2000, OLD_1975 = 20, REDEV_M = 1.5, TOWER_M = 15, FRONTIER = 10;
     // Typical base FAR per city, as pipeline/realestate/supply.py BASE_FAR.
     const BASE_FAR = { delhi: 2.0, mumbai: 2.5, bengaluru: 2.25, chennai: 2.0, hyderabad: 3.0, pune: 2.0, ahmedabad: 2.7,
@@ -350,6 +351,54 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    /** Housing gap 2030: projected new households within ~1 km against homes at the 2016–23 building pace, and vacant land to close it. */
+    function housinggap(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], p30 = c['population.projected_2030'];
+        const nf = c['re_supply.new_floor_m2'];
+        if (!pop || !p30 || !nf) return null;
+        const vh = c['re_supply.vacant_ha'], nr = c['building_dynamics.nonres_pct'];
+        const need = new Float64Array(n).fill(NaN), pace = new Float64Array(n).fill(NaN), land = new Float64Array(n).fill(NaN);
+        let needT = 0, paceT = 0;
+        for (let i = 0; i < n; i++) {
+            if (!_fin(pop[i]) || !_fin(p30[i])) continue;
+            need[i] = Math.max(0, p30[i] - pop[i]) / HH_SIZE;
+            const res = nr && _fin(nr[i]) ? 1 - nr[i] / 100 : RESI_SHARE;
+            pace[i] = (_fin(nf[i]) ? nf[i] : 0) / COUNT_BIAS * NET_EFF / BUILD_YEARS * YEARS_TO_2030 * res / HOME_FLOOR;
+            land[i] = vh && vh[i] > 0 ? vh[i] * 1e4 * DEFAULT_FAR * RESI_EFF / HOME_M2 : 0;
+            needT += need[i]; paceT += pace[i];
+        }
+        const N = within(g, need, LOCAL_KM), P = within(g, pace, LOCAL_KM), V = within(g, land, LOCAL_KM);
+        const gap = new Float64Array(n).fill(NaN), cells = [];
+        for (let i = 0; i < n; i++) {
+            if (!_fin(need[i])) continue;
+            cells.push(i);
+            gap[i] = N[i] - P[i];
+        }
+        if (cells.length < 10) return null;
+        const short = cells.filter(i => gap[i] >= GAP_MIN);
+        const fixable = short.filter(i => V[i] >= gap[i]).length;
+        const extra = cells.reduce((a, i) => a + Math.max(0, p30[i] - pop[i]), 0);
+        const ratio = _round(paceT / (needT || 1), 2);
+        const stats = [
+            { label: 'Extra residents projected 2020→2030 (GHSL)', value: `${_people(extra)} (${_people(needT)} households at ${HH_SIZE} a home)` },
+            { label: 'Homes the 2016–23 building pace adds by 2030', value: `about ${_people(paceT)} (${HOME_FLOOR} m² each, net of walls, stairs and non-residential space)` },
+            { label: 'Building pace vs projected need, city-wide', value: `${ratio}×`, raw: ratio },
+            { label: `Blocks where need within ${LOCAL_KM} km outruns supply by ${GAP_MIN}+ homes`, value: `${short.length}` },
+            { label: '… of them with enough vacant land nearby to close the gap at base FAR', value: `${fixable}` },
+        ];
+        const col = new Float64Array(n).fill(NaN);
+        for (const i of cells) col[i] = Math.max(-2000, Math.min(5000, gap[i]));
+        spaced(g, short, gap).forEach((i, k) => stats.push({ label: `Shortfall pocket ${k + 1}: ${g.codes[i]}`, value: `about ${_people(gap[i])} homes short within ${LOCAL_KM} km${V[i] > 0 ? `; vacant land nearby for ${_people(V[i])}` : '; no vacant land nearby'}` }));
+        return {
+            columns: { housing_gap: col }, idx: cells, weightKey: 'housing_gap',
+            metric: { label: 'Building pace vs projected housing need to 2030', value: ratio, unit: '×', higherIs: 'better' },
+            headline: ratio >= 1
+                ? `At the 2016–23 pace the city builds about ${ratio}× the homes its projected growth needs by 2030, but ${short.length} blocks still face local shortfalls where growth lands away from construction.`
+                : `At the 2016–23 pace the city builds only ${ratio}× the homes its projected growth needs by 2030: a shortfall of about ${_people(needT - paceT)} homes, concentrated in ${short.length} blocks.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'landvalue', equity: false, title: 'Land value', icon: '🏷️',
             question: 'Where is land dearest and cheapest, and what drives the difference?',
@@ -402,9 +451,15 @@ const UrbanLensesRealEstate = (() => {
             needs: ['building_dynamics.proj_gain_pp', 'building_dynamics.dw_built_change', 'building_dynamics.accel', 'rail_access.metro_walk_min', 'land_value.prem_risk_pct'],
             method: `The growth signal adds GHSL's projected built-up gain 2020→2030 (percentage points of the block), half of Dynamic World's rise in built-area probability from 2023 to 2026 (Sentinel-2, after the last Open Buildings year) and up to 4 points for building faster than the city's median block in 2020–23 than in 2016–20 (Open Buildings yearly counts). Frontier blocks score ${FRONTIER} or more. GHSL projections extend past trends; they do not know master plans or new roads.`,
             refs: 'GHSL P2023A built-up projections; Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
+        { id: 'housinggap', equity: false, title: 'Housing gap 2030', icon: '🏘️',
+            question: 'Where will population growth to 2030 outrun the homes being built, and is there land to close the gap?',
+            field: { key: 'housing_gap', label: 'Homes short by 2030 within ~1 km (need − building pace)', unit: 'homes', higherIs: 'worse', ramp: 'diverging' },
+            needs: ['population.population', 'population.projected_2030', 're_supply.new_floor_m2', 're_supply.vacant_ha', 'building_dynamics.nonres_pct'],
+            method: `Need is GHSL's projected population gain 2020→2030 divided by ${HH_SIZE} people a household (urban India, NFHS-5). Supply carries the 2016–23 floor area added (Open Buildings 2.5D Temporal) forward ${YEARS_TO_2030} years, deflates the Open Buildings count by ${COUNT_BIAS}× (it runs above the v3 footprint count) and keeps ${NET_EFF * 100}% of gross floor area as usable homes, keeps the residential share (GHSL non-residential share, else ${RESI_SHARE * 100}%) and divides by ${HOME_FLOOR} m² a home. Both are summed within ${LOCAL_KM} km, since people move locally. Vacant land capacity is vacant buildable land at a base FAR of ${DEFAULT_FAR}, 60% residential and ${HOME_M2} m² a home. GHSL projections extend past trends, construction pace from satellites misses interiors and upper floors under construction, and household size varies by income: read the pattern, not exact counts.`,
+            refs: 'GHSL P2023A population projections; Google Open Buildings 2.5D Temporal; NFHS-5 (household size); MoHUA Technical Group on Urban Housing Shortage (2012)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth }, { landRate: rate, RE_BASE_FAR: BASE_FAR }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap }, { landRate: rate, RE_BASE_FAR: BASE_FAR }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS };
 })();
 

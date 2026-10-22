@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -100,5 +100,17 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.growth_score[0]).toBe(40);
         expect(r.stats.find(s => s.label.startsWith('Growth frontier 1')).label).toContain(codes[0]);
         expect(r.stats.some(s => s.label.startsWith('Growth frontier 2'))).toBe(false);
+    });
+
+    it('housinggap: projected households against the building pace', () => {
+        const p30 = pop.map((p, i) => (i < SIZE ? p + 4300 : p));         // +1,000 households on the top row
+        const nf = codes.map((_, i) => (i === n - 1 ? 1.5 * 50 / 0.7 * 100 : 0)); // 100 homes, bottom corner
+        const f = L.frameFrom(codes, { ...base, 'population.projected_2030': p30, 're_supply.new_floor_m2': nf });
+        const r = L._lenses.housinggap(f, {});
+        expect(r.metric.value).toBe(0.01);                                    // 75 homes for 12,000 households, rounded
+        expect(r.headline).toMatch(/only/);
+        expect(r.columns.housing_gap[0]).toBeGreaterThan(200);
+        expect(r.stats.find(s => s.label.startsWith('Shortfall pocket 1')).value).toMatch(/no vacant land/);
+        expect(L._lenses.housinggap(L.frameFrom(codes, base), {})).toBeNull();
     });
 });
