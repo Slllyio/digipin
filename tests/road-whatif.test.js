@@ -1,0 +1,85 @@
+import { describe, it, expect } from 'vitest';
+
+// RoadWhatIf is exposed on globalThis by tests/setup.js. The core routing
+// engine is pure; these run it on a toy network.
+const RW = globalThis.RoadWhatIf;
+const C = RW.core;
+
+// Nodes: 0 W (75.80,22.70), 1 E (75.82,22.70), 2 N-mid (75.81,22.71).
+// Road 0: W–E direct (2 km). Roads 1, 2: W–N, N–E detour.
+function model() {
+    return {
+        nodes: [75.80, 22.70, 75.82, 22.70, 75.81, 22.71],
+        pieces: { a: [0, 0, 2], b: [1, 2, 1], len: [2000, 1500, 1500], ffs: [45, 35, 35], cap: [1800, 1500, 1500], f: [0, 1, 2] },
+        zones: { node: [0, 1], pop: [10000, 0] },
+        od: { origins: [0], counts: [1], d: [1], v: [20000] },
+        pop_cells: [75.805, 22.7055, 500, 75.80, 22.69, 300],
+        params: { period_share: { am: 0.09, pm: 0.088 }, increments: [0.4, 0.3, 0.2, 0.1], bpr: [0.15, 4],
+            max_slowdown: 4, los_bands: [0.35, 0.55, 0.75, 0.9, 1.0], access_min: 2,
+            new_road: { highway: 'primary', ffs: 45, cap: 1800 } },
+    };
+}
+
+describe('RoadWhatIf core', () => {
+    it('loads the commute on the quickest road, then spills onto the detour as it fills', () => {
+        const m = model(), g = C.build(m);
+        const r = C.assign(g, m, 'am');
+        const vc = C.featureVC(g, r);
+        expect(r.served).toBeCloseTo(20000 * 0.09, 6);
+        expect(vc.get(0)).toBeGreaterThan(0.5);                // direct road carries most
+        expect(r.unserved).toBe(0);
+    });
+    it('reverses the matrix in the evening', () => {
+        const m = model(), g = C.build(m);
+        const am = C.assign(g, m, 'am'), pm = C.assign(g, m, 'pm');
+        expect(am.flow[0]).toBeGreaterThan(0);                  // link 0: W→E
+        expect(am.flow[1]).toBe(0);
+        expect(pm.flow[1]).toBeGreaterThan(0);                  // link 1: E→W
+        expect(pm.flow[0]).toBe(0);
+    });
+    it('closing the direct road pushes traffic onto the detour and names who is affected', () => {
+        const m = model();
+        const out = C.run(m, 'am', { closed: [0] });
+        const res = out.result;
+        const d1 = res.roads.find(r => r.f === 1);
+        expect(d1.delta).toBeGreaterThan(0.1);
+        expect(res.roads.find(r => r.f === 0).closed).toBe(true);
+        expect(res.worse).toBeGreaterThanOrEqual(1);
+        expect(res.residentsNearWorse).toBe(500);               // only the cell beside the detour
+        expect(res.vehHours.delta).toBeGreaterThan(0);
+        expect(res.tripMin.scen).toBeGreaterThan(res.tripMin.base);
+        expect(RW.headline(res, 'am')).toMatch(/more time spent driving in the morning peak/);
+    });
+    it('reports trips cut off when a closure disconnects homes', () => {
+        const m = model();
+        const res = C.run(m, 'am', { closed: [0, 1] }).result;
+        expect(res.unservedPcu).toBeCloseTo(20000 * 0.09, 6);
+        expect(RW.headline(res, 'am')).toMatch(/cuts off about 1,800 vehicle trips/);
+    });
+    it('widening and new links add capacity and relieve the corridor', () => {
+        const m = model();
+        const base = C.run(m, 'am', {});
+        const wid = C.run(m, 'am', { widened: { 0: 1.5 } }, base.base).result;
+        expect(wid.roads.find(r => r.f === 0).delta).toBeLessThan(0);
+        expect(C.newLink(m, 0, 1).len).toBeGreaterThan(2000);    // straight line × 1.1
+        const link = C.newLink(m, 0, 1, 0.9);                    // a shorter flyover
+        const add = C.run(m, 'am', { added: [link] }, base.base).result;
+        expect(add.roads.find(r => r.f === -1).scen).toBeGreaterThan(0);
+        expect(add.vehHours.delta).toBeLessThan(0);
+    });
+    it('baseline cache gives the same answer as a fresh run', () => {
+        const m = model();
+        const fresh = C.run(m, 'am', { closed: [0] }).result;
+        const base = C.run(m, 'am', {});
+        const cached = C.run(m, 'am', { closed: [0] }, base.base).result;
+        expect(cached.vehHours.delta).toBeCloseTo(fresh.vehHours.delta, 9);
+    });
+    it('snaps to the nearest node and colours changes', () => {
+        expect(C.nearestNode(model(), 75.8101, 22.7099).node).toBe(2);
+        expect(RW.diffColor(0.35)).toBe('#b30000');
+        expect(RW.diffColor(-0.15)).toBe('#6baed6');
+        expect(RW.diffColor(0.05)).toBeNull();
+        expect(RW.editsFrom({ closed: [3], widened: [4], added: [{ link: { a: 0, b: 1 } }] }))
+            .toEqual({ closed: [3], widened: { 4: 1.5 }, added: [{ a: 0, b: 1 }] });
+    });
+});

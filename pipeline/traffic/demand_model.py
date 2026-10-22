@@ -25,6 +25,7 @@ shared vertex so crossings join up (the endpoint-only graph in
 road_network.py leaves ~40 % of way ends dangling).
 
 Outputs (both directions of a road are modelled; the busier one is reported):
+    whatif_model.json  compact network + commute matrix for js/road-whatif.js
     road_los.geojson   gains pcu_peak, vc_peak, los_peak, speed_peak, pcu_daily
     data/cells         dataset ``traffic_load`` (L7): peak flow, V/C, LOS,
                        speed, delay, daily vehicle-km per cell
@@ -61,6 +62,8 @@ BETA_PER_MIN = 0.10          # gravity deterrence; mean trip ≈ 10–15 min (5�
 INCREMENTS = (0.4, 0.3, 0.2, 0.1)
 BPR_A, BPR_B = 0.15, 4
 MID_BETA = 0.15              # midday errands are shorter (mean ≈ 7 min)
+WHATIF_TOP = 40              # what-if matrix: each origin's top destinations kept exactly…
+WHATIF_BUCKET_LEVEL = 5      # …the rest pooled per ~4 km DIGIPIN parent
 MAX_SLOWDOWN = 4.0           # reported speeds floor at a quarter of free flow (BPR explodes past V/C ≈ 2)
 SNAP_M = 25.0                # join a dangling road end to a road vertex this close
 
@@ -412,43 +415,127 @@ def assign(net: Network, nodes, od, log=print, label=""):
     return flow.tolist(), times
 
 
-def run_periods(net: Network, zs: dict, log=print):
+def matrices(net: Network, zs: dict):
+    """Zone keys, network nodes, populations and the daily PCU work/errand matrices."""
+    import numpy as np
+    conn = _connect(net, zs)
+    keys = list(conn)
+    nodes = np.array([conn[k] for k in keys], dtype=int)
+    pop = np.array([zs[k]["pop"] for k in keys])
+    attr = np.array([zs[k]["attr"] for k in keys])
+    prod = np.where(pop >= 50, pop, 0) * TRIPS_PER_CAPITA * PCU_PER_TRIP
+    t = skim(net, nodes)
+    same = nodes[:, None] == nodes[None, :]
+    return {"keys": keys, "nodes": nodes, "pop": pop, "prod": prod,
+            "work": gravity_od(prod, attr, t, same),
+            "errand": gravity_od(prod, attr, t, same, MID_BETA)}
+
+
+def run_periods(net: Network, zs: dict, log=print, mats=None):
     """Assign the three daily patterns. Returns ({period: (flow, times)}, n_orig, n_conn).
 
     am   homes → jobs/activity (gravity, β = BETA_PER_MIN) at the 09:00 hour volume
     pm   the morning matrix reversed (people going home) at the 18:00 volume
     mid  shorter errands both ways (β = MID_BETA) at the 13:00 volume
     """
-    import numpy as np
-    conn = _connect(net, zs)
-    keys = list(conn)
-    nodes = np.array([conn[k] for k in keys])
-    pop = np.array([zs[k]["pop"] for k in keys])
-    attr = np.array([zs[k]["attr"] for k in keys])
-    prod = np.where(pop >= 50, pop, 0) * TRIPS_PER_CAPITA * PCU_PER_TRIP
-    t = skim(net, nodes)
-    same = nodes[:, None] == nodes[None, :]
-    work = gravity_od(prod, attr, t, same)
-    errand = gravity_od(prod, attr, t, same, MID_BETA)
+    m = mats or matrices(net, zs)
+    work, errand = m["work"], m["errand"]
     ods = {"am": work * PERIOD_SHARE["am"], "pm": work.T * PERIOD_SHARE["pm"],
            "mid": 0.5 * (errand + errand.T) * PERIOD_SHARE["mid"]}
-    out = {k: assign(net, nodes, od, log, k) for k, od in ods.items()}
-    return out, int((prod > 0).sum()), len(conn)
+    out = {k: assign(net, m["nodes"], od, log, k) for k, od in ods.items()}
+    return out, int((m["prod"] > 0).sum()), len(m["keys"])
+
+
+def sparse_rows(od, keys, top=WHATIF_TOP, bucket_level=WHATIF_BUCKET_LEVEL):
+    """Compress a zone OD matrix for the browser.
+
+    Each origin keeps its ``top`` largest destinations exactly; the rest of its
+    trips are pooled by the destination's DIGIPIN parent at ``bucket_level``
+    (~4 km at L5) and sent to that parent's busiest destination zone, so far
+    trips keep their direction and every row total is preserved.
+    Returns (origins, counts, dests, values): origin i's pairs are the next
+    counts[i] entries of dests/values.
+    """
+    import numpy as np
+    col = od.sum(axis=0)
+    bucket = [k[:bucket_level] for k in keys]
+    rep: dict = {}
+    for j, bk in enumerate(bucket):
+        if bk not in rep or col[j] > col[rep[bk]]:
+            rep[bk] = j
+    o_out, n_out, d_out, v_out = [], [], [], []
+    for i in np.nonzero(od.sum(axis=1) > 0)[0].tolist():
+        row = od[i]
+        order = np.argsort(-row)
+        acc: dict = {}
+        for j in order[:top].tolist():
+            if row[j] > 0:
+                acc[j] = acc.get(j, 0.0) + row[j]
+        for j in order[top:].tolist():
+            if row[j] <= 0:
+                break
+            r = rep[bucket[j]]
+            acc[r] = acc.get(r, 0.0) + row[j]
+        kept = [(j, v) for j, v in acc.items() if v >= 0.05]
+        if not kept:
+            continue
+        o_out.append(i)
+        n_out.append(len(kept))
+        for j, v in kept:
+            d_out.append(j)
+            v_out.append(round(v, 1) if v < 10 else round(v))
+    return o_out, n_out, d_out, v_out
+
+
+def whatif_model(net: Network, features, mats, region):
+    """Compact network + commute matrix for the in-browser road what-if (js/road-whatif.js)."""
+    import numpy as np
+    pieces = {"a": [], "b": [], "len": [], "ffs": [], "cap": [], "f": []}
+    for e in range(0, len(net.head), 2):          # links come in (a→b, b→a) pairs
+        pieces["a"].append(net.tail[e])
+        pieces["b"].append(net.head[e])
+        pieces["len"].append(round(net.length[e]))
+        pieces["ffs"].append(round(net.length[e] / 1000 / (net.t0[e] / 60), 1))
+        pieces["cap"].append(net.cap[e])
+        pieces["f"].append(net.feat[e])
+    o, n, d, v = sparse_rows(mats["work"], mats["keys"])
+    # Residents near the network: L7 population cells within reach of a road.
+    pop_cells = []
+    popd = _read("population", region)
+    if popd is not None:
+        grid: dict = {}
+        g = 0.0025
+        for (x, y) in net.mid:
+            grid.setdefault((int(x / g), int(y / g)), True)
+        for code, p in zip(popd.codes, popd.columns["population"]):
+            if not p or p < 1:
+                continue
+            c = digipin.decode_partial(code)["bounds"]
+            x, y = (c["west"] + c["east"]) / 2, (c["south"] + c["north"]) / 2
+            gx, gy = int(x / g), int(y / g)
+            if any((gx + dx, gy + dy) in grid for dx in (-1, 0, 1) for dy in (-1, 0, 1)):
+                pop_cells += [round(x, 5), round(y, 5), round(p)]
+    return {
+        "version": 1, "region": region,
+        "nodes": [round(c, 5) for xy in net.xy for c in xy],
+        "pieces": pieces,
+        "zones": {"node": np.asarray(mats["nodes"]).tolist(),
+                  "pop": [round(p) for p in np.asarray(mats["pop"]).tolist()]},
+        "od": {"origins": o, "counts": n, "d": d, "v": v, "unit": "PCU/day", "top": WHATIF_TOP,
+               "bucket_level": WHATIF_BUCKET_LEVEL},
+        "pop_cells": pop_cells,
+        "params": {"period_share": PERIOD_SHARE, "increments": list(INCREMENTS),
+                   "bpr": [BPR_A, BPR_B], "max_slowdown": MAX_SLOWDOWN,
+                   "los_bands": [c for c, _ in LOS_BANDS], "access_min": 2.0,
+                   "new_road": {"highway": "primary", "ffs": ROAD["primary"][0], "cap": ROAD["primary"][1]}},
+    }
 
 
 def run_model(net: Network, zs: dict, log=print):
     """Morning peak only (homes → jobs). Returns (flow, times, n_orig, n_conn)."""
-    import numpy as np
-    conn = _connect(net, zs)
-    keys = list(conn)
-    nodes = np.array([conn[k] for k in keys])
-    pop = np.array([zs[k]["pop"] for k in keys])
-    prod = np.where(pop >= 50, pop, 0) * TRIPS_PER_CAPITA * PCU_PER_TRIP
-    t = skim(net, nodes)
-    od = gravity_od(prod, np.array([zs[k]["attr"] for k in keys]), t,
-                    nodes[:, None] == nodes[None, :]) * PEAK_SHARE
-    flow, times = assign(net, nodes, od, log, "am")
-    return flow, times, int((prod > 0).sum()), len(conn)
+    m = matrices(net, zs)
+    flow, times = assign(net, m["nodes"], m["work"] * PEAK_SHARE, log, "am")
+    return flow, times, int((m["prod"] > 0).sum()), len(m["keys"])
 
 
 def hourly(vc_by_period):
@@ -600,9 +687,12 @@ def run(region, log=print):
     net = Network(feats)
     zs = zones(region)
     log(f"{region}: {net.n} nodes, {len(net.head)} links, {len(zs)} zones")
-    periods, n_orig, n_conn = run_periods(net, zs, log)
+    mats = matrices(net, zs)
+    periods, n_orig, n_conn = run_periods(net, zs, log, mats)
     rows = summarise(net, feats, *periods["am"], periods=periods)
     path.write_text(json.dumps(gj, separators=(",", ":")))
+    (path.parent / "whatif_model.json").write_text(
+        json.dumps(whatif_model(net, feats, mats, region), separators=(",", ":")))
     res = cell_dataset(region, rows)
     summ = REPO / "data" / "traffic" / region / "summary.json"
     s = json.loads(summ.read_text()) if summ.exists() else {}
@@ -629,13 +719,27 @@ def run(region, log=print):
     return res
 
 
+def write_whatif(region, log=print):
+    """Only (re)write data/traffic/<region>/whatif_model.json (no assignment)."""
+    path = REPO / "data" / "traffic" / region / "road_los.geojson"
+    feats = json.loads(path.read_text())["features"]
+    net = Network(feats)
+    model = whatif_model(net, feats, matrices(net, zones(region)), region)
+    out = path.parent / "whatif_model.json"
+    out.write_text(json.dumps(model, separators=(",", ":")))
+    log(f"{region}: whatif_model.json {out.stat().st_size / 1e6:.2f} MB, "
+        f"{len(model['od']['d'])} OD pairs")
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--region", default="all")
+    p.add_argument("--whatif-only", action="store_true",
+                   help="only rewrite whatif_model.json for the browser what-if")
     a = p.parse_args(argv)
     regions = list(CITY_PILOTS) if a.region == "all" else a.region.split(",")
     for r in regions:
-        run(r)
+        (write_whatif if a.whatif_only else run)(r)
     return 0
 
 

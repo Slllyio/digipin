@@ -68,6 +68,7 @@ loadGlobalScript('js/traffic-grid.js', ['TrafficGrid']);
 loadGlobalScript('js/realtime-traffic.js', ['RealtimeTraffic']);
 loadGlobalScript('js/traffic-widget.js', ['TrafficWidget']);
 loadGlobalScript('js/traffic-overlay.js', ['TrafficOverlay']);
+loadGlobalScript('js/road-whatif.js', ['RoadWhatIf']);
 loadGlobalScript('js/mobility-score.js', ['MobilityScore']);
 loadGlobalScript('js/mobility-grid.js', ['MobilityGrid']);
 loadGlobalScript('js/emergency-access-score.js', ['EmergencyAccessScore']);

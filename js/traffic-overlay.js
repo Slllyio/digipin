@@ -255,6 +255,7 @@ const TrafficOverlay = (() => {
 
     /** Open a popup describing the clicked road (name, LOS grade, risk, criticality). */
     function _onClick(e) {
+        if (typeof RoadWhatIf !== 'undefined' && RoadWhatIf.isPicking && RoadWhatIf.isPicking()) return;
         const p = (e.features && e.features[0] && e.features[0].properties) || {};
         /** HTML-escape a value for safe insertion into the popup markup. */
         const esc = (v) => String(v == null ? '' : v)
@@ -296,14 +297,15 @@ const TrafficOverlay = (() => {
 
     /** Tag features with a `color` (from LOS) + `is_critical` flag for the paint. */
     function _decorate(features) {
-        for (const f of features) {
+        features.forEach((f, i) => {
             const p = f.properties || (f.properties = {});
+            p.fi = i;                       // feature index (road what-if picks roads by it)
             p.color = colorFor(gradeForRoad(p));
             p.w = widthFor(p.pcu_peak);
             // Emphasise only genuinely critical links (high-betweenness bridges),
             // not every graph bridge — an arterial-only network has many of those.
             p.is_critical = (p.criticality === 'critical');
-        }
+        });
         return features;
     }
 
@@ -463,6 +465,7 @@ const TrafficOverlay = (() => {
             + `<button type="button" data-tclock="play" aria-label="Play the day" style="${btn}">▶</button>`
             + `<input type="range" min="0" max="23" step="1" value="${_hour == null ? 9 : _hour}" data-tclock="hour" aria-label="Hour of day" style="flex:1;min-width:120px;accent-color:${pal.primary};">`
             + `<button type="button" data-tclock="peak" style="${btn}">Peak</button></div>`
+            + (typeof RoadWhatIf !== 'undefined' ? `<button type="button" data-tclock="whatif" style="${btn}margin-top:6px;width:100%;">What if… close, widen or add a road</button>` : '')
             + `<div data-tclock="label" aria-live="polite" style="margin-top:4px;color:${pal.ink};font-weight:600;"></div></div>`;
     }
     function _wireClock(el) {
@@ -473,6 +476,8 @@ const TrafficOverlay = (() => {
         if (pb) pb.addEventListener('click', () => (_play ? stop() : play()));
         const pk = q('peak');
         if (pk) pk.addEventListener('click', () => { stop(); setHour(null); });
+        const wi = q('whatif');
+        if (wi) wi.addEventListener('click', () => RoadWhatIf.toggle());
     }
     /** Reflect the current hour / play state in the legend clock. */
     function _syncClock() {
@@ -504,6 +509,7 @@ const TrafficOverlay = (() => {
         stop();
         if (_unsub) { _unsub(); _unsub = null; }
         if (_popup) { _popup.remove(); _popup = null; }
+        if (typeof RoadWhatIf !== 'undefined' && RoadWhatIf.close) RoadWhatIf.close();
         _removeLegend();
         const map = _map_();
         if (!map) return;
@@ -520,7 +526,7 @@ const TrafficOverlay = (() => {
     /** Whether the overlay is currently active. */
     function isVisible() { return _active; }
 
-    return { attach, detach, toggle, isVisible, refresh, colorFor, gradeForRoad, widthFor, geojsonUrl, BANDS,
+    return { attach, detach, toggle, isVisible, refresh, colorFor, gradeForRoad, widthFor, geojsonUrl, region, BANDS,
         setHour, getHour, play, stop, hourCoef, vcAt, losFor, speedAt, hourLabel, paintFor, HOURLY };
 })();
 

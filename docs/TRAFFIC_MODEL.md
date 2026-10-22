@@ -114,6 +114,28 @@ same with `[ACTION] trafficHour hour:18` (or `peak`, `play`).
 Between peak hours the hourly V/C is a linear blend of the assigned patterns,
 not a fresh assignment, so off-peak route choice is approximated.
 
+#### Road what-if (`js/road-whatif.js`)
+
+The Traffic legend's **What if…** button opens a panel: close a road, widen
+one (+50% capacity, about one more lane each way) or click two junctions to
+build a new 4-lane link, pick the 09:00 or 18:00 peak and press Run. A Web
+Worker re-routes the commute with the pipeline's method (incremental
+all-or-nothing + BPR) twice, before and after the edit (the "before" run is
+cached per city and peak), and the map shows roads whose V/C rose (reds) or
+fell (blues). The panel reports the change in vehicle-hours and average trip
+time, roads that get busier or quieter, roads that tip into LOS E/F, people
+living within 250 m of a road that gets worse, and trips cut off when a
+closure leaves homes with no arterial route.
+
+Input is `data/traffic/<region>/whatif_model.json` (written by `run`, or
+alone with `--whatif-only`, a few seconds per city): the split arterial graph,
+the home → work matrix with each origin's top 40 destinations kept exactly
+and the rest pooled per ~4 km DIGIPIN L5 parent (correlation with the
+pipeline's own 09:00 V/C ≈ 0.89 in Indore and Delhi), and residents per L7
+cell near the network. Indore takes ~2 s per scenario, Delhi ~13 s for the
+first run in the browser. Destinations stay fixed, so this is the effect in
+the first weeks after a change, before people move jobs or homes.
+
 What it does not know: signals, lane counts, one-way rules, local streets,
 parking, buses' own routes, or today's events. Treat it as where commuting
 demand meets thin capacity, then check against counts or a live feed (TomTom,
