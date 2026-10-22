@@ -129,6 +129,9 @@ test.describe('live feeds', () => {
     const status = page.locator('.live-sky-status');
     await expect(status).toContainText(/\d+ aircraft in the air/, { timeout: 20_000 });
     expect(await page.evaluate(() => LiveSky.aircraft().length)).toBeGreaterThan(0);
+    // Live count beside the layer (Aino Layers card on wide light screens, else the menu row).
+    await expect(page.locator('.ar-row[data-ar-key="_btn_btn-livesky"] .layer-count, .dt-layer-item[data-layer-key="_btn_btn-livesky"] .layer-count').first())
+      .toHaveText(/^\d+$/, { timeout: 10_000 });
     if (!STUB) {
       const z = await page.evaluate(() => new Promise((res) => setTimeout(() => {
         const f = (LiveSky.lastFrame() || { planes: { features: [] } }).planes.features;

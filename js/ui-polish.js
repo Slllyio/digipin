@@ -512,6 +512,7 @@ const UIPolish = (() => {
         for (const r of rows) {
             const row = document.createElement('div');
             row.className = 'ar-row';
+            row.dataset.arKey = r.key;
             row.innerHTML = '<span class="ar-dot"></span><span class="ar-text"><span class="ar-name"></span><span class="ar-src"></span></span>'
                 + '<button type="button" class="ar-eye" aria-pressed="true"></button>';
             row.querySelector('.ar-dot').style.background = r.dot || '#a9a9a6';

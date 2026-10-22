@@ -4645,3 +4645,5 @@ body.presenting #sidebar { display: none !important; }
 .live-sky-pop { display: grid; gap: 2px; font-size: 12px; }
 .live-now-panel.is-docked { position: relative; right: auto; top: auto; width: auto; max-height: none; flex: 0 1 auto; min-height: 0; }
 #aino-right.has-live-now #city-overview { display: none; }
+.layer-count { margin-left: auto; margin-right: 8px; padding: 1px 6px; border-radius: 9px; font-size: 10px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-secondary); background: rgba(127,127,127,.14); white-space: nowrap; }
+.ar-row .layer-count { margin-right: 2px; }
