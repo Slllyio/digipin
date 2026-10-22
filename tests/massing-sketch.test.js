@@ -60,3 +60,27 @@ describe('Clearing the site under a proposal', () => {
         expect(globalThis.OvertureBuildings.dropInside(recs, [])).toBe(recs);
     });
 });
+
+describe('Before/after', () => {
+    it('captions totals and the FAR each proposal adds', () => {
+        const cap = M.beforeAfterCaption([{ id: 'm1', name: 'Tower', floors: 10, use: 'mixed', ring }], { m1: { code: '3MC-88M-6', area: 60000 } });
+        expect(cap.after).toMatch(/Tower · up to 10 floors \(32 m\) · GFA 12,000 m²/);
+        expect(cap.far).toBe('+0.20 FAR in 3MC-88M-6');
+        expect(M.beforeAfterCaption([]).far).toBe('');
+    });
+    it('halves are capped at 960 px wide, keeping the aspect', () => {
+        expect(M.halfSize(1920, 1080)).toEqual({ w: 960, h: 540 });
+        expect(M.halfSize(800, 600)).toEqual({ w: 800, h: 600 });
+    });
+    it('before hides proposals from shadows and site clearing', () => {
+        M.setAll([{ name: 'A', floors: 6, use: 'mixed', ring }]);
+        expect(M.footprints().length).toBe(1);
+        M.setView('before');
+        expect(M.getView()).toBe('before');
+        expect(M.footprints()).toEqual([]);
+        expect(M.clearRings()).toEqual([]);
+        M.setView('after');
+        expect(M.clearRings().length).toBe(1);
+        M.setAll([]);
+    });
+});

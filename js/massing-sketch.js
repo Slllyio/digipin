@@ -88,6 +88,7 @@ const MassingSketch = (() => {
     let _draft = null;      // [[lng,lat], ...] while drawing
     let _seq = 0;
     let _clearSig = '[]';
+    let _view = 'after';    // 'before' hides proposals and restores the site
 
     function _theme() { return typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
     function _esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -106,10 +107,36 @@ const MassingSketch = (() => {
     function isDrawing() { return !!_draft || Date.now() < _swallowUntil; }
 
     /** Rings of proposals that replace what stands on their site (OvertureBuildings drops those buildings). */
-    function clearRings() { return _list.filter(p => p.clear !== false).map(p => p.ring); }
+    function clearRings() { return _view === 'before' ? [] : _list.filter(p => p.clear !== false).map(p => p.ring); }
+
+    /**
+     * Caption lines for a before/after image: totals across proposals and the
+     * cell FAR each adds. `cells` maps proposal id → { code, area }. Pure.
+     */
+    function beforeAfterCaption(list, cells = {}) {
+        const ps = list || [];
+        const gfaSum = ps.reduce((s, p) => s + gfa(ringAreaM2(p.ring), p.floors), 0);
+        const tallest = ps.reduce((m, p) => Math.max(m, p.floors), 0);
+        const head = ps.length === 1 ? ps[0].name : `${ps.length} proposals`;
+        const far = ps.map(p => {
+            const c = cells[p.id];
+            return c && c.area ? `+${(gfa(ringAreaM2(p.ring), p.floors) / c.area).toFixed(2)} FAR in ${c.code}` : null;
+        }).filter(Boolean);
+        return {
+            before: 'Before: the site today',
+            after: `After: ${head} · up to ${tallest} floors (${Math.round(tallest * FLOOR_M)} m) · GFA ${Math.round(gfaSum).toLocaleString('en-IN')} m²`,
+            far: far.slice(0, 2).join(' · '),
+        };
+    }
+
+    /** Size of each half of the side-by-side image for a w × h map canvas, capped at `max` px wide. Pure. */
+    function halfSize(w, h, max = 960) {
+        const k = w > max ? max / w : 1;
+        return { w: Math.round(w * k), h: Math.round(h * k) };
+    }
 
     /** Footprints for SunShadows: [{ ring, h }]. */
-    function footprints() { return _list.map(p => ({ ring: p.ring, h: p.floors * FLOOR_M, p: true })); }
+    function footprints() { return _view === 'before' ? [] : _list.map(p => ({ ring: p.ring, h: p.floors * FLOOR_M, p: true })); }
 
     function _ensureLayers() {
         if (!_map || _map.getSource(SRC)) return;
@@ -129,7 +156,7 @@ const MassingSketch = (() => {
         if (!_map) return;
         try {
             _ensureLayers();
-            _map.getSource(SRC).setData({ type: 'FeatureCollection', features: _list.map(toFeature) });
+            _map.getSource(SRC).setData({ type: 'FeatureCollection', features: _view === 'before' ? [] : _list.map(toFeature) });
             const d = _draft || [];
             const feats = d.map(p => ({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: p } }));
             if (d.length >= 2) feats.push({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: d.length >= 3 ? [...d, d[0]] : d } });
@@ -204,6 +231,7 @@ const MassingSketch = (() => {
         const id = `m${++_seq}`;
         _list.push({ id, name: (p.name || `Proposal ${_list.length + 1}`).slice(0, 40), floors: Math.max(1, Math.min(200, Math.round(p.floors || 8))),
             use: USES[p.use] ? p.use : 'mixed', clear: p.clear !== false, ring });
+        _view = 'after';
         _save(); _paint(); _renderPanel();
         return id;
     }
@@ -244,6 +272,69 @@ const MassingSketch = (() => {
         } catch { return null; }
     }
 
+    function getView() { return _view; }
+
+    /** Show the site as it is ('before') or with the proposals ('after'). */
+    function setView(v) {
+        const next = v === 'before' ? 'before' : 'after';
+        if (next === _view) return;
+        _view = next;
+        _paint(); _renderPanel();
+    }
+
+    function _settle() {
+        return new Promise((resolve) => {
+            let done = false;
+            const fin = () => { if (done) return; done = true; setTimeout(() => requestAnimationFrame(() => resolve()), 400); };
+            try { _map.once('idle', fin); _map.triggerRepaint(); } catch { /* stub map */ }
+            setTimeout(fin, 5000);
+        });
+    }
+
+    /** Save a side-by-side before/after PNG of the current 3D view. Resolves to the file name, or null. */
+    async function saveBeforeAfter() {
+        if (!_map || !_list.length || typeof document === 'undefined') return null;
+        const keep = _view;
+        const src = _map.getCanvas();
+        const { w, h } = halfSize(src.width, src.height);
+        const shots = {};
+        for (const v of ['before', 'after']) {
+            setView(v);
+            await _settle();
+            const c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            c.getContext('2d').drawImage(src, 0, 0, w, h);
+            shots[v] = c;
+        }
+        setView(keep);
+        const cells = {};
+        for (const p of _list) cells[p.id] = _cellFor(p);
+        const cap = beforeAfterCaption(_list, cells);
+        const bar = 64, gap = 8;
+        const out = document.createElement('canvas');
+        out.width = w * 2 + gap; out.height = h + bar;
+        const ctx = out.getContext('2d');
+        const dark = typeof Theme !== 'undefined' && Theme.get && Theme.get() === 'dark';
+        ctx.fillStyle = dark ? '#0b1020' : '#ffffff';
+        ctx.fillRect(0, 0, out.width, out.height);
+        ctx.drawImage(shots.before, 0, 0);
+        ctx.drawImage(shots.after, w + gap, 0);
+        ctx.fillStyle = dark ? '#e8eef7' : '#1c1c1c';
+        ctx.font = '600 16px Inter, system-ui, sans-serif';
+        ctx.fillText(cap.before, 16, h + 26);
+        ctx.fillText(cap.after, w + gap + 16, h + 26);
+        ctx.fillStyle = dark ? '#9aa7b8' : '#6b6b6b';
+        ctx.font = '12px Inter, system-ui, sans-serif';
+        if (cap.far) ctx.fillText(cap.far, w + gap + 16, h + 48);
+        ctx.fillText('DigiPin · © Overture Maps, OpenStreetMap contributors', 16, h + 48);
+        const name = `digipin-before-after-${new Date().toISOString().slice(0, 10)}.png`;
+        const url = out.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url; a.download = name;
+        document.body.appendChild(a); a.click(); a.remove();
+        return name;
+    }
+
     function exportGeoJSON() {
         if (!_list.length || typeof document === 'undefined') return 0;
         const blob = new Blob([JSON.stringify({ type: 'FeatureCollection', features: _list.map(toFeature) })], { type: 'application/geo+json' });
@@ -271,13 +362,19 @@ const MassingSketch = (() => {
                 + (far != null ? `<br>Adds FAR ${far.toFixed(2)} to cell ${_esc(cell.code)} (~${Math.round(Math.sqrt(cell.area))} m)` : '') + '</div></div>';
         }).join('');
         const drawing = !!_draft;
-        _panel.querySelector('.ms-body').innerHTML =
+        const ba = _list.length && !drawing
+            ? `<div class="ms-ba" role="group" aria-label="Before or after">`
+                + ['before', 'after'].map(v => `<button type="button" data-act="${v}" aria-pressed="${_view === v}"${_view === v ? ' class="on"' : ''}>${v === 'before' ? 'Before' : 'After'}</button>`).join('')
+                + '</div>'
+            : '';
+        _panel.querySelector('.ms-body').innerHTML = ba +
             (drawing ? `<div class="ms-hint" role="status">Click the corners on the map${_draft.length ? ` (${_draft.length} so far)` : ''}. Click the first corner again, double-click or use Finish shape; Esc cancels.</div>` : '')
             + (rows || (drawing ? '' : '<div class="ms-hint">Sketch a proposed building to see its floor area, density and shadow among the real city.</div>'))
             + '<div class="ms-actions">'
             + (drawing && _draft.length >= 3 ? '<button type="button" data-act="finish" class="ms-primary">Finish shape</button>' : '')
             + `<button type="button" data-act="${drawing ? 'cancel' : 'draw'}"${drawing ? '' : ' class="ms-primary"'}>${drawing ? 'Cancel' : 'Draw footprint'}</button>`
             + (_list.length ? '<button type="button" data-act="export">Export GeoJSON</button>' : '') + '</div>'
+            + (_list.length && !drawing ? '<div class="ms-actions"><button type="button" data-act="ba-image">Save before/after image</button></div>' : '')
             + (_list.length ? '<div class="ms-note">Open Sun to see each proposal’s shadow at an hour.</div>' : '');
     }
 
@@ -298,6 +395,11 @@ const MassingSketch = (() => {
             else if (act === 'finish') _finish();
             else if (act === 'del' && id) remove(id);
             else if (act === 'export') exportGeoJSON();
+            else if (act === 'before' || act === 'after') setView(act);
+            else if (act === 'ba-image') {
+                b.disabled = true;
+                saveBeforeAfter().finally(() => { b.disabled = false; });
+            }
         });
         el.addEventListener('change', (e) => {
             const it = e.target.closest('.ms-item');
@@ -359,7 +461,7 @@ const MassingSketch = (() => {
         }
     }
 
-    return { init, toggle, isOpen, isDrawing, startDraw, cancel, add, update, remove, setAll, list, footprints, clearRings,
+    return { init, toggle, isOpen, isDrawing, startDraw, cancel, add, update, remove, setAll, list, footprints, clearRings, getView, setView, saveBeforeAfter, beforeAfterCaption, halfSize,
         exportGeoJSON, ringAreaM2, gfa, closeRing, toFeature, parseParam, toParam, FLOOR_M, LAYER };
 })();
 

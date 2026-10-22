@@ -1233,3 +1233,8 @@ html[data-theme="light"] .massing-panel .ms-close:hover, html[data-theme="light"
     .sun-study-panel, html[data-theme="light"] .sun-study-panel { top: 110px; bottom: auto; left: 10px; width: calc(100vw - 92px); max-height: calc(100vh - 320px); overflow-y: auto; }
     .sun-study-panel .sun-chart, .sun-study-panel .sun-hint { display: none; }
 }
+.massing-panel .ms-ba { display: flex; gap: 0; margin: 0 0 8px; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 8px; overflow: hidden; }
+.massing-panel .ms-ba button { flex: 1; padding: 6px 8px; border: 0; background: none; color: inherit; font: 500 12.5px var(--font-sans); cursor: pointer; }
+.massing-panel .ms-ba button.on { background: #e0734d; color: #fff; }
+html[data-theme="light"] .massing-panel .ms-ba { border-color: var(--aino-line); }
+@media (max-width: 768px) { .massing-panel { max-height: calc(100vh - 420px); } }
