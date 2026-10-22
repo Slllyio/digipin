@@ -1048,5 +1048,64 @@
     "sources": {
       "overture": 1
     }
+  },
+  "parking": {
+    "cells": 261,
+    "demand_ecs": 11285,
+    "lots_mapped": 0,
+    "pct_demand_in_overflow": 2.1,
+    "overflow_ecs": 95,
+    "hotspots": [
+      {
+        "digipin": "35F5K83",
+        "demand_ecs": 45,
+        "supply_ecs": 14,
+        "pressure": 3.12
+      },
+      {
+        "digipin": "35F5KJL",
+        "demand_ecs": 37,
+        "supply_ecs": 6,
+        "pressure": 5.68
+      },
+      {
+        "digipin": "35F53M4",
+        "demand_ecs": 22,
+        "supply_ecs": 8,
+        "pressure": 2.61
+      },
+      {
+        "digipin": "35F5K32",
+        "demand_ecs": 43,
+        "supply_ecs": 33,
+        "pressure": 1.33
+      },
+      {
+        "digipin": "35F5K8P",
+        "demand_ecs": 25,
+        "supply_ecs": 21,
+        "pressure": 1.22
+      },
+      {
+        "digipin": "35F4682",
+        "demand_ecs": 26,
+        "supply_ecs": 23,
+        "pressure": 1.1
+      },
+      {
+        "digipin": "35F5K37",
+        "demand_ecs": 39,
+        "supply_ecs": 37,
+        "pressure": 1.04
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
   }
 }

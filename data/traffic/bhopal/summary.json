@@ -690,5 +690,82 @@
     "sources": {
       "overture": 31
     }
+  },
+  "parking": {
+    "cells": 2263,
+    "demand_ecs": 102251,
+    "lots_mapped": 1,
+    "pct_demand_in_overflow": 6.3,
+    "overflow_ecs": 2220,
+    "hotspots": [
+      {
+        "digipin": "35L9724",
+        "demand_ecs": 353,
+        "supply_ecs": 152,
+        "pressure": 2.33
+      },
+      {
+        "digipin": "35L96C5",
+        "demand_ecs": 364,
+        "supply_ecs": 228,
+        "pressure": 1.6
+      },
+      {
+        "digipin": "35L83L4",
+        "demand_ecs": 224,
+        "supply_ecs": 101,
+        "pressure": 2.22
+      },
+      {
+        "digipin": "35L9748",
+        "demand_ecs": 332,
+        "supply_ecs": 223,
+        "pressure": 1.49
+      },
+      {
+        "digipin": "35L972K",
+        "demand_ecs": 239,
+        "supply_ecs": 136,
+        "pressure": 1.75
+      },
+      {
+        "digipin": "35L9737",
+        "demand_ecs": 187,
+        "supply_ecs": 106,
+        "pressure": 1.76
+      },
+      {
+        "digipin": "35L973P",
+        "demand_ecs": 291,
+        "supply_ecs": 212,
+        "pressure": 1.37
+      },
+      {
+        "digipin": "35L84F9",
+        "demand_ecs": 123,
+        "supply_ecs": 53,
+        "pressure": 2.29
+      },
+      {
+        "digipin": "35L83LP",
+        "demand_ecs": 135,
+        "supply_ecs": 67,
+        "pressure": 2.01
+      },
+      {
+        "digipin": "35L8P52",
+        "demand_ecs": 94,
+        "supply_ecs": 27,
+        "pressure": 3.48
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
   }
 }

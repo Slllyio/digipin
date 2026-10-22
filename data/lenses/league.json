@@ -114,6 +114,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 30.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 35.2,
@@ -297,6 +303,12 @@
     "busheat": {
      "label": "Bus stops hot and unshaded",
      "value": 18.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 5.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -486,6 +498,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 6.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 48,
@@ -663,6 +681,12 @@
     "busheat": {
      "label": "Bus stops hot and unshaded",
      "value": 74.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 4.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -852,6 +876,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 21,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 46.5,
@@ -1038,6 +1068,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 2.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 0,
@@ -1215,6 +1251,12 @@
     "busheat": {
      "label": "Bus stops hot and unshaded",
      "value": 22.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 4.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1404,6 +1446,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 15.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 22.8,
@@ -1590,6 +1638,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 2.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 53.3,
@@ -1770,6 +1824,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 29.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 61.6,
@@ -1947,6 +2007,12 @@
     "busheat": {
      "label": "Bus stops hot and unshaded",
      "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 5.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -2136,6 +2202,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 49.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 73,
@@ -2319,6 +2391,12 @@
     "busheat": {
      "label": "Bus stops hot and unshaded",
      "value": 44.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "parking": {
+     "label": "Parking demand on overflowing streets",
+     "value": 6.3,
      "unit": "%",
      "higherIs": "worse"
     },

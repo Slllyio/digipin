@@ -447,6 +447,18 @@ Jaipur 91%, Ahmedabad 87%, Chennai 75%, Delhi 36%, Bengaluru 19% (3,805 GTFS
 stops), Kolkata 2%. Outside Bengaluru the sandbox only had Overture's partial
 stop list (Delhi 624); the CI bake adds OpenStreetMap stops.
 
+### 24. Parking pressure (`pipeline/traffic/parking.py`, lens `parking`)
+
+Demand per L7 cell is the demand model's trip attraction: half of the city's
+0.9 motorised trips per resident end away from home, shared by attraction,
+turned into cars (15% at 1.6 people) and two-wheelers (40% at 1.2, 0.25 of a
+car bay) and 60% of them parked at once late in the morning. Supply is usable
+kerb on local and secondary streets (both sides, 5.5 m bays, 40% usable) plus
+Overture parking lots at 40 spaces. Dataset `parking` (L7): demand_ecs,
+supply_ecs, lots, pressure. Share of parking demand on overflowing streets:
+Mumbai 50%, Ahmedabad 31%, Kolkata 30%, Delhi 21%, Bengaluru 6%. Indicative:
+no surveys or occupancy counts.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

@@ -838,5 +838,82 @@
     "sources": {
       "overture": 166
     }
+  },
+  "parking": {
+    "cells": 8492,
+    "demand_ecs": 389566,
+    "lots_mapped": 12,
+    "pct_demand_in_overflow": 4.3,
+    "overflow_ecs": 5366,
+    "hotspots": [
+      {
+        "digipin": "4222T7L",
+        "demand_ecs": 270,
+        "supply_ecs": 114,
+        "pressure": 2.38
+      },
+      {
+        "digipin": "422CTL5",
+        "demand_ecs": 163,
+        "supply_ecs": 25,
+        "pressure": 6.43
+      },
+      {
+        "digipin": "4222T6F",
+        "demand_ecs": 266,
+        "supply_ecs": 137,
+        "pressure": 1.95
+      },
+      {
+        "digipin": "422749J",
+        "demand_ecs": 114,
+        "supply_ecs": 0,
+        "pressure": 113.86
+      },
+      {
+        "digipin": "422749F",
+        "demand_ecs": 132,
+        "supply_ecs": 24,
+        "pressure": 5.45
+      },
+      {
+        "digipin": "42274C6",
+        "demand_ecs": 185,
+        "supply_ecs": 79,
+        "pressure": 2.35
+      },
+      {
+        "digipin": "4222CM2",
+        "demand_ecs": 181,
+        "supply_ecs": 77,
+        "pressure": 2.36
+      },
+      {
+        "digipin": "4222CK2",
+        "demand_ecs": 205,
+        "supply_ecs": 105,
+        "pressure": 1.94
+      },
+      {
+        "digipin": "422742J",
+        "demand_ecs": 114,
+        "supply_ecs": 14,
+        "pressure": 8.13
+      },
+      {
+        "digipin": "422745L",
+        "demand_ecs": 120,
+        "supply_ecs": 33,
+        "pressure": 3.59
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
   }
 }

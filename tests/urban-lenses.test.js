@@ -482,6 +482,20 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.busheat(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('parking lens: overflowing streets, residents and hotspots', () => {
+        const pr = codes.map((_, i) => (i < SIZE ? 2 : 0.5));
+        const dem = codes.map((_, i) => (i < SIZE ? 200 : 100));
+        const sup = codes.map((_, i) => (i < SIZE ? 100 : 200));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'parking.pressure': pr, 'parking.demand_ecs': dem, 'parking.supply_ecs': sup });
+        const r = L._lenses.parking(f, {});
+        const dTot = 200 * SIZE + 100 * (n - SIZE);
+        expect(r.metric.value).toBeCloseTo(100 * 200 * SIZE / dTot, 0);
+        expect(r.columns.park_overflow[0]).toBe(100);
+        expect(Number.isNaN(r.columns.park_overflow[n - 1])).toBe(true);
+        expect(r.stats.some(x => x.label.startsWith('Parking hotspot 1'))).toBe(true);
+        expect(L._lenses.parking(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
         const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
         const league = { generated: '2026-10-22', cities: {

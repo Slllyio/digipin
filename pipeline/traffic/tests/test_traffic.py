@@ -434,3 +434,15 @@ def test_bus_stop_heat_helpers():
     assert bh.priority(1000, 33, 0) == 0
     ns = bh.neighbours("39J49LL")
     assert len(ns) == 9 and "39J49LL" in ns and all(len(c) == 7 for c in ns)
+
+
+def test_parking_helpers():
+    from pipeline.traffic import parking as pk
+    assert pk.ecs_per_trip() == pytest.approx(0.15 / 1.6 + 0.40 / 1.2 * 0.25)
+    # 1 km of street, both sides, a bay every 5.5 m, 40% usable ≈ 145 spaces.
+    assert pk.kerb_ecs(1.0) == pytest.approx(145.45, rel=0.01)
+    d = pk.demand_ecs(1_000_000, 0.001)
+    assert d == pytest.approx(0.9 * 1e6 * 0.5 * 0.001 * pk.ecs_per_trip() * 0.6)
+    assert pk.pressure(10, 5) is None            # too little demand to call
+    assert pk.pressure(200, 100) == pytest.approx(2)
+    assert pk.pressure(200, 0) == pytest.approx(200)

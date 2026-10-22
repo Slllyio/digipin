@@ -15,6 +15,7 @@ const UrbanLensesMobility = (() => {
     const EV_NEAR_KM = 2, EV_GRID_KM = 3;
     const STATION_WALK = 10, WALK_M_MIN = 80, WALK_DETOUR = 1.3, NEW_STATIONS = 3;
     const JOB_MIN = 45, JOB_LOW = 10;
+    const PARK_CAP = 3, PARK_HOT = 5;
     const STOP_KM = 0.4, STOP_HOT = 40, STOP_BARE = 10, SHELTERS = 5, FEW_STOPS = 50;
     const STATION_KM = STATION_WALK * WALK_M_MIN / WALK_DETOUR / 1000;   // ~615 m straight line
 
@@ -336,6 +337,43 @@ const UrbanLensesMobility = (() => {
             columns: { shelter_priority: prCol, stop_heat: tCol }, idx: stops, weightKey: 'shelter_priority', noHotspots: true,
             metric: { label: 'Bus stops hot and unshaded', value: share, unit: '%', higherIs: 'worse' },
             headline: `${share}% of the ${_people(nS)} mapped bus stops sit at ${STOP_HOT}+ °C surface temperature with under ${STOP_BARE}% tree canopy; ${_people(pSun)} residents live within a 5-minute walk of one.`,
+            stats,
+        };
+    }
+
+    /** Parking pressure: where more vehicles arrive than kerbs and lots can hold, and who lives with the spill-over. */
+    function parking(fr) {
+        const g = fr.grid, c = fr.cols, idx = _residents(fr), n = g.n, pop = c['population.population'];
+        const pr = c['parking.pressure'], dem = c['parking.demand_ecs'], sup = c['parking.supply_ecs'];
+        if (!pr || !dem) return null;
+        const pCol = new Float64Array(n).fill(NaN), oCol = new Float64Array(n).fill(NaN), cells = [];
+        let dTot = 0, dOver = 0, over = 0;
+        for (let i = 0; i < n; i++) {
+            if (!_fin(pr[i]) || !_fin(dem[i])) continue;
+            cells.push(i);
+            pCol[i] = Math.min(PARK_CAP, pr[i]);
+            dTot += dem[i];
+            if (pr[i] > 1) { dOver += dem[i]; const o = dem[i] - (_fin(sup[i]) ? sup[i] : 0); oCol[i] = o; over += o; }
+        }
+        if (!cells.length) return null;
+        const total = _sumOver(pop, idx, () => true) || 1, pSpill = _sumOver(pop, idx, i => pr[i] > 1);
+        const share = _round(100 * dOver / (dTot || 1));
+        const stats = [
+            { label: 'Parking demand in streets that overflow', value: `${share}%`, raw: share },
+            { label: 'Vehicles with no kerb or lot space at the late-morning peak', value: `${_people(over)} car spaces` },
+            { label: 'Residents living on overflowing streets', value: `${_people(pSpill)} (${_round(100 * pSpill / total)}%)` },
+        ];
+        const rw = c['rail_access.rail_walk_min'];
+        if (rw) {
+            const near = cells.filter(i => pr[i] > 1 && rw[i] <= STATION_WALK);
+            if (near.length) stats.push({ label: `Overflowing cells within a ${STATION_WALK}-minute walk of a station`, value: `${near.length} (park-and-ride or feeder candidates)` });
+        }
+        cells.filter(i => _fin(oCol[i])).sort((a, b) => oCol[b] - oCol[a]).slice(0, PARK_HOT)
+            .forEach((i, k) => stats.push({ label: `Parking hotspot ${k + 1}: ${g.codes[i]}`, value: `${_people(dem[i])} vehicles for ${_people(sup[i] || 0)} spaces (${_round(pr[i], 1)}×)` }));
+        return {
+            columns: { park_pressure: pCol, park_overflow: oCol }, idx: cells, weightKey: 'park_overflow',
+            metric: { label: 'Parking demand on overflowing streets', value: share, unit: '%', higherIs: 'worse' },
+            headline: `${share}% of late-morning parking demand falls on streets where it outstrips the kerb and lots, leaving about ${_people(over)} vehicles on footpaths, main roads or double-parked.`,
             stats,
         };
     }
@@ -1013,7 +1051,7 @@ const UrbanLensesMobility = (() => {
     // left out: open charger data covers too little of India's network to rank on.
     const PILLARS = [
         { id: 'access', label: 'Access', metrics: ['metro', 'jobaccess', 'transit', 'busgap', 'ambulance'] },
-        { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon'] },
+        { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon', 'parking'] },
         { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise', 'nightwalk', 'freight', 'cleanwalk'] },
         { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'busheat', 'walk', 'cycling', 'crossing'] },
     ];
@@ -1179,6 +1217,13 @@ const UrbanLensesMobility = (() => {
             needs: ['bus_stop_heat.stops', 'bus_stop_heat.hot_bare_stops', 'bus_stop_heat.shelter_priority', 'bus_stop_heat.stop_lst_c', 'wealth.rwi'],
             method: `Bus stops are OpenStreetMap highway=bus_stop, open GTFS stops (Bengaluru BMTC) and Overture Maps bus stations, merged within 30 m; outside Bengaluru the open map lists only part of the network until OpenStreetMap stops are pulled on the next data refresh. Each stop takes the Landsat summer daytime surface temperature and the tree canopy of its cell. Hot and bare is ${STOP_HOT}+ °C with under ${STOP_BARE}% canopy. The priority score is residents within about a 5-minute walk × degrees above 35 °C × the unshaded share. Surface temperature is not air temperature, and 30 m canopy misses single trees and shelter roofs.`,
             refs: 'OpenStreetMap; BMTC GTFS (Vonter, ODbL); Overture Maps Foundation places; Landsat 8/9 surface temperature; Lanza & Durand 2021 (heat and transit waiting)' },
+        { id: 'parking', equity: false, title: 'Parking pressure', icon: '🅿️',
+            question: 'Where do more vehicles arrive than the kerbs and lots can hold?',
+            field: { key: 'park_pressure', label: 'Parking pressure (demand / spaces)', unit: '×', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'park_overflow', label: 'Vehicles with no space', unit: 'car spaces', higherIs: 'worse', ramp: 'heat' }],
+            needs: ['parking.pressure', 'parking.demand_ecs', 'parking.supply_ecs', 'rail_access.rail_walk_min'],
+            method: 'Demand is the traffic model\'s trip attraction (GHSL non-residential floor space and OpenStreetMap amenities): half of the city\'s 0.9 motorised trips per resident end away from home, cars (15% at 1.6 people) and two-wheelers (40% at 1.2, a quarter of a car bay each) in equivalent car spaces, 60% of them parked at once late in the morning. Supply is usable kerb on local and secondary streets (both sides, a bay every 5.5 m, 40% usable after junctions, driveways and no-parking stretches) plus Overture parking lots at 40 spaces each; main roads are left out. Indicative: no parking surveys or occupancy counts, and open data maps few off-street lots.',
+            refs: 'IRC SP 12 (parking norms); MoHUA 2016 National Urban Transport Policy parking guidance; Overture Maps Foundation places; GHSL 2023' },
         { id: 'ev', equity: false, title: 'EV charging gaps', icon: '🔌',
             question: 'How far are homes and traffic from a known public EV charger?',
             field: { key: 'ev_km', label: 'Distance to the nearest known charger', unit: 'km', higherIs: 'worse', ramp: 'heat' },
@@ -1188,7 +1233,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

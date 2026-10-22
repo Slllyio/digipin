@@ -693,5 +693,83 @@
     "sources": {
       "overture": 247
     }
+  },
+  "parking": {
+    "cells": 6221,
+    "demand_ecs": 834303,
+    "lots_mapped": 65,
+    "pct_demand_in_overflow": 49.9,
+    "overflow_ecs": 197741,
+    "hotspots": [
+      {
+        "digipin": "4FK55L9",
+        "demand_ecs": 1083,
+        "supply_ecs": 59,
+        "pressure": 18.23
+      },
+      {
+        "digipin": "4FK2PP5",
+        "demand_ecs": 945,
+        "supply_ecs": 68,
+        "pressure": 13.91
+      },
+      {
+        "digipin": "4FK5258",
+        "demand_ecs": 906,
+        "supply_ecs": 154,
+        "pressure": 5.87
+      },
+      {
+        "digipin": "4FK2PP2",
+        "demand_ecs": 1044,
+        "supply_ecs": 301,
+        "lots": 1,
+        "pressure": 3.47
+      },
+      {
+        "digipin": "4FK5425",
+        "demand_ecs": 772,
+        "supply_ecs": 30,
+        "pressure": 25.37
+      },
+      {
+        "digipin": "4FK7C4P",
+        "demand_ecs": 967,
+        "supply_ecs": 229,
+        "pressure": 4.22
+      },
+      {
+        "digipin": "4FK545J",
+        "demand_ecs": 729,
+        "supply_ecs": 0,
+        "pressure": 729.17
+      },
+      {
+        "digipin": "4FKPCM7",
+        "demand_ecs": 982,
+        "supply_ecs": 274,
+        "pressure": 3.59
+      },
+      {
+        "digipin": "4FKPC2L",
+        "demand_ecs": 875,
+        "supply_ecs": 224,
+        "pressure": 3.9
+      },
+      {
+        "digipin": "4FK8MMM",
+        "demand_ecs": 863,
+        "supply_ecs": 212,
+        "pressure": 4.07
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
   }
 }

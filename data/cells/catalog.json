@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T10:00:04Z",
+  "generated": "2026-10-22T10:05:07Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -9024,6 +9024,284 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "parking",
+      "title": "Parking pressure",
+      "description": "Late-morning parked vehicles from the demand model's trip attraction (cars and two-wheelers in equivalent car spaces) against usable kerb on local and secondary streets and mapped parking lots. Above 1, vehicles spill onto footpaths and main roads. Indicative: no parking surveys or occupancy counts; open data maps few off-street lots.",
+      "source": "pipeline/traffic/parking.py over population, built_up, osm_amenities, osm_roads + Overture parking",
+      "license": "CC BY 4.0 (GHSL) + ODbL (OpenStreetMap) + CDLA-Permissive-2.0 (Overture places)",
+      "group": "Traffic & mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "demand_ecs",
+          "label": "Vehicles parked at the late-morning peak",
+          "type": "number",
+          "agg": "sum",
+          "unit": "car spaces",
+          "domain": [
+            4,
+            1083
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "supply_ecs",
+          "label": "Kerb and lot spaces",
+          "type": "number",
+          "agg": "sum",
+          "unit": "car spaces",
+          "domain": [
+            0,
+            897
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "lots",
+          "label": "Mapped parking lots",
+          "type": "number",
+          "agg": "sum",
+          "unit": "lots",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "pressure",
+          "label": "Parking pressure (demand / spaces)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "ratio",
+          "domain": [
+            0,
+            3
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "pressure",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 5036,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "parking/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 10310,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "parking/bengaluru/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 2263,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.5185546875,
+            "north": 23.3212890625
+          },
+          "json": "parking/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 6745,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "parking/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 21066,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "parking/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 261,
+          "bbox": {
+            "west": 77.2724609375,
+            "south": 24.619873046875,
+            "east": 77.349365234375,
+            "north": 24.67919921875
+          },
+          "json": "parking/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 8492,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "parking/hyderabad/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 3292,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.50390625,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "parking/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 4357,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "parking/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 6024,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "parking/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 4179,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "parking/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 6221,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "parking/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 5484,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "parking/pune.json",
+          "parquet": null
         }
       ]
     },

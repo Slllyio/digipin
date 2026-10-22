@@ -74,6 +74,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('job accessibility by public transport in Delhi')).toEqual({ type: 'lens', lens: 'jobaccess', city: 'delhi' });
         expect(M('which bus stops have no shade in the summer heat')).toEqual({ type: 'lens', lens: 'busheat' });
         expect(M('where should we add bus shelters')).toEqual({ type: 'lens', lens: 'busheat' });
+        expect(M('where is parking worst near markets')).toEqual({ type: 'lens', lens: 'parking' });
         expect(M('where do trucks run through neighbourhoods in Pune')).toEqual({ type: 'lens', lens: 'freight', city: 'pune' });
         expect(M('what if 20% of car trips moved to the metro in Delhi')).toEqual({ type: 'modeshift', pct: 20, scope: 'stations', period: 'am', city: 'delhi' });
         expect(M('what if people take the bus instead of driving')).toEqual({ type: 'modeshift', pct: 10, scope: 'all', period: 'am' });
