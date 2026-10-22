@@ -70,7 +70,7 @@ const MassingSketch = (() => {
             const floors = Math.round(Number(x && x.f));
             if (!ring || !(floors >= 1 && floors <= 200)) continue;
             out.push({ id: `m${out.length + 1}`, name: String((x && x.n) || `Proposal ${out.length + 1}`).slice(0, 40),
-                floors, use: USES[x && x.u] ? x.u : 'mixed', ring });
+                floors, use: USES[x && x.u] ? x.u : 'mixed', clear: !(x && x.c === 0), ring });
         }
         return out;
     }
@@ -78,7 +78,7 @@ const MassingSketch = (() => {
     /** Proposals → compact share-link payload (6-decimal corners). Pure. */
     function toParam(list) {
         return JSON.stringify((list || []).slice(0, MAX_PROPOSALS).map(p => ({
-            n: p.name, f: p.floors, u: p.use, r: p.ring.slice(0, -1).map(([x, y]) => [+x.toFixed(6), +y.toFixed(6)]),
+            n: p.name, f: p.floors, u: p.use, ...(p.clear === false ? { c: 0 } : {}), r: p.ring.slice(0, -1).map(([x, y]) => [+x.toFixed(6), +y.toFixed(6)]),
         })));
     }
 
@@ -87,6 +87,7 @@ const MassingSketch = (() => {
     let _list = [];
     let _draft = null;      // [[lng,lat], ...] while drawing
     let _seq = 0;
+    let _clearSig = '[]';
 
     function _theme() { return typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
     function _esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -103,6 +104,9 @@ const MassingSketch = (() => {
     function list() { return _list.map(p => ({ ...p })); }
     let _swallowUntil = 0;  // the finishing click must not also select the cell under it
     function isDrawing() { return !!_draft || Date.now() < _swallowUntil; }
+
+    /** Rings of proposals that replace what stands on their site (OvertureBuildings drops those buildings). */
+    function clearRings() { return _list.filter(p => p.clear !== false).map(p => p.ring); }
 
     /** Footprints for SunShadows: [{ ring, h }]. */
     function footprints() { return _list.map(p => ({ ring: p.ring, h: p.floors * FLOOR_M, p: true })); }
@@ -131,6 +135,12 @@ const MassingSketch = (() => {
             if (d.length >= 2) feats.push({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: d.length >= 3 ? [...d, d[0]] : d } });
             _map.getSource(DRAFT_SRC).setData({ type: 'FeatureCollection', features: feats });
         } catch { /* style reloading */ }
+        // Cleared sites drop their buildings from the 3D city (shadows follow the twin).
+        const sig = JSON.stringify(clearRings());
+        if (sig !== _clearSig) {
+            _clearSig = sig;
+            if (typeof OvertureBuildings !== 'undefined' && OvertureBuildings.refreshTwin) OvertureBuildings.refreshTwin();
+        }
         // Proposals cast shadows too.
         if (typeof SunStudy !== 'undefined' && SunStudy.isActive && SunStudy.isActive() && SunStudy.applyToMap) SunStudy.applyToMap();
     }
@@ -193,7 +203,7 @@ const MassingSketch = (() => {
         if (!ring || _list.length >= MAX_PROPOSALS) return null;
         const id = `m${++_seq}`;
         _list.push({ id, name: (p.name || `Proposal ${_list.length + 1}`).slice(0, 40), floors: Math.max(1, Math.min(200, Math.round(p.floors || 8))),
-            use: USES[p.use] ? p.use : 'mixed', ring });
+            use: USES[p.use] ? p.use : 'mixed', clear: p.clear !== false, ring });
         _save(); _paint(); _renderPanel();
         return id;
     }
@@ -204,6 +214,7 @@ const MassingSketch = (() => {
         if (patch.floors != null) p.floors = Math.max(1, Math.min(200, Math.round(Number(patch.floors) || 1)));
         if (patch.use && USES[patch.use]) p.use = patch.use;
         if (patch.name != null) p.name = String(patch.name).slice(0, 40) || p.name;
+        if (patch.clear != null) p.clear = !!patch.clear;
         _save(); _paint(); _renderPanel();
     }
 
@@ -255,6 +266,7 @@ const MassingSketch = (() => {
                 <button type="button" class="ms-del" data-act="del" aria-label="Delete ${_esc(p.name)}" title="Delete">✕</button></div>
                 <div class="ms-row"><label>Floors <input type="number" class="ms-floors" min="1" max="200" value="${p.floors}"></label>
                 <select class="ms-use" aria-label="Use">${Object.entries(USES).map(([k, v]) => `<option value="${k}"${k === p.use ? ' selected' : ''}>${v}</option>`).join('')}</select></div>
+                <label class="ms-clear"><input type="checkbox" class="ms-clear-cb"${p.clear !== false ? ' checked' : ''}> Clear existing buildings on site</label>
                 <div class="ms-facts">${(p.floors * FLOOR_M).toFixed(0)} m tall · footprint ${Math.round(area).toLocaleString('en-IN')} m² · GFA ${Math.round(g).toLocaleString('en-IN')} m²`
                 + (far != null ? `<br>Adds FAR ${far.toFixed(2)} to cell ${_esc(cell.code)} (~${Math.round(Math.sqrt(cell.area))} m)` : '') + '</div></div>';
         }).join('');
@@ -293,6 +305,7 @@ const MassingSketch = (() => {
             if (e.target.classList.contains('ms-floors')) update(it.dataset.id, { floors: e.target.value });
             else if (e.target.classList.contains('ms-use')) update(it.dataset.id, { use: e.target.value });
             else if (e.target.classList.contains('ms-name')) update(it.dataset.id, { name: e.target.value });
+            else if (e.target.classList.contains('ms-clear-cb')) update(it.dataset.id, { clear: e.target.checked });
         });
         document.body.appendChild(el);
         return el;
@@ -346,7 +359,7 @@ const MassingSketch = (() => {
         }
     }
 
-    return { init, toggle, isOpen, isDrawing, startDraw, cancel, add, update, remove, setAll, list, footprints,
+    return { init, toggle, isOpen, isDrawing, startDraw, cancel, add, update, remove, setAll, list, footprints, clearRings,
         exportGeoJSON, ringAreaM2, gfa, closeRing, toFeature, parseParam, toParam, FLOOR_M, LAYER };
 })();
 

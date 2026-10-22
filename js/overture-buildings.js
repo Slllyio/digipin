@@ -209,6 +209,33 @@ const OvertureBuildings = (() => {
         };
     }
 
+    /** Records whose footprint centre lies outside every ring (ray casting). Pure. */
+    function dropInside(records, rings) {
+        if (!rings || !rings.length) return records;
+        const inRing = (x, y, r) => {
+            let inside = false;
+            for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
+                const [xi, yi] = r[i], [xj, yj] = r[j];
+                if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+            }
+            return inside;
+        };
+        const boxes = rings.map(r => {
+            let a = Infinity, b = Infinity, c = -Infinity, d = -Infinity;
+            for (const [x, y] of r) { if (x < a) a = x; if (y < b) b = y; if (x > c) c = x; if (y > d) d = y; }
+            return [a, b, c, d];
+        });
+        return (records || []).filter(rec => {
+            const poly = rec.polygon || [];
+            const n = poly.length > 1 && poly[0][0] === poly[poly.length - 1][0] && poly[0][1] === poly[poly.length - 1][1] ? poly.length - 1 : poly.length;
+            if (!n) return true;
+            let x = 0, y = 0;
+            for (let i = 0; i < n; i++) { x += poly[i][0]; y += poly[i][1]; }
+            x /= n; y /= n;
+            return !rings.some((r, k) => x >= boxes[k][0] && x <= boxes[k][2] && y >= boxes[k][1] && y <= boxes[k][3] && inRing(x, y, r));
+        });
+    }
+
     /** Flag records whose DIGIPIN falls inside the cell `code` (any level) as `sel`. Pure. */
     function markSelected(records, code) {
         const pre = code ? String(code).toUpperCase() : '';
@@ -614,6 +641,8 @@ const OvertureBuildings = (() => {
         // Light theme has no amber rings, so the selected DIGIPIN cell shows as
         // its own buildings tinted (matched on each building's L10 DIGIPIN).
         if (isLight() && !data) markSelected(recs, typeof MapModule !== 'undefined' && MapModule.getSelectedCode ? MapModule.getSelectedCode() : null);
+        // A sketched redevelopment replaces what stands on its site.
+        if (typeof MassingSketch !== 'undefined' && MassingSketch.clearRings) recs = dropInside(recs, MassingSketch.clearRings());
         _hoverId = null;   // setData resets generated feature ids
         const src = _map.getSource(TWIN_SRC);
         if (src && src.setData) src.setData(twinGeoJSON(recs, DeckBuildings.getExaggeration()));
@@ -777,5 +806,6 @@ const OvertureBuildings = (() => {
     function isActive() { return _active; }
 
     return { toggle, isActive, getVisibleStats, focusCell, ringsGeoJSON, nearbyHighlight,
-        chooseRenderer, twinGeoJSON, twinPaint, markSelected };
+        chooseRenderer, twinGeoJSON, twinPaint, markSelected, dropInside,
+        refreshTwin: () => { if (_twin) _refreshTwin(); } };
 })();

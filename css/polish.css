@@ -1224,3 +1224,5 @@ html[data-theme="light"] .massing-panel .ms-close:hover, html[data-theme="light"
         top: 110px; right: 10px; left: 10px; bottom: auto; width: auto; max-height: 34vh;
     }
 }
+.massing-panel .ms-clear { display: flex; align-items: center; gap: 6px; font-size: 12px; margin: 4px 0; cursor: pointer; }
+.massing-panel .ms-clear input { margin: 0; accent-color: #e0734d; }

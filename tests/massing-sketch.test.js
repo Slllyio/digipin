@@ -45,3 +45,18 @@ describe('MassingSketch share payload', () => {
         expect(st.massing[0].floors).toBe(6);
     });
 });
+
+describe('Clearing the site under a proposal', () => {
+    it('keeps the clear switch through the share link (on by default)', () => {
+        expect(M.parseParam(M.toParam([{ name: 'A', floors: 4, use: 'mixed', ring }]))[0].clear).toBe(true);
+        expect(M.parseParam(M.toParam([{ name: 'A', floors: 4, use: 'mixed', clear: false, ring }]))[0].clear).toBe(false);
+    });
+    it('drops buildings whose centre is inside a ring', () => {
+        const sq = (x, y, d) => [[x, y], [x + d, y], [x + d, y + d], [x, y + d], [x, y]];
+        const site = sq(0, 0, 10);
+        const recs = [{ id: 'in', polygon: sq(2, 2, 2) }, { id: 'out', polygon: sq(20, 20, 2) }, { id: 'edge', polygon: sq(9, 9, 4) }];
+        const kept = globalThis.OvertureBuildings.dropInside(recs, [site]).map(r => r.id);
+        expect(kept).toEqual(['out', 'edge']);
+        expect(globalThis.OvertureBuildings.dropInside(recs, [])).toBe(recs);
+    });
+});
