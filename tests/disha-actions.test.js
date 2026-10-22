@@ -204,3 +204,28 @@ describe('DISHAActions.executeAgentActions (agent tools, async)', () => {
         expect(shown).toEqual([22.7, 75.8]);
     });
 });
+
+describe('DISHAActions trafficHour', () => {
+    it('opens the traffic map at an hour, the peak, or plays the day', () => {
+        const real = globalThis.TrafficOverlay;
+        const calls = [];
+        let vis = false;
+        globalThis.TrafficOverlay = {
+            isVisible: () => vis, attach: () => { vis = true; calls.push('attach'); },
+            setHour: (h) => calls.push(['hour', h]), play: () => calls.push('play'), stop: () => calls.push('stop'),
+            hourLabel: real.hourLabel,
+        };
+        try {
+            const r = DA.executeActions([
+                { type: 'traffichour', params: { hour: '18' } },
+                { type: 'traffichour', params: { hour: 'peak' } },
+                { type: 'traffichour', params: { hour: 'play' } },
+            ]);
+            expect(r.every(x => x.ok)).toBe(true);
+            expect(r[0].label).toBe('Traffic at 18:00 · evening peak');
+            expect(calls).toEqual(['attach', 'stop', ['hour', 18], 'stop', ['hour', null], 'play']);
+            const bad = DA.executeActions([{ type: 'traffichour', params: { hour: '25' } }]);
+            expect(bad[0].ok).toBe(false);
+        } finally { globalThis.TrafficOverlay = real; }
+    });
+});

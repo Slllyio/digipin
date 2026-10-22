@@ -207,3 +207,30 @@ def test_demand_model_network_assigns_flow():
     rows = dm.summarise(net, feats, flow, times)
     assert feats[0]["properties"]["pcu_peak"] == round(peak)
     assert all(r["peak_los"] in "ABCDEF" for r in rows.values())
+
+
+def test_demand_model_time_of_day():
+    pytest.importorskip("scipy")
+    from pipeline.traffic import demand_model as dm
+    assert abs(sum(dm.HOURLY_SHARE) - 100) < 1e-9 and dm.PERIOD_SHARE["am"] == dm.PEAK_SHARE
+    assert all(abs(sum(m) - 1) < 1e-9 for m in dm.HOURLY_MIX)
+    h = dm.hourly({"am": 1.0, "pm": 0.8, "mid": 0.4})
+    assert abs(h[9] - 1.0) < 1e-9 and abs(h[18] - 0.8) < 1e-9 and abs(h[13] - 0.4) < 1e-9
+    assert h[3] < h[13] < h[9]
+    # One road W–E: homes in the west, jobs in the east.
+    feats = [{"type": "Feature", "properties": {"highway": "primary"},
+              "geometry": {"type": "LineString", "coordinates": [[75.80, 22.70], [75.82, 22.70]]}}]
+    net = dm.Network(feats)
+    zs = {"W": {"pop": 10000, "attr": 0, "lon": 75.80, "lat": 22.70},
+          "E": {"pop": 0, "attr": 5000, "lon": 75.82, "lat": 22.70}}
+    periods, n_orig, n_conn = dm.run_periods(net, zs, log=lambda *_: None)
+    east = [e for e in range(len(net.head)) if net.xy[net.head[e]][0] > net.xy[net.tail[e]][0]][0]
+    west = 1 - east
+    am, pm, mid = (periods[k][0] for k in ("am", "pm", "mid"))
+    assert am[east] > 0 and am[west] == 0          # morning: to work
+    assert pm[west] > 0 and pm[east] == 0          # evening: home again
+    assert mid[east] > 0 and mid[west] > 0         # midday: both ways
+    rows = dm.summarise(net, feats, *periods["am"], periods=periods)
+    p = feats[0]["properties"]
+    assert p["peak_period"] == "am" and p["vc_pm"] < p["vc_am"] and p["ffs"] == 45
+    assert all({"am_vc", "pm_vc", "mid_vc", "peak_period"} <= set(r) for r in rows.values())

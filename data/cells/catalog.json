@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-21T22:07:31Z",
+  "generated": "2026-10-22T05:49:07Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -9800,8 +9800,8 @@
     },
     {
       "id": "traffic_load",
-      "title": "Traffic load (peak-hour model)",
-      "description": "Modelled morning peak hour on the arterial roads: residents (GHSL) make 0.9 motorised trips a day toward jobs and activity floor space (GHSL non-residential built-up, OSM amenities), distributed by a gravity model and routed on the OSM arterial network with BPR congestion feedback; 9% of the day falls in the peak, 0.37 PCU per trip for an Indian mode mix, IRC 106 capacities. A strategic model, not traffic counts: no signals, lane counts, one-way rules or local streets.",
+      "title": "Traffic load (time-of-day model)",
+      "description": "Modelled traffic on the arterial roads through the day: residents (GHSL) make 0.9 motorised trips a day toward jobs and activity floor space (GHSL non-residential built-up, OSM amenities), distributed by a gravity model and routed on the OSM arterial network with BPR congestion feedback. Three patterns are assigned: the 09:00 commute, the 18:00 trip home (the morning matrix reversed) and shorter midday errands; peak fields show the worse of the two peaks; 0.37 PCU per trip for an Indian mode mix, IRC 106 capacities. A strategic model, not traffic counts: no signals, lane counts, one-way rules or local streets.",
       "source": "pipeline/traffic/demand_model.py over OSM arterials (data/traffic) + GHSL + OSM amenities",
       "license": "ODbL (OpenStreetMap) + CC BY 4.0 (GHSL)",
       "group": "Traffic & mobility",
@@ -9851,7 +9851,7 @@
           "unit": "PCU/h",
           "domain": [
             0,
-            18066
+            18682
           ],
           "ramp": "heat"
         },
@@ -9892,6 +9892,59 @@
             960439
           ],
           "ramp": "heat"
+        },
+        {
+          "key": "am_vc",
+          "label": "Morning peak (09:00) volume / capacity",
+          "type": "number",
+          "agg": "max",
+          "unit": "ratio",
+          "domain": [
+            0,
+            1.5
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "pm_vc",
+          "label": "Evening peak (18:00) volume / capacity",
+          "type": "number",
+          "agg": "max",
+          "unit": "ratio",
+          "domain": [
+            0,
+            1.5
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "mid_vc",
+          "label": "Midday (13:00) volume / capacity",
+          "type": "number",
+          "agg": "max",
+          "unit": "ratio",
+          "domain": [
+            0,
+            1.5
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "peak_period",
+          "label": "Worse peak",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "Evening",
+            "Morning"
+          ],
+          "colors": {
+            "Morning": "#f59e0b",
+            "Evening": "#6366f1"
+          }
         }
       ],
       "default": {
@@ -9921,7 +9974,7 @@
             "east": 77.793212890625,
             "north": 13.1611328125
           },
-          "json": "traffic_load/bengaluru.json",
+          "json": "traffic_load/bengaluru.json.gz",
           "parquet": null
         },
         {
@@ -9957,7 +10010,7 @@
             "east": 77.3955078125,
             "north": 28.900146484375
           },
-          "json": "traffic_load/delhi.json",
+          "json": "traffic_load/delhi.json.gz",
           "parquet": null
         },
         {
@@ -9974,7 +10027,7 @@
         },
         {
           "name": "hyderabad",
-          "cells": 4063,
+          "cells": 4065,
           "bbox": {
             "west": 78.276611328125,
             "south": 17.27001953125,
@@ -10034,7 +10087,7 @@
         },
         {
           "name": "mumbai",
-          "cells": 3495,
+          "cells": 3496,
           "bbox": {
             "west": 72.78125,
             "south": 18.8828125,

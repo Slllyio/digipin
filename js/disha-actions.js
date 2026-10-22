@@ -117,6 +117,21 @@ const DISHAActions = (() => {
             }
             return color || height ? `Buildings coloured by ${color || 'height'}${height ? `, height from ${height}` : ''}` : 'Buildings back to plain massing';
         },
+        traffichour(p) {
+            const T = _g('TrafficOverlay');
+            if (!T) throw new Error('traffic overlay unavailable');
+            const v = String(p.hour == null ? '' : p.hour).trim().toLowerCase();
+            const h = Number(v.replace(/:00$/, ''));
+            if (v !== 'peak' && v !== 'play' && !(Number.isInteger(h) && h >= 0 && h <= 23)) {
+                throw new Error('trafficHour needs an hour 0–23, "peak" or "play"');
+            }
+            if (!T.isVisible()) T.attach();
+            if (v === 'play') { T.play(); return 'Playing traffic through the day'; }
+            T.stop();
+            if (v === 'peak') { T.setHour(null); return 'Traffic at the worse peak hour'; }
+            T.setHour(h);
+            return `Traffic at ${T.hourLabel(h)}`;
+        },
         query(p) {
             if (!p.id) throw new Error('query needs an id');
             if (typeof QueryEngine === 'undefined' || !QueryEngine.runQuery) throw new Error('query engine unavailable');

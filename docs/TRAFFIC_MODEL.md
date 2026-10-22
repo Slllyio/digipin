@@ -59,7 +59,7 @@ neighbourhood) — `coverage_access` (4+ nearby stops ≈ 100). This is an hones
 timetable frequency; headway/route fields stay null and the widget labels it
 "(OSM coverage)". Swap in a real GTFS feed later for true frequency.
 
-### 5. Demand-driven peak-hour load (`demand_model.py`)
+### 5. Demand-driven traffic load through the day (`demand_model.py`)
 
 Betweenness treats every pair of junctions as equally likely to swap
 traffic. The demand model puts people behind the flows with a four-step
@@ -85,12 +85,41 @@ layer colours roads by the peak LOS, widens them with traffic and animates the
 busiest; the **Traffic load** lens counts residents within 250 m of an
 arterial at LOS E/F.
 
+#### Through the day
+
+Three trip patterns are distributed once on free-flow times and assigned
+separately (each with its own BPR feedback):
+
+| pattern | matrix | volume |
+|---|---|---|
+| `am` 09:00 commute | homes → jobs/activity (β 0.10) | 9.0% of the day |
+| `pm` 18:00 trip home | the morning matrix transposed | 8.8% |
+| `mid` 13:00 errands | homes ↔ activity, shorter trips (β 0.15), half each way | 4.8% |
+
+`HOURLY_SHARE` gives each hour's share of daily traffic (a typical Indian
+arterial profile: sharp 09:00 peak, broad 18:00 peak, midday plateau, quiet
+night; sums to 100) and `HOURLY_MIX` which pattern(s) each hour carries
+(06–11 morning, 16–21 evening, the rest errands, blended on the shoulders).
+A road's V/C at hour *h* is Σₖ mixₖ(h) · V/Cₖ · share(h)/shareₖ, so each
+pattern is reproduced exactly at its own hour. Roads gain `vc_am`, `vc_pm`,
+`vc_mid`, `ffs` (free-flow km/h) and `peak_period`; the `pcu_peak`/`vc_peak`
+/`los_peak`/`speed_peak` fields are now the worse of the two peaks and
+`pcu_daily` sums all 24 hours. `traffic_load` gains `am_vc`, `pm_vc`, `mid_vc`
+and `peak_period` (Morning/Evening). `summary.json` carries the profile under
+`demand_model.hourly`, which the map reads. The **Traffic** layer's legend has
+a clock: drag to any hour or press ▶ to play the day; roads re-colour with
+paint expressions (no reload), also in the pitched 3D view. DISHA can do the
+same with `[ACTION] trafficHour hour:18` (or `peak`, `play`).
+
+Between peak hours the hourly V/C is a linear blend of the assigned patterns,
+not a fresh assignment, so off-peak route choice is approximated.
+
 What it does not know: signals, lane counts, one-way rules, local streets,
 parking, buses' own routes, or today's events. Treat it as where commuting
 demand meets thin capacity, then check against counts or a live feed (TomTom,
 HERE or Mappls, which need a key).
 
-    python -m pipeline.traffic.demand_model --region all     # ~1 min Delhi
+    python -m pipeline.traffic.demand_model --region all     # ~3 min Delhi (three patterns)
 
 ## Pipeline (`pipeline/traffic/`)
 

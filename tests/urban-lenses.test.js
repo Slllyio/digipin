@@ -216,6 +216,15 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(r.metric.value).toBeGreaterThan(0);
         expect(r.headline).toMatch(/16 km\/h/);                    // (8·3000 + 40·1000) / 4000
         expect(L._lenses.traffic(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+        // Time of day: the NW road jams only in the evening.
+        const am = codes.map((_, i) => (i === 0 ? 0.5 : i === n - 1 ? 0.3 : NaN));
+        const ft = L.frameFrom(codes, { 'population.population': pop, 'traffic_load.peak_vc': vc,
+            'traffic_load.am_vc': am, 'traffic_load.pm_vc': vc, 'traffic_load.mid_vc': am });
+        const rt = L._lenses.traffic(ft, {});
+        const st = (k) => rt.stats.find(x => x.label.includes(k));
+        expect(st('morning').value).toMatch(/^0 /);
+        expect(st('evening').value).not.toMatch(/^0 /);
+        expect(rt.headline).toMatch(/morning or evening peak/);
     });
 
     it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {

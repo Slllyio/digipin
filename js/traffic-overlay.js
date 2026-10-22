@@ -21,6 +21,11 @@
  * peak LOS, drawn wider with more traffic, and animated dashes show the
  * direction-free movement on the busiest links.
  *
+ * Time of day: the model also assigns the 18:00 trip home and midday errands
+ * (vc_am / vc_pm / vc_mid per road). The legend's clock slider (and ▶ play)
+ * re-colours every road for any hour 00–23 with paint expressions only, so
+ * scrubbing never reloads data; the same view shows when the map is pitched.
+ *
  * Honest framing: modelled / structural congestion, NOT real-time delays.
  * docs/TRAFFIC_MODEL.md
  */
@@ -66,8 +71,84 @@ const TrafficOverlay = (() => {
     let _mode = 'precomputed';   // or 'class_based' (Overpass fallback)
     let _popup = null;
     let _modelled = false;      // roads carry demand-model peak fields
+    let _timed = false;         // …and the time-of-day fields (vc_am / vc_pm / vc_mid)
     let _anim = null;
     let _unsub = null;
+    let _hour = null;           // null = worse of the two peaks; 0–23 = that hour
+    let _play = null;
+    let _cfg = null;            // summary.json demand_model.hourly
+
+    // Fallback hourly profile, identical to pipeline/traffic/demand_model.py.
+    const HOURLY = {
+        share_pct: [0.6, 0.4, 0.3, 0.3, 0.5, 1.1, 2.4, 4.4, 7.0, 9.0, 7.6, 5.6,
+            5.0, 4.8, 4.6, 4.8, 5.4, 7.0, 8.8, 7.8, 5.6, 3.6, 2.2, 1.2],
+        mix: Array.from({ length: 24 }, (_, h) => (
+            [8, 9, 10].includes(h) ? [1, 0, 0] : h === 7 ? [0.8, 0, 0.2] : [6, 11].includes(h) ? [0.5, 0, 0.5]
+                : [18, 19, 20].includes(h) ? [0, 1, 0] : h === 17 ? [0, 0.8, 0.2] : [16, 21].includes(h) ? [0, 0.5, 0.5]
+                    : [0, 0, 1])),
+        periods: ['am', 'pm', 'mid'],
+        period_share: { am: 0.09, pm: 0.088, mid: 0.048 },
+        bpr: [0.15, 4], max_slowdown: 4,
+        los_bands: [0.35, 0.55, 0.75, 0.90, 1.00],
+    };
+
+    /** Weights turning a road's period V/C (vc_am, vc_pm, vc_mid) into its V/C at ``hour``. */
+    function hourCoef(hour, cfg = HOURLY) {
+        const h = ((Math.round(hour) % 24) + 24) % 24;
+        const out = {};
+        cfg.periods.forEach((k, i) => {
+            out[k] = (cfg.mix[h][i] || 0) * cfg.share_pct[h] / (100 * cfg.period_share[k]);
+        });
+        return out;
+    }
+    /** A road's modelled V/C at ``hour`` (null when the road has no time-of-day fields). */
+    function vcAt(props, hour, cfg = HOURLY) {
+        if (!props || props.vc_am == null) return null;
+        const c = hourCoef(hour, cfg);
+        return Object.keys(c).reduce((t, k) => t + c[k] * (Number(props[`vc_${k}`]) || 0), 0);
+    }
+    /** LOS letter for a V/C ratio (HCM bands as in the pipeline). */
+    function losFor(vc, cfg = HOURLY) {
+        const g = 'ABCDE';
+        for (let i = 0; i < cfg.los_bands.length; i++) if (vc <= cfg.los_bands[i]) return g[i];
+        return 'F';
+    }
+    /** BPR speed (km/h) at a V/C, floored at free-flow ÷ max_slowdown. */
+    function speedAt(ffs, vc, cfg = HOURLY) {
+        if (!(ffs > 0)) return null;
+        const [a, b] = cfg.bpr;
+        return ffs / Math.min(1 + a * Math.pow(vc, b), cfg.max_slowdown);
+    }
+    /** "18:00 · evening peak"-style label for an hour. */
+    function hourLabel(h) {
+        const t = `${String(h).padStart(2, '0')}:00`;
+        const what = h >= 8 && h <= 10 ? 'morning peak' : h >= 17 && h <= 20 ? 'evening peak'
+            : h >= 11 && h <= 16 ? 'midday' : h >= 6 && h < 8 ? 'morning build-up' : h >= 21 || h < 6 ? 'night' : '';
+        return what ? `${t} · ${what}` : t;
+    }
+    /** MapLibre expression for a road's V/C at the coefficients of one hour. */
+    function vcExpression(coef) {
+        return ['+', ...Object.keys(coef).map(k => ['*', coef[k], ['coalesce', ['get', `vc_${k}`], 0]])];
+    }
+    /** Paint values (colour, width multiplier, flow filter) for ``hour`` (null = peak view). */
+    function paintFor(hour, cfg = HOURLY) {
+        if (hour == null) {
+            return {
+                color: ['get', 'color'], w: ['get', 'w'],
+                flow: ['>=', ['coalesce', ['get', 'pcu_peak'], 0], FLOW_MIN_PCU],
+            };
+        }
+        const vc = vcExpression(hourCoef(hour, cfg));
+        const bands = cfg.los_bands;
+        const step = ['step', vc, colorFor('A')];
+        'BCDEF'.split('').forEach((g, i) => step.push(bands[i] + 1e-9, colorFor(g)));
+        const pcu = ['*', ['coalesce', ['get', 'pcu_peak'], 0], ['/', vc, ['max', ['coalesce', ['get', 'vc_peak'], 0], 0.01]]];
+        return {
+            color: ['case', ['has', 'vc_am'], step, ['get', 'color']],
+            w: ['case', ['has', 'vc_am'], ['+', 0.7, ['/', ['min', pcu, 6000], 2000]], ['get', 'w']],
+            flow: ['all', ['has', 'vc_am'], ['>=', pcu, FLOW_MIN_PCU]],
+        };
+    }
 
     /** Colour for a LOS grade ('A'..'F'), transparent when unknown. */
     function colorFor(grade) {
@@ -97,8 +178,7 @@ const TrafficOverlay = (() => {
                 id: LINE_ID, type: 'line', source: SOURCE_ID,
                 paint: {
                     'line-color': ['get', 'color'],
-                    'line-width': ['interpolate', ['linear'], ['zoom'],
-                        10, ['*', 1.2, ['get', 'w']], 16, ['*', 4, ['get', 'w']]],
+                    'line-width': _widthExpr(['get', 'w']),
                     'line-opacity': 0.85,
                 },
             });
@@ -132,6 +212,42 @@ const TrafficOverlay = (() => {
         }
     }
 
+    /** Zoom-scaled line width around a per-road multiplier expression. */
+    function _widthExpr(w) {
+        return ['interpolate', ['linear'], ['zoom'], 10, ['*', 1.2, w], 16, ['*', 4, w]];
+    }
+
+    /** Re-colour the roads for ``hour`` (null = peak view) without touching the data. */
+    function setHour(hour) {
+        _hour = hour == null || !Number.isFinite(Number(hour)) ? null : ((Math.round(hour) % 24) + 24) % 24;
+        if (_map && _map.getLayer && _map.getLayer(LINE_ID)) {
+            const p = paintFor(_hour, _cfg || HOURLY);
+            _map.setPaintProperty(LINE_ID, 'line-color', p.color);
+            _map.setPaintProperty(LINE_ID, 'line-width', _widthExpr(p.w));
+            if (_map.getLayer(FLOW_ID)) _map.setFilter(FLOW_ID, p.flow);
+        }
+        _syncClock();
+        return _hour;
+    }
+    /** Current hour shown (null = worse peak). */
+    function getHour() { return _hour; }
+
+    /** Play the day: advance one hour every ``ms`` until stopped. */
+    function play(ms = 700) {
+        stop();
+        if (_hour == null) setHour(5);
+        _play = setInterval(() => {
+            if (!_active) { stop(); return; }
+            setHour((_hour + 1) % 24);
+        }, ms);
+        _syncClock();
+    }
+    /** Stop the day animation. */
+    function stop() {
+        if (_play) { clearInterval(_play); _play = null; }
+        _syncClock();
+    }
+
     /** Show a pointer cursor over road lines. */
     function _onEnter() { if (_map) _map.getCanvas().style.cursor = 'pointer'; }
     /** Reset the cursor when leaving road lines. */
@@ -148,12 +264,23 @@ const TrafficOverlay = (() => {
         let html = `<div style="font-family:Inter,sans-serif;font-size:12px;">`
             + `<strong>${esc(p.name) || esc(p.highway) || 'Road'}</strong>`
             + `<br>${p.los_peak ? 'Morning peak LOS' : 'LOS'} <strong>${esc(grade || '—')}</strong>`;
-        if (p.pcu_peak != null) {
-            html += `<br>~${esc(Number(p.pcu_peak).toLocaleString('en-IN'))} PCU/h in the busier direction`
+        const vh = _hour != null ? vcAt(p, _hour, _cfg || HOURLY) : null;
+        if (vh != null) {
+            const sp = speedAt(Number(p.ffs), vh, _cfg || HOURLY);
+            html = html.replace(/(Morning peak LOS|LOS) <strong>[^<]*<\/strong>/,
+                `LOS at ${esc(hourLabel(_hour))} <strong>${esc(losFor(vh, _cfg || HOURLY))}</strong>`);
+            html += `<br>V/C ${esc(vh.toFixed(2))}` + (sp != null ? ` · ~${esc(Math.round(sp))} km/h` : '')
+                + `<br>peaks: 09:00 V/C ${esc(p.vc_am)} · 18:00 V/C ${esc(p.vc_pm)} · 13:00 V/C ${esc(p.vc_mid)}`
+                + (p.pcu_daily != null ? `<br>~${esc(Number(p.pcu_daily).toLocaleString('en-IN'))} PCU/day` : '')
+                + `<br><span style="opacity:.7">modelled, not counts</span>`;
+        } else if (p.pcu_peak != null) {
+            const when = p.peak_period === 'pm' ? 'evening peak (18:00)' : p.peak_period === 'am' ? 'morning peak (09:00)' : 'peak hour';
+            html = html.replace('Morning peak LOS', p.peak_period === 'pm' ? 'Evening peak LOS' : 'Morning peak LOS');
+            html += `<br>~${esc(Number(p.pcu_peak).toLocaleString('en-IN'))} PCU/h in the busier direction, ${esc(when)}`
                 + ` · V/C ${esc(p.vc_peak)}`
                 + (p.speed_peak != null ? `<br>peak speed ~${esc(p.speed_peak)} km/h` : '')
                 + (p.pcu_daily != null ? ` · ~${esc(Number(p.pcu_daily).toLocaleString('en-IN'))} PCU/day` : '')
-                + `<br><span style="opacity:.7">modelled (homes → jobs), not counts</span>`;
+                + `<br><span style="opacity:.7">modelled (homes ↔ jobs), not counts</span>`;
             if (p.los_grade) html += `<br>structural LOS ${esc(p.los_grade)}`;
         } else {
             if (p.congestion_risk != null) html += ` · risk ${esc(p.congestion_risk)}/100`;
@@ -195,6 +322,15 @@ const TrafficOverlay = (() => {
             const gj = await r.json();
             _decorate(gj.features || []);
             _modelled = (gj.features || []).some(f => f.properties && f.properties.pcu_peak != null);
+            _timed = (gj.features || []).some(f => f.properties && f.properties.vc_am != null);
+            _cfg = null;
+            if (_timed) {
+                try {
+                    const sr = await fetch(geojsonUrl().replace('road_los.geojson', 'summary.json'), { cache: 'force-cache', signal });
+                    const h = sr.ok ? ((await sr.json()).demand_model || {}).hourly : null;
+                    if (h && Array.isArray(h.share_pct) && h.share_pct.length === 24) _cfg = { ...HOURLY, ...h };
+                } catch { /* fall back to the built-in profile */ }
+            }
             return gj;
         } catch { return null; }
     }
@@ -249,6 +385,7 @@ const TrafficOverlay = (() => {
         if (signal.aborted || !_active) return;
         _paint(gj);
         _renderLegend();
+        if (_hour != null) setHour(_timed ? _hour : null);
         _animate();
         if (typeof App !== 'undefined') {
             App.showToast('Traffic',
@@ -291,18 +428,62 @@ const TrafficOverlay = (() => {
         el.style.cssText = `position:absolute;bottom:24px;left:96px;z-index:5;background:${pal.surface};`
             + `border:1px solid ${pal.border};border-radius:10px;padding:12px 14px;color:${pal.ink};`
             + 'font:12px/1.4 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.32);backdrop-filter:blur(8px);';
-        const rows = BANDS.map(b => `<div style="display:flex;align-items:center;gap:6px;margin:2px 0;">`
-            + `<span style="width:16px;height:4px;border-radius:2px;background:${b.color};flex:none;"></span>`
-            + `<span style="color:${pal.sub};">${b.label}</span></div>`).join('');
+        // With the clock the legend is taller, so LOS bands collapse into one strip.
+        const rows = _timed && _mode === 'precomputed'
+            ? `<div style="display:flex;gap:2px;margin:2px 0;" aria-label="Level of Service A free-flow to F breakdown">`
+                + BANDS.slice().reverse().map(b => `<div title="${b.label}" style="flex:1;text-align:center;">`
+                    + `<div style="height:5px;border-radius:2px;background:${b.color};"></div>`
+                    + `<div style="color:${pal.sub};font-size:11px;">${b.grade}</div></div>`).join('')
+                + `</div><div style="display:flex;justify-content:space-between;color:${pal.sub};font-size:11px;"><span>free-flow</span><span>breakdown</span></div>`
+            : BANDS.map(b => `<div style="display:flex;align-items:center;gap:6px;margin:2px 0;">`
+                + `<span style="width:16px;height:4px;border-radius:2px;background:${b.color};flex:none;"></span>`
+                + `<span style="color:${pal.sub};">${b.label}</span></div>`).join('');
         const note = _mode !== 'precomputed'
             ? 'Class-based estimate (no centrality) · run the pipeline for full LOS'
             : _modelled
-                ? 'Modelled morning peak hour: trips from homes to jobs routed on the arterials (volume ÷ capacity → LOS). Wider = more traffic; moving dashes = busiest roads. Not live counts.'
+                ? (_timed
+                    ? 'Modelled from homes, jobs and errands routed on the arterials (volume ÷ capacity → LOS). Wider = more traffic; moving dashes = busiest roads. Not live counts.'
+                    : 'Modelled morning peak hour: trips from homes to jobs routed on the arterials (volume ÷ capacity → LOS). Wider = more traffic; moving dashes = busiest roads. Not live counts.')
                 : 'Structural congestion · betweenness ÷ road capacity → LOS';
-        el.innerHTML = `<div style="font-weight:600;font-size:15px;margin-bottom:8px;color:${pal.primary};">Traffic — ${_modelled ? 'peak-hour load' : 'Level of Service'}</div>`
+        el.innerHTML = `<div style="font-weight:600;font-size:15px;margin-bottom:8px;color:${pal.primary};">Traffic — ${_timed ? 'through the day' : _modelled ? 'peak-hour load' : 'Level of Service'}</div>`
             + rows
             + `<div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><span style="width:16px;height:4px;background:#000;opacity:.55;flex:none;"></span><span style="color:${pal.sub};">critical link</span></div>`
+            + (_timed && _mode === 'precomputed' ? _clockHtml(pal) : '')
             + `<div style="margin-top:6px;color:${pal.sub};font-size:11px;max-width:240px;">${note}</div>`;
+        if (_timed && _mode === 'precomputed') _wireClock(el);
+        _syncClock();
+    }
+
+    /** Time-of-day control: play button, hour slider, "worse peak" reset. */
+    function _clockHtml(pal) {
+        const btn = `background:transparent;border:1px solid ${pal.border};color:${pal.ink};border-radius:6px;`
+            + 'padding:2px 8px;font:12px system-ui,sans-serif;cursor:pointer;';
+        return `<div style="margin-top:8px;padding-top:8px;border-top:1px solid ${pal.border};">`
+            + `<div style="display:flex;align-items:center;gap:6px;">`
+            + `<button type="button" data-tclock="play" aria-label="Play the day" style="${btn}">▶</button>`
+            + `<input type="range" min="0" max="23" step="1" value="${_hour == null ? 9 : _hour}" data-tclock="hour" aria-label="Hour of day" style="flex:1;min-width:120px;accent-color:${pal.primary};">`
+            + `<button type="button" data-tclock="peak" style="${btn}">Peak</button></div>`
+            + `<div data-tclock="label" aria-live="polite" style="margin-top:4px;color:${pal.ink};font-weight:600;"></div></div>`;
+    }
+    function _wireClock(el) {
+        const q = (k) => el.querySelector(`[data-tclock="${k}"]`);
+        const r = q('hour');
+        if (r) r.addEventListener('input', () => { const h = Number(r.value); stop(); setHour(h); });
+        const pb = q('play');
+        if (pb) pb.addEventListener('click', () => (_play ? stop() : play()));
+        const pk = q('peak');
+        if (pk) pk.addEventListener('click', () => { stop(); setHour(null); });
+    }
+    /** Reflect the current hour / play state in the legend clock. */
+    function _syncClock() {
+        if (typeof document === 'undefined') return;
+        const el = document.getElementById(LEGEND_ID);
+        if (!el) return;
+        const q = (k) => el.querySelector(`[data-tclock="${k}"]`);
+        const r = q('hour'), lab = q('label'), pb = q('play');
+        if (r && _hour != null) r.value = String(_hour);
+        if (lab) lab.textContent = _hour == null ? 'Worse of the 09:00 / 18:00 peaks' : hourLabel(_hour);
+        if (pb) { pb.textContent = _play ? '❚❚' : '▶'; pb.setAttribute('aria-label', _play ? 'Pause' : 'Play the day'); }
     }
     /** Remove the legend element if present. */
     function _removeLegend() { const el = document.getElementById(LEGEND_ID); if (el) el.remove(); }
@@ -320,6 +501,7 @@ const TrafficOverlay = (() => {
         _active = false;
         if (_abort) { _abort.abort(); _abort = null; }
         if (_anim) { clearInterval(_anim); _anim = null; }
+        stop();
         if (_unsub) { _unsub(); _unsub = null; }
         if (_popup) { _popup.remove(); _popup = null; }
         _removeLegend();
@@ -338,7 +520,8 @@ const TrafficOverlay = (() => {
     /** Whether the overlay is currently active. */
     function isVisible() { return _active; }
 
-    return { attach, detach, toggle, isVisible, refresh, colorFor, gradeForRoad, widthFor, geojsonUrl, BANDS };
+    return { attach, detach, toggle, isVisible, refresh, colorFor, gradeForRoad, widthFor, geojsonUrl, BANDS,
+        setHour, getHour, play, stop, hourCoef, vcAt, losFor, speedAt, hourLabel, paintFor, HOURLY };
 })();
 
 if (typeof window !== 'undefined') window.TrafficOverlay = TrafficOverlay;

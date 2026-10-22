@@ -45,6 +45,12 @@ const DISHATools = (() => {
             example: '[ACTION] overlay name:heat',
         },
         {
+            name: 'trafficHour', type: 'traffichour', kind: 'state', agentOnly: false,
+            args: { hour: { type: 'string', required: true } },
+            desc: 'Show modelled road traffic at an hour of day (0–23), "peak" for the worse of the two peaks, or "play" to animate the day.',
+            example: '[ACTION] trafficHour hour:18',
+        },
+        {
             name: 'query', type: 'query', kind: 'state', agentOnly: false,
             args: { id: { type: 'string', required: true } },
             desc: 'Run a saved planning query (e.g. best_residential, hospital, flood) and rank cells.',

@@ -88,8 +88,9 @@ const UrbanLenses = (() => {
             question: 'Who lives next to roads that jam in the morning peak?',
             field: { key: 'traffic_vc', label: 'Worst peak-hour V/C within 250 m', unit: 'ratio', higherIs: 'worse', ramp: 'heat' },
             extra: [{ key: 'traffic_speed', label: 'Peak-hour arterial speed nearby', unit: 'km/h', higherIs: 'better', ramp: 'heat' }],
-            needs: ['traffic_load.peak_vc', 'traffic_load.peak_speed_kmh', 'traffic_load.delay_pct', 'traffic_load.daily_vkm'],
-            method: `Morning peak hour from the demand model (pipeline/traffic/demand_model.py): residents make motorised trips to jobs and activity floor space, distributed by a gravity model and routed on the OpenStreetMap arterials with BPR congestion feedback. For each home cell, the worst volume/capacity ratio on any arterial within ${ROAD_KM * 1000} m (its own or a neighbouring cell); at or above ${JAM_VC} is Level of Service E/F (at or over capacity). Speeds and delay are vehicle-km weighted. A strategic model with stated assumptions, not traffic counts.`,
+            needs: ['traffic_load.peak_vc', 'traffic_load.peak_speed_kmh', 'traffic_load.delay_pct', 'traffic_load.daily_vkm',
+                'traffic_load.am_vc', 'traffic_load.pm_vc', 'traffic_load.mid_vc'],
+            method: `Peak hours from the demand model (pipeline/traffic/demand_model.py): residents make motorised trips to jobs and activity floor space, distributed by a gravity model and routed on the OpenStreetMap arterials with BPR congestion feedback; the 09:00 commute, the 18:00 trip home and midday errands are assigned separately and the worse peak counts. For each home cell, the worst volume/capacity ratio on any arterial within ${ROAD_KM * 1000} m (its own or a neighbouring cell); at or above ${JAM_VC} is Level of Service E/F (at or over capacity). Speeds and delay are vehicle-km weighted. A strategic model with stated assumptions, not traffic counts.`,
             refs: 'Ortúzar & Willumsen, Modelling Transport (4-step model); BPR (1964) link performance; IRC 106-1990 urban road capacities; HCM LOS' },
         { id: 'fifteen', equity: true, title: '15-minute completeness', icon: '🚶',
             question: 'Can people reach daily needs on foot?',
@@ -763,6 +764,16 @@ const UrbanLenses = (() => {
         }
         const total = _sumOver(pop, idx, () => true) || 1;
         const jam = _sumOver(pop, idx, i => near[i] >= JAM_VC);
+        // Same 250 m test per time of day, where the model has the three patterns.
+        const byPeriod = {};
+        for (const [k, col] of [['morning', 'traffic_load.am_vc'], ['evening', 'traffic_load.pm_vc'], ['midday', 'traffic_load.mid_vc']]) {
+            const v = c[col];
+            if (!v) continue;
+            byPeriod[k] = _sumOver(pop, idx, i => {
+                for (const [a, b] of off) { const j = g.cellAt(i, a, b); if (j >= 0 && v[j] >= JAM_VC) return true; }
+                return false;
+            });
+        }
         const nearRoad = _sumOver(pop, idx, i => _fin(near[i]));
         const all = [];
         for (let i = 0; i < n; i++) if (_fin(vc[i])) all.push(i);
@@ -776,10 +787,13 @@ const UrbanLenses = (() => {
         if (vSpeed != null) stats.push({ label: 'Average peak-hour arterial speed (per vehicle-km)', value: `${_round(vSpeed)} km/h` });
         if (vDelay != null) stats.push({ label: 'Peak-hour delay over free flow (per vehicle-km)', value: `+${_round(vDelay)}% (${_round(1 + vDelay / 100, 1)}× the time)` });
         if (km) stats.push({ label: 'Vehicle-km on arterials per day (PCU)', value: `${_people(km)} km` });
+        for (const [k, v] of Object.entries(byPeriod)) {
+            stats.push({ label: `Residents beside a jammed arterial: ${k} (${{ morning: '09:00', evening: '18:00', midday: '13:00' }[k]})`, value: `${_people(v)} (${_round(100 * v / total)}%)` });
+        }
         return {
             columns: { traffic_vc: near, traffic_speed: speed }, idx, weightKey: 'traffic_vc',
             metric: { label: 'Residents beside a jammed arterial', value: _round(100 * jam / total), unit: '%', higherIs: 'worse' },
-            headline: `${_people(jam)} people (${_round(100 * jam / total)}% of residents) live within 250 m of an arterial that runs at or over capacity in the morning peak`
+            headline: `${_people(jam)} people (${_round(100 * jam / total)}% of residents) live within 250 m of an arterial that runs at or over capacity in ${byPeriod.morning != null ? 'the morning or evening peak' : 'the morning peak'}`
                 + (vSpeed != null ? `; arterial traffic averages ${_round(vSpeed)} km/h` : '')
                 + (vDelay != null ? ` and a peak trip on them takes ${_round(1 + vDelay / 100, 1)}× its free-flow time.` : '.'),
             stats,

@@ -50,3 +50,41 @@ describe('TrafficOverlay demand-model fields', () => {
         expect(O.geojsonUrl('delhi')).toBe('./data/traffic/delhi/road_los.geojson');
     });
 });
+
+describe('TrafficOverlay time of day', () => {
+    const p = { vc_am: 1.0, vc_pm: 0.8, vc_mid: 0.4, vc_peak: 1.0, pcu_peak: 1800, ffs: 45 };
+    it('reproduces each pattern at its own peak hour', () => {
+        expect(O.vcAt(p, 9)).toBeCloseTo(1.0, 9);
+        expect(O.vcAt(p, 18)).toBeCloseTo(0.8, 9);
+        expect(O.vcAt(p, 13)).toBeCloseTo(0.4, 9);
+        expect(O.vcAt(p, 3)).toBeLessThan(0.1);
+        expect(O.vcAt({ los_peak: 'C' }, 9)).toBeNull();
+    });
+    it('matches the pipeline profile (sums to 100, mixes sum to 1)', () => {
+        expect(O.HOURLY.share_pct.reduce((a, b) => a + b, 0)).toBeCloseTo(100, 9);
+        for (const m of O.HOURLY.mix) expect(m.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 9);
+        expect(O.HOURLY.share_pct[9] / 100).toBeCloseTo(O.HOURLY.period_share.am, 9);
+    });
+    it('grades and slows roads like the model', () => {
+        expect(O.losFor(0.3)).toBe('A');
+        expect(O.losFor(0.95)).toBe('E');
+        expect(O.losFor(1.3)).toBe('F');
+        expect(O.speedAt(45, 0)).toBe(45);
+        expect(O.speedAt(45, 1)).toBeCloseTo(45 / 1.15, 6);
+        expect(O.speedAt(45, 5)).toBeCloseTo(45 / 4, 6);   // floored at a quarter of free flow
+    });
+    it('labels hours and builds hour paint expressions', () => {
+        expect(O.hourLabel(9)).toBe('09:00 · morning peak');
+        expect(O.hourLabel(18)).toBe('18:00 · evening peak');
+        expect(O.paintFor(null).color).toEqual(['get', 'color']);
+        const e = O.paintFor(18);
+        expect(e.color[0]).toBe('case');
+        expect(JSON.stringify(e.color)).toContain('vc_pm');
+        expect(O.hourCoef(18).am).toBe(0);
+        expect(O.hourCoef(18).pm).toBeCloseTo(1, 9);
+    });
+    it('setHour wraps and clears without a map', () => {
+        expect(O.setHour(25)).toBe(1);
+        expect(O.setHour(null)).toBeNull();
+    });
+});
