@@ -93,8 +93,11 @@ jobs:
                 python -m pipeline.traffic.bus_stop_heat --region "$DIGIPIN_REGION" --refresh || python -m pipeline.traffic.bus_stop_heat --region "$DIGIPIN_REGION" || echo "bus stop heat bake skipped"
                 python -m pipeline.traffic.parking --region "$DIGIPIN_REGION" || echo "parking bake skipped"
                 python -m pipeline.traffic.commute_carbon --region "$DIGIPIN_REGION" || echo "commute carbon bake skipped"
+                python -m pipeline.realestate.land_value --region "$DIGIPIN_REGION" || echo "land value bake skipped"
+                python -m pipeline.realestate.supply --region "$DIGIPIN_REGION" || echo "real-estate supply bake skipped"
+                if [ "$DIGIPIN_REGION" = delhi ]; then python -m pipeline.realestate.calibrate || echo "Delhi calibration skipped"; fi
               '; then
-              git add data/vectors/ data/traffic/ data/safety/ data/cells/
+              git add data/vectors/ data/traffic/ data/safety/ data/cells/ data/realestate/
               git diff --staged --quiet || git commit -qm "chore(cells): refresh traffic + mobility for $r"
               built="$built $r"
             else

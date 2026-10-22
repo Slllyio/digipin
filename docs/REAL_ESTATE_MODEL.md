@@ -89,3 +89,59 @@ Sources:
 - [Urban green space & housing value (Taylor & Francis)](https://www.tandfonline.com/doi/full/10.1080/19498276.2024.2432758)
 - [Neighbourhood services & land values, hedonic model (Springer)](https://link.springer.com/article/10.1007/s10708-019-10127-w)
 - [House prices & flood-risk exposure (Springer)](https://link.springer.com/article/10.1007/s11146-022-09930-z)
+
+## City-wide land value, supply and lenses (2026-10-22)
+
+The per-cell `RealEstateModel` above scores one place at a time from live data.
+The pipeline in `pipeline/realestate/` bakes the same ideas onto every L7 block
+(~245 m) of all 13 cities, so they can be mapped, ranked and asked about.
+
+**`land_value` (pipeline/realestate/land_value.py).** A hedonic land value
+surface. Each block's value index is `100·exp(Σ premiums)`, re-centred so the
+city's median home is 100. Premiums, in log points:
+
+| Driver | Rule |
+|---|---|
+| Jobs | 0.35·ln(reach / city median), ±0.6; reach = 0.6·car + 0.4·transit share of jobs within 45 min (`job_access`) |
+| Metro | +0.10 within a 6-minute walk, tapering to 0 at 20 minutes (`rail_access`) |
+| Amenities | 0.08·ln((1 + POIs within ~1 km) / (1 + median)) (`osm_amenities`) |
+| Neighbourhood | 0.20·(RWI − median) + 0.30·ln(average footprint / median), ±0.4 (Meta RWI, Open Buildings) |
+| Green | 0.004 per point of canopy within ~500 m above the median, ±0.06 |
+| Risk | −0.09 in the 1-in-100-year floodplain (≥30% of the block), −0.05 / −0.02 for very high / high waterlogging |
+| Noise | −0.006 per dB of road noise above 60 dB Lden, at most −0.08 |
+
+Each premium is also stored (`prem_*_pct`) so the map can show why a block is
+dear. `data/realestate/anchors.json` holds NHB RESIDEX year-on-year growth per
+city (Q3 FY26) for the level; the index supplies the spatial pattern.
+
+**`re_supply` (pipeline/realestate/supply.py).** Floor area built 2016–2023
+(new Open Buildings 2.5D Temporal buildings × average footprint × storeys),
+construction intensity, vacant buildable land (WorldCover bare/grass/shrub in
+the urban area, outside water, floodplain and parks), FAR now (GHSL volume ÷
+3 m) and headroom under each city's typical base FAR.
+
+**Delhi check (pipeline/realestate/calibrate.py).** Delhi's colonies are
+categorised A–H for circle rates (2014 revision: ₹7.74 lakh/m² for A down to
+₹23,280 for H). 244 colonies from the MCD colony list were placed on the map by
+name (Overture divisions, then OpenStreetMap; names that match several far-apart
+places are dropped) into `data/realestate/delhi_colonies.geojson`. Their value
+index ranks with **Spearman 0.67** against the category rate. Refitting the
+seven premiums by cross-validated ridge regression did not beat the
+literature weights (0.65), so the weights stand. The index is mapped to rupees
+by rank matching at the colony deciles (`calibration.knots` in
+`data/realestate/delhi.json`): 77% of colonies land within 2× of their own
+category rate. Circle rates are government floors that lag the market,
+furthest in the dearest colonies.
+
+**Lenses (js/urban-lenses-realestate.js).** `landvalue` (spread and drivers,
+₹ circle-rate equivalent in Delhi), `buildhot` (construction hotspots, share
+near metro and on risky land), `vacant` (vacant land ranked by value, homes at
+base FAR), `rentdemand` (job reach high relative to land value), `affordability`
+(land value rank minus wealth rank; displacement pressure) and `undervalued`
+(access rank minus value rank plus momentum, no flood flag). DISHA routes
+questions on land prices, circle rates, rent, displacement, vacant land,
+construction and "where should I invest" to them. Buildings can be coloured by
+`land_value:value_index` in 3D (Building data panel, or `bc=` in a share link).
+
+Rerun after the traffic and access datasets:
+`python -m pipeline.realestate.land_value --region all && python -m pipeline.realestate.supply --region all && python -m pipeline.realestate.calibrate`.
