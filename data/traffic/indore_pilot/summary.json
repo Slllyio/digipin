@@ -625,31 +625,5 @@
       "reach_m": 300.0,
       "method": "CRTN 1988 + Abbott & Nelson 2002 Lden"
     }
-  },
-  "emergency_access": {
-    "hospitals": 387,
-    "pct_within_10_night": 88.9,
-    "pct_within_10_am": 88.7,
-    "pct_within_10_pm": 88.7,
-    "pct_over_20_peak": 3.1,
-    "source": "Overture Maps places 2026-10-21.0; demand model link times"
-  },
-  "rail_access": {
-    "metro_stations": 5,
-    "rail_stations": 17,
-    "pct_within_10_walk_metro": 0.2,
-    "pct_within_10_walk_any": 6.0,
-    "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
-  },
-  "ev_charging": {
-    "chargers": 2,
-    "chargers_by_source": {
-      "overture": 2
-    },
-    "parking": 8,
-    "fuel": 175,
-    "chargers_per_lakh": 0.05,
-    "pct_vkm_within_2km": 9.3,
-    "pct_pop_within_2km": 13.0
   }
 }
