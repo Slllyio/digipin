@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -112,5 +112,43 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.housing_gap[0]).toBeGreaterThan(200);
         expect(r.stats.find(s => s.label.startsWith('Shortfall pocket 1')).value).toMatch(/no vacant land/);
         expect(L._lenses.housinggap(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('damage() and ead(): JRC curve, protection standard', () => {
+        expect(RE.damage(0)).toBe(0);
+        expect(RE.damage(0.25)).toBeCloseTo(0.165, 3);
+        expect(RE.damage(10)).toBe(1);
+        expect(RE.ead(0, 100, 2)).toBeCloseTo((0.1 - 0.01) * 50 + 1, 6);    // unprotected: 10→100 trapezoid + tail
+        expect(RE.ead(50, 100, 100)).toBeCloseTo(1, 6);                      // protected to 100-yr: only the tail
+        expect(RE.ead(50, 100, 25)).toBeLessThan(RE.ead(50, 100, 2));
+    });
+
+    it('floodloss: buildings in the floodplain lose money every year', () => {
+        const cover = codes.map(() => 30), f100 = codes.map((_, i) => (i < SIZE ? 100 : 0));
+        const f10 = f100.map(v => v / 2), dm = f100.map(v => v / 100 * 1.5);
+        const f = L.frameFrom(codes, { ...base, 'building_stock.cover_2023_pct': cover, 'water.flood_rp100_pct': f100, 'water.flood_rp10_pct': f10, 'water.flood_rp100_depth_m': dm });
+        const r = L._lenses.floodloss(f, {});
+        expect(r.idx).toHaveLength(SIZE);
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.stats[0].value).toMatch(/crore/);
+        expect(L._lenses.floodloss(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('encroach: former water built up, floodplain building', () => {
+        const wl = codes.map((_, i) => (i === 0 ? 40 : 0)), wb = codes.map((_, i) => (i === 0 ? 20 : 0));
+        const fn = codes.map((_, i) => (i === n - 1 ? 5 : 0));
+        const f = L.frameFrom(codes, { ...base, 'encroachment.water_lost_pct': wl, 'encroachment.water_built_pct': wb, 'encroachment.flood_new_pct': fn });
+        const r = L._lenses.encroach(f, {});
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.stats.filter(s => s.label.startsWith('Encroachment hotspot'))).toHaveLength(2);
+        expect(r.headline).toMatch(/floodplain/);
+    });
+
+    it('similarText(): reference profile and ranked matches', () => {
+        const t = RE.similarText({ fromCity: 'delhi', toCity: 'pune', ref: { code: '39J4M98', profile: [{ label: 'land value', pct: 98 }, { label: 'density', pct: 50 }, { label: 'wealth', pct: 3 }] },
+            matches: [{ code: '4FP4C73', similarity: 94, differs: [] }, { code: '4FP493F', similarity: 90, differs: ['more high-rise'] }] });
+        expect(t).toMatch(/land value 98th percentile, wealth 3rd percentile, density 50th percentile/);
+        expect(t).toMatch(/2\. 4FP493F: 90% similar; more high-rise/);
+        expect(RE.similarText(null)).toMatch(/Click a block/);
     });
 });

@@ -16,6 +16,9 @@ const UrbanLensesRealEstate = (() => {
     const GAP_VALUE = 0.8, GAP_WEALTH = 0.4, POCKET_POP = 200;
     const UPSIDE_MIN = 0.25, MAX_VALUE_RANK = 0.6;
     const COUNT_BIAS = 1.5, NET_EFF = 0.7, HH_SIZE = 4.3, HOME_FLOOR = 50, RESI_SHARE = 0.75, BUILD_YEARS = 7, YEARS_TO_2030 = 7, LOCAL_KM = 1, GAP_MIN = 200;
+    // JRC global depth-damage function, residential, Asia (Huizinga et al. 2017): [depth m, damage factor].
+    const DEPTH_DAMAGE = [[0, 0], [0.5, 0.33], [1, 0.49], [1.5, 0.62], [2, 0.72], [3, 0.87], [4, 0.93], [5, 0.98], [6, 1]];
+    const MAX_DMG = 30000, BUILD_COST = 22000, RP10_DEPTH = 0.6, DISCOUNT = 0.06, WLOG_EAD = [[65, 0.01], [45, 0.004]], PROTECT_RP = 25;
     const OLD_YEAR = 2000, OLD_1975 = 20, REDEV_M = 1.5, TOWER_M = 15, FRONTIER = 10;
     // Typical base FAR per city, as pipeline/realestate/supply.py BASE_FAR.
     const BASE_FAR = { delhi: 2.0, mumbai: 2.5, bengaluru: 2.25, chennai: 2.0, hyderabad: 3.0, pune: 2.0, ahmedabad: 2.7,
@@ -399,6 +402,178 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    /** Depth-damage factor (0–1), linear between the JRC Asia residential points. */
+    function damage(depth) {
+        if (!_fin(depth) || depth <= 0) return 0;
+        for (let k = 1; k < DEPTH_DAMAGE.length; k++) {
+            const [d0, f0] = DEPTH_DAMAGE[k - 1], [d1, f1] = DEPTH_DAMAGE[k];
+            if (depth <= d1) return f0 + (f1 - f0) * (depth - d0) / (d1 - d0);
+        }
+        return 1;
+    }
+
+    /**
+     * Expected annual damage from the 10- and 100-year events: trapezoid over exceedance probability above the
+     * protection standard (damage at the protected return period interpolated in log return period), then the
+     * 100-year damage for rarer events. protectRp ≤ 2 means no protection.
+     */
+    function ead(d10, d100, protectRp = PROTECT_RP) {
+        const pts = [[2, 0], [10, d10], [100, d100]];
+        const at = rp => {
+            if (rp <= 2) return 0;
+            const k = rp <= 10 ? 1 : 2, [r0, v0] = pts[k - 1], [r1, v1] = pts[k];
+            return v0 + (v1 - v0) * (Math.log(rp) - Math.log(r0)) / (Math.log(r1) - Math.log(r0));
+        };
+        const rp0 = Math.min(100, Math.max(2, protectRp));
+        const knots = [[rp0, at(rp0)], ...pts.filter(([r]) => r > rp0)];
+        let e = 0;
+        for (let k = 1; k < knots.length; k++) e += (1 / knots[k - 1][0] - 1 / knots[k][0]) * (knots[k - 1][1] + knots[k][1]) / 2;
+        return e + 0.01 * d100;
+    }
+
+    /** Climate risk to property: expected yearly flood and waterlogging damage to buildings, in rupees. */
+    function floodloss(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const f100 = c['water.flood_rp100_pct'], f10 = c['water.flood_rp10_pct'], dm = c['water.flood_rp100_depth_m'];
+        const cover = c['building_stock.cover_2023_pct'], ht = c['building_stock.height_2023_m'], wl = c['waterlogging.waterlogging_index'];
+        if (!f100 || !dm || !cover) return null;
+        const loss = new Float64Array(n).fill(NaN), pct = new Float64Array(n).fill(NaN), cells = [];
+        let tot = 0, stock = 0, river = 0, pluvial = 0;
+        for (let i = 0; i < n; i++) {
+            if (!(cover[i] > 0)) continue;
+            const foot = cover[i] / 100 * g.dx * g.dy * 1e6;
+            const floors = Math.max(1, (_fin(ht && ht[i]) ? ht[i] : 3) / 3);
+            const value = foot * floors * BUILD_COST;
+            stock += value;
+            let e = 0;
+            if (f100[i] > 0 && dm[i] > 0) {
+                const depth = dm[i] / (f100[i] / 100);
+                const d100 = f100[i] / 100 * foot * MAX_DMG * damage(depth);
+                const d10 = (_fin(f10 && f10[i]) ? f10[i] : 0) / 100 * foot * MAX_DMG * damage(depth * RP10_DEPTH);
+                const r = ead(d10, d100);
+                e += r; river += r;
+            }
+            if (wl && _fin(wl[i])) {
+                const w = WLOG_EAD.find(([t]) => wl[i] >= t);
+                if (w) { const r = foot * MAX_DMG * w[1]; e += r; pluvial += r; }
+            }
+            if (e <= 0) continue;
+            cells.push(i); tot += e;
+            loss[i] = e / 1e5;
+            pct[i] = 100 * e / value;
+        }
+        if (cells.length < 5) return null;
+        const share = 100 * tot / (stock || 1);
+        const capital = tot / DISCOUNT;
+        const stats = [
+            { label: 'Expected flood and waterlogging damage to buildings a year', value: `₹${_people(tot / 1e7)} crore`, raw: _round(tot / 1e7) },
+            { label: `… river flooding beyond 1-in-${PROTECT_RP}-year protection vs waterlogging`, value: `${_round(100 * river / tot)}% / ${_round(100 * pluvial / tot)}%` },
+            { label: 'As a share of the building stock\'s replacement value', value: `${_round(share, 2)}% a year` },
+            { label: `Value at risk if buyers price it in (capitalised at ${DISCOUNT * 100}%)`, value: `₹${_people(capital / 1e7)} crore` },
+        ];
+        spaced(g, cells, loss).forEach((i, k) => stats.push({ label: `Costliest block ${k + 1}: ${g.codes[i]}`, value: `₹${_round(loss[i], 1)} lakh a year, ${_round(pct[i], 1)}% of its building value` }));
+        const cap = wquantile(loss, null, cells, 0.98);
+        for (const i of cells) if (loss[i] > cap) loss[i] = cap;
+        return {
+            columns: { flood_loss: loss, flood_loss_pct: pct }, idx: cells, weightKey: 'flood_loss',
+            metric: { label: 'Expected yearly flood damage, share of building value', value: _round(share, 2), unit: '%/yr', higherIs: 'worse' },
+            headline: `Floods and waterlogging are expected to cost the city's buildings about ₹${_people(tot / 1e7)} crore a year (${_round(share, 2)}% of their replacement value); priced into property, that is about ₹${_people(capital / 1e7)} crore of value at risk.`,
+            stats,
+        };
+    }
+
+    /** Encroachment watch: water bodies, floodplains and tree cover lost to building. */
+    function encroach(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const wl = c['encroachment.water_lost_pct'], wb = c['encroachment.water_built_pct'], fn = c['encroachment.flood_new_pct'];
+        const tl = c['encroachment.tree_lost_pct'], tb = c['encroachment.tree_built_pct'], rb = c['encroachment.recent_built_pct'];
+        if (!wl || !wb) return null;
+        const ha = i => g.dx * g.dy * 100;                                  // block area in ha
+        const sum = a => (a ? Array.from(a).reduce((s, v, i) => s + (_fin(v) ? v / 100 * ha(i) : 0), 0) : 0);
+        const score = new Float64Array(n).fill(NaN), cells = [];
+        for (let i = 0; i < n; i++) {
+            const v = (_fin(wb[i]) ? wb[i] : 0) + (fn && _fin(fn[i]) ? 3 * fn[i] : 0) + (tb && _fin(tb[i]) ? tb[i] : 0) + (rb && _fin(rb[i]) ? 2 * rb[i] : 0);
+            if (_fin(wl[i]) || v > 0) { score[i] = v; cells.push(i); }
+        }
+        if (!cells.length) return null;
+        const hot = cells.filter(i => score[i] >= 2);
+        const stats = [
+            { label: 'Surface water lost since 1984', value: `${_round(sum(wl))} ha` },
+            { label: '… of it now built up', value: `${_round(sum(wb))} ha`, raw: _round(sum(wb)) },
+        ];
+        if (fn) stats.push({ label: 'New building footprint in the 100-year floodplain, 2016→2023', value: `${_round(sum(fn), 1)} ha` });
+        if (tl) stats.push({ label: 'Tree cover lost 2001–2024 / now built up', value: `${_round(sum(tl))} ha / ${_round(sum(tb))} ha` });
+        if (rb) stats.push({ label: 'Built since 2023 on former water, floodplain or lost trees', value: `${_round(sum(rb), 1)} ha` });
+        spaced(g, hot, score).forEach((i, k) => stats.push({ label: `Encroachment hotspot ${k + 1}: ${g.codes[i]}`, value: [wb[i] >= 1 ? `${_round(wb[i])}% former water built` : '', fn && fn[i] >= 0.5 ? `${_round(fn[i], 1)}% new floodplain building` : '', tb && tb[i] >= 1 ? `${_round(tb[i])}% lost trees built` : '', rb && rb[i] >= 0.5 ? `${_round(rb[i], 1)}% built since 2023` : ''].filter(Boolean).join(', ') }));
+        return {
+            columns: { encroach_score: score }, idx: cells, weightKey: 'encroach_score', noHotspots: hot.length < 10,
+            metric: { label: 'Former water now built up', value: _round(sum(wb)), unit: 'ha', higherIs: 'worse' },
+            headline: `About ${_round(sum(wb))} ha of former lakes, ponds and river channels are now built up${fn ? `, and ${_round(sum(fn), 1)} ha of new building footprint went into the 100-year floodplain between 2016 and 2023` : ''}.`,
+            stats,
+        };
+    }
+
+    // Features for "places like this": each block's percentile within its own city, so a match means the same
+    // standing in the target city (the "Hauz Khas of Pune"), not the same absolute numbers.
+    const SIM_FEATURES = [['land_value.value_index', 'land value', 2, 'dearer', 'cheaper'], ['population.density_km2', 'density', 1, 'denser', 'sparser'],
+        ['job_access.jobs_car_pct', 'job reach', 1, 'more jobs in reach', 'fewer jobs in reach'], ['rail_access.metro_walk_min', 'metro walk', 1, 'further from metro', 'nearer metro', true],
+        ['wealth.rwi', 'wealth', 1, 'wealthier', 'less wealthy'], ['osm_amenities.poi_total', 'shops and services', 1, 'more shops', 'fewer shops'],
+        ['building_dynamics.settled_year', 'newness', 1, 'newer', 'older'], ['building_dynamics.highrise_pct', 'high-rise share', 1, 'more high-rise', 'fewer high-rises'],
+        ['vegetation.ndvi', 'greenery', 0.5, 'greener', 'less green']];
+    const SIM_KM = 0.5, SIM_EXCLUDE_KM = 3;
+
+    async function _simFrame(city, store) {
+        const fr = await UrbanLenses.frame(city, store, ['population.population', ...SIM_FEATURES.map(f => f[0])]);
+        const g = fr.grid, idx = _residents(fr);
+        const ranks = SIM_FEATURES.map(([k]) => {
+            const v = fr.cols[k];
+            if (!v) return null;
+            const sm = within(g, v, SIM_KM, true);
+            return prank(sm, idx);
+        });
+        return { fr, g, idx, ranks };
+    }
+
+    /**
+     * Places like a reference block: the k blocks of `toCity` (default the same city) whose percentile profile
+     * is closest to the block at lat/lng in `fromCity`. Returns { ref, matches: [{ code, dist, same, differs }] }.
+     */
+    async function similar({ fromCity, lat, lng, toCity, k = TOP }, store) {
+        const A = await _simFrame(fromCity, store);
+        const code = globalThis.DigiPin.encode(lat, lng).replace(/-/g, '').slice(0, 7);
+        const i0 = A.g.codes.indexOf(code);
+        if (i0 < 0) return null;
+        const ref = A.ranks.map(r => (r && _fin(r[i0]) ? r[i0] : null));
+        const B = toCity && toCity !== fromCity ? await _simFrame(toCity, store) : A;
+        const dist = new Float64Array(B.g.n).fill(NaN), cand = [];
+        for (const i of B.idx) {
+            if (B === A && Math.hypot((B.g.row[i] - B.g.row[i0]) * B.g.dy, (B.g.col[i] - B.g.col[i0]) * B.g.dx) < SIM_EXCLUDE_KM) continue;
+            let d = 0, w = 0;
+            SIM_FEATURES.forEach(([, , wt], f) => {
+                const r = B.ranks[f];
+                if (ref[f] == null || !r || !_fin(r[i])) return;
+                d += wt * (r[i] - ref[f]) ** 2; w += wt;
+            });
+            if (w >= 4) { dist[i] = Math.sqrt(d / w); cand.push(i); }
+        }
+        const score = Float64Array.from(dist, v => (_fin(v) ? -v : NaN));
+        const matches = spaced(B.g, cand, score, k).map(i => {
+            const diffs = SIM_FEATURES.map(([, , , up, down], f) => ({ up, down, d: ref[f] != null && B.ranks[f] && _fin(B.ranks[f][i]) ? B.ranks[f][i] - ref[f] : 0 }));
+            const big = diffs.filter(x => Math.abs(x.d) >= 0.2).sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, 2);
+            return { code: B.g.codes[i], similarity: Math.round(100 * (1 - dist[i])), differs: big.map(x => (x.d > 0 ? x.up : x.down)) };
+        });
+        const profile = SIM_FEATURES.map(([, label, , , , inv], f) => ref[f] != null && { label: inv ? 'metro access' : label, pct: Math.round(100 * (inv ? 1 - ref[f] : ref[f])) }).filter(Boolean);
+        return { fromCity, toCity: toCity || fromCity, ref: { code, profile }, matches };
+    }
+
+    function similarText(r) {
+        if (!r) return 'That spot is outside the populated blocks I have data for. Click a block inside the city and ask again.';
+        const L = typeof UrbanInsights !== 'undefined' ? UrbanInsights.cityLabel : (c => c);
+        const top = r.ref.profile.slice().sort((a, b) => Math.abs(b.pct - 50) - Math.abs(a.pct - 50)).slice(0, 3).map(p => `${p.label} ${_th(p.pct)} percentile`).join(', ');
+        return [`Places in ${L(r.toCity)} most like ${r.ref.code} in ${L(r.fromCity)} (${top}):`,
+            ...r.matches.map((m, i) => `${i + 1}. ${m.code}: ${m.similarity}% similar${m.differs.length ? `; ${m.differs.join(', ')}` : ''}`)].join('\n');
+    }
+
     const ENTRIES = [
         { id: 'landvalue', equity: false, title: 'Land value', icon: '🏷️',
             question: 'Where is land dearest and cheapest, and what drives the difference?',
@@ -457,10 +632,23 @@ const UrbanLensesRealEstate = (() => {
             needs: ['population.population', 'population.projected_2030', 're_supply.new_floor_m2', 're_supply.vacant_ha', 'building_dynamics.nonres_pct'],
             method: `Need is GHSL's projected population gain 2020→2030 divided by ${HH_SIZE} people a household (urban India, NFHS-5). Supply carries the 2016–23 floor area added (Open Buildings 2.5D Temporal) forward ${YEARS_TO_2030} years, deflates the Open Buildings count by ${COUNT_BIAS}× (it runs above the v3 footprint count) and keeps ${NET_EFF * 100}% of gross floor area as usable homes, keeps the residential share (GHSL non-residential share, else ${RESI_SHARE * 100}%) and divides by ${HOME_FLOOR} m² a home. Both are summed within ${LOCAL_KM} km, since people move locally. Vacant land capacity is vacant buildable land at a base FAR of ${DEFAULT_FAR}, 60% residential and ${HOME_M2} m² a home. GHSL projections extend past trends, construction pace from satellites misses interiors and upper floors under construction, and household size varies by income: read the pattern, not exact counts.`,
             refs: 'GHSL P2023A population projections; Google Open Buildings 2.5D Temporal; NFHS-5 (household size); MoHUA Technical Group on Urban Housing Shortage (2012)' },
+        { id: 'floodloss', equity: false, title: 'Climate risk to property', icon: '🌊',
+            question: 'How much do floods and waterlogging cost the city\'s buildings each year, and where?',
+            field: { key: 'flood_loss', label: 'Expected flood and waterlogging damage a year', unit: '₹ lakh/yr', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'flood_loss_pct', label: 'Expected yearly damage, share of building value', unit: '%/yr', higherIs: 'worse', ramp: 'heat' }],
+            needs: ['water.flood_rp100_pct', 'water.flood_rp10_pct', 'water.flood_rp100_depth_m', 'building_stock.cover_2023_pct', 'building_stock.height_2023_m', 'waterlogging.waterlogging_index'],
+            method: `River flooding: the block's footprint (Open Buildings roof cover) in the JRC/GloFAS 1-in-100-year flood zone takes the JRC Asia residential depth-damage factor at the zone's mean depth, times ₹${MAX_DMG.toLocaleString('en-IN')} per m² of footprint (structure and contents of the flooded floor); the 1-in-10-year zone takes ${RP10_DEPTH * 100}% of that depth. Global flood maps ignore embankments, so cities are assumed protected up to the 1-in-${PROTECT_RP}-year flood (FLOPROS-style urban standard); expected annual damage integrates the rarer events over exceedance probability. Waterlogging adds ${WLOG_EAD[0][1] * 100}% (very high) or ${WLOG_EAD[1][1] * 100}% (high) of footprint value a year. Building value is floor area (footprint × height ÷ 3 m) at ₹${BUILD_COST.toLocaleString('en-IN')}/m² (CPWD plinth-area rates); value at risk capitalises the yearly loss at ${DISCOUNT * 100}%. Coarse flood maps (~90 m) miss drains and local embankments.`,
+            refs: 'Huizinga, de Moel & Szewczyk 2017 (JRC global depth-damage functions); Scussolini et al. 2016 (FLOPROS protection standards); JRC/CEMS GloFAS flood hazard maps; CPWD plinth area rates; Bin & Landry 2013 (flood risk capitalisation)' },
+        { id: 'encroach', equity: true, title: 'Encroachment watch', icon: '🚧',
+            question: 'Which lakes, floodplains and green areas have been lost to building, and where is it still happening?',
+            field: { key: 'encroach_score', label: 'Encroachment score (former water, floodplain and tree loss built up)', unit: 'points', higherIs: 'worse', ramp: 'reds' },
+            needs: ['encroachment.water_lost_pct', 'encroachment.water_built_pct', 'encroachment.flood_new_pct', 'encroachment.tree_lost_pct', 'encroachment.tree_built_pct', 'encroachment.recent_built_pct'],
+            method: 'Lost water is JRC Global Surface Water (Landsat, 1984–2021) permanent or seasonal water that has gone; built means Dynamic World (Sentinel-2) labels it built most of the time in 2025–26. New floodplain building is Open Buildings 2.5D Temporal presence in 2023 but not 2016 inside the JRC/GloFAS 1-in-100-year zone. Tree loss is Hansen Global Forest Change (≥ 30% canopy in 2000, lost 2001–2024). The score weights floodplain building 3× and building since 2023 2×. Satellite screens only: some loss is legal (planned reclamation, metro depots), so confirm against land records and the master plan.',
+            refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap }, { landRate: rate, RE_BASE_FAR: BASE_FAR }, 'tod');
-    return { ENTRIES, rate, spaced, RATE_KNOTS };
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText }, 'tod');
+    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText };
 })();
 
 if (typeof window !== 'undefined') {

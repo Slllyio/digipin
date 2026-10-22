@@ -24,6 +24,8 @@ const DishaIntel = (() => {
         compare: /\b(compare|vs\.?|versus|better than)\b/i,
         // Urban lenses (js/urban-lenses.js): combined-dataset questions about people.
         lens: {
+            encroach: /\b(encroach\w*|(lakes?|ponds?|wetlands?|water ?bodies|floodplains?|green belts?|ridge|forests?)\b.{0,30}\b(lost|built (on|over)|disappear\w*|filled|encroached|destroyed)|(lost|disappearing|vanishing) (lakes?|ponds?|wetlands?|water ?bodies))\b/i,
+            floodloss: /\b(flood (damage|losses?|cost)|expected (annual )?(damage|loss)|climate risk to (property|buildings|homes)|(property|buildings?|homes?|real estate)\b.{0,25}\b(climate|flood) risk|value at risk|insur\w*)\b/i,
             housinggap: /\b(housing (gap|shortages?|deficits?|demand|need)|shortage of (homes|housing)|enough (homes|housing)|(homes|houses|housing) (needed|required) by 2030|how many (homes|houses) (are )?needed)\b/i,
             redevelop: /\b(redevelop\w*|re-?built|rebuild\w*|getting taller|vertical (growth|expansion)|builder floors?|floors? (being )?added|old (neighbou?rhoods?|colon(y|ies)|areas?)\b.{0,25}\b(rebuilt|taller|redeveloped))\b/i,
             nextgrowth: /\b(grow(s|ing)? next|next (growth|expansion)|growth frontiers?|future (growth|development|built[\s-]?up|expansion)|where (will|would|is) (the )?city (grow|expand)\w*|(2030|projected) (built[\s-]?up|growth|urbani[sz]ation|expansion))\b/i,
@@ -172,6 +174,12 @@ const DishaIntel = (() => {
         if (station.test(q)) {
             const out = { type: 'stationwhatif', here: /\b(here|this (cell|spot|place|location|area|site)|selected (cell|spot))\b/i.test(q) };
             if (named.length) out.city = named[0];
+            return out;
+        }
+        const like = /\b(places?|areas?|localit(y|ies)|neighbou?rhoods?|blocks?|colon(y|ies)|spots?)\s+(like|similar to)\s+(this|here|the selected)\b|\b(similar|comparable) (places?|areas?|localit(y|ies)|neighbou?rhoods?|blocks?)\b|\bcomparables?\b|\bwhere else (is|are) (like|similar)\b/i;
+        if (like.test(q)) {
+            const out = { type: 'similar' };
+            if (named.length) out.city = named[named.length - 1];
             return out;
         }
         const siting = /\bwhere (should|to|could|would|can)\b.{0,40}\b(clinics?|hospitals?|health (centre|center)s?|schools?|parks?|cool roofs?|ev|charg\w*)\b|\b(best|ideal|suitable) (locations?|sites?|places?) for\b|\bsite (selection|suitability)\b|\bsiting\b/i;
@@ -338,6 +346,13 @@ const DishaIntel = (() => {
                 r = await UrbanInsights.cityDashboard(CellStore);
             } else if (intent.type === 'compare') {
                 r = await UrbanInsights.compare(intent.a, intent.b, CellStore);
+            } else if (intent.type === 'similar') {
+                if (!center) { el.textContent = 'Click a block on the map first, then ask for places like it.'; return ''; }
+                const from = UrbanInsights.cityAt(CellStore, center.lat, center.lng);
+                if (!from) { el.textContent = 'That spot is outside the cities I have data for.'; return ''; }
+                if (typeof UrbanLenses === 'undefined' || !UrbanLenses.similar) { el.textContent = 'The real-estate lenses did not load.'; return ''; }
+                const s = await UrbanLenses.similar({ fromCity: from, lat: center.lat, lng: center.lng, toCity: intent.city || from }, CellStore);
+                r = { kind: 'similar', s };
             } else if (intent.type === 'stationwhatif') {
                 let city = intent.city;
                 if (!city) {
@@ -430,6 +445,7 @@ const DishaIntel = (() => {
             return `Briefing on ${r.cityLabel}${r.play ? ' (the 3D tour is now flying through these stops)' : ''}:\n${r.stops.map((x, i) => `${i + 1}. ${x.label}: ${x.caption}`).join('\n')}`;
         }
         if (r.kind === 'roadwhatif') return RoadWhatIf.askText(r.a);
+        if (r.kind === 'similar') return UrbanLenses.similarText(r.s);
         if (r.kind === 'stationwhatif') return stationText(r);
         if (r.kind === 'mobilityscore') return UrbanLenses.scorecardText(r.sc, r.city);
         if (r.kind === 'siting') return `${r.st.title} in ${r.cityLabel}: ${r.st.headline}\n${r.st.sites.map(x => `${x.rank}. ${x.code} (score ${x.score}): ${x.why}`).join('\n')}`;
@@ -530,6 +546,13 @@ const DishaIntel = (() => {
                 `${x.rank}. ${x.label} ${x.overall} · ${r.sc.pillars.map(p => `${p.label} ${x.pillars[p.id] ?? '–'}`).join(' · ')}`)));
             el.appendChild(_el('div', 'disha-scan-hint', `Each measure scores 0–100 between the worst and best city; pillars average their measures (${r.sc.pillars.map(p => `${p.label}: ${p.metrics.map(id => r.sc.metrics[id].label.replace(/^./, ch => ch.toLowerCase())).join(', ')}`).join('; ')}).`));
             el.appendChild(_openButton('Open the lenses', 'lenses'));
+        } else if (r.kind === 'similar') {
+            head.textContent = 'Places like this';
+            el.appendChild(head);
+            const [first, ...rest] = UrbanLenses.similarText(r.s).split('\n');
+            el.appendChild(_el('div', 'ui-headline', first));
+            rest.forEach(line => el.appendChild(_el('div', 'disha-scan-row', line)));
+            el.appendChild(_el('div', 'disha-scan-hint', 'Matched on each block\'s percentile within its own city (land value counts double): land value, density, job reach, metro walk, wealth, shops, newness, high-rise share and greenery, smoothed over 500 m.'));
         } else if (r.kind === 'stationwhatif') {
             head.textContent = `Metro station what-if · ${r.cityLabel}`;
             el.appendChild(head);
