@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -169,6 +169,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.tod_uplift[0]).toBeGreaterThan(0);
         expect(Number.isNaN(r.columns.tod_uplift[n - 1])).toBe(true);
         expect(L._lenses.feasible(L.frameFrom(codes, base), {})).toBeNull();   // no city price
+    });
+
+    it('metroboost: residents newly within a walk of an upcoming station', () => {
+        const fw = codes.map((_, i) => (i < SIZE ? 5 : i < 2 * SIZE ? 15 : NaN)), up = fw.map(v => (v === 5 ? 10.5 : v === 15 ? 3 : NaN));
+        const now = codes.map(() => 40), fn = codes.map(() => 1);
+        const f = L.frameFrom(codes, { ...base, 'metro_future.future_walk_min': fw, 'metro_future.value_uplift_pct': up, 'rail_access.metro_walk_min': now, 're_supply.far_now': fn }, { city: 'bengaluru' });
+        const r = L._lenses.metroboost(f, {});
+        expect(r.idx).toHaveLength(2 * SIZE);
+        expect(r.metric.value).toBe(SIZE * 1000);                              // the top row's residents
+        expect(r.headline).toMatch(/TOD FAR/);
+        expect(r.stats.find(s => /Value added/.test(s.label)).value).toMatch(/crore/);
+        expect(L._lenses.metroboost(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('similarText(): reference profile and ranked matches', () => {

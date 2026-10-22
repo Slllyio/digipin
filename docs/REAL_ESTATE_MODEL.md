@@ -196,3 +196,23 @@ Results:
 - New floodplain footprint 2016→2023: Delhi 1,496 ha. GloFAS ignores the Yamuna embankments, so read this as building on the natural floodplain.
 
 To bake every city, run `python -m pipeline.realestate.encroachment --region all`. Delhi takes about 40 minutes because of the 4 m Open Buildings pass.
+
+### Upcoming metro uplift (`metro_future` dataset, `metroboost` lens)
+
+pipeline/realestate/metro_future.py reads Wikidata metro stations in India: 916 stations, of which 72 are under construction and 3 are proposed, with opening dates for 841. The snapshot is saved in data/realestate/metro_stations.json; `--refresh` re-queries it.
+
+**Upcoming stations.** These are stations under construction or proposed, plus stations opened since 2025 that the Overture station layer may lack. Each block's walk to the nearest one goes into the land-value model's metro premium, and the dataset stores the gain.
+
+Coverage depends on Wikidata. Bengaluru, Chennai, Kolkata, Mumbai, Indore and Bhopal are well covered. Delhi Phase 4 is mostly missing.
+
+**Did past stations draw building?** The test compares floor area added 2016–2023:
+
+- Treated blocks: within 800 m of stations opened 2017–22.
+- Comparison blocks: 1.5–3 km from the same stations.
+- Both groups had no older station within 2 km.
+
+Across 9 cities, 5,364 blocks near new stations added **1.00× (±0.03)** the floor area of 8,834 comparison blocks. Height change and Dynamic World built-up change show no effect either. The result is in data/realestate/metro_effect.json.
+
+Under base FAR, stations raised access but did not densify their surroundings. That is the case for the TOD FAR in the feasibility lens.
+
+Results: in Bengaluru, 8.2 lakh residents in 723 blocks come within a 10-minute walk, adding about ₹95,600 crore to existing property. In Indore, 36,700 residents in 190 blocks gain.

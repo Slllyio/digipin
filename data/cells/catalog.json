@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T14:00:43Z",
+  "generated": "2026-10-22T14:12:17Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -8142,6 +8142,171 @@
           },
           "json": "lst_monthly/pune.json.gz",
           "parquet": "lst_monthly/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "metro_future",
+      "title": "Upcoming metro stations",
+      "description": "Blocks whose walk to metro shortens when stations under construction or proposed (Wikidata) open, and the land-value model's metro premium gained (up to +10% within a 6-minute walk). Wikidata lists upcoming stations for some cities only.",
+      "source": "pipeline/realestate/metro_future.py (Wikidata metro stations, rail_access, land_value metro premium)",
+      "license": "CC0 (Wikidata); derived",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "future_walk_min",
+          "label": "Walk to the nearest upcoming metro station",
+          "type": "number",
+          "agg": "mean",
+          "unit": "min",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "walk_saved_min",
+          "label": "Minutes saved on the walk to metro",
+          "type": "number",
+          "agg": "mean",
+          "unit": "min",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "value_uplift_pct",
+          "label": "Expected land value uplift from the new station",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            10
+          ],
+          "ramp": "greens"
+        }
+      ],
+      "default": {
+        "field": "value_uplift_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 2127,
+          "bbox": {
+            "west": 77.582275390625,
+            "south": 12.829345703125,
+            "east": 77.7119140625,
+            "north": 13.132568359375
+          },
+          "json": "metro_future/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 220,
+          "bbox": {
+            "west": 77.41748046875,
+            "south": 23.20263671875,
+            "east": 77.468017578125,
+            "north": 23.259765625
+          },
+          "json": "metro_future/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 595,
+          "bbox": {
+            "west": 80.131103515625,
+            "south": 12.899658203125,
+            "east": 80.28271484375,
+            "north": 13.167724609375
+          },
+          "json": "metro_future/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 418,
+          "bbox": {
+            "west": 77.076904296875,
+            "south": 28.638671875,
+            "east": 77.28125,
+            "north": 28.74853515625
+          },
+          "json": "metro_future/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 84,
+          "bbox": {
+            "west": 78.46337890625,
+            "south": 17.320556640625,
+            "east": 78.487548828125,
+            "north": 17.342529296875
+          },
+          "json": "metro_future/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 610,
+          "bbox": {
+            "west": 75.784912109375,
+            "south": 22.72802734375,
+            "east": 75.91455078125,
+            "north": 22.800537109375
+          },
+          "json": "metro_future/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 481,
+          "bbox": {
+            "west": 88.28955078125,
+            "south": 22.448974609375,
+            "east": 88.449951171875,
+            "north": 22.651123046875
+          },
+          "json": "metro_future/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 371,
+          "bbox": {
+            "west": 72.809814453125,
+            "south": 18.902587890625,
+            "east": 72.88232421875,
+            "north": 19.271728515625
+          },
+          "json": "metro_future/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 24,
+          "bbox": {
+            "west": 73.829345703125,
+            "south": 18.55322265625,
+            "east": 73.842529296875,
+            "north": 18.56640625
+          },
+          "json": "metro_future/pune.json",
+          "parquet": null
         }
       ]
     },

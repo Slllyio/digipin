@@ -102,3 +102,21 @@ def test_acceleration():
     assert bd.acceleration({2016: 0, 2020: 40, 2023: 60}) == pytest.approx((20 / 3) / 10)
     assert bd.acceleration({2016: 0, 2020: 1, 2023: 60}) is None
     assert bd.acceleration({2016: 0, 2023: 60}) is None
+
+
+def test_metro_future_helpers():
+    from pipeline.realestate import metro_future as mf
+    assert mf.walk_min(1.0) == pytest.approx(1000 * 1.3 / 80)
+    assert mf.uplift_pct(30, 5) == pytest.approx(100 * (math.exp(lv.metro_premium(5)) - 1))
+    assert mf.uplift_pct(5, 30) == 0.0
+    assert mf.uplift_pct(None, 4) > 0
+    rows = mf.parse_rows([
+        {"s": {"value": "http://www.wikidata.org/entity/Q2"}, "sLabel": {"value": "B"}, "c": {"value": "Point(77.6 12.9)"},
+         "st": {"value": "http://www.wikidata.org/entity/Q12377751"}},
+        {"s": {"value": "http://www.wikidata.org/entity/Q1"}, "sLabel": {"value": "A"}, "c": {"value": "Point(77.2 28.6)"},
+         "open": {"value": "2026-01-05T00:00:00Z"}},
+        {"s": {"value": "http://www.wikidata.org/entity/Q3"}, "c": {"value": "Point(77.2 28.7)"}, "open": {"value": "2010-01-01T00:00:00Z"}},
+    ])
+    assert [r["id"] for r in rows] == ["Q1", "Q2", "Q3"]
+    assert rows[1] == {"id": "Q2", "name": "B", "lat": 12.9, "lng": 77.6, "open": None, "state": "under_construction"}
+    assert [r["id"] for r in mf.upcoming(rows)] == ["Q1", "Q2"]

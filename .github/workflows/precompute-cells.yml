@@ -95,6 +95,7 @@ jobs:
                 python -m pipeline.traffic.commute_carbon --region "$DIGIPIN_REGION" || echo "commute carbon bake skipped"
                 python -m pipeline.realestate.building_dynamics --region "$DIGIPIN_REGION" || echo "building dynamics bake skipped (needs Earth Engine)"
                 python -m pipeline.realestate.encroachment --region "$DIGIPIN_REGION" || echo "encroachment bake skipped (needs Earth Engine)"
+                python -m pipeline.realestate.metro_future --region "$DIGIPIN_REGION" || echo "upcoming metro bake skipped"
                 python -m pipeline.realestate.land_value --region "$DIGIPIN_REGION" || echo "land value bake skipped"
                 python -m pipeline.realestate.supply --region "$DIGIPIN_REGION" || echo "real-estate supply bake skipped"
                 if [ "$DIGIPIN_REGION" = delhi ]; then python -m pipeline.realestate.calibrate || echo "Delhi calibration skipped"; fi

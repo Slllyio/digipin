@@ -13,7 +13,7 @@
 const PropertyReport = (() => {
     'use strict';
     const SCHEMA = 'digipin.property/1';
-    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible'];
+    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost'];
     const EXTRA = ['land_value.prem_jobs_pct', 'land_value.prem_metro_pct', 'land_value.prem_amenity_pct', 'land_value.prem_neigh_pct',
         'land_value.prem_green_pct', 'land_value.prem_risk_pct', 'land_value.prem_noise_pct', 're_supply.far_now', 're_supply.headroom_m2',
         'building_dynamics.settled_year', 'building_dynamics.highrise_pct', 'building_dynamics.nonres_pct', 'building_dynamics.accel',
@@ -53,6 +53,7 @@ const PropertyReport = (() => {
             sec('Access', [
                 row('Job reach', fin(v.jobsPct) ? `${th(v.jobsPct)} percentile in the city` : null),
                 row('Walk to metro', fin(v.metro) ? (v.metro > 60 ? 'over an hour' : `${r1(v.metro)} min`) : null),
+                row('Upcoming metro station', fin(v.futureWalk) ? `${r1(v.futureWalk)} min walk once it opens, about +${r1(v.metroUp, 1)}% land value` : null, 'Wikidata stations under construction or proposed'),
             ]),
             sec('Supply and momentum', [
                 row('Floor area built 2016–2023 (this block)', fin(v.newFloor) ? `${Math.round(v.newFloor).toLocaleString('en-IN')} m²` : null),
@@ -92,6 +93,7 @@ const PropertyReport = (() => {
         if (fin(v.valuePct) && v.valuePct >= 80) strengths.push('top-fifth land value');
         if (fin(v.jobsPct) && v.jobsPct >= 70) strengths.push('strong job reach');
         if (fin(v.metro) && v.metro <= 10) strengths.push('metro within a 10-minute walk');
+        else if (fin(v.futureWalk) && v.futureWalk <= 10) strengths.push('a metro station coming within a 10-minute walk');
         if (fin(v.upside) && v.upside >= 25) strengths.push('priced below its access');
         if (fin(v.yieldGap) && v.yieldGap >= 30) strengths.push('rental demand high for the price');
         if (fin(v.accel) && v.accel >= 1.5) strengths.push('building speeding up');
@@ -136,6 +138,7 @@ const PropertyReport = (() => {
             loss: col('floodloss', 'flood_loss'), lossPct: col('floodloss', 'flood_loss_pct'), flood: at('water.flood_rp100_pct'),
             wlog: at('waterlogging.waterlogging_index'), noise: at('traffic_noise.lden_db'), encroach: col('encroach', 'encroach_score'),
             upside: col('undervalued', 'upside'), growth: col('nextgrowth', 'growth_score'),
+            futureWalk: at('metro_future.future_walk_min'), metroUp: at('metro_future.value_uplift_pct'),
             rlv: col('feasible', 'rlv'), redevGain: col('feasible', 'redev_gain'), tod: col('feasible', 'tod_uplift'),
             price: UrbanLenses.blockPrice ? UrbanLenses.blockPrice(city, vi) : null, baseFar: UrbanLenses.RE_BASE_FAR ? UrbanLenses.RE_BASE_FAR[city] : null,
             priceNote: 'city-average price (ANAROCK Q3 2025, rough for smaller cities) × value index',

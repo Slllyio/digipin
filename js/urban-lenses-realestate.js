@@ -586,6 +586,48 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    // pipeline/realestate/metro_effect.json, pooled over 9 cities: floor area added 2016–23 within 800 m of stations
+    // opened 2017–22 ÷ the same 1.5–3 km away. 1.00 ± 0.03: new stations did not draw extra building.
+    const METRO_EFFECT = { ratio: 1.0, ci: 0.03, near: 5364, ring: 8834 };
+
+    /** Upcoming metro: who gains a station within a walk, and the land value it should add. */
+    function metroboost(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, city = fr.city;
+        const fw = c['metro_future.future_walk_min'], up = c['metro_future.value_uplift_pct'], sv = c['metro_future.walk_saved_min'];
+        if (!fw || !up) return null;
+        const pop = c['population.population'], vi = c['land_value.value_index'], fn = c['re_supply.far_now'], now = c['rail_access.metro_walk_min'];
+        const cells = [], score = new Float64Array(n).fill(NaN);
+        let newly = 0, people = 0, worth = 0;
+        const land = g.dx * g.dy * 1e6;
+        for (let i = 0; i < n; i++) {
+            if (!_fin(fw[i])) continue;
+            cells.push(i);
+            const p = pop && _fin(pop[i]) ? pop[i] : 0;
+            score[i] = (_fin(up[i]) ? up[i] : 0) * (1 + Math.log1p(p) / 10);
+            if (fw[i] <= STATION_WALK && !(now && now[i] <= STATION_WALK)) { newly++; people += p; }
+            const price = blockPrice(city, vi && vi[i]);
+            if (price != null && fn && _fin(fn[i]) && _fin(up[i])) worth += up[i] / 100 * price * fn[i] * land;
+        }
+        if (!cells.length) return null;
+        const meanUp = cells.reduce((a, i) => a + (_fin(up[i]) ? up[i] : 0), 0) / cells.length;
+        const stats = [
+            { label: `Blocks that get a metro station within a ${STATION_WALK}-minute walk`, value: `${newly.toLocaleString('en-IN')}`, raw: newly },
+            { label: '… residents in them', value: _people(people) },
+            { label: 'Blocks with a shorter walk to metro', value: `${cells.length.toLocaleString('en-IN')}, average value uplift ${_round(meanUp, 1)}%` },
+        ];
+        if (worth > 0) stats.push({ label: 'Value added to existing homes and offices (city prices × floor area)', value: `₹${_people(worth / 1e7)} crore` });
+        stats.push({ label: 'Past openings, 2017–22: building near new stations vs 1.5–3 km away', value: `${METRO_EFFECT.ratio.toFixed(2)}× (±${METRO_EFFECT.ci}): no extra building followed` });
+        spaced(g, cells, score).forEach((i, k) => stats.push({ label: `Biggest gain ${k + 1}: ${g.codes[i]}`, value: `+${_round(up[i], 1)}% value, ${_round(fw[i])} min walk to the new station${sv && _fin(sv[i]) ? (now && now[i] > 60 ? ' (today over an hour on foot)' : ` (${_round(sv[i])} min saved)`) : ''}` }));
+        return {
+            columns: { metro_uplift: Float64Array.from(up, v => (_fin(v) ? v : NaN)), metro_score: score }, idx: cells, weightKey: 'metro_score',
+            metric: { label: 'Residents newly within a 10-minute walk of metro', value: Math.round(people), unit: 'people', higherIs: 'better' },
+            headline: newly < 10
+                ? `Wikidata lists few upcoming metro stations for this city: ${newly.toLocaleString('en-IN')} block${newly === 1 ? '' : 's'} gain a station within a ${STATION_WALK}-minute walk.`
+                : `Upcoming stations put ${_people(people)} residents in ${newly.toLocaleString('en-IN')} blocks within a ${STATION_WALK}-minute walk of metro${worth > 0 ? `, adding about ₹${_people(worth / 1e7)} crore to existing property` : ''}; past openings drew no extra building nearby, so new homes there need a TOD FAR.`,
+            stats,
+        };
+    }
+
     // Features for "places like this": each block's percentile within its own city, so a match means the same
     // standing in the target city (the "Hauz Khas of Pune"), not the same absolute numbers.
     const SIM_FEATURES = [['land_value.value_index', 'land value', 2, 'dearer', 'cheaper'], ['population.density_km2', 'density', 1, 'denser', 'sparser'],
@@ -720,6 +762,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['land_value.value_index', 're_supply.far_now', 're_supply.vacant_ha', 'rail_access.metro_walk_min'],
             method: `Sale price per m² is the city-average new-home price scaled by the block's value index (100 = median). Residual land value = sales (FAR area × ${SALE_LOADING} loading to saleable area) − build cost (${BUILT_PER_FAR}× FAR area for parking and services at ₹${BUILD_COST.toLocaleString('en-IN')}/m², CPWD plinth-area rates, plus ${SOFT * 100}% approvals, fees and finance) − ${MARGIN * 100}% developer margin. Rebuilding pays when that beats selling the existing floor area (GHSL volume ÷ 3 m) as old stock at ${OLD_STOCK * 100}% of new prices. TOD tests FAR ${TOD_FAR} within a ${TOD_WALK}-minute walk of a metro station, as in the MoHUA TOD policy and Delhi's TOD regulations. Base FAR is a typical master-plan level, not plot zoning; prices are city averages until licensed market data arrives.`,
             refs: 'ANAROCK Research Q3 2025 (city prices); CPWD plinth area rates; RICS residual valuation method; MoHUA National TOD Policy 2017' },
+        { id: 'metroboost', equity: false, title: 'Upcoming metro uplift', icon: '🚇',
+            question: 'Which blocks will a metro line under construction bring within walking distance, and what will it add to land value?',
+            field: { key: 'metro_uplift', label: 'Expected land value uplift from upcoming stations', unit: '%', higherIs: null, ramp: 'greens' },
+            needs: ['metro_future.future_walk_min', 'metro_future.walk_saved_min', 'metro_future.value_uplift_pct', 'rail_access.metro_walk_min', 'population.population', 'land_value.value_index', 're_supply.far_now'],
+            method: `Upcoming stations are Wikidata metro stations under construction or proposed, plus stations opened since 2025 that the Overture station layer may lack; Wikidata lists them for some cities only. Each block's walk to the nearest one (straight line × 1.3 at 4.8 km/h) replaces today's metro walk in the land-value model's metro premium (+10% within 6 minutes, tapering to 0 at 20). Value added is the uplift × city-average price × value index × existing floor area. Evidence: blocks within 800 m of stations opened 2017–22 (no older station within 2 km) added ${METRO_EFFECT.ratio.toFixed(2)}× (±${METRO_EFFECT.ci}) the floor area of blocks 1.5–3 km away (Open Buildings 2.5D Temporal, 9 cities), so stations alone did not densify their surroundings.`,
+            refs: 'Wikidata (CC0); Debrezion, Pels & Rietveld 2007; Agarwal 2023 (Delhi metro and property values); MoHUA National TOD Policy 2017' },
         { id: 'encroach', equity: true, title: 'Encroachment watch', icon: '🚧',
             question: 'Which lakes, floodplains and green areas have been lost to building, and where is it still happening?',
             field: { key: 'encroach_score', label: 'Encroachment score (former water, floodplain and tree loss built up)', unit: 'points', higherIs: 'worse', ramp: 'reds' },
@@ -728,7 +776,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT };
 })();
 

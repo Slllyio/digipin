@@ -28,6 +28,12 @@ describe('PropertyReport', () => {
         expect(PR.assemble({ rlv: -16.8 }).sections[0].rows[0].value).toBe('−₹16,800 per m² of plot');
     });
 
+    it('assemble(): upcoming metro row and strength', () => {
+        const m = PR.assemble({ metro: 40, futureWalk: 6, metroUp: 10.5 });
+        expect(m.sections.find(s => s.title === 'Access').rows[1].value).toBe('6 min walk once it opens, about +10.5% land value');
+        expect(m.strengths).toContain('a metro station coming within a 10-minute walk');
+    });
+
     it('assemble(): an empty block still reads sensibly', () => {
         const m = PR.assemble({});
         expect(m.verdict).toBe('No standout strengths. No major risk flags.');

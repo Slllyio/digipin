@@ -504,6 +504,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "metroboost": {
+     "label": "Residents newly within a 10-minute walk of metro",
+     "value": 818788,
+     "unit": "people",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 36.7,
@@ -798,6 +804,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "metroboost": {
+     "label": "Residents newly within a 10-minute walk of metro",
+     "value": 22570,
+     "unit": "people",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 2,
@@ -1085,6 +1097,12 @@
      "value": 98.4,
      "unit": "%",
      "higherIs": null
+    },
+    "metroboost": {
+     "label": "Residents newly within a 10-minute walk of metro",
+     "value": 128741,
+     "unit": "people",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -1379,6 +1397,12 @@
      "value": 85.6,
      "unit": "%",
      "higherIs": null
+    },
+    "metroboost": {
+     "label": "Residents newly within a 10-minute walk of metro",
+     "value": 2598,
+     "unit": "people",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -1956,6 +1980,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "metroboost": {
+     "label": "Residents newly within a 10-minute walk of metro",
+     "value": 26951,
+     "unit": "people",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 40.7,
@@ -2249,6 +2279,12 @@
      "value": 49.4,
      "unit": "%",
      "higherIs": null
+    },
+    "metroboost": {
+     "label": "Residents newly within a 10-minute walk of metro",
+     "value": 36705,
+     "unit": "people",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2832,6 +2868,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "metroboost": {
+     "label": "Residents newly within a 10-minute walk of metro",
+     "value": 237065,
+     "unit": "people",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 137.5,
@@ -3414,6 +3456,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "metroboost": {
+     "label": "Residents newly within a 10-minute walk of metro",
+     "value": 8648,
+     "unit": "people",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 43.5,
@@ -3707,6 +3755,12 @@
      "value": 98.6,
      "unit": "%",
      "higherIs": null
+    },
+    "metroboost": {
+     "label": "Residents newly within a 10-minute walk of metro",
+     "value": 675,
+     "unit": "people",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
