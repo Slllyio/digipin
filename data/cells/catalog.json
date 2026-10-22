@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T12:53:40Z",
+  "generated": "2026-10-22T13:48:53Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -7565,7 +7565,7 @@
           "unit": "km",
           "domain": [
             0.01,
-            12.1
+            10.3
           ],
           "ramp": "reds",
           "higherIs": "worse"
@@ -7591,7 +7591,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 5393,
+          "cells": 5392,
           "bbox": {
             "west": 77.450439453125,
             "south": 12.829345703125,
