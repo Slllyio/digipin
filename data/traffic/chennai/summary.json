@@ -669,5 +669,12 @@
     "pct_within_10_pm": 99.8,
     "pct_over_20_peak": 0.0,
     "source": "Overture Maps places 2026-10-21.0; demand model link times"
+  },
+  "rail_access": {
+    "metro_stations": 58,
+    "rail_stations": 78,
+    "pct_within_10_walk_metro": 19.9,
+    "pct_within_10_walk_any": 35.3,
+    "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   }
 }

@@ -32,6 +32,7 @@ const DishaIntel = (() => {
             noise: /\b(noise|nois(y|ier|iest)|loud|decibels?|honking|road noise|sound pollution)\b/i,
             traffic: /\b(traffic (load|jams?|congestion|volume|flow|movement)|congest\w*|jams?|peak[\s-]?hour|rush hour|level of service|busiest roads?|bottlenecks?|evening (traffic|peak)|traffic (at|by|through the) (night|day|hour|time)|time of day traffic)\b/i,
             cutoff: /\b(cut off|stranded|isolated|lose access|cannot reach)\b.{0,40}\bfloods?\b|\bfloods?\b.{0,40}\b(cut off|stranded|isolat\w*|lose access|access to (hospitals?|health\s?care|clinics?))\b/i,
+            metro: /\b(metro|subway|mrts|local trains?|suburban rail|rail(way)? stations?|train stations?)\b.{0,40}\b(catchments?|walk\w*|within|near\w*|far|access\w*|reach|coverage|gaps?)\b|\b(walk\w*|within|near\w*|far from|catchments? of)\b.{0,30}\b(metro|subway|mrts|rail(way)? stations?|train stations?)\b|\bstation catchments?\b|\bmetro (access|coverage|catchments?)\b/i,
             transit: /\b(public transport|transit|bus stops?|metro|stations?)\b.{0,20}\b(access|accessibility|coverage|reach|walk\w*|near\w*|far)\b|\b(access|walk\w*|near\w*|far) to (a |the )?(public transport|transit|bus stops?|metro|stations?)\b|\bsdg 11\.2\b/i,
             health: /\b(health\s?care|hospitals?|clinics?|doctors?)\b.{0,15}\b(access|accessibility|deserts?|scarc\w*|shortages?|reach)\b|\baccess to (health\s?care|hospitals?|clinics?|doctors?)\b|\bcare deserts?\b|\b2sfca\b/i,
             air: /\b(pm\s?2\.?5|air[\s-]?pollution exposure|breathe|dirty air|(people|residents|who)\b.{0,25}\b(polluted|pollution)\b)/i,
@@ -113,6 +114,12 @@ const DishaIntel = (() => {
         }
         if (RE.changes.test(q)) return named.length ? { type: 'changes', city: named[0] } : { type: 'changes' };
         if (RE.compare.test(q) && named.length >= 2) return { type: 'compare', a: { city: named[0] }, b: { city: named[1] } };
+        const station = /\b(new|next|another|extra|add(ing)?|open(s|ed|ing)?|build(ing)?)\b.{0,25}\b(metro|rail|train) stations?\b|\b(metro|rail|train) stations?\b.{0,25}\b(open(s|ed)?|built|added) (here|at|in|near)\b/i;
+        if (station.test(q)) {
+            const out = { type: 'stationwhatif', here: /\b(here|this (cell|spot|place|location|area|site)|selected (cell|spot))\b/i.test(q) };
+            if (named.length) out.city = named[0];
+            return out;
+        }
         const siting = /\bwhere (should|to|could|would|can)\b.{0,40}\b(clinics?|hospitals?|health (centre|center)s?|schools?|parks?|cool roofs?|ev|charg\w*)\b|\b(best|ideal|suitable) (locations?|sites?|places?) for\b|\bsite (selection|suitability)\b|\bsiting\b/i;
         if (siting.test(q)) {
             const preset = /\bschool/i.test(q) ? 'school' : /\bpark|garden|green/i.test(q) ? 'park' : /\bcool roof/i.test(q) ? 'cool_roofs'
@@ -152,6 +159,22 @@ const DishaIntel = (() => {
         }
         if (RE.insights.test(q)) return { type: 'insights' };
         return null;
+    }
+
+    /** Plain-text answer for a metro station what-if. Pure. */
+    function stationText(r) {
+        const s = r.s, lines = [];
+        if (s.at) {
+            lines.push(s.at.people > 0
+                ? `A metro station at ${s.at.code} would bring ${Math.round(s.at.people).toLocaleString('en-IN')} more residents within a ${s.at.walkMin}-minute walk (${s.at.alreadyServed.toLocaleString('en-IN')} nearby are already served${s.at.nearestMin != null ? `; the metro is ${s.at.nearestMin} min away on foot today` : ''}).`
+                : `Everyone within a ${s.at.walkMin}-minute walk of ${s.at.code} is already that close to a metro station.`);
+        } else if (s.sites.length) {
+            lines.push(`The best new metro station sites in ${r.cityLabel}, each adding the most residents not already within a 10-minute walk:`);
+        } else {
+            lines.push(`No metro stations are mapped in ${r.cityLabel}, or everyone is already within a 10-minute walk.`);
+        }
+        if (s.sites.length) s.sites.forEach(x => lines.push(`${x.rank}. ${x.code}: +${x.people.toLocaleString('en-IN')} residents (now ${x.nearestMin} min walk from the metro)`));
+        return lines.join('\n');
     }
 
     /** The distinct [C#] tags in a reply, in order. Pure. */
@@ -255,6 +278,17 @@ const DishaIntel = (() => {
                 r = await UrbanInsights.cityDashboard(CellStore);
             } else if (intent.type === 'compare') {
                 r = await UrbanInsights.compare(intent.a, intent.b, CellStore);
+            } else if (intent.type === 'stationwhatif') {
+                let city = intent.city;
+                if (!city) {
+                    const p = center || _viewCenter();
+                    city = p ? UrbanInsights.cityAt(CellStore, p.lat, p.lng) : null;
+                }
+                if (!city) { el.textContent = 'Pan the map to a city (or name one) and ask again.'; return ''; }
+                if (typeof UrbanLenses === 'undefined' || !UrbanLenses.stationAsk) { el.textContent = 'The lenses module did not load.'; return ''; }
+                if (intent.here && !center) { el.textContent = 'Click a cell on the map first, then ask again: the new station needs a site.'; return ''; }
+                const s = await UrbanLenses.stationAsk(city, intent.here ? center.lat : null, intent.here ? center.lng : null, CellStore);
+                r = { kind: 'stationwhatif', s, cityLabel: UrbanInsights.cityLabel(city) };
             } else if (intent.type === 'roadwhatif') {
                 if (typeof RoadWhatIf === 'undefined') { el.textContent = 'The road what-if module did not load.'; return ''; }
                 if (intent.city && typeof TrafficOverlay !== 'undefined' && TrafficOverlay.region && TrafficOverlay.region() !== intent.city) {
@@ -300,6 +334,7 @@ const DishaIntel = (() => {
             return `Briefing on ${r.cityLabel}${r.play ? ' (the 3D tour is now flying through these stops)' : ''}:\n${r.stops.map((x, i) => `${i + 1}. ${x.label}: ${x.caption}`).join('\n')}`;
         }
         if (r.kind === 'roadwhatif') return RoadWhatIf.askText(r.a);
+        if (r.kind === 'stationwhatif') return stationText(r);
         if (r.kind === 'siting') return `${r.st.title} in ${r.cityLabel}: ${r.st.headline}\n${r.st.sites.map(x => `${x.rank}. ${x.code} (score ${x.score}): ${x.why}`).join('\n')}`;
         return r.kind === 'lenses' ? UrbanLenses.toText(r, r.only) : UrbanInsights.toText(r);
     }
@@ -388,6 +423,16 @@ const DishaIntel = (() => {
                 if (r.only) el.appendChild(_el('div', 'disha-scan-hint', `Method: ${l.method}`));
             }
             el.appendChild(_openButton('Open the lenses', 'lenses'));
+        } else if (r.kind === 'stationwhatif') {
+            head.textContent = `Metro station what-if · ${r.cityLabel}`;
+            el.appendChild(head);
+            const [first, ...rest] = stationText(r).split('\n');
+            el.appendChild(_el('div', 'ui-headline', first));
+            rest.forEach(line => el.appendChild(_el('div', 'disha-scan-row', line)));
+            el.appendChild(_el('div', 'disha-scan-hint', 'Catchment = 10-minute walk (straight line × 1.3 at 4.8 km/h). Track alignment and cost are not considered.'));
+            if (r.s.sites.length && typeof MapModule !== 'undefined' && MapModule.selectByCode) {
+                el.appendChild(_el('div', 'disha-scan-hint', `Open a site: ${r.s.sites.map(x => DigiPin.format(x.code)).join(', ')}`));
+            }
         } else if (r.kind === 'roadwhatif') {
             const a = r.a;
             head.textContent = a.ok ? `Road what-if · ${a.action === 'widen' ? 'widen' : 'close'} ${a.road} · ${a.period === 'pm' ? '18:00' : '09:00'}` : 'Road what-if';
@@ -462,7 +507,7 @@ const DishaIntel = (() => {
         return used;
     }
 
-    return { match, roadAsk, citiesIn, citeTags, answer, evidence, decorate, whereChanged, cities: _cities };
+    return { match, roadAsk, stationText, citiesIn, citeTags, answer, evidence, decorate, whereChanged, cities: _cities };
 })();
 
 if (typeof window !== 'undefined') {

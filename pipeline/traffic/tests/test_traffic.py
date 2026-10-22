@@ -298,3 +298,27 @@ def test_emergency_access_helpers_and_drive_times():
     assert t["night"][west] > 0 and t["am"][west] > t["pm"][west] >= t["night"][west]
     node, d = ea.Snapper(net).nearest(75.8001, 22.7001)
     assert node == west and d < 20
+
+
+def test_rail_stations_helpers():
+    from pipeline.traffic import rail_stations as rs
+    assert rs.is_station_name("Saket Metro Station")
+    assert rs.is_station_name("मुंडका रेलवे स्टेशन")
+    assert not rs.is_station_name("Chaayos Cafe - Dwarka, Sector 12")
+    assert not rs.is_station_name("Railway Quarters Lodhi Colony")
+    assert not rs.is_station_name("Brar Square") and rs.is_station_name("Brar Square", from_osm=True)
+    assert rs.kind_for("subway", "Shastri Park") == "metro"
+    assert rs.kind_for("standard_gauge", "Okhla Metro Station") == "metro"
+    assert rs.kind_for("standard_gauge", "Okhla Railway Station") == "rail"
+    assert rs.kind_for(None, "Okhla Metro Station") is None
+    assert rs.name_key("Saket Metro Station-Gate No 2") == rs.name_key("Saket metro station") == "saket"
+    pts = [(77.2000, 28.5000, "metro", "Saket Metro Station"),
+           (77.2050, 28.5000, "metro", "Saket Metro Station-Gate No 2"),   # ~490 m: same name merges
+           (77.2050, 28.5000, "rail", "Saket Railway Station"),
+           (77.3000, 28.5000, "metro", "Okhla Metro Station")]
+    m = rs.merge_stations(pts)
+    assert len(m) == 3 and sum(k == "metro" for *_, k, _ in m) == 2
+    idx = rs.TrackIndex([("subway", [(77.0, 28.5), (77.01, 28.5)])])
+    assert idx.nearest(77.005, 28.501)[0] == "subway"                     # ~110 m off the track
+    assert idx.nearest(77.005, 28.51)[0] is None                          # ~1.1 km off
+    assert abs(rs.walk_min(800) - 13.0) < 1e-9

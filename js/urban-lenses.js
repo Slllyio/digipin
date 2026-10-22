@@ -43,6 +43,8 @@ const UrbanLenses = (() => {
     const ROAD_KM = 0.25, JAM_VC = 0.9;
     const NOISE_WHO = 53, NOISE_HIGH = 65;
     const HOSP_GOLDEN = 10, HOSP_FAR = 20;
+    const STATION_WALK = 10, WALK_M_MIN = 80, WALK_DETOUR = 1.3, NEW_STATIONS = 3;
+    const STATION_KM = STATION_WALK * WALK_M_MIN / WALK_DETOUR / 1000;   // ~615 m straight line
     const FREQ_MIN = 10;                         // 'frequent' bus: every 10 min or better at peak      // dB Lden: WHO 2018 road guideline; high exposure     // residents within 250 m (own or next cell) of an arterial at LOS E/F
     const CUTOFF_DOMAIN = ['Cut off from care', 'Longer walk to care', 'Flooded', 'Unaffected', 'No care in reach anyway'];
     const CUTOFF_COLORS = { 'Cut off from care': '#c0392b', 'Longer walk to care': '#f39c12', Flooded: '#2e86c1', Unaffected: '#cfd8dc', 'No care in reach anyway': '#8e8e8e' };
@@ -111,6 +113,13 @@ const UrbanLenses = (() => {
                 'demographics.elderly_60plus', 'wealth.rwi'],
             method: `Drive time from each home cell to the nearest hospital on the OpenStreetMap arterials: at 03:00 with free-flow speeds, and at 09:00 and 18:00 with each road slowed by the demand model's volume/capacity (BPR, at most 4× free-flow time), plus the walk-speed access to and from the road. Hospitals and schools are Overture Maps places (confidence ≥ 0.6); places tagged hospital include smaller nursing homes, and there is no bed, ward or ambulance-siren priority data, so treat it as general-traffic reach. ${HOSP_GOLDEN} minutes is the reporting threshold. Schools count as exposed when their cell is at ${NOISE_HIGH}+ dB Lden or within ${ROAD_KM * 1000} m of an arterial at LOS E/F.`,
             refs: 'Overture Maps Foundation places; BPR (1964); Wilde 2013 (ambulance response time and outcomes); WHO 2018 noise guidelines' },
+        { id: 'metro', equity: true, title: 'Metro catchments', icon: '🚇',
+            question: 'Who lives within a 10-minute walk of a metro station, and where would a new one help most?',
+            field: { key: 'metro_walk', label: 'Walk to the nearest metro station', unit: 'min', higherIs: 'worse', ramp: 'heat' },
+            extra: [{ key: 'station_walk', label: 'Walk to any metro or rail station', unit: 'min', higherIs: 'worse', ramp: 'heat' }],
+            needs: ['rail_access.metro_walk_min', 'rail_access.rail_walk_min', 'rail_access.metro_stations', 'rail_access.rail_stations', 'wealth.rwi'],
+            method: `Walking time from each home cell to the nearest station: straight line × ${WALK_DETOUR} detour at ${WALK_M_MIN * 60 / 1000} km/h; ${STATION_WALK} minutes (about ${Math.round(STATION_KM * 1000)} m as the crow flies) is the catchment. Stations are Overture Maps and OpenStreetMap station points, classed metro when the nearest Overture rail track is subway, light rail or monorail and rail when it is standard or narrow gauge. New-station sites are picked greedily: each is the cell whose ${STATION_WALK}-minute catchment adds the most residents not already served, ignoring track alignment and cost.`,
+            refs: 'Overture Maps Foundation places & transportation; Guerra, Cervero & Tischler 2012 (transit catchments in practice); UN SDG 11.2.1' },
         { id: 'fifteen', equity: true, title: '15-minute completeness', icon: '🚶',
             question: 'Can people reach daily needs on foot?',
             field: { key: 'fifteen_min', label: '15-minute completeness', unit: '0-100', higherIs: 'better', ramp: 'greens' },
@@ -924,6 +933,105 @@ const UrbanLenses = (() => {
         };
     }
 
+    /** Residents newly within the station catchment if a station opened at cell i (served: 0/1 per cell). */
+    function _stationGain(g, pop, served, i) {
+        let s = 0;
+        for (const [a, b] of g.offsets(STATION_KM)) {
+            const j = g.cellAt(i, a, b);
+            if (j >= 0 && !served[j] && pop[j] > 0) s += pop[j];
+        }
+        return s;
+    }
+
+    /** Greedy best sites for new metro stations: [{ rank, code, people, nearestMin }]. */
+    function stationSites(fr, k = NEW_STATIONS) {
+        const c = fr.cols, g = fr.grid, mw = c['rail_access.metro_walk_min'], pop = c['population.population'];
+        if (!mw || !pop) return [];
+        const served = new Uint8Array(g.n), idx = _residents(fr);
+        for (const i of idx) if (mw[i] <= STATION_WALK) served[i] = 1;
+        const out = [];
+        for (let r = 0; r < k; r++) {
+            let best = -1, bestGain = 0;
+            for (const i of idx) {
+                if (served[i]) continue;
+                const v = _stationGain(g, pop, served, i);
+                if (v > bestGain) { bestGain = v; best = i; }
+            }
+            if (best < 0) break;
+            out.push({ rank: r + 1, code: g.codes[best], people: Math.round(bestGain), nearestMin: _fin(mw[best]) ? _round(mw[best], 1) : null });
+            for (const [a, b] of g.offsets(STATION_KM)) { const j = g.cellAt(best, a, b); if (j >= 0) served[j] = 1; }
+        }
+        return out;
+    }
+
+    function metro(fr) {
+        const c = fr.cols, idx = _residents(fr), n = fr.grid.n;
+        const mw = c['rail_access.metro_walk_min'], rw = c['rail_access.rail_walk_min'], pop = c['population.population'];
+        if (!mw && !rw) return null;
+        const mCol = new Float64Array(n).fill(NaN), rCol = new Float64Array(n).fill(NaN);
+        for (const i of idx) { if (mw && _fin(mw[i])) mCol[i] = mw[i]; if (rw && _fin(rw[i])) rCol[i] = rw[i]; }
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const pM = mw ? _sumOver(pop, idx, i => mw[i] <= STATION_WALK) : 0;
+        const pAny = rw ? _sumOver(pop, idx, i => rw[i] <= STATION_WALK) : pM;
+        let nM = 0, nR = 0;
+        const ms = c['rail_access.metro_stations'], rs = c['rail_access.rail_stations'];
+        for (let i = 0; i < n; i++) { if (ms && ms[i] > 0) nM += ms[i]; if (rs && rs[i] > 0) nR += rs[i]; }
+        const stats = [];
+        if (mw) stats.push({ label: `Residents within a ${STATION_WALK}-minute walk of a metro station`, value: `${_people(pM)} (${_round(100 * pM / total)}%)`, raw: Math.round(pM) });
+        stats.push({ label: `… of any metro or suburban rail station`, value: `${_people(pAny)} (${_round(100 * pAny / total)}%)` });
+        if (nM || nR) stats.push({ label: 'Stations mapped (metro / rail)', value: `${_people(nM)} / ${_people(nR)}` });
+        const med = mw ? wquantile(mCol, pop, idx.filter(i => _fin(mCol[i])), 0.5) : null;
+        if (med != null) stats.push({ label: 'Median walk to a metro station', value: `${_round(med)} min` });
+        const sites = mw && nM ? stationSites(fr) : [];
+        sites.forEach(x => stats.push({ label: `New station site ${x.rank}: ${x.code}`, value: `+${_people(x.people)} residents within ${STATION_WALK} min (now ${x.nearestMin} min from the metro)` }));
+        let poorShare = null;
+        const rwi = c['wealth.rwi'];
+        if (rwi && mw && pM > 0) {
+            const q20 = wquantile(rwi, pop, idx, 0.2);
+            if (q20 != null) {
+                const poor = _sumOver(pop, idx, i => rwi[i] <= q20);
+                poorShare = poor ? 100 * _sumOver(pop, idx, i => rwi[i] <= q20 && mw[i] <= STATION_WALK) / poor : null;
+                if (poorShare != null) stats.push({ label: 'Poorest fifth within a 10-minute walk of the metro', value: `${_round(poorShare)}% (city: ${_round(100 * pM / total)}%)` });
+            }
+        }
+        const gain = sites.reduce((a, x) => a + x.people, 0);
+        return {
+            columns: { metro_walk: mCol, station_walk: rCol }, idx, weightKey: 'metro_walk',
+            metric: { label: `Within ${STATION_WALK} min walk of the metro`, value: _round(100 * (mw ? pM : pAny) / total), unit: '%', higherIs: 'better' },
+            headline: (mw && nM
+                ? `${_round(100 * pM / total)}% of residents live within a ${STATION_WALK}-minute walk of a metro station (${_round(100 * pAny / total)}% counting suburban rail)`
+                : `${_round(100 * pAny / total)}% of residents live within a ${STATION_WALK}-minute walk of a rail station`)
+                + (sites.length ? `; the best ${sites.length} new station sites would bring ${_people(gain)} more people within walking distance.` : '.'),
+            stats,
+        };
+    }
+
+    /** What if a metro station opened at (lat, lng)? Residents newly within the catchment. */
+    function stationWhatIf(fr, lat, lng) {
+        const g = fr.grid, c = fr.cols, mw = c['rail_access.metro_walk_min'], pop = c['population.population'];
+        if (!mw || !pop || !g.n) return null;
+        let i0 = -1, d0 = Infinity;
+        for (let i = 0; i < g.n; i++) {
+            const d = (g.lat[i] - lat) ** 2 + ((g.lng[i] - lng) * Math.cos(lat * Math.PI / 180)) ** 2;
+            if (d < d0) { d0 = d; i0 = i; }
+        }
+        if (i0 < 0 || Math.sqrt(d0) * KM_LAT > 2) return null;
+        const served = new Uint8Array(g.n);
+        for (let i = 0; i < g.n; i++) if (mw[i] <= STATION_WALK) served[i] = 1;
+        const people = _stationGain(g, pop, served, i0);
+        const total = _sumOver(pop, _residents(fr), () => true) || 1;
+        let already = 0;
+        for (const [a, b] of g.offsets(STATION_KM)) { const j = g.cellAt(i0, a, b); if (j >= 0 && served[j] && pop[j] > 0) already += pop[j]; }
+        return { code: g.codes[i0], people: Math.round(people), alreadyServed: Math.round(already), nearestMin: _fin(mw[i0]) ? _round(mw[i0], 1) : null,
+            sharePts: _round(100 * people / total, 2), walkMin: STATION_WALK };
+    }
+
+    async function stationAsk(city, lat, lng, store) {
+        const fr = await frame(city, store, allNeeds(['metro']));
+        const w = lat != null ? stationWhatIf(fr, lat, lng) : null;
+        return { city, at: w, sites: stationSites(fr) };
+    }
+
     function cutoff(fr) {
         const c = fr.cols, g = fr.grid, idx = _residents(fr), n = g.n;
         const rp = c['water.flood_rp100_pct'], depth = c['water.flood_rp100_depth_m'], care = c['osm_amenities.healthcare'];
@@ -1711,7 +1819,7 @@ const UrbanLenses = (() => {
             metric: pmRes != null ? { label: 'Months a year above 60 µg/m³ PM2.5', value: _round(pmRes, 1), unit: 'months', higherIs: 'worse' } : null };
     }
 
-    const RUN = { heat, flood, waterlog, noise, traffic, ambulance, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
+    const RUN = { heat, flood, waterlog, noise, traffic, ambulance, metro, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
 
     // ── siting suitability (MCDA with AHP weights) ──────────────────────────
 
@@ -2201,7 +2309,7 @@ const UrbanLenses = (() => {
         SCHEMA, LENS_SCHEMA, LENSES, PRESETS, ESSENTIALS, CELL_DEG, GHI,
         catalog, lens, site, areaProfile, leagueFor, ahp, within,
         prank, wmean, wquantile, gini, lorenz, palma, ols, pearson, grid, frameFrom, frame, allNeeds,
-        e2sfca, walkNet, pedShed, DIRS, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
+        e2sfca, walkNet, pedShed, stationSites, stationWhatIf, stationAsk, DIRS, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
         _lenses: RUN,
     };
 })();

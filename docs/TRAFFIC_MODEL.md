@@ -204,6 +204,33 @@ priority, so this is general-traffic reach to any hospital-tagged place.
     python -m pipeline.traffic.emergency_access --region all            # cached places
     python -m pipeline.traffic.emergency_access --region delhi --refresh  # re-query Overture
 
+### 8. Metro and rail station catchments (`rail_stations.py`)
+
+Station points are Overture Maps places tagged `train_station` /
+`metro_station` (names filtered: Overture also tags cafés, depots and
+railway quarters) plus OpenStreetMap `station` points. Each is classed by the
+nearest Overture rail track within 250 m: subway, light rail, monorail or tram
+is **metro**, standard or narrow gauge is **rail**, with "metro" / "railway"
+in the name breaking ties; nothing within 250 m drops the point. Entrances of
+one station (same name within 750 m, or anything within 250 m) merge.
+Output: `data/vectors/rail_stations_<region>.geojson`, cell dataset
+`rail_access` (`metro_walk_min`, `rail_walk_min`, `metro_stations`,
+`rail_stations`; walk = straight line × 1.3 at 4.8 km/h) and a `rail_access`
+block in `summary.json`.
+
+The **Metro catchments** lens reports residents within a 10-minute walk of a
+metro station and of any station, the poorest fifth's share, and the three
+best new station sites, chosen greedily by the residents each would add that
+are not already within 10 minutes (no track alignment or cost).
+`UrbanLenses.stationWhatIf(frame, lat, lng)` scores one site; DISHA answers
+"what if a new metro station opened here?" for the selected cell and "where
+should the next metro station go?" for the city. First run: Mumbai 30% within
+10 min of metro (51% counting the locals), Delhi 26% (30%), Kolkata 21%,
+Chennai 20%, Bengaluru 14%. Overture misses some newer stations (Ahmedabad
+has 16 of about 32 mapped), so read the smaller systems as lower bounds.
+
+    python -m pipeline.traffic.rail_stations --region all --refresh   # ~30 s per city
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

@@ -275,6 +275,32 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.ambulance(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('metro lens: catchment shares, greedy new-station sites and a what-if', () => {
+        const mw = codes.map((_, i) => (i === 0 ? 4 : i === 1 ? 8 : 25));
+        const rw = codes.map((_, i) => (i === 0 ? 4 : i === 1 ? 8 : i === n - 1 ? 6 : 25));
+        const ms = codes.map((_, i) => (i === 0 ? 1 : 0));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'rail_access.metro_walk_min': mw,
+            'rail_access.rail_walk_min': rw, 'rail_access.metro_stations': ms });
+        const r = L._lenses.metro(f, {});
+        const total = pop.reduce((a, b) => a + b, 0);
+        expect(r.metric.value).toBeCloseTo(100 * (pop[0] + pop[1]) / total, 0);
+        expect(r.columns.metro_walk[2]).toBe(25);
+        const sites = L.stationSites(f);
+        expect(sites.length).toBe(3);
+        expect(sites[0].people).toBeGreaterThanOrEqual(sites[1].people);
+        expect(r.stats.some(s => s.label.startsWith('New station site 1'))).toBe(true);
+        expect(r.headline).toMatch(/best 3 new station sites/);
+        // A station on an already-served cell adds nobody from that cell.
+        const g = f.grid;
+        const w0 = L.stationWhatIf(f, g.lat[0], g.lng[0]);
+        expect(w0.code).toBe(codes[0]);
+        expect(w0.alreadyServed).toBeGreaterThan(0);
+        const far = L.stationWhatIf(f, g.lat[n - 1], g.lng[n - 1]);
+        expect(far.people).toBeGreaterThan(0);
+        expect(L.stationWhatIf(f, 0, 0)).toBeNull();
+        expect(L._lenses.metro(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {
         const rp = new Array(n).fill(0), depth = new Array(n).fill(0);
         for (let r = 0; r < SIZE; r++) { rp[r * SIZE + 3] = 100; depth[r * SIZE + 3] = 1; }   // column 3 floods
