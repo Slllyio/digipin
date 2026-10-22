@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-10-22T00:41:14Z",
-  "count": 18,
+  "generated_at_iso": "2026-10-22T05:23:47Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us6000u411",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-22T04:44:17.421000+00:00",
+      "latitude": 56.9659,
+      "longitude": -34.0939,
+      "depth_km": 10.0,
+      "place": "Reykjanes Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u411",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000u40r",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-22T03:35:17.429000+00:00",
+      "latitude": 14.8614,
+      "longitude": -93.8388,
+      "depth_km": 49.131,
+      "place": "97 km SW of El Palmarcito, Mexico",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u40r",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000u3yp",
       "magnitude": 5.0,
@@ -181,42 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3t4",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us6000u3sj",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-21T04:23:28.083000+00:00",
-      "latitude": -14.035,
-      "longitude": 165.8331,
-      "depth_km": 10.0,
-      "place": "173 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3sj",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000u3rr",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-21T01:20:02.961000+00:00",
-      "latitude": 4.5985,
-      "longitude": -82.7031,
-      "depth_km": 10.0,
-      "place": "south of Panama",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3rr",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000u3rn",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-21T01:04:29.196000+00:00",
-      "latitude": 35.7245,
-      "longitude": 139.9836,
-      "depth_km": 90.274,
-      "place": "2 km N of Honchō, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3rn",
-      "tsunami": 0,
-      "significance": 314
     }
   ]
 }

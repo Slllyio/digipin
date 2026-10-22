@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-22T00:41:19Z",
+  "generated_at_iso": "2026-10-22T05:23:53Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-22 06:37:16|34.001,88.505",
+      "magnitude": 4.3,
+      "origin_time": "2026-10-22 06:37:16",
+      "latitude": 34.001,
+      "longitude": 88.505,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "702km N of Lachung, Sikkim, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-22 05:00:02|36.951,71.319",
       "magnitude": 3.5,
@@ -1639,17 +1650,6 @@
       "depth_km": 95.0,
       "region": "Afghanistan",
       "location": "112km SSE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-06 05:25:10|36.884,68.864",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-06 05:25:10",
-      "latitude": 36.884,
-      "longitude": 68.864,
-      "depth_km": 103.0,
-      "region": "Afghanistan",
-      "location": "151km W of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]
