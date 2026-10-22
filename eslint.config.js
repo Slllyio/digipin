@@ -29,7 +29,7 @@ const APP_GLOBALS = {
   CAGrowthOverlay: 'readonly', ScenarioModel: 'readonly', ScenarioPanel: 'readonly',
   AreaAggregate: 'readonly',
   TrafficScore: 'readonly', TrafficGrid: 'readonly', RealtimeTraffic: 'readonly',
-  TrafficWidget: 'readonly', TrafficOverlay: 'readonly', RoadWhatIf: 'readonly',
+  TrafficWidget: 'readonly', TrafficOverlay: 'readonly', RoadWhatIf: 'readonly', TrafficBuildings: 'readonly',
   MobilityScore: 'readonly', MobilityGrid: 'readonly', RealtimeMobility: 'readonly',
   MobilityWidget: 'readonly', MobilityOverlay: 'readonly',
   EmergencyAccessScore: 'readonly', EmergencyAccess: 'readonly', EmergencyAccessOverlay: 'readonly',
