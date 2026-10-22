@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T08:35:16Z",
+  "generated": "2026-10-22T09:28:49Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -2486,6 +2486,409 @@
           },
           "json": "co_monthly/pune.json.gz",
           "parquet": "co_monthly/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "cycling",
+      "title": "Low-stress cycling network",
+      "description": "Overture Maps streets classed by Level of Traffic Stress from the road class (main roads motorway\u2013tertiary are high stress), joined into islands that never pass through a main-road junction. Shows how far a cautious rider can go from each cell and which junction crossings would join the most people to a bigger island. No lane, speed-limit or signal data.",
+      "source": "pipeline/traffic/cycling.py over Overture Maps transportation 2026-10-21.0",
+      "license": "ODbL (Overture transportation, from OpenStreetMap)",
+      "group": "Traffic & mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "lowstress_km",
+          "label": "Low-stress street length",
+          "type": "number",
+          "agg": "sum",
+          "unit": "km",
+          "domain": [
+            0,
+            5.68
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "cycleway_km",
+          "label": "Mapped cycle track",
+          "type": "number",
+          "agg": "sum",
+          "unit": "km",
+          "domain": [
+            0.01,
+            0.5
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "highstress_km",
+          "label": "Main-road length",
+          "type": "number",
+          "agg": "sum",
+          "unit": "km",
+          "domain": [
+            0,
+            3.13
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "island",
+          "label": "Low-stress island (1 = largest)",
+          "type": "number",
+          "agg": "mode",
+          "unit": "id",
+          "domain": [
+            1.0,
+            13497.0
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "island_km2",
+          "label": "Area you can cycle without crossing a main road",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km\u00b2",
+          "domain": [
+            0,
+            10
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "island_pop",
+          "label": "Residents in the same low-stress island",
+          "type": "number",
+          "agg": "mean",
+          "unit": "people",
+          "domain": [
+            0.0,
+            1352772.0
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "crossing_gain",
+          "label": "Residents joined by a safe crossing here",
+          "type": "number",
+          "agg": "max",
+          "unit": "people",
+          "domain": [
+            1,
+            975871
+          ],
+          "ramp": "heat",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "island_km2",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7059,
+          "bbox": {
+            "west": 72.46923828125,
+            "south": 22.70166015625,
+            "east": 72.893310546875,
+            "north": 23.130126953125
+          },
+          "json": "cycling/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 20467,
+          "bbox": {
+            "west": 77.40869140625,
+            "south": 12.81396484375,
+            "east": 77.791015625,
+            "north": 13.15234375
+          },
+          "json": "cycling/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ5",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 5488,
+          "bbox": {
+            "west": 77.28564453125,
+            "south": 23.160888671875,
+            "east": 77.54052734375,
+            "north": 23.33447265625
+          },
+          "json": "cycling/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 8540,
+          "bbox": {
+            "west": 80.09814453125,
+            "south": 12.890869140625,
+            "east": 80.31787109375,
+            "north": 13.194091796875
+          },
+          "json": "cycling/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39",
+              "4TCT"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 42407,
+          "bbox": {
+            "west": 76.81103515625,
+            "south": 28.315673828125,
+            "east": 77.4482421875,
+            "north": 28.944091796875
+          },
+          "json": "cycling/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39FM",
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J6",
+              "39J7",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "39KC",
+              "39KF",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 922,
+          "bbox": {
+            "west": 77.257080078125,
+            "south": 24.593505859375,
+            "east": 77.371337890625,
+            "north": 24.690185546875
+          },
+          "json": "cycling/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15092,
+          "bbox": {
+            "west": 78.23486328125,
+            "south": 17.23486328125,
+            "east": 78.658935546875,
+            "north": 17.579833984375
+          },
+          "json": "cycling/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C",
+              "422F",
+              "422J",
+              "422M",
+              "422T"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 17793,
+          "bbox": {
+            "west": 75.55419921875,
+            "south": 22.486328125,
+            "east": 76.022216796875,
+            "north": 22.91259765625
+          },
+          "json": "cycling/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MM",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "34PM",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC3",
+              "3MC7",
+              "3MC8",
+              "3MC9",
+              "3MCC"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 8257,
+          "bbox": {
+            "west": 75.679443359375,
+            "south": 26.773193359375,
+            "east": 75.929931640625,
+            "north": 27.014892578125
+          },
+          "json": "cycling/jaipur/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 6920,
+          "bbox": {
+            "west": 88.230224609375,
+            "south": 22.440185546875,
+            "east": 88.463134765625,
+            "north": 22.6796875
+          },
+          "json": "cycling/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 7764,
+          "bbox": {
+            "west": 80.82763671875,
+            "south": 26.7314453125,
+            "east": 81.0693359375,
+            "north": 26.98193359375
+          },
+          "json": "cycling/lucknow.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 8740,
+          "bbox": {
+            "west": 72.77685546875,
+            "south": 18.87841796875,
+            "east": 73.007568359375,
+            "north": 19.29150390625
+          },
+          "json": "cycling/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10155,
+          "bbox": {
+            "west": 73.6337890625,
+            "south": 18.3203125,
+            "east": 74.000732421875,
+            "north": 18.652099609375
+          },
+          "json": "cycling/pune/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK",
+              "4FPL",
+              "4FPM"
+            ]
+          }
         }
       ]
     },
@@ -12873,409 +13276,6 @@
           },
           "json": "wealth/pune.json",
           "parquet": null
-        }
-      ]
-    },
-    {
-      "id": "cycling",
-      "title": "Low-stress cycling network",
-      "description": "Overture Maps streets classed by Level of Traffic Stress from the road class (main roads motorway\u2013tertiary are high stress), joined into islands that never pass through a main-road junction. Shows how far a cautious rider can go from each cell and which junction crossings would join the most people to a bigger island. No lane, speed-limit or signal data.",
-      "source": "pipeline/traffic/cycling.py over Overture Maps transportation 2026-10-21.0",
-      "license": "ODbL (Overture transportation, from OpenStreetMap)",
-      "group": "Traffic & mobility",
-      "level": 7,
-      "approxCellM": 244,
-      "fields": [
-        {
-          "key": "lowstress_km",
-          "label": "Low-stress street length",
-          "type": "number",
-          "agg": "sum",
-          "unit": "km",
-          "domain": [
-            0,
-            5.68
-          ],
-          "ramp": "greens",
-          "higherIs": "better"
-        },
-        {
-          "key": "cycleway_km",
-          "label": "Mapped cycle track",
-          "type": "number",
-          "agg": "sum",
-          "unit": "km",
-          "domain": [
-            0.01,
-            0.5
-          ],
-          "ramp": "greens",
-          "higherIs": "better"
-        },
-        {
-          "key": "highstress_km",
-          "label": "Main-road length",
-          "type": "number",
-          "agg": "sum",
-          "unit": "km",
-          "domain": [
-            0,
-            3.13
-          ],
-          "ramp": "reds",
-          "higherIs": "worse"
-        },
-        {
-          "key": "island",
-          "label": "Low-stress island (1 = largest)",
-          "type": "number",
-          "agg": "mode",
-          "unit": "id",
-          "domain": [
-            1.0,
-            13497.0
-          ],
-          "ramp": "viridis"
-        },
-        {
-          "key": "island_km2",
-          "label": "Area you can cycle without crossing a main road",
-          "type": "number",
-          "agg": "mean",
-          "unit": "km\u00b2",
-          "domain": [
-            0,
-            10
-          ],
-          "ramp": "viridis",
-          "higherIs": "better"
-        },
-        {
-          "key": "island_pop",
-          "label": "Residents in the same low-stress island",
-          "type": "number",
-          "agg": "mean",
-          "unit": "people",
-          "domain": [
-            0.0,
-            1352772.0
-          ],
-          "ramp": "viridis",
-          "higherIs": "better"
-        },
-        {
-          "key": "crossing_gain",
-          "label": "Residents joined by a safe crossing here",
-          "type": "number",
-          "agg": "max",
-          "unit": "people",
-          "domain": [
-            1,
-            975871
-          ],
-          "ramp": "heat",
-          "higherIs": "better"
-        }
-      ],
-      "default": {
-        "field": "island_km2",
-        "extrude": false,
-        "heightM": 400.0
-      },
-      "regions": [
-        {
-          "name": "ahmedabad",
-          "cells": 7059,
-          "bbox": {
-            "west": 72.46923828125,
-            "south": 22.70166015625,
-            "east": 72.893310546875,
-            "north": 23.130126953125
-          },
-          "json": "cycling/ahmedabad.json",
-          "parquet": null
-        },
-        {
-          "name": "bengaluru",
-          "cells": 20467,
-          "bbox": {
-            "west": 77.40869140625,
-            "south": 12.81396484375,
-            "east": 77.791015625,
-            "north": 13.15234375
-          },
-          "json": "cycling/bengaluru/{prefix}.json.gz",
-          "parquet": null,
-          "shards": {
-            "prefixLen": 4,
-            "keys": [
-              "4P33",
-              "4P34",
-              "4P3C",
-              "4P3F",
-              "4P3J",
-              "4P3K",
-              "4PJ5",
-              "4PJ6",
-              "4PJ7",
-              "4PJ8"
-            ]
-          }
-        },
-        {
-          "name": "bhopal",
-          "cells": 5488,
-          "bbox": {
-            "west": 77.28564453125,
-            "south": 23.160888671875,
-            "east": 77.54052734375,
-            "north": 23.33447265625
-          },
-          "json": "cycling/bhopal.json",
-          "parquet": null
-        },
-        {
-          "name": "chennai",
-          "cells": 8540,
-          "bbox": {
-            "west": 80.09814453125,
-            "south": 12.890869140625,
-            "east": 80.31787109375,
-            "north": 13.194091796875
-          },
-          "json": "cycling/chennai/{prefix}.json.gz",
-          "parquet": null,
-          "shards": {
-            "prefixLen": 4,
-            "keys": [
-              "4T32",
-              "4T35",
-              "4T36",
-              "4T37",
-              "4T38",
-              "4T39",
-              "4TCT"
-            ]
-          }
-        },
-        {
-          "name": "delhi",
-          "cells": 42407,
-          "bbox": {
-            "west": 76.81103515625,
-            "south": 28.315673828125,
-            "east": 77.4482421875,
-            "north": 28.944091796875
-          },
-          "json": "cycling/delhi/{prefix}.json.gz",
-          "parquet": null,
-          "shards": {
-            "prefixLen": 4,
-            "keys": [
-              "39FM",
-              "39J2",
-              "39J3",
-              "39J4",
-              "39J5",
-              "39J6",
-              "39J7",
-              "39J9",
-              "39JC",
-              "39JF",
-              "39JJ",
-              "39JK",
-              "39JL",
-              "39JM",
-              "39JP",
-              "39KC",
-              "39KF",
-              "3C72",
-              "3C75",
-              "3C76",
-              "3C77",
-              "3C78",
-              "3C79",
-              "3C7P",
-              "3C7T"
-            ]
-          }
-        },
-        {
-          "name": "guna",
-          "cells": 922,
-          "bbox": {
-            "west": 77.257080078125,
-            "south": 24.593505859375,
-            "east": 77.371337890625,
-            "north": 24.690185546875
-          },
-          "json": "cycling/guna.json",
-          "parquet": null
-        },
-        {
-          "name": "hyderabad",
-          "cells": 15092,
-          "bbox": {
-            "west": 78.23486328125,
-            "south": 17.23486328125,
-            "east": 78.658935546875,
-            "north": 17.579833984375
-          },
-          "json": "cycling/hyderabad/{prefix}.json.gz",
-          "parquet": null,
-          "shards": {
-            "prefixLen": 4,
-            "keys": [
-              "4222",
-              "4223",
-              "4224",
-              "4225",
-              "4226",
-              "4227",
-              "4228",
-              "4229",
-              "422C",
-              "422F",
-              "422J",
-              "422M",
-              "422T"
-            ]
-          }
-        },
-        {
-          "name": "indore_pilot",
-          "cells": 17793,
-          "bbox": {
-            "west": 75.55419921875,
-            "south": 22.486328125,
-            "east": 76.022216796875,
-            "north": 22.91259765625
-          },
-          "json": "cycling/indore_pilot/{prefix}.json.gz",
-          "parquet": null,
-          "shards": {
-            "prefixLen": 4,
-            "keys": [
-              "34M5",
-              "34M6",
-              "34MM",
-              "34MP",
-              "34MT",
-              "34PK",
-              "34PL",
-              "34PM",
-              "3M9F",
-              "3M9J",
-              "3MC2",
-              "3MC3",
-              "3MC7",
-              "3MC8",
-              "3MC9",
-              "3MCC"
-            ]
-          }
-        },
-        {
-          "name": "jaipur",
-          "cells": 8257,
-          "bbox": {
-            "west": 75.679443359375,
-            "south": 26.773193359375,
-            "east": 75.929931640625,
-            "north": 27.014892578125
-          },
-          "json": "cycling/jaipur/{prefix}.json.gz",
-          "parquet": null,
-          "shards": {
-            "prefixLen": 4,
-            "keys": [
-              "339J",
-              "339K",
-              "339L",
-              "33C2",
-              "33C5",
-              "33C6",
-              "33C7",
-              "33CP",
-              "33CT"
-            ]
-          }
-        },
-        {
-          "name": "kolkata",
-          "cells": 6920,
-          "bbox": {
-            "west": 88.230224609375,
-            "south": 22.440185546875,
-            "east": 88.463134765625,
-            "north": 22.6796875
-          },
-          "json": "cycling/kolkata.json",
-          "parquet": null
-        },
-        {
-          "name": "lucknow",
-          "cells": 7764,
-          "bbox": {
-            "west": 80.82763671875,
-            "south": 26.7314453125,
-            "east": 81.0693359375,
-            "north": 26.98193359375
-          },
-          "json": "cycling/lucknow.json.gz",
-          "parquet": null
-        },
-        {
-          "name": "mumbai",
-          "cells": 8740,
-          "bbox": {
-            "west": 72.77685546875,
-            "south": 18.87841796875,
-            "east": 73.007568359375,
-            "north": 19.29150390625
-          },
-          "json": "cycling/mumbai/{prefix}.json.gz",
-          "parquet": null,
-          "shards": {
-            "prefixLen": 4,
-            "keys": [
-              "4FK2",
-              "4FK3",
-              "4FK5",
-              "4FK6",
-              "4FK7",
-              "4FK8",
-              "4FK9",
-              "4FKC",
-              "4FKP",
-              "4FKT"
-            ]
-          }
-        },
-        {
-          "name": "pune",
-          "cells": 10155,
-          "bbox": {
-            "west": 73.6337890625,
-            "south": 18.3203125,
-            "east": 74.000732421875,
-            "north": 18.652099609375
-          },
-          "json": "cycling/pune/{prefix}.json.gz",
-          "parquet": null,
-          "shards": {
-            "prefixLen": 4,
-            "keys": [
-              "4FP2",
-              "4FP3",
-              "4FP4",
-              "4FP5",
-              "4FPJ",
-              "4FPK",
-              "4FPL",
-              "4FPM"
-            ]
-          }
         }
       ]
     }

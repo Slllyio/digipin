@@ -532,6 +532,14 @@
       "mid_beta_per_min": 0.15
     }
   },
+  "road_flood": {
+    "very_high": 1.7,
+    "high": 264.4,
+    "river_flood": 0.0,
+    "total": 1442.8,
+    "pct_very_high": 0.1,
+    "pct_high_or_worse": 18.4
+  },
   "noise_air": {
     "residents_total": 4199878,
     "residents_near_modelled_roads": 3469015,
@@ -577,24 +585,5 @@
     "chargers_per_lakh": 0.0,
     "pct_vkm_within_2km": 0.0,
     "pct_pop_within_2km": 0.0
-  },
-  "road_flood": {
-    "very_high": 1.7,
-    "high": 264.4,
-    "river_flood": 0.0,
-    "total": 1442.8,
-    "pct_very_high": 0.1,
-    "pct_high_or_worse": 18.4
-  },
-  "cycling": {
-    "lowstress_km": 7742,
-    "cycleway_km": 1.2,
-    "highstress_km": 658,
-    "islands": 1738,
-    "islands_over_5_km2": 18,
-    "largest_island_km2": 83.3,
-    "pct_residents_small_island": 10.1,
-    "pct_residents_no_lowstress_street": 0.3,
-    "source": "Overture Maps transportation 2026-10-21.0"
   }
 }
