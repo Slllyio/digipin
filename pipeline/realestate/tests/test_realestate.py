@@ -68,3 +68,22 @@ def test_vacant_share_and_headroom():
     assert sp.headroom_m2(1.0, 2.0, 1000) == 1000
     assert sp.headroom_m2(3.0, 2.0, 1000) == 0
     assert sp.headroom_m2(None, 2.0, 1000) == 0
+
+
+cal = pytest.importorskip("pipeline.realestate.calibrate")
+
+
+def test_spearman_and_ranks():
+    assert cal.ranks([3, 1, 2]) == [2, 0, 1]
+    assert cal.ranks([1, 1, 2]) == [0.5, 0.5, 2]
+    assert cal.spearman([1, 2, 3, 4], [10, 20, 30, 40]) == pytest.approx(1)
+    assert cal.spearman([1, 2, 3, 4], [4, 3, 2, 1]) == pytest.approx(-1)
+    assert cal.spearman([1, 2], [1, 2]) is None
+
+
+def test_knots_rank_match_and_interpolate():
+    kn = cal.knots([50, 100, 150, 200, 250], [10000, 20000, 40000, 80000, 160000], n=5)
+    assert kn[0] == [50, 10000] and kn[-1] == [250, 160000]
+    assert cal.interp_rate(kn, 10) == 10000
+    assert cal.interp_rate(kn, 1000) == 160000
+    assert cal.interp_rate(kn, 125) == pytest.approx(math.sqrt(20000 * 40000))

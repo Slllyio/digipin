@@ -144,6 +144,42 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 1.6,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 5.8,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 13.5,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 13.3,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 1.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 3.8,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 18.4,
@@ -365,6 +401,42 @@
      "value": 21.4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 2.1,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 12.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 67.5,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 1.1,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 2.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 3.5,
+     "unit": "%",
+     "higherIs": null
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -588,6 +660,42 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 1.6,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 3.8,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 23.8,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 9.9,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 8.8,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 8.8,
@@ -803,6 +911,42 @@
      "value": 19.6,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 1.9,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 16.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 9.7,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 2.1,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 8.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 2.8,
+     "unit": "%",
+     "higherIs": null
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -1026,6 +1170,42 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 3.7,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 17.4,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 65.8,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 0.6,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 3.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 0.8,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 12.3,
@@ -1242,6 +1422,42 @@
      "unit": "min/day",
      "higherIs": "worse"
     },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 1.5,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "Floor area built 2016–2023",
+     "value": 2.6,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 3.3,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 13.3,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 10.9,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 2.9,
@@ -1457,6 +1673,42 @@
      "value": 18.4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 1.7,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 7,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 98.2,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 5.3,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 5.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 8.8,
+     "unit": "%",
+     "higherIs": null
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -1680,6 +1932,42 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 2.4,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 0.3,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 35,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 4,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 0.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 7.4,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 14.4,
@@ -1902,6 +2190,42 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 1.6,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 2.9,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 51.1,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 6.4,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 11.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 7.4,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 9.6,
@@ -2118,6 +2442,42 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 2.6,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 22.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 1.2,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 0.5,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 5.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 0.8,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 36.3,
@@ -2333,6 +2693,42 @@
      "value": 28.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 1.7,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 5.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 25.6,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 8.2,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 5.3,
+     "unit": "%",
+     "higherIs": null
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -2556,6 +2952,42 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 2.1,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 29.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 6.8,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 5.4,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 3.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 3.4,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 35.1,
@@ -2777,6 +3209,42 @@
      "value": 28.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "landvalue": {
+     "label": "Land value spread (dearest tenth ÷ cheapest tenth)",
+     "value": 1.6,
+     "unit": "×",
+     "higherIs": "worse"
+    },
+    "buildhot": {
+     "label": "New floor area within a 10-minute walk of the metro",
+     "value": 5.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "vacant": {
+     "label": "Vacant buildable land in the urban area",
+     "value": 72.7,
+     "unit": "km²",
+     "higherIs": null
+    },
+    "rentdemand": {
+     "label": "Residents in high-demand, low-price pockets",
+     "value": 6.9,
+     "unit": "%",
+     "higherIs": null
+    },
+    "affordability": {
+     "label": "Residents where land prices outrun local incomes",
+     "value": 4.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "undervalued": {
+     "label": "Blocks undervalued for their access",
+     "value": 6.4,
+     "unit": "%",
+     "higherIs": null
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",

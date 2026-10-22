@@ -114,5 +114,100 @@
         "urban_2035_pct": 9.8
       }
     ]
+  },
+  "calibration": {
+    "colonies": 244,
+    "spearman": 0.67,
+    "by_category": {
+      "A": {
+        "colonies": 6,
+        "median_value_index": 164.9,
+        "circle_rate": 774000
+      },
+      "B": {
+        "colonies": 18,
+        "median_value_index": 179.6,
+        "circle_rate": 245520
+      },
+      "C": {
+        "colonies": 9,
+        "median_value_index": 143.0,
+        "circle_rate": 159840
+      },
+      "D": {
+        "colonies": 37,
+        "median_value_index": 139.5,
+        "circle_rate": 127680
+      },
+      "E": {
+        "colonies": 27,
+        "median_value_index": 142.6,
+        "circle_rate": 70080
+      },
+      "F": {
+        "colonies": 58,
+        "median_value_index": 119.2,
+        "circle_rate": 56640
+      },
+      "G": {
+        "colonies": 50,
+        "median_value_index": 116.0,
+        "circle_rate": 46200
+      },
+      "H": {
+        "colonies": 39,
+        "median_value_index": 43.1,
+        "circle_rate": 23280
+      }
+    },
+    "knots": [
+      [
+        26.0,
+        23280
+      ],
+      [
+        45.0,
+        23280
+      ],
+      [
+        76.4,
+        46200
+      ],
+      [
+        101.9,
+        46200
+      ],
+      [
+        114.9,
+        56640
+      ],
+      [
+        122.3,
+        56640
+      ],
+      [
+        130.1,
+        56640
+      ],
+      [
+        142.9,
+        70080
+      ],
+      [
+        156.6,
+        127680
+      ],
+      [
+        175.8,
+        159840
+      ],
+      [
+        200.4,
+        774000
+      ]
+    ],
+    "within_2x": 0.766,
+    "rate_source": "Delhi Revenue Department circle rates for residential land, 2014 revision (categories A\u2013H)",
+    "colony_source": "MCD colony list with A\u2013H categories (MCD property-tax colony categorisation, as published from the MCD/MapmyIndia colony app); colonies placed by name match to Overture Maps divisions 2026-10-21.0 (neighbourhood/locality) or OpenStreetMap Nominatim; ambiguous names dropped"
   }
 }

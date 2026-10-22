@@ -81,6 +81,14 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('which schools have traffic jams at drop-off time')).toEqual({ type: 'lens', lens: 'schoolrun' });
         expect(M('show school street candidates')).toEqual({ type: 'lens', lens: 'schoolrun' });
         expect(M('where is parking worst near markets')).toEqual({ type: 'lens', lens: 'parking' });
+        expect(M('what are land values like in Delhi')).toEqual({ type: 'lens', lens: 'landvalue', city: 'delhi' });
+        expect(M('which are the most expensive neighbourhoods')).toEqual({ type: 'lens', lens: 'landvalue' });
+        expect(M('where is construction activity highest in Pune')).toEqual({ type: 'lens', lens: 'buildhot', city: 'pune' });
+        expect(M('how much vacant land is there')).toEqual({ type: 'lens', lens: 'vacant' });
+        expect(M('where is rental demand strongest')).toEqual({ type: 'lens', lens: 'rentdemand' });
+        expect(M('who is at risk of displacement in Delhi')).toEqual({ type: 'lens', lens: 'affordability', city: 'delhi' });
+        expect(M('which areas are undervalued')).toEqual({ type: 'lens', lens: 'undervalued' });
+        expect(M('where should I invest in Delhi')).toEqual({ type: 'lens', lens: 'undervalued', city: 'delhi' });
         expect(M('where do trucks run through neighbourhoods in Pune')).toEqual({ type: 'lens', lens: 'freight', city: 'pune' });
         expect(M('what if 20% of car trips moved to the metro in Delhi')).toEqual({ type: 'modeshift', pct: 20, scope: 'stations', period: 'am', city: 'delhi' });
         expect(M('what if people take the bus instead of driving')).toEqual({ type: 'modeshift', pct: 10, scope: 'all', period: 'am' });

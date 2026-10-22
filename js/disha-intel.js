@@ -24,6 +24,12 @@ const DishaIntel = (() => {
         compare: /\b(compare|vs\.?|versus|better than)\b/i,
         // Urban lenses (js/urban-lenses.js): combined-dataset questions about people.
         lens: {
+            undervalued: /\b(under[\s-]?valued|under[\s-]?priced|(good|best|smart) (place|area|locality|localit(y|ies)|neighbou?rhoods?) to (invest|buy)|where (to|should i|should we|can i) (invest|buy (land|property|a (flat|plot|house)))|investment (picks?|hotspots?|opportunit\w*)|(appreciat\w*|capital growth) (potential|hotspots?))\b/i,
+            rentdemand: /\b(rent(al)? (demand|yields?|hotspots?|market)|(high|best|good) rental|renters?|tenants?|paying guest|pg accommodation|where .{0,20}\brent\b)\b/i,
+            affordability: /\b(afford\w*|unaffordab\w*|displace\w*|gentrif\w*|price[\s-]?(to[\s-]?)?income|priced out|evict\w*)\b/i,
+            vacant: /\b(vacant|empty|unused|undeveloped|open) (land|plots?|parcels?|lots?)\b|\bland ?bank\b/i,
+            buildhot: /\b(construction (hotspots?|activity|boom|pipeline)|building boom|new (construction|buildings|floor (area|space))|where .{0,25}\b(being built|building (fastest|most)|construct\w*))\b/i,
+            landvalue: /\b(land (values?|prices?|rates?)|circle rates?|property (prices?|values?|rates?)|real[\s-]?estate (prices?|values?)|(dearest|costliest|most expensive|cheapest|priciest) (land|neighbou?rhoods?|areas?|localit(y|ies)|colon(y|ies))|price per (sq|square))/i,
             heat: /\b(heat[\s-]?(vulnerab\w*|risk|wave|stress|exposure)|hottest neighbourhoods?|who (suffers|is most at risk) .{0,20}heat)\b/i,
             flood: /\b(flood\s?plain|flood (exposure|exposed)|(how many|people|residents|population|who)\b.{0,30}\b(flood(ed|s|ing)?|floodplain)\b.{0,20}\b(live|exposed|risk|zone|area))/i,
             fifteen: /\b(15|fifteen)[\s-]?min(ute)?s?\b|\bwalk(ing|able)? (to|distance (to|of)) (daily|essentials?|shops|amenities)|\bdaily needs\b|\bland[\s-]?use mix\b/i,
