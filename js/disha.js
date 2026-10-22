@@ -99,7 +99,7 @@ MAP ACTIONS — in addition to your normal answer, you MAY emit up to 3 machine-
   [ACTION] selectCell code:39J-49L-L8T4
   [ACTION] overlay name:heat   (names: growth, prediction, scenario, traffic, mobility, heat, ndvi, bivariate, kde, access, grid, wards, buildings)
   [ACTION] query id:best_residential
-  [ACTION] colorBuildings color:scores:flood_risk height:bldg:height_m   (fields as <dataset>:<field>; datasets: scores, traffic, traffic_load (peak_vc, am_vc, pm_vc, mid_vc, peak_los, peak_speed_kmh), traffic_noise (lden_db, nox_kg_day), emergency_access (hospital_min_am, hospital_min_pm, hospital_min_night, rush_delay_min, schools), rail_access (metro_walk_min, rail_walk_min), mobility, growth, waterlogging, climate_zones, bldg; color:none resets)
+  [ACTION] colorBuildings color:scores:flood_risk height:bldg:height_m   (fields as <dataset>:<field>; datasets: scores, traffic, traffic_load (peak_vc, am_vc, pm_vc, mid_vc, peak_los, peak_speed_kmh), traffic_noise (lden_db, nox_kg_day), emergency_access (hospital_min_am, hospital_min_pm, hospital_min_night, rush_delay_min, schools), rail_access (metro_walk_min, rail_walk_min), ev_charging (charger_km, chargers, parking, fuel), mobility, growth, waterlogging, climate_zones, bldg; color:none resets)
   [ACTION] trafficHour hour:18   (modelled road traffic at an hour 0–23; hour:peak = worse peak, hour:play animates the day)
 Keep each directive on its own line; the rest of your reply should read normally without them.`;
 

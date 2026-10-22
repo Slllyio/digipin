@@ -231,6 +231,27 @@ has 16 of about 32 mapped), so read the smaller systems as lower bounds.
 
     python -m pipeline.traffic.rail_stations --region all --refresh   # ~30 s per city
 
+### 9. EV charging gaps (`ev_charging.py`)
+
+Known public chargers merge (within 60 m) from OpenStreetMap
+`amenity=charging_station` (Overpass; works on CI runners, skipped where it is
+blocked), Open Charge Map (when `OCM_API_KEY` is set) and Overture Maps
+`ev_charging_station` places; Overture `parking` and fuel-station places are
+kept as low-cost host sites. Output: `data/vectors/ev_places_<region>.geojson`,
+cell dataset `ev_charging` (`charger_km`, `chargers`, `parking`, `fuel`) and an
+`ev_charging` block in `summary.json`.
+
+The **EV charging gaps** lens reports residents within 2 km and 3 km (the
+grid spacing in India's 2024 charging guidelines) of a known charger and the
+share of arterial vehicle-km within 2 km. The **EV charging hub** siting
+preset now weights arterial vehicle-km within 1 km (3), distance to the
+nearest known charger (2), parking and fuel forecourts within 500 m (2),
+residents per km² (1) and night lights (1). Open data lists only a fraction
+of India's chargers (Overture: Delhi 44, Pune 85, Kolkata 0), so distances
+are upper bounds until the OSM/Open Charge Map sources are added on CI.
+
+    python -m pipeline.traffic.ev_charging --region all --refresh
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

@@ -40,12 +40,7 @@ const UrbanLenses = (() => {
     const FLOOD_DETOUR_M = 250;
     const WATERLOG_BLOCK = 65;  // waterlogging_index "Very high" class
     const WLOG_HIGH = 45, WLOG_VERY = 65;   // waterlogging index cut-offs for High / Very high (pipeline/cells/ee_layers.py)
-    const ROAD_KM = 0.25, JAM_VC = 0.9;
-    const NOISE_WHO = 53, NOISE_HIGH = 65;
-    const HOSP_GOLDEN = 10, HOSP_FAR = 20;
-    const STATION_WALK = 10, WALK_M_MIN = 80, WALK_DETOUR = 1.3, NEW_STATIONS = 3;
-    const STATION_KM = STATION_WALK * WALK_M_MIN / WALK_DETOUR / 1000;   // ~615 m straight line
-    const FREQ_MIN = 10;                         // 'frequent' bus: every 10 min or better at peak      // dB Lden: WHO 2018 road guideline; high exposure     // residents within 250 m (own or next cell) of an arterial at LOS E/F
+    const FREQ_MIN = 10;                         // 'frequent' bus: every 10 min or better at peak
     const CUTOFF_DOMAIN = ['Cut off from care', 'Longer walk to care', 'Flooded', 'Unaffected', 'No care in reach anyway'];
     const CUTOFF_COLORS = { 'Cut off from care': '#c0392b', 'Longer walk to care': '#f39c12', Flooded: '#2e86c1', Unaffected: '#cfd8dc', 'No care in reach anyway': '#8e8e8e' };
     const STOP_KM = 0.5, RAPID_KM = 1;   // SDG 11.2.1: 500 m to a bus stop, 1 km to rail / BRT / terminal
@@ -89,37 +84,6 @@ const UrbanLenses = (() => {
             needs: ['waterlogging.waterlogging_index', 'waterlogging.monsoon_water_pct', 'demographics.under5', 'demographics.elderly_60plus', 'wealth.rwi'],
             method: `Residents of cells whose waterlogging susceptibility is High (≥ ${WLOG_HIGH}) or Very high (≥ ${WLOG_VERY}). The index blends height above drainage, Sentinel-1 radar passes that saw standing water in the wet seasons 2021–2025, the topographic wetness index, hollows below the surrounding 300 m and sealed surface. Drains and pumps are not modelled. The poorest-fifth share uses the Meta Relative Wealth Index, population-weighted within the city.`,
             refs: 'Beven & Kirkby 1979 (TWI); Nobre et al. 2011 (HAND); Tiwari et al. 2020 (Sentinel-1 urban flood mapping); Chi et al. 2022 (RWI)' },
-        { id: 'noise', equity: true, title: 'Road noise', icon: '🔊',
-            question: 'Who lives with main-road noise above the WHO guideline?',
-            field: { key: 'noise_lden', label: 'Road noise at home (Lden)', unit: 'dB(A)', higherIs: 'worse', ramp: 'heat' },
-            extra: [{ key: 'noise_nox', label: 'Traffic NOx emitted nearby', unit: 'kg/day', higherIs: 'worse', ramp: 'heat' }],
-            needs: ['traffic_noise.lden_db', 'traffic_noise.nox_kg_day', 'traffic_noise.co2_t_day', 'demographics.under5', 'demographics.elderly_60plus', 'wealth.rwi'],
-            method: `Road noise at each home cell from the traffic model's daily volumes on the arterials, by the UK CRTN method (every modelled road within 300 m, energy-summed, converted to Lden). The WHO 2018 guideline for road traffic is ${NOISE_WHO} dB Lden; ${NOISE_HIGH} dB is a high exposure. No barriers, building shielding or local streets, so it describes the road-facing side. Exhaust uses fleet-average emission factors per vehicle-km; modelled NOx tracks Sentinel-5P NO₂ across each city (rank correlation in data/traffic/<city>/summary.json).`,
-            refs: 'DoT 1988 (CRTN); Abbott & Nelson 2002 (CRTN to Lden); WHO 2018 Environmental Noise Guidelines' },
-        { id: 'traffic', equity: true, title: 'Traffic load', icon: '🚦',
-            question: 'Who lives next to roads that jam in the morning peak?',
-            field: { key: 'traffic_vc', label: 'Worst peak-hour V/C within 250 m', unit: 'ratio', higherIs: 'worse', ramp: 'heat' },
-            extra: [{ key: 'traffic_speed', label: 'Peak-hour arterial speed nearby', unit: 'km/h', higherIs: 'better', ramp: 'heat' }],
-            needs: ['traffic_load.peak_vc', 'traffic_load.peak_speed_kmh', 'traffic_load.delay_pct', 'traffic_load.daily_vkm',
-                'traffic_load.am_vc', 'traffic_load.pm_vc', 'traffic_load.mid_vc'],
-            method: `Peak hours from the demand model (pipeline/traffic/demand_model.py): residents make motorised trips to jobs and activity floor space, distributed by a gravity model and routed on the OpenStreetMap arterials with BPR congestion feedback; the 09:00 commute, the 18:00 trip home and midday errands are assigned separately and the worse peak counts. For each home cell, the worst volume/capacity ratio on any arterial within ${ROAD_KM * 1000} m (its own or a neighbouring cell); at or above ${JAM_VC} is Level of Service E/F (at or over capacity). Speeds and delay are vehicle-km weighted. A strategic model with stated assumptions, not traffic counts.`,
-            refs: 'Ortúzar & Willumsen, Modelling Transport (4-step model); BPR (1964) link performance; IRC 106-1990 urban road capacities; HCM LOS' },
-        { id: 'ambulance', equity: true, title: 'Hospital at rush hour', icon: '🚑',
-            question: 'How far is a hospital by road at 9 am, compared with 3 am?',
-            field: { key: 'hosp_peak', label: 'Drive to nearest hospital, worse peak', unit: 'min', higherIs: 'worse', ramp: 'heat' },
-            extra: [{ key: 'hosp_delay', label: 'Extra minutes at rush hour', unit: 'min', higherIs: 'worse', ramp: 'reds' }],
-            needs: ['emergency_access.hospital_min_night', 'emergency_access.hospital_min_am', 'emergency_access.hospital_min_pm',
-                'emergency_access.rush_delay_min', 'emergency_access.schools', 'traffic_noise.lden_db', 'traffic_load.peak_vc',
-                'demographics.elderly_60plus', 'wealth.rwi'],
-            method: `Drive time from each home cell to the nearest hospital on the OpenStreetMap arterials: at 03:00 with free-flow speeds, and at 09:00 and 18:00 with each road slowed by the demand model's volume/capacity (BPR, at most 4× free-flow time), plus the walk-speed access to and from the road. Hospitals and schools are Overture Maps places (confidence ≥ 0.6); places tagged hospital include smaller nursing homes, and there is no bed, ward or ambulance-siren priority data, so treat it as general-traffic reach. ${HOSP_GOLDEN} minutes is the reporting threshold. Schools count as exposed when their cell is at ${NOISE_HIGH}+ dB Lden or within ${ROAD_KM * 1000} m of an arterial at LOS E/F.`,
-            refs: 'Overture Maps Foundation places; BPR (1964); Wilde 2013 (ambulance response time and outcomes); WHO 2018 noise guidelines' },
-        { id: 'metro', equity: true, title: 'Metro catchments', icon: '🚇',
-            question: 'Who lives within a 10-minute walk of a metro station, and where would a new one help most?',
-            field: { key: 'metro_walk', label: 'Walk to the nearest metro station', unit: 'min', higherIs: 'worse', ramp: 'heat' },
-            extra: [{ key: 'station_walk', label: 'Walk to any metro or rail station', unit: 'min', higherIs: 'worse', ramp: 'heat' }],
-            needs: ['rail_access.metro_walk_min', 'rail_access.rail_walk_min', 'rail_access.metro_stations', 'rail_access.rail_stations', 'wealth.rwi'],
-            method: `Walking time from each home cell to the nearest station: straight line × ${WALK_DETOUR} detour at ${WALK_M_MIN * 60 / 1000} km/h; ${STATION_WALK} minutes (about ${Math.round(STATION_KM * 1000)} m as the crow flies) is the catchment. Stations are Overture Maps and OpenStreetMap station points, classed metro when the nearest Overture rail track is subway, light rail or monorail and rail when it is standard or narrow gauge. New-station sites are picked greedily: each is the cell whose ${STATION_WALK}-minute catchment adds the most residents not already served, ignoring track alignment and cost.`,
-            refs: 'Overture Maps Foundation places & transportation; Guerra, Cervero & Tischler 2012 (transit catchments in practice); UN SDG 11.2.1' },
         { id: 'fifteen', equity: true, title: '15-minute completeness', icon: '🚶',
             question: 'Can people reach daily needs on foot?',
             field: { key: 'fifteen_min', label: '15-minute completeness', unit: '0-100', higherIs: 'better', ramp: 'greens' },
@@ -769,267 +733,6 @@ const UrbanLenses = (() => {
                 + (poorShare != null ? `; ${_round(poorShare)}% of them are in the city’s poorest fifth of neighbourhoods.` : '.'),
             stats,
         };
-    }
-
-    function noise(fr) {
-        const c = fr.cols, idx = _residents(fr), n = fr.grid.n;
-        const ld = c['traffic_noise.lden_db'], nox = c['traffic_noise.nox_kg_day'], co2 = c['traffic_noise.co2_t_day'];
-        const pop = c['population.population'];
-        if (!ld) return null;
-        const lden = new Float64Array(n).fill(NaN), noxN = new Float64Array(n).fill(NaN);
-        for (const i of idx) { if (_fin(ld[i])) lden[i] = ld[i]; if (nox && _fin(nox[i])) noxN[i] = nox[i]; }
-        const total = _sumOver(pop, idx, () => true) || 1;
-        const who = idx.filter(i => ld[i] >= NOISE_WHO), high = idx.filter(i => ld[i] >= NOISE_HIGH);
-        const pWho = _sumOver(pop, who, () => true), pHigh = _sumOver(pop, high, () => true);
-        const stats = [
-            { label: `Residents at or above ${NOISE_WHO} dB Lden (WHO road guideline)`, value: `${_people(pWho)} (${_round(100 * pWho / total)}%)`, raw: Math.round(pWho) },
-            { label: `Residents at or above ${NOISE_HIGH} dB Lden`, value: `${_people(pHigh)} (${_round(100 * pHigh / total)}%)`, raw: Math.round(pHigh) },
-        ];
-        const u5 = c['demographics.under5'], old = c['demographics.elderly_60plus'];
-        if (u5 && old) stats.push({ label: `Children under 5 / people 60+ at ${NOISE_HIGH}+ dB`, value: `${_people(_sumOver(u5, high, () => true))} / ${_people(_sumOver(old, high, () => true))}` });
-        if (nox) { let t = 0; for (let i = 0; i < n; i++) if (_fin(nox[i])) t += nox[i]; stats.push({ label: 'Traffic NOx emitted on the arterials', value: `${_round(t / 1000, 1)} t/day` }); }
-        if (co2) { let t = 0; for (let i = 0; i < n; i++) if (_fin(co2[i])) t += co2[i]; stats.push({ label: 'Traffic CO₂ on the arterials', value: `${_people(t)} t/day` }); }
-        let poorShare = null;
-        const rwi = c['wealth.rwi'];
-        if (rwi && pHigh > 0) {
-            const q20 = wquantile(rwi, pop, idx, 0.2);
-            if (q20 != null) {
-                poorShare = 100 * _sumOver(pop, high, i => rwi[i] <= q20) / pHigh;
-                stats.push({ label: `Share of the ${NOISE_HIGH}+ dB residents in the poorest fifth (RWI; 20% if even)`, value: `${_round(poorShare)}%` });
-            }
-        }
-        return {
-            columns: { noise_lden: lden, noise_nox: noxN }, idx, weightKey: 'noise_lden',
-            metric: { label: `Residents above ${NOISE_WHO} dB`, value: _round(100 * pWho / total), unit: '%', higherIs: 'worse' },
-            headline: `${_people(pWho)} people (${_round(100 * pWho / total)}% of residents) live where main-road noise reaches the WHO guideline of ${NOISE_WHO} dB Lden`
-                + (pHigh ? `; ${_people(pHigh)} of them at ${NOISE_HIGH} dB or more` : '')
-                + (poorShare != null ? `, ${_round(poorShare)}% of those in the poorest fifth.` : '.'),
-            stats,
-        };
-    }
-
-    function traffic(fr) {
-        const c = fr.cols, g = fr.grid, idx = _residents(fr), n = g.n;
-        const vc = c['traffic_load.peak_vc'], sp = c['traffic_load.peak_speed_kmh'];
-        const delay = c['traffic_load.delay_pct'], vkm = c['traffic_load.daily_vkm'];
-        const pop = c['population.population'];
-        if (!vc) return null;
-        const near = new Float64Array(n).fill(NaN), speed = new Float64Array(n).fill(NaN);
-        const off = g.offsets(ROAD_KM);
-        for (const i of idx) {
-            let worst = -1, sSum = 0, sW = 0;
-            for (const [a, b] of off) {
-                const j = g.cellAt(i, a, b);
-                if (j < 0 || !_fin(vc[j])) continue;
-                if (vc[j] > worst) worst = vc[j];
-                if (sp && _fin(sp[j])) { const w = vkm && vkm[j] > 0 ? vkm[j] : 1; sSum += sp[j] * w; sW += w; }
-            }
-            if (worst >= 0) near[i] = worst;
-            if (sW) speed[i] = sSum / sW;
-        }
-        const total = _sumOver(pop, idx, () => true) || 1;
-        const jam = _sumOver(pop, idx, i => near[i] >= JAM_VC);
-        // Same 250 m test per time of day, where the model has the three patterns.
-        const byPeriod = {};
-        for (const [k, col] of [['morning', 'traffic_load.am_vc'], ['evening', 'traffic_load.pm_vc'], ['midday', 'traffic_load.mid_vc']]) {
-            const v = c[col];
-            if (!v) continue;
-            byPeriod[k] = _sumOver(pop, idx, i => {
-                for (const [a, b] of off) { const j = g.cellAt(i, a, b); if (j >= 0 && v[j] >= JAM_VC) return true; }
-                return false;
-            });
-        }
-        const nearRoad = _sumOver(pop, idx, i => _fin(near[i]));
-        const all = [];
-        for (let i = 0; i < n; i++) if (_fin(vc[i])) all.push(i);
-        const vSpeed = sp ? wmean(sp, vkm, all) : null, vDelay = delay ? wmean(delay, vkm, all) : null;
-        let km = 0;
-        if (vkm) for (const i of all) km += vkm[i] > 0 ? vkm[i] : 0;
-        const stats = [
-            { label: 'Residents within 250 m of an arterial at LOS E/F', value: `${_people(jam)} (${_round(100 * jam / total)}%)`, raw: Math.round(jam) },
-            { label: 'Residents within 250 m of any modelled arterial', value: `${_people(nearRoad)} (${_round(100 * nearRoad / total)}%)` },
-        ];
-        if (vSpeed != null) stats.push({ label: 'Average peak-hour arterial speed (per vehicle-km)', value: `${_round(vSpeed)} km/h` });
-        if (vDelay != null) stats.push({ label: 'Peak-hour delay over free flow (per vehicle-km)', value: `+${_round(vDelay)}% (${_round(1 + vDelay / 100, 1)}× the time)` });
-        if (km) stats.push({ label: 'Vehicle-km on arterials per day (PCU)', value: `${_people(km)} km` });
-        for (const [k, v] of Object.entries(byPeriod)) {
-            stats.push({ label: `Residents beside a jammed arterial: ${k} (${{ morning: '09:00', evening: '18:00', midday: '13:00' }[k]})`, value: `${_people(v)} (${_round(100 * v / total)}%)` });
-        }
-        return {
-            columns: { traffic_vc: near, traffic_speed: speed }, idx, weightKey: 'traffic_vc',
-            metric: { label: 'Residents beside a jammed arterial', value: _round(100 * jam / total), unit: '%', higherIs: 'worse' },
-            headline: `${_people(jam)} people (${_round(100 * jam / total)}% of residents) live within 250 m of an arterial that runs at or over capacity in ${byPeriod.morning != null ? 'the morning or evening peak' : 'the morning peak'}`
-                + (vSpeed != null ? `; arterial traffic averages ${_round(vSpeed)} km/h` : '')
-                + (vDelay != null ? ` and a peak trip on them takes ${_round(1 + vDelay / 100, 1)}× its free-flow time.` : '.'),
-            stats,
-        };
-    }
-
-    function ambulance(fr) {
-        const c = fr.cols, g = fr.grid, idx = _residents(fr), n = g.n;
-        const night = c['emergency_access.hospital_min_night'], am = c['emergency_access.hospital_min_am'];
-        const pm = c['emergency_access.hospital_min_pm'], pop = c['population.population'];
-        if (!night || !am) return null;
-        const peak = new Float64Array(n).fill(NaN), delay = new Float64Array(n).fill(NaN);
-        const reach = [];
-        for (const i of idx) {
-            if (!_fin(night[i]) || !_fin(am[i])) continue;
-            peak[i] = Math.max(am[i], pm && _fin(pm[i]) ? pm[i] : am[i]);
-            delay[i] = Math.max(0, peak[i] - night[i]);
-            reach.push(i);
-        }
-        if (!reach.length) return null;
-        const total = _sumOver(pop, reach, () => true) || 1;
-        const pNight = _sumOver(pop, reach, i => night[i] <= HOSP_GOLDEN);
-        const pPeak = _sumOver(pop, reach, i => peak[i] <= HOSP_GOLDEN);
-        const pFar = _sumOver(pop, reach, i => peak[i] > HOSP_FAR);
-        const lost = Math.max(0, pNight - pPeak);
-        const medPeak = wquantile(peak, pop, reach, 0.5), medNight = wquantile(night, pop, reach, 0.5);
-        const stats = [
-            { label: `Residents within ${HOSP_GOLDEN} min of a hospital at 03:00`, value: `${_people(pNight)} (${_round(100 * pNight / total)}%)` },
-            { label: `… at the worse rush hour (09:00 or 18:00)`, value: `${_people(pPeak)} (${_round(100 * pPeak / total)}%)`, raw: Math.round(pPeak) },
-            { label: `Residents more than ${HOSP_FAR} min away at rush hour`, value: `${_people(pFar)} (${_round(100 * pFar / total)}%)`, raw: Math.round(pFar) },
-        ];
-        if (medPeak != null && medNight != null) stats.push({ label: 'Median drive to hospital: night / rush hour', value: `${_round(medNight, 1)} / ${_round(medPeak, 1)} min` });
-        const eld = c['demographics.elderly_60plus'];
-        if (eld) stats.push({ label: `People 60+ who lose ${HOSP_GOLDEN}-minute reach at rush hour`, value: _people(_sumOver(eld, reach, i => night[i] <= HOSP_GOLDEN && peak[i] > HOSP_GOLDEN)) });
-        // Schools beside jammed or noisy roads (schools are counted per cell, wherever they are).
-        const sch = c['emergency_access.schools'], ld = c['traffic_noise.lden_db'], vc = c['traffic_load.peak_vc'];
-        if (sch && (ld || vc)) {
-            const off = g.offsets(ROAD_KM);
-            let all = 0, noisy = 0, jammed = 0, either = 0;
-            for (let i = 0; i < n; i++) {
-                if (!(sch[i] > 0)) continue;
-                all += sch[i];
-                const loud = !!ld && _fin(ld[i]) && ld[i] >= NOISE_HIGH;
-                let jam = false;
-                if (vc) for (const [a, b] of off) { const j = g.cellAt(i, a, b); if (j >= 0 && vc[j] >= JAM_VC) { jam = true; break; } }
-                if (loud) noisy += sch[i];
-                if (jam) jammed += sch[i];
-                if (loud || jam) either += sch[i];
-            }
-            if (all) {
-                stats.push({ label: `Schools at ${NOISE_HIGH}+ dB road noise`, value: `${_people(noisy)} of ${_people(all)} (${_round(100 * noisy / all)}%)` });
-                stats.push({ label: `Schools within ${ROAD_KM * 1000} m of a jammed arterial`, value: `${_people(jammed)} (${_round(100 * jammed / all)}%)` });
-                stats.push({ label: 'Schools beside a noisy or jammed road', value: `${_people(either)} (${_round(100 * either / all)}%)`, raw: either });
-            }
-        }
-        let poorShare = null;
-        const rwi = c['wealth.rwi'];
-        if (rwi && pFar > 0) {
-            const q20 = wquantile(rwi, pop, reach, 0.2);
-            if (q20 != null) {
-                poorShare = 100 * _sumOver(pop, reach, i => peak[i] > HOSP_FAR && rwi[i] <= q20) / pFar;
-                stats.push({ label: `Share of the ${HOSP_FAR}+ min residents in the poorest fifth (RWI; 20% if even)`, value: `${_round(poorShare)}%` });
-            }
-        }
-        return {
-            columns: { hosp_peak: peak, hosp_delay: delay }, idx: reach, weightKey: 'hosp_peak',
-            metric: { label: `Within ${HOSP_GOLDEN} min of a hospital at rush hour`, value: _round(100 * pPeak / total), unit: '%', higherIs: 'better' },
-            headline: `${_round(100 * pPeak / total)}% of residents can reach a hospital by road within ${HOSP_GOLDEN} minutes at rush hour, against ${_round(100 * pNight / total)}% at 3 am`
-                + (lost > 0 ? `: traffic takes ${HOSP_GOLDEN}-minute reach away from ${_people(lost)} people` : '')
-                + (pFar > 0 ? `, and ${_people(pFar)} are more than ${HOSP_FAR} minutes away.` : '.'),
-            stats,
-        };
-    }
-
-    /** Residents newly within the station catchment if a station opened at cell i (served: 0/1 per cell). */
-    function _stationGain(g, pop, served, i) {
-        let s = 0;
-        for (const [a, b] of g.offsets(STATION_KM)) {
-            const j = g.cellAt(i, a, b);
-            if (j >= 0 && !served[j] && pop[j] > 0) s += pop[j];
-        }
-        return s;
-    }
-
-    /** Greedy best sites for new metro stations: [{ rank, code, people, nearestMin }]. */
-    function stationSites(fr, k = NEW_STATIONS) {
-        const c = fr.cols, g = fr.grid, mw = c['rail_access.metro_walk_min'], pop = c['population.population'];
-        if (!mw || !pop) return [];
-        const served = new Uint8Array(g.n), idx = _residents(fr);
-        for (const i of idx) if (mw[i] <= STATION_WALK) served[i] = 1;
-        const out = [];
-        for (let r = 0; r < k; r++) {
-            let best = -1, bestGain = 0;
-            for (const i of idx) {
-                if (served[i]) continue;
-                const v = _stationGain(g, pop, served, i);
-                if (v > bestGain) { bestGain = v; best = i; }
-            }
-            if (best < 0) break;
-            out.push({ rank: r + 1, code: g.codes[best], people: Math.round(bestGain), nearestMin: _fin(mw[best]) ? _round(mw[best], 1) : null });
-            for (const [a, b] of g.offsets(STATION_KM)) { const j = g.cellAt(best, a, b); if (j >= 0) served[j] = 1; }
-        }
-        return out;
-    }
-
-    function metro(fr) {
-        const c = fr.cols, idx = _residents(fr), n = fr.grid.n;
-        const mw = c['rail_access.metro_walk_min'], rw = c['rail_access.rail_walk_min'], pop = c['population.population'];
-        if (!mw && !rw) return null;
-        const mCol = new Float64Array(n).fill(NaN), rCol = new Float64Array(n).fill(NaN);
-        for (const i of idx) { if (mw && _fin(mw[i])) mCol[i] = mw[i]; if (rw && _fin(rw[i])) rCol[i] = rw[i]; }
-        const total = _sumOver(pop, idx, () => true) || 1;
-        const pM = mw ? _sumOver(pop, idx, i => mw[i] <= STATION_WALK) : 0;
-        const pAny = rw ? _sumOver(pop, idx, i => rw[i] <= STATION_WALK) : pM;
-        let nM = 0, nR = 0;
-        const ms = c['rail_access.metro_stations'], rs = c['rail_access.rail_stations'];
-        for (let i = 0; i < n; i++) { if (ms && ms[i] > 0) nM += ms[i]; if (rs && rs[i] > 0) nR += rs[i]; }
-        const stats = [];
-        if (mw) stats.push({ label: `Residents within a ${STATION_WALK}-minute walk of a metro station`, value: `${_people(pM)} (${_round(100 * pM / total)}%)`, raw: Math.round(pM) });
-        stats.push({ label: `… of any metro or suburban rail station`, value: `${_people(pAny)} (${_round(100 * pAny / total)}%)` });
-        if (nM || nR) stats.push({ label: 'Stations mapped (metro / rail)', value: `${_people(nM)} / ${_people(nR)}` });
-        const med = mw ? wquantile(mCol, pop, idx.filter(i => _fin(mCol[i])), 0.5) : null;
-        if (med != null) stats.push({ label: 'Median walk to a metro station', value: `${_round(med)} min` });
-        const sites = mw && nM ? stationSites(fr) : [];
-        sites.forEach(x => stats.push({ label: `New station site ${x.rank}: ${x.code}`, value: `+${_people(x.people)} residents within ${STATION_WALK} min (now ${x.nearestMin} min from the metro)` }));
-        let poorShare = null;
-        const rwi = c['wealth.rwi'];
-        if (rwi && mw && pM > 0) {
-            const q20 = wquantile(rwi, pop, idx, 0.2);
-            if (q20 != null) {
-                const poor = _sumOver(pop, idx, i => rwi[i] <= q20);
-                poorShare = poor ? 100 * _sumOver(pop, idx, i => rwi[i] <= q20 && mw[i] <= STATION_WALK) / poor : null;
-                if (poorShare != null) stats.push({ label: 'Poorest fifth within a 10-minute walk of the metro', value: `${_round(poorShare)}% (city: ${_round(100 * pM / total)}%)` });
-            }
-        }
-        const gain = sites.reduce((a, x) => a + x.people, 0);
-        return {
-            columns: { metro_walk: mCol, station_walk: rCol }, idx, weightKey: 'metro_walk',
-            metric: { label: `Within ${STATION_WALK} min walk of the metro`, value: _round(100 * (mw ? pM : pAny) / total), unit: '%', higherIs: 'better' },
-            headline: (mw && nM
-                ? `${_round(100 * pM / total)}% of residents live within a ${STATION_WALK}-minute walk of a metro station (${_round(100 * pAny / total)}% counting suburban rail)`
-                : `${_round(100 * pAny / total)}% of residents live within a ${STATION_WALK}-minute walk of a rail station`)
-                + (sites.length ? `; the best ${sites.length} new station sites would bring ${_people(gain)} more people within walking distance.` : '.'),
-            stats,
-        };
-    }
-
-    /** What if a metro station opened at (lat, lng)? Residents newly within the catchment. */
-    function stationWhatIf(fr, lat, lng) {
-        const g = fr.grid, c = fr.cols, mw = c['rail_access.metro_walk_min'], pop = c['population.population'];
-        if (!mw || !pop || !g.n) return null;
-        let i0 = -1, d0 = Infinity;
-        for (let i = 0; i < g.n; i++) {
-            const d = (g.lat[i] - lat) ** 2 + ((g.lng[i] - lng) * Math.cos(lat * Math.PI / 180)) ** 2;
-            if (d < d0) { d0 = d; i0 = i; }
-        }
-        if (i0 < 0 || Math.sqrt(d0) * KM_LAT > 2) return null;
-        const served = new Uint8Array(g.n);
-        for (let i = 0; i < g.n; i++) if (mw[i] <= STATION_WALK) served[i] = 1;
-        const people = _stationGain(g, pop, served, i0);
-        const total = _sumOver(pop, _residents(fr), () => true) || 1;
-        let already = 0;
-        for (const [a, b] of g.offsets(STATION_KM)) { const j = g.cellAt(i0, a, b); if (j >= 0 && served[j] && pop[j] > 0) already += pop[j]; }
-        return { code: g.codes[i0], people: Math.round(people), alreadyServed: Math.round(already), nearestMin: _fin(mw[i0]) ? _round(mw[i0], 1) : null,
-            sharePts: _round(100 * people / total, 2), walkMin: STATION_WALK };
-    }
-
-    async function stationAsk(city, lat, lng, store) {
-        const fr = await frame(city, store, allNeeds(['metro']));
-        const w = lat != null ? stationWhatIf(fr, lat, lng) : null;
-        return { city, at: w, sites: stationSites(fr) };
     }
 
     function cutoff(fr) {
@@ -1819,12 +1522,13 @@ const UrbanLenses = (() => {
             metric: pmRes != null ? { label: 'Months a year above 60 µg/m³ PM2.5', value: _round(pmRes, 1), unit: 'months', higherIs: 'worse' } : null };
     }
 
-    const RUN = { heat, flood, waterlog, noise, traffic, ambulance, metro, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
+    const RUN = { heat, flood, waterlog, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
 
     // ── siting suitability (MCDA with AHP weights) ──────────────────────────
 
     const SITING_NEEDS = ['osm_amenities.education', 'osm_amenities.leisure', 'osm_amenities.healthcare', 'osm_roads.junctions_km2',
-        'osm_roads.major_km_km2', 'building_stock.cover_2023_pct', 'nightlights.radiance', 'vegetation.tree_canopy_pct'];
+        'osm_roads.major_km_km2', 'building_stock.cover_2023_pct', 'nightlights.radiance', 'vegetation.tree_canopy_pct',
+        'traffic_load.daily_vkm', 'ev_charging.charger_km', 'ev_charging.parking', 'ev_charging.fuel'];
 
     /**
      * AHP weights from a reciprocal pairwise matrix (Saaty 1980): principal
@@ -1886,14 +1590,18 @@ const UrbanLenses = (() => {
                 { label: 'residents per km²', get: (c) => c['population.density_km2'], dir: 1 },
             ],
             pairwise: [[1, 2, 3], [1 / 2, 1, 2], [1 / 3, 1 / 2, 1]] },
-        ev_charging: { title: 'EV charging hub', icon: '🔌', serveKm: 1,
-            why: 'busy (bright at night), on major roads, many residents',
+        ev_charging: { title: 'EV charging hub', icon: '🔌', serveKm: 2,
+            why: 'heavy traffic nearby, far from known chargers, existing parking or fuel forecourts',
             criteria: [
-                { label: 'night-time lights', get: (c) => c['nightlights.radiance'], dir: 1 },
-                { label: 'major road km per km²', get: (c) => c['osm_roads.major_km_km2'], dir: 1 },
+                { label: 'vehicle-km on arterials within 1 km', get: (c, d, g) => c['traffic_load.daily_vkm'] ? within(g, c['traffic_load.daily_vkm'], 1) : null, dir: 1 },
+                { label: 'km to the nearest known charger', get: (c) => c['ev_charging.charger_km'], dir: 1 },
+                { label: 'parking + fuel stations within 500 m', get: (c, d, g) => (c['ev_charging.parking'] || c['ev_charging.fuel'])
+                    ? within(g, Float64Array.from(c['population.population'], (_, i) => (c['ev_charging.parking'] ? c['ev_charging.parking'][i] || 0 : 0) + (c['ev_charging.fuel'] ? c['ev_charging.fuel'][i] || 0 : 0)), 0.5) : null, dir: 1 },
                 { label: 'residents per km²', get: (c) => c['population.density_km2'], dir: 1 },
+                { label: 'night-time lights', get: (c) => c['nightlights.radiance'], dir: 1 },
             ],
-            pairwise: [[1, 1, 2], [1, 1, 2], [1 / 2, 1 / 2, 1]] },
+            // Consistent from weights 3 : 2 : 2 : 1 : 1.
+            pairwise: [[1, 3 / 2, 3 / 2, 3, 3], [2 / 3, 1, 1, 2, 2], [2 / 3, 1, 1, 2, 2], [1 / 3, 1 / 2, 1 / 2, 1, 1], [1 / 3, 1 / 2, 1 / 2, 1, 1]] },
     };
 
     /**
@@ -2305,13 +2013,28 @@ const UrbanLenses = (() => {
         };
     }
 
-    return {
+    /**
+     * Add lenses from another file (js/urban-lenses-mobility.js): `entries`
+     * go into LENSES after `after`, `fns` into the runner map, `api` onto
+     * UrbanLenses. `_kit` hands such files the shared helpers.
+     */
+    function register(entries, fns, api = {}, after = 'waterlog') {
+        const at = LENSES.findIndex(l => l.id === after);
+        LENSES.splice(at < 0 ? LENSES.length : at + 1, 0, ...entries.filter(e => !BY_ID.has(e.id)));
+        for (const e of entries) BY_ID.set(e.id, e);
+        Object.assign(RUN, fns);
+        Object.assign(API, api);
+    }
+
+    const API = {
         SCHEMA, LENS_SCHEMA, LENSES, PRESETS, ESSENTIALS, CELL_DEG, GHI,
         catalog, lens, site, areaProfile, leagueFor, ahp, within,
         prank, wmean, wquantile, gini, lorenz, palma, ols, pearson, grid, frameFrom, frame, allNeeds,
-        e2sfca, walkNet, pedShed, stationSites, stationWhatIf, stationAsk, DIRS, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
-        _lenses: RUN,
+        e2sfca, walkNet, pedShed, DIRS, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
+        register, _lenses: RUN,
+        _kit: { KM_LAT, _fin, _round, _people, _sumOver, _residents, wmean, wquantile, within, frame, allNeeds },
     };
+    return API;
 })();
 
 if (typeof window !== 'undefined') {

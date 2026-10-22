@@ -301,6 +301,26 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.metro(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('ev lens: residents and traffic near known chargers; EV siting uses traffic and charger gaps', () => {
+        const km = codes.map((_, i) => (i === 0 ? 0.5 : i === 1 ? 2.5 : 6));
+        const ch = codes.map((_, i) => (i === 0 ? 2 : 0));
+        const vk = codes.map((_, i) => (i === n - 1 ? 5000 : i === 0 ? 1000 : 0));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'ev_charging.charger_km': km, 'ev_charging.chargers': ch,
+            'traffic_load.daily_vkm': vk });
+        const r = L._lenses.ev(f, {});
+        const total = pop.reduce((a, b) => a + b, 0);
+        expect(r.metric.value).toBeCloseTo(100 * (pop[0] + pop[1]) / total, 0);
+        expect(r.headline).toMatch(/^2 public charging sites/);
+        expect(r.headline).toMatch(/16.7% of arterial traffic/);  // 1000 of 6000 veh-km
+        expect(r.columns.ev_gap[0]).toBe(0);
+        expect(r.columns.ev_gap[n - 1]).toBeGreaterThan(0);
+        expect(L._lenses.ev(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+        const P = L.PRESETS.ev_charging;
+        expect(P.criteria.length).toBe(5);
+        const { cr } = L.ahp(P.pairwise);
+        expect(cr).toBeLessThan(0.01);
+    });
+
     it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {
         const rp = new Array(n).fill(0), depth = new Array(n).fill(0);
         for (let r = 0; r < SIZE; r++) { rp[r * SIZE + 3] = 100; depth[r * SIZE + 3] = 1; }   // column 3 floods

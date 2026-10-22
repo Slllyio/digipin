@@ -832,5 +832,16 @@
     "pct_within_10_walk_metro": 11.6,
     "pct_within_10_walk_any": 25.0,
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
+  },
+  "ev_charging": {
+    "chargers": 85,
+    "chargers_by_source": {
+      "overture": 85
+    },
+    "parking": 17,
+    "fuel": 203,
+    "chargers_per_lakh": 1.32,
+    "pct_vkm_within_2km": 79.2,
+    "pct_pop_within_2km": 82.9
   }
 }

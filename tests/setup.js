@@ -50,6 +50,7 @@ loadGlobalScript('js/analysis.js', ['Analysis']);
 loadGlobalScript('js/analyses-panel.js', ['AnalysesPanel']);
 loadGlobalScript('js/urban-insights.js', ['UrbanInsights']);
 loadGlobalScript('js/urban-lenses.js', ['UrbanLenses']);
+loadGlobalScript('js/urban-lenses-mobility.js', ['UrbanLensesMobility']);
 loadGlobalScript('js/urban-agents.js', ['UrbanAgents']);
 loadGlobalScript('js/lenses-panel.js', ['LensesPanel']);
 loadGlobalScript('js/scenario-lenses.js', ['ScenarioLenses']);

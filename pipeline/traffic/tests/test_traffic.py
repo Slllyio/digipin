@@ -322,3 +322,17 @@ def test_rail_stations_helpers():
     assert idx.nearest(77.005, 28.501)[0] == "subway"                     # ~110 m off the track
     assert idx.nearest(77.005, 28.51)[0] is None                          # ~1.1 km off
     assert abs(rs.walk_min(800) - 13.0) < 1e-9
+
+
+def test_ev_charging_helpers():
+    from pipeline.traffic import ev_charging as ev
+    pts = [(77.2000, 28.5000, "charger", "A", "osm"),
+           (77.2003, 28.5001, "charger", "A dup", "overture"),   # ~30 m: duplicate
+           (77.2003, 28.5001, "parking", "P", "overture"),       # other kind: kept
+           (77.2100, 28.5000, "charger", "B", "overture")]       # ~980 m: kept
+    d = ev.dedupe(pts)
+    assert [p[3] for p in d] == ["A", "P", "B"]
+    near = ev.NearestKm([(77.2, 28.5), (77.5, 28.5)])
+    assert abs(near(77.21, 28.5) - 0.977) < 0.01
+    assert abs(near(77.45, 28.5) - 4.886) < 0.02
+    assert ev.NearestKm([])(77.2, 28.5) is None

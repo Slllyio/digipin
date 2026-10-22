@@ -54,6 +54,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "ev": {
+     "label": "Residents within 3 km of a known charger",
+     "value": 35.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 34.5,
@@ -165,6 +171,12 @@
     "metro": {
      "label": "Within 10 min walk of the metro",
      "value": 14.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "ev": {
+     "label": "Residents within 3 km of a known charger",
+     "value": 67.9,
      "unit": "%",
      "higherIs": "better"
     },
@@ -396,6 +408,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "ev": {
+     "label": "Residents within 3 km of a known charger",
+     "value": 61.4,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 73.5,
@@ -507,6 +525,12 @@
     "metro": {
      "label": "Within 10 min walk of the metro",
      "value": 26.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "ev": {
+     "label": "Residents within 3 km of a known charger",
+     "value": 46.5,
      "unit": "%",
      "higherIs": "better"
     },
@@ -738,6 +762,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "ev": {
+     "label": "Residents within 3 km of a known charger",
+     "value": 36.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 78.5,
@@ -849,6 +879,12 @@
     "metro": {
      "label": "Within 10 min walk of the metro",
      "value": 0.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "ev": {
+     "label": "Residents within 3 km of a known charger",
+     "value": 22.8,
      "unit": "%",
      "higherIs": "better"
     },
@@ -1194,6 +1230,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "ev": {
+     "label": "Residents within 3 km of a known charger",
+     "value": 12.7,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 41.1,
@@ -1308,6 +1350,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "ev": {
+     "label": "Residents within 3 km of a known charger",
+     "value": 73,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 92,
@@ -1419,6 +1467,12 @@
     "metro": {
      "label": "Within 10 min walk of the metro",
      "value": 11.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "ev": {
+     "label": "Residents within 3 km of a known charger",
+     "value": 95.7,
      "unit": "%",
      "higherIs": "better"
     },
