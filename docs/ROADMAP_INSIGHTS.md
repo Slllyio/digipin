@@ -64,6 +64,7 @@ new data.
 | 21 | Seasonal exposure | How many months a year are residents exposed? Is it warming? | Yes (monthly series) | S | **Shipped** |
 | 22 | Public transport coverage (SDG 11.2.1) | How many people can walk to a bus stop (500 m) or a station (1 km)? | Yes (OSM stops + `osm_walk`) | S | **Shipped** |
 | 23 | Cut off by floods | Who loses walking access to healthcare in a 100-year flood? | Yes (GloFAS + `osm_walk` + OSM healthcare) | S | **Shipped** |
+| 24 | Fairness by wealth | Do poorer neighbourhoods carry more heat, flood and dirty air, and get less access? | Yes (Meta RWI `wealth` + other lenses) | S | **Shipped** |
 | 24 | Rain waterlogging | Who lives where heavy rain pools, and are they poorer? | Yes (`waterlogging`: Sentinel-1 + DEM + MERIT Hydro + GHSL) | S | **Shipped** |
 
 Excluded here because other work owns them: draw-an-area building insights,
@@ -309,6 +310,28 @@ ERA5-Land days ≥ 40 °C.
 
 DISHA routes "where does rainwater pool", "waterlogging" and "pluvial / urban
 flooding" here.
+
+## 24. Fairness by wealth (environmental justice)
+
+**Question.** Do poorer neighbourhoods carry more of the hazards and get less
+of the services?
+
+**Method.** Residents ranked by Meta's Relative Wealth Index (L6,
+population-weighted fractional rank, ties averaged). For eight outcomes
+(surface heat, flood hazard, waterlogging, PM2.5, tree canopy, 15-minute
+completeness, E2SFCA healthcare, walk to transit) the lens reports the
+poorest vs richest fifth and the concentration index CI = 2·cov(y, R)/μ
+(Wagstaff et al. 2003); CI < 0 means the outcome concentrates among poorer
+residents. "Worse off" needs a ≥ 10 % gap in the harmful direction. Heat uses
+surface temperature because the HVI already contains wealth.
+
+**User sees.** The count of outcomes tilted against the poorest fifth (league
+metric), a per-outcome table, and a map of the poorest two-fifths coloured by
+how many outcomes put them in the city's worst fifth.
+
+**Limits.** RWI is a ~2.4 km estimate from satellite and connectivity data
+(Chi et al. 2022), so within-slum variation is invisible, and coarse inputs
+(PM2.5, ERA5) cannot show a gap at that scale.
 
 ## How it is built
 

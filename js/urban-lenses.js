@@ -35,6 +35,17 @@ const UrbanLenses = (() => {
     const KWH_PER_CAPITA = 1395;  // CEA per-capita electricity consumption, 2023-24 (all sectors)
     const URBAN_PCT = 15;     // a cell counts as urban for the LEI at ≥ 15% built-up
     const SHED_KM = 1;
+    // Fairness lens outcomes: [label, source ('dataset.field' or 'lensId:key'), higher is 'worse' | 'better'].
+    const FAIR_PARTS = [
+        ['Daytime surface heat', 'surface_heat.lst_day_c', 'worse', '°C'],
+        ['Flood hazard', 'flood:flood_hazard', 'worse', '/100'],
+        ['Waterlogging', 'waterlogging.waterlogging_index', 'worse', '/100'],
+        ['PM2.5', 'air_quality.pm25_ugm3', 'worse', 'µg/m³'],
+        ['Tree canopy', 'vegetation.tree_canopy_pct', 'better', '%'],
+        ['15-minute completeness', 'fifteen:fifteen_min', 'better', '/100'],
+        ['Healthcare places in reach', 'health:health_access', 'better', 'per 10k'],
+        ['Walk to transit', 'transit:transit_m', 'worse', 'm'],
+    ];
     const FLOOD_WADE_M = 0.3;   // floodwater above ~0.3 m knocks pedestrians over at modest velocity
     const FLOOD_SHARE = 50;     // % of the cell in the floodplain to treat it as impassable
     const FLOOD_DETOUR_M = 250;
@@ -172,6 +183,14 @@ const UrbanLenses = (() => {
             after: ['heat', 'flood', 'air'],
             method: 'Count of hazards (heat vulnerability, flood hazard, PM2.5) for which the cell is in its city’s worst 20%, among populated cells.',
             refs: 'Multi-hazard exposure (Cutter et al. 2003 hazards-of-place)' },
+        { id: 'fair', title: 'Fairness by wealth', icon: '⚖',
+            question: 'Do poorer neighbourhoods carry more heat, flood and dirty air, and get less access?',
+            field: { key: 'poor_burdens', label: 'Burdens in the worst fifth (poorest two-fifths only)', unit: `of ${FAIR_PARTS.length}`, higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'wealth_rank', label: 'Relative wealth rank (per resident)', unit: '0-100', higherIs: null, ramp: 'viridis' }],
+            needs: ['wealth.rwi', 'surface_heat.lst_day_c', 'waterlogging.waterlogging_index', 'air_quality.pm25_ugm3', 'vegetation.tree_canopy_pct'],
+            after: ['flood', 'fifteen', 'health', 'transit'],
+            method: `Residents are ranked by Meta’s Relative Wealth Index (population-weighted, ties averaged) and split into fifths. For each of ${FAIR_PARTS.length} outcomes (daytime surface heat, flood hazard, waterlogging, PM2.5, tree canopy, 15-minute completeness, healthcare access, walk to transit) the lens compares the poorest and richest fifths and computes the concentration index (Wagstaff & Kakwani): negative means the burden sits with poorer residents. Heat uses surface temperature, not the HVI, because the HVI already includes wealth. The map counts, for the poorest two-fifths only, how many outcomes put the cell in its city’s worst fifth.`,
+            refs: 'Wagstaff, van Doorslaer & Watanabe 2003 (concentration index); Chi et al. 2022 PNAS (Relative Wealth Index); Mitchell & Chakraborty 2015 (environmental justice of urban heat)' },
     ];
     const BY_ID = new Map(LENSES.map(l => [l.id, l]));
 
@@ -1038,6 +1057,95 @@ const UrbanLenses = (() => {
         };
     }
 
+    /** Population-weighted fractional rank (0..1) of `values` over idx, ties averaged. */
+    function wrank(values, weights, idx) {
+        const ok = idx.filter(i => _fin(values[i]) && weights[i] > 0).sort((a, b) => values[a] - values[b]);
+        const out = new Float64Array(values.length).fill(NaN);
+        let tot = 0;
+        for (const i of ok) tot += weights[i];
+        let cum = 0;
+        for (let s0 = 0; s0 < ok.length;) {
+            let e = s0, w = 0;
+            while (e < ok.length && values[ok[e]] === values[ok[s0]]) w += weights[ok[e++]];
+            const r = (cum + w / 2) / (tot || 1);
+            for (let q = s0; q < e; q++) out[ok[q]] = r;
+            cum += w; s0 = e;
+        }
+        return out;
+    }
+
+    /** Concentration index of y by rank R (weights w): 2·cov_w(y, R) / mean_w(y). */
+    function concIndex(y, R, w, idx) {
+        let sw = 0, sy = 0, sr = 0;
+        const ok = idx.filter(i => _fin(y[i]) && _fin(R[i]) && w[i] > 0);
+        for (const i of ok) { sw += w[i]; sy += w[i] * y[i]; sr += w[i] * R[i]; }
+        if (!sw || !sy) return null;
+        const my = sy / sw, mr = sr / sw;
+        let cov = 0;
+        for (const i of ok) cov += w[i] * (y[i] - my) * (R[i] - mr);
+        return 2 * (cov / sw) / my;
+    }
+
+    function fair(fr, done) {
+        const c = fr.cols, idx = _residents(fr), n = fr.grid.n, pop = c['population.population'];
+        const rwi = c['wealth.rwi'];
+        if (!rwi) return null;
+        const R = wrank(rwi, pop, idx);
+        const ranked = idx.filter(i => _fin(R[i]));
+        if (ranked.length < 20) return null;
+        const parts = [];
+        for (const [label, src, dir, unit] of FAIR_PARTS) {
+            const [a, b] = src.includes(':') ? src.split(':') : [null, src];
+            const v = a ? done[a] && done[a].columns[b] : c[b];
+            if (!v) continue;
+            parts.push({ label, v, dir, unit });
+        }
+        if (parts.length < 3) return null;
+        const poor = ranked.filter(i => R[i] < 0.2), rich = ranked.filter(i => R[i] >= 0.8);
+        const rows = [];
+        const ranks = [];
+        for (const p of parts) {
+            const mp = wmean(p.v, pop, poor.filter(i => _fin(p.v[i]))), mr = wmean(p.v, pop, rich.filter(i => _fin(p.v[i])));
+            const ci = concIndex(p.v, R, pop, ranked);
+            // The poor are worse off when they have more of a burden or less of a good.
+            const gap = _fin(mp) && _fin(mr) && mr !== 0 ? (mp - mr) / Math.abs(mr) : null;
+            const poorWorse = gap != null && (p.dir === 'worse' ? gap > 0.1 : gap < -0.1);
+            const poorBetter = gap != null && (p.dir === 'worse' ? gap < -0.1 : gap > 0.1);
+            rows.push({ ...p, mp, mr, ci, poorWorse, poorBetter });
+            const pr = prank(p.v, ranked);
+            ranks.push(p.dir === 'worse' ? pr : pr.map(x => (_fin(x) ? 1 - x : NaN)));
+        }
+        const out = new Float64Array(n).fill(NaN), wr = new Float64Array(n).fill(NaN);
+        for (const i of ranked) {
+            wr[i] = 100 * R[i];
+            if (R[i] >= 0.4) continue;
+            let k = 0;
+            for (let q = 0; q < rows.length; q++) if (ranks[q][i] >= 0.8 && _fin(rows[q].v[i])) k++;
+            out[i] = k;
+        }
+        const worse = rows.filter(r => r.poorWorse), better = rows.filter(r => r.poorBetter);
+        const fmt = (x, u) => (_fin(x) ? `${_round(x, Math.abs(x) < 10 ? 1 : 0)}${u.startsWith('/') || u === '%' ? '' : ' '}${u}` : '–');
+        const total = _sumOver(pop, idx, () => true);
+        const many = _sumOver(pop, ranked, i => out[i] >= 3);
+        return {
+            columns: { poor_burdens: out, wealth_rank: wr }, idx: ranked,
+            metric: { label: 'Outcomes where the poorest fifth is worse off', value: worse.length, unit: `of ${rows.length}`, higherIs: 'worse' },
+            headline: (worse.length
+                ? `The poorest fifth of residents is worse off on ${worse.length} of ${rows.length} outcomes (${worse.map(r => r.label.toLowerCase()).join(', ')})`
+                : `The poorest fifth is not clearly worse off on any of ${rows.length} outcomes`)
+                + (better.length ? `, and better off on ${better.map(r => r.label.toLowerCase()).join(', ')}` : '')
+                + `; ${_people(many)} people in the poorest two-fifths sit in the worst fifth on three or more.`,
+            stats: [
+                ...rows.map(r => ({
+                    label: `${r.label}: poorest vs richest fifth`,
+                    value: `${fmt(r.mp, r.unit)} vs ${fmt(r.mr, r.unit)} · CI ${r.ci != null ? _round(r.ci, 3) : '–'}${r.poorWorse ? ' · poor worse off' : r.poorBetter ? ' · poor better off' : ''}`,
+                })),
+                { label: 'Poorest two-fifths with 3+ burdens in the worst fifth', value: `${_people(many)} (${_round(100 * many / (total || 1))}% of residents)`, raw: Math.round(many) },
+            ],
+            fair: rows.map(r => ({ label: r.label, poorest: _round(r.mp, 3), richest: _round(r.mr, 3), ci: r.ci != null ? _round(r.ci, 4) : null, poorWorse: r.poorWorse })),
+        };
+    }
+
     function burden(fr, done) {
         const parts = [['heat', 'hvi'], ['flood', 'flood_hazard'], ['air', 'pm25']].map(([id, k]) => done[id] && done[id].columns[k]).filter(Boolean);
         if (parts.length < 2) return null;
@@ -1522,7 +1630,7 @@ const UrbanLenses = (() => {
             metric: pmRes != null ? { label: 'Months a year above 60 µg/m³ PM2.5', value: _round(pmRes, 1), unit: 'months', higherIs: 'worse' } : null };
     }
 
-    const RUN = { heat, flood, waterlog, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
+    const RUN = { heat, flood, waterlog, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden, fair };
 
     // ── siting suitability (MCDA with AHP weights) ──────────────────────────
 
@@ -2030,7 +2138,7 @@ const UrbanLenses = (() => {
         SCHEMA, LENS_SCHEMA, LENSES, PRESETS, ESSENTIALS, CELL_DEG, GHI,
         catalog, lens, site, areaProfile, leagueFor, ahp, within,
         prank, wmean, wquantile, gini, lorenz, palma, ols, pearson, grid, frameFrom, frame, allNeeds,
-        e2sfca, walkNet, pedShed, DIRS, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
+        e2sfca, walkNet, pedShed, wrank, concIndex, DIRS, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
         register, _lenses: RUN,
         _kit: { GHI, ROOF_USABLE, M2_PER_KWP, PERF_RATIO, KM_LAT, DIRS, _fin, _round, _people, _sumOver, _residents, wmean, wquantile, within, frame, allNeeds },
     };

@@ -155,6 +155,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('what if we close a road here')).toEqual({ type: 'whatif', scenario: 'closure' });
         expect(M('Where are the traffic jams in Delhi?')).toEqual({ type: 'lens', lens: 'traffic', city: 'delhi' });
         expect(M('which roads are the worst bottlenecks at rush hour')).toEqual({ type: 'lens', lens: 'traffic' });
+        expect(M('Do poorer neighbourhoods carry more heat and pollution?')).toEqual({ type: 'lens', lens: 'fair' });
         expect(M('How many people can walk to a bus stop?')).toEqual({ type: 'lens', lens: 'transit' });
         expect(M('public transport access in Delhi')).toMatchObject({ type: 'lens', lens: 'transit' });
         expect(M('How many people breathe PM2.5 above the standard?')).toEqual({ type: 'lens', lens: 'air' });

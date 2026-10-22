@@ -602,6 +602,32 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(q.ds[q.len - 1]).toBeCloseTo(2 * fr.grid.dx, 6);
     });
 
+    it('wrank and concIndex: a burden carried by the poor has a negative concentration index', () => {
+        const v = [1, 2, 2, 3], w = [1, 1, 1, 1], ix = [0, 1, 2, 3];
+        const R = L.wrank(v, w, ix);
+        expect(Array.from(R)).toEqual([0.125, 0.5, 0.5, 0.875]);               // ties averaged
+        expect(L.concIndex([4, 3, 2, 1], R, w, ix)).toBeLessThan(0);           // more for the poorer
+        expect(L.concIndex([1, 2, 3, 4], R, w, ix)).toBeGreaterThan(0);
+        expect(L.concIndex([2, 2, 2, 2], R, w, ix)).toBeCloseTo(0, 9);
+    });
+
+    it('fair lens: poorer cells with more heat and less canopy count as worse off', () => {
+        const rwi = codes.map((_, i) => (i % SIZE) / SIZE - 0.5);           // richer to the east
+        const lst = codes.map((_, i) => 45 - (i % SIZE) * 0.5);             // hotter to the west
+        const tree = codes.map((_, i) => 2 + (i % SIZE));                    // greener to the east
+        const pm = codes.map(() => 50);
+        const f = L.frameFrom(codes, { 'population.population': pop, 'wealth.rwi': rwi, 'surface_heat.lst_day_c': lst, 'vegetation.tree_canopy_pct': tree, 'air_quality.pm25_ugm3': pm });
+        const r = L._lenses.fair(f, {});
+        const row = k => r.fair.find(x => x.label === k);
+        expect(row('Daytime surface heat').poorWorse).toBe(true);
+        expect(row('Daytime surface heat').ci).toBeLessThan(0);
+        expect(row('Tree canopy').poorWorse).toBe(true);
+        expect(row('PM2.5').poorWorse).toBe(false);
+        expect(r.metric.value).toBe(2);
+        expect(Number.isNaN(r.columns.poor_burdens[SIZE - 1])).toBe(true);   // richest column: not mapped
+        expect(r.columns.poor_burdens[0]).toBe(2);
+    });
+
     it('health lens counts the people beyond the catchment', () => {
         const r = L._lenses.health(fr, {});
         expect(r.stats[1].raw).toBeGreaterThan(0);

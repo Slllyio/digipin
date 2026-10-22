@@ -312,6 +312,12 @@
      "unit": "months",
      "higherIs": "worse"
     },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 4,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "monsoon": {
      "label": "Arterial km prone to monsoon waterlogging",
      "value": 29.9,
@@ -636,6 +642,12 @@
      "unit": "months",
      "higherIs": "worse"
     },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 1,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "monsoon": {
      "label": "Arterial km prone to monsoon waterlogging",
      "value": 14.1,
@@ -952,6 +964,12 @@
      "label": "Months a year above 60 µg/m³ PM2.5",
      "value": 0,
      "unit": "months",
+     "higherIs": "worse"
+    },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 6,
+     "unit": "of 8",
      "higherIs": "worse"
     },
     "monsoon": {
@@ -1278,6 +1296,12 @@
      "unit": "months",
      "higherIs": "worse"
     },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 3,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "monsoon": {
      "label": "Arterial km prone to monsoon waterlogging",
      "value": 33.1,
@@ -1602,6 +1626,12 @@
      "unit": "months",
      "higherIs": "worse"
     },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 3,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "monsoon": {
      "label": "Arterial km prone to monsoon waterlogging",
      "value": 26.7,
@@ -1906,6 +1936,12 @@
      "label": "Months a year above 60 µg/m³ PM2.5",
      "value": 0,
      "unit": "months",
+     "higherIs": "worse"
+    },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 3,
+     "unit": "of 8",
      "higherIs": "worse"
     },
     "monsoon": {
@@ -2232,6 +2268,12 @@
      "unit": "months",
      "higherIs": "worse"
     },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 0,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "monsoon": {
      "label": "Arterial km prone to monsoon waterlogging",
      "value": 14.6,
@@ -2556,6 +2598,12 @@
      "unit": "months",
      "higherIs": "worse"
     },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 4,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "monsoon": {
      "label": "Arterial km prone to monsoon waterlogging",
      "value": 8.1,
@@ -2866,6 +2914,12 @@
      "label": "Months a year above 60 µg/m³ PM2.5",
      "value": 1,
      "unit": "months",
+     "higherIs": "worse"
+    },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 0,
+     "unit": "of 8",
      "higherIs": "worse"
     },
     "monsoon": {
@@ -3186,6 +3240,12 @@
      "unit": "months",
      "higherIs": "worse"
     },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 3,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "monsoon": {
      "label": "Arterial km prone to monsoon waterlogging",
      "value": 35.2,
@@ -3502,6 +3562,12 @@
      "label": "Months a year above 60 µg/m³ PM2.5",
      "value": 5,
      "unit": "months",
+     "higherIs": "worse"
+    },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 3,
+     "unit": "of 8",
      "higherIs": "worse"
     },
     "monsoon": {
@@ -3828,6 +3894,12 @@
      "unit": "months",
      "higherIs": "worse"
     },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 4,
+     "unit": "of 8",
+     "higherIs": "worse"
+    },
     "monsoon": {
      "label": "Arterial km prone to monsoon waterlogging",
      "value": 26.4,
@@ -4150,6 +4222,12 @@
      "label": "Months a year above 60 µg/m³ PM2.5",
      "value": 0,
      "unit": "months",
+     "higherIs": "worse"
+    },
+    "fair": {
+     "label": "Outcomes where the poorest fifth is worse off",
+     "value": 2,
+     "unit": "of 8",
      "higherIs": "worse"
     },
     "monsoon": {
