@@ -28,6 +28,7 @@ const DishaIntel = (() => {
             flood: /\b(flood\s?plain|flood (exposure|exposed)|(how many|people|residents|population|who)\b.{0,30}\b(flood(ed|s|ing)?|floodplain)\b.{0,20}\b(live|exposed|risk|zone|area))/i,
             fifteen: /\b(15|fifteen)[\s-]?min(ute)?s?\b|\bwalk(ing|able)? (to|distance (to|of)) (daily|essentials?|shops|amenities)|\bdaily needs\b|\bland[\s-]?use mix\b/i,
             waterlog: /\b(water[\s-]?log\w*|rain(water)? (pools?|pooling|collects?|stagnat\w*)|pluvial|urban flood\w*|stagnant water|where (does )?(the )?rain(water)? (collect|pool|stand)s?)\b/i,
+            schoolrun: /\b(school (run|streets?|drop[\s-]?offs?|pick[\s-]?ups?|traffic|gates?|zones? traffic)|drop[\s-]?off traffic|(traffic|jams?|congestion)\b.{0,25}\bschools?|schools?\b.{0,30}\b(traffic|jams?|congestion))\b/i,
             tod: /\b(tod|transit[\s-]?oriented( development)?|densif\w*|floor area ratio|far|fsi)\b.{0,40}\b(stations?|metro|transit|corridors?)\b|\b(stations?|metro)\b.{0,30}\b(densit\w*|densif\w*|redevelop\w*|tod|floor area ratio|fsi)\b/i,
             jamcost: /\b(cost|price|losses?|lost|waste[sd]?|rupees?|crores?|economic (cost|loss))\b.{0,30}\b(congestion|traffic|jams?)\b|\b(congestion|traffic|jams?)\b.{0,30}\b(cost\w*|losses?|lost hours|hours lost|waste\w*|rupees?|crores?)\b/i,
             commute: /\b(commut\w*|trip (length|distance)s?|how far (do )?people (travel|commute))\b.{0,40}\b(carbon|co2|emissions?|footprint|distance|long\w*|km|far)\b|\b(transport|travel|commut\w*) (carbon|co2|emissions?|footprint)\b/i,

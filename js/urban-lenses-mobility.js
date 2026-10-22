@@ -18,6 +18,7 @@ const UrbanLensesMobility = (() => {
     // Hourly share of daily traffic (%) as in pipeline/traffic/demand_model.py HOURLY_SHARE; 9 % at the 09:00 peak.
     const HOURLY = [0.6, 0.4, 0.3, 0.3, 0.5, 1.1, 2.4, 4.4, 7.0, 9.0, 7.6, 5.6, 5.0, 4.8, 4.6, 4.8, 5.4, 7.0, 8.8, 7.8, 5.6, 3.6, 2.2, 1.2];
     const HOURLY_PEAK = 9.0, JAM_MAX = 4, WORKDAYS = 300, PERSONS_PER_PCU = 2.7, RS_PER_PCU_HR = 2.7 * 100 + 0.4 * 100;
+    const SCHOOL_GATE_KM = 0.15, SCHOOL_KM = 0.8, SCHOOL_BUSY_VC = 0.7, KIDS_PCT = 25;
     const TOD_BUILT = 10, TOD_LOW = 1, TOD_TARGET = 4, STOREY_M = 3;
     const PARK_CAP = 3, PARK_HOT = 5, FEEDER_MAX = 30, FEEDERS = 5;
     const STOP_KM = 0.4, STOP_HOT = 40, STOP_BARE = 10, SHELTERS = 5, FEW_STOPS = 50;
@@ -558,6 +559,54 @@ const UrbanLensesMobility = (() => {
             columns: { station_far: farCol, tod_gap: gapCol }, idx: area, weightKey: 'tod_gap', noHotspots: true,
             metric: { label: 'Station-area land built low-rise', value: share, unit: '%', higherIs: 'worse' },
             headline: `Built-up land within a ${STATION_WALK}-minute walk of the metro averages a floor area ratio of about ${_round(fA, 2)} against ${_round(fR, 2)} elsewhere; ${share}% of it is low-rise (FAR under ${TOD_LOW}), room for transit-oriented growth.`,
+            stats,
+        };
+    }
+
+    /** School drop-off: schools whose gate sits on a road jammed in the 8–9 am school run, and school-street candidates. */
+    function schoolrun(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const sch = c['emergency_access.schools'], am = c['traffic_load.am_vc'] || c['traffic_load.peak_vc'], pcu = c['traffic_load.peak_pcu'];
+        const kids = c['demographics.children_pct'];
+        if (!sch || !am) return null;
+        const schools = [];
+        for (let i = 0; i < n; i++) if (sch[i] > 0) schools.push(i);
+        if (!schools.length) return null;
+        const gate = g.offsets(SCHOOL_GATE_KM), catch_ = g.offsets(SCHOOL_KM);
+        const vcCol = new Float64Array(n).fill(NaN), kidCol = new Float64Array(n).fill(NaN);
+        let nS = 0, nJam = 0, nBusy = 0;
+        const jammed = [];
+        for (const i of schools) {
+            let v = 0;
+            for (const [a, b] of gate) { const j = g.cellAt(i, a, b); if (j >= 0 && _fin(am[j]) && am[j] > v) v = am[j]; }
+            let k = 0;
+            for (const [a, b] of catch_) { const j = g.cellAt(i, a, b); if (j >= 0 && pop[j] > 0) k += pop[j] * ((kids && _fin(kids[j]) ? kids[j] : KIDS_PCT) / 100); }
+            vcCol[i] = Math.min(2, v); kidCol[i] = k;
+            nS += sch[i];
+            if (v >= JAM_VC) { nJam += sch[i]; jammed.push(i); } else if (v >= SCHOOL_BUSY_VC) nBusy += sch[i];
+        }
+        const share = _round(100 * nJam / (nS || 1));
+        const near = new Uint8Array(n);
+        for (const i of jammed) for (const [a, b] of catch_) { const j = g.cellAt(i, a, b); if (j >= 0) near[j] = 1; }
+        let kidsJam = 0;
+        for (let j = 0; j < n; j++) if (near[j] && pop[j] > 0) kidsJam += pop[j] * ((kids && _fin(kids[j]) ? kids[j] : KIDS_PCT) / 100);
+        const stats = [
+            { label: 'Schools mapped', value: _people(nS) },
+            { label: `Schools beside a road at V/C ${JAM_VC}+ in the 9 am peak`, value: `${_people(nJam)} (${share}%)`, raw: share },
+            { label: `… beside a road at V/C ${SCHOOL_BUSY_VC}–${JAM_VC}`, value: _people(nBusy) },
+            { label: `Children living within ${SCHOOL_KM * 1000} m of those jammed schools`, value: _people(kidsJam) },
+        ];
+        const picks = [];
+        for (const i of jammed.slice().sort((a, b) => kidCol[b] - kidCol[a])) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, k) => stats.push({ label: `School street ${k + 1}: ${g.codes[i]}`, value: `${sch[i]} school${sch[i] > 1 ? 's' : ''}, gate road V/C ${_round(vcCol[i], 2)}, ${_people(kidCol[i])} children within ${SCHOOL_KM * 1000} m${pcu && _fin(pcu[i]) ? `, ${_people(pcu[i])} PCU/h` : ''}` }));
+        return {
+            columns: { school_gate_vc: vcCol, school_kids: kidCol }, idx: schools, weightKey: 'school_kids', noHotspots: true,
+            metric: { label: 'Schools on a jammed road at the school run', value: share, unit: '%', higherIs: 'worse' },
+            headline: `${share}% of the ${_people(nS)} mapped schools sit beside a road that is jammed (V/C ${JAM_VC}+) in the 9 am school run; ${_people(kidsJam)} children live within ${SCHOOL_KM * 1000} m of them. The top sites are candidates for school streets closed to through traffic at drop-off.`,
             stats,
         };
     }
@@ -1236,7 +1285,7 @@ const UrbanLensesMobility = (() => {
     const PILLARS = [
         { id: 'access', label: 'Access', metrics: ['metro', 'jobaccess', 'feeder', 'transit', 'busgap', 'ambulance'] },
         { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'jamcost', 'monsoon', 'parking'] },
-        { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'commute', 'noise', 'nightwalk', 'freight', 'cleanwalk'] },
+        { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'schoolrun', 'commute', 'noise', 'nightwalk', 'freight', 'cleanwalk'] },
         { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'busheat', 'walk', 'cycling', 'crossing'] },
     ];
 
@@ -1436,6 +1485,13 @@ const UrbanLensesMobility = (() => {
             needs: ['rail_access.metro_walk_min', 'built_up.volume_m3_m2', 'built_up.built_pct', 'population.population'],
             method: `Station areas are built-up cells (at least ${TOD_BUILT}% built) within a ${STATION_WALK}-minute walk of a metro station. Floor area ratio is approximated as GHSL built volume per m² of land ÷ ${STOREY_M} m a storey. Low-rise is FAR under ${TOD_LOW}; the target is FAR ${TOD_TARGET}, inside the 3–5 range the 2017 National TOD Policy suggests for station influence zones. TOD sites are the lowest-FAR station cells, 1 km apart. Parks, heritage zones, airports and defence land are not masked, so check sites against the master plan.`,
             refs: 'MoHUA 2017 National Transit Oriented Development Policy; Cervero & Kockelman 1997 (3Ds); GHSL 2023 built-up volume' },
+        { id: 'schoolrun', equity: false, title: 'School-run traffic', icon: '🎒',
+            question: 'Which schools sit on roads jammed at drop-off, and where would a school street help most?',
+            field: { key: 'school_gate_vc', label: 'Busiest road at the school gate, 9 am (V/C)', unit: 'V/C', higherIs: 'worse', ramp: 'heat' },
+            extra: [{ key: 'school_kids', label: 'Children living within 800 m', unit: 'children', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['emergency_access.schools', 'traffic_load.am_vc', 'traffic_load.peak_vc', 'traffic_load.peak_pcu', 'demographics.children_pct'],
+            method: `Schools are Overture Maps places tagged as schools (confidence ≥ 0.6). The gate road is the busiest modelled arterial within about ${SCHOOL_GATE_KM * 1000} m in the 09:00 hour, close to the 8–9 am school run. Jammed is V/C ${JAM_VC}+ (LOS E/F), busy ${SCHOOL_BUSY_VC}–${JAM_VC}. Children are residents within ${SCHOOL_KM * 1000} m × WorldPop's district child share (${KIDS_PCT}% where missing). The model has no school-trip purpose and no side streets, so drop-off queues on lanes are not seen; the top sites are where a school street (no through traffic at drop-off and pick-up) or staggered timings are worth a site visit.`,
+            refs: 'Overture Maps Foundation places; WorldPop 2020 age structure; Hopkinson et al. 2021 (school streets, London); Bloomberg Philanthropies child-friendly street guidance' },
         { id: 'ev', equity: false, title: 'EV charging gaps', icon: '🔌',
             question: 'How far are homes and traffic from a known public EV charger?',
             field: { key: 'ev_km', label: 'Distance to the nearest known charger', unit: 'km', higherIs: 'worse', ramp: 'heat' },
@@ -1445,7 +1501,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

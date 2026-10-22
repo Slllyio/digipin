@@ -542,6 +542,17 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.tod(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('schoolrun lens: schools on jammed gate roads and school-street sites', () => {
+        const sch = codes.map((_, i) => (i === 0 || i === n - 1 ? 1 : 0));
+        const am = codes.map((_, i) => (i < SIZE ? 1.1 : 0.2));                    // the top row is jammed at 9 am
+        const f = L.frameFrom(codes, { 'population.population': pop, 'emergency_access.schools': sch, 'traffic_load.am_vc': am });
+        const r = L._lenses.schoolrun(f, {});
+        expect(r.metric.value).toBe(50);
+        expect(r.stats.find(x => x.label.startsWith('School street 1')).label).toContain(codes[0]);
+        expect(r.columns.school_kids[0]).toBeGreaterThan(0);
+        expect(L._lenses.schoolrun(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
         const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
         const league = { generated: '2026-10-22', cities: {

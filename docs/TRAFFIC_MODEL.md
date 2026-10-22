@@ -516,6 +516,16 @@ segment's V/C) a bus escapes on a 5 km ride at 60% of free-flow speed. On
 Outer Ring Road at 09:00 that is about 10.8 minutes per ride, for about 2,900
 new riders in the peak hour (shifted PCU × 2.7) plus existing riders.
 
+### 30. School-run traffic (lens `schoolrun`)
+
+Each mapped school (Overture places) takes the busiest modelled arterial
+within about 150 m in the 09:00 hour as its gate road; V/C 0.9+ is jammed.
+Children are residents within 800 m × WorldPop's district child share,
+counted once where catchments overlap. Top jammed schools by children nearby
+are school-street candidates. Schools beside a jammed road at 9 am: Mumbai
+35%, Bengaluru 19%, Delhi 12%. No school-trip purpose or side streets in the
+model, so lane-level drop-off queues are not seen.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |
