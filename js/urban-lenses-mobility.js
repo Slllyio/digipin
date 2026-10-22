@@ -18,6 +18,7 @@ const UrbanLensesMobility = (() => {
     // Hourly share of daily traffic (%) as in pipeline/traffic/demand_model.py HOURLY_SHARE; 9 % at the 09:00 peak.
     const HOURLY = [0.6, 0.4, 0.3, 0.3, 0.5, 1.1, 2.4, 4.4, 7.0, 9.0, 7.6, 5.6, 5.0, 4.8, 4.6, 4.8, 5.4, 7.0, 8.8, 7.8, 5.6, 3.6, 2.2, 1.2];
     const HOURLY_PEAK = 9.0, JAM_MAX = 4, WORKDAYS = 300, PERSONS_PER_PCU = 2.7, RS_PER_PCU_HR = 2.7 * 100 + 0.4 * 100;
+    const TOD_BUILT = 10, TOD_LOW = 1, TOD_TARGET = 4, STOREY_M = 3;
     const PARK_CAP = 3, PARK_HOT = 5, FEEDER_MAX = 30, FEEDERS = 5;
     const STOP_KM = 0.4, STOP_HOT = 40, STOP_BARE = 10, SHELTERS = 5, FEW_STOPS = 50;
     const STATION_KM = STATION_WALK * WALK_M_MIN / WALK_DETOUR / 1000;   // ~615 m straight line
@@ -514,6 +515,49 @@ const UrbanLensesMobility = (() => {
             columns: { jam_hours: hCol, jam_cost: rCol }, idx: cells, weightKey: 'jam_hours',
             metric: { label: 'Delay per motorised traveller', value: _round(perTraveller), unit: 'min/day', higherIs: 'worse' },
             headline: `Congestion on the modelled arterials costs about ${_people(pHrs)} person-hours a day, ${_round(perTraveller)} minutes per motorised traveller, or ₹${_people(crore)} crore a year in time and fuel.`,
+            stats,
+        };
+    }
+
+    /** Transit-oriented development: how densely station areas are built, and where low-rise land sits next to the metro. */
+    function tod(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const mw = c['rail_access.metro_walk_min'], vol = c['built_up.volume_m3_m2'], bp = c['built_up.built_pct'];
+        if (!mw || !vol || !bp) return null;
+        const area = [], rest = [];
+        for (let i = 0; i < n; i++) {
+            if (!_fin(vol[i]) || !_fin(bp[i]) || bp[i] < TOD_BUILT) continue;
+            (mw[i] <= STATION_WALK ? area : rest).push(i);
+        }
+        if (area.length < 3) return null;
+        const far = i => vol[i] / STOREY_M;
+        const mean = cells => cells.reduce((a, i) => a + far(i), 0) / (cells.length || 1);
+        const fA = mean(area), fR = mean(rest);
+        const low = area.filter(i => far(i) < TOD_LOW);
+        const farCol = new Float64Array(n).fill(NaN), gapCol = new Float64Array(n).fill(NaN);
+        for (const i of area) farCol[i] = Math.min(TOD_TARGET, far(i));
+        for (const i of low) gapCol[i] = TOD_TARGET - far(i);
+        const share = _round(100 * low.length / area.length);
+        const popOf = cells => cells.reduce((a, i) => a + (pop && pop[i] > 0 ? pop[i] : 0), 0);
+        const dA = popOf(area) / area.length, dR = popOf(rest) / (rest.length || 1);
+        const cellKm2 = g.dy * g.dx;
+        const stats = [
+            { label: `Built-up land within a ${STATION_WALK}-minute walk of the metro, floor area ratio (approx.)`, value: `${_round(fA, 2)} (rest of the city: ${_round(fR, 2)})` },
+            { label: `… share built low-rise (FAR under ${TOD_LOW})`, value: `${share}%`, raw: share },
+            { label: 'Residents per km² near stations vs elsewhere', value: `${_people(dA / cellKm2)} vs ${_people(dR / cellKm2)}` },
+            { label: `Extra floor space if low-rise station land reached FAR ${TOD_TARGET}`, value: `${_round(low.reduce((a, i) => a + (TOD_TARGET - far(i)), 0) * cellKm2, 1)} km²` },
+        ];
+        const picks = [];
+        for (const i of low.slice().sort((a, b) => gapCol[b] - gapCol[a] || mw[a] - mw[b])) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, k) => stats.push({ label: `TOD site ${k + 1}: ${g.codes[i]}`, value: `FAR about ${_round(far(i), 2)}, ${_round(mw[i])} min walk from the metro` }));
+        return {
+            columns: { station_far: farCol, tod_gap: gapCol }, idx: area, weightKey: 'tod_gap', noHotspots: true,
+            metric: { label: 'Station-area land built low-rise', value: share, unit: '%', higherIs: 'worse' },
+            headline: `Built-up land within a ${STATION_WALK}-minute walk of the metro averages a floor area ratio of about ${_round(fA, 2)} against ${_round(fR, 2)} elsewhere; ${share}% of it is low-rise (FAR under ${TOD_LOW}), room for transit-oriented growth.`,
             stats,
         };
     }
@@ -1385,6 +1429,13 @@ const UrbanLensesMobility = (() => {
             needs: ['traffic_load.peak_vc', 'traffic_load.peak_speed_kmh', 'traffic_load.delay_pct', 'traffic_load.daily_vkm'],
             method: 'Each road cell\'s daily vehicle-km (PCU) is spread over the day with the model\'s hourly profile; each hour\'s volume/capacity is the peak V/C scaled by that hour\'s share, and its delay is the BPR travel-time factor (1 + 0.15·(V/C)⁴, at most 4×) minus one, at the cell\'s free-flow speed. Person-hours use 2.7 people per PCU (the model\'s mode mix); cost is ₹100 an hour of people\'s time plus 0.4 litres of fuel per PCU-hour at ₹100, over 300 working days. Arterials only: side streets and junction signals are not modelled, so this is a floor. The map caps cells at the city\'s 95th percentile.',
             refs: 'BPR (1964); IRC SP 30 (value of travel time); TomTom Traffic Index for comparison; Boston Consulting Group 2018 (Indian congestion costs)' },
+        { id: 'tod', equity: false, title: 'Transit-oriented development', icon: '🏙️',
+            question: 'How densely are metro station areas built, and where is low-rise land next to a station?',
+            field: { key: 'tod_gap', label: 'Floor area ratio short of the TOD target', unit: 'FAR', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'station_far', label: 'Floor area ratio near stations (approx.)', unit: 'FAR', higherIs: 'better', ramp: 'viridis' }],
+            needs: ['rail_access.metro_walk_min', 'built_up.volume_m3_m2', 'built_up.built_pct', 'population.population'],
+            method: `Station areas are built-up cells (at least ${TOD_BUILT}% built) within a ${STATION_WALK}-minute walk of a metro station. Floor area ratio is approximated as GHSL built volume per m² of land ÷ ${STOREY_M} m a storey. Low-rise is FAR under ${TOD_LOW}; the target is FAR ${TOD_TARGET}, inside the 3–5 range the 2017 National TOD Policy suggests for station influence zones. TOD sites are the lowest-FAR station cells, 1 km apart. Parks, heritage zones, airports and defence land are not masked, so check sites against the master plan.`,
+            refs: 'MoHUA 2017 National Transit Oriented Development Policy; Cervero & Kockelman 1997 (3Ds); GHSL 2023 built-up volume' },
         { id: 'ev', equity: false, title: 'EV charging gaps', icon: '🔌',
             question: 'How far are homes and traffic from a known public EV charger?',
             field: { key: 'ev_km', label: 'Distance to the nearest known charger', unit: 'km', higherIs: 'worse', ramp: 'heat' },
@@ -1394,7 +1445,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

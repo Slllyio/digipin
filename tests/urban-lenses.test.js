@@ -530,6 +530,18 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.commute(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('tod lens: station-area floor area ratio and low-rise TOD sites', () => {
+        const mw = codes.map((_, i) => (i % SIZE < 3 ? 5 : 30));
+        const vol = codes.map((_, i) => (i % SIZE === 0 ? 1.5 : 9));      // FAR 0.5 in the first column, 3 elsewhere
+        const bp = codes.map(() => 40);
+        const f = L.frameFrom(codes, { 'population.population': pop, 'rail_access.metro_walk_min': mw, 'built_up.volume_m3_m2': vol, 'built_up.built_pct': bp });
+        const r = L._lenses.tod(f, {});
+        expect(r.metric.value).toBeCloseTo(100 / 3, 0);
+        expect(r.columns.tod_gap[0]).toBeCloseTo(3.5, 5);
+        expect(r.stats.some(x => x.label.startsWith('TOD site 1'))).toBe(true);
+        expect(L._lenses.tod(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
         const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
         const league = { generated: '2026-10-22', cities: {

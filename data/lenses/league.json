@@ -138,6 +138,12 @@
      "unit": "min/day",
      "higherIs": "worse"
     },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 17.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 35.2,
@@ -346,6 +352,12 @@
      "label": "Delay per motorised traveller",
      "value": 16.4,
      "unit": "min/day",
+     "higherIs": "worse"
+    },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 21.4,
+     "unit": "%",
      "higherIs": "worse"
     },
     "ev": {
@@ -558,6 +570,12 @@
      "unit": "min/day",
      "higherIs": "worse"
     },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 35.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 48,
@@ -760,6 +778,12 @@
      "label": "Delay per motorised traveller",
      "value": 5.4,
      "unit": "min/day",
+     "higherIs": "worse"
+    },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 19.6,
+     "unit": "%",
      "higherIs": "worse"
     },
     "ev": {
@@ -970,6 +994,12 @@
      "label": "Delay per motorised traveller",
      "value": 39.4,
      "unit": "min/day",
+     "higherIs": "worse"
+    },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 20.2,
+     "unit": "%",
      "higherIs": "worse"
     },
     "ev": {
@@ -1386,6 +1416,12 @@
      "unit": "min/day",
      "higherIs": "worse"
     },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 18.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 36.6,
@@ -1594,6 +1630,12 @@
      "label": "Delay per motorised traveller",
      "value": 1.9,
      "unit": "min/day",
+     "higherIs": "worse"
+    },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 91.7,
+     "unit": "%",
      "higherIs": "worse"
     },
     "ev": {
@@ -1806,6 +1848,12 @@
      "unit": "min/day",
      "higherIs": "worse"
     },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 7.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 53.3,
@@ -2010,6 +2058,12 @@
      "unit": "min/day",
      "higherIs": "worse"
     },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 13.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 61.6,
@@ -2212,6 +2266,12 @@
      "label": "Delay per motorised traveller",
      "value": 3,
      "unit": "min/day",
+     "higherIs": "worse"
+    },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 28.5,
+     "unit": "%",
      "higherIs": "worse"
     },
     "ev": {
@@ -2424,6 +2484,12 @@
      "unit": "min/day",
      "higherIs": "worse"
     },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 14.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 73,
@@ -2632,6 +2698,12 @@
      "label": "Delay per motorised traveller",
      "value": 3.9,
      "unit": "min/day",
+     "higherIs": "worse"
+    },
+    "tod": {
+     "label": "Station-area land built low-rise",
+     "value": 28.7,
+     "unit": "%",
      "higherIs": "worse"
     },
     "ev": {

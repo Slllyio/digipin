@@ -77,6 +77,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('where is last mile connectivity to the metro worst')).toEqual({ type: 'lens', lens: 'feeder' });
         expect(M('which neighbourhoods have the highest commuting carbon footprint')).toEqual({ type: 'lens', lens: 'commute' });
         expect(M('how many hours are lost to traffic jams every day')).toEqual({ type: 'lens', lens: 'jamcost' });
+        expect(M('where should we densify around metro stations')).toEqual({ type: 'lens', lens: 'tod' });
         expect(M('where is parking worst near markets')).toEqual({ type: 'lens', lens: 'parking' });
         expect(M('where do trucks run through neighbourhoods in Pune')).toEqual({ type: 'lens', lens: 'freight', city: 'pune' });
         expect(M('what if 20% of car trips moved to the metro in Delhi')).toEqual({ type: 'modeshift', pct: 20, scope: 'stations', period: 'am', city: 'delhi' });

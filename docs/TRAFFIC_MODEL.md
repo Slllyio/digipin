@@ -492,6 +492,15 @@ working days. Delhi: 87 lakh person-hours a day, 39 min per motorised
 traveller, about ₹30,000 crore a year; Mumbai 26 min; Bengaluru 16 min.
 Arterials only (no side streets or signal delay), so it is a floor.
 
+### 28. Transit-oriented development (lens `tod`)
+
+Station areas are built-up cells (10%+ built) within a 10-minute walk of a
+metro station. Floor area ratio ≈ GHSL built volume per m² ÷ 3 m a storey.
+Low-rise is FAR under 1; the target is FAR 4 (2017 National TOD Policy
+suggests 3–5 in station influence zones). Delhi station areas: FAR about 1.67
+vs 1.16 elsewhere, 20% low-rise; Mumbai 2.05 vs 1.64, 14%; Bengaluru 1.62 vs
+1.07, 21%. Parks, heritage, airport and defence land are not masked.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |
