@@ -250,3 +250,26 @@ def test_noise_air_helpers():
     assert na.spearman([1, 2, 3, 4], [4, 3, 2, 1]) == -1.0
     assert na.spearman([1, 2], [1, 2]) is None
     assert abs(na._seg_dist_m(75.80, 22.701, 75.79, 22.70, 75.81, 22.70, 0.92) - 111.32) < 0.5
+
+
+def test_gtfs_cells_helpers():
+    from pipeline.traffic import gtfs_cells as gc
+    assert gc.minutes("07:30:00") == 450 and gc.minutes("25:00:00") == 1500 and gc.minutes("x") is None
+    cal = [{"service_id": "WK", "wednesday": "1"}, {"service_id": "SUN", "wednesday": "0"}]
+    assert gc.weekday_services(cal) == {"WK"}
+    dates = [{"service_id": "A", "date": "20260101", "exception_type": "1"},
+             {"service_id": "B", "date": "20260101", "exception_type": "1"},
+             {"service_id": "A", "date": "20260102", "exception_type": "1"}]
+    assert gc.weekday_services([], dates) == {"A", "B"}
+    trips = {"t1": "R1", "t2": "R2", "t3": "R1"}
+    st = [{"trip_id": "t1", "stop_id": "s1", "departure_time": "07:10:00"},
+          {"trip_id": "t2", "stop_id": "s1", "departure_time": "08:40:00"},
+          {"trip_id": "t3", "stop_id": "s1", "departure_time": "12:00:00"},
+          {"trip_id": "tX", "stop_id": "s1", "departure_time": "07:20:00"},     # not a weekday trip
+          {"trip_id": "t1", "stop_id": "s2", "departure_time": "09:59:00"}]
+    per = gc.summarise_stops(st, trips)
+    assert per["s1"]["departures"] == 3 and per["s1"]["peak"] == 2 and per["s1"]["routes"] == {"R1", "R2"}
+    rows = gc.cell_rows({"s1": (22.7196, 75.8577), "s2": (22.7197, 75.8578), "s9": (0.0, 0.0)}, per)
+    (code, r), = rows.items()                        # both stops in one L7 cell; s9 has no service
+    assert len(code) == 7 and r["stops"] == 2 and r["routes"] == 2 and r["departures_day"] == 4
+    assert r["peak_departures_hr"] == 1.0 and r["best_headway_min"] == 90.0     # 2 buses in 3 h at s1

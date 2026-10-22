@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T06:14:26Z",
+  "generated": "2026-10-22T06:19:41Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -1763,6 +1763,102 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "bus_service",
+      "title": "Bus service (timetable)",
+      "description": "Weekday bus service from the city's open GTFS timetable: stops, routes, departures and the gap between buses at each cell's busiest stop in the 07:00\u201310:00 peak. Only cities with an open feed. Source for this city: BMTC (Namma BMTC app, community GTFS by Vonter).",
+      "source": "pipeline/traffic/gtfs_cells.py over BMTC (Namma BMTC app, community GTFS by Vonter)",
+      "license": "ODbL 1.0",
+      "group": "Traffic & mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "best_headway_min",
+          "label": "Minutes between buses at the busiest stop (07\u201310 h)",
+          "type": "number",
+          "agg": "min",
+          "unit": "min",
+          "domain": [
+            2,
+            60
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "peak_departures_hr",
+          "label": "Bus departures per hour (07\u201310 h)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "per hour",
+          "domain": [
+            0,
+            1021
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "departures_day",
+          "label": "Bus departures per weekday",
+          "type": "number",
+          "agg": "sum",
+          "unit": "per day",
+          "domain": [
+            1,
+            15895
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "routes",
+          "label": "Bus routes calling",
+          "type": "number",
+          "agg": "max",
+          "unit": "routes",
+          "domain": [
+            1,
+            1127
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "stops",
+          "label": "Bus stops",
+          "type": "number",
+          "agg": "sum",
+          "unit": "stops",
+          "domain": [
+            1,
+            32
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "best_headway_min",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 5284,
+          "bbox": {
+            "west": 75.116943359375,
+            "south": 12.029541015625,
+            "east": 78.395263671875,
+            "north": 17.773193359375
+          },
+          "json": "bus_service/bengaluru.json",
+          "parquet": null
         }
       ]
     },

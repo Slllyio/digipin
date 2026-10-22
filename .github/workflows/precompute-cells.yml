@@ -81,6 +81,7 @@ jobs:
                 python -m pipeline.cells.build --region "$DIGIPIN_REGION" traffic mobility
                 python -m pipeline.traffic.demand_model --region "$DIGIPIN_REGION"
                 python -m pipeline.traffic.noise_air --region "$DIGIPIN_REGION"
+                python -m pipeline.traffic.gtfs_cells --region "$DIGIPIN_REGION" || echo "GTFS bake skipped"
               '; then
               git add data/vectors/ data/traffic/ data/safety/ data/cells/
               git diff --staged --quiet || git commit -qm "chore(cells): refresh traffic + mobility for $r"

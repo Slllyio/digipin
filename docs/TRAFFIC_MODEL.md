@@ -59,6 +59,20 @@ neighbourhood) — `coverage_access` (4+ nearby stops ≈ 100). This is an hones
 timetable frequency; headway/route fields stay null and the widget labels it
 "(OSM coverage)". Swap in a real GTFS feed later for true frequency.
 
+#### Bus frequency from open timetables (`gtfs_cells.py`)
+
+Where a city's bus timetable is open GTFS, `pipeline/traffic/gtfs_cells.py`
+bins it to cell dataset `bus_service` (L7): stops, routes, weekday
+departures, departures per hour 07:00–10:00 and the minutes between buses at
+each cell's busiest stop in that window. Bengaluru uses the community BMTC
+feed scraped from the Namma BMTC app (github.com/Vonter/bmtc-gtfs, ODbL;
+routes without live tracking are missing). Delhi's Open Transit Data feed
+needs a registered key and is skipped until one is configured (or pass
+`--gtfs <zip>`). The **Public transport access** lens then adds residents
+within 500 m of a stop with a bus every 10 minutes or better at peak.
+
+    python -m pipeline.traffic.gtfs_cells --region bengaluru   # ~45 MB download, seconds to bin
+
 ### 5. Demand-driven traffic load through the day (`demand_model.py`)
 
 Betweenness treats every pair of junctions as equally likely to swap

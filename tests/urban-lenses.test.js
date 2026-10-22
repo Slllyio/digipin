@@ -185,6 +185,20 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.transit(fr, {})).toBeNull();       // no transit points → no lens
     });
 
+    it('transit lens: GTFS frequency — residents near a bus every 10 min or better', () => {
+        const stops = new Array(n).fill(0), rapid = new Array(n).fill(0);
+        stops[0] = 1; stops[n - 1] = 1;
+        const hw = codes.map((_, i) => (i === 0 ? 6 : i === n - 1 ? 30 : NaN));   // NW frequent, SE every 30 min
+        const f = L.frameFrom(codes, { 'population.population': pop, 'osm_transit.stops': stops, 'osm_transit.rapid': rapid, 'bus_service.best_headway_min': hw });
+        const r = L._lenses.transit(f, {});
+        const st = r.stats.find(x => /every 10 min/.test(x.label));
+        expect(st.raw).toBeGreaterThan(0);
+        expect(st.raw).toBeLessThan(pop.reduce((a, b) => a + b, 0) / 2);
+        expect(r.headline).toMatch(/bus every 10 minutes or better/);
+        const plain = L._lenses.transit(L.frameFrom(codes, { 'population.population': pop, 'osm_transit.stops': stops, 'osm_transit.rapid': rapid }), {});
+        expect(plain.stats.some(x => /every 10 min/.test(x.label))).toBe(false);
+    });
+
     it('waterlog lens: counts residents of High cells and the poorest-fifth share', () => {
         const wl = codes.map((_, i) => (i % SIZE < 2 ? 70 : i % SIZE < 4 ? 50 : 10));    // two very high, two high columns
         const rwi = codes.map((_, i) => (i % SIZE < 2 ? -1 : 1));

@@ -41,7 +41,8 @@ const UrbanLenses = (() => {
     const WATERLOG_BLOCK = 65;  // waterlogging_index "Very high" class
     const WLOG_HIGH = 45, WLOG_VERY = 65;   // waterlogging index cut-offs for High / Very high (pipeline/cells/ee_layers.py)
     const ROAD_KM = 0.25, JAM_VC = 0.9;
-    const NOISE_WHO = 53, NOISE_HIGH = 65;      // dB Lden: WHO 2018 road guideline; high exposure     // residents within 250 m (own or next cell) of an arterial at LOS E/F
+    const NOISE_WHO = 53, NOISE_HIGH = 65;
+    const FREQ_MIN = 10;                         // 'frequent' bus: every 10 min or better at peak      // dB Lden: WHO 2018 road guideline; high exposure     // residents within 250 m (own or next cell) of an arterial at LOS E/F
     const CUTOFF_DOMAIN = ['Cut off from care', 'Longer walk to care', 'Flooded', 'Unaffected', 'No care in reach anyway'];
     const CUTOFF_COLORS = { 'Cut off from care': '#c0392b', 'Longer walk to care': '#f39c12', Flooded: '#2e86c1', Unaffected: '#cfd8dc', 'No care in reach anyway': '#8e8e8e' };
     const STOP_KM = 0.5, RAPID_KM = 1;   // SDG 11.2.1: 500 m to a bus stop, 1 km to rail / BRT / terminal
@@ -117,8 +118,8 @@ const UrbanLenses = (() => {
             question: 'How many people can walk to a bus stop or station?',
             field: { key: 'transit_m', label: 'Walk to the nearest stop', unit: 'm', higherIs: 'worse', ramp: 'reds' },
             extra: [{ key: 'rapid_m', label: 'Walk to the nearest station or terminal', unit: 'm', higherIs: 'worse', ramp: 'reds' }],
-            needs: [`${TRANSIT}.stops`, `${TRANSIT}.rapid`, WALK_LINKS],
-            method: `UN SDG indicator 11.2.1: a resident has convenient access when a bus stop is within ${STOP_KM * 1000} m, or a rail, metro or BRT station or bus terminal within ${RAPID_KM} km, walking along the OpenStreetMap network (Dijkstra over the walking-graph cells; straight line where none is baked). Stops and stations are OpenStreetMap points. Distances are cell centre to cell centre, so anything in the same ~244 m cell counts as 0. Service frequency is not known without GTFS, so this measures coverage, not service quality.`,
+            needs: [`${TRANSIT}.stops`, `${TRANSIT}.rapid`, WALK_LINKS, 'bus_service.best_headway_min'],
+            method: `UN SDG indicator 11.2.1: a resident has convenient access when a bus stop is within ${STOP_KM * 1000} m, or a rail, metro or BRT station or bus terminal within ${RAPID_KM} km, walking along the OpenStreetMap network (Dijkstra over the walking-graph cells; straight line where none is baked). Stops and stations are OpenStreetMap points. Distances are cell centre to cell centre, so anything in the same ~244 m cell counts as 0. Where the city publishes an open GTFS timetable (Bengaluru BMTC so far), the lens also counts residents within ${STOP_KM * 1000} m of a stop with a bus at least every ${FREQ_MIN} minutes in the 07:00–10:00 peak; elsewhere it measures coverage, not service quality.`,
             refs: 'UN-Habitat SDG 11.2.1 metadata (2018); TfL PTAL methodology (2015) for the 640 m / 960 m walk bands' },
         { id: 'air', title: 'Air pollution exposure', icon: '🌫',
             question: 'How many people breathe air above the standard?',
@@ -1029,7 +1030,9 @@ const UrbanLenses = (() => {
         const stops = c[`${TRANSIT}.stops`], rapid = c[`${TRANSIT}.rapid`], pop = c['population.population'];
         if (!stops || !rapid) return null;
         const net = _net(fr);
+        const hw = c['bus_service.best_headway_min'];
         const near = new Float64Array(g.n).fill(NaN), nearRapid = new Float64Array(g.n).fill(NaN);
+        const freqOk = new Uint8Array(g.n);
         let onNet = 0;
         for (const i of idx) {
             const r = net.reach(i, RAPID_KM);
@@ -1039,6 +1042,7 @@ const UrbanLenses = (() => {
                 const j = r.js[t], d = r.ds[t];
                 if (stops[j] > 0 || rapid[j] > 0) ds = Math.min(ds, d);
                 if (rapid[j] > 0) dr = Math.min(dr, d);
+                if (hw && d <= STOP_KM + 1e-9 && hw[j] <= FREQ_MIN) freqOk[i] = 1;
             }
             // Beyond the search radius: report "over 1 km" as the radius plus one cell.
             const cap = RAPID_KM + Math.max(g.dx, g.dy);
@@ -1052,16 +1056,22 @@ const UrbanLenses = (() => {
         let nStops = 0, nRapid = 0;
         for (let i = 0; i < g.n; i++) { nStops += stops[i]; nRapid += rapid[i]; }
         const pct = _round(100 * covered / (total || 1));
+        const freq = hw ? _sumOver(pop, idx, i => freqOk[i] === 1) : null;
+        const freqStats = freq == null ? [] : [
+            { label: `Within ${STOP_KM * 1000} m of a bus every ${FREQ_MIN} min or better (07–10 h, GTFS)`, value: `${_people(freq)} (${_round(100 * freq / (total || 1))}%)`, raw: Math.round(freq) },
+        ];
         return {
             columns: { transit_m: near, rapid_m: nearRapid }, idx,
             metric: { label: 'Residents with convenient public transport (SDG 11.2.1)', value: pct, unit: '%', higherIs: 'better' },
             headline: `${pct}% of residents can walk to a bus stop within ${STOP_KM * 1000} m or a station within ${RAPID_KM} km (UN SDG 11.2.1); `
-                + `${_people(total - covered)} people cannot, and ${_round(100 * rapidOk / (total || 1))}% live within ${RAPID_KM} km of rapid transit.`,
+                + `${_people(total - covered)} people cannot, and ${_round(100 * rapidOk / (total || 1))}% live within ${RAPID_KM} km of rapid transit`
+                + (freq != null ? `; ${_round(100 * freq / (total || 1))}% have a bus every ${FREQ_MIN} minutes or better within ${STOP_KM * 1000} m in the morning peak.` : '.'),
             stats: [
                 { label: 'Residents without convenient access', value: _people(total - covered), raw: Math.round(total - covered) },
                 { label: `Within ${RAPID_KM} km walk of a station or terminal`, value: _people(rapidOk), raw: Math.round(rapidOk) },
                 { label: 'Median walk to the nearest stop', value: `${_round(wquantile(near, pop, idx, 0.5))} m` },
                 { label: 'Mapped stops / stations per 10k residents', value: `${_round(1e4 * nStops / (total || 1), 1)} / ${_round(1e4 * nRapid / (total || 1), 2)}` },
+                ...freqStats,
                 _distStat(onNet, total),
             ],
         };
