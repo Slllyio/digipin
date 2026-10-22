@@ -325,5 +325,17 @@ test.describe('live feeds', () => {
     }
     await shot(page, 'disha-live-now');
   });
+
+  test('a share link reopens with the live layers on', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/app.html?ll=28.61,77.21&z=11&layers=livenow,satpasses,places');
+    await waitForApp(page);
+    await expect.poll(() => page.evaluate(() => [LiveNow.isActive(), SatPasses.isActive(), PlacesNearby.isActive()]), { timeout: 20_000 })
+      .toEqual([true, true, true]);
+    await expect(page.locator('#sat-passes-panel')).toBeVisible();
+    // And the current view writes them back into the link.
+    const tokens = await page.evaluate(() => URLState.activeLayers());
+    expect(tokens).toEqual(expect.arrayContaining(['livenow', 'satpasses', 'places']));
+  });
 });
 
