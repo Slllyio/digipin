@@ -138,6 +138,9 @@ const DishaIntel = (() => {
             const only = /\b(radar|sar|sentinel[\s-]?1)\b/i.test(q) ? 'radar' : /\bsentinel[\s-]?2\b/i.test(q) ? 'sentinel2' : /\blandsat\b/i.test(q) ? 'landsat' : null;
             return only ? { type: 'satpasses', only } : { type: 'satpasses' };
         }
+        if (/\bwhat(?:'?s| is)\s+(happening|going on)\b(?!.{0,30}\b(19|20)\d\d\b)|\b(right now|live (conditions?|situation|update|feeds?)|current (conditions?|situation)|situation (here|now|today))\b|\bany (alerts?|warnings?)\b.{0,20}\b(here|now|today)\b/i.test(q)) {
+            return { type: 'livenow' };
+        }
         const mob = /\b(mobility|transport|transit|commut\w*|traffic)\b.{0,30}\b(scorecard|score|rank\w*|league|across (the |all )?cities|which city)\b|\b(scorecard|rank\w*|league|which city|best city|worst city|compare (all )?cities)\b.{0,40}\b(mobility|transport|transit|commut\w*|traffic|getting around)\b|\bmobility scorecard\b/i;
         if (mob.test(q) && named.length < 2) return named.length ? { type: 'mobilityscore', city: named[0] } : { type: 'mobilityscore' };
         const re = /\b(real[\s-]?estate|property|housing|land)\b.{0,30}\b(scorecard|rank\w*|league|across (the |all )?cities|which city)\b|\b(scorecard|rank\w*|league|which city|best city|worst city|compare (all )?cities)\b.{0,40}\b(real[\s-]?estate|property|housing|invest\w*)\b|\breal[\s-]?estate scorecard\b/i;
@@ -302,6 +305,7 @@ const DishaIntel = (() => {
     async function answer(el, intent, ctx = {}) {
         el.textContent = '';
         if (intent.type === 'satpasses') return _satAnswer(el, intent, ctx.cell);
+        if (intent.type === 'livenow') return _liveAnswer(el, ctx.cell);
         if (typeof UrbanInsights === 'undefined' || typeof CellStore === 'undefined' || !CellStore.isEnabled()) {
             el.textContent = 'The per-cell data store is not loaded, so I cannot compute this yet.';
             return '';
@@ -529,6 +533,35 @@ const DishaIntel = (() => {
         }
         el.appendChild(_el('div', 'disha-scan-hint', 'Orbits: CelesTrak elements, accurate to a few km. Clouds: Open-Meteo hourly forecast. Sentinel-1 and Cartosat follow acquisition plans, so their passes are chances. Turn on Satellites in Layers to see the tracks.'));
         return `Next satellite passes over ${where}:\n${SatPasses.toText(rows, now)}`;
+    }
+
+    /** What the live feeds say about the selected cell or the view right now (js/live-now.js). */
+    async function _liveAnswer(el, cell) {
+        if (typeof LiveNow === 'undefined' || !LiveNow.gather) { el.textContent = 'The live feeds module did not load.'; return ''; }
+        el.textContent = 'Checking the live feeds…';
+        let s;
+        try {
+            s = await LiveNow.gather(cell && cell.center ? { lat: cell.center.lat, lng: cell.center.lng, code: cell.code } : undefined);
+        } catch {
+            el.textContent = 'The map is not ready yet; try again in a moment.';
+            return '';
+        }
+        el.textContent = '';
+        const where = cell && cell.code ? DigiPin.format(cell.code) : 'the map centre';
+        el.appendChild(_el('div', 'disha-scan-header', `Live now · ${where}`));
+        const n = s.correlations.length;
+        el.appendChild(_el('div', 'ui-headline', n
+            ? `${n} thing${n > 1 ? 's' : ''} in the live feeds line${n > 1 ? '' : 's'} up with the people or hazards here.`
+            : 'Nothing in the live feeds lines up with the people or hazards here right now.'));
+        s.correlations.slice(0, 6).forEach(c => el.appendChild(_el('div', 'disha-scan-row', `${c.icon || ''} ${c.title}: ${c.detail}`.trim())));
+        const facts = [];
+        if (s.weather) facts.push(`${Math.round(s.weather.temp)}°C, ${LiveNow.weatherLabel(s.weather.code).text.toLowerCase()}`);
+        if (s.air) facts.push(`AQI ${s.air.naqi} (${s.air.band.label})`);
+        if (s.gnss) facts.push(`GPS accuracy ${s.gnss.label.toLowerCase()}`);
+        if (facts.length) el.appendChild(_el('div', 'disha-scan-row', facts.join(' · ')));
+        const ok = s.checks.filter(c => c[1]).length;
+        el.appendChild(_el('div', 'disha-scan-hint', `Checked ${ok} of ${s.checks.length} live feeds (Open-Meteo weather, air and river; USGS; NASA EONET; NOAA SWPC; DigiPin cells). Turn on Live now in Layers to see them on the map.`));
+        return `Live conditions at ${where}:\n${LiveNow.toText(s)}`;
     }
 
     function _render(el, r) {

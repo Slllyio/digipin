@@ -302,5 +302,28 @@ test.describe('live feeds', () => {
     await expect(msgs).toContainText('Thu 22 Oct, 11:11 IST');
     await shot(page, 'disha-sat-passes');
   });
+
+  test('DISHA answers "what is happening here right now" from the live feeds', async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.goto('/app.html');
+    await waitForApp(page);
+    await page.selectOption('#city-select', 'delhi');
+    await settle(page, 600);
+    await page.evaluate(() => MapModule.getMap().jumpTo({ center: [77.3, 28.55], zoom: 11, pitch: 0 }));
+    await page.evaluate(() => {
+      const code = DigiPin.encode(28.55, 77.3);
+      DISHAPanel.open({ code, center: { lat: 28.55, lng: 77.3 } }, {});
+    });
+    await page.fill('#disha-input', "What's happening here right now?");
+    await page.press('#disha-input', 'Enter');
+    const msgs = page.locator('#disha-messages');
+    await expect(msgs).toContainText('Live now ·', { timeout: 30_000 });
+    if (!REAL) {
+      await expect(msgs).toContainText(/things? in the live feeds line/);
+      await expect(msgs).toContainText(/AQI \d+ \(Very Poor\)/);
+      await expect(msgs).toContainText(/M4\.6/);
+    }
+    await shot(page, 'disha-live-now');
+  });
 });
 

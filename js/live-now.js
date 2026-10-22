@@ -458,11 +458,15 @@ const LiveNow = (() => {
         return exposure(inView(pop), inView(water), inView(heat));
     }
 
-    async function refresh() {
-        if (!_active || !_map) return;
-        const reqId = ++_reqId;
-        const target = _target();
-        _render({ loading: true, target });
+    /**
+     * Fetch every feed for a target ({lat, lng, code?}; default: the selected
+     * cell or the view centre) and correlate them. No DOM: the panel and DISHA
+     * both use it. Exposure uses the cells in the current map view.
+     */
+    async function gather(target) {
+        if (!_map && typeof MapModule !== 'undefined' && MapModule.getMap) _map = MapModule.getMap();
+        if (!_map) throw new Error('map not ready');
+        target = target || _target();
         const settle = (p) => p.then(v => ({ ok: true, v }), e => ({ ok: false, e }));
         const alertsP = typeof RealtimeAlerts !== 'undefined' && RealtimeAlerts.getForLocation
             ? (async () => {
@@ -483,7 +487,6 @@ const LiveNow = (() => {
             settle(_exposure()),
             settle(_json(KP)),
         ]);
-        if (reqId !== _reqId || !_active) return;
         const weather = w.ok ? parseWeather(w.v) : null;
         const air = a.ok ? parseAir(a.v) : null;
         const river = f.ok ? parseFlood(f.v) : null;
@@ -502,10 +505,20 @@ const LiveNow = (() => {
             ['People, flood and heat cells in view (DigiPin cells)', !!exp],
             ['Space weather for GNSS (NOAA SWPC Kp)', !!kp],
         ];
-        _last = { target, weather, air, river, quakes, events, exp, gnss, correlations, checks, at: new Date() };
+        return { target, weather, air, river, quakes, events, exp, gnss, correlations, checks, at: new Date() };
+    }
+
+    async function refresh() {
+        if (!_active || !_map) return;
+        const reqId = ++_reqId;
+        const target = _target();
+        _render({ loading: true, target });
+        const snap = await gather(target);
+        if (reqId !== _reqId || !_active) return;
+        _last = snap;
         _render(_last);
         _drawPoints();
-        _setBadge(correlations.length);
+        _setBadge(snap.correlations.length);
     }
 
     function _setBadge(n) {
@@ -763,8 +776,35 @@ const LiveNow = (() => {
     function snapshot() { return _last; }
     function shownCells() { return _shown; }
 
+    /** Plain-text summary of a gathered snapshot (for DISHA). */
+    function toText(s) {
+        if (!s) return '';
+        const lines = [];
+        const w = s.weather;
+        if (w) {
+            const today = (w.days || [])[0];
+            lines.push(`Weather now: ${weatherLabel(w.code).text}, ${Math.round(w.temp)}°C (feels ${Math.round(w.feels)}°C), humidity ${w.rh}%, rain ${w.rain} mm in the last hour, wind ${Math.round(w.wind)} km/h.`
+                + (today ? ` Today: ${Math.round(today.tmin)}–${Math.round(today.tmax)}°C, ${today.rain} mm rain forecast (${today.rainProb}% chance).` : ''));
+            const wet = (w.days || []).filter(d => d.rain >= RAIN.heavy);
+            if (wet.length) lines.push(`Heavy rain (IMD heavy is ${RAIN.heavy} mm/day) forecast on ${wet.map(d => `${d.date} (${d.rain} mm)`).join(', ')}.`);
+        }
+        if (s.air) lines.push(`Air quality: National AQI ${s.air.naqi} (${s.air.band.label}), driven by ${s.air.dominant}; PM2.5 ${Math.round(s.air.pm25)} µg/m³, PM10 ${Math.round(s.air.pm10)} µg/m³.`);
+        if (s.river && s.river.now != null) {
+            lines.push(`Largest river nearby: ${Math.round(s.river.now)} m³/s today, ${s.river.trend}; 7-day peak ${Math.round(s.river.peak)} m³/s on ${s.river.peakDate}`
+                + `${s.river.mean30 ? ` (30-day mean ${Math.round(s.river.mean30)} m³/s)` : ''}.`);
+        }
+        if (s.gnss) lines.push(`GPS field accuracy: ${s.gnss.label}${s.gnss.kp != null ? ` (peak Kp ${s.gnss.kp.toFixed(1)} in the next 24 h)` : ''}${s.gnss.reasons.length ? `: ${s.gnss.reasons.join('; ')}` : ''}.`);
+        if (s.exp && s.exp.pop) lines.push(`People in view: ${fmtPeople(s.exp.pop)}; ${fmtPeople(s.exp.floodPop)} in 1-in-100-year flood cells, ${fmtPeople(s.exp.heatPop)} in heat-island cells.`);
+        lines.push(s.correlations.length
+            ? `Live correlations (${s.correlations.length}):\n${s.correlations.map(c => `- [${c.severity}] ${c.title}: ${c.detail}`).join('\n')}`
+            : 'No live correlations: nothing in the feeds lines up with the people or hazards here right now.');
+        const failed = s.checks.filter(c => !c[1]).map(c => c[0]);
+        if (failed.length) lines.push(`Feeds that did not answer: ${failed.join(', ')}.`);
+        return lines.join('\n');
+    }
+
     return {
-        attach, detach, toggle, isActive, refresh, focus, snapshot, shownCells,
+        attach, detach, toggle, isActive, refresh, focus, snapshot, shownCells, gather, toText,
         forecastUrl, airUrl, floodUrl, eonetUrl, distanceKm, weatherLabel, parseWeather, subIndex, naqiBand, parseAir,
         parseFlood, parseQuakes, parseEvents, parseKp, gnssCondition, istDate, exposure, fmtPeople, correlate, cellsBounds, RAIN,
     };

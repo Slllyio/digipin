@@ -204,6 +204,21 @@ describe('DISHAActions.executeAgentActions (agent tools, async)', () => {
         expect(shown).toEqual([22.7, 75.8]);
     });
 
+    it('liveNow gathers the live feeds for a cell and returns the text summary', async () => {
+        const LN = globalThis.LiveNow;
+        const realGather = LN.gather;
+        let at = null;
+        LN.gather = async (t) => { at = t; return { correlations: [{ severity: 'high', title: 'River rising', detail: 'Yamuna up 3x' }], checks: [['x', true]] }; };
+        try {
+            const res = await DA.executeAgentActions([{ type: 'livenow', params: { code: '39J49LL8T4' } }]);
+            expect(res[0]).toMatchObject({ type: 'livenow', ok: true });
+            expect(at).toMatchObject({ lat: 22.7, lng: 75.8 });
+            expect(res[0].observation).toMatch(/- \[high\] River rising: Yamuna up 3x/);
+        } finally {
+            LN.gather = realGather;
+        }
+    });
+
     it('satellitePasses lists the next passes over a cell, filtered by kind', async () => {
         const SP = globalThis.SatPasses;
         const realPasses = SP.passes;

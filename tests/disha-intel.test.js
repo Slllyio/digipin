@@ -145,6 +145,9 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('next Landsat overpass?')).toEqual({ type: 'satpasses', only: 'landsat' });
         expect(M('when is the next radar satellite pass for flood mapping')).toEqual({ type: 'satpasses', only: 'radar' });
         expect(M('show the satellite map')).toBeNull();
+        expect(M("What's happening here right now?")).toEqual({ type: 'livenow' });
+        expect(M('any alerts here today?')).toEqual({ type: 'livenow' });
+        expect(M('current conditions in this ward')).toEqual({ type: 'livenow' });
         expect(M('Is this a good place to pass the time?')).toBeNull();
         expect(M('What if MG Road closes at 6 pm in Pune?')).toEqual({ type: 'roadwhatif', action: 'close', road: 'MG Road', period: 'pm', city: 'pune' });
         expect(M('close AB Road')).toEqual({ type: 'roadwhatif', action: 'close', road: 'AB Road', period: 'am' });

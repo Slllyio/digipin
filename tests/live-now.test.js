@@ -180,3 +180,28 @@ describe('LiveNow.istDate()', () => {
         expect(LN.istDate(new Date('2026-10-22T18:31:00Z'))).toBe('2026-10-23');
     });
 });
+
+describe('LiveNow.toText', () => {
+    it('summarises a snapshot for DISHA', () => {
+        const LN = globalThis.LiveNow;
+        const s = {
+            weather: { temp: 27.4, feels: 31.2, rh: 88, rain: 3.1, wind: 14, code: 63, days: [{ date: '2026-10-22', tmin: 24, tmax: 29, rain: 22.5, rainProb: 90 }, { date: '2026-10-23', tmin: 23, tmax: 28, rain: 92.4, rainProb: 95 }] },
+            air: { naqi: 247, band: { label: 'Poor' }, dominant: 'PM2.5', pm25: 104.5, pm10: 180 },
+            river: { now: 300, trend: 'rising', peak: 1140, peakDate: '2026-10-29', mean30: 300 },
+            gnss: { label: 'Caution', kp: 6.33, reasons: ['geomagnetic storm (Kp 6)'] },
+            exp: { pop: 340000, floodPop: 12400, heatPop: 0 },
+            correlations: [{ severity: 'high', title: 'Heavy rain on flood-prone blocks', detail: '92 mm tomorrow' }],
+            checks: [['Weather', true], ['USGS', false]],
+        };
+        const t = LN.toText(s);
+        expect(t).toMatch(/Weather now: .*27°C \(feels 31°C\), humidity 88%/);
+        expect(t).toMatch(/Heavy rain .* forecast on 2026-10-23 \(92.4 mm\)/);
+        expect(t).toMatch(/National AQI 247 \(Poor\), driven by PM2.5/);
+        expect(t).toMatch(/300 m³\/s today, rising; 7-day peak 1140 m³\/s on 2026-10-29/);
+        expect(t).toMatch(/GPS field accuracy: Caution \(peak Kp 6.3 in the next 24 h\): geomagnetic storm/);
+        expect(t).toMatch(/People in view: 3.4 lakh; 12,400 in 1-in-100-year flood cells/);
+        expect(t).toMatch(/- \[high\] Heavy rain on flood-prone blocks: 92 mm tomorrow/);
+        expect(t).toMatch(/did not answer: USGS/);
+        expect(LN.toText({ correlations: [], checks: [] })).toMatch(/No live correlations/);
+    });
+});

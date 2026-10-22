@@ -349,6 +349,15 @@ const DISHAActions = (() => {
             return { label: `${a.action === 'widen' ? 'Widened' : 'Closed'} ${a.road}`, observation: `roadWhatIf:\n${RW.askText(a)}` };
         },
 
+        async livenow(p) {
+            const LN = _g('LiveNow');
+            if (!LN || !LN.gather) throw new Error('live feeds unavailable');
+            const at = p.code ? { ..._coords(p), code: p.code } : undefined;
+            const s = await LN.gather(at);
+            const where = p.code ? _norm(p.code) : 'the map centre';
+            return { label: `Live conditions at ${where}`, observation: `liveNow ${where}:\n${LN.toText(s)}` };
+        },
+
         async satellitepasses(p) {
             const SP = _g('SatPasses');
             if (!SP || !SP.passes) throw new Error('satellite passes unavailable');

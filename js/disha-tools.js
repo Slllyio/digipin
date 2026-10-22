@@ -143,6 +143,12 @@ const DISHATools = (() => {
             example: '[ACTION] runIsochrone code:39J-49L-L8T4',
         },
         {
+            name: 'liveNow', type: 'livenow', kind: 'read', agentOnly: true,
+            args: { code: { type: 'digipin' } },
+            desc: 'Live conditions at a cell or the map centre: weather and heavy-rain forecast, air quality (National AQI), river flow, nearby earthquakes and natural events, GPS accuracy, and live correlations with the people, flood and heat cells in view.',
+            example: '[ACTION] liveNow code:39J-49L-L8T4',
+        },
+        {
             name: 'satellitePasses', type: 'satellitepasses', kind: 'read', agentOnly: true,
             args: { code: { type: 'digipin' }, kind: { type: 'enum', values: ['all', 'optical', 'radar'] } },
             desc: 'When Earth-observation satellites (Sentinel-2, Landsat, Sentinel-1 radar, Resourcesat, Cartosat-3, Sentinel-3/5P) next pass over a cell or the map centre in the next 7 days, with the cloud forecast for each pass.',
