@@ -1,18 +1,102 @@
 {
-  "generated_at_iso": "2026-10-22T15:28:38Z",
-  "count": 18,
+  "generated_at_iso": "2026-10-22T19:22:38Z",
+  "count": 20,
   "records": [
+    {
+      "id": "us6000u45j",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-22T18:06:44.294000+00:00",
+      "latitude": 32.3707,
+      "longitude": 93.9886,
+      "depth_km": 10.0,
+      "place": "207 km ENE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u45j",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000u45f",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-22T17:21:26.780000+00:00",
+      "latitude": 44.035,
+      "longitude": 147.0825,
+      "depth_km": 76.309,
+      "place": "39 km NE of Shikotan, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u45f",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000u459",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-22T16:51:21.365000+00:00",
+      "latitude": -22.564,
+      "longitude": -175.4438,
+      "depth_km": 35.0,
+      "place": "144 km SSW of ‘Ohonua, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u459",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000u451",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-22T16:21:33.822000+00:00",
+      "latitude": 32.4918,
+      "longitude": 93.9447,
+      "depth_km": 10.0,
+      "place": "210 km ENE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u451",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000u44w",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-22T15:45:37.094000+00:00",
+      "latitude": 33.7966,
+      "longitude": 86.2316,
+      "depth_km": 10.0,
+      "place": "western Xizang",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u44w",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000u44u",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-22T15:27:48.445000+00:00",
+      "latitude": 40.1472,
+      "longitude": 77.3556,
+      "depth_km": 10.0,
+      "place": "139 km ENE of Kashgar, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u44u",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000u44n",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-10-22T15:12:04.462000+00:00",
+      "latitude": 32.4401,
+      "longitude": 93.8669,
+      "depth_km": 10.0,
+      "place": "201 km ENE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u44n",
+      "tsunami": 0,
+      "significance": 416
+    },
     {
       "id": "us6000u43g",
       "magnitude": 7.0,
-      "origin_time_utc": "2026-10-22T14:33:39.014000+00:00",
-      "latitude": 32.3357,
-      "longitude": 93.7138,
-      "depth_km": 10.0,
-      "place": "183 km ENE of Nagqu, China",
+      "origin_time_utc": "2026-10-22T14:33:40.353000+00:00",
+      "latitude": 32.3805,
+      "longitude": 93.7797,
+      "depth_km": 18.0,
+      "place": "191 km ENE of Nagqu, China",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u43g",
       "tsunami": 0,
-      "significance": 1000
+      "significance": 1003
     },
     {
       "id": "us6000u432",
@@ -157,66 +241,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3y1",
       "tsunami": 0,
       "significance": 370
-    },
-    {
-      "id": "us6000u3x2",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-21T19:06:06.706000+00:00",
-      "latitude": 57.1591,
-      "longitude": -33.9973,
-      "depth_km": 10.0,
-      "place": "Reykjanes Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3x2",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000u3xx",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-21T18:41:04.974000+00:00",
-      "latitude": -14.1796,
-      "longitude": 165.4616,
-      "depth_km": 10.0,
-      "place": "198 km WNW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3xx",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000u3ws",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-21T18:40:31.851000+00:00",
-      "latitude": -14.1592,
-      "longitude": 165.431,
-      "depth_km": 10.0,
-      "place": "202 km WNW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3ws",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000u3wh",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-21T18:12:35.474000+00:00",
-      "latitude": -52.8118,
-      "longitude": 27.4604,
-      "depth_km": 10.0,
-      "place": "south of Africa",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3wh",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000u3w6",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-21T17:19:33.362000+00:00",
-      "latitude": 49.2528,
-      "longitude": 158.0282,
-      "depth_km": 10.0,
-      "place": "208 km SE of Severo-Kuril’sk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3w6",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
