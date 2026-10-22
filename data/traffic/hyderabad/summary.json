@@ -614,12 +614,31 @@
       "method": "CRTN 1988 + Abbott & Nelson 2002 Lden"
     }
   },
-  "road_flood": {
-    "very_high": 18.1,
-    "high": 360.9,
-    "river_flood": 78.0,
-    "total": 2591.6,
-    "pct_very_high": 0.7,
-    "pct_high_or_worse": 14.6
+  "emergency_access": {
+    "hospitals": 1879,
+    "pct_within_10_night": 99.3,
+    "pct_within_10_am": 99.3,
+    "pct_within_10_pm": 99.3,
+    "pct_over_20_peak": 0.0,
+    "source": "Overture Maps places 2026-10-21.0; demand model link times"
+  },
+  "rail_access": {
+    "metro_stations": 54,
+    "rail_stations": 45,
+    "pct_within_10_walk_metro": 12.2,
+    "pct_within_10_walk_any": 18.5,
+    "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
+  },
+  "ev_charging": {
+    "chargers": 18,
+    "chargers_by_source": {
+      "osm": 2,
+      "overture": 16
+    },
+    "parking": 12,
+    "fuel": 461,
+    "chargers_per_lakh": 0.2,
+    "pct_vkm_within_2km": 34.5,
+    "pct_pop_within_2km": 24.4
   }
 }

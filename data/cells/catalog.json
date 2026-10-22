@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T07:37:14Z",
+  "generated": "2026-10-22T08:35:16Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -10740,7 +10740,7 @@
         },
         {
           "name": "delhi",
-          "cells": 11473,
+          "cells": 11472,
           "bbox": {
             "west": 76.839599609375,
             "south": 28.399169921875,
