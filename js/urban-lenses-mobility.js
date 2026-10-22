@@ -322,14 +322,16 @@ const UrbanLensesMobility = (() => {
      * 8 neighbours where a city has none) from every target cell, out to `km`.
      * Returns per cell: dist (km), shade (mean tree canopy % along the route),
      * heat (mean daytime LST along it), pred (next cell towards the target).
+     * ``weight(j, k)`` (default 1) multiplies each step's cost, so routes can
+     * avoid something; ``dist`` stays the length walked and ``km`` caps it.
      */
-    function walkTree(fr, isTarget, km = SHADE_KM) {
+    function walkTree(fr, isTarget, km = SHADE_KM, weight = null) {
         const g = fr.grid, n = g.n, c = fr.cols;
         const links = c['osm_walk.links'], can = c['vegetation.tree_canopy_pct'], lst = c['surface_heat.lst_day_c'];
         const useLinks = !!links && links.some(v => v > 0);
         const step = DIRS.map(([a, b]) => Math.hypot(a * g.dy, b * g.dx));
         const dist = new Float64Array(n).fill(Infinity), sh = new Float64Array(n), ht = new Float64Array(n), htw = new Float64Array(n);
-        const pred = new Int32Array(n).fill(-1);
+        const pred = new Int32Array(n).fill(-1), cost = weight ? new Float64Array(n).fill(Infinity) : dist;
         const cv = (i) => (can && _fin(can[i]) ? can[i] : 0);
         const hv = (i) => (lst && _fin(lst[i]) ? lst[i] : NaN);
         const hd = [], hj = [];
@@ -353,19 +355,19 @@ const UrbanLensesMobility = (() => {
             }
             return [d, j];
         };
-        for (let i = 0; i < n; i++) if (isTarget(i)) { dist[i] = 0; push(0, i); }
+        for (let i = 0; i < n; i++) if (isTarget(i)) { dist[i] = 0; cost[i] = 0; push(0, i); }
         while (hd.length) {
             const [d, j] = pop();
-            if (d > dist[j]) continue;
+            if (d > cost[j]) continue;
             const m = useLinks ? links[j] : 255;
             if (!(m > 0)) continue;
             for (let b = 0; b < 8; b++) {
                 if (!((m >> b) & 1)) continue;
                 const k = g.cellAt(j, DIRS[b][0], DIRS[b][1]);
                 if (k < 0) continue;
-                const nd = d + step[b];
-                if (nd <= km + 1e-9 && nd < dist[k]) {
-                    dist[k] = nd; pred[k] = j;
+                const nl = dist[j] + step[b], nd = weight ? d + step[b] * weight(j, k) : nl;
+                if (nl <= km + 1e-9 && nd < cost[k]) {
+                    cost[k] = nd; dist[k] = nl; pred[k] = j;
                     sh[k] = sh[j] + step[b] * (cv(j) + cv(k)) / 2;
                     const h = (hv(j) + hv(k)) / 2;
                     ht[k] = ht[j] + (_fin(h) ? step[b] * h : 0); htw[k] = htw[j] + (_fin(h) ? step[b] : 0);
@@ -852,6 +854,70 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // ── traffic exhaust on the walk ─────────────────────────────────────────
+
+    const CLEAN_ALPHA = 3, CLEAN_SAVE = 30, CLEAN_EXTRA = 20;   // cost weight; "worth it" = ≥30% less exhaust for ≤20% more walking
+
+    /** Exhaust dose along each route of a walk tree: Σ step length × exposure of the two cells. Pure given the tree. */
+    function routeDose(fr, tree, ex) {
+        const g = fr.grid, n = g.n, dose = new Float64Array(n).fill(NaN), order = [];
+        for (let i = 0; i < n; i++) if (_fin(tree.dist[i])) order.push(i);
+        order.sort((a, b) => tree.dist[a] - tree.dist[b]);
+        for (const i of order) {
+            const p = tree.pred[i];
+            if (p < 0) { dose[i] = 0; continue; }
+            const step = Math.hypot((g.row[i] - g.row[p]) * g.dy, (g.col[i] - g.col[p]) * g.dx);
+            dose[i] = (_fin(dose[p]) ? dose[p] : 0) + step * (ex[i] + ex[p]) / 2;
+        }
+        return dose;
+    }
+
+    function cleanwalk(fr) {
+        const c = fr.cols, g = fr.grid, n = g.n, idx = _residents(fr), pop = c['population.population'];
+        const nox = c['traffic_noise.nox_kg_day'];
+        if (!nox || !nox.some(v => v > 0)) return null;
+        const ms = c['rail_access.metro_stations'], rs = c['rail_access.rail_stations'], sch = c['emergency_access.schools'];
+        const T = sch && sch.some(v => v > 0) ? (i => sch[i] > 0) : (ms || rs) ? (i => (ms && ms[i] > 0) || (rs && rs[i] > 0)) : null;
+        if (!T) return null;
+        const what = sch && sch.some(v => v > 0) ? 'school' : 'the station';
+        // Exposure index: cell NOx emitted by traffic, relative to the city's busiest tenth of road cells.
+        const vals = [];
+        for (let i = 0; i < n; i++) if (nox[i] > 0) vals.push(nox[i]);
+        vals.sort((a, b) => a - b);
+        const p90 = vals[Math.floor(0.9 * (vals.length - 1))] || 1;
+        const ex = new Float64Array(n);
+        for (let i = 0; i < n; i++) ex[i] = nox[i] > 0 ? Math.min(2, nox[i] / p90) : 0;
+        const short = walkTree(fr, T), clean = walkTree(fr, T, SHADE_KM * 1.2, (j, k) => 1 + CLEAN_ALPHA * (ex[j] + ex[k]) / 2);
+        const dS = routeDose(fr, short, ex), dC = routeDose(fr, clean, ex);
+        const reach = idx.filter(i => _fin(short.dist[i]) && short.dist[i] > 0);
+        const pR = _sumOver(pop, reach, () => true);
+        if (!pR) return null;
+        const hot = reach.filter(i => dS[i] / short.dist[i] >= 0.5);           // average route at half the busiest-tenth level or worse
+        const pHot = _sumOver(pop, hot, () => true);
+        const save = new Float64Array(n).fill(NaN), mean = new Float64Array(n).fill(NaN);
+        let pWorth = 0;
+        for (const i of reach) {
+            mean[i] = _round(100 * dS[i] / short.dist[i]);
+            if (!_fin(clean.dist[i]) || !(dS[i] > 0)) { save[i] = 0; continue; }
+            const s = Math.max(0, 100 * (1 - dC[i] / dS[i])), extra = 100 * (clean.dist[i] / short.dist[i] - 1);
+            save[i] = _round(s);
+            if (s >= CLEAN_SAVE && extra <= CLEAN_EXTRA) pWorth += pop[i] || 0;
+        }
+        const medSave = wquantile(save, pop, hot.length ? hot : reach, 0.5);
+        const stats = [
+            { label: `Residents within a ${Math.round(SHADE_KM * 12.5)}-minute walk of ${what}`, value: _people(pR) },
+            { label: '… whose shortest walk runs along heavy traffic exhaust (route average ≥ half the busiest tenth of road cells)', value: `${_people(pHot)} (${_round(100 * pHot / pR)}%)`, raw: Math.round(pHot) },
+            { label: `… who could cut the exhaust on their walk by ${CLEAN_SAVE}%+ with at most ${CLEAN_EXTRA}% more walking`, value: `${_people(pWorth)} (${_round(100 * pWorth / pR)}%)` },
+        ];
+        if (medSave != null) stats.push({ label: 'Median exhaust saved by the cleaner route (exposed walkers)', value: `${_round(medSave)}%` });
+        return {
+            columns: { walk_exhaust: mean, clean_save: save }, idx: reach, weightKey: 'walk_exhaust',
+            metric: { label: `Walk to ${what} along heavy traffic exhaust`, value: _round(100 * pHot / pR), unit: '%', higherIs: 'worse' },
+            headline: `${_round(100 * pHot / pR)}% of residents within walking distance of ${what} walk there along heavy traffic exhaust; ${_round(100 * pWorth / pR)}% could cut that exposure by ${CLEAN_SAVE}% or more on a quieter route no more than ${CLEAN_EXTRA}% longer.`,
+            stats,
+        };
+    }
+
     // ── mobility scorecard across the cities ────────────────────────────────
 
     // Pillars over the lens league (data/lenses/league.json). EV charging is
@@ -859,7 +925,7 @@ const UrbanLensesMobility = (() => {
     const PILLARS = [
         { id: 'access', label: 'Access', metrics: ['metro', 'transit', 'busgap', 'ambulance'] },
         { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon'] },
-        { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise', 'nightwalk', 'freight'] },
+        { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise', 'nightwalk', 'freight', 'cleanwalk'] },
         { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'walk', 'cycling', 'crossing'] },
     ];
 
@@ -918,6 +984,13 @@ const UrbanLensesMobility = (() => {
     }
 
     const ENTRIES = [
+        { id: 'cleanwalk', equity: true, title: 'Exhaust on the walk to school', icon: '😷',
+            question: 'How much traffic exhaust do children breathe on the walk to school, and is there a cleaner route?',
+            field: { key: 'walk_exhaust', label: 'Traffic exhaust along the shortest walk (100 = busiest tenth of road cells)', unit: 'index', higherIs: 'worse', ramp: 'heat' },
+            extra: [{ key: 'clean_save', label: 'Exhaust saved by the cleaner route', unit: '%', higherIs: 'better', ramp: 'greens' }],
+            needs: ['traffic_noise.nox_kg_day', 'emergency_access.schools', 'rail_access.metro_stations', 'rail_access.rail_stations', 'osm_walk.links', 'wealth.rwi'],
+            method: `Exposure index per cell is the demand model's traffic NOx emitted in it (pipeline/traffic/noise_air.py), relative to the city's busiest tenth of road cells (capped at 2×): near-road exhaust falls off within 100–200 m, so the cell's own emissions are a fair proxy for what a pedestrian breathes. Each resident walks the OpenStreetMap walking network to the nearest school (stations where no school is mapped): once by the shortest route and once by a route that weighs each step by 1 + ${CLEAN_ALPHA}× exposure. Dose is length × exposure summed along the route. "Worth it" is ${CLEAN_SAVE}%+ less dose for at most ${CLEAN_EXTRA}% more walking. A screen for school-street and low-traffic-route planning, not measured air quality.`,
+            refs: 'Karner, Eisinger & Niemeier 2010 (near-road pollutant gradients); Hertel et al. 2008 (route choice and cyclist exposure); Davies & Whyatt 2014 (pedestrian route exposure); EEA/COPERT emission factors' },
         { id: 'freight', equity: true, title: 'Freight and truck routes', icon: '🚚',
             question: 'Where do trucks run through neighbourhoods, and where are the freight clusters?',
             field: { key: 'truck_near', label: 'Trucks a day on the busiest road within 250 m', unit: 'trucks/day', higherIs: 'worse', ramp: 'heat' },
@@ -1012,7 +1085,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

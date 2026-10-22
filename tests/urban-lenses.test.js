@@ -441,6 +441,21 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.freight(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('cleanwalk lens: exhaust on the walk to school and a cleaner detour', () => {
+        // School at the west end of the middle row; that row is a busy road, the rows beside it are quiet.
+        const mid = Math.floor(SIZE / 2);
+        const nox = codes.map((_, i) => (Math.floor(i / SIZE) === mid ? 50 : 0));
+        const sch = codes.map((_, i) => (i === mid * SIZE ? 1 : 0));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'traffic_noise.nox_kg_day': nox, 'emergency_access.schools': sch });
+        const r = L._lenses.cleanwalk(f, {});
+        const home = mid * SIZE + 4;                                       // on the busy row, 4 cells east of school
+        expect(r.columns.walk_exhaust[home]).toBeGreaterThan(50);
+        expect(r.columns.clean_save[home]).toBeGreaterThan(30);           // the quiet parallel row avoids most of it
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.metric.value).toBeLessThan(100);
+        expect(L._lenses.cleanwalk(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
         const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
         const league = { generated: '2026-10-22', cities: {

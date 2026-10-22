@@ -406,6 +406,18 @@ truck_nox_kg_day (5 g/km). The lens counts residents and schools within
 Residents beside truck routes: Ahmedabad 24%, Mumbai 17%, Kolkata 14%,
 Delhi 10%. No truck counts or entry-time rules, so routes are indicative.
 
+### 21. Exhaust on the walk to school (lens `cleanwalk`)
+
+Exposure per cell is the traffic NOx the demand model emits in it
+(noise_air.py), relative to the city's busiest tenth of road cells (capped at
+2×). Residents walk the OSM walking network to the nearest school twice: by
+the shortest route, and by a route whose step cost is 1 + 3 × exposure
+(`walkTree(fr, isTarget, km, weight)`, length capped at 1.2 × 1.6 km). Dose
+is length × exposure along the route (`routeDose`). "Heavy" is a route
+average at half the busiest-tenth level or more; "worth it" is 30%+ less dose
+for at most 20% more walking. Delhi: 8.8% walk along heavy exhaust, 12% could
+cut it by 30%+ (median saving 61% for the exposed); Indore 35%, Ahmedabad 29%.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

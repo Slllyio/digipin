@@ -28,6 +28,7 @@ const DishaIntel = (() => {
             flood: /\b(flood\s?plain|flood (exposure|exposed)|(how many|people|residents|population|who)\b.{0,30}\b(flood(ed|s|ing)?|floodplain)\b.{0,20}\b(live|exposed|risk|zone|area))/i,
             fifteen: /\b(15|fifteen)[\s-]?min(ute)?s?\b|\bwalk(ing|able)? (to|distance (to|of)) (daily|essentials?|shops|amenities)|\bdaily needs\b|\bland[\s-]?use mix\b/i,
             waterlog: /\b(water[\s-]?log\w*|rain(water)? (pools?|pooling|collects?|stagnat\w*)|pluvial|urban flood\w*|stagnant water|where (does )?(the )?rain(water)? (collect|pool|stand)s?)\b/i,
+            cleanwalk: /\b(exhaust|fumes|pollut\w*|air quality|breath\w*)\b.{0,40}\b(walk\w*|routes?|commut\w*|school run|way to school|cycl\w*)\b|\b(walk\w*|routes?|commut\w*)\b.{0,40}\b(exhaust|fumes|pollut\w*)\b|\bclean(er)? (air )?routes?\b/i,
             freight: /\b(trucks?|lorr(y|ies)|freight|logistics|goods vehicles?|hgvs?|warehous\w*|godowns?|delivery vans?)\b/i,
             crossing: /\b(zebra|pedestrian) crossings?\b|\b(foot ?over ?bridges?|fobs?|subways? for pedestrians|jaywalk\w*)\b|\bcross(ing)? the (main |busy )?road\b|\bcrossing gaps?\b|\b(no|without|lack of|missing) (safe )?crossings?\b/i,
             nightwalk: /\bstreet ?lights?\b|\b(dark|unlit|poorly lit|street ?lights?|lighting|lit|at night|after dark|night[\s-]?time)\b.{0,40}\b(walk\w*|routes?|stations?|streets?|stretch\w*|safe\w*|women)\b|\b(walk\w*|routes?|women|safe\w*)\b.{0,40}\b(at night|after dark|dark|unlit|street ?lights?)\b/i,
