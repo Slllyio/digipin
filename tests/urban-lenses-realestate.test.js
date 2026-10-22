@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -215,6 +215,21 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats.find(s => /Cooling need/.test(s.label)).value).toMatch(/\+\d+%/);
         expect(r.stats.find(s => /tree canopy/.test(s.label)).value).toMatch(/100%/);
         expect(L._lenses.streetheat(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('flood2050: residents in the 100-year river or sea flood zone, now and 2050', () => {
+        const now = codes.map((_, i) => (i < SIZE ? 50 : 0)), fut = codes.map((_, i) => (i < SIZE ? 100 : i < 2 * SIZE ? 50 : 0));
+        const zero = codes.map(() => 0);
+        const f = L.frameFrom(codes, { ...base, 'flood_future.any_pct_now': now, 'flood_future.any_pct_2050': fut, 'flood_future.river_pct_now': now, 'flood_future.river_pct_2050': fut,
+            'flood_future.river_pct_2050_high': fut, 'flood_future.coast_pct_now': zero, 'flood_future.coast_pct_2050': zero, 'flood_future.coast_pct_2050_high': zero });
+        const r = L._lenses.flood2050(f, {});
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.columns.flood_added_pct[SIZE]).toBe(50);
+        expect(r.headline).toMatch(/up from/);
+        expect(r.stats.some(s => /Coastal/.test(s.label))).toBe(false);          // no sea here
+        const dry = L.frameFrom(codes, { ...base, 'flood_future.any_pct_now': zero, 'flood_future.any_pct_2050': zero });
+        expect(L._lenses.flood2050(dry, {}).headline).toMatch(/^No residents/);
+        expect(L._lenses.flood2050(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('farText(): base vs asked FAR, rebuild and homes', () => {

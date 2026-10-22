@@ -6108,6 +6108,311 @@
       ]
     },
     {
+      "id": "flood_future",
+      "title": "Flood 2050 (WRI Aqueduct)",
+      "description": "1-in-100-year river and coastal flooding now and by 2050 from WRI Aqueduct Floods v2 (~1 km). River: GLOFRIS driven by five CMIP5 models (RCP4.5 and 8.5) against a 1980 baseline. Coast: sea-level rise, storm surge and land subsidence against 2010. No flood defences are modelled and 1 km cannot see drains or embankments; a cell counts as flooded where depth > 0.05 m.",
+      "source": "WRI/Aqueduct_Flood_Hazard_Maps/V2 via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "CC BY 4.0 (WRI)",
+      "group": "Open Data (satellite)",
+      "level": 6,
+      "approxCellM": 975,
+      "fields": [
+        {
+          "key": "any_pct_now",
+          "label": "1-in-100-year flood (river or sea), now",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of area",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "any_pct_2050",
+          "label": "1-in-100-year flood (river or sea) by 2050, RCP4.5",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of area",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "river_pct_now",
+          "label": "River 100-year flood, now (1980 baseline)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of area",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "river_pct_2050",
+          "label": "River 100-year flood by 2050 (RCP4.5, 5 models)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of area",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "river_pct_2050_high",
+          "label": "River 100-year flood by 2050 (RCP8.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of area",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "river_depth_2050_m",
+          "label": "River 100-year flood depth by 2050 where flooded",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m",
+          "domain": [
+            0,
+            3
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "coast_pct_now",
+          "label": "Coastal 100-year flood, now (2010)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of area",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "coast_pct_2050",
+          "label": "Coastal 100-year flood by 2050 (RCP4.5, sea-level rise and subsidence)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of area",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "coast_pct_2050_high",
+          "label": "Coastal 100-year flood by 2050 (RCP8.5, with subsidence)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of area",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "coast_depth_2050_m",
+          "label": "Coastal 100-year flood depth by 2050 where flooded",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m",
+          "domain": [
+            0,
+            3
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "any_pct_2050",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 504,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.6845703125,
+            "north": 23.1279296875
+          },
+          "json": "flood_future/ahmedabad.json",
+          "parquet": "flood_future/ahmedabad.parquet"
+        },
+        {
+          "name": "bengaluru",
+          "cells": 1368,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.8271484375,
+            "east": 77.7822265625,
+            "north": 13.1435546875
+          },
+          "json": "flood_future/bengaluru.json",
+          "parquet": "flood_future/bengaluru.parquet"
+        },
+        {
+          "name": "bhopal",
+          "cells": 442,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.3212890625
+          },
+          "json": "flood_future/bhopal.json",
+          "parquet": "flood_future/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 726,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.8974609375,
+            "east": 80.322265625,
+            "north": 13.1875
+          },
+          "json": "flood_future/chennai.json",
+          "parquet": "flood_future/chennai.parquet"
+        },
+        {
+          "name": "delhi",
+          "cells": 3304,
+          "bbox": {
+            "west": 76.8330078125,
+            "south": 28.392578125,
+            "east": 77.3515625,
+            "north": 28.884765625
+          },
+          "json": "flood_future/delhi.json",
+          "parquet": "flood_future/delhi.parquet"
+        },
+        {
+          "name": "guna",
+          "cells": 100,
+          "bbox": {
+            "west": 77.263671875,
+            "south": 24.595703125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "flood_future/guna.json",
+          "parquet": "flood_future/guna.parquet"
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1080,
+          "bbox": {
+            "west": 78.2919921875,
+            "south": 17.2919921875,
+            "east": 78.6083984375,
+            "north": 17.5556640625
+          },
+          "json": "flood_future/hyderabad.json",
+          "parquet": "flood_future/hyderabad.parquet"
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 2209,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.4951171875,
+            "east": 76.0068359375,
+            "north": 22.908203125
+          },
+          "json": "flood_future/indore_pilot.json",
+          "parquet": "flood_future/indore_pilot.parquet"
+        },
+        {
+          "name": "jaipur",
+          "cells": 624,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.927734375,
+            "north": 27.00390625
+          },
+          "json": "flood_future/jaipur.json",
+          "parquet": "flood_future/jaipur.parquet"
+        },
+        {
+          "name": "kolkata",
+          "cells": 480,
+          "bbox": {
+            "west": 88.2763671875,
+            "south": 22.4423828125,
+            "east": 88.4521484375,
+            "north": 22.6533203125
+          },
+          "json": "flood_future/kolkata.json",
+          "parquet": "flood_future/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 529,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "flood_future/lucknow.json",
+          "parquet": "flood_future/lucknow.parquet"
+        },
+        {
+          "name": "mumbai",
+          "cells": 1125,
+          "bbox": {
+            "west": 72.7724609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.2783203125
+          },
+          "json": "flood_future/mumbai.json",
+          "parquet": "flood_future/mumbai.parquet"
+        },
+        {
+          "name": "pune",
+          "cells": 700,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.42578125,
+            "east": 73.994140625,
+            "north": 18.6455078125
+          },
+          "json": "flood_future/pune.json",
+          "parquet": "flood_future/pune.parquet"
+        }
+      ]
+    },
+    {
       "id": "freight",
       "title": "Freight and logistics",
       "description": "Truck-trip generators from Overture Maps places (logistics, wholesale, industry) and the first/last-mile truck routes they load: each site's indicative truck trips (12/6/4 a day) take the fastest free-flow arterial route to the nearest national highway. Truck NOx at 5.0 g/km. Indicative: no truck counts or gate data.",

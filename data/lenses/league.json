@@ -222,6 +222,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 909783,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 18.1,
@@ -532,6 +538,12 @@
      "label": "Days at 40 °C or more by 2050 for the hottest tenth of residents",
      "value": 0.1,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 113,
+     "unit": "people",
      "higherIs": "worse"
     },
     "encroach": {
@@ -846,6 +858,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 0,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 2,
@@ -1150,6 +1168,12 @@
      "label": "Days at 40 °C or more by 2050 for the hottest tenth of residents",
      "value": 4.5,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 5520070,
+     "unit": "people",
      "higherIs": "worse"
     },
     "encroach": {
@@ -1464,6 +1488,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 6124223,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 108.7,
@@ -1762,6 +1792,12 @@
      "label": "Days at 40 °C or more by 2050 for the hottest tenth of residents",
      "value": 45.9,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 0,
+     "unit": "people",
      "higherIs": "worse"
     },
     "encroach": {
@@ -2068,6 +2104,12 @@
      "label": "Days at 40 °C or more by 2050 for the hottest tenth of residents",
      "value": 17,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 81903,
+     "unit": "people",
      "higherIs": "worse"
     },
     "encroach": {
@@ -2382,6 +2424,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 0,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 3.8,
@@ -2686,6 +2734,12 @@
      "label": "Days at 40 °C or more by 2050 for the hottest tenth of residents",
      "value": 59,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 0,
+     "unit": "people",
      "higherIs": "worse"
     },
     "encroach": {
@@ -2994,6 +3048,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 2649892,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 137.5,
@@ -3292,6 +3352,12 @@
      "label": "Days at 40 °C or more by 2050 for the hottest tenth of residents",
      "value": 44.2,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 465217,
+     "unit": "people",
      "higherIs": "worse"
     },
     "encroach": {
@@ -3606,6 +3672,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 4573687,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 43.5,
@@ -3916,6 +3988,12 @@
      "label": "Days at 40 °C or more by 2050 for the hottest tenth of residents",
      "value": 14.4,
      "unit": "days",
+     "higherIs": "worse"
+    },
+    "flood2050": {
+     "label": "Residents in the 1-in-100-year flood zone by 2050",
+     "value": 760423,
+     "unit": "people",
      "higherIs": "worse"
     },
     "encroach": {

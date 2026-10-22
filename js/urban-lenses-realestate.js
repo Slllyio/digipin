@@ -709,6 +709,42 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    /** Flood 2050: residents in the 1-in-100-year river or coastal flood zone, now and by 2050 (WRI Aqueduct). */
+    function flood2050(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const an = c['flood_future.any_pct_now'], a5 = c['flood_future.any_pct_2050'], rn = c['flood_future.river_pct_now'], r5 = c['flood_future.river_pct_2050'];
+        const cn = c['flood_future.coast_pct_now'], c5 = c['flood_future.coast_pct_2050'], c8 = c['flood_future.coast_pct_2050_high'], r8 = c['flood_future.river_pct_2050_high'];
+        const pop = c['population.population'], vi = c['land_value.value_index'];
+        if (!an || !a5 || !pop) return null;
+        const cells = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0 && _fin(an[i]) && _fin(a5[i])) cells.push(i);
+        if (cells.length < 5) return null;
+        const at = (a) => (a ? cells.reduce((s, i) => s + (_fin(a[i]) ? pop[i] * a[i] / 100 : 0), 0) : null);
+        const people = cells.reduce((s, i) => s + pop[i], 0);
+        const now = at(an), fut = at(a5), add = new Float64Array(n).fill(NaN);
+        for (const i of cells) add[i] = a5[i] - an[i];
+        const gain = cells.reduce((s, i) => s + Math.max(0, pop[i] * (a5[i] - an[i]) / 100), 0);
+        const coastNow = at(cn), coastFut = at(c5), coastHi = at(c8), riverFut = at(r5), riverNow = at(rn), riverHi = at(r8);
+        const stats = [
+            { label: 'Residents in the 1-in-100-year flood zone (river or sea): now → 2050', value: `${_people(now)} → ${_people(fut)} (${_round(100 * fut / people)}% of residents)`, raw: fut },
+            { label: 'Residents newly inside the flood zone by 2050', value: `${_people(gain)}` },
+        ];
+        if (riverFut != null) stats.push({ label: 'River flooding: now → 2050 (RCP4.5 / RCP8.5)', value: `${_people(riverNow)} → ${_people(riverFut)} / ${_people(riverHi)}` });
+        if (coastFut != null && (coastFut > 0 || coastNow > 0)) stats.push({ label: 'Coastal flooding with sea-level rise and subsidence: now → 2050 (RCP4.5 / RCP8.5)', value: `${_people(coastNow)} → ${_people(coastFut)} / ${_people(coastHi)}` });
+        if (vi) {
+            const dear = wquantile(vi, pop, cells, 0.8), top = cells.filter(i => _fin(vi[i]) && vi[i] >= dear);
+            const wet = top.reduce((s, i) => s + pop[i] * a5[i] / 100, 0), all = top.reduce((s, i) => s + pop[i], 0);
+            if (all) stats.push({ label: 'Residents of the dearest fifth of land inside the 2050 flood zone', value: `${_people(wet)} (${_round(100 * wet / all)}%)` });
+        }
+        return {
+            columns: { flood_2050_pct: a5, flood_added_pct: add }, idx: cells, weightKey: 'flood_2050_pct',
+            metric: { label: 'Residents in the 1-in-100-year flood zone by 2050', value: Math.round(fut), unit: 'people', higherIs: 'worse' },
+            headline: fut < 1 && now < 1 ? 'No residents live inside the 1-in-100-year river or sea flood zone, now or by 2050, at Aqueduct\'s 1 km scale.'
+                : `By 2050 about ${_people(fut)} residents (${_round(100 * fut / people)}%) live where a 1-in-100-year river or sea flood reaches, ${fut >= now ? `up from ${_people(now)}` : `against ${_people(now)} today`}${coastFut > 0 ? `; ${_people(coastFut)} of them from the sea, with sea-level rise and sinking land` : ''}.`,
+            stats,
+        };
+    }
+
     /** Climate 2050: hot days, warm nights and the wettest day by mid-century, weighted by who lives there. */
     function climate2050(fr) {
         const g = fr.grid, c = fr.cols, n = g.n;
@@ -959,6 +995,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_per_c_2050', 'climate_future.warm_nights_2050', 'climate_future.warm_nights_per_c_2050', 'climate_future.cdd_now', 'climate_future.cdd_2050', 'climate_future.cooling_days_2050', 'surface_heat.uhi_anomaly_c', 'surface_heat.modis_night_c', 'vegetation.tree_canopy_pct', 'population.population'],
             method: 'Takes the Climate 2050 counts (six-model CMIP6 ensemble on ERA5-Land, SSP2-4.5) and shifts them by each block\'s heat island. The daytime air offset is 0.3 × the Landsat surface-temperature anomaly against the city median; the night offset is 0.6 × the MODIS night anomaly. The offset is multiplied by how many extra days cross 40 °C (or nights cross 28 °C) per degree, measured from the ±1 °C counts. Cooling degree-days use a 24 °C daily-mean base. Surface-to-air coupling varies by street, wind and humidity, so read the block numbers as a ranking more than exact counts.',
             refs: 'Venter, Chakraborty & Lee 2021 (Sci. Adv., air vs surface UHI); Stewart & Oke 2012 (LCZ); Thrasher et al. 2022 (NEX-GDDP-CMIP6); BEE ECBC-R cooling base; IMD heatwave criteria' },
+        { id: 'flood2050', equity: true, title: 'Flood 2050', icon: '🌊',
+            question: 'Who will live inside the 100-year river or sea flood zone by 2050?',
+            field: { key: 'flood_2050_pct', label: 'Share of the area in the 100-year flood zone by 2050', unit: '%', higherIs: 'worse', ramp: 'blues' },
+            needs: ['flood_future.any_pct_now', 'flood_future.any_pct_2050', 'flood_future.river_pct_now', 'flood_future.river_pct_2050', 'flood_future.river_pct_2050_high', 'flood_future.coast_pct_now', 'flood_future.coast_pct_2050', 'flood_future.coast_pct_2050_high', 'land_value.value_index', 'population.population'],
+            method: 'WRI Aqueduct Floods v2 at ~1 km. River: GLOFRIS inundation for the 1-in-100-year flood, the mean of five CMIP5 models for 2050 against a 1980 baseline. Coast: storm surge plus sea-level rise and land subsidence for 2050 against 2010. A cell\'s share is the part deeper than 5 cm; residents (WorldPop) are spread evenly inside it. No defences or drains are modelled and 1 km is coarse, so Aqueduct reads higher than the GloFAS floodplain in the Flood lenses: use it for the change to 2050 more than the level.',
+            refs: 'Ward et al. 2020 (Aqueduct Floods methodology, WRI); Winsemius et al. 2013 (GLOFRIS); Muis et al. 2016 (GTSR surge); Kulp & Strauss 2019 (coastal exposure)' },
         { id: 'encroach', equity: true, title: 'Encroachment watch', icon: '🚧',
             question: 'Which lakes, floodplains and green areas have been lost to building, and where is it still happening?',
             field: { key: 'encroach_score', label: 'Encroachment score (former water, floodplain and tree loss built up)', unit: 'points', higherIs: 'worse', ramp: 'reds' },
@@ -967,7 +1009,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050 }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText };
 })();
 

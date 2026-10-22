@@ -243,3 +243,21 @@ Results:
 | Ahmedabad | 67 | 49 |
 
 Cooling need rises about 25% in the hot plains cities and 82% in Bengaluru, from a low base. About 72% of the hottest tenth live under less than 5% tree canopy. Read the block values as a ranking: surface-to-air coupling varies with wind, humidity and street form.
+
+## Flood 2050 (`flood_future`, lens `flood2050`)
+
+This is an L6 cell dataset from `pipeline/cells/ee_layers.py --layer flood_future`. It uses WRI Aqueduct Floods v2 (~1 km) to give the share of each cell flooded more than 5 cm deep by the 1-in-100-year flood.
+
+- **River flooding** comes from GLOFRIS. The 1980 baseline is compared with the mean of five CMIP5 models for 2050, under RCP4.5 and RCP8.5.
+- **Coastal flooding** combines storm surge, sea-level rise and land subsidence for 2050, compared with 2010.
+
+Residents in the zone, now → 2050:
+
+| City | River or sea | Newly exposed | From the sea alone |
+|---|---|---|---|
+| Kolkata | 19.7 → 26.5 lakh | 6.8 lakh | 16.1 lakh by 2050 |
+| Delhi | 53.4 → 61.2 lakh | — | — |
+| Ahmedabad | 4.9 → 9.1 lakh | — | — |
+| Mumbai | 44.3 → 45.7 lakh | — | 3.3 lakh by 2050 |
+
+Aqueduct models no defences or drains, and at 1 km it reads well above the GloFAS floodplain. For example, it puts 63% of Chennai residents in the zone. Use it for the change to 2050 more than for the level. The property report shows the block's share under Risk.

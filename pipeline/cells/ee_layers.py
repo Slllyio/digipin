@@ -1190,6 +1190,74 @@ def climate_future(region):
         default_field="hot_days_2050")
     return spec, _table(level, rows, specs)
 
+# ── flood 2050 (WRI Aqueduct Floods v2: river and coastal, 1-in-100-year) ──
+
+AQ_RIVER_GCMS = ["00000NorESM1-M", "0000GFDL-ESM2M", "0000HadGEM2-ES", "00IPSL-CM5A-LR", "MIROC-ESM-CHEM"]
+AQ_WET_M = 0.05                    # depth that counts as flooded
+
+
+def _aq(ee, name):
+    return ee.Image(f"WRI/Aqueduct_Flood_Hazard_Maps/V2/{name}").select("inundation_depth").unmask(0)
+
+
+def flood_future(region):
+    """1-in-100-year river and coastal flooding now and by 2050 (WRI Aqueduct, ~1 km)."""
+    ee = gee.init()
+    _, bbox = _bbox(region)
+    level = 6
+
+    def river(scen):
+        return ee.ImageCollection([_aq(ee, f"inunriver_{scen}_{g}_2050_rp00100") for g in AQ_RIVER_GCMS]).mean()
+
+    layers = {
+        "rn": _aq(ee, "inunriver_historical_000000000WATCH_1980_rp00100"), "r5": river("rcp4p5"), "r8": river("rcp8p5"),
+        # Coastal with land subsidence, the Aqueduct default for 2050; "now" is the 2010 baseline without it
+        "cn": _aq(ee, "inuncoast_historical_nosub_hist_rp0100_0"), "c5": _aq(ee, "inuncoast_rcp4p5_wtsub_2050_rp0100_0"),
+        "c8": _aq(ee, "inuncoast_rcp8p5_wtsub_2050_rp0100_0"),
+    }
+    bands = []
+    for k, im in layers.items():
+        bands += [im.gt(AQ_WET_M).rename(f"{k}_w"), im.rename(f"{k}_d")]
+    raw = gee.fetch(gee.to_cells(ee.Image.cat(bands), 925), bbox, level)
+    rows = {}
+    for c, x in raw.items():
+        if x.get("rn_w") is None:
+            continue
+
+        def pct(k):
+            return _r(100 * (x.get(f"{k}_w") or 0), 1)
+
+        def depth(k):
+            w = x.get(f"{k}_w") or 0
+            return _r((x.get(f"{k}_d") or 0) / w, 2) if w > 0.01 else 0.0
+        r = {"river_pct_now": pct("rn"), "river_pct_2050": pct("r5"), "river_pct_2050_high": pct("r8"),
+             "river_depth_2050_m": depth("r5"), "coast_pct_now": pct("cn"), "coast_pct_2050": pct("c5"),
+             "coast_pct_2050_high": pct("c8"), "coast_depth_2050_m": depth("c5")}
+        r["any_pct_now"] = max(r["river_pct_now"], r["coast_pct_now"])
+        r["any_pct_2050"] = max(r["river_pct_2050"], r["coast_pct_2050"])
+        rows[c] = r                 # keep dry cells: the lens counts their residents as safe
+    specs = [
+        FieldSpec("any_pct_now", "1-in-100-year flood (river or sea), now", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("any_pct_2050", "1-in-100-year flood (river or sea) by 2050, RCP4.5", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("river_pct_now", "River 100-year flood, now (1980 baseline)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("river_pct_2050", "River 100-year flood by 2050 (RCP4.5, 5 models)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("river_pct_2050_high", "River 100-year flood by 2050 (RCP8.5)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("river_depth_2050_m", "River 100-year flood depth by 2050 where flooded", agg="mean", unit="m", domain=[0, 3], ramp="blues", higher_is="worse"),
+        FieldSpec("coast_pct_now", "Coastal 100-year flood, now (2010)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("coast_pct_2050", "Coastal 100-year flood by 2050 (RCP4.5, sea-level rise and subsidence)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("coast_pct_2050_high", "Coastal 100-year flood by 2050 (RCP8.5, with subsidence)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("coast_depth_2050_m", "Coastal 100-year flood depth by 2050 where flooded", agg="mean", unit="m", domain=[0, 3], ramp="blues", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="flood_future", title="Flood 2050 (WRI Aqueduct)", level=level, fields=specs, group=GROUP,
+        description="1-in-100-year river and coastal flooding now and by 2050 from WRI Aqueduct Floods v2 (~1 km). "
+                    "River: GLOFRIS driven by five CMIP5 models (RCP4.5 and 8.5) against a 1980 baseline. Coast: "
+                    "sea-level rise, storm surge and land subsidence against 2010. No flood defences are modelled and "
+                    f"1 km cannot see drains or embankments; a cell counts as flooded where depth > {AQ_WET_M} m.",
+        source="WRI/Aqueduct_Flood_Hazard_Maps/V2 via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (WRI)", default_field="any_pct_2050")
+    return spec, _table(level, rows, specs)
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -1197,7 +1265,7 @@ LAYERS = {
     "rainfall": rainfall, "building_stock": building_stock, "soil": soil,
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
-    "humid_heat": humid_heat, "climate_future": climate_future,
+    "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future,
 }
 
 
