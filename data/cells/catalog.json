@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T14:12:17Z",
+  "generated": "2026-10-22T14:35:56Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -2525,6 +2525,311 @@
           },
           "json": "bus_stop_heat/pune.json",
           "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "climate_future",
+      "title": "Climate 2050 (CMIP6, downscaled)",
+      "description": "Heat and extreme rain by 2041\u20132060 against today. A six-model NASA NEX-GDDP-CMIP6 ensemble (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM) gives the change from 1995\u20132014: hot-season (Mar\u2013Jun) daytime and monsoon (May\u2013Sep) night-time warming, added to every ERA5-Land day of 2015\u20132024 to count days \u2265 40 \u00b0C and nights \u2265 28 \u00b0C; and the ratio of the mean annual wettest day, applied to CHIRPS 2005\u20132024. Climate models are ~25 km and reanalysis ~9 km, so this is a city- and district-scale outlook: street-level heat comes from Land surface temperature.",
+      "source": "NASA NEX-GDDP-CMIP6, ECMWF ERA5-Land and UCSB CHIRPS via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "NEX-GDDP-CMIP6: CC BY 4.0 (most models); ERA5-Land: Copernicus licence; CHIRPS: public domain",
+      "group": "Open Data (satellite)",
+      "level": 5,
+      "approxCellM": 3900,
+      "fields": [
+        {
+          "key": "hot_days_now",
+          "label": "Days \u2265 40 \u00b0C a year (2015\u20132024)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days",
+          "domain": [
+            0.0,
+            36.6
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "hot_days_2050",
+          "label": "Days \u2265 40 \u00b0C a year by 2050 (SSP2-4.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days",
+          "domain": [
+            0.0,
+            59.5
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "hot_days_2050_high",
+          "label": "Days \u2265 40 \u00b0C a year by 2050 (SSP5-8.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days",
+          "domain": [
+            0.0,
+            63.9
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "warm_nights_now",
+          "label": "Nights \u2265 28 \u00b0C a year now",
+          "type": "number",
+          "agg": "mean",
+          "unit": "nights",
+          "domain": [
+            0.0,
+            37.3
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "warm_nights_2050",
+          "label": "Nights \u2265 28 \u00b0C a year by 2050 (SSP2-4.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "nights",
+          "domain": [
+            0.0,
+            95.6
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "tmax_rise_c",
+          "label": "Hot-season daytime warming by 2050 (SSP2-4.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b0C",
+          "domain": [
+            0,
+            3
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "tmax_rise_high_c",
+          "label": "Hot-season daytime warming by 2050 (SSP5-8.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b0C",
+          "domain": [
+            0,
+            4
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "wettest_day_mm",
+          "label": "Wettest day of the year, average (2005\u20132024)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "mm",
+          "domain": [
+            35.6,
+            258.0
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "wettest_day_2050_mm",
+          "label": "Wettest day of the year by 2050 (SSP2-4.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "mm",
+          "domain": [
+            38.9,
+            281.2
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "wettest_day_change_pct",
+          "label": "Change in the wettest day by 2050 (SSP2-4.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            -10,
+            40
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "hot_days_2050",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 42,
+          "bbox": {
+            "west": 72.46484375,
+            "south": 22.92578125,
+            "east": 72.7109375,
+            "north": 23.13671875
+          },
+          "json": "climate_future/ahmedabad.json",
+          "parquet": "climate_future/ahmedabad.parquet"
+        },
+        {
+          "name": "bengaluru",
+          "cells": 110,
+          "bbox": {
+            "west": 77.421875,
+            "south": 12.80078125,
+            "east": 77.80859375,
+            "north": 13.15234375
+          },
+          "json": "climate_future/bengaluru.json",
+          "parquet": "climate_future/bengaluru.parquet"
+        },
+        {
+          "name": "bhopal",
+          "cells": 35,
+          "bbox": {
+            "west": 77.28125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.34765625
+          },
+          "json": "climate_future/bhopal.json",
+          "parquet": "climate_future/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 36,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.87109375,
+            "east": 80.26953125,
+            "north": 13.1875
+          },
+          "json": "climate_future/chennai.json",
+          "parquet": "climate_future/chennai.parquet"
+        },
+        {
+          "name": "delhi",
+          "cells": 225,
+          "bbox": {
+            "west": 76.82421875,
+            "south": 28.375,
+            "east": 77.3515625,
+            "north": 28.90234375
+          },
+          "json": "climate_future/delhi.json",
+          "parquet": "climate_future/delhi.parquet"
+        },
+        {
+          "name": "guna",
+          "cells": 9,
+          "bbox": {
+            "west": 77.24609375,
+            "south": 24.578125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "climate_future/guna.json",
+          "parquet": "climate_future/guna.parquet"
+        },
+        {
+          "name": "hyderabad",
+          "cells": 90,
+          "bbox": {
+            "west": 78.265625,
+            "south": 17.265625,
+            "east": 78.6171875,
+            "north": 17.58203125
+          },
+          "json": "climate_future/hyderabad.json",
+          "parquet": "climate_future/hyderabad.parquet"
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 156,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.46875,
+            "east": 76.015625,
+            "north": 22.92578125
+          },
+          "json": "climate_future/indore_pilot.json",
+          "parquet": "climate_future/indore_pilot.parquet"
+        },
+        {
+          "name": "jaipur",
+          "cells": 42,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.9453125,
+            "north": 27.00390625
+          },
+          "json": "climate_future/jaipur.json",
+          "parquet": "climate_future/jaipur.parquet"
+        },
+        {
+          "name": "kolkata",
+          "cells": 42,
+          "bbox": {
+            "west": 88.25,
+            "south": 22.43359375,
+            "east": 88.4609375,
+            "north": 22.6796875
+          },
+          "json": "climate_future/kolkata.json",
+          "parquet": "climate_future/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 49,
+          "bbox": {
+            "west": 80.83203125,
+            "south": 26.72265625,
+            "east": 81.078125,
+            "north": 26.96875
+          },
+          "json": "climate_future/lucknow.json",
+          "parquet": "climate_future/lucknow.parquet"
+        },
+        {
+          "name": "mumbai",
+          "cells": 60,
+          "bbox": {
+            "west": 72.74609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.3046875
+          },
+          "json": "climate_future/mumbai.json",
+          "parquet": "climate_future/mumbai.parquet"
+        },
+        {
+          "name": "pune",
+          "cells": 56,
+          "bbox": {
+            "west": 73.73046875,
+            "south": 18.42578125,
+            "east": 74.01171875,
+            "north": 18.671875
+          },
+          "json": "climate_future/pune.json",
+          "parquet": "climate_future/pune.parquet"
         }
       ]
     },

@@ -1082,6 +1082,95 @@ def humid_heat(region):
         default_field="hot_days_40c")
     return spec, _table(level, rows, specs)
 
+# ── climate 2050 (NASA NEX-GDDP-CMIP6, delta method on observed baselines) ──
+
+CMIP_MODELS = ["ACCESS-CM2", "EC-Earth3", "MIROC6", "MPI-ESM1-2-HR", "MRI-ESM2-0", "NorESM2-MM"]
+CMIP_HIST, CMIP_FUT = (1995, 2014), (2041, 2060)
+OBS_YEARS = (2015, 2024)
+
+
+def _cmip(ee, geom, model, scenario, years, band, months=None):
+    col = ee.ImageCollection("NASA/GDDP-CMIP6").filterBounds(geom).filter(ee.Filter.eq("model", model)) \
+        .filter(ee.Filter.eq("scenario", scenario)).filterDate(f"{years[0]}-01-01", f"{years[1] + 1}-01-01").select(band)
+    return col.filter(ee.Filter.calendarRange(months[0], months[1], "month")) if months else col
+
+
+def _ens_delta(ee, geom, band, scenario, months):
+    """Ensemble-mean change in the season's mean of `band` (K), future minus historical."""
+    ds = [_cmip(ee, geom, m, scenario, CMIP_FUT, band, months).mean()
+          .subtract(_cmip(ee, geom, m, "historical", CMIP_HIST, band, months).mean()) for m in CMIP_MODELS]
+    return ee.ImageCollection(ds).mean()
+
+
+def _ens_rx1day_ratio(ee, geom, scenario):
+    """Ensemble-mean ratio of the mean annual wettest day, future ÷ historical."""
+    def rx(model, scen, years):
+        ims = [_cmip(ee, geom, model, scen, (y, y), "pr").max() for y in range(years[0], years[1] + 1)]
+        return ee.ImageCollection(ims).mean()
+    return ee.ImageCollection([rx(m, scenario, CMIP_FUT).divide(rx(m, "historical", CMIP_HIST)) for m in CMIP_MODELS]).mean()
+
+
+def climate_future(region):
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 5
+    yrs = OBS_YEARS[1] - OBS_YEARS[0] + 1
+    era = ee.ImageCollection("ECMWF/ERA5_LAND/DAILY_AGGR").filterDate(f"{OBS_YEARS[0]}-01-01", f"{OBS_YEARS[1] + 1}-01-01")
+    out = {}
+    for scen, tag in (("ssp245", "mid"), ("ssp585", "high")):
+        dx = _ens_delta(ee, geom, "tasmax", scen, (3, 6))
+        dn = _ens_delta(ee, geom, "tasmin", scen, (5, 9))
+
+        def day(im, dx=dx, dn=dn):
+            tx = im.select("temperature_2m_max").subtract(273.15)
+            tn = im.select("temperature_2m_min").subtract(273.15)
+            return ee.Image.cat([tx.gte(40).rename("hot_now"), tx.add(dx).gte(40).rename("hot"),
+                                 tn.gte(28).rename("warm_now"), tn.add(dn).gte(28).rename("warm")])
+        d = era.map(day).sum().divide(yrs)
+        out[tag] = ee.Image.cat([d, dx.rename("dx")])
+    chirps = ee.ImageCollection("UCSB-CHG/CHIRPS/DAILY").select("precipitation")
+    rx_now = ee.ImageCollection([chirps.filterDate(f"{y}-01-01", f"{y + 1}-01-01").max()
+                                 for y in range(2005, 2025)]).mean().rename("rx_now")
+    img = ee.Image.cat([out["mid"].select(["hot_now", "hot", "warm_now", "warm", "dx"]),
+                        out["high"].select(["hot", "warm", "dx"], ["hot_hi", "warm_hi", "dx_hi"]),
+                        _ens_rx1day_ratio(ee, geom, "ssp245").rename("rxr")])
+    a = gee.fetch(gee.to_cells(img, 11000), bbox, level)
+    b = gee.fetch(gee.to_cells(rx_now, 5500), bbox, level)
+    rows = {}
+    for c, x in gee.merge(a, b).items():
+        if x.get("hot_now") is None or x.get("dx") is None:
+            continue
+        rx = x.get("rx_now")
+        rows[c] = {"hot_days_now": _r(x["hot_now"]), "hot_days_2050": _r(x["hot"]), "hot_days_2050_high": _r(x.get("hot_hi")),
+                   "warm_nights_now": _r(x["warm_now"]), "warm_nights_2050": _r(x["warm"]),
+                   "tmax_rise_c": _r(x["dx"], 2), "tmax_rise_high_c": _r(x.get("dx_hi"), 2),
+                   "wettest_day_mm": _r(rx), "wettest_day_2050_mm": _r(rx * x["rxr"]) if rx is not None and x.get("rxr") else None,
+                   "wettest_day_change_pct": _r(100 * (x["rxr"] - 1)) if x.get("rxr") else None}
+    specs = [
+        FieldSpec("hot_days_now", f"Days ≥ 40 °C a year ({OBS_YEARS[0]}–{OBS_YEARS[1]})", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("hot_days_2050", "Days ≥ 40 °C a year by 2050 (SSP2-4.5)", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("hot_days_2050_high", "Days ≥ 40 °C a year by 2050 (SSP5-8.5)", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("warm_nights_now", "Nights ≥ 28 °C a year now", agg="mean", unit="nights", ramp="heat", higher_is="worse"),
+        FieldSpec("warm_nights_2050", "Nights ≥ 28 °C a year by 2050 (SSP2-4.5)", agg="mean", unit="nights", ramp="heat", higher_is="worse"),
+        FieldSpec("tmax_rise_c", "Hot-season daytime warming by 2050 (SSP2-4.5)", agg="mean", unit="°C", domain=[0, 3], ramp="heat", higher_is="worse"),
+        FieldSpec("tmax_rise_high_c", "Hot-season daytime warming by 2050 (SSP5-8.5)", agg="mean", unit="°C", domain=[0, 4], ramp="heat", higher_is="worse"),
+        FieldSpec("wettest_day_mm", "Wettest day of the year, average (2005–2024)", agg="mean", unit="mm", ramp="blues", higher_is="worse"),
+        FieldSpec("wettest_day_2050_mm", "Wettest day of the year by 2050 (SSP2-4.5)", agg="mean", unit="mm", ramp="blues", higher_is="worse"),
+        FieldSpec("wettest_day_change_pct", "Change in the wettest day by 2050 (SSP2-4.5)", agg="mean", unit="%", domain=[-10, 40], ramp="blues", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="climate_future", title="Climate 2050 (CMIP6, downscaled)", level=level, fields=specs, group=GROUP,
+        description=f"Heat and extreme rain by 2041–2060 against today. A six-model NASA NEX-GDDP-CMIP6 ensemble "
+                    f"({', '.join(CMIP_MODELS)}) gives the change from {CMIP_HIST[0]}–{CMIP_HIST[1]}: hot-season (Mar–Jun) "
+                    "daytime and monsoon (May–Sep) night-time warming, added to every ERA5-Land day of "
+                    f"{OBS_YEARS[0]}–{OBS_YEARS[1]} to count days ≥ 40 °C and nights ≥ 28 °C; and the ratio of the "
+                    "mean annual wettest day, applied to CHIRPS 2005–2024. Climate models are ~25 km and reanalysis "
+                    "~9 km, so this is a city- and district-scale outlook: street-level heat comes from Land surface temperature.",
+        source="NASA NEX-GDDP-CMIP6, ECMWF ERA5-Land and UCSB CHIRPS via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="NEX-GDDP-CMIP6: CC BY 4.0 (most models); ERA5-Land: Copernicus licence; CHIRPS: public domain",
+        default_field="hot_days_2050")
+    return spec, _table(level, rows, specs)
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -1089,7 +1178,7 @@ LAYERS = {
     "rainfall": rainfall, "building_stock": building_stock, "soil": soil,
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
-    "humid_heat": humid_heat,
+    "humid_heat": humid_heat, "climate_future": climate_future,
 }
 
 

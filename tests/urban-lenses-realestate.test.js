@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -185,6 +185,20 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.headline).toMatch(/TOD FAR/);
         expect(r.stats.find(s => /Value added/.test(s.label)).value).toMatch(/crore/);
         expect(L._lenses.metroboost(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('climate2050: resident-weighted hot days and warm nights, now and 2050', () => {
+        const h0 = codes.map(() => 20), h1 = codes.map((_, i) => (i < SIZE ? 60 : 30)), w0 = codes.map(() => 10), w1 = codes.map(() => 30);
+        const f = L.frameFrom(codes, { ...base, 'climate_future.hot_days_now': h0, 'climate_future.hot_days_2050': h1, 'climate_future.hot_days_2050_high': h1.map(v => v + 5),
+            'climate_future.warm_nights_now': w0, 'climate_future.warm_nights_2050': w1, 'climate_future.tmax_rise_c': codes.map(() => 1.5), 'climate_future.wettest_day_change_pct': codes.map(() => 8) });
+        const r = L._lenses.climate2050(f, {});
+        expect(r.metric.value).toBeGreaterThan(30);
+        expect(r.metric.value).toBeLessThan(60);
+        expect(r.columns.heat_added[0]).toBe(60);                               // +40 hot days, +20 warm nights
+        expect(r.headline).toMatch(/2050/);
+        expect(r.stats.find(s => /Wettest|wettest/.test(s.label)).value).toBe('+8%');
+        expect(r.stats.find(s => /30 or more/.test(s.label)).value).toMatch(/\d/);
+        expect(L._lenses.climate2050(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('farText(): base vs asked FAR, rebuild and homes', () => {

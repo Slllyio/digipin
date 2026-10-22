@@ -210,6 +210,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 58,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 18.1,
@@ -509,6 +515,12 @@
      "value": 818788,
      "unit": "people",
      "higherIs": "better"
+    },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 0,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -810,6 +822,12 @@
      "unit": "people",
      "higherIs": "better"
     },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 39.4,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 2,
@@ -1103,6 +1121,12 @@
      "value": 128741,
      "unit": "people",
      "higherIs": "better"
+    },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 1.7,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -1404,6 +1428,12 @@
      "unit": "people",
      "higherIs": "better"
     },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 41.3,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 108.7,
@@ -1691,6 +1721,12 @@
      "value": 1.5,
      "unit": "%",
      "higherIs": null
+    },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 37.4,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -1985,6 +2021,12 @@
      "value": 26951,
      "unit": "people",
      "higherIs": "better"
+    },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 12.3,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2286,6 +2328,12 @@
      "unit": "people",
      "higherIs": "better"
     },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 35.3,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 3.8,
@@ -2579,6 +2627,12 @@
      "value": 90.3,
      "unit": "%",
      "higherIs": null
+    },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 50.5,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2874,6 +2928,12 @@
      "unit": "people",
      "higherIs": "better"
     },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 4.6,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 137.5,
@@ -3161,6 +3221,12 @@
      "value": 92.7,
      "unit": "%",
      "higherIs": null
+    },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 41.6,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -3462,6 +3528,12 @@
      "unit": "people",
      "higherIs": "better"
     },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 0.4,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 43.5,
@@ -3761,6 +3833,12 @@
      "value": 675,
      "unit": "people",
      "higherIs": "better"
+    },
+    "climate2050": {
+     "label": "Days at 40 °C or more a year by 2050, per resident",
+     "value": 5.5,
+     "unit": "days",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",

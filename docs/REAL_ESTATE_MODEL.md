@@ -218,3 +218,9 @@ Across 9 cities, 5,364 blocks near new stations added **1.00× (±0.03)** the fl
 Under base FAR, stations raised access but did not densify their surroundings. That is the case for the TOD FAR in the feasibility lens.
 
 Results: in Bengaluru, 8.2 lakh residents in 723 blocks come within a 10-minute walk, adding about ₹95,600 crore to existing property. In Indore, 36,700 residents in 190 blocks gain.
+
+## Climate 2050 (`climate_future`, lens `climate2050`)
+
+Per L5 cell, from `pipeline/cells/ee_layers.py` (`--layer climate_future`). Delta method on a six-model NASA NEX-GDDP-CMIP6 ensemble (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM): the 2041–2060 minus 1995–2014 change in March–June daily maximum and May–September daily minimum temperature is added to every ERA5-Land day of 2015–2024, then days ≥ 40 °C (IMD plains heatwave threshold) and nights ≥ 28 °C are counted. SSP2-4.5 is the central case; `hot_days_2050_high` uses SSP5-8.5. The wettest-day change is the ensemble ratio of the mean annual maximum one-day rainfall, applied to CHIRPS 2005–2024.
+
+Resident-weighted, SSP2-4.5: Delhi 26 → 41 hot days and 17 → 43 warm nights; Ahmedabad 35 → 58 hot days; Chennai 35 → 85 warm nights; Mumbai's wettest day +9%. Models are ~25 km and reanalysis ~9 km, so this is a city-scale outlook: it misses the urban heat island, and ERA5-Land reads 1–2 °C below city stations, so absolute counts are low. The property report lists the block's numbers under Risk and flags 45+ hot days a year by 2050.

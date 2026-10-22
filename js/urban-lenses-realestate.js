@@ -657,6 +657,35 @@ const UrbanLensesRealEstate = (() => {
         ].filter(Boolean).join('\n');
     }
 
+    /** Climate 2050: hot days, warm nights and the wettest day by mid-century, weighted by who lives there. */
+    function climate2050(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const h0 = c['climate_future.hot_days_now'], h1 = c['climate_future.hot_days_2050'], h2 = c['climate_future.hot_days_2050_high'];
+        const w0 = c['climate_future.warm_nights_now'], w1 = c['climate_future.warm_nights_2050'];
+        const dx = c['climate_future.tmax_rise_c'], rx = c['climate_future.wettest_day_change_pct'], pop = c['population.population'];
+        if (!h0 || !h1) return null;
+        const cells = [], add = new Float64Array(n).fill(NaN);
+        for (let i = 0; i < n; i++) if (_fin(h0[i]) && _fin(h1[i]) && pop && pop[i] > 0) { cells.push(i); add[i] = h1[i] - h0[i] + (w1 && w0 && _fin(w1[i]) && _fin(w0[i]) ? w1[i] - w0[i] : 0); }
+        if (cells.length < 5) return null;
+        const pw = (a) => (a ? _round(cells.reduce((s, i) => s + (_fin(a[i]) ? a[i] * pop[i] : 0), 0) / cells.reduce((s, i) => s + (_fin(a[i]) ? pop[i] : 0), 0), 1) : null);
+        const people = cells.reduce((s, i) => s + pop[i], 0);
+        const over30 = cells.reduce((s, i) => s + (add[i] >= 30 ? pop[i] : 0), 0);
+        const hn = pw(h0), hm = pw(h1), hh = pw(h2), wn = pw(w0), wm = pw(w1);
+        const stats = [
+            { label: 'Days at 40 °C or more a year, for the average resident: now → 2050', value: `${hn} → ${hm} (${hh != null ? `${hh} on the high-emissions path` : 'SSP2-4.5'})`, raw: hm },
+        ];
+        if (wn != null) stats.push({ label: 'Nights at 28 °C or more a year: now → 2050', value: `${wn} → ${wm}` });
+        if (dx) stats.push({ label: 'Hot-season daytime warming by 2050 (SSP2-4.5)', value: `+${pw(dx)} °C` });
+        if (rx) stats.push({ label: 'Change in the wettest day of the year by 2050', value: `${pw(rx) >= 0 ? '+' : ''}${pw(rx)}%` });
+        stats.push({ label: 'Residents gaining 30 or more extra hot days and warm nights a year', value: `${_people(over30)} (${_round(100 * over30 / people)}%)` });
+        return {
+            columns: { heat_added: add }, idx: cells, weightKey: 'heat_added', noHotspots: true,
+            metric: { label: 'Days at 40 °C or more a year by 2050, per resident', value: hm, unit: 'days', higherIs: 'worse' },
+            headline: `By 2050 the average resident faces about ${hm} days a year at 40 °C or more, up from ${hn}${wn != null ? `, and ${wm} nights that stay above 28 °C, up from ${wn}` : ''} (six-model CMIP6 ensemble, SSP2-4.5).`,
+            stats,
+        };
+    }
+
     // ── real-estate scorecard across the cities ────────────────────────────
     const RE_PILLARS = [
         { id: 'momentum', label: 'Momentum', metrics: ['buildhot', 'redevelop', 'nextgrowth', 'metroboost'] },
@@ -865,6 +894,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['metro_future.future_walk_min', 'metro_future.walk_saved_min', 'metro_future.value_uplift_pct', 'rail_access.metro_walk_min', 'population.population', 'land_value.value_index', 're_supply.far_now'],
             method: `Upcoming stations are Wikidata metro stations under construction or proposed, plus stations opened since 2025 that the Overture station layer may lack; Wikidata lists them for some cities only. Each block's walk to the nearest one (straight line × 1.3 at 4.8 km/h) replaces today's metro walk in the land-value model's metro premium (+10% within 6 minutes, tapering to 0 at 20). Value added is the uplift × city-average price × value index × existing floor area. Evidence: blocks within 800 m of stations opened 2017–22 (no older station within 2 km) added ${METRO_EFFECT.ratio.toFixed(2)}× (±${METRO_EFFECT.ci}) the floor area of blocks 1.5–3 km away (Open Buildings 2.5D Temporal, 9 cities), so stations alone did not densify their surroundings.`,
             refs: 'Wikidata (CC0); Debrezion, Pels & Rietveld 2007; Agarwal 2023 (Delhi metro and property values); MoHUA National TOD Policy 2017' },
+        { id: 'climate2050', equity: true, title: 'Climate 2050', icon: '🌡️',
+            question: 'How much hotter, and how much wetter on the worst day, will the city be by 2050?',
+            field: { key: 'heat_added', label: 'Extra hot days and warm nights a year by 2050', unit: 'days', higherIs: 'worse', ramp: 'heat' },
+            needs: ['climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_2050_high', 'climate_future.warm_nights_now', 'climate_future.warm_nights_2050', 'climate_future.tmax_rise_c', 'climate_future.wettest_day_change_pct', 'population.population'],
+            method: 'Delta method: a six-model NASA NEX-GDDP-CMIP6 ensemble (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM) gives the 2041–2060 change against 1995–2014 in hot-season (March–June) daytime and monsoon (May–September) night-time temperatures. That change is added to every ERA5-Land day of 2015–2024 to count days at 40 °C or more (the IMD plains heatwave threshold) and nights at 28 °C or more. The wettest-day change is the ensemble ratio of the mean annual wettest day, applied to CHIRPS 2005–2024. Averages weight each block by its residents. Climate models are ~25 km and reanalysis ~9 km, so this is a city-scale outlook that misses the urban heat island; reanalysis reads 1–2 °C below city stations.',
+            refs: 'Thrasher et al. 2022 (NEX-GDDP-CMIP6); IPCC AR6 WGI ch. 11; IMD heatwave criteria; Muñoz Sabater et al. 2021 (ERA5-Land); Funk et al. 2015 (CHIRPS)' },
         { id: 'encroach', equity: true, title: 'Encroachment watch', icon: '🚧',
             question: 'Which lakes, floodplains and green areas have been lost to building, and where is it still happening?',
             field: { key: 'encroach_score', label: 'Encroachment score (former water, floodplain and tree loss built up)', unit: 'points', higherIs: 'worse', ramp: 'reds' },
@@ -873,7 +908,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050 }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText };
 })();
 
