@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-10-22T10:27:52Z",
+  "generated_at_iso": "2026-10-22T15:28:46Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-22 20:42:33|30.473,92.964",
+      "magnitude": 5.0,
+      "origin_time": "2026-10-22 20:42:33",
+      "latitude": 30.473,
+      "longitude": 92.964,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "323km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-22 20:29:41|32.592,94.217",
+      "magnitude": 5.2,
+      "origin_time": "2026-10-22 20:29:41",
+      "latitude": 32.592,
+      "longitude": 94.217,
+      "depth_km": 15.0,
+      "region": "China",
+      "location": "505km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-22 20:03:43|32.368,93.853",
+      "magnitude": 7.0,
+      "origin_time": "2026-10-22 20:03:43",
+      "latitude": 32.368,
+      "longitude": 93.853,
+      "depth_km": 173.0,
+      "region": "Tibet",
+      "location": "489km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-22 17:02:33|19.909,79.133",
+      "magnitude": 2.9,
+      "origin_time": "2026-10-22 17:02:33",
+      "latitude": 19.909,
+      "longitude": 79.133,
+      "depth_km": 5.0,
+      "region": "Chandrapur, Maharashtra",
+      "location": "137km S of Nagpur, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-22 16:24:17|27.845,86.977",
+      "magnitude": 3.2,
+      "origin_time": "2026-10-22 16:24:17",
+      "latitude": 27.845,
+      "longitude": 86.977,
+      "depth_km": 9.0,
+      "region": "Nepal",
+      "location": "133km WNW of Yuksom, Sikkim, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-22 15:37:40|36.593,71.482",
       "magnitude": 4.7,
@@ -1595,61 +1650,6 @@
       "depth_km": 13.0,
       "region": "Chamoli, Uttarakhand",
       "location": "50km S of Joshimath, Uttarakhand , India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-06 22:19:09|27.120,89.105",
-      "magnitude": 2.6,
-      "origin_time": "2026-10-06 22:19:09",
-      "latitude": 27.12,
-      "longitude": 89.105,
-      "depth_km": 5.0,
-      "region": "Bhutan",
-      "location": "54km ESE of Gangtok, Sikkim",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-06 20:44:40|36.418,70.784",
-      "magnitude": 3.5,
-      "origin_time": "2026-10-06 20:44:40",
-      "latitude": 36.418,
-      "longitude": 70.784,
-      "depth_km": 154.0,
-      "region": "Afghanistan",
-      "location": "78km SSE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-06 18:58:46|37.077,71.584",
-      "magnitude": 3.2,
-      "origin_time": "2026-10-06 18:58:46",
-      "latitude": 37.077,
-      "longitude": 71.584,
-      "depth_km": 115.0,
-      "region": "Tajikistan",
-      "location": "91km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-06 17:46:16|27.175,92.451",
-      "magnitude": 3.2,
-      "origin_time": "2026-10-06 17:46:16",
-      "latitude": 27.175,
-      "longitude": 92.451,
-      "depth_km": 5.0,
-      "region": "West Kameng, Arunachal Pradesh",
-      "location": "67km NNW of Tezpur, Assam, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-06 14:33:32|29.831,92.496",
-      "magnitude": 3.7,
-      "origin_time": "2026-10-06 14:33:32",
-      "latitude": 29.831,
-      "longitude": 92.496,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "257km NNE of Tawang, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
