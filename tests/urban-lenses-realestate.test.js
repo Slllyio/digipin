@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -230,6 +230,19 @@ describe('Real-estate lenses on a hand-made grid', () => {
         const dry = L.frameFrom(codes, { ...base, 'flood_future.any_pct_now': zero, 'flood_future.any_pct_2050': zero });
         expect(L._lenses.flood2050(dry, {}).headline).toMatch(/^No residents/);
         expect(L._lenses.flood2050(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('solarhome: roof per household, payback after subsidy, AC cover', () => {
+        const cover = codes.map((_, i) => (i < SIZE ? 60 : 1));                   // roomy top row, almost no roof elsewhere
+        const f = L.frameFrom(codes, { ...base, 'building_stock.cover_2023_pct': cover, 'climate_future.cdd_2050': codes.map(() => 1500) }, { city: 'delhi' });
+        const r = L._lenses.solarhome(f, {});
+        expect(r.columns.home_kwp[0]).toBeGreaterThan(r.columns.home_kwp[SIZE]);
+        expect(r.columns.home_kwp.every(v => Number.isNaN(v) || v <= 3)).toBe(true);
+        const k = r.columns.home_kwp[0], pay = r.columns.payback_yr[0];
+        if (k >= 1) { expect(pay).toBeGreaterThan(2); expect(pay).toBeLessThan(8); }
+        expect(Number.isNaN(r.columns.payback_yr[SIZE])).toBe(true);           // under 1 kW: no system
+        expect(r.headline).toMatch(/community solar/);
+        expect(L._lenses.solarhome(L.frameFrom(codes, base, { city: 'delhi' }), {})).toBeNull();
     });
 
     it('farText(): base vs asked FAR, rebuild and homes', () => {

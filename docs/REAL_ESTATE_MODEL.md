@@ -261,3 +261,24 @@ Residents in the zone, now → 2050:
 | Mumbai | 44.3 → 45.7 lakh | — | 3.3 lakh by 2050 |
 
 Aqueduct models no defences or drains, and at 1 km it reads well above the GloFAS floodplain. For example, it puts 63% of Chennai residents in the zone. Use it for the change to 2050 more than for the level. The property report shows the block's share under Risk.
+
+## Home solar (lens `solarhome`)
+
+This lens works out rooftop solar for each household, as a companion to the city-wide `solar` lens.
+
+**Method**
+
+1. **Roof per home.** Building cover × cell area × 30% usable roof, divided by the number of households (residents ÷ 4.3).
+2. **System size.** 10 m² of roof per kW, capped at 3 kW. Homes with room for less than 1 kW are counted as having too little roof and are pointed to society or community solar.
+3. **Payback.** (₹60,000 a kW − the PM Surya Ghar subsidy) ÷ (yield × ₹7/kWh). The subsidy is ₹30k a kW up to 2 kW, plus ₹18k for the third kW, capped at ₹78k.
+4. **AC cover.** Annual output compared with one AC at 1.2 kWh per cooling degree-day in 2050, which is close to BEE's 1,600-hour label in Delhi.
+
+**Results**
+
+| City | Residents with room for at least 1 kW | Median payback | Residents whose roof share could run one AC through a 2050 summer |
+|---|---|---|---|
+| Delhi | 57% | about 3.2 years | 39% |
+| Mumbai | 6.5% | — | — |
+| Guna | 82% | — | — |
+
+The property report has an Energy section with the home's kW, payback and AC cover.

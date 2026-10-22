@@ -13,7 +13,7 @@
 const PropertyReport = (() => {
     'use strict';
     const SCHEMA = 'digipin.property/1';
-    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050'];
+    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome'];
     const EXTRA = ['land_value.prem_jobs_pct', 'land_value.prem_metro_pct', 'land_value.prem_amenity_pct', 'land_value.prem_neigh_pct',
         'land_value.prem_green_pct', 'land_value.prem_risk_pct', 'land_value.prem_noise_pct', 're_supply.far_now', 're_supply.headroom_m2',
         'building_dynamics.settled_year', 'building_dynamics.highrise_pct', 'building_dynamics.nonres_pct', 'building_dynamics.accel',
@@ -69,6 +69,11 @@ const PropertyReport = (() => {
                 row('Rebuilding vs selling the existing floors', fin(v.redevGain) && fin(v.far) && v.far >= 0.5 ? `${v.redevGain > 0 ? 'pays, +' : 'does not pay, '}${rs(Math.abs(v.redevGain) * 1e3)} per m² of plot` : null),
                 row('Extra value at a metro TOD FAR of 4', fin(v.tod) ? `+${rs(v.tod * 1e3)} per m² of plot` : null),
             ]),
+            sec('Energy', [
+                row('Rooftop solar per home', fin(v.homeKw) ? (v.homeKw >= 1 ? `${r1(v.homeKw, 1)} kW` : `${r1(v.homeKw, 1)} kW: too little roof per home, look at society or community solar`) : null, 'roof share per household, up to 3 kW'),
+                row('Payback after PM Surya Ghar subsidy', fin(v.payback) ? `about ${r1(v.payback, 1)} years at ₹7/kWh` : null),
+                row('Share of one AC\'s 2050 summer it could cover', fin(v.acCover) ? `${Math.round(v.acCover)}%` : null, 'annual output against use; storage ignored'),
+            ]),
             sec('Neighbourhood', [
                 row('First settled', fin(v.settled) ? (v.settled <= 1985 ? 'by 1985' : `around ${Math.round(v.settled)}`) : null),
                 row('High-rise share / non-residential share', fin(v.highrise) || fin(v.nonres) ? `${r1(v.highrise) ?? '–'}% / ${r1(v.nonres) ?? '–'}%` : null),
@@ -103,6 +108,7 @@ const PropertyReport = (() => {
         if (fin(v.upside) && v.upside >= 25) strengths.push('priced below its access');
         if (fin(v.yieldGap) && v.yieldGap >= 30) strengths.push('rental demand high for the price');
         if (fin(v.accel) && v.accel >= 1.5) strengths.push('building speeding up');
+        if (fin(v.homeKw) && v.homeKw >= 2 && fin(v.payback) && v.payback <= 5) strengths.push('room for rooftop solar that pays back within 5 years');
         if (fin(v.redevGain) && v.redevGain > 0 && fin(v.far) && v.far >= 0.5) strengths.push('rebuilding to the base FAR pays');
         if (fin(v.lossPct) && v.lossPct >= 0.5) risks.push(`flood damage ≈ ${r1(v.lossPct, 1)}% of building value a year`);
         else if (fin(v.flood) && v.flood >= 30) risks.push('in the 1-in-100-year floodplain');
@@ -146,6 +152,7 @@ const PropertyReport = (() => {
             wlog: at('waterlogging.waterlogging_index'), noise: at('traffic_noise.lden_db'), encroach: col('encroach', 'encroach_score'),
             upside: col('undervalued', 'upside'), growth: col('nextgrowth', 'growth_score'),
             hot0: at('climate_future.hot_days_now'), hot1: at('climate_future.hot_days_2050'), hot2: at('climate_future.hot_days_2050_high'),
+            homeKw: col('solarhome', 'home_kwp'), payback: col('solarhome', 'payback_yr'), acCover: col('solarhome', 'ac_2050_covered_pct'),
             flood50: at('flood_future.any_pct_2050'), flood50now: at('flood_future.any_pct_now'),
             hotBlock: col('streetheat', 'hot_2050_block'), cddBlock: col('streetheat', 'cdd_2050_block'), islandC: col('streetheat', 'heat_island_air_c'), cdd0: at('climate_future.cdd_now'),
             warm0: at('climate_future.warm_nights_now'), warm1: at('climate_future.warm_nights_2050'), rx: at('climate_future.wettest_day_change_pct'),

@@ -228,6 +228,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 40.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 18.1,
@@ -545,6 +551,12 @@
      "value": 113,
      "unit": "people",
      "higherIs": "worse"
+    },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 26.3,
+     "unit": "%",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -864,6 +876,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 83.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 2,
@@ -1175,6 +1193,12 @@
      "value": 5520070,
      "unit": "people",
      "higherIs": "worse"
+    },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 80.7,
+     "unit": "%",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -1494,6 +1518,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 57.3,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 108.7,
@@ -1799,6 +1829,12 @@
      "value": 0,
      "unit": "people",
      "higherIs": "worse"
+    },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 82.2,
+     "unit": "%",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2111,6 +2147,12 @@
      "value": 81903,
      "unit": "people",
      "higherIs": "worse"
+    },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 91.2,
+     "unit": "%",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2430,6 +2472,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 67.8,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 3.8,
@@ -2741,6 +2789,12 @@
      "value": 0,
      "unit": "people",
      "higherIs": "worse"
+    },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 92,
+     "unit": "%",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -3054,6 +3108,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 35.9,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 137.5,
@@ -3359,6 +3419,12 @@
      "value": 465217,
      "unit": "people",
      "higherIs": "worse"
+    },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 92,
+     "unit": "%",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -3678,6 +3744,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 6.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 43.5,
@@ -3995,6 +4067,12 @@
      "value": 760423,
      "unit": "people",
      "higherIs": "worse"
+    },
+    "solarhome": {
+     "label": "Residents whose home can host at least 1 kW of rooftop solar",
+     "value": 48.6,
+     "unit": "%",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",

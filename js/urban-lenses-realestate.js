@@ -8,7 +8,7 @@
 const UrbanLensesRealEstate = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people, _sumOver, _residents, wquantile, within } = UrbanLenses._kit;
+    const { _fin, _round, _people, _sumOver, _residents, wquantile, within, GHI, ROOF_USABLE, M2_PER_KWP, PERF_RATIO } = UrbanLenses._kit;
     const prank = UrbanLenses.prank;
 
     const STATION_WALK = 10, SPACING_KM = 1.5, TOP = 5;
@@ -709,6 +709,52 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    // Home rooftop solar economics (PM Surya Ghar, 2024): ₹30,000 a kW for the first 2 kW, ₹18,000 for the third, capped
+    // at ₹78,000; installed cost and tariff are national averages, so treat payback as indicative.
+    const PV_COST_KW = 60000, TARIFF = 7, MAX_HOME_KWP = 3, MIN_HOME_KWP = 1;
+    const AC_KWH_PER_CDD = 1.2;   // one 1.5-tonne star-rated AC: ~1,450 kWh at Delhi's ~1,200 degree-days, near BEE's 1,600-hour label
+    const subsidy = kwp => Math.min(78000, 30000 * Math.min(kwp, 2) + 18000 * Math.max(0, Math.min(kwp, 3) - 2));
+
+    /** Home solar: each household's share of roof, what it can host, payback after subsidy, and the 2050 AC it can run. */
+    function solarhome(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const cover = c['building_stock.cover_2023_pct'] || c['osm_roads.building_cover_pct'], pop = c['population.population'];
+        const cdd = c['climate_future.cdd_2050'], ghi = GHI[fr.city];
+        if (!cover || !pop || !ghi) return null;
+        const yieldKwh = ghi * 365 * PERF_RATIO;
+        const kw = new Float64Array(n).fill(NaN), pay = new Float64Array(n).fill(NaN), acShare = new Float64Array(n).fill(NaN);
+        const cells = [];
+        for (let i = 0; i < n; i++) {
+            if (!(pop[i] > 0) || !_fin(cover[i])) continue;
+            const homes = pop[i] / HH_SIZE, roof = (cover[i] / 100) * g.cellKm2 * 1e6 * ROOF_USABLE / homes;
+            const k = Math.min(MAX_HOME_KWP, roof / M2_PER_KWP);
+            kw[i] = k; cells.push(i);
+            if (k >= MIN_HOME_KWP) {
+                pay[i] = (k * PV_COST_KW - subsidy(k)) / (k * yieldKwh * TARIFF);
+                if (cdd && _fin(cdd[i]) && cdd[i] > 0) acShare[i] = Math.min(100, 100 * k * yieldKwh / (cdd[i] * AC_KWH_PER_CDD));
+            }
+        }
+        if (cells.length < 5) return null;
+        const people = _sumOver(pop, cells, () => true);
+        const fit = cells.filter(i => kw[i] >= MIN_HOME_KWP), fitPeople = _sumOver(pop, fit, () => true);
+        const medPay = fit.length ? wquantile(pay, pop, fit, 0.5) : null;
+        const acFull = cdd ? _sumOver(pop, fit, i => acShare[i] >= 100) : null;
+        const kwFit = fit.reduce((s, i) => s + kw[i] * pop[i] / HH_SIZE, 0);
+        const stats = [
+            { label: `Residents whose home's share of roof fits at least ${MIN_HOME_KWP} kW`, value: `${_people(fitPeople)} (${_round(100 * fitPeople / people)}%)`, raw: _round(100 * fitPeople / people) },
+            { label: 'Home systems that fit, up to 3 kW each', value: `${_round(kwFit / 1e6, 2)} GW, ₹${Math.round(fit.reduce((s, i) => s + subsidy(kw[i]) * pop[i] / HH_SIZE, 0) / 1e7).toLocaleString('en-IN')} crore of PM Surya Ghar subsidy` },
+        ];
+        if (medPay != null) stats.push({ label: `Payback after subsidy, median home that fits (at ₹${TARIFF}/kWh)`, value: `${_round(medPay, 1)} years` });
+        stats.push({ label: 'A 3 kW home system a year', value: `${Math.round(3 * yieldKwh).toLocaleString('en-IN')} kWh, about ₹${Math.round(3 * yieldKwh * TARIFF / 1000)}k saved` });
+        if (acFull != null) stats.push({ label: 'Residents whose roof share could run one AC through a 2050 summer', value: `${_people(acFull)} (${_round(100 * acFull / people)}%)` });
+        return {
+            columns: { home_kwp: kw, payback_yr: pay, ac_2050_covered_pct: acShare }, idx: cells, weightKey: 'home_kwp',
+            metric: { label: `Residents whose home can host at least ${MIN_HOME_KWP} kW of rooftop solar`, value: _round(100 * fitPeople / people), unit: '%', higherIs: 'better' },
+            headline: `${_round(100 * fitPeople / people)}% of residents (${_people(fitPeople)}) have enough roof per home for a ${MIN_HOME_KWP}–3 kW system${medPay != null ? `, paying back in about ${_round(medPay, 1)} years after the PM Surya Ghar subsidy` : ''}; in denser blocks, flats share too little roof and need society or community solar.`,
+            stats,
+        };
+    }
+
     /** Flood 2050: residents in the 1-in-100-year river or coastal flood zone, now and by 2050 (WRI Aqueduct). */
     function flood2050(fr) {
         const g = fr.grid, c = fr.cols, n = g.n;
@@ -1001,6 +1047,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['flood_future.any_pct_now', 'flood_future.any_pct_2050', 'flood_future.river_pct_now', 'flood_future.river_pct_2050', 'flood_future.river_pct_2050_high', 'flood_future.coast_pct_now', 'flood_future.coast_pct_2050', 'flood_future.coast_pct_2050_high', 'land_value.value_index', 'population.population'],
             method: 'WRI Aqueduct Floods v2 at ~1 km. River: GLOFRIS inundation for the 1-in-100-year flood, the mean of five CMIP5 models for 2050 against a 1980 baseline. Coast: storm surge plus sea-level rise and land subsidence for 2050 against 2010. A cell\'s share is the part deeper than 5 cm; residents (WorldPop) are spread evenly inside it. No defences or drains are modelled and 1 km is coarse, so Aqueduct reads higher than the GloFAS floodplain in the Flood lenses: use it for the change to 2050 more than the level.',
             refs: 'Ward et al. 2020 (Aqueduct Floods methodology, WRI); Winsemius et al. 2013 (GLOFRIS); Muis et al. 2016 (GTSR surge); Kulp & Strauss 2019 (coastal exposure)' },
+        { id: 'solarhome', title: 'Home solar', icon: '🔆',
+            question: 'Which homes have the roof for rooftop solar, how fast does it pay back, and can it run the AC in 2050?',
+            field: { key: 'home_kwp', label: 'Rooftop solar a home can host', unit: 'kW', higherIs: 'better', ramp: 'greens' },
+            needs: ['building_stock.cover_2023_pct', 'osm_roads.building_cover_pct', 'climate_future.cdd_2050', 'population.population'],
+            method: `Roof per home = building cover (Open Buildings 2023, else OSM) × cell area × ${ROOF_USABLE * 100}% usable ÷ households (residents ÷ ${HH_SIZE}); ${M2_PER_KWP} m² per kW, capped at ${MAX_HOME_KWP} kW. Yield = city irradiance (NASA POWER) × 365 × ${PERF_RATIO}. Payback = (₹${PV_COST_KW.toLocaleString('en-IN')} a kW − PM Surya Ghar subsidy) ÷ (yield × ₹${TARIFF}/kWh). One AC uses about ${AC_KWH_PER_CDD} kWh per cooling degree-day (2050, SSP2-4.5), compared with annual output: storage and timing are ignored. Shading, roof strength and ownership are not modelled.`,
+            refs: 'MNRE PM Surya Ghar Muft Bijli Yojana guidelines 2024; MNRE rooftop benchmark costs; BEE star labelling for room ACs; NASA POWER; Census 2011 / NFHS-5 household size' },
         { id: 'encroach', equity: true, title: 'Encroachment watch', icon: '🚧',
             question: 'Which lakes, floodplains and green areas have been lost to building, and where is it still happening?',
             field: { key: 'encroach_score', label: 'Encroachment score (former water, floodplain and tree loss built up)', unit: 'points', higherIs: 'worse', ramp: 'reds' },
@@ -1009,7 +1061,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050 }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText };
 })();
 
