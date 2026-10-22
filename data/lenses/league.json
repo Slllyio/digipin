@@ -206,7 +206,7 @@
     },
     "feasible": {
      "label": "Blocks where building pays at the base FAR",
-     "value": 95.9,
+     "value": 95.1,
      "unit": "%",
      "higherIs": null
     },
@@ -500,7 +500,7 @@
     },
     "feasible": {
      "label": "Blocks where building pays at the base FAR",
-     "value": 99,
+     "value": 98.8,
      "unit": "%",
      "higherIs": null
     },
@@ -1976,7 +1976,7 @@
     },
     "feasible": {
      "label": "Blocks where building pays at the base FAR",
-     "value": 99.1,
+     "value": 98.8,
      "unit": "%",
      "higherIs": null
     },

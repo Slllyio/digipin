@@ -150,7 +150,10 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(f.build).toBeCloseTo(2 * 1.4 * 22000 * 1.15, 6);
         expect(f.rlv).toBeCloseTo(250000 - 70840 - 50000, 6);
         expect(f.euv).toBeCloseTo(1 * 1.25 * 100000 * 0.6, 6);
-        expect(RE.feasibility({ price: f.breakEvenPrice, far: 3 }).rlv).toBeCloseTo(0, 6);
+        expect(RE.feasibility({ price: f.breakEvenPrice, far: 2 }).rlv).toBeCloseTo(0, 6);
+        const tall = RE.feasibility({ price: 100000, far: 4 });                 // 8 storeys: +12% build cost
+        expect(tall.build).toBeCloseTo(4 * 1.4 * 22000 * 1.12 * 1.15, 6);
+        expect(RE.feasibility({ price: tall.breakEvenPrice, far: 4 }).rlv).toBeCloseTo(0, 6);
         expect(RE.feasibility({ price: null, far: 2 })).toBeNull();
         expect(RE.blockPrice('delhi', 200)).toBeCloseTo(2 * 8900 * 10.764, 6);
         expect(RE.blockPrice('nowhere', 100)).toBeNull();
@@ -166,7 +169,8 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats.find(s => s.label.startsWith('Redevelopment candidate 1')).value).toMatch(/FAR now 1.8/);           // dear east blocks pay to rebuild even at FAR 1.8
         expect(r.columns.redev_gain[0]).toBeLessThan(0);                       // cheap west block at FAR 0.6 does not
         expect(r.stats.some(s => /TOD/.test(s.label))).toBe(true);
-        expect(r.columns.tod_uplift[0]).toBeGreaterThan(0);
+        expect(r.columns.tod_uplift[SIZE - 1]).toBeGreaterThan(0);              // dear block: FAR 4 pays
+        expect(r.columns.tod_uplift[0]).toBeLessThan(0);                       // cheap block: 8 storeys cost more than they sell for
         expect(Number.isNaN(r.columns.tod_uplift[n - 1])).toBe(true);
         expect(L._lenses.feasible(L.frameFrom(codes, base), {})).toBeNull();   // no city price
     });
@@ -181,6 +185,17 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.headline).toMatch(/TOD FAR/);
         expect(r.stats.find(s => /Value added/.test(s.label)).value).toMatch(/crore/);
         expect(L._lenses.metroboost(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('farText(): base vs asked FAR, rebuild and homes', () => {
+        const t = RE.farText({ ok: true, code: '39J4M98', far: 3, base: 2, farNow: 1.2, price: 95800, metro: 6, rough: false,
+            rlvBase: 120000, rlv: 170000, gainBase: 30000, gain: 80000, homesHa: 1000, storeys: 6, costM2: 23320 });
+        const lines = t.split('\n');
+        expect(lines[0]).toBe('At FAR 3 instead of the base 2, the plot is worth ₹1.7 lakh per m² to a developer (+₹50,000, +42%).');
+        expect(lines[2]).toMatch(/^Rebuilding the existing floors \(FAR 1.2 now\) pays/);
+        expect(lines[3]).toMatch(/1,000 more homes a hectare/);
+        expect(lines[4]).toMatch(/inside a TOD zone/);
+        expect(RE.farText({ ok: false, code: '39J4M98', why: 'No price anchor for this city.' })).toMatch(/No price anchor/);
     });
 
     it('reScorecard(): rank-based pillars, capped housing pace, neutral metrics given a direction', () => {

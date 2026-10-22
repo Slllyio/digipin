@@ -180,6 +180,11 @@ const DishaIntel = (() => {
             if (named.length) out.city = named[0];
             return out;
         }
+        const farq = /(?<!\b(?:how|so|too|as|not|by)\s)\b(?:far|floor area ratio|fsi)\s*(?:(?:is|were|was|went to|goes to|becomes|of|=|to|at|raised to|increased to)\s*)?(\d+(?:\.\d+)?)\b|\b(?:at|with) (?:an? )?(?:far|fsi) (?:of )?(\d+(?:\.\d+)?)\b/i.exec(q);
+        if (farq && /\b(what if|if|could|would|at|with|here|this|build)\b/i.test(q)) {
+            const v = Number(farq[1] || farq[2]);
+            if (v > 0 && v <= 20) return { type: 'farwhatif', far: v };
+        }
         if (/\b(property|real[\s-]?estate|investment|land) (report|brief|memo|check|due[\s-]?diligence)\b|\bdue[\s-]?diligence\b/i.test(q)) return { type: 'propreport' };
         const like = /\b(places?|areas?|localit(y|ies)|neighbou?rhoods?|blocks?|colon(y|ies)|spots?)\s+(like|similar to)\s+(this|here|the selected)\b|\b(similar|comparable) (places?|areas?|localit(y|ies)|neighbou?rhoods?|blocks?)\b|\bcomparables?\b|\bwhere else (is|are) (like|similar)\b/i;
         if (like.test(q)) {
@@ -364,6 +369,12 @@ const DishaIntel = (() => {
                 if (typeof UrbanLenses === 'undefined' || !UrbanLenses.similar) { el.textContent = 'The real-estate lenses did not load.'; return ''; }
                 const s = await UrbanLenses.similar({ fromCity: from, lat: center.lat, lng: center.lng, toCity: intent.city || from }, CellStore);
                 r = { kind: 'similar', s };
+            } else if (intent.type === 'farwhatif') {
+                if (!center) { el.textContent = 'Click a block on the map first, then ask what a higher FAR would do there.'; return ''; }
+                const city = UrbanInsights.cityAt(CellStore, center.lat, center.lng);
+                if (!city) { el.textContent = 'That spot is outside the cities I have data for.'; return ''; }
+                if (typeof UrbanLenses === 'undefined' || !UrbanLenses.farAsk) { el.textContent = 'The real-estate lenses did not load.'; return ''; }
+                r = { kind: 'farwhatif', f: await UrbanLenses.farAsk({ city, lat: center.lat, lng: center.lng, far: intent.far }, CellStore), cityLabel: UrbanInsights.cityLabel(city) };
             } else if (intent.type === 'stationwhatif') {
                 let city = intent.city;
                 if (!city) {
@@ -459,6 +470,7 @@ const DishaIntel = (() => {
         if (r.kind === 'propreport') return PropertyReport.text(r.m);
         if (r.kind === 'similar') return UrbanLenses.similarText(r.s);
         if (r.kind === 'stationwhatif') return stationText(r);
+        if (r.kind === 'farwhatif') return UrbanLenses.farText(r.f);
         if (r.kind === 'mobilityscore') return r.sc.kind === 'realestate' ? UrbanLenses.reScorecardText(r.sc, r.city) : UrbanLenses.scorecardText(r.sc, r.city);
         if (r.kind === 'siting') return `${r.st.title} in ${r.cityLabel}: ${r.st.headline}\n${r.st.sites.map(x => `${x.rank}. ${x.code} (score ${x.score}): ${x.why}`).join('\n')}`;
         return r.kind === 'lenses' ? UrbanLenses.toText(r, r.only) : UrbanInsights.toText(r);
@@ -574,6 +586,13 @@ const DishaIntel = (() => {
             el.appendChild(_el('div', 'ui-headline', first));
             rest.forEach(line => el.appendChild(_el('div', 'disha-scan-row', line)));
             el.appendChild(_el('div', 'disha-scan-hint', 'Matched on each block\'s percentile within its own city (land value counts double): land value, density, job reach, metro walk, wealth, shops, newness, high-rise share and greenery, smoothed over 500 m.'));
+        } else if (r.kind === 'farwhatif') {
+            head.textContent = `FAR what-if · ${DigiPin.format(r.f.code)} · ${r.cityLabel}`;
+            el.appendChild(head);
+            const [first, ...rest] = UrbanLenses.farText(r.f).split('\n');
+            el.appendChild(_el('div', 'ui-headline', first));
+            rest.forEach(line => el.appendChild(_el('div', 'disha-scan-row', line)));
+            el.appendChild(_el('div', 'disha-scan-hint', 'Residual valuation: sales (city-average price × the block\'s value index, 1.25 loading) − build cost (CPWD rates, +3% a storey above four, 15% soft costs) − 20% margin. Base FAR is the city\'s typical master-plan level, not this plot\'s zoning.'));
         } else if (r.kind === 'stationwhatif') {
             head.textContent = `Metro station what-if · ${r.cityLabel}`;
             el.appendChild(head);

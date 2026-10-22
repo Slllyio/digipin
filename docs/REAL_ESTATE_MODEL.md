@@ -170,11 +170,13 @@ This is a residual valuation for every block. It asks what a developer can pay f
 - **Residual land value.** This is sales minus build cost minus developer margin:
   - Sales: FAR area × 1.25, the loading to saleable area.
   - Build cost: FAR area × 1.4 for parking and services, at ₹22,000/m² (CPWD), plus 15% soft costs.
+  - Taller buildings cost more: add 3% for each storey above four. Storeys = FAR ÷ 50% ground cover. Because of this, FAR 4 can lose money on cheap land.
   - Developer margin: 20% of sales.
-  - The break-even price is about ₹3,300 per sq ft in every city, because cost and margin scale with FAR.
+  - At FAR ≤ 2 the break-even price is about ₹3,300 per sq ft. It rises with FAR above that.
 - **Rebuild gain.** This is the residual value minus the existing floor area (GHSL volume) sold as old stock at 60% of the new price. It only counts for built-up blocks, meaning FAR ≥ 0.5 today.
 - **TOD uplift.** This is the extra residual value at FAR 4 within a 10-minute metro walk, following the MoHUA TOD policy. It is summed over vacant buildable land.
 - **Where it shows.** The property report has a "Development feasibility" section. DISHA answers questions like "is development feasible in Pune" or "residual land value in Delhi".
+- **FAR what-if.** DISHA answers "what if FAR were 3 here" for a clicked block (`UrbanLenses.farAsk`/`farText`). The answer covers the residual value at the asked FAR against the base FAR, the rebuild case, extra homes per hectare, and whether the block sits in a TOD zone.
 - **Results at the base FAR:**
   - Delhi: building pays in 86% of blocks, and the median residual is about ₹83,000/m².
   - Mumbai: building pays in 100% of blocks, at about ₹3.4 lakh/m².

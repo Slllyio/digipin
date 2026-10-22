@@ -32,6 +32,8 @@ const UrbanLensesRealEstate = (() => {
         ahmedabad: 5500, jaipur: 5000, lucknow: 5500, indore_pilot: 4500, bhopal: 4000, guna: 2500 };
     const PRICE_ROUGH = new Set(['ahmedabad', 'jaipur', 'lucknow', 'indore_pilot', 'bhopal', 'guna']);
     const SQFT_M2 = 10.764, SALE_LOADING = 1.25, BUILT_PER_FAR = 1.4, SOFT = 0.15, MARGIN = 0.2, OLD_STOCK = 0.6, TOD_FAR = 4, TOD_WALK = 10, REBUILD_FAR = 0.5;
+    // Taller costs more per m² (structure, lifts, fire systems): +3% a storey above four, storeys = FAR ÷ 50% ground cover.
+    const COVER = 0.5, BASE_STOREYS = 4, STOREY_PREMIUM = 0.03;
     const DRIVERS = [['jobs', 'Job reach'], ['metro', 'Metro walk'], ['amenity', 'Shops and services'], ['neigh', 'Neighbourhood and plot size'],
         ['green', 'Green cover'], ['risk', 'Flood and waterlogging'], ['noise', 'Road noise']];
 
@@ -525,8 +527,9 @@ const UrbanLensesRealEstate = (() => {
      * build cost (built area incl. parking/services × ₹BUILD_COST × (1 + soft costs)) minus developer margin.
      * Redevelopment pays when it beats the existing floor area sold as old stock.
      */
-    function feasibility({ price, far, farNow = 0, cost = BUILD_COST }) {
+    function feasibility({ price, far, farNow = 0, cost: base = BUILD_COST }) {
         if (!_fin(price) || !_fin(far)) return null;
+        const cost = base * (1 + STOREY_PREMIUM * Math.max(0, far / COVER - BASE_STOREYS));
         const gdv = far * SALE_LOADING * price, build = far * BUILT_PER_FAR * cost * (1 + SOFT), margin = MARGIN * gdv;
         const rlv = gdv - build - margin, euv = (_fin(farNow) ? farNow : 0) * SALE_LOADING * price * OLD_STOCK;
         return { gdv, build, margin, rlv, euv, redevGain: rlv - euv, breakEvenPrice: far * BUILT_PER_FAR * cost * (1 + SOFT) / (far * SALE_LOADING * (1 - MARGIN)) };
@@ -626,6 +629,32 @@ const UrbanLensesRealEstate = (() => {
                 : `Upcoming stations put ${_people(people)} residents in ${newly.toLocaleString('en-IN')} blocks within a ${STATION_WALK}-minute walk of metro${worth > 0 ? `, adding about ₹${_people(worth / 1e7)} crore to existing property` : ''}; past openings drew no extra building nearby, so new homes there need a TOD FAR.`,
             stats,
         };
+    }
+
+    /** "What if FAR were x here?": the block's residual land value, rebuild case and new homes at x vs the base FAR. */
+    async function farAsk({ city, lat, lng, far }, store) {
+        const fr = await UrbanLenses.frame(city, store, ['land_value.value_index', 're_supply.far_now', 'rail_access.metro_walk_min']);
+        const code = DigiPin.encode(lat, lng).replace(/-/g, '').slice(0, 7), i = fr.grid.codes.indexOf(code);
+        const c = fr.cols, at = k => (i >= 0 && c[k] && _fin(c[k][i]) ? c[k][i] : null);
+        const vi = at('land_value.value_index'), price = blockPrice(city, vi);
+        if (price == null) return { code, city, ok: false, why: PRICE_SQFT[city] ? 'This block has no land value estimate.' : 'No price anchor for this city.' };
+        const base = BASE_FAR[city] || DEFAULT_FAR, farNow = at('re_supply.far_now') ?? 0;
+        const a = feasibility({ price, far: base, farNow }), b = feasibility({ price, far, farNow });
+        const homesHa = Math.max(0, far - Math.max(farNow, base)) * 1e4 * RESI_EFF / HOME_M2;
+        return { code, city, ok: true, far, base, farNow, price, metro: at('rail_access.metro_walk_min'), rough: PRICE_ROUGH.has(city),
+            rlvBase: a.rlv, rlv: b.rlv, gainBase: a.redevGain, gain: b.redevGain, homesHa, storeys: Math.ceil(far / COVER), costM2: b.build / (far * BUILT_PER_FAR * (1 + SOFT)) };
+    }
+
+    function farText(r) {
+        if (!r.ok) return `FAR what-if for ${DigiPin.format(r.code)}: ${r.why}`;
+        const d = r.rlv - r.rlvBase, pct = r.rlvBase > 0 ? Math.round(100 * d / r.rlvBase) : null;
+        return [
+            `At FAR ${r.far} instead of the base ${r.base}, the plot is worth ${_rs(r.rlv)} per m² to a developer (${d >= 0 ? '+' : '−'}${_rs(Math.abs(d))}${pct != null ? `, ${pct >= 0 ? '+' : ''}${pct}%` : ''}).`,
+            `Indicative new-home price here: ₹${Math.round(r.price / SQFT_M2).toLocaleString('en-IN')} per sq ft${r.rough ? ' (rough city anchor)' : ''}; about ${r.storeys} storeys at 50% ground cover, building at ₹${Math.round(r.costM2).toLocaleString('en-IN')}/m².`,
+            r.farNow >= REBUILD_FAR ? `Rebuilding the existing floors (FAR ${_round(r.farNow, 1)} now) ${r.gain > 0 ? `pays: +${_rs(r.gain)}` : `does not pay: ${_rs(r.gain)}`} per m² of plot (${r.gainBase > 0 ? 'it already pays' : 'it does not pay'} at the base FAR).` : 'The block is mostly open land, so this is new building rather than a rebuild.',
+            r.homesHa > 0 ? `That is room for about ${Math.round(r.homesHa).toLocaleString('en-IN')} more homes a hectare (60% of floor area as ${HOME_M2} m² homes).` : `FAR ${r.far} adds no floor area over what is built or allowed now.`,
+            _fin(r.metro) ? (r.metro <= TOD_WALK ? `It is a ${Math.round(r.metro)}-minute walk from metro: inside a TOD zone, where a higher FAR is policy.` : `It is ${r.metro > 60 ? 'over an hour' : `${Math.round(r.metro)} minutes`} on foot from metro, outside a TOD zone.`) : '',
+        ].filter(Boolean).join('\n');
     }
 
     // ── real-estate scorecard across the cities ────────────────────────────
@@ -828,7 +857,7 @@ const UrbanLensesRealEstate = (() => {
             extra: [{ key: 'redev_gain', label: 'Rebuild gain over the existing floors', unit: '₹k/m² plot', higherIs: null, ramp: 'diverging' },
                 { key: 'tod_uplift', label: `Extra value at FAR ${TOD_FAR} near metro`, unit: '₹k/m² plot', higherIs: null, ramp: 'greens' }],
             needs: ['land_value.value_index', 're_supply.far_now', 're_supply.vacant_ha', 'rail_access.metro_walk_min'],
-            method: `Sale price per m² is the city-average new-home price scaled by the block's value index (100 = median). Residual land value = sales (FAR area × ${SALE_LOADING} loading to saleable area) − build cost (${BUILT_PER_FAR}× FAR area for parking and services at ₹${BUILD_COST.toLocaleString('en-IN')}/m², CPWD plinth-area rates, plus ${SOFT * 100}% approvals, fees and finance) − ${MARGIN * 100}% developer margin. Rebuilding pays when that beats selling the existing floor area (GHSL volume ÷ 3 m) as old stock at ${OLD_STOCK * 100}% of new prices. TOD tests FAR ${TOD_FAR} within a ${TOD_WALK}-minute walk of a metro station, as in the MoHUA TOD policy and Delhi's TOD regulations. Base FAR is a typical master-plan level, not plot zoning; prices are city averages until licensed market data arrives.`,
+            method: `Sale price per m² is the city-average new-home price scaled by the block's value index (100 = median). Residual land value = sales (FAR area × ${SALE_LOADING} loading to saleable area) − build cost (${BUILT_PER_FAR}× FAR area for parking and services at ₹${BUILD_COST.toLocaleString('en-IN')}/m², CPWD plinth-area rates, +${STOREY_PREMIUM * 100}% a storey above ${BASE_STOREYS} at ${COVER * 100}% ground cover, plus ${SOFT * 100}% approvals, fees and finance) − ${MARGIN * 100}% developer margin. Rebuilding pays when that beats selling the existing floor area (GHSL volume ÷ 3 m) as old stock at ${OLD_STOCK * 100}% of new prices. TOD tests FAR ${TOD_FAR} within a ${TOD_WALK}-minute walk of a metro station, as in the MoHUA TOD policy and Delhi's TOD regulations. Base FAR is a typical master-plan level, not plot zoning; prices are city averages until licensed market data arrives.`,
             refs: 'ANAROCK Research Q3 2025 (city prices); CPWD plinth area rates; RICS residual valuation method; MoHUA National TOD Policy 2017' },
         { id: 'metroboost', equity: false, title: 'Upcoming metro uplift', icon: '🚇',
             question: 'Which blocks will a metro line under construction bring within walking distance, and what will it add to land value?',
@@ -844,8 +873,8 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText }, 'tod');
-    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText };
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
+    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText };
 })();
 
 if (typeof window !== 'undefined') {
