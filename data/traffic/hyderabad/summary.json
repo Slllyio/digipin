@@ -708,5 +708,18 @@
       "nox_g_km": 5.0
     },
     "source": "Overture Maps places 2026-10-21.0; demand model arterials"
+  },
+  "job_access": {
+    "zones": 1058,
+    "pop_mean_jobs_car_pct": 81.3,
+    "pop_mean_jobs_transit_pct": 8.7,
+    "stations": 99,
+    "threshold_min": 45.0,
+    "assumptions": {
+      "wait_min": 5.0,
+      "ride_kmh": 33.0,
+      "walk_max_min": 20.0,
+      "all_stations_connected": true
+    }
   }
 }

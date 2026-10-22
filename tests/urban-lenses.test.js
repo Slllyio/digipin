@@ -456,6 +456,19 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.cleanwalk(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('jobaccess lens: jobs within 45 minutes by train versus car, poor vs rich', () => {
+        const tr = codes.map((_, i) => (i % SIZE < SIZE / 2 ? 5 : 30));
+        const car = codes.map(() => 60);
+        const rwi = codes.map((_, i) => (i % SIZE < SIZE / 2 ? -1 : 1));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'job_access.jobs_transit_pct': tr, 'job_access.jobs_car_pct': car, 'wealth.rwi': rwi });
+        const r = L._lenses.jobaccess(f, {});
+        expect(r.metric.value).toBeGreaterThan(5);
+        expect(r.metric.value).toBeLessThan(30);
+        expect(r.columns.jobs_car_gap[0]).toBe(55);
+        expect(r.stats.find(x => x.label.startsWith('Poorest vs richest')).value).toBe('5% vs 30%');
+        expect(L._lenses.jobaccess(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
         const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
         const league = { generated: '2026-10-22', cities: {

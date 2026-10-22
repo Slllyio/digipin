@@ -102,6 +102,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 11.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 35.2,
@@ -273,6 +279,12 @@
     "metro": {
      "label": "Within 10 min walk of the metro",
      "value": 14.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 9.3,
      "unit": "%",
      "higherIs": "better"
     },
@@ -450,6 +462,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 14.3,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 48,
@@ -615,6 +633,12 @@
     "metro": {
      "label": "Within 10 min walk of the metro",
      "value": 19.9,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 20.9,
      "unit": "%",
      "higherIs": "better"
     },
@@ -792,6 +816,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 7.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 46.5,
@@ -966,6 +996,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 56.9,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 0,
@@ -1131,6 +1167,12 @@
     "metro": {
      "label": "Within 10 min walk of the metro",
      "value": 12.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 8.7,
      "unit": "%",
      "higherIs": "better"
     },
@@ -1308,6 +1350,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 7.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 22.8,
@@ -1482,6 +1530,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 9.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 53.3,
@@ -1650,6 +1704,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 23.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 61.6,
@@ -1815,6 +1875,12 @@
     "metro": {
      "label": "Within 10 min walk of the metro",
      "value": 8.8,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 12.8,
      "unit": "%",
      "higherIs": "better"
     },
@@ -1992,6 +2058,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 22.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 73,
@@ -2163,6 +2235,12 @@
     "metro": {
      "label": "Within 10 min walk of the metro",
      "value": 11.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
+    "jobaccess": {
+     "label": "Jobs within 45 min by train and walking",
+     "value": 15.3,
      "unit": "%",
      "higherIs": "better"
     },

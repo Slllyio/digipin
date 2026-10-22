@@ -14,6 +14,7 @@ const UrbanLensesMobility = (() => {
     const HOSP_GOLDEN = 10, HOSP_FAR = 20;
     const EV_NEAR_KM = 2, EV_GRID_KM = 3;
     const STATION_WALK = 10, WALK_M_MIN = 80, WALK_DETOUR = 1.3, NEW_STATIONS = 3;
+    const JOB_MIN = 45, JOB_LOW = 10;
     const STATION_KM = STATION_WALK * WALK_M_MIN / WALK_DETOUR / 1000;   // ~615 m straight line
 
     function noise(fr) {
@@ -247,6 +248,47 @@ const UrbanLensesMobility = (() => {
                 ? `${_round(100 * pM / total)}% of residents live within a ${STATION_WALK}-minute walk of a metro station (${_round(100 * pAny / total)}% counting suburban rail)`
                 : `${_round(100 * pAny / total)}% of residents live within a ${STATION_WALK}-minute walk of a rail station`)
                 + (sites.length ? `; the best ${sites.length} new station sites would bring ${_people(gain)} more people within walking distance.` : '.'),
+            stats,
+        };
+    }
+
+    /** Jobs within 45 minutes: by car at 9 am versus by train and walking (cumulative opportunities). */
+    function jobaccess(fr) {
+        const c = fr.cols, idx = _residents(fr), n = fr.grid.n, pop = c['population.population'];
+        const car = c['job_access.jobs_car_pct'], tr = c['job_access.jobs_transit_pct'];
+        if (!tr) return null;
+        const tCol = new Float64Array(n).fill(NaN), gCol = new Float64Array(n).fill(NaN);
+        const use = idx.filter(i => _fin(tr[i]));
+        for (const i of use) {
+            tCol[i] = tr[i];
+            if (car && _fin(car[i])) gCol[i] = Math.max(0, car[i] - tr[i]);
+        }
+        if (!use.length) return null;
+        const mT = wmean(tCol, pop, use), mC = car ? wmean(car, pop, use.filter(i => _fin(car[i]))) : null;
+        const stats = [
+            { label: `Jobs and activities within ${JOB_MIN} min by train and walking (average resident)`, value: `${_round(mT)}%`, raw: _round(mT) },
+        ];
+        if (mC != null) stats.push({ label: `… by car at 9 am`, value: `${_round(mC)}%` });
+        const total = _sumOver(pop, use, () => true) || 1;
+        const cut = _sumOver(pop, use, i => tr[i] < JOB_LOW);
+        stats.push({ label: `Residents who reach under ${JOB_LOW}% of jobs without a car`, value: `${_people(cut)} (${_round(100 * cut / total)}%)` });
+        const rwi = c['wealth.rwi'];
+        let poorT = null;
+        if (rwi) {
+            const q20 = wquantile(rwi, pop, use, 0.2), q80 = wquantile(rwi, pop, use, 0.8);
+            if (q20 != null && q80 != null) {
+                const poor = use.filter(i => rwi[i] <= q20), rich = use.filter(i => rwi[i] >= q80);
+                poorT = poor.length ? wmean(tCol, pop, poor) : null;
+                const richT = rich.length ? wmean(tCol, pop, rich) : null;
+                if (poorT != null && richT != null) stats.push({ label: 'Poorest vs richest fifth, jobs reachable by train and walking', value: `${_round(poorT)}% vs ${_round(richT)}%` });
+            }
+        }
+        return {
+            columns: { jobs_transit: tCol, jobs_car_gap: gCol }, idx: use, weightKey: 'jobs_transit',
+            metric: { label: `Jobs within ${JOB_MIN} min by train and walking`, value: _round(mT), unit: '%', higherIs: 'better' },
+            headline: `The average resident can reach ${_round(mT)}% of the city's jobs and activities within ${JOB_MIN} minutes by train and walking`
+                + (mC != null ? `, against ${_round(mC)}% by car at 9 am` : '')
+                + `; ${_round(100 * cut / total)}% reach under ${JOB_LOW}% without a car.`,
             stats,
         };
     }
@@ -923,7 +965,7 @@ const UrbanLensesMobility = (() => {
     // Pillars over the lens league (data/lenses/league.json). EV charging is
     // left out: open charger data covers too little of India's network to rank on.
     const PILLARS = [
-        { id: 'access', label: 'Access', metrics: ['metro', 'transit', 'busgap', 'ambulance'] },
+        { id: 'access', label: 'Access', metrics: ['metro', 'jobaccess', 'transit', 'busgap', 'ambulance'] },
         { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon'] },
         { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise', 'nightwalk', 'freight', 'cleanwalk'] },
         { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'walk', 'cycling', 'crossing'] },
@@ -1076,6 +1118,13 @@ const UrbanLensesMobility = (() => {
             needs: ['rail_access.metro_walk_min', 'rail_access.rail_walk_min', 'rail_access.metro_stations', 'rail_access.rail_stations', 'wealth.rwi'],
             method: `Walking time from each home cell to the nearest station: straight line × ${WALK_DETOUR} detour at ${WALK_M_MIN * 60 / 1000} km/h; ${STATION_WALK} minutes (about ${Math.round(STATION_KM * 1000)} m as the crow flies) is the catchment. Stations are Overture Maps and OpenStreetMap station points, classed metro when the nearest Overture rail track is subway, light rail or monorail and rail when it is standard or narrow gauge. New-station sites are picked greedily: each is the cell whose ${STATION_WALK}-minute catchment adds the most residents not already served, ignoring track alignment and cost.`,
             refs: 'Overture Maps Foundation places & transportation; Guerra, Cervero & Tischler 2012 (transit catchments in practice); UN SDG 11.2.1' },
+        { id: 'jobaccess', equity: true, title: 'Jobs within 45 minutes', icon: '💼',
+            question: 'How much of the city can people reach for work in 45 minutes, by car versus by train and walking?',
+            field: { key: 'jobs_transit', label: 'Jobs within 45 min by train and walking', unit: '%', higherIs: 'better', ramp: 'viridis' },
+            extra: [{ key: 'jobs_car_gap', label: 'Car advantage (car minus train share)', unit: 'pts', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['job_access.jobs_car_pct', 'job_access.jobs_transit_pct', 'wealth.rwi'],
+            method: `Cumulative-opportunity accessibility over the demand model's ~1 km zones: the share of the city's jobs and activities (GHSL non-residential floor space plus OpenStreetMap amenities) reachable within ${JOB_MIN} minutes. Car: walk-speed access to the nearest arterial, then the 9 am congested arterial times (BPR). Train: walk to the nearest metro or rail station within 20 minutes, a 5-minute wait, 33 km/h over the straight line × 1.25 to the station nearest the destination, and walk out; or walk all the way. Every station is assumed connected and buses are left out, so the train figure is an upper bound for rail and a lower bound for all public transport.`,
+            refs: 'Hansen 1959 (accessibility); Geurs & van Wee 2004; Overture Maps Foundation places; GHSL 2023' },
         { id: 'ev', equity: false, title: 'EV charging gaps', icon: '🔌',
             question: 'How far are homes and traffic from a known public EV charger?',
             field: { key: 'ev_km', label: 'Distance to the nearest known charger', unit: 'km', higherIs: 'worse', ramp: 'heat' },
@@ -1085,7 +1134,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

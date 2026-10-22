@@ -418,6 +418,21 @@ average at half the busiest-tenth level or more; "worth it" is 30%+ less dose
 for at most 20% more walking. Delhi: 8.8% walk along heavy exhaust, 12% could
 cut it by 30%+ (median saving 61% for the exposed); Indore 35%, Ahmedabad 29%.
 
+### 22. Jobs within 45 minutes (`pipeline/traffic/job_access.py`, lens `jobaccess`)
+
+Cumulative-opportunity accessibility (Hansen 1959) over the demand model's
+~1 km zones: the share of the city's jobs and activities (the same activity
+floor space the model sends commuters to) reachable within 45 minutes. Car is
+walk-speed access to the nearest arterial plus the 9 am congested arterial
+times; train is a walk of up to 20 min to the nearest metro or rail station,
+a 5-minute wait, 33 km/h over the straight line × 1.25, and a walk out (or
+walking all the way). Every station is assumed connected and buses are left
+out. Dataset `job_access` (L6): jobs_car_pct, jobs_transit_pct,
+transit_car_ratio. Population-weighted, train vs car: Mumbai 22.6% vs 42%,
+Kolkata 23.6% vs 40.8%, Chennai 20.9% vs 80.2%, Bengaluru 9.3% vs 56.9%,
+Delhi 7.6% vs 9.6% (Delhi is large and slow at 9 am, so neither mode reaches
+much of it).
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

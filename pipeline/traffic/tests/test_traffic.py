@@ -403,3 +403,21 @@ def test_freight_kinds_and_truck_routes():
     flow = fr.route_flows(4, links, [(0, 12), (2, 4)], [3])
     assert flow[0] == 12 and flow[2] == 12 and flow[4] == 16   # 0→1→2→3 carries both sites
     assert flow[6] == 0 and flow[1] == 0
+
+
+def test_job_access_transit_and_reach():
+    np = pytest.importorskip("numpy")
+    from pipeline.traffic import job_access as ja
+    # Three zones on a line 0, 5 and 10 km east; stations at the two ends.
+    k = 1 / 111.32
+    zx = np.array([77.0, 77.0 + 5 * k, 77.0 + 10 * k]); zy = np.array([0.0, 0.0, 0.0])
+    sx = np.array([77.0, 77.0 + 10 * k]); sy = np.array([0.0, 0.0])
+    t = ja.transit_times(zx, zy, sx, sy)
+    # End to end: wait 5 + 10 km × 1.25 at 33 km/h ≈ 27.7 min, far quicker than walking 10 km.
+    assert t[0, 2] == pytest.approx(5 + 10 * 1.25 / 33 * 60, rel=0.01)
+    assert t[0, 2] < 10_000 * ja.DETOUR / ja.WALK_M_MIN
+    # The middle zone is 5 km from any station: walking only.
+    assert t[1, 0] == pytest.approx(5000 * ja.DETOUR / ja.WALK_M_MIN, rel=0.01)
+    share = ja.reach_share(t, [1, 1, 2])
+    assert share[0] == pytest.approx(75.0)        # itself + the far end (weight 2) of 4
+    assert share[1] == pytest.approx(25.0)        # only itself within 45 min
