@@ -106,6 +106,7 @@ loadGlobalScript('js/sentinel-imagery.js', ['SentinelImagery']);
 loadGlobalScript('js/live-now.js', ['LiveNow']);
 loadGlobalScript('js/live-sky.js', ['LiveSky']);
 loadGlobalScript('js/places-nearby.js', ['PlacesNearby']);
+loadGlobalScript('js/sat-passes.js', ['SatPasses']);
 loadGlobalScript('js/live-search.js', ['LiveSearch']);
 loadGlobalScript('js/layer-counts.js', ['LayerCounts']);
 loadGlobalScript('js/point-cloud.js', ['PointCloud']);

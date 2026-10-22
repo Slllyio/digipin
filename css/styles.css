@@ -4656,3 +4656,10 @@ body.presenting #sidebar { display: none !important; }
 .live-now-panel .ln-gnss-good { background: #3a9d4a; }
 .live-now-panel .ln-gnss-caution { background: #e6a229; }
 .live-now-panel .ln-gnss-poor { background: #d7372f; }
+.sat-panel .sat-kicker::before { background: #1f78d1; }
+.sat-panel .sat-optical .ln-c-btn { border-left-color: #1f78d1; }
+.sat-panel .sat-sar .ln-c-btn { border-left-color: #8a3ffc; }
+.sat-panel .sat-air .ln-c-btn { border-left-color: #e08a1e; }
+.sat-panel .is-selected .ln-c-btn { background: rgba(31,120,209,.08); }
+.sat-panel .sat-foot { font-size: 10px; line-height: 1.4; }
+#aino-right.has-sat-passes #city-overview { display: none; }

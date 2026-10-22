@@ -83,6 +83,8 @@ const LayerCounts = (() => {
     });
     register('_btn_btn-places', () => (typeof PlacesNearby !== 'undefined' && PlacesNearby.isActive()
         ? PlacesNearby.places().length : null));
+    register('_btn_btn-satpasses', () => (typeof SatPasses !== 'undefined' && SatPasses.isActive()
+        ? SatPasses.satellites().length : null));
     register('_btn_btn-buildings', () => {
         if (typeof DeckBuildings === 'undefined' || !DeckBuildings.isEnabled || !DeckBuildings.isEnabled()) return null;
         const s = DeckBuildings.renderStats && DeckBuildings.renderStats();

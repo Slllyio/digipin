@@ -301,6 +301,10 @@
             <span class="tb-icon">&#128205;</span>
             <span class="tb-label" data-i18n="tb.places">Places</span>
         </button>
+        <button class="toolbar-btn" id="btn-satpasses" title="Satellite passes — when Sentinel-2, Landsat, Sentinel-1 and ISRO satellites next image this view, with the cloud forecast (live)">
+            <span class="tb-icon">&#128752;</span>
+            <span class="tb-label" data-i18n="tb.satpasses">Satellites</span>
+        </button>
         <button class="toolbar-btn" id="btn-pointcloud" title="Point cloud — view your LiDAR / drone survey (LAS, LAZ, COPC, EPT) in 3D">
             <span class="tb-icon">&#9729;</span>
             <span class="tb-label" data-i18n="tb.pointcloud">Point cloud</span>
@@ -571,6 +575,7 @@
     <script defer src="js/live-now.js"></script>
     <script defer src="js/live-sky.js"></script>
     <script defer src="js/places-nearby.js"></script>
+    <script defer src="js/sat-passes.js"></script>
     <script defer src="js/live-search.js"></script>
     <script defer src="js/layer-counts.js"></script>
     <script defer src="js/kde-overlay.js"></script>
@@ -638,6 +643,7 @@
         ['btn-livenow',   () => window.LiveNow],
         ['btn-livesky',   () => window.LiveSky],
         ['btn-places',    () => window.PlacesNearby],
+        ['btn-satpasses', () => window.SatPasses],
         ['btn-kde',       () => window.KDEOverlay],
         ['btn-access',    () => window.AccessibilityOverlay],
         ['btn-choropleth', () => window.ScoreChoropleth],

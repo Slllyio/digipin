@@ -71,11 +71,25 @@ function wiki(url) {
   return { query: { pages } };
 }
 
+// Recorded CelesTrak elements, re-dated to 12 h ago so they never look stale.
+function celestrak() {
+  const epoch = new Date(Date.now() - 12 * 3600e3).toISOString().slice(0, 23);
+  return JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'celestrak-gp.json'), 'utf8')).map((r) => ({ ...r, EPOCH: epoch }));
+}
+
+function clouds() {
+  const t0 = Math.floor(Date.now() / 3600e3) * 3600e3;
+  const time = []; const cloud = [];
+  for (let k = 0; k < 7 * 24; k++) { time.push(new Date(t0 + k * 3600e3).toISOString().slice(0, 16)); cloud.push(k % 48 < 24 ? 15 : 85); }
+  return { hourly: { time, cloud_cover: cloud } };
+}
+
 async function stubFeeds(page) {
   await page.route(/api\.adsb\.lol/, (r) => r.fulfill({ json: aircraft(r.request().url()), headers: CORS }));
   if (REAL) return;
   await page.route(/wikipedia\.org\/w\/api\.php/, (r) => r.fulfill({ json: wiki(r.request().url()), headers: CORS }));
-  await page.route(/api\.open-meteo\.com/, (r) => r.fulfill({ json: forecast(), headers: CORS }));
+  await page.route(/celestrak\.org/, (r) => r.fulfill({ json: /GROUP=stations/.test(r.request().url()) ? celestrak().filter((x) => /ISS/.test(x.OBJECT_NAME)) : celestrak().filter((x) => !/ISS/.test(x.OBJECT_NAME)), headers: CORS }));
+  await page.route(/api\.open-meteo\.com/, (r) => r.fulfill({ json: /hourly=cloud_cover/.test(r.request().url()) ? clouds() : forecast(), headers: CORS }));
   await page.route(/air-quality-api\.open-meteo\.com/, (r) => r.fulfill({ json: { current: { time: 't', pm2_5: 142, pm10: 260, nitrogen_dioxide: 60, ozone: 40 } }, headers: CORS }));
   await page.route(/flood-api\.open-meteo\.com/, (r) => r.fulfill({ json: flood(r.request().url()), headers: CORS }));
   await page.route(/earthquake\.usgs\.gov/, (r) => r.fulfill({ json: { features: [{ id: 'us7000x', geometry: { coordinates: [78.1, 29.9, 10] }, properties: { mag: 4.6, place: 'Uttarakhand, India', time: Date.now() - 864e5 } }] }, headers: CORS }));
@@ -207,5 +221,43 @@ test.describe('live feeds', () => {
     if (!STUB) await expect(page.locator('.places-card')).toContainText('Jama Masjid');
     await toggleRow(page, 'btn-places');
     expect(await page.evaluate(() => PlacesNearby.isActive())).toBe(false);
+  });
+
+  test('Satellite passes lists the next imaging passes with clouds and draws the swath', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/app.html');
+    await waitForApp(page);
+    await page.selectOption('#city-select', 'delhi');
+    await settle(page, 600);
+    await page.evaluate(() => MapModule.getMap().jumpTo({ center: [77.21, 28.61], zoom: 10, pitch: 0 }));
+    await toggleRow(page, 'btn-satpasses');
+    await closeLayers(page);
+    await page.waitForFunction(() => SatPasses.rows().length > 0, null, { timeout: 20_000 });
+    const rows = await page.evaluate(() => SatPasses.rows());
+    // Sorted soonest first, within the week, each with an outlook.
+    expect(rows.map((r) => r.t)).toEqual([...rows.map((r) => r.t)].sort((a, b) => a - b));
+    expect(rows.every((r) => r.t > Date.now() && r.t < Date.now() + 7.1 * 864e5)).toBe(true);
+    // Fixture epochs are re-dated to now, so which satellites pass depends on the hour; the wide-swath daily ones always do.
+    expect(rows.length).toBeGreaterThanOrEqual(3);
+    expect(rows.some((r) => r.meta.kind === 'optical')).toBe(true);
+    expect(rows.filter((r) => r.meta.kind === 'optical').every((r) => /cloud|forecast/.test(r.outlook))).toBe(true);
+    expect(rows.find((r) => r.meta.kind === 'sar')?.outlook || 'Radar').toMatch(/Radar/);
+    const panel = page.locator('#sat-passes-panel');
+    await expect(panel).toContainText('Satellite passes over this view');
+    await expect(panel.locator('.sat-list li')).toHaveCount(rows.length);
+    const fleet = await page.evaluate(() => SatPasses.satellites().length);
+    if (!REAL) expect(fleet).toBe(11);
+    await expect(page.locator('.ar-row[data-ar-key="_btn_btn-satpasses"] .layer-count, .dt-layer-item[data-layer-key="_btn_btn-satpasses"] .layer-count').first())
+      .toHaveText(String(fleet), { timeout: 10_000 });
+    // Positions and tracks are drawn; picking a pass adds its swath.
+    await expect.poll(() => page.evaluate(() => SatPasses.lastFrame()?.pos), { timeout: 10_000 }).toBe(fleet);
+    await panel.locator('.sat-list li button').first().click();
+    await expect(panel.locator('.sat-list li.is-selected')).toHaveCount(1);
+    await settle(page, 1200);
+    await expect.poll(() => page.evaluate(() => SatPasses.lastFrame()?.swath), { timeout: 10_000 }).toBe(1);
+    await shot(page, 'sat-passes');
+    await toggleRow(page, 'btn-satpasses');
+    expect(await page.evaluate(() => SatPasses.isActive())).toBe(false);
+    await expect(panel).toHaveCount(0);
   });
 });

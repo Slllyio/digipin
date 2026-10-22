@@ -33,6 +33,7 @@ const LayersPanel = (() => {
         { btnId: 'btn-livenow', name: 'Live Now (weather, air, river, correlations)', icon: '\u{1F534}' },
         { btnId: 'btn-livesky', name: 'Live Sky (aircraft in 3D)', icon: '\u{2708}' },
         { btnId: 'btn-places', name: 'Places Nearby (Wikipedia, with DIGIPIN)', icon: '\u{1F4CD}' },
+        { btnId: 'btn-satpasses', name: 'Satellite Passes (next imagery + clouds)', icon: '\u{1F6F0}' },
         { btnId: 'btn-swipe', name: 'Swipe Compare (two layers)', icon: '\u{2194}' },
         { btnId: 'btn-hydrology', name: 'Terrain Hydrology (ponding)', icon: '\u{1F4A7}' },
         { btnId: 'btn-access', name: 'Accessibility Gaps', icon: '♿' },
