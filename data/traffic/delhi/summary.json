@@ -493,16 +493,15 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 168,
+    "chargers": 44,
     "chargers_by_source": {
-      "osm": 126,
-      "overture": 42
+      "overture": 44
     },
     "parking": 220,
     "fuel": 556,
-    "chargers_per_lakh": 0.57,
-    "pct_vkm_within_2km": 51.7,
-    "pct_pop_within_2km": 46.9
+    "chargers_per_lakh": 0.15,
+    "pct_vkm_within_2km": 25.8,
+    "pct_pop_within_2km": 27.6
   },
   "cycling": {
     "lowstress_km": 32513,
@@ -514,5 +513,292 @@
     "pct_residents_small_island": 11.5,
     "pct_residents_no_lowstress_street": 0.4,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "crossings": {
+    "main_km": 4113,
+    "pct_main_km_on_long_gaps": 24.7,
+    "median_gap_m": 552,
+    "crosswalks_mapped": 700,
+    "gap_threshold_m": 500.0,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 4508,
+      "logistics": 1103,
+      "wholesale": 374
+    },
+    "truck_trips_day": 33512,
+    "gateway_nodes": 2509,
+    "road_km_500_trucks_day": 13.5,
+    "busiest_truck_roads": [
+      {
+        "name": "Nityanand Marg",
+        "trucks_day": 2738
+      },
+      {
+        "name": "Jawaharlal Nehru Marg",
+        "trucks_day": 1616
+      },
+      {
+        "name": "Rani Jhansi Flyover",
+        "trucks_day": 1408
+      },
+      {
+        "name": "Outer Ring Road",
+        "trucks_day": 1216
+      },
+      {
+        "name": "Mandi House Chowk",
+        "trucks_day": 968
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
+  },
+  "job_access": {
+    "zones": 3139,
+    "pop_mean_jobs_car_pct": 9.6,
+    "pop_mean_jobs_transit_pct": 7.6,
+    "stations": 327,
+    "threshold_min": 45.0,
+    "assumptions": {
+      "wait_min": 5.0,
+      "ride_kmh": 33.0,
+      "walk_max_min": 20.0,
+      "all_stations_connected": true
+    }
+  },
+  "bus_stop_heat": {
+    "stops": 624,
+    "stops_with_heat_data": 624,
+    "pct_hot_bare": 35.7,
+    "pct_riders_at_hot_bare": 34.4,
+    "median_stop_lst_c": 39.7,
+    "top_stops": [
+      {
+        "digipin": "39J3646",
+        "name": "Bhajanpura Bus Stop",
+        "lon": 77.2636,
+        "lat": 28.70333,
+        "residents_5min": 51714,
+        "lst_c": 40.3,
+        "canopy_pct": 1.4,
+        "priority": 270247
+      },
+      {
+        "digipin": "39J4924",
+        "name": "Turkman Gate Bus Stop",
+        "lon": 77.2328,
+        "lat": 28.642,
+        "residents_5min": 45157,
+        "lst_c": 41.3,
+        "canopy_pct": 11.7,
+        "priority": 251204
+      },
+      {
+        "digipin": "39J497C",
+        "name": "Dariya Ganj Bus Stop",
+        "lon": 77.24007,
+        "lat": 28.64717,
+        "residents_5min": 49853,
+        "lst_c": 40.5,
+        "canopy_pct": 8.4,
+        "priority": 251159
+      },
+      {
+        "digipin": "39J4C94",
+        "name": "East Park Road Bus Stop",
+        "lon": 77.19733,
+        "lat": 28.65082,
+        "residents_5min": 53769,
+        "lst_c": 40.0,
+        "canopy_pct": 7.1,
+        "priority": 249757
+      },
+      {
+        "digipin": "39J5FK9",
+        "name": "Nirman Vihar Bus Stop",
+        "lon": 77.2869,
+        "lat": 28.637,
+        "residents_5min": 36999,
+        "lst_c": 41.3,
+        "canopy_pct": 1.3,
+        "priority": 230063
+      },
+      {
+        "digipin": "39J3T99",
+        "name": "Ghonda Chowk Bus Stop",
+        "lon": 77.27005,
+        "lat": 28.6905,
+        "residents_5min": 48359,
+        "lst_c": 40.1,
+        "canopy_pct": 6.8,
+        "priority": 229860
+      },
+      {
+        "digipin": "39J2KF6",
+        "name": "Jawahar Nagar Bus Stop",
+        "lon": 77.2897,
+        "lat": 28.72012,
+        "residents_5min": 34404,
+        "lst_c": 41.6,
+        "canopy_pct": 2.1,
+        "priority": 222298
+      },
+      {
+        "digipin": "39J3655",
+        "name": "B Block Yamuna Vihar Bus Stop",
+        "lon": 77.26947,
+        "lat": 28.70297,
+        "residents_5min": 48192,
+        "lst_c": 39.9,
+        "canopy_pct": 6.0,
+        "priority": 221972
+      },
+      {
+        "digipin": "39J4932",
+        "name": "Kamla Market Bada Akhada Bus Stop",
+        "lon": 77.22599,
+        "lat": 28.64337,
+        "residents_5min": 38258,
+        "lst_c": 41.4,
+        "canopy_pct": 11.6,
+        "priority": 216448
+      },
+      {
+        "digipin": "39J3T5J",
+        "name": "Kishan Gunj Bus Stop",
+        "lon": 77.26507,
+        "lat": 28.67066,
+        "residents_5min": 38757,
+        "lst_c": 40.5,
+        "canopy_pct": 0.8,
+        "priority": 211458
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "overture": 624
+    }
+  },
+  "parking": {
+    "cells": 21066,
+    "demand_ecs": 1317171,
+    "lots_mapped": 220,
+    "pct_demand_in_overflow": 21.0,
+    "overflow_ecs": 178739,
+    "hotspots": [
+      {
+        "digipin": "39J49K6",
+        "demand_ecs": 640,
+        "supply_ecs": 121,
+        "pressure": 5.29
+      },
+      {
+        "digipin": "39J5FK9",
+        "demand_ecs": 635,
+        "supply_ecs": 123,
+        "pressure": 5.15
+      },
+      {
+        "digipin": "39J4944",
+        "demand_ecs": 647,
+        "supply_ecs": 150,
+        "pressure": 4.3
+      },
+      {
+        "digipin": "39J4L39",
+        "demand_ecs": 666,
+        "supply_ecs": 203,
+        "pressure": 3.27
+      },
+      {
+        "digipin": "3C77T97",
+        "demand_ecs": 507,
+        "supply_ecs": 74,
+        "pressure": 6.89
+      },
+      {
+        "digipin": "39J4282",
+        "demand_ecs": 482,
+        "supply_ecs": 55,
+        "pressure": 8.74
+      },
+      {
+        "digipin": "39J53MJ",
+        "demand_ecs": 413,
+        "supply_ecs": 0,
+        "pressure": 413.32
+      },
+      {
+        "digipin": "39J44PK",
+        "demand_ecs": 517,
+        "supply_ecs": 109,
+        "pressure": 4.74
+      },
+      {
+        "digipin": "3C77T8J",
+        "demand_ecs": 483,
+        "supply_ecs": 76,
+        "pressure": 6.4
+      },
+      {
+        "digipin": "39JK7M8",
+        "demand_ecs": 686,
+        "supply_ecs": 289,
+        "pressure": 2.37
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
+  },
+  "commute_carbon": {
+    "zones": 2690,
+    "pop_mean_trip_km": 12.21,
+    "co2_kg_resident_day": 0.396,
+    "co2_kt_year": 4250.0,
+    "inner_fifth_trip_km": 10.37,
+    "outer_fifth_trip_km": 15.12,
+    "assumptions": {
+      "detour": 1.3,
+      "intra_km": 0.6,
+      "kg_co2_per_pkm_mix": 0.036,
+      "modes": {
+        "two_wheeler": {
+          "share": 0.4,
+          "kg_per_pkm": 0.0292
+        },
+        "car": {
+          "share": 0.15,
+          "kg_per_pkm": 0.0875
+        },
+        "auto": {
+          "share": 0.15,
+          "kg_per_pkm": 0.035
+        },
+        "bus": {
+          "share": 0.3,
+          "kg_per_pkm": 0.02
+        }
+      }
+    }
   }
 }
