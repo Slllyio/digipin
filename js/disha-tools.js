@@ -46,8 +46,8 @@ const DISHATools = (() => {
         },
         {
             name: 'trafficHour', type: 'traffichour', kind: 'state', agentOnly: false,
-            args: { hour: { type: 'string', required: true } },
-            desc: 'Show modelled road traffic at an hour of day (0–23), "peak" for the worse of the two peaks, or "play" to animate the day.',
+            args: { hour: { type: 'string', required: true }, buildings: { type: 'enum', values: ['on', 'off'] } },
+            desc: 'Show modelled road traffic at an hour of day (0–23), "peak" for the worse of the two peaks, or "play" to animate the day. buildings:on also colours the 3D buildings by the clock.',
             example: '[ACTION] trafficHour hour:18',
         },
         {

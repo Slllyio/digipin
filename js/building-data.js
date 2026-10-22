@@ -360,6 +360,14 @@ const BuildingData = (() => {
 
     function get() { return { color: _color, height: _height, stretch: _stretch }; }
 
+    /** Drop a cached dataset table (a runtime dataset that changed) and repaint. */
+    async function refresh(datasetId) {
+        _tables.delete(datasetId);
+        await Promise.all([_ensureTable(_color), _ensureTable(_height)]);
+        _emit();
+        _renderPanel();
+    }
+
     /** True when any data driver is set (buildings then use the MapLibre twin renderer). */
     function isActive() { return !!(_color || _height); }
 
@@ -644,7 +652,7 @@ const BuildingData = (() => {
     }
 
     return {
-        init, set, get, isActive, onChange, annotateCurrent, currentColorExpr,
+        init, set, get, refresh, isActive, onChange, annotateCurrent, currentColorExpr,
         setPanelVisible, describe, popupHTML, tooltipHTML, exportView, exportGeoJSON,
         parseKey, options, centroid, areaM2, fieldFor, cellValue, heightFromValue,
         annotate, colorExpr, legend, legendModel, summary, stretchField, BUILDING_SPEC,

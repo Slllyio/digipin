@@ -252,6 +252,16 @@ are upper bounds until the OSM/Open Charge Map sources are added on CI.
 
     python -m pipeline.traffic.ev_charging --region all --refresh
 
+### 10. Buildings on the traffic clock (`js/traffic-buildings.js`)
+
+"Colour 3D buildings by the clock" in the Traffic legend (or DISHA
+`[ACTION] trafficHour hour:18 buildings:on`) builds a runtime cell dataset
+`traffic_clock` from `traffic_load` for the clock's hour: each L7 cell takes
+the worst road V/C in it (via `TrafficOverlay.vcAt`), or ¾ of the worst in a
+neighbouring cell, and BuildingData colours every Overture building by its
+cell. Moving the slider or playing the day repaints the buildings as the
+roads beside them fill and empty.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

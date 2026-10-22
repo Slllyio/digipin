@@ -126,11 +126,15 @@ const DISHAActions = (() => {
                 throw new Error('trafficHour needs an hour 0–23, "peak" or "play"');
             }
             if (!T.isVisible()) T.attach();
-            if (v === 'play') { T.play(); return 'Playing traffic through the day'; }
+            const B = _g('TrafficBuildings'), b = String(p.buildings || '').toLowerCase();
+            let tail = '';
+            if (B && (b === 'on' || b === 'true')) { B.enable(); tail = '; buildings coloured by the clock'; }
+            else if (B && (b === 'off' || b === 'false')) { B.disable(); tail = '; buildings back to plain massing'; }
+            if (v === 'play') { T.play(); return `Playing traffic through the day${tail}`; }
             T.stop();
-            if (v === 'peak') { T.setHour(null); return 'Traffic at the worse peak hour'; }
+            if (v === 'peak') { T.setHour(null); return `Traffic at the worse peak hour${tail}`; }
             T.setHour(h);
-            return `Traffic at ${T.hourLabel(h)}`;
+            return `Traffic at ${T.hourLabel(h)}${tail}`;
         },
         query(p) {
             if (!p.id) throw new Error('query needs an id');

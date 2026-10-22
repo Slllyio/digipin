@@ -227,8 +227,14 @@ const TrafficOverlay = (() => {
             if (_map.getLayer(FLOW_ID)) _map.setFilter(FLOW_ID, p.flow);
         }
         _syncClock();
+        for (const fn of _hourFns) { try { fn(_hour); } catch (e) { console.warn('traffic hour listener', e); } }
         return _hour;
     }
+    const _hourFns = new Set();
+    /** Call fn(hour) whenever the clock moves; returns an unsubscribe. */
+    function onHour(fn) { _hourFns.add(fn); return () => _hourFns.delete(fn); }
+    /** The city's hourly profile (summary.json) or the default. */
+    function config() { return _cfg || HOURLY; }
     /** Current hour shown (null = worse peak). */
     function getHour() { return _hour; }
 
@@ -465,6 +471,7 @@ const TrafficOverlay = (() => {
             + `<button type="button" data-tclock="play" aria-label="Play the day" style="${btn}">▶</button>`
             + `<input type="range" min="0" max="23" step="1" value="${_hour == null ? 9 : _hour}" data-tclock="hour" aria-label="Hour of day" style="flex:1;min-width:120px;accent-color:${pal.primary};">`
             + `<button type="button" data-tclock="peak" style="${btn}">Peak</button></div>`
+            + (typeof TrafficBuildings !== 'undefined' ? `<label style="display:flex;align-items:center;gap:6px;margin-top:6px;cursor:pointer;"><input type="checkbox" data-tclock="bldg"${TrafficBuildings.isOn() ? ' checked' : ''}> Colour 3D buildings by the clock</label>` : '')
             + (typeof RoadWhatIf !== 'undefined' ? `<button type="button" data-tclock="whatif" style="${btn}margin-top:6px;width:100%;">What if… close, widen or add a road</button>` : '')
             + `<div data-tclock="label" aria-live="polite" style="margin-top:4px;color:${pal.ink};font-weight:600;"></div></div>`;
     }
@@ -478,6 +485,11 @@ const TrafficOverlay = (() => {
         if (pk) pk.addEventListener('click', () => { stop(); setHour(null); });
         const wi = q('whatif');
         if (wi) wi.addEventListener('click', () => RoadWhatIf.toggle());
+        const bl = q('bldg');
+        if (bl) bl.addEventListener('change', async () => {
+            const ok = bl.checked ? await TrafficBuildings.enable() : (await TrafficBuildings.disable(), false);
+            bl.checked = !!ok;
+        });
     }
     /** Reflect the current hour / play state in the legend clock. */
     function _syncClock() {
@@ -510,6 +522,7 @@ const TrafficOverlay = (() => {
         if (_unsub) { _unsub(); _unsub = null; }
         if (_popup) { _popup.remove(); _popup = null; }
         if (typeof RoadWhatIf !== 'undefined' && RoadWhatIf.close) RoadWhatIf.close();
+        if (typeof TrafficBuildings !== 'undefined' && TrafficBuildings.isOn()) TrafficBuildings.disable();
         _removeLegend();
         const map = _map_();
         if (!map) return;
@@ -527,7 +540,7 @@ const TrafficOverlay = (() => {
     function isVisible() { return _active; }
 
     return { attach, detach, toggle, isVisible, refresh, colorFor, gradeForRoad, widthFor, geojsonUrl, region, BANDS,
-        setHour, getHour, play, stop, hourCoef, vcAt, losFor, speedAt, hourLabel, paintFor, HOURLY };
+        setHour, getHour, onHour, config, play, stop, hourCoef, vcAt, losFor, speedAt, hourLabel, paintFor, HOURLY };
 })();
 
 if (typeof window !== 'undefined') window.TrafficOverlay = TrafficOverlay;
