@@ -1224,10 +1224,10 @@ def flood_future(region):
         if x.get("rn_w") is None:
             continue
 
-        def pct(k):
+        def pct(k, x=x):
             return _r(100 * (x.get(f"{k}_w") or 0), 1)
 
-        def depth(k):
+        def depth(k, x=x):
             w = x.get(f"{k}_w") or 0
             return _r((x.get(f"{k}_d") or 0) / w, 2) if w > 0.01 else 0.0
         r = {"river_pct_now": pct("rn"), "river_pct_2050": pct("r5"), "river_pct_2050_high": pct("r8"),
