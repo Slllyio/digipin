@@ -296,6 +296,17 @@ cell's missing canopy, and the top five cells (≥ 750 m apart) are listed.
 Delhi: 63% of residents within 20 minutes of a station walk there under less
 than 10% tree cover; 72% for the walk to school.
 
+### 13. Bus gaps on busy corridors (Urban lens `busgap`)
+
+Busy corridors are arterials in the top fifth of modelled peak-hour PCU; a
+home within 250 m of one is beside it. It counts as served with a bus every
+10 minutes or better within 400 m (GTFS, 07–10 h; Bengaluru today), any
+mapped OSM bus stop within 400 m where there is no timetable, or a
+rail/metro/BRT station within 800 m. The five heaviest unserved corridor
+cells (≥ 1.5 km apart) are listed as candidates for new or more frequent
+routes. Bengaluru: 4.9% of the 55.6 lakh people beside busy arterials lack a
+frequent bus; Delhi (stops only): 17.3% have no stop at all.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

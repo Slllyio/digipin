@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 45,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
      "value": 75.7,
@@ -153,6 +159,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 20.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 4.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -282,6 +294,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 46.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
      "value": 69.2,
@@ -399,6 +417,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 7.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -528,6 +552,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 17.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
      "value": 62.7,
@@ -654,6 +684,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 75.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
      "value": 65.4,
@@ -771,6 +807,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 25.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 23.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -900,6 +942,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 49.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
      "value": 64.6,
@@ -1026,6 +1074,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 21.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
      "value": 97.3,
@@ -1146,6 +1200,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 13.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
      "value": 52,
@@ -1263,6 +1323,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 49.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1392,6 +1458,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
      "value": 17.2,
@@ -1515,6 +1587,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "busgap": {
+     "label": "Busy-corridor residents without good bus service",
+     "value": 15.8,
      "unit": "%",
      "higherIs": "worse"
     },

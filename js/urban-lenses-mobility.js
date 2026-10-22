@@ -448,7 +448,79 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // ── bus gaps on busy corridors ──────────────────────────────────────────
+
+    const BUS_KM = 0.4, BUS_FREQ_HR = 6, CORRIDOR_Q = 0.8;
+
+    function busgap(fr) {
+        const c = fr.cols, g = fr.grid, idx = _residents(fr), n = g.n, pop = c['population.population'];
+        const pcu = c['traffic_load.peak_pcu'];
+        const dep = c['bus_service.peak_departures_hr'], stops = c['osm_transit.stops'], rapid = c['osm_transit.rapid'];
+        if (!pcu || (!dep && !stops)) return null;
+        const gtfs = !!dep && dep.some(v => v > 0);
+        const road = [];
+        for (let i = 0; i < n; i++) if (pcu[i] > 0) road.push(i);
+        if (road.length < 10) return null;
+        const vals = road.map(i => pcu[i]).sort((a, b) => a - b);
+        const cut = vals[Math.floor(CORRIDOR_Q * (vals.length - 1))];
+        const near = g.offsets(ROAD_KM), bus = g.offsets(BUS_KM), rail = g.offsets(0.8);
+        const corr = new Float64Array(n).fill(NaN), busHr = new Float64Array(n).fill(NaN);
+        const served = new Uint8Array(n);
+        for (let i = 0; i < n; i++) {
+            let m = 0;
+            for (const [a, b] of near) { const j = g.cellAt(i, a, b); if (j >= 0 && pcu[j] > m) m = pcu[j]; }
+            if (m < cut) continue;
+            corr[i] = m;
+            let hr = 0, any = false;
+            for (const [a, b] of bus) {
+                const j = g.cellAt(i, a, b);
+                if (j < 0) continue;
+                if (gtfs && dep[j] > 0) hr += dep[j];
+                if (stops && stops[j] > 0) any = true;
+            }
+            let r = false;
+            if (rapid) for (const [a, b] of rail) { const j = g.cellAt(i, a, b); if (j >= 0 && rapid[j] > 0) { r = true; break; } }
+            busHr[i] = gtfs ? hr : (any ? 1 : 0);
+            served[i] = (gtfs ? hr >= BUS_FREQ_HR : any) || r ? 1 : 0;
+        }
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const along = idx.filter(i => _fin(corr[i]));
+        const pAlong = _sumOver(pop, along, () => true);
+        if (!pAlong) return null;
+        const pGap = _sumOver(pop, along, i => !served[i]);
+        const gaps = [];
+        for (let i = 0; i < n; i++) if (_fin(corr[i]) && !served[i]) gaps.push(i);
+        gaps.sort((a, b) => corr[b] - corr[a]);
+        const picks = [];
+        for (const i of gaps) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1.5)) continue;
+            picks.push(i);
+        }
+        const what = gtfs ? `a bus every ${60 / BUS_FREQ_HR} minutes or better (07–10 h, GTFS)` : 'any mapped bus stop';
+        const stats = [
+            { label: `Residents beside the busiest fifth of arterials (by peak traffic)`, value: `${_people(pAlong)} (${_round(100 * pAlong / total)}%)` },
+            { label: `… with no ${gtfs ? 'frequent bus' : 'bus stop'} within ${BUS_KM * 1000} m and no station within 800 m`, value: `${_people(pGap)} (${_round(100 * pGap / pAlong)}%)`, raw: Math.round(pGap) },
+            { label: 'Service test', value: gtfs ? 'Timetable (GTFS) frequency' : 'OpenStreetMap stops (no timetable for this city)' },
+        ];
+        picks.forEach((i, r) => stats.push({ label: `Corridor gap ${r + 1}: ${g.codes[i]}`, value: `${_people(corr[i])} PCU in the peak hour, ${gtfs ? `${_round(busHr[i])} buses/hour nearby` : 'no stop mapped nearby'}` }));
+        return {
+            columns: { corridor_pcu: corr, bus_hr: busHr }, idx: along, weightKey: 'corridor_pcu',
+            metric: { label: 'Busy-corridor residents without good bus service', value: _round(100 * pGap / pAlong), unit: '%', higherIs: 'worse' },
+            headline: `${_round(100 * pGap / pAlong)}% of the ${_people(pAlong)} people living beside the busiest fifth of arterials have no ${gtfs ? 'frequent bus' : 'bus stop'} within ${BUS_KM * 1000} m or station within 800 m`
+                + (picks.length ? `; the heaviest unserved corridor carries ${_people(corr[picks[0]])} vehicles (PCU) in the peak hour.` : '.'),
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'busgap', equity: true, title: 'Bus gaps on busy roads', icon: '🚌',
+            question: 'Which busy commute corridors have no frequent bus?',
+            field: { key: 'corridor_pcu', label: 'Peak-hour traffic on the nearest busy arterial', unit: 'PCU/h', higherIs: 'worse', ramp: 'heat' },
+            extra: [{ key: 'bus_hr', label: 'Buses per hour within 400 m (07–10 h)', unit: 'per hour', higherIs: 'better', ramp: 'viridis' }],
+            needs: ['traffic_load.peak_pcu', 'bus_service.peak_departures_hr', 'osm_transit.stops', 'osm_transit.rapid', 'wealth.rwi'],
+            method: `Busy corridors are arterials in the top fifth of modelled peak-hour traffic (demand model PCU); a home within ${ROAD_KM * 1000} m of one counts as beside it. Served means a bus every ${60 / BUS_FREQ_HR} minutes or better within ${BUS_KM * 1000} m in the 07–10 h timetable (cities with open GTFS, currently Bengaluru), or any mapped bus stop within ${BUS_KM * 1000} m elsewhere, or a rail/metro/BRT station within 800 m. Gaps are where car traffic is heavy and buses are not: candidates for new or more frequent routes.`,
+            refs: 'Demand model (pipeline/traffic/demand_model.py); GTFS (BMTC, Vonter); MoHUA 2017 Metro Rail Policy (feeder bus within 500 m); ITDP BRT Standard' },
         { id: 'shade', equity: true, title: 'Shaded walks', icon: '🌳',
             question: 'How much tree shade is there on the walk to the station and to school?',
             field: { key: 'walk_shade', label: 'Tree cover along the walk to the nearest station', unit: '%', higherIs: 'better', ramp: 'greens' },
@@ -496,7 +568,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

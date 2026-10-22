@@ -341,6 +341,21 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.shade(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('busgap lens: busy corridors without frequent buses', () => {
+        const pcu = codes.map((_, i) => (i < SIZE ? 3000 : i === n - 1 ? 3500 : i % 7 === 0 ? 200 : 0));
+        const dep = codes.map((_, i) => (i === 1 ? 20 : 0));                // frequent bus at the west end of the top row
+        const f = L.frameFrom(codes, { 'population.population': pop, 'traffic_load.peak_pcu': pcu, 'bus_service.peak_departures_hr': dep });
+        const r = L._lenses.busgap(f, {});
+        expect(r.stats[2].value).toMatch(/GTFS/);
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.metric.value).toBeLessThan(100);
+        expect(r.stats.some(x => x.label.startsWith('Corridor gap 1'))).toBe(true);
+        expect(r.columns.bus_hr[0]).toBeGreaterThanOrEqual(20);
+        const osm = L.frameFrom(codes, { 'population.population': pop, 'traffic_load.peak_pcu': pcu, 'osm_transit.stops': dep });
+        expect(L._lenses.busgap(osm, {}).stats[2].value).toMatch(/OpenStreetMap/);
+        expect(L._lenses.busgap(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {
         const rp = new Array(n).fill(0), depth = new Array(n).fill(0);
         for (let r = 0; r < SIZE; r++) { rp[r * SIZE + 3] = 100; depth[r * SIZE + 3] = 1; }   // column 3 floods
