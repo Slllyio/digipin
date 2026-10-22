@@ -4599,3 +4599,49 @@ body.presenting #sidebar { display: none !important; }
 .point-cloud-panel button, .point-cloud-panel input[type=file] { font: inherit; cursor: pointer; }
 .point-cloud-sample { justify-self: start; }
 .point-cloud-close { justify-self: end; }
+
+/* Live now (weather, air, river, correlations) and Live sky */
+.tb-badge { position: absolute; top: 2px; right: 2px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: #d7372f; color: #fff; font-size: 10px; line-height: 16px; font-weight: 700; text-align: center; pointer-events: none; }
+#btn-livenow { position: relative; }
+.live-now-panel { position: fixed; right: 16px; top: 80px; z-index: 960; display: grid; gap: 10px; width: min(340px, calc(100vw - 32px)); max-height: calc(100vh - 140px); overflow: auto; padding: 12px 14px; border-radius: 12px; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); font-size: 12px; box-shadow: 0 8px 28px rgba(0,0,0,.28); }
+.live-now-panel .ln-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.live-now-panel .ln-title { display: grid; gap: 2px; }
+.live-now-panel .ln-kicker, .live-now-panel .ln-section { font-size: 10px; letter-spacing: .12em; color: var(--text-secondary); font-weight: 600; }
+.live-now-panel .ln-kicker::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: #d7372f; animation: ln-pulse 1.6s ease-in-out infinite; vertical-align: 1px; }
+@keyframes ln-pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .live-now-panel .ln-kicker::before { animation: none; } }
+.live-now-panel .ln-place { font-size: 14px; }
+.live-now-panel .ln-btns { display: flex; gap: 4px; }
+.live-now-panel .ln-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border-color); background: transparent; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; }
+.live-now-panel .ln-dim { color: var(--text-secondary); }
+.live-now-panel .ln-loading, .live-now-panel .ln-clear { color: var(--text-secondary); padding: 6px 0; }
+.live-now-panel .ln-weather { display: flex; align-items: center; gap: 10px; }
+.live-now-panel .ln-wx-icon { font-size: 26px; }
+.live-now-panel .ln-temp { font-size: 30px; font-weight: 300; line-height: 1; }
+.live-now-panel .ln-wx-meta { display: grid; gap: 2px; }
+.live-now-panel .ln-days { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.live-now-panel .ln-day { display: grid; justify-items: center; gap: 1px; padding: 6px 4px; border-radius: 8px; border: 1px solid var(--border-color); }
+.live-now-panel .ln-facts { display: grid; gap: 6px; }
+.live-now-panel .ln-fact { display: grid; grid-template-columns: 34px 1fr; column-gap: 8px; align-items: center; }
+.live-now-panel .ln-fact > :nth-child(3) { grid-column: 2; font-size: 11px; }
+.live-now-panel .ln-aqi { grid-row: span 2; display: grid; place-items: center; height: 30px; border-radius: 8px; color: #fff; font-weight: 700; }
+.live-now-panel .ln-river { background: #1f78d1; font-size: 16px; }
+.live-now-panel .ln-pop { background: var(--border-color); }
+.live-now-panel .ln-section { display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 8px; }
+.live-now-panel .ln-count { min-width: 18px; padding: 0 5px; border-radius: 9px; background: #d7372f; color: #fff; text-align: center; letter-spacing: 0; }
+.live-now-panel .ln-corr { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.live-now-panel .ln-c-btn { display: flex; gap: 8px; width: 100%; text-align: left; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color); border-left-width: 4px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.live-now-panel .ln-high .ln-c-btn { border-left-color: #d7372f; }
+.live-now-panel .ln-medium .ln-c-btn { border-left-color: #f28c28; }
+.live-now-panel .ln-low .ln-c-btn { border-left-color: #e6c229; }
+.live-now-panel .ln-c-icon { font-size: 16px; }
+.live-now-panel .ln-c-txt { display: grid; gap: 2px; }
+.live-now-panel .ln-checks summary { cursor: pointer; color: var(--text-secondary); font-size: 11px; }
+.live-now-panel .ln-checks ul { margin: 6px 0 0; padding-left: 4px; list-style: none; display: grid; gap: 2px; font-size: 11px; }
+.live-now-panel .ln-checks .fail { color: #d7372f; }
+.live-sky-status { position: fixed; left: 50%; top: 76px; transform: translateX(-50%); z-index: 940; display: flex; gap: 10px; align-items: center; padding: 6px 12px; border-radius: 18px; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); font-size: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.2); max-width: calc(100vw - 32px); flex-wrap: wrap; justify-content: center; }
+.live-sky-status select { font: inherit; }
+.live-sky-credit { color: var(--text-secondary); font-size: 10px; }
+.live-sky-pop { display: grid; gap: 2px; font-size: 12px; }
+.live-now-panel.is-docked { position: relative; right: auto; top: auto; width: auto; max-height: none; flex: 0 1 auto; min-height: 0; }
+#aino-right.has-live-now #city-overview { display: none; }

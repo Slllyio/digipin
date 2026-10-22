@@ -289,6 +289,14 @@
             <span class="tb-icon">&#128752;</span>
             <span class="tb-label" data-i18n="tb.sentinel">Sentinel-2</span>
         </button>
+        <button class="toolbar-btn" id="btn-livenow" title="Live now — weather, air, river flow and correlations with the cells in view (live)">
+            <span class="tb-icon">&#128308;</span>
+            <span class="tb-label" data-i18n="tb.livenow">Live now</span>
+        </button>
+        <button class="toolbar-btn" id="btn-livesky" title="Live sky — aircraft over the city in 3D at their real altitude (ADS-B)">
+            <span class="tb-icon">&#9992;&#65039;</span>
+            <span class="tb-label" data-i18n="tb.livesky">Live sky</span>
+        </button>
         <button class="toolbar-btn" id="btn-pointcloud" title="Point cloud — view your LiDAR / drone survey (LAS, LAZ, COPC, EPT) in 3D">
             <span class="tb-icon">&#9729;</span>
             <span class="tb-label" data-i18n="tb.pointcloud">Point cloud</span>
@@ -556,6 +564,8 @@
     <script defer src="js/layer-swipe.js"></script>
     <script defer src="js/sentinel-imagery.js"></script>
     <script defer src="js/point-cloud.js"></script>
+    <script defer src="js/live-now.js"></script>
+    <script defer src="js/live-sky.js"></script>
     <script defer src="js/kde-overlay.js"></script>
     <script defer src="js/accessibility-overlay.js"></script>
     <script defer src="js/url-state.js"></script>
@@ -618,6 +628,8 @@
         ['btn-swipe',     () => window.LayerSwipe],
         ['btn-sentinel',  () => window.SentinelImagery],
         ['btn-pointcloud', () => window.PointCloud],
+        ['btn-livenow',   () => window.LiveNow],
+        ['btn-livesky',   () => window.LiveSky],
         ['btn-kde',       () => window.KDEOverlay],
         ['btn-access',    () => window.AccessibilityOverlay],
         ['btn-choropleth', () => window.ScoreChoropleth],
