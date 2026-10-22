@@ -227,6 +227,25 @@ const Panel = (() => {
             });
         }
 
+        const prBtn = document.getElementById('open-property-report-btn');
+        if (prBtn) {
+            prBtn.addEventListener('click', async () => {
+                const c = currentCell && currentCell.center;
+                const city = c && typeof UrbanInsights !== 'undefined' && typeof CellStore !== 'undefined' ? UrbanInsights.cityAt(CellStore, c.lat, c.lng) : null;
+                const toast = (msg, kind) => { if (typeof App !== 'undefined') App.showToast('Property report', msg, kind); };
+                if (!city) { toast('This spot is outside the 13 cities with real-estate data.', 'info'); return; }
+                prBtn.disabled = true;
+                try {
+                    const m = await PropertyReport.build(city, c.lat, c.lng, CellStore);
+                    if (!PropertyReport.open(m)) toast('Allow pop-ups to open the report.', 'warning');
+                } catch (e) {
+                    toast(e.message || 'The report could not be built.', 'warning');
+                } finally {
+                    prBtn.disabled = false;
+                }
+            });
+        }
+
         const scoresBtn = document.getElementById('open-scores-btn');
         if (scoresBtn) {
             scoresBtn.addEventListener('click', () => {
@@ -547,6 +566,14 @@ const Panel = (() => {
         if (data.scores) {
             html += `<button class="open-dialog-btn" id="open-site-brief-btn">
                 <span class="dialog-btn-icon">&#128203;</span> Site Brief
+                <span class="dialog-btn-arrow">&#8599;</span>
+            </button>`;
+        }
+
+        // Property report — real-estate due diligence for this block (js/property-report.js)
+        if (typeof PropertyReport !== 'undefined') {
+            html += `<button class="open-dialog-btn" id="open-property-report-btn">
+                <span class="dialog-btn-icon">&#127968;</span> Property Report
                 <span class="dialog-btn-arrow">&#8599;</span>
             </button>`;
         }

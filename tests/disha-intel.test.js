@@ -93,6 +93,8 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('where will the city grow next')).toEqual({ type: 'lens', lens: 'nextgrowth' });
         expect(M('find places like this in Pune')).toEqual({ type: 'similar', city: 'pune' });
         expect(M('show comparable localities')).toEqual({ type: 'similar' });
+        expect(M('give me a property report for this spot')).toEqual({ type: 'propreport' });
+        expect(M('do a due diligence check here')).toEqual({ type: 'propreport' });
         expect(M('which lakes have been encroached in Delhi')).toEqual({ type: 'lens', lens: 'encroach', city: 'delhi' });
         expect(M('how much flood damage do buildings face each year')).toEqual({ type: 'lens', lens: 'floodloss' });
         expect(M('what is the climate risk to property in Delhi')).toEqual({ type: 'lens', lens: 'floodloss', city: 'delhi' });

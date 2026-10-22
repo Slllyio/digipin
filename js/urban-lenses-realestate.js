@@ -540,7 +540,7 @@ const UrbanLensesRealEstate = (() => {
      */
     async function similar({ fromCity, lat, lng, toCity, k = TOP }, store) {
         const A = await _simFrame(fromCity, store);
-        const code = globalThis.DigiPin.encode(lat, lng).replace(/-/g, '').slice(0, 7);
+        const code = DigiPin.encode(lat, lng).replace(/-/g, '').slice(0, 7);
         const i0 = A.g.codes.indexOf(code);
         if (i0 < 0) return null;
         const ref = A.ranks.map(r => (r && _fin(r[i0]) ? r[i0] : null));
