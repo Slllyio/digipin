@@ -15,7 +15,7 @@ const UrbanLensesMobility = (() => {
     const EV_NEAR_KM = 2, EV_GRID_KM = 3;
     const STATION_WALK = 10, WALK_M_MIN = 80, WALK_DETOUR = 1.3, NEW_STATIONS = 3;
     const JOB_MIN = 45, JOB_LOW = 10;
-    const PARK_CAP = 3, PARK_HOT = 5;
+    const PARK_CAP = 3, PARK_HOT = 5, FEEDER_MAX = 30, FEEDERS = 5;
     const STOP_KM = 0.4, STOP_HOT = 40, STOP_BARE = 10, SHELTERS = 5, FEW_STOPS = 50;
     const STATION_KM = STATION_WALK * WALK_M_MIN / WALK_DETOUR / 1000;   // ~615 m straight line
 
@@ -374,6 +374,62 @@ const UrbanLensesMobility = (() => {
             columns: { park_pressure: pCol, park_overflow: oCol }, idx: cells, weightKey: 'park_overflow',
             metric: { label: 'Parking demand on overflowing streets', value: share, unit: '%', higherIs: 'worse' },
             headline: `${share}% of late-morning parking demand falls on streets where it outstrips the kerb and lots, leaving about ${_people(over)} vehicles on footpaths, main roads or double-parked.`,
+            stats,
+        };
+    }
+
+    /** Metro last mile: residents too far to walk to a station and with no bus stop within a 5-minute walk. */
+    function feeder(fr) {
+        const g = fr.grid, c = fr.cols, idx = _residents(fr), n = g.n, pop = c['population.population'];
+        const mw = c['rail_access.metro_walk_min'], rw = c['rail_access.rail_walk_min'];
+        const w = mw && mw.some(v => _fin(v)) ? mw : rw;
+        const srcs = ['bus_stop_heat.stops', 'osm_transit.stops', 'bus_service.stops'].map(k => c[k]).filter(Boolean);
+        if (!w || !srcs.length) return null;
+        const hasStop = new Uint8Array(n);
+        for (let i = 0; i < n; i++) if (srcs.some(a => a[i] > 0)) hasStop[i] = 1;
+        const off = g.offsets(STOP_KM);
+        const band = idx.filter(i => _fin(w[i]) && w[i] > STATION_WALK && w[i] <= FEEDER_MAX);
+        if (!band.length) return null;
+        const gap = new Float64Array(n).fill(NaN), walk = new Float64Array(n).fill(NaN), unserved = new Uint8Array(n);
+        for (const i of band) {
+            walk[i] = w[i];
+            let ok = false;
+            for (const [a, b] of off) { const j = g.cellAt(i, a, b); if (j >= 0 && hasStop[j]) { ok = true; break; } }
+            if (!ok) { unserved[i] = 1; gap[i] = pop[i]; }
+        }
+        const total = _sumOver(pop, idx, () => true) || 1, pBand = _sumOver(pop, band, () => true), pGap = _sumOver(pop, band, i => unserved[i]);
+        const share = _round(100 * pGap / (pBand || 1));
+        const metroWord = w === mw ? 'metro' : 'rail';
+        const stats = [
+            { label: `Residents ${STATION_WALK}–${FEEDER_MAX} min on foot from a ${metroWord} station (feeder range)`, value: `${_people(pBand)} (${_round(100 * pBand / total)}% of the city)` },
+            { label: '… with no mapped bus stop within a 5-minute walk', value: `${_people(pGap)} (${share}%)`, raw: share },
+        ];
+        // Feeder clusters: unserved cells, ~1.5 km apart, by residents within 800 m.
+        const area = g.offsets(0.8), score = new Map();
+        for (const i of band) {
+            if (!unserved[i]) continue;
+            let p = 0;
+            for (const [a, b] of area) { const j = g.cellAt(i, a, b); if (j >= 0 && unserved[j]) p += pop[j]; }
+            score.set(i, p);
+        }
+        const picks = [];
+        for (const i of [...score.keys()].sort((a, b) => score.get(b) - score.get(a))) {
+            if (picks.length >= FEEDERS) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1.5)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, k) => stats.push({ label: `Feeder route stop ${k + 1}: ${g.codes[i]}`, value: `${_people(score.get(i))} residents within 800 m, ${_round(w[i])} min walk from the ${metroWord}` }));
+        const rwi = c['wealth.rwi'];
+        if (rwi) {
+            const q20 = wquantile(rwi, pop, idx, 0.2);
+            const poor = q20 != null ? band.filter(i => rwi[i] <= q20) : [];
+            const pp = _sumOver(pop, poor, () => true);
+            if (pp) stats.push({ label: 'Poorest fifth in feeder range with no bus stop', value: `${_round(100 * _sumOver(pop, poor, i => unserved[i]) / pp)}% (all: ${share}%)` });
+        }
+        return {
+            columns: { feeder_gap: gap, station_walk_min: walk }, idx: band, weightKey: 'feeder_gap',
+            metric: { label: `Feeder-range residents with no bus stop nearby`, value: share, unit: '%', higherIs: 'worse' },
+            headline: `${_people(pBand)} people live ${STATION_WALK}–${FEEDER_MAX} minutes on foot from a ${metroWord} station; ${share}% of them have no mapped bus stop within a 5-minute walk to make that last mile.`,
             stats,
         };
     }
@@ -1050,7 +1106,7 @@ const UrbanLensesMobility = (() => {
     // Pillars over the lens league (data/lenses/league.json). EV charging is
     // left out: open charger data covers too little of India's network to rank on.
     const PILLARS = [
-        { id: 'access', label: 'Access', metrics: ['metro', 'jobaccess', 'transit', 'busgap', 'ambulance'] },
+        { id: 'access', label: 'Access', metrics: ['metro', 'jobaccess', 'feeder', 'transit', 'busgap', 'ambulance'] },
         { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon', 'parking'] },
         { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise', 'nightwalk', 'freight', 'cleanwalk'] },
         { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'busheat', 'walk', 'cycling', 'crossing'] },
@@ -1224,6 +1280,13 @@ const UrbanLensesMobility = (() => {
             needs: ['parking.pressure', 'parking.demand_ecs', 'parking.supply_ecs', 'rail_access.rail_walk_min'],
             method: 'Demand is the traffic model\'s trip attraction (GHSL non-residential floor space and OpenStreetMap amenities): half of the city\'s 0.9 motorised trips per resident end away from home, cars (15% at 1.6 people) and two-wheelers (40% at 1.2, a quarter of a car bay each) in equivalent car spaces, 60% of them parked at once late in the morning. Supply is usable kerb on local and secondary streets (both sides, a bay every 5.5 m, 40% usable after junctions, driveways and no-parking stretches) plus Overture parking lots at 40 spaces each; main roads are left out. Indicative: no parking surveys or occupancy counts, and open data maps few off-street lots.',
             refs: 'IRC SP 12 (parking norms); MoHUA 2016 National Urban Transport Policy parking guidance; Overture Maps Foundation places; GHSL 2023' },
+        { id: 'feeder', equity: true, title: 'Metro last mile', icon: '🚌',
+            question: 'Who lives too far to walk to a metro station and has no bus stop nearby to get there?',
+            field: { key: 'feeder_gap', label: 'Residents with no bus stop in feeder range', unit: 'people', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'station_walk_min', label: 'Walk to the nearest station', unit: 'min', higherIs: 'worse', ramp: 'heat' }],
+            needs: ['rail_access.metro_walk_min', 'rail_access.rail_walk_min', 'bus_stop_heat.stops', 'osm_transit.stops', 'bus_service.stops', 'wealth.rwi'],
+            method: `The feeder range is homes ${STATION_WALK}–${FEEDER_MAX} minutes on foot from the nearest metro station (any rail station where the city has no metro): too far to walk comfortably, close enough for a feeder bus, shared auto or bicycle. A home counts as served when a mapped bus stop (OpenStreetMap, open GTFS or Overture) is within about ${STOP_KM * 1000} m. Feeder stops are picked greedily, 1.5 km apart, by unserved residents within 800 m. Stop lists outside Bengaluru are partial until OpenStreetMap stops are pulled on the next data refresh, so gaps are upper bounds there; shared autos and e-rickshaws are not mapped.`,
+            refs: 'Overture Maps Foundation; OpenStreetMap; BMTC GTFS; MoHUA 2017 Metro Rail Policy (last-mile connectivity within 5 km)' },
         { id: 'ev', equity: false, title: 'EV charging gaps', icon: '🔌',
             question: 'How far are homes and traffic from a known public EV charger?',
             field: { key: 'ev_km', label: 'Distance to the nearest known charger', unit: 'km', higherIs: 'worse', ramp: 'heat' },
@@ -1233,7 +1296,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

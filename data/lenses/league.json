@@ -120,6 +120,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 70.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 35.2,
@@ -309,6 +315,12 @@
     "parking": {
      "label": "Parking demand on overflowing streets",
      "value": 5.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 6.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -504,6 +516,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 58.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 48,
@@ -687,6 +705,12 @@
     "parking": {
      "label": "Parking demand on overflowing streets",
      "value": 4.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 42.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -882,6 +906,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 54.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 46.5,
@@ -1074,6 +1104,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 91.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 0,
@@ -1257,6 +1293,12 @@
     "parking": {
      "label": "Parking demand on overflowing streets",
      "value": 4.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 62,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1452,6 +1494,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 89.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 22.8,
@@ -1644,6 +1692,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 50.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 53.3,
@@ -1830,6 +1884,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 54.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 61.6,
@@ -2013,6 +2073,12 @@
     "parking": {
      "label": "Parking demand on overflowing streets",
      "value": 5.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 87.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -2208,6 +2274,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 30.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 73,
@@ -2397,6 +2469,12 @@
     "parking": {
      "label": "Parking demand on overflowing streets",
      "value": 6.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "feeder": {
+     "label": "Feeder-range residents with no bus stop nearby",
+     "value": 54.9,
      "unit": "%",
      "higherIs": "worse"
     },

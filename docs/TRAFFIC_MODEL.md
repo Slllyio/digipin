@@ -459,6 +459,17 @@ supply_ecs, lots, pressure. Share of parking demand on overflowing streets:
 Mumbai 50%, Ahmedabad 31%, Kolkata 30%, Delhi 21%, Bengaluru 6%. Indicative:
 no surveys or occupancy counts.
 
+### 25. Metro last mile (lens `feeder`)
+
+Residents 10–30 minutes on foot from the nearest metro station (any rail
+station where a city has no metro) are in feeder range. They count as served
+when a mapped bus stop (bus_stop_heat, osm_transit or GTFS stops) is within
+about 400 m. Feeder stop sites are picked greedily, 1.5 km apart, by unserved
+residents within 800 m. Bengaluru, with the full BMTC stop list: 6% of
+feeder-range residents have no stop nearby. Other cities read 30–90% only
+because their open stop lists are partial until the CI bake adds
+OpenStreetMap stops; treat them as upper bounds.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

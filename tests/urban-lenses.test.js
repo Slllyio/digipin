@@ -496,6 +496,18 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.parking(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('feeder lens: residents in feeder range of a station with no bus stop nearby', () => {
+        const mw = codes.map((_, i) => (i % SIZE) * 5);                  // 0, 5, 10 … min walk going east
+        const st = codes.map((_, i) => (i % SIZE === 3 && Math.floor(i / SIZE) === 0 ? 1 : 0));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'rail_access.metro_walk_min': mw, 'bus_stop_heat.stops': st });
+        const r = L._lenses.feeder(f, {});
+        expect(r.metric.value).toBeGreaterThan(50);
+        expect(r.metric.value).toBeLessThan(100);
+        expect(Number.isNaN(r.columns.feeder_gap[0])).toBe(true);        // within a 10-minute walk: not in range
+        expect(r.stats.some(x => x.label.startsWith('Feeder route stop 1'))).toBe(true);
+        expect(L._lenses.feeder(L.frameFrom(codes, { 'population.population': pop, 'rail_access.metro_walk_min': mw }), {})).toBeNull();
+    });
+
     it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
         const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
         const league = { generated: '2026-10-22', cities: {
