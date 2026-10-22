@@ -15,6 +15,9 @@ const UrbanLensesMobility = (() => {
     const EV_NEAR_KM = 2, EV_GRID_KM = 3;
     const STATION_WALK = 10, WALK_M_MIN = 80, WALK_DETOUR = 1.3, NEW_STATIONS = 3;
     const JOB_MIN = 45, JOB_LOW = 10;
+    // Hourly share of daily traffic (%) as in pipeline/traffic/demand_model.py HOURLY_SHARE; 9 % at the 09:00 peak.
+    const HOURLY = [0.6, 0.4, 0.3, 0.3, 0.5, 1.1, 2.4, 4.4, 7.0, 9.0, 7.6, 5.6, 5.0, 4.8, 4.6, 4.8, 5.4, 7.0, 8.8, 7.8, 5.6, 3.6, 2.2, 1.2];
+    const HOURLY_PEAK = 9.0, JAM_MAX = 4, WORKDAYS = 300, PERSONS_PER_PCU = 2.7, RS_PER_PCU_HR = 2.7 * 100 + 0.4 * 100;
     const PARK_CAP = 3, PARK_HOT = 5, FEEDER_MAX = 30, FEEDERS = 5;
     const STOP_KM = 0.4, STOP_HOT = 40, STOP_BARE = 10, SHELTERS = 5, FEW_STOPS = 50;
     const STATION_KM = STATION_WALK * WALK_M_MIN / WALK_DETOUR / 1000;   // ~615 m straight line
@@ -466,6 +469,51 @@ const UrbanLensesMobility = (() => {
             columns: { trip_km: kCol, co2_kg_year: yCol }, idx: use, weightKey: 'trip_km',
             metric: { label: 'Average motorised trip from home', value: _round(mk, 1), unit: 'km', higherIs: 'worse' },
             headline: `The average resident's motorised trip is ${_round(mk, 1)} km` + (my != null ? `, about ${_round(my)} kg of CO2 a year from the tailpipe` : '') + '; homes far from jobs and shops travel the furthest.',
+            stats,
+        };
+    }
+
+    /** Hours and rupees lost to congestion over a day (hourly BPR delay on the modelled arterials). */
+    function jamcost(fr) {
+        const g = fr.grid, c = fr.cols, idx = _residents(fr), n = g.n, pop = c['population.population'];
+        const vc = c['traffic_load.peak_vc'], sp = c['traffic_load.peak_speed_kmh'], dl = c['traffic_load.delay_pct'], vkm = c['traffic_load.daily_vkm'];
+        if (!vc || !sp || !vkm) return null;
+        const hCol = new Float64Array(n).fill(NaN), rCol = new Float64Array(n).fill(NaN), cells = [];
+        let hrs = 0;
+        for (let i = 0; i < n; i++) {
+            if (!(vkm[i] > 0) || !_fin(vc[i]) || !(sp[i] > 0)) continue;
+            const ffs = sp[i] * (1 + (_fin(dl && dl[i]) ? dl[i] : 0) / 100);
+            let h = 0;
+            for (const sh of HOURLY) {
+                const v = vc[i] * sh / HOURLY_PEAK;
+                h += vkm[i] * sh / 100 / ffs * (Math.min(JAM_MAX, 1 + 0.15 * v ** 4) - 1);
+            }
+            if (h <= 0) continue;
+            hCol[i] = h; rCol[i] = h * WORKDAYS * RS_PER_PCU_HR / 1e5; hrs += h; cells.push(i);
+        }
+        if (!cells.length) return null;
+        const pHrs = hrs * PERSONS_PER_PCU, crore = hrs * WORKDAYS * RS_PER_PCU_HR / 1e7;
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const perTraveller = 60 * pHrs / (total * 0.9 * 0.5);                // minutes a day per motorised commuter (two trips)
+        const stats = [
+            { label: 'Person-hours lost in traffic a day', value: _people(pHrs), raw: Math.round(pHrs) },
+            { label: 'Delay per motorised traveller', value: `${_round(perTraveller)} min a day` },
+            { label: 'Cost of the delay (time + fuel)', value: `₹${_people(crore)} crore a year` },
+        ];
+        const picks = [];
+        for (const i of cells.slice().sort((a, b) => hCol[b] - hCol[a])) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1.5)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, k) => stats.push({ label: `Costliest jam ${k + 1}: ${g.codes[i]}`, value: `${_people(hCol[i] * PERSONS_PER_PCU)} person-hours a day, ₹${_round(rCol[i] / 100, 1)} crore a year` }));
+        // A few junction cells dwarf the rest; cap the map columns at the 95th percentile so the pattern shows.
+        const sorted = cells.map(i => hCol[i]).sort((a, b) => a - b), cap = sorted[Math.floor(0.95 * (sorted.length - 1))];
+        for (const i of cells) if (hCol[i] > cap) { rCol[i] *= cap / hCol[i]; hCol[i] = cap; }
+        return {
+            columns: { jam_hours: hCol, jam_cost: rCol }, idx: cells, weightKey: 'jam_hours',
+            metric: { label: 'Delay per motorised traveller', value: _round(perTraveller), unit: 'min/day', higherIs: 'worse' },
+            headline: `Congestion on the modelled arterials costs about ${_people(pHrs)} person-hours a day, ${_round(perTraveller)} minutes per motorised traveller, or ₹${_people(crore)} crore a year in time and fuel.`,
             stats,
         };
     }
@@ -1143,7 +1191,7 @@ const UrbanLensesMobility = (() => {
     // left out: open charger data covers too little of India's network to rank on.
     const PILLARS = [
         { id: 'access', label: 'Access', metrics: ['metro', 'jobaccess', 'feeder', 'transit', 'busgap', 'ambulance'] },
-        { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon', 'parking'] },
+        { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'jamcost', 'monsoon', 'parking'] },
         { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'commute', 'noise', 'nightwalk', 'freight', 'cleanwalk'] },
         { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'busheat', 'walk', 'cycling', 'crossing'] },
     ];
@@ -1330,6 +1378,13 @@ const UrbanLensesMobility = (() => {
             needs: ['commute_carbon.trip_km', 'commute_carbon.co2_kg_day', 'wealth.rwi'],
             method: 'The traffic model\'s morning trips (gravity on arterial travel times, trips within the ~1 km home zone included) give each zone a trip-weighted mean distance (straight line × 1.3). CO2 is 0.9 motorised trips a day × that distance × the model\'s city-wide mode mix (two-wheelers 40%, cars 15%, autos 15%, buses 30%; about 0.036 kg CO2 per person-km, tailpipe). With one mode mix for the whole city, the map shows the cost of distance between homes and activity, not of car ownership; walking and cycling trips are left out.',
             refs: 'Hansen 1959; Ewing & Cervero 2010 (travel and the built environment); ICCT India emission factors; ARAI 2008' },
+        { id: 'jamcost', equity: false, title: 'Cost of congestion', icon: '⏱️',
+            question: 'How many hours and rupees does traffic congestion cost the city each day?',
+            field: { key: 'jam_hours', label: 'Vehicle-hours of delay a day', unit: 'PCU-h/day', higherIs: 'worse', ramp: 'heat' },
+            extra: [{ key: 'jam_cost', label: 'Cost of the delay', unit: '₹ lakh/year', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['traffic_load.peak_vc', 'traffic_load.peak_speed_kmh', 'traffic_load.delay_pct', 'traffic_load.daily_vkm'],
+            method: 'Each road cell\'s daily vehicle-km (PCU) is spread over the day with the model\'s hourly profile; each hour\'s volume/capacity is the peak V/C scaled by that hour\'s share, and its delay is the BPR travel-time factor (1 + 0.15·(V/C)⁴, at most 4×) minus one, at the cell\'s free-flow speed. Person-hours use 2.7 people per PCU (the model\'s mode mix); cost is ₹100 an hour of people\'s time plus 0.4 litres of fuel per PCU-hour at ₹100, over 300 working days. Arterials only: side streets and junction signals are not modelled, so this is a floor. The map caps cells at the city\'s 95th percentile.',
+            refs: 'BPR (1964); IRC SP 30 (value of travel time); TomTom Traffic Index for comparison; Boston Consulting Group 2018 (Indian congestion costs)' },
         { id: 'ev', equity: false, title: 'EV charging gaps', icon: '🔌',
             question: 'How far are homes and traffic from a known public EV charger?',
             field: { key: 'ev_km', label: 'Distance to the nearest known charger', unit: 'km', higherIs: 'worse', ramp: 'heat' },
@@ -1339,7 +1394,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

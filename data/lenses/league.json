@@ -132,6 +132,12 @@
      "unit": "km",
      "higherIs": "worse"
     },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 6.7,
+     "unit": "min/day",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 35.2,
@@ -334,6 +340,12 @@
      "label": "Average motorised trip from home",
      "value": 10.9,
      "unit": "km",
+     "higherIs": "worse"
+    },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 16.4,
+     "unit": "min/day",
      "higherIs": "worse"
     },
     "ev": {
@@ -540,6 +552,12 @@
      "unit": "km",
      "higherIs": "worse"
     },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 1.6,
+     "unit": "min/day",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 48,
@@ -736,6 +754,12 @@
      "label": "Average motorised trip from home",
      "value": 9.2,
      "unit": "km",
+     "higherIs": "worse"
+    },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 5.4,
+     "unit": "min/day",
      "higherIs": "worse"
     },
     "ev": {
@@ -942,6 +966,12 @@
      "unit": "km",
      "higherIs": "worse"
     },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 39.4,
+     "unit": "min/day",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 46.5,
@@ -1146,6 +1176,12 @@
      "unit": "km",
      "higherIs": "worse"
     },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 0.1,
+     "unit": "min/day",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 0,
@@ -1342,6 +1378,12 @@
      "label": "Average motorised trip from home",
      "value": 10.8,
      "unit": "km",
+     "higherIs": "worse"
+    },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 4.5,
+     "unit": "min/day",
      "higherIs": "worse"
     },
     "ev": {
@@ -1548,6 +1590,12 @@
      "unit": "km",
      "higherIs": "worse"
     },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 1.9,
+     "unit": "min/day",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 22.8,
@@ -1752,6 +1800,12 @@
      "unit": "km",
      "higherIs": "worse"
     },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 2.3,
+     "unit": "min/day",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 53.3,
@@ -1950,6 +2004,12 @@
      "unit": "km",
      "higherIs": "worse"
     },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 35.2,
+     "unit": "min/day",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 61.6,
@@ -2146,6 +2206,12 @@
      "label": "Average motorised trip from home",
      "value": 8.1,
      "unit": "km",
+     "higherIs": "worse"
+    },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 3,
+     "unit": "min/day",
      "higherIs": "worse"
     },
     "ev": {
@@ -2352,6 +2418,12 @@
      "unit": "km",
      "higherIs": "worse"
     },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 26.1,
+     "unit": "min/day",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 73,
@@ -2554,6 +2626,12 @@
      "label": "Average motorised trip from home",
      "value": 9.5,
      "unit": "km",
+     "higherIs": "worse"
+    },
+    "jamcost": {
+     "label": "Delay per motorised traveller",
+     "value": 3.9,
+     "unit": "min/day",
      "higherIs": "worse"
     },
     "ev": {

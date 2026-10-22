@@ -28,6 +28,7 @@ const DishaIntel = (() => {
             flood: /\b(flood\s?plain|flood (exposure|exposed)|(how many|people|residents|population|who)\b.{0,30}\b(flood(ed|s|ing)?|floodplain)\b.{0,20}\b(live|exposed|risk|zone|area))/i,
             fifteen: /\b(15|fifteen)[\s-]?min(ute)?s?\b|\bwalk(ing|able)? (to|distance (to|of)) (daily|essentials?|shops|amenities)|\bdaily needs\b|\bland[\s-]?use mix\b/i,
             waterlog: /\b(water[\s-]?log\w*|rain(water)? (pools?|pooling|collects?|stagnat\w*)|pluvial|urban flood\w*|stagnant water|where (does )?(the )?rain(water)? (collect|pool|stand)s?)\b/i,
+            jamcost: /\b(cost|price|losses?|lost|waste[sd]?|rupees?|crores?|economic (cost|loss))\b.{0,30}\b(congestion|traffic|jams?)\b|\b(congestion|traffic|jams?)\b.{0,30}\b(cost\w*|losses?|lost hours|hours lost|waste\w*|rupees?|crores?)\b/i,
             commute: /\b(commut\w*|trip (length|distance)s?|how far (do )?people (travel|commute))\b.{0,40}\b(carbon|co2|emissions?|footprint|distance|long\w*|km|far)\b|\b(transport|travel|commut\w*) (carbon|co2|emissions?|footprint)\b/i,
             feeder: /\b(last[\s-]?mile|first[\s-]?mile|feeder (bus\w*|routes?|services?))\b/i,
             busheat: /\b(add|more|new|build|need\w*|install) (bus )?shelters?\b|\b(bus (stops?|shelters?)|bus[\s-]?stop shelters?|waiting (for (the|a) bus|in the sun))\b.{0,40}\b(heat|hot|sun|shade|shad(ed|y)|shelters?|trees?)\b|\b(heat|hot|sun|shade|shelters?)\b.{0,30}\bbus (stops?|shelters?)\b/i,

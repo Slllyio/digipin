@@ -481,6 +481,17 @@ co2_kg_day, co2_t_year. Population-weighted mean trip: Delhi 12.2 km
 (15.1 km for the worst-placed fifth), Bengaluru 10.9, Mumbai 10.3, Bhopal 7.1.
 One mode mix per city, so the map shows the cost of distance only.
 
+### 27. Cost of congestion (lens `jamcost`)
+
+Each road cell's daily PCU-km is spread over the 24 hours with HOURLY_SHARE;
+hour h runs at V/C = peak V/C × share_h / 9 %, and its delay is the BPR
+factor (1 + 0.15·(V/C)⁴, capped at 4) minus one at the cell's free-flow speed
+(peak speed × (1 + delay %)). Person-hours use 2.7 people per PCU; cost is
+₹100 per person-hour plus 0.4 L of fuel per PCU-hour at ₹100, over 300
+working days. Delhi: 87 lakh person-hours a day, 39 min per motorised
+traveller, about ₹30,000 crore a year; Mumbai 26 min; Bengaluru 16 min.
+Arterials only (no side streets or signal delay), so it is a floor.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |
