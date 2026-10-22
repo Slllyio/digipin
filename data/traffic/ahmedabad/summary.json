@@ -818,32 +818,12 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 178,
-    "stops_with_heat_data": 178,
-    "pct_hot_bare": 79.8,
-    "pct_riders_at_hot_bare": 81.9,
+    "stops": 78,
+    "stops_with_heat_data": 78,
+    "pct_hot_bare": 87.2,
+    "pct_riders_at_hot_bare": 85.2,
     "median_stop_lst_c": 44.1,
     "top_stops": [
-      {
-        "digipin": "3KLK9T5",
-        "name": "Rambaug Post office",
-        "lon": 72.60136,
-        "lat": 22.99891,
-        "residents_5min": 45104,
-        "lst_c": 43.8,
-        "canopy_pct": 5.1,
-        "priority": 376673
-      },
-      {
-        "digipin": "3KLK9T4",
-        "name": "Rambaug",
-        "lon": 72.60067,
-        "lat": 22.99992,
-        "residents_5min": 40722,
-        "lst_c": 44.2,
-        "canopy_pct": 1.3,
-        "priority": 369772
-      },
       {
         "digipin": "3KLK25P",
         "name": "Popular Wheelers",
@@ -876,53 +856,73 @@
       },
       {
         "digipin": "3KLK256",
-        "name": "",
-        "lon": 72.5953,
-        "lat": 22.97396,
+        "name": "Mukesh Industries Bus Stop",
+        "lon": 72.59532,
+        "lat": 22.97404,
         "residents_5min": 23375,
         "lst_c": 49.4,
         "canopy_pct": 0.8,
         "priority": 333907
       },
       {
-        "digipin": "3KLK8LL",
-        "name": "Maninagar",
-        "lon": 72.60643,
-        "lat": 22.99724,
-        "residents_5min": 42051,
-        "lst_c": 43.4,
-        "canopy_pct": 6.2,
-        "priority": 331328
-      },
-      {
-        "digipin": "3KLK288",
-        "name": "Jawahar Chowk",
-        "lon": 72.6051,
-        "lat": 22.99514,
-        "residents_5min": 40511,
-        "lst_c": 43.5,
-        "canopy_pct": 3.8,
-        "priority": 331258
-      },
-      {
-        "digipin": "3KLK9M7",
-        "name": "Amarkunj /Swaminarayan College",
-        "lon": 72.58701,
-        "lat": 23.00139,
-        "residents_5min": 29534,
-        "lst_c": 46.2,
-        "canopy_pct": 3.2,
-        "priority": 320196
-      },
-      {
         "digipin": "3KLKCFP",
-        "name": "Nehru Nagar",
-        "lon": 72.54169,
-        "lat": 23.02253,
+        "name": "Nehru Nagar Bus Stop",
+        "lon": 72.54168,
+        "lat": 23.02255,
         "residents_5min": 45811,
         "lst_c": 42.5,
         "canopy_pct": 7.3,
         "priority": 318501
+      },
+      {
+        "digipin": "3KLKCMC",
+        "name": "Vasna Bus Stand",
+        "lon": 72.54768,
+        "lat": 23.0038,
+        "residents_5min": 39513,
+        "lst_c": 43.3,
+        "canopy_pct": 7.0,
+        "priority": 305001
+      },
+      {
+        "digipin": "3KLK9CC",
+        "name": "Mirjapur Chowk Bus Stop",
+        "lon": 72.583,
+        "lat": 23.03029,
+        "residents_5min": 35409,
+        "lst_c": 44.2,
+        "canopy_pct": 6.9,
+        "priority": 303285
+      },
+      {
+        "digipin": "3KLKC7M",
+        "name": "Paldi Bus Parking",
+        "lon": 72.56497,
+        "lat": 23.01452,
+        "residents_5min": 37018,
+        "lst_c": 43.4,
+        "canopy_pct": 5.9,
+        "priority": 292605
+      },
+      {
+        "digipin": "3KLK9P2",
+        "name": "BRTS Ahmedabad",
+        "lon": 72.59288,
+        "lat": 23.0026,
+        "residents_5min": 33210,
+        "lst_c": 43.9,
+        "canopy_pct": 3.9,
+        "priority": 284042
+      },
+      {
+        "digipin": "3KLKC7P",
+        "name": "Paldi ST Pick Up Stand",
+        "lon": 72.56606,
+        "lat": 23.0141,
+        "residents_5min": 34158,
+        "lst_c": 43.4,
+        "canopy_pct": 6.0,
+        "priority": 269712
       }
     ],
     "thresholds": {
@@ -931,8 +931,7 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "osm": 109,
-      "overture": 69
+      "overture": 78
     }
   },
   "parking": {

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T15:08:38Z",
+  "generated": "2026-10-22T16:14:34Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -8765,7 +8765,7 @@
           "unit": "km",
           "domain": [
             0.01,
-            26.75
+            12.1
           ],
           "ramp": "reds",
           "higherIs": "worse"
@@ -8827,7 +8827,7 @@
         },
         {
           "name": "delhi",
-          "cells": 7344,
+          "cells": 7343,
           "bbox": {
             "west": 76.839599609375,
             "south": 28.399169921875,
@@ -14925,7 +14925,7 @@
         },
         {
           "name": "delhi",
-          "cells": 11472,
+          "cells": 11471,
           "bbox": {
             "west": 76.839599609375,
             "south": 28.399169921875,

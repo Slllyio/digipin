@@ -493,16 +493,15 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 70,
+    "chargers": 34,
     "chargers_by_source": {
-      "osm": 36,
       "overture": 34
     },
     "parking": 62,
     "fuel": 524,
-    "chargers_per_lakh": 0.53,
-    "pct_vkm_within_2km": 63.8,
-    "pct_pop_within_2km": 56.4
+    "chargers_per_lakh": 0.26,
+    "pct_vkm_within_2km": 43.4,
+    "pct_pop_within_2km": 40.5
   },
   "cycling": {
     "lowstress_km": 20861,
@@ -578,17 +577,17 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 3805,
-    "stops_with_heat_data": 3805,
-    "pct_hot_bare": 18.8,
-    "pct_riders_at_hot_bare": 11.4,
-    "median_stop_lst_c": 38.7,
+    "stops": 5123,
+    "stops_with_heat_data": 5123,
+    "pct_hot_bare": 17.8,
+    "pct_riders_at_hot_bare": 10.7,
+    "median_stop_lst_c": 38.6,
     "top_stops": [
       {
         "digipin": "4PJ77LF",
-        "name": "",
-        "lon": 77.52924,
-        "lat": 12.98385,
+        "name": "Kamakshipalya",
+        "lon": 77.52929,
+        "lat": 12.98381,
         "residents_5min": 40509,
         "lst_c": 41.4,
         "canopy_pct": 3.6,
@@ -675,14 +674,14 @@
         "priority": 218906
       },
       {
-        "digipin": "4P3JK42",
-        "name": "",
-        "lon": 77.57721,
-        "lat": 12.95624,
-        "residents_5min": 40685,
-        "lst_c": 40.6,
-        "canopy_pct": 8.1,
-        "priority": 209381
+        "digipin": "4P3JJ4K",
+        "name": "Central",
+        "lon": 77.57198,
+        "lat": 12.98961,
+        "residents_5min": 39976,
+        "lst_c": 40.7,
+        "canopy_pct": 5.6,
+        "priority": 215103
       }
     ],
     "thresholds": {
@@ -691,8 +690,9 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "gtfs": 3539,
-      "overture": 266
+      "osm": 2721,
+      "gtfs": 2175,
+      "overture": 227
     }
   },
   "parking": {
