@@ -1,0 +1,70 @@
+"""Tests for the real-estate pipeline's pure helpers (land value premiums, supply arithmetic)."""
+import math
+
+import pytest
+
+lv = pytest.importorskip("pipeline.realestate.land_value")
+sp = pytest.importorskip("pipeline.realestate.supply")
+from pipeline._lib import digipin
+
+
+def test_metro_premium_tapers_to_zero():
+    assert lv.metro_premium(None) == 0
+    assert lv.metro_premium(3) == lv.METRO_MAX
+    assert lv.metro_premium(lv.METRO_ZERO_MIN) == 0
+    mid = lv.metro_premium((lv.METRO_FULL_MIN + lv.METRO_ZERO_MIN) / 2)
+    assert mid == pytest.approx(lv.METRO_MAX / 2)
+
+
+def test_jobs_premium_log_and_clipped():
+    assert lv.jobs_premium(100, 100) == 0
+    assert lv.jobs_premium(200, 100) == pytest.approx(lv.B_JOBS * math.log(2))
+    assert lv.jobs_premium(1e9, 1) == lv.JOBS_CLIP
+    assert lv.jobs_premium(1, 1e9) == -lv.JOBS_CLIP
+    assert lv.jobs_premium(0, 100) == 0 and lv.jobs_premium(None, 100) == 0
+
+
+def test_risk_and_noise_discounts():
+    assert lv.risk_discount(None, None) == 0
+    assert lv.risk_discount(40, None) == lv.FLOOD_DISC
+    assert lv.risk_discount(0, 70) == lv.WLOG_VHIGH[1]
+    assert lv.risk_discount(0, 50) == lv.WLOG_HIGH[1]
+    assert lv.risk_discount(40, 70) == pytest.approx(lv.FLOOD_DISC + lv.WLOG_VHIGH[1])
+    assert lv.noise_discount(55) == 0
+    assert lv.noise_discount(65) == pytest.approx(5 * lv.NOISE_PER_DB)
+    assert lv.noise_discount(120) == lv.NOISE_CAP
+
+
+def test_disk_sum_and_mean():
+    code = digipin.normalize(digipin.encode(28.6139, 77.2090))[:7]
+    ix = digipin.to_index(code)
+    nb = digipin.from_index(ix["level"], ix["row"], ix["col"] + 1)
+    far = digipin.from_index(ix["level"], ix["row"], ix["col"] + 5)
+    vals = {code: 2.0, nb: 3.0, far: 100.0}
+    assert lv.disk_sum(vals, code, 1) == 5.0
+    assert lv.disk_mean(vals, code, 1) == 2.5
+    assert lv.disk_mean({}, code, 1) is None
+
+
+def test_quintile():
+    s = list(range(100))
+    assert lv.quintile(s, -1) == 1
+    assert lv.quintile(s, 50) == 3
+    assert lv.quintile(s, 1000) == 5
+    assert lv.quintile([], 3) is None
+
+
+def test_new_floor_area():
+    # 10 new buildings at a 20%-covered 60,000 m² cell with 100 buildings (120 m² each), 9 m tall (3 storeys)
+    assert sp.new_floor_m2(10, 20, 100, 9, 60000) == pytest.approx(10 * 120 * 3)
+    assert sp.new_floor_m2(0, 20, 100, 9, 60000) == 0
+    assert sp.new_floor_m2(5, 20, 100, 1, 60000) == pytest.approx(5 * 120)  # at least one storey
+
+
+def test_vacant_share_and_headroom():
+    assert sp.vacant_share(10, 5, 5) == 20
+    assert sp.vacant_share(10, 5, 5, water=60) == 0
+    assert sp.vacant_share(None, None, None) == 0
+    assert sp.headroom_m2(1.0, 2.0, 1000) == 1000
+    assert sp.headroom_m2(3.0, 2.0, 1000) == 0
+    assert sp.headroom_m2(None, 2.0, 1000) == 0

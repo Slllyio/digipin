@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T10:15:13Z",
+  "generated": "2026-10-22T11:17:26Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -6132,6 +6132,351 @@
       ]
     },
     {
+      "id": "land_value",
+      "title": "Relative land value",
+      "description": "A relative land-value index per block (city's typical block = 100) built from hedonic premiums: jobs within 45 minutes, metro proximity, shops and services within 1 km, neighbourhood status (Meta RWI and plot size from Open Buildings), tree canopy, and discounts for floodplain, waterlogging and road noise. Coefficients come from the hedonic literature, not fitted to Indian prices: it ranks blocks, it does not quote rupees. Add circle rates to calibrate.",
+      "source": "pipeline/realestate/land_value.py over job_access, rail_access, osm_amenities, wealth, building_stock, vegetation, water, waterlogging, traffic_noise",
+      "license": "ODbL (OpenStreetMap) + CC BY 4.0 (GHSL, Meta RWI) + CDLA-Permissive-2.0 (Overture)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "value_index",
+          "label": "Relative land value (city median block = 100)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "index",
+          "domain": [
+            40,
+            250
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "value_quintile",
+          "label": "Land-value quintile within the city",
+          "type": "number",
+          "agg": "mean",
+          "unit": "1\u20135",
+          "domain": [
+            1,
+            5
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "prem_jobs_pct",
+          "label": "Premium: jobs within 45 min",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            -20,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "prem_metro_pct",
+          "label": "Premium: metro station nearby",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            -20,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "prem_amenity_pct",
+          "label": "Premium: shops and services within 1 km",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            -20,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "prem_neigh_pct",
+          "label": "Premium: neighbourhood status (wealth, plot size)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            -20,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "prem_green_pct",
+          "label": "Premium: tree canopy within 500 m",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            -20,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "prem_risk_pct",
+          "label": "Discount: floodplain and waterlogging",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            -20,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "prem_noise_pct",
+          "label": "Discount: road noise",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            -20,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "value_index",
+        "extrude": true,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 5865,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "land_value/ahmedabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 15028,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "land_value/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 3446,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "land_value/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 7641,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "land_value/chennai.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 28075,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "land_value/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 411,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.349365234375,
+            "north": 24.681396484375
+          },
+          "json": "land_value/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 12181,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "land_value/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 7780,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "land_value/indore_pilot.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 6449,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "land_value/jaipur.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 6068,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "land_value/kolkata.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 5807,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "land_value/lucknow.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 6525,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "land_value/mumbai.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 7521,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "land_value/pune.json.gz",
+          "parquet": null
+        }
+      ]
+    },
+    {
       "id": "landcover_yearly",
       "title": "Land cover by year, 2016\u20132025",
       "description": "Yearly mean Dynamic World class probability from every Sentinel-2 scene: how much of each cell reads as built-up, trees, water or crops. Recent change at 10 m detail, averaged to the cell.",
@@ -10874,6 +11219,383 @@
           },
           "json": "rainfall/pune.json",
           "parquet": "rainfall/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "re_supply",
+      "title": "Real-estate supply",
+      "description": "What was built 2016\u20132023 (Open Buildings 2.5D Temporal new buildings \u00d7 footprint \u00d7 storeys), vacant buildable land (ESA WorldCover bare, grass and shrub inside the urban area, outside water, floodplain and mapped parks), floor area ratio now (GHSL volume) and the headroom under the city's typical base FAR (indicative, not plot-level zoning), plus the 2035 urban projection.",
+      "source": "pipeline/realestate/supply.py over building_stock, land_cover, built_up, water, osm_amenities, growth",
+      "license": "CC BY 4.0 (Open Buildings, ESA WorldCover, GHSL) + ODbL (OpenStreetMap)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "new_floor_m2",
+          "label": "Floor area built 2016\u20132023",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m\u00b2",
+          "domain": [
+            2,
+            383303
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "build_rate",
+          "label": "Construction intensity (floor area per km\u00b2 a year)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m\u00b2/km\u00b2/yr",
+          "domain": [
+            6.0,
+            959289.0
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "vacant_ha",
+          "label": "Vacant buildable land",
+          "type": "number",
+          "agg": "sum",
+          "unit": "ha",
+          "domain": [
+            0.26,
+            5.83
+          ],
+          "ramp": "greens"
+        },
+        {
+          "key": "far_now",
+          "label": "Floor area ratio now (approx.)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "FAR",
+          "domain": [
+            0,
+            4
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "headroom_m2",
+          "label": "Floor area left under the city's base FAR",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m\u00b2",
+          "domain": [
+            90,
+            151211
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "urban_2035_pct",
+          "label": "Projected urban share by 2035",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "build_rate",
+        "extrude": true,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "re_supply/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "re_supply/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 6498,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "re_supply/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 9003,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.31787109375,
+            "north": 13.180908203125
+          },
+          "json": "re_supply/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "re_supply/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 1349,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "re_supply/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "re_supply/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 30658,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "re_supply/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 8963,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "re_supply/jaipur/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7243,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "re_supply/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 8457,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "re_supply/lucknow/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 11372,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "re_supply/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "re_supply/pune/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
         }
       ]
     },

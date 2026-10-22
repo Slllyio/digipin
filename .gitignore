@@ -80,6 +80,11 @@ data/traffic/*
 data/traffic/*/*
 !data/traffic/*/*.json
 !data/traffic/*/*.geojson
+# Real-estate summaries, anchors and calibration sets (pipeline/realestate) — browser-consumed.
+!data/realestate/
+data/realestate/*
+!data/realestate/*.json
+!data/realestate/*.geojson
 # Precomputed law-and-order mobility (access-resilience) artifacts — browser-consumed.
 !data/safety/
 data/safety/*
