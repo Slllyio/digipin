@@ -521,5 +521,46 @@
     "crosswalks_mapped": 700,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 4508,
+      "logistics": 1103,
+      "wholesale": 374
+    },
+    "truck_trips_day": 33512,
+    "gateway_nodes": 2509,
+    "road_km_500_trucks_day": 13.5,
+    "busiest_truck_roads": [
+      {
+        "name": "Nityanand Marg",
+        "trucks_day": 2738
+      },
+      {
+        "name": "Jawaharlal Nehru Marg",
+        "trucks_day": 1616
+      },
+      {
+        "name": "Rani Jhansi Flyover",
+        "trucks_day": 1408
+      },
+      {
+        "name": "Outer Ring Road",
+        "trucks_day": 1216
+      },
+      {
+        "name": "Mandi House Chowk",
+        "trucks_day": 968
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

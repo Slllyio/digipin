@@ -522,5 +522,46 @@
     "crosswalks_mapped": 116,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 2783,
+      "logistics": 746,
+      "wholesale": 202
+    },
+    "truck_trips_day": 21296,
+    "gateway_nodes": 1609,
+    "road_km_500_trucks_day": 3.7,
+    "busiest_truck_roads": [
+      {
+        "name": "P D' Mello Road",
+        "trucks_day": 5700
+      },
+      {
+        "name": "Lal Bahadur Shastri Marg",
+        "trucks_day": 2088
+      },
+      {
+        "name": "Yusuf Meher Ali Road - Masjid Bunder Road",
+        "trucks_day": 1730
+      },
+      {
+        "name": "Service Road",
+        "trucks_day": 1662
+      },
+      {
+        "name": "Jijamata Road",
+        "trucks_day": 1368
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

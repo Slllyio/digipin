@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 23.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "crossing": {
      "label": "Main-road residents facing a 500+ m crossing gap",
      "value": 26.2,
@@ -189,6 +195,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 20.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -354,6 +366,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 9.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "crossing": {
      "label": "Main-road residents facing a 500+ m crossing gap",
      "value": 21.9,
@@ -507,6 +525,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 13.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -672,6 +696,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 9.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "crossing": {
      "label": "Main-road residents facing a 500+ m crossing gap",
      "value": 29.2,
@@ -834,6 +864,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "crossing": {
      "label": "Main-road residents facing a 500+ m crossing gap",
      "value": 11.8,
@@ -987,6 +1023,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 25.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 4.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1152,6 +1194,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 7.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "crossing": {
      "label": "Main-road residents facing a 500+ m crossing gap",
      "value": 23.8,
@@ -1314,6 +1362,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 6.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "crossing": {
      "label": "Main-road residents facing a 500+ m crossing gap",
      "value": 28,
@@ -1470,6 +1524,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 13.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "crossing": {
      "label": "Main-road residents facing a 500+ m crossing gap",
      "value": 16.2,
@@ -1623,6 +1683,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 3.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1788,6 +1854,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 17.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "crossing": {
      "label": "Main-road residents facing a 500+ m crossing gap",
      "value": 26.1,
@@ -1947,6 +2019,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "freight": {
+     "label": "Residents beside a truck route",
+     "value": 2.5,
      "unit": "%",
      "higherIs": "worse"
     },

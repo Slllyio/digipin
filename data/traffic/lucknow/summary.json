@@ -702,5 +702,46 @@
     "crosswalks_mapped": 17,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 338,
+      "logistics": 95,
+      "wholesale": 41
+    },
+    "truck_trips_day": 2738,
+    "gateway_nodes": 650,
+    "road_km_500_trucks_day": 0.0,
+    "busiest_truck_roads": [
+      {
+        "name": "Lalji Tandon Marg",
+        "trucks_day": 1356
+      },
+      {
+        "name": "Kanpur-Lucknow Road",
+        "trucks_day": 874
+      },
+      {
+        "name": "Hardoi Road",
+        "trucks_day": 744
+      },
+      {
+        "name": "Alambagh Chowraha",
+        "trucks_day": 676
+      },
+      {
+        "name": "Kursi Road",
+        "trucks_day": 620
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

@@ -667,5 +667,46 @@
     "crosswalks_mapped": 38,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "wholesale": 168,
+      "industry": 1489,
+      "logistics": 314
+    },
+    "truck_trips_day": 10732,
+    "gateway_nodes": 2018,
+    "road_km_500_trucks_day": 0.0,
+    "busiest_truck_roads": [
+      {
+        "name": "Habsiguda Main Road",
+        "trucks_day": 2440
+      },
+      {
+        "name": "Sardar Patel Road",
+        "trucks_day": 924
+      },
+      {
+        "name": "Shilpa Layout road",
+        "trucks_day": 908
+      },
+      {
+        "name": "Hyderabad - Mancherial Highway",
+        "trucks_day": 720
+      },
+      {
+        "name": "Maula Ali Road",
+        "trucks_day": 708
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

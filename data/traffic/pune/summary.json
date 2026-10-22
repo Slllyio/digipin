@@ -871,5 +871,46 @@
     "crosswalks_mapped": 127,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "logistics": 214,
+      "industry": 1112,
+      "wholesale": 124
+    },
+    "truck_trips_day": 7760,
+    "gateway_nodes": 1397,
+    "road_km_500_trucks_day": 0.0,
+    "busiest_truck_roads": [
+      {
+        "name": "Gopal Hari Deshmukh Marg",
+        "trucks_day": 1192
+      },
+      {
+        "name": "Jangli Maharaj Path",
+        "trucks_day": 830
+      },
+      {
+        "name": "Nigdi Bhosari Road",
+        "trucks_day": 830
+      },
+      {
+        "name": "National Games Marg",
+        "trucks_day": 500
+      },
+      {
+        "name": "Sinhagad Road",
+        "trucks_day": 474
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

@@ -679,5 +679,46 @@
     "crosswalks_mapped": 4,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 509,
+      "logistics": 95,
+      "wholesale": 48
+    },
+    "truck_trips_day": 3464,
+    "gateway_nodes": 647,
+    "road_km_500_trucks_day": 1.6,
+    "busiest_truck_roads": [
+      {
+        "name": "Old A. B. Road",
+        "trucks_day": 3350
+      },
+      {
+        "name": "Bhagat Singh Square",
+        "trucks_day": 1788
+      },
+      {
+        "name": "Dhar Road",
+        "trucks_day": 1520
+      },
+      {
+        "name": "Ganesh Ganj Marg",
+        "trucks_day": 1402
+      },
+      {
+        "name": "Nawalakha Main road",
+        "trucks_day": 1360
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

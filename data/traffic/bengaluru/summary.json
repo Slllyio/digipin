@@ -522,5 +522,46 @@
     "crosswalks_mapped": 330,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "wholesale": 198,
+      "industry": 2169,
+      "logistics": 540
+    },
+    "truck_trips_day": 16344,
+    "gateway_nodes": 1902,
+    "road_km_500_trucks_day": 1.2,
+    "busiest_truck_roads": [
+      {
+        "name": "SJP Road",
+        "trucks_day": 2942
+      },
+      {
+        "name": "JC Road",
+        "trucks_day": 1456
+      },
+      {
+        "name": "Mission Road",
+        "trucks_day": 1156
+      },
+      {
+        "name": "High Tension Road",
+        "trucks_day": 832
+      },
+      {
+        "name": "Residency Road",
+        "trucks_day": 832
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

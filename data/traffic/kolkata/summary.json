@@ -521,5 +521,46 @@
     "crosswalks_mapped": 22,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 1375,
+      "logistics": 236,
+      "wholesale": 96
+    },
+    "truck_trips_day": 8908,
+    "gateway_nodes": 304,
+    "road_km_500_trucks_day": 6.9,
+    "busiest_truck_roads": [
+      {
+        "name": "Acharya Jagadish Chandra Bose Road",
+        "trucks_day": 4848
+      },
+      {
+        "name": "Strand Road",
+        "trucks_day": 4804
+      },
+      {
+        "name": "Jessore Road",
+        "trucks_day": 2744
+      },
+      {
+        "name": "Bentinck Street",
+        "trucks_day": 2366
+      },
+      {
+        "name": "Cathedral Road",
+        "trucks_day": 1776
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

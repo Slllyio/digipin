@@ -519,5 +519,46 @@
     "crosswalks_mapped": 3,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "logistics": 54,
+      "industry": 154,
+      "wholesale": 11
+    },
+    "truck_trips_day": 1330,
+    "gateway_nodes": 106,
+    "road_km_500_trucks_day": 1.7,
+    "busiest_truck_roads": [
+      {
+        "name": "Raisen Road",
+        "trucks_day": 4704
+      },
+      {
+        "name": "Katara hills rd",
+        "trucks_day": 944
+      },
+      {
+        "name": "J K Road",
+        "trucks_day": 672
+      },
+      {
+        "name": "Bhopal Bypass",
+        "trucks_day": 492
+      },
+      {
+        "name": "Ayodhya Bypass Road",
+        "trucks_day": 368
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

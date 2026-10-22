@@ -988,5 +988,25 @@
     "crosswalks_mapped": 0,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 10,
+      "logistics": 1,
+      "wholesale": 1
+    },
+    "truck_trips_day": 58,
+    "gateway_nodes": 29,
+    "road_km_500_trucks_day": 0.0,
+    "busiest_truck_roads": [],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

@@ -389,3 +389,17 @@ def test_crossing_gap_runs_chain_through_plain_connectors():
     assert runs[(2, 0)] == 100 and runs[(2, 1)] == 100    # C is a junction, X a crosswalk
     assert (3, 0) not in runs
     assert cx.degrees(segs)["C"] == 3 and cx.degrees(segs)["X"] == 3
+
+
+def test_freight_kinds_and_truck_routes():
+    pytest.importorskip("scipy")
+    from pipeline.traffic import freight as fr
+    assert fr.kind_of("freight_and_cargo_service") == "logistics"
+    assert fr.kind_of("pharmaceutical_products_wholesaler") == "wholesale"
+    assert fr.kind_of("plastic_manufacturer") == "industry"
+    assert fr.kind_of("warehouse_club_store") is None and fr.kind_of("food_truck_stand") is None
+    # 0 — 1 — 2 — 3(gateway), plus a slow shortcut 0 — 3.
+    links = [(0, 1, 1), (1, 0, 1), (1, 2, 1), (2, 1, 1), (2, 3, 1), (3, 2, 1), (0, 3, 10), (3, 0, 10)]
+    flow = fr.route_flows(4, links, [(0, 12), (2, 4)], [3])
+    assert flow[0] == 12 and flow[2] == 12 and flow[4] == 16   # 0→1→2→3 carries both sites
+    assert flow[6] == 0 and flow[1] == 0

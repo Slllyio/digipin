@@ -604,5 +604,46 @@
     "crosswalks_mapped": 49,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 771,
+      "logistics": 132,
+      "wholesale": 56
+    },
+    "truck_trips_day": 5004,
+    "gateway_nodes": 587,
+    "road_km_500_trucks_day": 0.0,
+    "busiest_truck_roads": [
+      {
+        "name": "Sawai Jai Singh Highway",
+        "trucks_day": 852
+      },
+      {
+        "name": "Jaipur Road",
+        "trucks_day": 848
+      },
+      {
+        "name": "Mirza Ismail Road",
+        "trucks_day": 732
+      },
+      {
+        "name": "Queens Road",
+        "trucks_day": 720
+      },
+      {
+        "name": "Sawai Jai Singh Circle",
+        "trucks_day": 676
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

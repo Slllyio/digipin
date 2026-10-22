@@ -796,6 +796,62 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // ── freight and logistics ───────────────────────────────────────────────
+
+    const TRUCK_ROUTE = 100;   // trucks/day on the busiest nearby road
+
+    function freight(fr) {
+        const c = fr.cols, g = fr.grid, n = g.n, idx = _residents(fr), pop = c['population.population'];
+        const tr = c['freight.trucks_day'], lo = c['freight.logistics'], wh = c['freight.wholesale'], ind = c['freight.industry'];
+        if (!tr || !tr.some(v => v > 0)) return null;
+        const near = g.offsets(ROAD_KM);
+        const truckNear = new Float64Array(n).fill(NaN);
+        for (let i = 0; i < n; i++) {
+            let m = 0;
+            for (const [a, b] of near) { const j = g.cellAt(i, a, b); if (j >= 0 && tr[j] > m) m = tr[j]; }
+            if (m > 0) truckNear[i] = m;
+        }
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const pRoute = _sumOver(pop, idx, i => truckNear[i] >= TRUCK_ROUTE);
+        const sites = new Float64Array(n).fill(NaN);
+        let nLo = 0, nWh = 0, nInd = 0;
+        for (let i = 0; i < n; i++) {
+            const a = lo && lo[i] > 0 ? lo[i] : 0, b = wh && wh[i] > 0 ? wh[i] : 0, d = ind && ind[i] > 0 ? ind[i] : 0;
+            nLo += a; nWh += b; nInd += d;
+            if (a + b + d > 0) sites[i] = a + b + d;
+        }
+        const stats = [
+            { label: 'Truck-trip generators mapped (logistics / wholesale / industry)', value: `${_people(nLo)} / ${_people(nWh)} / ${_people(nInd)}` },
+            { label: `Residents within ${ROAD_KM * 1000} m of a truck route (${TRUCK_ROUTE}+ trucks a day)`, value: `${_people(pRoute)} (${_round(100 * pRoute / total)}%)`, raw: Math.round(pRoute) },
+        ];
+        const sch = c['emergency_access.schools'];
+        if (sch) {
+            let all = 0, hit = 0;
+            for (let i = 0; i < n; i++) if (sch[i] > 0) { all += sch[i]; if (truckNear[i] >= TRUCK_ROUTE) hit += sch[i]; }
+            if (all) stats.push({ label: 'Schools beside a truck route', value: `${_people(hit)} of ${_people(all)} (${_round(100 * hit / all)}%)` });
+        }
+        const nox = c['freight.truck_nox_kg_day'];
+        if (nox) { let t = 0; for (let i = 0; i < n; i++) if (nox[i] > 0) t += nox[i]; stats.push({ label: 'Truck NOx on first/last-mile routes', value: `${_round(t)} kg a day` }); }
+        // Freight clusters: cells with the most sites, 1.5 km apart (candidates for consolidation centres / truck lay-bys).
+        const order = [];
+        for (let i = 0; i < n; i++) if (sites[i] > 0) order.push(i);
+        order.sort((a, b) => sites[b] - sites[a]);
+        const picks = [];
+        for (const i of order) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1.5)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, r) => stats.push({ label: `Freight cluster ${r + 1}: ${g.codes[i]}`, value: `${_people(sites[i])} sites${_fin(truckNear[i]) ? `, ${_people(truckNear[i])} trucks a day on the nearest route` : ''}` }));
+        return {
+            columns: { truck_near: truckNear, freight_sites: sites }, idx, weightKey: 'truck_near',
+            metric: { label: 'Residents beside a truck route', value: _round(100 * pRoute / total), unit: '%', higherIs: 'worse' },
+            headline: `${_round(100 * pRoute / total)}% of residents (${_people(pRoute)}) live within ${ROAD_KM * 1000} m of a road carrying ${TRUCK_ROUTE}+ trucks a day between ${_people(nLo + nWh + nInd)} logistics, wholesale and industrial sites and the national highways`
+                + (picks.length ? `; the densest freight cluster is around ${g.codes[picks[0]]}.` : '.'),
+            stats,
+        };
+    }
+
     // ── mobility scorecard across the cities ────────────────────────────────
 
     // Pillars over the lens league (data/lenses/league.json). EV charging is
@@ -803,7 +859,7 @@ const UrbanLensesMobility = (() => {
     const PILLARS = [
         { id: 'access', label: 'Access', metrics: ['metro', 'transit', 'busgap', 'ambulance'] },
         { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon'] },
-        { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise', 'nightwalk'] },
+        { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise', 'nightwalk', 'freight'] },
         { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'walk', 'cycling', 'crossing'] },
     ];
 
@@ -862,6 +918,14 @@ const UrbanLensesMobility = (() => {
     }
 
     const ENTRIES = [
+        { id: 'freight', equity: true, title: 'Freight and truck routes', icon: '🚚',
+            question: 'Where do trucks run through neighbourhoods, and where are the freight clusters?',
+            field: { key: 'truck_near', label: 'Trucks a day on the busiest road within 250 m', unit: 'trucks/day', higherIs: 'worse', ramp: 'heat' },
+            extra: [{ key: 'freight_sites', label: 'Logistics, wholesale and industrial sites', unit: 'sites', higherIs: null, ramp: 'viridis' }],
+            needs: ['freight.trucks_day', 'freight.logistics', 'freight.wholesale', 'freight.industry', 'freight.truck_nox_kg_day',
+                'emergency_access.schools', 'wealth.rwi'],
+            method: `Truck-trip generators are Overture Maps places in logistics (freight, courier, storage, warehouses), wholesale and industry categories. Each gets an indicative number of truck trips a day (12 / 6 / 4) routed on the fastest free-flow arterial path to the nearest national highway node: the first and last mile, at night when most Indian cities let heavy vehicles in. A home is beside a truck route when a road within ${ROAD_KM * 1000} m carries ${TRUCK_ROUTE}+ modelled trucks a day. No truck counts, gate data or entry-time rules, so the routes are indicative; the clusters are where consolidation centres or truck lay-bys would serve the most sites.`,
+            refs: 'Holguín-Veras et al. 2011 (freight trip generation); NITI Aayog 2021 (urban freight in India); Overture Maps Foundation places; COPERT heavy-duty vehicle emission factors' },
         { id: 'crossing', equity: true, title: 'Crossing gaps on main roads', icon: '🦓',
             question: 'How far do people walk along a main road before they can cross it?',
             field: { key: 'cross_gap', label: 'Longest main-road stretch with no crossing near home (2,000+ capped)', unit: 'm', higherIs: 'worse', ramp: 'heat' },
@@ -948,7 +1012,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

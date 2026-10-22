@@ -714,5 +714,46 @@
     "crosswalks_mapped": 26,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 1538,
+      "logistics": 386,
+      "wholesale": 177
+    },
+    "truck_trips_day": 11846,
+    "gateway_nodes": 464,
+    "road_km_500_trucks_day": 6.6,
+    "busiest_truck_roads": [
+      {
+        "name": "General Hospital Road",
+        "trucks_day": 3222
+      },
+      {
+        "name": "Muthialpet Roundabout",
+        "trucks_day": 2548
+      },
+      {
+        "name": "Anna Salai (Mount Road)",
+        "trucks_day": 1856
+      },
+      {
+        "name": "EVR Periyar Salai",
+        "trucks_day": 1404
+      },
+      {
+        "name": "Ebrahim Sahib Street",
+        "trucks_day": 1380
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

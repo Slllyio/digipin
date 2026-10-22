@@ -428,6 +428,19 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.crossing(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('freight lens: residents and schools beside truck routes, freight clusters', () => {
+        const tr = codes.map((_, i) => (Math.floor(i / SIZE) === 0 ? 800 : 0));   // a truck road along the top row
+        const lo = codes.map((_, i) => (i === 0 ? 5 : 0));
+        const sch = codes.map((_, i) => (i === 1 || i === n - 1 ? 1 : 0));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'freight.trucks_day': tr, 'freight.logistics': lo, 'emergency_access.schools': sch });
+        const r = L._lenses.freight(f, {});
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.metric.value).toBeLessThan(100);
+        expect(r.stats.find(x => x.label === 'Schools beside a truck route').value).toMatch(/^1 of 2/);
+        expect(r.stats.some(x => x.label.startsWith('Freight cluster 1'))).toBe(true);
+        expect(L._lenses.freight(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
         const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
         const league = { generated: '2026-10-22', cities: {

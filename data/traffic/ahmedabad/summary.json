@@ -762,5 +762,46 @@
     "crosswalks_mapped": 26,
     "gap_threshold_m": 500.0,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 2593,
+      "logistics": 235,
+      "wholesale": 138
+    },
+    "truck_trips_day": 14020,
+    "gateway_nodes": 392,
+    "road_km_500_trucks_day": 11.8,
+    "busiest_truck_roads": [
+      {
+        "name": "Drive-in Road",
+        "trucks_day": 12994
+      },
+      {
+        "name": "NH8",
+        "trucks_day": 11202
+      },
+      {
+        "name": "Khokhra Road",
+        "trucks_day": 8402
+      },
+      {
+        "name": "100 Ft. Road",
+        "trucks_day": 6526
+      },
+      {
+        "name": "Khokhra Junction",
+        "trucks_day": 5290
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
   }
 }

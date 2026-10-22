@@ -392,6 +392,20 @@ pair. Panel buttons: 10% or 20% near stations, 10% of all trips; DISHA:
 11.7% less driving time; 4,520 roads get quieter, 621 busier as the
 remaining drivers re-route onto main roads that freed up.
 
+### 20. Freight and truck routes (`pipeline/traffic/freight.py`, lens `freight`)
+
+Truck-trip generators are Overture places in logistics (freight, courier,
+storage, warehouses), wholesale and industry categories, cached in
+data/vectors/freight_places_<city>.geojson. Each gets indicative truck trips
+a day (12 / 6 / 4) routed on the fastest free-flow arterial path to the
+nearest national-highway (motorway/trunk) node: a multi-source Dijkstra on
+the reversed road_los graph with predecessors, accumulated per link. Cell
+dataset `freight` (L7): logistics, wholesale, industry, trucks_day,
+truck_nox_kg_day (5 g/km). The lens counts residents and schools within
+250 m of a road with 100+ modelled trucks a day and lists freight clusters.
+Residents beside truck routes: Ahmedabad 24%, Mumbai 17%, Kolkata 14%,
+Delhi 10%. No truck counts or entry-time rules, so routes are indicative.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |
