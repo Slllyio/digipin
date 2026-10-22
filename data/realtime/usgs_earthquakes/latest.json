@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-10-22T19:22:38Z",
-  "count": 20,
+  "generated_at_iso": "2026-10-22T22:36:21Z",
+  "count": 22,
   "records": [
+    {
+      "id": "us6000u473",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-22T20:05:04.207000+00:00",
+      "latitude": -5.728,
+      "longitude": 152.2646,
+      "depth_km": 10.0,
+      "place": "153 km S of Kokopo, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u473",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000u46r",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-22T19:06:56.074000+00:00",
+      "latitude": -15.1269,
+      "longitude": -173.3304,
+      "depth_km": 23.411,
+      "place": "104 km NNE of Hihifo, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u46r",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us6000u45j",
       "magnitude": 5.0,
@@ -27,6 +51,18 @@
       "significance": 354
     },
     {
+      "id": "us6000u45a",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-22T16:57:53.999000+00:00",
+      "latitude": 32.3207,
+      "longitude": 93.8055,
+      "depth_km": 10.0,
+      "place": "190 km ENE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u45a",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
       "id": "us6000u459",
       "magnitude": 4.8,
       "origin_time_utc": "2026-10-22T16:51:21.365000+00:00",
@@ -37,6 +73,30 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u459",
       "tsunami": 0,
       "significance": 354
+    },
+    {
+      "id": "us6000u458",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-22T16:50:16.850000+00:00",
+      "latitude": 32.4493,
+      "longitude": 93.8798,
+      "depth_km": 10.0,
+      "place": "203 km ENE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u458",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000u455",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-22T16:45:00.942000+00:00",
+      "latitude": 32.4691,
+      "longitude": 93.7403,
+      "depth_km": 10.0,
+      "place": "193 km NE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u455",
+      "tsunami": 0,
+      "significance": 326
     },
     {
       "id": "us6000u451",
@@ -205,42 +265,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u40r",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "us6000u3yp",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-21T21:58:48.618000+00:00",
-      "latitude": 56.863,
-      "longitude": -34.1306,
-      "depth_km": 10.0,
-      "place": "Reykjanes Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3yp",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000u3yj",
-      "magnitude": 5.3,
-      "origin_time_utc": "2026-10-21T21:38:55.441000+00:00",
-      "latitude": 56.8137,
-      "longitude": -34.1689,
-      "depth_km": 10.0,
-      "place": "Reykjanes Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3yj",
-      "tsunami": 0,
-      "significance": 432
-    },
-    {
-      "id": "us6000u3y1",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-21T20:34:50.454000+00:00",
-      "latitude": -19.7855,
-      "longitude": 14.7284,
-      "depth_km": 10.0,
-      "place": "68 km NNW of Khorixas, Namibia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3y1",
-      "tsunami": 0,
-      "significance": 370
     }
   ]
 }

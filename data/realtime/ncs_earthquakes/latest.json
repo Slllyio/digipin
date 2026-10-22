@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-10-22T19:22:45Z",
+  "generated_at_iso": "2026-10-22T22:36:26Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-23 02:43:21|31.242,77.692",
+      "magnitude": 2.7,
+      "origin_time": "2026-10-23 02:43:21",
+      "latitude": 31.242,
+      "longitude": 77.692,
+      "depth_km": 5.0,
+      "region": "Shimla, Himachal Pradesh",
+      "location": "51km ENE of Shimla, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 02:15:13|24.654,94.593",
+      "magnitude": 3.3,
+      "origin_time": "2026-10-23 02:15:13",
+      "latitude": 24.654,
+      "longitude": 94.593,
+      "depth_km": 13.0,
+      "region": "Myanmar",
+      "location": "33km SSE of Ukhrul, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 02:06:33|33.194,94.514",
+      "magnitude": 4.5,
+      "origin_time": "2026-10-23 02:06:33",
+      "latitude": 33.194,
+      "longitude": 94.514,
+      "depth_km": 15.0,
+      "region": "China",
+      "location": "566km N of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 00:51:09|25.001,94.853",
+      "magnitude": 3.5,
+      "origin_time": "2026-10-23 00:51:09",
+      "latitude": 25.001,
+      "longitude": 94.853,
+      "depth_km": 99.0,
+      "region": "Myanmar",
+      "location": "38km ENE of Ukhrul, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 00:38:47|32.315,76.370",
+      "magnitude": 2.3,
+      "origin_time": "2026-10-23 00:38:47",
+      "latitude": 32.315,
+      "longitude": 76.37,
+      "depth_km": 5.0,
+      "region": "Chamba, Himachal Pradesh",
+      "location": "11km NNE of Dharamshala, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-23 00:35:32|32.725,94.228",
       "magnitude": 4.3,
@@ -1595,61 +1650,6 @@
       "depth_km": 10.0,
       "region": "North Garo Hills, Meghalaya",
       "location": "53km NE of Tura, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-09 05:34:55|33.195,75.543",
-      "magnitude": 2.6,
-      "origin_time": "2026-10-09 05:34:55",
-      "latitude": 33.195,
-      "longitude": 75.543,
-      "depth_km": 10.0,
-      "region": "Doda, Jammu and Kashmir",
-      "location": "61km ENE of Katra, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-09 04:17:19|23.284,94.024",
-      "magnitude": 2.8,
-      "origin_time": "2026-10-09 04:17:19",
-      "latitude": 23.284,
-      "longitude": 94.024,
-      "depth_km": 136.0,
-      "region": "Myanmar",
-      "location": "73km ESE of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-09 04:01:37|36.605,71.119",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-09 04:01:37",
-      "latitude": 36.605,
-      "longitude": 71.119,
-      "depth_km": 225.0,
-      "region": "Afghanistan",
-      "location": "74km SE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-09 02:41:46|24.126,93.622",
-      "magnitude": 3.1,
-      "origin_time": "2026-10-09 02:41:46",
-      "latitude": 24.126,
-      "longitude": 93.622,
-      "depth_km": 50.0,
-      "region": "Churachandpur, Manipur",
-      "location": "44km SSW of Moirang, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-09 01:08:14|27.197,92.443",
-      "magnitude": 3.7,
-      "origin_time": "2026-10-09 01:08:14",
-      "latitude": 27.197,
-      "longitude": 92.443,
-      "depth_km": 10.0,
-      "region": "West Kameng, Arunachal Pradesh",
-      "location": "69km NNW of Tezpur, Assam, India",
       "review_status": "Reviewed"
     }
   ]

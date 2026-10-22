@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-22T19:22:42Z",
+  "generated_at_iso": "2026-10-22T22:36:26Z",
   "count": 100,
   "records": [
+    {
+      "id": "1792704216231008",
+      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 22 Oct 2026 21:24:21 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792704216231008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1792703403467028",
+      "headline": "Thunderstorm with Lightning is very likely to occur at isolated places over Bikaner, Ganganagar, Jaisalmer, Phalodi in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Thu, 22 Oct 2026 21:10:05 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792703403467028",
+      "severity": "Minor",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1792696686892041",
       "headline": "Moderate Rain TS  is very likely to occur at a few places over Chengalpattu, Chennai, Coimbatore, Cuddalore, Dindigul, Erode, Kancheepuram, Karur, Madurai, Mayiladuthurai, Nagapattinam, Thanjavur, Theni, The Nilgiris, Thiruvallur, Thiruvarur, Tirupathur, Tiruppur, Karaikal, Pondicherry in next 3 hours.",
@@ -1078,28 +1100,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792652980456038",
       "severity": "Severe",
       "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1792653525106008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 22 Oct 2026 07:19:30 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792653525106008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792652871153008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Thu, 22 Oct 2026 07:08:30 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792652871153008",
-      "severity": "Minor",
-      "category": "Other",
       "tags": []
     }
   ]
