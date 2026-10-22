@@ -380,6 +380,18 @@ crossings even without a signal, so gaps are a lower bound. Share of
 main-road residents facing a 500 m+ gap: Lucknow 36%, Delhi 29%, Jaipur 28%,
 Kolkata 16%.
 
+### 19. Mode-shift what-if (`RoadWhatIf.modeShift`)
+
+A share of car trips leaves the road and the peak is re-assigned with the
+same incremental BPR as the road what-if. "Near stations" shifts only trips
+whose origin and destination zones both have a metro or rail station within
+1 km (data/vectors/rail_stations_<city>.geojson); "all trips" shifts every
+pair. Panel buttons: 10% or 20% near stations, 10% of all trips; DISHA:
+"what if 20% of car trips moved to the metro". Delhi, 20% near stations at
+09:00: 733 of 3,129 zones served, 63,623 fewer vehicles in the peak hour,
+11.7% less driving time; 4,520 roads get quieter, 621 busier as the
+remaining drivers re-route onto main roads that freed up.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

@@ -103,30 +103,37 @@ const RoadWhatIf = (() => {
         }
 
         /** Group the sparse matrix by origin zone node: [{node, dest: Int32Array, v: Float64Array}].
-         *  The evening ('pm') period reverses every pair (people going home). */
-        function rows(model, period) {
+         *  The evening ('pm') period reverses every pair (people going home).
+         *  ``shift`` = {frac, zones}: that share of each trip leaves the road (mode shift),
+         *  only between zones flagged in ``zones`` (both ends) when it is given.
+         *  The array carries ``shifted``: daily-matrix trips removed. */
+        function rows(model, period, shift) {
             const zn = model.zones.node, od = model.od, by = new Map();
-            const pm = period === 'pm';
-            let k = 0;
+            const pm = period === 'pm', fr = shift && shift.frac > 0 ? Math.min(1, shift.frac) : 0, zf = shift && shift.zones;
+            let k = 0, shifted = 0;
             od.origins.forEach((oz, i) => {
                 for (let c = 0; c < od.counts[i]; c++, k++) {
                     const a = zn[oz], b = zn[od.d[k]];
                     const o = pm ? b : a, d = pm ? a : b;
                     if (o === d) continue;
+                    let v = od.v[k];
+                    if (fr && (!zf || (zf[oz] && zf[od.d[k]]))) { shifted += v * fr; v *= 1 - fr; }
                     let r = by.get(o);
                     if (!r) by.set(o, r = { d: [], v: [] });
-                    r.d.push(d); r.v.push(od.v[k]);
+                    r.d.push(d); r.v.push(v);
                 }
             });
-            return [...by.entries()].map(([node, r]) => ({ node, dest: Int32Array.from(r.d), v: Float64Array.from(r.v) }));
+            const out = [...by.entries()].map(([node, r]) => ({ node, dest: Int32Array.from(r.d), v: Float64Array.from(r.v) }));
+            out.shifted = shifted;
+            return out;
         }
 
         /** Incremental assignment of one period. Returns flows, times and trip totals. */
-        function assign(g, model, period = 'am', onProgress) {
+        function assign(g, model, period = 'am', onProgress, shift) {
             const prm = model.params, share = prm.period_share[period] || prm.period_share.am;
             const [A, B] = prm.bpr, inc = prm.increments, acc = prm.access_min || 0;
             const maxSlow = prm.max_slowdown || 4;
-            const R = rows(model, period), search = makeSearch(g);
+            const R = rows(model, period, shift), search = makeSearch(g);
             const flow = new Float64Array(g.nl), times = Float64Array.from(g.t0);
             const demand = new Float64Array(g.n);
             let tripMin = 0, served = 0, unserved = 0;
@@ -160,7 +167,7 @@ const RoadWhatIf = (() => {
                     times[e] = g.cap[e] > 0 ? g.t0[e] * (1 + A * Math.pow(flow[e] / g.cap[e], B)) : g.t0[e];
                 }
             }
-            return { flow, times, tripMin, served, unserved };
+            return { flow, times, tripMin, served, unserved, shifted: R.shifted * share };
         }
 
         /** Max-direction V/C per feature id (added links get negative ids). */
@@ -261,8 +268,10 @@ const RoadWhatIf = (() => {
             const gB = base ? base.g : build(model, {});
             const rB = base ? base.r : assign(gB, model, period, onProgress && (p => onProgress(p / 2)));
             const gS = build(model, edits);
-            const rS = assign(gS, model, period, onProgress && (p => onProgress(base ? p : 0.5 + p / 2)));
-            return { base: { g: gB, r: rB }, result: compare(model, gB, rB, gS, rS) };
+            const rS = assign(gS, model, period, onProgress && (p => onProgress(base ? p : 0.5 + p / 2)), edits.shift);
+            const result = compare(model, gB, rB, gS, rS);
+            if (edits.shift) result.shiftedPcu = Math.round(rS.shifted);
+            return { base: { g: gB, r: rB }, result };
         }
 
         return { build, makeSearch, rows, assign, featureVC, vehHours, compare, nearestNode, newLink, run };
@@ -337,7 +346,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     };
     /** V/C for display: overloaded links read "3+" rather than a spurious 26.7. Pure. */
     function fmtVC(v) { return v == null ? '–' : v >= 3 ? '3+' : v.toFixed(2); }
-    const S = { open: false, tool: null, period: 'am', closed: [], widened: [], slowed: {}, monsoon: null, added: [], pending: null,
+    const S = { open: false, tool: null, period: 'am', closed: [], widened: [], slowed: {}, monsoon: null, shift: null, added: [], pending: null,
         region: null, roads: null, model: null, result: null, running: false, progress: 0, error: null };
 
     /** Colour for a V/C change (worse = reds, better = blues), null when too small to show. */
@@ -354,7 +363,9 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
         const widened = {};
         for (const f of st.widened) widened[f] = WIDEN;
         for (const [f, k] of Object.entries(st.slowed || {})) widened[f] = k;
-        return { closed: st.closed.slice(), widened, added: st.added.map(a => a.link) };
+        const out = { closed: st.closed.slice(), widened, added: st.added.map(a => a.link) };
+        if (st.shift) out.shift = { frac: st.shift.pct / 100, zones: st.shift.zones || null };
+        return out;
     }
     /** One-line plain-language summary of a comparison. Pure. */
     function headline(res, period) {
@@ -440,7 +451,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     }
     function toggle() { if (S.open) close(); else open(); }
     function _reset(render = true) {
-        S.closed = []; S.widened = []; S.slowed = {}; S.monsoon = null; S.added = []; S.pending = null; S.result = null; S.error = null;
+        S.closed = []; S.widened = []; S.slowed = {}; S.monsoon = null; S.shift = null; S.added = []; S.pending = null; S.result = null; S.error = null;
         _clearLayers(); _dimRoads(false);
         if (render) _render();
     }
@@ -487,7 +498,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     /** Run baseline (cached in the worker) + scenario and paint the result. */
     async function runScenario() {
         if (S.running) return null;
-        if (!S.closed.length && !S.widened.length && !S.added.length && !Object.keys(S.slowed).length) {
+        if (!S.closed.length && !S.widened.length && !S.added.length && !Object.keys(S.slowed).length && !S.shift) {
             S.error = 'Close, widen or add a road first.'; _render(); return null;
         }
         S.running = true; S.progress = 0; S.error = null; S.tool = null; _render();
@@ -619,7 +630,10 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
             + ['close', 'widen', 'add'].map(t => `<button type="button" data-rw="tool" data-v="${t}" aria-pressed="${S.tool === t}" style="${btn(S.tool === t)}">${{ close: 'Close a road', widen: 'Widen a road', add: 'Add a link' }[t]}</button>`).join('')
             + `</div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">`
             + Object.entries(MONSOON).map(([k, m]) => `<button type="button" data-rw="monsoon" data-v="${k}" aria-pressed="${S.monsoon === k}" style="${btn(S.monsoon === k)}">🌧 ${_esc(m.label)}</button>`).join('')
+            + `</div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">`
+            + SHIFTS.map(([pct, scope, label]) => { const on = S.shift && S.shift.pct === pct && S.shift.scope === scope; return `<button type="button" data-rw="shift" data-v="${pct}:${scope}" aria-pressed="${!!on}" style="${btn(on)}">🚇 ${_esc(label)}</button>`; }).join('')
             + `</div>`
+            + (S.shift ? `<div style="margin-top:6px;">${_esc(shiftLabel(S.shift))}.${S.result ? ` ${S.result.shiftedPcu != null ? `${Math.round(S.result.shiftedPcu).toLocaleString('en-IN')} fewer vehicles in the peak hour. ` : ''}Some roads still get busier: the remaining drivers re-route onto main roads that freed up.` : ''}</div>` : '')
             + (S.monsoon ? `<div style="margin-top:6px;">${_esc(MONSOON[S.monsoon].label)}: ${S.closed.length} road segments closed, ${nSlow} slowed (waterlogging-prone).</div>` : '')
             + (S.tool ? `<div style="margin-top:6px;color:${pal.sub};">${HINT[S.tool]}${S.tool === 'add' && S.pending != null ? ' Now click the second junction.' : ''}</div>` : '')
             + (!S.model && !S.error ? `<div style="margin-top:6px;color:${pal.sub};">Loading the road model…</div>` : '');
@@ -680,6 +694,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
             S.result = null; _drawEdits(); _dimRoads(false);
         }
         if (k === 'monsoon') { setMonsoon(v).then(() => runScenario()); return; }
+        if (k === 'shift') { const [pct, scope] = v.split(':'); setShift(Number(pct), scope).then(() => runScenario()); return; }
         if (k === 'reset') { _reset(); return; }
         if (k === 'run') { runScenario(); return; }
         _render();
@@ -765,10 +780,13 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     function askText(a) {
         if (!a || !a.ok) return (a && a.error) || 'The road what-if did not run.';
         const line = (r) => `${r.name} (V/C ${fmtVC(r.base)} → ${fmtVC(r.scen)})`;
-        const lead = a.monsoon
+        const lead = a.shift
+            ? `${a.label}${a.result && a.result.shiftedPcu ? ` (${Math.round(a.result.shiftedPcu).toLocaleString('en-IN')} fewer vehicles in the peak hour)` : ''}`
+            : a.monsoon
             ? `${a.label}: ${a.closedN} waterlogging-prone road segments closed and ${a.slowedN} slowed`
             : `${a.action === 'widen' ? 'Widening' : 'Closing'} ${a.road} (${a.matched} segment${a.matched === 1 ? '' : 's'})`;
         return `${lead}, ${a.period === 'pm' ? '18:00' : '09:00'} peak: ${a.headline}`
+            + (a.shift ? ' Some roads still get busier because the remaining drivers re-route onto main roads that freed up.' : '')
             + (a.result && a.result.newlyJammed ? ` ${a.result.newlyJammed} roads tip into LOS E/F.` : '')
             + (a.worse.length ? `\nBusier: ${a.worse.map(line).join('; ')}.` : '')
             + (a.better.length ? `\nQuieter: ${a.better.map(line).join('; ')}.` : '')
@@ -815,11 +833,68 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
         return { ok: true, monsoon: S.monsoon, label: MONSOON[S.monsoon].label, closedN: e.closed.length, slowedN: Object.keys(e.slowed).length,
             period: S.period, headline: headline(res, S.period), ...t, result: res };
     }
+    // ── mode shift: a share of car trips moves to metro / rail / bus ─────────
+    const SHIFT_KM = 1;                 // a zone counts as served when a station is within 1 km
+    const SHIFTS = [[10, 'stations', '10% near stations'], [20, 'stations', '20% near stations'], [10, 'all', '10% of all trips']];
+    function shiftLabel(sh) {
+        return sh.scope === 'all' ? `${sh.pct}% of every car trip moves to public transport`
+            : `${sh.pct}% of car trips between places within ${SHIFT_KM} km of a metro or rail station move to the train`
+                + (sh.zonesServed != null ? ` (${sh.zonesServed} of ${sh.zonesTotal} zones served)` : '');
+    }
+    /**
+     * Zone flags (1 = a station within ``km``) from the model's zone nodes and
+     * station points [[lon, lat]…]. Pure.
+     */
+    function stationZones(model, stations, km = SHIFT_KM) {
+        const zn = model.zones.node, N = model.nodes, out = new Uint8Array(zn.length);
+        if (!stations || !stations.length) return out;
+        const k = Math.cos(((N[1] || 22) * Math.PI) / 180), r2 = (km * 1000) ** 2;
+        zn.forEach((node, z) => {
+            const x = N[2 * node], y = N[2 * node + 1];
+            for (const [sx, sy] of stations) {
+                const dx = (sx - x) * k * 111320, dy = (sy - y) * 111320;
+                if (dx * dx + dy * dy <= r2) { out[z] = 1; break; }
+            }
+        });
+        return out;
+    }
+    async function _stations(region) {
+        try {
+            const r = await fetch(`./data/vectors/rail_stations_${region}.geojson`, { cache: 'force-cache' });
+            if (!r.ok) return [];
+            return (await r.json()).features.map(f => f.geometry.coordinates);
+        } catch { return []; }
+    }
+    async function setShift(pct = 10, scope = 'stations', period) {
+        await open();
+        await _ensureData();
+        _reset(false);
+        if (period) S.period = period === 'pm' ? 'pm' : 'am';
+        const sh = { pct: Math.max(1, Math.min(100, Number(pct) || 10)), scope: scope === 'all' ? 'all' : 'stations' };
+        if (sh.scope === 'stations') {
+            sh.zones = stationZones(S.model, await _stations(S.region));
+            sh.zonesServed = sh.zones.reduce((a, b) => a + b, 0);
+            sh.zonesTotal = sh.zones.length;
+        }
+        S.shift = sh;
+        _drawEdits(); _render();
+        return sh;
+    }
+    /** Chat entry point: move pct% of car trips to transit and re-run the peak. Same shape as ask(). */
+    async function modeShift({ pct = 10, scope = 'stations', period = 'am' } = {}) {
+        const sh = await setShift(pct, scope, period);
+        if (sh.scope === 'stations' && !sh.zonesServed) return { ok: false, error: 'No metro or rail station is mapped in this city, so no trips can shift to the train.' };
+        const res = await runScenario();
+        if (!res) return { ok: false, error: S.error || 'The what-if did not run.' };
+        const t = topRoads(res, _roadName);
+        return { ok: true, shift: sh, label: shiftLabel(sh), period: S.period, headline: headline(res, S.period), ...t, result: res };
+    }
     function state() { return { ...S, roads: undefined, model: undefined }; }
 
     return { core: C, run, loadModel, modelUrl, nearestNode: C.nearestNode, newLink: C.newLink,
         open, close, toggle, isPicking, runScenario, setEdits, findRoads, state, diffColor, editsFrom, headline,
-        normRoad, matchRoads, topRoads, ask, askText, monsoon, monsoonEdits, setMonsoon, fmtVC, MONSOON };
+        normRoad, matchRoads, topRoads, ask, askText, monsoon, monsoonEdits, setMonsoon, fmtVC, MONSOON,
+        modeShift, setShift, stationZones, shiftLabel };
 })();
 
 if (typeof window !== 'undefined') window.RoadWhatIf = RoadWhatIf;
