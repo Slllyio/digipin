@@ -165,6 +165,9 @@ test.describe('live feeds', () => {
     await closeLayers(page);
     await settle(page, 1500);
     await shot(page, 'live-sky-3d');
+    await page.fill('#search-input', 'aic433');
+    await page.press('#search-input', 'Enter');
+    if (!STUB && !process.env.ADSB_FIXTURE) await expect(page.locator('.live-sky-pop')).toContainText('AIC433');
     await status.locator('select').selectOption('0.25');
     await settle(page, 800);
     await shot(page, 'live-sky-3d-compressed');
@@ -198,6 +201,10 @@ test.describe('live feeds', () => {
       await card.getByRole('button', { name: 'Open this cell' }).click();
       await expect.poll(() => page.evaluate(() => MapModule.getSelectedCode())).toBeTruthy();
     }
+    // The map search finds places on the layer before asking the geocoder.
+    await page.fill('#search-input', 'jama masjid');
+    await page.press('#search-input', 'Enter');
+    if (!STUB) await expect(page.locator('.places-card')).toContainText('Jama Masjid');
     await toggleRow(page, 'btn-places');
     expect(await page.evaluate(() => PlacesNearby.isActive())).toBe(false);
   });

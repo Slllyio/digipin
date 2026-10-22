@@ -196,6 +196,17 @@ const PlacesNearby = (() => {
         _popup = new maplibregl.Popup({ offset: 10, maxWidth: '260px' }).setLngLat([p.lng, p.lat]).setDOMContent(_card(p)).addTo(_map);
     }
 
+    /** Fly to a place (by page id) and open its card. */
+    function focus(id) {
+        const p = _places.find(x => x.id === id);
+        if (!p || !_map || typeof maplibregl === 'undefined') return false;
+        _map.flyTo({ center: [p.lng, p.lat], zoom: Math.max(_map.getZoom(), 15), essential: true });
+        if (_popup) _popup.remove();
+        // focusAfterOpen off: opened from the search box, the Enter that ran the search would otherwise click the card's first button.
+        _popup = new maplibregl.Popup({ offset: 10, maxWidth: '260px', focusAfterOpen: false }).setLngLat([p.lng, p.lat]).setDOMContent(_card(p)).addTo(_map);
+        return true;
+    }
+
     function _onMoveEnd() {
         if (!_lastCentre) return;
         const c = _map.getCenter();
@@ -240,7 +251,7 @@ const PlacesNearby = (() => {
     function isActive() { return _active; }
     function places() { return _places.slice(); }
 
-    return { attach, detach, toggle, isActive, places, load, apiUrl, kindOf, parse, toGeoJSON, KIND_COLORS };
+    return { attach, detach, toggle, isActive, places, load, focus, apiUrl, kindOf, parse, toGeoJSON, KIND_COLORS };
 })();
 
 if (typeof window !== 'undefined') window.PlacesNearby = PlacesNearby;

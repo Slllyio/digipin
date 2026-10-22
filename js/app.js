@@ -228,6 +228,7 @@ const App = (() => {
             // DIGIPIN codes of any level (3–10 symbols), dashes/spaces optional.
             const cleaned = query.replace(/[-\s]/g, '').toUpperCase();
             const isDigiPin = cleaned.length >= 3 && DigiPin.isValid(cleaned);
+            let liveHit = null;
 
             if (isDigiPin) {
                 try {
@@ -237,6 +238,10 @@ const App = (() => {
                 } catch (e) {
                     showToast('Invalid DigiPin', e.message, 'error');
                 }
+            } else if ((liveHit = typeof LiveSearch !== 'undefined' ? LiveSearch.find(query) : null) && LiveSearch.go(liveHit)) {
+                // A flight, place or live correlation on a layer that is on.
+                const hit = liveHit;
+                showToast('Found on the map', `${hit.label} \u00b7 ${hit.kind === 'aircraft' ? 'Live sky' : hit.kind === 'place' ? 'Places' : 'Live now'}`, 'success');
             } else {
                 setSearching(true);
                 try {

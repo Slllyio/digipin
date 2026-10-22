@@ -251,7 +251,21 @@ const LiveSky = (() => {
         const f = e.features && e.features[0];
         if (!f) return;
         const a = _aircraft.find(x => x.hex === f.properties.hex);
-        if (!a || typeof maplibregl === 'undefined') return;
+        if (a) _showPopup(a, e.lngLat);
+    }
+
+    /** Fly to an aircraft (by hex) and open its card. False when it isn't in the feed. */
+    function focus(hex) {
+        const a = _aircraft.find(x => x.hex === hex);
+        if (!a || !_map) return false;
+        const p = predict(a, Date.now() / 1000);
+        _map.flyTo({ center: [p.lng, p.lat], zoom: Math.max(_map.getZoom(), 11), essential: true });
+        _showPopup(a, [p.lng, p.lat]);
+        return true;
+    }
+
+    function _showPopup(a, lngLat) {
+        if (typeof maplibregl === 'undefined') return;
         if (_popup) _popup.remove();
         const div = document.createElement('div');
         div.className = 'live-sky-pop';
@@ -261,7 +275,7 @@ const LiveSky = (() => {
         line(a.onGround ? 'On the ground' : `${a.altFt.toLocaleString('en-IN')} ft (${Math.round(a.altM).toLocaleString('en-IN')} m)`);
         line(`${Math.round(a.speedKmh)} km/h · heading ${Math.round(a.track)}°${a.vrateFpm > 300 ? ' · climbing' : a.vrateFpm < -300 ? ' · descending' : ''}`);
         if (a.emergency) line(`Emergency: ${a.emergency}`);
-        _popup = new maplibregl.Popup({ closeButton: true, offset: 8 }).setLngLat(e.lngLat).setDOMContent(div).addTo(_map);
+        _popup = new maplibregl.Popup({ closeButton: true, offset: 8, focusAfterOpen: false }).setLngLat(lngLat).setDOMContent(div).addTo(_map);
     }
 
     function _renderStatus(err) {
@@ -344,7 +358,7 @@ const LiveSky = (() => {
     function lastFrame() { return _lastFrame; }
 
     return {
-        attach, detach, toggle, isActive, aircraft, lastFrame, poll,
+        attach, detach, toggle, isActive, aircraft, lastFrame, poll, focus,
         feedUrl, proxied, parseAircraft, offset, predict, planeRing, planeLength, altColor, frameFeatures, summary,
     };
 })();
