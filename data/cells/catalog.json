@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T05:49:07Z",
+  "generated": "2026-10-22T06:14:26Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -10107,6 +10107,321 @@
             "north": 18.654296875
           },
           "json": "traffic_load/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "traffic_noise",
+      "title": "Road noise & exhaust (modelled)",
+      "description": "From the traffic demand model's daily volumes on the arterials: road noise at each home cell by the UK CRTN method (all modelled roads within 300 m, energy-summed, converted to Lden), and exhaust from vehicle-km driven in the cell with fleet-average factors (NOx 0.45 g, PM2.5 0.025 g, CO2 110.0 g per vehicle-km). No barriers, facades or local streets; modelled, not measured.",
+      "source": "pipeline/traffic/noise_air.py over data/traffic road_los.geojson + GHSL population",
+      "license": "ODbL (OpenStreetMap) + CC BY 4.0 (GHSL)",
+      "group": "Traffic & mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "lden_db",
+          "label": "Road noise at home (Lden)",
+          "type": "number",
+          "agg": "max",
+          "unit": "dB(A)",
+          "domain": [
+            45,
+            80
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "l10_18h_db",
+          "label": "Road noise L10 (06\u201324 h)",
+          "type": "number",
+          "agg": "max",
+          "unit": "dB(A)",
+          "domain": [
+            45,
+            85
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "nox_kg_day",
+          "label": "Traffic NOx emitted",
+          "type": "number",
+          "agg": "sum",
+          "unit": "kg/day",
+          "domain": [
+            0,
+            278.18
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "pm25_exhaust_g_day",
+          "label": "Traffic exhaust PM2.5",
+          "type": "number",
+          "agg": "sum",
+          "unit": "g/day",
+          "domain": [
+            0,
+            15454.4
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "co2_t_day",
+          "label": "Traffic CO2",
+          "type": "number",
+          "agg": "sum",
+          "unit": "t/day",
+          "domain": [
+            0,
+            67.999
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "lden_db",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 5911,
+          "bbox": {
+            "west": 72.462646484375,
+            "south": 22.927978515625,
+            "east": 72.708740234375,
+            "north": 23.13671875
+          },
+          "json": "traffic_noise/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 15043,
+          "bbox": {
+            "west": 77.441650390625,
+            "south": 12.807373046875,
+            "east": 77.797607421875,
+            "north": 13.15673828125
+          },
+          "json": "traffic_noise/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 3287,
+          "bbox": {
+            "west": 77.27685546875,
+            "south": 23.130126953125,
+            "east": 77.525146484375,
+            "north": 23.332275390625
+          },
+          "json": "traffic_noise/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 6677,
+          "bbox": {
+            "west": 80.1025390625,
+            "south": 12.8798828125,
+            "east": 80.31787109375,
+            "north": 13.211669921875
+          },
+          "json": "traffic_noise/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 25120,
+          "bbox": {
+            "west": 76.82421875,
+            "south": 28.390380859375,
+            "east": 77.369140625,
+            "north": 28.90234375
+          },
+          "json": "traffic_noise/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 426,
+          "bbox": {
+            "west": 77.25927734375,
+            "south": 24.595703125,
+            "east": 77.3515625,
+            "north": 24.685791015625
+          },
+          "json": "traffic_noise/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 10218,
+          "bbox": {
+            "west": 78.265625,
+            "south": 17.2392578125,
+            "east": 78.632568359375,
+            "north": 17.5732421875
+          },
+          "json": "traffic_noise/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C",
+              "422T"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 10806,
+          "bbox": {
+            "west": 75.534423828125,
+            "south": 22.36328125,
+            "east": 76.031005859375,
+            "north": 22.954345703125
+          },
+          "json": "traffic_noise/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9C",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC5",
+              "3MC6",
+              "3MC7",
+              "3MC8",
+              "3MC9",
+              "3MCC"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 5712,
+          "bbox": {
+            "west": 75.67724609375,
+            "south": 26.77978515625,
+            "east": 75.94091796875,
+            "north": 27.04345703125
+          },
+          "json": "traffic_noise/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 5129,
+          "bbox": {
+            "west": 88.232421875,
+            "south": 22.365478515625,
+            "east": 88.467529296875,
+            "north": 22.6533203125
+          },
+          "json": "traffic_noise/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 5417,
+          "bbox": {
+            "west": 80.81005859375,
+            "south": 26.724853515625,
+            "east": 81.0693359375,
+            "north": 26.992919921875
+          },
+          "json": "traffic_noise/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 6083,
+          "bbox": {
+            "west": 72.783447265625,
+            "south": 18.89599609375,
+            "east": 73.016357421875,
+            "north": 19.276123046875
+          },
+          "json": "traffic_noise/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 6525,
+          "bbox": {
+            "west": 73.732666015625,
+            "south": 18.41259765625,
+            "east": 74.0029296875,
+            "north": 18.654296875
+          },
+          "json": "traffic_noise/pune.json",
           "parquet": null
         }
       ]

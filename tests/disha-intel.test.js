@@ -55,6 +55,8 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('Who gets cut off from hospitals in a flood?')).toEqual({ type: 'lens', lens: 'cutoff' });
         expect(M('Where does rainwater pool in Pune?')).toEqual({ type: 'lens', lens: 'waterlog', city: 'pune' });
         expect(M('which areas face waterlogging')).toEqual({ type: 'lens', lens: 'waterlog' });
+        expect(M('How many people in Delhi live with road noise above the WHO limit?')).toEqual({ type: 'lens', lens: 'noise', city: 'delhi' });
+        expect(M('which neighbourhoods are the noisiest')).toEqual({ type: 'lens', lens: 'noise' });
         expect(M('Where are the traffic jams in Delhi?')).toEqual({ type: 'lens', lens: 'traffic', city: 'delhi' });
         expect(M('which roads are the worst bottlenecks at rush hour')).toEqual({ type: 'lens', lens: 'traffic' });
         expect(M('How many people can walk to a bus stop?')).toEqual({ type: 'lens', lens: 'transit' });

@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 88.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "traffic": {
      "label": "Residents beside a jammed arterial",
      "value": 56.7,
@@ -123,6 +129,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 20.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 83.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -222,6 +234,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 68.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "traffic": {
      "label": "Residents beside a jammed arterial",
      "value": 16.9,
@@ -315,6 +333,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 78.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -414,6 +438,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 66.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "traffic": {
      "label": "Residents beside a jammed arterial",
      "value": 41,
@@ -507,6 +537,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 26.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 55,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -606,6 +642,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 69.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "traffic": {
      "label": "Residents beside a jammed arterial",
      "value": 30.9,
@@ -699,6 +741,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 21,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 68.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -798,6 +846,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 70,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "traffic": {
      "label": "Residents beside a jammed arterial",
      "value": 22,
@@ -891,6 +945,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 43.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 75.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -990,6 +1050,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 67.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "traffic": {
      "label": "Residents beside a jammed arterial",
      "value": 23.4,
@@ -1086,6 +1152,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 88.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "traffic": {
      "label": "Residents beside a jammed arterial",
      "value": 70,
@@ -1179,6 +1251,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "noise": {
+     "label": "Residents above 53 dB",
+     "value": 76.7,
      "unit": "%",
      "higherIs": "worse"
     },

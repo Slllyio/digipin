@@ -143,6 +143,28 @@ HERE or Mappls, which need a key).
 
     python -m pipeline.traffic.demand_model --region all     # ~3 min Delhi (three patterns)
 
+### 6. Road noise and exhaust (`noise_air.py`)
+
+From the demand model's daily volumes (`pcu_daily`, ×1.4 vehicles per PCU
+for a two-wheeler-heavy mix, 5% heavy vehicles, 83% of the day between 06:00
+and 24:00) each home cell (L7 centre) gets the CRTN L10(18h) of every modelled
+road within 300 m, energy-summed and converted to Lden
+(0.90·L10 + 3.77, Abbott & Nelson 2002). Exhaust is vehicle-km in the cell ×
+fleet-average factors (NOx 0.45 g, exhaust PM2.5 0.025 g, CO₂ 110 g per
+vehicle-km). Output: cell dataset `traffic_noise` (`lden_db`, `l10_18h_db`,
+`nox_kg_day`, `pm25_exhaust_g_day`, `co2_t_day`) and a `noise_air` block in
+`summary.json`. The **Road noise** lens counts residents at or above WHO's
+53 dB Lden road guideline and at 65 dB, with the poorest-fifth share.
+
+Sanity check: modelled NOx per ~4 km cell (L5) against Sentinel-5P NO₂ has a
+Spearman rank correlation of 0.82 in Delhi, 0.87 Bhopal, 0.81 Jaipur, 0.77
+Kolkata, 0.69 Indore, 0.65 Bengaluru, and is weak where ports, power plants
+or the sea dominate the column (Mumbai 0.22, Chennai 0.33). Arterials only,
+no barriers or building shielding: the noise figures describe the
+road-facing side of homes near main roads.
+
+    python -m pipeline.traffic.noise_air --region all        # seconds per city
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

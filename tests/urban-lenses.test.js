@@ -227,6 +227,19 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(rt.headline).toMatch(/morning or evening peak/);
     });
 
+    it('noise lens: residents above the WHO road guideline and at 65 dB', () => {
+        const ld = codes.map((_, i) => (i === 0 ? 70 : i === 1 ? 58 : i === n - 1 ? 45 : NaN));
+        const nox = codes.map((_, i) => (i === 0 ? 12 : NaN));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'traffic_noise.lden_db': ld, 'traffic_noise.nox_kg_day': nox });
+        const r = L._lenses.noise(f, {});
+        const total = pop.reduce((a, b) => a + b, 0);
+        expect(r.metric.value).toBeCloseTo(100 * (pop[0] + pop[1]) / total, 0);
+        expect(r.columns.noise_lden[0]).toBe(70);
+        expect(r.stats[1].raw).toBe(Math.round(pop[0]));
+        expect(r.headline).toMatch(/WHO guideline of 53 dB/);
+        expect(L._lenses.noise(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {
         const rp = new Array(n).fill(0), depth = new Array(n).fill(0);
         for (let r = 0; r < SIZE; r++) { rp[r * SIZE + 3] = 100; depth[r * SIZE + 3] = 1; }   // column 3 floods
@@ -312,7 +325,7 @@ describe('UrbanLenses on committed city data', () => {
         expect(r.schema).toBe('digipin.lenses/1');
         expect(r.residents).toBeGreaterThan(1e6);
         const ids = r.lenses.map(l => l.id);
-        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'waterlog', 'traffic', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'types', 'green', 'solar', 'confidence', 'seasons', 'burden']));
+        expect(ids).toEqual(expect.arrayContaining(['heat', 'flood', 'waterlog', 'noise', 'traffic', 'fifteen', 'health', 'air', 'lights', 'walk', 'sprawl', 'types', 'green', 'solar', 'confidence', 'seasons', 'burden']));
         const se = r.lenses.find(l => l.id === 'seasons');
         expect(se.series.lst.values.length).toBe(24);
         expect(se.headline).toMatch(/PM2\.5/);

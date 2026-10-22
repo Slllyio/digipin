@@ -40,7 +40,8 @@ const UrbanLenses = (() => {
     const FLOOD_DETOUR_M = 250;
     const WATERLOG_BLOCK = 65;  // waterlogging_index "Very high" class
     const WLOG_HIGH = 45, WLOG_VERY = 65;   // waterlogging index cut-offs for High / Very high (pipeline/cells/ee_layers.py)
-    const ROAD_KM = 0.25, JAM_VC = 0.9;     // residents within 250 m (own or next cell) of an arterial at LOS E/F
+    const ROAD_KM = 0.25, JAM_VC = 0.9;
+    const NOISE_WHO = 53, NOISE_HIGH = 65;      // dB Lden: WHO 2018 road guideline; high exposure     // residents within 250 m (own or next cell) of an arterial at LOS E/F
     const CUTOFF_DOMAIN = ['Cut off from care', 'Longer walk to care', 'Flooded', 'Unaffected', 'No care in reach anyway'];
     const CUTOFF_COLORS = { 'Cut off from care': '#c0392b', 'Longer walk to care': '#f39c12', Flooded: '#2e86c1', Unaffected: '#cfd8dc', 'No care in reach anyway': '#8e8e8e' };
     const STOP_KM = 0.5, RAPID_KM = 1;   // SDG 11.2.1: 500 m to a bus stop, 1 km to rail / BRT / terminal
@@ -84,6 +85,13 @@ const UrbanLenses = (() => {
             needs: ['waterlogging.waterlogging_index', 'waterlogging.monsoon_water_pct', 'demographics.under5', 'demographics.elderly_60plus', 'wealth.rwi'],
             method: `Residents of cells whose waterlogging susceptibility is High (≥ ${WLOG_HIGH}) or Very high (≥ ${WLOG_VERY}). The index blends height above drainage, Sentinel-1 radar passes that saw standing water in the wet seasons 2021–2025, the topographic wetness index, hollows below the surrounding 300 m and sealed surface. Drains and pumps are not modelled. The poorest-fifth share uses the Meta Relative Wealth Index, population-weighted within the city.`,
             refs: 'Beven & Kirkby 1979 (TWI); Nobre et al. 2011 (HAND); Tiwari et al. 2020 (Sentinel-1 urban flood mapping); Chi et al. 2022 (RWI)' },
+        { id: 'noise', equity: true, title: 'Road noise', icon: '🔊',
+            question: 'Who lives with main-road noise above the WHO guideline?',
+            field: { key: 'noise_lden', label: 'Road noise at home (Lden)', unit: 'dB(A)', higherIs: 'worse', ramp: 'heat' },
+            extra: [{ key: 'noise_nox', label: 'Traffic NOx emitted nearby', unit: 'kg/day', higherIs: 'worse', ramp: 'heat' }],
+            needs: ['traffic_noise.lden_db', 'traffic_noise.nox_kg_day', 'traffic_noise.co2_t_day', 'demographics.under5', 'demographics.elderly_60plus', 'wealth.rwi'],
+            method: `Road noise at each home cell from the traffic model's daily volumes on the arterials, by the UK CRTN method (every modelled road within 300 m, energy-summed, converted to Lden). The WHO 2018 guideline for road traffic is ${NOISE_WHO} dB Lden; ${NOISE_HIGH} dB is a high exposure. No barriers, building shielding or local streets, so it describes the road-facing side. Exhaust uses fleet-average emission factors per vehicle-km; modelled NOx tracks Sentinel-5P NO₂ across each city (rank correlation in data/traffic/<city>/summary.json).`,
+            refs: 'DoT 1988 (CRTN); Abbott & Nelson 2002 (CRTN to Lden); WHO 2018 Environmental Noise Guidelines' },
         { id: 'traffic', equity: true, title: 'Traffic load', icon: '🚦',
             question: 'Who lives next to roads that jam in the morning peak?',
             field: { key: 'traffic_vc', label: 'Worst peak-hour V/C within 250 m', unit: 'ratio', higherIs: 'worse', ramp: 'heat' },
@@ -739,6 +747,43 @@ const UrbanLenses = (() => {
             headline: `${_people(pHigh)} people (${_round(100 * pHigh / total)}% of residents) live where heavy rain is likely to pool`
                 + (pVery ? `, ${_people(pVery)} of them in the most waterlogging-prone cells` : '')
                 + (poorShare != null ? `; ${_round(poorShare)}% of them are in the city’s poorest fifth of neighbourhoods.` : '.'),
+            stats,
+        };
+    }
+
+    function noise(fr) {
+        const c = fr.cols, idx = _residents(fr), n = fr.grid.n;
+        const ld = c['traffic_noise.lden_db'], nox = c['traffic_noise.nox_kg_day'], co2 = c['traffic_noise.co2_t_day'];
+        const pop = c['population.population'];
+        if (!ld) return null;
+        const lden = new Float64Array(n).fill(NaN), noxN = new Float64Array(n).fill(NaN);
+        for (const i of idx) { if (_fin(ld[i])) lden[i] = ld[i]; if (nox && _fin(nox[i])) noxN[i] = nox[i]; }
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const who = idx.filter(i => ld[i] >= NOISE_WHO), high = idx.filter(i => ld[i] >= NOISE_HIGH);
+        const pWho = _sumOver(pop, who, () => true), pHigh = _sumOver(pop, high, () => true);
+        const stats = [
+            { label: `Residents at or above ${NOISE_WHO} dB Lden (WHO road guideline)`, value: `${_people(pWho)} (${_round(100 * pWho / total)}%)`, raw: Math.round(pWho) },
+            { label: `Residents at or above ${NOISE_HIGH} dB Lden`, value: `${_people(pHigh)} (${_round(100 * pHigh / total)}%)`, raw: Math.round(pHigh) },
+        ];
+        const u5 = c['demographics.under5'], old = c['demographics.elderly_60plus'];
+        if (u5 && old) stats.push({ label: `Children under 5 / people 60+ at ${NOISE_HIGH}+ dB`, value: `${_people(_sumOver(u5, high, () => true))} / ${_people(_sumOver(old, high, () => true))}` });
+        if (nox) { let t = 0; for (let i = 0; i < n; i++) if (_fin(nox[i])) t += nox[i]; stats.push({ label: 'Traffic NOx emitted on the arterials', value: `${_round(t / 1000, 1)} t/day` }); }
+        if (co2) { let t = 0; for (let i = 0; i < n; i++) if (_fin(co2[i])) t += co2[i]; stats.push({ label: 'Traffic CO₂ on the arterials', value: `${_people(t)} t/day` }); }
+        let poorShare = null;
+        const rwi = c['wealth.rwi'];
+        if (rwi && pHigh > 0) {
+            const q20 = wquantile(rwi, pop, idx, 0.2);
+            if (q20 != null) {
+                poorShare = 100 * _sumOver(pop, high, i => rwi[i] <= q20) / pHigh;
+                stats.push({ label: `Share of the ${NOISE_HIGH}+ dB residents in the poorest fifth (RWI; 20% if even)`, value: `${_round(poorShare)}%` });
+            }
+        }
+        return {
+            columns: { noise_lden: lden, noise_nox: noxN }, idx, weightKey: 'noise_lden',
+            metric: { label: `Residents above ${NOISE_WHO} dB`, value: _round(100 * pWho / total), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pWho)} people (${_round(100 * pWho / total)}% of residents) live where main-road noise reaches the WHO guideline of ${NOISE_WHO} dB Lden`
+                + (pHigh ? `; ${_people(pHigh)} of them at ${NOISE_HIGH} dB or more` : '')
+                + (poorShare != null ? `, ${_round(poorShare)}% of those in the poorest fifth.` : '.'),
             stats,
         };
     }
@@ -1578,7 +1623,7 @@ const UrbanLenses = (() => {
             metric: pmRes != null ? { label: 'Months a year above 60 µg/m³ PM2.5', value: _round(pmRes, 1), unit: 'months', higherIs: 'worse' } : null };
     }
 
-    const RUN = { heat, flood, waterlog, traffic, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
+    const RUN = { heat, flood, waterlog, noise, traffic, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
 
     // ── siting suitability (MCDA with AHP weights) ──────────────────────────
 

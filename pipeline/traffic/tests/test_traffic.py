@@ -234,3 +234,19 @@ def test_demand_model_time_of_day():
     p = feats[0]["properties"]
     assert p["peak_period"] == "am" and p["vc_pm"] < p["vc_am"] and p["ffs"] == 45
     assert all({"am_vc", "pm_vc", "mid_vc", "peak_period"} <= set(r) for r in rows.values())
+
+
+def test_noise_air_helpers():
+    from pipeline.traffic import noise_air as na
+    # CRTN: 10× the traffic is +10 dB; doubling the distance loses ~2–3 dB.
+    a = na.crtn_l10_18h(10000, 40, 10)
+    assert abs(na.crtn_l10_18h(100000, 40, 10) - a - 10) < 1e-9
+    assert 1.5 < a - na.crtn_l10_18h(10000, 40, 20) < 3.5
+    assert 60 < a < 80                                   # a busy urban road, 10 m away
+    assert na.crtn_l10_18h(0, 40, 10) == float("-inf")
+    assert abs(na.energy_sum([60, 60]) - 63.0103) < 1e-3
+    assert abs(na.lden_from_l10(70) - 66.77) < 1e-9
+    assert na.spearman([1, 2, 3, 4], [10, 20, 30, 40]) == 1.0
+    assert na.spearman([1, 2, 3, 4], [4, 3, 2, 1]) == -1.0
+    assert na.spearman([1, 2], [1, 2]) is None
+    assert abs(na._seg_dist_m(75.80, 22.701, 75.79, 22.70, 75.81, 22.70, 0.92) - 111.32) < 0.5
