@@ -4647,3 +4647,9 @@ body.presenting #sidebar { display: none !important; }
 #aino-right.has-live-now #city-overview { display: none; }
 .layer-count { margin-left: auto; margin-right: 8px; padding: 1px 6px; border-radius: 9px; font-size: 10px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-secondary); background: rgba(127,127,127,.14); white-space: nowrap; }
 .ar-row .layer-count { margin-right: 2px; }
+.places-card { display: grid; gap: 4px; font-size: 12px; max-width: 240px; }
+.places-card img { width: 100%; max-height: 130px; object-fit: cover; border-radius: 6px; }
+.places-card .places-desc { color: #555; }
+.places-card .places-pin { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: #1f5fa8; }
+.places-card .places-actions { display: flex; gap: 10px; align-items: center; margin-top: 2px; }
+.places-card .places-actions button { font: inherit; font-size: 11px; padding: 3px 8px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; }

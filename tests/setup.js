@@ -105,6 +105,7 @@ loadGlobalScript('js/layer-swipe.js', ['LayerSwipe']);
 loadGlobalScript('js/sentinel-imagery.js', ['SentinelImagery']);
 loadGlobalScript('js/live-now.js', ['LiveNow']);
 loadGlobalScript('js/live-sky.js', ['LiveSky']);
+loadGlobalScript('js/places-nearby.js', ['PlacesNearby']);
 loadGlobalScript('js/layer-counts.js', ['LayerCounts']);
 loadGlobalScript('js/point-cloud.js', ['PointCloud']);
 loadGlobalScript('js/kde-overlay.js', ['KDEOverlay']);

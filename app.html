@@ -297,6 +297,10 @@
             <span class="tb-icon">&#9992;&#65039;</span>
             <span class="tb-label" data-i18n="tb.livesky">Live sky</span>
         </button>
+        <button class="toolbar-btn" id="btn-places" title="Places nearby — notable places from Wikipedia, each with its DIGIPIN (live)">
+            <span class="tb-icon">&#128205;</span>
+            <span class="tb-label" data-i18n="tb.places">Places</span>
+        </button>
         <button class="toolbar-btn" id="btn-pointcloud" title="Point cloud — view your LiDAR / drone survey (LAS, LAZ, COPC, EPT) in 3D">
             <span class="tb-icon">&#9729;</span>
             <span class="tb-label" data-i18n="tb.pointcloud">Point cloud</span>
@@ -566,6 +570,7 @@
     <script defer src="js/point-cloud.js"></script>
     <script defer src="js/live-now.js"></script>
     <script defer src="js/live-sky.js"></script>
+    <script defer src="js/places-nearby.js"></script>
     <script defer src="js/layer-counts.js"></script>
     <script defer src="js/kde-overlay.js"></script>
     <script defer src="js/accessibility-overlay.js"></script>
@@ -631,6 +636,7 @@
         ['btn-pointcloud', () => window.PointCloud],
         ['btn-livenow',   () => window.LiveNow],
         ['btn-livesky',   () => window.LiveSky],
+        ['btn-places',    () => window.PlacesNearby],
         ['btn-kde',       () => window.KDEOverlay],
         ['btn-access',    () => window.AccessibilityOverlay],
         ['btn-choropleth', () => window.ScoreChoropleth],

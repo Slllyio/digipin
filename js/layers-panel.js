@@ -32,6 +32,7 @@ const LayersPanel = (() => {
         { btnId: 'btn-pointcloud', name: 'Point Cloud (LiDAR / drone)', icon: '\u{2601}' },
         { btnId: 'btn-livenow', name: 'Live Now (weather, air, river, correlations)', icon: '\u{1F534}' },
         { btnId: 'btn-livesky', name: 'Live Sky (aircraft in 3D)', icon: '\u{2708}' },
+        { btnId: 'btn-places', name: 'Places Nearby (Wikipedia, with DIGIPIN)', icon: '\u{1F4CD}' },
         { btnId: 'btn-swipe', name: 'Swipe Compare (two layers)', icon: '\u{2194}' },
         { btnId: 'btn-hydrology', name: 'Terrain Hydrology (ponding)', icon: '\u{1F4A7}' },
         { btnId: 'btn-access', name: 'Accessibility Gaps', icon: '♿' },

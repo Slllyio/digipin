@@ -55,9 +55,26 @@ function aircraft(url) {
   return { now: Date.now(), ac };
 }
 
+function wiki(url) {
+  const at = new URL(url).searchParams.get('ggscoord');
+  if (!at) return { query: { pages: [] } };   // other Wikipedia calls the app makes
+  const [lat, lng] = at.split('|').map(Number);
+  const pages = [
+    ['Red Fort', 'Historic fort in Delhi, India', 0.012, 0.01],
+    ['Jama Masjid', 'Mosque in Delhi', -0.01, 0.006],
+    ['Lodhi Garden', 'Urban park in New Delhi', -0.02, -0.012],
+    ['Rajiv Chowk metro station', 'Metro station in New Delhi', 0.004, -0.004],
+  ].map(([title, description, dy, dx], i) => ({
+    pageid: 100 + i, index: i + 1, title, description, fullurl: `https://en.wikipedia.org/wiki/${title.replace(/ /g, '_')}`,
+    coordinates: [{ lat: lat + dy, lon: lng + dx, dist: Math.round(Math.hypot(dy, dx) * 111000) }],
+  }));
+  return { query: { pages } };
+}
+
 async function stubFeeds(page) {
   await page.route(/api\.adsb\.lol/, (r) => r.fulfill({ json: aircraft(r.request().url()), headers: CORS }));
   if (REAL) return;
+  await page.route(/wikipedia\.org\/w\/api\.php/, (r) => r.fulfill({ json: wiki(r.request().url()), headers: CORS }));
   await page.route(/api\.open-meteo\.com/, (r) => r.fulfill({ json: forecast(), headers: CORS }));
   await page.route(/air-quality-api\.open-meteo\.com/, (r) => r.fulfill({ json: { current: { time: 't', pm2_5: 142, pm10: 260, nitrogen_dioxide: 60, ozone: 40 } }, headers: CORS }));
   await page.route(/flood-api\.open-meteo\.com/, (r) => r.fulfill({ json: flood(r.request().url()), headers: CORS }));
@@ -150,5 +167,35 @@ test.describe('live feeds', () => {
     await shot(page, 'live-sky-3d-compressed');
     await toggleRow(page, 'btn-livesky');
     await expect(status).toHaveCount(0);
+  });
+
+  test('Places pins Wikipedia places with their DIGIPIN and opens the cell', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/app.html');
+    await waitForApp(page);
+    await page.selectOption('#city-select', 'delhi');
+    await settle(page, 600);
+    await page.evaluate(() => MapModule.getMap().jumpTo({ center: [77.225, 28.64], zoom: 13.2, pitch: 0 }));
+    await toggleRow(page, 'btn-places');
+    await closeLayers(page);
+    await page.waitForFunction(() => PlacesNearby.places().length > 0, null, { timeout: 20_000 });
+    const places = await page.evaluate(() => PlacesNearby.places());
+    expect(places.every((p) => /^[2-9CFJKLMPT]{3}-[2-9CFJKLMPT]{3}-[2-9CFJKLMPT]{4}$/.test(p.digipin))).toBe(true);
+    await expect(page.locator('.ar-row[data-ar-key="_btn_btn-places"] .layer-count, .dt-layer-item[data-layer-key="_btn_btn-places"] .layer-count').first())
+      .toHaveText(String(places.length), { timeout: 10_000 });
+    if (!STUB) {
+      await settle(page, 800);
+      const target = places[0];
+      const pt = await page.evaluate((p) => { const m = MapModule.getMap(); const q = m.project([p.lng, p.lat]); const r = m.getCanvas().getBoundingClientRect(); return { x: r.left + q.x, y: r.top + q.y }; }, target);
+      await page.mouse.click(pt.x, pt.y);
+      const card = page.locator('.places-card');
+      await expect(card).toContainText(target.title);
+      await expect(card).toContainText(`DIGIPIN ${target.digipin}`);
+      await shot(page, 'places-card');
+      await card.getByRole('button', { name: 'Open this cell' }).click();
+      await expect.poll(() => page.evaluate(() => MapModule.getSelectedCode())).toBeTruthy();
+    }
+    await toggleRow(page, 'btn-places');
+    expect(await page.evaluate(() => PlacesNearby.isActive())).toBe(false);
   });
 });
