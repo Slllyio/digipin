@@ -82,6 +82,9 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('where do trucks run through neighbourhoods in Pune')).toEqual({ type: 'lens', lens: 'freight', city: 'pune' });
         expect(M('what if 20% of car trips moved to the metro in Delhi')).toEqual({ type: 'modeshift', pct: 20, scope: 'stations', period: 'am', city: 'delhi' });
         expect(M('what if people take the bus instead of driving')).toEqual({ type: 'modeshift', pct: 10, scope: 'all', period: 'am' });
+        expect(M('what if we add a bus lane on Outer Ring Road in Delhi')).toEqual({ type: 'buslane', road: 'Outer Ring Road', pct: 10, period: 'am', city: 'delhi' });
+        expect(M('bus lane along MG Road with 20% switching')).toEqual({ type: 'buslane', road: 'MG Road', pct: 20, period: 'am' });
+        expect(M('give Ring Road a bus lane')).toEqual({ type: 'buslane', road: 'Ring Road', pct: 10, period: 'am' });
         expect(M('where are pedestrian crossings missing in Delhi')).toEqual({ type: 'lens', lens: 'crossing', city: 'delhi' });
         expect(M('how far do people walk to cross the main road')).toEqual({ type: 'lens', lens: 'crossing' });
         expect(M('is the walk to the metro safe for women at night')).toEqual({ type: 'lens', lens: 'nightwalk' });

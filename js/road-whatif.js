@@ -633,7 +633,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
             + `</div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">`
             + SHIFTS.map(([pct, scope, label]) => { const on = S.shift && S.shift.pct === pct && S.shift.scope === scope; return `<button type="button" data-rw="shift" data-v="${pct}:${scope}" aria-pressed="${!!on}" style="${btn(on)}">🚇 ${_esc(label)}</button>`; }).join('')
             + `</div>`
-            + (S.shift ? `<div style="margin-top:6px;">${_esc(shiftLabel(S.shift))}.${S.result ? ` ${S.result.shiftedPcu != null ? `${Math.round(S.result.shiftedPcu).toLocaleString('en-IN')} fewer vehicles in the peak hour. ` : ''}Some roads still get busier: the remaining drivers re-route onto main roads that freed up.` : ''}</div>` : '')
+            + (S.shift ? `<div style="margin-top:6px;">${_esc(shiftLabel(S.shift))}.${S.result ? ` ${S.result.shiftedPcu != null ? `${Math.round(S.result.shiftedPcu).toLocaleString('en-IN')} fewer vehicles in the peak hour. ` : ''}${S.shift.scope === 'corridor' ? `A third of ${_esc(S.shift.road || 'the road')} is taken from cars, so drivers who stay re-route; buses on the lane run at free-flow speed.` : 'Some roads still get busier: the remaining drivers re-route onto main roads that freed up.'}` : ''}</div>` : '')
             + (S.monsoon ? `<div style="margin-top:6px;">${_esc(MONSOON[S.monsoon].label)}: ${S.closed.length} road segments closed, ${nSlow} slowed (waterlogging-prone).</div>` : '')
             + (S.tool ? `<div style="margin-top:6px;color:${pal.sub};">${HINT[S.tool]}${S.tool === 'add' && S.pending != null ? ' Now click the second junction.' : ''}</div>` : '')
             + (!S.model && !S.error ? `<div style="margin-top:6px;color:${pal.sub};">Loading the road model…</div>` : '');
@@ -780,13 +780,16 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     function askText(a) {
         if (!a || !a.ok) return (a && a.error) || 'The road what-if did not run.';
         const line = (r) => `${r.name} (V/C ${fmtVC(r.base)} → ${fmtVC(r.scen)})`;
-        const lead = a.shift
+        const lead = a.buslane
+            ? `A bus lane on ${a.road} (${a.matched} segment${a.matched === 1 ? '' : 's'}, a third of the road taken from cars) with ${a.label}${a.result && a.result.shiftedPcu ? ` (${Math.round(a.result.shiftedPcu).toLocaleString('en-IN')} fewer vehicles in the peak hour)` : ''}`
+            : a.shift
             ? `${a.label}${a.result && a.result.shiftedPcu ? ` (${Math.round(a.result.shiftedPcu).toLocaleString('en-IN')} fewer vehicles in the peak hour)` : ''}`
             : a.monsoon
             ? `${a.label}: ${a.closedN} waterlogging-prone road segments closed and ${a.slowedN} slowed`
             : `${a.action === 'widen' ? 'Widening' : 'Closing'} ${a.road} (${a.matched} segment${a.matched === 1 ? '' : 's'})`;
         return `${lead}, ${a.period === 'pm' ? '18:00' : '09:00'} peak: ${a.headline}`
-            + (a.shift ? ' Some roads still get busier because the remaining drivers re-route onto main roads that freed up.' : '')
+            + (a.buslane ? ' Buses on the lane run at free-flow speed whatever the general traffic does.' : '')
+            + (a.shift && !a.buslane ? ' Some roads still get busier because the remaining drivers re-route onto main roads that freed up.' : '')
             + (a.result && a.result.newlyJammed ? ` ${a.result.newlyJammed} roads tip into LOS E/F.` : '')
             + (a.worse.length ? `\nBusier: ${a.worse.map(line).join('; ')}.` : '')
             + (a.better.length ? `\nQuieter: ${a.better.map(line).join('; ')}.` : '')
@@ -837,6 +840,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     const SHIFT_KM = 1;                 // a zone counts as served when a station is within 1 km
     const SHIFTS = [[10, 'stations', '10% near stations'], [20, 'stations', '20% near stations'], [10, 'all', '10% of all trips']];
     function shiftLabel(sh) {
+        if (sh.scope === 'corridor') return `${sh.pct}% of car trips between places within ${BUS_LANE_KM} km of ${sh.road || 'the corridor'} move to the bus`;
         return sh.scope === 'all' ? `${sh.pct}% of every car trip moves to public transport`
             : `${sh.pct}% of car trips between places within ${SHIFT_KM} km of a metro or rail station move to the train`
                 + (sh.zonesServed != null ? ` (${sh.zonesServed} of ${sh.zonesTotal} zones served)` : '');
@@ -889,12 +893,44 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
         const t = topRoads(res, _roadName);
         return { ok: true, shift: sh, label: shiftLabel(sh), period: S.period, headline: headline(res, S.period), ...t, result: res };
     }
+    // ── bus lane: one lane of a named road goes to buses, some car trips along it switch ──
+    const BUS_LANE_CAP = 2 / 3;        // a three-lane carriageway each way keeps two lanes for general traffic
+    const BUS_LANE_KM = 0.8;           // zones within this distance of the corridor are on the bus route
+    /** Corridor vertices [[lon, lat]…] of features ``fs``, every ``step``-th point. Pure. */
+    function corridorPoints(features, fs, step = 3) {
+        const out = [];
+        for (const f of fs) {
+            for (const line of _coordsOf(features[f])) line.forEach((p, i) => { if (i % step === 0 || i === line.length - 1) out.push(p); });
+        }
+        return out;
+    }
+    /** Chat entry point: a bus lane on a named road, with pct% of car trips along it moving to the bus. */
+    async function busLane({ road, pct = 10, period = 'am' } = {}) {
+        await open();
+        await _ensureData();
+        const fs = matchRoads(S.roads, road);
+        if (!fs.length) return { ok: false, error: `No modelled arterial named “${road}” in this city.` };
+        _reset(false);
+        S.period = period === 'pm' ? 'pm' : 'am';
+        S.slowed = Object.fromEntries(fs.map(f => [f, BUS_LANE_CAP]));
+        const named = S.roads[fs[0]].properties.name;
+        const zones = stationZones(S.model, corridorPoints(S.roads, fs), BUS_LANE_KM);
+        S.shift = { pct: Math.max(0, Math.min(100, Number(pct) || 0)), scope: 'corridor', road: named, zones,
+            zonesServed: zones.reduce((a, b) => a + b, 0), zonesTotal: zones.length };
+        _drawEdits(); _render();
+        const res = await runScenario();
+        if (!res) return { ok: false, error: S.error || 'The what-if did not run.' };
+        const t = topRoads(res, _roadName);
+        return { ok: true, buslane: true, road: named, matched: fs.length, shift: S.shift, label: shiftLabel(S.shift), period: S.period,
+            headline: headline(res, S.period), ...t, result: res };
+    }
+
     function state() { return { ...S, roads: undefined, model: undefined }; }
 
     return { core: C, run, loadModel, modelUrl, nearestNode: C.nearestNode, newLink: C.newLink,
         open, close, toggle, isPicking, runScenario, setEdits, findRoads, state, diffColor, editsFrom, headline,
         normRoad, matchRoads, topRoads, ask, askText, monsoon, monsoonEdits, setMonsoon, fmtVC, MONSOON,
-        modeShift, setShift, stationZones, shiftLabel };
+        modeShift, setShift, stationZones, shiftLabel, busLane, corridorPoints, BUS_LANE_CAP };
 })();
 
 if (typeof window !== 'undefined') window.RoadWhatIf = RoadWhatIf;

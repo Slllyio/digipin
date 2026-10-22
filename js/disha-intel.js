@@ -132,6 +132,15 @@ const DishaIntel = (() => {
         }
         if (RE.changes.test(q)) return named.length ? { type: 'changes', city: named[0] } : { type: 'changes' };
         if (RE.compare.test(q) && named.length >= 2) return { type: 'compare', a: { city: named[0] }, b: { city: named[1] } };
+        const bus = /\b(?:bus[\s-]?(?:only[\s-]?)?lanes?|bus priority(?: lanes?)?|brts(?: corridor)?|dedicated bus (?:lanes?|corridors?))\s+(?:on|along|down|for)\s+(?:the\s+)?(.+?)(?=\s+(?:in|at|during|with|and|if|would|will)\b|[?.,!]|$)/i.exec(q)
+            || /\b(?:add|put|give|build|what if)\b.{0,20}?\b(?:the\s+)?([a-z0-9][\w.' -]{2,40}?)\s+(?:a\s+)?(?:bus[\s-]?lanes?|brts)\b/i.exec(q);
+        if (bus && bus[1]) {
+            const m = /(\d{1,3})\s*(%|percent|per cent)/i.exec(q);
+            const out = { type: 'buslane', road: bus[1].replace(/^(the|a)\s+/i, '').trim(), pct: m ? Math.max(0, Math.min(100, Number(m[1]))) : 10,
+                period: /\b(evening|6\s?pm|18:00|going home)\b/i.test(q) ? 'pm' : 'am' };
+            if (named.length) out.city = named[0];
+            return out;
+        }
         const shift = /\bmode[\s-]?shift\b|\b(shift|switch|move|moved|moving|leave|leaves|take|took|use|used)\b.{0,40}\b(metro|trains?|rail|public transport|transit|bus(es)?)\b|\b(metro|trains?|public transport|transit|bus(es)?)\b.{0,30}\binstead of (driving|cars?)\b/i;
         if (shift.test(q) && /\b(cars?|driv\w*|vehicles?|trips?|commut\w*|traffic|people|drivers)\b/i.test(q)) {
             const m = /(\d{1,3})\s*(%|percent|per cent)/i.exec(q);
@@ -342,6 +351,18 @@ const DishaIntel = (() => {
                 const a = await RoadWhatIf.modeShift({ pct: intent.pct, scope: intent.scope, period: intent.period });
                 el.textContent = '';
                 r = { kind: 'roadwhatif', a };
+            } else if (intent.type === 'buslane') {
+                if (typeof RoadWhatIf === 'undefined' || !RoadWhatIf.busLane) { el.textContent = 'The road what-if module did not load.'; return ''; }
+                if (intent.city && typeof TrafficOverlay !== 'undefined' && TrafficOverlay.region && TrafficOverlay.region() !== intent.city) {
+                    const sel = typeof document !== 'undefined' && document.getElementById('city-select');
+                    const opt = sel && [...sel.options].find(o => o.value === intent.city || o.value === intent.city.replace(/_pilot$/, ''));
+                    if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', { bubbles: true })); await new Promise(res => setTimeout(res, 1500)); }
+                }
+                if (typeof TrafficOverlay !== 'undefined' && !TrafficOverlay.isVisible()) TrafficOverlay.attach();
+                el.textContent = `Re-routing every commute with a bus lane on ${intent.road}…`;
+                const a = await RoadWhatIf.busLane({ road: intent.road, pct: intent.pct, period: intent.period });
+                el.textContent = '';
+                r = { kind: 'roadwhatif', a };
             } else if (intent.type === 'monsoonroads') {
                 if (typeof RoadWhatIf === 'undefined' || !RoadWhatIf.monsoon) { el.textContent = 'The road what-if module did not load.'; return ''; }
                 if (intent.city && typeof TrafficOverlay !== 'undefined' && TrafficOverlay.region && TrafficOverlay.region() !== intent.city) {
@@ -511,7 +532,7 @@ const DishaIntel = (() => {
             }
         } else if (r.kind === 'roadwhatif') {
             const a = r.a;
-            head.textContent = !a.ok ? 'Road what-if' : a.shift ? `Mode-shift what-if · ${a.shift.pct}% ${a.shift.scope === 'all' ? 'of all car trips' : 'near stations'} · ${a.period === 'pm' ? '18:00' : '09:00'}` : a.monsoon ? `Monsoon what-if · ${a.label} · ${a.period === 'pm' ? '18:00' : '09:00'}`
+            head.textContent = !a.ok ? 'Road what-if' : a.buslane ? `Bus-lane what-if · ${a.road} · ${a.shift.pct}% switch · ${a.period === 'pm' ? '18:00' : '09:00'}` : a.shift ? `Mode-shift what-if · ${a.shift.pct}% ${a.shift.scope === 'all' ? 'of all car trips' : 'near stations'} · ${a.period === 'pm' ? '18:00' : '09:00'}` : a.monsoon ? `Monsoon what-if · ${a.label} · ${a.period === 'pm' ? '18:00' : '09:00'}`
                 : `Road what-if · ${a.action === 'widen' ? 'widen' : 'close'} ${a.road} · ${a.period === 'pm' ? '18:00' : '09:00'}`;
             el.appendChild(head);
             el.appendChild(_el('div', 'ui-headline', a.ok ? a.headline : a.error));

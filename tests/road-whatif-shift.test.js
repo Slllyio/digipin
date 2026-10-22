@@ -36,3 +36,18 @@ describe('RoadWhatIf mode shift', () => {
         expect(W.editsFrom({ closed: [], widened: [], added: [], slowed: {}, shift: { pct: 15, zones: null } }).shift).toEqual({ frac: 0.15, zones: null });
     });
 });
+
+describe('RoadWhatIf bus lane', () => {
+    it('corridorPoints samples every feature line and keeps the ends', () => {
+        const R = globalThis.RoadWhatIf || window.RoadWhatIf;
+        const feats = [{ geometry: { type: 'LineString', coordinates: [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]] } },
+            { geometry: { type: 'MultiLineString', coordinates: [[[9, 9], [9, 10]]] } }];
+        const pts = R.corridorPoints(feats, [0, 1], 3);
+        expect(pts).toEqual([[0, 0], [3, 0], [4, 0], [9, 9], [9, 10]]);
+        expect(R.BUS_LANE_CAP).toBeCloseTo(2 / 3, 6);
+    });
+    it('shiftLabel names the corridor', () => {
+        const R = globalThis.RoadWhatIf || window.RoadWhatIf;
+        expect(R.shiftLabel({ pct: 15, scope: 'corridor', road: 'Outer Ring Road' })).toMatch(/^15% of car trips .* Outer Ring Road move to the bus$/);
+    });
+});

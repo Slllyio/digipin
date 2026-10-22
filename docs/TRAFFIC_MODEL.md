@@ -501,6 +501,18 @@ suggests 3–5 in station influence zones). Delhi station areas: FAR about 1.67
 vs 1.16 elsewhere, 20% low-rise; Mumbai 2.05 vs 1.64, 14%; Bengaluru 1.62 vs
 1.07, 21%. Parks, heritage, airport and defence land are not masked.
 
+### 29. Bus-lane what-if (`RoadWhatIf.busLane`)
+
+`busLane({road, pct, period})` matches a named arterial, keeps two thirds of
+its capacity for general traffic (one lane of three each way goes to buses)
+and moves pct% (default 10) of car trips whose both ends lie within 0.8 km
+of the corridor onto the bus, then re-routes the commute. DISHA: "what if we
+add a bus lane on Outer Ring Road". Bengaluru Outer Ring Road at 15%: 1,058
+fewer vehicles in the 09:00 hour, but driving time city-wide rises 3.1%
+because the remaining traffic loses a lane; even at 40% it stays 2.5% worse,
+since few trips both start and end along the corridor. The gain is for bus
+riders, whose lane runs at free-flow speed (not yet counted in the result).
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |
