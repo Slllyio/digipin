@@ -42,6 +42,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 99.4,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 34.5,
@@ -134,15 +140,21 @@
     },
     "noise": {
      "label": "Residents above 53 dB",
-     "value": 83.8,
+     "value": 83.7,
      "unit": "%",
      "higherIs": "worse"
     },
     "traffic": {
      "label": "Residents beside a jammed arterial",
-     "value": 67.2,
+     "value": 66.8,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 96.1,
+     "unit": "%",
+     "higherIs": "better"
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
@@ -246,6 +258,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 96.4,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 48,
@@ -347,6 +365,12 @@
      "value": 40,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 99.8,
+     "unit": "%",
+     "higherIs": "better"
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
@@ -450,6 +474,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 83.3,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 57.1,
@@ -551,6 +581,12 @@
      "value": 5.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 93.4,
+     "unit": "%",
+     "higherIs": "better"
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
@@ -654,6 +690,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 99.3,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 78.5,
@@ -755,6 +797,12 @@
      "value": 30.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 88.7,
+     "unit": "%",
+     "higherIs": "better"
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
@@ -858,6 +906,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 98.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 53.3,
@@ -959,6 +1013,12 @@
      "value": 61.2,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 87.3,
+     "unit": "%",
+     "higherIs": "better"
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
@@ -1062,6 +1122,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 98.8,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 41.1,
@@ -1154,15 +1220,21 @@
     },
     "noise": {
      "label": "Residents above 53 dB",
-     "value": 88.3,
+     "value": 88.2,
      "unit": "%",
      "higherIs": "worse"
     },
     "traffic": {
      "label": "Residents beside a jammed arterial",
-     "value": 70,
+     "value": 70.2,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 98.8,
+     "unit": "%",
+     "higherIs": "better"
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
@@ -1265,6 +1337,12 @@
      "value": 34.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "ambulance": {
+     "label": "Within 10 min of a hospital at rush hour",
+     "value": 99.5,
+     "unit": "%",
+     "higherIs": "better"
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T06:42:08Z",
+  "generated": "2026-10-22T06:55:32Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -2863,6 +2863,351 @@
             "north": 18.64111328125
           },
           "json": "demographics/pune/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "emergency_access",
+      "title": "Hospital access by time of day",
+      "description": "Drive time from each home cell to the nearest hospital at 03:00 (free flow), 09:00 and 18:00, on the arterial network with the demand model's congestion (BPR at each road's modelled V/C). Hospitals and schools are Overture Maps places (confidence \u2265 0.6). General-traffic speed, arterials only, no bed or emergency-ward data.",
+      "source": "pipeline/traffic/emergency_access.py over Overture Maps places 2026-10-21.0 + data/traffic road_los.geojson",
+      "license": "CDLA-Permissive-2.0 / ODbL (Overture) + ODbL (OpenStreetMap)",
+      "group": "Traffic & mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "hospital_min_am",
+          "label": "Drive to the nearest hospital at 09:00",
+          "type": "number",
+          "agg": "mean",
+          "unit": "min",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "hospital_min_pm",
+          "label": "Drive to the nearest hospital at 18:00",
+          "type": "number",
+          "agg": "mean",
+          "unit": "min",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "hospital_min_night",
+          "label": "Drive to the nearest hospital at 03:00",
+          "type": "number",
+          "agg": "mean",
+          "unit": "min",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rush_delay_min",
+          "label": "Extra minutes to hospital in the worse peak",
+          "type": "number",
+          "agg": "mean",
+          "unit": "min",
+          "domain": [
+            0,
+            15
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "hospitals",
+          "label": "Hospitals (Overture places)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "schools",
+          "label": "Schools (Overture places)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            19
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "hospital_min_am",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 6640,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "emergency_access/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 18755,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "emergency_access/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 4977,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "emergency_access/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 8413,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "emergency_access/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 36926,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "emergency_access/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 899,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "emergency_access/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 14372,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "emergency_access/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 18104,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "emergency_access/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 8081,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "emergency_access/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 7004,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "emergency_access/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 7245,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "emergency_access/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 8090,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "emergency_access/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 9645,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "emergency_access/pune/{prefix}.json.gz",
           "parquet": null,
           "shards": {
             "prefixLen": 4,
@@ -10063,7 +10408,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 5929,
+          "cells": 5926,
           "bbox": {
             "west": 77.428466796875,
             "south": 12.816162109375,
@@ -10303,7 +10648,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 15043,
+          "cells": 15038,
           "bbox": {
             "west": 77.441650390625,
             "south": 12.807373046875,

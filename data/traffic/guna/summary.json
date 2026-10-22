@@ -915,5 +915,35 @@
       "beta_per_min": 0.1,
       "mid_beta_per_min": 0.15
     }
+  },
+  "noise_air": {
+    "residents_total": 300935,
+    "residents_near_modelled_roads": 200675,
+    "residents_lden_ge_53": 165525,
+    "residents_lden_ge_65": 28220,
+    "nox_t_day": 0.16,
+    "co2_t_day": 38.4,
+    "nox_vs_s5p_no2_spearman_l5": -0.17,
+    "l5_cells_compared": 8,
+    "assumptions": {
+      "veh_per_pcu": 1.4,
+      "heavy_pct": 5.0,
+      "share_18h": 0.968,
+      "ef_g_per_vkm": {
+        "nox": 0.45,
+        "pm25": 0.025,
+        "co2": 110.0
+      },
+      "reach_m": 300.0,
+      "method": "CRTN 1988 + Abbott & Nelson 2002 Lden"
+    }
+  },
+  "emergency_access": {
+    "hospitals": 20,
+    "pct_within_10_night": 93.8,
+    "pct_within_10_am": 93.4,
+    "pct_within_10_pm": 93.5,
+    "pct_over_20_peak": 0.1,
+    "source": "Overture Maps places 2026-10-21.0; demand model link times"
   }
 }
