@@ -1226,3 +1226,10 @@ html[data-theme="light"] .massing-panel .ms-close:hover, html[data-theme="light"
 }
 .massing-panel .ms-clear { display: flex; align-items: center; gap: 6px; font-size: 12px; margin: 4px 0; cursor: pointer; }
 .massing-panel .ms-clear input { margin: 0; accent-color: #e0734d; }
+#camera-presets .cp-night .cp-ico { font-size: 14px; line-height: 1; width: 16px; text-align: center; }
+#camera-presets .cp-night.active { background: #1d2540; color: #ffd58a; }
+/* Phones: the sun card sits up top and stays short, so the 3D shot bar (Night) stays reachable. */
+@media (max-width: 768px) {
+    .sun-study-panel, html[data-theme="light"] .sun-study-panel { top: 110px; bottom: auto; left: 10px; width: calc(100vw - 92px); max-height: calc(100vh - 320px); overflow-y: auto; }
+    .sun-study-panel .sun-chart, .sun-study-panel .sun-hint { display: none; }
+}

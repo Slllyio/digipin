@@ -47,7 +47,7 @@ const APP_GLOBALS = {
   Analysis: 'readonly', AnalysesPanel: 'readonly', UrbanInsights: 'readonly', UrbanLenses: 'readonly', LensesPanel: 'readonly', InsightsPanel: 'readonly', IntelBrief: 'readonly', ScenarioLenses: 'readonly', CityTour: 'readonly', UrbanAgents: 'readonly', AgentsPanel: 'readonly', DishaIntel: 'readonly',
   URLState: 'readonly', SavedViews: 'readonly', Theme: 'readonly', I18n: 'readonly', I18nUI: 'readonly',
   LayersPanel: 'readonly', ExportDialog: 'readonly', DTDLExport: 'readonly', Onboarding: 'readonly',
-  PitchMap: 'readonly', SunStudy: 'readonly', SunShadows: 'readonly', CameraPresets: 'readonly',
+  PitchMap: 'readonly', SunStudy: 'readonly', SunShadows: 'readonly', NightCity: 'readonly', CameraPresets: 'readonly',
   ViewHandoff: 'readonly', Quality3D: 'readonly', MassingSketch: 'readonly', FootprintExport: 'readonly', SiteBrief: 'readonly',
   MeasureTool: 'readonly', PresentMode: 'readonly', Annotations: 'readonly',
   RealEstateModel: 'readonly', RealEstateWidget: 'readonly', FootprintGrid: 'readonly',

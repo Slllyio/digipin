@@ -139,6 +139,7 @@ loadGlobalScript('js/text2map-embeddings.js', ['Text2MapEmbeddings']);
 loadGlobalScript('js/pitch-map.js', ['PitchMap']);
 loadGlobalScript('js/quality-3d.js', ['Quality3D']);
 loadGlobalScript('js/massing-sketch.js', ['MassingSketch']);
+loadGlobalScript('js/night-city.js', ['NightCity']);
 loadGlobalScript('js/sun-shadows.js', ['SunShadows']);
 loadGlobalScript('js/sun-study.js', ['SunStudy']);
 loadGlobalScript('js/camera-presets.js', ['CameraPresets']);

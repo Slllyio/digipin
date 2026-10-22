@@ -232,6 +232,7 @@ const SunShadows = (() => {
                 map.setSky(skyFor(altitude, _theme(), day));
             }
         } catch { /* style not ready */ }
+        if (typeof NightCity !== 'undefined') NightCity.apply(map, altitude);
         _schedule(80);
         // Tiles still streaming in (just after a fly-to) → draw again once they settle.
         map.once('idle', _onMove);
@@ -245,6 +246,7 @@ const SunShadows = (() => {
         if (!map) return;
         map.off('moveend', _onMove);
         _bound = null;
+        if (typeof NightCity !== 'undefined') NightCity.clear(map);
         try { if (map.getLayer(LAYER)) map.removeLayer(LAYER); } catch { /* gone */ }
         try { if (map.getSource(SRC)) map.removeSource(SRC); } catch { /* gone */ }
         try {

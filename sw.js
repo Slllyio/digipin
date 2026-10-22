@@ -146,6 +146,7 @@ const LOCAL_ASSETS = [
     './js/export-dialog.js',
     './js/footprint-export.js',
     './js/pitch-map.js',
+    './js/night-city.js',
     './js/sun-shadows.js',
     './js/sun-study.js',
     './js/quality-3d.js',
