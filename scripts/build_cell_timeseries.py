@@ -145,6 +145,17 @@ def recipe_dw(ee, a, b, label=None, geom=None, **_):
     return {f"{k}_pct": mean.select(k).multiply(100).toFloat() for k in ("built", "trees", "water", "crops")}
 
 
+def recipe_construction(ee, a, b, label=None, geom=None, **_):
+    # Dynamic World built and bare-ground probability for the month: construction clears land (bare)
+    # before it reads as built. Cloudy monsoon months can be empty.
+    col = ee.ImageCollection("GOOGLE/DYNAMICWORLD/V1").filterDate(a, b)
+    if geom is not None:
+        col = col.filterBounds(geom)
+    empty = ee.Image.constant([0, 0]).updateMask(ee.Image.constant(0)).rename(["built", "bare"])
+    mean = ee.Image(ee.Algorithms.If(col.size().gt(0), col.select(["built", "bare"]).mean(), empty))
+    return {f"{k}_pct": mean.select(k).multiply(100).toFloat() for k in ("built", "bare")}
+
+
 def recipe_co(ee, a, b, label=None, **_):
     # Sentinel-5P TROPOMI CO total column, mol/m² → mmol/m².
     return {"co_mmol_m2": _monthly_mean(ee, ["COPERNICUS/S5P/OFFL/L3_CO"], "CO_column_number_density",
@@ -275,6 +286,20 @@ DATASETS = {
                     FieldSpec("crops_pct", "Crops", unit="%", domain=[0, 100], ramp="greens")],
             default_field="built_pct", height_m=300,
             time=TimeSpec("year", steps))),
+    "construction": dict(
+        recipe=recipe_construction, level=7, decimals=0,
+        spec=lambda steps: DatasetSpec(
+            id="construction_monthly", title="Construction watch (monthly)",
+            description="Monthly mean Dynamic World built-up and bare-ground probability per block. "
+                        "Land cleared for building reads as bare, then built; the construction alerts "
+                        "agent compares the last three months with the same months a year earlier.",
+            source="Google / WRI Dynamic World V1 via Earth Engine (scripts/build_cell_timeseries.py)",
+            license="CC BY 4.0",
+            group="Time series", level=7,
+            fields=[FieldSpec("built_pct", "Built-up", unit="%", domain=[0, 100], ramp="heat"),
+                    FieldSpec("bare_pct", "Bare ground", unit="%", domain=[0, 60], ramp="reds")],
+            default_field="built_pct", height_m=300,
+            time=TimeSpec("month", steps))),
     "co": dict(
         recipe=recipe_co, level=6, decimals=2,
         spec=lambda steps: DatasetSpec(

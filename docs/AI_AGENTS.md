@@ -29,6 +29,20 @@ Shipped on this branch and covered by unit + loop-integration tests (`npm test`)
 
 **Compare agent:** wraps `UrbanInsights.compare` to put the area against its own city or any other covered city (a `dynamic: 'cities'` param rendered as a select), listing the clearest leads on each side.
 
+**Construction alerts agent (2026-10-22):** this agent reads `construction_monthly`, the Dynamic World built-up and bare-ground probability per L7 block over 24 months for all 13 cities.
+
+- **How a block is checked.** Each block's latest 3 months with clear skies are compared with the same months a year earlier, which cancels the season. The monsoon months are usually empty.
+- **When it alerts.** A block alerts at +15 points of built-up, or at +15 points of bare ground (land being cleared).
+- **Sensitive ground comes first.** Alerts on sensitive ground are listed before the rest. Sensitive ground means one of:
+  - ≥ 25% of the block is in the JRC 1-in-100-year floodplain;
+  - ≥ 5% is surface water lost since 1984 (`encroachment`);
+  - ≥ 5% is tree cover lost since 2001.
+- **Refresh.** The series refreshes in open-data-cells.yml on the 7th of each month. The command is `python scripts/build_cell_timeseries.py construction --months 24`.
+- **Results on the first run:**
+  - Delhi: 1,578 alerts, 850 on sensitive ground. GloFAS ignores the Yamuna embankments, so this count reads wide.
+  - Chennai: 220 alerts, 93 on sensitive ground.
+  - Bengaluru: 746 alerts, 45 on sensitive ground. The top alert is on a former lake.
+
 The Alert Triage agent (§5.1) and the Pipeline Steward (§5.2, `pipeline/steward/`) are shipped too. Not yet built: the Tier-3 automation (§6).
 
 ## 0. Why this document

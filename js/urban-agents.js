@@ -78,6 +78,12 @@ const UrbanAgents = (() => {
             params: [],
         },
         {
+            id: 'construction', title: 'Construction alerts', icon: '🏗',
+            question: 'Where has new construction started, and is any of it on a floodplain, lake or lost green?',
+            blurb: 'Sentinel-2 built-up and cleared land in the latest cloud-free months against the same months a year earlier, flagged where it lands on sensitive ground.',
+            params: [],
+        },
+        {
             id: 'changes', title: 'What changed', icon: '⟳',
             question: 'What moved in the latest data?',
             blurb: 'Each monthly and yearly series against a year earlier, with the cells that changed unusually.',
@@ -294,6 +300,12 @@ const UrbanAgents = (() => {
             { tool: 'loadData', label: 'Load built-up growth 2016–2023, new buildings and the 2035 outlook' },
             { tool: 'hotspots', label: 'Rank cells by built-up change and cluster them by neighbourhood' },
             { tool: 'layer', label: 'Paint built-up change as a layer' },
+        ],
+        construction: () => [
+            { tool: 'loadData', label: 'Load monthly Dynamic World built-up and bare ground, the floodplain and encroachment layers' },
+            { tool: 'detect', label: 'Compare the latest cloud-free months with the same months a year earlier, cell by cell' },
+            { tool: 'flag', label: 'Flag new construction on the floodplain, former water or lost tree cover' },
+            { tool: 'layer', label: 'Paint the year-on-year built-up change as a layer' },
         ],
         changes: () => [
             { tool: 'changes', label: 'Compare every time series’ latest step with a year earlier' },
@@ -610,6 +622,103 @@ const UrbanAgents = (() => {
         };
     }
 
+    // Construction alerts: a block alerts when Dynamic World built-up (or bare, cleared ground) is up this many
+    // points against the same months a year earlier, averaged over the latest MATCH_PAIRS cloud-free months.
+    const ALERT_BUILT = 15, ALERT_BARE = 15, MATCH_PAIRS = 3, SENSITIVE = { flood: 25, water: 5, trees: 5 };
+
+    /** Mean change between each of the latest `k` steps with data and the same step `lag` earlier. Pure. */
+    function yoyChange(series, lag = 12, k = MATCH_PAIRS) {
+        if (!Array.isArray(series)) return null;
+        let sum = 0, n = 0, last = -1;
+        for (let t = series.length - 1; t >= lag && n < k; t--) {
+            if (!_fin(series[t]) || !_fin(series[t - lag])) continue;
+            sum += Number(series[t]) - Number(series[t - lag]);
+            n++;
+            if (last < 0) last = t;
+        }
+        return n ? { delta: sum / n, pairs: n, last } : null;
+    }
+
+    async function _construction(ctx, store, step) {
+        const spec = store.get('construction_monthly');
+        if (!spec) throw new Error('The monthly construction series is not in the store yet.');
+        const bbox = ctx.area.kind === 'city' ? null : ctx.area.bbox;
+        const opt = (id) => (store.get(id) ? _loadTable(store, id, bbox).catch(() => null) : null);
+        const [t, enc, water] = await step('loadData', () => Promise.all([_loadTable(store, 'construction_monthly', bbox), opt('encroachment'), opt('water')]),
+            ([x]) => `${x ? x.cells.length : 0} cells × ${x && x.times ? x.times.length : 0} months`);
+        if (!t) throw new Error('No construction series for this area.');
+        const steps = t.times || spec.time.steps;
+        const built = t.columns.built_pct || [], bare = t.columns.bare_pct || [];
+        const region = ctx.area.kind === 'city' ? new Set(UrbanInsights.cellsInRegion(spec, t, ctx.city)) : null;
+        const out = await step('detect', () => {
+            const rows = [];
+            let checked = 0;
+            const lastAt = new Map();
+            for (let i = 0; i < t.cells.length; i++) {
+                if (region ? !region.has(i) : !inArea(t.cells[i], ctx.area)) continue;
+                const b = yoyChange(built[i]), g = yoyChange(bare[i]);
+                if (!b) continue;
+                checked++;
+                lastAt.set(b.last, (lastAt.get(b.last) || 0) + 1);
+                rows.push({ code: t.cells[i], value: _round(b.delta, 1), bare: g ? _round(g.delta, 1) : null,
+                    alert: b.delta >= ALERT_BUILT || (g != null && g.delta >= ALERT_BARE), kind: b.delta >= ALERT_BUILT ? 'built' : 'cleared' });
+            }
+            // The month most cells last compared: a few cells seeing through monsoon cloud do not make it "latest".
+            const lastStep = [...lastAt.entries()].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0]?.[0] ?? -1;
+            return { rows, checked, lastStep };
+        }, (o) => `${o.rows.filter(r => r.alert).length} of ${o.checked} cells up ≥ ${ALERT_BUILT} points`);
+        if (!out.checked) throw new Error('No cloud-free months to compare inside this area.');
+        const lookup = (tbl, key) => {
+            const m = new Map();
+            const col = tbl && tbl.columns && tbl.columns[key];
+            if (col) tbl.cells.forEach((c, i) => { if (_fin(col[i])) m.set(c, Number(col[i])); });
+            return m;
+        };
+        const flagged = await step('flag', () => {
+            const fl = lookup(water, 'flood_rp100_pct'), wl = lookup(enc, 'water_lost_pct'), tl = lookup(enc, 'tree_lost_pct');
+            return out.rows.filter(r => r.alert).map(r => {
+                const why = [];
+                if ((fl.get(r.code) || 0) >= SENSITIVE.flood) why.push('100-year floodplain');
+                if ((wl.get(r.code) || 0) >= SENSITIVE.water) why.push('former water body');
+                if ((tl.get(r.code) || 0) >= SENSITIVE.trees) why.push('lost tree cover');
+                return { ...r, why };
+            }).sort((a, b) => (b.why.length > 0) - (a.why.length > 0) || b.value - a.value);
+        }, (f) => `${f.filter(r => r.why.length).length} on sensitive ground`);
+        const layer = _layerFrom(`${LAYER_PREFIX}construction`, 'Agent: Built-up change, year on year', `Built-up change for ${ctx.area.label}`, t.level,
+            out.rows.map(r => ({ code: r.code, value: r.value })), { key: 'built_yoy_pp', label: 'Built-up vs a year earlier', unit: 'pp', ramp: 'diverging', higherIs: null });
+        await step('layer', () => layer, () => `${out.rows.length} cells`);
+        const sens = flagged.filter(r => r.why.length);
+        const month = out.lastStep >= 0 ? steps[out.lastStep] : steps[steps.length - 1];
+        const plen = Math.max(1, t.level - 1);
+        const picks = spread(flagged, MAX_CELLS, plen);
+        return {
+            summary: flagged.length
+                ? `${flagged.length} block${flagged.length === 1 ? '' : 's'} in ${ctx.area.label} show new construction up to ${month}`
+                    + (sens.length ? `, ${sens.length} of them on sensitive ground (${[...new Set(sens.flatMap(r => r.why))].join(', ')}).` : ', none on a floodplain, former water or lost tree cover.')
+                : `No new construction stands out in ${ctx.area.label} up to ${month}.`,
+            metrics: [
+                { label: 'Cells compared', value: String(out.checked) },
+                { label: 'Construction alerts', value: String(flagged.length) },
+                { label: 'On sensitive ground', value: String(sens.length) },
+                { label: 'Latest month with clear skies', value: month },
+            ],
+            findings: picks.map(r => ({
+                kind: r.why.length ? 'concern' : 'trend',
+                title: `${DigiPin.format(r.code)}: ${r.kind === 'built' ? `built-up +${r.value} points` : `land cleared, bare ground +${r.bare} points`}`,
+                detail: r.why.length ? `On ${r.why.join(' and ')}. Check the permission before it is finished.` : 'Against the same months a year earlier.',
+                cells: [r.code], sources: ['construction_monthly'].concat(r.why.length ? ['water', 'encroachment'] : []),
+            })),
+            layers: layer ? [{ id: layer.spec.id, title: layer.spec.title, field: 'built_yoy_pp', unit: 'pp', runtime: true }] : [],
+            sources: _sourcesFor(store, ['construction_monthly', 'water', 'encroachment']),
+            method: `Dynamic World (Sentinel-2, 10 m) monthly mean built-up and bare-ground probability per block. Each block's latest ${MATCH_PAIRS} months with clear skies are compared `
+                + `with the same months a year earlier, so the season cancels out; the monsoon months are usually empty. A block alerts at +${ALERT_BUILT} points of built-up or +${ALERT_BARE} of bare ground (land cleared). `
+                + `Sensitive ground is ≥ ${SENSITIVE.flood}% in the JRC 1-in-100-year floodplain, ≥ ${SENSITIVE.water}% water lost since 1984 or ≥ ${SENSITIVE.trees}% tree cover lost since 2001. `
+                + 'Global flood maps ignore embankments, so walled floodplains (Delhi\'s Yamuna) read wide. Run it again each month: the series refreshes on the 7th. A satellite screen, not a finding of illegality.',
+            refs: 'Brown et al. 2022 (Dynamic World); Pekel et al. 2016 (Global Surface Water); JRC/CEMS GloFAS flood hazard maps',
+            layer,
+        };
+    }
+
     async function _changes(ctx, store, step) {
         if (!ctx.city) throw new Error('This area is outside the cities the data covers.');
         const r = await step('changes', () => UrbanInsights.changes(store, { city: ctx.city, limit: 8 }), (x) => `${x.items.length} series moved`);
@@ -861,7 +970,7 @@ const UrbanAgents = (() => {
     }
     const lc = (t) => (t ? t.charAt(0).toLowerCase() + t.slice(1) : t);
 
-    const RUNNERS = { compare: _compare, air: _lensAgent('air'), green: _lensAgent('green'), solar: _lensAgent('solar'), risk: _lensAgent('burden'), programme: _programme, health: _health, brief: _brief, site: _site, flood: _flood, heat: _heat, access: _access, growth: _growth, changes: _changes };
+    const RUNNERS = { compare: _compare, air: _lensAgent('air'), green: _lensAgent('green'), solar: _lensAgent('solar'), risk: _lensAgent('burden'), programme: _programme, health: _health, brief: _brief, site: _site, flood: _flood, heat: _heat, access: _access, growth: _growth, changes: _changes, construction: _construction };
 
     /**
      * Run an agent. hooks.onStep({ i, tool, label, status, detail, ms }) fires as
@@ -937,7 +1046,7 @@ const UrbanAgents = (() => {
         return lines.join('\n');
     }
 
-    return { SCHEMA, LAYER_PREFIX, TEMPLATES, SITE_USES, template, plan, run, resolve, inArea, prank, spread, gradeFeed, toText };
+    return { SCHEMA, LAYER_PREFIX, TEMPLATES, SITE_USES, template, plan, run, resolve, inArea, prank, spread, gradeFeed, toText, yoyChange };
 })();
 
 if (typeof window !== 'undefined') {

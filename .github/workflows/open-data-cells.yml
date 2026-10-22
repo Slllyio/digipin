@@ -79,6 +79,16 @@ jobs:
           fi
           python -m pipeline.cells.ee_layers --region "$REGION" $LAYERS
 
+      - name: Construction watch (Dynamic World, last 24 months)
+        # Feeds the construction alerts agent; refreshed with the monthly run.
+        if: contains(env.SOURCES, 'ee')
+        run: |
+          if [ -z "$GEE_SERVICE_ACCOUNT_KEY" ]; then
+            echo "::notice::GEE_SERVICE_ACCOUNT_KEY is not set; skipping the construction series"
+            exit 0
+          fi
+          python scripts/build_cell_timeseries.py construction --months 24 --region "$REGION" --no-parquet
+
       - name: Check the store still loads
         run: python -m pytest -q pipeline/cells
 

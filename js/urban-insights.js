@@ -1484,10 +1484,14 @@ const UrbanInsights = (() => {
                 const tr = trendOf(spec, table, f, idx, idx);
                 if (!tr) continue;
                 const ser = tr.city.series;
-                let t = ser.length - 1;
-                while (t >= 0 && !_isNum(ser[t])) t--;
                 const w = tr.window;
-                if (t < w || !_isNum(ser[t - w])) continue;
+                // The latest step most cells have both ends of (as changeLayer): a cloudy month seen through by a
+                // few cells is not "latest".
+                const col = table.columns[f.key] || [];
+                const pairs = (k) => idx.filter(i => _isNum((col[i] || [])[k]) && _isNum((col[i] || [])[k - w])).length;
+                let t = ser.length - 1;
+                while (t >= w && (!_isNum(ser[t]) || !_isNum(ser[t - w]) || pairs(t) < idx.length / 2)) t--;
+                if (t < w) continue;
                 const latest = ser[t], prev = ser[t - w];
                 const delta = latest - prev;
                 // Typical size of a same-step-a-year-apart move in this series.

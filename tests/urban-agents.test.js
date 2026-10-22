@@ -25,9 +25,9 @@ async function store() {
 const HOOD = { code: globalThis.DigiPin.encode(22.7186, 75.8553).replace(/-/g, '').slice(0, 5) };
 
 describe('UrbanAgents catalogue and plans', () => {
-    it('offers the fourteen agents with unique ids', () => {
+    it('offers the fifteen agents with unique ids', () => {
         const ids = A.TEMPLATES.map(t => t.id);
-        expect(ids).toEqual(['brief', 'site', 'flood', 'heat', 'access', 'growth', 'changes', 'air', 'green', 'solar', 'risk', 'programme', 'compare', 'health']);
+        expect(ids).toEqual(['brief', 'site', 'flood', 'heat', 'access', 'growth', 'construction', 'changes', 'air', 'green', 'solar', 'risk', 'programme', 'compare', 'health']);
         expect(new Set(ids).size).toBe(ids.length);
     });
 
@@ -42,6 +42,15 @@ describe('UrbanAgents catalogue and plans', () => {
 });
 
 describe('UrbanAgents helpers', () => {
+    it('compares the latest cloud-free months with a year earlier', () => {
+        const s = [10, 10, 10, null, 10, 10, 10, 10, 10, 10, 10, 10, 30, 40, null, 20];
+        // t=15 vs 3 (null) skipped; t=13 vs 1: +30; t=12 vs 0: +20.
+        expect(A.yoyChange(s, 12, 3)).toEqual({ delta: 25, pairs: 2, last: 13 });
+        expect(A.yoyChange([1, 2, 3], 12)).toBeNull();
+        expect(A.yoyChange(null)).toBeNull();
+    });
+
+
     it('ranks within a set, averaging ties', () => {
         const r = A.prank([5, 1, 5, 9], [0, 1, 2, 3]);
         expect(r[1]).toBe(0);
@@ -125,6 +134,20 @@ describe('UrbanAgents runs on the committed store', () => {
             expect(A.toText(report)).toContain(report.title);
         }
     }, 120000);
+});
+
+describe('Construction alerts agent', () => {
+    it('flags construction against a year earlier, sensitive ground first, with a layer', async () => {
+        const s = await store();
+        const { report, layer } = await A.run({ agent: 'construction', area: { city: 'indore_pilot' } }, s);
+        expect(report.steps.map(x => x.status)).toEqual(['done', 'done', 'done', 'done']);
+        expect(report.metrics.find(m => m.label === 'Latest month with clear skies').value).toMatch(/^20\d\d-\d\d$/);
+        expect(Number(report.metrics.find(m => m.label === 'Cells compared').value)).toBeGreaterThan(1000);
+        expect(layer.table.cells.length).toBeGreaterThan(1000);
+        const f = report.findings;
+        const firstPlain = f.findIndex(x => x.kind === 'trend');
+        if (firstPlain >= 0) expect(f.slice(firstPlain).every(x => x.kind === 'trend')).toBe(true);
+    }, 60000);
 });
 
 describe('Lens-backed agents', () => {
