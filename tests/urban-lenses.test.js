@@ -254,6 +254,27 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.noise(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('ambulance lens: rush hour takes 10-minute hospital reach away; schools by noisy/jammed roads', () => {
+        const night = codes.map((_, i) => (i === 0 ? 6 : i === 1 ? 8 : i === n - 1 ? 25 : NaN));
+        const am = codes.map((_, i) => (i === 0 ? 7 : i === 1 ? 14 : i === n - 1 ? 30 : NaN));
+        const pm = codes.map((_, i) => (i === 0 ? 9 : i === 1 ? 12 : i === n - 1 ? 28 : NaN));
+        const sch = codes.map((_, i) => (i === 0 ? 2 : i === n - 1 ? 1 : 0));
+        const ld = codes.map((_, i) => (i === 0 ? 70 : NaN));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'emergency_access.hospital_min_night': night,
+            'emergency_access.hospital_min_am': am, 'emergency_access.hospital_min_pm': pm,
+            'emergency_access.schools': sch, 'traffic_noise.lden_db': ld });
+        const r = L._lenses.ambulance(f, {});
+        const total = pop[0] + pop[1] + pop[n - 1];
+        expect(r.columns.hosp_peak[0]).toBe(9);                    // worse of 09:00 and 18:00
+        expect(r.columns.hosp_delay[1]).toBe(6);
+        expect(r.metric.value).toBeCloseTo(100 * pop[0] / total, 0);
+        expect(r.headline).toMatch(/against [\d.]+% at 3 am/);
+        expect(r.headline).toMatch(/more than 20 minutes away/);
+        const st = (k) => r.stats.find(x => x.label.includes(k));
+        expect(st('65+ dB road noise').value).toMatch(/^2 of 3/);
+        expect(L._lenses.ambulance(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {
         const rp = new Array(n).fill(0), depth = new Array(n).fill(0);
         for (let r = 0; r < SIZE; r++) { rp[r * SIZE + 3] = 100; depth[r * SIZE + 3] = 1; }   // column 3 floods

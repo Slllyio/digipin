@@ -273,3 +273,28 @@ def test_gtfs_cells_helpers():
     (code, r), = rows.items()                        # both stops in one L7 cell; s9 has no service
     assert len(code) == 7 and r["stops"] == 2 and r["routes"] == 2 and r["departures_day"] == 4
     assert r["peak_departures_hr"] == 1.0 and r["best_headway_min"] == 90.0     # 2 buses in 3 h at s1
+
+
+def test_emergency_access_helpers_and_drive_times():
+    pytest.importorskip("scipy")
+    from pipeline.traffic import demand_model as dm
+    from pipeline.traffic import emergency_access as ea
+    assert ea.kind_of("hospital", "hospital") == "hospital"
+    assert ea.kind_of(None, "emergency_room") == "hospital"
+    assert ea.kind_of("place_of_learning", "high_school") == "school"
+    assert ea.kind_of("restaurant", "restaurant") is None
+    assert ea.period_time(2.0, 0.0) == 2.0
+    assert abs(ea.period_time(2.0, 1.0) - 2.0 * (1 + dm.BPR_A)) < 1e-9
+    assert ea.period_time(2.0, 50.0) == 2.0 * dm.MAX_SLOWDOWN       # floored speed
+    assert abs(ea.access_min(1000) - 1.3 / 15 * 60) < 1e-9
+    # One road W–E; the hospital sits at the east end; the road jams only at 09:00.
+    feats = [{"type": "Feature", "properties": {"highway": "primary", "vc_am": 1.5, "vc_pm": 0.2},
+              "geometry": {"type": "LineString", "coordinates": [[75.80, 22.70], [75.82, 22.70]]}}]
+    net = dm.Network(feats)
+    east = max(range(net.n), key=lambda i: net.xy[i][0])
+    west = 1 - east
+    t = ea.drive_times(net, feats, [east], [0.0])
+    assert t["night"][east] < 1e-3
+    assert t["night"][west] > 0 and t["am"][west] > t["pm"][west] >= t["night"][west]
+    node, d = ea.Snapper(net).nearest(75.8001, 22.7001)
+    assert node == west and d < 20

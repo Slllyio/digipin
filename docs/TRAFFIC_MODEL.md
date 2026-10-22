@@ -179,6 +179,31 @@ road-facing side of homes near main roads.
 
     python -m pipeline.traffic.noise_air --region all        # seconds per city
 
+### 7. Hospital access by time of day (`emergency_access.py`)
+
+Hospitals and schools come from Overture Maps places (release 2026-10-21.0,
+confidence ≥ 0.6, read straight from the public S3 parquet with DuckDB and
+cached as `data/vectors/overture_facilities_<region>.geojson`). Each hospital
+snaps to its nearest arterial node; one multi-source Dijkstra on the reversed
+road graph gives every node its drive time to the nearest hospital. Link
+times are free flow for 03:00 and BPR at the link's modelled `vc_am` /
+`vc_pm` for 09:00 and 18:00 (capped at 4× free-flow time). Home cells add a
+walk-speed access leg (15 km/h × 1.3 detour) to and from the road. Output:
+cell dataset `emergency_access` (`hospital_min_night`, `hospital_min_am`,
+`hospital_min_pm`, `rush_delay_min`, `hospitals`, `schools`) and an
+`emergency_access` block in `summary.json`.
+
+The **Hospital at rush hour** lens reports residents within 10 minutes at
+3 am and at the worse peak, those more than 20 minutes away, people 60+ who
+lose 10-minute reach in traffic, and schools at 65+ dB Lden or within 250 m
+of an arterial at LOS E/F. First run: Delhi 91% within 10 min at night vs
+83% at 09:00; Kolkata 98% vs 87%; Bengaluru 99% vs 96%. Overture's hospital
+category includes nursing homes and small clinics, and there is no ambulance
+priority, so this is general-traffic reach to any hospital-tagged place.
+
+    python -m pipeline.traffic.emergency_access --region all            # cached places
+    python -m pipeline.traffic.emergency_access --region delhi --refresh  # re-query Overture
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

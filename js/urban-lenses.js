@@ -42,6 +42,7 @@ const UrbanLenses = (() => {
     const WLOG_HIGH = 45, WLOG_VERY = 65;   // waterlogging index cut-offs for High / Very high (pipeline/cells/ee_layers.py)
     const ROAD_KM = 0.25, JAM_VC = 0.9;
     const NOISE_WHO = 53, NOISE_HIGH = 65;
+    const HOSP_GOLDEN = 10, HOSP_FAR = 20;
     const FREQ_MIN = 10;                         // 'frequent' bus: every 10 min or better at peak      // dB Lden: WHO 2018 road guideline; high exposure     // residents within 250 m (own or next cell) of an arterial at LOS E/F
     const CUTOFF_DOMAIN = ['Cut off from care', 'Longer walk to care', 'Flooded', 'Unaffected', 'No care in reach anyway'];
     const CUTOFF_COLORS = { 'Cut off from care': '#c0392b', 'Longer walk to care': '#f39c12', Flooded: '#2e86c1', Unaffected: '#cfd8dc', 'No care in reach anyway': '#8e8e8e' };
@@ -101,6 +102,15 @@ const UrbanLenses = (() => {
                 'traffic_load.am_vc', 'traffic_load.pm_vc', 'traffic_load.mid_vc'],
             method: `Peak hours from the demand model (pipeline/traffic/demand_model.py): residents make motorised trips to jobs and activity floor space, distributed by a gravity model and routed on the OpenStreetMap arterials with BPR congestion feedback; the 09:00 commute, the 18:00 trip home and midday errands are assigned separately and the worse peak counts. For each home cell, the worst volume/capacity ratio on any arterial within ${ROAD_KM * 1000} m (its own or a neighbouring cell); at or above ${JAM_VC} is Level of Service E/F (at or over capacity). Speeds and delay are vehicle-km weighted. A strategic model with stated assumptions, not traffic counts.`,
             refs: 'Ortúzar & Willumsen, Modelling Transport (4-step model); BPR (1964) link performance; IRC 106-1990 urban road capacities; HCM LOS' },
+        { id: 'ambulance', equity: true, title: 'Hospital at rush hour', icon: '🚑',
+            question: 'How far is a hospital by road at 9 am, compared with 3 am?',
+            field: { key: 'hosp_peak', label: 'Drive to nearest hospital, worse peak', unit: 'min', higherIs: 'worse', ramp: 'heat' },
+            extra: [{ key: 'hosp_delay', label: 'Extra minutes at rush hour', unit: 'min', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['emergency_access.hospital_min_night', 'emergency_access.hospital_min_am', 'emergency_access.hospital_min_pm',
+                'emergency_access.rush_delay_min', 'emergency_access.schools', 'traffic_noise.lden_db', 'traffic_load.peak_vc',
+                'demographics.elderly_60plus', 'wealth.rwi'],
+            method: `Drive time from each home cell to the nearest hospital on the OpenStreetMap arterials: at 03:00 with free-flow speeds, and at 09:00 and 18:00 with each road slowed by the demand model's volume/capacity (BPR, at most 4× free-flow time), plus the walk-speed access to and from the road. Hospitals and schools are Overture Maps places (confidence ≥ 0.6); places tagged hospital include smaller nursing homes, and there is no bed, ward or ambulance-siren priority data, so treat it as general-traffic reach. ${HOSP_GOLDEN} minutes is the reporting threshold. Schools count as exposed when their cell is at ${NOISE_HIGH}+ dB Lden or within ${ROAD_KM * 1000} m of an arterial at LOS E/F.`,
+            refs: 'Overture Maps Foundation places; BPR (1964); Wilde 2013 (ambulance response time and outcomes); WHO 2018 noise guidelines' },
         { id: 'fifteen', equity: true, title: '15-minute completeness', icon: '🚶',
             question: 'Can people reach daily needs on foot?',
             field: { key: 'fifteen_min', label: '15-minute completeness', unit: '0-100', higherIs: 'better', ramp: 'greens' },
@@ -842,6 +852,74 @@ const UrbanLenses = (() => {
             headline: `${_people(jam)} people (${_round(100 * jam / total)}% of residents) live within 250 m of an arterial that runs at or over capacity in ${byPeriod.morning != null ? 'the morning or evening peak' : 'the morning peak'}`
                 + (vSpeed != null ? `; arterial traffic averages ${_round(vSpeed)} km/h` : '')
                 + (vDelay != null ? ` and a peak trip on them takes ${_round(1 + vDelay / 100, 1)}× its free-flow time.` : '.'),
+            stats,
+        };
+    }
+
+    function ambulance(fr) {
+        const c = fr.cols, g = fr.grid, idx = _residents(fr), n = g.n;
+        const night = c['emergency_access.hospital_min_night'], am = c['emergency_access.hospital_min_am'];
+        const pm = c['emergency_access.hospital_min_pm'], pop = c['population.population'];
+        if (!night || !am) return null;
+        const peak = new Float64Array(n).fill(NaN), delay = new Float64Array(n).fill(NaN);
+        const reach = [];
+        for (const i of idx) {
+            if (!_fin(night[i]) || !_fin(am[i])) continue;
+            peak[i] = Math.max(am[i], pm && _fin(pm[i]) ? pm[i] : am[i]);
+            delay[i] = Math.max(0, peak[i] - night[i]);
+            reach.push(i);
+        }
+        if (!reach.length) return null;
+        const total = _sumOver(pop, reach, () => true) || 1;
+        const pNight = _sumOver(pop, reach, i => night[i] <= HOSP_GOLDEN);
+        const pPeak = _sumOver(pop, reach, i => peak[i] <= HOSP_GOLDEN);
+        const pFar = _sumOver(pop, reach, i => peak[i] > HOSP_FAR);
+        const lost = Math.max(0, pNight - pPeak);
+        const medPeak = wquantile(peak, pop, reach, 0.5), medNight = wquantile(night, pop, reach, 0.5);
+        const stats = [
+            { label: `Residents within ${HOSP_GOLDEN} min of a hospital at 03:00`, value: `${_people(pNight)} (${_round(100 * pNight / total)}%)` },
+            { label: `… at the worse rush hour (09:00 or 18:00)`, value: `${_people(pPeak)} (${_round(100 * pPeak / total)}%)`, raw: Math.round(pPeak) },
+            { label: `Residents more than ${HOSP_FAR} min away at rush hour`, value: `${_people(pFar)} (${_round(100 * pFar / total)}%)`, raw: Math.round(pFar) },
+        ];
+        if (medPeak != null && medNight != null) stats.push({ label: 'Median drive to hospital: night / rush hour', value: `${_round(medNight, 1)} / ${_round(medPeak, 1)} min` });
+        const eld = c['demographics.elderly_60plus'];
+        if (eld) stats.push({ label: `People 60+ who lose ${HOSP_GOLDEN}-minute reach at rush hour`, value: _people(_sumOver(eld, reach, i => night[i] <= HOSP_GOLDEN && peak[i] > HOSP_GOLDEN)) });
+        // Schools beside jammed or noisy roads (schools are counted per cell, wherever they are).
+        const sch = c['emergency_access.schools'], ld = c['traffic_noise.lden_db'], vc = c['traffic_load.peak_vc'];
+        if (sch && (ld || vc)) {
+            const off = g.offsets(ROAD_KM);
+            let all = 0, noisy = 0, jammed = 0, either = 0;
+            for (let i = 0; i < n; i++) {
+                if (!(sch[i] > 0)) continue;
+                all += sch[i];
+                const loud = !!ld && _fin(ld[i]) && ld[i] >= NOISE_HIGH;
+                let jam = false;
+                if (vc) for (const [a, b] of off) { const j = g.cellAt(i, a, b); if (j >= 0 && vc[j] >= JAM_VC) { jam = true; break; } }
+                if (loud) noisy += sch[i];
+                if (jam) jammed += sch[i];
+                if (loud || jam) either += sch[i];
+            }
+            if (all) {
+                stats.push({ label: `Schools at ${NOISE_HIGH}+ dB road noise`, value: `${_people(noisy)} of ${_people(all)} (${_round(100 * noisy / all)}%)` });
+                stats.push({ label: `Schools within ${ROAD_KM * 1000} m of a jammed arterial`, value: `${_people(jammed)} (${_round(100 * jammed / all)}%)` });
+                stats.push({ label: 'Schools beside a noisy or jammed road', value: `${_people(either)} (${_round(100 * either / all)}%)`, raw: either });
+            }
+        }
+        let poorShare = null;
+        const rwi = c['wealth.rwi'];
+        if (rwi && pFar > 0) {
+            const q20 = wquantile(rwi, pop, reach, 0.2);
+            if (q20 != null) {
+                poorShare = 100 * _sumOver(pop, reach, i => peak[i] > HOSP_FAR && rwi[i] <= q20) / pFar;
+                stats.push({ label: `Share of the ${HOSP_FAR}+ min residents in the poorest fifth (RWI; 20% if even)`, value: `${_round(poorShare)}%` });
+            }
+        }
+        return {
+            columns: { hosp_peak: peak, hosp_delay: delay }, idx: reach, weightKey: 'hosp_peak',
+            metric: { label: `Within ${HOSP_GOLDEN} min of a hospital at rush hour`, value: _round(100 * pPeak / total), unit: '%', higherIs: 'better' },
+            headline: `${_round(100 * pPeak / total)}% of residents can reach a hospital by road within ${HOSP_GOLDEN} minutes at rush hour, against ${_round(100 * pNight / total)}% at 3 am`
+                + (lost > 0 ? `: traffic takes ${HOSP_GOLDEN}-minute reach away from ${_people(lost)} people` : '')
+                + (pFar > 0 ? `, and ${_people(pFar)} are more than ${HOSP_FAR} minutes away.` : '.'),
             stats,
         };
     }
@@ -1633,7 +1711,7 @@ const UrbanLenses = (() => {
             metric: pmRes != null ? { label: 'Months a year above 60 µg/m³ PM2.5', value: _round(pmRes, 1), unit: 'months', higherIs: 'worse' } : null };
     }
 
-    const RUN = { heat, flood, waterlog, noise, traffic, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
+    const RUN = { heat, flood, waterlog, noise, traffic, ambulance, cutoff, fifteen, health, transit, air, lights, walk, sprawl, types, green, solar, confidence, seasons, burden };
 
     // ── siting suitability (MCDA with AHP weights) ──────────────────────────
 
