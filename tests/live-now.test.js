@@ -145,3 +145,38 @@ describe('LN.cellsBounds()', () => {
         expect(LN.cellsBounds([])).toBeNull();
     });
 });
+
+describe('LiveNow GNSS conditions', () => {
+    const rows = [
+        { time_tag: '2026-10-22T15:00:00', kp: 2.33, observed: 'observed' },
+        { time_tag: '2026-10-22T18:00:00', kp: 3.0, observed: 'estimated' },
+        { time_tag: '2026-10-22T21:00:00', kp: 5.67, observed: 'predicted' },
+        { time_tag: '2026-10-24T21:00:00', kp: 8, observed: 'predicted' },
+    ];
+    it('reads the current Kp and the 24 h peak ahead', () => {
+        const k = LN.parseKp(rows, new Date('2026-10-22T19:00:00Z'));
+        expect(k).toEqual({ now: 3, max24: 5.67, maxAt: '2026-10-22T21:00:00' });
+        expect(LN.parseKp('x')).toBeNull();
+    });
+    it('flags storms and the post-sunset scintillation window', () => {
+        const noon = new Date('2026-10-22T06:30:00Z');        // 12:00 IST
+        const evening = new Date('2026-10-22T15:30:00Z');     // 21:00 IST, October
+        expect(LN.gnssCondition({ now: 2, max24: 3 }, 22.7, noon).level).toBe('good');
+        expect(LN.gnssCondition({ now: 2, max24: 3 }, 22.7, evening)).toMatchObject({ level: 'caution', reasons: ['post-sunset ionospheric scintillation season'] });
+        expect(LN.gnssCondition({ now: 2, max24: 3 }, 28.6, evening).level).toBe('good');
+        expect(LN.gnssCondition({ now: 3, max24: 7.3 }, 28.6, noon).level).toBe('poor');
+    });
+    it('turns a storm into a correlation, but not plain scintillation', () => {
+        const storm = LN.gnssCondition({ now: 6, max24: 6 }, 28.6, new Date('2026-10-22T06:30:00Z'));
+        expect(LN.correlate({ gnss: storm }).map(c => c.id)).toEqual(['gnss']);
+        const scint = LN.gnssCondition({ now: 2, max24: 2 }, 22.7, new Date('2026-10-22T15:30:00Z'));
+        expect(LN.correlate({ gnss: scint })).toEqual([]);
+    });
+});
+
+describe('LiveNow.istDate()', () => {
+    it('rolls over at Indian midnight, not UTC midnight', () => {
+        expect(LN.istDate(new Date('2026-10-22T18:00:00Z'))).toBe('2026-10-22');
+        expect(LN.istDate(new Date('2026-10-22T18:31:00Z'))).toBe('2026-10-23');
+    });
+});

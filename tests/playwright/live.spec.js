@@ -79,6 +79,7 @@ async function stubFeeds(page) {
   await page.route(/air-quality-api\.open-meteo\.com/, (r) => r.fulfill({ json: { current: { time: 't', pm2_5: 142, pm10: 260, nitrogen_dioxide: 60, ozone: 40 } }, headers: CORS }));
   await page.route(/flood-api\.open-meteo\.com/, (r) => r.fulfill({ json: flood(r.request().url()), headers: CORS }));
   await page.route(/earthquake\.usgs\.gov/, (r) => r.fulfill({ json: { features: [{ id: 'us7000x', geometry: { coordinates: [78.1, 29.9, 10] }, properties: { mag: 4.6, place: 'Uttarakhand, India', time: Date.now() - 864e5 } }] }, headers: CORS }));
+  await page.route(/services\.swpc\.noaa\.gov/, (r) => r.fulfill({ json: [{ time_tag: new Date(Date.now() - 3600e3).toISOString().slice(0, 19), kp: 6.33, observed: 'estimated' }], headers: CORS }));
   await page.route(/eonet\.gsfc\.nasa\.gov/, (r) => r.fulfill({ json: { events: [] }, headers: CORS }));
 }
 
@@ -115,6 +116,8 @@ test.describe('live feeds', () => {
       expect(titles.join('|')).toMatch(/Heavy rain .*92 mm/);
       expect(titles.join('|')).toMatch(/River flow rising/);
       expect(titles.join('|')).toMatch(/M4\.6 earthquake/);
+      expect(titles.join('|')).toMatch(/GPS accuracy degraded: geomagnetic storm \(Kp 6\)/);
+      await expect(panel).toContainText('GPS field accuracy · Caution');
       await expect(page.locator('#btn-livenow .tb-badge')).toHaveText(String(titles.length));
     }
     await shot(page, 'live-now');

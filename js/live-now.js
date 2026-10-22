@@ -21,6 +21,7 @@ const LiveNow = (() => {
     const FLOOD = 'https://flood-api.open-meteo.com/v1/flood';
     const USGS = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson';
     const EONET = 'https://eonet.gsfc.nasa.gov/api/v3/events';
+    const KP = 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json';
     const REFRESH_MS = 10 * 60 * 1000;
     const NEAR_KM = 300;
     const PANEL_ID = 'live-now-panel';
@@ -183,6 +184,45 @@ const LiveNow = (() => {
         return out.sort((a, b) => a.km - b.km);
     }
 
+    /** NOAA Kp product → { now, max24, maxAt }: latest observed/estimated Kp and the 24 h peak ahead. */
+    function parseKp(rows, now = new Date()) {
+        if (!Array.isArray(rows)) return null;
+        const t = now.getTime();
+        let cur = null, max24 = null, maxAt = null;
+        for (const r of rows) {
+            if (!r || typeof r !== 'object' || !Number.isFinite(+r.kp)) continue;
+            const at = Date.parse(`${r.time_tag}Z`);
+            if (!Number.isFinite(at)) continue;
+            if (at <= t && r.observed !== 'predicted') cur = +r.kp;
+            if (at > t - 3 * 3600e3 && at <= t + 24 * 3600e3 && (max24 == null || +r.kp > max24)) { max24 = +r.kp; maxAt = r.time_tag; }
+        }
+        if (cur == null && max24 == null) return null;
+        return { now: cur ?? max24, max24: max24 ?? cur, maxAt };
+    }
+
+    /**
+     * Whether now is a good time for accurate phone / field GNSS geotagging.
+     * Geomagnetic storms (Kp ≥ 5) degrade fixes everywhere; India also sits
+     * under the equatorial ionisation anomaly, where post-sunset scintillation
+     * (≈ 19:00–01:00 IST, worst around the equinox months) causes jumps and
+     * dropouts south of ~26° N.
+     */
+    function gnssCondition(kp, lat, now = new Date()) {
+        const reasons = [];
+        let level = 'good';
+        const k = kp ? Math.max(kp.now ?? 0, kp.max24 ?? 0) : null;
+        if (k != null && k >= 7) { level = 'poor'; reasons.push(`severe geomagnetic storm (Kp ${k.toFixed(0)})`); }
+        else if (k != null && k >= 5) { level = 'caution'; reasons.push(`geomagnetic storm (Kp ${k.toFixed(0)})`); }
+        const ist = (now.getUTCHours() + now.getUTCMinutes() / 60 + 5.5) % 24;
+        const month = new Date(now.getTime() + 5.5 * 3600e3).getUTCMonth() + 1;
+        const equinox = [2, 3, 4, 8, 9, 10].includes(month);
+        if (lat < 26 && (ist >= 19 || ist < 1) && equinox) {
+            if (level === 'good') level = 'caution';
+            reasons.push('post-sunset ionospheric scintillation season');
+        }
+        return { level, kp: k, reasons, label: { good: 'Good', caution: 'Caution', poor: 'Poor' }[level] };
+    }
+
     /**
      * People exposed in the loaded cells. Tables are CellStore tables
      * ({ cells, columns }); any of them may be null.
@@ -219,6 +259,11 @@ const LiveNow = (() => {
         return Math.round(n).toLocaleString('en-IN');
     }
 
+    /** Today's date in India (the forecast is requested in Asia/Kolkata). */
+    function istDate(now = new Date()) {
+        return new Date(now.getTime() + 5.5 * 3600e3).toISOString().slice(0, 10);
+    }
+
     function _day(date, today) {
         if (!date) return '';
         if (date === today) return 'today';
@@ -230,10 +275,10 @@ const LiveNow = (() => {
      * Live feeds × exposure → a ranked list of correlations.
      * Each: { id, kind, severity, icon, title, detail, lat?, lng?, cells? }.
      */
-    function correlate({ weather, air, river, quakes, events, alerts, exp, today } = {}) {
+    function correlate({ weather, air, river, quakes, events, alerts, exp, gnss, today } = {}) {
         const out = [];
         exp = exp || exposure(null);
-        today = today || new Date().toISOString().slice(0, 10);
+        today = today || istDate();
         const riverUp = river && river.mean30 > 0 && river.peak >= 50 && river.peak >= 1.5 * river.mean30;
 
         const wet = weather && weather.days && weather.days.reduce((a, b) => ((b.rain ?? 0) > (a.rain ?? 0) ? b : a), weather.days[0]);
@@ -302,6 +347,14 @@ const LiveNow = (() => {
                 severity: e.km <= 50 ? 'medium' : 'low',
                 title: `${e.category}: ${Math.round(e.km)} km away`,
                 detail: e.title, lat: e.lat, lng: e.lng, url: e.url,
+            });
+        }
+
+        if (gnss && gnss.level !== 'good' && gnss.kp != null && gnss.kp >= 5) {
+            out.push({
+                id: 'gnss', kind: 'gnss', icon: '📡', severity: gnss.level === 'poor' ? 'high' : 'medium',
+                title: `GPS accuracy degraded: ${gnss.reasons[0]}`,
+                detail: 'Phone and field GNSS fixes may drift by tens of metres, several DIGIPIN 4 m cells. Re-check geotags taken now.',
             });
         }
 
@@ -420,7 +473,7 @@ const LiveNow = (() => {
                 if (!age || age.stale) return [];
                 return RealtimeAlerts.filterBySeverity(all, 'Severe');
             })() : Promise.resolve([]);
-        const [w, a, f, q, e, al, x] = await Promise.all([
+        const [w, a, f, q, e, al, x, k] = await Promise.all([
             settle(_json(forecastUrl(target.lat, target.lng))),
             settle(_json(airUrl(target.lat, target.lng))),
             settle(_json(floodUrl(target.lat, target.lng), 15000)),
@@ -428,6 +481,7 @@ const LiveNow = (() => {
             settle(_json(eonetUrl(target.lat, target.lng))),
             settle(alertsP),
             settle(_exposure()),
+            settle(_json(KP)),
         ]);
         if (reqId !== _reqId || !_active) return;
         const weather = w.ok ? parseWeather(w.v) : null;
@@ -436,7 +490,9 @@ const LiveNow = (() => {
         const quakes = q.ok ? parseQuakes(q.v, target.lat, target.lng) : [];
         const events = e.ok ? parseEvents(e.v, target.lat, target.lng) : [];
         const exp = x.ok && x.v ? x.v : null;
-        const correlations = correlate({ weather, air, river, quakes, events, alerts: al.ok ? al.v : [], exp });
+        const kp = k.ok ? parseKp(k.v) : null;
+        const gnss = kp ? gnssCondition(kp, target.lat) : null;
+        const correlations = correlate({ weather, air, river, quakes, events, alerts: al.ok ? al.v : [], exp, gnss });
         const checks = [
             ['Weather forecast (Open-Meteo)', !!weather],
             ['Air quality (CAMS via Open-Meteo)', !!air],
@@ -444,8 +500,9 @@ const LiveNow = (() => {
             [`Earthquakes within ${NEAR_KM} km (USGS)`, q.ok],
             [`Natural events within ${NEAR_KM} km (NASA EONET)`, e.ok],
             ['People, flood and heat cells in view (DigiPin cells)', !!exp],
+            ['Space weather for GNSS (NOAA SWPC Kp)', !!kp],
         ];
-        _last = { target, weather, air, river, quakes, events, exp, correlations, checks, at: new Date() };
+        _last = { target, weather, air, river, quakes, events, exp, gnss, correlations, checks, at: new Date() };
         _render(_last);
         _drawPoints();
         _setBadge(correlations.length);
@@ -510,7 +567,7 @@ const LiveNow = (() => {
             now.appendChild(meta);
             _panel.appendChild(now);
             const strip = _el('div', 'ln-days');
-            const today = new Date().toISOString().slice(0, 10);
+            const today = istDate();
             w.days.forEach(d => {
                 const c = _el('div', 'ln-day');
                 c.append(_el('span', 'ln-dim', _day(d.date, today)), _el('span', null, weatherLabel(d.code).icon),
@@ -538,6 +595,14 @@ const LiveNow = (() => {
                 _el('span', 'ln-dim', `7-day peak ${Math.round(s.river.peak)} · 30-day avg ${Math.round(s.river.mean30 ?? 0)}`));
             r.title = 'Largest river within ~17 km, GloFAS v4 discharge.';
             facts.appendChild(r);
+        }
+        if (s.gnss) {
+            const g = _el('div', 'ln-fact');
+            const chip = _el('span', `ln-aqi ln-gnss ln-gnss-${s.gnss.level}`, '📡');
+            g.append(chip, _el('span', null, `GPS field accuracy · ${s.gnss.label}`),
+                _el('span', 'ln-dim', [s.gnss.kp != null ? `Kp ${s.gnss.kp.toFixed(1)}` : null, ...s.gnss.reasons].filter(Boolean).join(' · ') || 'quiet ionosphere'));
+            g.title = 'For geotagging DIGIPINs in the field: NOAA planetary Kp (now and next 24 h) plus the post-sunset scintillation window over India.';
+            facts.appendChild(g);
         }
         if (s.exp && s.exp.pop > 0) {
             const p = _el('div', 'ln-fact');
@@ -701,7 +766,7 @@ const LiveNow = (() => {
     return {
         attach, detach, toggle, isActive, refresh, focus, snapshot, shownCells,
         forecastUrl, airUrl, floodUrl, eonetUrl, distanceKm, weatherLabel, parseWeather, subIndex, naqiBand, parseAir,
-        parseFlood, parseQuakes, parseEvents, exposure, fmtPeople, correlate, cellsBounds, RAIN,
+        parseFlood, parseQuakes, parseEvents, parseKp, gnssCondition, istDate, exposure, fmtPeople, correlate, cellsBounds, RAIN,
     };
 })();
 

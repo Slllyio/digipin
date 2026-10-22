@@ -4653,3 +4653,6 @@ body.presenting #sidebar { display: none !important; }
 .places-card .places-pin { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: #1f5fa8; }
 .places-card .places-actions { display: flex; gap: 10px; align-items: center; margin-top: 2px; }
 .places-card .places-actions button { font: inherit; font-size: 11px; padding: 3px 8px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+.live-now-panel .ln-gnss-good { background: #3a9d4a; }
+.live-now-panel .ln-gnss-caution { background: #e6a229; }
+.live-now-panel .ln-gnss-poor { background: #d7372f; }
