@@ -476,5 +476,48 @@
     "total": 751.7,
     "pct_very_high": 0.0,
     "pct_high_or_worse": 6.7
+  },
+  "emergency_access": {
+    "hospitals": 358,
+    "pct_within_10_night": 96.4,
+    "pct_within_10_am": 96.4,
+    "pct_within_10_pm": 96.4,
+    "pct_over_20_peak": 0.2,
+    "source": "Overture Maps places 2026-10-21.0; demand model link times"
+  },
+  "rail_access": {
+    "metro_stations": 6,
+    "rail_stations": 12,
+    "pct_within_10_walk_metro": 5.9,
+    "pct_within_10_walk_any": 12.6,
+    "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
+  },
+  "ev_charging": {
+    "chargers": 0,
+    "chargers_by_source": {},
+    "parking": 1,
+    "fuel": 71,
+    "chargers_per_lakh": 0.0,
+    "pct_vkm_within_2km": 0.0,
+    "pct_pop_within_2km": 0.0
+  },
+  "cycling": {
+    "lowstress_km": 4428,
+    "cycleway_km": 0,
+    "highstress_km": 446,
+    "islands": 1602,
+    "islands_over_5_km2": 17,
+    "largest_island_km2": 33.7,
+    "pct_residents_small_island": 16.3,
+    "pct_residents_no_lowstress_street": 0.3,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "crossings": {
+    "main_km": 446,
+    "pct_main_km_on_long_gaps": 17.3,
+    "median_gap_m": 231,
+    "crosswalks_mapped": 3,
+    "gap_threshold_m": 500.0,
+    "source": "Overture Maps transportation 2026-10-21.0"
   }
 }

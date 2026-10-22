@@ -736,6 +736,66 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // ── pedestrian crossing gaps ────────────────────────────────────────────
+
+    const GAP_M = 500;
+
+    function crossing(fr) {
+        const c = fr.cols, g = fr.grid, n = g.n, idx = _residents(fr), pop = c['population.population'];
+        const gap = c['crossings.max_gap_m'], gkm = c['crossings.gap_km'], mkm = c['crossings.main_km'], cw = c['crossings.crosswalks'];
+        if (!gap || !gap.some(v => v > 0)) return null;
+        const pcu = c['traffic_load.peak_pcu'];
+        const near = g.offsets(ROAD_KM);
+        const facing = new Float64Array(n).fill(NaN);      // worst gap on a main road within 250 m of home
+        for (const i of idx) {
+            let m = -1;
+            for (const [a, b] of near) { const j = g.cellAt(i, a, b); if (j >= 0 && gap[j] > m) m = gap[j]; }
+            if (m >= 0) facing[i] = Math.min(4 * GAP_M, m);   // a few km-long flyover runs would wash out the ramp
+        }
+        const beside = idx.filter(i => _fin(facing[i]));
+        const pB = _sumOver(pop, beside, () => true);
+        if (!pB) return null;
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const pGap = _sumOver(pop, beside, i => facing[i] > GAP_M);
+        const pFar = _sumOver(pop, beside, i => facing[i] > 2 * GAP_M);
+        // Need: residents within 250 m of each long-gap road cell, more where traffic is heavy.
+        const need = new Float64Array(n).fill(NaN), order = [];
+        for (let i = 0; i < n; i++) {
+            if (!(gap[i] > GAP_M)) continue;
+            let people = 0;
+            for (const [a, b] of near) { const j = g.cellAt(i, a, b); if (j >= 0 && pop[j] > 0) people += pop[j]; }
+            if (!people) continue;
+            need[i] = people * Math.min(3, gap[i] / GAP_M) * (pcu && pcu[i] > 0 ? Math.min(2, 0.5 + pcu[i] / 2000) : 1);
+            order.push(i);
+        }
+        order.sort((a, b) => need[b] - need[a]);
+        const picks = [];
+        for (const i of order) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1)) continue;
+            picks.push(i);
+        }
+        let main = 0, long = 0, cws = 0;
+        for (let i = 0; i < n; i++) { if (mkm && mkm[i] > 0) main += mkm[i]; if (gkm && gkm[i] > 0) long += gkm[i]; if (cw && cw[i] > 0) cws += cw[i]; }
+        const med = wquantile(facing, pop, beside, 0.5);
+        const stats = [
+            { label: `Residents within ${ROAD_KM * 1000} m of a main road`, value: `${_people(pB)} (${_round(100 * pB / total)}%)` },
+            { label: `… beside a stretch with no crossing for ${GAP_M}+ m`, value: `${_people(pGap)} (${_round(100 * pGap / pB)}%)`, raw: Math.round(pGap) },
+            { label: `… for ${(2 * GAP_M) / 1000}+ km`, value: `${_people(pFar)} (${_round(100 * pFar / pB)}%)` },
+        ];
+        if (med != null) stats.push({ label: 'Median longest crossing gap near home', value: `${_people(med)} m` });
+        if (main) stats.push({ label: `Main-road length on gaps over ${GAP_M} m`, value: `${_round(long)} of ${_round(main)} km (${_round(100 * long / main)}%)` });
+        stats.push({ label: 'Mapped zebra crossings', value: `${_people(cws)}${cws < main / 5 ? ' (sparse in open maps, so junctions count as crossings)' : ''}` });
+        picks.forEach((i, r) => stats.push({ label: `Add a crossing ${r + 1}: ${g.codes[i]}`, value: `${_people(gap[i])} m without one${pcu && pcu[i] > 0 ? `, ${_people(pcu[i])} PCU/h at peak` : ''}` }));
+        return {
+            columns: { cross_gap: facing, cross_need: need }, idx: beside, weightKey: 'cross_gap',
+            metric: { label: `Main-road residents facing a ${GAP_M}+ m crossing gap`, value: _round(100 * pGap / pB), unit: '%', higherIs: 'worse' },
+            headline: `${_round(100 * pGap / pB)}% of the ${_people(pB)} people living beside a main road face a stretch of ${GAP_M} m or more with no junction or crossing, a walk of up to ${(2 * GAP_M) / 1000} km round trip to reach the other side`
+                + (picks.length ? `; the most needed new crossing is at ${g.codes[picks[0]]} (${_people(gap[picks[0]])} m gap).` : '.'),
+            stats,
+        };
+    }
+
     // ── mobility scorecard across the cities ────────────────────────────────
 
     // Pillars over the lens league (data/lenses/league.json). EV charging is
@@ -744,7 +804,7 @@ const UrbanLensesMobility = (() => {
         { id: 'access', label: 'Access', metrics: ['metro', 'transit', 'busgap', 'ambulance'] },
         { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon'] },
         { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise', 'nightwalk'] },
-        { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'walk', 'cycling'] },
+        { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'walk', 'cycling', 'crossing'] },
     ];
 
     /**
@@ -802,6 +862,13 @@ const UrbanLensesMobility = (() => {
     }
 
     const ENTRIES = [
+        { id: 'crossing', equity: true, title: 'Crossing gaps on main roads', icon: '🦓',
+            question: 'How far do people walk along a main road before they can cross it?',
+            field: { key: 'cross_gap', label: 'Longest main-road stretch with no crossing near home (2,000+ capped)', unit: 'm', higherIs: 'worse', ramp: 'heat' },
+            extra: [{ key: 'cross_need', label: 'Residents nearby × gap × traffic (add a crossing here)', unit: 'score', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['crossings.max_gap_m', 'crossings.gap_km', 'crossings.main_km', 'crossings.crosswalks', 'traffic_load.peak_pcu', 'wealth.rwi'],
+            method: `Overture Maps main roads (trunk, primary, secondary, and tertiary roads the demand model loads with 600+ PCU at peak; motorways are left out) are chained through every connector that no other road, lane or path meets; a junction or a mapped crosswalk ends the chain. The chain's length is the gap a pedestrian walks along before crossing. IRC 103 asks for a crossing every 80–250 m in busy areas; ${GAP_M} m is the line used here. Junctions count as crossings even without a signal or zebra, so gaps are a lower bound. A home is beside a main road within ${ROAD_KM * 1000} m; new-crossing need is residents within ${ROAD_KM * 1000} m × gap (to 3×) × peak traffic.`,
+            refs: 'IRC 103-2022 (Guidelines for pedestrian facilities); Overture Maps Foundation transportation; Tiwari 2015 (pedestrian safety in Indian cities)' },
         { id: 'nightwalk', equity: true, title: 'Night walk to the station', icon: '🌙',
             question: 'Is the walk to the metro or train station lit and busy after dark?',
             field: { key: 'night_route', label: 'Dimmest night light along the walk to the station', unit: 'nW/cm²/sr', higherIs: 'better', ramp: 'viridis' },
@@ -881,7 +948,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety, cycling, nightwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

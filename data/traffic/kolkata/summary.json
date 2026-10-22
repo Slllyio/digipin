@@ -502,5 +502,24 @@
     "chargers_per_lakh": 0.07,
     "pct_vkm_within_2km": 42.7,
     "pct_pop_within_2km": 37.6
+  },
+  "cycling": {
+    "lowstress_km": 6426,
+    "cycleway_km": 1.4,
+    "highstress_km": 984,
+    "islands": 4152,
+    "islands_over_5_km2": 17,
+    "largest_island_km2": 29.1,
+    "pct_residents_small_island": 27.4,
+    "pct_residents_no_lowstress_street": 0.3,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "crossings": {
+    "main_km": 946,
+    "pct_main_km_on_long_gaps": 9.9,
+    "median_gap_m": 245,
+    "crosswalks_mapped": 22,
+    "gap_threshold_m": 500.0,
+    "source": "Overture Maps transportation 2026-10-21.0"
   }
 }

@@ -415,6 +415,19 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.nightwalk(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('crossing lens: residents beside long main-road stretches with no crossing', () => {
+        const mid = Math.floor(SIZE / 2);
+        const gap = codes.map((_, i) => (i % SIZE === mid ? (Math.floor(i / SIZE) < SIZE / 2 ? 1200 : 200) : 0));
+        const mkm = codes.map((_, i) => (i % SIZE === mid ? 0.25 : 0));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'crossings.max_gap_m': gap, 'crossings.main_km': mkm });
+        const r = L._lenses.crossing(f, {});
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.metric.value).toBeLessThan(100);
+        expect(r.columns.cross_gap[mid]).toBe(1200);
+        expect(r.stats.some(x => x.label.startsWith('Add a crossing 1'))).toBe(true);
+        expect(L._lenses.crossing(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
         const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
         const league = { generated: '2026-10-22', cities: {

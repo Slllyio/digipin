@@ -13278,6 +13278,257 @@
           "parquet": null
         }
       ]
+    },
+    {
+      "id": "crossings",
+      "title": "Pedestrian crossing gaps",
+      "description": "How far a pedestrian walks along a main road (trunk, primary, secondary, busy tertiary) before a junction or mapped crosswalk lets them cross: Overture Maps road segments chained through connectors that no other road or path meets. Stretches over 500 m are gaps (IRC 103 asks for a crossing every 80\u2013250 m in busy areas). Mapped crosswalks are sparse in India, so gaps count junctions as crossings and are a lower bound on the walk.",
+      "source": "pipeline/traffic/crossings.py over Overture Maps transportation 2026-10-21.0",
+      "license": "ODbL (Overture transportation, from OpenStreetMap)",
+      "group": "Traffic & mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "max_gap_m",
+          "label": "Longest main-road stretch with no crossing",
+          "type": "number",
+          "agg": "max",
+          "unit": "m",
+          "domain": [
+            0,
+            1500
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "gap_km",
+          "label": "Main road on stretches over 500 m without a crossing",
+          "type": "number",
+          "agg": "sum",
+          "unit": "km",
+          "domain": [
+            0,
+            1.77
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "main_km",
+          "label": "Main-road length",
+          "type": "number",
+          "agg": "sum",
+          "unit": "km",
+          "domain": [
+            0,
+            3.13
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "crosswalks",
+          "label": "Mapped crosswalks",
+          "type": "number",
+          "agg": "sum",
+          "unit": "crossings",
+          "domain": [
+            1,
+            10
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "max_gap_m",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 2654,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.7021484375,
+            "north": 23.125732421875
+          },
+          "json": "crossings/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 5964,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.82275390625,
+            "east": 77.784423828125,
+            "north": 13.15234375
+          },
+          "json": "crossings/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 1156,
+          "bbox": {
+            "west": 77.29443359375,
+            "south": 23.160888671875,
+            "east": 77.520751953125,
+            "north": 23.33447265625
+          },
+          "json": "crossings/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 3064,
+          "bbox": {
+            "west": 80.09814453125,
+            "south": 12.895263671875,
+            "east": 80.31787109375,
+            "north": 13.185302734375
+          },
+          "json": "crossings/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 9908,
+          "bbox": {
+            "west": 76.82861328125,
+            "south": 28.377197265625,
+            "east": 77.371337890625,
+            "north": 28.884765625
+          },
+          "json": "crossings/delhi/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 195,
+          "bbox": {
+            "west": 77.265869140625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.685791015625
+          },
+          "json": "crossings/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 3914,
+          "bbox": {
+            "west": 78.294189453125,
+            "south": 17.29638671875,
+            "east": 78.601806640625,
+            "north": 17.564453125
+          },
+          "json": "crossings/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 3624,
+          "bbox": {
+            "west": 75.5673828125,
+            "south": 22.488525390625,
+            "east": 76.022216796875,
+            "north": 22.906005859375
+          },
+          "json": "crossings/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 1517,
+          "bbox": {
+            "west": 75.6904296875,
+            "south": 26.79736328125,
+            "east": 75.92333984375,
+            "north": 27.00390625
+          },
+          "json": "crossings/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 2620,
+          "bbox": {
+            "west": 88.230224609375,
+            "south": 22.440185546875,
+            "east": 88.458740234375,
+            "north": 22.655517578125
+          },
+          "json": "crossings/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 1536,
+          "bbox": {
+            "west": 80.82763671875,
+            "south": 26.7314453125,
+            "east": 81.0693359375,
+            "north": 26.98193359375
+          },
+          "json": "crossings/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 3546,
+          "bbox": {
+            "west": 72.78125,
+            "south": 18.88720703125,
+            "east": 73.003173828125,
+            "north": 19.276123046875
+          },
+          "json": "crossings/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 2680,
+          "bbox": {
+            "west": 73.741455078125,
+            "south": 18.42138671875,
+            "east": 73.991943359375,
+            "north": 18.647705078125
+          },
+          "json": "crossings/pune.json",
+          "parquet": null
+        }
+      ]
     }
   ]
 }

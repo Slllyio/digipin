@@ -366,6 +366,20 @@ At ~500 m resolution station areas read as lit almost everywhere (Delhi 2.8%
 pass a dark or deserted stretch; Indore 11.7%, Guna 32%), so this is a screen
 for street audits, not a substitute.
 
+### 18. Pedestrian crossing gaps (`pipeline/traffic/crossings.py`, lens `crossing`)
+
+Main roads (Overture trunk, primary, secondary, and tertiary roads at 600+ PCU
+peak; motorways excluded) are chained through every connector that no other
+road, lane or path meets; a junction or mapped crosswalk ends the chain, and
+its length is the gap a pedestrian walks along before crossing. Gaps over
+500 m (IRC 103 asks for 80–250 m in busy areas) are flagged. Cell dataset
+`crossings` (L7): max_gap_m, gap_km, main_km, crosswalks. The lens counts
+residents within 250 m of a main road facing a 500 m+ gap and ranks new
+crossing sites by residents nearby × gap × peak traffic. Junctions count as
+crossings even without a signal, so gaps are a lower bound. Share of
+main-road residents facing a 500 m+ gap: Lucknow 36%, Delhi 29%, Jaipur 28%,
+Kolkata 16%.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

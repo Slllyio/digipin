@@ -372,3 +372,20 @@ def test_cycling_islands_split_at_main_road_junctions():
     assert cy.pieces([("b", 1.0), ("a", 0.0), ("m", 0.4)]) == [(0.0, 0.4, "a", "m"), (0.4, 1.0, "m", "b")]
     pts = cy.walk_line([(77.0, 28.0), (77.001, 28.0)], step_m=25)
     assert len(pts) == 4 and abs(sum(p[3] for p in pts) - 98) < 2 and 0 < pts[0][2] < pts[-1][2] < 1
+
+
+def test_crossing_gap_runs_chain_through_plain_connectors():
+    from pipeline.traffic import crossings as cx
+    # A main road A–B–C–D in three segments; a side street meets it at C; a crosswalk sits on segment 3 at X.
+    segs = [
+        (True, False, [("A", 0.0), ("B", 1.0)]),
+        (True, False, [("B", 0.0), ("C", 1.0)]),
+        (True, False, [("C", 0.0), ("X", 0.5), ("D", 1.0)]),
+        (False, False, [("C", 0.0), ("S", 1.0)]),
+        (False, True, [("X", 0.0), ("Y", 1.0)]),
+    ]
+    runs = cx.gap_runs(segs, [300, 400, 200, 50, 10])
+    assert runs[(0, 0)] == runs[(1, 0)] == 700          # B is a plain continuation
+    assert runs[(2, 0)] == 100 and runs[(2, 1)] == 100    # C is a junction, X a crosswalk
+    assert (3, 0) not in runs
+    assert cx.degrees(segs)["C"] == 3 and cx.degrees(segs)["X"] == 3

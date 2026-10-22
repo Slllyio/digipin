@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 26.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
      "value": 2.2,
@@ -183,6 +189,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 20.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 18.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -342,6 +354,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 21.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
      "value": 4.8,
@@ -489,6 +507,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 20.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -648,6 +672,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 29.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
      "value": 2.8,
@@ -804,6 +834,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 11.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
      "value": 32,
@@ -951,6 +987,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 25.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 16.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1110,6 +1152,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 23.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
      "value": 11.7,
@@ -1266,6 +1314,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 28,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
      "value": 2.4,
@@ -1416,6 +1470,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 16.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
      "value": 2.8,
@@ -1563,6 +1623,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 36.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1722,6 +1788,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 26.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
      "value": 2.5,
@@ -1875,6 +1947,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "crossing": {
+     "label": "Main-road residents facing a 500+ m crossing gap",
+     "value": 22.1,
      "unit": "%",
      "higherIs": "worse"
     },
