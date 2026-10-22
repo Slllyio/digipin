@@ -184,11 +184,15 @@ This is a residual valuation for every block. It asks what a developer can pay f
 
 pipeline/realestate/encroachment.py measures, per L7 block:
 
-- **Lost surface water** (JRC GSW transitions 3/6, 1984–2021), and how much of it is built up now (Dynamic World mean built probability ≥ 0.6, 2025–26).
+- **Lost surface water** (JRC GSW transitions 3/6, 1984–2021), and how much of it is built up now (Dynamic World built class most likely, 2025–26).
 - **New building footprint in the GloFAS 1-in-100-year floodplain.** Open Buildings Temporal presence must be ≥ 0.5 in 2023 and < 0.2 in 2016.
 - **Hansen tree-cover loss** (≥ 30% canopy in 2000, lost 2001–2024), and how much of it is built up.
 - **Building since 2023** on any of the above. The built probability must be ≥ 0.6 now and ≤ 0.3 in 2023.
 
-The probability thresholds replaced a "most-likely label" test. That test flagged whole built-up blocks as "100% built since 2023", because Dynamic World labels flicker.
+For "built since 2023", the probability thresholds replaced a "most-likely label in both years" test. That test flagged whole built-up blocks as "100% built since 2023", because Dynamic World labels flicker. Delhi dropped from 2,903 ha to 43 ha.
+
+Results:
+- Former water now built up: Chennai 286 ha, Delhi 109 ha, Mumbai 44 ha, Bengaluru 37 ha.
+- New floodplain footprint 2016→2023: Delhi 1,496 ha. GloFAS ignores the Yamuna embankments, so read this as building on the natural floodplain.
 
 To bake every city, run `python -m pipeline.realestate.encroachment --region all`. Delhi takes about 40 minutes because of the 4 m Open Buildings pass.

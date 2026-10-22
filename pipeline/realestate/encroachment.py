@@ -4,8 +4,8 @@ Per L7 cell (dataset ``encroachment``), each a share of the block's land:
 
     water_lost_pct     surface water lost 1984–2021 (JRC Global Surface Water
                        transition: permanent or seasonal water that is gone)
-    water_built_pct    … of that, built up now (Dynamic World 2025–26 mean
-                       built probability ≥ 0.6)
+    water_built_pct    … of that, built up now (Dynamic World 2025–26 built
+                       class most likely)
     flood_new_pct      1-in-100-year floodplain (JRC/GloFAS) where buildings
                        appeared 2016→2023 (Open Buildings 2.5D Temporal
                        presence ≥ 0.5 in 2023, < 0.2 in 2016)
@@ -37,45 +37,53 @@ DW_NOW, DW_THEN = ("2025-10-01", "2026-10-01"), ("2023-01-01", "2023-12-31")
 BUILT_NOW, BUILT_THEN = 0.6, 0.3
 
 
-def _built_prob(ee, geom, dates):
-    """Dynamic World: mean built-area probability over the period."""
-    return ee.ImageCollection("GOOGLE/DYNAMICWORLD/V1").filterBounds(geom).filterDate(*dates).select("built").mean()
+def _dw(ee, geom, dates):
+    return ee.ImageCollection("GOOGLE/DYNAMICWORLD/V1").filterBounds(geom).filterDate(*dates)
 
 
-def compute(region, log=print):
+def _floodplain(ee, geom):
+    fl = ee.ImageCollection("JRC/CEMS_GLOFAS/FloodHazard/v2_1").filterBounds(geom).mosaic()
+    dry = fl.select("permanent_water_class").unmask(0).neq(1)
+    return fl.select("RP100_depth").unmask(0).multiply(dry).gt(0)
+
+
+def water_trees(region, log=print):
+    """Lost water and tree cover, how much is built now, and building since 2023 (30 m)."""
     ee = gee.init()
     geom, bbox = el._bbox(region)
     tr = ee.Image("JRC/GSW1_4/GlobalSurfaceWater").select("transition").unmask(0)
     lost = tr.eq(LOST[0]).Or(tr.eq(LOST[1]))
     gfc = ee.Image(GFC)
     tree_lost = gfc.select("treecover2000").gte(30).And(gfc.select("loss").eq(1))
-    p_now, p_then = _built_prob(ee, geom, DW_NOW), _built_prob(ee, geom, DW_THEN)
-    now = p_now.gte(BUILT_NOW)
-    # Recent: confidently built now and confidently not built in 2023 (label flips in built-up areas are noise).
-    recent = now.And(p_then.lte(BUILT_THEN))
-    fl = ee.ImageCollection("JRC/CEMS_GLOFAS/FloodHazard/v2_1").filterBounds(geom).mosaic()
-    dry = fl.select("permanent_water_class").unmask(0).neq(1)
-    plain = fl.select("RP100_depth").unmask(0).multiply(dry).gt(0)
-    any_ = lost.Or(tree_lost).Or(plain)
+    # Built now: the most likely class over the year. Built since 2023 also needs confident probabilities both
+    # years, since labels flicker in dense built-up blocks.
+    now = _dw(ee, geom, DW_NOW).select("label").mode().eq(6)
+    recent = _dw(ee, geom, DW_NOW).select("built").mean().gte(BUILT_NOW).And(
+        _dw(ee, geom, DW_THEN).select("built").mean().lte(BUILT_THEN))
+    any_ = lost.Or(tree_lost).Or(_floodplain(ee, geom))
     log(f"{region}: water, trees, Dynamic World")
-    a = gee.fetch(gee.to_cells(ee.Image.cat([
+    return gee.fetch(gee.to_cells(ee.Image.cat([
         lost.rename("wl"), lost.And(now).rename("wb"),
         tree_lost.rename("tl"), tree_lost.And(now).rename("tb"),
         any_.And(recent).rename("rb")]).unmask(0), 30), bbox, LEVEL, tile=96)
-    log(f"{region}: floodplain buildings")
+
+
+def floodplain_new(region, log=print):
+    """Share of the block that is new building (Open Buildings 2016→2023) in the 100-year floodplain (4 m)."""
+    ee = gee.init()
+    geom, bbox = el._bbox(region)
     col = ee.ImageCollection("GOOGLE/Research/open-buildings-temporal/v1").filterBounds(geom)
 
-    def _p(y):
+    def presence(y):
         c = col.filter(ee.Filter.calendarRange(y, y, "year"))
         return c.mosaic().setDefaultProjection(c.first().projection().atScale(4)).select("building_presence")
 
-    def pres(y):
-        return _p(y).gte(0.5)
+    new = presence(2023).gte(0.5).And(presence(2016).unmask(0).lt(0.2)).unmask(0)
+    log(f"{region}: floodplain buildings")
+    return gee.fetch(gee.to_cells(new.And(_floodplain(ee, geom)).rename("fn"), 4), bbox, LEVEL, tile=48)
 
-    def pres16_low(y):
-        return _p(y).unmask(0).lt(0.2)
-    new = pres(2023).And(pres16_low(2016)).unmask(0)
-    b = gee.fetch(gee.to_cells(new.And(plain).rename("fn"), 4), bbox, LEVEL, tile=48)
+
+def rows_from(a, b):
     rows = {}
     for code, x in gee.merge(a, b).items():
         if x.get("wl") is None:
@@ -86,6 +94,11 @@ def compute(region, log=print):
         r = {k: el._r(v, 2) for k, v in r.items()}
         if any(v >= 0.5 for v in r.values()):
             rows[code] = r
+    return rows
+
+
+def compute(region, log=print):
+    rows = rows_from(water_trees(region, log), floodplain_new(region, log))
     log(f"{region}: {len(rows)} cells with any loss")
     return rows
 
