@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T06:19:41Z",
+  "generated": "2026-10-22T06:42:08Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -4601,7 +4601,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 5395,
+          "cells": 5394,
           "bbox": {
             "west": 77.450439453125,
             "south": 12.829345703125,
@@ -9711,7 +9711,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 10808,
+          "cells": 10807,
           "bbox": {
             "west": 77.450439453125,
             "south": 12.829345703125,

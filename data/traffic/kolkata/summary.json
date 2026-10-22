@@ -446,27 +446,5 @@
       "beta_per_min": 0.1,
       "mid_beta_per_min": 0.15
     }
-  },
-  "noise_air": {
-    "residents_total": 13548737,
-    "residents_near_modelled_roads": 10491855,
-    "residents_lden_ge_53": 10189692,
-    "residents_lden_ge_65": 5938536,
-    "nox_t_day": 18.64,
-    "co2_t_day": 4557.1,
-    "nox_vs_s5p_no2_spearman_l5": 0.77,
-    "l5_cells_compared": 42,
-    "assumptions": {
-      "veh_per_pcu": 1.4,
-      "heavy_pct": 5.0,
-      "share_18h": 0.968,
-      "ef_g_per_vkm": {
-        "nox": 0.45,
-        "pm25": 0.025,
-        "co2": 110.0
-      },
-      "reach_m": 300.0,
-      "method": "CRTN 1988 + Abbott & Nelson 2002 Lden"
-    }
   }
 }
