@@ -22,7 +22,7 @@ test.describe('agents', () => {
     await page.click('#btn-agents');
     const dlg = page.locator('#agents-dialog');
     await expect(dlg).toBeVisible();
-    await expect(dlg.locator('.ag-card')).toHaveCount(14);
+    await expect(dlg.locator('.ag-card')).toHaveCount(15);
 
     // Setup shows the plan before anything runs.
     await dlg.locator('.ag-card[data-agent="site"]').click();
