@@ -92,6 +92,7 @@ jobs:
                 python -m pipeline.traffic.job_access --region "$DIGIPIN_REGION" || echo "job access bake skipped"
                 python -m pipeline.traffic.bus_stop_heat --region "$DIGIPIN_REGION" --refresh || python -m pipeline.traffic.bus_stop_heat --region "$DIGIPIN_REGION" || echo "bus stop heat bake skipped"
                 python -m pipeline.traffic.parking --region "$DIGIPIN_REGION" || echo "parking bake skipped"
+                python -m pipeline.traffic.commute_carbon --region "$DIGIPIN_REGION" || echo "commute carbon bake skipped"
               '; then
               git add data/vectors/ data/traffic/ data/safety/ data/cells/
               git diff --staged --quiet || git commit -qm "chore(cells): refresh traffic + mobility for $r"

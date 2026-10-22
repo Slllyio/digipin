@@ -1107,5 +1107,36 @@
       "usable_kerb": 0.4,
       "lot_ecs": 40.0
     }
+  },
+  "commute_carbon": {
+    "zones": 71,
+    "pop_mean_trip_km": 3.13,
+    "co2_kg_resident_day": 0.102,
+    "co2_kt_year": 11.1,
+    "inner_fifth_trip_km": 2.48,
+    "outer_fifth_trip_km": 4.26,
+    "assumptions": {
+      "detour": 1.3,
+      "intra_km": 0.6,
+      "kg_co2_per_pkm_mix": 0.036,
+      "modes": {
+        "two_wheeler": {
+          "share": 0.4,
+          "kg_per_pkm": 0.0292
+        },
+        "car": {
+          "share": 0.15,
+          "kg_per_pkm": 0.0875
+        },
+        "auto": {
+          "share": 0.15,
+          "kg_per_pkm": 0.035
+        },
+        "bus": {
+          "share": 0.3,
+          "kg_per_pkm": 0.02
+        }
+      }
+    }
   }
 }

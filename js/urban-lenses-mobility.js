@@ -434,6 +434,42 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    /** Commute length and carbon by home location: the cost of distance between homes and activity. */
+    function commute(fr) {
+        const c = fr.cols, idx = _residents(fr), n = fr.grid.n, pop = c['population.population'];
+        const tk = c['commute_carbon.trip_km'], co = c['commute_carbon.co2_kg_day'];
+        if (!tk) return null;
+        const use = idx.filter(i => _fin(tk[i]));
+        if (!use.length) return null;
+        const kCol = new Float64Array(n).fill(NaN), yCol = new Float64Array(n).fill(NaN);
+        for (const i of use) { kCol[i] = tk[i]; if (co && _fin(co[i])) yCol[i] = co[i] * 365; }
+        const mk = wmean(kCol, pop, use), my = co ? wmean(yCol, pop, use.filter(i => _fin(yCol[i]))) : null;
+        const q20 = wquantile(kCol, pop, use, 0.2), q80 = wquantile(kCol, pop, use, 0.8);
+        const stats = [
+            { label: 'Average motorised trip from home', value: `${_round(mk, 1)} km`, raw: _round(mk, 1) },
+        ];
+        if (my != null) stats.push({ label: 'Transport CO2 per resident', value: `${_round(my)} kg a year` });
+        if (q20 != null && q80 != null) {
+            const inner = use.filter(i => kCol[i] <= q20), outer = use.filter(i => kCol[i] >= q80);
+            const ki = wmean(kCol, pop, inner), ko = wmean(kCol, pop, outer);
+            if (ki != null && ko != null) stats.push({ label: 'Best-placed fifth vs worst-placed fifth', value: `${_round(ki, 1)} km vs ${_round(ko, 1)} km a trip (${_round(ko / ki, 1)}×)` });
+        }
+        const rwi = c['wealth.rwi'];
+        if (rwi) {
+            const r20 = wquantile(rwi, pop, use, 0.2), r80 = wquantile(rwi, pop, use, 0.8);
+            if (r20 != null && r80 != null) {
+                const kp = wmean(kCol, pop, use.filter(i => rwi[i] <= r20)), kr = wmean(kCol, pop, use.filter(i => rwi[i] >= r80));
+                if (kp != null && kr != null) stats.push({ label: 'Poorest vs richest fifth, average trip', value: `${_round(kp, 1)} km vs ${_round(kr, 1)} km` });
+            }
+        }
+        return {
+            columns: { trip_km: kCol, co2_kg_year: yCol }, idx: use, weightKey: 'trip_km',
+            metric: { label: 'Average motorised trip from home', value: _round(mk, 1), unit: 'km', higherIs: 'worse' },
+            headline: `The average resident's motorised trip is ${_round(mk, 1)} km` + (my != null ? `, about ${_round(my)} kg of CO2 a year from the tailpipe` : '') + '; homes far from jobs and shops travel the furthest.',
+            stats,
+        };
+    }
+
     /** What if a metro station opened at (lat, lng)? Residents newly within the catchment. */
     function stationWhatIf(fr, lat, lng) {
         const g = fr.grid, c = fr.cols, mw = c['rail_access.metro_walk_min'], pop = c['population.population'];
@@ -1108,7 +1144,7 @@ const UrbanLensesMobility = (() => {
     const PILLARS = [
         { id: 'access', label: 'Access', metrics: ['metro', 'jobaccess', 'feeder', 'transit', 'busgap', 'ambulance'] },
         { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon', 'parking'] },
-        { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise', 'nightwalk', 'freight', 'cleanwalk'] },
+        { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'commute', 'noise', 'nightwalk', 'freight', 'cleanwalk'] },
         { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'busheat', 'walk', 'cycling', 'crossing'] },
     ];
 
@@ -1287,6 +1323,13 @@ const UrbanLensesMobility = (() => {
             needs: ['rail_access.metro_walk_min', 'rail_access.rail_walk_min', 'bus_stop_heat.stops', 'osm_transit.stops', 'bus_service.stops', 'wealth.rwi'],
             method: `The feeder range is homes ${STATION_WALK}–${FEEDER_MAX} minutes on foot from the nearest metro station (any rail station where the city has no metro): too far to walk comfortably, close enough for a feeder bus, shared auto or bicycle. A home counts as served when a mapped bus stop (OpenStreetMap, open GTFS or Overture) is within about ${STOP_KM * 1000} m. Feeder stops are picked greedily, 1.5 km apart, by unserved residents within 800 m. Stop lists outside Bengaluru are partial until OpenStreetMap stops are pulled on the next data refresh, so gaps are upper bounds there; shared autos and e-rickshaws are not mapped.`,
             refs: 'Overture Maps Foundation; OpenStreetMap; BMTC GTFS; MoHUA 2017 Metro Rail Policy (last-mile connectivity within 5 km)' },
+        { id: 'commute', equity: true, title: 'Commute length and carbon', icon: '🌍',
+            question: 'How far do people travel from each neighbourhood, and what does it emit?',
+            field: { key: 'trip_km', label: 'Average motorised trip from home', unit: 'km', higherIs: 'worse', ramp: 'heat' },
+            extra: [{ key: 'co2_kg_year', label: 'Transport CO2 per resident', unit: 'kg/year', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['commute_carbon.trip_km', 'commute_carbon.co2_kg_day', 'wealth.rwi'],
+            method: 'The traffic model\'s morning trips (gravity on arterial travel times, trips within the ~1 km home zone included) give each zone a trip-weighted mean distance (straight line × 1.3). CO2 is 0.9 motorised trips a day × that distance × the model\'s city-wide mode mix (two-wheelers 40%, cars 15%, autos 15%, buses 30%; about 0.036 kg CO2 per person-km, tailpipe). With one mode mix for the whole city, the map shows the cost of distance between homes and activity, not of car ownership; walking and cycling trips are left out.',
+            refs: 'Hansen 1959; Ewing & Cervero 2010 (travel and the built environment); ICCT India emission factors; ARAI 2008' },
         { id: 'ev', equity: false, title: 'EV charging gaps', icon: '🔌',
             question: 'How far are homes and traffic from a known public EV charger?',
             field: { key: 'ev_km', label: 'Distance to the nearest known charger', unit: 'km', higherIs: 'worse', ramp: 'heat' },
@@ -1296,7 +1339,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

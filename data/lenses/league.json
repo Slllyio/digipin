@@ -126,6 +126,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 7.9,
+     "unit": "km",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 35.2,
@@ -322,6 +328,12 @@
      "label": "Feeder-range residents with no bus stop nearby",
      "value": 6.2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 10.9,
+     "unit": "km",
      "higherIs": "worse"
     },
     "ev": {
@@ -522,6 +534,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 7.1,
+     "unit": "km",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 48,
@@ -712,6 +730,12 @@
      "label": "Feeder-range residents with no bus stop nearby",
      "value": 42.5,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 9.2,
+     "unit": "km",
      "higherIs": "worse"
     },
     "ev": {
@@ -912,6 +936,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 12.2,
+     "unit": "km",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 46.5,
@@ -1110,6 +1140,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 3.1,
+     "unit": "km",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 0,
@@ -1300,6 +1336,12 @@
      "label": "Feeder-range residents with no bus stop nearby",
      "value": 62,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 10.8,
+     "unit": "km",
      "higherIs": "worse"
     },
     "ev": {
@@ -1500,6 +1542,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 9,
+     "unit": "km",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 22.8,
@@ -1698,6 +1746,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 8.4,
+     "unit": "km",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 53.3,
@@ -1890,6 +1944,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 8.8,
+     "unit": "km",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 61.6,
@@ -2080,6 +2140,12 @@
      "label": "Feeder-range residents with no bus stop nearby",
      "value": 87.6,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 8.1,
+     "unit": "km",
      "higherIs": "worse"
     },
     "ev": {
@@ -2280,6 +2346,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 10.3,
+     "unit": "km",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 73,
@@ -2476,6 +2548,12 @@
      "label": "Feeder-range residents with no bus stop nearby",
      "value": 54.9,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "commute": {
+     "label": "Average motorised trip from home",
+     "value": 9.5,
+     "unit": "km",
      "higherIs": "worse"
     },
     "ev": {

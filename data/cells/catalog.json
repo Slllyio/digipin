@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T10:05:07Z",
+  "generated": "2026-10-22T10:15:13Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -2725,6 +2725,220 @@
           },
           "json": "co_monthly/pune.json.gz",
           "parquet": "co_monthly/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "commute_carbon",
+      "title": "Commute length and carbon",
+      "description": "Mean motorised trip length from each ~1 km home zone in the demand model's morning matrix (gravity on arterial times, straight line \u00d7 1.3), and tailpipe CO2 per resident at the model's city-wide mode mix (0.036 kg per person-km: two-wheelers, cars, autos, buses). Shows the cost of distance between homes and activity, not of car ownership.",
+      "source": "pipeline/traffic/commute_carbon.py over the demand model",
+      "license": "ODbL (OpenStreetMap) + CC BY 4.0 (GHSL) + CDLA-Permissive-2.0 (Overture)",
+      "group": "Traffic & mobility",
+      "level": 6,
+      "approxCellM": 975,
+      "fields": [
+        {
+          "key": "trip_km",
+          "label": "Mean motorised trip length from homes here",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "co2_kg_day",
+          "label": "Transport CO2 per resident per day",
+          "type": "number",
+          "agg": "mean",
+          "unit": "kg",
+          "domain": [
+            0.078,
+            0.902
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "co2_t_year",
+          "label": "Transport CO2 of all residents",
+          "type": "number",
+          "agg": "sum",
+          "unit": "t/year",
+          "domain": [
+            4.2,
+            24180.1
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "trip_km",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 464,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.6845703125,
+            "north": 23.1279296875
+          },
+          "json": "commute_carbon/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 1210,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.8271484375,
+            "east": 77.7822265625,
+            "north": 13.1435546875
+          },
+          "json": "commute_carbon/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 377,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.3212890625
+          },
+          "json": "commute_carbon/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 577,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.8974609375,
+            "east": 80.322265625,
+            "north": 13.1875
+          },
+          "json": "commute_carbon/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 2690,
+          "bbox": {
+            "west": 76.8330078125,
+            "south": 28.392578125,
+            "east": 77.3515625,
+            "north": 28.884765625
+          },
+          "json": "commute_carbon/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 71,
+          "bbox": {
+            "west": 77.263671875,
+            "south": 24.595703125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "commute_carbon/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1022,
+          "bbox": {
+            "west": 78.2919921875,
+            "south": 17.2919921875,
+            "east": 78.6083984375,
+            "north": 17.5556640625
+          },
+          "json": "commute_carbon/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 1383,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.4951171875,
+            "east": 76.0068359375,
+            "north": 22.908203125
+          },
+          "json": "commute_carbon/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 565,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.927734375,
+            "north": 27.00390625
+          },
+          "json": "commute_carbon/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 478,
+          "bbox": {
+            "west": 88.2763671875,
+            "south": 22.4423828125,
+            "east": 88.4521484375,
+            "north": 22.6533203125
+          },
+          "json": "commute_carbon/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 502,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "commute_carbon/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 553,
+          "bbox": {
+            "west": 72.78125,
+            "south": 18.8916015625,
+            "east": 72.9921875,
+            "north": 19.2783203125
+          },
+          "json": "commute_carbon/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 658,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.42578125,
+            "east": 73.994140625,
+            "north": 18.6455078125
+          },
+          "json": "commute_carbon/pune.json",
+          "parquet": null
         }
       ]
     },

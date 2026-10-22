@@ -508,6 +508,17 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.feeder(L.frameFrom(codes, { 'population.population': pop, 'rail_access.metro_walk_min': mw }), {})).toBeNull();
     });
 
+    it('commute lens: trip length and carbon by home, inner vs outer', () => {
+        const tk = codes.map((_, i) => 4 + (i % SIZE));
+        const co = tk.map(k => 0.9 * k * 0.036);
+        const f = L.frameFrom(codes, { 'population.population': pop, 'commute_carbon.trip_km': tk, 'commute_carbon.co2_kg_day': co });
+        const r = L._lenses.commute(f, {});
+        expect(r.metric.value).toBeGreaterThan(4);
+        expect(r.columns.co2_kg_year[0]).toBeCloseTo(0.9 * 4 * 0.036 * 365, 3);
+        expect(r.stats.find(x => x.label.startsWith('Best-placed fifth')).value).toMatch(/×\)$/);
+        expect(L._lenses.commute(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
         const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
         const league = { generated: '2026-10-22', cities: {

@@ -446,3 +446,15 @@ def test_parking_helpers():
     assert pk.pressure(10, 5) is None            # too little demand to call
     assert pk.pressure(200, 100) == pytest.approx(2)
     assert pk.pressure(200, 0) == pytest.approx(200)
+
+
+def test_commute_carbon_helpers():
+    np = pytest.importorskip("numpy")
+    from pipeline.traffic import commute_carbon as cc
+    od = np.array([[1.0, 3.0], [0.0, 0.0]])
+    km = np.array([[0.6, 10.0], [10.0, 0.6]])
+    m = cc.mean_trip_km(od, km)
+    assert m[0] == pytest.approx((0.6 + 30) / 4)
+    assert np.isnan(m[1])
+    assert cc.EF_MIX == pytest.approx(0.036, abs=0.001)
+    assert cc.co2_per_resident(10) == pytest.approx(0.9 * 10 * cc.EF_MIX)

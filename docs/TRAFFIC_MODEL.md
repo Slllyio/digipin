@@ -470,6 +470,17 @@ feeder-range residents have no stop nearby. Other cities read 30–90% only
 because their open stop lists are partial until the CI bake adds
 OpenStreetMap stops; treat them as upper bounds.
 
+### 26. Commute length and carbon (`pipeline/traffic/commute_carbon.py`, lens `commute`)
+
+The morning gravity matrix on free-flow arterial times, with trips inside
+the ~1 km home zone kept (4 min, 0.6 km), gives each zone a trip-weighted
+mean distance (straight line × 1.3). CO2 per resident per day = 0.9 trips ×
+distance × 0.036 kg per person-km (two-wheeler 40%, car 15%, auto 15%, bus
+30%, tailpipe factors ÷ occupancy). Dataset `commute_carbon` (L6): trip_km,
+co2_kg_day, co2_t_year. Population-weighted mean trip: Delhi 12.2 km
+(15.1 km for the worst-placed fifth), Bengaluru 10.9, Mumbai 10.3, Bhopal 7.1.
+One mode mix per city, so the map shows the cost of distance only.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |
