@@ -688,6 +688,14 @@
       "mid_beta_per_min": 0.15
     }
   },
+  "road_flood": {
+    "very_high": 8.4,
+    "high": 619.0,
+    "river_flood": 938.1,
+    "total": 2099.3,
+    "pct_very_high": 0.4,
+    "pct_high_or_worse": 29.9
+  },
   "noise_air": {
     "residents_total": 7954301,
     "residents_near_modelled_roads": 7450667,
@@ -736,14 +744,6 @@
     "pct_vkm_within_2km": 17.3,
     "pct_pop_within_2km": 16.0
   },
-  "road_flood": {
-    "very_high": 8.4,
-    "high": 619.0,
-    "river_flood": 938.1,
-    "total": 2099.3,
-    "pct_very_high": 0.4,
-    "pct_high_or_worse": 29.9
-  },
   "cycling": {
     "lowstress_km": 5450,
     "cycleway_km": 24.7,
@@ -754,5 +754,293 @@
     "pct_residents_small_island": 41.6,
     "pct_residents_no_lowstress_street": 0.8,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "crossings": {
+    "main_km": 1197,
+    "pct_main_km_on_long_gaps": 15.1,
+    "median_gap_m": 311,
+    "crosswalks_mapped": 26,
+    "gap_threshold_m": 500.0,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 2593,
+      "logistics": 235,
+      "wholesale": 138
+    },
+    "truck_trips_day": 14020,
+    "gateway_nodes": 392,
+    "road_km_500_trucks_day": 11.8,
+    "busiest_truck_roads": [
+      {
+        "name": "Drive-in Road",
+        "trucks_day": 12994
+      },
+      {
+        "name": "NH8",
+        "trucks_day": 11202
+      },
+      {
+        "name": "Khokhra Road",
+        "trucks_day": 8402
+      },
+      {
+        "name": "100 Ft. Road",
+        "trucks_day": 6526
+      },
+      {
+        "name": "Khokhra Junction",
+        "trucks_day": 5290
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
+  },
+  "job_access": {
+    "zones": 497,
+    "pop_mean_jobs_car_pct": 96.3,
+    "pop_mean_jobs_transit_pct": 11.5,
+    "stations": 36,
+    "threshold_min": 45.0,
+    "assumptions": {
+      "wait_min": 5.0,
+      "ride_kmh": 33.0,
+      "walk_max_min": 20.0,
+      "all_stations_connected": true
+    }
+  },
+  "bus_stop_heat": {
+    "stops": 178,
+    "stops_with_heat_data": 178,
+    "pct_hot_bare": 79.8,
+    "pct_riders_at_hot_bare": 81.9,
+    "median_stop_lst_c": 44.1,
+    "top_stops": [
+      {
+        "digipin": "3KLK9T5",
+        "name": "Rambaug Post office",
+        "lon": 72.60136,
+        "lat": 22.99891,
+        "residents_5min": 45104,
+        "lst_c": 43.8,
+        "canopy_pct": 5.1,
+        "priority": 376673
+      },
+      {
+        "digipin": "3KLK9T4",
+        "name": "Rambaug",
+        "lon": 72.60067,
+        "lat": 22.99992,
+        "residents_5min": 40722,
+        "lst_c": 44.2,
+        "canopy_pct": 1.3,
+        "priority": 369772
+      },
+      {
+        "digipin": "3KLK25P",
+        "name": "Popular Wheelers",
+        "lon": 72.59441,
+        "lat": 22.97014,
+        "residents_5min": 24268,
+        "lst_c": 50.2,
+        "canopy_pct": 0.3,
+        "priority": 367767
+      },
+      {
+        "digipin": "3KLJMT4",
+        "name": "Navrangpura AMTS Bus Stand",
+        "lon": 72.56424,
+        "lat": 23.03553,
+        "residents_5min": 50775,
+        "lst_c": 42.9,
+        "canopy_pct": 10.2,
+        "priority": 360208
+      },
+      {
+        "digipin": "3KLKCM3",
+        "name": "Vasna Bus Station",
+        "lon": 72.54805,
+        "lat": 23.00177,
+        "residents_5min": 37852,
+        "lst_c": 44.6,
+        "canopy_pct": 5.9,
+        "priority": 341940
+      },
+      {
+        "digipin": "3KLK256",
+        "name": "",
+        "lon": 72.5953,
+        "lat": 22.97396,
+        "residents_5min": 23375,
+        "lst_c": 49.4,
+        "canopy_pct": 0.8,
+        "priority": 333907
+      },
+      {
+        "digipin": "3KLK8LL",
+        "name": "Maninagar",
+        "lon": 72.60643,
+        "lat": 22.99724,
+        "residents_5min": 42051,
+        "lst_c": 43.4,
+        "canopy_pct": 6.2,
+        "priority": 331328
+      },
+      {
+        "digipin": "3KLK288",
+        "name": "Jawahar Chowk",
+        "lon": 72.6051,
+        "lat": 22.99514,
+        "residents_5min": 40511,
+        "lst_c": 43.5,
+        "canopy_pct": 3.8,
+        "priority": 331258
+      },
+      {
+        "digipin": "3KLK9M7",
+        "name": "Amarkunj /Swaminarayan College",
+        "lon": 72.58701,
+        "lat": 23.00139,
+        "residents_5min": 29534,
+        "lst_c": 46.2,
+        "canopy_pct": 3.2,
+        "priority": 320196
+      },
+      {
+        "digipin": "3KLKCFP",
+        "name": "Nehru Nagar",
+        "lon": 72.54169,
+        "lat": 23.02253,
+        "residents_5min": 45811,
+        "lst_c": 42.5,
+        "canopy_pct": 7.3,
+        "priority": 318501
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "osm": 109,
+      "overture": 69
+    }
+  },
+  "parking": {
+    "cells": 5036,
+    "demand_ecs": 367937,
+    "lots_mapped": 35,
+    "pct_demand_in_overflow": 30.7,
+    "overflow_ecs": 63305,
+    "hotspots": [
+      {
+        "digipin": "3KLK2FT",
+        "demand_ecs": 548,
+        "supply_ecs": 77,
+        "pressure": 7.14
+      },
+      {
+        "digipin": "3KLK2F6",
+        "demand_ecs": 562,
+        "supply_ecs": 91,
+        "pressure": 6.17
+      },
+      {
+        "digipin": "3KLK2CK",
+        "demand_ecs": 496,
+        "supply_ecs": 45,
+        "pressure": 10.97
+      },
+      {
+        "digipin": "3KLK2FP",
+        "demand_ecs": 540,
+        "supply_ecs": 107,
+        "pressure": 5.05
+      },
+      {
+        "digipin": "3KLK2F2",
+        "demand_ecs": 555,
+        "supply_ecs": 130,
+        "pressure": 4.27
+      },
+      {
+        "digipin": "3KLK2J9",
+        "demand_ecs": 498,
+        "supply_ecs": 94,
+        "pressure": 5.32
+      },
+      {
+        "digipin": "3KL34F3",
+        "demand_ecs": 462,
+        "supply_ecs": 69,
+        "pressure": 6.66
+      },
+      {
+        "digipin": "3KLK2F9",
+        "demand_ecs": 489,
+        "supply_ecs": 97,
+        "pressure": 5.02
+      },
+      {
+        "digipin": "3KLK494",
+        "demand_ecs": 393,
+        "supply_ecs": 17,
+        "pressure": 22.59
+      },
+      {
+        "digipin": "3KLK76M",
+        "demand_ecs": 431,
+        "supply_ecs": 63,
+        "pressure": 6.87
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
+  },
+  "commute_carbon": {
+    "zones": 464,
+    "pop_mean_trip_km": 7.95,
+    "co2_kg_resident_day": 0.258,
+    "co2_kt_year": 748.5,
+    "inner_fifth_trip_km": 7.08,
+    "outer_fifth_trip_km": 9.49,
+    "assumptions": {
+      "detour": 1.3,
+      "intra_km": 0.6,
+      "kg_co2_per_pkm_mix": 0.036,
+      "modes": {
+        "two_wheeler": {
+          "share": 0.4,
+          "kg_per_pkm": 0.0292
+        },
+        "car": {
+          "share": 0.15,
+          "kg_per_pkm": 0.0875
+        },
+        "auto": {
+          "share": 0.15,
+          "kg_per_pkm": 0.035
+        },
+        "bus": {
+          "share": 0.3,
+          "kg_per_pkm": 0.02
+        }
+      }
+    }
   }
 }

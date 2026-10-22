@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T11:34:14Z",
+  "generated": "2026-10-22T12:53:40Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -7711,7 +7711,7 @@
         },
         {
           "name": "mumbai",
-          "cells": 3289,
+          "cells": 3286,
           "bbox": {
             "west": 72.78125,
             "south": 18.889404296875,
@@ -13834,7 +13834,7 @@
         },
         {
           "name": "mumbai",
-          "cells": 4983,
+          "cells": 4980,
           "bbox": {
             "west": 72.779052734375,
             "south": 18.889404296875,

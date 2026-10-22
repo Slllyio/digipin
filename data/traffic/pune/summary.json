@@ -767,5 +767,293 @@
     "pct_residents_small_island": 37.4,
     "pct_residents_no_lowstress_street": 0.2,
     "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "crossings": {
+    "main_km": 1109,
+    "pct_main_km_on_long_gaps": 15.8,
+    "median_gap_m": 304,
+    "crosswalks_mapped": 127,
+    "gap_threshold_m": 500.0,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "logistics": 214,
+      "industry": 1112,
+      "wholesale": 124
+    },
+    "truck_trips_day": 7760,
+    "gateway_nodes": 1398,
+    "road_km_500_trucks_day": 0.0,
+    "busiest_truck_roads": [
+      {
+        "name": "Gopal Hari Deshmukh Marg",
+        "trucks_day": 1192
+      },
+      {
+        "name": "Jangli Maharaj Path",
+        "trucks_day": 830
+      },
+      {
+        "name": "Nigdi Bhosari Road",
+        "trucks_day": 830
+      },
+      {
+        "name": "National Games Marg",
+        "trucks_day": 500
+      },
+      {
+        "name": "Sinhagad Road",
+        "trucks_day": 474
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
+  },
+  "job_access": {
+    "zones": 697,
+    "pop_mean_jobs_car_pct": 96.3,
+    "pop_mean_jobs_transit_pct": 15.3,
+    "stations": 88,
+    "threshold_min": 45.0,
+    "assumptions": {
+      "wait_min": 5.0,
+      "ride_kmh": 33.0,
+      "walk_max_min": 20.0,
+      "all_stations_connected": true
+    }
+  },
+  "bus_stop_heat": {
+    "stops": 552,
+    "stops_with_heat_data": 552,
+    "pct_hot_bare": 52.0,
+    "pct_riders_at_hot_bare": 40.0,
+    "median_stop_lst_c": 42.3,
+    "top_stops": [
+      {
+        "digipin": "4FP4774",
+        "name": "Indira Vasahat",
+        "lon": 73.90063,
+        "lat": 18.48157,
+        "residents_5min": 42851,
+        "lst_c": 42.1,
+        "canopy_pct": 10.8,
+        "priority": 271384
+      },
+      {
+        "digipin": "4FP2L49",
+        "name": "Dutt Mandir Bus Stop",
+        "lon": 73.92133,
+        "lat": 18.54675,
+        "residents_5min": 38606,
+        "lst_c": 42.2,
+        "canopy_pct": 7.1,
+        "priority": 258228
+      },
+      {
+        "digipin": "4FP497P",
+        "name": "Nana Peth",
+        "lon": 73.86876,
+        "lat": 18.51485,
+        "residents_5min": 31875,
+        "lst_c": 43.4,
+        "canopy_pct": 6.1,
+        "priority": 251417
+      },
+      {
+        "digipin": "4FP4969",
+        "name": "A.D. Camp Chowk",
+        "lon": 73.86886,
+        "lat": 18.51255,
+        "residents_5min": 28175,
+        "lst_c": 44.4,
+        "canopy_pct": 5.7,
+        "priority": 249749
+      },
+      {
+        "digipin": "4FP2L3M",
+        "name": "Matchwell Company Bus Stop",
+        "lon": 73.91855,
+        "lat": 18.54954,
+        "residents_5min": 35027,
+        "lst_c": 42.7,
+        "canopy_pct": 9.6,
+        "priority": 243816
+      },
+      {
+        "digipin": "4FP4773",
+        "name": "Borde Nagar",
+        "lon": 73.9004,
+        "lat": 18.4849,
+        "residents_5min": 35609,
+        "lst_c": 42.3,
+        "canopy_pct": 8.4,
+        "priority": 238110
+      },
+      {
+        "digipin": "4FP492L",
+        "name": "Appa Balwant Chowk (Hujurpaga)",
+        "lon": 73.85375,
+        "lat": 18.51489,
+        "residents_5min": 27275,
+        "lst_c": 44.0,
+        "canopy_pct": 4.1,
+        "priority": 235411
+      },
+      {
+        "digipin": "4FP492L",
+        "name": "Ganpati Chowk",
+        "lon": 73.85492,
+        "lat": 18.51488,
+        "residents_5min": 27275,
+        "lst_c": 44.0,
+        "canopy_pct": 4.1,
+        "priority": 235411
+      },
+      {
+        "digipin": "4FP47LP",
+        "name": "Bus Stop",
+        "lon": 73.87606,
+        "lat": 18.46157,
+        "residents_5min": 22421,
+        "lst_c": 45.5,
+        "canopy_pct": 0.6,
+        "priority": 234008
+      },
+      {
+        "digipin": "4FP2L75",
+        "name": "",
+        "lon": 73.93887,
+        "lat": 18.55139,
+        "residents_5min": 26437,
+        "lst_c": 43.8,
+        "canopy_pct": 4.1,
+        "priority": 223107
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "osm": 491,
+      "overture": 61
+    }
+  },
+  "parking": {
+    "cells": 5484,
+    "demand_ecs": 277583,
+    "lots_mapped": 17,
+    "pct_demand_in_overflow": 6.3,
+    "overflow_ecs": 6361,
+    "hotspots": [
+      {
+        "digipin": "4FP3J83",
+        "demand_ecs": 192,
+        "supply_ecs": 10,
+        "pressure": 19.87
+      },
+      {
+        "digipin": "4FP3CT6",
+        "demand_ecs": 261,
+        "supply_ecs": 102,
+        "pressure": 2.54
+      },
+      {
+        "digipin": "4FP39LK",
+        "demand_ecs": 219,
+        "supply_ecs": 62,
+        "pressure": 3.54
+      },
+      {
+        "digipin": "4FP5FM5",
+        "demand_ecs": 216,
+        "supply_ecs": 66,
+        "pressure": 3.26
+      },
+      {
+        "digipin": "4FP3387",
+        "demand_ecs": 220,
+        "supply_ecs": 94,
+        "pressure": 2.34
+      },
+      {
+        "digipin": "4FP3CTL",
+        "demand_ecs": 171,
+        "supply_ecs": 48,
+        "pressure": 3.55
+      },
+      {
+        "digipin": "4FP3CTT",
+        "demand_ecs": 185,
+        "supply_ecs": 62,
+        "pressure": 2.97
+      },
+      {
+        "digipin": "4FP32FJ",
+        "demand_ecs": 232,
+        "supply_ecs": 117,
+        "pressure": 1.99
+      },
+      {
+        "digipin": "4FP5JC7",
+        "demand_ecs": 183,
+        "supply_ecs": 69,
+        "pressure": 2.67
+      },
+      {
+        "digipin": "4FP3CT5",
+        "demand_ecs": 186,
+        "supply_ecs": 75,
+        "pressure": 2.48
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
+  },
+  "commute_carbon": {
+    "zones": 658,
+    "pop_mean_trip_km": 9.5,
+    "co2_kg_resident_day": 0.308,
+    "co2_kt_year": 724.7,
+    "inner_fifth_trip_km": 8.55,
+    "outer_fifth_trip_km": 11.06,
+    "assumptions": {
+      "detour": 1.3,
+      "intra_km": 0.6,
+      "kg_co2_per_pkm_mix": 0.036,
+      "modes": {
+        "two_wheeler": {
+          "share": 0.4,
+          "kg_per_pkm": 0.0292
+        },
+        "car": {
+          "share": 0.15,
+          "kg_per_pkm": 0.0875
+        },
+        "auto": {
+          "share": 0.15,
+          "kg_per_pkm": 0.035
+        },
+        "bus": {
+          "share": 0.3,
+          "kg_per_pkm": 0.02
+        }
+      }
+    }
   }
 }
