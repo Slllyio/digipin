@@ -680,18 +680,86 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
         });
         S.result = null; _drawEdits(); _render();
     }
-    /** Feature indexes whose road name matches ``q`` (case-insensitive). */
+    /** Road-name key for matching ("M.G. Road", "MG Rd" and "mg road" agree). Pure. */
+    function normRoad(name) {
+        return String(name || '').toLowerCase()
+            .replace(/\brd\b\.?/g, 'road')
+            .replace(/[^a-z0-9]/g, '');
+    }
+    /** Feature indexes whose name matches ``q`` (exact key first, else containment). Pure over features. */
+    function matchRoads(features, q) {
+        const k = normRoad(q);
+        if (k.length < 3) return [];
+        const exact = [], part = [];
+        (features || []).forEach((f, i) => {
+            const n = f && f.properties && f.properties.name;
+            if (!n) return;
+            const kn = normRoad(n);
+            if (kn === k) exact.push(i);
+            else if (kn.includes(k) || (kn.length >= 5 && k.includes(kn))) part.push(i);
+        });
+        return exact.length ? exact : part;
+    }
+    /** Feature indexes whose road name matches ``q``. */
     async function findRoads(q) {
         await _ensureData();
-        const re = new RegExp(String(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-        const out = [];
-        (S.roads || []).forEach((f, i) => { if (f.properties && f.properties.name && re.test(f.properties.name)) out.push(i); });
-        return out;
+        return matchRoads(S.roads, q);
+    }
+
+    /** Busier / quieter road names from a result, one line per name. Pure given a namer. */
+    function topRoads(res, namer, n = 5) {
+        const pick = (arr) => {
+            const seen = new Set(), out = [];
+            for (const r of arr) {
+                const nm = namer(r.f);
+                if (seen.has(nm)) continue;
+                seen.add(nm);
+                out.push({ name: nm, base: r.base, scen: r.scen });
+                if (out.length === n) break;
+            }
+            return out;
+        };
+        const ok = res.roads.filter(r => r.delta != null && r.f >= 0);
+        return {
+            worse: pick(ok.filter(r => r.delta >= 0.1).sort((a, b) => b.delta - a.delta)),
+            better: pick(ok.filter(r => r.delta <= -0.1).sort((a, b) => a.delta - b.delta)),
+        };
+    }
+
+    /**
+     * Chat entry point: close or widen a named road for a peak and run it.
+     * Returns { ok, road, matched, headline, worse, better, result } or { ok:false, error }.
+     */
+    async function ask({ action = 'close', road, period = 'am' } = {}) {
+        await open();
+        await _ensureData();
+        const fs = matchRoads(S.roads, road);
+        if (!fs.length) return { ok: false, error: `No modelled arterial named “${road}” in this city.` };
+        _reset(false);
+        S.period = period === 'pm' ? 'pm' : 'am';
+        if (action === 'widen') S.widened = fs; else S.closed = fs;
+        _drawEdits(); _render();
+        const res = await runScenario();
+        if (!res) return { ok: false, error: S.error || 'The what-if did not run.' };
+        const named = S.roads[fs[0]].properties.name;
+        const t = topRoads(res, _roadName);
+        return { ok: true, road: named, matched: fs.length, action, period: S.period, headline: headline(res, S.period), ...t, result: res };
+    }
+    /** Plain text of an ask() answer, for DISHA. Pure. */
+    function askText(a) {
+        if (!a || !a.ok) return (a && a.error) || 'The road what-if did not run.';
+        const line = (r) => `${r.name} (V/C ${r.base.toFixed(2)} → ${r.scen.toFixed(2)})`;
+        return `${a.action === 'widen' ? 'Widening' : 'Closing'} ${a.road} (${a.matched} segment${a.matched === 1 ? '' : 's'}), ${a.period === 'pm' ? '18:00' : '09:00'} peak: ${a.headline}`
+            + (a.result && a.result.newlyJammed ? ` ${a.result.newlyJammed} roads tip into LOS E/F.` : '')
+            + (a.worse.length ? `\nBusier: ${a.worse.map(line).join('; ')}.` : '')
+            + (a.better.length ? `\nQuieter: ${a.better.map(line).join('; ')}.` : '')
+            + '\nModelled re-routing of the commute (destinations fixed), shown on the map in red (busier) and blue (quieter).';
     }
     function state() { return { ...S, roads: undefined, model: undefined }; }
 
     return { core: C, run, loadModel, modelUrl, nearestNode: C.nearestNode, newLink: C.newLink,
-        open, close, toggle, isPicking, runScenario, setEdits, findRoads, state, diffColor, editsFrom, headline };
+        open, close, toggle, isPicking, runScenario, setEdits, findRoads, state, diffColor, editsFrom, headline,
+        normRoad, matchRoads, topRoads, ask, askText };
 })();
 
 if (typeof window !== 'undefined') window.RoadWhatIf = RoadWhatIf;

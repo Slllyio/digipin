@@ -83,3 +83,31 @@ describe('RoadWhatIf core', () => {
             .toEqual({ closed: [3], widened: { 4: 1.5 }, added: [{ a: 0, b: 1 }] });
     });
 });
+
+describe('RoadWhatIf chat helpers', () => {
+    const feats = [
+        { properties: { name: 'M.G. Road' } }, { properties: { name: 'MG Road' } },
+        { properties: { name: 'AB Road' } }, { properties: { name: 'Ring Road' } }, { properties: {} },
+    ];
+    it('matches road names loosely but prefers exact keys', () => {
+        expect(RW.normRoad('M.G. Rd')).toBe('mgroad');
+        expect(RW.matchRoads(feats, 'mg road')).toEqual([0, 1]);
+        expect(RW.matchRoads(feats, 'AB Rd')).toEqual([2]);
+        expect(RW.matchRoads(feats, 'ring')).toEqual([3]);
+        expect(RW.matchRoads(feats, 'xy')).toEqual([]);
+    });
+    it('summarises busier and quieter roads once per name', () => {
+        const res = { roads: [
+            { f: 0, base: 0.5, scen: 1.2, delta: 0.7 }, { f: 1, base: 0.4, scen: 0.9, delta: 0.5 },
+            { f: 2, base: 1.1, scen: 0.6, delta: -0.5 }, { f: 3, base: 0.5, scen: 0.55, delta: 0.05 },
+            { f: -1, base: 0, scen: 0.8, delta: 0.8 }, { f: 4, base: 0.9, scen: null, delta: null, closed: true },
+        ] };
+        const t = RW.topRoads(res, f => (f === 1 ? 'M.G. Road' : feats[f].properties.name));
+        expect(t.worse.map(x => x.name)).toEqual(['M.G. Road']);
+        expect(t.better.map(x => x.name)).toEqual(['AB Road']);
+        const txt = RW.askText({ ok: true, action: 'close', road: 'AB Road', matched: 2, period: 'pm', headline: 'H.', result: { newlyJammed: 3 }, ...t });
+        expect(txt).toMatch(/^Closing AB Road \(2 segments\), 18:00 peak: H\. 3 roads tip into LOS E\/F\./);
+        expect(txt).toMatch(/Busier: M\.G\. Road \(V\/C 0\.50 → 1\.20\)/);
+        expect(RW.askText({ ok: false, error: 'nope' })).toBe('nope');
+    });
+});

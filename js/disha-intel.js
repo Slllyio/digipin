@@ -70,6 +70,28 @@ const DishaIntel = (() => {
         return hits.sort((a, b) => a.at - b.at).map(h => h.city);
     }
 
+    // Named-road what-ifs: "what if MG Road closes at 6 pm", "widen AB Road".
+    const ROAD_WORD = '(?:ring road|road|rd|marg|street|highway|flyover|bridge|expressway|bypass|avenue|setu|path)';
+    const ROAD_VERB_FIRST = new RegExp(`\\b(close|closing|shut(?:ting)?|block(?:ing)?|widen(?:ing)?)\\s+(?:down\\s+)?([a-z0-9][\\w.'\\- ]{0,40}?\\b${ROAD_WORD})\\b`, 'i');
+    const ROAD_NAME_FIRST = new RegExp(`([a-z0-9][\\w.'\\- ]{0,40}?\\b${ROAD_WORD})\\s+(?:is |was |were |gets? |got |to be )?(closed|closes|closing|shut|blocked|widened)\\b`, 'i');
+    const LEAD = /^(?:(?:what|if|happens|happen|when|would|will|suppose|imagine|we|i|they|the|a|an|and|then|say)\s+)+/i;
+    const GENERIC = /^(?:a|an|the|this|that|any|one|main|my|our|some|every|each|nearby|local|busy|busiest)?\s*$/i;
+
+    /** {action, road, period} for a named-road closure/widening question, or null. Pure. */
+    function roadAsk(question) {
+        const q = String(question || '');
+        let action = null, road = null;
+        let m = ROAD_VERB_FIRST.exec(q);
+        if (m) { action = /widen/i.test(m[1]) ? 'widen' : 'close'; road = m[2]; }
+        else if ((m = ROAD_NAME_FIRST.exec(q))) { action = /widen/i.test(m[2]) ? 'widen' : 'close'; road = m[1]; }
+        if (!road) return null;
+        road = road.replace(LEAD, '').trim();
+        const core = road.replace(new RegExp(`\\s*\\b${ROAD_WORD}$`, 'i'), '');
+        if (GENERIC.test(core) || core.length < 2) return null;
+        const period = /\b(evening|6\s?pm|18:00|19:00|7\s?pm|going home|return trip)\b/i.test(q) ? 'pm' : 'am';
+        return { action, road, period };
+    }
+
     /** Route a question to the insights engine, or null. Pure given `cities`. */
     function match(question, cities) {
         const q = String(question || '');
@@ -98,7 +120,9 @@ const DishaIntel = (() => {
             if (named.length) out.city = named[0];
             return out;
         }
-        if (/\bwhat[\s-]?if\b|\bimagine\b|\bsimulate\b|\bscenario\b|\bif (we|they|i)\b/i.test(q) || RE.park.test(q) || RE.flood.test(q) || RE.cool.test(q) || RE.closure.test(q)) {
+        if (/\bwhat[\s-]?if\b|\bimagine\b|\bsimulate\b|\bscenario\b|\bif (we|they|i)\b|\bwiden/i.test(q) || RE.park.test(q) || RE.flood.test(q) || RE.cool.test(q) || RE.closure.test(q)) {
+            const ra = roadAsk(q);
+            if (ra) return named.length ? { type: 'roadwhatif', ...ra, city: named[0] } : { type: 'roadwhatif', ...ra };
             if (RE.closure.test(q)) return { type: 'whatif', scenario: 'closure' };
             if (RE.cool.test(q)) {
                 const m = /(\d{1,2})\s*(%|percent|pts|points)/i.exec(q);
@@ -230,6 +254,17 @@ const DishaIntel = (() => {
                 r = await UrbanInsights.cityDashboard(CellStore);
             } else if (intent.type === 'compare') {
                 r = await UrbanInsights.compare(intent.a, intent.b, CellStore);
+            } else if (intent.type === 'roadwhatif') {
+                if (typeof RoadWhatIf === 'undefined') { el.textContent = 'The road what-if module did not load.'; return ''; }
+                if (intent.city && typeof TrafficOverlay !== 'undefined' && TrafficOverlay.region && TrafficOverlay.region() !== intent.city) {
+                    const sel = typeof document !== 'undefined' && document.getElementById('city-select');
+                    const opt = sel && [...sel.options].find(o => o.value === intent.city || o.value === intent.city.replace(/_pilot$/, ''));
+                    if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', { bubbles: true })); await new Promise(res => setTimeout(res, 1500)); }
+                }
+                el.textContent = `Re-routing every commute with ${intent.road} ${intent.action === 'widen' ? 'widened' : 'closed'}…`;
+                const a = await RoadWhatIf.ask({ action: intent.action, road: intent.road, period: intent.period });
+                el.textContent = '';
+                r = { kind: 'roadwhatif', a };
             } else if (intent.type === 'whatif') {
                 const sc = { type: intent.scenario };
                 let heights = null;
@@ -263,6 +298,7 @@ const DishaIntel = (() => {
             if (r.play) CityTour.play(r.city, CellStore);
             return `Briefing on ${r.cityLabel}${r.play ? ' (the 3D tour is now flying through these stops)' : ''}:\n${r.stops.map((x, i) => `${i + 1}. ${x.label}: ${x.caption}`).join('\n')}`;
         }
+        if (r.kind === 'roadwhatif') return RoadWhatIf.askText(r.a);
         if (r.kind === 'siting') return `${r.st.title} in ${r.cityLabel}: ${r.st.headline}\n${r.st.sites.map(x => `${x.rank}. ${x.code} (score ${x.score}): ${x.why}`).join('\n')}`;
         return r.kind === 'lenses' ? UrbanLenses.toText(r, r.only) : UrbanInsights.toText(r);
     }
@@ -351,6 +387,17 @@ const DishaIntel = (() => {
                 if (r.only) el.appendChild(_el('div', 'disha-scan-hint', `Method: ${l.method}`));
             }
             el.appendChild(_openButton('Open the lenses', 'lenses'));
+        } else if (r.kind === 'roadwhatif') {
+            const a = r.a;
+            head.textContent = a.ok ? `Road what-if · ${a.action === 'widen' ? 'widen' : 'close'} ${a.road} · ${a.period === 'pm' ? '18:00' : '09:00'}` : 'Road what-if';
+            el.appendChild(head);
+            el.appendChild(_el('div', 'ui-headline', a.ok ? a.headline : a.error));
+            if (a.ok) {
+                const row = (x) => `${x.name}: V/C ${x.base.toFixed(2)} → ${x.scen.toFixed(2)}`;
+                if (a.worse.length) el.appendChild(_el('div', 'disha-scan-row', `Busier: ${a.worse.map(row).join(' · ')}`));
+                if (a.better.length) el.appendChild(_el('div', 'disha-scan-row', `Quieter: ${a.better.map(row).join(' · ')}`));
+                el.appendChild(_el('div', 'disha-scan-hint', 'Commute re-routed on the modelled arterials (destinations fixed). Edit it in the What-if panel by the Traffic legend.'));
+            }
         } else if (r.kind === 'whatif') {
             head.textContent = r.title;
             el.appendChild(head);
@@ -414,7 +461,7 @@ const DishaIntel = (() => {
         return used;
     }
 
-    return { match, citiesIn, citeTags, answer, evidence, decorate, whereChanged, cities: _cities };
+    return { match, roadAsk, citiesIn, citeTags, answer, evidence, decorate, whereChanged, cities: _cities };
 })();
 
 if (typeof window !== 'undefined') {

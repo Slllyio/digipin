@@ -106,6 +106,16 @@ const DISHATools = (() => {
             example: '[ACTION] whatIf scenario:park code:34M-P6L',
         },
         {
+            name: 'roadWhatIf', type: 'roadwhatif', kind: 'state', agentOnly: true, confirm: true,
+            args: {
+                road: { type: 'string', required: true },
+                action: { type: 'enum', values: ['close', 'widen'] },
+                period: { type: 'enum', values: ['am', 'pm'] },
+            },
+            desc: 'Close or widen a named arterial road in the selected city and re-route the modelled commute (am = 09:00, pm = 18:00): roads that get busier/quieter, residents beside worse roads, trips cut off.',
+            example: '[ACTION] roadWhatIf road:MG Road action:close period:pm',
+        },
+        {
             name: 'compareCities', type: 'comparecities', kind: 'read', agentOnly: true,
             args: { a: { type: 'string', required: true }, b: { type: 'string', required: true } },
             desc: 'Compare two cities (e.g. indore, pune) or DIGIPIN areas indicator by indicator from the cell store.',
@@ -164,6 +174,7 @@ const DISHATools = (() => {
             return `Run the ${p.agent || 'analysis'}${extra ? ` (${extra})` : ''} agent and paint its result layer`;
         }
         case 'runisochrone': return `Compute 5/10/15-minute walking zones${where}`;
+        case 'roadwhatif': return `${p.action === 'widen' ? 'Widen' : 'Close'} ${p.road || 'the road'} and re-route the ${p.period === 'pm' ? '18:00' : '09:00'} commute (about 2–15 s)`;
         case 'colorbuildings': return `Recolour the 3D buildings by ${p.color || 'a dataset'}${p.height ? `, heights from ${p.height}` : ''}`;
         default: return t.desc.replace(/\.$/, '');
         }

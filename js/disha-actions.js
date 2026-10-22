@@ -337,6 +337,14 @@ const DISHAActions = (() => {
             return { label: `${r.title}: ${r.area.label}`, observation: `runAgent ${p.agent}:\n${UA.toText(r)}` };
         },
 
+        async roadwhatif(p) {
+            const RW = _g('RoadWhatIf');
+            if (!RW || !RW.ask) throw new Error('road what-if unavailable');
+            const a = await RW.ask({ road: p.road, action: p.action || 'close', period: p.period || 'am' });
+            if (!a.ok) throw new Error(a.error);
+            return { label: `${a.action === 'widen' ? 'Widened' : 'Closed'} ${a.road}`, observation: `roadWhatIf:\n${RW.askText(a)}` };
+        },
+
         finish() { return { label: 'done', observation: '' }; },
     };
 

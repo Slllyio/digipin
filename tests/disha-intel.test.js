@@ -57,6 +57,11 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('which areas face waterlogging')).toEqual({ type: 'lens', lens: 'waterlog' });
         expect(M('How many people in Delhi live with road noise above the WHO limit?')).toEqual({ type: 'lens', lens: 'noise', city: 'delhi' });
         expect(M('which neighbourhoods are the noisiest')).toEqual({ type: 'lens', lens: 'noise' });
+        // Named-road what-ifs go to the road model; generic closures stay cell scenarios.
+        expect(M('What if MG Road closes at 6 pm in Pune?')).toEqual({ type: 'roadwhatif', action: 'close', road: 'MG Road', period: 'pm', city: 'pune' });
+        expect(M('close AB Road')).toEqual({ type: 'roadwhatif', action: 'close', road: 'AB Road', period: 'am' });
+        expect(M('what happens if we widen the Outer Ring Road')).toEqual({ type: 'roadwhatif', action: 'widen', road: 'Outer Ring Road', period: 'am' });
+        expect(M('what if we close a road here')).toEqual({ type: 'whatif', scenario: 'closure' });
         expect(M('Where are the traffic jams in Delhi?')).toEqual({ type: 'lens', lens: 'traffic', city: 'delhi' });
         expect(M('which roads are the worst bottlenecks at rush hour')).toEqual({ type: 'lens', lens: 'traffic' });
         expect(M('How many people can walk to a bus stop?')).toEqual({ type: 'lens', lens: 'transit' });
