@@ -1087,6 +1087,7 @@ def humid_heat(region):
 CMIP_MODELS = ["ACCESS-CM2", "EC-Earth3", "MIROC6", "MPI-ESM1-2-HR", "MRI-ESM2-0", "NorESM2-MM"]
 CMIP_HIST, CMIP_FUT = (1995, 2014), (2041, 2060)
 OBS_YEARS = (2015, 2024)
+CDD_BASE = 24.0                  # °C daily mean; the balance point commonly used for Indian homes (BEE/ECBC)
 
 
 def _cmip(ee, geom, model, scenario, years, band, months=None):
@@ -1124,14 +1125,22 @@ def climate_future(region):
         def day(im, dx=dx, dn=dn):
             tx = im.select("temperature_2m_max").subtract(273.15)
             tn = im.select("temperature_2m_min").subtract(273.15)
-            return ee.Image.cat([tx.gte(40).rename("hot_now"), tx.add(dx).gte(40).rename("hot"),
-                                 tn.gte(28).rename("warm_now"), tn.add(dn).gte(28).rename("warm")])
+            tx2, tn2 = tx.add(dx), tn.add(dn)
+            mean_now, mean_fut = tx.add(tn).divide(2), tx2.add(tn2).divide(2)
+            # ±1 °C counts give how fast the counts change per degree, so a block's own heat island can shift them
+            return ee.Image.cat([tx.gte(40).rename("hot_now"), tx2.gte(40).rename("hot"),
+                                 tn.gte(28).rename("warm_now"), tn2.gte(28).rename("warm"),
+                                 tx.gte(39).subtract(tx.gte(41)).rename("hot_s_now"), tx2.gte(39).subtract(tx2.gte(41)).rename("hot_s"),
+                                 tn.gte(27).subtract(tn.gte(29)).rename("warm_s_now"), tn2.gte(27).subtract(tn2.gte(29)).rename("warm_s"),
+                                 mean_now.subtract(CDD_BASE).max(0).rename("cdd_now"), mean_fut.subtract(CDD_BASE).max(0).rename("cdd"),
+                                 mean_fut.gte(CDD_BASE).rename("cool_days")])
         d = era.map(day).sum().divide(yrs)
         out[tag] = ee.Image.cat([d, dx.rename("dx")])
     chirps = ee.ImageCollection("UCSB-CHG/CHIRPS/DAILY").select("precipitation")
     rx_now = ee.ImageCollection([chirps.filterDate(f"{y}-01-01", f"{y + 1}-01-01").max()
                                  for y in range(2005, 2025)]).mean().rename("rx_now")
-    img = ee.Image.cat([out["mid"].select(["hot_now", "hot", "warm_now", "warm", "dx"]),
+    img = ee.Image.cat([out["mid"].select(["hot_now", "hot", "warm_now", "warm", "dx", "hot_s_now", "hot_s", "warm_s_now",
+                                           "warm_s", "cdd_now", "cdd", "cool_days"]),
                         out["high"].select(["hot", "warm", "dx"], ["hot_hi", "warm_hi", "dx_hi"]),
                         _ens_rx1day_ratio(ee, geom, "ssp245").rename("rxr")])
     a = gee.fetch(gee.to_cells(img, 11000), bbox, level)
@@ -1145,7 +1154,10 @@ def climate_future(region):
                    "warm_nights_now": _r(x["warm_now"]), "warm_nights_2050": _r(x["warm"]),
                    "tmax_rise_c": _r(x["dx"], 2), "tmax_rise_high_c": _r(x.get("dx_hi"), 2),
                    "wettest_day_mm": _r(rx), "wettest_day_2050_mm": _r(rx * x["rxr"]) if rx is not None and x.get("rxr") else None,
-                   "wettest_day_change_pct": _r(100 * (x["rxr"] - 1)) if x.get("rxr") else None}
+                   "wettest_day_change_pct": _r(100 * (x["rxr"] - 1)) if x.get("rxr") else None,
+                   "hot_days_per_c_now": _r((x.get("hot_s_now") or 0) / 2), "hot_days_per_c_2050": _r((x.get("hot_s") or 0) / 2),
+                   "warm_nights_per_c_now": _r((x.get("warm_s_now") or 0) / 2), "warm_nights_per_c_2050": _r((x.get("warm_s") or 0) / 2),
+                   "cdd_now": _r(x.get("cdd_now")), "cdd_2050": _r(x.get("cdd")), "cooling_days_2050": _r(x.get("cool_days"))}
     specs = [
         FieldSpec("hot_days_now", f"Days ≥ 40 °C a year ({OBS_YEARS[0]}–{OBS_YEARS[1]})", agg="mean", unit="days", ramp="heat", higher_is="worse"),
         FieldSpec("hot_days_2050", "Days ≥ 40 °C a year by 2050 (SSP2-4.5)", agg="mean", unit="days", ramp="heat", higher_is="worse"),
@@ -1156,6 +1168,13 @@ def climate_future(region):
         FieldSpec("tmax_rise_high_c", "Hot-season daytime warming by 2050 (SSP5-8.5)", agg="mean", unit="°C", domain=[0, 4], ramp="heat", higher_is="worse"),
         FieldSpec("wettest_day_mm", "Wettest day of the year, average (2005–2024)", agg="mean", unit="mm", ramp="blues", higher_is="worse"),
         FieldSpec("wettest_day_2050_mm", "Wettest day of the year by 2050 (SSP2-4.5)", agg="mean", unit="mm", ramp="blues", higher_is="worse"),
+        FieldSpec("hot_days_per_c_now", "Extra days ≥ 40 °C per 1 °C of local warming, now", agg="mean", unit="days/°C", ramp="heat", higher_is="worse"),
+        FieldSpec("hot_days_per_c_2050", "Extra days ≥ 40 °C per 1 °C of local warming, 2050", agg="mean", unit="days/°C", ramp="heat", higher_is="worse"),
+        FieldSpec("warm_nights_per_c_now", "Extra nights ≥ 28 °C per 1 °C of local warming, now", agg="mean", unit="nights/°C", ramp="heat", higher_is="worse"),
+        FieldSpec("warm_nights_per_c_2050", "Extra nights ≥ 28 °C per 1 °C of local warming, 2050", agg="mean", unit="nights/°C", ramp="heat", higher_is="worse"),
+        FieldSpec("cdd_now", f"Cooling degree-days a year (base {CDD_BASE:g} °C), now", agg="mean", unit="°C·days", ramp="heat", higher_is="worse"),
+        FieldSpec("cdd_2050", f"Cooling degree-days a year (base {CDD_BASE:g} °C), 2050 (SSP2-4.5)", agg="mean", unit="°C·days", ramp="heat", higher_is="worse"),
+        FieldSpec("cooling_days_2050", f"Days a year with a mean ≥ {CDD_BASE:g} °C by 2050", agg="mean", unit="days", ramp="heat", higher_is="worse"),
         FieldSpec("wettest_day_change_pct", "Change in the wettest day by 2050 (SSP2-4.5)", agg="mean", unit="%", domain=[-10, 40], ramp="blues", higher_is="worse"),
     ]
     spec = DatasetSpec(

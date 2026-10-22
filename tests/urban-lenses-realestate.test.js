@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -199,6 +199,22 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats.find(s => /Wettest|wettest/.test(s.label)).value).toBe('+8%');
         expect(r.stats.find(s => /30 or more/.test(s.label)).value).toMatch(/\d/);
         expect(L._lenses.climate2050(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('streetheat: block heat island shifts the 2050 counts', () => {
+        const uhi = codes.map((_, i) => (i < SIZE ? 6 : i < 2 * SIZE ? -4 : 0));      // hot row +1.8 °C air, cool row −1.2 °C
+        const f = L.frameFrom(codes, { ...base, 'climate_future.hot_days_now': codes.map(() => 20), 'climate_future.hot_days_2050': codes.map(() => 30),
+            'climate_future.hot_days_per_c_2050': codes.map(() => 10), 'climate_future.warm_nights_2050': codes.map(() => 40), 'climate_future.warm_nights_per_c_2050': codes.map(() => 8),
+            'climate_future.cdd_now': codes.map(() => 1000), 'climate_future.cdd_2050': codes.map(() => 1300), 'climate_future.cooling_days_2050': codes.map(() => 200),
+            'surface_heat.uhi_anomaly_c': uhi, 'surface_heat.modis_night_c': codes.map(() => 25), 'vegetation.tree_canopy_pct': codes.map(() => 2) });
+        const r = L._lenses.streetheat(f, {});
+        expect(r.columns.hot_2050_block[0] - r.columns.hot_2050_block[SIZE]).toBeCloseTo(30);   // 10 days/°C × 0.3 × (6 − −4)
+        expect(r.columns.hot_2050_block[0]).toBeGreaterThan(30);
+        expect(r.columns.warm_2050_block[0]).toBe(40);                          // flat night anomaly
+        expect(r.metric.value).toBeGreaterThanOrEqual(r.stats[0].value.split(' vs ')[1] * 1);
+        expect(r.stats.find(s => /Cooling need/.test(s.label)).value).toMatch(/\+\d+%/);
+        expect(r.stats.find(s => /tree canopy/.test(s.label)).value).toMatch(/100%/);
+        expect(L._lenses.streetheat(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('farText(): base vs asked FAR, rebuild and homes', () => {

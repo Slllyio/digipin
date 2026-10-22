@@ -657,6 +657,58 @@ const UrbanLensesRealEstate = (() => {
         ].filter(Boolean).join('\n');
     }
 
+    // Surface-to-air coupling of the heat island: by day air runs about a third of the surface anomaly
+    // (Venter, Chakraborty & Lee 2021), at night closer to two thirds (Stewart & Oke 2012; Ho et al. 2016).
+    const AIR_PER_SURF_DAY = 0.3, AIR_PER_SURF_NIGHT = 0.6, TREE_LOW = 5;
+
+    /** Street-level heat by 2050: the city's 2050 counts shifted by each block's own heat island. */
+    function streetheat(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const h1 = c['climate_future.hot_days_2050'], hs = c['climate_future.hot_days_per_c_2050'], h0 = c['climate_future.hot_days_now'];
+        const w1 = c['climate_future.warm_nights_2050'], ws = c['climate_future.warm_nights_per_c_2050'];
+        const cdd0 = c['climate_future.cdd_now'], cdd1 = c['climate_future.cdd_2050'], cd = c['climate_future.cooling_days_2050'];
+        const uhi = c['surface_heat.uhi_anomaly_c'], mn = c['surface_heat.modis_night_c'], pop = c['population.population'], tree = c['vegetation.tree_canopy_pct'];
+        if (!h1 || !hs || !uhi || !pop) return null;
+        const cells = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0 && _fin(h1[i]) && _fin(hs[i]) && _fin(uhi[i])) cells.push(i);
+        if (cells.length < 5) return null;
+        // Centre both anomalies on the resident-weighted mean: the ~9 km reanalysis cell already averages the city's
+        // own warmth, so the block offsets redistribute it rather than add to it.
+        const wmean = (a) => { let s = 0, w = 0; for (const i of cells) if (_fin(a[i])) { s += a[i] * pop[i]; w += pop[i]; } return w ? s / w : null; };
+        const dayMean = wmean(uhi), nightMed = mn ? wmean(mn) : null;
+        const hot = new Float64Array(n).fill(NaN), warm = new Float64Array(n).fill(NaN), cdd = new Float64Array(n).fill(NaN), dT = new Float64Array(n).fill(NaN);
+        for (const i of cells) {
+            const day = AIR_PER_SURF_DAY * (uhi[i] - dayMean);
+            const night = mn && _fin(mn[i]) && nightMed != null ? AIR_PER_SURF_NIGHT * (mn[i] - nightMed) : 0;
+            dT[i] = day;
+            hot[i] = Math.max(0, h1[i] + hs[i] * day);
+            if (w1 && _fin(w1[i])) warm[i] = Math.max(0, w1[i] + (ws && _fin(ws[i]) ? ws[i] : 0) * night);
+            if (cdd1 && _fin(cdd1[i])) cdd[i] = Math.max(0, cdd1[i] + (cd && _fin(cd[i]) ? cd[i] : 0) * (day + night) / 2);
+        }
+        const pw = (a) => _round(cells.reduce((s, i) => s + (_fin(a[i]) ? a[i] * pop[i] : 0), 0) / cells.reduce((s, i) => s + (_fin(a[i]) ? pop[i] : 0), 0), 1);
+        const q90 = wquantile(hot, pop, cells, 0.9), q10 = wquantile(hot, pop, cells, 0.1);
+        const top = cells.filter(i => hot[i] >= q90);
+        const bare = tree ? _sumOver(pop, top, i => _fin(tree[i]) && tree[i] < TREE_LOW) : null;
+        const stats = [
+            { label: 'Days at 40 °C or more by 2050, hottest tenth of residents vs coolest tenth', value: `${_round(q90, 1)} vs ${_round(q10, 1)}`, raw: q90 },
+            { label: 'Days at 40 °C or more by 2050, average resident, with the heat island', value: `${pw(hot)} (city air alone: ${pw(h1)}${h0 ? `, today ${pw(h0)}` : ''})` },
+        ];
+        if (w1) stats.push({ label: 'Nights at 28 °C or more by 2050, average resident, with the heat island', value: `${pw(warm)}` });
+        if (cdd1 && cdd0) {
+            const now = pw(cdd0), fut = pw(cdd);
+            stats.push({ label: 'Cooling need (degree-days above 24 °C): now → 2050', value: `${now} → ${fut} (+${Math.round(100 * (fut / now - 1))}%)` });
+        }
+        if (bare != null) stats.push({ label: `Residents in the hottest tenth with under ${TREE_LOW}% tree canopy (where shade helps most)`, value: `${_people(bare)} (${_round(100 * bare / top.reduce((s, i) => s + pop[i], 0))}%)` });
+        stats.push({ label: 'Block heat-island range (air, by day)', value: `${_round(wquantile(dT, pop, cells, 0.1), 1)} to +${_round(wquantile(dT, pop, cells, 0.9), 1)} °C` });
+        return {
+            columns: { hot_2050_block: hot, warm_2050_block: warm, cdd_2050_block: cdd, heat_island_air_c: dT }, idx: cells, weightKey: 'hot_2050_block',
+            metric: { label: 'Days at 40 °C or more by 2050 for the hottest tenth of residents', value: _round(q90, 1), unit: 'days', higherIs: 'worse' },
+            headline: q90 < 1 && cdd1 && cdd0 ? `Days at 40 °C stay rare here, but cooling need rises from ${pw(cdd0)} to ${pw(cdd)} degree-days a year by 2050 (+${Math.round(100 * (pw(cdd) / pw(cdd0) - 1))}%).`
+                : `With each block's own heat island, the hottest tenth of residents (${_people(top.reduce((s, i) => s + pop[i], 0))}) face about ${_round(q90)} days at 40 °C or more a year by 2050, against ${_round(q10)} for the coolest tenth.`,
+            stats,
+        };
+    }
+
     /** Climate 2050: hot days, warm nights and the wettest day by mid-century, weighted by who lives there. */
     function climate2050(fr) {
         const g = fr.grid, c = fr.cols, n = g.n;
@@ -681,7 +733,8 @@ const UrbanLensesRealEstate = (() => {
         return {
             columns: { heat_added: add }, idx: cells, weightKey: 'heat_added', noHotspots: true,
             metric: { label: 'Days at 40 °C or more a year by 2050, per resident', value: hm, unit: 'days', higherIs: 'worse' },
-            headline: `By 2050 the average resident faces about ${hm} days a year at 40 °C or more, up from ${hn}${wn != null ? `, and ${wm} nights that stay above 28 °C, up from ${wn}` : ''} (six-model CMIP6 ensemble, SSP2-4.5).`,
+            headline: hm < 1 && (wm == null || wm < 1) ? `Days at 40 °C and nights at 28 °C stay rare here by 2050, but the hot season warms by about ${dx ? pw(dx) : '1'} °C${rx ? ` and the wettest day of the year changes by ${pw(rx) >= 0 ? '+' : ''}${pw(rx)}%` : ''} (six-model CMIP6 ensemble, SSP2-4.5).`
+                : `By 2050 the average resident faces about ${hm} days a year at 40 °C or more, up from ${hn}${wn != null ? `, and ${wm} nights that stay above 28 °C, up from ${wn}` : ''} (six-model CMIP6 ensemble, SSP2-4.5).`,
             stats,
         };
     }
@@ -900,6 +953,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_2050_high', 'climate_future.warm_nights_now', 'climate_future.warm_nights_2050', 'climate_future.tmax_rise_c', 'climate_future.wettest_day_change_pct', 'population.population'],
             method: 'Delta method: a six-model NASA NEX-GDDP-CMIP6 ensemble (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM) gives the 2041–2060 change against 1995–2014 in hot-season (March–June) daytime and monsoon (May–September) night-time temperatures. That change is added to every ERA5-Land day of 2015–2024 to count days at 40 °C or more (the IMD plains heatwave threshold) and nights at 28 °C or more. The wettest-day change is the ensemble ratio of the mean annual wettest day, applied to CHIRPS 2005–2024. Averages weight each block by its residents. Climate models are ~25 km and reanalysis ~9 km, so this is a city-scale outlook that misses the urban heat island; reanalysis reads 1–2 °C below city stations.',
             refs: 'Thrasher et al. 2022 (NEX-GDDP-CMIP6); IPCC AR6 WGI ch. 11; IMD heatwave criteria; Muñoz Sabater et al. 2021 (ERA5-Land); Funk et al. 2015 (CHIRPS)' },
+        { id: 'streetheat', equity: true, title: 'Street heat 2050', icon: '🔥',
+            question: 'Which blocks will be hottest by 2050 once their own heat island is added?',
+            field: { key: 'cdd_2050_block', label: 'Cooling need by 2050, this block (degree-days above 24 °C)', unit: '°C·days', higherIs: 'worse', ramp: 'heat' },
+            needs: ['climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_per_c_2050', 'climate_future.warm_nights_2050', 'climate_future.warm_nights_per_c_2050', 'climate_future.cdd_now', 'climate_future.cdd_2050', 'climate_future.cooling_days_2050', 'surface_heat.uhi_anomaly_c', 'surface_heat.modis_night_c', 'vegetation.tree_canopy_pct', 'population.population'],
+            method: 'Takes the Climate 2050 counts (six-model CMIP6 ensemble on ERA5-Land, SSP2-4.5) and shifts them by each block\'s heat island. The daytime air offset is 0.3 × the Landsat surface-temperature anomaly against the city median; the night offset is 0.6 × the MODIS night anomaly. The offset is multiplied by how many extra days cross 40 °C (or nights cross 28 °C) per degree, measured from the ±1 °C counts. Cooling degree-days use a 24 °C daily-mean base. Surface-to-air coupling varies by street, wind and humidity, so read the block numbers as a ranking more than exact counts.',
+            refs: 'Venter, Chakraborty & Lee 2021 (Sci. Adv., air vs surface UHI); Stewart & Oke 2012 (LCZ); Thrasher et al. 2022 (NEX-GDDP-CMIP6); BEE ECBC-R cooling base; IMD heatwave criteria' },
         { id: 'encroach', equity: true, title: 'Encroachment watch', icon: '🚧',
             question: 'Which lakes, floodplains and green areas have been lost to building, and where is it still happening?',
             field: { key: 'encroach_score', label: 'Encroachment score (former water, floodplain and tree loss built up)', unit: 'points', higherIs: 'worse', ramp: 'reds' },
@@ -908,7 +967,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050 }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText };
 })();
 

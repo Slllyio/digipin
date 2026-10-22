@@ -224,3 +224,22 @@ Results: in Bengaluru, 8.2 lakh residents in 723 blocks come within a 10-minute 
 Per L5 cell, from `pipeline/cells/ee_layers.py` (`--layer climate_future`). Delta method on a six-model NASA NEX-GDDP-CMIP6 ensemble (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM): the 2041–2060 minus 1995–2014 change in March–June daily maximum and May–September daily minimum temperature is added to every ERA5-Land day of 2015–2024, then days ≥ 40 °C (IMD plains heatwave threshold) and nights ≥ 28 °C are counted. SSP2-4.5 is the central case; `hot_days_2050_high` uses SSP5-8.5. The wettest-day change is the ensemble ratio of the mean annual maximum one-day rainfall, applied to CHIRPS 2005–2024.
 
 Resident-weighted, SSP2-4.5: Delhi 26 → 41 hot days and 17 → 43 warm nights; Ahmedabad 35 → 58 hot days; Chennai 35 → 85 warm nights; Mumbai's wettest day +9%. Models are ~25 km and reanalysis ~9 km, so this is a city-scale outlook: it misses the urban heat island, and ERA5-Land reads 1–2 °C below city stations, so absolute counts are low. The property report lists the block's numbers under Risk and flags 45+ hot days a year by 2050.
+
+### Street heat 2050 (lens `streetheat`)
+
+`climate_future` also stores how many extra days cross 40 °C (and nights cross 28 °C) per 1 °C of local warming, measured from counts at ±1 °C. It also stores cooling degree-days above a 24 °C daily mean, for now and for 2050.
+
+The lens shifts the city's 2050 counts by each block's own heat island:
+
+- By day, the offset is 0.3 × the Landsat surface anomaly (`surface_heat.uhi_anomaly_c`). Venter, Chakraborty & Lee 2021 find air heat islands run about a third of surface ones.
+- At night, the offset is 0.6 × the MODIS night surface anomaly.
+- Both offsets are centred on the resident-weighted mean, so they redistribute the reanalysis cell's warmth rather than add to it.
+
+Results:
+
+| City | Days ≥ 40 °C by 2050, hottest tenth | Coolest tenth |
+|---|---|---|
+| Delhi | 48 | 35 |
+| Ahmedabad | 67 | 49 |
+
+Cooling need rises about 25% in the hot plains cities and 82% in Bengaluru, from a low base. About 72% of the hottest tenth live under less than 5% tree canopy. Read the block values as a ranking: surface-to-air coupling varies with wind, humidity and street form.

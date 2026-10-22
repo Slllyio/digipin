@@ -13,7 +13,7 @@
 const PropertyReport = (() => {
     'use strict';
     const SCHEMA = 'digipin.property/1';
-    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050'];
+    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat'];
     const EXTRA = ['land_value.prem_jobs_pct', 'land_value.prem_metro_pct', 'land_value.prem_amenity_pct', 'land_value.prem_neigh_pct',
         'land_value.prem_green_pct', 'land_value.prem_risk_pct', 'land_value.prem_noise_pct', 're_supply.far_now', 're_supply.headroom_m2',
         'building_dynamics.settled_year', 'building_dynamics.highrise_pct', 'building_dynamics.nonres_pct', 'building_dynamics.accel',
@@ -83,6 +83,8 @@ const PropertyReport = (() => {
                 row('Waterlogging index', fin(v.wlog) ? `${r1(v.wlog)} / 100` : null),
                 row('Road noise', fin(v.noise) ? `${r1(v.noise)} dB Lden` : null),
                 row('Days at 40 °C or more a year: now → 2050', fin(v.hot0) && fin(v.hot1) ? `${r1(v.hot0)} → ${r1(v.hot1)}${fin(v.hot2) ? ` (${r1(v.hot2)} on the high-emissions path)` : ''}` : null, 'six-model CMIP6 ensemble, SSP2-4.5; city-scale, misses the heat island'),
+                row('… with this block\'s own heat island', fin(v.hotBlock) ? `${r1(v.hotBlock)} days at 40 °C by 2050 (air ${v.islandC >= 0 ? '+' : ''}${r1(v.islandC, 1)} °C vs the city average by day)` : null),
+                row('Cooling need by 2050', fin(v.cddBlock) ? `${Math.round(v.cddBlock)} degree-days above 24 °C${fin(v.cdd0) ? ` (now ${Math.round(v.cdd0)})` : ''}` : null, 'drives air-conditioning hours and power bills'),
                 row('Nights at 28 °C or more a year: now → 2050', fin(v.warm0) && fin(v.warm1) ? `${r1(v.warm0)} → ${r1(v.warm1)}` : null),
                 row('Wettest day of the year by 2050', fin(v.rx) ? `${v.rx >= 0 ? '+' : ''}${r1(v.rx)}%` : null),
                 row('Encroachment flags', fin(v.encroach) && v.encroach > 0 ? `score ${r1(v.encroach, 1)}` : null, 'former water, floodplain or tree loss built up'),
@@ -106,7 +108,7 @@ const PropertyReport = (() => {
         if (fin(v.wlog) && v.wlog >= 65) risks.push('very high waterlogging');
         if (fin(v.noise) && v.noise >= 70) risks.push('loud road noise');
         if (fin(v.encroach) && v.encroach >= 2) risks.push('encroachment flags');
-        if (fin(v.hot1) && v.hot1 >= 45) risks.push(`about ${Math.round(v.hot1)} days a year at 40 °C by 2050`);
+        if (fin(v.hotBlock ?? v.hot1) && (v.hotBlock ?? v.hot1) >= 45) risks.push(`about ${Math.round(v.hotBlock ?? v.hot1)} days a year at 40 °C by 2050`);
         if (fin(v.priceGap) && v.priceGap >= 50) risks.push('displacement pressure');
         if (fin(v.gap) && v.gap < -2000) risks.push('local oversupply');
         const verdict = `${strengths.length ? `Strengths: ${strengths.join(', ')}.` : 'No standout strengths.'} ${risks.length ? `Watch: ${risks.join(', ')}.` : 'No major risk flags.'}`;
@@ -143,6 +145,7 @@ const PropertyReport = (() => {
             wlog: at('waterlogging.waterlogging_index'), noise: at('traffic_noise.lden_db'), encroach: col('encroach', 'encroach_score'),
             upside: col('undervalued', 'upside'), growth: col('nextgrowth', 'growth_score'),
             hot0: at('climate_future.hot_days_now'), hot1: at('climate_future.hot_days_2050'), hot2: at('climate_future.hot_days_2050_high'),
+            hotBlock: col('streetheat', 'hot_2050_block'), cddBlock: col('streetheat', 'cdd_2050_block'), islandC: col('streetheat', 'heat_island_air_c'), cdd0: at('climate_future.cdd_now'),
             warm0: at('climate_future.warm_nights_now'), warm1: at('climate_future.warm_nights_2050'), rx: at('climate_future.wettest_day_change_pct'),
             futureWalk: at('metro_future.future_walk_min'), metroUp: at('metro_future.value_uplift_pct'),
             rlv: col('feasible', 'rlv'), redevGain: col('feasible', 'redev_gain'), tod: col('feasible', 'tod_uplift'),

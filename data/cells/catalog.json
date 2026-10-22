@@ -2656,6 +2656,97 @@
           "higherIs": "worse"
         },
         {
+          "key": "hot_days_per_c_now",
+          "label": "Extra days \u2265 40 \u00b0C per 1 \u00b0C of local warming, now",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days/\u00b0C",
+          "domain": [
+            0.0,
+            17.0
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "hot_days_per_c_2050",
+          "label": "Extra days \u2265 40 \u00b0C per 1 \u00b0C of local warming, 2050",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days/\u00b0C",
+          "domain": [
+            0.0,
+            15.1
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "warm_nights_per_c_now",
+          "label": "Extra nights \u2265 28 \u00b0C per 1 \u00b0C of local warming, now",
+          "type": "number",
+          "agg": "mean",
+          "unit": "nights/\u00b0C",
+          "domain": [
+            0.0,
+            41.8
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "warm_nights_per_c_2050",
+          "label": "Extra nights \u2265 28 \u00b0C per 1 \u00b0C of local warming, 2050",
+          "type": "number",
+          "agg": "mean",
+          "unit": "nights/\u00b0C",
+          "domain": [
+            0.0,
+            58.5
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cdd_now",
+          "label": "Cooling degree-days a year (base 24 \u00b0C), now",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b0C\u00b7days",
+          "domain": [
+            233.0,
+            1621.6
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cdd_2050",
+          "label": "Cooling degree-days a year (base 24 \u00b0C), 2050 (SSP2-4.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b0C\u00b7days",
+          "domain": [
+            427.7,
+            1981.0
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cooling_days_2050",
+          "label": "Days a year with a mean \u2265 24 \u00b0C by 2050",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days",
+          "domain": [
+            212.2,
+            363.9
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
           "key": "wettest_day_change_pct",
           "label": "Change in the wettest day by 2050 (SSP2-4.5)",
           "type": "number",
