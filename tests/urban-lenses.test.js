@@ -513,7 +513,7 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         const sp = codes.map(() => 20), dl = codes.map((_, i) => (i === 0 ? 50 : 0)), vkm = codes.map(() => 10000);
         const f = L.frameFrom(codes, { 'population.population': pop, 'traffic_load.peak_vc': vc, 'traffic_load.peak_speed_kmh': sp, 'traffic_load.delay_pct': dl, 'traffic_load.daily_vkm': vkm });
         const r = L._lenses.jamcost(f, {});
-        expect(r.columns.jam_hours[0]).toBeGreaterThan(r.columns.jam_hours[1] * 20);
+        expect(r.columns.jam_hours[0]).toBeGreaterThanOrEqual(r.columns.jam_hours[1]);   // map column capped at the 95th percentile
         expect(r.metric.value).toBeGreaterThan(0);
         expect(r.stats.find(x => x.label.startsWith('Costliest jam 1')).label).toContain(codes[0]);
         expect(L._lenses.jamcost(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
