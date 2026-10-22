@@ -576,5 +576,122 @@
       "walk_max_min": 20.0,
       "all_stations_connected": true
     }
+  },
+  "bus_stop_heat": {
+    "stops": 247,
+    "stops_with_heat_data": 247,
+    "pct_hot_bare": 21.1,
+    "pct_riders_at_hot_bare": 19.6,
+    "median_stop_lst_c": 40.7,
+    "top_stops": [
+      {
+        "digipin": "4FK2C46",
+        "name": "Rudra Travels",
+        "lon": 72.832,
+        "lat": 19.21231,
+        "residents_5min": 50153,
+        "lst_c": 43.9,
+        "canopy_pct": 8.0,
+        "priority": 410653
+      },
+      {
+        "digipin": "4FK5MML",
+        "name": "C. P. Tank",
+        "lon": 72.82564,
+        "lat": 18.95326,
+        "residents_5min": 57952,
+        "lst_c": 42.1,
+        "canopy_pct": 4.7,
+        "priority": 392121
+      },
+      {
+        "digipin": "4FK8MC3",
+        "name": "Anand Nagar Bus Depo",
+        "lon": 72.96942,
+        "lat": 19.26609,
+        "residents_5min": 44498,
+        "lst_c": 44.4,
+        "canopy_pct": 8.7,
+        "priority": 381891
+      },
+      {
+        "digipin": "4FK25L7",
+        "name": "MSRTC",
+        "lon": 72.85925,
+        "lat": 19.13369,
+        "residents_5min": 34504,
+        "lst_c": 45.6,
+        "canopy_pct": 1.4,
+        "priority": 360622
+      },
+      {
+        "digipin": "4FK732K",
+        "name": "Thane East Satis",
+        "lon": 72.97637,
+        "lat": 19.1853,
+        "residents_5min": 39857,
+        "lst_c": 44.3,
+        "canopy_pct": 6.7,
+        "priority": 345835
+      },
+      {
+        "digipin": "4FK732K",
+        "name": "Kopri Bus Station",
+        "lon": 72.97667,
+        "lat": 19.18491,
+        "residents_5min": 39857,
+        "lst_c": 44.3,
+        "canopy_pct": 6.7,
+        "priority": 345835
+      },
+      {
+        "digipin": "4FK732J",
+        "name": "Louiswadi Bus Stop",
+        "lon": 72.97547,
+        "lat": 19.1868,
+        "residents_5min": 37964,
+        "lst_c": 44.6,
+        "canopy_pct": 5.6,
+        "priority": 344045
+      },
+      {
+        "digipin": "4FK732J",
+        "name": "Patlipada Bus Stop",
+        "lon": 72.97581,
+        "lat": 19.18698,
+        "residents_5min": 37964,
+        "lst_c": 44.6,
+        "canopy_pct": 5.6,
+        "priority": 344045
+      },
+      {
+        "digipin": "4FK5M4C",
+        "name": "Madan Pura Bus Stop",
+        "lon": 72.82803,
+        "lat": 18.97052,
+        "residents_5min": 49929,
+        "lst_c": 42.4,
+        "canopy_pct": 6.9,
+        "priority": 343981
+      },
+      {
+        "digipin": "4FK2CMT",
+        "name": "Shiv Mandir-Janta Colony Bus Stop",
+        "lon": 72.83385,
+        "lat": 19.19995,
+        "residents_5min": 31472,
+        "lst_c": 45.7,
+        "canopy_pct": 1.8,
+        "priority": 330689
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "overture": 247
+    }
   }
 }

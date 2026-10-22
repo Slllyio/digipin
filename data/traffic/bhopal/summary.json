@@ -573,5 +573,122 @@
       "walk_max_min": 20.0,
       "all_stations_connected": true
     }
+  },
+  "bus_stop_heat": {
+    "stops": 31,
+    "stops_with_heat_data": 31,
+    "pct_hot_bare": 71.0,
+    "pct_riders_at_hot_bare": 76.2,
+    "median_stop_lst_c": 42.5,
+    "top_stops": [
+      {
+        "digipin": "35L963C",
+        "name": "New Market Bus Station",
+        "lon": 77.39987,
+        "lat": 23.2331,
+        "residents_5min": 15908,
+        "lst_c": 44.0,
+        "canopy_pct": 8.9,
+        "priority": 130430
+      },
+      {
+        "digipin": "35L8K33",
+        "name": "Board Office Chauraha Bus Stop",
+        "lon": 77.43318,
+        "lat": 23.231,
+        "residents_5min": 16934,
+        "lst_c": 42.6,
+        "canopy_pct": 4.7,
+        "priority": 122650
+      },
+      {
+        "digipin": "35L8J4L",
+        "name": "Prabhat Petrol Pump Bus Stop",
+        "lon": 77.4309,
+        "lat": 23.25188,
+        "residents_5min": 14631,
+        "lst_c": 43.3,
+        "canopy_pct": 12.7,
+        "priority": 106015
+      },
+      {
+        "digipin": "35L8JKL",
+        "name": "Bogda Pul Bus Stop",
+        "lon": 77.42387,
+        "lat": 23.25199,
+        "residents_5min": 12531,
+        "lst_c": 43.7,
+        "canopy_pct": 3.0,
+        "priority": 105749
+      },
+      {
+        "digipin": "35L8K32",
+        "name": "MP Nagar Zone 1 BUS STOP",
+        "lon": 77.43684,
+        "lat": 23.22999,
+        "residents_5min": 15111,
+        "lst_c": 42.5,
+        "canopy_pct": 7.3,
+        "priority": 105059
+      },
+      {
+        "digipin": "35L8JKT",
+        "name": "Prabhat Square",
+        "lon": 77.43063,
+        "lat": 23.25125,
+        "residents_5min": 14060,
+        "lst_c": 42.3,
+        "canopy_pct": 6.9,
+        "priority": 95556
+      },
+      {
+        "digipin": "35L8LC8",
+        "name": "Saibaba Board bus stop",
+        "lon": 77.43732,
+        "lat": 23.20513,
+        "residents_5min": 16199,
+        "lst_c": 41.1,
+        "canopy_pct": 6.2,
+        "priority": 92687
+      },
+      {
+        "digipin": "35L9396",
+        "name": "Bairagarh Bus Stand",
+        "lon": 77.34158,
+        "lat": 23.27187,
+        "residents_5min": 10354,
+        "lst_c": 43.1,
+        "canopy_pct": 3.2,
+        "priority": 81184
+      },
+      {
+        "digipin": "35L97CM",
+        "name": "Berasia Bus Station",
+        "lon": 77.3983,
+        "lat": 23.27047,
+        "residents_5min": 10564,
+        "lst_c": 42.5,
+        "canopy_pct": 4.2,
+        "priority": 75902
+      },
+      {
+        "digipin": "35L92C3",
+        "name": "Halalpur Bus Stand",
+        "lon": 77.36323,
+        "lat": 23.27376,
+        "residents_5min": 8933,
+        "lst_c": 42.8,
+        "canopy_pct": 1.0,
+        "priority": 68981
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "overture": 31
+    }
   }
 }

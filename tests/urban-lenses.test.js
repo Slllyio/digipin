@@ -469,6 +469,19 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.jobaccess(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('busheat lens: hot, bare bus stops and shelter priorities', () => {
+        const st = codes.map((_, i) => (i === 0 || i === n - 1 ? 2 : 0));
+        const hb = codes.map((_, i) => (i === 0 ? 2 : 0));
+        const pr = codes.map((_, i) => (i === 0 ? 900 : i === n - 1 ? 0 : NaN));
+        const t = codes.map((_, i) => (i === 0 ? 44 : 36));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'bus_stop_heat.stops': st, 'bus_stop_heat.hot_bare_stops': hb, 'bus_stop_heat.shelter_priority': pr, 'bus_stop_heat.stop_lst_c': t });
+        const r = L._lenses.busheat(f, {});
+        expect(r.metric.value).toBe(50);
+        expect(r.stats.find(x => x.label.startsWith('Shelter or trees 1')).label).toContain(codes[0]);
+        expect(r.stats.some(x => x.label.startsWith('Shelter or trees 2'))).toBe(false);
+        expect(L._lenses.busheat(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
         const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
         const league = { generated: '2026-10-22', cities: {

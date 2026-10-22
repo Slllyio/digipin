@@ -421,3 +421,16 @@ def test_job_access_transit_and_reach():
     share = ja.reach_share(t, [1, 1, 2])
     assert share[0] == pytest.approx(75.0)        # itself + the far end (weight 2) of 4
     assert share[1] == pytest.approx(25.0)        # only itself within 45 min
+
+
+def test_bus_stop_heat_helpers():
+    from pipeline.traffic import bus_stop_heat as bh
+    assert bh.hot_bare(42, 3) is True
+    assert bh.hot_bare(42, 25) is False
+    assert bh.hot_bare(38, 3) is False
+    assert bh.hot_bare(None, 3) is None
+    assert bh.priority(1000, 45, 0) == pytest.approx(10_000)
+    assert bh.priority(1000, 45, 50) == pytest.approx(5_000)
+    assert bh.priority(1000, 33, 0) == 0
+    ns = bh.neighbours("39J49LL")
+    assert len(ns) == 9 and "39J49LL" in ns and all(len(c) == 7 for c in ns)

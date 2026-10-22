@@ -108,6 +108,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 87.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 35.2,
@@ -287,6 +293,12 @@
      "value": 9.3,
      "unit": "%",
      "higherIs": "better"
+    },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 18.8,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "ev": {
      "label": "Residents within 3 km of a known charger",
@@ -468,6 +480,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 71,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 48,
@@ -641,6 +659,12 @@
      "value": 20.9,
      "unit": "%",
      "higherIs": "better"
+    },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 74.9,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "ev": {
      "label": "Residents within 3 km of a known charger",
@@ -822,6 +846,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 35.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 46.5,
@@ -1002,6 +1032,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 100,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 0,
@@ -1175,6 +1211,12 @@
      "value": 8.7,
      "unit": "%",
      "higherIs": "better"
+    },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 22.9,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "ev": {
      "label": "Residents within 3 km of a known charger",
@@ -1356,6 +1398,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 64.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 22.8,
@@ -1536,6 +1584,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 90.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 53.3,
@@ -1710,6 +1764,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
      "value": 61.6,
@@ -1883,6 +1943,12 @@
      "value": 12.8,
      "unit": "%",
      "higherIs": "better"
+    },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "ev": {
      "label": "Residents within 3 km of a known charger",
@@ -2064,6 +2130,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 21.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "ev": {
      "label": "Residents within 3 km of a known charger",
      "value": 73,
@@ -2243,6 +2315,12 @@
      "value": 15.3,
      "unit": "%",
      "higherIs": "better"
+    },
+    "busheat": {
+     "label": "Bus stops hot and unshaded",
+     "value": 44.6,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "ev": {
      "label": "Residents within 3 km of a known charger",

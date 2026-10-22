@@ -433,6 +433,20 @@ Kolkata 23.6% vs 40.8%, Chennai 20.9% vs 80.2%, Bengaluru 9.3% vs 56.9%,
 Delhi 7.6% vs 9.6% (Delhi is large and slow at 9 am, so neither mode reaches
 much of it).
 
+### 23. Heat and shade at bus stops (`pipeline/traffic/bus_stop_heat.py`, lens `busheat`)
+
+Stops are OpenStreetMap highway=bus_stop (Overpass, CI only), open GTFS
+stops (Bengaluru BMTC) and Overture Maps bus stations, merged within 30 m and
+cached in data/vectors/bus_stops_<r>.geojson. Each stop takes its L7 cell's
+Landsat summer daytime surface temperature and tree canopy; residents in the
+cell and its eight neighbours stand in for the people waiting there. Hot and
+bare: 40+ °C with under 10% canopy. Priority = residents × (LST − 35 °C) ×
+(1 − canopy). Dataset `bus_stop_heat` (L7): stops, hot_bare_stops,
+stop_lst_c, stop_canopy_pct, shelter_priority. Share of stops hot and bare:
+Jaipur 91%, Ahmedabad 87%, Chennai 75%, Delhi 36%, Bengaluru 19% (3,805 GTFS
+stops), Kolkata 2%. Outside Bengaluru the sandbox only had Overture's partial
+stop list (Delhi 624); the CI bake adds OpenStreetMap stops.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

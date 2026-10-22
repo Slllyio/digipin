@@ -15,6 +15,7 @@ const UrbanLensesMobility = (() => {
     const EV_NEAR_KM = 2, EV_GRID_KM = 3;
     const STATION_WALK = 10, WALK_M_MIN = 80, WALK_DETOUR = 1.3, NEW_STATIONS = 3;
     const JOB_MIN = 45, JOB_LOW = 10;
+    const STOP_KM = 0.4, STOP_HOT = 40, STOP_BARE = 10, SHELTERS = 5, FEW_STOPS = 50;
     const STATION_KM = STATION_WALK * WALK_M_MIN / WALK_DETOUR / 1000;   // ~615 m straight line
 
     function noise(fr) {
@@ -289,6 +290,52 @@ const UrbanLensesMobility = (() => {
             headline: `The average resident can reach ${_round(mT)}% of the city's jobs and activities within ${JOB_MIN} minutes by train and walking`
                 + (mC != null ? `, against ${_round(mC)}% by car at 9 am` : '')
                 + `; ${_round(100 * cut / total)}% reach under ${JOB_LOW}% without a car.`,
+            stats,
+        };
+    }
+
+    /** Heat and shade at bus stops: who waits in the sun, and where a shelter or trees would help most. */
+    function busheat(fr) {
+        const g = fr.grid, c = fr.cols, idx = _residents(fr), n = g.n, pop = c['population.population'];
+        const st = c['bus_stop_heat.stops'], hb = c['bus_stop_heat.hot_bare_stops'], pr = c['bus_stop_heat.shelter_priority'];
+        const lst = c['bus_stop_heat.stop_lst_c'];
+        if (!st) return null;
+        let nS = 0, nH = 0;
+        const stops = [];
+        for (let i = 0; i < n; i++) if (st[i] > 0) { nS += st[i]; nH += hb && hb[i] > 0 ? hb[i] : 0; stops.push(i); }
+        if (!nS) return null;
+        const prCol = new Float64Array(n).fill(NaN), tCol = new Float64Array(n).fill(NaN);
+        for (const i of stops) { if (pr && _fin(pr[i])) prCol[i] = pr[i]; if (lst && _fin(lst[i])) tCol[i] = lst[i]; }
+        // Residents whose nearest mapped stops (within a 5-minute walk) include a hot, bare one.
+        const off = g.offsets(STOP_KM), near = new Uint8Array(n), sun = new Uint8Array(n);
+        for (const i of idx) {
+            for (const [a, b] of off) {
+                const j = g.cellAt(i, a, b);
+                if (j < 0 || !(st[j] > 0)) continue;
+                near[i] = 1;
+                if (hb && hb[j] > 0) sun[i] = 1;
+            }
+        }
+        const total = _sumOver(pop, idx, () => true) || 1, pNear = _sumOver(pop, idx, i => near[i]), pSun = _sumOver(pop, idx, i => sun[i]);
+        const share = _round(100 * nH / nS);
+        const stats = [
+            { label: 'Bus stops mapped', value: _people(nS) + (nS < FEW_STOPS ? ' (few mapped: OpenStreetMap stops are added on the next data refresh)' : '') },
+            { label: `Stops at ${STOP_HOT}+ °C surface with under ${STOP_BARE}% tree canopy`, value: `${_people(nH)} (${share}%)`, raw: share },
+            { label: 'Residents within a 5-minute walk of a mapped stop', value: `${_people(pNear)} (${_round(100 * pNear / total)}%)` },
+            { label: '… whose nearby stop is hot and bare', value: `${_people(pSun)} (${_round(100 * pSun / (pNear || 1))}% of them)` },
+        ];
+        stops.filter(i => _fin(prCol[i]) && prCol[i] > 0).sort((a, b) => prCol[b] - prCol[a]).slice(0, SHELTERS)
+            .forEach((i, k) => stats.push({ label: `Shelter or trees ${k + 1}: ${g.codes[i]}`, value: `${_fin(tCol[i]) ? _round(tCol[i]) + ' °C, ' : ''}${st[i]} stop${st[i] > 1 ? 's' : ''}, score ${_people(prCol[i])}` }));
+        const rwi = c['wealth.rwi'];
+        if (rwi && pNear) {
+            const q20 = wquantile(rwi, pop, idx, 0.2);
+            const poorNear = q20 != null ? _sumOver(pop, idx, i => near[i] && rwi[i] <= q20) : 0;
+            if (poorNear) stats.push({ label: 'Poorest fifth near a stop: share whose stop is hot and bare', value: `${_round(100 * _sumOver(pop, idx, i => sun[i] && rwi[i] <= q20) / poorNear)}% (all: ${_round(100 * pSun / pNear)}%)` });
+        }
+        return {
+            columns: { shelter_priority: prCol, stop_heat: tCol }, idx: stops, weightKey: 'shelter_priority', noHotspots: true,
+            metric: { label: 'Bus stops hot and unshaded', value: share, unit: '%', higherIs: 'worse' },
+            headline: `${share}% of the ${_people(nS)} mapped bus stops sit at ${STOP_HOT}+ °C surface temperature with under ${STOP_BARE}% tree canopy; ${_people(pSun)} residents live within a 5-minute walk of one.`,
             stats,
         };
     }
@@ -968,7 +1015,7 @@ const UrbanLensesMobility = (() => {
         { id: 'access', label: 'Access', metrics: ['metro', 'jobaccess', 'transit', 'busgap', 'ambulance'] },
         { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon'] },
         { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise', 'nightwalk', 'freight', 'cleanwalk'] },
-        { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'walk', 'cycling', 'crossing'] },
+        { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'busheat', 'walk', 'cycling', 'crossing'] },
     ];
 
     /**
@@ -1125,6 +1172,13 @@ const UrbanLensesMobility = (() => {
             needs: ['job_access.jobs_car_pct', 'job_access.jobs_transit_pct', 'wealth.rwi'],
             method: `Cumulative-opportunity accessibility over the demand model's ~1 km zones: the share of the city's jobs and activities (GHSL non-residential floor space plus OpenStreetMap amenities) reachable within ${JOB_MIN} minutes. Car: walk-speed access to the nearest arterial, then the 9 am congested arterial times (BPR). Train: walk to the nearest metro or rail station within 20 minutes, a 5-minute wait, 33 km/h over the straight line × 1.25 to the station nearest the destination, and walk out; or walk all the way. Every station is assumed connected and buses are left out, so the train figure is an upper bound for rail and a lower bound for all public transport.`,
             refs: 'Hansen 1959 (accessibility); Geurs & van Wee 2004; Overture Maps Foundation places; GHSL 2023' },
+        { id: 'busheat', equity: true, title: 'Heat at bus stops', icon: '🚏',
+            question: 'Which bus stops leave people waiting in the sun, and where would a shelter or trees help most?',
+            field: { key: 'shelter_priority', label: 'Shelter / tree priority', unit: 'score', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'stop_heat', label: 'Surface temperature at the stops', unit: '°C', higherIs: 'worse', ramp: 'heat' }],
+            needs: ['bus_stop_heat.stops', 'bus_stop_heat.hot_bare_stops', 'bus_stop_heat.shelter_priority', 'bus_stop_heat.stop_lst_c', 'wealth.rwi'],
+            method: `Bus stops are OpenStreetMap highway=bus_stop, open GTFS stops (Bengaluru BMTC) and Overture Maps bus stations, merged within 30 m; outside Bengaluru the open map lists only part of the network until OpenStreetMap stops are pulled on the next data refresh. Each stop takes the Landsat summer daytime surface temperature and the tree canopy of its cell. Hot and bare is ${STOP_HOT}+ °C with under ${STOP_BARE}% canopy. The priority score is residents within about a 5-minute walk × degrees above 35 °C × the unshaded share. Surface temperature is not air temperature, and 30 m canopy misses single trees and shelter roofs.`,
+            refs: 'OpenStreetMap; BMTC GTFS (Vonter, ODbL); Overture Maps Foundation places; Landsat 8/9 surface temperature; Lanza & Durand 2021 (heat and transit waiting)' },
         { id: 'ev', equity: false, title: 'EV charging gaps', icon: '🔌',
             question: 'How far are homes and traffic from a known public EV charger?',
             field: { key: 'ev_km', label: 'Distance to the nearest known charger', unit: 'km', higherIs: 'worse', ramp: 'heat' },
@@ -1134,7 +1188,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

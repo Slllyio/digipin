@@ -576,5 +576,123 @@
       "walk_max_min": 20.0,
       "all_stations_connected": true
     }
+  },
+  "bus_stop_heat": {
+    "stops": 3805,
+    "stops_with_heat_data": 3805,
+    "pct_hot_bare": 18.8,
+    "pct_riders_at_hot_bare": 11.4,
+    "median_stop_lst_c": 38.7,
+    "top_stops": [
+      {
+        "digipin": "4PJ77LF",
+        "name": "",
+        "lon": 77.52924,
+        "lat": 12.98385,
+        "residents_5min": 40509,
+        "lst_c": 41.4,
+        "canopy_pct": 3.6,
+        "priority": 249924
+      },
+      {
+        "digipin": "4PJ77LF",
+        "name": "Kamakshipalya Bus Stop",
+        "lon": 77.52912,
+        "lat": 12.98419,
+        "residents_5min": 40509,
+        "lst_c": 41.4,
+        "canopy_pct": 3.6,
+        "priority": 249924
+      },
+      {
+        "digipin": "4PJ726M",
+        "name": "sumanahalli Bus Stop",
+        "lon": 77.52123,
+        "lat": 12.98737,
+        "residents_5min": 32727,
+        "lst_c": 42.8,
+        "canopy_pct": 3.0,
+        "priority": 247612
+      },
+      {
+        "digipin": "4PJ726M",
+        "name": "VRL Logistics Limited - Kamakshipalyam",
+        "lon": 77.52203,
+        "lat": 12.98581,
+        "residents_5min": 32727,
+        "lst_c": 42.8,
+        "canopy_pct": 3.0,
+        "priority": 247612
+      },
+      {
+        "digipin": "4PJ7245",
+        "name": "",
+        "lon": 77.50638,
+        "lat": 12.98946,
+        "residents_5min": 34300,
+        "lst_c": 42.2,
+        "canopy_pct": 1.4,
+        "priority": 243503
+      },
+      {
+        "digipin": "4PJ7245",
+        "name": "",
+        "lon": 77.50583,
+        "lat": 12.98931,
+        "residents_5min": 34300,
+        "lst_c": 42.2,
+        "canopy_pct": 1.4,
+        "priority": 243503
+      },
+      {
+        "digipin": "4PJ7246",
+        "name": "",
+        "lon": 77.50878,
+        "lat": 12.98862,
+        "residents_5min": 30126,
+        "lst_c": 42.7,
+        "canopy_pct": 1.4,
+        "priority": 228723
+      },
+      {
+        "digipin": "4PJ7246",
+        "name": "",
+        "lon": 77.50768,
+        "lat": 12.98936,
+        "residents_5min": 30126,
+        "lst_c": 42.7,
+        "canopy_pct": 1.4,
+        "priority": 228723
+      },
+      {
+        "digipin": "4P3J3L8",
+        "name": "",
+        "lon": 77.60518,
+        "lat": 12.98486,
+        "residents_5min": 37656,
+        "lst_c": 41.1,
+        "canopy_pct": 4.7,
+        "priority": 218906
+      },
+      {
+        "digipin": "4P3JK42",
+        "name": "",
+        "lon": 77.57721,
+        "lat": 12.95624,
+        "residents_5min": 40685,
+        "lst_c": 40.6,
+        "canopy_pct": 8.1,
+        "priority": 209381
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "gtfs": 3539,
+      "overture": 266
+    }
   }
 }

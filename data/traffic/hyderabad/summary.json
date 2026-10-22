@@ -721,5 +721,122 @@
       "walk_max_min": 20.0,
       "all_stations_connected": true
     }
+  },
+  "bus_stop_heat": {
+    "stops": 166,
+    "stops_with_heat_data": 166,
+    "pct_hot_bare": 22.9,
+    "pct_riders_at_hot_bare": 16.7,
+    "median_stop_lst_c": 39.3,
+    "top_stops": [
+      {
+        "digipin": "4225793",
+        "name": "Chaitanyapuri Bus Stop",
+        "lon": 78.53302,
+        "lat": 17.36873,
+        "residents_5min": 29565,
+        "lst_c": 39.7,
+        "canopy_pct": 2.8,
+        "priority": 135065
+      },
+      {
+        "digipin": "42257PC",
+        "name": "Karmanghat Bus Stop",
+        "lon": 78.5325,
+        "lat": 17.34448,
+        "residents_5min": 25605,
+        "lst_c": 39.6,
+        "canopy_pct": 3.4,
+        "priority": 113778
+      },
+      {
+        "digipin": "422579L",
+        "name": "VV Nagar Bus Stop",
+        "lon": 78.53071,
+        "lat": 17.36305,
+        "residents_5min": 26920,
+        "lst_c": 39.4,
+        "canopy_pct": 12.0,
+        "priority": 104234
+      },
+      {
+        "digipin": "4225FM4",
+        "name": "Bapu Nagar Bus Stop",
+        "lon": 78.41841,
+        "lat": 17.37412,
+        "residents_5min": 21108,
+        "lst_c": 39.7,
+        "canopy_pct": 1.6,
+        "priority": 97620
+      },
+      {
+        "digipin": "4225745",
+        "name": "Green Park Colony Bus Stop",
+        "lon": 78.5263,
+        "lat": 17.3487,
+        "residents_5min": 24488,
+        "lst_c": 39.0,
+        "canopy_pct": 4.7,
+        "priority": 93348
+      },
+      {
+        "digipin": "42252M2",
+        "name": "Arundathi Colony Bus Stop",
+        "lon": 78.4902,
+        "lat": 17.3408,
+        "residents_5min": 19373,
+        "lst_c": 39.7,
+        "canopy_pct": 3.5,
+        "priority": 87866
+      },
+      {
+        "digipin": "4225759",
+        "name": "Saroor Nagar Bus Terminal",
+        "lon": 78.53544,
+        "lat": 17.35169,
+        "residents_5min": 21234,
+        "lst_c": 39.3,
+        "canopy_pct": 7.0,
+        "priority": 84915
+      },
+      {
+        "digipin": "4225CLJ",
+        "name": "Tallagadda Bus Stop",
+        "lon": 78.44177,
+        "lat": 17.3776,
+        "residents_5min": 18654,
+        "lst_c": 39.6,
+        "canopy_pct": 5.3,
+        "priority": 81261
+      },
+      {
+        "digipin": "4225CT8",
+        "name": "Bangalore Goa Roadways",
+        "lon": 78.4755,
+        "lat": 17.3788,
+        "residents_5min": 14264,
+        "lst_c": 40.8,
+        "canopy_pct": 3.0,
+        "priority": 80249
+      },
+      {
+        "digipin": "42222LM",
+        "name": "Old Bowenpally Bus Station",
+        "lon": 78.47887,
+        "lat": 17.47674,
+        "residents_5min": 18996,
+        "lst_c": 39.4,
+        "canopy_pct": 5.2,
+        "priority": 79236
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "overture": 166
+    }
   }
 }

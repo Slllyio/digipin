@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T09:50:32Z",
+  "generated": "2026-10-22T10:00:04Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -1858,6 +1858,245 @@
             "north": 17.773193359375
           },
           "json": "bus_service/bengaluru.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "bus_stop_heat",
+      "title": "Heat and shade at bus stops",
+      "description": "Bus stops from OpenStreetMap, open GTFS feeds and Overture Maps places, each with the daytime land surface temperature and tree canopy of its cell and the residents within about a 5-minute walk. Hot and bare: 40+ \u00b0C surface with under 10% canopy. Priority = residents \u00d7 degrees above 35 \u00b0C \u00d7 unshaded share. Surface temperature is not air temperature, and 30 m canopy misses single trees and shelter roofs.",
+      "source": "pipeline/traffic/bus_stop_heat.py over bus stops + surface_heat + vegetation + population",
+      "license": "ODbL (OpenStreetMap, BMTC GTFS) + CDLA-Permissive-2.0 (Overture places) + derived EE layers",
+      "group": "Traffic & mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "stops",
+          "label": "Bus stops",
+          "type": "number",
+          "agg": "sum",
+          "unit": "stops",
+          "domain": [
+            1,
+            14
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hot_bare_stops",
+          "label": "Bus stops at 40+ \u00b0C surface with under 10% tree canopy",
+          "type": "number",
+          "agg": "sum",
+          "unit": "stops",
+          "domain": [
+            0,
+            14
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "stop_lst_c",
+          "label": "Daytime surface temperature at the stops",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b0C",
+          "domain": [
+            30,
+            50
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "stop_canopy_pct",
+          "label": "Tree canopy at the stops",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            40
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "shelter_priority",
+          "label": "Shelter / tree priority (waiting residents \u00d7 heat \u00d7 no shade)",
+          "type": "number",
+          "agg": "max",
+          "unit": "score",
+          "domain": [
+            0,
+            410653
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "shelter_priority",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 74,
+          "bbox": {
+            "west": 72.480224609375,
+            "south": 22.95654296875,
+            "east": 72.673583984375,
+            "north": 23.112548828125
+          },
+          "json": "bus_stop_heat/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 2883,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "bus_stop_heat/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 30,
+          "bbox": {
+            "west": 77.340576171875,
+            "south": 23.191650390625,
+            "east": 77.48779296875,
+            "north": 23.294921875
+          },
+          "json": "bus_stop_heat/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 199,
+          "bbox": {
+            "west": 80.131103515625,
+            "south": 12.899658203125,
+            "east": 80.306884765625,
+            "north": 13.17431640625
+          },
+          "json": "bus_stop_heat/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 595,
+          "bbox": {
+            "west": 76.841796875,
+            "south": 28.403564453125,
+            "east": 77.34716796875,
+            "north": 28.878173828125
+          },
+          "json": "bus_stop_heat/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 1,
+          "bbox": {
+            "west": 77.305419921875,
+            "south": 24.641845703125,
+            "east": 77.3076171875,
+            "north": 24.64404296875
+          },
+          "json": "bus_stop_heat/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 158,
+          "bbox": {
+            "west": 78.30078125,
+            "south": 17.307373046875,
+            "east": 78.599609375,
+            "north": 17.546875
+          },
+          "json": "bus_stop_heat/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 31,
+          "bbox": {
+            "west": 75.604736328125,
+            "south": 22.532470703125,
+            "east": 75.987060546875,
+            "north": 22.88623046875
+          },
+          "json": "bus_stop_heat/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 73,
+          "bbox": {
+            "west": 75.701416015625,
+            "south": 26.812744140625,
+            "east": 75.9013671875,
+            "north": 27.001708984375
+          },
+          "json": "bus_stop_heat/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 181,
+          "bbox": {
+            "west": 88.28076171875,
+            "south": 22.448974609375,
+            "east": 88.449951171875,
+            "north": 22.64892578125
+          },
+          "json": "bus_stop_heat/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 13,
+          "bbox": {
+            "west": 80.891357421875,
+            "south": 26.78857421875,
+            "east": 81.0166015625,
+            "north": 26.905029296875
+          },
+          "json": "bus_stop_heat/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 234,
+          "bbox": {
+            "west": 72.78564453125,
+            "south": 18.906982421875,
+            "east": 72.98779296875,
+            "north": 19.267333984375
+          },
+          "json": "bus_stop_heat/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 61,
+          "bbox": {
+            "west": 73.7568359375,
+            "south": 18.43017578125,
+            "east": 73.98974609375,
+            "north": 18.62353515625
+          },
+          "json": "bus_stop_heat/pune.json",
           "parquet": null
         }
       ]

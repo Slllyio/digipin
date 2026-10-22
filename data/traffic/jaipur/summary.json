@@ -658,5 +658,122 @@
       "walk_max_min": 20.0,
       "all_stations_connected": true
     }
+  },
+  "bus_stop_heat": {
+    "stops": 77,
+    "stops_with_heat_data": 77,
+    "pct_hot_bare": 90.9,
+    "pct_riders_at_hot_bare": 92.7,
+    "median_stop_lst_c": 43.2,
+    "top_stops": [
+      {
+        "digipin": "33C638F",
+        "name": "Peetal Factory Bus Stand",
+        "lon": 75.7972,
+        "lat": 26.93309,
+        "residents_5min": 16425,
+        "lst_c": 44.0,
+        "canopy_pct": 3.8,
+        "priority": 142208
+      },
+      {
+        "digipin": "33C6373",
+        "name": "Kalpana Travels PrivateLimited (Ticket Booking)",
+        "lon": 75.79811,
+        "lat": 26.9217,
+        "residents_5min": 16942,
+        "lst_c": 43.0,
+        "canopy_pct": 3.7,
+        "priority": 130521
+      },
+      {
+        "digipin": "33C6379",
+        "name": "R.S.R.T.C, Bus Depot, Jaipur",
+        "lon": 75.80077,
+        "lat": 26.92375,
+        "residents_5min": 15379,
+        "lst_c": 43.2,
+        "canopy_pct": 0.8,
+        "priority": 125099
+      },
+      {
+        "digipin": "33C6379",
+        "name": "Main Bus Station",
+        "lon": 75.80074,
+        "lat": 26.92334,
+        "residents_5min": 15379,
+        "lst_c": 43.2,
+        "canopy_pct": 0.8,
+        "priority": 125099
+      },
+      {
+        "digipin": "33C67F2",
+        "name": "Jaipur Eidgah Bus Stand",
+        "lon": 75.84425,
+        "lat": 26.93046,
+        "residents_5min": 15324,
+        "lst_c": 43.1,
+        "canopy_pct": 0.2,
+        "priority": 123876
+      },
+      {
+        "digipin": "33C6353",
+        "name": "RSRTC Jaipur Depot",
+        "lon": 75.79149,
+        "lat": 26.91234,
+        "residents_5min": 14363,
+        "lst_c": 43.4,
+        "canopy_pct": 2.5,
+        "priority": 117633
+      },
+      {
+        "digipin": "33C6CPP",
+        "name": "Space bus stand",
+        "lon": 75.79235,
+        "lat": 26.93559,
+        "residents_5min": 15235,
+        "lst_c": 42.6,
+        "canopy_pct": 2.0,
+        "priority": 113470
+      },
+      {
+        "digipin": "33C637C",
+        "name": "Jaipur Bus Station",
+        "lon": 75.80009,
+        "lat": 26.92386,
+        "residents_5min": 15649,
+        "lst_c": 42.4,
+        "canopy_pct": 5.0,
+        "priority": 110012
+      },
+      {
+        "digipin": "33C637C",
+        "name": "Sindhi Camp",
+        "lon": 75.80017,
+        "lat": 26.92297,
+        "residents_5min": 15649,
+        "lst_c": 42.4,
+        "canopy_pct": 5.0,
+        "priority": 110012
+      },
+      {
+        "digipin": "33C625C",
+        "name": "Kalpana Cargo (A Division of Kalpana Travels Private Limited)",
+        "lon": 75.82531,
+        "lat": 26.91552,
+        "residents_5min": 13989,
+        "lst_c": 42.9,
+        "canopy_pct": 6.6,
+        "priority": 103219
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "overture": 77
+    }
   }
 }

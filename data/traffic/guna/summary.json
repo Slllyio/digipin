@@ -1021,5 +1021,32 @@
       "walk_max_min": 20.0,
       "all_stations_connected": true
     }
+  },
+  "bus_stop_heat": {
+    "stops": 1,
+    "stops_with_heat_data": 1,
+    "pct_hot_bare": 100.0,
+    "pct_riders_at_hot_bare": 100.0,
+    "median_stop_lst_c": 44.7,
+    "top_stops": [
+      {
+        "digipin": "35F5K96",
+        "name": "Guna Bus Stop",
+        "lon": 77.30648,
+        "lat": 24.64346,
+        "residents_5min": 13962,
+        "lst_c": 44.7,
+        "canopy_pct": 4.6,
+        "priority": 129202
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "overture": 1
+    }
   }
 }

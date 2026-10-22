@@ -768,5 +768,122 @@
       "walk_max_min": 20.0,
       "all_stations_connected": true
     }
+  },
+  "bus_stop_heat": {
+    "stops": 207,
+    "stops_with_heat_data": 207,
+    "pct_hot_bare": 74.9,
+    "pct_riders_at_hot_bare": 72.7,
+    "median_stop_lst_c": 42.0,
+    "top_stops": [
+      {
+        "digipin": "4T39TL6",
+        "name": "Vadapalani Bus Stand",
+        "lon": 80.20695,
+        "lat": 13.04932,
+        "residents_5min": 35345,
+        "lst_c": 43.2,
+        "canopy_pct": 7.7,
+        "priority": 267512
+      },
+      {
+        "digipin": "4T38MJP",
+        "name": "Wallajah Road Bus Stop",
+        "lon": 80.27567,
+        "lat": 13.06617,
+        "residents_5min": 26661,
+        "lst_c": 43.2,
+        "canopy_pct": 0.7,
+        "priority": 217090
+      },
+      {
+        "digipin": "4T38454",
+        "name": "Broadway Bus Stand",
+        "lon": 80.29013,
+        "lat": 13.0942,
+        "residents_5min": 21334,
+        "lst_c": 44.6,
+        "canopy_pct": 0.4,
+        "priority": 203987
+      },
+      {
+        "digipin": "4T38447",
+        "name": "Mannadi Bus Stop",
+        "lon": 80.28643,
+        "lat": 13.09578,
+        "residents_5min": 20664,
+        "lst_c": 44.6,
+        "canopy_pct": 0.5,
+        "priority": 197383
+      },
+      {
+        "digipin": "4T38L56",
+        "name": "TVS",
+        "lon": 80.25996,
+        "lat": 13.05939,
+        "residents_5min": 26694,
+        "lst_c": 42.7,
+        "canopy_pct": 4.1,
+        "priority": 197117
+      },
+      {
+        "digipin": "4T39T8L",
+        "name": "Amjikarai Bus Stand",
+        "lon": 80.22675,
+        "lat": 13.07406,
+        "residents_5min": 21198,
+        "lst_c": 44.2,
+        "canopy_pct": 3.0,
+        "priority": 189171
+      },
+      {
+        "digipin": "4T39T43",
+        "name": "OYO 13006 Arumbakkam Inn",
+        "lon": 80.21158,
+        "lat": 13.06077,
+        "residents_5min": 19218,
+        "lst_c": 44.8,
+        "canopy_pct": 0.4,
+        "priority": 187583
+      },
+      {
+        "digipin": "4T384M2",
+        "name": "Broadway Bus Terminus",
+        "lon": 80.2838,
+        "lat": 13.0874,
+        "residents_5min": 22671,
+        "lst_c": 43.7,
+        "canopy_pct": 4.9,
+        "priority": 187573
+      },
+      {
+        "digipin": "4T384M2",
+        "name": "Paris Bus Stop",
+        "lon": 80.2835,
+        "lat": 13.08771,
+        "residents_5min": 22671,
+        "lst_c": 43.7,
+        "canopy_pct": 4.9,
+        "priority": 187573
+      },
+      {
+        "digipin": "4T32699",
+        "name": "Vijayanagar Bus Stand",
+        "lon": 80.22144,
+        "lat": 12.97598,
+        "residents_5min": 21639,
+        "lst_c": 43.8,
+        "canopy_pct": 1.7,
+        "priority": 187186
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "overture": 207
+    }
   }
 }

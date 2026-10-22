@@ -733,5 +733,122 @@
       "walk_max_min": 20.0,
       "all_stations_connected": true
     }
+  },
+  "bus_stop_heat": {
+    "stops": 31,
+    "stops_with_heat_data": 31,
+    "pct_hot_bare": 64.5,
+    "pct_riders_at_hot_bare": 39.5,
+    "median_stop_lst_c": 41.7,
+    "top_stops": [
+      {
+        "digipin": "3MC87FF",
+        "name": "Indore Gangwal Bus Stand",
+        "lon": 75.84086,
+        "lat": 22.71292,
+        "residents_5min": 22223,
+        "lst_c": 42.5,
+        "canopy_pct": 3.1,
+        "priority": 161506
+      },
+      {
+        "digipin": "3M9FFMC",
+        "name": "Palasia Bus Stop",
+        "lon": 75.8871,
+        "lat": 22.72351,
+        "residents_5min": 28574,
+        "lst_c": 40.1,
+        "canopy_pct": 10.7,
+        "priority": 130135
+      },
+      {
+        "digipin": "3M9FFMK",
+        "name": "Geeta Bhavan BRT Bus Stop",
+        "lon": 75.8844,
+        "lat": 22.71897,
+        "residents_5min": 27259,
+        "lst_c": 40.4,
+        "canopy_pct": 14.5,
+        "priority": 125855
+      },
+      {
+        "digipin": "3MC8PFP",
+        "name": "Rau Bus Stand",
+        "lon": 75.81045,
+        "lat": 22.63662,
+        "residents_5min": 18583,
+        "lst_c": 42.0,
+        "canopy_pct": 5.1,
+        "priority": 123447
+      },
+      {
+        "digipin": "3MC878C",
+        "name": "Indor Bus Station",
+        "lon": 75.86876,
+        "lat": 22.71396,
+        "residents_5min": 17358,
+        "lst_c": 42.3,
+        "canopy_pct": 10.3,
+        "priority": 113662
+      },
+      {
+        "digipin": "3MC878F",
+        "name": "Sarwate Bus Stand",
+        "lon": 75.86835,
+        "lat": 22.71394,
+        "residents_5min": 15340,
+        "lst_c": 42.7,
+        "canopy_pct": 4.0,
+        "priority": 113393
+      },
+      {
+        "digipin": "3M9FFL6",
+        "name": "Treebo Omni Palace - Hotel",
+        "lon": 75.88192,
+        "lat": 22.71774,
+        "residents_5min": 26841,
+        "lst_c": 39.6,
+        "canopy_pct": 12.3,
+        "priority": 108282
+      },
+      {
+        "digipin": "3M9FFMF",
+        "name": "Velocity Terminal",
+        "lon": 75.88416,
+        "lat": 22.72325,
+        "residents_5min": 28948,
+        "lst_c": 39.7,
+        "canopy_pct": 24.6,
+        "priority": 102586
+      },
+      {
+        "digipin": "3MC88TM",
+        "name": "Indore Nagar Palika Nigam Bus Stop",
+        "lon": 75.8705,
+        "lat": 22.71515,
+        "residents_5min": 19893,
+        "lst_c": 41.2,
+        "canopy_pct": 20.1,
+        "priority": 98546
+      },
+      {
+        "digipin": "3MC887T",
+        "name": "City Bus Stasion",
+        "lon": 75.87459,
+        "lat": 22.73273,
+        "residents_5min": 13697,
+        "lst_c": 41.6,
+        "canopy_pct": 2.9,
+        "priority": 87779
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "overture": 31
+    }
   }
 }

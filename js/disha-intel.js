@@ -28,6 +28,7 @@ const DishaIntel = (() => {
             flood: /\b(flood\s?plain|flood (exposure|exposed)|(how many|people|residents|population|who)\b.{0,30}\b(flood(ed|s|ing)?|floodplain)\b.{0,20}\b(live|exposed|risk|zone|area))/i,
             fifteen: /\b(15|fifteen)[\s-]?min(ute)?s?\b|\bwalk(ing|able)? (to|distance (to|of)) (daily|essentials?|shops|amenities)|\bdaily needs\b|\bland[\s-]?use mix\b/i,
             waterlog: /\b(water[\s-]?log\w*|rain(water)? (pools?|pooling|collects?|stagnat\w*)|pluvial|urban flood\w*|stagnant water|where (does )?(the )?rain(water)? (collect|pool|stand)s?)\b/i,
+            busheat: /\b(add|more|new|build|need\w*|install) (bus )?shelters?\b|\b(bus (stops?|shelters?)|bus[\s-]?stop shelters?|waiting (for (the|a) bus|in the sun))\b.{0,40}\b(heat|hot|sun|shade|shad(ed|y)|shelters?|trees?)\b|\b(heat|hot|sun|shade|shelters?)\b.{0,30}\bbus (stops?|shelters?)\b/i,
             jobaccess: /\b(jobs?|work(places?)?|employment|offices?)\b.{0,40}\b(reach\w*|within \d+ ?min\w*|access\w*|commut\w*|by (car|train|metro|public transport|transit))\b|\b(job|employment) access\w*\b|\b(reach|get to)\b.{0,20}\b(jobs?|work)\b/i,
             cleanwalk: /\b(exhaust|fumes|pollut\w*|air quality|breath\w*)\b.{0,40}\b(walk\w*|routes?|commut\w*|school run|way to school|cycl\w*)\b|\b(walk\w*|routes?|commut\w*)\b.{0,40}\b(exhaust|fumes|pollut\w*)\b|\bclean(er)? (air )?routes?\b/i,
             freight: /\b(trucks?|lorr(y|ies)|freight|logistics|goods vehicles?|hgvs?|warehous\w*|godowns?|delivery vans?)\b/i,
