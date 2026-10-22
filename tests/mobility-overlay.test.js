@@ -28,3 +28,18 @@ describe('MobilityOverlay.KINDS — legend', () => {
         for (const k of O.KINDS) expect(k.label).toBeTruthy();
     });
 });
+
+describe('MobilityOverlay.dataUrl — follows the selected city', () => {
+    it('loads the selected city region and falls back to Indore', () => {
+        const CS = globalThis.CitySelector;
+        const prev = CS.currentArea;
+        try {
+            CS.currentArea = () => ({ region: 'delhi' });
+            expect(O.region()).toBe('delhi');
+            expect(O.dataUrl()).toBe('./data/safety/delhi/chokepoints.geojson');
+            CS.currentArea = () => null;
+            expect(O.region()).toBe('indore_pilot');
+            expect(O.dataUrl('pune')).toBe('./data/safety/pune/chokepoints.geojson');
+        } finally { CS.currentArea = prev; }
+    });
+});
