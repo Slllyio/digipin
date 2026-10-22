@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-10-21T22:09:21Z",
-  "count": 19,
+  "generated_at_iso": "2026-10-22T00:41:14Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us6000u3yp",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-21T21:58:48.618000+00:00",
+      "latitude": 56.863,
+      "longitude": -34.1306,
+      "depth_km": 10.0,
+      "place": "Reykjanes Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3yp",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us6000u3yj",
       "magnitude": 5.3,
@@ -205,30 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3rn",
       "tsunami": 0,
       "significance": 314
-    },
-    {
-      "id": "us6000u3r3",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-20T23:24:27.101000+00:00",
-      "latitude": -25.502,
-      "longitude": 179.592,
-      "depth_km": 529.781,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3r3",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u3r1",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-20T23:16:43.934000+00:00",
-      "latitude": 37.3012,
-      "longitude": 75.121,
-      "depth_km": 65.601,
-      "place": "115 km NNE of Barishal, Pakistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u3r1",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }

@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-21T22:09:21Z",
+  "generated_at_iso": "2026-10-22T00:41:19Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-22 05:00:02|36.951,71.319",
+      "magnitude": 3.5,
+      "origin_time": "2026-10-22 05:00:02",
+      "latitude": 36.951,
+      "longitude": 71.319,
+      "depth_km": 133.0,
+      "region": "Afghanistan",
+      "location": "70km ESE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-22 01:00:32|25.848,94.361",
       "magnitude": 3.6,
@@ -1639,17 +1650,6 @@
       "depth_km": 103.0,
       "region": "Afghanistan",
       "location": "151km W of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-06 04:27:25|25.070,93.568",
-      "magnitude": 2.9,
-      "origin_time": "2026-10-06 04:27:25",
-      "latitude": 25.07,
-      "longitude": 93.568,
-      "depth_km": 12.0,
-      "region": "Tamenglong, Manipur",
-      "location": "46km NW of Imphal, Manipur, India",
       "review_status": "Reviewed"
     }
   ]
