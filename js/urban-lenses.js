@@ -2032,7 +2032,7 @@ const UrbanLenses = (() => {
         prank, wmean, wquantile, gini, lorenz, palma, ols, pearson, grid, frameFrom, frame, allNeeds,
         e2sfca, walkNet, pedShed, DIRS, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
         register, _lenses: RUN,
-        _kit: { KM_LAT, _fin, _round, _people, _sumOver, _residents, wmean, wquantile, within, frame, allNeeds },
+        _kit: { KM_LAT, DIRS, _fin, _round, _people, _sumOver, _residents, wmean, wquantile, within, frame, allNeeds },
     };
     return API;
 })();

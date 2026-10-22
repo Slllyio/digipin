@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 75.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "noise": {
      "label": "Residents above 53 dB",
      "value": 88.1,
@@ -147,6 +153,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 20.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 39.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -270,6 +282,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 69.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "noise": {
      "label": "Residents above 53 dB",
      "value": 68.8,
@@ -381,6 +399,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 76.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -504,6 +528,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 62.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "noise": {
      "label": "Residents above 53 dB",
      "value": 66.6,
@@ -624,6 +654,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 65.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "noise": {
      "label": "Residents above 53 dB",
      "value": 55,
@@ -735,6 +771,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 25.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 70.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -858,6 +900,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 64.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "noise": {
      "label": "Residents above 53 dB",
      "value": 68.8,
@@ -978,6 +1026,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 97.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "noise": {
      "label": "Residents above 53 dB",
      "value": 70,
@@ -1092,6 +1146,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 52,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "noise": {
      "label": "Residents above 53 dB",
      "value": 75.2,
@@ -1203,6 +1263,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 71.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1326,6 +1392,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 17.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "noise": {
      "label": "Residents above 53 dB",
      "value": 88.2,
@@ -1443,6 +1515,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "shade": {
+     "label": "Walk to a station or school under 10% tree cover",
+     "value": 29.1,
      "unit": "%",
      "higherIs": "worse"
     },

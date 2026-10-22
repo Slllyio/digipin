@@ -65,6 +65,8 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('what happens to traffic in Delhi when it rains heavily in the evening?')).toEqual({ type: 'monsoonroads', level: 'severe', period: 'pm', city: 'delhi' });
         expect(M('which roads jam when the Yamuna floods')).toEqual({ type: 'monsoonroads', level: 'extreme', period: 'am' });
         expect(M('how many people live in the flood zone')).not.toEqual(expect.objectContaining({ type: 'monsoonroads' }));
+        expect(M('is the walk to the metro shaded in Delhi?')).toEqual({ type: 'lens', lens: 'shade', city: 'delhi' });
+        expect(M('which walking routes to school have no shade')).toEqual({ type: 'lens', lens: 'shade' });
         expect(M('how is EV charging coverage in Delhi?')).toEqual({ type: 'lens', lens: 'ev', city: 'delhi' });
         expect(M('where should EV chargers go')).toEqual({ type: 'lens', lens: 'siting', preset: 'ev_charging' });
         expect(M('what if a new metro station opened here?')).toEqual({ type: 'stationwhatif', here: true });

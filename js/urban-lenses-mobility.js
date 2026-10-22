@@ -7,7 +7,7 @@
 const UrbanLensesMobility = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { KM_LAT, _fin, _round, _people, _sumOver, _residents, wmean, wquantile, within, frame, allNeeds } = UrbanLenses._kit;
+    const { KM_LAT, DIRS, _fin, _round, _people, _sumOver, _residents, wmean, wquantile, within, frame, allNeeds } = UrbanLenses._kit;
 
     const ROAD_KM = 0.25, JAM_VC = 0.9;
     const NOISE_WHO = 53, NOISE_HIGH = 65;
@@ -312,7 +312,150 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // ── shaded walks ────────────────────────────────────────────────────────
+
+    const SHADE_KM = 1.6;          // ~20 minutes on foot
+    const SHADE_LOW = 10;          // % tree canopy along the route counted as unshaded
+
+    /**
+     * One multi-source Dijkstra over the walking network (osm_walk links; all
+     * 8 neighbours where a city has none) from every target cell, out to `km`.
+     * Returns per cell: dist (km), shade (mean tree canopy % along the route),
+     * heat (mean daytime LST along it), pred (next cell towards the target).
+     */
+    function walkTree(fr, isTarget, km = SHADE_KM) {
+        const g = fr.grid, n = g.n, c = fr.cols;
+        const links = c['osm_walk.links'], can = c['vegetation.tree_canopy_pct'], lst = c['surface_heat.lst_day_c'];
+        const useLinks = !!links && links.some(v => v > 0);
+        const step = DIRS.map(([a, b]) => Math.hypot(a * g.dy, b * g.dx));
+        const dist = new Float64Array(n).fill(Infinity), sh = new Float64Array(n), ht = new Float64Array(n), htw = new Float64Array(n);
+        const pred = new Int32Array(n).fill(-1);
+        const cv = (i) => (can && _fin(can[i]) ? can[i] : 0);
+        const hv = (i) => (lst && _fin(lst[i]) ? lst[i] : NaN);
+        const hd = [], hj = [];
+        const push = (d, j) => {
+            let k = hd.length; hd.push(d); hj.push(j);
+            while (k > 0) { const p = (k - 1) >> 1; if (hd[p] <= d) break; hd[k] = hd[p]; hj[k] = hj[p]; k = p; }
+            hd[k] = d; hj[k] = j;
+        };
+        const pop = () => {
+            const d = hd[0], j = hj[0], ld = hd.pop(), lj = hj.pop();
+            if (hd.length) {
+                let k = 0;
+                for (;;) {
+                    let ch = 2 * k + 1;
+                    if (ch >= hd.length) break;
+                    if (ch + 1 < hd.length && hd[ch + 1] < hd[ch]) ch++;
+                    if (hd[ch] >= ld) break;
+                    hd[k] = hd[ch]; hj[k] = hj[ch]; k = ch;
+                }
+                hd[k] = ld; hj[k] = lj;
+            }
+            return [d, j];
+        };
+        for (let i = 0; i < n; i++) if (isTarget(i)) { dist[i] = 0; push(0, i); }
+        while (hd.length) {
+            const [d, j] = pop();
+            if (d > dist[j]) continue;
+            const m = useLinks ? links[j] : 255;
+            if (!(m > 0)) continue;
+            for (let b = 0; b < 8; b++) {
+                if (!((m >> b) & 1)) continue;
+                const k = g.cellAt(j, DIRS[b][0], DIRS[b][1]);
+                if (k < 0) continue;
+                const nd = d + step[b];
+                if (nd <= km + 1e-9 && nd < dist[k]) {
+                    dist[k] = nd; pred[k] = j;
+                    sh[k] = sh[j] + step[b] * (cv(j) + cv(k)) / 2;
+                    const h = (hv(j) + hv(k)) / 2;
+                    ht[k] = ht[j] + (_fin(h) ? step[b] * h : 0); htw[k] = htw[j] + (_fin(h) ? step[b] : 0);
+                    push(nd, k);
+                }
+            }
+        }
+        const shade = new Float64Array(n).fill(NaN), heat = new Float64Array(n).fill(NaN);
+        for (let i = 0; i < n; i++) {
+            if (!_fin(dist[i])) continue;
+            shade[i] = dist[i] > 0 ? sh[i] / dist[i] : cv(i);
+            heat[i] = htw[i] > 0 ? ht[i] / htw[i] : hv(i);
+        }
+        return { dist, shade, heat, pred };
+    }
+
+    /** Walkers through each cell when every resident walks the tree to its target. */
+    function walkerLoad(tree, pop, idx) {
+        const n = tree.dist.length, load = new Float64Array(n);
+        for (const i of idx) if (_fin(tree.dist[i]) && pop[i] > 0) load[i] += pop[i];
+        const order = [];
+        for (let i = 0; i < n; i++) if (_fin(tree.dist[i])) order.push(i);
+        order.sort((a, b) => tree.dist[b] - tree.dist[a]);
+        for (const i of order) if (tree.pred[i] >= 0) load[tree.pred[i]] += load[i];
+        return load;
+    }
+
+    function shade(fr) {
+        const c = fr.cols, g = fr.grid, idx = _residents(fr), pop = c['population.population'];
+        if (!c['vegetation.tree_canopy_pct']) return null;
+        const ms = c['rail_access.metro_stations'], rs = c['rail_access.rail_stations'], sch = c['emergency_access.schools'];
+        if (!ms && !rs && !sch) return null;
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const can = c['vegetation.tree_canopy_pct'];
+        const stats = [], out = {};
+        let shadeCol = null, plant = null, headline = '';
+        for (const [key, label, isT] of [
+            ['station', 'a metro or rail station', (ms || rs) ? (i => (ms && ms[i] > 0) || (rs && rs[i] > 0)) : null],
+            ['school', 'a school', sch ? (i => sch[i] > 0) : null]]) {
+            if (!isT) continue;
+            const t = walkTree(fr, isT);
+            const reach = idx.filter(i => _fin(t.dist[i]));
+            const pR = _sumOver(pop, reach, () => true);
+            if (!pR) continue;
+            const pLow = _sumOver(pop, reach, i => t.shade[i] < SHADE_LOW);
+            const mean = wmean(t.shade, pop, reach), heat = wmean(t.heat, pop, reach.filter(i => _fin(t.heat[i])));
+            out[key] = { pR, pLow, mean };
+            stats.push({ label: `Residents within a ${Math.round(SHADE_KM * 12.5)}-minute walk of ${label}`, value: `${_people(pR)} (${_round(100 * pR / total)}%)` });
+            stats.push({ label: `… whose walk there has under ${SHADE_LOW}% tree cover`, value: `${_people(pLow)} (${_round(100 * pLow / pR)}%)`, raw: Math.round(pLow) });
+            if (mean != null) stats.push({ label: `Average tree cover along the walk to ${label}`, value: `${_round(mean)}%` + (heat != null ? ` (surface ${_round(heat)} °C)` : '') });
+            if (key === 'station' || !shadeCol) {
+                shadeCol = new Float64Array(g.n).fill(NaN);
+                for (const i of reach) shadeCol[i] = t.shade[i];
+                const load = walkerLoad(t, pop, reach);
+                plant = new Float64Array(g.n).fill(NaN);
+                for (let i = 0; i < g.n; i++) if (load[i] > 0) plant[i] = load[i] * (1 - (_fin(can[i]) ? can[i] : 0) / 100);
+            }
+        }
+        if (!shadeCol) return null;
+        const order = [];
+        for (let i = 0; i < g.n; i++) if (_fin(plant[i]) && plant[i] > 0) order.push(i);
+        order.sort((a, b) => plant[b] - plant[a]);
+        const picks = [];
+        for (const i of order) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 0.75)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, r) => stats.push({ label: `Plant first ${r + 1}: ${g.codes[i]}`, value: `on the route of ${_people(plant[i] / (1 - (_fin(can[i]) ? can[i] : 0) / 100))} residents, ${_round(_fin(can[i]) ? can[i] : 0)}% canopy` }));
+        const st = out.station, sc = out.school, main = st || sc;
+        const pct = (o) => _round(100 * o.pLow / o.pR);
+        const parts = [];
+        if (st) parts.push(`${pct(st)}% of residents within a 20-minute walk of a station get there under less than ${SHADE_LOW}% tree cover`);
+        if (sc) parts.push(st ? `${pct(sc)}% on the walk to school` : `${pct(sc)}% of residents near a school walk there under less than ${SHADE_LOW}% tree cover`);
+        headline = parts.join('; ') + (picks.length ? '. The busiest unshaded walking cells are listed for planting first.' : '.');
+        return {
+            columns: { walk_shade: shadeCol, plant_priority: plant }, idx, weightKey: 'walk_shade',
+            metric: { label: 'Walk to a station or school under 10% tree cover', value: _round(100 * main.pLow / main.pR), unit: '%', higherIs: 'worse' },
+            headline, stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'shade', equity: true, title: 'Shaded walks', icon: '🌳',
+            question: 'How much tree shade is there on the walk to the station and to school?',
+            field: { key: 'walk_shade', label: 'Tree cover along the walk to the nearest station', unit: '%', higherIs: 'better', ramp: 'greens' },
+            extra: [{ key: 'plant_priority', label: 'Walkers × missing canopy (plant here first)', unit: 'people', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['osm_walk.links', 'vegetation.tree_canopy_pct', 'surface_heat.lst_day_c', 'rail_access.metro_stations', 'rail_access.rail_stations', 'emergency_access.schools', 'wealth.rwi'],
+            method: `A walking tree from every station (and every school) over the OpenStreetMap walking network (8-direction cell links), out to ${SHADE_KM} km (about 20 minutes). Each home takes the route to its nearest target; shade is the mean tree canopy of the cells the route crosses (Meta/WRI 1 m canopy height), heat the mean daytime land surface temperature. Walker load routes every resident down the tree; planting priority is that load × the share of the cell without canopy.`,
+            refs: 'Tran et al. 2024 (1 m canopy height); Deilami et al. 2018 (urban heat and shade); WHO 2016 (urban green spaces and health)' },
         { id: 'noise', equity: true, title: 'Road noise', icon: '🔊',
             question: 'Who lives with main-road noise above the WHO guideline?',
             field: { key: 'noise_lden', label: 'Road noise at home (Lden)', unit: 'dB(A)', higherIs: 'worse', ramp: 'heat' },
@@ -353,7 +496,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev }, { stationSites, stationWhatIf, stationAsk });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

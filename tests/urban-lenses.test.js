@@ -321,6 +321,26 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(cr).toBeLessThan(0.01);
     });
 
+    it('shade lens: canopy along the walk to stations and schools, and where to plant', () => {
+        const can = codes.map((_, i) => (i % SIZE < 3 ? 40 : 2));         // shaded west columns
+        const st = codes.map((_, i) => (i === 0 ? 1 : 0));                // a station in the NW corner
+        const sch = codes.map((_, i) => (i === SIZE - 1 ? 1 : 0));        // a school in the NE corner
+        const f = L.frameFrom(codes, { 'population.population': pop, 'vegetation.tree_canopy_pct': can,
+            'rail_access.metro_stations': st, 'emergency_access.schools': sch });
+        const r = L._lenses.shade(f, {});
+        expect(r.columns.walk_shade[0]).toBe(40);                         // the station cell itself
+        expect(r.columns.walk_shade[1]).toBe(40);
+        expect(r.headline).toMatch(/station/);
+        expect(r.headline).toMatch(/on the walk to school/);
+        expect(r.stats.some(x => x.label.startsWith('Plant first 1'))).toBe(true);
+        const t = L.walkTree(f, i => st[i] > 0);
+        expect(t.dist[0]).toBe(0);
+        expect(t.pred[1]).toBe(0);
+        const load = L.walkerLoad(t, f.cols['population.population'], [...Array(n).keys()].filter(i => Number.isFinite(t.dist[i])));
+        expect(load[0]).toBeGreaterThanOrEqual(load[1]);                  // everyone ends at the station
+        expect(L._lenses.shade(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('cutoff lens: a flooded column strands the far bank from the only clinic', () => {
         const rp = new Array(n).fill(0), depth = new Array(n).fill(0);
         for (let r = 0; r < SIZE; r++) { rp[r * SIZE + 3] = 100; depth[r * SIZE + 3] = 1; }   // column 3 floods

@@ -284,6 +284,18 @@ headline then reports the vehicle trips cut off. Pumps, drains and the timing
 of a storm are not modelled, so read it as which corridors carry the
 diverted traffic, not as a forecast.
 
+### 12. Shaded walks (Urban lens `shade`)
+
+One multi-source Dijkstra per target type (stations from `rail_access`,
+schools from `emergency_access`) over the `osm_walk` cell links, out to
+1.6 km (~20 minutes). Each home takes the route to its nearest target; the
+route's shade is the mean Meta/WRI tree canopy of the cells it crosses and
+its heat the mean daytime LST. Residents are then pushed down the tree to
+count whose route passes each cell; planting priority = that count × the
+cell's missing canopy, and the top five cells (≥ 750 m apart) are listed.
+Delhi: 63% of residents within 20 minutes of a station walk there under less
+than 10% tree cover; 72% for the walk to school.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |
