@@ -379,6 +379,42 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.roadsafety(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('cycling lens: schools on the same low-stress island within reach', () => {
+        const mid = Math.floor(SIZE / 2);
+        // Two islands split by a main road down the middle column; the school is on the west side.
+        const isl = codes.map((_, i) => (i % SIZE < mid ? 1 : i % SIZE > mid ? 2 : null));
+        const area = codes.map((_, i) => (i % SIZE < mid ? 3 : i % SIZE > mid ? 0.5 : null));
+        const gain = codes.map((_, i) => (i === mid ? 900 : 0));
+        const sch = codes.map((_, i) => (i === 0 ? 1 : 0));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'cycling.island': isl, 'cycling.island_km2': area,
+            'cycling.crossing_gain': gain, 'emergency_access.schools': sch });
+        const r = L._lenses.cycling(f, {});
+        expect(r.metric.higherIs).toBe('better');
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.metric.value).toBeLessThan(100);
+        expect(r.columns.cycle_school[0]).toBe(1);
+        expect(r.columns.cycle_school[SIZE - 1]).toBe(0);            // across the main road
+        expect(r.stats.some(x => x.label.startsWith('Safe cycle crossing 1'))).toBe(true);
+        expect(r.headline).toMatch(/box them into/);
+        expect(L._lenses.cycling(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
+    it('nightwalk lens: dark or deserted stretches on the walk to the station', () => {
+        const rad = codes.map((_, i) => (i % SIZE === 2 ? 3 : 30));        // a dark column
+        const st = codes.map((_, i) => (i === 0 ? 1 : 0));
+        const food = codes.map(() => 1);
+        const f = L.frameFrom(codes, { 'population.population': pop, 'nightlights.radiance': rad, 'rail_access.metro_stations': st,
+            'osm_amenities.food': food });
+        const r = L._lenses.nightwalk(f, {});
+        expect(r.columns.night_route[0]).toBe(30);
+        expect(r.columns.night_route[1]).toBe(30);
+        expect(r.columns.night_route[3]).toBe(3);                          // walks west through the dark column
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.metric.value).toBeLessThan(100);
+        expect(r.stats.some(x => x.label.startsWith('Light first 1'))).toBe(true);
+        expect(L._lenses.nightwalk(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('mobility scorecard ranks cities on direction-aware 0–100 scores', () => {
         const m = (v, higherIs, unit = '%') => ({ label: 'x', value: v, unit, higherIs });
         const league = { generated: '2026-10-22', cities: {

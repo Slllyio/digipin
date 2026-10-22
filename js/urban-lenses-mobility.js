@@ -497,7 +497,6 @@ const UrbanLensesMobility = (() => {
             if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1.5)) continue;
             picks.push(i);
         }
-        const what = gtfs ? `a bus every ${60 / BUS_FREQ_HR} minutes or better (07–10 h, GTFS)` : 'any mapped bus stop';
         const stats = [
             { label: `Residents beside the busiest fifth of arterials (by peak traffic)`, value: `${_people(pAlong)} (${_round(100 * pAlong / total)}%)` },
             { label: `… with no ${gtfs ? 'frequent bus' : 'bus stop'} within ${BUS_KM * 1000} m and no station within 800 m`, value: `${_people(pGap)} (${_round(100 * pGap / pAlong)}%)`, raw: Math.round(pGap) },
@@ -595,6 +594,148 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // ── low-stress cycling ──────────────────────────────────────────────────
+
+    const BIKE_KM = 2.5, SMALL_ISLAND_KM2 = 1, AREA_CAP = 10;   // ~3 km ride (×1.3) ≈ 12 minutes at 15 km/h
+
+    function cycling(fr) {
+        const c = fr.cols, g = fr.grid, n = g.n, idx = _residents(fr), pop = c['population.population'];
+        const isl = c['cycling.island'], area = c['cycling.island_km2'], gain = c['cycling.crossing_gain'];
+        if (!isl || !area) return null;
+        const sch = c['emergency_access.schools'], ms = c['rail_access.metro_stations'], rs = c['rail_access.rail_stations'];
+        const kpct = c['demographics.children_pct'];
+        const within = (i, list) => {
+            for (const j of list) if (Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) <= BIKE_KM) return true;
+            return false;
+        };
+        const byIsland = (test) => {
+            const m = new Map();
+            for (let i = 0; i < n; i++) if (_fin(isl[i]) && test(i)) { let l = m.get(isl[i]); if (!l) m.set(isl[i], (l = [])); l.push(i); }
+            return m;
+        };
+        const total = _sumOver(pop, idx, () => true) || 1;
+        const stats = [];
+        const small = _sumOver(pop, idx, i => !_fin(area[i]) || area[i] < SMALL_ISLAND_KM2);
+        stats.push({ label: `Residents who can ride less than ${SMALL_ISLAND_KM2} km² before meeting a main road`, value: `${_people(small)} (${_round(100 * small / total)}%)`, raw: Math.round(small) });
+        const med = wquantile(area, pop, idx.filter(i => _fin(area[i])), 0.5);
+        if (med != null) stats.push({ label: 'Median low-stress area per resident', value: `${_round(med, 1)} km²` });
+        let metric = null, headline = '';
+        const reach = new Float64Array(n).fill(NaN);
+        if (sch && sch.some(v => v > 0)) {
+            const S = byIsland(i => sch[i] > 0);
+            let kAll = 0, kOk = 0;
+            for (const i of idx) {
+                const k = (pop[i] || 0) * (kpct && _fin(kpct[i]) ? kpct[i] / 100 : 0.25);
+                kAll += k;
+                const ok = _fin(isl[i]) && S.has(isl[i]) && within(i, S.get(isl[i]));
+                reach[i] = ok ? 1 : 0;
+                if (ok) kOk += k;
+            }
+            if (kAll) {
+                metric = { label: 'Children who can cycle to school without crossing a main road', value: _round(100 * kOk / kAll), unit: '%', higherIs: 'better' };
+                stats.unshift({ label: `Children with a school within ${BIKE_KM} km on low-stress streets only`, value: `${_people(kOk)} (${_round(100 * kOk / kAll)}%)`, raw: Math.round(kOk) });
+                headline = `${_round(100 * kOk / kAll)}% of children have a school within about ${Math.round(BIKE_KM * 1.3)} km that they can cycle to on quiet streets without crossing a main road`;
+            }
+        }
+        if ((ms && ms.some(v => v > 0)) || (rs && rs.some(v => v > 0))) {
+            const T = byIsland(i => (ms && ms[i] > 0) || (rs && rs[i] > 0));
+            const ok = _sumOver(pop, idx, i => _fin(isl[i]) && T.has(isl[i]) && within(i, T.get(isl[i])));
+            stats.push({ label: `Residents who can cycle to a metro or rail station on low-stress streets (≤ ${BIKE_KM} km)`, value: `${_people(ok)} (${_round(100 * ok / total)}%)` });
+            if (!headline) headline = `${_round(100 * ok / total)}% of residents can cycle to a station on quiet streets without crossing a main road`;
+        }
+        const cyc = c['cycling.cycleway_km'];
+        if (cyc) {
+            let km = 0;
+            for (let i = 0; i < n; i++) if (cyc[i] > 0) km += cyc[i];
+            stats.push({ label: 'Mapped cycle tracks', value: `${_round(km)} km (${_round(km / (total / 1e5), 2)} km per lakh residents)` });
+        }
+        const picks = [];
+        if (gain) {
+            const order = [];
+            for (let i = 0; i < n; i++) if (gain[i] > 0) order.push(i);
+            order.sort((a, b) => gain[b] - gain[a]);
+            for (const i of order) {
+                if (picks.length >= 5) break;
+                if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1)) continue;
+                picks.push(i);
+            }
+            picks.forEach((i, r) => stats.push({ label: `Safe cycle crossing ${r + 1}: ${g.codes[i]}`, value: `joins ${_people(gain[i])} residents to a bigger quiet-street network` }));
+        }
+        headline = (headline ? `${headline}; ` : '') + `${_round(100 * small / total)}% of residents live where main roads box them into less than ${SMALL_ISLAND_KM2} km² of quiet streets`
+            + (picks.length ? `, and one safe crossing at ${g.codes[picks[0]]} would join ${_people(gain[picks[0]])} people to a bigger network.` : '.');
+        const areaCol = new Float64Array(n).fill(NaN);
+        for (const i of idx) if (_fin(area[i])) areaCol[i] = Math.min(AREA_CAP, area[i]);   // one city-wide island would wash out the ramp
+        return {
+            columns: { cycle_area: areaCol, cycle_school: reach, cycle_crossing: gain ? Float64Array.from(gain, v => (v > 0 ? v : NaN)) : new Float64Array(n).fill(NaN) },
+            idx, weightKey: 'cycle_area',
+            metric: metric || { label: `Residents boxed into under ${SMALL_ISLAND_KM2} km² of quiet streets`, value: _round(100 * small / total), unit: '%', higherIs: 'worse' },
+            headline, stats,
+        };
+    }
+
+    // ── night walk to the station ───────────────────────────────────────────
+
+    const DARK_RAD = 20, LONELY_DENS = 2000;   // VIIRS nW/cm²/sr; residents/km² with no shop or eatery
+
+    function nightwalk(fr) {
+        const c = fr.cols, g = fr.grid, n = g.n, idx = _residents(fr), pop = c['population.population'];
+        const rad = c['nightlights.radiance'], ms = c['rail_access.metro_stations'], rs = c['rail_access.rail_stations'];
+        if (!rad || (!ms && !rs)) return null;
+        const isT = i => (ms && ms[i] > 0) || (rs && rs[i] > 0);
+        let any = false;
+        for (let i = 0; i < n && !any; i++) any = isT(i);
+        if (!any) return null;
+        const food = c['osm_amenities.food'], shop = c['osm_amenities.shopping'], dens = c['population.density_km2'];
+        const dark = new Float64Array(n), lonely = new Float64Array(n), bad = new Float64Array(n);
+        for (let i = 0; i < n; i++) {
+            dark[i] = _fin(rad[i]) && rad[i] < DARK_RAD ? 1 : 0;
+            const quiet = (food || shop) && !((food && food[i] > 0) || (shop && shop[i] > 0));
+            const sparse = dens ? !(dens[i] >= LONELY_DENS) : !(pop[i] > 0);
+            lonely[i] = quiet && sparse ? 1 : 0;
+            bad[i] = dark[i] || lonely[i] ? 1 : 0;
+        }
+        const tree = walkTree(fr, isT);
+        const reach = idx.filter(i => _fin(tree.dist[i]));
+        const pR = _sumOver(pop, reach, () => true);
+        if (!pR) return null;
+        const dRoute = routeMax(tree, dark), lRoute = routeMax(tree, lonely), bRoute = routeMax(tree, bad);
+        const dimmest = routeMax(tree, Float64Array.from(rad, v => (_fin(v) ? -v : 0)));
+        const pDark = _sumOver(pop, reach, i => dRoute[i] > 0), pLonely = _sumOver(pop, reach, i => lRoute[i] > 0);
+        const pBad = _sumOver(pop, reach, i => bRoute[i] > 0);
+        const wpct = c['demographics.women_pct'];
+        const women = wpct ? _sumOver(pop.map((p, i) => p * (_fin(wpct[i]) ? wpct[i] / 100 : 0.48)), reach, i => bRoute[i] > 0) : null;
+        const route = new Float64Array(n).fill(NaN);
+        for (const i of reach) route[i] = _round(-dimmest[i], 1);
+        const load = walkerLoad(tree, pop, reach);
+        const prio = new Float64Array(n).fill(NaN), order = [];
+        for (let i = 0; i < n; i++) if (dark[i] && load[i] > 0) { prio[i] = load[i]; order.push(i); }
+        order.sort((a, b) => prio[b] - prio[a]);
+        const picks = [];
+        for (const i of order) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 0.75)) continue;
+            picks.push(i);
+        }
+        const pct = (v) => _round(100 * v / pR);
+        const stats = [
+            { label: `Residents within a ${Math.round(SHADE_KM * 12.5)}-minute walk of a metro or rail station`, value: _people(pR) },
+            { label: `… whose walk passes a dark stretch (VIIRS < ${DARK_RAD} nW/cm²/sr)`, value: `${_people(pDark)} (${pct(pDark)}%)`, raw: Math.round(pDark) },
+            { label: '… whose walk passes a deserted stretch (no shop or eatery, few residents)', value: `${_people(pLonely)} (${pct(pLonely)}%)` },
+            { label: '… dark or deserted, either', value: `${_people(pBad)} (${pct(pBad)}%)` },
+        ];
+        if (women != null) stats.push({ label: 'Women among them (WorldPop share)', value: _people(women) });
+        const pol = c['mobility.nearest_police_km'];
+        if (pol) { const m = wquantile(pol, pop, reach.filter(i => _fin(pol[i])), 0.5); if (m != null) stats.push({ label: 'Median distance from home to a police station', value: `${_round(m, 1)} km` }); }
+        picks.forEach((i, r) => stats.push({ label: `Light first ${r + 1}: ${g.codes[i]}`, value: `on the walk of ${_people(load[i])} residents, ${_round(rad[i], 1)} nW/cm²/sr` }));
+        return {
+            columns: { night_route: route, light_priority: prio }, idx: reach, weightKey: 'night_route',
+            metric: { label: 'Walk to the station passes a dark or deserted stretch', value: pct(pBad), unit: '%', higherIs: 'worse' },
+            headline: `${pct(pBad)}% of residents within walking distance of a station (${_people(pBad)}) pass a dark or deserted stretch on the way: ${pct(pDark)}% a dark one, ${pct(pLonely)}% one with no shops or eateries`
+                + (picks.length ? `. Lighting the busiest dark cell, ${g.codes[picks[0]]}, covers the walk of ${_people(load[picks[0]])} people.` : '.'),
+            stats,
+        };
+    }
+
     // ── mobility scorecard across the cities ────────────────────────────────
 
     // Pillars over the lens league (data/lenses/league.json). EV charging is
@@ -602,8 +743,8 @@ const UrbanLensesMobility = (() => {
     const PILLARS = [
         { id: 'access', label: 'Access', metrics: ['metro', 'transit', 'busgap', 'ambulance'] },
         { id: 'flow', label: 'Traffic flow', metrics: ['traffic', 'monsoon'] },
-        { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise'] },
-        { id: 'walk', label: 'Walking', metrics: ['fifteen', 'shade', 'walk'] },
+        { id: 'safety', label: 'Safety & health', metrics: ['roadsafety', 'noise', 'nightwalk'] },
+        { id: 'walk', label: 'Walking & cycling', metrics: ['fifteen', 'shade', 'walk', 'cycling'] },
     ];
 
     /**
@@ -661,6 +802,23 @@ const UrbanLensesMobility = (() => {
     }
 
     const ENTRIES = [
+        { id: 'nightwalk', equity: true, title: 'Night walk to the station', icon: '🌙',
+            question: 'Is the walk to the metro or train station lit and busy after dark?',
+            field: { key: 'night_route', label: 'Dimmest night light along the walk to the station', unit: 'nW/cm²/sr', higherIs: 'better', ramp: 'viridis' },
+            extra: [{ key: 'light_priority', label: 'Walkers through a dark cell (light here first)', unit: 'people', higherIs: 'worse', ramp: 'heat' }],
+            needs: ['nightlights.radiance', 'rail_access.metro_stations', 'rail_access.rail_stations', 'osm_walk.links', 'osm_amenities.food',
+                'osm_amenities.shopping', 'population.density_km2', 'demographics.women_pct', 'mobility.nearest_police_km', 'wealth.rwi'],
+            method: `Each resident walks the OpenStreetMap walking network to the nearest metro or rail station, out to ${SHADE_KM} km. A cell on the route is dark when its VIIRS night-time radiance is under ${DARK_RAD} nW/cm²/sr (the dimmest ~5–10% of populated cells in these cities; most read 25–50 at this ~500 m resolution), and deserted when it has no mapped shop or eatery and fewer than ${LONELY_DENS} residents/km² ("eyes on the street", Jacobs 1961). The map shows the dimmest radiance along each walk; lighting priority is walkers routed through each dark cell. Satellite light is an area average, so a lit main road can hide a dark lane; treat it as a screen for audits such as Safetipin's.`,
+            refs: 'Elvidge et al. 2017 (VIIRS night lights); Jacobs 1961; Painter 1996 (street lighting and pedestrian fear); Safetipin / UN Women Safe Cities audits' },
+        { id: 'cycling', equity: true, title: 'Low-stress cycling', icon: '🚲',
+            question: 'Can children cycle to school without crossing a main road?',
+            field: { key: 'cycle_area', label: 'Area you can cycle without crossing a main road (10+ = big network)', unit: 'km²', higherIs: 'better', ramp: 'viridis' },
+            extra: [{ key: 'cycle_school', label: 'School reachable on quiet streets (1 = yes)', unit: '0-1', higherIs: 'better', ramp: 'greens' },
+                { key: 'cycle_crossing', label: 'Residents joined by a safe crossing here', unit: 'people', higherIs: 'better', ramp: 'heat' }],
+            needs: ['cycling.island', 'cycling.island_km2', 'cycling.crossing_gain', 'cycling.cycleway_km', 'emergency_access.schools',
+                'rail_access.metro_stations', 'rail_access.rail_stations', 'demographics.children_pct', 'wealth.rwi'],
+            method: `Level of Traffic Stress (Mekuria, Furth & Nixon 2012) from Overture Maps road classes: motorway, trunk, primary and secondary roads, and tertiary roads the demand model loads with 600+ PCU at peak, are high stress; residential, service, unclassified, living streets, tracks, paths and cycle tracks are low stress. Low-stress streets join into islands that never pass through a main-road junction (no signal or crossing data, so every such junction counts as a barrier). A child can cycle to school when a school lies in the same island within ${BIKE_KM} km as the crow flies (about ${Math.round(BIKE_KM * 1.3)} km ridden); the same test for stations is bike-and-ride. Crossing gain is the residents of the smaller islands a safe crossing at that junction would join to the biggest one.`,
+            refs: 'Mekuria, Furth & Nixon 2012 (Low-stress bicycling and network connectivity); Furth et al. 2016 (network connectivity for low-stress bicycling); MoHUA 2017 Cycles4Change; Overture Maps Foundation transportation' },
         { id: 'roadsafety', equity: true, title: 'Road danger on the school walk', icon: '🚸',
             question: 'Which children have to cross a fast, busy road to walk to school?',
             field: { key: 'walk_risk', label: 'Worst fatality risk if hit on the walk to school', unit: '%', higherIs: 'worse', ramp: 'reds' },
@@ -723,7 +881,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, ev, shade, busgap, roadsafety, cycling, nightwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

@@ -350,3 +350,25 @@ def test_road_flood_flags():
     assert f["wlog"] == 70 and 0 < f["wlog_hi"] < 50 and f["fl100"] == 0
     g = rf.road_flags([(77.0, 28.5), (77.01, 28.5)], lambda c: 50, lambda c: True)
     assert g == {"wlog": 50, "wlog_hi": 100, "fl100": 1}
+
+
+def test_cycling_islands_split_at_main_road_junctions():
+    from pipeline.traffic import cycling as cy
+    assert cy.stress("primary") == "high" and cy.stress("residential") == "low" and cy.stress("footway") is None
+    assert cy.stress("tertiary") == "low" and cy.stress("tertiary", busy=True) == "high"
+    # Two residential streets meet a primary road at junction J; a third street continues past K.
+    segs = [
+        ("low", [("A", 0.0), ("J", 1.0)]),
+        ("low", [("J", 0.0), ("B", 1.0)]),
+        ("high", [("P", 0.0), ("J", 0.5), ("Q", 1.0)]),
+        ("low", [("B", 0.0), ("K", 0.5), ("C", 1.0)]),
+        ("low", [("P", 0.0), ("Q", 1.0)]),                  # stub between two main-road junctions
+    ]
+    isl, blocked = cy.islands(segs)
+    assert blocked == {"P", "J", "Q"}
+    assert isl[(0, 0)] != isl[(1, 0)]                     # J does not join A and B
+    assert isl[(1, 0)] == isl[(3, 0)] == isl[(3, 1)]      # B–K–C is one island
+    assert isl[(4, 0)][0] == "stub"
+    assert cy.pieces([("b", 1.0), ("a", 0.0), ("m", 0.4)]) == [(0.0, 0.4, "a", "m"), (0.4, 1.0, "m", "b")]
+    pts = cy.walk_line([(77.0, 28.0), (77.001, 28.0)], step_m=25)
+    assert len(pts) == 4 and abs(sum(p[3] for p in pts) - 98) < 2 and 0 < pts[0][2] < pts[-1][2] < 1

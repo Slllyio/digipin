@@ -330,14 +330,41 @@ modelled arterial km in High-or-worse waterlogging cells (road_flood). Each
 measure scores 0–100 between the worst and best of the 13 cities, direction-
 aware; four pillars average their measures (Access: metro, SDG 11.2.1
 transit, bus gaps, hospital at rush hour; Traffic flow: jammed arterials,
-monsoon roads; Safety & health: school-walk danger, road noise; Walking:
-15-minute essentials, shaded walks, junction density) and the overall score
+monsoon roads; Safety & health: school-walk danger, road noise; Walking & cycling:
+15-minute essentials, shaded walks, junction density, low-stress cycling to school) and the overall score
 averages the pillars. EV charging is left out because open charger data is
 too partial to rank on. Scores are relative to these 13 cities, so small
 towns (Guna) score well on flow simply by having little traffic. It shows in
 the Lenses panel and answers "mobility scorecard" / "which city has the best
 public transport" in DISHA. October 2026: Hyderabad 67, Bhopal 65, Pune 62 …
 Mumbai 48, Kolkata 44, Ahmedabad 30.
+
+### 16. Low-stress cycling (`pipeline/traffic/cycling.py`, lens `cycling`)
+
+Every Overture Maps road segment is split at its connectors and classed by
+Level of Traffic Stress (Mekuria, Furth & Nixon 2012) from its class:
+motorway–secondary are high stress, tertiary too where the demand model puts
+600+ PCU on it at peak; residential, service, unclassified, living streets,
+tracks, paths and cycle tracks are low stress. A union-find joins low-stress
+pieces into islands that never pass through a junction touched by a main road
+(no signal or crossing data). Cell dataset `cycling` (L7): lowstress_km,
+cycleway_km, highstress_km, island (1 = largest), island_km2, island_pop,
+crossing_gain (residents of smaller islands a safe crossing at the best
+junction in the cell would join to the biggest one). The lens tests whether a
+school (and, separately, a station) lies in the same island within 2.5 km.
+Residents boxed into under 1 km² of quiet streets: Mumbai 60%, Pune 37%,
+Indore 29%, Delhi 11%. Mapped cycle tracks are almost absent (Delhi 78 km).
+
+### 17. Night walk to the station (lens `nightwalk`)
+
+Residents walk the OSM walking tree to the nearest metro or rail station
+(1.6 km). A cell on the route is dark under 20 nW/cm²/sr of VIIRS radiance
+(the dimmest ~5–10% of populated cells) and deserted when it has no mapped
+shop or eatery and under 2,000 residents/km². The map shows the dimmest
+radiance on each walk; lighting priority is walkers through each dark cell.
+At ~500 m resolution station areas read as lit almost everywhere (Delhi 2.8%
+pass a dark or deserted stretch; Indore 11.7%, Guna 32%), so this is a screen
+for street audits, not a substitute.
 
 ## Pipeline (`pipeline/traffic/`)
 

@@ -687,5 +687,24 @@
     "chargers_per_lakh": 0.18,
     "pct_vkm_within_2km": 38.7,
     "pct_pop_within_2km": 35.9
+  },
+  "road_flood": {
+    "very_high": 17.6,
+    "high": 580.6,
+    "river_flood": 639.5,
+    "total": 1806.5,
+    "pct_very_high": 1.0,
+    "pct_high_or_worse": 33.1
+  },
+  "cycling": {
+    "lowstress_km": 8794,
+    "cycleway_km": 5.3,
+    "highstress_km": 1362,
+    "islands": 5900,
+    "islands_over_5_km2": 21,
+    "largest_island_km2": 15.5,
+    "pct_residents_small_island": 30.3,
+    "pct_residents_no_lowstress_street": 0.3,
+    "source": "Overture Maps transportation 2026-10-21.0"
   }
 }

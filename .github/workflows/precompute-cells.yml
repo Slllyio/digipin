@@ -86,6 +86,7 @@ jobs:
                 python -m pipeline.traffic.emergency_access --region "$DIGIPIN_REGION"
                 python -m pipeline.traffic.rail_stations --region "$DIGIPIN_REGION"
                 python -m pipeline.traffic.ev_charging --region "$DIGIPIN_REGION" --refresh || python -m pipeline.traffic.ev_charging --region "$DIGIPIN_REGION"
+                python -m pipeline.traffic.cycling --region "$DIGIPIN_REGION" || echo "cycling bake skipped"
               '; then
               git add data/vectors/ data/traffic/ data/safety/ data/cells/
               git diff --staged --quiet || git commit -qm "chore(cells): refresh traffic + mobility for $r"
