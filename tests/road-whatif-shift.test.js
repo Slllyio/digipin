@@ -51,3 +51,13 @@ describe('RoadWhatIf bus lane', () => {
         expect(R.shiftLabel({ pct: 15, scope: 'corridor', road: 'Outer Ring Road' })).toMatch(/^15% of car trips .* Outer Ring Road move to the bus$/);
     });
 });
+
+describe('RoadWhatIf bus riders', () => {
+    it('busRiderGain is zero on a free road and grows with V/C', () => {
+        const R = globalThis.RoadWhatIf;
+        const feats = [{ properties: { ffs: 50, vc_am: 0 } }, { properties: { ffs: 50, vc_am: 1.2 } }];
+        expect(R.busRiderGain(feats, [0], 'am')).toBe(0);
+        // 5 km at 30 km/h = 10 min; BPR 1 + 0.15·1.2⁴ ≈ 1.311 → 3.11 min saved.
+        expect(R.busRiderGain(feats, [1], 'am')).toBeCloseTo(10 * 0.15 * 1.2 ** 4, 3);
+    });
+});

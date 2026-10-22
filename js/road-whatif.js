@@ -788,7 +788,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
             ? `${a.label}: ${a.closedN} waterlogging-prone road segments closed and ${a.slowedN} slowed`
             : `${a.action === 'widen' ? 'Widening' : 'Closing'} ${a.road} (${a.matched} segment${a.matched === 1 ? '' : 's'})`;
         return `${lead}, ${a.period === 'pm' ? '18:00' : '09:00'} peak: ${a.headline}`
-            + (a.buslane ? ' Buses on the lane run at free-flow speed whatever the general traffic does.' : '')
+            + (a.buslane && a.bus ? ` Bus riders: a ${a.bus.rideKm} km ride along it is about ${a.bus.minSaved} min quicker in the lane than in today's traffic, for about ${a.bus.newRiders.toLocaleString('en-IN')} new riders in the peak hour plus everyone already on those buses.` : '')
             + (a.shift && !a.buslane ? ' Some roads still get busier because the remaining drivers re-route onto main roads that freed up.' : '')
             + (a.result && a.result.newlyJammed ? ` ${a.result.newlyJammed} roads tip into LOS E/F.` : '')
             + (a.worse.length ? `\nBusier: ${a.worse.map(line).join('; ')}.` : '')
@@ -896,6 +896,23 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     // ── bus lane: one lane of a named road goes to buses, some car trips along it switch ──
     const BUS_LANE_CAP = 2 / 3;        // a three-lane carriageway each way keeps two lanes for general traffic
     const BUS_LANE_KM = 0.8;           // zones within this distance of the corridor are on the bus route
+    const BUS_SPEED_SHARE = 0.6;       // a bus averages ~60% of the road's free-flow speed with stops
+    const BUS_TRIP_KM = 5;             // a typical bus ride along the corridor
+    const PERSONS_PER_PCU = 2.7;       // the demand model's 0.37 PCU per person trip
+    /**
+     * Minutes a bus rider saves on a BUS_TRIP_KM ride when the lane frees the bus
+     * from the period's general-traffic delay (BPR on each segment's V/C). Pure.
+     */
+    function busRiderGain(features, fs, period = 'am', km = BUS_TRIP_KM) {
+        let sum = 0, n = 0;
+        for (const f of fs) {
+            const p = (features[f] && features[f].properties) || {};
+            const ffs = Number(p.ffs) || 30, vc = Number(p[`vc_${period}`] ?? p.vc_peak) || 0;
+            const lane = 60 / (BUS_SPEED_SHARE * ffs);
+            sum += lane * (Math.min(4, 1 + 0.15 * vc ** 4) - 1); n++;
+        }
+        return n ? km * sum / n : 0;
+    }
     /** Corridor vertices [[lon, lat]…] of features ``fs``, every ``step``-th point. Pure. */
     function corridorPoints(features, fs, step = 3) {
         const out = [];
@@ -921,7 +938,9 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
         const res = await runScenario();
         if (!res) return { ok: false, error: S.error || 'The what-if did not run.' };
         const t = topRoads(res, _roadName);
-        return { ok: true, buslane: true, road: named, matched: fs.length, shift: S.shift, label: shiftLabel(S.shift), period: S.period,
+        const bus = { minSaved: Math.round(busRiderGain(S.roads, fs, S.period) * 10) / 10, rideKm: BUS_TRIP_KM,
+            newRiders: Math.round((res.shiftedPcu || 0) * PERSONS_PER_PCU) };
+        return { ok: true, buslane: true, bus, road: named, matched: fs.length, shift: S.shift, label: shiftLabel(S.shift), period: S.period,
             headline: headline(res, S.period), ...t, result: res };
     }
 
@@ -930,7 +949,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     return { core: C, run, loadModel, modelUrl, nearestNode: C.nearestNode, newLink: C.newLink,
         open, close, toggle, isPicking, runScenario, setEdits, findRoads, state, diffColor, editsFrom, headline,
         normRoad, matchRoads, topRoads, ask, askText, monsoon, monsoonEdits, setMonsoon, fmtVC, MONSOON,
-        modeShift, setShift, stationZones, shiftLabel, busLane, corridorPoints, BUS_LANE_CAP };
+        modeShift, setShift, stationZones, shiftLabel, busLane, corridorPoints, busRiderGain, BUS_LANE_CAP };
 })();
 
 if (typeof window !== 'undefined') window.RoadWhatIf = RoadWhatIf;

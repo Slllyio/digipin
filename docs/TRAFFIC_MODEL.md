@@ -511,7 +511,10 @@ add a bus lane on Outer Ring Road". Bengaluru Outer Ring Road at 15%: 1,058
 fewer vehicles in the 09:00 hour, but driving time city-wide rises 3.1%
 because the remaining traffic loses a lane; even at 40% it stays 2.5% worse,
 since few trips both start and end along the corridor. The gain is for bus
-riders, whose lane runs at free-flow speed (not yet counted in the result).
+riders: `busRiderGain` prices the general-traffic delay (BPR on each
+segment's V/C) a bus escapes on a 5 km ride at 60% of free-flow speed. On
+Outer Ring Road at 09:00 that is about 10.8 minutes per ride, for about 2,900
+new riders in the peak hour (shifted PCU × 2.7) plus existing riders.
 
 ## Pipeline (`pipeline/traffic/`)
 
