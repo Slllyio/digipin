@@ -336,3 +336,17 @@ def test_ev_charging_helpers():
     assert abs(near(77.21, 28.5) - 0.977) < 0.01
     assert abs(near(77.45, 28.5) - 4.886) < 0.02
     assert ev.NearestKm([])(77.2, 28.5) is None
+
+
+def test_road_flood_flags():
+    from pipeline.traffic import road_flood as rf
+    pts = rf.samples([(77.0, 28.5), (77.01, 28.5)])
+    assert len(pts) == 11 and pts[0] == (77.0, 28.5)              # ~980 m → 10 steps + the end point
+    wl = {}
+    from pipeline._lib import digipin
+    hot = digipin.encode(28.5, 77.005).replace("-", "")[:7]
+    wl[hot] = 70
+    f = rf.road_flags([(77.0, 28.5), (77.01, 28.5)], lambda c: wl.get(c, 20), lambda c: False)
+    assert f["wlog"] == 70 and 0 < f["wlog_hi"] < 50 and f["fl100"] == 0
+    g = rf.road_flags([(77.0, 28.5), (77.01, 28.5)], lambda c: 50, lambda c: True)
+    assert g == {"wlog": 50, "wlog_hi": 100, "fl100": 1}

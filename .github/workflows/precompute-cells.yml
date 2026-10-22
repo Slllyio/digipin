@@ -80,6 +80,7 @@ jobs:
                 python -m pipeline.safety.mobility
                 python -m pipeline.cells.build --region "$DIGIPIN_REGION" traffic mobility
                 python -m pipeline.traffic.demand_model --region "$DIGIPIN_REGION"
+                python -m pipeline.traffic.road_flood --region "$DIGIPIN_REGION"
                 python -m pipeline.traffic.noise_air --region "$DIGIPIN_REGION"
                 python -m pipeline.traffic.gtfs_cells --region "$DIGIPIN_REGION" || echo "GTFS bake skipped"
                 python -m pipeline.traffic.emergency_access --region "$DIGIPIN_REGION"

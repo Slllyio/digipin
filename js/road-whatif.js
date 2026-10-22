@@ -328,7 +328,16 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     const L_DIFF = 'road-whatif-diff', L_EDIT = 'road-whatif-edits', L_PT = 'road-whatif-pts';
     const ROAD_LAYER = 'traffic-overlay-line';
     const WIDEN = 1.5;                 // one more lane each way on a 4-lane road
-    const S = { open: false, tool: null, period: 'am', closed: [], widened: [], added: [], pending: null,
+    // Monsoon levels: which roads slow (capacity factor) or close, from the road_flood.py flags.
+    // tiers: [highest waterlogging index along the road ≥ min, capacity factor (0 = closed)].
+    const MONSOON = {
+        heavy: { label: 'Heavy shower', tiers: [[65, 0.5], [60, 0.75]], river: null },
+        severe: { label: 'Severe waterlogging', tiers: [[65, 0], [60, 0.5], [55, 0.75]], river: null },
+        extreme: { label: 'River flood (1-in-100-year)', tiers: [[65, 0], [60, 0.5], [55, 0.75]], river: 0.25 },
+    };
+    /** V/C for display: overloaded links read "3+" rather than a spurious 26.7. Pure. */
+    function fmtVC(v) { return v == null ? '–' : v >= 3 ? '3+' : v.toFixed(2); }
+    const S = { open: false, tool: null, period: 'am', closed: [], widened: [], slowed: {}, monsoon: null, added: [], pending: null,
         region: null, roads: null, model: null, result: null, running: false, progress: 0, error: null };
 
     /** Colour for a V/C change (worse = reds, better = blues), null when too small to show. */
@@ -344,6 +353,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     function editsFrom(st) {
         const widened = {};
         for (const f of st.widened) widened[f] = WIDEN;
+        for (const [f, k] of Object.entries(st.slowed || {})) widened[f] = k;
         return { closed: st.closed.slice(), widened, added: st.added.map(a => a.link) };
     }
     /** One-line plain-language summary of a comparison. Pure. */
@@ -430,7 +440,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     }
     function toggle() { if (S.open) close(); else open(); }
     function _reset(render = true) {
-        S.closed = []; S.widened = []; S.added = []; S.pending = null; S.result = null; S.error = null;
+        S.closed = []; S.widened = []; S.slowed = {}; S.monsoon = null; S.added = []; S.pending = null; S.result = null; S.error = null;
         _clearLayers(); _dimRoads(false);
         if (render) _render();
     }
@@ -477,7 +487,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     /** Run baseline (cached in the worker) + scenario and paint the result. */
     async function runScenario() {
         if (S.running) return null;
-        if (!S.closed.length && !S.widened.length && !S.added.length) {
+        if (!S.closed.length && !S.widened.length && !S.added.length && !Object.keys(S.slowed).length) {
             S.error = 'Close, widen or add a road first.'; _render(); return null;
         }
         S.running = true; S.progress = 0; S.error = null; S.tool = null; _render();
@@ -508,8 +518,8 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
                 layout: { 'line-cap': 'round' },
                 paint: { 'line-color': ['get', 'color'], 'line-opacity': 0.95,
                     'line-width': ['interpolate', ['linear'], ['zoom'], 10, 2.5, 16, 8] } });
-            map.addLayer({ id: L_EDIT, type: 'line', source: SRC, filter: ['in', ['get', 'kind'], ['literal', ['closed', 'widened', 'added']]],
-                paint: { 'line-color': ['match', ['get', 'kind'], 'closed', '#111827', 'widened', '#2563eb', '#7c3aed'],
+            map.addLayer({ id: L_EDIT, type: 'line', source: SRC, filter: ['in', ['get', 'kind'], ['literal', ['closed', 'widened', 'added', 'slowed']]],
+                paint: { 'line-color': ['match', ['get', 'kind'], 'closed', '#111827', 'widened', '#2563eb', 'slowed', '#9ca3af', '#7c3aed'],
                     'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 16, 9],
                     'line-dasharray': [1.2, 1] } });
             map.addLayer({ id: L_PT, type: 'circle', source: SRC, filter: ['==', ['get', 'kind'], 'pending'],
@@ -524,6 +534,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
         };
         S.closed.forEach(f => add('closed', f));
         S.widened.forEach(f => add('widened', f));
+        Object.keys(S.slowed).forEach(f => add('slowed', Number(f)));
         const N = S.model && S.model.nodes;
         if (N) {
             for (const a of S.added) {
@@ -592,7 +603,8 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
         el.style.cssText = `position:absolute;bottom:24px;left:372px;z-index:6;width:300px;max-height:70vh;overflow:auto;background:${pal.surface};`
             + `border:1px solid ${pal.border};border-radius:10px;padding:12px 14px;color:${pal.ink};`
             + 'font:12px/1.45 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,0.32);backdrop-filter:blur(8px);';
-        const edits = [
+        const nSlow = Object.keys(S.slowed).length;
+        const edits = S.monsoon ? [] : [
             ...S.closed.map(f => ['closed', f, `Closed: ${_roadName(f)}`]),
             ...S.widened.map(f => ['widened', f, `Widened: ${_roadName(f)}`]),
             ...S.added.map((a, i) => ['added', i, `New link (${(a.link.len / 1000).toFixed(1)} km)`]),
@@ -605,7 +617,10 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
             + `<button type="button" data-rw="period" data-v="pm" aria-pressed="${S.period === 'pm'}" style="${btn(S.period === 'pm')}">Evening 18:00</button></div>`
             + `<div style="display:flex;gap:4px;flex-wrap:wrap;">`
             + ['close', 'widen', 'add'].map(t => `<button type="button" data-rw="tool" data-v="${t}" aria-pressed="${S.tool === t}" style="${btn(S.tool === t)}">${{ close: 'Close a road', widen: 'Widen a road', add: 'Add a link' }[t]}</button>`).join('')
+            + `</div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">`
+            + Object.entries(MONSOON).map(([k, m]) => `<button type="button" data-rw="monsoon" data-v="${k}" aria-pressed="${S.monsoon === k}" style="${btn(S.monsoon === k)}">🌧 ${_esc(m.label)}</button>`).join('')
             + `</div>`
+            + (S.monsoon ? `<div style="margin-top:6px;">${_esc(MONSOON[S.monsoon].label)}: ${S.closed.length} road segments closed, ${nSlow} slowed (waterlogging-prone).</div>` : '')
             + (S.tool ? `<div style="margin-top:6px;color:${pal.sub};">${HINT[S.tool]}${S.tool === 'add' && S.pending != null ? ' Now click the second junction.' : ''}</div>` : '')
             + (!S.model && !S.error ? `<div style="margin-top:6px;color:${pal.sub};">Loading the road model…</div>` : '');
         if (edits.length) {
@@ -630,7 +645,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
                     const nm = _roadName(r.f);
                     if (seen.has(nm)) continue;
                     seen.add(nm);
-                    rowsOut.push(`<div>${_esc(nm)}: V/C ${r.base.toFixed(2)} → ${r.scen.toFixed(2)}</div>`);
+                    rowsOut.push(`<div>${_esc(nm)}: V/C ${fmtVC(r.base)} → ${fmtVC(r.scen)}</div>`);
                     if (rowsOut.length === 5) break;
                 }
                 return rowsOut.join('');
@@ -656,7 +671,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
         const k = b.getAttribute('data-rw'), v = b.getAttribute('data-v');
         if (k === 'close') { close(); return; }
         if (k === 'period') { if (S.period !== v) { S.period = v; S.result = null; _drawEdits(); _dimRoads(false); } }
-        if (k === 'tool') { S.tool = S.tool === v ? null : v; S.pending = null; _drawEdits(); }
+        if (k === 'tool') { if (S.monsoon) _reset(false); S.tool = S.tool === v ? null : v; S.pending = null; _drawEdits(); }
         if (k === 'undo') {
             const i = Number(b.getAttribute('data-i')), kind = b.getAttribute('data-k');
             if (kind === 'closed') S.closed = S.closed.filter(f => f !== i);
@@ -664,6 +679,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
             else S.added.splice(i, 1);
             S.result = null; _drawEdits(); _dimRoads(false);
         }
+        if (k === 'monsoon') { setMonsoon(v).then(() => runScenario()); return; }
         if (k === 'reset') { _reset(); return; }
         if (k === 'run') { runScenario(); return; }
         _render();
@@ -673,7 +689,7 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     async function setEdits({ closed = [], widened = [], added = [], period } = {}) {
         await _ensureData();
         if (period) S.period = period;
-        S.closed = closed.map(Number); S.widened = widened.map(Number);
+        S.closed = closed.map(Number); S.widened = widened.map(Number); S.slowed = {}; S.monsoon = null;
         S.added = added.map(([p, q]) => {
             const a = C.nearestNode(S.model, p[0], p[1]).node, b = C.nearestNode(S.model, q[0], q[1]).node;
             return { link: C.newLink(S.model, a, b) };
@@ -748,18 +764,62 @@ const res=out.result;postMessage({id,result:res});}catch(e){postMessage({id,erro
     /** Plain text of an ask() answer, for DISHA. Pure. */
     function askText(a) {
         if (!a || !a.ok) return (a && a.error) || 'The road what-if did not run.';
-        const line = (r) => `${r.name} (V/C ${r.base.toFixed(2)} → ${r.scen.toFixed(2)})`;
-        return `${a.action === 'widen' ? 'Widening' : 'Closing'} ${a.road} (${a.matched} segment${a.matched === 1 ? '' : 's'}), ${a.period === 'pm' ? '18:00' : '09:00'} peak: ${a.headline}`
+        const line = (r) => `${r.name} (V/C ${fmtVC(r.base)} → ${fmtVC(r.scen)})`;
+        const lead = a.monsoon
+            ? `${a.label}: ${a.closedN} waterlogging-prone road segments closed and ${a.slowedN} slowed`
+            : `${a.action === 'widen' ? 'Widening' : 'Closing'} ${a.road} (${a.matched} segment${a.matched === 1 ? '' : 's'})`;
+        return `${lead}, ${a.period === 'pm' ? '18:00' : '09:00'} peak: ${a.headline}`
             + (a.result && a.result.newlyJammed ? ` ${a.result.newlyJammed} roads tip into LOS E/F.` : '')
             + (a.worse.length ? `\nBusier: ${a.worse.map(line).join('; ')}.` : '')
             + (a.better.length ? `\nQuieter: ${a.better.map(line).join('; ')}.` : '')
             + '\nModelled re-routing of the commute (destinations fixed), shown on the map in red (busier) and blue (quieter).';
     }
+    /**
+     * Which features a monsoon level slows or closes, from road_flood.py's
+     * wlog (highest waterlogging index along the road) and fl100 (in the
+     * 1-in-100-year river flood) flags. The lowest factor that applies wins.
+     * Returns { closed: [f], slowed: {f: capacity factor} }. Pure.
+     */
+    function monsoonEdits(features, level = 'severe') {
+        const m = MONSOON[level] || MONSOON.severe, closed = [], slowed = {};
+        (features || []).forEach((ft, i) => {
+            const p = (ft && ft.properties) || {};
+            let k = null;
+            for (const [min, f] of m.tiers) if (p.wlog >= min) { k = f; break; }
+            if (m.river != null && p.fl100) k = k == null ? m.river : Math.min(k, m.river);
+            if (k == null) return;
+            if (k === 0) closed.push(i); else slowed[i] = k;
+        });
+        return { closed, slowed };
+    }
+    async function setMonsoon(level = 'severe', period) {
+        await open();
+        await _ensureData();
+        _reset(false);
+        if (period) S.period = period === 'pm' ? 'pm' : 'am';
+        const e = monsoonEdits(S.roads, level);
+        S.monsoon = MONSOON[level] ? level : 'severe';
+        S.closed = e.closed; S.slowed = e.slowed;
+        _drawEdits(); _render();
+        return e;
+    }
+    /** Chat entry point: a monsoon level at a peak. Same shape as ask(). */
+    async function monsoon({ level = 'severe', period = 'am' } = {}) {
+        const e = await setMonsoon(level, period);
+        if (!e.closed.length && !Object.keys(e.slowed).length) {
+            return { ok: false, error: 'No modelled road here is flagged as waterlogging-prone (road_flood.py has not run for this city).' };
+        }
+        const res = await runScenario();
+        if (!res) return { ok: false, error: S.error || 'The what-if did not run.' };
+        const t = topRoads(res, _roadName);
+        return { ok: true, monsoon: S.monsoon, label: MONSOON[S.monsoon].label, closedN: e.closed.length, slowedN: Object.keys(e.slowed).length,
+            period: S.period, headline: headline(res, S.period), ...t, result: res };
+    }
     function state() { return { ...S, roads: undefined, model: undefined }; }
 
     return { core: C, run, loadModel, modelUrl, nearestNode: C.nearestNode, newLink: C.newLink,
         open, close, toggle, isPicking, runScenario, setEdits, findRoads, state, diffColor, editsFrom, headline,
-        normRoad, matchRoads, topRoads, ask, askText };
+        normRoad, matchRoads, topRoads, ask, askText, monsoon, monsoonEdits, setMonsoon, fmtVC, MONSOON };
 })();
 
 if (typeof window !== 'undefined') window.RoadWhatIf = RoadWhatIf;

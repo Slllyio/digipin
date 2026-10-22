@@ -468,5 +468,13 @@
       "reach_m": 300.0,
       "method": "CRTN 1988 + Abbott & Nelson 2002 Lden"
     }
+  },
+  "road_flood": {
+    "very_high": 18.2,
+    "high": 434.1,
+    "river_flood": 551.0,
+    "total": 1283.8,
+    "pct_very_high": 1.4,
+    "pct_high_or_worse": 35.2
   }
 }

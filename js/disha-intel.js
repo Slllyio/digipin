@@ -115,6 +115,14 @@ const DishaIntel = (() => {
         }
         if (RE.changes.test(q)) return named.length ? { type: 'changes', city: named[0] } : { type: 'changes' };
         if (RE.compare.test(q) && named.length >= 2) return { type: 'compare', a: { city: named[0] }, b: { city: named[1] } };
+        const wet = /\b(monsoon|heavy rain|rains?|rainy|downpour|cloudburst|waterlog\w*|flood\w*)\b.{0,50}\b(traffic|roads?|commute|jams?|congestion)\b|\b(traffic|roads?|commute|congestion)\b.{0,50}\b(monsoon|heavy rain|rains?|rainy|downpour|cloudburst|waterlog\w*|flood\w*)\b/i;
+        if (wet.test(q) && !/\b(people|residents|who|households?)\b/i.test(q)) {
+            const level = /\b(river|yamuna|ganga|mithi|extreme|100[\s-]?year|cloudburst)\b/i.test(q) ? 'extreme'
+                : /\b(shower|drizzle|light|moderate)\b/i.test(q) ? 'heavy' : 'severe';
+            const out = { type: 'monsoonroads', level, period: /\b(evening|6\s?pm|18:00|18h|going home)\b/i.test(q) ? 'pm' : 'am' };
+            if (named.length) out.city = named[0];
+            return out;
+        }
         const station = /\b(new|next|another|extra|add(ing)?|open(s|ed|ing)?|build(ing)?)\b.{0,25}\b(metro|rail|train) stations?\b|\b(metro|rail|train) stations?\b.{0,25}\b(open(s|ed)?|built|added) (here|at|in|near)\b/i;
         if (station.test(q)) {
             const out = { type: 'stationwhatif', here: /\b(here|this (cell|spot|place|location|area|site)|selected (cell|spot))\b/i.test(q) };
@@ -290,6 +298,18 @@ const DishaIntel = (() => {
                 if (intent.here && !center) { el.textContent = 'Click a cell on the map first, then ask again: the new station needs a site.'; return ''; }
                 const s = await UrbanLenses.stationAsk(city, intent.here ? center.lat : null, intent.here ? center.lng : null, CellStore);
                 r = { kind: 'stationwhatif', s, cityLabel: UrbanInsights.cityLabel(city) };
+            } else if (intent.type === 'monsoonroads') {
+                if (typeof RoadWhatIf === 'undefined' || !RoadWhatIf.monsoon) { el.textContent = 'The road what-if module did not load.'; return ''; }
+                if (intent.city && typeof TrafficOverlay !== 'undefined' && TrafficOverlay.region && TrafficOverlay.region() !== intent.city) {
+                    const sel = typeof document !== 'undefined' && document.getElementById('city-select');
+                    const opt = sel && [...sel.options].find(o => o.value === intent.city || o.value === intent.city.replace(/_pilot$/, ''));
+                    if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', { bubbles: true })); await new Promise(res => setTimeout(res, 1500)); }
+                }
+                if (typeof TrafficOverlay !== 'undefined' && !TrafficOverlay.isVisible()) TrafficOverlay.attach();
+                el.textContent = 'Re-routing every commute around the waterlogging-prone roads…';
+                const a = await RoadWhatIf.monsoon({ level: intent.level, period: intent.period });
+                el.textContent = '';
+                r = { kind: 'roadwhatif', a };
             } else if (intent.type === 'roadwhatif') {
                 if (typeof RoadWhatIf === 'undefined') { el.textContent = 'The road what-if module did not load.'; return ''; }
                 if (intent.city && typeof TrafficOverlay !== 'undefined' && TrafficOverlay.region && TrafficOverlay.region() !== intent.city) {
@@ -436,7 +456,8 @@ const DishaIntel = (() => {
             }
         } else if (r.kind === 'roadwhatif') {
             const a = r.a;
-            head.textContent = a.ok ? `Road what-if · ${a.action === 'widen' ? 'widen' : 'close'} ${a.road} · ${a.period === 'pm' ? '18:00' : '09:00'}` : 'Road what-if';
+            head.textContent = !a.ok ? 'Road what-if' : a.monsoon ? `Monsoon what-if · ${a.label} · ${a.period === 'pm' ? '18:00' : '09:00'}`
+                : `Road what-if · ${a.action === 'widen' ? 'widen' : 'close'} ${a.road} · ${a.period === 'pm' ? '18:00' : '09:00'}`;
             el.appendChild(head);
             el.appendChild(_el('div', 'ui-headline', a.ok ? a.headline : a.error));
             if (a.ok) {

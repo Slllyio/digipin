@@ -262,6 +262,28 @@ neighbouring cell, and BuildingData colours every Overture building by its
 cell. Moving the slider or playing the day repaints the buildings as the
 roads beside them fill and empty.
 
+### 11. Monsoon what-if (`road_flood.py` + the What-if panel)
+
+`road_flood.py` samples every arterial each ~100 m against the
+`waterlogging` and `water` cell datasets and writes `wlog` (highest
+waterlogging index along the road), `wlog_hi` (% of samples in High-or-worse
+cells) and `fl100` (some stretch in the 1-in-100-year river flood at ≥ 0.3 m)
+onto road_los.geojson, plus a `road_flood` block in summary.json. It runs
+after demand_model. The What-if panel's three rain buttons (and DISHA: "what
+happens to traffic in Mumbai when it rains heavily?") cut capacity by the
+highest index along each road and re-route the commute:
+
+| Level | wlog ≥ 65 | 60–65 | 55–60 | river floodplain |
+|---|---|---|---|---|
+| Heavy shower | × 0.5 | × 0.75 | – | – |
+| Severe waterlogging | closed | × 0.5 | × 0.75 | – |
+| River flood (1-in-100) | closed | × 0.5 | × 0.75 | × 0.25 |
+
+Closures can disconnect homes whose only modelled arterial floods; the
+headline then reports the vehicle trips cut off. Pumps, drains and the timing
+of a storm are not modelled, so read it as which corridors carry the
+diverted traffic, not as a forecast.
+
 ## Pipeline (`pipeline/traffic/`)
 
 | Stage | File | Output |

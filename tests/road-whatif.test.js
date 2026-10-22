@@ -110,4 +110,26 @@ describe('RoadWhatIf chat helpers', () => {
         expect(txt).toMatch(/Busier: M\.G\. Road \(V\/C 0\.50 → 1\.20\)/);
         expect(RW.askText({ ok: false, error: 'nope' })).toBe('nope');
     });
+    it('monsoon levels slow or close waterlogging-prone roads', () => {
+        const fs = [
+            { properties: { wlog: 80, fl100: 0 } },     // very high somewhere
+            { properties: { wlog: 62, fl100: 0 } },
+            { properties: { wlog: 30, fl100: 1 } },     // river floodplain only
+            { properties: { wlog: 57 } },
+            { properties: { wlog: 20 } },
+        ];
+        expect(RW.monsoonEdits(fs, 'heavy')).toEqual({ closed: [], slowed: { 0: 0.5, 1: 0.75 } });
+        expect(RW.monsoonEdits(fs, 'severe')).toEqual({ closed: [0], slowed: { 1: 0.5, 3: 0.75 } });
+        expect(RW.monsoonEdits(fs, 'extreme')).toEqual({ closed: [0], slowed: { 1: 0.5, 2: 0.25, 3: 0.75 } });
+        expect(RW.fmtVC(26.7)).toBe('3+');
+        expect(RW.fmtVC(0.5)).toBe('0.50');
+        // A slowed road (capacity × 0.3) gets busier relative to capacity and pushes traffic to the detour.
+        const m = model();
+        const base = C.run(m, 'am', {});
+        const slow = C.run(m, 'am', { widened: { 0: 0.3 } }, base.base).result;
+        expect(slow.roads.find(r => r.f === 1).delta).toBeGreaterThan(0);
+        expect(slow.vehHours.delta).toBeGreaterThan(0);
+        const txt = RW.askText({ ok: true, monsoon: 'severe', label: 'Severe waterlogging', closedN: 3, slowedN: 7, period: 'am', headline: 'H.', worse: [], better: [], result: {} });
+        expect(txt).toMatch(/^Severe waterlogging: 3 waterlogging-prone road segments closed and 7 slowed, 09:00 peak: H\./);
+    });
 });
