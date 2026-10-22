@@ -661,6 +661,433 @@
       ]
     },
     {
+      "id": "building_dynamics",
+      "title": "Building dynamics",
+      "description": "When and how fast each block was built, from Earth Engine's building prediction datasets: Google Open Buildings 2.5D Temporal yearly counts and heights (2016\u20132023), the World Settlement Footprint Evolution (1985\u20132015), GHSL built-up surface for 1975, 2020 and its 2030 projection, GHSL 2018 building-height and use classes, and Dynamic World built-area probability for 2023 and 2026. Model outputs: counts and heights carry several metres and a few buildings of error per block.",
+      "source": "pipeline/realestate/building_dynamics.py via Earth Engine (GOOGLE/Research/open-buildings-temporal/v1, JRC/GHSL/P2023A, projects/sat-io/open-datasets/WSF/WSF_EVO, GOOGLE/DYNAMICWORLD/V1)",
+      "license": "CC BY 4.0 (Open Buildings, GHSL, WSF Evolution, Dynamic World)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "build_year",
+          "label": "Median year of new buildings (2017\u20132023)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "year",
+          "domain": [
+            2017,
+            2023
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "accel",
+          "label": "Construction acceleration vs the city (2020\u201323 pace \u00f7 2016\u201320)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00d7",
+          "domain": [
+            0,
+            3
+          ],
+          "ramp": "diverging"
+        },
+        {
+          "key": "height_change_m",
+          "label": "Change in mean building height 2016\u21922023",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m",
+          "domain": [
+            -3,
+            6
+          ],
+          "ramp": "diverging"
+        },
+        {
+          "key": "settled_year",
+          "label": "Year first settled (WSF Evolution; 1985 = by 1985)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "year",
+          "domain": [
+            1985,
+            2015
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "built_1975_pct",
+          "label": "Built-up in 1975",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "built_2030_pct",
+          "label": "Built-up projected for 2030 (GHSL)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "proj_gain_pp",
+          "label": "Projected built-up gain 2020\u21922030 (GHSL)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "pp",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "nonres_pct",
+          "label": "Non-residential share of built-up (GHSL 2020)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "highrise_pct",
+          "label": "Built-up in buildings over 15 m (GHSL 2018)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "dw_built_change",
+          "label": "Built-area probability change 2023\u21922026 (Dynamic World)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "pp",
+          "domain": [
+            -10,
+            30
+          ],
+          "ramp": "diverging"
+        }
+      ],
+      "default": {
+        "field": "build_year",
+        "extrude": true,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "building_dynamics/ahmedabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "building_dynamics/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 6565,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "building_dynamics/bhopal.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 11136,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.320068359375,
+            "north": 13.180908203125
+          },
+          "json": "building_dynamics/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "building_dynamics/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "building_dynamics/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "building_dynamics/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 33489,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "building_dynamics/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "building_dynamics/jaipur/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "building_dynamics/kolkata.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "building_dynamics/lucknow/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 16878,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "building_dynamics/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK4",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKM",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "building_dynamics/pune/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
       "id": "building_stock",
       "title": "Building stock 2016\u20132023",
       "description": "Building counts, roof cover and height from Google Open Buildings 2.5D Temporal (annual, 4 m effective resolution) for 2016 and 2023. Counts are the model's fractional-count estimate and run higher than the v3 polygon count in dense cores.",

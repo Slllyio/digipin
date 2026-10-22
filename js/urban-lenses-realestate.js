@@ -15,6 +15,7 @@ const UrbanLensesRealEstate = (() => {
     const HOME_M2 = 60, RESI_EFF = 0.6, DEFAULT_FAR = 2.0;
     const GAP_VALUE = 0.8, GAP_WEALTH = 0.4, POCKET_POP = 200;
     const UPSIDE_MIN = 0.25, MAX_VALUE_RANK = 0.6;
+    const OLD_YEAR = 2000, OLD_1975 = 20, REDEV_M = 1.5, TOWER_M = 15, FRONTIER = 10;
     // Typical base FAR per city, as pipeline/realestate/supply.py BASE_FAR.
     const BASE_FAR = { delhi: 2.0, mumbai: 2.5, bengaluru: 2.25, chennai: 2.0, hyderabad: 3.0, pune: 2.0, ahmedabad: 2.7,
         kolkata: 2.0, jaipur: 2.0, lucknow: 2.0, indore_pilot: 1.5, bhopal: 1.5, guna: 1.5 };
@@ -277,6 +278,78 @@ const UrbanLensesRealEstate = (() => {
 
     const VALUE_METHOD = 'The value index is a hedonic land value surface: log premiums for jobs within 45 minutes (0.6 car + 0.4 transit, from the demand model), metro within a 20-minute walk (up to +10%), shops and services within ~1 km, neighbourhood status (Meta Relative Wealth Index and average building footprint, a proxy for plot size), green cover, and discounts for the 1-in-100-year floodplain, waterlogging and road noise above 60 dB, with coefficients from the Indian and international hedonic literature. 100 is the city\'s median home. No open locality prices exist for Indian cities, so it ranks land rather than quoting it; In Delhi, 244 colonies placed on the map rank with Spearman 0.67 against their circle-rate category (A–H, 2014 rates), and ₹ figures are rank-matched to those rates: official floors that lag the market most in the dearest colonies.';
 
+    /** Redevelopment: old neighbourhoods where buildings are getting taller (rebuilt or floors added). */
+    function redevelop(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const dh = c['building_dynamics.height_change_m'], sy = c['building_dynamics.settled_year'], b75 = c['building_dynamics.built_1975_pct'];
+        if (!dh || !(sy || b75)) return null;
+        const old = i => (sy && _fin(sy[i]) && sy[i] <= OLD_YEAR) || (b75 && b75[i] >= OLD_1975);
+        const cells = [], rising = [];
+        for (let i = 0; i < n; i++) {
+            if (!_fin(dh[i]) || !old(i)) continue;
+            cells.push(i);
+            if (dh[i] >= REDEV_M) rising.push(i);
+        }
+        if (cells.length < 5) return null;
+        const col = new Float64Array(n).fill(NaN);
+        for (const i of cells) col[i] = Math.max(-3, Math.min(6, dh[i]));
+        const pOld = _sumOver(pop, cells, i => _fin(pop[i])) || 1;
+        const pRise = _sumOver(pop, rising, i => _fin(pop[i]));
+        const share = _round(100 * rising.length / cells.length);
+        const hr = c['building_dynamics.highrise_pct'], vi = c['land_value.value_index'];
+        const stats = [
+            { label: `Old blocks (settled by ${OLD_YEAR}) where buildings grew ${REDEV_M} m or more, 2016–2023`, value: `${rising.length} of ${cells.length} (${share}%)`, raw: share },
+            { label: 'Residents of those blocks', value: `${_people(pRise)} (${_round(100 * pRise / pOld)}% of old-block residents)` },
+        ];
+        if (vi) {
+            const m = xs => xs.filter(i => _fin(vi[i])).reduce((a, i, _, arr) => a + vi[i] / arr.length, 0);
+            stats.push({ label: 'Land value index, redeveloping vs other old blocks', value: `${_round(m(rising))} vs ${_round(m(cells.filter(i => dh[i] < REDEV_M)))}` });
+        }
+        if (hr) stats.push({ label: 'Built-up in buildings over 15 m, redeveloping blocks (GHSL 2018)', value: `${_round(rising.reduce((a, i) => a + (_fin(hr[i]) ? hr[i] : 0), 0) / (rising.length || 1))}%` });
+        spaced(g, rising, col).forEach((i, k) => stats.push({ label: `Redevelopment hotspot ${k + 1}: ${g.codes[i]}`, value: `${dh[i] > TOWER_M ? 'new high-rise, ' : ''}+${_round(dh[i], 1)} m average height${sy && _fin(sy[i]) ? `, settled by ${sy[i] <= 1985 ? '1985' : Math.round(sy[i])}` : ''}` }));
+        return {
+            columns: { height_change: col }, idx: cells, weightKey: 'height_change',
+            metric: { label: 'Old blocks being rebuilt taller', value: share, unit: '%', higherIs: null },
+            headline: `In ${share}% of the city's older blocks (settled by ${OLD_YEAR}), buildings got ${REDEV_M} m or more taller between 2016 and 2023: floors added or plots rebuilt as builder floors and apartments.`,
+            stats,
+        };
+    }
+
+    /** Next growth: where satellites see building now and GHSL projects it by 2030. */
+    function nextgrowth(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const pg = c['building_dynamics.proj_gain_pp'], dw = c['building_dynamics.dw_built_change'], ac = c['building_dynamics.accel'];
+        if (!pg) return null;
+        const score = new Float64Array(n).fill(NaN), cells = [];
+        let km2 = 0;
+        for (let i = 0; i < n; i++) {
+            if (!_fin(pg[i])) continue;
+            const s = Math.max(0, pg[i]) + (dw && _fin(dw[i]) ? Math.max(0, dw[i]) / 2 : 0) + (ac && _fin(ac[i]) ? 2 * Math.min(2, Math.max(0, ac[i] - 1)) : 0);
+            score[i] = s; cells.push(i);
+            km2 += Math.max(0, pg[i]) / 100 * g.dx * g.dy;
+        }
+        if (cells.length < 10) return null;
+        const front = cells.filter(i => score[i] >= FRONTIER);
+        const mw = c['rail_access.metro_walk_min'], risk = c['land_value.prem_risk_pct'];
+        const stats = [
+            { label: 'Land GHSL projects to be built over 2020–2030', value: `${_round(km2, 1)} km²`, raw: _round(km2, 1) },
+            { label: 'Growth-frontier blocks (projected gain, building since 2023, speeding up)', value: `${front.length}` },
+        ];
+        if (dw) {
+            const recent = cells.filter(i => dw[i] >= 10).length;
+            stats.push({ label: 'Blocks where Dynamic World sees new built area since 2023 (+10 points or more)', value: `${recent}` });
+        }
+        if (mw) stats.push({ label: `… frontier within a ${STATION_WALK}-minute walk of a metro station`, value: `${front.filter(i => mw[i] <= STATION_WALK).length}` });
+        if (risk) stats.push({ label: '… frontier on flood- or waterlogging-prone land', value: `${front.filter(i => risk[i] < 0).length}` });
+        spaced(g, front, score).forEach((i, k) => stats.push({ label: `Growth frontier ${k + 1}: ${g.codes[i]}`, value: [pg[i] >= 1 ? `+${_round(pg[i])} points built-up by 2030 (GHSL)` : '', dw && _fin(dw[i]) && dw[i] >= 1 ? `+${_round(dw[i])} points built-up seen since 2023` : '', ac && _fin(ac[i]) && ac[i] > 1.5 ? 'building speeding up' : ''].filter(Boolean).join(', ') }));
+        return {
+            columns: { growth_score: score }, idx: cells, weightKey: 'growth_score', noHotspots: front.length < 10,
+            metric: { label: 'Land projected to be built 2020–2030', value: _round(km2, 1), unit: 'km²', higherIs: null },
+            headline: `GHSL projects about ${_round(km2, 1)} km² of new built-up land by 2030; ${front.length} blocks are already on the move, with building seen since 2023 and a quickening pace.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'landvalue', equity: false, title: 'Land value', icon: '🏷️',
             question: 'Where is land dearest and cheapest, and what drives the difference?',
@@ -317,9 +390,21 @@ const UrbanLensesRealEstate = (() => {
             needs: ['land_value.value_index', 'land_value.prem_risk_pct', 'land_value.prem_noise_pct', 'job_access.jobs_car_pct', 'job_access.jobs_transit_pct', 'rail_access.metro_walk_min', 're_supply.build_rate', 're_supply.urban_2035_pct', 'built_up.built_pct'],
             method: `Upside is the block's access percentile (job reach, ×1.2 within a 10-minute metro walk) minus its land value percentile, plus a fifth of how far its construction rate sits above the median and a small bonus for projected urban growth to 2035. Picks have upside of at least ${UPSIDE_MIN * 100} points, land value below the ${MAX_VALUE_RANK * 100}th percentile, no flood or waterlogging flag and no heavy road noise, spaced 1.5 km apart. A screening list, not investment advice: title, zoning and planned infrastructure decide more than any map.`,
             refs: 'Hedonic access premiums (Debrezion, Pels & Rietveld 2007); Open Buildings 2.5D Temporal; GHSL SSP projections' },
+        { id: 'redevelop', equity: false, title: 'Redevelopment', icon: '🏚️',
+            question: 'Which older neighbourhoods are being rebuilt taller?',
+            field: { key: 'height_change', label: 'Change in mean building height 2016→2023, older blocks', unit: 'm', higherIs: null, ramp: 'diverging' },
+            needs: ['building_dynamics.height_change_m', 'building_dynamics.settled_year', 'building_dynamics.built_1975_pct', 'building_dynamics.highrise_pct', 'land_value.value_index'],
+            method: `Older blocks were settled by ${OLD_YEAR} in the World Settlement Footprint Evolution (Landsat, 1985–2015) or were at least ${OLD_1975}% built in GHSL 1975. Height change is the mean building height in Google Open Buildings 2.5D Temporal, 2023 minus 2016; ${REDEV_M} m is about half a storey on average across the block, beyond the model's year-to-year noise. Heights are model estimates (±3 m per building), so read the pattern, not single blocks.`,
+            refs: 'Google Open Buildings 2.5D Temporal (Sirko et al. 2023); Marconcini et al. 2021 (WSF Evolution); GHSL P2023A (Pesaresi et al.)' },
+        { id: 'nextgrowth', equity: false, title: 'Where the city grows next', icon: '🌱',
+            question: 'Where will the city build next, and is building already under way there?',
+            field: { key: 'growth_score', label: 'Growth signal (projected gain + recent building + pace)', unit: 'points', higherIs: null, ramp: 'reds' },
+            needs: ['building_dynamics.proj_gain_pp', 'building_dynamics.dw_built_change', 'building_dynamics.accel', 'rail_access.metro_walk_min', 'land_value.prem_risk_pct'],
+            method: `The growth signal adds GHSL's projected built-up gain 2020→2030 (percentage points of the block), half of Dynamic World's rise in built-area probability from 2023 to 2026 (Sentinel-2, after the last Open Buildings year) and up to 4 points for building faster than the city's median block in 2020–23 than in 2016–20 (Open Buildings yearly counts). Frontier blocks score ${FRONTIER} or more. GHSL projections extend past trends; they do not know master plans or new roads.`,
+            refs: 'GHSL P2023A built-up projections; Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued }, { landRate: rate, RE_BASE_FAR: BASE_FAR }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth }, { landRate: rate, RE_BASE_FAR: BASE_FAR }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS };
 })();
 

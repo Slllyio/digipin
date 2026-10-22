@@ -87,3 +87,18 @@ def test_knots_rank_match_and_interpolate():
     assert cal.interp_rate(kn, 10) == 10000
     assert cal.interp_rate(kn, 1000) == 160000
     assert cal.interp_rate(kn, 125) == pytest.approx(math.sqrt(20000 * 40000))
+
+
+bd = pytest.importorskip("pipeline.realestate.building_dynamics")
+
+
+def test_build_year_median_of_additions():
+    # 10 added in 2018, 10 in 2020: half reached in 2018
+    assert bd.build_year({2016: 10, 2017: 10, 2018: 20, 2019: 20, 2020: 30}) == 2018
+    assert bd.build_year({2016: 10, 2023: 11}) is None
+
+
+def test_acceleration():
+    assert bd.acceleration({2016: 0, 2020: 40, 2023: 60}) == pytest.approx((20 / 3) / 10)
+    assert bd.acceleration({2016: 0, 2020: 1, 2023: 60}) is None
+    assert bd.acceleration({2016: 0, 2023: 60}) is None

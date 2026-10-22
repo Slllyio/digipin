@@ -143,5 +143,19 @@ questions on land prices, circle rates, rent, displacement, vacant land,
 construction and "where should I invest" to them. Buildings can be coloured by
 `land_value:value_index` in 3D (Building data panel, or `bc=` in a share link).
 
+**`building_dynamics` (pipeline/realestate/building_dynamics.py, Earth Engine).**
+When and how fast each block was built, from the building prediction datasets:
+Open Buildings 2.5D Temporal yearly counts and heights 2016–2023 (median build
+year, construction acceleration relative to the city's median block, height
+change), World Settlement Footprint Evolution 1985–2015 (year first settled),
+GHSL built-up 1975 / 2020 and its 2030 projection, GHSL 2018 building-height
+and use classes (high-rise and non-residential shares) and Dynamic World
+built-area probability 2023→2026 (construction since the last Open Buildings
+year). Lenses `redevelop` (older blocks getting taller) and `nextgrowth`
+(projected gain + recent building + pace) read it, and buildings can be
+coloured by `building_dynamics:settled_year` in 3D. The model's later years
+detect more buildings, so raw acceleration runs above 1 city-wide; the stored
+ratio is relative to the city's median block.
+
 Rerun after the traffic and access datasets:
-`python -m pipeline.realestate.land_value --region all && python -m pipeline.realestate.supply --region all && python -m pipeline.realestate.calibrate`.
+`python -m pipeline.realestate.building_dynamics --region all && python -m pipeline.realestate.land_value --region all && python -m pipeline.realestate.supply --region all && python -m pipeline.realestate.calibrate`.

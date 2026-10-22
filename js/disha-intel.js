@@ -24,6 +24,8 @@ const DishaIntel = (() => {
         compare: /\b(compare|vs\.?|versus|better than)\b/i,
         // Urban lenses (js/urban-lenses.js): combined-dataset questions about people.
         lens: {
+            redevelop: /\b(redevelop\w*|re-?built|rebuild\w*|getting taller|vertical (growth|expansion)|builder floors?|floors? (being )?added|old (neighbou?rhoods?|colon(y|ies)|areas?)\b.{0,25}\b(rebuilt|taller|redeveloped))\b/i,
+            nextgrowth: /\b(grow(s|ing)? next|next (growth|expansion)|growth frontiers?|future (growth|development|built[\s-]?up|expansion)|where (will|would|is) (the )?city (grow|expand)\w*|(2030|projected) (built[\s-]?up|growth|urbani[sz]ation|expansion))\b/i,
             undervalued: /\b(under[\s-]?valued|under[\s-]?priced|(good|best|smart) (place|area|locality|localit(y|ies)|neighbou?rhoods?) to (invest|buy)|where (to|should i|should we|can i) (invest|buy (land|property|a (flat|plot|house)))|investment (picks?|hotspots?|opportunit\w*)|(appreciat\w*|capital growth) (potential|hotspots?))\b/i,
             rentdemand: /\b(rent(al)? (demand|yields?|hotspots?|market)|(high|best|good) rental|renters?|tenants?|paying guest|pg accommodation|where .{0,20}\brent\b)\b/i,
             affordability: /\b(afford\w*|unaffordab\w*|displace\w*|gentrif\w*|price[\s-]?(to[\s-]?)?income|priced out|evict\w*)\b/i,

@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -78,5 +78,27 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.metric.value).toBeGreaterThan(5);
         expect(r.stats.find(s => s.label.startsWith('Pressure pocket 1')).value).toMatch(/1st|2nd|3rd|\dth/);
         expect(L._lenses.affordability(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('redevelop: old blocks getting taller', () => {
+        const dh = codes.map((_, i) => (i < SIZE ? 3 : 0.2));
+        const sy = codes.map((_, i) => (i < 2 * SIZE ? 1985 : 2010));
+        const f = L.frameFrom(codes, { ...base, 'building_dynamics.height_change_m': dh, 'building_dynamics.settled_year': sy });
+        const r = L._lenses.redevelop(f, {});
+        expect(r.metric.value).toBe(50);                                     // 12 of 24 old blocks
+        expect(r.stats.find(s => s.label.startsWith('Redevelopment hotspot 1')).value).toMatch(/\+3 m/);
+        expect(Number.isNaN(r.columns.height_change[n - 1])).toBe(true);     // new blocks left out
+        expect(L._lenses.redevelop(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('nextgrowth: projected gain, recent building and pace', () => {
+        const pg = codes.map((_, i) => (i === 0 ? 30 : 1));
+        const dw = codes.map((_, i) => (i === 0 ? 20 : 0));
+        const f = L.frameFrom(codes, { ...base, 'building_dynamics.proj_gain_pp': pg, 'building_dynamics.dw_built_change': dw });
+        const r = L._lenses.nextgrowth(f, {});
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.columns.growth_score[0]).toBe(40);
+        expect(r.stats.find(s => s.label.startsWith('Growth frontier 1')).label).toContain(codes[0]);
+        expect(r.stats.some(s => s.label.startsWith('Growth frontier 2'))).toBe(false);
     });
 });

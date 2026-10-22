@@ -93,6 +93,7 @@ jobs:
                 python -m pipeline.traffic.bus_stop_heat --region "$DIGIPIN_REGION" --refresh || python -m pipeline.traffic.bus_stop_heat --region "$DIGIPIN_REGION" || echo "bus stop heat bake skipped"
                 python -m pipeline.traffic.parking --region "$DIGIPIN_REGION" || echo "parking bake skipped"
                 python -m pipeline.traffic.commute_carbon --region "$DIGIPIN_REGION" || echo "commute carbon bake skipped"
+                python -m pipeline.realestate.building_dynamics --region "$DIGIPIN_REGION" || echo "building dynamics bake skipped (needs Earth Engine)"
                 python -m pipeline.realestate.land_value --region "$DIGIPIN_REGION" || echo "land value bake skipped"
                 python -m pipeline.realestate.supply --region "$DIGIPIN_REGION" || echo "real-estate supply bake skipped"
                 if [ "$DIGIPIN_REGION" = delhi ]; then python -m pipeline.realestate.calibrate || echo "Delhi calibration skipped"; fi

@@ -180,6 +180,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 9.8,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 1.8,
+     "unit": "km²",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 18.4,
@@ -436,6 +448,18 @@
      "label": "Blocks undervalued for their access",
      "value": 3.5,
      "unit": "%",
+     "higherIs": null
+    },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 5.3,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 9.2,
+     "unit": "km²",
      "higherIs": null
     },
     "schoolrun": {
@@ -696,6 +720,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 4.9,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 2,
+     "unit": "km²",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 8.8,
@@ -946,6 +982,18 @@
      "label": "Blocks undervalued for their access",
      "value": 2.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 3.8,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 2.3,
+     "unit": "km²",
      "higherIs": null
     },
     "schoolrun": {
@@ -1206,6 +1254,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 5.1,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 14.2,
+     "unit": "km²",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 12.3,
@@ -1458,6 +1518,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 0.5,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 0.4,
+     "unit": "km²",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 2.9,
@@ -1708,6 +1780,18 @@
      "label": "Blocks undervalued for their access",
      "value": 8.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 10.7,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 5.7,
+     "unit": "km²",
      "higherIs": null
     },
     "schoolrun": {
@@ -1968,6 +2052,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 3.7,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 8,
+     "unit": "km²",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 14.4,
@@ -2226,6 +2322,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 3.6,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 2.8,
+     "unit": "km²",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 9.6,
@@ -2478,6 +2586,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 4.4,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 0.6,
+     "unit": "km²",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 36.3,
@@ -2728,6 +2848,18 @@
      "label": "Blocks undervalued for their access",
      "value": 5.3,
      "unit": "%",
+     "higherIs": null
+    },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 3.2,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 2.1,
+     "unit": "km²",
      "higherIs": null
     },
     "schoolrun": {
@@ -2988,6 +3120,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 22.4,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 1.4,
+     "unit": "km²",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 35.1,
@@ -3244,6 +3388,18 @@
      "label": "Blocks undervalued for their access",
      "value": 6.4,
      "unit": "%",
+     "higherIs": null
+    },
+    "redevelop": {
+     "label": "Old blocks being rebuilt taller",
+     "value": 7.9,
+     "unit": "%",
+     "higherIs": null
+    },
+    "nextgrowth": {
+     "label": "Land projected to be built 2020–2030",
+     "value": 4,
+     "unit": "km²",
      "higherIs": null
     },
     "schoolrun": {
