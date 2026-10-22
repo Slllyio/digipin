@@ -260,4 +260,27 @@ test.describe('live feeds', () => {
     expect(await page.evaluate(() => SatPasses.isActive())).toBe(false);
     await expect(panel).toHaveCount(0);
   });
+
+  test('Sentinel-2 card shows when the next Sentinel-2 pass is due', async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.route(/planetarycomputer\.microsoft\.com\/api\/stac/, (r) => r.fulfill({ json: { features: [
+      { id: 'S2B_MSIL2A_TEST', bbox: [76.5, 28, 77.8, 29.1], properties: { datetime: new Date(Date.now() - 4 * 864e5).toISOString(), 'eo:cloud_cover': 3.2 } },
+    ] }, headers: CORS }));
+    await page.route(/planetarycomputer\.microsoft\.com\/api\/data/, (r) => r.fulfill({ status: 204, headers: CORS }));
+    // Real element epochs and a pinned clock make the pass deterministic: SGP4 puts
+    // Sentinel-2A over Delhi at 2026-10-22 05:41 UTC (11:11 IST).
+    const fixture = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'celestrak-gp.json'), 'utf8'));
+    await page.route(/celestrak\.org/, (r) => r.fulfill({ json: /GROUP=stations/.test(r.request().url()) ? [] : fixture, headers: CORS }));
+    await page.clock.setFixedTime(new Date('2026-10-21T20:00:00Z'));
+    await page.goto('/app.html');
+    await waitForApp(page);
+    await page.selectOption('#city-select', 'delhi');
+    await settle(page, 600);
+    await page.evaluate(() => SentinelImagery.attach());
+    const next = page.locator('#sentinel-panel .sentinel-next, .sentinel-panel .sentinel-next').first();
+    await expect(next).toBeVisible({ timeout: 20_000 });
+    await expect(next).toContainText('Next pass: Sentinel-2A, Thu 22 Oct, 11:11 IST');
+    await page.evaluate(() => SentinelImagery.detach());
+  });
 });
+

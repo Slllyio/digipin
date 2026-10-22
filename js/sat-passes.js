@@ -447,6 +447,24 @@ const SatPasses = (() => {
         return true;
     }
 
+    async function _loadFleet() {
+        if (_sats.length) return _sats;
+        const lists = await Promise.all(GP_URLS.map(u => _json(u, 6 * 3600000)));
+        _sats = fleet(lists.flat(), Date.now());
+        return _sats;
+    }
+
+    /**
+     * Next pass over a point by the satellites whose name matches `re`, with
+     * its cloud outlook, for other cards (e.g. Sentinel-2 imagery). Null when
+     * there is none in 7 days; throws if the orbits cannot be fetched.
+     */
+    async function nextPass(lat, lng, re = /^Sentinel-2/) {
+        const sats = (await _loadFleet()).filter(s => re.test(s.label));
+        const hourly = await _json(_cloudUrl(lat, lng), 3600000).then(j => j.hourly).catch(() => null);
+        return schedule(sats, lat, lng, Date.now(), 7, hourly)[0] || null;
+    }
+
     async function refresh() {
         if (!_active || !_map) return;
         const id = ++_reqId;
@@ -454,11 +472,8 @@ const SatPasses = (() => {
         _centre = { lat: c.lat, lng: c.lng };
         _render();
         try {
-            if (!_sats.length) {
-                const lists = await Promise.all(GP_URLS.map(u => _json(u, 6 * 3600000)));
-                if (id !== _reqId || !_active) return;
-                _sats = fleet(lists.flat(), Date.now());
-            }
+            await _loadFleet();
+            if (id !== _reqId || !_active) return;
             _hourly = await _json(_cloudUrl(_centre.lat, _centre.lng), 3600000).then(j => j.hourly).catch(() => null);
             if (id !== _reqId || !_active) return;
             _rows = schedule(_sats, _centre.lat, _centre.lng, Date.now(), 7, _hourly);
@@ -514,7 +529,7 @@ const SatPasses = (() => {
     function satellites() { return _sats.map(s => ({ id: s.el.id, label: s.label, kind: s.meta.kind })); }
 
     return {
-        attach, detach, toggle, isActive, refresh, select, rows, satellites, lastFrame,
+        attach, detach, toggle, isActive, refresh, select, rows, satellites, lastFrame, nextPass,
         CATALOG, elements, gmst, propagate, distanceKm, sunElevation, closeApproaches, metaFor, passesFor,
         cloudAt, outlook, groundTrack, swathPolygon, fmtIst, fmtIn, fleet, schedule,
     };

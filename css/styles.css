@@ -4569,6 +4569,7 @@ body.presenting #sidebar { display: none !important; }
 .sentinel-field { display: grid; gap: 4px; }
 .sentinel-field select { font: inherit; max-width: 100%; }
 .sentinel-credit { color: var(--text-secondary); font-size: 11px; }
+.sentinel-next { font-size: 11px; color: var(--text-primary); }
 .sentinel-close { justify-self: end; font: inherit; cursor: pointer; }
 
 /* DISHA: ask before slow/heavy agent steps (DISHATools `confirm`). */

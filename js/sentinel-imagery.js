@@ -154,8 +154,24 @@ const SentinelImagery = (() => {
         close.className = 'sentinel-close';
         close.textContent = 'Close';
         close.addEventListener('click', () => { detach(); _syncButton(false); });
-        _panel.append(title, date, view, credit, close);
+        const next = document.createElement('div');
+        next.className = 'sentinel-next';
+        next.hidden = true;
+        _panel.append(title, date, view, next, credit, close);
         document.body.appendChild(_panel);
+        _showNextPass(next, target);
+    }
+
+    /** "Next pass: Sentinel-2B, Fri 24 Oct, 11:11 IST · Likely clear" from the satellite-pass model. */
+    async function _showNextPass(el, target) {
+        if (typeof SatPasses === 'undefined' || !SatPasses.nextPass) return;
+        const reqId = _reqId;
+        try {
+            const p = await SatPasses.nextPass(target.lat, target.lng);
+            if (reqId !== _reqId || !p) return;
+            el.textContent = `Next pass: ${p.label}, ${SatPasses.fmtIst(p.t)}${p.outlook ? ` \u00b7 ${p.outlook}` : ''}`;
+            el.hidden = false;
+        } catch { /* orbits unavailable: the card works without it */ }
     }
 
     async function attach() {

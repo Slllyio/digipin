@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 const SP = globalThis.SatPasses;
 
@@ -100,5 +100,30 @@ describe('SatPasses schedule', () => {
         expect(SP.fmtIn(20 * 60000)).toBe('in 20 min');
         expect(SP.fmtIn(5 * 3600000)).toBe('in 5 h');
         expect(SP.fmtIn(3 * 86400000)).toBe('in 3 days');
+    });
+});
+
+describe('SatPasses.nextPass', () => {
+    it('returns the next Sentinel-2 pass with its cloud outlook, from fetched orbits', async () => {
+        const el = SP.elements(S2A);
+        vi.useFakeTimers({ toFake: ['Date'] });
+        vi.setSystemTime(el.epochMs);
+        const fetchMock = vi.fn(async (url) => ({
+            ok: true,
+            json: async () => /celestrak/.test(url)
+                ? (/stations/.test(url) ? [ISS] : [S2A])
+                : { hourly: { time: ['2026-10-22T06:00'], cloud_cover: [80] } },
+        }));
+        vi.stubGlobal('fetch', fetchMock);
+        try {
+            const p = await SP.nextPass(DELHI.lat, DELHI.lng);
+            expect(p.label).toBe('Sentinel-2A');
+            expect(Math.abs(p.t - Date.parse('2026-10-22T05:41:12Z'))).toBeLessThan(20000);
+            expect(p.outlook).toMatch(/Likely cloudy/);
+            expect(await SP.nextPass(DELHI.lat, DELHI.lng, /^Landsat/)).toBeNull();
+        } finally {
+            vi.unstubAllGlobals();
+            vi.useRealTimers();
+        }
     });
 });
