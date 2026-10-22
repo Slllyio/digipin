@@ -4,15 +4,16 @@ Per L7 cell (dataset ``encroachment``), each a share of the block's land:
 
     water_lost_pct     surface water lost 1984–2021 (JRC Global Surface Water
                        transition: permanent or seasonal water that is gone)
-    water_built_pct    … of that, built up now (Dynamic World 2025–26 built
-                       class most likely)
+    water_built_pct    … of that, built up now (Dynamic World 2025–26 mean
+                       built probability ≥ 0.6)
     flood_new_pct      1-in-100-year floodplain (JRC/GloFAS) where buildings
                        appeared 2016→2023 (Open Buildings 2.5D Temporal
-                       presence)
+                       presence ≥ 0.5 in 2023, < 0.2 in 2016)
     tree_lost_pct      tree cover ≥ 30% in 2000 that was lost 2001–2024
                        (Hansen Global Forest Change)
     tree_built_pct     … of that, built up now (Dynamic World)
-    recent_built_pct   built in 2025–26 but not in 2023 on any of the above
+    recent_built_pct   built in 2025–26 (probability ≥ 0.6) but not in 2023
+                       (≤ 0.3) on any of the above
                        (former water, floodplain or lost tree cover): the live
                        front of encroachment
 
@@ -33,12 +34,12 @@ LEVEL = 7
 LOST = (3, 6)                      # GSW transition: lost permanent, lost seasonal
 GFC = "UMD/hansen/global_forest_change_2025_v1_13"
 DW_NOW, DW_THEN = ("2025-10-01", "2026-10-01"), ("2023-01-01", "2023-12-31")
+BUILT_NOW, BUILT_THEN = 0.6, 0.3
 
 
-def _built(ee, geom, dates):
-    """Dynamic World: built is the most likely class over the period."""
-    dw = ee.ImageCollection("GOOGLE/DYNAMICWORLD/V1").filterBounds(geom).filterDate(*dates).select("label")
-    return dw.mode().eq(6)
+def _built_prob(ee, geom, dates):
+    """Dynamic World: mean built-area probability over the period."""
+    return ee.ImageCollection("GOOGLE/DYNAMICWORLD/V1").filterBounds(geom).filterDate(*dates).select("built").mean()
 
 
 def compute(region, log=print):
@@ -48,7 +49,10 @@ def compute(region, log=print):
     lost = tr.eq(LOST[0]).Or(tr.eq(LOST[1]))
     gfc = ee.Image(GFC)
     tree_lost = gfc.select("treecover2000").gte(30).And(gfc.select("loss").eq(1))
-    now, then = _built(ee, geom, DW_NOW), _built(ee, geom, DW_THEN)
+    p_now, p_then = _built_prob(ee, geom, DW_NOW), _built_prob(ee, geom, DW_THEN)
+    now = p_now.gte(BUILT_NOW)
+    # Recent: confidently built now and confidently not built in 2023 (label flips in built-up areas are noise).
+    recent = now.And(p_then.lte(BUILT_THEN))
     fl = ee.ImageCollection("JRC/CEMS_GLOFAS/FloodHazard/v2_1").filterBounds(geom).mosaic()
     dry = fl.select("permanent_water_class").unmask(0).neq(1)
     plain = fl.select("RP100_depth").unmask(0).multiply(dry).gt(0)
@@ -57,14 +61,20 @@ def compute(region, log=print):
     a = gee.fetch(gee.to_cells(ee.Image.cat([
         lost.rename("wl"), lost.And(now).rename("wb"),
         tree_lost.rename("tl"), tree_lost.And(now).rename("tb"),
-        any_.And(now).And(then.Not()).rename("rb")]).unmask(0), 30), bbox, LEVEL, tile=96)
+        any_.And(recent).rename("rb")]).unmask(0), 30), bbox, LEVEL, tile=96)
     log(f"{region}: floodplain buildings")
     col = ee.ImageCollection("GOOGLE/Research/open-buildings-temporal/v1").filterBounds(geom)
 
-    def pres(y):
+    def _p(y):
         c = col.filter(ee.Filter.calendarRange(y, y, "year"))
-        return c.mosaic().setDefaultProjection(c.first().projection().atScale(4)).select("building_presence").gte(0.5)
-    new = pres(2023).And(pres(2016).unmask(0).Not()).unmask(0)
+        return c.mosaic().setDefaultProjection(c.first().projection().atScale(4)).select("building_presence")
+
+    def pres(y):
+        return _p(y).gte(0.5)
+
+    def pres16_low(y):
+        return _p(y).unmask(0).lt(0.2)
+    new = pres(2023).And(pres16_low(2016)).unmask(0)
     b = gee.fetch(gee.to_cells(new.And(plain).rename("fn"), 4), bbox, LEVEL, tile=48)
     rows = {}
     for code, x in gee.merge(a, b).items():

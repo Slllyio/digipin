@@ -204,6 +204,18 @@
      "unit": "%/yr",
      "higherIs": "worse"
     },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 2.7",
+     "value": 95.9,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 18.1,
+     "unit": "ha",
+     "higherIs": "worse"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 18.4,
@@ -484,6 +496,18 @@
      "label": "Expected yearly flood damage, share of building value",
      "value": 0.04,
      "unit": "%/yr",
+     "higherIs": "worse"
+    },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 2.25",
+     "value": 99,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 36.7,
+     "unit": "ha",
      "higherIs": "worse"
     },
     "schoolrun": {
@@ -768,9 +792,15 @@
      "unit": "%/yr",
      "higherIs": "worse"
     },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 1.5",
+     "value": 66.9,
+     "unit": "%",
+     "higherIs": null
+    },
     "encroach": {
      "label": "Former water now built up",
-     "value": 2,
+     "value": 0.2,
      "unit": "ha",
      "higherIs": "worse"
     },
@@ -1048,6 +1078,18 @@
      "label": "Expected yearly flood damage, share of building value",
      "value": 0.41,
      "unit": "%/yr",
+     "higherIs": "worse"
+    },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 2",
+     "value": 98.4,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 286.2,
+     "unit": "ha",
      "higherIs": "worse"
     },
     "schoolrun": {
@@ -1332,6 +1374,18 @@
      "unit": "%/yr",
      "higherIs": "worse"
     },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 2",
+     "value": 85.6,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 108.8,
+     "unit": "ha",
+     "higherIs": "worse"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 12.3,
@@ -1608,6 +1662,18 @@
      "unit": "%/yr",
      "higherIs": "worse"
     },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 1.5",
+     "value": 1.5,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 0.1,
+     "unit": "ha",
+     "higherIs": "worse"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 2.9,
@@ -1882,6 +1948,18 @@
      "label": "Expected yearly flood damage, share of building value",
      "value": 0.05,
      "unit": "%/yr",
+     "higherIs": "worse"
+    },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 3",
+     "value": 99.1,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 40.7,
+     "unit": "ha",
      "higherIs": "worse"
     },
     "schoolrun": {
@@ -2166,6 +2244,18 @@
      "unit": "%/yr",
      "higherIs": "worse"
     },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 1.5",
+     "value": 49.4,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 3.8,
+     "unit": "ha",
+     "higherIs": "worse"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 14.4,
@@ -2448,6 +2538,18 @@
      "unit": "%/yr",
      "higherIs": "worse"
     },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 2",
+     "value": 90.3,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 0.2,
+     "unit": "ha",
+     "higherIs": "worse"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 9.6,
@@ -2724,6 +2826,18 @@
      "unit": "%/yr",
      "higherIs": "worse"
     },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 2",
+     "value": 84.8,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 137.6,
+     "unit": "ha",
+     "higherIs": "worse"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 36.3,
@@ -2998,6 +3112,18 @@
      "label": "Expected yearly flood damage, share of building value",
      "value": 0.26,
      "unit": "%/yr",
+     "higherIs": "worse"
+    },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 2",
+     "value": 92.7,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 18.3,
+     "unit": "ha",
      "higherIs": "worse"
     },
     "schoolrun": {
@@ -3282,6 +3408,18 @@
      "unit": "%/yr",
      "higherIs": "worse"
     },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 2.5",
+     "value": 100,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 43.5,
+     "unit": "ha",
+     "higherIs": "worse"
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 35.1,
@@ -3562,6 +3700,18 @@
      "label": "Expected yearly flood damage, share of building value",
      "value": 0.08,
      "unit": "%/yr",
+     "higherIs": "worse"
+    },
+    "feasible": {
+     "label": "Blocks where building pays at FAR 2",
+     "value": 98.6,
+     "unit": "%",
+     "higherIs": null
+    },
+    "encroach": {
+     "label": "Former water now built up",
+     "value": 63.1,
+     "unit": "ha",
      "higherIs": "worse"
     },
     "schoolrun": {

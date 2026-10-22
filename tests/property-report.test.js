@@ -17,6 +17,17 @@ describe('PropertyReport', () => {
         expect(m.sections[2].rows.find(r => r.label.startsWith('Housing need')).value).toBe('300 homes short');
     });
 
+    it('assemble(): development feasibility rows', () => {
+        const m = PR.assemble({ price: 95800, rlv: 120.5, redevGain: 40, far: 0.8, tod: 90, baseFar: 2 });
+        const fe = m.sections.find(s => s.title === 'Development feasibility').rows;
+        expect(fe[0].value).toBe('₹8,900 per sq ft');
+        expect(fe[1].label).toBe('Residual land value at the base FAR of 2');
+        expect(fe[1].value).toBe('₹1.2 lakh per m² of plot');
+        expect(fe[2].value).toBe('pays, +₹40,000 per m² of plot');
+        expect(m.strengths).toContain('rebuilding to the base FAR pays');
+        expect(PR.assemble({ rlv: -16.8 }).sections[0].rows[0].value).toBe('−₹16,800 per m² of plot');
+    });
+
     it('assemble(): an empty block still reads sensibly', () => {
         const m = PR.assemble({});
         expect(m.verdict).toBe('No standout strengths. No major risk flags.');

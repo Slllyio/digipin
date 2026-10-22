@@ -26,6 +26,12 @@ const UrbanLensesRealEstate = (() => {
     // Delhi: value index → circle rate (₹/m² of residential land, 2014 categories A–H), rank-matched at the
     // deciles of 244 placed colonies by pipeline/realestate/calibrate.py (Spearman 0.67). Official floors, not market prices.
     const RATE_KNOTS = { delhi: [[26.0, 23280], [45.0, 23280], [76.4, 46200], [101.9, 46200], [114.9, 56640], [122.3, 56640], [130.1, 56640], [142.9, 70080], [156.6, 127680], [175.8, 159840], [200.4, 774000]] };
+    // City-average new-home asking price, ₹ per sq ft of saleable area. Top seven: ANAROCK Q3 2025 (Delhi = NCR,
+    // Mumbai = MMR). The rest are rough placeholders from listings until licensed market data (end-of-project keys).
+    const PRICE_SQFT = { mumbai: 17230, delhi: 8900, bengaluru: 8870, pune: 7935, hyderabad: 7750, chennai: 7010, kolkata: 6060,
+        ahmedabad: 5500, jaipur: 5000, lucknow: 5500, indore_pilot: 4500, bhopal: 4000, guna: 2500 };
+    const PRICE_ROUGH = new Set(['ahmedabad', 'jaipur', 'lucknow', 'indore_pilot', 'bhopal', 'guna']);
+    const SQFT_M2 = 10.764, SALE_LOADING = 1.25, BUILT_PER_FAR = 1.4, SOFT = 0.15, MARGIN = 0.2, OLD_STOCK = 0.6, TOD_FAR = 4, TOD_WALK = 10, REBUILD_FAR = 0.5;
     const DRIVERS = [['jobs', 'Job reach'], ['metro', 'Metro walk'], ['amenity', 'Shops and services'], ['neigh', 'Neighbourhood and plot size'],
         ['green', 'Green cover'], ['risk', 'Flood and waterlogging'], ['noise', 'Road noise']];
 
@@ -63,6 +69,7 @@ const UrbanLensesRealEstate = (() => {
 
     function _rs(v) {
         if (!_fin(v)) return '–';
+        if (v < 0) return `−${_rs(-v)}`;
         return v >= 1e5 ? `₹${_round(v / 1e5, 1)} lakh` : `₹${Math.round(v).toLocaleString('en-IN')}`;
     }
 
@@ -513,6 +520,72 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    /**
+     * Residual land value per m² of plot: sales at FAR `far` (saleable = FAR area × loading, at ₹`price`/m²) minus
+     * build cost (built area incl. parking/services × ₹BUILD_COST × (1 + soft costs)) minus developer margin.
+     * Redevelopment pays when it beats the existing floor area sold as old stock.
+     */
+    function feasibility({ price, far, farNow = 0, cost = BUILD_COST }) {
+        if (!_fin(price) || !_fin(far)) return null;
+        const gdv = far * SALE_LOADING * price, build = far * BUILT_PER_FAR * cost * (1 + SOFT), margin = MARGIN * gdv;
+        const rlv = gdv - build - margin, euv = (_fin(farNow) ? farNow : 0) * SALE_LOADING * price * OLD_STOCK;
+        return { gdv, build, margin, rlv, euv, redevGain: rlv - euv, breakEvenPrice: far * BUILT_PER_FAR * cost * (1 + SOFT) / (far * SALE_LOADING * (1 - MARGIN)) };
+    }
+
+    function blockPrice(city, vi) {
+        const p = PRICE_SQFT[city];
+        return p && _fin(vi) ? p * SQFT_M2 * vi / 100 : null;
+    }
+
+    /** Development feasibility: what land is worth to a developer at the allowed FAR, and what a TOD FAR would add. */
+    function feasible(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, city = fr.city;
+        const vi = c['land_value.value_index'], fn = c['re_supply.far_now'], vh = c['re_supply.vacant_ha'], mw = c['rail_access.metro_walk_min'];
+        if (!vi || !PRICE_SQFT[city]) return null;
+        const far = BASE_FAR[city] || DEFAULT_FAR;
+        const rlv = new Float64Array(n).fill(NaN), gain = new Float64Array(n).fill(NaN), tod = new Float64Array(n).fill(NaN), cells = [];
+        let viable = 0, redev = 0, vacVal = 0, todVal = 0, todHa = 0;
+        for (let i = 0; i < n; i++) {
+            const price = blockPrice(city, vi[i]);
+            if (price == null) continue;
+            const f = feasibility({ price, far, farNow: fn && _fin(fn[i]) ? fn[i] : 0 });
+            cells.push(i);
+            rlv[i] = f.rlv / 1e3;
+            gain[i] = f.redevGain / 1e3;
+            if (f.rlv > 0) viable++;
+            if (f.redevGain > 0 && fn && fn[i] >= REBUILD_FAR) redev++;
+            const vac = vh && vh[i] > 0 ? vh[i] : 0;
+            vacVal += vac * 1e4 * Math.max(0, f.rlv);
+            if (mw && mw[i] <= TOD_WALK && TOD_FAR > far) {
+                const t = feasibility({ price, far: TOD_FAR }).rlv - f.rlv;
+                tod[i] = t / 1e3;
+                if (t > 0) { todVal += vac * 1e4 * t; todHa += vac; }
+            }
+        }
+        if (cells.length < 5) return null;
+        const med = wquantile(rlv, null, cells, 0.5);
+        const be = feasibility({ price: 1, far }).breakEvenPrice;
+        const rough = PRICE_ROUGH.has(city);
+        const stats = [
+            { label: `City-average new-home price${rough ? ' (rough placeholder)' : ' (ANAROCK Q3 2025)'}`, value: `₹${PRICE_SQFT[city].toLocaleString('en-IN')} per sq ft` },
+            { label: 'New-home price at which building breaks even on cost and margin', value: `₹${Math.round(be / SQFT_M2).toLocaleString('en-IN')} per sq ft` },
+            { label: `Blocks where new building pays at the base FAR of ${far}`, value: `${_round(100 * viable / cells.length)}%`, raw: _round(100 * viable / cells.length) },
+            { label: 'Median residual land value', value: `${_rs(med * 1e3)} per m² of plot` },
+            { label: `Built-up blocks (FAR ≥ ${REBUILD_FAR}) where rebuilding to the base FAR beats selling the existing floors`, value: `${redev.toLocaleString('en-IN')}` },
+            { label: 'Developer value of the vacant buildable land, if all of it could be built', value: `₹${_people(vacVal / 1e7)} crore` },
+        ];
+        if (todHa > 0) stats.push({ label: `Extra value if vacant land within a ${TOD_WALK}-minute metro walk got FAR ${TOD_FAR} (TOD)`, value: `₹${_people(todVal / 1e7)} crore on ${_round(todHa, 1)} ha` });
+        spaced(g, cells.filter(i => gain[i] > 0 && fn && fn[i] >= REBUILD_FAR), gain).forEach((i, k) => stats.push({ label: `Redevelopment candidate ${k + 1}: ${g.codes[i]}`, value: `rebuilding adds ${_rs(gain[i] * 1e3)} per m² of plot (FAR now ${_round(fn[i], 1)})` }));
+        const cap = wquantile(rlv, null, cells, 0.98);
+        for (const i of cells) if (rlv[i] > cap) rlv[i] = cap;
+        return {
+            columns: { rlv, redev_gain: gain, tod_uplift: tod }, idx: cells, weightKey: 'rlv',
+            metric: { label: `Blocks where building pays at FAR ${far}`, value: _round(100 * viable / cells.length), unit: '%', higherIs: null },
+            headline: `At the city's base FAR of ${far}, new building pays in ${_round(100 * viable / cells.length)}% of blocks; ${med > 0 ? `the median plot is worth about ${_rs(med * 1e3)} per m² to a developer` : 'at the median price, apartment building does not cover its cost and margin, so plotted houses dominate'}${rough ? ' (prices here are rough placeholders)' : ''}.`,
+            stats,
+        };
+    }
+
     // Features for "places like this": each block's percentile within its own city, so a match means the same
     // standing in the target city (the "Hauz Khas of Pune"), not the same absolute numbers.
     const SIM_FEATURES = [['land_value.value_index', 'land value', 2, 'dearer', 'cheaper'], ['population.density_km2', 'density', 1, 'denser', 'sparser'],
@@ -639,16 +712,24 @@ const UrbanLensesRealEstate = (() => {
             needs: ['water.flood_rp100_pct', 'water.flood_rp10_pct', 'water.flood_rp100_depth_m', 'building_stock.cover_2023_pct', 'building_stock.height_2023_m', 'waterlogging.waterlogging_index'],
             method: `River flooding: the block's footprint (Open Buildings roof cover) in the JRC/GloFAS 1-in-100-year flood zone takes the JRC Asia residential depth-damage factor at the zone's mean depth, times ₹${MAX_DMG.toLocaleString('en-IN')} per m² of footprint (structure and contents of the flooded floor); the 1-in-10-year zone takes ${RP10_DEPTH * 100}% of that depth. Global flood maps ignore embankments, so cities are assumed protected up to the 1-in-${PROTECT_RP}-year flood (FLOPROS-style urban standard); expected annual damage integrates the rarer events over exceedance probability. Waterlogging adds ${WLOG_EAD[0][1] * 100}% (very high) or ${WLOG_EAD[1][1] * 100}% (high) of footprint value a year. Building value is floor area (footprint × height ÷ 3 m) at ₹${BUILD_COST.toLocaleString('en-IN')}/m² (CPWD plinth-area rates); value at risk capitalises the yearly loss at ${DISCOUNT * 100}%. Coarse flood maps (~90 m) miss drains and local embankments.`,
             refs: 'Huizinga, de Moel & Szewczyk 2017 (JRC global depth-damage functions); Scussolini et al. 2016 (FLOPROS protection standards); JRC/CEMS GloFAS flood hazard maps; CPWD plinth area rates; Bin & Landry 2013 (flood risk capitalisation)' },
+        { id: 'feasible', equity: false, title: 'Development feasibility', icon: '🏗️',
+            question: 'Where does building at the allowed FAR pay, what is land worth to a developer, and what would a metro TOD FAR add?',
+            field: { key: 'rlv', label: 'Residual land value at the base FAR', unit: '₹k/m² plot', higherIs: null, ramp: 'viridis' },
+            extra: [{ key: 'redev_gain', label: 'Rebuild gain over the existing floors', unit: '₹k/m² plot', higherIs: null, ramp: 'diverging' },
+                { key: 'tod_uplift', label: `Extra value at FAR ${TOD_FAR} near metro`, unit: '₹k/m² plot', higherIs: null, ramp: 'greens' }],
+            needs: ['land_value.value_index', 're_supply.far_now', 're_supply.vacant_ha', 'rail_access.metro_walk_min'],
+            method: `Sale price per m² is the city-average new-home price scaled by the block's value index (100 = median). Residual land value = sales (FAR area × ${SALE_LOADING} loading to saleable area) − build cost (${BUILT_PER_FAR}× FAR area for parking and services at ₹${BUILD_COST.toLocaleString('en-IN')}/m², CPWD plinth-area rates, plus ${SOFT * 100}% approvals, fees and finance) − ${MARGIN * 100}% developer margin. Rebuilding pays when that beats selling the existing floor area (GHSL volume ÷ 3 m) as old stock at ${OLD_STOCK * 100}% of new prices. TOD tests FAR ${TOD_FAR} within a ${TOD_WALK}-minute walk of a metro station, as in the MoHUA TOD policy and Delhi's TOD regulations. Base FAR is a typical master-plan level, not plot zoning; prices are city averages until licensed market data arrives.`,
+            refs: 'ANAROCK Research Q3 2025 (city prices); CPWD plinth area rates; RICS residual valuation method; MoHUA National TOD Policy 2017' },
         { id: 'encroach', equity: true, title: 'Encroachment watch', icon: '🚧',
             question: 'Which lakes, floodplains and green areas have been lost to building, and where is it still happening?',
             field: { key: 'encroach_score', label: 'Encroachment score (former water, floodplain and tree loss built up)', unit: 'points', higherIs: 'worse', ramp: 'reds' },
             needs: ['encroachment.water_lost_pct', 'encroachment.water_built_pct', 'encroachment.flood_new_pct', 'encroachment.tree_lost_pct', 'encroachment.tree_built_pct', 'encroachment.recent_built_pct'],
-            method: 'Lost water is JRC Global Surface Water (Landsat, 1984–2021) permanent or seasonal water that has gone; built means Dynamic World (Sentinel-2) labels it built most of the time in 2025–26. New floodplain building is Open Buildings 2.5D Temporal presence in 2023 but not 2016 inside the JRC/GloFAS 1-in-100-year zone. Tree loss is Hansen Global Forest Change (≥ 30% canopy in 2000, lost 2001–2024). The score weights floodplain building 3× and building since 2023 2×. Satellite screens only: some loss is legal (planned reclamation, metro depots), so confirm against land records and the master plan.',
+            method: 'Lost water is JRC Global Surface Water (Landsat, 1984–2021) permanent or seasonal water that has gone; built means Dynamic World (Sentinel-2) mean built probability of at least 0.6 in 2025–26, and built since 2023 also needs it at or below 0.3 in 2023. New floodplain building is Open Buildings 2.5D Temporal presence of at least 0.5 in 2023 and below 0.2 in 2016 inside the JRC/GloFAS 1-in-100-year zone. Tree loss is Hansen Global Forest Change (≥ 30% canopy in 2000, lost 2001–2024). The score weights floodplain building 3× and building since 2023 2×. Satellite screens only: some loss is legal (planned reclamation, metro depots), so confirm against land records and the master plan.',
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText }, 'tod');
-    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText };
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice }, 'tod');
+    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT };
 })();
 
 if (typeof window !== 'undefined') {

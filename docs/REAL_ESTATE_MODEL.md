@@ -159,3 +159,36 @@ ratio is relative to the city's median block.
 
 Rerun after the traffic and access datasets:
 `python -m pipeline.realestate.building_dynamics --region all && python -m pipeline.realestate.land_value --region all && python -m pipeline.realestate.supply --region all && python -m pipeline.realestate.calibrate`.
+
+### Development feasibility (`feasible` lens)
+
+This is a residual valuation for every block. It asks what a developer can pay for land and still build at the city's base FAR.
+
+- **Sale price.** The sale price per m² is the city-average new-home price (`PRICE_SQFT` in js/urban-lenses-realestate.js) multiplied by the block's value index ÷ 100.
+  - The top seven cities use ANAROCK Q3 2025 figures.
+  - Ahmedabad, Jaipur, Lucknow, Indore, Bhopal and Guna use rough placeholders, and the lens says so. Replace them when licensed market data arrives.
+- **Residual land value.** This is sales minus build cost minus developer margin:
+  - Sales: FAR area × 1.25, the loading to saleable area.
+  - Build cost: FAR area × 1.4 for parking and services, at ₹22,000/m² (CPWD), plus 15% soft costs.
+  - Developer margin: 20% of sales.
+  - The break-even price is about ₹3,300 per sq ft in every city, because cost and margin scale with FAR.
+- **Rebuild gain.** This is the residual value minus the existing floor area (GHSL volume) sold as old stock at 60% of the new price. It only counts for built-up blocks, meaning FAR ≥ 0.5 today.
+- **TOD uplift.** This is the extra residual value at FAR 4 within a 10-minute metro walk, following the MoHUA TOD policy. It is summed over vacant buildable land.
+- **Where it shows.** The property report has a "Development feasibility" section. DISHA answers questions like "is development feasible in Pune" or "residual land value in Delhi".
+- **Results at the base FAR:**
+  - Delhi: building pays in 86% of blocks, and the median residual is about ₹83,000/m².
+  - Mumbai: building pays in 100% of blocks, at about ₹3.4 lakh/m².
+  - Guna: building pays in only 1.5% of blocks. Apartments do not pay there at current prices, which matches its plotted-house market.
+
+### Encroachment watch (`encroachment` dataset, `encroach` lens)
+
+pipeline/realestate/encroachment.py measures, per L7 block:
+
+- **Lost surface water** (JRC GSW transitions 3/6, 1984–2021), and how much of it is built up now (Dynamic World mean built probability ≥ 0.6, 2025–26).
+- **New building footprint in the GloFAS 1-in-100-year floodplain.** Open Buildings Temporal presence must be ≥ 0.5 in 2023 and < 0.2 in 2016.
+- **Hansen tree-cover loss** (≥ 30% canopy in 2000, lost 2001–2024), and how much of it is built up.
+- **Building since 2023** on any of the above. The built probability must be ≥ 0.6 now and ≤ 0.3 in 2023.
+
+The probability thresholds replaced a "most-likely label" test. That test flagged whole built-up blocks as "100% built since 2023", because Dynamic World labels flicker.
+
+To bake every city, run `python -m pipeline.realestate.encroachment --region all`. Delhi takes about 40 minutes because of the 4 m Open Buildings pass.

@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -142,6 +142,33 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.metric.value).toBeGreaterThan(0);
         expect(r.stats.filter(s => s.label.startsWith('Encroachment hotspot'))).toHaveLength(2);
         expect(r.headline).toMatch(/floodplain/);
+    });
+
+    it('feasibility(): residual land value and break-even price', () => {
+        const f = RE.feasibility({ price: 100000, far: 2, farNow: 1 });
+        expect(f.gdv).toBe(250000);                                          // 2 × 1.25 × ₹1 lakh
+        expect(f.build).toBeCloseTo(2 * 1.4 * 22000 * 1.15, 6);
+        expect(f.rlv).toBeCloseTo(250000 - 70840 - 50000, 6);
+        expect(f.euv).toBeCloseTo(1 * 1.25 * 100000 * 0.6, 6);
+        expect(RE.feasibility({ price: f.breakEvenPrice, far: 3 }).rlv).toBeCloseTo(0, 6);
+        expect(RE.feasibility({ price: null, far: 2 })).toBeNull();
+        expect(RE.blockPrice('delhi', 200)).toBeCloseTo(2 * 8900 * 10.764, 6);
+        expect(RE.blockPrice('nowhere', 100)).toBeNull();
+    });
+
+    it('feasible: viable share, rebuild candidates and TOD uplift', () => {
+        const fn = codes.map((_, i) => (col(i) === 0 ? 0.6 : 1.8)), mw = codes.map((_, i) => (i < SIZE ? 5 : 40));
+        const vh = codes.map((_, i) => (i < SIZE ? 0.5 : 0));
+        const f = L.frameFrom(codes, { ...base, 're_supply.far_now': fn, 'rail_access.metro_walk_min': mw, 're_supply.vacant_ha': vh }, { city: 'delhi' });
+        const r = L._lenses.feasible(f, {});
+        expect(r.metric.value).toBe(100);
+        expect(r.headline).toMatch(/FAR of 2/);
+        expect(r.stats.find(s => s.label.startsWith('Redevelopment candidate 1')).value).toMatch(/FAR now 1.8/);           // dear east blocks pay to rebuild even at FAR 1.8
+        expect(r.columns.redev_gain[0]).toBeLessThan(0);                       // cheap west block at FAR 0.6 does not
+        expect(r.stats.some(s => /TOD/.test(s.label))).toBe(true);
+        expect(r.columns.tod_uplift[0]).toBeGreaterThan(0);
+        expect(Number.isNaN(r.columns.tod_uplift[n - 1])).toBe(true);
+        expect(L._lenses.feasible(L.frameFrom(codes, base), {})).toBeNull();   // no city price
     });
 
     it('similarText(): reference profile and ranked matches', () => {

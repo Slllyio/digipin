@@ -13,7 +13,7 @@
 const PropertyReport = (() => {
     'use strict';
     const SCHEMA = 'digipin.property/1';
-    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach'];
+    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible'];
     const EXTRA = ['land_value.prem_jobs_pct', 'land_value.prem_metro_pct', 'land_value.prem_amenity_pct', 'land_value.prem_neigh_pct',
         'land_value.prem_green_pct', 'land_value.prem_risk_pct', 'land_value.prem_noise_pct', 're_supply.far_now', 're_supply.headroom_m2',
         'building_dynamics.settled_year', 'building_dynamics.highrise_pct', 'building_dynamics.nonres_pct', 'building_dynamics.accel',
@@ -62,6 +62,12 @@ const PropertyReport = (() => {
                 row('Vacant buildable land', fin(v.vacant) && v.vacant > 0 ? `${r1(v.vacant, 1)} ha` : null),
                 row('Housing need vs pace within 1 km to 2030', fin(v.gap) ? (v.gap > 0 ? `${Math.round(v.gap).toLocaleString('en-IN')} homes short` : `${Math.round(-v.gap).toLocaleString('en-IN')} homes surplus`) : null),
             ]),
+            sec('Development feasibility', [
+                row('Indicative new-home price here', fin(v.price) ? `${rs(v.price / 10.764)} per sq ft` : null, v.priceNote),
+                row(`Residual land value at the base FAR${fin(v.baseFar) ? ` of ${v.baseFar}` : ''}`, fin(v.rlv) ? `${v.rlv < 0 ? '−' : ''}${rs(Math.abs(v.rlv) * 1e3)} per m² of plot` : null, 'sales − build cost − 20% margin; what a developer can pay for land'),
+                row('Rebuilding vs selling the existing floors', fin(v.redevGain) && fin(v.far) && v.far >= 0.5 ? `${v.redevGain > 0 ? 'pays, +' : 'does not pay, '}${rs(Math.abs(v.redevGain) * 1e3)} per m² of plot` : null),
+                row('Extra value at a metro TOD FAR of 4', fin(v.tod) ? `+${rs(v.tod * 1e3)} per m² of plot` : null),
+            ]),
             sec('Neighbourhood', [
                 row('First settled', fin(v.settled) ? (v.settled <= 1985 ? 'by 1985' : `around ${Math.round(v.settled)}`) : null),
                 row('High-rise share / non-residential share', fin(v.highrise) || fin(v.nonres) ? `${r1(v.highrise) ?? '–'}% / ${r1(v.nonres) ?? '–'}%` : null),
@@ -89,6 +95,7 @@ const PropertyReport = (() => {
         if (fin(v.upside) && v.upside >= 25) strengths.push('priced below its access');
         if (fin(v.yieldGap) && v.yieldGap >= 30) strengths.push('rental demand high for the price');
         if (fin(v.accel) && v.accel >= 1.5) strengths.push('building speeding up');
+        if (fin(v.redevGain) && v.redevGain > 0 && fin(v.far) && v.far >= 0.5) strengths.push('rebuilding to the base FAR pays');
         if (fin(v.lossPct) && v.lossPct >= 0.5) risks.push(`flood damage ≈ ${r1(v.lossPct, 1)}% of building value a year`);
         else if (fin(v.flood) && v.flood >= 30) risks.push('in the 1-in-100-year floodplain');
         if (fin(v.wlog) && v.wlog >= 65) risks.push('very high waterlogging');
@@ -129,6 +136,9 @@ const PropertyReport = (() => {
             loss: col('floodloss', 'flood_loss'), lossPct: col('floodloss', 'flood_loss_pct'), flood: at('water.flood_rp100_pct'),
             wlog: at('waterlogging.waterlogging_index'), noise: at('traffic_noise.lden_db'), encroach: col('encroach', 'encroach_score'),
             upside: col('undervalued', 'upside'), growth: col('nextgrowth', 'growth_score'),
+            rlv: col('feasible', 'rlv'), redevGain: col('feasible', 'redev_gain'), tod: col('feasible', 'tod_uplift'),
+            price: UrbanLenses.blockPrice ? UrbanLenses.blockPrice(city, vi) : null, baseFar: UrbanLenses.RE_BASE_FAR ? UrbanLenses.RE_BASE_FAR[city] : null,
+            priceNote: 'city-average price (ANAROCK Q3 2025, rough for smaller cities) × value index',
         };
         for (const k of Object.keys(DRIVERS)) v[`prem_${k}`] = at(`land_value.prem_${k}_pct`);
         let comps = null;
