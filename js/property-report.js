@@ -92,6 +92,7 @@ const PropertyReport = (() => {
                 row('Water stress (basin, WRI Aqueduct)', fin(v.wstress) ? `${v.wstress >= 100 ? `${r1(v.wstress / 100, 1)} times renewable supply` : `${Math.round(v.wstress)}% of renewable supply`}${fin(v.wstress50) ? `; ${v.wstress50 >= 100 ? `${r1(v.wstress50 / 100, 1)} times` : `${Math.round(v.wstress50)}%`} by 2050` : ''}` : null, 'city-wide; over 80% is extremely high'),
                 row('Humid-heat days (wet-bulb 28 °C or more): now → 2050', fin(v.hum0) && fin(v.hum1) ? `${Math.round(v.hum0)} → ${Math.round(v.hum1)} a year` : null, 'sweat stops cooling the body; city-scale'),
                 row('Air: NO₂ since 2019 / PM2.5 2022', fin(v.no2chg) || fin(v.pm22) ? `${fin(v.no2chg) ? `${v.no2chg >= 0 ? '+' : ''}${Math.round(v.no2chg)}%` : '–'} / ${fin(v.pm22) ? `${Math.round(v.pm22)} µg/m³` : '–'}` : null, 'satellite; India\'s annual standard is 40 µg/m³'),
+                row('Ground: clay at 60 cm / seismic zone', fin(v.clay60) || v.zone ? `${fin(v.clay60) ? `${Math.round(v.clay60)}%${v.clay60 >= 40 ? ' (expansive black cotton soil: deeper or piled footings)' : ''}` : '–'} / ${v.zone ? `zone ${v.zone}` : '–'}` : null, 'model soil map; get a soil test'),
                 row('Groundwater table', fin(v.gwd) && v.gwd > 0 ? `falling about ${r1(v.gwd, 1)} cm a year (1990–2014 trend)` : null, 'borewells go deeper'),
                 row('Waterlogging index', fin(v.wlog) ? `${r1(v.wlog)} / 100` : null),
                 row('Road noise', fin(v.noise) ? `${r1(v.noise)} dB Lden` : null),
@@ -126,6 +127,7 @@ const PropertyReport = (() => {
         if (fin(v.hotBlock ?? v.hot1) && (v.hotBlock ?? v.hot1) >= 45) risks.push(`about ${Math.round(v.hotBlock ?? v.hot1)} days a year at 40 °C by 2050`);
         if (fin(v.cscore) && v.cscore >= 50) risks.push(`climate 2050 grade ${UrbanLenses.climateGrade ? UrbanLenses.climateGrade(v.cscore) : 'D or E'}`);
         if (fin(v.gwd) && v.gwd >= 10) risks.push('groundwater falling fast');
+        if (fin(v.clay60) && v.clay60 >= 40) risks.push('expansive clay: budget for a soil test and deeper footings');
         if (fin(v.darkRoof) && v.darkRoof >= 60) risks.push('mostly dark roofs: a cool-roof coating would cool top floors');
         if (fin(v.priceGap) && v.priceGap >= 50) risks.push('displacement pressure');
         if (fin(v.gap) && v.gap < -2000) risks.push('local oversupply');
@@ -167,6 +169,7 @@ const PropertyReport = (() => {
             cscore: col('climategrade', 'climate_score'),
             wstress: at('water_risk.water_stress_pct'), wstress50: at('water_risk.water_stress_2050_pct'), gwd: at('water_risk.groundwater_decline_cm_yr'),
             homeKw: col('solarhome', 'home_kwp'), payback: col('solarhome', 'payback_yr'), acCover: col('solarhome', 'ac_2050_covered_pct'),
+            clay60: at('subsoil.clay_60cm_pct'), zone: UrbanLenses.SEISMIC_ZONE ? UrbanLenses.SEISMIC_ZONE[city] : null,
             hum0: at('humid_future.humid_days_now'), hum1: at('humid_future.humid_days_2050'), no2chg: at('air_trend.no2_change_pct'), pm22: at('air_trend.pm25_2022'),
             roofAlb: at('roofs.roof_albedo'), darkRoof: at('roofs.dark_roof_pct'),
             flood50: at('flood_future.any_pct_2050'), flood50now: at('flood_future.any_pct_now'),

@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'burning']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'burning', 'ground']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -230,6 +230,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         const dry = L.frameFrom(codes, { ...base, 'flood_future.any_pct_now': zero, 'flood_future.any_pct_2050': zero });
         expect(L._lenses.flood2050(dry, {}).headline).toMatch(/^No residents/);
         expect(L._lenses.flood2050(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
+        const clay = codes.map((_, i) => (col(i) < 6 ? 50 : 20));
+        const hand = codes.map((_, i) => (i < SIZE * 6 ? 0.5 : 10));
+        const f = L.frameFrom(codes, { ...base, 'subsoil.clay_60cm_pct': clay, 'terrain.hand_m': hand, 'terrain.slope_deg': codes.map(() => 2) }, { city: 'delhi' });
+        const r = L._lenses.ground(f, {});
+        expect(r.headline).toMatch(/^Seismic zone IV\. 50% of the land sits on expansive clay/);
+        expect(r.columns.ground_issues[0]).toBe(2);
+        expect(r.columns.ground_issues[SIZE * 11 + 11]).toBe(0);
+        expect(r.stats.find(x => /swells most/.test(x.label)).value).toBe('25% of land');
+        expect(L._lenses.ground(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('burning: frequent fire blocks, residents in the smoke, steady heat sources apart', () => {

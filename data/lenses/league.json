@@ -276,6 +276,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 2.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 5.1,
@@ -652,6 +658,12 @@
      "label": "Residents within 1 km of frequent open burning",
      "value": 0,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 20.4,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitality": {
@@ -1032,6 +1044,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 1.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 4,
@@ -1404,6 +1422,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 61.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 6.4,
@@ -1758,6 +1782,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 12817557,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 139.3,
@@ -1774,6 +1804,12 @@
      "label": "Residents within 1 km of frequent open burning",
      "value": 1004244,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 0,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitality": {
@@ -2140,6 +2176,12 @@
      "label": "Residents within 1 km of frequent open burning",
      "value": 0,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 79.9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitality": {
@@ -2512,6 +2554,12 @@
      "label": "Residents within 1 km of frequent open burning",
      "value": 244264,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 34.7,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitality": {
@@ -2892,6 +2940,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 76.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 4,
@@ -3262,6 +3316,12 @@
      "label": "Residents within 1 km of frequent open burning",
      "value": 0,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 0,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitality": {
@@ -3636,6 +3696,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 56.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 3.8,
@@ -4000,6 +4066,12 @@
      "label": "Residents within 1 km of frequent open burning",
      "value": 0,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 0,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitality": {
@@ -4380,6 +4452,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 11.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 4.9,
@@ -4756,6 +4834,12 @@
      "label": "Residents within 1 km of frequent open burning",
      "value": 35625,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "ground": {
+     "label": "Land on expansive clay",
+     "value": 90.6,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitality": {

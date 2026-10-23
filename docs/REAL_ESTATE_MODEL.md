@@ -508,3 +508,26 @@ It also counts residents within 1 km of frequent burning, and uses WorldCover to
 | Ahmedabad | 7.2 lakh | 80% |
 | Chennai | 3.7 lakh | 60% |
 | Indore | none | |
+
+## Ground conditions
+
+The `subsoil` dataset is at L7 and built by `pipeline/cells/ee_layers.py --layer subsoil`. It holds OpenLandMap clay at 60 cm and 1 m, and bulk density at 60 cm.
+
+The `ground` lens flags three issues per block:
+
+- **Expansive black cotton clay:** 40% or more clay at 60 cm.
+- **Low-lying, waterlogging-prone land:** a waterlogging index of 50 or more. Where that index is missing, land under 1 m above the nearest drain (HAND).
+- **Steep land:** a slope of 10° or more.
+
+It also gives the city's seismic zone from IS 1893 (Part 1): 2016, Annex E: Delhi IV; Mumbai, Kolkata, Chennai, Pune, Ahmedabad and Lucknow III; the rest II.
+
+| City | Land on expansive clay |
+|---|---|
+| Pune | 91% |
+| Guna | 80% |
+| Indore | 76% |
+| Chennai | 61% |
+| Kolkata | 57% (soft clay with high settlement risk; 48% is also wet) |
+| Delhi, Jaipur, Lucknow | 0% |
+
+The property report shows the clay at 60 cm and the seismic zone, and flags expansive clay as a risk. Soil maps are model predictions under cities, so treat them as a reason to test the soil, not as test results.

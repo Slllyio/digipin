@@ -1136,6 +1136,48 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    // Ground conditions for building. Seismic zones are IS 1893 (Part 1): 2016, Annex E; the zone factor Z is the design
+    // peak ground acceleration as a share of g. Expansive clay, low-lying wet ground and steep slopes are flagged per block.
+    const SEISMIC_ZONE = { delhi: 'IV', mumbai: 'III', kolkata: 'III', chennai: 'III', pune: 'III', ahmedabad: 'III', lucknow: 'III',
+        bengaluru: 'II', hyderabad: 'II', jaipur: 'II', bhopal: 'II', indore_pilot: 'II', guna: 'II' };
+    const ZONE_Z = { II: 0.10, III: 0.16, IV: 0.24, V: 0.36 };
+    const CLAY_EXPANSIVE = 40, HAND_LOW_M = 1, WLOG_HIGH = 50, SLOPE_STEEP = 10;
+
+    /** Ground conditions: expansive clay, low-lying wet ground, steep slopes and the city's seismic zone, per block. */
+    function ground(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const clay = c['subsoil.clay_60cm_pct'], hand = c['terrain.hand_m'], wl = c['waterlogging.waterlogging_index'], slope = c['terrain.slope_deg'];
+        const pop = c['population.population'], nb = c['building_stock.new_buildings'];
+        if (!clay) return null;
+        const cells = [];
+        for (let i = 0; i < n; i++) if (_fin(clay[i])) cells.push(i);
+        if (cells.length < 5) return null;
+        const exp = i => clay[i] >= CLAY_EXPANSIVE;
+        const wet = i => (wl && _fin(wl[i]) ? wl[i] >= WLOG_HIGH : hand && _fin(hand[i]) && hand[i] < HAND_LOW_M);
+        const steep = i => slope && _fin(slope[i]) && slope[i] >= SLOPE_STEEP;
+        const issues = new Float64Array(n).fill(NaN);
+        for (const i of cells) issues[i] = (exp(i) ? 1 : 0) + (wet(i) ? 1 : 0) + (steep(i) ? 1 : 0);
+        const share = f => _round(100 * cells.filter(f).length / cells.length);
+        const zone = SEISMIC_ZONE[fr.city];
+        const newOn = f => (nb ? Math.round(cells.reduce((s, i) => s + (f(i) && _fin(nb[i]) ? Math.max(0, nb[i]) : 0), 0)) : null);
+        const stats = [];
+        if (zone) stats.push({ label: 'Seismic zone (IS 1893: 2016)', value: `Zone ${zone}, design ground acceleration ${ZONE_Z[zone]} g${zone === 'IV' ? ': ductile detailing (IS 13920) is a must' : ''}` });
+        stats.push({ label: `Land on expansive clay (${CLAY_EXPANSIVE}% or more at 60 cm; black cotton soil)`, value: `${share(exp)}%`, raw: share(exp) });
+        if (hand || wl) stats.push({ label: `Low-lying, waterlogging-prone land (waterlogging index ${WLOG_HIGH}+)`, value: `${share(wet)}%` });
+        if (slope) stats.push({ label: `Steep land (${SLOPE_STEEP}° or more)`, value: `${share(steep)}%` });
+        const both = i => exp(i) && wet(i);
+        if (hand || wl) stats.push({ label: 'Expansive clay that is also low-lying or wet (swells most)', value: `${share(both)}% of land` });
+        const nExp = newOn(exp);
+        if (nExp != null) stats.push({ label: 'New buildings 2016–2023 on expansive clay', value: nExp.toLocaleString('en-IN') });
+        if (pop) stats.push({ label: 'Residents on land with two or more ground issues', value: _people(_sumOver(pop, cells, i => issues[i] >= 2)) });
+        return {
+            columns: { ground_issues: issues }, idx: cells, weightKey: 'ground_issues', noHotspots: true,
+            metric: { label: 'Land on expansive clay', value: share(exp), unit: '%', higherIs: 'worse' },
+            headline: `${zone ? `Seismic zone ${zone}. ` : ''}${share(exp) < 1 ? 'Almost none of the land is expansive clay' : `${share(exp)}% of the land sits on expansive clay that swells and shrinks with the monsoon`}${hand || wl ? `, ${share(wet)}% is low-lying or prone to waterlogging` : ''}${slope ? ` and ${share(steep)}% is steep` : ''}: these blocks need a soil test and deeper or piled footings before building.`,
+            stats,
+        };
+    }
+
     /** Flood 2050: residents in the 1-in-100-year river or coastal flood zone, now and by 2050 (WRI Aqueduct). */
     function flood2050(fr) {
         const g = fr.grid, c = fr.cols, n = g.n;
@@ -1480,6 +1522,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['fires.fire_days_yr', 'fires.winter_fire_days_yr', 'land_cover.crop_pct', 'land_cover.bare_pct', 'land_cover.built_pct', 'population.population'],
             method: `NASA VIIRS (Suomi NPP) 375 m active-fire detections of nominal or high confidence since September 2023, counted as days a year at each block's most-burned spot. Blocks with ${FIRE_OFTEN}–${FIRE_INDUSTRY} days a year count as frequent burning; ${FIRE_INDUSTRY} or more is nearly always a steady heat source such as a furnace or kiln and is listed apart. Residents within ${SMOKE_KM} km of a frequent-burning block are counted. The likely kind comes from ESA WorldCover. The satellite passes about 1:30 am and pm, so small and short fires are missed.`,
             refs: 'Schroeder et al. 2014 (VIIRS 375 m active fire); NASA FIRMS; CAQM directions on open burning; Jethva et al. 2019 (crop-residue fires)' },
+        { id: 'ground', title: 'Ground conditions', icon: '🪨',
+            question: 'What is the ground like for building: black cotton soil, low wet land, slopes and earthquake zone?',
+            field: { key: 'ground_issues', label: 'Ground issues (expansive clay, low-lying or wet, steep)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['subsoil.clay_60cm_pct', 'terrain.hand_m', 'terrain.slope_deg', 'waterlogging.waterlogging_index', 'building_stock.new_buildings', 'population.population'],
+            method: `Expansive clay: OpenLandMap predicted clay of ${CLAY_EXPANSIVE}% or more at 60 cm (250 m). Low-lying or wet: a waterlogging index of ${WLOG_HIGH}+ (the Waterlogging lens), or under ${HAND_LOW_M} m above the nearest drainage line (MERIT Hydro HAND) where that index is missing. Steep: a slope of ${SLOPE_STEEP}° or more (Copernicus DEM). Seismic zone is the city's zone in IS 1893 (Part 1): 2016, Annex E. Soil maps are model predictions under cities: they say where to test, not what a borehole will find.`,
+            refs: 'IS 1893 (Part 1): 2016; IS 2911 (Part 3) under-reamed piles; IS 13920 ductile detailing; Hengl et al. 2017 (SoilGrids/OpenLandMap); Yamazaki et al. 2019 (MERIT Hydro)' },
         { id: 'vitality', title: 'Commercial vitality', icon: '🛍️',
             question: 'Where are the high streets, where do chains and offices cluster, and which dense areas lack shops?',
             field: { key: 'places_km2', label: 'Businesses and services per km²', unit: 'per km²', higherIs: 'better', ramp: 'viridis', domain: [0, 1000] },
@@ -1494,8 +1542,8 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, coolroof, change, airtrend, burning }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText }, 'tod');
-    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText };
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, coolroof, change, airtrend, burning, ground }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText, SEISMIC_ZONE }, 'tod');
+    return { ENTRIES, SEISMIC_ZONE, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText };
 })();
 
 if (typeof window !== 'undefined') {

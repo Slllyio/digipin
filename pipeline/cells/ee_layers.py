@@ -1490,6 +1490,44 @@ def fires(region):
     return spec, _table(level, rows, specs)
 
 
+# ── subsoil for foundations (OpenLandMap clay and bulk density at 60 and 100 cm) ──
+
+EXPANSIVE_CLAY = 40              # % clay below which shrink-swell (black cotton) behaviour is rare
+
+
+def subsoil(region):
+    """Clay and bulk density at foundation depth: where expansive (black cotton) soils swell and shrink."""
+    ee = gee.init()
+    _, bbox = _bbox(region)
+    level = 7
+    clay = ee.Image("OpenLandMap/SOL/SOL_CLAY-WFRACTION_USDA-3A1A1A_M/v02")
+    bd = ee.Image("OpenLandMap/SOL/SOL_BULKDENS-FINEEARTH_USDA-4A1H_M/v02")
+    img = ee.Image.cat([clay.select("b60").rename("c60"), clay.select("b100").rename("c100"), bd.select("b60").rename("bd60")])
+    raw = gee.fetch(gee.to_cells(img, 250), bbox, level)
+    rows = {}
+    for c, x in raw.items():
+        if x.get("c60") is None:
+            continue
+        rows[c] = {"clay_60cm_pct": _r(x["c60"]), "clay_100cm_pct": _r(x.get("c100")),
+                   "bulk_density_60cm": _r(x["bd60"] / 100, 2) if x.get("bd60") is not None else None}
+    specs = [
+        FieldSpec("clay_60cm_pct", "Clay at 60 cm (typical footing depth)", agg="mean", unit="%", domain=[10, 60], ramp="reds",
+                  higher_is="worse"),
+        FieldSpec("clay_100cm_pct", "Clay at 1 m", agg="mean", unit="%", domain=[10, 60], ramp="reds", higher_is="worse"),
+        FieldSpec("bulk_density_60cm", "Soil bulk density at 60 cm", agg="mean", unit="g/cm³", domain=[1.2, 1.8], ramp="viridis"),
+    ]
+    spec = DatasetSpec(
+        id="subsoil", title="Subsoil for foundations (OpenLandMap)", level=level, fields=specs, group=GROUP,
+        description=f"Predicted clay content at 60 cm and 1 m and bulk density at 60 cm from OpenLandMap's 250 m soil maps. "
+                    f"Clay of {EXPANSIVE_CLAY}% or more at footing depth marks soils that can swell and shrink with the "
+                    "seasons (black cotton soils of the Deccan and Malwa), which crack walls unless footings go deeper or "
+                    "use under-reamed piles (IS 2911-3). Under built-up land these are model predictions, not borehole "
+                    "results: get a soil test before building.",
+        source="OpenLandMap soil v02 (Hengl et al.) via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="CC BY-SA 4.0 (OpenLandMap)", default_field="clay_60cm_pct")
+    return spec, _table(level, rows, specs)
+
+
 # ── roofs: how much sun they reflect (Sentinel-2 albedo on Open Buildings roofs) ──
 
 # Thresholds are for 10 m pixel albedo, which blends roofs with parapets, tanks and shade: the median Lucknow roof
@@ -1560,7 +1598,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil,
 }
 
 
