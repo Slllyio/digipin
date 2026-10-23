@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T19:12:22Z",
+  "generated": "2026-10-23T19:37:34Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -6849,6 +6849,219 @@
       ]
     },
     {
+      "id": "farmland",
+      "title": "Farmland at the edge (Dynamic World)",
+      "description": "Dynamic World V1 yearly mode land-cover label at 10 m for 2018 and 2025: the share of each block that reads as crops in each year, and the share that was crops and is now built. The yearly mode smooths out fallow months, but Dynamic World still confuses dry fallow with bare ground and grass, so read changes under 10 points as noise. Only blocks with at least 5% cropland in either year are kept.",
+      "source": "GOOGLE/DYNAMICWORLD/V1 via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "CC BY 4.0 (Dynamic World)",
+      "group": "Open Data (satellite)",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "crop_2018_pct",
+          "label": "Cropland, 2018",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens"
+        },
+        {
+          "key": "crop_now_pct",
+          "label": "Cropland, 2025",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens"
+        },
+        {
+          "key": "crop_change_pp",
+          "label": "Change in cropland 2018\u21922025",
+          "type": "number",
+          "agg": "mean",
+          "unit": "points",
+          "domain": [
+            -40,
+            40
+          ],
+          "ramp": "diverging"
+        },
+        {
+          "key": "crop_built_pp",
+          "label": "Block area that was cropland in 2018 and is built now",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "crop_built_share",
+          "label": "Share of the block's 2018 cropland now built",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "built_now_pct",
+          "label": "Built-up, 2025 (Dynamic World)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "crop_built_pp",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 2494,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "farmland/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 6934,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "farmland/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 3883,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "farmland/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 1405,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.311279296875,
+            "north": 13.180908203125
+          },
+          "json": "farmland/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 1171,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "farmland/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 4066,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "farmland/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 3637,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "farmland/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 723,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "farmland/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 3280,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "farmland/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 4482,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "farmland/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
       "id": "fires",
       "title": "Fires and open burning (VIIRS)",
       "description": "NASA LANCE VIIRS (Suomi NPP) 375 m active-fire detections, nominal or high confidence, from 2023-09-01 to the latest pass (3.1 years), as days a year at the block's most-burned 375 m spot, the October\u2013February share and summed fire radiative power. Satellites pass about 1:30 am and pm, so short fires are missed; hot rooftops, flares and kilns can also trigger detections.",
@@ -8763,6 +8976,257 @@
             "north": 18.6455078125
           },
           "json": "job_access/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "lakes",
+      "title": "Lake health (Sentinel-2)",
+      "description": "Dry-season (Feb\u2013Apr) Sentinel-2 L2A medians for 2019 and 2025: open water (MNDWI > 0.2), the normalised difference chlorophyll index (Mishra & Mishra 2012) and turbidity index (Lacaux et al. 2007) over today's clear water (NDVI < 0.1), and the share of 2019 water that is now green (NDVI > 0.3: water hyacinth, reeds or infill). Only blocks with at least 2% water in either year are kept. One season's median swings with the monsoon before it, so read small changes as noise.",
+      "source": "Copernicus Sentinel-2 L2A via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "Copernicus open licence",
+      "group": "Open Data (satellite)",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "water_2019_pct",
+          "label": "Open water, Feb\u2013Apr 2019",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "water_now_pct",
+          "label": "Open water, Feb\u2013Apr 2025",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "water_change_pp",
+          "label": "Change in open water 2019\u21922025",
+          "type": "number",
+          "agg": "mean",
+          "unit": "points",
+          "domain": [
+            -40,
+            40
+          ],
+          "ramp": "diverging",
+          "higherIs": "better"
+        },
+        {
+          "key": "chlorophyll_ndci",
+          "label": "Chlorophyll in the water (NDCI; above 0.1 is algae-rich)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "index",
+          "domain": [
+            -0.1,
+            0.3
+          ],
+          "ramp": "greens",
+          "higherIs": "worse"
+        },
+        {
+          "key": "turbidity_ndti",
+          "label": "Turbidity (NDTI; higher is muddier)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "index",
+          "domain": [
+            -0.2,
+            0.2
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "weed_pct",
+          "label": "Share of 2019 water now covered by weeds or reeds",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "water_change_pp",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 165,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.9521484375,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "lakes/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 899,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "lakes/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 661,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.187255859375,
+            "east": 77.503173828125,
+            "north": 23.314697265625
+          },
+          "json": "lakes/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 3240,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.320068359375,
+            "north": 13.180908203125
+          },
+          "json": "lakes/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 1060,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.40576171875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "lakes/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 21,
+          "bbox": {
+            "west": 77.292236328125,
+            "south": 24.606689453125,
+            "east": 77.3515625,
+            "north": 24.67041015625
+          },
+          "json": "lakes/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 993,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "lakes/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 507,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "lakes/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 37,
+          "bbox": {
+            "west": 75.705810546875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 26.9951171875
+          },
+          "json": "lakes/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 1054,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "lakes/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 68,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.944580078125
+          },
+          "json": "lakes/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 6555,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "lakes/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 258,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.638916015625
+          },
+          "json": "lakes/pune.json",
           "parquet": null
         }
       ]
@@ -20075,233 +20539,6 @@
             "north": 18.6455078125
           },
           "json": "wealth/pune.json",
-          "parquet": null
-        }
-      ]
-    },
-    {
-      "id": "lakes",
-      "title": "Lake health (Sentinel-2)",
-      "description": "Dry-season (Feb\u2013Apr) Sentinel-2 L2A medians for 2019 and 2025: open water (MNDWI > 0.2), the normalised difference chlorophyll index (Mishra & Mishra 2012) and turbidity index (Lacaux et al. 2007) over today's clear water (NDVI < 0.1), and the share of 2019 water that is now green (NDVI > 0.3: water hyacinth, reeds or infill). Only blocks with at least 2% water in either year are kept. One season's median swings with the monsoon before it, so read small changes as noise.",
-      "source": "Copernicus Sentinel-2 L2A via Earth Engine (pipeline/cells/ee_layers.py)",
-      "license": "Copernicus open licence",
-      "group": "Open Data (satellite)",
-      "level": 7,
-      "approxCellM": 244,
-      "fields": [
-        {
-          "key": "water_2019_pct",
-          "label": "Open water, Feb\u2013Apr 2019",
-          "type": "number",
-          "agg": "mean",
-          "unit": "% of block",
-          "domain": [
-            0,
-            100
-          ],
-          "ramp": "blues"
-        },
-        {
-          "key": "water_now_pct",
-          "label": "Open water, Feb\u2013Apr 2025",
-          "type": "number",
-          "agg": "mean",
-          "unit": "% of block",
-          "domain": [
-            0,
-            100
-          ],
-          "ramp": "blues"
-        },
-        {
-          "key": "water_change_pp",
-          "label": "Change in open water 2019\u21922025",
-          "type": "number",
-          "agg": "mean",
-          "unit": "points",
-          "domain": [
-            -40,
-            40
-          ],
-          "ramp": "diverging",
-          "higherIs": "better"
-        },
-        {
-          "key": "chlorophyll_ndci",
-          "label": "Chlorophyll in the water (NDCI; above 0.1 is algae-rich)",
-          "type": "number",
-          "agg": "mean",
-          "unit": "index",
-          "domain": [
-            -0.1,
-            0.3
-          ],
-          "ramp": "greens",
-          "higherIs": "worse"
-        },
-        {
-          "key": "turbidity_ndti",
-          "label": "Turbidity (NDTI; higher is muddier)",
-          "type": "number",
-          "agg": "mean",
-          "unit": "index",
-          "domain": [
-            -0.2,
-            0.2
-          ],
-          "ramp": "reds",
-          "higherIs": "worse"
-        },
-        {
-          "key": "weed_pct",
-          "label": "Share of 2019 water now covered by weeds or reeds",
-          "type": "number",
-          "agg": "mean",
-          "unit": "%",
-          "domain": [
-            0,
-            100
-          ],
-          "ramp": "greens",
-          "higherIs": "worse"
-        }
-      ],
-      "default": {
-        "field": "water_change_pp",
-        "extrude": false,
-        "heightM": 400.0
-      },
-      "regions": [
-        {
-          "name": "ahmedabad",
-          "cells": 165,
-          "bbox": {
-            "west": 72.47802734375,
-            "south": 22.9521484375,
-            "east": 72.68017578125,
-            "north": 23.121337890625
-          },
-          "json": "lakes/ahmedabad.json",
-          "parquet": null
-        },
-        {
-          "name": "bengaluru",
-          "cells": 899,
-          "bbox": {
-            "west": 77.4482421875,
-            "south": 12.829345703125,
-            "east": 77.780029296875,
-            "north": 13.141357421875
-          },
-          "json": "lakes/bengaluru.json",
-          "parquet": null
-        },
-        {
-          "name": "bhopal",
-          "cells": 661,
-          "bbox": {
-            "west": 77.298828125,
-            "south": 23.187255859375,
-            "east": 77.503173828125,
-            "north": 23.314697265625
-          },
-          "json": "lakes/bhopal.json",
-          "parquet": null
-        },
-        {
-          "name": "chennai",
-          "cells": 3240,
-          "bbox": {
-            "west": 80.12890625,
-            "south": 12.899658203125,
-            "east": 80.320068359375,
-            "north": 13.180908203125
-          },
-          "json": "lakes/chennai.json",
-          "parquet": null
-        },
-        {
-          "name": "guna",
-          "cells": 21,
-          "bbox": {
-            "west": 77.292236328125,
-            "south": 24.606689453125,
-            "east": 77.3515625,
-            "north": 24.67041015625
-          },
-          "json": "lakes/guna.json",
-          "parquet": null
-        },
-        {
-          "name": "hyderabad",
-          "cells": 993,
-          "bbox": {
-            "west": 78.298583984375,
-            "south": 17.298583984375,
-            "east": 78.601806640625,
-            "north": 17.55126953125
-          },
-          "json": "lakes/hyderabad.json",
-          "parquet": null
-        },
-        {
-          "name": "jaipur",
-          "cells": 37,
-          "bbox": {
-            "west": 75.705810546875,
-            "south": 26.799560546875,
-            "east": 75.921142578125,
-            "north": 26.9951171875
-          },
-          "json": "lakes/jaipur.json",
-          "parquet": null
-        },
-        {
-          "name": "kolkata",
-          "cells": 1054,
-          "bbox": {
-            "west": 88.278564453125,
-            "south": 22.448974609375,
-            "east": 88.4521484375,
-            "north": 22.651123046875
-          },
-          "json": "lakes/kolkata.json",
-          "parquet": null
-        },
-        {
-          "name": "lucknow",
-          "cells": 68,
-          "bbox": {
-            "west": 80.849609375,
-            "south": 26.7490234375,
-            "east": 81.0517578125,
-            "north": 26.944580078125
-          },
-          "json": "lakes/lucknow.json",
-          "parquet": null
-        },
-        {
-          "name": "mumbai",
-          "cells": 6555,
-          "bbox": {
-            "west": 72.779052734375,
-            "south": 18.889404296875,
-            "east": 72.9921875,
-            "north": 19.271728515625
-          },
-          "json": "lakes/mumbai.json",
-          "parquet": null
-        },
-        {
-          "name": "pune",
-          "cells": 258,
-          "bbox": {
-            "west": 73.748046875,
-            "south": 18.427978515625,
-            "east": 73.991943359375,
-            "north": 18.638916015625
-          },
-          "json": "lakes/pune.json",
           "parquet": null
         }
       ]

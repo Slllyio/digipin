@@ -319,6 +319,105 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Farmland at the edge. Dynamic World yearly mode labels, 2018 and 2025. An active edge block still has
+    // EDGE_CROP% crops and already EDGE_BUILT% building. Farmland expected to go by 2035 weights each block's
+    // farmland by the CA-ML model's projected urban share of that block.
+    const EDGE_CROP = 30, EDGE_BUILT = 20, FARM_NOISE = 10;
+
+    function farmloss(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const c0 = c['farmland.crop_2018_pct'], c1 = c['farmland.crop_now_pct'], cb = c['farmland.crop_built_pp'];
+        const b1 = c['farmland.built_now_pct'], u35 = c['growth.urban_2035_pct'];
+        if (!c0 || !c1 || !cb) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(c0[i]) && _fin(c1[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const km2 = g.cellKm2, lostHa = new Float64Array(n).fill(NaN), edge = new Float64Array(n).fill(NaN);
+        let a0 = 0, a1 = 0, built = 0, edgeKm2 = 0, edgeN = 0, atRisk = 0;
+        for (const i of idx) {
+            a0 += c0[i] / 100 * km2; a1 += c1[i] / 100 * km2;
+            const b = _fin(cb[i]) ? cb[i] / 100 * km2 : 0;
+            built += b; lostHa[i] = b * 100;
+            const isEdge = c1[i] >= EDGE_CROP && b1 && _fin(b1[i]) && b1[i] >= EDGE_BUILT;
+            edge[i] = isEdge ? 1 : 0;
+            if (isEdge) { edgeN++; edgeKm2 += c1[i] / 100 * km2; }
+            if (u35 && _fin(u35[i])) atRisk += c1[i] / 100 * km2 * Math.min(100, u35[i]) / 100;
+        }
+        if (a0 < 1) return null;
+        const net = a0 - a1, other = Math.max(0, net - built);
+        const stats = [
+            { label: 'Farmland in 2018 → 2025', value: `${_round(a0)} → ${_round(a1)} km² (${net >= 0 ? '−' : '+'}${_round(Math.abs(net))} km²)` },
+            { label: 'Farmland turned built-up since 2018 (buildings, roads or cleared plots)', value: `${_round(built, 1)} km² (${_round(100 * built / a0)}% of 2018 farmland)`, raw: _round(built, 2) },
+            { label: 'Lost to fallow, scrub or bare ground (not built yet; part is fallow-year noise)', value: `${_round(other, 1)} km²` },
+            { label: `Active edge: blocks still ${EDGE_CROP}%+ crops and already ${EDGE_BUILT}%+ built`, value: `${edgeN} blocks, ${_round(edgeKm2, 1)} km² of farmland` },
+        ];
+        if (u35) stats.push({ label: 'Today\'s farmland the growth model expects to turn urban by 2035', value: `${_round(atRisk, 1)} km² (${_round(100 * atRisk / Math.max(1e-9, a1))}%)` });
+        const hs = idx.filter(i => lostHa[i] > 0);
+        spaced(g, hs, lostHa).slice(0, 4).forEach((i, k) => stats.push({ label: `Fastest conversion ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(lostHa[i], 1)} ha of farmland built; crops ${_round(c0[i])}% → ${_round(c1[i])}%` }));
+        return {
+            columns: { farm_built_ha: lostHa, farm_edge: edge }, idx, weightKey: 'farm_built_ha',
+            metric: { label: 'Farmland turned built-up since 2018', value: _round(built, 1), unit: 'km²', higherIs: 'worse' },
+            headline: `${_round(built, 1)} km² of farmland (${_round(100 * built / a0)}% of what was farmed in 2018) has turned built-up since 2018, as buildings, roads or cleared plots; ${edgeN} edge blocks are still part farm, part built${u35 ? `, and the growth model expects another ${_round(atRisk, 1)} km² to go by 2035` : ''}.`,
+            stats,
+        };
+    }
+
+    // Property market activity. Overture places tagged as estate agents or brokers, summed within MARKET_KM of each
+    // block. Hot = top MARKET_HOT share of blocks; emerging = hot but land value index below the city median.
+    const MARKET_KM = 1, MARKET_HOT = 0.9;
+
+    function _spearman(x, y) {
+        const rank = a => { const o = a.map((v, i) => [v, i]).sort((p, q) => p[0] - q[0]), r = new Float64Array(a.length); o.forEach(([, i], k) => { r[i] = k; }); return r; };
+        const n = x.length;
+        if (n < 5) return null;
+        const rx = rank(x), ry = rank(y);
+        let d = 0;
+        for (let i = 0; i < n; i++) d += (rx[i] - ry[i]) ** 2;
+        return 1 - 6 * d / (n * (n * n - 1));
+    }
+
+    function market(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const ag = c['places.property_agents'], vi = c['land_value.value_index'], br = c['re_supply.build_rate'], pop = c['population.population'];
+        if (!ag) return null;
+        const vals = Float64Array.from(ag, v => (_fin(v) ? v : 0));
+        let total = 0;
+        for (const v of vals) total += v;
+        if (total < 10) return null;
+        const near = within(g, vals, MARKET_KM);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (near[i] > 0 || (pop && pop[i] > 0)) idx.push(i);
+        const hotCut = wquantile(near, null, idx.filter(i => near[i] > 0), MARKET_HOT);
+        const viMed = vi ? wquantile(vi, null, idx, 0.5) : null;
+        const emerging = new Float64Array(n).fill(NaN);
+        let emN = 0, emPop = 0;
+        for (const i of idx) {
+            const e = near[i] >= hotCut && viMed != null && _fin(vi[i]) && vi[i] < viMed ? 1 : 0;
+            emerging[i] = e;
+            if (e) { emN++; emPop += pop && pop[i] > 0 ? pop[i] : 0; }
+        }
+        const sorted = Array.from(vals).sort((a, b) => b - a), top = sorted.slice(0, Math.ceil(0.01 * idx.length)).reduce((a, b) => a + b, 0);
+        const both = vi ? idx.filter(i => _fin(vi[i]) && near[i] > 0) : [];
+        const rho = both.length >= 30 ? _spearman(both.map(i => near[i]), both.map(i => vi[i])) : null;
+        const stats = [
+            { label: 'Estate agents and brokers on the map (Overture places)', value: `${Math.round(total).toLocaleString('en-IN')}`, raw: Math.round(total) },
+            { label: 'Share of them in the busiest 1% of blocks', value: `${_round(100 * top / total)}%` },
+            { label: `Hot markets: blocks in the top ${_round(100 * (1 - MARKET_HOT))}% for agents within ${MARKET_KM} km`, value: `${_round(hotCut, 1)}+ agents within ${MARKET_KM} km` },
+        ];
+        if (rho != null) stats.push({ label: 'How closely agent density tracks the land value index (Spearman ρ)', value: `${_round(rho, 2)}` });
+        if (viMed != null) stats.push({ label: 'Emerging: hot for agents but land value below the city median', value: `${emN} blocks${pop ? `, ${_people(emPop)} residents` : ''}` });
+        const hs = idx.filter(i => near[i] >= hotCut);
+        spaced(g, hs, near).slice(0, 4).forEach((i, k) => stats.push({ label: `Busiest market ${k + 1}: ${g.codes[i]}`,
+            value: `${Math.round(near[i])} agents within ${MARKET_KM} km${vi && _fin(vi[i]) ? `; value index ${_round(vi[i])}` : ''}${br && _fin(br[i]) ? `; ${Math.round(br[i]).toLocaleString('en-IN')} m² of floor built per km² a year` : ''}` }));
+        return {
+            columns: { agents_1km: near, market_emerging: emerging }, idx, weightKey: 'agents_1km',
+            metric: { label: `Estate agents within ${MARKET_KM} km`, value: Math.round(total), unit: 'agents', higherIs: null },
+            headline: `${Math.round(total).toLocaleString('en-IN')} estate agents and brokers are on the map, ${_round(100 * top / total)}% of them in the busiest 1% of blocks${rho != null ? `; agent density tracks land value with ρ ${_round(rho, 2)}` : ''}${viMed != null ? `, and ${emN} blocks are busy markets with land still below the city median` : ''}.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -482,6 +581,20 @@ const UrbanLensesEnvironment = (() => {
             needs: ['vegetation.tree_canopy_pct', 'land_cover.grass_pct', 'land_cover.bare_pct', 'land_cover.shrub_pct', 'surface_heat.lst_day_c', 'population.population'],
             method: `Canopy gap = ${CANOPY_TARGET}% (the 3-30-300 rule) minus the block's tree canopy ≥ 5 m (Meta/WRI 1 m canopy height), turned into trees at ${CROWN_M2} m² of mature crown each. Room = ${OPEN_USABLE * 100}% of the block's grass, shrub and bare ground (ESA WorldCover), as paths, playing fields and utilities take the rest. Priority = trees that fit × (1 + degrees the block's daytime surface is above the resident average ÷ 3) × residents (full weight at 2,000). Private land, ownership and soil are not modelled.`,
             refs: 'Konijnendijk 2023 (3-30-300 rule); Tolan et al. 2024 (Meta/WRI canopy height); Zanaga et al. 2022 (ESA WorldCover); Ziter et al. 2019 (canopy cooling thresholds)' },
+        { id: 'farmloss', equity: false, title: 'Farmland at the edge', icon: '🌾',
+            question: 'How much farmland has the city built over since 2018, and where is the edge moving now?',
+            field: { key: 'farm_built_ha', label: 'Farmland turned built-up since 2018', unit: 'ha', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'farm_edge', label: 'Active edge (part farm, part building)', unit: 'yes/no', higherIs: null, ramp: 'heat', domain: [0, 1] }],
+            needs: ['farmland.crop_2018_pct', 'farmland.crop_now_pct', 'farmland.crop_built_pp', 'farmland.built_now_pct', 'growth.urban_2035_pct'],
+            method: `Dynamic World V1 yearly mode label at 10 m for 2018 and 2025 (crops = class 4, built = class 6). Built over = pixels that were crops in 2018 and are built in 2025. An active edge block is still ${EDGE_CROP}%+ crops and already ${EDGE_BUILT}%+ built. Farmland expected to go by 2035 = each block's 2025 farmland × the CA-ML growth model's projected urban share of the block. Dynamic World calls roads and cleared, plotted land built-up too: in Bengaluru and Pune the blocks that lost most farmland had only about 4–5% roof cover in Open Buildings 2023, so much of the conversion is layouts waiting for houses. Dynamic World mixes dry fallow with bare ground and grass, so net loss beyond the built part, and any block change under ${FARM_NOISE} points, is partly a wet or dry year rather than lost farming.`,
+            refs: 'Brown et al. 2022 (Dynamic World); Pandey & Seto 2015 (urbanisation and farmland loss in India); d\'Amour et al. 2017 (future urban expansion and cropland)' },
+        { id: 'market', equity: false, title: 'Property market activity', icon: '🏷️',
+            question: 'Where is the property market busiest, and where is it busy while land is still cheap?',
+            field: { key: 'agents_1km', label: 'Estate agents and brokers within 1 km', unit: 'agents', higherIs: null, ramp: 'heat' },
+            extra: [{ key: 'market_emerging', label: 'Emerging market (busy, land below the city median)', unit: 'yes/no', higherIs: null, ramp: 'viridis', domain: [0, 1] }],
+            needs: ['places.property_agents', 'land_value.value_index', 're_supply.build_rate', 'population.population'],
+            method: `Overture places (confidence 0.6+, not closed) whose category or name marks an estate agent, broker or property dealer, summed within ${MARKET_KM} km of each block. Agents cluster where deals happen, so the count is a proxy for transaction activity, not prices. Hot = top ${_round(100 * (1 - MARKET_HOT))}% of blocks; emerging = hot while the block's land value index is below the city median. ρ is the Spearman rank correlation between agent density and the land value index over blocks with any agents. Coverage of small dealers in Overture is uneven, so compare blocks within a city, not across cities.`,
+            refs: 'Overture Maps Foundation places (2026-10); Glaeser, Kim & Luca 2018 (online listings as a proxy for local economic activity); DigiPin land value model (docs/REAL_ESTATE_MODEL.md)' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -497,7 +610,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, burning, ground, treeplant, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, burning, ground, treeplant, farmloss, market, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

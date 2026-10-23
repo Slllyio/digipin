@@ -294,6 +294,18 @@
      "unit": "trees",
      "higherIs": null
     },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 24.5,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 826,
+     "unit": "agents",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 2,
@@ -694,6 +706,18 @@
      "label": "Trees that fit on open land toward 30% canopy",
      "value": 1213671,
      "unit": "trees",
+     "higherIs": null
+    },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 47.4,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 1762,
+     "unit": "agents",
      "higherIs": null
     },
     "lakehealth": {
@@ -1098,6 +1122,18 @@
      "unit": "trees",
      "higherIs": null
     },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 27.6,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 145,
+     "unit": "agents",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 5,
@@ -1492,6 +1528,18 @@
      "label": "Trees that fit on open land toward 30% canopy",
      "value": 279531,
      "unit": "trees",
+     "higherIs": null
+    },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 6.1,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 659,
+     "unit": "agents",
      "higherIs": null
     },
     "lakehealth": {
@@ -1896,6 +1944,18 @@
      "unit": "trees",
      "higherIs": null
     },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 2633,
+     "unit": "agents",
+     "higherIs": null
+    },
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 37,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
     "jobsmap": {
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 55.8,
@@ -2279,6 +2339,12 @@
      "value": 106410,
      "unit": "trees",
      "higherIs": null
+    },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 5,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -2674,6 +2740,18 @@
      "label": "Trees that fit on open land toward 30% canopy",
      "value": 1279111,
      "unit": "trees",
+     "higherIs": null
+    },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 22.3,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 1110,
+     "unit": "agents",
      "higherIs": null
     },
     "lakehealth": {
@@ -3078,6 +3156,18 @@
      "unit": "trees",
      "higherIs": null
     },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 343,
+     "unit": "agents",
+     "higherIs": null
+    },
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 9,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
     "jobsmap": {
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 57.2,
@@ -3466,6 +3556,18 @@
      "label": "Trees that fit on open land toward 30% canopy",
      "value": 833897,
      "unit": "trees",
+     "higherIs": null
+    },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 32.8,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 496,
+     "unit": "agents",
      "higherIs": null
     },
     "lakehealth": {
@@ -3864,6 +3966,18 @@
      "unit": "trees",
      "higherIs": null
     },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 1.8,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 545,
+     "unit": "agents",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 23,
@@ -4252,6 +4366,18 @@
      "label": "Trees that fit on open land toward 30% canopy",
      "value": 534112,
      "unit": "trees",
+     "higherIs": null
+    },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 25.6,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 597,
+     "unit": "agents",
      "higherIs": null
     },
     "lakehealth": {
@@ -4656,6 +4782,12 @@
      "unit": "trees",
      "higherIs": null
     },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 2013,
+     "unit": "agents",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 21,
@@ -5056,6 +5188,18 @@
      "label": "Trees that fit on open land toward 30% canopy",
      "value": 1073428,
      "unit": "trees",
+     "higherIs": null
+    },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 27.4,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
+    "market": {
+     "label": "Estate agents within 1 km",
+     "value": 1526,
+     "unit": "agents",
      "higherIs": null
     },
     "lakehealth": {

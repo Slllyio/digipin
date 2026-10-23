@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'burning', 'ground', 'treeplant', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -273,6 +273,38 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.plant_trees[SIZE - 1]).toBe(0);
         expect(r.stats.find(x => /Plant first 1/.test(x.label)).label).toMatch(new RegExp(codes.slice(0, SIZE * 6).filter((_, i) => i % SIZE < 6).join('|')));
         expect(L._lenses.treeplant(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('farmloss: farmland built over, the active edge and land likely urban by 2035', () => {
+        const left = codes.map((_, i) => col(i) < 6);
+        const f = L.frameFrom(codes, { ...base,
+            'farmland.crop_2018_pct': codes.map(() => 80), 'farmland.crop_now_pct': left.map(l => (l ? 50 : 80)),
+            'farmland.crop_built_pp': left.map(l => (l ? 30 : 0)), 'farmland.built_now_pct': left.map(l => (l ? 30 : 5)),
+            'growth.urban_2035_pct': left.map(l => (l ? 80 : 10)) }, { city: 'delhi' });
+        const r = L._lenses.farmloss(f, {});
+        const km2 = f.grid.cellKm2;
+        expect(r.columns.farm_built_ha[0]).toBeCloseTo(30 * km2, 6);
+        expect(r.columns.farm_built_ha[SIZE - 1]).toBe(0);
+        expect(r.columns.farm_edge[0]).toBe(1);
+        expect(r.columns.farm_edge[SIZE - 1]).toBe(0);
+        expect(r.metric.value).toBeCloseTo(0.3 * 72 * km2, 1);
+        expect(r.stats.find(x => /Active edge/.test(x.label)).value).toMatch(/^72 blocks/);
+        expect(r.headline).toMatch(/expects another [\d.]+ km² to go by 2035/);
+        expect(L._lenses.farmloss(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('market: agents within 1 km, busiest blocks and emerging markets', () => {
+        const f = L.frameFrom(codes, { ...base,
+            'places.property_agents': codes.map((_, i) => (col(i) < 3 ? 4 : 0)),
+            'land_value.value_index': codes.map((_, i) => (col(i) < 3 ? 30 : 70)) }, { city: 'delhi' });
+        const r = L._lenses.market(f, {});
+        expect(r.metric.value).toBe(4 * 3 * SIZE);
+        expect(r.columns.agents_1km[0]).toBeGreaterThan(r.columns.agents_1km[SIZE - 1]);
+        const em = codes.map((_, i) => i).filter(i => r.columns.market_emerging[i] === 1);
+        expect(em.length).toBeGreaterThan(0);
+        expect(em.every(i => col(i) < 3)).toBe(true);                         // busy and cheap: the agents' own strip
+        expect(r.headline).toMatch(/estate agents and brokers/);
+        expect(L._lenses.market(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

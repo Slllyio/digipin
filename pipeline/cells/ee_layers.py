@@ -1601,6 +1601,53 @@ def lakes(region):
     return spec, _table(level, rows, specs)
 
 
+# ── farmland at the edge: cropland lost since 2018 (Dynamic World) ────────────
+
+FARM_FROM = 2018      # first full year of Sentinel-2 L2A over India
+DW_CROPS, DW_BUILT = 4, 6
+
+
+def farmland(region):
+    """Cropland per block in 2018 and now (Dynamic World yearly mode label), and how much of it is now built."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    dw = ee.ImageCollection("GOOGLE/DYNAMICWORLD/V1").filterBounds(geom).select("label")
+    a, b = _year(dw, FARM_FROM).mode(), _year(dw, YEAR).mode()
+    crop0, crop1 = a.eq(DW_CROPS), b.eq(DW_CROPS)
+    built = crop0.And(b.eq(DW_BUILT))
+    img = ee.Image.cat([crop0.rename("c0"), crop1.rename("c1"), built.rename("cb"), b.eq(DW_BUILT).rename("b1")])
+    raw = gee.fetch(gee.to_cells(img, 10), bbox, level, tile=64)
+    rows = {}
+    for c, x in raw.items():
+        c0, c1, cb = x.get("c0") or 0, x.get("c1") or 0, x.get("cb") or 0
+        if max(c0, c1) < 0.05:
+            continue
+        rows[c] = {"crop_2018_pct": _r(100 * c0), "crop_now_pct": _r(100 * c1), "crop_change_pp": _r(100 * (c1 - c0)),
+                   "crop_built_pp": _r(100 * cb), "crop_built_share": _r(100 * cb / c0) if c0 >= 0.05 else None,
+                   "built_now_pct": _r(100 * (x.get("b1") or 0))}
+    specs = [
+        FieldSpec("crop_2018_pct", f"Cropland, {FARM_FROM}", agg="mean", unit="% of block", domain=[0, 100], ramp="greens"),
+        FieldSpec("crop_now_pct", f"Cropland, {YEAR}", agg="mean", unit="% of block", domain=[0, 100], ramp="greens"),
+        FieldSpec("crop_change_pp", f"Change in cropland {FARM_FROM}→{YEAR}", agg="mean", unit="points", domain=[-40, 40],
+                  ramp="diverging", higher_is=None),
+        FieldSpec("crop_built_pp", f"Block area that was cropland in {FARM_FROM} and is built now", agg="mean", unit="% of block",
+                  domain=[0, 30], ramp="reds", higher_is="worse"),
+        FieldSpec("crop_built_share", f"Share of the block's {FARM_FROM} cropland now built", agg="mean", unit="%", domain=[0, 60],
+                  ramp="reds", higher_is="worse"),
+        FieldSpec("built_now_pct", f"Built-up, {YEAR} (Dynamic World)", agg="mean", unit="% of block", domain=[0, 100], ramp="viridis"),
+    ]
+    spec = DatasetSpec(
+        id="farmland", title="Farmland at the edge (Dynamic World)", level=level, fields=specs, group=GROUP,
+        description=f"Dynamic World V1 yearly mode land-cover label at 10 m for {FARM_FROM} and {YEAR}: the share of each block "
+                    "that reads as crops in each year, and the share that was crops and is now built. The yearly mode smooths "
+                    "out fallow months, but Dynamic World still confuses dry fallow with bare ground and grass, so read changes "
+                    "under 10 points as noise. Only blocks with at least 5% cropland in either year are kept.",
+        source="GOOGLE/DYNAMICWORLD/V1 via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (Dynamic World)", default_field="crop_built_pp")
+    return spec, _table(level, rows, specs)
+
+
 # ── roofs: how much sun they reflect (Sentinel-2 albedo on Open Buildings roofs) ──
 
 # Thresholds are for 10 m pixel albedo, which blends roofs with parapets, tanks and shade: the median Lucknow roof
@@ -1671,7 +1718,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland,
 }
 
 

@@ -17,15 +17,15 @@ Each item gives four things:
 |---|---|---|
 | 1 | ❌ Overture buildings: class, floors, height per block | Building use mix (residential/commercial/industrial) per block: core to real estate |
 | 2 | ❌ Overture transport segments: road class, speed, surface per block | Road quality and arterial frontage for land value and retail siting |
-| 3 | Office and IT clusters → jobs proxy | Fills the missing jobs layer behind job access and rental demand |
-| 4 | Property-agent density → market-activity signal in land value | Turns places data into a price-model input |
+| 3 | ✅ Office and IT clusters → jobs proxy (jobsmap lens) | Fills the missing jobs layer behind job access and rental demand |
+| 4 | ✅ Property-agent density → market-activity signal (market lens) | Turns places data into a price-model input |
 | 5 | Landslide susceptibility (NASA LHASA) | Hills in Mumbai, Pune, Bengaluru fringe, Bhopal |
 | 6 | Cyclone wind return levels (STORM) | Chennai, Kolkata, Mumbai: insurance and structure risk |
 | 7 | ✅ Earthquake zone (ground lens) (BIS IS 1893 zones) | Delhi zone IV, Kolkata III/IV: building code and insurance |
 | 8 | Lightning flash density (LIS/OTD) | Deaths, power cuts, solar/telecom asset risk |
 | 9 | Dust and dust storms (MERRA-2 / CAMS dust AOD) | Delhi/Jaipur/Ahmedabad pre-monsoon air |
 | 10 | ✅ Wet-bulb 2050 (CMIP6 hurs + tas) | Humid heat future for coastal cities |
-| 11 | Crop and green-belt loss at the edge (ESA WorldCereal / Dynamic World) | Peri-urban conversion pressure |
+| 11 | ✅ Crop and green-belt loss at the edge (Dynamic World; farmloss lens) | Peri-urban conversion pressure |
 | 12 | ✅ Air trend (NO₂ 2019→2025, PM2.5 2012→2022, SO₂) | Where air is getting worse fastest |
 | 13 | Schools and hospitals capacity (Overture + OSM beds/levels) | Service gap lenses with size, not just count |
 | 14 | ✅ Tree planting potential (canopy gap × heat × pavement) | Cooling action siting |
@@ -36,6 +36,8 @@ Each item gives four things:
 - ✅ Satellite embeddings: the "What changed" lens and "looks like this from space" search (items 116–117)
 - ✅ Open burning from VIIRS fires (items 34–35)
 - ✅ Ground conditions: subsoil clay, wet land and slopes (items 103 and 105)
+- ✅ Lake health: water lost since 2019, algae and weeds (items 41–42)
+- ✅ Flood exposure to 2080 added to the flood_future dataset (long view next to item 32)
 
 ## A. Buildings and real estate (1–20)
 
@@ -82,8 +84,8 @@ Each item gives four things:
 38. Soil sealing trend (GHSL imperviousness yearly) | EE | runoff lens
 39. Urban runoff coefficient per block (sealing + slope + soil) | derived | drainage lens
 40. Drainage density (OSM drains + MERIT streams) | OSM/EE | waterlogging
-41. Lake and wetland health (Sentinel-2 water extent trend + NDCI) | EE | lake lens
-42. Water quality chlorophyll / turbidity in lakes (Sentinel-2) | EE | lake lens
+41. ✅ Lake and wetland health (Sentinel-2 water extent trend + NDCI) | EE | lake lens
+42. ✅ Water quality chlorophyll / turbidity in lakes (Sentinel-2) | EE | lake lens
 43. Mangrove extent and loss (Global Mangrove Watch) | EE | coastal buffer
 44. Coastal erosion / shoreline change (Landsat shoreline) | EE | coast lens
 45. Groundwater recharge potential (soil + slope + land cover) | EE | recharge siting

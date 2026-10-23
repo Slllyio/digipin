@@ -586,3 +586,32 @@ The `lakehealth` lens joins water blocks that touch into lakes. It then flags ea
 - **Weeds:** 30% or more of its 2019 water surface choked.
 
 In Bengaluru, it maps 66 lakes. Of these, 41 are algae-rich, 16 are choked by weeds and 12 have lost a fifth or more of their water. About 5.4 lakh people live within 500 m of a lake with at least one problem.
+
+## Farmland at the edge
+
+The `farmland` dataset (L7) uses the Dynamic World V1 yearly mode label at 10 m for 2018 and 2025. It records three things per block:
+
+- the share that reads as crops in each year;
+- the share that was crops in 2018 and is built-up in 2025;
+- the 2025 built-up share.
+
+The `farmloss` lens adds these up into farmland turned built-up since 2018. It also marks the active edge: blocks still 30% or more crops that are already 20% or more built. Finally, it weights each block's remaining farmland by the CA-ML growth model's projected urban share for 2035.
+
+Dynamic World counts roads and cleared, plotted land as built-up. In Bengaluru and Pune, the blocks that lost the most farmland had only 4–5% roof cover in Open Buildings 2023, so much of the converted land is plotted layouts that are not yet built.
+
+Farmland turned built-up, 2018 to 2025:
+
+| City | Built-up area | Share of 2018 farmland |
+|---|---|---|
+| Bengaluru | 47 km² | 41% |
+| Jaipur | 33 km² | 38% |
+| Pune | 27 km² | 27% |
+| Lucknow | 26 km² | 28% |
+
+## Property market activity
+
+The `market` lens counts estate agents, brokers and property dealers within 1 km of each block. It uses the `property_agents` count from the Overture places data. Agents cluster where deals happen, so the count works as a proxy for transaction activity, not for prices.
+
+Busy markets are the top 10% of blocks by this count. Emerging markets are busy blocks whose land value index is still below the city median.
+
+How closely agent density tracks the land value index (Spearman ρ): Bengaluru 0.56, Pune 0.49, Mumbai 0.34, Delhi 0.28. Delhi's agents are concentrated: 42% of them sit in the busiest 1% of blocks.
