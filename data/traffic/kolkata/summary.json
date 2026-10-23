@@ -493,13 +493,15 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 0,
-    "chargers_by_source": {},
+    "chargers": 10,
+    "chargers_by_source": {
+      "osm": 10
+    },
     "parking": 49,
     "fuel": 178,
-    "chargers_per_lakh": 0.0,
-    "pct_vkm_within_2km": 0.0,
-    "pct_pop_within_2km": 0.0
+    "chargers_per_lakh": 0.07,
+    "pct_vkm_within_2km": 42.7,
+    "pct_pop_within_2km": 37.6
   },
   "cycling": {
     "lowstress_km": 6426,

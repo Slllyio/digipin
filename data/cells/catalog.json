@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T14:05:13Z",
+  "generated": "2026-10-23T15:19:52Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -9096,7 +9096,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 5392,
+          "cells": 5394,
           "bbox": {
             "west": 77.450439453125,
             "south": 12.829345703125,
@@ -9180,7 +9180,7 @@
         },
         {
           "name": "jaipur",
-          "cells": 1738,
+          "cells": 1739,
           "bbox": {
             "west": 75.69921875,
             "south": 26.799560546875,
@@ -15613,7 +15613,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 10806,
+          "cells": 10808,
           "bbox": {
             "west": 77.450439453125,
             "south": 12.829345703125,
