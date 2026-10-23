@@ -330,6 +330,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 128,
+     "unit": "centres",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 2,
@@ -766,6 +772,12 @@
      "label": "Night-district blocks",
      "value": 321,
      "unit": "blocks",
+     "higherIs": null
+    },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 288,
+     "unit": "centres",
      "higherIs": null
     },
     "lakehealth": {
@@ -1206,6 +1218,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 35,
+     "unit": "centres",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 5,
@@ -1636,6 +1654,12 @@
      "label": "Night-district blocks",
      "value": 277,
      "unit": "blocks",
+     "higherIs": null
+    },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 172,
+     "unit": "centres",
      "higherIs": null
     },
     "lakehealth": {
@@ -2076,6 +2100,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 429,
+     "unit": "centres",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 37,
@@ -2488,6 +2518,12 @@
      "label": "Night-district blocks",
      "value": 16,
      "unit": "blocks",
+     "higherIs": null
+    },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 4,
+     "unit": "centres",
      "higherIs": null
     },
     "lakehealth": {
@@ -2920,6 +2956,12 @@
      "label": "Night-district blocks",
      "value": 307,
      "unit": "blocks",
+     "higherIs": null
+    },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 204,
+     "unit": "centres",
      "higherIs": null
     },
     "lakehealth": {
@@ -3360,6 +3402,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 56,
+     "unit": "centres",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 9,
@@ -3790,6 +3838,12 @@
      "label": "Night-district blocks",
      "value": 359,
      "unit": "blocks",
+     "higherIs": null
+    },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 104,
+     "unit": "centres",
      "higherIs": null
     },
     "lakehealth": {
@@ -4224,6 +4278,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 130,
+     "unit": "centres",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 23,
@@ -4648,6 +4708,12 @@
      "label": "Night-district blocks",
      "value": 310,
      "unit": "blocks",
+     "higherIs": null
+    },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 79,
+     "unit": "centres",
      "higherIs": null
     },
     "lakehealth": {
@@ -5094,6 +5160,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 184,
+     "unit": "centres",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 21,
@@ -5530,6 +5602,12 @@
      "label": "Night-district blocks",
      "value": 322,
      "unit": "blocks",
+     "higherIs": null
+    },
+    "catchment": {
+     "label": "Shopping centres",
+     "value": 126,
+     "unit": "centres",
      "higherIs": null
     },
     "lakehealth": {

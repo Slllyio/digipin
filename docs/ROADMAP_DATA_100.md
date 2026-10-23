@@ -57,7 +57,7 @@ Each item gives four things:
 14. Hotel and serviced-apartment density (Overture lodging) | S3 | tourism demand lens
 15. Co-working spaces (Overture) | S3 | office demand
 16. ✅ Overture places per block (shops, food, offices, health, education, brands) | S3 | Commercial vitality
-17. Retail catchment (Huff model on places + population) | derived | retail siting
+17. ✅ Retail catchment (Huff model on places + population) | derived | retail siting
 18. Mall and big-box presence (Overture shopping_mall, chains) | S3 | retail anchor lens
 19. Petrol pumps and EV chargers combined fuel map | S3/OSM | mobility energy
 20. Land-pooling and master-plan zones (where states publish GIS) | open GIS | zoning overlay

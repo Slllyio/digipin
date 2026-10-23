@@ -705,3 +705,9 @@ The VIIRS night-time light composite is captured at about 1:30 am. The `nighteco
 | Delhi | 1,269 | 28% |
 | Mumbai | 398 | 21% |
 | Bengaluru | 321 | 11% |
+
+## Retail catchments
+
+The `catchment` lens is a Huff gravity model. Shopping centres are the top 5% of blocks by Overture shops. Each block's residents split their trips across the centres within 5 km in proportion to shops ÷ distance².
+
+The lens reports each centre's draw and its residents per listed shop. Centres at twice the median residents per shop are flagged as having room for more shops. In Delhi and Pune these are mostly small outer centres that are the only one serving dense new suburbs. Overture lists only a fraction of real shops, so compare centres within a city, not the absolute counts.

@@ -674,6 +674,59 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Retail catchments (Huff 1963). Shopping centres are blocks in the top HUFF_TOP share for shops; each block's
+    // residents split their trips across centres within HUFF_KM in proportion to shops ÷ distance^HUFF_BETA.
+    const HUFF_KM = 5, HUFF_BETA = 2, HUFF_TOP = 0.95, HUFF_MIN_KM = 0.3;
+
+    function catchment(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const shop = c['places.shopping'], pop = c['population.population'];
+        if (!shop || !pop) return null;
+        const withShops = [];
+        for (let i = 0; i < n; i++) if (_fin(shop[i]) && shop[i] > 0) withShops.push(i);
+        if (withShops.length < 10) return null;
+        const cut = Math.max(3, wquantile(shop, null, withShops, HUFF_TOP));
+        const isCentre = new Uint8Array(n);
+        for (const i of withShops) if (shop[i] >= cut) isCentre[i] = 1;
+        const off = g.offsets(HUFF_KM);
+        const draw = new Float64Array(n), reach = new Float64Array(n).fill(NaN);
+        const res = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0) res.push(i);
+        for (const i of res) {
+            const js = [], ws = [];
+            let tot = 0;
+            for (const [a, b, d] of off) {
+                const j = g.cellAt(i, a, b);
+                if (j < 0 || !isCentre[j]) continue;
+                const w = shop[j] / Math.max(HUFF_MIN_KM, d) ** HUFF_BETA;
+                js.push(j); ws.push(w); tot += w;
+            }
+            reach[i] = tot;
+            if (tot > 0) js.forEach((j, k) => { draw[j] += pop[i] * ws[k] / tot; });
+        }
+        const centres = withShops.filter(i => isCentre[i]);
+        const perShop = new Float64Array(n).fill(NaN), drawCol = new Float64Array(n).fill(NaN);
+        let drawn = 0;
+        for (const i of centres) { drawCol[i] = draw[i]; perShop[i] = draw[i] / shop[i]; drawn += draw[i]; }
+        const people = _sumOver(pop, res, () => true), none = _sumOver(pop, res, i => !(reach[i] > 0));
+        const medPer = wquantile(perShop, null, centres, 0.5);
+        const stats = [
+            { label: `Shopping centres (blocks with ${Math.round(cut)}+ shops, the top ${_round(100 * (1 - HUFF_TOP))}%)`, value: `${centres.length}` },
+            { label: `Residents with no centre within ${HUFF_KM} km`, value: `${_people(none)} (${_round(100 * none / people)}%)` },
+            { label: 'Residents per listed shop at the median centre', value: `${Math.round(medPer)}` },
+        ];
+        spaced(g, centres, drawCol).slice(0, 4).forEach((i, k) => stats.push({ label: `Biggest catchment ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(draw[i])} residents' trips; ${Math.round(shop[i])} shops` }));
+        spaced(g, centres.filter(i => perShop[i] >= 2 * medPer), perShop).slice(0, 3).forEach((i, k) => stats.push({ label: `Room for more shops ${k + 1}: ${g.codes[i]}`,
+            value: `${Math.round(perShop[i])} residents per listed shop, ${_round(perShop[i] / medPer, 1)}× the median centre` }));
+        return {
+            columns: { huff_draw: drawCol, residents_per_shop: perShop }, idx: centres, weightKey: 'huff_draw', noHotspots: true,
+            metric: { label: 'Shopping centres', value: centres.length, unit: 'centres', higherIs: null },
+            headline: `${centres.length} shopping centres share the city's ${_people(drawn)} residents in a gravity model; the median centre serves ${Math.round(medPer)} residents per listed shop, and centres at twice that have room for more shops.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -886,6 +939,13 @@ const UrbanLensesEnvironment = (() => {
             needs: ['nightlights.radiance', 'places.food', 'places.leisure', 'places.lodging', 'population.population'],
             method: `VIIRS Day/Night Band radiance (2025 median) is recorded at about 1:30 am local time, so it measures late-night light. Places = Overture eateries and bars, leisure and entertainment, and hotels, summed within ${NIGHT_KM} km. Score = standardised log radiance + standardised log places. A night district is in the top ${_round(100 * (1 - NIGHT_TOP))}% of blocks for both. Industrial yards, depots and floodlit stations are bright but have few such places, so they score on light alone. Opening hours are not in the data.`,
             refs: 'Elvidge et al. 2017 (VIIRS DNB); Overture Maps Foundation places; Roberts & Eldridge 2009 (planning the night-time city)' },
+        { id: 'catchment', equity: false, title: 'Retail catchments', icon: '🛍️',
+            question: 'Which shopping centres draw the most residents, and which are short of shops for the people they serve?',
+            field: { key: 'huff_draw', label: 'Residents whose shopping trips the centre draws', unit: 'people', higherIs: null, ramp: 'viridis' },
+            extra: [{ key: 'residents_per_shop', label: 'Residents per shop at the centre', unit: 'people', higherIs: 'worse', ramp: 'heat' }],
+            needs: ['places.shopping', 'population.population'],
+            method: `Huff gravity model. Centres are blocks in the top ${_round(100 * (1 - HUFF_TOP))}% for Overture shops (at least 3). Each block's residents (GHSL) split their trips across centres within ${HUFF_KM} km in proportion to shops ÷ distance^${HUFF_BETA} (distance at least ${HUFF_MIN_KM} km). Draw = residents' trips a centre wins; residents per shop = draw ÷ shops. Centres at twice the median residents per shop are flagged as having room for more shops. Income, parking and online shopping are not modelled.`,
+            refs: 'Huff 1963 (a probabilistic analysis of shopping centre trade areas); Dolega, Pavlis & Singleton 2016 (estimating retail catchments); Overture Maps Foundation places' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -901,7 +961,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

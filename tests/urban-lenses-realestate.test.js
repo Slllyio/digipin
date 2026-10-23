@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -367,6 +367,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.night_district[0]).toBe(0);
         expect(r.stats.find(x => /Night district 1/.test(x.label)).label).toContain(codes[SIZE * 5 + 5]);
         expect(L._lenses.nighteconomy(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('catchment: Huff draw splits residents across centres by shops over distance squared', () => {
+        const a = SIZE * 2 + 2, b = SIZE * 9 + 9;
+        const shop = codes.map((_, i) => (i === a ? 100 : i === b ? 10 : 1));
+        const f = L.frameFrom(codes, { ...base, 'places.shopping': shop }, { city: 'delhi' });
+        const r = L._lenses.catchment(f, {});
+        expect(r.idx.sort()).toEqual([a, b].sort());
+        expect(r.columns.huff_draw[a] + r.columns.huff_draw[b]).toBeCloseTo(144 * 1000, 0);
+        expect(r.columns.huff_draw[a]).toBeGreaterThan(r.columns.huff_draw[b]);
+        expect(r.columns.residents_per_shop[b]).toBeGreaterThan(r.columns.residents_per_shop[a]);
+        expect(L._lenses.catchment(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
