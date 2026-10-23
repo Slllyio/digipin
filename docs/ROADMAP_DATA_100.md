@@ -143,7 +143,7 @@ Each item gives four things:
 88. Schools by board and level (UDISE+ where open) | open | education lens
 89. ✅ Colleges and coaching hubs (Overture) | S3 | student housing demand
 90. ✅ Bank branches and ATMs per resident (financial inclusion) | S3 | finance lens
-91. Post offices and India Post services (DIGIPIN home!) | open | postal lens
+91. ✅ Post offices and India Post services (DIGIPIN home!; reach lens, Overture listings) | open | postal lens
 92. Startups and IT parks (Wikidata, SEZ list) | open | innovation lens
 93. GST registrations by district | open | economy context
 94. Electricity reliability (power-cut reports, ESMI where open) | open | utilities

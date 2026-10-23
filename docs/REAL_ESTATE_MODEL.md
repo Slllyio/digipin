@@ -905,3 +905,15 @@ Using the `landuse` dataset, the lens sums mapped homes, commerce (commercial an
 | Pune | 29 | 1.8 lakh (2.8%) | 24% |
 
 Only a quarter to two-fifths of lived-in land has a use drawn in OpenStreetMap, so the headline says so when coverage is under half.
+
+## Everyday and public services reach (`reach` lens)
+
+`places` now also counts post offices, police stations, fire stations, pharmacies, grocers (grocery, Indian grocery, supermarket and convenience stores) and preschools (preschool and day care) in exact Overture categories. A lived-in block lacks a service when no listed place of that kind lies within its distance: grocer 0.5 km, pharmacy 1 km, preschool 1 km, post office 2 km, police station 2 km, fire station 3 km. These are planning thresholds for the lens, not statutory norms.
+
+| City | Missing 3+ of 6 | Biggest single gap |
+|---|---|---|
+| Lucknow | 17.8 lakh (38%) | post office within 2 km: 31.8 lakh |
+| Delhi | 82.3 lakh (28%) | fire station within 3 km: 1.6 crore |
+| Mumbai | 9.2 lakh (5%) | grocer within 0.5 km: 42.9 lakh |
+
+Overture lists far fewer kirana shops, post offices and fire stations than exist (Delhi has 203 post offices and 39 fire stations listed), so every gap is first a listing gap to check, and the headline says so.

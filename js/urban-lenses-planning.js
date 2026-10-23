@@ -108,7 +108,55 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Everyday and public services reach. A block lacks a service when no listed place of that kind is within its
+    // distance: a short walk for daily needs, a short ride for post offices, police and fire stations.
+    const REACH_KINDS = [
+        { key: 'grocers', name: 'grocer', km: 0.5 }, { key: 'pharmacies', name: 'pharmacy', km: 1 }, { key: 'preschools', name: 'preschool', km: 1 },
+        { key: 'post_offices', name: 'post office', km: 2 }, { key: 'police', name: 'police station', km: 2 }, { key: 'fire_stations', name: 'fire station', km: 3 },
+    ];
+
+    function reach(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        if (!pop || REACH_KINDS.some(k => !c[`places.${k.key}`])) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const missing = new Float64Array(n).fill(NaN), lack = {};
+        for (const i of idx) missing[i] = 0;
+        for (const k of REACH_KINDS) {
+            const a = c[`places.${k.key}`];
+            const near = within(g, Float64Array.from({ length: n }, (_, i) => v(a, i)), k.km);
+            lack[k.key] = idx.filter(i => near[i] <= 0);
+            for (const i of lack[k.key]) missing[i] += 1;
+        }
+        const all = _sumOver(pop, idx, () => true);
+        const stats = REACH_KINDS.map(k => {
+            const p = _sumOver(pop, lack[k.key], () => true);
+            return { label: `No ${k.name} listed within ${k.km} km`, value: `${_people(p)} (${_round(100 * p / Math.max(all, 1), 1)}%)`, raw: Math.round(p) };
+        });
+        const three = idx.filter(i => missing[i] >= 3);
+        const p3 = _sumOver(pop, three, () => true);
+        stats.push({ label: 'People missing three or more of the six', value: `${_people(p3)} (${_round(100 * p3 / Math.max(all, 1), 1)}%)` });
+        spaced(g, three, Float64Array.from({ length: n }, (_, i) => (missing[i] || 0) * 1e6 + v(pop, i))).slice(0, TOP).forEach((i, k) => stats.push({
+            label: `Underserved ${k + 1}: ${g.codes[i]}`,
+            value: `no ${REACH_KINDS.filter(kk => lack[kk.key].includes(i)).map(kk => kk.name).join(', ')}; ${_people(v(pop, i))} residents` }));
+        const worst = REACH_KINDS.map((k, j) => [k, stats[j].raw]).sort((a, b) => b[1] - a[1])[0];
+        return {
+            columns: { services_lacking: missing }, idx, weightKey: 'services_lacking', noHotspots: true,
+            metric: { label: 'People missing three or more everyday or public services nearby', value: Math.round(p3), unit: 'people', higherIs: 'worse' },
+            headline: `${_people(p3)} people (${_round(100 * p3 / Math.max(all, 1), 1)}%) lack three or more of six nearby services; the most common gap is a ${worst[0].name} within ${worst[0].km} km (${_people(worst[1])} people). Overture lists fewer kirana shops, post offices and fire stations than actually exist, so read every gap as a possible listing gap until checked.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'reach', equity: true, title: 'Everyday and public services reach', icon: '📮',
+            question: 'Who lives far from a grocer, pharmacy, preschool, post office, police or fire station?',
+            field: { key: 'services_lacking', label: 'Services of six with none listed nearby', unit: 'count', higherIs: 'worse', ramp: 'reds', domain: [0, 6] },
+            needs: ['places.grocers', 'places.pharmacies', 'places.preschools', 'places.post_offices', 'places.police', 'places.fire_stations', 'population.population'],
+            method: `Overture Maps places in exact categories (grocery, Indian grocery, supermarket and convenience stores; pharmacies; preschools and day care; post offices; police stations; fire stations). A lived-in block lacks a service when no place of that kind lies within its distance: ${REACH_KINDS.map(k => `${k.name} ${k.km} km`).join(', ')}. Distances are straight-line between block centres and are planning thresholds for this lens, not statutory norms. Overture lists fewer post offices and fire stations than India Post and the fire services run, and few kirana shops, so gaps can be listing gaps.`,
+            refs: 'Overture Maps Foundation places; URDPFI Guidelines 2015 (social infrastructure); WorldPop' },
         { id: 'landmix', equity: false, title: 'Land-use mix and homes beside industry', icon: '🧩',
             question: 'How mixed are neighbourhoods, and who lives next to industry?',
             field: { key: 'landuse_mix', label: 'Land-use mix within 1 km (Shannon evenness)', unit: '0-100', higherIs: 'better', ramp: 'viridis', domain: [0, 100] },
@@ -127,7 +175,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

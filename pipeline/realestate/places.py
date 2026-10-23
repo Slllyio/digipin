@@ -9,8 +9,9 @@ Per L7 block (dataset ``places``), counting Overture places with confidence
     offices             IT, software, professional and business services
     finance             banks, ATMs and other financial services
     property_agents     real-estate agents and services (a market-activity proxy)
-    hospitals, colleges, coaching, malls, coworking, hostels
-                        exact Overture categories (see ANCHORS), for demand-anchor lenses
+    hospitals, colleges, coaching, malls, coworking, hostels, post_offices, police, fire_stations,
+                        pharmacies, grocers, preschools
+                        exact Overture categories (see ANCHORS), for demand-anchor and service-reach lenses
     branded_pct         share of places that carry a brand (chains)
     diversity           Shannon evenness of the level-1 mix (0 = one kind, 1 = even)
 
@@ -49,6 +50,12 @@ ANCHORS = {
     "malls": ("shopping_mall",),
     "coworking": ("coworking_space",),
     "hostels": ("hostel",),
+    "post_offices": ("post_office",),
+    "police": ("police_station",),
+    "fire_stations": ("fire_station",),
+    "pharmacies": ("pharmacy",),
+    "grocers": ("grocery_store", "indian_grocery_store", "organic_grocery_store", "supermarket", "convenience_store"),
+    "preschools": ("preschool", "day_care_preschool", "child_care_and_day_care"),
 }
 _ANCHOR_OF = {cat: k for k, cats in ANCHORS.items() for cat in cats}
 
@@ -130,6 +137,12 @@ def cell_dataset(region, rows):
         FieldSpec("malls", "Shopping malls", agg="sum", unit="places", ramp="viridis", higher_is=None),
         FieldSpec("coworking", "Co-working spaces", agg="sum", unit="places", ramp="viridis", higher_is=None),
         FieldSpec("hostels", "Hostels", agg="sum", unit="places", ramp="viridis", higher_is=None),
+        FieldSpec("post_offices", "Post offices", agg="sum", unit="places", ramp="viridis", higher_is="better"),
+        FieldSpec("police", "Police stations", agg="sum", unit="places", ramp="viridis", higher_is="better"),
+        FieldSpec("fire_stations", "Fire stations", agg="sum", unit="places", ramp="viridis", higher_is="better"),
+        FieldSpec("pharmacies", "Pharmacies", agg="sum", unit="places", ramp="viridis", higher_is="better"),
+        FieldSpec("grocers", "Grocery and convenience stores", agg="sum", unit="places", ramp="viridis", higher_is="better"),
+        FieldSpec("preschools", "Preschools and day care", agg="sum", unit="places", ramp="viridis", higher_is="better"),
         FieldSpec("branded_pct", "Share of places that are chains or brands", agg="mean", unit="%", domain=[0, 30], ramp="viridis", higher_is=None),
         FieldSpec("diversity", "Mix of business types (0 = one kind, 1 = even)", agg="mean", unit="0-1", domain=[0, 1], ramp="viridis", higher_is="better"),
     ]
@@ -137,7 +150,7 @@ def cell_dataset(region, rows):
         id="places", title="Businesses and services (Overture)", level=LEVEL, fields=specs, group="Real estate",
         description=f"Overture Maps places (release {RELEASE}, confidence ≥ {MIN_CONF}, not marked closed) counted per "
                     "block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, "
-                    "community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, brand share and business mix. "
+                    "community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, brand share and business mix. "
                     "Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses "
                     "list themselves online: dense in markets, thin in informal and older areas.",
         source="pipeline/realestate/places.py (Overture Maps places theme via DuckDB)",

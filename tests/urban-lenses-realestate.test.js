@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -543,6 +543,19 @@ describe('Real-estate lenses on a hand-made grid', () => {
             'landuse.civic_pct': codes.map(() => 0), 'landuse.industrial_pct': codes.map(() => 30) });
         expect(L._lenses.landmix(ind, {}).stats[2].raw).toBe(1000 * codes.length);
         expect(L._lenses.landmix(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('reach: services with none listed within their distance', () => {
+        const at = (j, k) => codes.map((_, i) => (i === j ? k : 0));
+        const mid = SIZE * 6 + 6;
+        const cols = { grocers: at(mid, 3), pharmacies: at(mid, 1), preschools: at(mid, 1), post_offices: at(mid, 1), police: at(mid, 1), fire_stations: at(mid, 1) };
+        const f = L.frameFrom(codes, { ...base, ...Object.fromEntries(Object.entries(cols).map(([k, v]) => [`places.${k}`, v])) });
+        const r = L._lenses.reach(f, {});
+        expect(r.columns.services_lacking[mid]).toBe(0);
+        expect(r.columns.services_lacking[0]).toBeGreaterThan(0);
+        expect(r.stats[0].label).toBe('No grocer listed within 0.5 km');
+        expect(r.stats[5].raw).toBe(0);                                        // a 3 km fire radius covers the 3 km grid
+        expect(L._lenses.reach(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
