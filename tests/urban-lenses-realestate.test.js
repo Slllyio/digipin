@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'burning', 'ground', 'treeplant']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'burning', 'ground', 'treeplant', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -232,6 +232,36 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(L._lenses.flood2050(L.frameFrom(codes, base), {})).toBeNull();
     });
 
+    it('jobsmap: jobs sum to resident workers, centres where floor space and places concentrate', () => {
+        const k = v => codes.map(() => v);
+        const hub = i => i === SIZE * 6 + 6;
+        const f = L.frameFrom(codes, { ...base, 'built_up.volume_m3_m2': codes.map((_, i) => (hub(i) ? 10 : 1)), 'built_up.nonres_share_pct': codes.map((_, i) => (hub(i) ? 80 : 10)),
+            'places.places': codes.map((_, i) => (hub(i) ? 500 : 5)) }, { city: 'delhi' });
+        const r = L._lenses.jobsmap(f, {});
+        const total = r.columns.jobs_est.reduce((s, v) => s + (Number.isFinite(v) ? v : 0), 0);
+        expect(total).toBeCloseTo(n * 1000 * 0.353, 0);
+        expect(r.stats.find(x => /Employment centre 1/.test(x.label)).label).toContain(codes[SIZE * 6 + 6]);
+        expect(r.columns.jobs_est[SIZE * 6 + 6]).toBeGreaterThan(50 * r.columns.jobs_est[0]);
+        expect(L._lenses.jobsmap(L.frameFrom(codes, base), {})).toBeNull();
+        void k;
+    });
+
+    it('lakehealth: joins water blocks into lakes and flags lost water, algae and weeds', () => {
+        const lakeA = i => i === 0 || i === 1 || i === SIZE;            // three touching blocks, top-left
+        const lakeB = i => i === SIZE * 10 + 10 || i === SIZE * 10 + 11; // two blocks, bottom-right
+        const w0 = codes.map((_, i) => (lakeA(i) ? 80 : lakeB(i) ? 60 : 0));
+        const w1 = codes.map((_, i) => (lakeA(i) ? 40 : lakeB(i) ? 60 : 0));
+        const nd = codes.map((_, i) => (lakeA(i) ? 0.3 : lakeB(i) ? 0 : NaN));
+        const wd = codes.map((_, i) => (lakeB(i) ? 50 : lakeA(i) ? 0 : NaN));
+        const f = L.frameFrom(codes, { ...base, 'lakes.water_2019_pct': w0, 'lakes.water_now_pct': w1, 'lakes.chlorophyll_ndci': nd, 'lakes.weed_pct': wd }, { city: 'delhi' });
+        const r = L._lenses.lakehealth(f, {});
+        expect(r.stats[0].value).toMatch(/^2:/);
+        expect(r.columns.lake_problems[0]).toBe(2);                    // lost half its water and algae-rich
+        expect(r.columns.lake_problems[SIZE * 10 + 10]).toBe(1);       // weed-choked only
+        expect(r.headline).toMatch(/1 are algae-rich, 1 are choked by weeds and 1 lost a fifth/);
+        expect(L._lenses.lakehealth(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
     it('treeplant: canopy gap in trees, room on open land, hot blocks first', () => {
         const k = v => codes.map(() => v);
         const f = L.frameFrom(codes, { ...base, 'vegetation.tree_canopy_pct': k(10), 'land_cover.grass_pct': codes.map((_, i) => (col(i) < 6 ? 20 : 0)),
@@ -295,10 +325,10 @@ describe('Real-estate lenses on a hand-made grid', () => {
     });
 
     it('lookalikeText lists matches and handles a missing block', () => {
-        const t = RE.lookalikeText({ fromCity: 'delhi', toCity: 'pune', ref: { code: '39J4M98' }, matches: [{ code: '4FP493F', similarity: 72, people: 1200 }] });
+        const t = UrbanLenses.lookalikeText({ fromCity: 'delhi', toCity: 'pune', ref: { code: '39J4M98' }, matches: [{ code: '4FP493F', similarity: 72, people: 1200 }] });
         expect(t).toMatch(/look most like 39J4M98/);
         expect(t).toMatch(/1\. 4FP493F: 72% match/);
-        expect(RE.lookalikeText(null)).toMatch(/no satellite embedding/);
+        expect(UrbanLenses.lookalikeText(null)).toMatch(/no satellite embedding/);
     });
 
     it('coolroof: dark roof area, residents under dark roofs, priority for hot poor low-rise blocks', () => {

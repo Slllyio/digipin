@@ -52,6 +52,7 @@ loadGlobalScript('js/urban-insights.js', ['UrbanInsights']);
 loadGlobalScript('js/urban-lenses.js', ['UrbanLenses']);
 loadGlobalScript('js/urban-lenses-mobility.js', ['UrbanLensesMobility']);
 loadGlobalScript('js/urban-lenses-realestate.js', ['UrbanLensesRealEstate']);
+loadGlobalScript('js/urban-lenses-environment.js', ['UrbanLensesEnvironment']);
 loadGlobalScript('js/property-report.js', ['PropertyReport']);
 loadGlobalScript('js/urban-agents.js', ['UrbanAgents']);
 loadGlobalScript('js/lenses-panel.js', ['LensesPanel']);

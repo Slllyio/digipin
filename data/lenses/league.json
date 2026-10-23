@@ -252,6 +252,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 5.1,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 462745,
@@ -288,11 +294,17 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 5.1,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 2,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 48.2,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -642,6 +654,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 7.1,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 978469,
@@ -678,11 +696,17 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 7.1,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 52,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 53.2,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -1032,6 +1056,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 4,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 379613,
@@ -1068,11 +1098,17 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 4,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 5,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 65.2,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -1416,6 +1452,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 6.4,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 1013336,
@@ -1452,11 +1494,17 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 6.4,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 39,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 65.8,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -1806,6 +1854,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 5,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 12817557,
@@ -1842,11 +1896,11 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 5,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 55.8,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2184,6 +2238,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 1.8,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 27567,
@@ -2220,11 +2280,17 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 1.8,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 0,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 70.5,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2568,6 +2634,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 7.2,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 514970,
@@ -2604,11 +2676,17 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 7.2,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 33,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 57.6,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2958,6 +3036,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 4,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 906146,
@@ -2994,11 +3078,11 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 4,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 57.2,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -3342,6 +3426,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 6.7,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 196950,
@@ -3378,11 +3468,17 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 6.7,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 1,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 63.8,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -3726,6 +3822,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 3.8,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 11549367,
@@ -3762,11 +3864,17 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 3.8,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 23,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 51.1,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -4104,6 +4212,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 5.1,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 536716,
@@ -4140,11 +4254,17 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 5.1,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 0,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 62.7,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -4494,6 +4614,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 4.9,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 11341942,
@@ -4530,11 +4656,17 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 4.9,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 21,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 43.8,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",
@@ -4884,6 +5016,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 7.7,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 2150850,
@@ -4920,11 +5058,17 @@
      "unit": "trees",
      "higherIs": null
     },
-    "vitality": {
-     "label": "Businesses and services per 1,000 residents",
-     "value": 7.7,
-     "unit": "per 1,000",
-     "higherIs": "better"
+    "lakehealth": {
+     "label": "Lakes with algae, weeds or lost water",
+     "value": 12,
+     "unit": "lakes",
+     "higherIs": "worse"
+    },
+    "jobsmap": {
+     "label": "Share of jobs in the busiest tenth of blocks",
+     "value": 59.5,
+     "unit": "%",
+     "higherIs": null
     },
     "encroach": {
      "label": "Former water now built up",

@@ -13,7 +13,7 @@
 const PropertyReport = (() => {
     'use strict';
     const SCHEMA = 'digipin.property/1';
-    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'vitality', 'coolroof'];
+    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'vitality', 'coolroof', 'jobsmap'];
     const EXTRA = ['land_value.prem_jobs_pct', 'land_value.prem_metro_pct', 'land_value.prem_amenity_pct', 'land_value.prem_neigh_pct',
         'land_value.prem_green_pct', 'land_value.prem_risk_pct', 'land_value.prem_noise_pct', 're_supply.far_now', 're_supply.headroom_m2',
         'building_dynamics.settled_year', 'building_dynamics.highrise_pct', 'building_dynamics.nonres_pct', 'building_dynamics.accel',
@@ -52,6 +52,7 @@ const PropertyReport = (() => {
             ]),
             sec('Access', [
                 row('Job reach', fin(v.jobsPct) ? `${th(v.jobsPct)} percentile in the city` : null),
+                row('Jobs within 3 km per resident worker', fin(v.jobRatio) ? `${r1(v.jobRatio, 1)}${v.jobRatio < 0.5 ? ' (a bedroom area: most people commute out)' : v.jobRatio >= 1.5 ? ' (an employment hub)' : ''}` : null, 'estimated from floor space and businesses'),
                 row('Walk to metro', fin(v.metro) ? (v.metro > 60 ? 'over an hour' : `${r1(v.metro)} min`) : null),
                 row('Upcoming metro station', fin(v.futureWalk) ? `${r1(v.futureWalk)} min walk once it opens, about +${r1(v.metroUp, 1)}% land value` : null, 'Wikidata stations under construction or proposed'),
             ]),
@@ -155,7 +156,7 @@ const PropertyReport = (() => {
         const v = {
             value: vi, valuePct: pct(c['land_value.value_index'], idx, i), rate: UrbanLenses.landRate ? UrbanLenses.landRate(city, vi) : null,
             hpi: a ? a.hpi_yoy_pct : null, hpiNote: a ? `NHB RESIDEX ${a.period}${a.scope === 'city' ? '' : ' (50-city composite)'}` : '',
-            jobsPct: pct(c['job_access.jobs_car_pct'], idx, i), metro: at('rail_access.metro_walk_min'),
+            jobsPct: pct(c['job_access.jobs_car_pct'], idx, i), jobRatio: col('jobsmap', 'jobs_per_worker_3km'), metro: at('rail_access.metro_walk_min'),
             newFloor: at('re_supply.new_floor_m2'), accel: at('building_dynamics.accel'), dw: at('building_dynamics.dw_built_change'),
             far: at('re_supply.far_now'), headroom: at('re_supply.headroom_m2'), vacant: at('re_supply.vacant_ha'), gap: col('housinggap', 'housing_gap'),
             settled: at('building_dynamics.settled_year'), highrise: at('building_dynamics.highrise_pct'), nonres: at('building_dynamics.nonres_pct'),

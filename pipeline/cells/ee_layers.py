@@ -1206,14 +1206,17 @@ def flood_future(region):
     _, bbox = _bbox(region)
     level = 6
 
-    def river(scen):
-        return ee.ImageCollection([_aq(ee, f"inunriver_{scen}_{g}_2050_rp00100") for g in AQ_RIVER_GCMS]).mean()
+    def river(scen, year=2050):
+        return ee.ImageCollection([_aq(ee, f"inunriver_{scen}_{g}_{year}_rp00100") for g in AQ_RIVER_GCMS]).mean()
 
     layers = {
         "rn": _aq(ee, "inunriver_historical_000000000WATCH_1980_rp00100"), "r5": river("rcp4p5"), "r8": river("rcp8p5"),
         # Coastal with land subsidence, the Aqueduct default for 2050; "now" is the 2010 baseline without it
         "cn": _aq(ee, "inuncoast_historical_nosub_hist_rp0100_0"), "c5": _aq(ee, "inuncoast_rcp4p5_wtsub_2050_rp0100_0"),
         "c8": _aq(ee, "inuncoast_rcp8p5_wtsub_2050_rp0100_0"),
+        # The long view: 2080, when most of today's buildings will still stand
+        "r80": river("rcp4p5", 2080), "c80": _aq(ee, "inuncoast_rcp4p5_wtsub_2080_rp0100_0"),
+        "c80h": _aq(ee, "inuncoast_rcp8p5_wtsub_2080_rp0100_0"),
     }
     bands = []
     for k, im in layers.items():
@@ -1235,10 +1238,16 @@ def flood_future(region):
              "coast_pct_2050_high": pct("c8"), "coast_depth_2050_m": depth("c5")}
         r["any_pct_now"] = max(r["river_pct_now"], r["coast_pct_now"])
         r["any_pct_2050"] = max(r["river_pct_2050"], r["coast_pct_2050"])
+        r.update({"river_pct_2080": pct("r80"), "coast_pct_2080": pct("c80"), "coast_pct_2080_high": pct("c80h")})
+        r["any_pct_2080"] = max(r["river_pct_2080"], r["coast_pct_2080"])
         rows[c] = r                 # keep dry cells: the lens counts their residents as safe
     specs = [
         FieldSpec("any_pct_now", "1-in-100-year flood (river or sea), now", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
         FieldSpec("any_pct_2050", "1-in-100-year flood (river or sea) by 2050, RCP4.5", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("any_pct_2080", "1-in-100-year flood (river or sea) by 2080, RCP4.5", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("river_pct_2080", "River 100-year flood by 2080 (RCP4.5, 5 models)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("coast_pct_2080", "Coastal 100-year flood by 2080 (RCP4.5, sea-level rise and subsidence)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
+        FieldSpec("coast_pct_2080_high", "Coastal 100-year flood by 2080 (RCP8.5, with subsidence)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
         FieldSpec("river_pct_now", "River 100-year flood, now (1980 baseline)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
         FieldSpec("river_pct_2050", "River 100-year flood by 2050 (RCP4.5, 5 models)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
         FieldSpec("river_pct_2050_high", "River 100-year flood by 2050 (RCP8.5)", agg="mean", unit="% of area", domain=[0, 100], ramp="blues", higher_is="worse"),
@@ -1250,7 +1259,7 @@ def flood_future(region):
     ]
     spec = DatasetSpec(
         id="flood_future", title="Flood 2050 (WRI Aqueduct)", level=level, fields=specs, group=GROUP,
-        description="1-in-100-year river and coastal flooding now and by 2050 from WRI Aqueduct Floods v2 (~1 km). "
+        description="1-in-100-year river and coastal flooding now, by 2050 and by 2080 from WRI Aqueduct Floods v2 (~1 km). "
                     "River: GLOFRIS driven by five CMIP5 models (RCP4.5 and 8.5) against a 1980 baseline. Coast: "
                     "sea-level rise, storm surge and land subsidence against 2010. No flood defences are modelled and "
                     f"1 km cannot see drains or embankments; a cell counts as flooded where depth > {AQ_WET_M} m.",
@@ -1528,6 +1537,70 @@ def subsoil(region):
     return spec, _table(level, rows, specs)
 
 
+# ── lakes: extent, algae, turbidity and weeds (Sentinel-2, dry season) ──
+
+LAKE_FROM = 2019                 # first full Sentinel-2 L2A year over India
+LAKE_MONTHS = (2, 4)             # Feb–Apr: after the monsoon fill, before the pre-monsoon low
+
+
+def lakes(region):
+    """Lake health per block: open water now and in 2019, chlorophyll (NDCI), turbidity (NDTI) and weed cover."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+
+    def med(y):
+        col = _year(ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED").filterBounds(geom), y, *LAKE_MONTHS) \
+            .filter(ee.Filter.lt("CLOUDY_PIXEL_PERCENTAGE", 30))
+
+        def prep(im):
+            scl = im.select("SCL")
+            ok = scl.neq(3).And(scl.neq(8)).And(scl.neq(9)).And(scl.neq(10))
+            return im.updateMask(ok).select(["B3", "B4", "B5", "B8", "B11"]).divide(10000)
+        return col.map(prep).median()
+    a, b = med(LAKE_FROM), med(YEAR)
+    mndwi = lambda im: im.normalizedDifference(["B3", "B11"])
+    ndvi = lambda im: im.normalizedDifference(["B8", "B4"])
+    # MNDWI > 0.2 rather than 0: city roofs and shadows creep over zero. Water quality only on clear water (NDVI < 0.1).
+    w0, w1 = mndwi(a).gt(0.2), mndwi(b).gt(0.2)
+    clear = w1.And(ndvi(b).lt(0.1))
+    ndci = b.normalizedDifference(["B5", "B4"]).updateMask(clear)
+    ndti = b.normalizedDifference(["B4", "B3"]).updateMask(clear)
+    weeds = ndvi(b).gt(0.3).And(w0).updateMask(w0)   # 2019 water now green: hyacinth or reeds
+    img = ee.Image.cat([w0.rename("w0"), w1.rename("w1"), ndci.rename("ndci"), ndti.rename("ndti"), weeds.rename("weeds")])
+    raw = gee.fetch(gee.to_cells(img, 10), bbox, level, tile=64)
+    rows = {}
+    for c, x in raw.items():
+        w0v, w1v = x.get("w0") or 0, x.get("w1") or 0
+        if max(w0v, w1v) < 0.02:
+            continue
+        rows[c] = {"water_2019_pct": _r(100 * w0v), "water_now_pct": _r(100 * w1v), "water_change_pp": _r(100 * (w1v - w0v)),
+                   "chlorophyll_ndci": _r(x.get("ndci"), 3), "turbidity_ndti": _r(x.get("ndti"), 3),
+                   "weed_pct": _r(100 * x["weeds"]) if x.get("weeds") is not None else None}
+    specs = [
+        FieldSpec("water_2019_pct", f"Open water, Feb–Apr {LAKE_FROM}", agg="mean", unit="% of block", domain=[0, 100], ramp="blues"),
+        FieldSpec("water_now_pct", f"Open water, Feb–Apr {YEAR}", agg="mean", unit="% of block", domain=[0, 100], ramp="blues"),
+        FieldSpec("water_change_pp", f"Change in open water {LAKE_FROM}→{YEAR}", agg="mean", unit="points", domain=[-40, 40], ramp="diverging",
+                  higher_is="better"),
+        FieldSpec("chlorophyll_ndci", "Chlorophyll in the water (NDCI; above 0.1 is algae-rich)", agg="mean", unit="index",
+                  domain=[-0.1, 0.3], ramp="greens", higher_is="worse"),
+        FieldSpec("turbidity_ndti", "Turbidity (NDTI; higher is muddier)", agg="mean", unit="index", domain=[-0.2, 0.2], ramp="reds",
+                  higher_is="worse"),
+        FieldSpec("weed_pct", f"Share of {LAKE_FROM} water now covered by weeds or reeds", agg="mean", unit="%", domain=[0, 100],
+                  ramp="greens", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="lakes", title="Lake health (Sentinel-2)", level=level, fields=specs, group=GROUP,
+        description=f"Dry-season (Feb–Apr) Sentinel-2 L2A medians for {LAKE_FROM} and {YEAR}: open water (MNDWI > 0.2), the "
+                    "normalised difference chlorophyll index (Mishra & Mishra 2012) and turbidity index (Lacaux et al. 2007) "
+                    f"over today's clear water (NDVI < 0.1), and the share of {LAKE_FROM} water that is now green (NDVI > 0.3: water hyacinth, "
+                    "reeds or infill). Only blocks with at least 2% water in either year are kept. One season's median "
+                    "swings with the monsoon before it, so read small changes as noise.",
+        source="Copernicus Sentinel-2 L2A via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="Copernicus open licence", default_field="water_change_pp")
+    return spec, _table(level, rows, specs)
+
+
 # ── roofs: how much sun they reflect (Sentinel-2 albedo on Open Buildings roofs) ──
 
 # Thresholds are for 10 m pixel albedo, which blends roofs with parapets, tanks and shade: the median Lucknow roof
@@ -1598,7 +1671,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes,
 }
 
 

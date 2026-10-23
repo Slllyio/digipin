@@ -545,3 +545,44 @@ It then checks how many of those trees fit on half of the block's grass, shrub a
 | Chennai | 24 lakh | 2.8 lakh (12%) |
 
 The trees that don't fit need street trees, rooftop and courtyard planting, or parks on reclaimed land.
+
+## Where the jobs are
+
+The `jobsmap` lens estimates jobs per block. It starts from the city total, which is residents × 35.3%, the Census 2011 urban work participation rate. It assumes the city has as many jobs as resident workers.
+
+It spreads that total over blocks using two weights of equal size:
+
+- **Floor space:** the block's share of non-residential floor area. This is GHSL built volume × the non-residential share ÷ 3.5 m per storey.
+- **Businesses:** the block's share of Overture places.
+
+The lens then compares jobs with resident workers within 3 km. Below 0.5 jobs per worker counts as a bedroom area, and 1.5 or more as job-rich.
+
+| City | Jobs in the busiest tenth of blocks | Residents in bedroom areas |
+|---|---|---|
+| Delhi | 56% | 96 lakh (33%) |
+| Bengaluru | 53% | 71 lakh (54%) |
+| Mumbai | 44% | 8 lakh (5%) |
+
+The property report shows the jobs-to-workers ratio within 3 km.
+
+## Flood: the 2080 view
+
+The `flood_future` dataset now also holds 2080 fields: `any_pct_2080`, `river_pct_2080`, `coast_pct_2080` and `coast_pct_2080_high`. They come from Aqueduct Floods, under RCP4.5 with subsidence, plus RCP8.5 for the coast.
+
+The `flood2050` lens adds a long-view line. Kolkata goes from 26.5 lakh residents in the flood zone by 2050 to 36.3 lakh by 2080, and 30.5 lakh of those are at risk from the sea.
+
+## Lake health
+
+The `lakes` dataset is at L7 and built by `pipeline/cells/ee_layers.py --layer lakes`. It uses Sentinel-2 dry-season (Feb–Apr) medians for 2019 and 2025, and holds:
+
+- **Open water:** MNDWI above 0.2.
+- **Chlorophyll index (NDCI) and turbidity (NDTI):** measured over clear water only.
+- **Weeds:** the share of 2019 water that is now vegetation.
+
+The `lakehealth` lens joins water blocks that touch into lakes. It then flags each lake for three problems:
+
+- **Lost water:** 20% or more of its open water gone since 2019.
+- **Algae:** NDCI of 0.1 or more.
+- **Weeds:** 30% or more of its 2019 water surface choked.
+
+In Bengaluru, it maps 66 lakes. Of these, 41 are algae-rich, 16 are choked by weeds and 12 have lost a fifth or more of their water. About 5.4 lakh people live within 500 m of a lake with at least one problem.

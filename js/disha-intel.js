@@ -28,6 +28,8 @@ const DishaIntel = (() => {
             floodloss: /\b(flood (damage|losses?|cost)|expected (annual )?(damage|loss)|climate risk to (property|buildings|homes)|(property|buildings?|homes?|real estate)\b.{0,25}\b(climate|flood) risk|value at risk|insur\w*)\b/i,
             housinggap: /\b(housing (gap|shortages?|deficits?|demand|need)|shortage of (homes|housing)|enough (homes|housing)|(homes|houses|housing) (needed|required) by 2030|how many (homes|houses) (are )?needed)\b/i,
             coolroof: /\b(cool[\s-]?roofs?|white[\s-]?(roofs?|paint\w*|wash\w*)|roof (albedo|colou?r|paint\w*|coating)|dark roofs?|(tin|metal|concrete) roofs?\b.{0,20}\b(hot|heat)|reflective (roofs?|paint|coating))\b/i,
+            jobsmap: /\b(where (are|is) (the )?jobs|employment (centres?|centers?|hubs?|density)|job (density|hubs?|centres?|map)|bedroom (areas?|suburbs?|communit\w*)|jobs[\s-]?(housing|homes) balance|business districts?|cbd)\b/i,
+            lakehealth: /\b(lakes?|ponds?|tanks?|reservoirs?)\b.{0,30}\b(health|algae|algal|weeds?|hyacinth|froth\w*|foam\w*|shrink\w*|shrank|dying|polluted|green|dry(ing)?)\b|\b(lake|water) (quality|health)\b/i,
             treeplant: /\b(plant(ing)? (trees|saplings)|tree[\s-]?planting|how many trees|trees? (needed|to plant)|afforest\w*|urban forest\w*|miyawaki)\b/i,
             ground: /\b(black cotton|expansive (soil|clay)|soil (test|type|conditions?|for (building|construction|foundations?))|ground conditions?|foundations?|seismic|earthquake (zone|risk)|bearing capacity)\b/i,
             burning: /\b(open burning|(garbage|waste|trash|stubble|crop[\s-]?residue|parali|landfill) (burning|fires?)|burning (garbage|waste|stubble|crop)|fires? (near|around)|active fires?|firms)\b/i,
