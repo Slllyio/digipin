@@ -318,6 +318,12 @@
      "unit": "m²",
      "higherIs": "better"
     },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 53.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 2,
@@ -743,6 +749,12 @@
      "value": 2.1,
      "unit": "m²",
      "higherIs": "better"
+    },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 44.7,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -1170,6 +1182,12 @@
      "unit": "m²",
      "higherIs": "better"
     },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 54.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 5,
@@ -1589,6 +1607,12 @@
      "value": 0.6,
      "unit": "m²",
      "higherIs": "better"
+    },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 65.5,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -2016,6 +2040,12 @@
      "unit": "m²",
      "higherIs": "better"
     },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 45.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 37,
@@ -2416,6 +2446,12 @@
      "label": "Farmland turned built-up since 2018",
      "value": 5,
      "unit": "km²",
+     "higherIs": "worse"
+    },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 50.6,
+     "unit": "%",
      "higherIs": "worse"
     },
     "lakehealth": {
@@ -2837,6 +2873,12 @@
      "value": 1.2,
      "unit": "m²",
      "higherIs": "better"
+    },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 33.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3264,6 +3306,12 @@
      "unit": "m²",
      "higherIs": "better"
     },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 57.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 9,
@@ -3683,6 +3731,12 @@
      "value": 1,
      "unit": "m²",
      "higherIs": "better"
+    },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 36.8,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -4104,6 +4158,12 @@
      "unit": "m²",
      "higherIs": "better"
     },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 50.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 23,
@@ -4517,6 +4577,12 @@
      "value": 2.5,
      "unit": "m²",
      "higherIs": "better"
+    },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 40,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -4950,6 +5016,12 @@
      "unit": "km²",
      "higherIs": "better"
     },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 84.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 21,
@@ -5375,6 +5447,12 @@
      "value": 1.2,
      "unit": "m²",
      "higherIs": "better"
+    },
+    "runoff": {
+     "label": "Share of 2025's wettest-day rain that runs off",
+     "value": 55.8,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",

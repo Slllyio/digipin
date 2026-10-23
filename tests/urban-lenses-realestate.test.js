@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -341,6 +341,21 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.mangrove_lost_ha[0]).toBeCloseTo(40 * km2, 6);
         expect(r.stats.find(x => /Mangrove loss 1/.test(x.label))).toBeTruthy();
         expect(L._lenses.mangrove(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('runoff: SCS curve number on the wettest day, the greening what-if, flood-first blocks', () => {
+        const k = v => codes.map(() => v);
+        const built = codes.map((_, i) => (col(i) < 6 ? 100 : 0));
+        const f = L.frameFrom(codes, { ...base, 'land_cover.built_pct': built, 'land_cover.grass_pct': built.map(b => 100 - b),
+            'rainfall.rain_max_day_mm': k(100), 'soil.sand_pct': k(40), 'soil.clay_pct': k(20),
+            'waterlogging.waterlogging_index': codes.map((_, i) => (i === SIZE * 6 + 6 ? 60 : 10)) }, { city: 'delhi' });
+        const r = L._lenses.runoff(f, {});
+        const q = (p, cn) => { const S = 25400 / cn - 254; return (p - 0.2 * S) ** 2 / (p + 0.8 * S); };
+        expect(r.columns.runoff_mm[0]).toBeCloseTo(q(100, 92), 6);                 // all built, soil group B
+        expect(r.columns.runoff_mm[SIZE - 1]).toBeCloseTo(q(100, 61), 6);          // all grass, group B
+        expect(r.stats.find(x => /Floods first 1/.test(x.label)).label).toContain(codes[SIZE * 6 + 6]);
+        expect(r.headline).toMatch(/cut that by \d/);
+        expect(L._lenses.runoff(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

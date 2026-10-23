@@ -554,6 +554,78 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Storm runoff. SCS curve number (USDA TR-55, average wetness) per land cover and hydrologic soil group, on the
+    // city's wettest day of the year. Soil group from SoilGrids texture: A sand ≥ 70% and clay < 10%, D clay ≥ 40%,
+    // C clay ≥ 27%, else B. GREEN_SWAP is the share of each block's built area that becomes permeable in the what-if.
+    const CN = { built: [89, 92, 94, 95], tree: [30, 55, 70, 77], shrub: [35, 56, 70, 77], grass: [39, 61, 74, 80],
+        crop: [67, 78, 85, 89], bare: [77, 86, 91, 94], water: [98, 98, 98, 98] };
+    const GREEN_SWAP = 0.1;
+
+    function _soilGroup(sand, clay) {
+        if (!_fin(sand) || !_fin(clay)) return 1;
+        if (sand >= 70 && clay < 10) return 0;
+        if (clay >= 40) return 3;
+        if (clay >= 27) return 2;
+        return 1;
+    }
+
+    function _scsQ(p, cn) {
+        const sMax = 25400 / cn - 254, ia = 0.2 * sMax;
+        return p > ia ? (p - ia) ** 2 / (p + 0.8 * sMax) : 0;
+    }
+
+    function runoff(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const lc = k => c[`land_cover.${k}_pct`];
+        const rain = c['rainfall.rain_max_day_mm'], sand = c['soil.sand_pct'], clay = c['soil.clay_pct'], wl = c['waterlogging.waterlogging_index'];
+        if (!lc('built') || !rain) return null;
+        const keys = { built: ['built'], tree: ['tree'], shrub: ['shrub'], grass: ['grass'], crop: ['crop'], bare: ['bare'], water: ['water', 'wetland', 'mangrove'] };
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(lc('built')[i]) && _fin(rain[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const m2 = g.cellKm2 * 1e6, qmm = new Float64Array(n).fill(NaN), vol = new Float64Array(n).fill(NaN);
+        let rainAll = 0, qAll = 0, saved = 0, pSum = 0;
+        for (const i of idx) {
+            const sg = _soilGroup(sand && sand[i], clay && clay[i]);
+            let tot = 0, cnw = 0, built = 0;
+            for (const [k, ks] of Object.entries(keys)) {
+                let sh = 0;
+                for (const kk of ks) { const a = lc(kk); if (a && _fin(a[i])) sh += a[i]; }
+                tot += sh; cnw += sh * CN[k][sg];
+                if (k === 'built') built = sh;
+            }
+            if (tot <= 0) continue;
+            const cn = cnw / tot, p = rain[i];
+            const q = _scsQ(p, cn);
+            const cn2 = (cnw - GREEN_SWAP * built * (CN.built[sg] - CN.grass[sg])) / tot;
+            qmm[i] = q; vol[i] = q / 1000 * m2;
+            rainAll += p / 1000 * m2; qAll += vol[i]; saved += (q - _scsQ(p, cn2)) / 1000 * m2; pSum += p;
+        }
+        if (qAll <= 0) return null;
+        const pMean = pSum / idx.length;
+        const stats = [
+            { label: 'Wettest day of 2025 (block average)', value: `${_round(pMean)} mm` },
+            { label: 'Rain that runs off instead of soaking in on that day', value: `${_round(100 * qAll / rainAll)}% (${_round(qAll / 1e6, 1)} million m³)`, raw: Math.round(qAll) },
+            { label: `Runoff avoided if ${GREEN_SWAP * 100}% of every block's built area were made permeable (grass, permeable paving, rain gardens)`, value: `${_round(saved / 1e6, 2)} million m³ (${_round(100 * saved / qAll)}%)` },
+        ];
+        if (wl) {
+            const wet = idx.filter(i => _fin(wl[i]) && wl[i] >= WLOG_HIGH);
+            if (wet.length) {
+                const up = within(g, Float64Array.from(vol, v => (_fin(v) ? v : 0)), 1);
+                spaced(g, wet, up).slice(0, 3).forEach((i, k) => stats.push({ label: `Floods first ${k + 1}: ${g.codes[i]}`,
+                    value: `waterlogging index ${_round(wl[i])}; ${_round(up[i] / 1e3)} thousand m³ runs off within 1 km` }));
+            }
+        }
+        spaced(g, idx.filter(i => qmm[i] > 0), qmm).slice(0, 3).forEach((i, k) => stats.push({ label: `Most sealed ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(qmm[i])} of ${_round(rain[i])} mm runs off` }));
+        return {
+            columns: { runoff_mm: qmm, runoff_m3: vol }, idx, weightKey: 'runoff_m3', noHotspots: true,
+            metric: { label: 'Share of 2025\'s wettest-day rain that runs off', value: _round(100 * qAll / rainAll), unit: '%', higherIs: 'worse' },
+            headline: `On the wettest day of 2025 (${_round(pMean)} mm), ${_round(100 * qAll / rainAll)}% of the rain runs off sealed and saturated ground, ${_round(qAll / 1e6, 1)} million m³ for the drains; making a tenth of the built area permeable would cut that by ${_round(100 * saved / qAll)}%.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -752,6 +824,13 @@ const UrbanLensesEnvironment = (() => {
             needs: ['mangroves.mangrove_1996_pct', 'mangroves.mangrove_2020_pct', 'mangroves.mangrove_lost_pct', 'growth.built_change_pp', 'population.population'],
             method: `Global Mangrove Watch v3 extent polygons (25 m, ALOS PALSAR radar and Landsat) for 1996 and 2020, rasterised per block. Lost = mangrove in 1996 and not in 2020; some stands also grew back or spread on new mud, so net change is smaller than loss. Residents within ${SURGE_KM} km of a mangrove block are counted as getting some storm-surge and erosion shelter; the real buffer depends on belt width. Only cities whose map extent reaches mangroves (Mumbai) have this layer.`,
             refs: 'Bunting et al. 2022 (Global Mangrove Watch v3, Remote Sensing); Menéndez et al. 2020 (global flood protection benefits of mangroves); Bombay High Court 2018 order protecting Maharashtra mangroves' },
+        { id: 'runoff', equity: false, title: 'Storm runoff', icon: '🌧️',
+            question: 'How much of a heavy day\'s rain runs off into the drains, from where, and how much would greening help?',
+            field: { key: 'runoff_mm', label: 'Runoff on the wettest day of 2025', unit: 'mm', higherIs: 'worse', ramp: 'blues' },
+            extra: [{ key: 'runoff_m3', label: 'Runoff volume from the block', unit: 'm³', higherIs: 'worse', ramp: 'blues' }],
+            needs: ['land_cover.built_pct', 'land_cover.tree_pct', 'land_cover.shrub_pct', 'land_cover.grass_pct', 'land_cover.crop_pct', 'land_cover.bare_pct', 'land_cover.water_pct', 'land_cover.wetland_pct', 'land_cover.mangrove_pct', 'rainfall.rain_max_day_mm', 'soil.sand_pct', 'soil.clay_pct', 'waterlogging.waterlogging_index'],
+            method: `SCS curve-number runoff Q = (P − 0.2S)² / (P + 0.8S), S = 25400/CN − 254 mm, with P the block's wettest day of 2025 (CHIRPS v2, ~5 km) and CN the land-cover-weighted TR-55 curve number for average wetness (ESA WorldCover 2021 classes; built 89–95, trees 30–77, grass 39–80, crops 67–89, bare 77–94 across soil groups A–D) on the SoilGrids hydrologic soil group (A sand ≥ 70% and clay < 10%; D clay ≥ 40%; C clay ≥ 27%; else B). The what-if turns ${GREEN_SWAP * 100}% of each block's built cover into grass-like cover. Blocks where floods start are those with a waterlogging index of ${WLOG_HIGH}+, ranked by runoff generated within 1 km. Drains, slope routing and storage are not modelled.`,
+            refs: 'USDA NRCS 1986 (TR-55 Urban Hydrology for Small Watersheds); Hawkins et al. 2009 (curve number hydrology); Funk et al. 2015 (CHIRPS); Hengl et al. 2017 (SoilGrids)' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -767,7 +846,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

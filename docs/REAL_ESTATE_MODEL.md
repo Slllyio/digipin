@@ -676,3 +676,22 @@ The `mangrove` lens covers four things:
 - the residents within 1 km of mangroves, who get some shelter from storm surge.
 
 Mumbai had 82.8 km² of mangroves in 1996 and 80.8 km² in 2020. 4.4 km² of the 1996 stands have gone, and regrowth elsewhere offsets most of that. 38 lakh residents live within 1 km of mangroves.
+
+## Storm runoff
+
+The `runoff` lens applies the SCS curve-number method to each block, using the wettest day of 2025 from CHIRPS. Each block's curve number is weighted by its ESA WorldCover land-cover shares, and its SoilGrids texture sets the hydrologic soil group.
+
+The lens reports:
+
+- the share of that day's rain that runs off, and its volume;
+- the runoff saved if a tenth of every block's built cover were made permeable;
+- the waterlogging hotspots (index 50 or more) that receive the most runoff from within 1 km.
+
+| City | Wettest day of 2025 | Share that ran off | Volume | Cut from greening 10% of built area |
+|---|---|---|---|---|
+| Delhi | 72 mm | 46% | 88 million m³ | 5% |
+| Mumbai | 235 mm | 85% | 168 million m³ | 1% |
+| Bengaluru | 63 mm | 45% | | 6% |
+| Chennai | 75 mm | 66% | | |
+
+On Mumbai's 235 mm day, soil saturates whatever the cover, so making surfaces permeable helps little there. Storage and drains matter more.

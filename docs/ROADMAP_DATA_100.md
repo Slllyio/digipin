@@ -82,7 +82,7 @@ Each item gives four things:
 36. Noise from aircraft (airport runways + flight paths) | OSM + derived | noise lens
 37. Light pollution sky brightness (VIIRS radiance to SQM) | EE | night-sky lens
 38. Soil sealing trend (GHSL imperviousness yearly) | EE | runoff lens
-39. Urban runoff coefficient per block (sealing + slope + soil) | derived | drainage lens
+39. ✅ Urban runoff coefficient per block (sealing + slope + soil) | derived | drainage lens
 40. Drainage density (OSM drains + MERIT streams) | OSM/EE | waterlogging
 41. ✅ Lake and wetland health (Sentinel-2 water extent trend + NDCI) | EE | lake lens
 42. ✅ Water quality chlorophyll / turbidity in lakes (Sentinel-2) | EE | lake lens

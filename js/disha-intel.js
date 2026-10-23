@@ -30,6 +30,7 @@ const DishaIntel = (() => {
             coolroof: /\b(cool[\s-]?roofs?|white[\s-]?(roofs?|paint\w*|wash\w*)|roof (albedo|colou?r|paint\w*|coating)|dark roofs?|(tin|metal|concrete) roofs?\b.{0,20}\b(hot|heat)|reflective (roofs?|paint|coating))\b/i,
             jobsmap: /\b(where (are|is) (the )?jobs|employment (centres?|centers?|hubs?|density)|job (density|hubs?|centres?|map)|bedroom (areas?|suburbs?|communit\w*)|jobs[\s-]?(housing|homes) balance|business districts?|cbd)\b/i,
             lakehealth: /\b(lakes?|ponds?|tanks?|reservoirs?)\b.{0,30}\b(health|algae|algal|weeds?|hyacinth|froth\w*|foam\w*|shrink\w*|shrank|dying|polluted|green|dry(ing)?)\b|\b(lake|water) (quality|health)\b/i,
+            runoff: /\b(storm ?water|run[\s-]?off|drains? (overflow|capacity|can\W?t cope)|permeable (paving|surfaces?)|rain gardens?|sponge city|sealed (ground|surfaces?)|impervious (surfaces?|cover))\b/i,
             mangrove: /\bmangroves?\b/i,
             parkshare: /\b(park|green|open) (space|area)s? (per (person|resident|head|capita)|shortage|deficit|gap)|(enough|lack of|short of|no|few) parks?\b|parks? per (person|resident|capita)|park deserts?\b/i,
             airdeaths: /\b(deaths?|die|dying|mortality|kill\w*|lives (lost|saved))\b.{0,40}\b(air|pollution|pm ?2\.?5|smog)\b|\b(air|pollution|pm ?2\.?5|smog)\b.{0,30}\b(deaths?|mortality|kills?|killing)\b/i,
