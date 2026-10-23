@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-23T11:02:03Z",
-  "count": 22,
+  "generated_at_iso": "2026-10-23T15:44:30Z",
+  "count": 21,
   "records": [
+    {
+      "id": "us6000u4dc",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-10-23T13:55:36.149000+00:00",
+      "latitude": 38.7787,
+      "longitude": 14.315,
+      "depth_km": 10.0,
+      "place": "50 km WNW of Malfa, Italy",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4dc",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000u4bw",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-23T12:24:24.746000+00:00",
+      "latitude": -7.3421,
+      "longitude": 128.4666,
+      "depth_km": 128.107,
+      "place": "207 km NE of Lospalos, Timor Leste",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4bw",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000u4bv",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-23T12:19:47.354000+00:00",
+      "latitude": -17.6833,
+      "longitude": -178.9021,
+      "depth_km": 571.735,
+      "place": "193 km ENE of Levuka, Fiji",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4bv",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000u4bk",
       "magnitude": 5.7,
@@ -12,7 +48,7 @@
       "place": "61 km WNW of Leni, Italy",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4bk",
       "tsunami": 0,
-      "significance": 502
+      "significance": 504
     },
     {
       "id": "us6000u4bg",
@@ -215,54 +251,6 @@
       "depth_km": 10.0,
       "place": "western Xizang",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u44w",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u44u",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-22T15:27:48.445000+00:00",
-      "latitude": 40.1472,
-      "longitude": 77.3556,
-      "depth_km": 10.0,
-      "place": "139 km ENE of Kashgar, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u44u",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000u44n",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-10-22T15:12:04.462000+00:00",
-      "latitude": 32.4401,
-      "longitude": 93.8669,
-      "depth_km": 10.0,
-      "place": "201 km ENE of Nagqu, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u44n",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000u43g",
-      "magnitude": 7.0,
-      "origin_time_utc": "2026-10-22T14:33:40.353000+00:00",
-      "latitude": 32.3805,
-      "longitude": 93.7797,
-      "depth_km": 18.0,
-      "place": "191 km ENE of Nagqu, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u43g",
-      "tsunami": 0,
-      "significance": 1004
-    },
-    {
-      "id": "us6000u432",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-22T12:22:57.822000+00:00",
-      "latitude": -13.9085,
-      "longitude": 165.6239,
-      "depth_km": 10.0,
-      "place": "200 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u432",
       "tsunami": 0,
       "significance": 369
     }

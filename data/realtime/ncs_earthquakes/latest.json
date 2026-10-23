@@ -1,7 +1,84 @@
 {
-  "generated_at_iso": "2026-10-23T11:02:16Z",
+  "generated_at_iso": "2026-10-23T15:44:35Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-23 20:48:47|32.453,93.102",
+      "magnitude": 4.1,
+      "origin_time": "2026-10-23 20:48:47",
+      "latitude": 32.453,
+      "longitude": 93.102,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "520km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 20:39:14|32.418,93.695",
+      "magnitude": 4.2,
+      "origin_time": "2026-10-23 20:39:14",
+      "latitude": 32.418,
+      "longitude": 93.695,
+      "depth_km": 12.0,
+      "region": "Tibet",
+      "location": "499km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 20:11:16|32.780,94.017",
+      "magnitude": 4.3,
+      "origin_time": "2026-10-23 20:11:16",
+      "latitude": 32.78,
+      "longitude": 94.017,
+      "depth_km": 13.0,
+      "region": "China",
+      "location": "529km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 19:44:05|33.054,93.746",
+      "magnitude": 4.3,
+      "origin_time": "2026-10-23 19:44:05",
+      "latitude": 33.054,
+      "longitude": 93.746,
+      "depth_km": 100.0,
+      "region": "China",
+      "location": "565km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 18:58:22|27.285,88.071",
+      "magnitude": 3.6,
+      "origin_time": "2026-10-23 18:58:22",
+      "latitude": 27.285,
+      "longitude": 88.071,
+      "depth_km": 5.0,
+      "region": "Gyalshing, Sikkim",
+      "location": "17km WSW of Pelling, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 17:15:36|32.522,93.975",
+      "magnitude": 4.2,
+      "origin_time": "2026-10-23 17:15:36",
+      "latitude": 32.522,
+      "longitude": 93.975,
+      "depth_km": 150.0,
+      "region": "China",
+      "location": "502km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 16:38:49|32.578,94.186",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-23 16:38:49",
+      "latitude": 32.578,
+      "longitude": 94.186,
+      "depth_km": 80.0,
+      "region": "China",
+      "location": "504km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-23 16:04:04|25.562,91.234",
       "magnitude": 3.1,
@@ -1573,83 +1650,6 @@
       "depth_km": 161.0,
       "region": "Afghanistan",
       "location": "89km SE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-11 06:24:28|25.714,90.325",
-      "magnitude": 2.9,
-      "origin_time": "2026-10-11 06:24:28",
-      "latitude": 25.714,
-      "longitude": 90.325,
-      "depth_km": 7.0,
-      "region": "West Garo Hills, Meghalaya",
-      "location": "25km NNE of Tura, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-11 05:58:13|37.467,72.044",
-      "magnitude": 4.3,
-      "origin_time": "2026-10-11 05:58:13",
-      "latitude": 37.467,
-      "longitude": 72.044,
-      "depth_km": 127.0,
-      "region": "Tajikistan",
-      "location": "138km ENE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-11 04:41:03|36.740,71.484",
-      "magnitude": 4.2,
-      "origin_time": "2026-10-11 04:41:03",
-      "latitude": 36.74,
-      "longitude": 71.484,
-      "depth_km": 181.0,
-      "region": "Afghanistan",
-      "location": "92km ESE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-11 03:48:47|13.404,92.053",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-11 03:48:47",
-      "latitude": 13.404,
-      "longitude": 92.053,
-      "depth_km": 10.0,
-      "region": "Bay of Bengal",
-      "location": "101km W of Diglipur, Andaman and Nicobar island, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-11 02:16:15|32.839,76.267",
-      "magnitude": 2.4,
-      "origin_time": "2026-10-11 02:16:15",
-      "latitude": 32.839,
-      "longitude": 76.267,
-      "depth_km": 9.0,
-      "region": "Chamba, Himachal Pradesh",
-      "location": "69km N of Dharamshala, Himachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-11 01:25:53|30.526,79.359",
-      "magnitude": 2.0,
-      "origin_time": "2026-10-11 01:25:53",
-      "latitude": 30.526,
-      "longitude": 79.359,
-      "depth_km": 5.0,
-      "region": "Chamoli, Uttarakhand",
-      "location": "19km W of Joshimath, Uttarakhand , India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-10 21:51:27|24.655,93.548",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-10 21:51:27",
-      "latitude": 24.655,
-      "longitude": 93.548,
-      "depth_km": 30.0,
-      "region": "Noney, Manipur",
-      "location": "21km W of Bishnupur, Manipur, India",
       "review_status": "Reviewed"
     }
   ]
