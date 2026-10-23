@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 34,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
      "value": 6151331,
@@ -1013,6 +1019,12 @@
      "value": 53.2,
      "unit": "%",
      "higherIs": null
+    },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 2252217,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
@@ -1614,6 +1626,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 10741,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
      "value": 1835622,
@@ -2207,6 +2225,12 @@
      "value": 65.8,
      "unit": "%",
      "higherIs": null
+    },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 386038,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
@@ -2807,6 +2831,12 @@
      "value": 55.8,
      "unit": "%",
      "higherIs": null
+    },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 1512471,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
@@ -3948,6 +3978,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 116250,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
      "value": 7017630,
@@ -4548,6 +4584,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 26599,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
      "value": 1760243,
@@ -5129,6 +5171,12 @@
      "value": 63.8,
      "unit": "%",
      "higherIs": null
+    },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 56213,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
@@ -5724,6 +5772,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 210999,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
      "value": 9525902,
@@ -6305,6 +6359,12 @@
      "value": 62.7,
      "unit": "%",
      "higherIs": null
+    },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 141732,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
@@ -6906,6 +6966,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 1801634,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
      "value": 6701850,
@@ -7505,6 +7571,12 @@
      "value": 59.5,
      "unit": "%",
      "higherIs": null
+    },
+    "drainage": {
+     "label": "Residents living beside an open drain or nallah",
+     "value": 112250,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",

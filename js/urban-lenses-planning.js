@@ -623,7 +623,56 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Drains and nallahs. The main storm-water network (OpenStreetMap drains and ditches) within DRAIN_KM; low ground that
+    // floods after rain with no main drain nearby has nowhere to send the water. Living beside an open nallah brings smell,
+    // mosquitoes and overflow; wastewater works bring smell too.
+    const DRAIN_KM = 1, WET_INDEX = 50, WW_KM = 1, DRAIN_MIN = 50;
+
+    function drainage(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, dk = c['drains.drain_km'], near = c['drains.drain_near_pct'], ww = c['drains.wastewater'];
+        const pop = c['population.population'], wl = c['waterlogging.waterlogging_index'];
+        if (!dk || !near || !pop) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5 || !idx.some(i => v(dk, i) > 0)) return null;
+        const area = Math.PI * DRAIN_KM * DRAIN_KM;
+        const dens = within(g, Float64Array.from({ length: n }, (_, i) => v(dk, i)), DRAIN_KM);
+        const wwNear = ww ? within(g, Float64Array.from({ length: n }, (_, i) => v(ww, i)), WW_KM) : null;
+        const density = new Float64Array(n).fill(NaN), beside = new Float64Array(n).fill(NaN);
+        for (const i of idx) { density[i] = _round(dens[i] / area, 2); beside[i] = v(pop, i) * v(near, i) / 100; }
+        const all = _sumOver(pop, idx, () => true);
+        const wet = wl ? idx.filter(i => v(wl, i) >= WET_INDEX) : [];
+        const dry = wet.filter(i => dens[i] <= 0);
+        const pBeside = idx.reduce((a, i) => a + beside[i], 0), pDry = _sumOver(pop, dry, () => true);
+        const km = idx.reduce((a, i) => a + v(dk, i), 0);
+        const stats = [
+            { label: 'Main drains and nallahs mapped', value: `${_round(km)} km` },
+            { label: 'Residents within 100 m of an open drain (spread evenly over each block)', value: `${_people(pBeside)} (${_round(100 * pBeside / Math.max(all, 1), 1)}%)` },
+        ];
+        if (wl) stats.push({ label: `Waterlogging-prone blocks (index ${WET_INDEX}+) with no main drain mapped within ${DRAIN_KM} km`, value: `${dry.length} of ${wet.length}; ${_people(pDry)} residents` });
+        if (wwNear) {
+            const pw = _sumOver(pop, idx, i => wwNear[i] > 0);
+            stats.push({ label: `Residents within ${WW_KM} km of a wastewater works or effluent pond`, value: _people(pw) });
+        }
+        spaced(g, dry, Float64Array.from({ length: n }, (_, i) => v(wl, i) * v(pop, i))).forEach((i, k) => stats.push({
+            label: `Drain needed ${k + 1}: ${g.codes[i]}`, value: `waterlogging index ${_round(v(wl, i))}; ${_people(v(pop, i))} residents; no main drain mapped within ${DRAIN_KM} km` }));
+        return {
+            columns: { drain_density: density, beside_drain: beside }, idx, weightKey: 'drain_density', noHotspots: true,
+            metric: { label: 'Residents living beside an open drain or nallah', value: Math.round(pBeside), unit: 'people', higherIs: 'worse' },
+            headline: km < DRAIN_MIN ? `Only ${_round(km)} km of drains and nallahs are mapped in OpenStreetMap here, too little to judge drainage gaps; the map shows where mapping is missing.` : `${_round(km)} km of main drains and nallahs are mapped; about ${_people(pBeside)} people live within 100 m of one${wl ? `, and ${dry.length} of ${wet.length} waterlogging-prone blocks (${_people(pDry)} residents) have no main drain mapped within ${DRAIN_KM} km` : ''}. OpenStreetMap maps trunk drains, not roadside ones, so this is the main network only.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'drainage', equity: true, title: 'Drains, nallahs and wastewater works', icon: '🕳️',
+            question: 'Where does rainwater have no drain, and who lives beside an open nallah?',
+            field: { key: 'drain_density', label: `Main drain length within ${DRAIN_KM} km`, unit: 'km/km²', higherIs: 'better', ramp: 'blues', domain: [0, 2] },
+            extra: [{ key: 'beside_drain', label: 'Residents within 100 m of an open drain', unit: 'people', higherIs: 'worse', ramp: 'reds', domain: [0, 500] }],
+            needs: ['drains.drain_km', 'drains.drain_near_pct', 'drains.wastewater', 'waterlogging.waterlogging_index', 'population.population'],
+            method: `OpenStreetMap drains and ditches (Overture Maps base water), which cover the nallahs and trunk storm drains but few roadside drains; wastewater basins mark sewage treatment plants and effluent ponds. Drain density is mapped drain length within ${DRAIN_KM} km ÷ the circle's area. Waterlogging-prone blocks are those with DigiPin's waterlogging index ${WET_INDEX}+ (low, flat, sealed ground that held water after monsoon rain). Residents beside a drain are block residents × the share of the block within 100 m of one.`,
+            refs: 'OpenStreetMap via Overture Maps; CPHEEO Manual on Storm Water Drainage Systems (2019); WorldPop' },
         { id: 'toilets', equity: true, title: 'Public toilets and drinking water', icon: '🚻',
             question: 'Where are public toilets and drinking water missing?',
             field: { key: 'toilet_gap', label: 'Toilet gaps (none near homes; none near a busy street)', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
@@ -723,7 +772,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

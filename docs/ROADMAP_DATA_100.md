@@ -83,7 +83,7 @@ Each item gives four things:
 37. ❌ Light pollution sky brightness (VIIRS radiance to SQM) | EE | night-sky lens (skipped: the Falchi 2016 atlas is CC BY-NC)
 38. Soil sealing trend (GHSL imperviousness yearly) | EE | runoff lens
 39. ✅ Urban runoff coefficient per block (sealing + slope + soil) | derived | drainage lens
-40. Drainage density (OSM drains + MERIT streams) | OSM/EE | waterlogging
+40. ✅ Drainage density (OSM drains + MERIT streams) | OSM/EE | waterlogging (`drains` dataset, `drainage` lens)
 41. ✅ Lake and wetland health (Sentinel-2 water extent trend + NDCI) | EE | lake lens
 42. ✅ Water quality chlorophyll / turbidity in lakes (Sentinel-2) | EE | lake lens
 43. ✅ Mangrove extent and loss (Global Mangrove Watch) | EE | coastal buffer
@@ -98,7 +98,7 @@ Each item gives four things:
 49. ✅ Formaldehyde HCHO (Sentinel-5P) | EE | VOC hotspots (already in air_quality (HCHO))
 50. Methane at landfills (Sentinel-5P CH4 + landfill locations) | EE/OSM | landfill lens
 51. ✅ Landfills and dumpsites (OSM landuse=landfill + Wikidata) | OSM | waste lens
-52. Sewage treatment plants and capacity | OSM/Wikidata | sanitation
+52. ✅ Sewage treatment plants and capacity | OSM/Wikidata | sanitation (wastewater basins in `drains`; capacity not open)
 53. Hospitals with beds (Overture + OSM beds tag + Wikidata) | S3/OSM | health capacity
 54. ✅ Pharmacies and diagnostics (Overture) | S3 | health access
 55. ✅ Dengue/malaria risk proxy (standing water + temperature + rain; mosquito lens) | EE | vector lens

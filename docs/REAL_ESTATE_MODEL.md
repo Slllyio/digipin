@@ -992,3 +992,7 @@ New dataset `street_infra` (L7, pipeline/realestate/streetinfra.py) counts OpenS
 
 - `toilets`: lived-in blocks with no public toilet within 1 km, and the busiest 10% of shopping and food blocks with none within 500 m; drinking water within 500 m. Below 100 mapped toilets the headline says the map shows mapping gaps, not toilet gaps. Delhi: 53% of residents have none mapped within 1 km.
 - `gated`: gates and barriers within 500 m per km²; 20 or more is called gated. Delhi 39% of residents, with a median value index of 122 in gated blocks against 63 elsewhere; Kolkata 17% (138 vs 88). Gate density tracks planned, formal colonies as much as gating itself.
+
+## Drains, nallahs and wastewater works (`drainage` lens)
+
+New dataset `drains` (L7, pipeline/realestate/drains.py): OpenStreetMap drains and ditches (`canal` subtype, classes drain and ditch) and canals from Overture's base water theme, with the share of each block within 100 m of a drain and the area of wastewater basins (sewage treatment plants and effluent ponds). The lens shows mapped drain length within 1 km per km², residents beside an open drain, waterlogging-prone blocks (index 50+) with no main drain mapped within 1 km, and residents within 1 km of a wastewater works. Delhi: 416 km of mapped drains in lived-in areas, 15 lakh residents within 100 m of one, and 2,301 of 4,915 waterlogging-prone blocks with none within 1 km. Most other cities map under 50 km of drains, and the headline then says the gaps are mapping gaps.

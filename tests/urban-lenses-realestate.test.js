@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -684,6 +684,17 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.gate_density[codes.length - 1]).toBe(0);
         expect(r.stats[0].value).toBe(String(20 * SIZE * 3));
         expect(L._lenses.gated(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('drainage: drain density, residents beside drains and wet blocks with no drain', () => {
+        const f = L.frameFrom(codes, { ...base, 'drains.drain_km': codes.map((_, i) => (col(i) === 0 ? 10 : 0)), 'drains.drain_near_pct': codes.map((_, i) => (col(i) === 0 ? 50 : 0)),
+            'drains.wastewater': codes.map(() => 0), 'waterlogging.waterlogging_index': codes.map(() => 60) });
+        const r = L._lenses.drainage(f, {});
+        expect(r.columns.drain_density[0]).toBeGreaterThan(0);
+        expect(r.columns.beside_drain[0]).toBeCloseTo(base['population.population'][0] / 2);
+        expect(r.columns.drain_density[codes.length - 1]).toBe(0);
+        expect(r.stats.some(x => /^Drain needed 1/.test(x.label))).toBe(true);
+        expect(L._lenses.drainage(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

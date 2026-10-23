@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T22:50:20Z",
+  "generated": "2026-10-23T22:59:10Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -5432,6 +5432,229 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "drains",
+      "title": "Drains, canals and wastewater works (Overture)",
+      "description": "OpenStreetMap water features via Overture Maps (release 2026-10-21.0): drains and ditches (the nallahs and trunk storm drains; roadside drains are rarely mapped), canals, and wastewater basins of sewage treatment plants and effluent ponds, clipped to each block, with the share of the block within 100 m of a drain.",
+      "source": "pipeline/realestate/drains.py (Overture Maps base water via DuckDB spatial)",
+      "license": "ODbL 1.0 (OpenStreetMap via Overture Maps)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "drain_km",
+          "label": "Storm-water drains, nallahs and ditches in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "km",
+          "domain": [
+            0,
+            0.5
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "canal_km",
+          "label": "Canals in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "km",
+          "domain": [
+            0,
+            0.5
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "drain_near_pct",
+          "label": "Block within 100 m of a drain or nallah",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "wastewater_pct",
+          "label": "Wastewater basins (sewage treatment, effluent ponds)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "wastewater",
+          "label": "Wastewater basins touching the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            3
+          ],
+          "ramp": "reds"
+        }
+      ],
+      "default": {
+        "field": "drain_near_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 197,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "drains/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 6173,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "drains/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 66,
+          "bbox": {
+            "west": 77.40869140625,
+            "south": 23.196044921875,
+            "east": 77.48779296875,
+            "north": 23.2509765625
+          },
+          "json": "drains/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 1361,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.2958984375,
+            "north": 13.180908203125
+          },
+          "json": "drains/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 6546,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "drains/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 519,
+          "bbox": {
+            "west": 78.333740234375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.5205078125
+          },
+          "json": "drains/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 318,
+          "bbox": {
+            "west": 75.76513671875,
+            "south": 22.49951171875,
+            "east": 75.995849609375,
+            "north": 22.78515625
+          },
+          "json": "drains/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 315,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 26.9599609375
+          },
+          "json": "drains/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 831,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "drains/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 651,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.913818359375
+          },
+          "json": "drains/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 2029,
+          "bbox": {
+            "west": 72.809814453125,
+            "south": 18.900390625,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "drains/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 438,
+          "bbox": {
+            "west": 73.754638671875,
+            "south": 18.43896484375,
+            "east": 73.991943359375,
+            "north": 18.621337890625
+          },
+          "json": "drains/pune.json",
+          "parquet": null
         }
       ]
     },
