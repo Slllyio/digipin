@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T22:44:02Z",
+  "generated": "2026-10-23T22:50:20Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -19295,6 +19295,277 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "street_infra",
+      "title": "Street infrastructure (Overture)",
+      "description": "OpenStreetMap street objects via Overture Maps (release 2026-10-21.0, base infrastructure): public toilets, drinking water, fire hydrants, gates and lift barriers, benches, bins, ATMs and telecom towers, counted per block. Mapping is patchy, so a zero often means not yet mapped.",
+      "source": "pipeline/realestate/streetinfra.py (Overture Maps base infrastructure via DuckDB)",
+      "license": "ODbL 1.0 (OpenStreetMap via Overture Maps)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "toilets",
+          "label": "Public toilets mapped in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "drinking_water",
+          "label": "Drinking-water points mapped in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hydrants",
+          "label": "Fire hydrants mapped in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "gates",
+          "label": "Gates and barriers across streets mapped in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "benches",
+          "label": "Benches mapped in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "bins",
+          "label": "Public bins mapped in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "atms",
+          "label": "ATMs (street objects) mapped in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "telecom_towers",
+          "label": "Telecom towers mapped in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "count",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "toilets",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 2557,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "street_infra/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 6715,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "street_infra/bengaluru.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 603,
+          "bbox": {
+            "west": 77.301025390625,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "street_infra/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 3226,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.3134765625,
+            "north": 13.180908203125
+          },
+          "json": "street_infra/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 8140,
+          "bbox": {
+            "west": 76.841796875,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "street_infra/delhi.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 2,
+          "bbox": {
+            "west": 77.270263671875,
+            "south": 24.637451171875,
+            "east": 77.301025390625,
+            "north": 24.66162109375
+          },
+          "json": "street_infra/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 4816,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "street_infra/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 1340,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.51708984375,
+            "east": 75.982666015625,
+            "north": 22.901611328125
+          },
+          "json": "street_infra/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 1320,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.91015625,
+            "north": 27.001708984375
+          },
+          "json": "street_infra/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 1671,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.449951171875,
+            "north": 22.651123046875
+          },
+          "json": "street_infra/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 689,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.948974609375
+          },
+          "json": "street_infra/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 4014,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.8916015625,
+            "east": 72.989990234375,
+            "north": 19.271728515625
+          },
+          "json": "street_infra/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 3706,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.43017578125,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "street_infra/pune.json",
+          "parquet": null
         }
       ]
     },

@@ -26,6 +26,8 @@ const DishaIntel = (() => {
         lens: {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
+            toilets: /\b((public|community) (toilets?|restrooms?|urinals?)|toilets?|restrooms?|drinking[\s-]?water (points?|taps?|fountains?)|water (taps?|points?) (on|in) the street)\b/i,
+            gated: /\b(gated (communit(y|ies)|colon(y|ies)|societ(y|ies)|streets?|areas?)|(street|colony|road) (gates?|barriers?)|closed (streets?|roads?|colon(y|ies)))\b/i,
             powerlines: /\b((high[\s-]?(voltage|tension)|ht|hv|transmission|power|electricity|pylon|tower) lines?|pylons?|transmission towers?|(power|electric(al)?) (sub[\s-]?stations?|corridors?)|under the (wires|power lines?))\b/i,
             gardens: /\b(soil (is |good |suitable )*for (gardens?|gardening|growing|farming|plants?|vegetables)|garden soil|soil (ph|quality|fertility|health)|kitchen gardens?|community gardens?|urban farm(s|ing)?|terrace gardens?)\b/i,
             cooling: /\b(cooling (centres?|centers?|shelters?|spaces?)|heat (shelters?|refuges?)|cool (shelters?|spaces?|refuges?))\b/i,

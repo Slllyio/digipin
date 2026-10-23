@@ -420,6 +420,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 6151331,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 3653749,
+     "unit": "people",
+     "higherIs": null
+    },
     "powerlines": {
      "label": "Residents living inside power line corridors",
      "value": 67025,
@@ -1000,6 +1012,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 53.2,
      "unit": "%",
+     "higherIs": null
+    },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 5448464,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 4070815,
+     "unit": "people",
      "higherIs": null
     },
     "powerlines": {
@@ -1590,6 +1614,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 1835622,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 162191,
+     "unit": "people",
+     "higherIs": null
+    },
     "powerlines": {
      "label": "Residents living inside power line corridors",
      "value": 41443,
@@ -2170,6 +2206,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 65.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 4962491,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 3222541,
+     "unit": "people",
      "higherIs": null
     },
     "powerlines": {
@@ -2760,6 +2808,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 15582096,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 11563334,
+     "unit": "people",
+     "higherIs": null
+    },
     "powerlines": {
      "label": "Residents living inside power line corridors",
      "value": 302495,
@@ -3310,6 +3370,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 70.5,
      "unit": "%",
+     "higherIs": null
+    },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 300935,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 0,
+     "unit": "people",
      "higherIs": null
     },
     "powerlines": {
@@ -3874,6 +3946,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 57.6,
      "unit": "%",
+     "higherIs": null
+    },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 7017630,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 2882814,
+     "unit": "people",
      "higherIs": null
     },
     "powerlines": {
@@ -4464,6 +4548,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 1760243,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 130969,
+     "unit": "people",
+     "higherIs": null
+    },
     "powerlines": {
      "label": "Residents living inside power line corridors",
      "value": 45149,
@@ -5032,6 +5128,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 63.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 3011272,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 741909,
+     "unit": "people",
      "higherIs": null
     },
     "powerlines": {
@@ -5616,6 +5724,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 9525902,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 2271097,
+     "unit": "people",
+     "higherIs": null
+    },
     "powerlines": {
      "label": "Residents living inside power line corridors",
      "value": 23697,
@@ -6184,6 +6304,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 62.7,
      "unit": "%",
+     "higherIs": null
+    },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 3699253,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 196003,
+     "unit": "people",
      "higherIs": null
     },
     "powerlines": {
@@ -6774,6 +6906,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 6701850,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 15460932,
+     "unit": "people",
+     "higherIs": null
+    },
     "powerlines": {
      "label": "Residents living inside power line corridors",
      "value": 116758,
@@ -7360,6 +7504,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 59.5,
      "unit": "%",
+     "higherIs": null
+    },
+    "toilets": {
+     "label": "Residents with no public toilet mapped within 1 km",
+     "value": 4249519,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "gated": {
+     "label": "Residents in gated areas",
+     "value": 4632588,
+     "unit": "people",
      "higherIs": null
     },
     "powerlines": {

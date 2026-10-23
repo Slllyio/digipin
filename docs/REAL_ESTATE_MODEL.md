@@ -985,3 +985,10 @@ New EE layer `topsoil` (L7, OpenLandMap 250 m surface soil, CC BY-SA 4.0): organ
 ## Homes under power lines (`powerlines` lens)
 
 New dataset `power_lines` (L7, pipeline/realestate/powerlines.py): OpenStreetMap power lines of 66 kV and over from Overture's base infrastructure, with their `voltage` tag, buffered to the Ministry of Power 2015 right-of-way width (66 kV 18 m, 110 kV 22 m, 132 kV 27 m, 220 kV 35 m, 400 kV 46 m, 765 kV 67 m; untagged lines taken as 132 kV) and clipped to each block. Fields: line_km, corridor_pct, max_kv, substations. Residents and built-up land inside corridors are block totals times the corridor share, so they assume an even spread. First run: Delhi has 1,417 km of line and 48 km² of corridor, with roughly 3 lakh residents inside. The property report shows the corridor share for the block.
+
+## Street infrastructure, public toilets and gated colonies (`toilets` and `gated` lenses)
+
+New dataset `street_infra` (L7, pipeline/realestate/streetinfra.py) counts OpenStreetMap street objects from Overture's base infrastructure per block: public toilets, drinking-water points, fire hydrants, gates and lift barriers, benches, bins, ATMs and telecom towers. Mapping is uneven: Delhi has 1,020 toilets and Indore 351, but Ahmedabad only 48.
+
+- `toilets`: lived-in blocks with no public toilet within 1 km, and the busiest 10% of shopping and food blocks with none within 500 m; drinking water within 500 m. Below 100 mapped toilets the headline says the map shows mapping gaps, not toilet gaps. Delhi: 53% of residents have none mapped within 1 km.
+- `gated`: gates and barriers within 500 m per km²; 20 or more is called gated. Delhi 39% of residents, with a median value index of 122 in gated blocks against 63 elsewhere; Kolkata 17% (138 vs 88). Gate density tracks planned, formal colonies as much as gating itself.

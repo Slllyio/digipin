@@ -537,7 +537,106 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Public toilets and drinking water on the street. Planning thresholds for this lens: a public toilet within
+    // TOILET_BUSY_KM of busy shopping streets and within TOILET_HOME_KM of homes, and a drinking-water point within
+    // WATER_KM. OpenStreetMap mapping of street objects is patchy, so gaps are leads to check, not proof.
+    const TOILET_BUSY_KM = 0.5, TOILET_HOME_KM = 1, WATER_KM = 0.5, BUSY_Q = 0.9, TOILET_MIN = 100;
+
+    function toilets(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, t = c['street_infra.toilets'], w = c['street_infra.drinking_water'];
+        const pop = c['population.population'], shops = c['places.shopping'], food = c['places.food'];
+        if (!t || !pop) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const tCount = Float64Array.from({ length: n }, (_, i) => v(t, i));
+        const nearBusy = within(g, tCount, TOILET_BUSY_KM), nearHome = within(g, tCount, TOILET_HOME_KM);
+        const water = w ? within(g, Float64Array.from({ length: n }, (_, i) => v(w, i)), WATER_KM) : null;
+        const footfall = Float64Array.from({ length: n }, (_, i) => v(shops, i) + v(food, i));
+        const fq = wquantile(footfall, null, idx, BUSY_Q);
+        const busy = idx.filter(i => footfall[i] > 0 && footfall[i] >= fq);
+        const busyGap = busy.filter(i => nearBusy[i] <= 0), homeGap = idx.filter(i => nearHome[i] <= 0);
+        const gap = new Float64Array(n).fill(NaN);
+        for (const i of idx) gap[i] = (nearHome[i] <= 0 ? 1 : 0) + (busyGap.includes(i) ? 1 : 0);
+        const all = _sumOver(pop, idx, () => true), pHome = _sumOver(pop, homeGap, () => true);
+        const total = idx.reduce((a, i) => a + tCount[i], 0);
+        const stats = [
+            { label: 'Public toilets mapped', value: String(total) },
+            { label: `Residents with none mapped within ${TOILET_HOME_KM} km`, value: `${_people(pHome)} (${_round(100 * pHome / Math.max(all, 1))}%)` },
+            { label: `Busiest shopping and food blocks (top 10%) with none within ${TOILET_BUSY_KM * 1000} m`, value: `${busyGap.length} of ${busy.length}` },
+        ];
+        if (water) {
+            const pw = _sumOver(pop, idx, i => water[i] <= 0);
+            stats.push({ label: `Residents with no drinking-water point mapped within ${WATER_KM * 1000} m`, value: `${_people(pw)} (${_round(100 * pw / Math.max(all, 1))}%)` });
+        }
+        spaced(g, busyGap, footfall).forEach((i, k) => stats.push({
+            label: `Toilet needed ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(footfall[i])} shops and eateries in the block; nearest mapped public toilet over ${TOILET_BUSY_KM * 1000} m away` }));
+        return {
+            columns: { toilet_gap: gap, toilets_1km: nearHome }, idx, weightKey: 'toilet_gap', noHotspots: true,
+            metric: { label: `Residents with no public toilet mapped within ${TOILET_HOME_KM} km`, value: Math.round(pHome), unit: 'people', higherIs: 'worse' },
+            headline: total < TOILET_MIN ? `Only ${total} public toilets are mapped in OpenStreetMap here, too few to judge gaps: the map shows where mapping, not toilets, is missing. Use the Swachh Bharat toilet locator for the real network.` : `${total} public toilets are mapped; ${_round(100 * pHome / Math.max(all, 1))}% of residents have none mapped within ${TOILET_HOME_KM} km, and ${busyGap.length} of the ${busy.length} busiest shopping and food blocks have none within ${TOILET_BUSY_KM * 1000} m, which hits women, older people and street vendors hardest. OpenStreetMap misses many toilets, so check the Swachh Bharat toilet locator before acting.`,
+            stats,
+        };
+    }
+
+    // Gated colonies. Gates and lift barriers across streets (OpenStreetMap) mark colonies that close their roads,
+    // which cuts through-routes for walking and emergency vehicles and goes with higher prices.
+    const GATE_KM = 0.5, GATED_PER_KM2 = 20;
+
+    function gated(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, gates = c['street_infra.gates'], pop = c['population.population'];
+        const res = c['landuse.residential_pct'], vi = c['land_value.value_index'];
+        if (!gates || !pop) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const area = Math.PI * GATE_KM * GATE_KM;
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(gates, i)), GATE_KM);
+        const dens = new Float64Array(n).fill(NaN);
+        for (const i of idx) dens[i] = _round(near[i] / area, 1);
+        const gatedIdx = idx.filter(i => dens[i] >= GATED_PER_KM2);
+        const all = _sumOver(pop, idx, () => true), pg = _sumOver(pop, gatedIdx, () => true);
+        const total = idx.reduce((a, i) => a + v(gates, i), 0);
+        const stats = [
+            { label: 'Gates and lift barriers mapped', value: String(total) },
+            { label: `Residents in gated areas (${GATED_PER_KM2}+ gates per km² within ${GATE_KM * 1000} m)`, value: `${_people(pg)} (${_round(100 * pg / Math.max(all, 1))}%)` },
+        ];
+        if (res) {
+            const resIdx = idx.filter(i => v(res, i) >= 50);
+            if (resIdx.length) stats.push({ label: 'Mapped residential blocks that are gated', value: `${_round(100 * resIdx.filter(i => dens[i] >= GATED_PER_KM2).length / resIdx.length)}%` });
+        }
+        if (vi) {
+            const inV = gatedIdx.filter(i => _fin(vi[i])), outV = idx.filter(i => dens[i] < GATED_PER_KM2 && _fin(vi[i]));
+            const med = a => wquantile(vi, null, a, 0.5);
+            if (inV.length >= 5 && outV.length >= 5) stats.push({ label: 'Median value index, gated vs open blocks', value: `${_round(med(inV))} vs ${_round(med(outV))}` });
+        }
+        spaced(g, gatedIdx, dens).forEach((i, k) => stats.push({
+            label: `Most gated ${k + 1}: ${g.codes[i]}`, value: `${dens[i]} gates per km² nearby; ${_people(v(pop, i))} residents` }));
+        return {
+            columns: { gate_density: dens }, idx, weightKey: 'gate_density', noHotspots: true,
+            metric: { label: 'Residents in gated areas', value: Math.round(pg), unit: 'people', higherIs: null },
+            headline: `${_round(100 * pg / Math.max(all, 1))}% of residents (${_people(pg)}) live where gates and barriers close off ${GATED_PER_KM2} or more street points per km². Gated colonies feel safer to residents but cut walking and ambulance routes for everyone else. Only mapped gates count, so read low numbers as unmapped.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'toilets', equity: true, title: 'Public toilets and drinking water', icon: '🚻',
+            question: 'Where are public toilets and drinking water missing?',
+            field: { key: 'toilet_gap', label: 'Toilet gaps (none near homes; none near a busy street)', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
+            extra: [{ key: 'toilets_1km', label: `Public toilets mapped within ${TOILET_HOME_KM} km`, unit: 'count', higherIs: 'better', ramp: 'viridis', domain: [0, 10] }],
+            needs: ['street_infra.toilets', 'street_infra.drinking_water', 'places.shopping', 'places.food', 'population.population'],
+            method: `OpenStreetMap public toilets and drinking-water points (Overture Maps base infrastructure). Gaps: a lived-in block with no public toilet within ${TOILET_HOME_KM} km, and one of the busiest 10% of blocks by shops and eateries (Overture places) with none within ${TOILET_BUSY_KM * 1000} m. Distances are straight-line between block centres and are planning thresholds for this lens, in the spirit of the Swachh Bharat Mission (Urban) public toilet guidance. OpenStreetMap misses many municipal toilets and water points.`,
+            refs: 'Swachh Bharat Mission (Urban) public and community toilet guidelines (MoHUA); OpenStreetMap via Overture Maps; WorldPop' },
+        { id: 'gated', equity: false, title: 'Gated colonies and closed streets', icon: '🚧',
+            question: 'Where have colonies gated their streets?',
+            field: { key: 'gate_density', label: `Gates and barriers per km² within ${GATE_KM * 1000} m`, unit: 'per km²', higherIs: null, ramp: 'heat', domain: [0, 60] },
+            needs: ['street_infra.gates', 'landuse.residential_pct', 'land_value.value_index', 'population.population'],
+            method: `OpenStreetMap gates, lift barriers and swing or sliding gates (Overture Maps base infrastructure), counted within ${GATE_KM * 1000} m of each lived-in block and divided by the circle's area. Blocks at ${GATED_PER_KM2} or more per km² are called gated. Residential blocks are those with half or more of their land mapped residential. The value index is DigiPin's hedonic land-value index (100 = city median home). Unmapped gates are missing, so the share is a floor.`,
+            refs: 'OpenStreetMap barrier=gate/lift_gate via Overture Maps; Delhi RWA gating studies; WorldPop' },
         { id: 'powerlines', equity: true, title: 'Homes under power lines', icon: '⚡',
             question: 'Who lives under high-voltage power lines?',
             field: { key: 'corridor_people', label: 'Residents inside a power line right-of-way', unit: 'people', higherIs: 'worse', ramp: 'reds', domain: [0, 200] },
@@ -624,7 +723,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

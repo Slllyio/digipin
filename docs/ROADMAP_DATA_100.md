@@ -93,7 +93,7 @@ Each item gives four things:
 ## C. Air and health (46–60)
 
 46. CAMS PM2.5 forecast (next 5 days) | API | air alerts
-47. Ozone (Sentinel-5P O3 + CAMS) | EE | ozone lens
+47. ❌ Ozone (Sentinel-5P O3 + CAMS) | EE | ozone lens (skipped: the Sentinel-5P ozone product is a total column, mostly stratospheric, so it says nothing about street-level ozone)
 48. ✅ SO2 from industry (Sentinel-5P) | EE | industry pollution (air_trend SO₂ hotspots)
 49. ✅ Formaldehyde HCHO (Sentinel-5P) | EE | VOC hotspots (already in air_quality (HCHO))
 50. Methane at landfills (Sentinel-5P CH4 + landfill locations) | EE/OSM | landfill lens
@@ -102,7 +102,7 @@ Each item gives four things:
 53. Hospitals with beds (Overture + OSM beds tag + Wikidata) | S3/OSM | health capacity
 54. ✅ Pharmacies and diagnostics (Overture) | S3 | health access
 55. ✅ Dengue/malaria risk proxy (standing water + temperature + rain; mosquito lens) | EE | vector lens
-56. Heat-health mortality estimate (Gasparrini ERFs on hot days) | derived | heat deaths lens
+56. ❌ Heat-health mortality estimate (Gasparrini ERFs on hot days) | derived | heat deaths lens (skipped: de Bont 2024 gives +14.7% deaths on city-level heatwave days, so a block map would be uniform)
 57. ✅ Air-pollution premature deaths (GBD PM2.5 IER) | derived | air deaths lens
 58. Walkable shade on routes to clinics | derived | shade lens extension
 59. ✅ Green space per resident (WHO 9 m² target) | derived | green lens extension
@@ -162,7 +162,7 @@ Each item gives four things:
 104. Bedrock depth (Pelletier 2016) | EE | foundation cost
 105. ✅ Expansive black-cotton soil (SoilGrids clay + vertisol class) | EE | foundation risk (subsoil + ground lens)
 106. ✅ Quarries and mines (Overture/OSM quarries; Maus 2022 global mines has none inside the 13 cities) | open | land damage
-107. Brick kilns (Sentinel-2 detections, Boyd et al.) | open | air/land
+107. ❌ Brick kilns (Sentinel-2 detections, Boyd et al.) | open | air/land (skipped: SentinelKilnDB is CC BY-NC)
 108. ✅ Lake encroachment by year (JRC GSW yearly) | EE | encroachment extension
 109. Urban farms and community gardens | OSM | food lens
 110. ❌ Night-sky dark spots for parks | EE | leisure
@@ -172,7 +172,7 @@ Each item gives four things:
 111. ✅ Per-block "what changed this month" digest across all datasets (monthly lens: built-up, lights, NDVI, NO₂ year on year) | derived | alerts
 112. Comparable-block search across all 13 cities on the new fields | derived | similar()
 113. DISHA site memo: one-click climate + market + access due diligence | derived | agents
-114. Data-confidence per lens (coverage × source quality) | derived | confidence lens
+114. ✅ Data-confidence per lens (coverage × source quality) | derived | confidence lens (exists as the `confidence` lens)
 115. Scenario builder: add a metro / flyover / park and re-score | derived | what-if
 116. ✅ Embeddings per block (Google Satellite Embedding V1, 64-d) for similarity | EE | AI search (embeddings + lookalike)
 117. ✅ Change detection with Satellite Embeddings year over year | EE | change lens (change lens)
@@ -180,6 +180,8 @@ Each item gives four things:
 119. ✅ Export any lens to GeoJSON / GeoParquet / CSV per DIGIPIN | derived | data API
 120. Public data API: static JSON per DIGIPIN prefix with every field | derived | developer API
 121. ✅ High-voltage power line corridors and substations (Overture/OSM voltage tags, MoP RoW widths) | S3 | `power_lines` dataset, `powerlines` lens, property report row
+122. ✅ Public toilets and drinking-water points (Overture/OSM street objects) | S3 | `street_infra` dataset, `toilets` lens
+123. ✅ Gated colonies from street gates and barriers (Overture/OSM) | S3 | `gated` lens
 
 ## Parked for the keys round
 
