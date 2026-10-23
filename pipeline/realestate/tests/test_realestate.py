@@ -129,7 +129,7 @@ def test_places_classify_and_rows():
     assert pl.classify("services_and_business", "bank_or_credit_union")[2] is True
     assert pl.classify("services_and_business", "real_estate_service")[3] is True
     assert pl.evenness({"food": 2}) is None
-    assert pl.evenness({k: 1 for k in pl.KINDS}) == 1.0
+    assert abs(pl.evenness({k: 1 for k in pl.KINDS}) - 1) < 1e-9
     rows = pl.rows_from([(77.2, 28.6, "food_and_drink", "cafe", "Starbucks"), (77.2, 28.6, "shopping", "clothing_store", None),
                          (77.2, 28.6, "health_care", "pharmacy", None)])
     (row,) = rows.values()
