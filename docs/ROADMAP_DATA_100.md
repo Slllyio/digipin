@@ -105,7 +105,7 @@ Each item gives four things:
 56. Heat-health mortality estimate (Gasparrini ERFs on hot days) | derived | heat deaths lens
 57. ✅ Air-pollution premature deaths (GBD PM2.5 IER) | derived | air deaths lens
 58. Walkable shade on routes to clinics | derived | shade lens extension
-59. Green space per resident (WHO 9 m² target) | derived | green lens extension
+59. ✅ Green space per resident (WHO 9 m² target) | derived | green lens extension
 60. Cooling centres siting (libraries, malls, temples with AC) | S3 | heat action plan
 
 ## D. Mobility and access (61–78)

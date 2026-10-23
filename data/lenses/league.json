@@ -312,6 +312,12 @@
      "unit": "agents",
      "higherIs": null
     },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 0.3,
+     "unit": "m²",
+     "higherIs": "better"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 2,
@@ -731,6 +737,12 @@
      "value": 1762,
      "unit": "agents",
      "higherIs": null
+    },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 2.1,
+     "unit": "m²",
+     "higherIs": "better"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -1152,6 +1164,12 @@
      "unit": "agents",
      "higherIs": null
     },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 0.6,
+     "unit": "m²",
+     "higherIs": "better"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 5,
@@ -1566,6 +1584,12 @@
      "unit": "agents",
      "higherIs": null
     },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 0.6,
+     "unit": "m²",
+     "higherIs": "better"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 39,
@@ -1974,11 +1998,23 @@
      "unit": "trees",
      "higherIs": null
     },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 114.8,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "market": {
      "label": "Estate agents within 1 km",
      "value": 2633,
      "unit": "agents",
      "higherIs": null
+    },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 2,
+     "unit": "m²",
+     "higherIs": "better"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -2796,6 +2832,12 @@
      "unit": "agents",
      "higherIs": null
     },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 1.2,
+     "unit": "m²",
+     "higherIs": "better"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 33,
@@ -3216,6 +3258,12 @@
      "unit": "agents",
      "higherIs": null
     },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 0.7,
+     "unit": "m²",
+     "higherIs": "better"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 9,
@@ -3629,6 +3677,12 @@
      "value": 496,
      "unit": "agents",
      "higherIs": null
+    },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 1,
+     "unit": "m²",
+     "higherIs": "better"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -4044,6 +4098,12 @@
      "unit": "agents",
      "higherIs": null
     },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 0.9,
+     "unit": "m²",
+     "higherIs": "better"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 23,
@@ -4451,6 +4511,12 @@
      "value": 597,
      "unit": "agents",
      "higherIs": null
+    },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 2.5,
+     "unit": "m²",
+     "higherIs": "better"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -4872,6 +4938,12 @@
      "unit": "agents",
      "higherIs": null
     },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 0.6,
+     "unit": "m²",
+     "higherIs": "better"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 21,
@@ -5291,6 +5363,12 @@
      "value": 1526,
      "unit": "agents",
      "higherIs": null
+    },
+    "parkshare": {
+     "label": "Public park space per resident",
+     "value": 1.2,
+     "unit": "m²",
+     "higherIs": "better"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T19:45:02Z",
+  "generated": "2026-10-23T19:52:33Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -6988,6 +6988,43 @@
           "parquet": null
         },
         {
+          "name": "delhi",
+          "cells": 27764,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "farmland/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
           "name": "guna",
           "cells": 1171,
           "bbox": {
@@ -8500,6 +8537,18 @@
             "north": 26.96875
           },
           "json": "haze_mix/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 84,
+          "bbox": {
+            "west": 72.74609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.3046875
+          },
+          "json": "haze_mix/mumbai.json",
           "parquet": null
         },
         {
@@ -13861,6 +13910,208 @@
             "north": 18.64111328125
           },
           "json": "parking/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "parks",
+      "title": "Parks and play space (Overture)",
+      "description": "Overture Maps base-theme land use (release 2026-10-21.0) of class park, garden, recreation_ground, playground, pitch, dog_park, village_green, common, clipped to each block. Overture land use comes from OpenStreetMap, so it shows mapped public parks and grounds; tree cover on private or unmapped land is in the vegetation and land-cover datasets instead. Mapping is fuller in central areas.",
+      "source": "pipeline/realestate/parks.py (Overture Maps base theme via DuckDB spatial)",
+      "license": "ODbL 1.0 (OpenStreetMap via Overture Maps)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "park_m2",
+          "label": "Public green and play space (Overture land use)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m\u00b2",
+          "domain": [
+            0,
+            126799
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "park_pct",
+          "label": "Share of the block that is public green or play space",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "big_park",
+          "label": "Touches a park of 0.5 ha or more",
+          "type": "number",
+          "agg": "max",
+          "unit": "yes/no",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "park_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 503,
+          "bbox": {
+            "west": 72.482421875,
+            "south": 22.97412109375,
+            "east": 72.673583984375,
+            "north": 23.121337890625
+          },
+          "json": "parks/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 5007,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "parks/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 254,
+          "bbox": {
+            "west": 77.32958984375,
+            "south": 23.178466796875,
+            "east": 77.5009765625,
+            "north": 23.29052734375
+          },
+          "json": "parks/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 1138,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.306884765625,
+            "north": 13.180908203125
+          },
+          "json": "parks/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 6638,
+          "bbox": {
+            "west": 76.879150390625,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.86279296875
+          },
+          "json": "parks/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 2026,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.30078125,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "parks/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 705,
+          "bbox": {
+            "west": 75.723388671875,
+            "south": 22.521484375,
+            "east": 75.995849609375,
+            "north": 22.82470703125
+          },
+          "json": "parks/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 671,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.87939453125,
+            "north": 26.99951171875
+          },
+          "json": "parks/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 1468,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "parks/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 1506,
+          "bbox": {
+            "west": 80.851806640625,
+            "south": 26.755615234375,
+            "east": 81.0517578125,
+            "north": 26.9423828125
+          },
+          "json": "parks/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 2266,
+          "bbox": {
+            "west": 72.787841796875,
+            "south": 18.8916015625,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "parks/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 1277,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.43017578125,
+            "east": 73.98974609375,
+            "north": 18.64111328125
+          },
+          "json": "parks/pune.json",
           "parquet": null
         }
       ]

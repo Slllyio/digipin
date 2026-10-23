@@ -468,6 +468,52 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Park space per resident. Public green and play space within PARK_KM of home, shared by everyone living within
+    // PARK_KM (a catchment ratio). WHO suggests 9 m² of green space per person; India's URDPFI guidelines 10–12 m².
+    // WHO Europe: a green area of at least 0.5 ha within 300 m of home.
+    const PARK_KM = 1, WHO_M2 = 9, URDPFI_M2 = 10, PARK_SHORT_M2 = 2, NEAR_PARK_KM = 0.3;
+
+    function parkshare(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const pk = c['parks.park_m2'], big = c['parks.big_park'], pop = c['population.population'];
+        if (!pk || !pop) return null;
+        const res = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0) res.push(i);
+        if (res.length < 5) return null;
+        const pkv = Float64Array.from(pk, v => (_fin(v) ? v : 0));
+        let parkAll = 0;
+        for (const v of pkv) parkAll += v;
+        if (parkAll <= 0) return null;
+        const pkNear = within(g, pkv, PARK_KM), popNear = within(g, Float64Array.from(pop, v => (v > 0 ? v : 0)), PARK_KM);
+        const bigNear = big ? within(g, Float64Array.from(big, v => (_fin(v) ? v : 0)), NEAR_PARK_KM) : null;
+        const per = new Float64Array(n).fill(NaN), gap = new Float64Array(n).fill(NaN);
+        for (const i of res) {
+            per[i] = popNear[i] > 0 ? pkNear[i] / popNear[i] : NaN;
+            gap[i] = _fin(per[i]) ? Math.max(0, URDPFI_M2 - per[i]) * pop[i] : NaN;
+        }
+        const people = _sumOver(pop, res, () => true);
+        const cityPer = parkAll / people;
+        const short = _sumOver(pop, res, i => per[i] < PARK_SHORT_M2), meets = _sumOver(pop, res, i => per[i] >= WHO_M2);
+        const noBig = bigNear ? _sumOver(pop, res, i => bigNear[i] === 0) : null;
+        let gapAll = 0;
+        for (const i of res) if (_fin(gap[i])) gapAll += gap[i];
+        const stats = [
+            { label: 'Mapped public park and play space per resident, city-wide', value: `${_round(cityPer, 1)} m² (WHO ${WHO_M2} m², URDPFI ${URDPFI_M2}–12 m²)`, raw: _round(cityPer, 2) },
+            { label: `Residents with under ${PARK_SHORT_M2} m² each within ${PARK_KM} km`, value: `${_people(short)} (${_round(100 * short / people)}%)` },
+            { label: `Residents with ${WHO_M2} m² or more each within ${PARK_KM} km`, value: `${_people(meets)} (${_round(100 * meets / people)}%)` },
+        ];
+        if (noBig != null) stats.push({ label: 'Residents with no park of 0.5 ha or more within 300 m', value: `${_people(noBig)} (${_round(100 * noBig / people)}%)` });
+        stats.push({ label: `Park space needed to give every block ${URDPFI_M2} m² a resident within ${PARK_KM} km`, value: `${_round(gapAll / 1e6, 1)} km²` });
+        spaced(g, res.filter(i => gap[i] > 0), gap).slice(0, 4).forEach((i, k) => stats.push({ label: `Park need ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(per[i], 1)} m² a resident within ${PARK_KM} km; ${_people(pop[i])} residents in the block` }));
+        return {
+            columns: { park_m2_per_resident: per, park_gap_m2: gap }, idx: res, weightKey: 'park_gap_m2', noHotspots: true,
+            metric: { label: 'Public park space per resident', value: _round(cityPer, 1), unit: 'm²', higherIs: 'better' },
+            headline: `The city has ${_round(cityPer, 1)} m² of mapped public park and play space per resident against WHO's ${WHO_M2} m²; ${_people(short)} residents (${_round(100 * short / people)}%) have under ${PARK_SHORT_M2} m² each within ${PARK_KM} km${noBig != null ? `, and ${_round(100 * noBig / people)}% have no half-hectare park within 300 m` : ''}.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -652,6 +698,13 @@ const UrbanLensesEnvironment = (() => {
             needs: ['places.property_agents', 'land_value.value_index', 're_supply.build_rate', 'population.population'],
             method: `Overture places (confidence 0.6+, not closed) whose category or name marks an estate agent, broker or property dealer, summed within ${MARKET_KM} km of each block. Agents cluster where deals happen, so the count is a proxy for transaction activity, not prices. Hot = top ${_round(100 * (1 - MARKET_HOT))}% of blocks; emerging = hot while the block's land value index is below the city median. ρ is the Spearman rank correlation between agent density and the land value index over blocks with any agents. Coverage of small dealers in Overture is uneven, so compare blocks within a city, not across cities.`,
             refs: 'Overture Maps Foundation places (2026-10); Glaeser, Kim & Luca 2018 (online listings as a proxy for local economic activity); DigiPin land value model (docs/REAL_ESTATE_MODEL.md)' },
+        { id: 'parkshare', equity: true, title: 'Park space per resident', icon: '🏞',
+            question: 'How much public park space does each neighbourhood have per person, and where is it most short?',
+            field: { key: 'park_m2_per_resident', label: 'Public park space per resident within 1 km', unit: 'm²', higherIs: 'better', ramp: 'greens', domain: [0, 20] },
+            extra: [{ key: 'park_gap_m2', label: 'Park space short of 10 m² a resident (block total)', unit: 'm²', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['parks.park_m2', 'parks.big_park', 'population.population'],
+            method: `Public green and play space = Overture Maps land use (from OpenStreetMap) of class park, garden, recreation ground, playground, pitch, dog park, village green or common, clipped to each block. Per resident = park area within ${PARK_KM} km of the block ÷ residents within ${PARK_KM} km (GHSL), so a big park is shared by everyone around it. Targets: WHO ${WHO_M2} m² of green space per person; URDPFI (India, 2014) ${URDPFI_M2}–12 m² of organised open space per person; WHO Europe 0.5 ha of green within 300 m. Ridge forests, nature reserves and unmapped or private green are not counted; tree cover is in the Green lens.`,
+            refs: 'WHO Regional Office for Europe 2016 (Urban green spaces and health); MoHUA URDPFI Guidelines 2014; Overture Maps base theme (2026-10); GHSL population' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -667,7 +720,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

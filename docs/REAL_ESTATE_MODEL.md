@@ -643,3 +643,23 @@ The `airdeaths` lens estimates early deaths from PM2.5 with the Global Exposure 
 | Bengaluru | about 16,000 | 25% | about 10 |
 
 GEMM sits at the high end of published estimates. One national baseline rate is used everywhere, so the map shows where air kills more, not local death records.
+
+## Park space per resident
+
+The `parks` dataset (L7, `pipeline/realestate/parks.py`) clips Overture Maps land use to each block. It keeps parks, gardens, recreation grounds, playgrounds, pitches, dog parks, village greens and commons. Overture takes these polygons from OpenStreetMap.
+
+The `parkshare` lens works out park space per resident as a catchment ratio:
+
+- the park area within 1 km of a block, divided by the residents within 1 km;
+- compared against WHO's 9 m² per person and the 10–12 m² in India's URDPFI guidelines;
+- plus whether a park of half a hectare or more lies within 300 m of home, the WHO Europe target.
+
+Ridge forests, nature reserves and private or unmapped green are not counted.
+
+| City | Park space per resident | Residents with under 2 m² each within 1 km |
+|---|---|---|
+| Delhi (NCR extent) | 2.0 m² | 71% |
+| Bengaluru | 2.1 m² | 85% |
+| Mumbai | 0.6 m² | 98% |
+| Chennai | 0.6 m² | 96% |
+| Ahmedabad | 0.3 m² | 98% |
