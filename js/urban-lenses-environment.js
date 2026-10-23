@@ -762,6 +762,43 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Informal-housing likelihood. Four signs of a dense informal settlement, each 0/1: small footprints (mean under
+    // SMALL_M2 m²), packed roofs (cover INF_COVER%+), low rise (under LOW_M m) and low wealth (RWI quintile 1–2).
+    // Likely informal = INF_LIKELY or more signs. OSM maps slum lanes well, so road density is not a sign.
+    const SMALL_M2 = 60, INF_COVER = 35, LOW_M = 8, INF_LIKELY = 3;
+
+    function informal(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const nb = c['building_stock.buildings_2023'], cov = c['building_stock.cover_2023_pct'], h = c['building_stock.height_2023_m'];
+        const q = c['wealth.wealth_quintile'], pop = c['population.population'];
+        if (!nb || !cov || !pop) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0 && _fin(nb[i]) && nb[i] >= 20 && _fin(cov[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const m2 = g.cellKm2 * 1e6, foot = new Float64Array(n).fill(NaN), signs = new Float64Array(n).fill(NaN);
+        for (const i of idx) {
+            foot[i] = cov[i] / 100 * m2 / nb[i];
+            signs[i] = (foot[i] < SMALL_M2 ? 1 : 0) + (cov[i] >= INF_COVER ? 1 : 0) + (h && _fin(h[i]) && h[i] < LOW_M ? 1 : 0)
+                + (q && _fin(q[i]) && q[i] <= 2 ? 1 : 0);
+        }
+        const people = _sumOver(pop, idx, () => true), likely = _sumOver(pop, idx, i => signs[i] >= INF_LIKELY);
+        const nLikely = idx.filter(i => signs[i] >= INF_LIKELY).length;
+        const stats = [
+            { label: `Residents in blocks with ${INF_LIKELY}+ of 4 informal-settlement signs`, value: `${_people(likely)} (${_round(100 * likely / people)}%)`, raw: Math.round(likely) },
+            { label: 'Blocks that look informal', value: `${nLikely}` },
+            { label: 'Median building footprint, lived-in blocks', value: `${Math.round(wquantile(foot, null, idx, 0.5))} m²` },
+        ];
+        const score = Float64Array.from({ length: n }, (_, i) => (signs[i] >= INF_LIKELY ? signs[i] * pop[i] : 0));
+        spaced(g, idx.filter(i => signs[i] >= INF_LIKELY), score).slice(0, 5).forEach((i, k) => stats.push({ label: `Likely informal ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(pop[i])} residents; ${Math.round(nb[i])} buildings averaging ${Math.round(foot[i])} m², ${_round(cov[i])}% roof cover` }));
+        return {
+            columns: { informal_signs: signs, footprint_m2: foot }, idx, weightKey: 'informal_signs', noHotspots: true,
+            metric: { label: 'Residents in likely informal blocks', value: _round(100 * likely / people), unit: '%', higherIs: null },
+            headline: `${_people(likely)} residents (${_round(100 * likely / people)}%) live in blocks that look like dense informal settlements from space: small, packed, low-rise roofs in a low-wealth area.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -987,6 +1024,13 @@ const UrbanLensesEnvironment = (() => {
             needs: ['sites.site_status', 'sites.bare_now', 'sites.built_then', 'sites.built_now', 'population.population'],
             method: 'Dynamic World monthly built-up and bare-ground probabilities averaged over two dry seasons a year apart (Dec 2024–May 2025 and Dec 2025–May 2026). In blocks at least 15% built-up, a site is 25%+ bare ground. Stalled = bare in both seasons with built-up moving under 5 points; building up = built-up up 10+ points; cleared this year = bare up 15+ points, or built-up down 10+ with bare ground up as much (demolition). Quarries, dry open plots and fair grounds can look like stalled sites, so check them on the satellite view. Residents near stalled sites are counted within 300 m.',
             refs: 'Brown et al. 2022 (Dynamic World); RERA project status as the ground truth to compare against (state portals)' },
+        { id: 'informal', equity: true, title: 'Informal housing (likely)', icon: '🏘️',
+            question: 'Which neighbourhoods look like dense informal settlements, and how many people live there?',
+            field: { key: 'informal_signs', label: 'Informal-settlement signs (of 4)', unit: 'of 4', higherIs: null, ramp: 'heat', domain: [0, 4] },
+            extra: [{ key: 'footprint_m2', label: 'Mean building footprint', unit: 'm²', higherIs: null, ramp: 'viridis', domain: [0, 300] }],
+            needs: ['building_stock.buildings_2023', 'building_stock.cover_2023_pct', 'building_stock.height_2023_m', 'wealth.wealth_quintile', 'population.population'],
+            method: `Four signs per lived-in block with 20+ buildings: mean footprint under ${SMALL_M2} m² (Open Buildings 2.5D 2023 roof cover × block area ÷ building count); roof cover ${INF_COVER}%+; mean height under ${LOW_M} m; Meta Relative Wealth Index quintile 1–2. ${INF_LIKELY}+ signs = likely informal. Open Buildings often merges touching slum roofs into one polygon, which inflates footprints, so dense settlements can be undercounted. This is a look-alike from space, not a legal status: notified slums, urban villages and old walled cores can all score high, and Census 2011 slum shares (Mumbai 41%, Delhi 15%) count differently.`,
+            refs: 'Kuffer, Pfeffer & Sliuzas 2016 (slums from space); Sirko et al. 2023 (Open Buildings 2.5D); Chi et al. 2022 (Relative Wealth Index); Census of India 2011 slum tables' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -1002,7 +1046,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

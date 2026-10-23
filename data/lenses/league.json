@@ -342,6 +342,12 @@
      "unit": "blocks",
      "higherIs": "worse"
     },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 11.4,
+     "unit": "%",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 2,
@@ -791,6 +797,12 @@
      "value": 5,
      "unit": "blocks",
      "higherIs": "worse"
+    },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 9.3,
+     "unit": "%",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -1242,6 +1254,12 @@
      "unit": "blocks",
      "higherIs": "worse"
     },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 9.7,
+     "unit": "%",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 5,
@@ -1685,6 +1703,12 @@
      "value": 16,
      "unit": "blocks",
      "higherIs": "worse"
+    },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 8.9,
+     "unit": "%",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -2136,6 +2160,12 @@
      "unit": "blocks",
      "higherIs": "worse"
     },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 5.7,
+     "unit": "%",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 37,
@@ -2561,6 +2591,12 @@
      "value": 0,
      "unit": "blocks",
      "higherIs": "worse"
+    },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 12.3,
+     "unit": "%",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3005,6 +3041,12 @@
      "value": 14,
      "unit": "blocks",
      "higherIs": "worse"
+    },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 8.4,
+     "unit": "%",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3456,6 +3498,12 @@
      "unit": "blocks",
      "higherIs": "worse"
     },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 8.7,
+     "unit": "%",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 9,
@@ -3899,6 +3947,12 @@
      "value": 8,
      "unit": "blocks",
      "higherIs": "worse"
+    },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 9,
+     "unit": "%",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -4344,6 +4398,12 @@
      "unit": "blocks",
      "higherIs": "worse"
     },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 9.8,
+     "unit": "%",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 23,
@@ -4781,6 +4841,12 @@
      "value": 55,
      "unit": "blocks",
      "higherIs": "worse"
+    },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 18,
+     "unit": "%",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -5238,6 +5304,12 @@
      "unit": "blocks",
      "higherIs": "worse"
     },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 3.8,
+     "unit": "%",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 21,
@@ -5687,6 +5759,12 @@
      "value": 16,
      "unit": "blocks",
      "higherIs": "worse"
+    },
+    "informal": {
+     "label": "Residents in likely informal blocks",
+     "value": 3.8,
+     "unit": "%",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",

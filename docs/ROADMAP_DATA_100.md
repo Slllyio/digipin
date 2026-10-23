@@ -44,8 +44,8 @@ Each item gives four things:
 1. ❌ Overture buildings class / subtype per block (residential, commercial, industrial, civic, religious) | S3 | land-use mix lens, property report (dropped: under 1% of Indian buildings carry a class or height in Overture)
 2. ❌ Overture building floors and height where tagged | S3 | FAR check against Open Buildings 2.5D (dropped: under 1% of Indian buildings carry floors or height in Overture)
 3. Building age bands from WSF Evolution + GHSL epochs (exists as settled_year; add age histogram) | EE | redevelopment lens
-4. Building footprint shape: compactness, size class (small plots vs slabs) | EE Open Buildings v3 polygons | informal-housing and plot-size lens
-5. Informal / slum likelihood (small dense roofs + low RWI + low road access) | derived | housing-quality lens
+4. ✅ Building footprint shape: compactness, size class (small plots vs slabs) | EE Open Buildings v3 polygons | informal-housing and plot-size lens
+5. ✅ Informal / slum likelihood (small dense roofs + low RWI + low road access) | derived | housing-quality lens
 6. Rooftop area free for solar after water tanks (Open Buildings height variance) | EE | refines Home solar
 7. Vacant building signal (no night light growth + no places + built) | derived | vacancy lens
 8. Commercial floor-space estimate (places × building class × height) | derived | office/retail supply

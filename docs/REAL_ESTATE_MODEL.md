@@ -721,3 +721,27 @@ The `sites` dataset (L7, `pipeline/realestate/stalled.py`) compares two dry seas
 - **Cleared this year:** bare ground up by 15 points or more, or built-up down 10 points with bare ground up as much (demolition).
 
 The `sites` lens names the largest stalled sites and the fastest-building blocks, and counts the residents within 300 m of a stalled site. Quarries and dry open plots can look like stalled sites, so check them on the satellite view. Before classifying, the city-wide median change between the two seasons is removed, because a hazier season shifts every block at once. Delhi has 508 stalled-or-idle blocks, 38 building up and 8 newly cleared. Many of Delhi's stalled-or-idle blocks are long-vacant open plots rather than halted projects.
+
+## Informal housing (likely)
+
+The `informal` lens counts four signs per lived-in block:
+
+- a mean building footprint under 60 m², worked out as roof cover × block area ÷ building count from Open Buildings 2023;
+- roof cover of 35% or more;
+- a mean height under 8 m;
+- a Relative Wealth Index in quintile 1–2.
+
+A block with three or more signs is likely informal. This is a look-alike from space, not a legal status.
+
+It undercounts the densest settlements. Open Buildings merges touching slum roofs into one large polygon, and its heights there are noisy. Mumbai reads 3.8% against a Census 2011 slum share of 41%.
+
+Share of residents in likely-informal blocks:
+
+| City | Share |
+|---|---|
+| Kolkata | 9.8% |
+| Bengaluru | 9.3% |
+| Chennai | 8.9% |
+| Delhi | 5.7% |
+
+Read the lens for where settlements are, not for how many people live in them.
