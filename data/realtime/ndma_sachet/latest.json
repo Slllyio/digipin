@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-23T19:33:20Z",
+  "generated_at_iso": "2026-10-23T22:38:37Z",
   "count": 100,
   "records": [
+    {
+      "id": "1792790157571028",
+      "headline": "Thunderstorm/Lightning, light to moderate rain with wind speed 30-40 Kmph is likely to occur at isolated places over Ajmer, Churu, Didwana-Kuchaman, Jaipur, Nagaur, Sikar in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 23 Oct 2026 21:21:28 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792790157571028",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1792783457574041",
       "headline": "Moderate Rain with thunderstorm is likely to occur at isolated places over Ariyalur, Chennai, Coimbatore, Cuddalore, Dindigul, Kallakurichi, Kancheepuram, Madurai, Mayiladuthurai, Nagapattinam, Pudukkottai, Thanjavur, Thiruvallur, Thiruvarur, Tiruvannamalai, Vellore, Viluppuram, Karaikal in next 3 hours.",
@@ -1087,17 +1098,6 @@
       "area": "",
       "published_utc": "Fri, 23 Oct 2026 02:15:15 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792721663859008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792720116693008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 23 Oct 2026 01:49:18 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792720116693008",
       "severity": "Minor",
       "category": "Other",
       "tags": []

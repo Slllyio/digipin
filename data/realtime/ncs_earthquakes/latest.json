@@ -1,10 +1,65 @@
 {
-  "generated_at_iso": "2026-10-23T19:33:17Z",
+  "generated_at_iso": "2026-10-23T22:38:35Z",
   "count": 150,
   "records": [
     {
+      "id": "2026-10-24 03:39:55|36.324,70.736",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-24 03:39:55",
+      "latitude": 36.324,
+      "longitude": 70.736,
+      "depth_km": 210.0,
+      "region": "Afghanistan",
+      "location": "87km S of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-24 03:29:42|13.497,77.420",
+      "magnitude": 2.9,
+      "origin_time": "2026-10-24 03:29:42",
+      "latitude": 13.497,
+      "longitude": 77.42,
+      "depth_km": 5.0,
+      "region": "Chikkaballapura, Karnataka",
+      "location": "61km NNW of Bengaluru, Karnataka, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-24 03:11:43|33.110,76.101",
+      "magnitude": 2.8,
+      "origin_time": "2026-10-24 03:11:43",
+      "latitude": 33.11,
+      "longitude": 76.101,
+      "depth_km": 5.0,
+      "region": "Doda, Jammu and Kashmir",
+      "location": "101km NNW of Dharamshala, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-24 02:07:47|32.322,93.888",
+      "magnitude": 4.6,
+      "origin_time": "2026-10-24 02:07:47",
+      "latitude": 32.322,
+      "longitude": 93.888,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "483km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-24 01:08:02|31.942,93.701",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-24 01:08:02",
+      "latitude": 31.942,
+      "longitude": 93.701,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "448km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
       "id": "2026-10-23 22:36:23|26.031,95.478",
-      "magnitude": 5.2,
+      "magnitude": 4.8,
       "origin_time": "2026-10-23 22:36:23",
       "latitude": 26.031,
       "longitude": 95.478,
@@ -1595,61 +1650,6 @@
       "depth_km": 90.0,
       "region": "Xinjiang",
       "location": "406km NNW of Kargil, Laddakh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-12 10:37:04|26.288,89.922",
-      "magnitude": 2.7,
-      "origin_time": "2026-10-12 10:37:04",
-      "latitude": 26.288,
-      "longitude": 89.922,
-      "depth_km": 6.0,
-      "region": "Kokrajhar, Assam",
-      "location": "90km NNW of Tura, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-12 08:34:17|39.322,72.113",
-      "magnitude": 4.3,
-      "origin_time": "2026-10-12 08:34:17",
-      "latitude": 39.322,
-      "longitude": 72.113,
-      "depth_km": 50.0,
-      "region": "Kyrgyzstan",
-      "location": "282km NNE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-12 06:58:18|24.738,94.318",
-      "magnitude": 4.6,
-      "origin_time": "2026-10-12 06:58:18",
-      "latitude": 24.738,
-      "longitude": 94.318,
-      "depth_km": 45.0,
-      "region": "Kamjong, Manipur",
-      "location": "27km SW of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-12 01:53:31|36.645,71.275",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-12 01:53:31",
-      "latitude": 36.645,
-      "longitude": 71.275,
-      "depth_km": 190.0,
-      "region": "Afghanistan",
-      "location": "82km SE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-11 23:31:25|33.246,75.520",
-      "magnitude": 2.9,
-      "origin_time": "2026-10-11 23:31:25",
-      "latitude": 33.246,
-      "longitude": 75.52,
-      "depth_km": 5.0,
-      "region": "Doda, Jammu and Kashmir",
-      "location": "61km ENE of Katra, Jammu and Kashmir, India",
       "review_status": "Reviewed"
     }
   ]
