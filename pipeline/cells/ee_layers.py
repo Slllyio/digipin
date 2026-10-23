@@ -1637,9 +1637,9 @@ def haze_mix(region):
         tot = x.get("total")
         if not tot:
             continue
-        sh = lambda k: _r(100 * (x.get(k) or 0) / tot)
-        rows[c] = {"aod_total": _r(tot, 3), "dust_share_pct": sh("dust"), "smoke_share_pct": sh("smoke"),
-                   "sulphate_share_pct": sh("sulphate"), "seasalt_share_pct": sh("seasalt"),
+        sh = {k: _r(100 * (x.get(k) or 0) / tot) for k in ("dust", "smoke", "sulphate", "seasalt")}
+        rows[c] = {"aod_total": _r(tot, 3), "dust_share_pct": sh["dust"], "smoke_share_pct": sh["smoke"],
+                   "sulphate_share_pct": sh["sulphate"], "seasalt_share_pct": sh["seasalt"],
                    "dust_aod_premonsoon": _r(x.get("dust_pre"), 3), "dust_days_yr": _r(x.get("dust_days"))}
     specs = [
         FieldSpec("aod_total", f"Aerosol optical depth at 550 nm, {YEAR} mean", agg="mean", unit="AOD", domain=[0, 1.2], ramp="reds",
@@ -1664,6 +1664,50 @@ def haze_mix(region):
                     "read them as the city's mix, not block detail.",
         source="ECMWF/CAMS/NRT via Earth Engine (pipeline/cells/ee_layers.py)",
         license="Copernicus licence (CAMS)", default_field="dust_share_pct")
+    return spec, _table(level, rows, specs)
+
+
+# ── mangroves: extent 1996 and 2020 (Global Mangrove Watch v3) ───────────────
+
+GMW = "projects/sat-io/open-datasets/GMW/extent/gmw_v3_{}_vec"
+MANGROVE_FROM, MANGROVE_TO = 1996, 2020
+
+
+def mangroves(region):
+    """Mangrove share of each block in 1996 and 2020, and the change, from Global Mangrove Watch v3 polygons."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+
+    def mask(y):
+        fc = ee.FeatureCollection(GMW.format(y)).filterBounds(geom)
+        return ee.Image(0).byte().paint(fc, 1)
+    m0, m1 = mask(MANGROVE_FROM), mask(MANGROVE_TO)
+    img = ee.Image.cat([m0.rename("m0"), m1.rename("m1"), m0.And(m1.Not()).rename("lost")])
+    raw = gee.fetch(gee.to_cells(img, 25), bbox, level, tile=64)
+    rows = {}
+    for c, x in raw.items():
+        a, b = x.get("m0") or 0, x.get("m1") or 0
+        if max(a, b) < 0.01:
+            continue
+        rows[c] = {"mangrove_1996_pct": _r(100 * a), "mangrove_2020_pct": _r(100 * b), "mangrove_change_pp": _r(100 * (b - a)),
+                   "mangrove_lost_pct": _r(100 * (x.get("lost") or 0))}
+    specs = [
+        FieldSpec("mangrove_1996_pct", f"Mangroves, {MANGROVE_FROM}", agg="mean", unit="% of block", domain=[0, 100], ramp="greens"),
+        FieldSpec("mangrove_2020_pct", f"Mangroves, {MANGROVE_TO}", agg="mean", unit="% of block", domain=[0, 100], ramp="greens"),
+        FieldSpec("mangrove_change_pp", f"Change in mangroves {MANGROVE_FROM}→{MANGROVE_TO}", agg="mean", unit="points", domain=[-30, 30],
+                  ramp="diverging", higher_is="better"),
+        FieldSpec("mangrove_lost_pct", f"Block area that was mangrove in {MANGROVE_FROM} and is not in {MANGROVE_TO}", agg="mean",
+                  unit="% of block", domain=[0, 30], ramp="reds", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="mangroves", title="Mangroves (Global Mangrove Watch)", level=level, fields=specs, group=GROUP,
+        description=f"Global Mangrove Watch v3 extent polygons (25 m, from ALOS PALSAR radar and Landsat) for {MANGROVE_FROM} and "
+                    f"{MANGROVE_TO}, rasterised and averaged per block: the mangrove share in each year, the change, and the share "
+                    "lost. Mangroves buffer storm surge and hold coastal mud; losses show reclamation, ports and roads. Only blocks "
+                    "with at least 1% mangrove in either year are kept.",
+        source=f"{GMW.format('YYYY')} (awesome-gee-community-catalog) via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (Bunting et al. 2022, Global Mangrove Watch)", default_field="mangrove_2020_pct")
     return spec, _table(level, rows, specs)
 
 
@@ -1784,7 +1828,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves,
 }
 
 

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T19:52:33Z",
+  "generated": "2026-10-23T19:57:40Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -10961,6 +10961,87 @@
           },
           "json": "lst_monthly/pune.json.gz",
           "parquet": "lst_monthly/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "mangroves",
+      "title": "Mangroves (Global Mangrove Watch)",
+      "description": "Global Mangrove Watch v3 extent polygons (25 m, from ALOS PALSAR radar and Landsat) for 1996 and 2020, rasterised and averaged per block: the mangrove share in each year, the change, and the share lost. Mangroves buffer storm surge and hold coastal mud; losses show reclamation, ports and roads. Only blocks with at least 1% mangrove in either year are kept.",
+      "source": "projects/sat-io/open-datasets/GMW/extent/gmw_v3_YYYY_vec (awesome-gee-community-catalog) via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "CC BY 4.0 (Bunting et al. 2022, Global Mangrove Watch)",
+      "group": "Open Data (satellite)",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "mangrove_1996_pct",
+          "label": "Mangroves, 1996",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens"
+        },
+        {
+          "key": "mangrove_2020_pct",
+          "label": "Mangroves, 2020",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens"
+        },
+        {
+          "key": "mangrove_change_pp",
+          "label": "Change in mangroves 1996\u21922020",
+          "type": "number",
+          "agg": "mean",
+          "unit": "points",
+          "domain": [
+            -30,
+            30
+          ],
+          "ramp": "diverging",
+          "higherIs": "better"
+        },
+        {
+          "key": "mangrove_lost_pct",
+          "label": "Block area that was mangrove in 1996 and is not in 2020",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "mangrove_2020_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "mumbai",
+          "cells": 2645,
+          "bbox": {
+            "west": 72.78125,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "mangroves/mumbai.json",
+          "parquet": null
         }
       ]
     },

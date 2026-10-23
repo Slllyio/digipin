@@ -86,7 +86,7 @@ Each item gives four things:
 40. Drainage density (OSM drains + MERIT streams) | OSM/EE | waterlogging
 41. ✅ Lake and wetland health (Sentinel-2 water extent trend + NDCI) | EE | lake lens
 42. ✅ Water quality chlorophyll / turbidity in lakes (Sentinel-2) | EE | lake lens
-43. Mangrove extent and loss (Global Mangrove Watch) | EE | coastal buffer
+43. ✅ Mangrove extent and loss (Global Mangrove Watch) | EE | coastal buffer
 44. Coastal erosion / shoreline change (Landsat shoreline) | EE | coast lens
 45. Groundwater recharge potential (soil + slope + land cover) | EE | recharge siting
 

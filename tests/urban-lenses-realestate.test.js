@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -329,6 +329,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.park_gap_m2[SIZE - 1]).toBe(10 * 1000);
         expect(r.headline).toMatch(/against WHO's 9 m²/);
         expect(L._lenses.parkshare(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('mangrove: area then and now, area lost, residents sheltered', () => {
+        const m0 = codes.map((_, i) => (col(i) < 2 ? 80 : NaN)), m1 = codes.map((_, i) => (col(i) < 2 ? (i < SIZE * 6 ? 40 : 80) : NaN));
+        const f = L.frameFrom(codes, { ...base, 'mangroves.mangrove_1996_pct': m0, 'mangroves.mangrove_2020_pct': m1,
+            'mangroves.mangrove_lost_pct': codes.map((_, i) => (col(i) < 2 && i < SIZE * 6 ? 40 : col(i) < 2 ? 0 : NaN)) }, { city: 'mumbai' });
+        const r = L._lenses.mangrove(f, {});
+        const km2 = f.grid.cellKm2;
+        expect(r.metric.value).toBeCloseTo((12 * 0.4 + 12 * 0.8) * km2, 1);
+        expect(r.columns.mangrove_lost_ha[0]).toBeCloseTo(40 * km2, 6);
+        expect(r.stats.find(x => /Mangrove loss 1/.test(x.label))).toBeTruthy();
+        expect(L._lenses.mangrove(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

@@ -514,6 +514,46 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Mangroves. Global Mangrove Watch v3, 1996 and 2020. Residents within SURGE_KM of mangroves get some storm-surge
+    // buffering; blocks that lost MANGROVE_LOST% or more of their area as mangrove are named.
+    const SURGE_KM = 1, MANGROVE_LOST = 5;
+
+    function mangrove(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const m0 = c['mangroves.mangrove_1996_pct'], m1 = c['mangroves.mangrove_2020_pct'], lost = c['mangroves.mangrove_lost_pct'];
+        const pop = c['population.population'], built = c['growth.built_change_pp'];
+        if (!m0 || !m1) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(m0[i]) || _fin(m1[i])) idx.push(i);
+        if (idx.length < 3) return null;
+        const km2 = g.cellKm2, v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        let a0 = 0, a1 = 0, gone = 0;
+        const lostHa = new Float64Array(n).fill(NaN), now = new Float64Array(n);
+        for (const i of idx) {
+            a0 += v(m0, i) / 100 * km2; a1 += v(m1, i) / 100 * km2;
+            gone += v(lost, i) / 100 * km2; lostHa[i] = v(lost, i) / 100 * km2 * 100; now[i] = v(m1, i) > 0 ? 1 : 0;
+        }
+        const stats = [
+            { label: 'Mangroves 1996 → 2020', value: `${_round(a0, 1)} → ${_round(a1, 1)} km²`, raw: _round(a1, 2) },
+            { label: 'Mangrove area lost since 1996 (some regrew elsewhere)', value: `${_round(gone, 1)} km² (${_round(100 * gone / Math.max(1e-9, a0))}%)` },
+        ];
+        if (pop) {
+            const near = within(g, now, SURGE_KM);
+            let people = 0;
+            for (let i = 0; i < n; i++) if (pop[i] > 0 && near[i] > 0) people += pop[i];
+            stats.push({ label: `Residents within ${SURGE_KM} km of mangroves (some storm-surge shelter)`, value: _people(people) });
+        }
+        const hs = idx.filter(i => v(lost, i) >= MANGROVE_LOST);
+        spaced(g, hs, lostHa).slice(0, 4).forEach((i, k) => stats.push({ label: `Mangrove loss ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(lostHa[i], 1)} ha lost${built && _fin(built[i]) && built[i] > 1 ? `; buildings up ${_round(built[i], 1)} points since 2016` : ''}` }));
+        return {
+            columns: { mangrove_lost_ha: lostHa, mangrove_now_pct: m1 }, idx, weightKey: 'mangrove_lost_ha', noHotspots: true,
+            metric: { label: 'Mangroves in 2020', value: _round(a1, 1), unit: 'km²', higherIs: 'better' },
+            headline: `The city has ${_round(a1, 1)} km² of mangroves (${_round(a0, 1)} km² in 1996); ${_round(gone, 1)} km² of the 1996 stands have gone.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -705,6 +745,13 @@ const UrbanLensesEnvironment = (() => {
             needs: ['parks.park_m2', 'parks.big_park', 'population.population'],
             method: `Public green and play space = Overture Maps land use (from OpenStreetMap) of class park, garden, recreation ground, playground, pitch, dog park, village green or common, clipped to each block. Per resident = park area within ${PARK_KM} km of the block ÷ residents within ${PARK_KM} km (GHSL), so a big park is shared by everyone around it. Targets: WHO ${WHO_M2} m² of green space per person; URDPFI (India, 2014) ${URDPFI_M2}–12 m² of organised open space per person; WHO Europe 0.5 ha of green within 300 m. Ridge forests, nature reserves and unmapped or private green are not counted; tree cover is in the Green lens.`,
             refs: 'WHO Regional Office for Europe 2016 (Urban green spaces and health); MoHUA URDPFI Guidelines 2014; Overture Maps base theme (2026-10); GHSL population' },
+        { id: 'mangrove', equity: false, title: 'Mangroves', icon: '🌿',
+            question: 'How much mangrove does the city have, what has been lost since 1996, and who does it shelter?',
+            field: { key: 'mangrove_lost_ha', label: 'Mangrove lost since 1996', unit: 'ha', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'mangrove_now_pct', label: 'Mangrove share of the block, 2020', unit: '%', higherIs: 'better', ramp: 'greens', domain: [0, 100] }],
+            needs: ['mangroves.mangrove_1996_pct', 'mangroves.mangrove_2020_pct', 'mangroves.mangrove_lost_pct', 'growth.built_change_pp', 'population.population'],
+            method: `Global Mangrove Watch v3 extent polygons (25 m, ALOS PALSAR radar and Landsat) for 1996 and 2020, rasterised per block. Lost = mangrove in 1996 and not in 2020; some stands also grew back or spread on new mud, so net change is smaller than loss. Residents within ${SURGE_KM} km of a mangrove block are counted as getting some storm-surge and erosion shelter; the real buffer depends on belt width. Only cities whose map extent reaches mangroves (Mumbai) have this layer.`,
+            refs: 'Bunting et al. 2022 (Global Mangrove Watch v3, Remote Sensing); Menéndez et al. 2020 (global flood protection benefits of mangroves); Bombay High Court 2018 order protecting Maharashtra mangroves' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -720,7 +767,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

@@ -663,3 +663,16 @@ Ridge forests, nature reserves and private or unmapped green are not counted.
 | Mumbai | 0.6 m² | 98% |
 | Chennai | 0.6 m² | 96% |
 | Ahmedabad | 0.3 m² | 98% |
+
+## Mangroves
+
+The `mangroves` dataset (L7) uses Global Mangrove Watch v3 extent polygons for 1996 and 2020, rasterised at 25 m. Of the 13 cities, only Mumbai's map extent reaches mangroves.
+
+The `mangrove` lens covers four things:
+
+- area then and now;
+- the area lost since 1996;
+- the blocks that lost the most;
+- the residents within 1 km of mangroves, who get some shelter from storm surge.
+
+Mumbai had 82.8 km² of mangroves in 1996 and 80.8 km² in 2020. 4.4 km² of the 1996 stands have gone, and regrowth elsewhere offsets most of that. 38 lakh residents live within 1 km of mangroves.
