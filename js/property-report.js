@@ -13,7 +13,7 @@
 const PropertyReport = (() => {
     'use strict';
     const SCHEMA = 'digipin.property/1';
-    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome'];
+    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk'];
     const EXTRA = ['land_value.prem_jobs_pct', 'land_value.prem_metro_pct', 'land_value.prem_amenity_pct', 'land_value.prem_neigh_pct',
         'land_value.prem_green_pct', 'land_value.prem_risk_pct', 'land_value.prem_noise_pct', 're_supply.far_now', 're_supply.headroom_m2',
         'building_dynamics.settled_year', 'building_dynamics.highrise_pct', 'building_dynamics.nonres_pct', 'building_dynamics.accel',
@@ -86,6 +86,8 @@ const PropertyReport = (() => {
                 row('Expected flood and waterlogging damage', fin(v.loss) ? `${rs(v.loss * 1e5)} a year (${r1(v.lossPct, 2)}% of building value)` : 'none modelled'),
                 row('1-in-100-year floodplain', fin(v.flood) ? `${r1(v.flood)}% of the block` : null),
                 row('100-year river or sea flood by 2050 (WRI Aqueduct, 1 km)', fin(v.flood50) ? `${r1(v.flood50)}% of the area${fin(v.flood50now) ? ` (now ${r1(v.flood50now)}%)` : ''}` : null, 'no defences modelled; coarse, reads high'),
+                row('Water stress (basin, WRI Aqueduct)', fin(v.wstress) ? `${v.wstress >= 100 ? `${r1(v.wstress / 100, 1)} times renewable supply` : `${Math.round(v.wstress)}% of renewable supply`}${fin(v.wstress50) ? `; ${v.wstress50 >= 100 ? `${r1(v.wstress50 / 100, 1)} times` : `${Math.round(v.wstress50)}%`} by 2050` : ''}` : null, 'city-wide; over 80% is extremely high'),
+                row('Groundwater table', fin(v.gwd) && v.gwd > 0 ? `falling about ${r1(v.gwd, 1)} cm a year (1990–2014 trend)` : null, 'borewells go deeper'),
                 row('Waterlogging index', fin(v.wlog) ? `${r1(v.wlog)} / 100` : null),
                 row('Road noise', fin(v.noise) ? `${r1(v.noise)} dB Lden` : null),
                 row('Days at 40 °C or more a year: now → 2050', fin(v.hot0) && fin(v.hot1) ? `${r1(v.hot0)} → ${r1(v.hot1)}${fin(v.hot2) ? ` (${r1(v.hot2)} on the high-emissions path)` : ''}` : null, 'six-model CMIP6 ensemble, SSP2-4.5; city-scale, misses the heat island'),
@@ -116,6 +118,7 @@ const PropertyReport = (() => {
         if (fin(v.noise) && v.noise >= 70) risks.push('loud road noise');
         if (fin(v.encroach) && v.encroach >= 2) risks.push('encroachment flags');
         if (fin(v.hotBlock ?? v.hot1) && (v.hotBlock ?? v.hot1) >= 45) risks.push(`about ${Math.round(v.hotBlock ?? v.hot1)} days a year at 40 °C by 2050`);
+        if (fin(v.gwd) && v.gwd >= 10) risks.push('groundwater falling fast');
         if (fin(v.priceGap) && v.priceGap >= 50) risks.push('displacement pressure');
         if (fin(v.gap) && v.gap < -2000) risks.push('local oversupply');
         const verdict = `${strengths.length ? `Strengths: ${strengths.join(', ')}.` : 'No standout strengths.'} ${risks.length ? `Watch: ${risks.join(', ')}.` : 'No major risk flags.'}`;
@@ -152,6 +155,7 @@ const PropertyReport = (() => {
             wlog: at('waterlogging.waterlogging_index'), noise: at('traffic_noise.lden_db'), encroach: col('encroach', 'encroach_score'),
             upside: col('undervalued', 'upside'), growth: col('nextgrowth', 'growth_score'),
             hot0: at('climate_future.hot_days_now'), hot1: at('climate_future.hot_days_2050'), hot2: at('climate_future.hot_days_2050_high'),
+            wstress: at('water_risk.water_stress_pct'), wstress50: at('water_risk.water_stress_2050_pct'), gwd: at('water_risk.groundwater_decline_cm_yr'),
             homeKw: col('solarhome', 'home_kwp'), payback: col('solarhome', 'payback_yr'), acCover: col('solarhome', 'ac_2050_covered_pct'),
             flood50: at('flood_future.any_pct_2050'), flood50now: at('flood_future.any_pct_now'),
             hotBlock: col('streetheat', 'hot_2050_block'), cddBlock: col('streetheat', 'cdd_2050_block'), islandC: col('streetheat', 'heat_island_air_c'), cdd0: at('climate_future.cdd_now'),

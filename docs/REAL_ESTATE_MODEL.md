@@ -282,3 +282,27 @@ This lens works out rooftop solar for each household, as a companion to the city
 | Guna | 82% | — | — |
 
 The property report has an Energy section with the home's kW, payback and AC cover.
+
+## Water risk (`water_risk`, lens `waterrisk`)
+
+`water_risk` is an L5 cell dataset built by `pipeline/cells/ee_layers.py --layer water_risk` from WRI Aqueduct 4.0 sub-basin polygons, rasterised and averaged per cell. It holds:
+
+- Baseline water stress and depletion (PCR-GLOBWB 2, 1979–2019).
+- Groundwater table decline (1990–2014 trend).
+- Drought risk.
+- District access to drinking water and sanitation.
+- 2030 and 2050 stress under business-as-usual, optimistic and pessimistic futures.
+
+Aqueduct's future runs use different models from its baseline, so compare 2030 with 2050, not today with 2050.
+
+What the data shows:
+
+| City | Basin withdrawals vs renewable supply | Groundwater decline |
+|---|---|---|
+| Delhi | 11.2 times | 12.9 cm a year |
+| Jaipur | 10.7 times | 8.3 cm a year |
+| Chennai | 1.5 times | not available |
+| Bengaluru | 64% | not available |
+| Mumbai | 12% | not available |
+
+Basins are large, so this is a city-level outlook. The property report lists water stress and groundwater decline under Risk, and flags groundwater falling 10 cm or more a year.

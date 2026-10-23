@@ -1,6 +1,6 @@
 {
  "schema": "digipin.lens-league/1",
- "generated": "2026-10-22",
+ "generated": "2026-10-23",
  "cities": {
   "ahmedabad": {
    "label": "Ahmedabad",
@@ -233,6 +233,12 @@
      "value": 40.6,
      "unit": "%",
      "higherIs": "better"
+    },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 638,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -564,6 +570,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 71,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 36.7,
@@ -894,6 +906,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 217,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 2,
@@ -1217,6 +1235,12 @@
      "value": 80.7,
      "unit": "%",
      "higherIs": "better"
+    },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 136,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -1548,6 +1572,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 577,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 108.7,
@@ -1865,6 +1895,12 @@
      "value": 82.2,
      "unit": "%",
      "higherIs": "better"
+    },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 1115,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2189,6 +2225,12 @@
      "value": 91.2,
      "unit": "%",
      "higherIs": "better"
+    },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 673,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2520,6 +2562,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 322,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 3.8,
@@ -2843,6 +2891,12 @@
      "value": 92,
      "unit": "%",
      "higherIs": "better"
+    },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 1090,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -3168,6 +3222,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 137.5,
@@ -3485,6 +3545,12 @@
      "value": 92,
      "unit": "%",
      "higherIs": "better"
+    },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 745,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -3816,6 +3882,12 @@
      "unit": "%",
      "higherIs": "better"
     },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 15,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 43.5,
@@ -4145,6 +4217,12 @@
      "value": 48.6,
      "unit": "%",
      "higherIs": "better"
+    },
+    "waterrisk": {
+     "label": "Water stress by 2050 for the average resident (business as usual)",
+     "value": 139,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "encroach": {
      "label": "Former water now built up",

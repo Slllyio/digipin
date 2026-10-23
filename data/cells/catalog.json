@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-22T16:14:34Z",
+  "generated": "2026-10-23T07:05:41Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -16741,6 +16741,337 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "water_risk",
+      "title": "Water risk now and 2050 (WRI Aqueduct)",
+      "description": "WRI Aqueduct 4.0 per sub-basin (HydroBASINS level 6, split by state): water stress and depletion (PCR-GLOBWB 2, 1979\u20132019), groundwater table decline (1990\u20132014 trend), drought risk and access to drinking water and sanitation; and 2050 stress and depletion under business-as-usual (SSP3 RCP7.0), optimistic (SSP1 RCP2.6) and pessimistic (SSP5 RCP8.5) futures. The future runs use a different model set from the baseline, so compare 2030 with 2050, not baseline with 2050. Basin values cover the whole catchment, so every block in a basin gets the same number: a city-level outlook, not a block one.",
+      "source": "WRI/Aqueduct_Water_Risk/V4 via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "CC BY 4.0 (WRI)",
+      "group": "Open Data (satellite)",
+      "level": 5,
+      "approxCellM": 3900,
+      "fields": [
+        {
+          "key": "water_stress_pct",
+          "label": "Baseline water stress (withdrawals \u00f7 available supply)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "water_stress_2030_pct",
+          "label": "Water stress by 2030 (business as usual)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "water_stress_2050_pct",
+          "label": "Water stress by 2050 (business as usual)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "water_stress_2050_opt_pct",
+          "label": "Water stress by 2050 (optimistic)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "water_stress_2050_pes_pct",
+          "label": "Water stress by 2050 (pessimistic)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "depletion_pct",
+          "label": "Water depletion (consumption \u00f7 available supply)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "depletion_2050_pct",
+          "label": "Water depletion by 2050 (business as usual)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "groundwater_decline_cm_yr",
+          "label": "Groundwater table decline (1990\u20132014 trend)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "cm/yr",
+          "domain": [
+            -2,
+            15
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "drought_risk",
+          "label": "Drought risk score",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-5",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "variability",
+          "label": "Year-to-year variability of supply",
+          "type": "number",
+          "agg": "mean",
+          "unit": "ratio",
+          "domain": [
+            0,
+            1.5
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "unimproved_water_pct",
+          "label": "Population without improved drinking water (district)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "unimproved_sanitation_pct",
+          "label": "Population without improved sanitation (district)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "water_stress_2050_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 42,
+          "bbox": {
+            "west": 72.46484375,
+            "south": 22.92578125,
+            "east": 72.7109375,
+            "north": 23.13671875
+          },
+          "json": "water_risk/ahmedabad.json",
+          "parquet": "water_risk/ahmedabad.parquet"
+        },
+        {
+          "name": "bengaluru",
+          "cells": 110,
+          "bbox": {
+            "west": 77.421875,
+            "south": 12.80078125,
+            "east": 77.80859375,
+            "north": 13.15234375
+          },
+          "json": "water_risk/bengaluru.json",
+          "parquet": "water_risk/bengaluru.parquet"
+        },
+        {
+          "name": "bhopal",
+          "cells": 35,
+          "bbox": {
+            "west": 77.28125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.34765625
+          },
+          "json": "water_risk/bhopal.json",
+          "parquet": "water_risk/bhopal.parquet"
+        },
+        {
+          "name": "chennai",
+          "cells": 47,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.87109375,
+            "east": 80.33984375,
+            "north": 13.1875
+          },
+          "json": "water_risk/chennai.json",
+          "parquet": "water_risk/chennai.parquet"
+        },
+        {
+          "name": "delhi",
+          "cells": 225,
+          "bbox": {
+            "west": 76.82421875,
+            "south": 28.375,
+            "east": 77.3515625,
+            "north": 28.90234375
+          },
+          "json": "water_risk/delhi.json",
+          "parquet": "water_risk/delhi.parquet"
+        },
+        {
+          "name": "guna",
+          "cells": 9,
+          "bbox": {
+            "west": 77.24609375,
+            "south": 24.578125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "water_risk/guna.json",
+          "parquet": "water_risk/guna.parquet"
+        },
+        {
+          "name": "hyderabad",
+          "cells": 90,
+          "bbox": {
+            "west": 78.265625,
+            "south": 17.265625,
+            "east": 78.6171875,
+            "north": 17.58203125
+          },
+          "json": "water_risk/hyderabad.json",
+          "parquet": "water_risk/hyderabad.parquet"
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 156,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.46875,
+            "east": 76.015625,
+            "north": 22.92578125
+          },
+          "json": "water_risk/indore_pilot.json",
+          "parquet": "water_risk/indore_pilot.parquet"
+        },
+        {
+          "name": "jaipur",
+          "cells": 42,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.9453125,
+            "north": 27.00390625
+          },
+          "json": "water_risk/jaipur.json",
+          "parquet": "water_risk/jaipur.parquet"
+        },
+        {
+          "name": "kolkata",
+          "cells": 42,
+          "bbox": {
+            "west": 88.25,
+            "south": 22.43359375,
+            "east": 88.4609375,
+            "north": 22.6796875
+          },
+          "json": "water_risk/kolkata.json",
+          "parquet": "water_risk/kolkata.parquet"
+        },
+        {
+          "name": "lucknow",
+          "cells": 49,
+          "bbox": {
+            "west": 80.83203125,
+            "south": 26.72265625,
+            "east": 81.078125,
+            "north": 26.96875
+          },
+          "json": "water_risk/lucknow.json",
+          "parquet": "water_risk/lucknow.parquet"
+        },
+        {
+          "name": "mumbai",
+          "cells": 76,
+          "bbox": {
+            "west": 72.74609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.3046875
+          },
+          "json": "water_risk/mumbai.json",
+          "parquet": "water_risk/mumbai.parquet"
+        },
+        {
+          "name": "pune",
+          "cells": 56,
+          "bbox": {
+            "west": 73.73046875,
+            "south": 18.42578125,
+            "east": 74.01171875,
+            "north": 18.671875
+          },
+          "json": "water_risk/pune.json",
+          "parquet": "water_risk/pune.parquet"
         }
       ]
     },

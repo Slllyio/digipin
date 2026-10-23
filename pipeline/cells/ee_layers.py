@@ -1258,6 +1258,67 @@ def flood_future(region):
         license="CC BY 4.0 (WRI)", default_field="any_pct_2050")
     return spec, _table(level, rows, specs)
 
+# ── water risk now and 2050 (WRI Aqueduct 4.0, sub-basin polygons) ──
+
+AQW_BASE = {"bws_raw": "ws", "bwd_raw": "wd", "gtd_raw": "gtd", "drr_score": "drr", "iav_raw": "iav",
+            "udw_raw": "udw", "usa_raw": "usa"}
+AQW_FUT = {"bau30_ws_x_r": "ws30", "bau50_ws_x_r": "ws50", "opt50_ws_x_r": "ws50o", "pes50_ws_x_r": "ws50p", "bau50_wd_x_r": "wd50"}
+
+
+def _fc_image(ee, fc, props):
+    return ee.Image.cat([fc.filter(ee.Filter.gte(k, -1e30)).reduceToImage([k], ee.Reducer.first()).rename(v)
+                         for k, v in props.items()])
+
+
+def water_risk(region):
+    """Basin water stress, depletion and groundwater decline now and by 2050 (WRI Aqueduct 4.0)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 5
+    base = ee.FeatureCollection("WRI/Aqueduct_Water_Risk/V4/baseline_annual").filterBounds(geom)
+    fut = ee.FeatureCollection("WRI/Aqueduct_Water_Risk/V4/future_annual").filterBounds(geom)
+    img = ee.Image.cat([_fc_image(ee, base, AQW_BASE), _fc_image(ee, fut, AQW_FUT)])
+    raw = gee.fetch(gee.to_cells(img, 1000), bbox, level)
+
+    def pct(v):
+        return _r(100 * v, 1) if v is not None and v >= 0 else None
+    rows = {}
+    for c, x in raw.items():
+        if x.get("ws") is None and x.get("ws50") is None:
+            continue
+        rows[c] = {"water_stress_pct": pct(x.get("ws")), "water_stress_2030_pct": pct(x.get("ws30")), "water_stress_2050_pct": pct(x.get("ws50")),
+                   "water_stress_2050_opt_pct": pct(x.get("ws50o")), "water_stress_2050_pes_pct": pct(x.get("ws50p")),
+                   "depletion_pct": pct(x.get("wd")), "depletion_2050_pct": pct(x.get("wd50")),
+                   "groundwater_decline_cm_yr": _r(x.get("gtd"), 1) if x.get("gtd") is not None and x["gtd"] > -9000 else None,
+                   "drought_risk": _r(x.get("drr"), 2) if x.get("drr") is not None and x["drr"] >= 0 else None,
+                   "variability": _r(x.get("iav"), 2) if x.get("iav") is not None and x["iav"] >= 0 else None,
+                   "unimproved_water_pct": pct(x.get("udw")), "unimproved_sanitation_pct": pct(x.get("usa"))}
+    specs = [
+        FieldSpec("water_stress_pct", "Baseline water stress (withdrawals ÷ available supply)", agg="mean", unit="%", domain=[0, 100], ramp="reds", higher_is="worse"),
+        FieldSpec("water_stress_2030_pct", "Water stress by 2030 (business as usual)", agg="mean", unit="%", domain=[0, 100], ramp="reds", higher_is="worse"),
+        FieldSpec("water_stress_2050_pct", "Water stress by 2050 (business as usual)", agg="mean", unit="%", domain=[0, 100], ramp="reds", higher_is="worse"),
+        FieldSpec("water_stress_2050_opt_pct", "Water stress by 2050 (optimistic)", agg="mean", unit="%", domain=[0, 100], ramp="reds", higher_is="worse"),
+        FieldSpec("water_stress_2050_pes_pct", "Water stress by 2050 (pessimistic)", agg="mean", unit="%", domain=[0, 100], ramp="reds", higher_is="worse"),
+        FieldSpec("depletion_pct", "Water depletion (consumption ÷ available supply)", agg="mean", unit="%", domain=[0, 100], ramp="reds", higher_is="worse"),
+        FieldSpec("depletion_2050_pct", "Water depletion by 2050 (business as usual)", agg="mean", unit="%", domain=[0, 100], ramp="reds", higher_is="worse"),
+        FieldSpec("groundwater_decline_cm_yr", "Groundwater table decline (1990–2014 trend)", agg="mean", unit="cm/yr", domain=[-2, 15], ramp="reds", higher_is="worse"),
+        FieldSpec("drought_risk", "Drought risk score", agg="mean", unit="0-5", domain=[0, 5], ramp="reds", higher_is="worse"),
+        FieldSpec("variability", "Year-to-year variability of supply", agg="mean", unit="ratio", domain=[0, 1.5], ramp="reds", higher_is="worse"),
+        FieldSpec("unimproved_water_pct", "Population without improved drinking water (district)", agg="mean", unit="%", domain=[0, 30], ramp="reds", higher_is="worse"),
+        FieldSpec("unimproved_sanitation_pct", "Population without improved sanitation (district)", agg="mean", unit="%", domain=[0, 60], ramp="reds", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="water_risk", title="Water risk now and 2050 (WRI Aqueduct)", level=level, fields=specs, group=GROUP,
+        description="WRI Aqueduct 4.0 per sub-basin (HydroBASINS level 6, split by state): water stress and depletion "
+                    "(PCR-GLOBWB 2, 1979–2019), groundwater table decline (1990–2014 trend), drought risk and access to "
+                    "drinking water and sanitation; and 2050 stress and depletion under business-as-usual (SSP3 RCP7.0), "
+                    "optimistic (SSP1 RCP2.6) and pessimistic (SSP5 RCP8.5) futures. The future runs use a different model set "
+                    "from the baseline, so compare 2030 with 2050, not baseline with 2050. Basin values cover the whole "
+                    "catchment, so every block in a basin gets the same number: a city-level outlook, not a block one.",
+        source="WRI/Aqueduct_Water_Risk/V4 via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (WRI)", default_field="water_stress_2050_pct")
+    return spec, _table(level, rows, specs)
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -1265,7 +1326,7 @@ LAYERS = {
     "rainfall": rainfall, "building_stock": building_stock, "soil": soil,
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
-    "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future,
+    "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
 }
 
 

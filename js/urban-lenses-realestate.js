@@ -755,6 +755,43 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    // WRI Aqueduct categories: water stress above 80% is "extremely high", 40–80% "high".
+    const STRESS_EXTREME = 80, STRESS_HIGH = 40, YEARS_TO_2050 = 2050 - 2026;
+    const stressAmt = v => (v >= 100 ? `${_round(v / 100, 1)} times` : `${Math.round(v)}%`);
+    const stressLabel = v => (v >= STRESS_EXTREME ? 'extremely high' : v >= STRESS_HIGH ? 'high' : v >= 20 ? 'medium–high' : v >= 10 ? 'low–medium' : 'low');
+
+    /** Water risk: basin water stress, depletion and groundwater decline now and by 2050, weighted by residents. */
+    function waterrisk(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const ws = c['water_risk.water_stress_pct'], w30 = c['water_risk.water_stress_2030_pct'], w50 = c['water_risk.water_stress_2050_pct'];
+        const wo = c['water_risk.water_stress_2050_opt_pct'], wp = c['water_risk.water_stress_2050_pes_pct'], gtd = c['water_risk.groundwater_decline_cm_yr'];
+        const dr = c['water_risk.drought_risk'], udw = c['water_risk.unimproved_water_pct'], usa = c['water_risk.unimproved_sanitation_pct'];
+        const dep = c['water_risk.depletion_pct'], pop = c['population.population'];
+        if (!ws || !w50 || !pop) return null;
+        const cells = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0 && _fin(ws[i])) cells.push(i);
+        if (cells.length < 5) return null;
+        const people = _sumOver(pop, cells, () => true);
+        const pw = (a) => { let s = 0, w = 0; if (a) for (const i of cells) if (_fin(a[i])) { s += a[i] * pop[i]; w += pop[i]; } return w ? s / w : null; };
+        const share = (a, t) => _round(100 * _sumOver(pop, cells, i => _fin(a[i]) && a[i] >= t) / people);
+        const now = pw(ws), s30 = pw(w30), s50 = pw(w50), gw = pw(gtd);
+        const stats = [
+            { label: 'Water stress today (withdrawals ÷ renewable supply), average resident', value: `${stressAmt(now)}: ${stressLabel(now)}`, raw: Math.round(now) },
+            { label: 'Residents in extremely high water stress (over 80%) today', value: `${share(ws, STRESS_EXTREME)}%` },
+        ];
+        if (s30 != null) stats.push({ label: 'Water stress 2030 → 2050, business as usual', value: `${stressAmt(s30)} → ${stressAmt(s50)}${wo && wp ? ` (optimistic ${stressAmt(pw(wo))}, pessimistic ${stressAmt(pw(wp))})` : ''}` });
+        if (gw != null) stats.push({ label: 'Groundwater table falling (1990–2014 trend)', value: gw > 0 ? `${_round(gw, 1)} cm a year: about ${_round(gw * YEARS_TO_2050 / 100, 1)} m more by 2050 if the trend holds` : 'no decline in Aqueduct\'s model' });
+        if (dep) stats.push({ label: 'Water depletion (consumed ÷ renewable supply)', value: `${Math.round(pw(dep))}%` });
+        if (dr) stats.push({ label: 'Drought risk', value: `${_round(pw(dr), 1)} / 5` });
+        if (udw || usa) stats.push({ label: 'Without improved drinking water / sanitation (district)', value: `${udw ? _round(pw(udw), 1) : '–'}% / ${usa ? _round(pw(usa), 1) : '–'}%` });
+        return {
+            columns: gtd ? { water_stress_2050: w50, groundwater_decline: gtd } : { water_stress_2050: w50 }, idx: cells, weightKey: 'water_stress_2050', noHotspots: true,
+            metric: { label: 'Water stress by 2050 for the average resident (business as usual)', value: Math.round(s50), unit: '%', higherIs: 'worse' },
+            headline: `The city's basin withdraws ${stressAmt(now)}${now >= 100 ? '' : ' of'} its renewable water (${stressLabel(now)} stress)${gw > 0 ? ` and groundwater is falling about ${_round(gw, 1)} cm a year` : ''}; by 2050 it is ${stressLabel(s50)} at ${stressAmt(s50)} under business as usual.`,
+            stats,
+        };
+    }
+
     /** Flood 2050: residents in the 1-in-100-year river or coastal flood zone, now and by 2050 (WRI Aqueduct). */
     function flood2050(fr) {
         const g = fr.grid, c = fr.cols, n = g.n;
@@ -1053,6 +1090,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['building_stock.cover_2023_pct', 'osm_roads.building_cover_pct', 'climate_future.cdd_2050', 'population.population'],
             method: `Roof per home = building cover (Open Buildings 2023, else OSM) × cell area × ${ROOF_USABLE * 100}% usable ÷ households (residents ÷ ${HH_SIZE}); ${M2_PER_KWP} m² per kW, capped at ${MAX_HOME_KWP} kW. Yield = city irradiance (NASA POWER) × 365 × ${PERF_RATIO}. Payback = (₹${PV_COST_KW.toLocaleString('en-IN')} a kW − PM Surya Ghar subsidy) ÷ (yield × ₹${TARIFF}/kWh). One AC uses about ${AC_KWH_PER_CDD} kWh per cooling degree-day (2050, SSP2-4.5), compared with annual output: storage and timing are ignored. Shading, roof strength and ownership are not modelled.`,
             refs: 'MNRE PM Surya Ghar Muft Bijli Yojana guidelines 2024; MNRE rooftop benchmark costs; BEE star labelling for room ACs; NASA POWER; Census 2011 / NFHS-5 household size' },
+        { id: 'waterrisk', title: 'Water risk', icon: '💧',
+            question: 'How stretched is the city\'s water now and by 2050, and how fast is groundwater falling?',
+            field: { key: 'water_stress_2050', label: 'Water stress by 2050 (business as usual)', unit: '%', higherIs: 'worse', ramp: 'reds' },
+            needs: ['water_risk.water_stress_pct', 'water_risk.water_stress_2030_pct', 'water_risk.water_stress_2050_pct', 'water_risk.water_stress_2050_opt_pct', 'water_risk.water_stress_2050_pes_pct', 'water_risk.groundwater_decline_cm_yr', 'water_risk.depletion_pct', 'water_risk.drought_risk', 'water_risk.unimproved_water_pct', 'water_risk.unimproved_sanitation_pct', 'population.population'],
+            method: 'WRI Aqueduct 4.0 per sub-basin: water stress = withdrawals ÷ renewable surface and ground water (PCR-GLOBWB 2, 1979–2019); groundwater table decline is the 1990–2014 trend; drinking water and sanitation are district shares. 2030 and 2050 come from Aqueduct\'s future runs (business as usual SSP3 RCP7.0, optimistic SSP1 RCP2.6, pessimistic SSP5 RCP8.5), which use different models from the baseline: compare 2030 with 2050, not today with 2050. Basins are large, so this is a city outlook; piped supply from distant reservoirs (Mumbai, Chennai, Bengaluru) is counted at the basin of use.',
+            refs: 'Kuzma et al. 2023 (Aqueduct 4.0, WRI); Sutanudjaja et al. 2018 (PCR-GLOBWB 2); CGWB Dynamic Ground Water Resources 2023' },
         { id: 'encroach', equity: true, title: 'Encroachment watch', icon: '🚧',
             question: 'Which lakes, floodplains and green areas have been lost to building, and where is it still happening?',
             field: { key: 'encroach_score', label: 'Encroachment score (former water, floodplain and tree loss built up)', unit: 'points', higherIs: 'worse', ramp: 'reds' },
@@ -1061,7 +1104,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText };
 })();
 

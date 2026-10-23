@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -243,6 +243,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(Number.isNaN(r.columns.payback_yr[SIZE])).toBe(true);           // under 1 kW: no system
         expect(r.headline).toMatch(/community solar/);
         expect(L._lenses.solarhome(L.frameFrom(codes, base, { city: 'delhi' }), {})).toBeNull();
+    });
+
+    it('waterrisk: basin stress now, 2030 → 2050 and groundwater decline', () => {
+        const k = v => codes.map(() => v);
+        const f = L.frameFrom(codes, { ...base, 'water_risk.water_stress_pct': k(250), 'water_risk.water_stress_2030_pct': k(90), 'water_risk.water_stress_2050_pct': k(120),
+            'water_risk.groundwater_decline_cm_yr': k(10), 'water_risk.drought_risk': k(4) });
+        const r = L._lenses.waterrisk(f, {});
+        expect(r.metric.value).toBe(120);
+        expect(r.headline).toMatch(/withdraws 2.5 times its renewable water/);
+        expect(r.stats.find(s => /2030/.test(s.label)).value).toBe('90% → 1.2 times');
+        expect(r.stats.find(s => /Groundwater/.test(s.label)).value).toMatch(/2.4 m more by 2050/);
+        expect(L._lenses.waterrisk(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('farText(): base vs asked FAR, rebuild and homes', () => {
