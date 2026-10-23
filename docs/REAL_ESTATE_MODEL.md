@@ -615,3 +615,31 @@ The `market` lens counts estate agents, brokers and property dealers within 1 km
 Busy markets are the top 10% of blocks by this count. Emerging markets are busy blocks whose land value index is still below the city median.
 
 How closely agent density tracks the land value index (Spearman ρ): Bengaluru 0.56, Pune 0.49, Mumbai 0.34, Delhi 0.28. Delhi's agents are concentrated: 42% of them sit in the busiest 1% of blocks.
+
+## What the haze is made of
+
+The `haze_mix` dataset (L5) is built from CAMS near-real-time analyses for 2025, which run on a grid of about 40 km. It holds:
+
+- the mean aerosol optical depth;
+- the shares of that depth from dust, smoke (black carbon plus organic matter), sulphate and sea salt;
+- the mean dust optical depth before the monsoon;
+- the number of days whose mean dust optical depth is over 0.3.
+
+The `airtrend` lens and the property report show the mix. These figures are model output at city scale, not measurements, and nitrate and ammonium are not split out.
+
+| City | Dust | Smoke | Sulphate | Dust-haze days a year |
+|---|---|---|---|---|
+| Delhi | 27% | 22% | 32% | 81 |
+| Kolkata | 4% | 27% | 46% | 0 |
+
+## Deaths from air pollution
+
+The `airdeaths` lens estimates early deaths from PM2.5 with the Global Exposure Mortality Model (Burnett et al. 2018) for non-communicable and lower-respiratory disease. It uses each block's 2022 satellite-derived PM2.5 and a national baseline of 5 such deaths per 1,000 residents a year (GBD 2019 India).
+
+| City | Early deaths a year | Share of these deaths | Deaths avoided if India's 40 µg/m³ standard were met |
+|---|---|---|---|
+| Delhi | about 59,000 | 40% | about 29,000 |
+| Mumbai | about 24,000 | 27% | about 1,600 |
+| Bengaluru | about 16,000 | 25% | about 10 |
+
+GEMM sits at the high end of published estimates. One national baseline rate is used everywhere, so the map shows where air kills more, not local death records.

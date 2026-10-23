@@ -188,11 +188,61 @@ const UrbanLensesEnvironment = (() => {
             spaced(g, top.slice(0, Math.max(5, Math.ceil(top.length / 50))), so2).slice(0, 3)
                 .forEach((i, k) => stats.push({ label: `SO₂ hotspot ${k + 1}: ${g.codes[i]}`, value: `${_round(so2[i])} µmol/m² (industry, power or brick kilns nearby)` }));
         }
+        const hz = k => pw(c[`haze_mix.${k}`]);
+        const dust = hz('dust_share_pct'), smoke = hz('smoke_share_pct'), sulph = hz('sulphate_share_pct'), salt = hz('seasalt_share_pct'), dd = hz('dust_days_yr');
+        if (dust != null) {
+            stats.push({ label: 'What the haze is made of (CAMS model, city scale)', value: `dust ${_round(dust)}%, smoke ${_round(smoke)}%, sulphate ${_round(sulph)}%${salt >= 3 ? `, sea salt ${_round(salt)}%` : ''}; the rest is mostly nitrate and ammonium` });
+            if (dd != null) stats.push({ label: 'Dust-haze days a year (daily dust optical depth over 0.3)', value: `${Math.round(dd)}` });
+        }
         const word = Math.abs(chg) < AIR_FLAT ? 'is roughly flat' : chg > 0 ? 'has risen' : 'has fallen';
         return {
             columns: { no2_change_pct: dn }, idx: cells, weightKey: 'no2_change_pct', noHotspots: true,
             metric: { label: 'Change in NO₂ for the average resident since 2019', value: _round(chg), unit: '%', higherIs: 'worse' },
             headline: `Traffic and combustion NO₂ ${word} since 2019 (${chg >= 0 ? '+' : ''}${_round(chg)}% for the average resident); ${_people(up)} residents live where it rose ${AIR_FLAT}% or more${q0 != null && q1 != null ? `, and fine-dust PM2.5 went from ${_round(q0)} to ${_round(q1)} µg/m³ between 2012 and 2022` : ''}.`,
+            stats,
+        };
+    }
+
+    // Deaths from fine-particle air. GEMM NCD+LRI hazard (Burnett et al. 2018, adults 25+, with the Chinese cohort):
+    // RR(z) = exp(θ·log(z/α + 1) / (1 + exp(−(z − μ)/ν))), z = PM2.5 above 2.4 µg/m³. Baseline NCD+LRI deaths
+    // per 1,000 residents of all ages a year from GBD 2019 India (about 70% of a crude death rate near 7).
+    const GEMM = { theta: 0.143, alpha: 1.6, mu: 15.5, nu: 36.8, cf: 2.4 }, BASE_DEATHS_PER_1000 = 5.0, NAAQS_PM25 = 40, WHO_PM25 = 5;
+
+    function _gemmRR(pm) {
+        const z = Math.max(0, pm - GEMM.cf);
+        return Math.exp(GEMM.theta * Math.log(z / GEMM.alpha + 1) / (1 + Math.exp(-(z - GEMM.mu) / GEMM.nu)));
+    }
+
+    function airdeaths(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const pm = c['air_trend.pm25_2022'], pop = c['population.population'];
+        if (!pm || !pop) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0 && _fin(pm[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const deaths = new Float64Array(n).fill(NaN), rate = new Float64Array(n).fill(NaN);
+        let all = 0, base = 0, toNaaqs = 0, people = 0, pmw = 0;
+        for (const i of idx) {
+            const b = pop[i] * BASE_DEATHS_PER_1000 / 1000, rr = _gemmRR(pm[i]);
+            const d = b * (1 - 1 / rr);
+            deaths[i] = d; rate[i] = 1e5 * d / pop[i];
+            all += d; base += b; people += pop[i]; pmw += pm[i] * pop[i];
+            if (pm[i] > NAAQS_PM25) toNaaqs += b * (1 - _gemmRR(NAAQS_PM25) / rr);
+        }
+        const meanPm = pmw / people;
+        const stats = [
+            { label: 'PM2.5 for the average resident (satellite-derived, 2022)', value: `${_round(meanPm)} µg/m³ (WHO guideline ${WHO_PM25}, India's standard ${NAAQS_PM25})` },
+            { label: 'Early deaths a year from fine-particle air (GEMM, adults)', value: `about ${_people(all)}`, raw: Math.round(all) },
+            { label: 'Share of the city\'s heart, lung, stroke, diabetes and lower-respiratory deaths', value: `${_round(100 * all / base)}%` },
+            { label: `Deaths a year avoided if every block met India's ${NAAQS_PM25} µg/m³ standard`, value: `about ${_people(toNaaqs)}` },
+            { label: 'Early deaths per 1 lakh residents a year', value: `${_round(1e5 * all / people)}` },
+        ];
+        spaced(g, idx, rate).slice(0, 3).forEach((i, k) => stats.push({ label: `Worst air ${k + 1}: ${g.codes[i]}`,
+            value: `PM2.5 ${_round(pm[i])} µg/m³; ${_round(rate[i])} early deaths per lakh a year` }));
+        return {
+            columns: { air_deaths: deaths, air_deaths_per_lakh: rate }, idx, weightKey: 'air_deaths', noHotspots: true,
+            metric: { label: 'Early deaths a year from PM2.5', value: Math.round(all), unit: 'deaths/yr', higherIs: 'worse' },
+            headline: `Fine-particle air (PM2.5 ${_round(meanPm)} µg/m³ for the average resident) causes about ${_people(all)} early deaths a year here, ${_round(100 * all / base)}% of deaths from heart, lung and related disease; meeting India's own ${NAAQS_PM25} µg/m³ standard everywhere would avoid about ${_people(toNaaqs)} a year.`,
             stats,
         };
     }
@@ -559,9 +609,16 @@ const UrbanLensesEnvironment = (() => {
         { id: 'airtrend', equity: true, title: 'Air trend', icon: '📉',
             question: 'Is the air getting cleaner or dirtier, and for whom?',
             field: { key: 'no2_change_pct', label: 'Change in NO₂ since 2019', unit: '%', higherIs: 'worse', ramp: 'diverging', domain: [-30, 30] },
-            needs: ['air_trend.no2_change_pct', 'air_trend.no2_2019', 'air_trend.no2_latest', 'air_trend.pm25_2012', 'air_trend.pm25_2022', 'air_trend.so2_umol_m2', 'population.population'],
-            method: `Sentinel-5P TROPOMI tropospheric NO₂ annual means, 2019 against 2025 (~5 km columns, so neighbouring blocks share values); Washington University satellite-derived surface PM2.5 (V6.GL, ~1 km), 2012 against 2022; and the 2025 SO₂ column, which is noisy except near big sources (hotspots are named only above ${SO2_NOTABLE} µmol/m²). Changes under ${AIR_FLAT}% are within weather swings between years and count as flat. Columns measure the whole air above a place, not what reaches the street.`,
-            refs: 'Veefkind et al. 2012 (TROPOMI); van Donkelaar et al. 2021 (V5/V6.GL PM2.5); NCAP progress reports (MoEFCC)' },
+            needs: ['air_trend.no2_change_pct', 'air_trend.no2_2019', 'air_trend.no2_latest', 'air_trend.pm25_2012', 'air_trend.pm25_2022', 'air_trend.so2_umol_m2', 'haze_mix.dust_share_pct', 'haze_mix.smoke_share_pct', 'haze_mix.sulphate_share_pct', 'haze_mix.seasalt_share_pct', 'haze_mix.dust_days_yr', 'population.population'],
+            method: `Sentinel-5P TROPOMI tropospheric NO₂ annual means, 2019 against 2025 (~5 km columns, so neighbouring blocks share values); Washington University satellite-derived surface PM2.5 (V6.GL, ~1 km), 2012 against 2022; and the 2025 SO₂ column, which is noisy except near big sources (hotspots are named only above ${SO2_NOTABLE} µmol/m²). Changes under ${AIR_FLAT}% are within weather swings between years and count as flat. Columns measure the whole air above a place, not what reaches the street. The haze mix is the CAMS model's 2025 split of aerosol optical depth into dust, smoke (black carbon plus organic matter), sulphate and sea salt on a ~40 km grid; dust-haze days have a daily mean dust optical depth over 0.3.`,
+            refs: 'Veefkind et al. 2012 (TROPOMI); van Donkelaar et al. 2021 (V5/V6.GL PM2.5); Inness et al. 2019 (CAMS reanalysis); NCAP progress reports (MoEFCC)' },
+        { id: 'airdeaths', equity: true, title: 'Deaths from air pollution', icon: '🫁',
+            question: 'How many early deaths does the city\'s PM2.5 cause a year, where, and how many would meeting the standard save?',
+            field: { key: 'air_deaths_per_lakh', label: 'Early deaths from PM2.5 per 1 lakh residents a year', unit: 'per lakh/yr', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'air_deaths', label: 'Early deaths from PM2.5 a year (block)', unit: 'deaths/yr', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['air_trend.pm25_2022', 'population.population'],
+            method: `Attributable deaths = residents × ${BASE_DEATHS_PER_1000} non-communicable plus lower-respiratory deaths per 1,000 a year (GBD 2019 India, all ages) × (1 − 1/RR). RR is the Global Exposure Mortality Model for NCD+LRI with the Chinese cohort (θ ${GEMM.theta}, α ${GEMM.alpha}, μ ${GEMM.mu}, ν ${GEMM.nu}, counterfactual ${GEMM.cf} µg/m³) at the block's 2022 satellite-derived PM2.5 (Washington University V6.GL, ~1 km). Avoided deaths compare each block's RR with RR at ${NAAQS_PM25} µg/m³. One national baseline rate is used everywhere, so the map shows where air kills more, not local death records; GEMM covers adults 25+, and children's deaths are not counted.`,
+            refs: 'Burnett et al. 2018 (GEMM, PNAS); GBD 2019 India State-Level Disease Burden Initiative (Lancet Planetary Health 2021); van Donkelaar et al. 2021 (V6.GL PM2.5); WHO 2021 air quality guidelines' },
         { id: 'burning', equity: true, title: 'Open burning', icon: '🔥',
             question: 'Where do satellites see fires again and again, and who lives in the smoke?',
             field: { key: 'fire_days_yr', label: 'Days a year with an active fire', unit: 'days', higherIs: 'worse', ramp: 'reds', domain: [0, 20] },
@@ -610,7 +667,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, burning, ground, treeplant, farmloss, market, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

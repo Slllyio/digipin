@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T19:37:34Z",
+  "generated": "2026-10-23T19:45:02Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -7012,6 +7012,35 @@
           "parquet": null
         },
         {
+          "name": "indore_pilot",
+          "cells": 28105,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "farmland/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
           "name": "jaipur",
           "cells": 3637,
           "bbox": {
@@ -7045,6 +7074,18 @@
             "north": 26.951171875
           },
           "json": "farmland/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 1103,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "farmland/mumbai.json",
           "parquet": null
         },
         {
@@ -8219,6 +8260,259 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "haze_mix",
+      "title": "What the haze is made of (CAMS)",
+      "description": "Copernicus Atmosphere Monitoring Service near-real-time analyses and day-ahead forecasts for 2025 (about 40 km grid): mean aerosol optical depth at 550 nm and the share from dust, smoke (black carbon plus organic matter), sulphate and sea salt (nitrate and ammonium, large in north Indian winters, are not split out, so shares do not add to 100%). Dust days count days whose mean dust optical depth is over 0.3. Shares are model output, not measurements: read them as the city's mix, not block detail.",
+      "source": "ECMWF/CAMS/NRT via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "Copernicus licence (CAMS)",
+      "group": "Open Data (satellite)",
+      "level": 5,
+      "approxCellM": 3900,
+      "fields": [
+        {
+          "key": "aod_total",
+          "label": "Aerosol optical depth at 550 nm, 2025 mean",
+          "type": "number",
+          "agg": "mean",
+          "unit": "AOD",
+          "domain": [
+            0,
+            1.2
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "dust_share_pct",
+          "label": "Share of the haze that is dust",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "smoke_share_pct",
+          "label": "Share that is smoke (black carbon + organic matter)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "sulphate_share_pct",
+          "label": "Share that is sulphate (coal, oil, industry)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "seasalt_share_pct",
+          "label": "Share that is sea salt",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            40
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "dust_aod_premonsoon",
+          "label": "Dust optical depth, Mar\u2013Jun mean",
+          "type": "number",
+          "agg": "mean",
+          "unit": "AOD",
+          "domain": [
+            0,
+            0.6
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "dust_days_yr",
+          "label": "Dust-haze days (daily dust AOD over 0.3)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days/yr",
+          "domain": [
+            0,
+            120
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "dust_share_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 42,
+          "bbox": {
+            "west": 72.46484375,
+            "south": 22.92578125,
+            "east": 72.7109375,
+            "north": 23.13671875
+          },
+          "json": "haze_mix/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 110,
+          "bbox": {
+            "west": 77.421875,
+            "south": 12.80078125,
+            "east": 77.80859375,
+            "north": 13.15234375
+          },
+          "json": "haze_mix/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 35,
+          "bbox": {
+            "west": 77.28125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.34765625
+          },
+          "json": "haze_mix/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 54,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.87109375,
+            "east": 80.33984375,
+            "north": 13.1875
+          },
+          "json": "haze_mix/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 225,
+          "bbox": {
+            "west": 76.82421875,
+            "south": 28.375,
+            "east": 77.3515625,
+            "north": 28.90234375
+          },
+          "json": "haze_mix/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 9,
+          "bbox": {
+            "west": 77.24609375,
+            "south": 24.578125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "haze_mix/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 90,
+          "bbox": {
+            "west": 78.265625,
+            "south": 17.265625,
+            "east": 78.6171875,
+            "north": 17.58203125
+          },
+          "json": "haze_mix/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 156,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.46875,
+            "east": 76.015625,
+            "north": 22.92578125
+          },
+          "json": "haze_mix/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 42,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.9453125,
+            "north": 27.00390625
+          },
+          "json": "haze_mix/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 42,
+          "bbox": {
+            "west": 88.25,
+            "south": 22.43359375,
+            "east": 88.4609375,
+            "north": 22.6796875
+          },
+          "json": "haze_mix/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 49,
+          "bbox": {
+            "west": 80.83203125,
+            "south": 26.72265625,
+            "east": 81.078125,
+            "north": 26.96875
+          },
+          "json": "haze_mix/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 56,
+          "bbox": {
+            "west": 73.73046875,
+            "south": 18.42578125,
+            "east": 74.01171875,
+            "north": 18.671875
+          },
+          "json": "haze_mix/pune.json",
+          "parquet": null
         }
       ]
     },

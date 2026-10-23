@@ -23,7 +23,7 @@ Each item gives four things:
 | 6 | Cyclone wind return levels (STORM) | Chennai, Kolkata, Mumbai: insurance and structure risk |
 | 7 | ✅ Earthquake zone (ground lens) (BIS IS 1893 zones) | Delhi zone IV, Kolkata III/IV: building code and insurance |
 | 8 | Lightning flash density (LIS/OTD) | Deaths, power cuts, solar/telecom asset risk |
-| 9 | Dust and dust storms (MERRA-2 / CAMS dust AOD) | Delhi/Jaipur/Ahmedabad pre-monsoon air |
+| 9 | ✅ Dust and dust storms (CAMS dust share and dust-haze days; airtrend lens) | Delhi/Jaipur/Ahmedabad pre-monsoon air |
 | 10 | ✅ Wet-bulb 2050 (CMIP6 hurs + tas) | Humid heat future for coastal cities |
 | 11 | ✅ Crop and green-belt loss at the edge (Dynamic World; farmloss lens) | Peri-urban conversion pressure |
 | 12 | ✅ Air trend (NO₂ 2019→2025, PM2.5 2012→2022, SO₂) | Where air is getting worse fastest |
@@ -103,7 +103,7 @@ Each item gives four things:
 54. Pharmacies and diagnostics (Overture) | S3 | health access
 55. Dengue/malaria risk proxy (standing water + temperature + humidity) | EE | vector lens
 56. Heat-health mortality estimate (Gasparrini ERFs on hot days) | derived | heat deaths lens
-57. Air-pollution premature deaths (GBD PM2.5 IER) | derived | air deaths lens
+57. ✅ Air-pollution premature deaths (GBD PM2.5 IER) | derived | air deaths lens
 58. Walkable shade on routes to clinics | derived | shade lens extension
 59. Green space per resident (WHO 9 m² target) | derived | green lens extension
 60. Cooling centres siting (libraries, malls, temples with AC) | S3 | heat action plan
@@ -131,7 +131,7 @@ Each item gives four things:
 
 ## E. People and economy (79–95)
 
-79. ▶ Jobs proxy from offices + places + non-residential floor space | derived | job access
+79. ✅ Jobs proxy from offices + places + non-residential floor space | derived | job access
 80. Census 2011 ward population and literacy (where ward shapes exist) | open | equity lens
 81. NFHS-5 district health and wealth indicators | open | district context
 82. SECC / PMAY beneficiary density (where published) | open | housing need
@@ -151,7 +151,7 @@ Each item gives four things:
 
 ## F. Land and nature (96–110)
 
-96. Crop-to-urban conversion at the edge (WorldCereal + Dynamic World) | EE | edge pressure
+96. ✅ Crop-to-urban conversion at the edge (WorldCereal + Dynamic World) | EE | edge pressure
 97. Green-belt and ridge forest boundaries (Delhi Ridge, Aravalli) | open GIS | encroachment
 98. ❌ Protected areas and eco-sensitive zones (WDPA) | EE | no-build overlay (skipped: WDPA needs an IBAT licence for commercial use; OSM protected areas in Actions instead)
 99. Biodiversity intactness (NHM BII) | open | nature lens

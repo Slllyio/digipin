@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -307,6 +307,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(L._lenses.market(L.frameFrom(codes, base), {})).toBeNull();
     });
 
+    it('airdeaths: GEMM attributable deaths, share of NCD+LRI deaths and deaths avoided at the standard', () => {
+        const pm = codes.map((_, i) => (col(i) < 6 ? 100 : 30));
+        const f = L.frameFrom(codes, { ...base, 'air_trend.pm25_2022': pm }, { city: 'delhi' });
+        const r = L._lenses.airdeaths(f, {});
+        const rr = z => Math.exp(0.143 * Math.log(z / 1.6 + 1) / (1 + Math.exp(-(z - 15.5) / 36.8)));
+        expect(r.columns.air_deaths[0]).toBeCloseTo(1000 * 0.005 * (1 - 1 / rr(97.6)), 6);
+        expect(r.columns.air_deaths_per_lakh[0]).toBeGreaterThan(r.columns.air_deaths_per_lakh[SIZE - 1]);
+        const avoided = 72 * 5 * (1 - rr(37.6) / rr(97.6));
+        expect(r.stats.find(x => /avoided/.test(x.label)).value).toBe(`about ${Math.round(avoided)}`);
+        expect(L._lenses.airdeaths(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
         const clay = codes.map((_, i) => (col(i) < 6 ? 50 : 20));
         const hand = codes.map((_, i) => (i < SIZE * 6 ? 0.5 : 10));
@@ -340,6 +352,11 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats[1].value).toMatch(/\(50%\) \/ .*\(50%\)/);
         expect(r.stats.some(x => /PM2\.5/.test(x.label) && /80 → 60/.test(x.value))).toBe(true);
         expect(r.stats.find(x => /SO₂ hotspot 1/.test(x.label)).label).toContain(codes[7]);
+        expect(r.stats.some(x => /haze is made of/.test(x.label))).toBe(false);
+        const h = L._lenses.airtrend(L.frameFrom(codes, { ...base, 'air_trend.no2_change_pct': dn, 'haze_mix.dust_share_pct': k(27), 'haze_mix.smoke_share_pct': k(22),
+            'haze_mix.sulphate_share_pct': k(32), 'haze_mix.seasalt_share_pct': k(1), 'haze_mix.dust_days_yr': k(78) }, { city: 'delhi' }), {});
+        expect(h.stats.find(x => /haze is made of/.test(x.label)).value).toBe('dust 27%, smoke 22%, sulphate 32%; the rest is mostly nitrate and ammonium');
+        expect(h.stats.find(x => /Dust-haze days/.test(x.label)).value).toBe('78');
         expect(L._lenses.airtrend(L.frameFrom(codes, base), {})).toBeNull();
     });
 

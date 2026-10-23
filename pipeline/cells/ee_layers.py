@@ -1601,6 +1601,72 @@ def lakes(region):
     return spec, _table(level, rows, specs)
 
 
+# ── what the haze is made of: CAMS aerosol composition and dust days ─────────
+
+DUST_DAY_AOD = 0.3    # daily mean dust optical depth at 550 nm; a visible dust haze
+AER_BANDS = {"dust": "dust_aerosol_optical_depth_at_550nm_surface",
+             "smoke": ["black_carbon_aerosol_optical_depth_at_550nm_surface", "organic_matter_aerosol_optical_depth_at_550nm_surface"],
+             "sulphate": "sulphate_aerosol_optical_depth_at_550nm_surface",
+             "seasalt": "sea_salt_aerosol_optical_depth_at_550nm_surface",
+             "total": "total_aerosol_optical_depth_at_550nm_surface"}
+
+
+def haze_mix(region):
+    """Share of the year's aerosol optical depth from dust, smoke (black carbon + organic), sulphate and sea salt; dust days."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 5
+    col = _year(ee.ImageCollection("ECMWF/CAMS/NRT").filterBounds(geom), YEAR) \
+        .filter(ee.Filter.lt("model_forecast_hour", 24))
+
+    def parts(im):
+        sm = im.select(AER_BANDS["smoke"]).reduce(ee.Reducer.sum()).rename("smoke")
+        return ee.Image.cat([im.select(AER_BANDS["dust"]).rename("dust"), sm, im.select(AER_BANDS["sulphate"]).rename("sulphate"),
+                             im.select(AER_BANDS["seasalt"]).rename("seasalt"), im.select(AER_BANDS["total"]).rename("total")])
+    mean = col.map(parts).mean()
+    pre = _year(ee.ImageCollection("ECMWF/CAMS/NRT").filterBounds(geom), YEAR, 3, 6) \
+        .filter(ee.Filter.lt("model_forecast_hour", 24)).select(AER_BANDS["dust"]).mean().rename("dust_pre")
+    start = ee.Date.fromYMD(YEAR, 1, 1)
+    days = ee.List.sequence(0, 364).map(lambda d: col.filterDate(start.advance(d, "day"), start.advance(ee.Number(d).add(1), "day"))
+                                       .select(AER_BANDS["dust"]).mean().gt(DUST_DAY_AOD).unmask(0))
+    dd = ee.ImageCollection.fromImages(days).sum().rename("dust_days")
+    img = ee.Image.cat([mean, pre, dd])
+    raw = gee.fetch(gee.to_cells(img, 11000), bbox, level)
+    rows = {}
+    for c, x in raw.items():
+        tot = x.get("total")
+        if not tot:
+            continue
+        sh = lambda k: _r(100 * (x.get(k) or 0) / tot)
+        rows[c] = {"aod_total": _r(tot, 3), "dust_share_pct": sh("dust"), "smoke_share_pct": sh("smoke"),
+                   "sulphate_share_pct": sh("sulphate"), "seasalt_share_pct": sh("seasalt"),
+                   "dust_aod_premonsoon": _r(x.get("dust_pre"), 3), "dust_days_yr": _r(x.get("dust_days"))}
+    specs = [
+        FieldSpec("aod_total", f"Aerosol optical depth at 550 nm, {YEAR} mean", agg="mean", unit="AOD", domain=[0, 1.2], ramp="reds",
+                  higher_is="worse"),
+        FieldSpec("dust_share_pct", "Share of the haze that is dust", agg="mean", unit="%", domain=[0, 60], ramp="heat", higher_is="worse"),
+        FieldSpec("smoke_share_pct", "Share that is smoke (black carbon + organic matter)", agg="mean", unit="%", domain=[0, 60], ramp="heat",
+                  higher_is="worse"),
+        FieldSpec("sulphate_share_pct", "Share that is sulphate (coal, oil, industry)", agg="mean", unit="%", domain=[0, 60], ramp="heat",
+                  higher_is="worse"),
+        FieldSpec("seasalt_share_pct", "Share that is sea salt", agg="mean", unit="%", domain=[0, 40], ramp="blues", higher_is=None),
+        FieldSpec("dust_aod_premonsoon", "Dust optical depth, Mar–Jun mean", agg="mean", unit="AOD", domain=[0, 0.6], ramp="heat",
+                  higher_is="worse"),
+        FieldSpec("dust_days_yr", f"Dust-haze days (daily dust AOD over {DUST_DAY_AOD})", agg="mean", unit="days/yr", domain=[0, 120],
+                  ramp="heat", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="haze_mix", title="What the haze is made of (CAMS)", level=level, fields=specs, group=GROUP,
+        description=f"Copernicus Atmosphere Monitoring Service near-real-time analyses and day-ahead forecasts for {YEAR} (about 40 km "
+                    "grid): mean aerosol optical depth at 550 nm and the share from dust, smoke (black carbon plus organic matter), "
+                    f"sulphate and sea salt (nitrate and ammonium, large in north Indian winters, are not split out, so shares do not add to 100%). "
+                    f"Dust days count days whose mean dust optical depth is over {DUST_DAY_AOD}. Shares are model output, not measurements: "
+                    "read them as the city's mix, not block detail.",
+        source="ECMWF/CAMS/NRT via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="Copernicus licence (CAMS)", default_field="dust_share_pct")
+    return spec, _table(level, rows, specs)
+
+
 # ── farmland at the edge: cropland lost since 2018 (Dynamic World) ────────────
 
 FARM_FROM = 2018      # first full year of Sentinel-2 L2A over India
@@ -1718,7 +1784,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix,
 }
 
 

@@ -276,6 +276,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 11760,
+     "unit": "deaths/yr",
+     "higherIs": "worse"
+    },
     "burning": {
      "label": "Residents within 1 km of frequent open burning",
      "value": 716466,
@@ -688,6 +694,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": -16.3,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 16224,
+     "unit": "deaths/yr",
      "higherIs": "worse"
     },
     "burning": {
@@ -1104,6 +1116,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 3348,
+     "unit": "deaths/yr",
+     "higherIs": "worse"
+    },
     "burning": {
      "label": "Residents within 1 km of frequent open burning",
      "value": 0,
@@ -1510,6 +1528,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 7.1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 10326,
+     "unit": "deaths/yr",
      "higherIs": "worse"
     },
     "burning": {
@@ -1926,6 +1950,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 59245,
+     "unit": "deaths/yr",
+     "higherIs": "worse"
+    },
     "burning": {
      "label": "Residents within 1 km of frequent open burning",
      "value": 1004244,
@@ -2320,6 +2350,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 1.6,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 360,
+     "unit": "deaths/yr",
      "higherIs": "worse"
     },
     "burning": {
@@ -2722,6 +2758,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 2.2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 11986,
+     "unit": "deaths/yr",
      "higherIs": "worse"
     },
     "burning": {
@@ -3138,6 +3180,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 6080,
+     "unit": "deaths/yr",
+     "higherIs": "worse"
+    },
     "burning": {
      "label": "Residents within 1 km of frequent open burning",
      "value": 0,
@@ -3155,6 +3203,12 @@
      "value": 1034599,
      "unit": "trees",
      "higherIs": null
+    },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 122,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "market": {
      "label": "Estate agents within 1 km",
@@ -3538,6 +3592,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 2.9,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 6447,
+     "unit": "deaths/yr",
      "higherIs": "worse"
     },
     "burning": {
@@ -3948,6 +4008,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 19145,
+     "unit": "deaths/yr",
+     "higherIs": "worse"
+    },
     "burning": {
      "label": "Residents within 1 km of frequent open burning",
      "value": 38636,
@@ -4348,6 +4414,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 1.4,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 9130,
+     "unit": "deaths/yr",
      "higherIs": "worse"
     },
     "burning": {
@@ -4764,6 +4836,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 23778,
+     "unit": "deaths/yr",
+     "higherIs": "worse"
+    },
     "burning": {
      "label": "Residents within 1 km of frequent open burning",
      "value": 462401,
@@ -4781,6 +4859,12 @@
      "value": 212046,
      "unit": "trees",
      "higherIs": null
+    },
+    "farmloss": {
+     "label": "Farmland turned built-up since 2018",
+     "value": 2.3,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "market": {
      "label": "Estate agents within 1 km",
@@ -5170,6 +5254,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 1.4,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "airdeaths": {
+     "label": "Early deaths a year from PM2.5",
+     "value": 8810,
+     "unit": "deaths/yr",
      "higherIs": "worse"
     },
     "burning": {
