@@ -1383,6 +1383,62 @@ def humid_future(region):
     return spec, _table(level, rows, specs)
 
 
+# ── air trend (Sentinel-5P NO₂ 2019 → latest year, satellite PM2.5 2012 → 2022, SO₂) ──
+
+AIR_TREND_FROM = 2019            # first full year of Sentinel-5P OFFL NO₂
+PM_TREND_FROM, PM_TREND_TO = 2012, 2022
+
+
+def air_trend(region):
+    """Which blocks' air got cleaner or dirtier: NO₂ since 2019, PM2.5 over ten years, and SO₂ hotspots."""
+    ee = gee.init()
+    _, bbox = _bbox(region)
+    level = 6
+
+    def s5p(cid, band, y):
+        return _year(ee.ImageCollection(cid).select(band), y).mean()
+    no2 = "COPERNICUS/S5P/OFFL/L3_NO2", "tropospheric_NO2_column_number_density"
+    img = ee.Image.cat([
+        s5p(*no2, AIR_TREND_FROM).multiply(1e6).rename("n0"), s5p(*no2, YEAR).multiply(1e6).rename("n1"),
+        s5p("COPERNICUS/S5P/OFFL/L3_SO2", "SO2_column_number_density", YEAR).multiply(1e6).rename("so2"),
+    ])
+    a = gee.fetch(gee.to_cells(img, 1113), bbox, level)
+    pmc = ee.ImageCollection("projects/sat-io/open-datasets/GLOBAL-SATELLITE-PM25/ANNUAL")
+
+    def pm(y):
+        return pmc.filter(ee.Filter.calendarRange(y, y, "year")).first()
+    b = gee.fetch(gee.to_cells(ee.Image.cat([pm(PM_TREND_FROM).rename("p0"), pm(PM_TREND_TO).rename("p1")]), 1000), bbox, level)
+    rows = {}
+    for c, x in gee.merge(a, b).items():
+        n0, n1, p0, p1 = x.get("n0"), x.get("n1"), x.get("p0"), x.get("p1")
+        if n1 is None and p1 is None:
+            continue
+        rows[c] = {"no2_2019": _r(n0), "no2_latest": _r(n1),
+                   "no2_change_pct": _r(100 * (n1 - n0) / n0) if n0 and n1 is not None and n0 > 0 else None,
+                   "pm25_2012": _r(p0), "pm25_2022": _r(p1),
+                   "pm25_change_pct": _r(100 * (p1 - p0) / p0) if p0 and p1 is not None and p0 > 0 else None,
+                   "so2_umol_m2": _r(x.get("so2"))}
+    specs = [
+        FieldSpec("no2_2019", f"Tropospheric NO₂ ({AIR_TREND_FROM} mean)", agg="mean", unit="µmol/m²", ramp="reds", higher_is="worse"),
+        FieldSpec("no2_latest", f"Tropospheric NO₂ ({YEAR} mean)", agg="mean", unit="µmol/m²", ramp="reds", higher_is="worse"),
+        FieldSpec("no2_change_pct", f"Change in NO₂ {AIR_TREND_FROM}→{YEAR}", agg="mean", unit="%", domain=[-30, 30], ramp="diverging", higher_is="worse"),
+        FieldSpec("pm25_2012", f"PM2.5 ({PM_TREND_FROM} annual mean)", agg="mean", unit="µg/m³", domain=[0, 120], ramp="reds", higher_is="worse"),
+        FieldSpec("pm25_2022", f"PM2.5 ({PM_TREND_TO} annual mean)", agg="mean", unit="µg/m³", domain=[0, 120], ramp="reds", higher_is="worse"),
+        FieldSpec("pm25_change_pct", f"Change in PM2.5 {PM_TREND_FROM}→{PM_TREND_TO}", agg="mean", unit="%", domain=[-30, 30], ramp="diverging", higher_is="worse"),
+        FieldSpec("so2_umol_m2", f"SO₂ column ({YEAR} mean)", agg="mean", unit="µmol/m²", ramp="reds", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="air_trend", title="Air quality trend (satellite)", level=level, fields=specs, group=GROUP,
+        description=f"Sentinel-5P TROPOMI tropospheric NO₂ annual means for {AIR_TREND_FROM} and {YEAR} and their change, "
+                    f"the {YEAR} SO₂ column (industry and power plants; noisy away from big sources), and Washington "
+                    f"University satellite-derived surface PM2.5 (V6.GL, ~1 km) for {PM_TREND_FROM} and {PM_TREND_TO}. "
+                    "NO₂ is a ~5 km column and tracks traffic and combustion; a single year can swing with weather "
+                    "and lockdowns, so read changes under 10% as flat.",
+        source="Copernicus Sentinel-5P OFFL L3 + ACAG V6.GL PM2.5 (awesome-gee-community catalog) via Earth Engine",
+        license="Copernicus open licence; PM2.5 free for research (WUSTL ACAG)", default_field="no2_change_pct")
+    return spec, _table(level, rows, specs)
+
+
 # ── roofs: how much sun they reflect (Sentinel-2 albedo on Open Buildings roofs) ──
 
 # Thresholds are for 10 m pixel albedo, which blends roofs with parapets, tanks and shade: the median Lucknow roof
@@ -1453,7 +1509,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend,
 }
 
 

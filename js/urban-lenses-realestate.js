@@ -970,7 +970,7 @@ const UrbanLensesRealEstate = (() => {
         return {
             columns: { cool_priority: prio, dark_roof_m2: darkM2 }, idx: cells, weightKey: 'cool_priority',
             metric: { label: 'Residents under dark roofs', value: Math.round(underDark), unit: 'people', higherIs: 'worse' },
-            headline: `${_round(100 * roofDark / roofAll)}% of the city's roof area is dark, over about ${_people(underDark)} residents; coating it white would cost roughly ₹${Math.round(crore).toLocaleString('en-IN')} crore, and trials in Ahmedabad found rooms under cool roofs 2–5 °C cooler.`,
+            headline: `${_round(100 * roofDark / roofAll)}% of the city's roof area reads dark from space (10 m albedo under ${DARK_LIMIT}), over about ${_people(underDark)} residents; coating it white would cost roughly ₹${Math.round(crore).toLocaleString('en-IN')} crore, and trials in Ahmedabad found rooms under cool roofs 2–5 °C cooler.`,
             stats,
         };
     }
@@ -1057,6 +1057,43 @@ const UrbanLensesRealEstate = (() => {
             columns: c2 ? { change_8yr: c8, change_2yr: c2 } : { change_8yr: c8 }, idx: cells, weightKey: 'change_8yr',
             metric: { label: 'Land that changed strongly since 2017', value: _round(km2, 1), unit: 'km²', higherIs: null },
             headline: `Satellite embeddings show ${_round(km2, 1)} km² of the city changed strongly between 2017 and 2025${builtShare != null ? `; ${builtShare}% of it gained 20 or more new buildings` : ''}${c2 ? `, and ${recent.length} blocks are changing fast right now` : ''}.`,
+            stats,
+        };
+    }
+
+    // Air trend: changes under 10% are within year-to-year weather swings, so they count as flat.
+    // SO₂ columns under ~100 µmol/m² are background and retrieval noise, so hotspots are named only above that.
+    const AIR_FLAT = 10, SO2_NOTABLE = 100;
+
+    /** Air trend: who now breathes more or less NO₂ than in 2019, how PM2.5 moved over ten years, and SO₂ hotspots. */
+    function airtrend(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const dn = c['air_trend.no2_change_pct'], n0 = c['air_trend.no2_2019'], n1 = c['air_trend.no2_latest'];
+        const p0 = c['air_trend.pm25_2012'], p1 = c['air_trend.pm25_2022'], so2 = c['air_trend.so2_umol_m2'], pop = c['population.population'];
+        if (!dn || !pop) return null;
+        const cells = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0 && _fin(dn[i])) cells.push(i);
+        if (cells.length < 5) return null;
+        const people = _sumOver(pop, cells, () => true);
+        const pw = a => { let s = 0, w = 0; for (const i of cells) if (a && _fin(a[i])) { s += a[i] * pop[i]; w += pop[i]; } return w ? s / w : null; };
+        const up = _sumOver(pop, cells, i => dn[i] >= AIR_FLAT), down = _sumOver(pop, cells, i => dn[i] <= -AIR_FLAT);
+        const a0 = pw(n0), a1 = pw(n1), q0 = pw(p0), q1 = pw(p1);
+        const chg = a0 ? 100 * (a1 - a0) / a0 : pw(dn);
+        const stats = [
+            { label: 'NO₂ for the average resident, 2019 → 2025', value: a0 != null ? `${_round(a0)} → ${_round(a1)} µmol/m² (${chg >= 0 ? '+' : ''}${_round(chg)}%)` : `${_round(chg)}%`, raw: _round(chg) },
+            { label: `Residents where NO₂ rose ${AIR_FLAT}% or more / fell ${AIR_FLAT}% or more`, value: `${_people(up)} (${_round(100 * up / people)}%) / ${_people(down)} (${_round(100 * down / people)}%)` },
+        ];
+        if (q0 != null && q1 != null) stats.push({ label: 'PM2.5 for the average resident, 2012 → 2022', value: `${_round(q0)} → ${_round(q1)} µg/m³ (${q1 >= q0 ? '+' : ''}${_round(100 * (q1 - q0) / q0)}%)` });
+        if (so2) {
+            const top = cells.filter(i => _fin(so2[i]) && so2[i] >= SO2_NOTABLE).sort((a, b) => so2[b] - so2[a]);
+            spaced(g, top.slice(0, Math.max(5, Math.ceil(top.length / 50))), so2).slice(0, 3)
+                .forEach((i, k) => stats.push({ label: `SO₂ hotspot ${k + 1}: ${g.codes[i]}`, value: `${_round(so2[i])} µmol/m² (industry, power or brick kilns nearby)` }));
+        }
+        const word = Math.abs(chg) < AIR_FLAT ? 'is roughly flat' : chg > 0 ? 'has risen' : 'has fallen';
+        return {
+            columns: { no2_change_pct: dn }, idx: cells, weightKey: 'no2_change_pct', noHotspots: true,
+            metric: { label: 'Change in NO₂ for the average resident since 2019', value: _round(chg), unit: '%', higherIs: 'worse' },
+            headline: `Traffic and combustion NO₂ ${word} since 2019 (${chg >= 0 ? '+' : ''}${_round(chg)}% for the average resident); ${_people(up)} residents live where it rose ${AIR_FLAT}% or more${q0 != null && q1 != null ? `, and fine-dust PM2.5 went from ${_round(q0)} to ${_round(q1)} µg/m³ between 2012 and 2022` : ''}.`,
             stats,
         };
     }
@@ -1393,6 +1430,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['embeddings.change_8yr', 'embeddings.change_2yr', 'building_stock.new_buildings', 'building_stock.growth_pct', 'vegetation.tree_canopy_pct', 'land_cover.water_pct', 'land_cover.bare_pct', 'land_cover.crop_pct', 'population.population'],
             method: `Google Satellite Embedding V1 (AlphaEarth Foundations) sums up each 10 m pixel's year of optical, radar, thermal, terrain and climate data as 64 numbers. Change is 1 − cosine similarity between a block's mean embedding in 2017 (or 2023) and 2025. Years differ in rain and haze, so "strong" means ${CHG_X}× the city's median block. The kind of change is read from Open Buildings new buildings (2016–2023), then ESA WorldCover water, bare ground and cropland, then tree canopy; embeddings say how much changed, not what.`,
             refs: 'Brown et al. 2025 (AlphaEarth Foundations, Google DeepMind); Google Satellite Embedding V1 (CC BY 4.0); Sirko et al. 2023 (Open Buildings 2.5D Temporal)' },
+        { id: 'airtrend', equity: true, title: 'Air trend', icon: '📉',
+            question: 'Is the air getting cleaner or dirtier, and for whom?',
+            field: { key: 'no2_change_pct', label: 'Change in NO₂ since 2019', unit: '%', higherIs: 'worse', ramp: 'diverging', domain: [-30, 30] },
+            needs: ['air_trend.no2_change_pct', 'air_trend.no2_2019', 'air_trend.no2_latest', 'air_trend.pm25_2012', 'air_trend.pm25_2022', 'air_trend.so2_umol_m2', 'population.population'],
+            method: `Sentinel-5P TROPOMI tropospheric NO₂ annual means, 2019 against 2025 (~5 km columns, so neighbouring blocks share values); Washington University satellite-derived surface PM2.5 (V6.GL, ~1 km), 2012 against 2022; and the 2025 SO₂ column, which is noisy except near big sources (hotspots are named only above ${SO2_NOTABLE} µmol/m²). Changes under ${AIR_FLAT}% are within weather swings between years and count as flat. Columns measure the whole air above a place, not what reaches the street.`,
+            refs: 'Veefkind et al. 2012 (TROPOMI); van Donkelaar et al. 2021 (V5/V6.GL PM2.5); NCAP progress reports (MoEFCC)' },
         { id: 'vitality', title: 'Commercial vitality', icon: '🛍️',
             question: 'Where are the high streets, where do chains and offices cluster, and which dense areas lack shops?',
             field: { key: 'places_km2', label: 'Businesses and services per km²', unit: 'per km²', higherIs: 'better', ramp: 'viridis', domain: [0, 1000] },
@@ -1407,7 +1450,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, coolroof, change }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, coolroof, change, airtrend }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText };
 })();
 

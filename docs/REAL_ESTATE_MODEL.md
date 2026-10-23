@@ -444,3 +444,43 @@ It counts days with a wet-bulb of 28 °C or more, and of 31 °C or more. Vecelli
 The 28 °C threshold sits near the monsoon's usual afternoon peak, so small shifts move the counts a lot. Treat the counts as direction and scale, not exact numbers.
 
 The `climate2050` lens now reports humid-heat days. The Climate 2050 grade now uses the 2050 count instead of today's, so humid cities grade worse than before.
+
+## Air trend
+
+The `air_trend` dataset is at L6 and built by `pipeline/cells/ee_layers.py --layer air_trend`. It holds:
+
+- Sentinel-5P tropospheric NO₂ annual means for 2019 and 2025, and the change between them.
+- Satellite PM2.5 (V6.GL) for 2012 and 2022.
+- The 2025 SO₂ column.
+
+The `airtrend` lens weights each block by its residents. Changes under 10% count as flat. It names SO₂ hotspots only above 100 µmol/m².
+
+| City | NO₂ 2019 → 2025 | PM2.5 2012 → 2022 |
+|---|---|---|
+| Delhi | −16% | 99 → 94 µg/m³ |
+| Bengaluru | −16% | 30 → 37 µg/m³ |
+| Kolkata | flat | 59 → 47 µg/m³ |
+| Lucknow | flat | 84 → 88 µg/m³ |
+
+In Delhi, NO₂ fell in the core and rose on the western fringe.
+
+## Cool roofs
+
+The `roofs` dataset is at L7 and built by `pipeline/cells/ee_layers.py --layer roofs`. It takes the March–May Sentinel-2 broadband albedo (Liang 2001) over 10 m pixels that are mostly roof in Open Buildings 2023.
+
+Each pixel blends a roof with its parapets, tanks and shade, so values bunch around 0.18 to 0.25. The thresholds are set for that: dark means under 0.17, and light means 0.25 or more.
+
+The `coolroof` lens reports:
+
+- Dark roof area and the residents under it.
+- The cost to coat every dark roof, at about ₹300/m².
+- A priority score: residents × dark share, weighted up for hot blocks, poor blocks (Relative Wealth Index below 0) and low-rise blocks.
+
+| City | Roof area that reads dark | Residents under dark roofs | Cost to coat |
+|---|---|---|---|
+| Kolkata | 86% | 1.2 crore | ₹2,495 crore |
+| Mumbai | 65% | 1.1 crore | ₹1,270 crore |
+| Chennai | 10% | 10 lakh | ₹354 crore |
+| Ahmedabad | 6% | 4.6 lakh | ₹147 crore |
+
+In humid cities, concrete weathers dark. Ahmedabad has 42% light roofs, partly thanks to its cool-roof programme.

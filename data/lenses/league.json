@@ -252,11 +252,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 462745,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 16,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": 0.9,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -612,11 +624,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 978469,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 49.9,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": -16.3,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -972,11 +996,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 379613,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 12.6,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": 12,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -1326,11 +1362,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 1013336,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 22.9,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": 7.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -1692,6 +1740,12 @@
      "unit": "km²",
      "higherIs": null
     },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": -15.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 5,
@@ -2034,11 +2088,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 27567,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 1.1,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": 1.6,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -2388,11 +2454,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 514970,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 68.9,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": 2.2,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -2748,11 +2826,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 906146,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 45.9,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": 15.9,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -3102,11 +3192,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 196950,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 1.9,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": 2.9,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -3456,11 +3558,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 11549367,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 17.7,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": -0.4,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -3804,11 +3918,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 536716,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 33.6,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": 1.4,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -4164,11 +4290,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 11341942,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 34.7,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": 6.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -4524,11 +4662,23 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coolroof": {
+     "label": "Residents under dark roofs",
+     "value": 2150850,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "change": {
      "label": "Land that changed strongly since 2017",
      "value": 31.1,
      "unit": "km²",
      "higherIs": null
+    },
+    "airtrend": {
+     "label": "Change in NO₂ for the average resident since 2019",
+     "value": 1.4,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",

@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -232,6 +232,19 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(L._lenses.flood2050(L.frameFrom(codes, base), {})).toBeNull();
     });
 
+    it('airtrend: NO₂ change for residents, flat band, PM2.5 trend and SO₂ hotspots', () => {
+        const k = v => codes.map(() => v);
+        const dn = codes.map((_, i) => (col(i) < 6 ? 20 : -20));
+        const f = L.frameFrom(codes, { ...base, 'air_trend.no2_change_pct': dn, 'air_trend.no2_2019': k(50), 'air_trend.no2_latest': k(50),
+            'air_trend.pm25_2012': k(80), 'air_trend.pm25_2022': k(60), 'air_trend.so2_umol_m2': codes.map((_, i) => (i === 7 ? 500 : 20)) }, { city: 'delhi' });
+        const r = L._lenses.airtrend(f, {});
+        expect(r.headline).toMatch(/roughly flat/);
+        expect(r.stats[1].value).toMatch(/\(50%\) \/ .*\(50%\)/);
+        expect(r.stats.some(x => /PM2\.5/.test(x.label) && /80 → 60/.test(x.value))).toBe(true);
+        expect(r.stats.find(x => /SO₂ hotspot 1/.test(x.label)).label).toContain(codes[7]);
+        expect(L._lenses.airtrend(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
     it('change: strongly changed land against the city median, hotspots named by what changed', () => {
         const c8 = codes.map((_, i) => (i === 0 || i === SIZE * 11 + 11 ? 0.2 : 0.02));
         const c2 = codes.map((_, i) => (i === 5 ? 0.1 : 0.01));
@@ -262,7 +275,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.cool_priority[0]).toBeGreaterThan(r.columns.cool_priority[SIZE - 1]);   // dark west beats light east
         expect(r.columns.cool_priority[0]).toBeGreaterThan(r.columns.cool_priority[SIZE * 11]);  // hot north beats cool south
         expect(r.metric.value).toBe(Math.round(n * 1000 * 0.45));
-        expect(r.headline).toMatch(/45% of the city's roof area is dark/);
+        expect(r.headline).toMatch(/45% of the city's roof area reads dark/);
         expect(L._lenses.coolroof(L.frameFrom(codes, base), {})).toBeNull();
     });
 
