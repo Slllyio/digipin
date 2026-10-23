@@ -560,12 +560,12 @@
     "zones": 697,
     "origins": 658,
     "peak_pcu_total_trips": 193168,
-    "roads_los_e_f": 1072,
-    "roads_los_d": 341,
+    "roads_los_e_f": 1071,
+    "roads_los_d": 342,
     "roads_total": 6388,
     "roads_los_e_f_by_period": {
       "am": 1045,
-      "pm": 1024,
+      "pm": 1026,
       "mid": 51
     },
     "hourly": {
@@ -762,7 +762,7 @@
     "residents_lden_ge_53": 4946058,
     "residents_lden_ge_65": 1756367,
     "nox_t_day": 7.88,
-    "co2_t_day": 1926.0,
+    "co2_t_day": 1925.8,
     "nox_vs_s5p_no2_spearman_l5": 0.45,
     "l5_cells_compared": 55,
     "assumptions": {
@@ -998,16 +998,16 @@
   },
   "parking": {
     "cells": 5484,
-    "demand_ecs": 277583,
+    "demand_ecs": 277590,
     "lots_mapped": 17,
     "pct_demand_in_overflow": 6.3,
-    "overflow_ecs": 6361,
+    "overflow_ecs": 6359,
     "hotspots": [
       {
         "digipin": "4FP3J83",
         "demand_ecs": 192,
         "supply_ecs": 10,
-        "pressure": 19.87
+        "pressure": 19.86
       },
       {
         "digipin": "4FP3CT6",
@@ -1034,16 +1034,16 @@
         "pressure": 2.34
       },
       {
-        "digipin": "4FP3CTL",
-        "demand_ecs": 171,
-        "supply_ecs": 48,
-        "pressure": 3.55
-      },
-      {
         "digipin": "4FP3CTT",
         "demand_ecs": 185,
         "supply_ecs": 62,
         "pressure": 2.97
+      },
+      {
+        "digipin": "4FP3CTL",
+        "demand_ecs": 171,
+        "supply_ecs": 48,
+        "pressure": 3.55
       },
       {
         "digipin": "4FP32FJ",
@@ -1055,7 +1055,7 @@
         "digipin": "4FP5JC7",
         "demand_ecs": 183,
         "supply_ecs": 69,
-        "pressure": 2.67
+        "pressure": 2.66
       },
       {
         "digipin": "4FP3CT5",

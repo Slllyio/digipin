@@ -264,7 +264,7 @@
     "roads_total": 14955,
     "roads_los_e_f_by_period": {
       "am": 4377,
-      "pm": 4315,
+      "pm": 4314,
       "mid": 640
     },
     "hourly": {
@@ -459,9 +459,9 @@
     "residents_total": 13252113,
     "residents_near_modelled_roads": 11756630,
     "residents_lden_ge_53": 11095502,
-    "residents_lden_ge_65": 5373299,
+    "residents_lden_ge_65": 5376073,
     "nox_t_day": 19.95,
-    "co2_t_day": 4876.2,
+    "co2_t_day": 4875.9,
     "nox_vs_s5p_no2_spearman_l5": 0.65,
     "l5_cells_compared": 107,
     "assumptions": {
@@ -697,11 +697,11 @@
     }
   },
   "parking": {
-    "cells": 10310,
-    "demand_ecs": 570897,
+    "cells": 10311,
+    "demand_ecs": 570907,
     "lots_mapped": 62,
-    "pct_demand_in_overflow": 5.9,
-    "overflow_ecs": 11377,
+    "pct_demand_in_overflow": 5.8,
+    "overflow_ecs": 11229,
     "hotspots": [
       {
         "digipin": "4P34F3F",
@@ -737,7 +737,7 @@
         "digipin": "4P33364",
         "demand_ecs": 163,
         "supply_ecs": 0,
-        "pressure": 163.49
+        "pressure": 163.46
       },
       {
         "digipin": "4P3JK2L",
@@ -778,7 +778,7 @@
     "pop_mean_trip_km": 10.91,
     "co2_kg_resident_day": 0.354,
     "co2_kt_year": 1710.6,
-    "inner_fifth_trip_km": 9.26,
+    "inner_fifth_trip_km": 9.27,
     "outer_fifth_trip_km": 14.05,
     "assumptions": {
       "detour": 1.3,

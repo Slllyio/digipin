@@ -456,7 +456,7 @@
     "roads_los_d": 551,
     "roads_total": 6743,
     "roads_los_e_f_by_period": {
-      "am": 1528,
+      "am": 1527,
       "pm": 1473,
       "mid": 122
     },
@@ -686,15 +686,16 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 16,
+    "chargers": 22,
     "chargers_by_source": {
+      "osm": 6,
       "overture": 16
     },
     "parking": 140,
     "fuel": 237,
-    "chargers_per_lakh": 0.18,
-    "pct_vkm_within_2km": 38.7,
-    "pct_pop_within_2km": 35.9
+    "chargers_per_lakh": 0.25,
+    "pct_vkm_within_2km": 56.7,
+    "pct_pop_within_2km": 55.5
   },
   "cycling": {
     "lowstress_km": 8794,
@@ -889,7 +890,7 @@
   },
   "parking": {
     "cells": 6745,
-    "demand_ecs": 402055,
+    "demand_ecs": 402056,
     "lots_mapped": 140,
     "pct_demand_in_overflow": 4.8,
     "overflow_ecs": 7000,
