@@ -98,6 +98,7 @@ jobs:
                 python -m pipeline.realestate.metro_future --region "$DIGIPIN_REGION" || echo "upcoming metro bake skipped"
                 python -m pipeline.realestate.places --region "$DIGIPIN_REGION" || echo "Overture places bake skipped"
                 python -m pipeline.realestate.parks --region "$DIGIPIN_REGION" || echo "Overture parks bake skipped"
+                python -m pipeline.realestate.stalled --region "$DIGIPIN_REGION" || echo "construction sites bake skipped"
                 python -m pipeline.realestate.land_value --region "$DIGIPIN_REGION" || echo "land value bake skipped"
                 python -m pipeline.realestate.supply --region "$DIGIPIN_REGION" || echo "real-estate supply bake skipped"
                 if [ "$DIGIPIN_REGION" = delhi ]; then python -m pipeline.realestate.calibrate || echo "Delhi calibration skipped"; fi

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T19:57:40Z",
+  "generated": "2026-10-23T20:15:59Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -17092,6 +17092,254 @@
           },
           "json": "scores/pune.json",
           "parquet": "scores/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "sites",
+      "title": "Construction sites: started, building, stalled",
+      "description": "Two dry seasons a year apart (December\u2013May) of the monthly Dynamic World built-up and bare-ground probabilities in construction_monthly. In blocks at least 15% built-up, a site is bare ground of 25% or more: stalled if it stays bare and built-up moves under 5 points in a year, building up if built-up rises 10+ points, cleared this year if bare ground rises 15+ points or built-up falls 10+ while bare ground rises as much (demolition). Quarries, dry plots and fair grounds can read as stalled sites; check on the satellite view.",
+      "source": "pipeline/realestate/stalled.py (from construction_monthly, Dynamic World V1)",
+      "license": "CC BY 4.0 (Dynamic World)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "bare_then",
+          "label": "Bare ground, Dec 2024\u2013May 2025",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "bare_now",
+          "label": "Bare ground, Dec 2025\u2013May 2026",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "built_then",
+          "label": "Built-up, Dec 2024\u2013May 2025",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "built_now",
+          "label": "Built-up, Dec 2025\u2013May 2026",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "site_status",
+          "label": "Site: 1 cleared this year, 2 building up, 3 stalled",
+          "type": "number",
+          "agg": "max",
+          "unit": "class",
+          "domain": [
+            0,
+            3
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "stalled",
+          "label": "Stalled site (cleared a year, not built up)",
+          "type": "number",
+          "agg": "max",
+          "unit": "yes/no",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "site_status",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 82,
+          "bbox": {
+            "west": 72.515380859375,
+            "south": 22.95654296875,
+            "east": 72.651611328125,
+            "north": 23.103759765625
+          },
+          "json": "sites/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 70,
+          "bbox": {
+            "west": 77.45263671875,
+            "south": 12.83154296875,
+            "east": 77.775634765625,
+            "north": 13.136962890625
+          },
+          "json": "sites/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 27,
+          "bbox": {
+            "west": 77.309814453125,
+            "south": 23.19384765625,
+            "east": 77.494384765625,
+            "north": 23.31689453125
+          },
+          "json": "sites/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 65,
+          "bbox": {
+            "west": 80.139892578125,
+            "south": 12.947998046875,
+            "east": 80.311279296875,
+            "north": 13.17431640625
+          },
+          "json": "sites/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 1491,
+          "bbox": {
+            "west": 76.841796875,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "sites/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 7,
+          "bbox": {
+            "west": 77.292236328125,
+            "south": 24.61328125,
+            "east": 77.32958984375,
+            "north": 24.67919921875
+          },
+          "json": "sites/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 78,
+          "bbox": {
+            "west": 78.30078125,
+            "south": 17.298583984375,
+            "east": 78.59521484375,
+            "north": 17.53369140625
+          },
+          "json": "sites/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 132,
+          "bbox": {
+            "west": 75.600341796875,
+            "south": 22.5126953125,
+            "east": 76.000244140625,
+            "north": 22.840087890625
+          },
+          "json": "sites/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 59,
+          "bbox": {
+            "west": 75.71240234375,
+            "south": 26.80615234375,
+            "east": 75.9189453125,
+            "north": 26.992919921875
+          },
+          "json": "sites/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 34,
+          "bbox": {
+            "west": 88.304931640625,
+            "south": 22.521484375,
+            "east": 88.445556640625,
+            "north": 22.651123046875
+          },
+          "json": "sites/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 754,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.040771484375,
+            "north": 26.944580078125
+          },
+          "json": "sites/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 248,
+          "bbox": {
+            "west": 72.783447265625,
+            "south": 18.89599609375,
+            "east": 72.9921875,
+            "north": 19.201416015625
+          },
+          "json": "sites/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 82,
+          "bbox": {
+            "west": 73.7568359375,
+            "south": 18.4697265625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "sites/pune.json",
+          "parquet": null
         }
       ]
     },

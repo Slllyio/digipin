@@ -727,6 +727,41 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Construction sites from two dry seasons of Dynamic World (pipeline/realestate/stalled.py).
+    function sites(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const st = c['sites.site_status'], b1 = c['sites.bare_now'], u0 = c['sites.built_then'], u1 = c['sites.built_now'], pop = c['population.population'];
+        if (!st) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(st[i]) && st[i] > 0) idx.push(i);
+        if (!idx.length) return null;
+        const count = k => idx.filter(i => st[i] === k).length;
+        const ha = k => idx.filter(i => st[i] === k).reduce((a, i) => a + (b1 && _fin(b1[i]) ? b1[i] : 0) / 100 * g.cellKm2 * 100, 0);
+        const stalledN = count(3), growN = count(2), clearN = count(1);
+        const stats = [
+            { label: 'Stalled sites or idle plots: bare ground in built-up areas, unchanged for a year', value: `${stalledN} blocks, about ${_round(ha(3))} ha bare`, raw: stalledN },
+            { label: 'Building up: built-up rising 10+ points in a year', value: `${growN} blocks` },
+            { label: 'Cleared this year', value: `${clearN} blocks, about ${_round(ha(1))} ha` },
+        ];
+        if (pop) {
+            const near = within(g, Float64Array.from({ length: n }, (_, i) => (st[i] === 3 ? 1 : 0)), 0.3);
+            const people = _sumOver(pop, Array.from({ length: n }, (_, i) => i).filter(i => pop[i] > 0), i => near[i] > 0);
+            stats.push({ label: 'Residents within 300 m of a stalled site (dust, stagnant water, safety)', value: _people(people) });
+        }
+        const bare = Float64Array.from({ length: n }, (_, i) => (st[i] === 3 && b1 && _fin(b1[i]) ? b1[i] : 0));
+        spaced(g, idx.filter(i => st[i] === 3), bare).slice(0, 4).forEach((i, k) => stats.push({ label: `Stalled site ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(b1[i])}% bare now; built-up ${_round(u0[i])}% → ${_round(u1[i])}%` }));
+        const grow = Float64Array.from({ length: n }, (_, i) => (st[i] === 2 && u0 && u1 && _fin(u1[i]) ? u1[i] - u0[i] : 0));
+        spaced(g, idx.filter(i => st[i] === 2), grow).slice(0, 3).forEach((i, k) => stats.push({ label: `Building fastest ${k + 1}: ${g.codes[i]}`,
+            value: `built-up ${_round(u0[i])}% → ${_round(u1[i])}%` }));
+        return {
+            columns: { site_status: st }, idx, weightKey: 'site_status', noHotspots: true,
+            metric: { label: 'Stalled sites or idle plots', value: stalledN, unit: 'blocks', higherIs: 'worse' },
+            headline: `${stalledN} blocks hold bare ground inside built-up areas that has not changed in a year (stalled sites or idle plots), ${growN} are building up fast and ${clearN} were cleared this year.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -946,6 +981,12 @@ const UrbanLensesEnvironment = (() => {
             needs: ['places.shopping', 'population.population'],
             method: `Huff gravity model. Centres are blocks in the top ${_round(100 * (1 - HUFF_TOP))}% for Overture shops (at least 3). Each block's residents (GHSL) split their trips across centres within ${HUFF_KM} km in proportion to shops ÷ distance^${HUFF_BETA} (distance at least ${HUFF_MIN_KM} km). Draw = residents' trips a centre wins; residents per shop = draw ÷ shops. Centres at twice the median residents per shop are flagged as having room for more shops. Income, parking and online shopping are not modelled.`,
             refs: 'Huff 1963 (a probabilistic analysis of shopping centre trade areas); Dolega, Pavlis & Singleton 2016 (estimating retail catchments); Overture Maps Foundation places' },
+        { id: 'sites', equity: false, title: 'Construction sites', icon: '🏗️',
+            question: 'Where is construction starting, moving fast, or stalled?',
+            field: { key: 'site_status', label: 'Site: 1 cleared this year, 2 building up, 3 stalled', unit: 'class', higherIs: null, ramp: 'heat', domain: [0, 3] },
+            needs: ['sites.site_status', 'sites.bare_now', 'sites.built_then', 'sites.built_now', 'population.population'],
+            method: 'Dynamic World monthly built-up and bare-ground probabilities averaged over two dry seasons a year apart (Dec 2024–May 2025 and Dec 2025–May 2026). In blocks at least 15% built-up, a site is 25%+ bare ground. Stalled = bare in both seasons with built-up moving under 5 points; building up = built-up up 10+ points; cleared this year = bare up 15+ points, or built-up down 10+ with bare ground up as much (demolition). Quarries, dry open plots and fair grounds can look like stalled sites, so check them on the satellite view. Residents near stalled sites are counted within 300 m.',
+            refs: 'Brown et al. 2022 (Dynamic World); RERA project status as the ground truth to compare against (state portals)' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -961,7 +1002,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

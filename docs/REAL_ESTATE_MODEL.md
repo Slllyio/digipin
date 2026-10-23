@@ -711,3 +711,13 @@ The VIIRS night-time light composite is captured at about 1:30 am. The `nighteco
 The `catchment` lens is a Huff gravity model. Shopping centres are the top 5% of blocks by Overture shops. Each block's residents split their trips across the centres within 5 km in proportion to shops ÷ distance².
 
 The lens reports each centre's draw and its residents per listed shop. Centres at twice the median residents per shop are flagged as having room for more shops. In Delhi and Pune these are mostly small outer centres that are the only one serving dense new suburbs. Overture lists only a fraction of real shops, so compare centres within a city, not the absolute counts.
+
+## Construction sites
+
+The `sites` dataset (L7, `pipeline/realestate/stalled.py`) compares two dry seasons a year apart in `construction_monthly`: December 2024–May 2025 against December 2025–May 2026. It only looks at blocks that are at least 15% built-up, and sorts them into three groups:
+
+- **Stalled:** 25% or more bare ground in both seasons, with built-up up by less than 5 points.
+- **Building up:** built-up up by 10 points or more.
+- **Cleared this year:** bare ground up by 15 points or more, or built-up down 10 points with bare ground up as much (demolition).
+
+The `sites` lens names the largest stalled sites and the fastest-building blocks, and counts the residents within 300 m of a stalled site. Quarries and dry open plots can look like stalled sites, so check them on the satellite view. Before classifying, the city-wide median change between the two seasons is removed, because a hazier season shifts every block at once. Delhi has 508 stalled-or-idle blocks, 38 building up and 8 newly cleared. Many of Delhi's stalled-or-idle blocks are long-vacant open plots rather than halted projects.
