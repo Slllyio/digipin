@@ -814,3 +814,14 @@ A block counts as missing a kind when none of that kind is listed within 1 km. T
 | Guna | 28% |
 
 Overture under-lists small and informal providers, so a gap can mean thin listings rather than a missing service.
+
+## Rental demand anchors (`anchors` lens)
+
+Three kinds of place drive rental demand in Indian cities: colleges and coaching centres (students, PG and hostel demand), hospitals (staff, and patients' families on long stays) and offices and co-working spaces (young workers). The `places` dataset now counts each in exact Overture categories (college_university; tutoring_service, computer_coaching, test_preparation, private_tutor; hospital, childrens_hospital; shopping_mall; coworking_space; hostel). For every lived-in block the lens sums each kind within 2 km, ranks it as a within-city percentile, and averages the three into `anchor_score`. Blocks scoring 80 or more sit near all three at once. The top student hubs also show how many hostels are already listed nearby, as a first read on existing supply.
+
+| City | Blocks near all three (80+) | Colleges and coaching | Hospitals | Offices and co-working |
+|---|---|---|---|---|
+| Delhi | 7,277 | 3,807 | 2,719 | 9,078 |
+| Pune | 1,618 | 1,446 | 1,135 | 3,194 |
+
+Counts are listings, not seats, beds or desks, so a large campus counts once and a coaching street of fifty small centres counts fifty times. Mall counts are stored in `places.malls` for later retail lenses.

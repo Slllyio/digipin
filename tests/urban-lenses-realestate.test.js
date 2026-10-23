@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -452,6 +452,17 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.headline).toMatch(/and 0 have none of the three/);
         expect(r.stats.find(x => /Service gap 1/.test(x.label)).value).toMatch(/^no bank or ATM, clinic or pharmacy within 1 km/);
         expect(L._lenses.services(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('anchors: colleges, hospitals and offices nearby as within-city percentiles', () => {
+        const at = j => codes.map((_, i) => (i === j ? 5 : 0));
+        const mid = SIZE * 6 + 6;
+        const f = L.frameFrom(codes, { ...base, 'places.colleges': at(mid), 'places.coaching': at(mid), 'places.hospitals': at(mid), 'places.offices': at(mid),
+            'places.coworking': at(0), 'places.hostels': at(mid) }, { city: 'delhi' });
+        const r = L._lenses.anchors(f, {});
+        expect(r.columns.anchor_score[mid]).toBeGreaterThan(r.columns.anchor_score[SIZE * 11 + 11]);
+        expect(r.stats.find(x => /Student hub 1/.test(x.label)).value).toMatch(/^10 within 2 km; 5 hostels$/);
+        expect(L._lenses.anchors(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

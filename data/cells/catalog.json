@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T20:32:31Z",
+  "generated": "2026-10-23T20:48:02Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -14533,7 +14533,7 @@
     {
       "id": "places",
       "title": "Businesses and services (Overture)",
-      "description": "Overture Maps places (release 2026-10-21.0, confidence \u2265 0.6, not marked closed) counted per block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, community and transport, plus offices, finance, real-estate agents, brand share and business mix. Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses list themselves online: dense in markets, thin in informal and older areas.",
+      "description": "Overture Maps places (release 2026-10-21.0, confidence \u2265 0.6, not marked closed) counted per block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, brand share and business mix. Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses list themselves online: dense in markets, thin in informal and older areas.",
       "source": "pipeline/realestate/places.py (Overture Maps places theme via DuckDB)",
       "license": "CDLA-Permissive-2.0 (Overture Maps places)",
       "group": "Real estate",
@@ -14718,6 +14718,79 @@
           "domain": [
             0,
             16
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hospitals",
+          "label": "Hospitals",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "colleges",
+          "label": "Colleges and universities",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            9
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "coaching",
+          "label": "Coaching centres and tutors",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            16
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "malls",
+          "label": "Shopping malls",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            7
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "coworking",
+          "label": "Co-working spaces",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            3
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hostels",
+          "label": "Hostels",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            5
           ],
           "ramp": "viridis"
         },

@@ -135,3 +135,7 @@ def test_places_classify_and_rows():
     (row,) = rows.values()
     assert row["places"] == 3 and row["food"] == 1 and row["shopping"] == 1 and row["health"] == 1
     assert row["branded_pct"] == 33.3 and 0 < row["diversity"] < 1
+    rows = pl.rows_from([(77.2, 28.6, "education", "college_university", None), (77.2, 28.6, "education", "test_preparation", None),
+                         (77.2, 28.6, "shopping", "shopping_mall", None)])
+    (row,) = rows.values()
+    assert row["colleges"] == 1 and row["coaching"] == 1 and row["malls"] == 1 and row["coworking"] == 0

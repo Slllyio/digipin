@@ -9,6 +9,8 @@ Per L7 block (dataset ``places``), counting Overture places with confidence
     offices             IT, software, professional and business services
     finance             banks, ATMs and other financial services
     property_agents     real-estate agents and services (a market-activity proxy)
+    hospitals, colleges, coaching, malls, coworking, hostels
+                        exact Overture categories (see ANCHORS), for demand-anchor lenses
     branded_pct         share of places that carry a brand (chains)
     diversity           Shannon evenness of the level-1 mix (0 = one kind, 1 = even)
 
@@ -40,6 +42,15 @@ OFFICE_WORDS = ("software", "information_technology", "professional_service", "b
                 "advertising", "legal", "lawyer", "accountant", "accounting", "engineering_service", "coworking", "office")
 FINANCE_WORDS = ("bank", "atm", "financial", "credit_union", "insurance", "stock_and_bond", "investing")
 PROPERTY_WORDS = ("real_estate", "property_management", "apartment_agent", "builder", "home_developer")
+ANCHORS = {
+    "hospitals": ("hospital", "childrens_hospital"),
+    "colleges": ("college_university",),
+    "coaching": ("tutoring_service", "computer_coaching", "test_preparation", "private_tutor"),
+    "malls": ("shopping_mall",),
+    "coworking": ("coworking_space",),
+    "hostels": ("hostel",),
+}
+_ANCHOR_OF = {cat: k for k, cats in ANCHORS.items() for cat in cats}
 
 
 def classify(level1, primary):
@@ -60,7 +71,7 @@ def evenness(counts):
 
 def rows_from(points):
     """points: iterable of (lng, lat, level1, primary, brand) → {code: row}."""
-    acc = defaultdict(lambda: {"n": 0, "brand": 0, "office": 0, "finance": 0, "prop": 0, "mix": defaultdict(int)})
+    acc = defaultdict(lambda: {"n": 0, "brand": 0, "office": 0, "finance": 0, "prop": 0, "mix": defaultdict(int), "anchor": defaultdict(int)})
     for x, y, l1, tp, br in points:
         try:
             code = digipin.encode(y, x).replace("-", "")[:LEVEL]
@@ -73,12 +84,14 @@ def rows_from(points):
         a["office"] += off
         a["finance"] += fin
         a["prop"] += prop
+        if tp in _ANCHOR_OF:
+            a["anchor"][_ANCHOR_OF[tp]] += 1
         if grp:
             a["mix"][grp] += 1
     rows = {}
     for code, a in acc.items():
         r = {"places": a["n"], **{k: a["mix"].get(k, 0) for k in KINDS}, "offices": a["office"], "finance": a["finance"],
-             "property_agents": a["prop"], "branded_pct": round(100 * a["brand"] / a["n"], 1)}
+             "property_agents": a["prop"], **{k: a["anchor"].get(k, 0) for k in ANCHORS}, "branded_pct": round(100 * a["brand"] / a["n"], 1)}
         ev = evenness(a["mix"])
         r["diversity"] = round(ev, 3) if ev is not None else None
         rows[code] = r
@@ -111,6 +124,12 @@ def cell_dataset(region, rows):
         FieldSpec("offices", "Offices: IT, professional and business services", agg="sum", unit="places", ramp="viridis", higher_is="better"),
         FieldSpec("finance", "Banks, ATMs and financial services", agg="sum", unit="places", ramp="viridis", higher_is="better"),
         FieldSpec("property_agents", "Real-estate agents and services", agg="sum", unit="places", ramp="viridis", higher_is=None),
+        FieldSpec("hospitals", "Hospitals", agg="sum", unit="places", ramp="viridis", higher_is="better"),
+        FieldSpec("colleges", "Colleges and universities", agg="sum", unit="places", ramp="viridis", higher_is=None),
+        FieldSpec("coaching", "Coaching centres and tutors", agg="sum", unit="places", ramp="viridis", higher_is=None),
+        FieldSpec("malls", "Shopping malls", agg="sum", unit="places", ramp="viridis", higher_is=None),
+        FieldSpec("coworking", "Co-working spaces", agg="sum", unit="places", ramp="viridis", higher_is=None),
+        FieldSpec("hostels", "Hostels", agg="sum", unit="places", ramp="viridis", higher_is=None),
         FieldSpec("branded_pct", "Share of places that are chains or brands", agg="mean", unit="%", domain=[0, 30], ramp="viridis", higher_is=None),
         FieldSpec("diversity", "Mix of business types (0 = one kind, 1 = even)", agg="mean", unit="0-1", domain=[0, 1], ramp="viridis", higher_is="better"),
     ]
@@ -118,7 +137,7 @@ def cell_dataset(region, rows):
         id="places", title="Businesses and services (Overture)", level=LEVEL, fields=specs, group="Real estate",
         description=f"Overture Maps places (release {RELEASE}, confidence ≥ {MIN_CONF}, not marked closed) counted per "
                     "block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, "
-                    "community and transport, plus offices, finance, real-estate agents, brand share and business mix. "
+                    "community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, brand share and business mix. "
                     "Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses "
                     "list themselves online: dense in markets, thin in informal and older areas.",
         source="pipeline/realestate/places.py (Overture Maps places theme via DuckDB)",

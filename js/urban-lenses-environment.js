@@ -952,6 +952,49 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Rental demand anchors: colleges and coaching (students), hospitals (staff, patients' families) and offices
+    // and co-working (young workers), each summed within ANCHOR_KM and turned into a within-city percentile.
+    const ANCHOR_KM = 2;
+
+    function anchors(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const col = k => c[`places.${k}`];
+        if (!col('colleges') || !col('hospitals') || !col('offices')) return null;
+        const sum = keys => Float64Array.from({ length: n }, (_, i) => keys.reduce((a, k) => a + (col(k) && _fin(col(k)[i]) ? col(k)[i] : 0), 0));
+        const groups = { students: sum(['colleges', 'coaching']), hospital: sum(['hospitals']), office: sum(['offices', 'coworking']) };
+        const idx = [];
+        for (let i = 0; i < n; i++) if (pop && pop[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const near = {}, pct = {};
+        for (const [k, v] of Object.entries(groups)) {
+            near[k] = within(g, v, ANCHOR_KM);
+            const sorted = idx.map(i => near[k][i]).sort((a, b) => a - b);
+            pct[k] = new Float64Array(n).fill(NaN);
+            for (const i of idx) { let lo = 0, hi = sorted.length; while (lo < hi) { const m = (lo + hi) >> 1; if (sorted[m] < near[k][i]) lo = m + 1; else hi = m; } pct[k][i] = 100 * lo / sorted.length; }
+        }
+        const score = new Float64Array(n).fill(NaN);
+        for (const i of idx) score[i] = (pct.students[i] + pct.hospital[i] + pct.office[i]) / 3;
+        const hostel = col('hostels') ? within(g, sum(['hostels']), ANCHOR_KM) : null;
+        const tot = k => groups[k].reduce((a, b) => a + b, 0);
+        const stats = [
+            { label: 'Colleges and coaching centres listed', value: `${Math.round(tot('students')).toLocaleString('en-IN')}` },
+            { label: 'Hospitals listed', value: `${Math.round(tot('hospital')).toLocaleString('en-IN')}` },
+            { label: 'Offices and co-working spaces listed', value: `${Math.round(tot('office')).toLocaleString('en-IN')}`, raw: Math.round(tot('office')) },
+        ];
+        const name = { students: 'Student hub', hospital: 'Hospital quarter', office: 'Office cluster' };
+        for (const k of ['students', 'hospital', 'office']) {
+            spaced(g, idx, near[k]).slice(0, 2).forEach((i, j) => stats.push({ label: `${name[k]} ${j + 1}: ${g.codes[i]}`,
+                value: `${Math.round(near[k][i])} within ${ANCHOR_KM} km${k === 'students' && hostel ? `; ${Math.round(hostel[i])} hostels` : ''}` }));
+        }
+        const top = idx.filter(i => score[i] >= 80);
+        return {
+            columns: { anchor_score: score, student_pct: pct.students, hospital_pct: pct.hospital, office_pct: pct.office }, idx, weightKey: 'anchor_score', noHotspots: true,
+            metric: { label: 'Blocks near all three demand anchors (score 80+)', value: top.length, unit: 'blocks', higherIs: null },
+            headline: `${top.length} blocks sit near all three kinds of rental demand at once: colleges and coaching, hospitals, and offices. They are the strongest rental locations on demand alone.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -1211,6 +1254,15 @@ const UrbanLensesEnvironment = (() => {
             needs: ['places.finance', 'places.health', 'places.education', 'population.population'],
             method: `Overture Maps places (confidence 0.6+, not closed) counted within ${SERVICE_KM} km of each lived-in block: banks, ATMs and financial services; clinics, hospitals and pharmacies; schools, colleges and coaching. A block misses a kind when none is listed within ${SERVICE_KM} km. Overture under-lists small and informal providers (local clinics, anganwadis, small schools), so gaps are where listings are thin as well as where services are missing; RBI's financial-inclusion target is a banking outlet within 5 km of every village.`,
             refs: 'Overture Maps Foundation places; RBI Financial Inclusion Plan; Weiss et al. 2020 (global access to healthcare)' },
+        { id: 'anchors', equity: false, title: 'Rental demand anchors', icon: '🎓',
+            question: 'Where do students, hospital staff and office workers create rental demand?',
+            field: { key: 'anchor_score', label: 'Rental demand anchors nearby (mean percentile)', unit: '0-100', higherIs: null, ramp: 'viridis', domain: [0, 100] },
+            extra: [{ key: 'student_pct', label: 'Colleges and coaching nearby (percentile)', unit: '0-100', higherIs: null, ramp: 'viridis', domain: [0, 100] },
+                { key: 'hospital_pct', label: 'Hospitals nearby (percentile)', unit: '0-100', higherIs: null, ramp: 'viridis', domain: [0, 100] },
+                { key: 'office_pct', label: 'Offices and co-working nearby (percentile)', unit: '0-100', higherIs: null, ramp: 'viridis', domain: [0, 100] }],
+            needs: ['places.colleges', 'places.coaching', 'places.hospitals', 'places.offices', 'places.coworking', 'places.hostels', 'population.population'],
+            method: `Overture Maps places in exact categories: college or university; tutoring, coaching and test preparation; hospital; offices (IT, professional and business services) and co-working spaces. Each kind is summed within ${ANCHOR_KM} km of every lived-in block and ranked as a within-city percentile; the score is the mean of the three. Counts are listings, not seats, beds or desks, so a big campus counts once; hostels are shown next to student hubs as existing supply.`,
+            refs: 'Overture Maps Foundation places; JLL/Knight Frank India student and co-living housing reports; Smith 2005 (studentification)' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -1226,7 +1278,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

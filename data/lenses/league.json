@@ -372,6 +372,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 1012,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 2,
@@ -851,6 +857,12 @@
      "value": 3.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 3460,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -1332,6 +1344,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 981,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 5,
@@ -1805,6 +1823,12 @@
      "value": 2.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 1552,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -2286,6 +2310,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 7277,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 37,
@@ -2735,6 +2765,12 @@
      "value": 27.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 175,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3209,6 +3245,12 @@
      "value": 1.8,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 2726,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3690,6 +3732,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 3263,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 9,
@@ -4163,6 +4211,12 @@
      "value": 4.6,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 1573,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -4638,6 +4692,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 1359,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 23,
@@ -5105,6 +5165,12 @@
      "value": 2.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 1460,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -5592,6 +5658,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 1256,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 21,
@@ -6071,6 +6143,12 @@
      "value": 1.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "anchors": {
+     "label": "Blocks near all three demand anchors (score 80+)",
+     "value": 1618,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
