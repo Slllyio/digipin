@@ -1,7 +1,84 @@
 {
-  "generated_at_iso": "2026-10-23T15:44:34Z",
+  "generated_at_iso": "2026-10-23T19:33:20Z",
   "count": 100,
   "records": [
+    {
+      "id": "1792783457574041",
+      "headline": "Moderate Rain with thunderstorm is likely to occur at isolated places over Ariyalur, Chennai, Coimbatore, Cuddalore, Dindigul, Kallakurichi, Kancheepuram, Madurai, Mayiladuthurai, Nagapattinam, Pudukkottai, Thanjavur, Thiruvallur, Thiruvarur, Tiruvannamalai, Vellore, Viluppuram, Karaikal in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 23 Oct 2026 19:27:01 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792783457574041",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1792783454599007",
+      "headline": "Moderate Rain with thunderstorm is likely to occur at isolated places over Ariyalur, Chennai, Coimbatore, Cuddalore, Dindigul, Kallakurichi, Kancheepuram, Madurai, Mayiladuthurai, Nagapattinam, Pudukkottai, Thanjavur, Thiruvallur, Thiruvarur, Tiruvannamalai, Vellore, Viluppuram, Karaikal in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 23 Oct 2026 19:24:18 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792783454599007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1792783078086007",
+      "headline": "Light to Moderate Rain with thunderstorm and lightning  is likely to occur at isolated places over Chengalpattu, Kancheepuram, Kanniyakumari, Ranipet, Tenkasi, Tirunelveli  districts in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 23 Oct 2026 19:18:03 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792783078086007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1792774397538006",
+      "headline": "അടുത്ത 3 മണിക്കൂറിൽ മലപ്പുറം, കോഴിക്കോട്, കണ്ണൂർ, കാസർഗോഡ് ജില്ലകളിൽ ഇടിമിന്നലോട് കൂടിയ ഇടത്തരം മഴയ്ക്കും 40-50 kmph വരെ വേഗതയിൽ ശക്തമായ കാറ്റിനും സാധ്യത. 23.10.2026; 10.20 PM ; IMD - KSDMA",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 23 Oct 2026 16:56:01 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792774397538006",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1792773656142041",
+      "headline": "Light to Moderate Rain is likely to occur at isol places over Chengalpattu, Chennai, Coimbatore, Dharmapuri, Erode, Kallakurichi, Karur, Krishnagiri, Nagapattinam, Namakkal, Pudukkottai, Salem, Thanjavur, The Nilgiris, Thiruvallur, Thiruvarur, Trichy, Tmalai, Viluppuram, Karaikal, Pondy in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 23 Oct 2026 16:44:05 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792773656142041",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1792773652889007",
+      "headline": "Light to Moderate Rain is likely to occur at isol places over Chengalpattu, Chennai, Coimbatore, Dharmapuri, Erode, Kallakurichi, Karur, Krishnagiri, Nagapattinam, Namakkal, Pudukkottai, Salem, Thanjavur, The Nilgiris, Thiruvallur, Thiruvarur, Trichy, Tmalai, Viluppuram, Karaikal, Pondy in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 23 Oct 2026 16:40:56 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792773652889007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1792773652021007",
+      "headline": "Moderate Rain with Thunderstorm and Lightning is very likely to occur at a few places over Ariyalur, Cuddalore, Kancheepuram, Mayiladuthurai, Perambalur in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 23 Oct 2026 16:40:53 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792773652021007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1792766828984031",
       "headline": "A Low Pressure area lies adjoining Lakshadweep area. Under the influence of this, Heavy  to Very heavy rainfall  is very likely to occur over Lakshadweep area till 24.10.2026 and strong wind is likely to prevail till 26.10.2026. Follow safety measures. IMD-Lakshadweep Disaster Management Authority.",
@@ -1023,83 +1100,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792720116693008",
       "severity": "Minor",
       "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792719682731008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 23 Oct 2026 01:42:04 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792719682731008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792718578267028",
-      "headline": "अगले 3 घंटों के दौरान गंगानगर और सीकर के कुछ इलाकों में आंधी-तूफान और बिजली गिरने की प्रबल संभावना है।",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 23 Oct 2026 01:26:06 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792718578267028",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792718724882008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 23 Oct 2026 01:25:58 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792718724882008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792718323185041",
-      "headline": "Light  to moderate Rain with thunderstorm is likely to occur at isolated places over Ariyalur, Coimbatore, Dharmapuri, Madurai, Mayiladuthurai, Nagapattinam, Ramanathapuram, Sivaganga, Thanjavur, The Nilgiris, Thiruvarur, Thoothukkudi, Virudhunagar, Karaikal in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 23 Oct 2026 01:23:19 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792718323185041",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1792718322679041",
-      "headline": "Moderate Rain with thunderstorm and lightning  is very likely to occur at isolated places over Chengalpattu, Chennai, Cuddalore, Erode, Kallakurichi, Kancheepuram, Namakkal, Perambalur, Salem, Thiruvallur, Viluppuram, Pondicherry in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 23 Oct 2026 01:21:17 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792718322679041",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1792718320002007",
-      "headline": "Light  to moderate Rain with thunderstorm is likely to occur at isolated places over Ariyalur, Coimbatore, Dharmapuri, Madurai, Mayiladuthurai, Nagapattinam, Ramanathapuram, Sivaganga, Thanjavur, The Nilgiris, Thiruvarur, Thoothukkudi, Virudhunagar, Karaikal in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 23 Oct 2026 01:18:43 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792718320002007",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1792718318457007",
-      "headline": "Moderate Rain with thunderstorm and lightning  is very likely to occur at isolated places over Chengalpattu, Chennai, Cuddalore, Erode, Kallakurichi, Kancheepuram, Namakkal, Perambalur, Salem, Thiruvallur, Viluppuram, Pondicherry in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 23 Oct 2026 01:18:41 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792718318457007",
-      "severity": "Moderate",
-      "category": "Met-Storm",
       "tags": []
     }
   ]

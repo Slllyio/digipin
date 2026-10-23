@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-23T15:44:35Z",
+  "generated_at_iso": "2026-10-23T19:33:17Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-23 22:36:23|26.031,95.478",
+      "magnitude": 5.2,
+      "origin_time": "2026-10-23 22:36:23",
+      "latitude": 26.031,
+      "longitude": 95.478,
+      "depth_km": 115.0,
+      "region": "Myanmar",
+      "location": "101km ESE of Mokokchung, Nagaland, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-23 20:48:47|32.453,93.102",
       "magnitude": 4.1,
@@ -1639,17 +1650,6 @@
       "depth_km": 5.0,
       "region": "Doda, Jammu and Kashmir",
       "location": "61km ENE of Katra, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-11 12:34:48|36.587,71.324",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-11 12:34:48",
-      "latitude": 36.587,
-      "longitude": 71.324,
-      "depth_km": 161.0,
-      "region": "Afghanistan",
-      "location": "89km SE of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]
