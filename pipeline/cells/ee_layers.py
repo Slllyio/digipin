@@ -1319,6 +1319,132 @@ def water_risk(region):
         license="CC BY 4.0 (WRI)", default_field="water_stress_2050_pct")
     return spec, _table(level, rows, specs)
 
+
+# ── humid heat 2050 (wet-bulb: ERA5-Land days shifted by the CMIP6 change in temperature and humidity) ──
+
+WETBULB_DANGER = 31.0            # °C wet-bulb: outdoor work unsafe for most people (Vecellio et al. 2022 find ~31 °C limits)
+
+
+def humid_future(region):
+    """Humid-heat days (afternoon wet-bulb ≥ 28 °C and ≥ 31 °C) now and by 2050, delta method on ERA5-Land."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 5
+    yrs = OBS_YEARS[1] - OBS_YEARS[0] + 1
+    era = ee.ImageCollection("ECMWF/ERA5_LAND/DAILY_AGGR").filterDate(f"{OBS_YEARS[0]}-01-01", f"{OBS_YEARS[1] + 1}-01-01")
+    es = lambda x: x.multiply(17.625).divide(x.add(243.04)).exp()
+    out = {}
+    for scen, tag in (("ssp245", "mid"), ("ssp585", "high")):
+        dx = _ens_delta(ee, geom, "tasmax", scen, (3, 9))
+        dh = _ens_delta(ee, geom, "hurs", scen, (3, 9))
+
+        def day(im, dx=dx, dh=dh):
+            tx = im.select("temperature_2m_max").subtract(273.15)
+            td = im.select("dewpoint_temperature_2m").subtract(273.15)
+            rh = es(td).divide(es(tx)).multiply(100).min(100)
+            tw, tw2 = _wetbulb(tx, rh), _wetbulb(tx.add(dx), rh.add(dh).max(1).min(100))
+            return ee.Image.cat([tw.gte(28).rename("h_now"), tw2.gte(28).rename("h"), tw.gte(WETBULB_DANGER).rename("d_now"),
+                                 tw2.gte(WETBULB_DANGER).rename("d"), tw.rename("tw_now"), tw2.rename("tw")])
+        d = era.map(day)
+        out[tag] = ee.Image.cat([d.select(["h_now", "h", "d_now", "d"]).sum().divide(yrs),
+                                 d.select(["tw_now", "tw"]).max(), dh.rename("dh")])
+    img = ee.Image.cat([out["mid"], out["high"].select(["h", "d", "tw"], ["h_hi", "d_hi", "tw_hi"])])
+    raw = gee.fetch(gee.to_cells(img, 11000), bbox, level)
+    rows = {}
+    for c, x in raw.items():
+        if x.get("h_now") is None or x.get("h") is None:
+            continue
+        rows[c] = {"humid_days_now": _r(x["h_now"]), "humid_days_2050": _r(x["h"]), "humid_days_2050_high": _r(x.get("h_hi")),
+                   "danger_days_now": _r(x.get("d_now")), "danger_days_2050": _r(x.get("d")), "danger_days_2050_high": _r(x.get("d_hi")),
+                   "peak_wetbulb_now_c": _r(x.get("tw_now")), "peak_wetbulb_2050_c": _r(x.get("tw")), "peak_wetbulb_2050_high_c": _r(x.get("tw_hi")),
+                   "humidity_change_pts": _r(x.get("dh"), 1)}
+    specs = [
+        FieldSpec("humid_days_now", f"Humid-heat days a year, wet-bulb ≥ 28 °C ({OBS_YEARS[0]}–{OBS_YEARS[1]})", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("humid_days_2050", "Humid-heat days a year by 2050 (SSP2-4.5)", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("humid_days_2050_high", "Humid-heat days a year by 2050 (SSP5-8.5)", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("danger_days_now", f"Dangerous humid-heat days, wet-bulb ≥ {WETBULB_DANGER:g} °C, now", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("danger_days_2050", f"Dangerous humid-heat days (≥ {WETBULB_DANGER:g} °C) by 2050 (SSP2-4.5)", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("danger_days_2050_high", f"Dangerous humid-heat days (≥ {WETBULB_DANGER:g} °C) by 2050 (SSP5-8.5)", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("peak_wetbulb_now_c", "Peak afternoon wet-bulb, now", agg="max", unit="°C", domain=[24, 34], ramp="heat", higher_is="worse"),
+        FieldSpec("peak_wetbulb_2050_c", "Peak afternoon wet-bulb by 2050 (SSP2-4.5)", agg="max", unit="°C", domain=[24, 34], ramp="heat", higher_is="worse"),
+        FieldSpec("peak_wetbulb_2050_high_c", "Peak afternoon wet-bulb by 2050 (SSP5-8.5)", agg="max", unit="°C", domain=[24, 34], ramp="heat", higher_is="worse"),
+        FieldSpec("humidity_change_pts", "Change in hot-season relative humidity by 2050 (SSP2-4.5)", agg="mean", unit="points", domain=[-5, 5], ramp="diverging"),
+    ]
+    spec = DatasetSpec(
+        id="humid_future", title="Humid heat 2050 (wet-bulb, CMIP6)", level=level, fields=specs, group=GROUP,
+        description=f"Afternoon wet-bulb temperature (Stull 2011, daily maximum temperature with the mean dew point) on every "
+                    f"ERA5-Land day of {OBS_YEARS[0]}–{OBS_YEARS[1]}, and the same days shifted by the six-model NEX-GDDP-CMIP6 "
+                    f"change to 2041–2060 in March–September maximum temperature and relative humidity "
+                    f"({', '.join(CMIP_MODELS)}). Days at a wet-bulb of 28 °C or more are humid-heat days; "
+                    f"{WETBULB_DANGER:g} °C or more is where lab studies find healthy young people can no longer shed heat. "
+                    "A ~9–25 km city-scale outlook; reanalysis runs 1–2 °C cool in cities.",
+        source="NASA NEX-GDDP-CMIP6 and ECMWF ERA5-Land via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="NEX-GDDP-CMIP6: CC BY 4.0 (most models); ERA5-Land: Copernicus licence", default_field="humid_days_2050")
+    return spec, _table(level, rows, specs)
+
+
+# ── roofs: how much sun they reflect (Sentinel-2 albedo on Open Buildings roofs) ──
+
+# Thresholds are for 10 m pixel albedo, which blends roofs with parapets, tanks and shade: the median Lucknow roof
+# pixel reads 0.18, a dark tar or tin roof under 0.17 and a whitewashed one 0.25 or more. Cool paint reaches 0.6–0.8.
+DARK_ALBEDO = 0.17
+BRIGHT_ALBEDO = 0.25
+
+
+def _s2_albedo(ee, geom):
+    """Dry-season (Mar–May) broadband shortwave albedo from Sentinel-2 L2A (Liang 2001 narrow-to-broadband, Naegeli et al. 2017)."""
+    col = _year(ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED").filterBounds(geom), YEAR, 3, 5) \
+        .filter(ee.Filter.lt("CLOUDY_PIXEL_PERCENTAGE", 40))
+
+    def prep(im):
+        scl = im.select("SCL")
+        ok = scl.neq(3).And(scl.neq(8)).And(scl.neq(9)).And(scl.neq(10)).And(scl.neq(11))
+        b = im.select(["B2", "B4", "B8", "B11", "B12"]).divide(10000)
+        a = b.expression("0.356*B2 + 0.130*B4 + 0.373*B8 + 0.085*B11 + 0.072*B12 - 0.0018",
+                         {k: b.select(k) for k in ("B2", "B4", "B8", "B11", "B12")})
+        return a.updateMask(ok).rename("alb")
+    return col.map(prep).median()
+
+
+def roofs(region):
+    """Roof albedo per block: where dark roofs soak up the summer sun (cool-roof candidates)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    ob = ee.ImageCollection("GOOGLE/Research/open-buildings-temporal/v1").filterBounds(geom) \
+        .filter(ee.Filter.calendarRange(2023, 2023, "year"))
+    pres = ob.mosaic().setDefaultProjection(ob.first().projection().atScale(4)).select("building_presence")
+    roof = pres.reduceResolution(ee.Reducer.mean(), maxPixels=64) \
+        .reproject(ee.Projection("EPSG:4326").atScale(10)).gte(0.5)
+    alb = _s2_albedo(ee, geom).updateMask(roof)
+    img = ee.Image.cat([alb.rename("alb"), alb.lt(DARK_ALBEDO).rename("dark"), alb.gte(BRIGHT_ALBEDO).rename("bright")])
+    raw = gee.fetch(gee.to_cells(img, 10), bbox, level, tile=48)
+    rows = {}
+    for c, x in raw.items():
+        if x.get("alb") is None:
+            continue
+        rows[c] = {"roof_albedo": _r(x["alb"], 3), "dark_roof_pct": _r(100 * (x.get("dark") or 0)),
+                   "bright_roof_pct": _r(100 * (x.get("bright") or 0))}
+    specs = [
+        FieldSpec("roof_albedo", "Roof albedo (share of sunlight reflected, dry season)", agg="mean", unit="0-1",
+                  domain=[0.08, 0.35], ramp="viridis", higher_is="better"),
+        FieldSpec("dark_roof_pct", f"Dark roofs (albedo below {DARK_ALBEDO})", agg="mean", unit="% of roof area",
+                  domain=[0, 100], ramp="reds", higher_is="worse"),
+        FieldSpec("bright_roof_pct", f"Light or white roofs (albedo {BRIGHT_ALBEDO} or more)", agg="mean",
+                  unit="% of roof area", domain=[0, 60], ramp="blues", higher_is="better"),
+    ]
+    spec = DatasetSpec(
+        id="roofs", title="Roof albedo (Sentinel-2)", level=level, fields=specs, group=GROUP,
+        description=f"Broadband shortwave albedo from the {YEAR} March–May Sentinel-2 L2A median (cloud-masked; "
+                    f"Liang 2001 coefficients as in Naegeli et al. 2017) averaged over 10 m pixels that are at least half roof "
+                    f"in Google Open Buildings 2.5D Temporal 2023. A 10 m pixel blends a roof with its parapets, tanks and "
+                    f"shade, so values bunch around 0.18: dark here means under {DARK_ALBEDO} (tar, dark tin, weathered "
+                    f"concrete) and light {BRIGHT_ALBEDO} or more (whitewashed). Cool-roof paint or lime wash reaches 0.6–0.8.",
+        source="Copernicus Sentinel-2 L2A + Google Open Buildings 2.5D Temporal via Earth Engine",
+        license="Copernicus open licence; Open Buildings CC BY 4.0", default_field="roof_albedo")
+    return spec, _table(level, rows, specs)
+
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -1327,6 +1453,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
+    "roofs": roofs, "humid_future": humid_future,
 }
 
 

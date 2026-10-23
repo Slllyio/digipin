@@ -801,7 +801,7 @@ const UrbanLensesRealEstate = (() => {
     function climategrade(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
         const sh = streetheat(fr);
-        const fl = c['flood_future.any_pct_2050'], hum = c['humid_heat.humid_heat_days'], ws = c['water_risk.water_stress_2050_pct'], gtd = c['water_risk.groundwater_decline_cm_yr'];
+        const fl = c['flood_future.any_pct_2050'], hum = c['humid_future.humid_days_2050'] || c['humid_heat.humid_heat_days'], ws = c['water_risk.water_stress_2050_pct'], gtd = c['water_risk.groundwater_decline_cm_yr'];
         if (!sh || !pop || (!fl && !ws)) return null;
         const hot = sh.columns.hot_2050_block, warm = sh.columns.warm_2050_block;
         const score = new Float64Array(n).fill(NaN), parts = { heat: new Float64Array(n), flood: new Float64Array(n), water: new Float64Array(n) };
@@ -911,7 +911,7 @@ const UrbanLensesRealEstate = (() => {
         }
         if (off) stats.push({ label: 'Offices (IT, professional and business services)', value: `${Math.round(all.reduce((s, i) => s + (_fin(off[i]) ? off[i] : 0), 0)).toLocaleString('en-IN')}` });
         if (agents) stats.push({ label: 'Real-estate agents and services', value: `${Math.round(all.reduce((s, i) => s + (_fin(agents[i]) ? agents[i] : 0), 0)).toLocaleString('en-IN')}` });
-        spaced(g, hs.sort((a, b) => pl[b] - pl[a]), 6).slice(0, 4).forEach((i, k) => {
+        spaced(g, hs, pl).slice(0, 4).forEach((i, k) => {
             const top = VIT_KINDS.filter(kd => c[`places.${kd}`] && _fin(c[`places.${kd}`][i])).sort((a, b) => c[`places.${b}`][i] - c[`places.${a}`][i]).slice(0, 2).map(kd => VIT_LABEL[kd]);
             stats.push({ label: `High street ${k + 1}: ${g.codes[i]}`, value: `${Math.round(pl[i])} places${top.length ? `, mostly ${top.join(' and ')}` : ''}` });
         });
@@ -919,6 +919,144 @@ const UrbanLensesRealEstate = (() => {
             columns: { places_km2: density }, idx: all, weightKey: 'places_km2', noHotspots: true,
             metric: { label: 'Businesses and services per 1,000 residents', value: _round(1000 * total / people, 1), unit: 'per 1,000', higherIs: 'better' },
             headline: `About ${total.toLocaleString('en-IN')} businesses and services are mapped, ${_round(1000 * total / people, 1)} per 1,000 residents; ${hs.length} blocks form the high streets${gapPeople != null ? `, and ${_people(gapPeople)} residents live in retail gaps with few shops or eateries within ${RETAIL_KM} km` : ''}.`,
+            stats,
+        };
+    }
+
+    // Cool roofs. Painting or lime-washing a dark roof lifts its albedo to about 0.65; trials in Ahmedabad's informal
+    // homes found rooms under cool roofs 2–5 °C cooler. Low-rise homes (under 6 m) feel the roof most.
+    const COOL_ALBEDO = 0.65, COOL_COST_M2 = 300, LOW_RISE_M = 6, DARK_LIMIT = 0.17;
+
+    /** Cool roofs: dark roof area, who lives under it, and where painting roofs white helps the hottest, poorest blocks first. */
+    function coolroof(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const alb = c['roofs.roof_albedo'], dark = c['roofs.dark_roof_pct'], cover = c['building_stock.cover_2023_pct'];
+        const pop = c['population.population'], lst = c['surface_heat.lst_day_c'], h = c['building_stock.height_2023_m'], rwi = c['wealth.rwi'];
+        if (!alb || !dark || !cover || !pop) return null;
+        const cells = [];
+        for (let i = 0; i < n; i++) if (_fin(alb[i]) && _fin(dark[i]) && _fin(cover[i]) && cover[i] > 0) cells.push(i);
+        if (cells.length < 5) return null;
+        const res = cells.filter(i => pop[i] > 0), people = _sumOver(pop, res, () => true);
+        let hotMean = null;
+        if (lst) { let s = 0, w = 0; for (const i of res) if (_fin(lst[i])) { s += lst[i] * pop[i]; w += pop[i]; } hotMean = w ? s / w : null; }
+        const darkM2 = new Float64Array(n).fill(NaN), prio = new Float64Array(n).fill(NaN);
+        let roofAll = 0, roofDark = 0, albSum = 0;
+        for (const i of cells) {
+            const roof = cover[i] / 100 * g.cellKm2 * 1e6;
+            darkM2[i] = roof * dark[i] / 100; roofAll += roof; roofDark += darkM2[i]; albSum += alb[i] * roof;
+            if (pop[i] > 0) {
+                const heat = hotMean != null && _fin(lst[i]) ? 1 + Math.max(0, lst[i] - hotMean) / 5 : 1;
+                const poor = rwi && _fin(rwi[i]) && rwi[i] < 0 ? 1.5 : 1;
+                const low = h && _fin(h[i]) && h[i] < LOW_RISE_M ? 1.5 : 1;
+                prio[i] = pop[i] * dark[i] / 100 * heat * poor * low;
+            }
+        }
+        const underDark = res.reduce((s, i) => s + pop[i] * dark[i] / 100, 0);
+        const lowDark = h ? res.reduce((s, i) => s + (_fin(h[i]) && h[i] < LOW_RISE_M ? pop[i] * dark[i] / 100 : 0), 0) : null;
+        const crore = roofDark * COOL_COST_M2 / 1e7;
+        const stats = [
+            { label: `Roof area that is dark (10 m albedo under ${DARK_LIMIT})`, value: `${_round(roofDark / 1e6, 1)} km² of ${_round(roofAll / 1e6, 1)} km² (${_round(100 * roofDark / roofAll)}%)`, raw: _round(100 * roofDark / roofAll) },
+            { label: 'Average roof albedo (share of sunlight reflected)', value: `${_round(albSum / roofAll, 2)}; cool paint reaches ${COOL_ALBEDO}` },
+            { label: 'Residents under dark roofs (block share of dark roof × residents)', value: `${_people(underDark)} (${_round(100 * underDark / people)}%)` },
+        ];
+        if (lowDark != null) stats.push({ label: `Of them in low-rise blocks (under ${LOW_RISE_M} m), where the roof heats the rooms directly`, value: `${_people(lowDark)}` });
+        stats.push({ label: `Cost to coat every dark roof (about ₹${COOL_COST_M2}/m²)`, value: `₹${Math.round(crore).toLocaleString('en-IN')} crore` });
+        if (hotMean != null) {
+            const hot = wquantile(lst, pop, res.filter(i => _fin(lst[i])), 0.8), cool = wquantile(lst, pop, res.filter(i => _fin(lst[i])), 0.2);
+            const share = sel => { let d = 0, a = 0; for (const i of sel) { const r = cover[i] / 100; d += r * dark[i]; a += r; } return a ? d / a : null; };
+            const sh = share(res.filter(i => _fin(lst[i]) && lst[i] >= hot)), sc = share(res.filter(i => _fin(lst[i]) && lst[i] <= cool));
+            if (sh != null && sc != null) stats.push({ label: 'Dark share of roofs: hottest fifth of residents vs coolest fifth', value: `${Math.round(sh)}% vs ${Math.round(sc)}%` });
+        }
+        return {
+            columns: { cool_priority: prio, dark_roof_m2: darkM2 }, idx: cells, weightKey: 'cool_priority',
+            metric: { label: 'Residents under dark roofs', value: Math.round(underDark), unit: 'people', higherIs: 'worse' },
+            headline: `${_round(100 * roofDark / roofAll)}% of the city's roof area is dark, over about ${_people(underDark)} residents; coating it white would cost roughly ₹${Math.round(crore).toLocaleString('en-IN')} crore, and trials in Ahmedabad found rooms under cool roofs 2–5 °C cooler.`,
+            stats,
+        };
+    }
+
+    // "Looks like this from space": distance between blocks' satellite embeddings (12 shared principal components of
+    // Google's AlphaEarth 64-number summary), so matches share built form, materials, greenery and water, in any city.
+    const EMB_DIMS = 12, EMB_KEYS = Array.from({ length: EMB_DIMS }, (_, k) => `embeddings.e${k}`), LOOK_EXCLUDE_KM = 1;
+
+    async function _embFrame(city, store) {
+        const fr = await UrbanLenses.frame(city, store, ['population.population', 'embeddings.change_8yr', ...EMB_KEYS]);
+        const E = EMB_KEYS.map(k => fr.cols[k]);
+        if (E.some(a => !a)) return null;
+        const idx = [];
+        for (let i = 0; i < fr.grid.n; i++) if (E.every(a => _fin(a[i]))) idx.push(i);
+        return { fr, g: fr.grid, E, idx };
+    }
+
+    /** Blocks of `toCity` (default the same city) whose satellite embedding is nearest the block at lat/lng in `fromCity`. */
+    async function lookalike({ fromCity, lat, lng, toCity, k = TOP }, store) {
+        const A = await _embFrame(fromCity, store);
+        if (!A) return null;
+        const code = DigiPin.encode(lat, lng).replace(/-/g, '').slice(0, 7), i0 = A.g.codes.indexOf(code);
+        if (i0 < 0 || !A.E.every(a => _fin(a[i0]))) return null;
+        const ref = A.E.map(a => a[i0]);
+        const B = toCity && toCity !== fromCity ? await _embFrame(toCity, store) : A;
+        if (!B) return null;
+        const dist = new Float64Array(B.g.n).fill(NaN), cand = [];
+        for (const i of B.idx) {
+            if (B === A && Math.hypot((B.g.row[i] - B.g.row[i0]) * B.g.dy, (B.g.col[i] - B.g.col[i0]) * B.g.dx) < LOOK_EXCLUDE_KM) continue;
+            let d = 0;
+            for (let f = 0; f < EMB_DIMS; f++) d += (B.E[f][i] - ref[f]) ** 2;
+            dist[i] = Math.sqrt(d); cand.push(i);
+        }
+        if (!cand.length) return null;
+        const sorted = cand.map(i => dist[i]).sort((a, b) => a - b), med = sorted[Math.floor(sorted.length / 2)];
+        const score = Float64Array.from(dist, v => (_fin(v) ? -v : NaN));
+        const pop = B.fr.cols['population.population'], chg = B.fr.cols['embeddings.change_8yr'];
+        const matches = spaced(B.g, cand, score, k).map(i => ({
+            code: B.g.codes[i], similarity: Math.max(0, Math.round(100 * (1 - dist[i] / med))),
+            people: pop && _fin(pop[i]) ? Math.round(pop[i]) : null, change: chg && _fin(chg[i]) ? chg[i] : null,
+        }));
+        return { fromCity, toCity: toCity || fromCity, ref: { code }, matches };
+    }
+
+    function lookalikeText(r) {
+        if (!r) return 'That spot has no satellite embedding yet. Click a block inside one of the cities and ask again.';
+        const L = typeof UrbanInsights !== 'undefined' ? UrbanInsights.cityLabel : (c => c);
+        return [`Blocks in ${L(r.toCity)} that look most like ${r.ref.code} in ${L(r.fromCity)} from space (built form, roofs, greenery, water; 100% = identical, 0% = as different as a typical block):`,
+            ...r.matches.map((m, i) => `${i + 1}. ${m.code}: ${m.similarity}% match${m.people != null ? `, ${_people(m.people)} residents` : ''}`)].join('\n');
+    }
+
+    // Change since 2017: 1 − cosine similarity of a block's mean satellite embedding. Years differ in rain and haze, so
+    // a block counts as strongly changed when it moved at least CHG_X times as much as the city's median block.
+    const CHG_X = 3;
+
+    /** What changed: blocks whose satellite signature moved most since 2017 and since 2023, and what the change was. */
+    function change(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const c8 = c['embeddings.change_8yr'], c2 = c['embeddings.change_2yr'], pop = c['population.population'];
+        const nb = c['building_stock.new_buildings'], gp = c['building_stock.growth_pct'], tree = c['vegetation.tree_canopy_pct'];
+        if (!c8) return null;
+        const cells = [];
+        for (let i = 0; i < n; i++) if (_fin(c8[i])) cells.push(i);
+        if (cells.length < 5) return null;
+        const med = a => { const v = cells.filter(i => _fin(a[i])).map(i => a[i]).sort((x, y) => x - y); return v[Math.floor(v.length / 2)]; };
+        const m8 = med(c8), m2 = c2 ? med(c2) : null;
+        const strong = cells.filter(i => c8[i] >= CHG_X * m8), recent = c2 ? cells.filter(i => _fin(c2[i]) && c2[i] >= CHG_X * m2) : [];
+        const km2 = strong.length * g.cellKm2;
+        const stats = [
+            { label: `Land that changed strongly since 2017 (${CHG_X}× the city's typical block)`, value: `${_round(km2, 1)} km² (${_round(100 * strong.length / cells.length, 1)}% of blocks)`, raw: _round(100 * strong.length / cells.length, 1) },
+        ];
+        if (c2) stats.push({ label: 'Changing strongly in the last two years (since 2023)', value: `${_round(recent.length * g.cellKm2, 1)} km² (${recent.length} blocks)` });
+        if (pop) stats.push({ label: 'Residents in strongly changed blocks', value: _people(_sumOver(pop, strong, () => true)) });
+        const lc = k => c[`land_cover.${k}_pct`];
+        const share = (k, i) => (lc(k) && _fin(lc(k)[i]) ? lc(k)[i] : 0);
+        const what = i => (nb && _fin(nb[i]) && nb[i] >= 20 ? `${Math.round(nb[i])} new buildings${gp && _fin(gp[i]) ? ` (+${Math.round(gp[i])}%)` : ''}`
+            : share('water', i) >= 20 ? 'water body: extent or level changed' : share('bare', i) >= 30 ? 'bare ground: quarry, clearing or building site'
+                : share('crop', i) >= 30 ? 'farmland: cropping changed or land left fallow' : tree && _fin(tree[i]) && tree[i] >= 30 ? 'tree-covered: greening or clearing'
+                    : 'land-surface change, few new buildings');
+        spaced(g, strong, c8).slice(0, 4).forEach((i, k) => stats.push({ label: `Change hotspot ${k + 1}: ${g.codes[i]}`, value: `${_round(c8[i] / m8, 1)}× typical; ${what(i)}` }));
+        if (c2) spaced(g, recent, c2).slice(0, 2).forEach((i, k) => stats.push({ label: `Changing now ${k + 1}: ${g.codes[i]}`, value: `${_round(c2[i] / m2, 1)}× typical since 2023; ${what(i)}` }));
+        const builtShare = nb ? _round(100 * strong.filter(i => _fin(nb[i]) && nb[i] >= 20).length / Math.max(1, strong.length)) : null;
+        return {
+            columns: c2 ? { change_8yr: c8, change_2yr: c2 } : { change_8yr: c8 }, idx: cells, weightKey: 'change_8yr',
+            metric: { label: 'Land that changed strongly since 2017', value: _round(km2, 1), unit: 'km²', higherIs: null },
+            headline: `Satellite embeddings show ${_round(km2, 1)} km² of the city changed strongly between 2017 and 2025${builtShare != null ? `; ${builtShare}% of it gained 20 or more new buildings` : ''}${c2 ? `, and ${recent.length} blocks are changing fast right now` : ''}.`,
             stats,
         };
     }
@@ -965,6 +1103,7 @@ const UrbanLensesRealEstate = (() => {
         const h0 = c['climate_future.hot_days_now'], h1 = c['climate_future.hot_days_2050'], h2 = c['climate_future.hot_days_2050_high'];
         const w0 = c['climate_future.warm_nights_now'], w1 = c['climate_future.warm_nights_2050'];
         const dx = c['climate_future.tmax_rise_c'], rx = c['climate_future.wettest_day_change_pct'], pop = c['population.population'];
+        const u0 = c['humid_future.humid_days_now'], u1 = c['humid_future.humid_days_2050'], u2 = c['humid_future.humid_days_2050_high'], tw = c['humid_future.peak_wetbulb_2050_c'];
         if (!h0 || !h1) return null;
         const cells = [], add = new Float64Array(n).fill(NaN);
         for (let i = 0; i < n; i++) if (_fin(h0[i]) && _fin(h1[i]) && pop && pop[i] > 0) { cells.push(i); add[i] = h1[i] - h0[i] + (w1 && w0 && _fin(w1[i]) && _fin(w0[i]) ? w1[i] - w0[i] : 0); }
@@ -977,6 +1116,7 @@ const UrbanLensesRealEstate = (() => {
             { label: 'Days at 40 °C or more a year, for the average resident: now → 2050', value: `${hn} → ${hm} (${hh != null ? `${hh} on the high-emissions path` : 'SSP2-4.5'})`, raw: hm },
         ];
         if (wn != null) stats.push({ label: 'Nights at 28 °C or more a year: now → 2050', value: `${wn} → ${wm}` });
+        if (u0 && u1) stats.push({ label: 'Humid-heat days (wet-bulb 28 °C or more) a year: now → 2050', value: `${pw(u0)} → ${pw(u1)}${u2 ? ` (${pw(u2)} on the high-emissions path)` : ''}${tw ? `; peak wet-bulb ${pw(tw)} °C` : ''}` });
         if (dx) stats.push({ label: 'Hot-season daytime warming by 2050 (SSP2-4.5)', value: `+${pw(dx)} °C` });
         if (rx) stats.push({ label: 'Change in the wettest day of the year by 2050', value: `${pw(rx) >= 0 ? '+' : ''}${pw(rx)}%` });
         stats.push({ label: 'Residents gaining 30 or more extra hot days and warm nights a year', value: `${_people(over30)} (${_round(100 * over30 / people)}%)` });
@@ -1200,8 +1340,8 @@ const UrbanLensesRealEstate = (() => {
         { id: 'climate2050', equity: true, title: 'Climate 2050', icon: '🌡️',
             question: 'How much hotter, and how much wetter on the worst day, will the city be by 2050?',
             field: { key: 'heat_added', label: 'Extra hot days and warm nights a year by 2050', unit: 'days', higherIs: 'worse', ramp: 'heat' },
-            needs: ['climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_2050_high', 'climate_future.warm_nights_now', 'climate_future.warm_nights_2050', 'climate_future.tmax_rise_c', 'climate_future.wettest_day_change_pct', 'population.population'],
-            method: 'Delta method: a six-model NASA NEX-GDDP-CMIP6 ensemble (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM) gives the 2041–2060 change against 1995–2014 in hot-season (March–June) daytime and monsoon (May–September) night-time temperatures. That change is added to every ERA5-Land day of 2015–2024 to count days at 40 °C or more (the IMD plains heatwave threshold) and nights at 28 °C or more. The wettest-day change is the ensemble ratio of the mean annual wettest day, applied to CHIRPS 2005–2024. Averages weight each block by its residents. Climate models are ~25 km and reanalysis ~9 km, so this is a city-scale outlook that misses the urban heat island; reanalysis reads 1–2 °C below city stations.',
+            needs: ['climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_2050_high', 'climate_future.warm_nights_now', 'climate_future.warm_nights_2050', 'climate_future.tmax_rise_c', 'climate_future.wettest_day_change_pct', 'humid_future.humid_days_now', 'humid_future.humid_days_2050', 'humid_future.humid_days_2050_high', 'humid_future.peak_wetbulb_2050_c', 'population.population'],
+            method: 'Delta method: a six-model NASA NEX-GDDP-CMIP6 ensemble (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM) gives the 2041–2060 change against 1995–2014 in hot-season (March–June) daytime and monsoon (May–September) night-time temperatures. That change is added to every ERA5-Land day of 2015–2024 to count days at 40 °C or more (the IMD plains heatwave threshold) and nights at 28 °C or more. The wettest-day change is the ensemble ratio of the mean annual wettest day, applied to CHIRPS 2005–2024. Averages weight each block by its residents. Humid-heat days shift each day\'s afternoon wet-bulb (Stull 2011) by the ensemble change in March–September maximum temperature and relative humidity; 28 °C wet-bulb sits close to the monsoon\'s typical afternoon peak, so small shifts move the count a lot. Climate models are ~25 km and reanalysis ~9 km, so this is a city-scale outlook that misses the urban heat island; reanalysis reads 1–2 °C below city stations.',
             refs: 'Thrasher et al. 2022 (NEX-GDDP-CMIP6); IPCC AR6 WGI ch. 11; IMD heatwave criteria; Muñoz Sabater et al. 2021 (ERA5-Land); Funk et al. 2015 (CHIRPS)' },
         { id: 'streetheat', equity: true, title: 'Street heat 2050', icon: '🔥',
             question: 'Which blocks will be hottest by 2050 once their own heat island is added?',
@@ -1230,15 +1370,29 @@ const UrbanLensesRealEstate = (() => {
         { id: 'climategrade', equity: true, title: 'Climate 2050 grade', icon: '🧭',
             question: 'How exposed is each block to heat, flooding and water shortage by 2050, from A to E?',
             field: { key: 'climate_score', label: 'Climate 2050 risk (0–100; A under 20, E 65+)', unit: '0-100', higherIs: 'worse', ramp: 'reds' },
-            needs: ['climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_per_c_2050', 'climate_future.warm_nights_2050', 'climate_future.warm_nights_per_c_2050', 'climate_future.cdd_now', 'climate_future.cdd_2050', 'climate_future.cooling_days_2050', 'surface_heat.uhi_anomaly_c', 'surface_heat.modis_night_c', 'vegetation.tree_canopy_pct', 'flood_future.any_pct_2050', 'humid_heat.humid_heat_days', 'water_risk.water_stress_2050_pct', 'water_risk.groundwater_decline_cm_yr', 'population.population'],
-            method: 'Score = 100 × (0.40 heat + 0.35 flood + 0.25 water), each 0–1 on fixed scales so cities compare directly. Heat: 0.5 × days at 40 °C or more by 2050 with the block\'s heat island (60 days = 1) + 0.3 × nights at 28 °C or more (90 = 1), from the Street heat lens, + 0.2 × humid-heat days with a wet-bulb of 28 °C or more today (60 = 1; no 2050 wet-bulb yet). Flood: share of the block in the 1-in-100-year river or sea flood zone by 2050 (WRI Aqueduct). Water: 0.7 × basin water stress by 2050 (100% = 1) + 0.3 × groundwater decline (15 cm a year = 1). Grades: A under 20, B 20–35, C 35–50, D 50–65, E 65+. The weights are a judgement, not a calibration: read the parts as well as the grade.',
+            needs: ['climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_per_c_2050', 'climate_future.warm_nights_2050', 'climate_future.warm_nights_per_c_2050', 'climate_future.cdd_now', 'climate_future.cdd_2050', 'climate_future.cooling_days_2050', 'surface_heat.uhi_anomaly_c', 'surface_heat.modis_night_c', 'vegetation.tree_canopy_pct', 'flood_future.any_pct_2050', 'humid_future.humid_days_2050', 'humid_heat.humid_heat_days', 'water_risk.water_stress_2050_pct', 'water_risk.groundwater_decline_cm_yr', 'population.population'],
+            method: 'Score = 100 × (0.40 heat + 0.35 flood + 0.25 water), each 0–1 on fixed scales so cities compare directly. Heat: 0.5 × days at 40 °C or more by 2050 with the block\'s heat island (60 days = 1) + 0.3 × nights at 28 °C or more (90 = 1), from the Street heat lens, + 0.2 × humid-heat days with a wet-bulb of 28 °C or more by 2050 (60 = 1; the Humid heat 2050 layer, today\'s count where it is missing). Flood: share of the block in the 1-in-100-year river or sea flood zone by 2050 (WRI Aqueduct). Water: 0.7 × basin water stress by 2050 (100% = 1) + 0.3 × groundwater decline (15 cm a year = 1). Grades: A under 20, B 20–35, C 35–50, D 50–65, E 65+. The weights are a judgement, not a calibration: read the parts as well as the grade.',
             refs: 'Thrasher et al. 2022 (NEX-GDDP-CMIP6); Ward et al. 2020 (Aqueduct Floods); Kuzma et al. 2023 (Aqueduct 4.0); OECD/JRC 2008 composite-indicator handbook' },
         { id: 'riskygrowth', title: 'Risky growth', icon: '🏗️',
             question: 'Is new building going into land that floods or overheats by 2050?',
             field: { key: 'risky_floor_m2', label: 'New floor area (2016–2023) inside the 2050 flood zone', unit: 'm²', higherIs: 'worse', ramp: 'reds' },
-            needs: ['re_supply.new_floor_m2', 'flood_future.any_pct_2050', 'building_dynamics.proj_gain_pp', 'climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_per_c_2050', 'climate_future.warm_nights_2050', 'climate_future.warm_nights_per_c_2050', 'climate_future.cdd_now', 'climate_future.cdd_2050', 'climate_future.cooling_days_2050', 'surface_heat.uhi_anomaly_c', 'surface_heat.modis_night_c', 'humid_heat.humid_heat_days', 'water_risk.water_stress_2050_pct', 'water_risk.groundwater_decline_cm_yr', 'population.population'],
+            needs: ['re_supply.new_floor_m2', 'flood_future.any_pct_2050', 'building_dynamics.proj_gain_pp', 'climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_per_c_2050', 'climate_future.warm_nights_2050', 'climate_future.warm_nights_per_c_2050', 'climate_future.cdd_now', 'climate_future.cdd_2050', 'climate_future.cooling_days_2050', 'surface_heat.uhi_anomaly_c', 'surface_heat.modis_night_c', 'humid_future.humid_days_2050', 'humid_heat.humid_heat_days', 'water_risk.water_stress_2050_pct', 'water_risk.groundwater_decline_cm_yr', 'population.population'],
             method: 'New floor area 2016–2023 (Open Buildings 2.5D Temporal, from the Building hotspots lens) is weighted by the share of each block inside the 1-in-100-year river or sea flood zone by 2050 (WRI Aqueduct). The tilt compares that share with the share of all land in the zone: above 1 means new building leans toward flood land. Projected built-up gain 2020→2030 is GHSL. Grade D/E uses the Climate 2050 grade. Aqueduct is 1 km with no defences, so blocks partly in the zone count in proportion.',
             refs: 'Rentschler et al. 2023 (Nature, global settlement growth in flood zones); Sirko et al. 2023 (Open Buildings 2.5D Temporal); Pesaresi et al. 2023 (GHSL); Ward et al. 2020 (Aqueduct Floods)' },
+        { id: 'coolroof', equity: true, title: 'Cool roofs', icon: '🏠',
+            question: 'Where are roofs dark and soaking up heat, who lives under them, and where would painting them white help most?',
+            field: { key: 'cool_priority', label: 'Cool-roof priority (residents under dark roofs, weighted for heat, poverty and low-rise homes)', unit: 'people', higherIs: 'worse', ramp: 'reds' },
+            extra: [{ key: 'dark_roof_m2', label: 'Dark roof area', unit: 'm²', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['roofs.roof_albedo', 'roofs.dark_roof_pct', 'building_stock.cover_2023_pct', 'building_stock.height_2023_m', 'surface_heat.lst_day_c', 'wealth.rwi', 'population.population'],
+            method: `Roof albedo is the dry-season (March–May) Sentinel-2 broadband albedo (Liang 2001) over 10 m pixels that are mostly roof in Open Buildings 2023; a roof is dark below ${DARK_LIMIT}. Dark roof area = roof cover × block area × dark share. Priority = residents × dark share, × (1 + degrees the block's daytime surface is above the resident average ÷ 5), × 1.5 where Meta's Relative Wealth Index is below zero, × 1.5 where buildings average under ${LOW_RISE_M} m. Cost assumes about ₹${COOL_COST_M2} a m² for a reflective coating; lime wash is cheaper, membranes dearer. 10 m pixels blend roofs with streets and shade, so dense small-roof areas read a little darker than they are.`,
+            refs: 'Liang 2001 and Naegeli et al. 2017 (Sentinel-2 albedo); Vellingiri et al. 2020 (cool roofs in Ahmedabad slums); Telangana Cool Roof Policy 2023–28; Akbari et al. 2009 (global cooling from cool roofs)' },
+        { id: 'change', title: 'What changed', icon: '🛰️',
+            question: 'Which places have changed most since 2017, and which are changing right now?',
+            field: { key: 'change_8yr', label: 'Change since 2017 (satellite embedding distance)', unit: '0-1', higherIs: null, ramp: 'reds', domain: [0, 0.15] },
+            extra: [{ key: 'change_2yr', label: 'Change since 2023', unit: '0-1', higherIs: null, ramp: 'reds', domain: [0, 0.1] }],
+            needs: ['embeddings.change_8yr', 'embeddings.change_2yr', 'building_stock.new_buildings', 'building_stock.growth_pct', 'vegetation.tree_canopy_pct', 'land_cover.water_pct', 'land_cover.bare_pct', 'land_cover.crop_pct', 'population.population'],
+            method: `Google Satellite Embedding V1 (AlphaEarth Foundations) sums up each 10 m pixel's year of optical, radar, thermal, terrain and climate data as 64 numbers. Change is 1 − cosine similarity between a block's mean embedding in 2017 (or 2023) and 2025. Years differ in rain and haze, so "strong" means ${CHG_X}× the city's median block. The kind of change is read from Open Buildings new buildings (2016–2023), then ESA WorldCover water, bare ground and cropland, then tree canopy; embeddings say how much changed, not what.`,
+            refs: 'Brown et al. 2025 (AlphaEarth Foundations, Google DeepMind); Google Satellite Embedding V1 (CC BY 4.0); Sirko et al. 2023 (Open Buildings 2.5D Temporal)' },
         { id: 'vitality', title: 'Commercial vitality', icon: '🛍️',
             question: 'Where are the high streets, where do chains and offices cluster, and which dense areas lack shops?',
             field: { key: 'places_km2', label: 'Businesses and services per km²', unit: 'per km²', higherIs: 'better', ramp: 'viridis', domain: [0, 1000] },
@@ -1253,8 +1407,8 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
-    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, coolroof, change }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText }, 'tod');
+    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText };
 })();
 
 if (typeof window !== 'undefined') {

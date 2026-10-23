@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T15:19:52Z",
+  "generated": "2026-10-23T18:35:28Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -5170,6 +5170,481 @@
       ]
     },
     {
+      "id": "embeddings",
+      "title": "Satellite embeddings (AlphaEarth)",
+      "description": "Google Satellite Embedding V1 (AlphaEarth Foundations): a 64-number summary per 10 m pixel of a year of optical, radar, thermal, terrain and climate data. Each block holds the first 12 principal components of its mean 2025 embedding (one PCA across all cities, 91% of the variance), used to find look-alike blocks anywhere, and the change since 2017 and 2023 as 1 \u2212 cosine similarity of the block's mean embeddings. Change catches new building, cleared land, new water and greening alike: it says how much, not what.",
+      "source": "GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL via Earth Engine (pipeline/cells/embeddings.py)",
+      "license": "CC BY 4.0 (Google Satellite Embedding)",
+      "group": "Open Data (satellite)",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "e0",
+          "label": "Embedding component 1",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.558,
+            0.596
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "e1",
+          "label": "Embedding component 2",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.55,
+            0.479
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "e2",
+          "label": "Embedding component 3",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.239,
+            0.924
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "e3",
+          "label": "Embedding component 4",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.52,
+            0.425
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "e4",
+          "label": "Embedding component 5",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.557,
+            0.42
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "e5",
+          "label": "Embedding component 6",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.57,
+            0.363
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "e6",
+          "label": "Embedding component 7",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.271,
+            0.52
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "e7",
+          "label": "Embedding component 8",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.5,
+            0.38
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "e8",
+          "label": "Embedding component 9",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.443,
+            0.335
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "e9",
+          "label": "Embedding component 10",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.326,
+            0.29
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "e10",
+          "label": "Embedding component 11",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.296,
+            0.396
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "e11",
+          "label": "Embedding component 12",
+          "type": "number",
+          "agg": "mean",
+          "unit": "score",
+          "domain": [
+            -0.254,
+            0.338
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "change_8yr",
+          "label": "Change since 2017 (satellite embedding)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-1",
+          "domain": [
+            0,
+            0.15
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "change_2yr",
+          "label": "Change since 2023 (satellite embedding)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-1",
+          "domain": [
+            0,
+            0.1
+          ],
+          "ramp": "reds"
+        }
+      ],
+      "default": {
+        "field": "change_8yr",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "embeddings/ahmedabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "embeddings/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 6565,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "embeddings/bhopal.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 11136,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.320068359375,
+            "north": 13.180908203125
+          },
+          "json": "embeddings/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "embeddings/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "embeddings/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "embeddings/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 33489,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "embeddings/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9292,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "embeddings/jaipur/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "embeddings/kolkata.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "embeddings/lucknow/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 16878,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "embeddings/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK4",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKM",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "embeddings/pune/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
       "id": "emergency_access",
       "title": "Hospital access by time of day",
       "description": "Drive time from each home cell to the nearest hospital at 03:00 (free flow), 09:00 and 18:00, on the arterial network with the demand model's congestion (BPR at each road's modelled V/C). Hospitals and schools are Overture Maps places (confidence \u2265 0.6). General-traffic speed, arterials only, no bed or emergency-ward data.",
@@ -6999,6 +7474,310 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "humid_future",
+      "title": "Humid heat 2050 (wet-bulb, CMIP6)",
+      "description": "Afternoon wet-bulb temperature (Stull 2011, daily maximum temperature with the mean dew point) on every ERA5-Land day of 2015\u20132024, and the same days shifted by the six-model NEX-GDDP-CMIP6 change to 2041\u20132060 in March\u2013September maximum temperature and relative humidity (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM). Days at a wet-bulb of 28 \u00b0C or more are humid-heat days; 31 \u00b0C or more is where lab studies find healthy young people can no longer shed heat. A ~9\u201325 km city-scale outlook; reanalysis runs 1\u20132 \u00b0C cool in cities.",
+      "source": "NASA NEX-GDDP-CMIP6 and ECMWF ERA5-Land via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "NEX-GDDP-CMIP6: CC BY 4.0 (most models); ERA5-Land: Copernicus licence",
+      "group": "Open Data (satellite)",
+      "level": 5,
+      "approxCellM": 3900,
+      "fields": [
+        {
+          "key": "humid_days_now",
+          "label": "Humid-heat days a year, wet-bulb \u2265 28 \u00b0C (2015\u20132024)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days",
+          "domain": [
+            0.0,
+            44.1
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "humid_days_2050",
+          "label": "Humid-heat days a year by 2050 (SSP2-4.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days",
+          "domain": [
+            0.0,
+            125.2
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "humid_days_2050_high",
+          "label": "Humid-heat days a year by 2050 (SSP5-8.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days",
+          "domain": [
+            0.0,
+            144.4
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "danger_days_now",
+          "label": "Dangerous humid-heat days, wet-bulb \u2265 31 \u00b0C, now",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days",
+          "domain": [
+            0.0,
+            0.0
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "danger_days_2050",
+          "label": "Dangerous humid-heat days (\u2265 31 \u00b0C) by 2050 (SSP2-4.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days",
+          "domain": [
+            0.0,
+            0.7
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "danger_days_2050_high",
+          "label": "Dangerous humid-heat days (\u2265 31 \u00b0C) by 2050 (SSP5-8.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "days",
+          "domain": [
+            0.0,
+            1.7
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "peak_wetbulb_now_c",
+          "label": "Peak afternoon wet-bulb, now",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u00b0C",
+          "domain": [
+            24,
+            34
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "peak_wetbulb_2050_c",
+          "label": "Peak afternoon wet-bulb by 2050 (SSP2-4.5)",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u00b0C",
+          "domain": [
+            24,
+            34
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "peak_wetbulb_2050_high_c",
+          "label": "Peak afternoon wet-bulb by 2050 (SSP5-8.5)",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u00b0C",
+          "domain": [
+            24,
+            34
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "humidity_change_pts",
+          "label": "Change in hot-season relative humidity by 2050 (SSP2-4.5)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "points",
+          "domain": [
+            -5,
+            5
+          ],
+          "ramp": "diverging"
+        }
+      ],
+      "default": {
+        "field": "humid_days_2050",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 42,
+          "bbox": {
+            "west": 72.46484375,
+            "south": 22.92578125,
+            "east": 72.7109375,
+            "north": 23.13671875
+          },
+          "json": "humid_future/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 110,
+          "bbox": {
+            "west": 77.421875,
+            "south": 12.80078125,
+            "east": 77.80859375,
+            "north": 13.15234375
+          },
+          "json": "humid_future/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 35,
+          "bbox": {
+            "west": 77.28125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.34765625
+          },
+          "json": "humid_future/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 36,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.87109375,
+            "east": 80.26953125,
+            "north": 13.1875
+          },
+          "json": "humid_future/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 225,
+          "bbox": {
+            "west": 76.82421875,
+            "south": 28.375,
+            "east": 77.3515625,
+            "north": 28.90234375
+          },
+          "json": "humid_future/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 9,
+          "bbox": {
+            "west": 77.24609375,
+            "south": 24.578125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "humid_future/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 90,
+          "bbox": {
+            "west": 78.265625,
+            "south": 17.265625,
+            "east": 78.6171875,
+            "north": 17.58203125
+          },
+          "json": "humid_future/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 156,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.46875,
+            "east": 76.015625,
+            "north": 22.92578125
+          },
+          "json": "humid_future/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 42,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.9453125,
+            "north": 27.00390625
+          },
+          "json": "humid_future/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 42,
+          "bbox": {
+            "west": 88.25,
+            "south": 22.43359375,
+            "east": 88.4609375,
+            "north": 22.6796875
+          },
+          "json": "humid_future/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 49,
+          "bbox": {
+            "west": 80.83203125,
+            "south": 26.72265625,
+            "east": 81.078125,
+            "north": 26.96875
+          },
+          "json": "humid_future/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 60,
+          "bbox": {
+            "west": 72.74609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.3046875
+          },
+          "json": "humid_future/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 56,
+          "bbox": {
+            "west": 73.73046875,
+            "south": 18.42578125,
+            "east": 74.01171875,
+            "north": 18.671875
+          },
+          "json": "humid_future/pune.json",
+          "parquet": null
         }
       ]
     },

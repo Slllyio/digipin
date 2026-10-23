@@ -13,7 +13,7 @@
 const PropertyReport = (() => {
     'use strict';
     const SCHEMA = 'digipin.property/1';
-    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'vitality'];
+    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'vitality', 'coolroof'];
     const EXTRA = ['land_value.prem_jobs_pct', 'land_value.prem_metro_pct', 'land_value.prem_amenity_pct', 'land_value.prem_neigh_pct',
         'land_value.prem_green_pct', 'land_value.prem_risk_pct', 'land_value.prem_noise_pct', 're_supply.far_now', 're_supply.headroom_m2',
         'building_dynamics.settled_year', 'building_dynamics.highrise_pct', 'building_dynamics.nonres_pct', 'building_dynamics.accel',
@@ -72,6 +72,7 @@ const PropertyReport = (() => {
             sec('Energy', [
                 row('Rooftop solar per home', fin(v.homeKw) ? (v.homeKw >= 1 ? `${r1(v.homeKw, 1)} kW` : `${r1(v.homeKw, 1)} kW: too little roof per home, look at society or community solar`) : null, 'roof share per household, up to 3 kW'),
                 row('Payback after PM Surya Ghar subsidy', fin(v.payback) ? `about ${r1(v.payback, 1)} years at ₹7/kWh` : null),
+                row('Roof albedo / dark roofs', fin(v.roofAlb) ? `${r1(v.roofAlb, 2)} / ${Math.round(v.darkRoof ?? 0)}% of roof area` : null, 'share of sunlight roofs reflect; a cool roof reaches 0.65'),
                 row('Share of one AC\'s 2050 summer it could cover', fin(v.acCover) ? `${Math.round(v.acCover)}%` : null, 'annual output against use; storage ignored'),
             ]),
             sec('Neighbourhood', [
@@ -123,6 +124,7 @@ const PropertyReport = (() => {
         if (fin(v.hotBlock ?? v.hot1) && (v.hotBlock ?? v.hot1) >= 45) risks.push(`about ${Math.round(v.hotBlock ?? v.hot1)} days a year at 40 °C by 2050`);
         if (fin(v.cscore) && v.cscore >= 50) risks.push(`climate 2050 grade ${UrbanLenses.climateGrade ? UrbanLenses.climateGrade(v.cscore) : 'D or E'}`);
         if (fin(v.gwd) && v.gwd >= 10) risks.push('groundwater falling fast');
+        if (fin(v.darkRoof) && v.darkRoof >= 60) risks.push('mostly dark roofs: a cool-roof coating would cool top floors');
         if (fin(v.priceGap) && v.priceGap >= 50) risks.push('displacement pressure');
         if (fin(v.gap) && v.gap < -2000) risks.push('local oversupply');
         const verdict = `${strengths.length ? `Strengths: ${strengths.join(', ')}.` : 'No standout strengths.'} ${risks.length ? `Watch: ${risks.join(', ')}.` : 'No major risk flags.'}`;
@@ -163,6 +165,7 @@ const PropertyReport = (() => {
             cscore: col('climategrade', 'climate_score'),
             wstress: at('water_risk.water_stress_pct'), wstress50: at('water_risk.water_stress_2050_pct'), gwd: at('water_risk.groundwater_decline_cm_yr'),
             homeKw: col('solarhome', 'home_kwp'), payback: col('solarhome', 'payback_yr'), acCover: col('solarhome', 'ac_2050_covered_pct'),
+            roofAlb: at('roofs.roof_albedo'), darkRoof: at('roofs.dark_roof_pct'),
             flood50: at('flood_future.any_pct_2050'), flood50now: at('flood_future.any_pct_now'),
             hotBlock: col('streetheat', 'hot_2050_block'), cddBlock: col('streetheat', 'cdd_2050_block'), islandC: col('streetheat', 'heat_island_air_c'), cdd0: at('climate_future.cdd_now'),
             warm0: at('climate_future.warm_nights_now'), warm1: at('climate_future.warm_nights_2050'), rx: at('climate_future.wettest_day_change_pct'),

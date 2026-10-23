@@ -27,6 +27,8 @@ const DishaIntel = (() => {
             encroach: /\b(encroach\w*|(lakes?|ponds?|wetlands?|water ?bodies|floodplains?|green belts?|ridge|forests?)\b.{0,30}\b(lost|built (on|over)|disappear\w*|filled|encroached|destroyed)|(lost|disappearing|vanishing) (lakes?|ponds?|wetlands?|water ?bodies))\b/i,
             floodloss: /\b(flood (damage|losses?|cost)|expected (annual )?(damage|loss)|climate risk to (property|buildings|homes)|(property|buildings?|homes?|real estate)\b.{0,25}\b(climate|flood) risk|value at risk|insur\w*)\b/i,
             housinggap: /\b(housing (gap|shortages?|deficits?|demand|need)|shortage of (homes|housing)|enough (homes|housing)|(homes|houses|housing) (needed|required) by 2030|how many (homes|houses) (are )?needed)\b/i,
+            coolroof: /\b(cool[\s-]?roofs?|white[\s-]?(roofs?|paint\w*|wash\w*)|roof (albedo|colou?r|paint\w*|coating)|dark roofs?|(tin|metal|concrete) roofs?\b.{0,20}\b(hot|heat)|reflective (roofs?|paint|coating))\b/i,
+            change: /\b(changed (the )?most|changing (fastest|most|now)|change (detection|since \d{4})|since 2017|before and after|new (development|construction) since)\b/i,
             vitality: /\b(high streets?|commercial (vitality|activity|hubs?|areas?|streets?)|busiest (market|street|area)s?|retail (gap|desert|opportunit\w*)|(shops|businesses|restaurants|offices) (per|density)|chains?|brands? presence)\b/i,
             riskygrowth: /\b((new|recent) (building|construction|development|projects?|homes)\b.{0,30}\b(flood|risk|danger|unsafe|climate)\w*|building (in|on) (flood|risky|unsafe)\w*|risky (growth|development|construction)|maladaptive)\b/i,
             climategrade: /\b(climate (risk|grade|score|rating|resilien\w*|exposure)|climate[\s-]?(proof|safe)|future[\s-]?proof|safest (area|place|neighbou?rhood|block)s? (from|for) (climate|2050))\b/i,
@@ -203,6 +205,12 @@ const DishaIntel = (() => {
             if (v > 0 && v <= 20) return { type: 'farwhatif', far: v };
         }
         if (/\b(property|real[\s-]?estate|investment|land) (report|brief|memo|check|due[\s-]?diligence)\b|\bdue[\s-]?diligence\b/i.test(q)) return { type: 'propreport' };
+        const lookq = /\b(look(s|ing)? (the same|alike|like (this|here))|look-?alikes?|(physically|visually) (similar|alike)|same (built form|urban form|texture|look)|from (space|above|the sky|satellite)|satellite (twins?|look-?alikes?|similar\w*))\b/i;
+        if (lookq.test(q) && /\b(like|similar|same|alike|twins?|look)\w*\b/i.test(q)) {
+            const out = { type: 'lookalike' };
+            if (named.length) out.city = named[named.length - 1];
+            return out;
+        }
         const like = /\b(places?|areas?|localit(y|ies)|neighbou?rhoods?|blocks?|colon(y|ies)|spots?)\s+(like|similar to)\s+(this|here|the selected)\b|\b(similar|comparable) (places?|areas?|localit(y|ies)|neighbou?rhoods?|blocks?)\b|\bcomparables?\b|\bwhere else (is|are) (like|similar)\b/i;
         if (like.test(q)) {
             const out = { type: 'similar' };
@@ -388,6 +396,12 @@ const DishaIntel = (() => {
                 if (typeof UrbanLenses === 'undefined' || !UrbanLenses.similar) { el.textContent = 'The real-estate lenses did not load.'; return ''; }
                 const s = await UrbanLenses.similar({ fromCity: from, lat: center.lat, lng: center.lng, toCity: intent.city || from }, CellStore);
                 r = { kind: 'similar', s };
+            } else if (intent.type === 'lookalike') {
+                if (!center) { el.textContent = 'Click a block on the map first, then ask for places that look like it.'; return ''; }
+                const from = UrbanInsights.cityAt(CellStore, center.lat, center.lng);
+                if (!from) { el.textContent = 'That spot is outside the cities I have data for.'; return ''; }
+                if (typeof UrbanLenses === 'undefined' || !UrbanLenses.lookalike) { el.textContent = 'The real-estate lenses did not load.'; return ''; }
+                r = { kind: 'lookalike', s: await UrbanLenses.lookalike({ fromCity: from, lat: center.lat, lng: center.lng, toCity: intent.city || from }, CellStore) };
             } else if (intent.type === 'farwhatif') {
                 if (!center) { el.textContent = 'Click a block on the map first, then ask what a higher FAR would do there.'; return ''; }
                 const city = UrbanInsights.cityAt(CellStore, center.lat, center.lng);
@@ -488,6 +502,7 @@ const DishaIntel = (() => {
         if (r.kind === 'roadwhatif') return RoadWhatIf.askText(r.a);
         if (r.kind === 'propreport') return PropertyReport.text(r.m);
         if (r.kind === 'similar') return UrbanLenses.similarText(r.s);
+        if (r.kind === 'lookalike') return UrbanLenses.lookalikeText(r.s);
         if (r.kind === 'stationwhatif') return stationText(r);
         if (r.kind === 'farwhatif') return UrbanLenses.farText(r.f);
         if (r.kind === 'mobilityscore') return r.sc.kind === 'realestate' ? UrbanLenses.reScorecardText(r.sc, r.city) : UrbanLenses.scorecardText(r.sc, r.city);
@@ -659,6 +674,13 @@ const DishaIntel = (() => {
             el.appendChild(_el('div', 'ui-headline', first));
             rest.forEach(line => el.appendChild(_el('div', 'disha-scan-row', line)));
             el.appendChild(_el('div', 'disha-scan-hint', 'Matched on each block\'s percentile within its own city (land value counts double): land value, density, job reach, metro walk, wealth, shops, newness, high-rise share and greenery, smoothed over 500 m.'));
+        } else if (r.kind === 'lookalike') {
+            head.textContent = 'Looks like this from space';
+            el.appendChild(head);
+            const [first, ...rest] = UrbanLenses.lookalikeText(r.s).split('\n');
+            el.appendChild(_el('div', 'ui-headline', first));
+            rest.forEach(line => el.appendChild(_el('div', 'disha-scan-row', line)));
+            el.appendChild(_el('div', 'disha-scan-hint', 'Matched on Google\'s AlphaEarth satellite embeddings for 2025 (12 principal components shared by all cities), which capture built form, roofs, greenery and water but not prices or people.'));
         } else if (r.kind === 'farwhatif') {
             head.textContent = `FAR what-if · ${DigiPin.format(r.f.code)} · ${r.cityLabel}`;
             el.appendChild(head);

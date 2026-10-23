@@ -160,3 +160,4 @@ playwright-report/
 !data/lenses/
 !data/lenses/*
 js/app.bundle.js
+data/cache/

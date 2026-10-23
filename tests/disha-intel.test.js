@@ -99,6 +99,8 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('where will the city grow next')).toEqual({ type: 'lens', lens: 'nextgrowth' });
         expect(M('find places like this in Pune')).toEqual({ type: 'similar', city: 'pune' });
         expect(M('show comparable localities')).toEqual({ type: 'similar' });
+        expect(M('find places that look like this from space in Pune')).toEqual({ type: 'lookalike', city: 'pune' });
+        expect(M('satellite lookalikes of this block')).toEqual({ type: 'lookalike' });
         expect(M('give me a property report for this spot')).toEqual({ type: 'propreport' });
         expect(M('do a due diligence check here')).toEqual({ type: 'propreport' });
         expect(M('which lakes have been encroached in Delhi')).toEqual({ type: 'lens', lens: 'encroach', city: 'delhi' });
@@ -108,6 +110,8 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('what is the climate risk in Delhi')).toEqual({ type: 'lens', lens: 'climategrade', city: 'delhi' });
         expect(M('is groundwater running out in Delhi')).toEqual({ type: 'lens', lens: 'waterrisk', city: 'delhi' });
         expect(M('is rooftop solar worth it for homes in Delhi')).toEqual({ type: 'lens', lens: 'solarhome', city: 'delhi' });
+        expect(M('which areas of Delhi changed most since 2017')).toEqual({ type: 'lens', lens: 'change', city: 'delhi' });
+        expect(M('which homes in Delhi have dark roofs that need a white coating')).toEqual({ type: 'lens', lens: 'coolroof', city: 'delhi' });
         expect(M('who will be under water by 2050 in Delhi')).toEqual({ type: 'lens', lens: 'flood2050', city: 'delhi' });
         expect(M('will sea level rise flood the coast')).toEqual({ type: 'lens', lens: 'flood2050' });
         expect(M('street level heat by 2050 in Delhi')).toEqual({ type: 'lens', lens: 'streetheat', city: 'delhi' });

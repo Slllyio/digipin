@@ -242,7 +242,7 @@
     },
     "climategrade": {
      "label": "Climate 2050 risk for the average resident",
-     "value": 54,
+     "value": 60,
      "unit": "0-100",
      "higherIs": "worse"
     },
@@ -251,6 +251,12 @@
      "value": 8.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 16,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -606,6 +612,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 49.9,
+     "unit": "km²",
+     "higherIs": null
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 7.1,
@@ -698,7 +710,7 @@
     },
     "monsoon": {
      "label": "Arterial km prone to monsoon waterlogging",
-     "value": 14.1,
+     "value": 14.2,
      "unit": "%",
      "higherIs": "worse"
     }
@@ -959,6 +971,12 @@
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 12.6,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -1298,7 +1316,7 @@
     },
     "climategrade": {
      "label": "Climate 2050 risk for the average resident",
-     "value": 57,
+     "value": 63,
      "unit": "0-100",
      "higherIs": "worse"
     },
@@ -1307,6 +1325,12 @@
      "value": 66.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 22.9,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -1652,7 +1676,7 @@
     },
     "climategrade": {
      "label": "Climate 2050 risk for the average resident",
-     "value": 52,
+     "value": 58,
      "unit": "0-100",
      "higherIs": "worse"
     },
@@ -1661,6 +1685,12 @@
      "value": 19.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 139.3,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -1994,7 +2024,7 @@
     },
     "climategrade": {
      "label": "Climate 2050 risk for the average resident",
-     "value": 34,
+     "value": 35,
      "unit": "0-100",
      "higherIs": "worse"
     },
@@ -2003,6 +2033,12 @@
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 1.1,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -2351,6 +2387,12 @@
      "value": 0.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 68.9,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -2706,6 +2748,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 45.9,
+     "unit": "km²",
+     "higherIs": null
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 4,
@@ -3044,7 +3092,7 @@
     },
     "climategrade": {
      "label": "Climate 2050 risk for the average resident",
-     "value": 44,
+     "value": 46,
      "unit": "0-100",
      "higherIs": "worse"
     },
@@ -3053,6 +3101,12 @@
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 1.9,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -3392,7 +3446,7 @@
     },
     "climategrade": {
      "label": "Climate 2050 risk for the average resident",
-     "value": 22,
+     "value": 26,
      "unit": "0-100",
      "higherIs": "worse"
     },
@@ -3401,6 +3455,12 @@
      "value": 29.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 17.7,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -3734,7 +3794,7 @@
     },
     "climategrade": {
      "label": "Climate 2050 risk for the average resident",
-     "value": 49,
+     "value": 56,
      "unit": "0-100",
      "higherIs": "worse"
     },
@@ -3743,6 +3803,12 @@
      "value": 10.8,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 33.6,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -4088,7 +4154,7 @@
     },
     "climategrade": {
      "label": "Climate 2050 risk for the average resident",
-     "value": 16,
+     "value": 19,
      "unit": "0-100",
      "higherIs": "worse"
     },
@@ -4097,6 +4163,12 @@
      "value": 21.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 34.7,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -4451,6 +4523,12 @@
      "value": 6.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "change": {
+     "label": "Land that changed strongly since 2017",
+     "value": 31.1,
+     "unit": "km²",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",

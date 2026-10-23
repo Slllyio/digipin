@@ -388,3 +388,59 @@ The `vitality` lens reports:
 Overture follows online listings, so informal markets are under-counted. Treat gaps as leads to check on the ground.
 
 The property report lists the block's businesses under Neighbourhood. The bake runs in the precompute-cells workflow.
+
+## Satellite embeddings: what changed, and places that look alike
+
+`pipeline/cells/embeddings.py` builds the L7 dataset `embeddings` from Google's Satellite Embedding V1, which comes from the AlphaEarth Foundations model. The model summarises each 10 m pixel's year of optical, radar, thermal, terrain and climate data as 64 numbers.
+
+The dataset has two kinds of field:
+
+- **Look-alike components:** the first 12 principal components of each block's mean 2025 embedding. One PCA is fitted across all 13 cities, so blocks in different cities compare directly. The 12 components hold 91% of the variance.
+- **Change:** `change_8yr` and `change_2yr` are 1 − cosine similarity between the block's mean embedding in 2017 (or 2023) and 2025.
+
+The build runs in two steps. `fetch` caches each city's 64-number means in `data/cache/embeddings`, which git ignores. `write` fits the PCA and writes the store, about 4.7 MB in total.
+
+### The `change` lens ("What changed")
+
+Rain and haze vary from year to year, so a block counts as changed strongly when it moved at least 3 times as far as the city's median block. Each hotspot is labelled with the likely cause, checked in this order:
+
+1. New buildings, from Open Buildings for 2016 to 2023.
+2. Water, bare ground or cropland, from ESA WorldCover.
+3. Tree canopy.
+
+| City | Strongly changed since 2017 | Share of that land with 20+ new buildings |
+|---|---|---|
+| Delhi | 139 km² (5.2% of blocks) | 17% |
+| Bengaluru | 50 km² | 42% |
+| Pune | 31 km² | 68% |
+| Chennai | 23 km² | 26% |
+
+Chennai's top hotspots are water bodies whose extent changed. Delhi's are along the Dwarka Expressway, plus farmland on the fringe.
+
+### "Looks like this from space"
+
+`UrbanLenses.lookalike` finds the blocks of any city whose 12 components lie nearest the clicked block. DISHA answers questions like "find places that look like this from space in Mumbai".
+
+Connaught Place matches Churchgate, Fort and Colaba in Mumbai. It also matches Saket and the Rajouri Garden and Janakpuri belt in Delhi.
+
+This matches physical form only. The existing "places like this" search matches on price, access and wealth, so the two complement each other.
+
+## Humid heat 2050 (wet-bulb)
+
+The `humid_future` dataset is at L5 and built by `pipeline/cells/ee_layers.py --layer humid_future`. For every ERA5-Land day from 2015 to 2024, it calculates the afternoon wet-bulb temperature (Stull 2011). It then shifts the same days by the six-model CMIP6 change in March–September maximum temperature and relative humidity.
+
+It counts days with a wet-bulb of 28 °C or more, and of 31 °C or more. Vecellio et al. 2022 found that, at around 31 °C, healthy young people can no longer shed heat.
+
+| City | Humid-heat days now | 2050, SSP2-4.5 | 2050, SSP5-8.5 | Peak wet-bulb 2050 |
+|---|---|---|---|---|
+| Kolkata | 42 | 124 | 143 | 31.2 °C |
+| Chennai | 20 | 69 | 95 | 30.4 °C |
+| Lucknow | 14 | 67 | 85 | 30.5 °C |
+| Delhi | 12 | 57 | 74 | 30.4 °C |
+| Ahmedabad | 2 | 42 | 61 | 29.9 °C |
+| Mumbai | 2 | 25 | 43 | 30.0 °C |
+| Jaipur | 0 | 20 | 31 | 29.5 °C |
+
+The 28 °C threshold sits near the monsoon's usual afternoon peak, so small shifts move the counts a lot. Treat the counts as direction and scale, not exact numbers.
+
+The `climate2050` lens now reports humid-heat days. The Climate 2050 grade now uses the 2050 count instead of today's, so humid cities grade worse than before.

@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -230,6 +230,40 @@ describe('Real-estate lenses on a hand-made grid', () => {
         const dry = L.frameFrom(codes, { ...base, 'flood_future.any_pct_now': zero, 'flood_future.any_pct_2050': zero });
         expect(L._lenses.flood2050(dry, {}).headline).toMatch(/^No residents/);
         expect(L._lenses.flood2050(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('change: strongly changed land against the city median, hotspots named by what changed', () => {
+        const c8 = codes.map((_, i) => (i === 0 || i === SIZE * 11 + 11 ? 0.2 : 0.02));
+        const c2 = codes.map((_, i) => (i === 5 ? 0.1 : 0.01));
+        const nb = codes.map((_, i) => (i === 0 ? 300 : 0));
+        const f = L.frameFrom(codes, { ...base, 'embeddings.change_8yr': c8, 'embeddings.change_2yr': c2, 'building_stock.new_buildings': nb }, { city: 'delhi' });
+        const r = L._lenses.change(f, {});
+        expect(r.stats.find(x => /changed strongly since 2017/.test(x.label)).value).toMatch(/\(1\.4% of blocks\)/);
+        expect(r.headline).toMatch(/50% of it gained 20 or more new buildings/);
+        expect(r.headline).toMatch(/1 blocks are changing fast/);
+        expect(r.stats.some(x => /hotspot/.test(x.label) && /300 new buildings/.test(x.value))).toBe(true);
+        expect(L._lenses.change(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('lookalikeText lists matches and handles a missing block', () => {
+        const t = RE.lookalikeText({ fromCity: 'delhi', toCity: 'pune', ref: { code: '39J4M98' }, matches: [{ code: '4FP493F', similarity: 72, people: 1200 }] });
+        expect(t).toMatch(/look most like 39J4M98/);
+        expect(t).toMatch(/1\. 4FP493F: 72% match/);
+        expect(RE.lookalikeText(null)).toMatch(/no satellite embedding/);
+    });
+
+    it('coolroof: dark roof area, residents under dark roofs, priority for hot poor low-rise blocks', () => {
+        const k = v => codes.map(() => v);
+        const dark = codes.map((_, i) => (col(i) < 6 ? 80 : 10));
+        const lst = codes.map((_, i) => (i < SIZE * 6 ? 44 : 40));
+        const f = L.frameFrom(codes, { ...base, 'roofs.roof_albedo': dark.map(d => (d > 50 ? 0.12 : 0.25)), 'roofs.dark_roof_pct': dark,
+            'building_stock.cover_2023_pct': k(50), 'building_stock.height_2023_m': k(4), 'surface_heat.lst_day_c': lst, 'wealth.rwi': k(-0.2) }, { city: 'delhi' });
+        const r = L._lenses.coolroof(f, {});
+        expect(r.columns.cool_priority[0]).toBeGreaterThan(r.columns.cool_priority[SIZE - 1]);   // dark west beats light east
+        expect(r.columns.cool_priority[0]).toBeGreaterThan(r.columns.cool_priority[SIZE * 11]);  // hot north beats cool south
+        expect(r.metric.value).toBe(Math.round(n * 1000 * 0.45));
+        expect(r.headline).toMatch(/45% of the city's roof area is dark/);
+        expect(L._lenses.coolroof(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('solarhome: roof per household, payback after subsidy, AC cover', () => {
