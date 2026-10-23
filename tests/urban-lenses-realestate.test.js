@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -505,6 +505,17 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats.find(x => x.label === 'Last seen 2010s')).toBeTruthy();
         expect(r.headline).toMatch(/50% of it lies in blocks that are now built-up/);
         expect(L._lenses.waterloss(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('dumps: people within 1 km of a mapped landfill or quarry', () => {
+        const at = (j, k) => codes.map((_, i) => (i === j ? k : 0));
+        const f = L.frameFrom(codes, { ...base, 'landuse.landfill_pct': at(0, 40), 'landuse.quarry_pct': codes.map(() => 0), 'landuse.brownfield_pct': at(5, 10) });
+        const r = L._lenses.dumps(f, {});
+        expect(r.metric.value).toBeGreaterThan(1000);
+        expect(r.metric.value).toBeLessThan(1000 * codes.length);
+        expect(r.columns.near_dump[codes.length - 1]).toBe(0);
+        expect(r.stats.find(x => /Site 1/.test(x.label)).value).toMatch(/^landfill, /);
+        expect(L._lenses.dumps(L.frameFrom(codes, { ...base, 'landuse.landfill_pct': codes.map(() => 0), 'landuse.quarry_pct': codes.map(() => 0) }), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

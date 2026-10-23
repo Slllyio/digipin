@@ -97,7 +97,7 @@ Each item gives four things:
 48. ✅ SO2 from industry (Sentinel-5P) | EE | industry pollution (air_trend SO₂ hotspots)
 49. ✅ Formaldehyde HCHO (Sentinel-5P) | EE | VOC hotspots (already in air_quality (HCHO))
 50. Methane at landfills (Sentinel-5P CH4 + landfill locations) | EE/OSM | landfill lens
-51. Landfills and dumpsites (OSM landuse=landfill + Wikidata) | OSM | waste lens
+51. ✅ Landfills and dumpsites (OSM landuse=landfill + Wikidata) | OSM | waste lens
 52. Sewage treatment plants and capacity | OSM/Wikidata | sanitation
 53. Hospitals with beds (Overture + OSM beds tag + Wikidata) | S3/OSM | health capacity
 54. ✅ Pharmacies and diagnostics (Overture) | S3 | health access
@@ -161,7 +161,7 @@ Each item gives four things:
 103. ✅ Slope stability and cut-fill (DEM curvature) | EE | construction cost (slopes in the ground lens)
 104. Bedrock depth (Pelletier 2016) | EE | foundation cost
 105. ✅ Expansive black-cotton soil (SoilGrids clay + vertisol class) | EE | foundation risk (subsoil + ground lens)
-106. Quarries and mines (Global mining polygons, Maus 2022) | open | land damage
+106. ✅ Quarries and mines (Overture/OSM quarries; Maus 2022 global mines has none inside the 13 cities) | open | land damage
 107. Brick kilns (Sentinel-2 detections, Boyd et al.) | open | air/land
 108. ✅ Lake encroachment by year (JRC GSW yearly) | EE | encroachment extension
 109. Urban farms and community gardens | OSM | food lens

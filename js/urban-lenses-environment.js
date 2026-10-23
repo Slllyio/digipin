@@ -1152,6 +1152,43 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Landfills and quarries as neighbours: mapped (Overture land use) dump and quarry area per block, and the people
+    // living within DUMP_KM of it (smell, flies, leachate, fires, dust and blasting).
+    const DUMP_KM = 1, DUMP_MIN_HA = 0.5;
+
+    function dumps(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const fill = c['landuse.landfill_pct'], quar = c['landuse.quarry_pct'], brown = c['landuse.brownfield_pct'];
+        if (!fill || !quar || !pop) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const site = Float64Array.from({ length: n }, (_, i) => v(fill, i) + v(quar, i));
+        const DUMP_MIN = DUMP_MIN_HA / (g.cellKm2 * 100) * 100;     // % of a block that is DUMP_MIN_HA
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(pop[i]) || site[i] > 0) idx.push(i);
+        const sites = idx.filter(i => site[i] >= DUMP_MIN);
+        if (!sites.length) return null;
+        const near = within(g, Float64Array.from(site, x => (x >= DUMP_MIN ? x : 0)), DUMP_KM);
+        const people = within(g, Float64Array.from({ length: n }, (_, i) => v(pop, i)), DUMP_KM);
+        const lived = idx.filter(i => v(pop, i) > 0);
+        const exposed = _sumOver(pop, lived, i => near[i] > 0), all = _sumOver(pop, lived, () => true);
+        const km2 = k => idx.reduce((a, i) => a + v(c[`landuse.${k}_pct`], i) / 100 * g.cellKm2, 0);
+        const stats = [
+            { label: 'Landfill and dump area mapped', value: `${_round(km2('landfill'), 2)} km²` },
+            { label: 'Quarry area mapped', value: `${_round(km2('quarry'), 2)} km²` },
+            { label: `People living within ${DUMP_KM} km of either`, value: `${_people(exposed)} (${_round(100 * exposed / Math.max(all, 1), 1)}%)`, raw: Math.round(exposed) },
+        ];
+        if (brown) stats.push({ label: 'Brownfield land mapped (cleared former industrial or built land)', value: `${_round(km2('brownfield'), 2)} km²` });
+        spaced(g, sites, people).slice(0, TOP).forEach((i, k) => stats.push({ label: `Site ${k + 1}: ${g.codes[i]}`,
+            value: `${v(fill, i) >= v(quar, i) ? 'landfill' : 'quarry'}, ${_round(site[i] / 100 * g.cellKm2 * 100, 1)} ha in the block; ${_people(people[i])} people within ${DUMP_KM} km` }));
+        const exposure = Float64Array.from({ length: n }, (_, i) => (near[i] > 0 ? 1 : 0));
+        return {
+            columns: { dump_quarry_pct: site, near_dump: exposure }, idx, weightKey: 'dump_quarry_pct', noHotspots: true,
+            metric: { label: `People within ${DUMP_KM} km of a landfill or quarry`, value: Math.round(exposed), unit: 'people', higherIs: 'worse' },
+            headline: `${_people(exposed)} people (${_round(100 * exposed / Math.max(all, 1), 1)}%) live within ${DUMP_KM} km of a mapped landfill or quarry. Mapping is OpenStreetMap's, so unmapped dumps and illegal quarries are missing.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -1449,6 +1486,13 @@ const UrbanLensesEnvironment = (() => {
             needs: ['water_history.water_lost_pct', 'water_history.lost_year', 'land_cover.built_pct'],
             method: `JRC Global Surface Water yearly history (Landsat, 30 m, 1984–2021). A pixel is lost water if it held seasonal or permanent water in any year of 1988–92 or 1998–2002 and in none of 2019–21; the last year it held water dates the loss. Areas are summed per block and split by decade; blocks now at least ${WLOST_BUILT}% built-up (Dynamic World) mark loss to building. River channels that moved and seasonal ponds through a run of dry years also read as loss, so check the satellite view before calling a block encroached.`,
             refs: 'Pekel et al. 2016 (Nature), JRC Global Surface Water; Ramachandra et al. 2016 (Bengaluru lake loss)' },
+        { id: 'dumps', equity: true, title: 'Landfills and quarries next door', icon: '🗑️',
+            question: 'Who lives next to a landfill or quarry?',
+            field: { key: 'dump_quarry_pct', label: 'Landfill or quarry (mapped land use)', unit: '% of block', higherIs: 'worse', ramp: 'reds', domain: [0, 50] },
+            extra: [{ key: 'near_dump', label: `Within ${DUMP_KM} km of a landfill or quarry`, unit: 'yes/no', higherIs: 'worse', ramp: 'reds', domain: [0, 1] }],
+            needs: ['landuse.landfill_pct', 'landuse.quarry_pct', 'landuse.brownfield_pct', 'population.population'],
+            method: `Overture Maps land use (from OpenStreetMap) of class landfill and quarry, clipped to each block; a block holding at least ${DUMP_MIN_HA} ha of either is a site. People = WorldPop residents of blocks within ${DUMP_KM} km of a site, a common buffer for odour, flies, leachate and blasting dust in landfill and quarry health studies. Brownfield land is listed for redevelopment. Only mapped sites count.`,
+            refs: 'Overture Maps Foundation land use; Mattiello et al. 2013 (Int. J. Public Health, landfill health review); WorldPop' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -1464,7 +1508,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lightning, recharge, stay, waterloss, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lightning, recharge, stay, waterloss, dumps, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

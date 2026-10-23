@@ -867,3 +867,17 @@ The `water_history` Earth Engine layer reads the JRC Global Surface Water yearly
 | Chennai | 10.4 km² | 3.7 / 3.5 / 3.2 km² | 40% |
 
 Chennai's loss clusters in the south around the Pallikaranai marsh. River channels that moved and seasonal ponds through a run of dry years also read as loss, so the lens is a list of places to check on the satellite view, not a finding of encroachment.
+
+## Mapped land use and landfill neighbours (`landuse` dataset, `dumps` lens)
+
+`pipeline/realestate/landuse.py` clips Overture Maps land use (from OpenStreetMap) to every L7 block and groups it into residential, industrial (industrial and works), commercial (commercial and retail), civic (schools, colleges, universities, hospitals, institutional and religious), military (including airfields), construction (construction and greenfield), brownfield, landfill and quarry. `mapped_pct` says how much of the block has any land use drawn, since mapping is uneven. Protected-area polygons are left out because some cover whole districts. This is mapped use, not the statutory master-plan zone.
+
+The `dumps` lens treats any block holding 0.5 ha or more of landfill or quarry as a site and counts the residents within 1 km.
+
+| City | Within 1 km of a landfill or quarry | Landfill / quarry area mapped |
+|---|---|---|
+| Mumbai | 18.3 lakh (10.3%) | 3.5 / 0.6 km² |
+| Delhi | 8.2 lakh (2.8%) | 1.2 / 0.7 km² |
+| Bengaluru | 2.2 lakh (1.7%) | 1.6 / 5.3 km² |
+
+Mumbai's map lights up around Deonar (Govandi, Shivaji Nagar, Mankhurd) and the Kanjurmarg site. The Maus et al. global mining polygons were checked first, but none fall inside the 13 cities.

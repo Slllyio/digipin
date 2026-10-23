@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T21:16:01Z",
+  "generated": "2026-10-23T21:23:08Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -11063,6 +11063,342 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "landuse",
+      "title": "Mapped land use (Overture)",
+      "description": "Overture Maps base-theme land use (release 2026-10-21.0, from OpenStreetMap), grouped into residential, industrial, commercial, civic, military, construction, brownfield, landfill and quarry, and clipped to each block. It is mapped use, not the statutory master-plan zone, and coverage is uneven: mapped_pct shows how much of a block has any land use drawn. Protected-area polygons are left out because some cover whole districts.",
+      "source": "pipeline/realestate/landuse.py (Overture Maps base theme via DuckDB spatial)",
+      "license": "ODbL 1.0 (OpenStreetMap via Overture Maps)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "residential_pct",
+          "label": "Residential (mapped land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "industrial_pct",
+          "label": "Industrial and works (mapped land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "commercial_pct",
+          "label": "Commercial and retail (mapped land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "civic_pct",
+          "label": "Schools, hospitals, institutions and religious (mapped land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "military_pct",
+          "label": "Military and airfields (mapped land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "construction_pct",
+          "label": "Construction and greenfield sites (mapped land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "brownfield_pct",
+          "label": "Brownfield land (mapped land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "landfill_pct",
+          "label": "Landfills and dumps (mapped land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "quarry_pct",
+          "label": "Quarries (mapped land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "mapped_pct",
+          "label": "Block area with any mapped land use",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "industrial_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 4083,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "landuse/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 17385,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "landuse/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 2853,
+          "bbox": {
+            "west": 77.31201171875,
+            "south": 23.178466796875,
+            "east": 77.5185546875,
+            "north": 23.3212890625
+          },
+          "json": "landuse/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 5247,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "landuse/chennai.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 23669,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "landuse/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 221,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.60009765625,
+            "east": 77.349365234375,
+            "north": 24.663818359375
+          },
+          "json": "landuse/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 7723,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "landuse/hyderabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 3347,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.50390625,
+            "east": 75.995849609375,
+            "north": 22.8994140625
+          },
+          "json": "landuse/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 1710,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.912353515625,
+            "north": 27.001708984375
+          },
+          "json": "landuse/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 3850,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "landuse/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 5290,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "landuse/lucknow.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 7098,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "landuse/mumbai.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 5730,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "landuse/pune.json.gz",
+          "parquet": null
         }
       ]
     },
