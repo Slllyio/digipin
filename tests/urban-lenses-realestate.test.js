@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -356,6 +356,17 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats.find(x => /Floods first 1/.test(x.label)).label).toContain(codes[SIZE * 6 + 6]);
         expect(r.headline).toMatch(/cut that by \d/);
         expect(L._lenses.runoff(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('nighteconomy: late-night light plus eateries, the night districts', () => {
+        const bright = codes.map((_, i) => (i === SIZE * 5 + 5 ? 80 : 5));
+        const f = L.frameFrom(codes, { ...base, 'nightlights.radiance': bright, 'places.food': codes.map((_, i) => (i === SIZE * 5 + 5 ? 40 : 0)),
+            'places.leisure': codes.map(() => 0), 'places.lodging': codes.map(() => 0) }, { city: 'delhi' });
+        const r = L._lenses.nighteconomy(f, {});
+        expect(r.columns.night_district[SIZE * 5 + 5]).toBe(1);
+        expect(r.columns.night_district[0]).toBe(0);
+        expect(r.stats.find(x => /Night district 1/.test(x.label)).label).toContain(codes[SIZE * 5 + 5]);
+        expect(L._lenses.nighteconomy(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

@@ -324,6 +324,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 156,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 2,
@@ -755,6 +761,12 @@
      "value": 44.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 321,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -1188,6 +1200,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 212,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 5,
@@ -1613,6 +1631,12 @@
      "value": 65.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 277,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -2046,6 +2070,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 1269,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 37,
@@ -2453,6 +2483,12 @@
      "value": 50.6,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 16,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -2879,6 +2915,12 @@
      "value": 33.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 307,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3312,6 +3354,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 571,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 9,
@@ -3737,6 +3785,12 @@
      "value": 36.8,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 359,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -4164,6 +4218,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 228,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 23,
@@ -4583,6 +4643,12 @@
      "value": 40,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 310,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -5022,6 +5088,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 398,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 21,
@@ -5453,6 +5525,12 @@
      "value": 55.8,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "nighteconomy": {
+     "label": "Night-district blocks",
+     "value": 322,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",

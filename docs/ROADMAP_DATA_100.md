@@ -136,7 +136,7 @@ Each item gives four things:
 81. NFHS-5 district health and wealth indicators | open | district context
 82. SECC / PMAY beneficiary density (where published) | open | housing need
 83. Gig and informal work proxy (two-wheeler density × places) | derived | economy lens
-84. Night-time economy (VIIRS late-night radiance × food/leisure places) | EE/S3 | night economy
+84. ✅ Night-time economy (VIIRS late-night radiance × food/leisure places) | EE/S3 | night economy
 85. Tourism footfall proxy (Wikipedia page views of landmarks + hotels) | API | tourism lens
 86. Landmark and heritage sites (Wikidata, ASI list) | API | heritage lens
 87. Religious places and festival crowd zones | S3/OSM | crowd lens

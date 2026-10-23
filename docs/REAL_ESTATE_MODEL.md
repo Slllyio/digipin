@@ -695,3 +695,13 @@ The lens reports:
 | Chennai | 75 mm | 66% | | |
 
 On Mumbai's 235 mm day, soil saturates whatever the cover, so making surfaces permeable helps little there. Storage and drains matter more.
+
+## Night-time economy
+
+The VIIRS night-time light composite is captured at about 1:30 am. The `nighteconomy` lens combines that late-night light with the number of eateries, leisure places and hotels within 500 m, taken from Overture places. A night district is a block in the top 10% for both.
+
+| City | Night-district blocks | Share of these places in them |
+|---|---|---|
+| Delhi | 1,269 | 28% |
+| Mumbai | 398 | 21% |
+| Bengaluru | 321 | 11% |

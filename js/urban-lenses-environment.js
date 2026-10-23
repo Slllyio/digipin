@@ -626,6 +626,54 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Night-time economy. VIIRS passes at about 1:30 am, so its radiance is late-night light. A night district has
+    // NIGHT_TOP-share radiance and NIGHT_TOP-share density of food, leisure and lodging places within NIGHT_KM.
+    const NIGHT_KM = 0.5, NIGHT_TOP = 0.9;
+
+    function nighteconomy(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const rad = c['nightlights.radiance'], food = c['places.food'], leis = c['places.leisure'], lodg = c['places.lodging'];
+        const pop = c['population.population'];
+        if (!rad || !food) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const nightPl = Float64Array.from({ length: n }, (_, i) => v(food, i) + v(leis, i) + v(lodg, i));
+        let all = 0;
+        for (const x of nightPl) all += x;
+        if (all < 20) return null;
+        const near = within(g, nightPl, NIGHT_KM);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(rad[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const radCut = wquantile(rad, null, idx, NIGHT_TOP), plCut = wquantile(near, null, idx.filter(i => near[i] > 0), NIGHT_TOP);
+        const score = new Float64Array(n).fill(NaN), hub = new Float64Array(n).fill(NaN);
+        const lr = idx.map(i => Math.log1p(Math.max(0, rad[i]))), lp = idx.map(i => Math.log1p(near[i]));
+        const sd = a => { const m = a.reduce((x, y) => x + y, 0) / a.length; return [m, Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / a.length) || 1]; };
+        const [mr, sr] = sd(lr), [mp, sp] = sd(lp);
+        let hubN = 0, hubPl = 0;
+        idx.forEach((i, k) => {
+            score[i] = (lr[k] - mr) / sr + (lp[k] - mp) / sp;
+            hub[i] = rad[i] >= radCut && near[i] >= plCut ? 1 : 0;
+            if (hub[i]) { hubN++; hubPl += nightPl[i]; }
+        });
+        const stats = [
+            { label: 'Eateries, bars, leisure and hotels on the map (Overture places)', value: `${Math.round(all).toLocaleString('en-IN')}`, raw: Math.round(all) },
+            { label: `Night districts: top ${_round(100 * (1 - NIGHT_TOP))}% for late-night light and for these places within ${NIGHT_KM} km`, value: `${hubN} blocks, ${_round(100 * hubPl / all)}% of the places` },
+        ];
+        if (pop) {
+            const dark = idx.filter(i => pop[i] > 0);
+            const darkPop = _sumOver(pop, dark, i => near[i] === 0);
+            stats.push({ label: `Residents with no eatery, leisure place or hotel within ${NIGHT_KM} km`, value: `${_people(darkPop)} (${_round(100 * darkPop / Math.max(1, _sumOver(pop, dark, () => true)))}%)` });
+        }
+        spaced(g, idx.filter(i => hub[i] === 1), score).slice(0, 5).forEach((i, k) => stats.push({ label: `Night district ${k + 1}: ${g.codes[i]}`,
+            value: `${Math.round(near[i])} places within ${NIGHT_KM} km; ${_round(rad[i], 1)} nW/cm²/sr at 1:30 am` }));
+        return {
+            columns: { night_score: score, night_district: hub }, idx, weightKey: 'night_score', noHotspots: true,
+            metric: { label: 'Night-district blocks', value: hubN, unit: 'blocks', higherIs: null },
+            headline: `${hubN} blocks form the city's night districts, bright at 1:30 am and dense with eateries, leisure and hotels; they hold ${_round(100 * hubPl / all)}% of those places.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -831,6 +879,13 @@ const UrbanLensesEnvironment = (() => {
             needs: ['land_cover.built_pct', 'land_cover.tree_pct', 'land_cover.shrub_pct', 'land_cover.grass_pct', 'land_cover.crop_pct', 'land_cover.bare_pct', 'land_cover.water_pct', 'land_cover.wetland_pct', 'land_cover.mangrove_pct', 'rainfall.rain_max_day_mm', 'soil.sand_pct', 'soil.clay_pct', 'waterlogging.waterlogging_index'],
             method: `SCS curve-number runoff Q = (P − 0.2S)² / (P + 0.8S), S = 25400/CN − 254 mm, with P the block's wettest day of 2025 (CHIRPS v2, ~5 km) and CN the land-cover-weighted TR-55 curve number for average wetness (ESA WorldCover 2021 classes; built 89–95, trees 30–77, grass 39–80, crops 67–89, bare 77–94 across soil groups A–D) on the SoilGrids hydrologic soil group (A sand ≥ 70% and clay < 10%; D clay ≥ 40%; C clay ≥ 27%; else B). The what-if turns ${GREEN_SWAP * 100}% of each block's built cover into grass-like cover. Blocks where floods start are those with a waterlogging index of ${WLOG_HIGH}+, ranked by runoff generated within 1 km. Drains, slope routing and storage are not modelled.`,
             refs: 'USDA NRCS 1986 (TR-55 Urban Hydrology for Small Watersheds); Hawkins et al. 2009 (curve number hydrology); Funk et al. 2015 (CHIRPS); Hengl et al. 2017 (SoilGrids)' },
+        { id: 'nighteconomy', equity: false, title: 'Night-time economy', icon: '🌃',
+            question: 'Where is the city awake late at night, with places to eat, meet and stay?',
+            field: { key: 'night_score', label: 'Late-night light plus eateries, leisure and hotels nearby', unit: 'z', higherIs: null, ramp: 'viridis' },
+            extra: [{ key: 'night_district', label: 'Night district (top 10% for both)', unit: 'yes/no', higherIs: null, ramp: 'heat', domain: [0, 1] }],
+            needs: ['nightlights.radiance', 'places.food', 'places.leisure', 'places.lodging', 'population.population'],
+            method: `VIIRS Day/Night Band radiance (2025 median) is recorded at about 1:30 am local time, so it measures late-night light. Places = Overture eateries and bars, leisure and entertainment, and hotels, summed within ${NIGHT_KM} km. Score = standardised log radiance + standardised log places. A night district is in the top ${_round(100 * (1 - NIGHT_TOP))}% of blocks for both. Industrial yards, depots and floodlit stations are bright but have few such places, so they score on light alone. Opening hours are not in the data.`,
+            refs: 'Elvidge et al. 2017 (VIIRS DNB); Overture Maps Foundation places; Roberts & Eldridge 2009 (planning the night-time city)' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -846,7 +901,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();
