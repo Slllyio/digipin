@@ -71,9 +71,9 @@ Each item gives four things:
 25. ✅ Climate 2050 grade A–E | derived
 26. ▶ Landslide susceptibility (NASA LHASA global) | EE community / NASA | hazard lens
 27. ▶ Cyclone wind 10/100-year return speeds (STORM, Bloemendaal 2020) | open download | wind risk
-28. ▶ Seismic zone (BIS IS 1893-2016) | open map digitised | quake risk
+28. ✅ Seismic zone (BIS IS 1893-2016) | open map digitised | quake risk
 29. ▶ Lightning flash density (NASA LIS/OTD climatology) | NASA | lightning risk
-30. ▶ Dust AOD and dust-storm days (MERRA-2) | NASA | dust lens
+30. ✅ Dust AOD and dust-storm days (CAMS instead of MERRA-2) | NASA | dust lens
 31. ✅ Wet-bulb 2050 (NEX-GDDP hurs + tasmax) | EE | humid heat future (humid_future (wet-bulb now and 2050))
 32. Sea-level rise 2100 bathtub on FABDEM (connected) | EE community | coastal long view
 33. Storm-surge 100-year (GTSR, Muis 2016) | open | coastal flood detail
@@ -177,7 +177,7 @@ Each item gives four things:
 116. ✅ Embeddings per block (Google Satellite Embedding V1, 64-d) for similarity | EE | AI search (embeddings + lookalike)
 117. ✅ Change detection with Satellite Embeddings year over year | EE | change lens (change lens)
 118. Building-use classifier from embeddings + places | EE/S3 | land-use mix
-119. Export any lens to GeoJSON / GeoParquet / CSV per DIGIPIN | derived | data API
+119. ✅ Export any lens to GeoJSON / GeoParquet / CSV per DIGIPIN | derived | data API
 120. Public data API: static JSON per DIGIPIN prefix with every field | derived | developer API
 
 ## Parked for the keys round

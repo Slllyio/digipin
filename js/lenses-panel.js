@@ -250,6 +250,59 @@ const LensesPanel = (() => {
         return 'highly unequal';
     }
 
+    /** One lens's per-cell values as rows: [{ code, lat, lng, bounds, [field]: value }], skipping cells with no value. */
+    function exportRows(r, lensId) {
+        const l = r && r.lenses.find(x => x.id === lensId);
+        if (!l || !r.layer) return [];
+        const keys = l.fields.map(f => f.key).filter(k => r.layer.columns[k]);
+        const out = [];
+        r.layer.cells.forEach((code, i) => {
+            const vals = {};
+            let any = false;
+            for (const k of keys) {
+                const f = l.fields.find(x => x.key === k);
+                let v = r.layer.columns[k][i];
+                if (f.type === 'category') v = v == null ? null : f.domain[v];
+                else if (typeof v !== 'number' || !Number.isFinite(v)) v = null;
+                if (v != null) any = true;
+                vals[k] = v;
+            }
+            if (!any) return;
+            const b = typeof DigiPin !== 'undefined' && DigiPin.cellBounds ? DigiPin.cellBounds(code) : null;
+            out.push({ code, lat: b ? +b.lat.toFixed(6) : null, lng: b ? +b.lng.toFixed(6) : null, bounds: b ? b.bounds : null, ...vals });
+        });
+        return out;
+    }
+
+    /** CSV text for one lens (digipin, lat, lng, then its fields). */
+    function toCSV(r, lensId) {
+        const rows = exportRows(r, lensId);
+        if (!rows.length) return '';
+        const keys = Object.keys(rows[0]).filter(k => k !== 'bounds' && k !== 'code' && k !== 'lat' && k !== 'lng');
+        const q = v => (v == null ? '' : typeof v === 'string' && /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : String(v));
+        return ['digipin,lat,lng,' + keys.join(','), ...rows.map(x => [x.code, x.lat, x.lng, ...keys.map(k => q(x[k]))].join(','))].join('\n') + '\n';
+    }
+
+    /** GeoJSON FeatureCollection of cell squares for one lens. */
+    function toGeoJSON(r, lensId) {
+        const rows = exportRows(r, lensId);
+        return {
+            type: 'FeatureCollection',
+            features: rows.filter(x => x.bounds).map(({ bounds: b, lat, lng, ...props }) => ({
+                type: 'Feature', properties: { digipin: props.code, ...Object.fromEntries(Object.entries(props).filter(([k]) => k !== 'code')) },
+                geometry: { type: 'Polygon', coordinates: [[[b.west, b.south], [b.east, b.south], [b.east, b.north], [b.west, b.north], [b.west, b.south]]] },
+            })),
+        };
+    }
+
+    function _save(name, text, type) {
+        const url = URL.createObjectURL(new Blob([text], { type }));
+        const a = document.createElement('a');
+        a.href = url; a.download = name;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
     function _card(kit, r, l) {
         const card = _el('section', 'ui-lens');
         card.dataset.lens = l.id;
@@ -332,6 +385,10 @@ const LensesPanel = (() => {
                 ], { fit: true });
             }, 0);
         }, 'ui-chip', 'Local Moran’s I with a permutation test: clusters and spatial outliers'));
+        const stem = `digipin_${r.city || 'city'}_${l.id}`;
+        acts.appendChild(_btn('⤓ CSV', () => _save(`${stem}.csv`, toCSV(r, l.id), 'text/csv'), 'ui-chip', 'Download this lens per DIGIPIN cell as CSV'));
+        acts.appendChild(_btn('⤓ GeoJSON', () => _save(`${stem}.geojson`, JSON.stringify(toGeoJSON(r, l.id)), 'application/geo+json'),
+            'ui-chip', 'Download this lens as GeoJSON cell squares'));
         card.appendChild(acts);
         card.appendChild(lisaOut);
 
@@ -398,7 +455,7 @@ const LensesPanel = (() => {
         body.appendChild(_sitingCard(kit, r));
     }
 
-    return { render, result, clear, LAYER_ID };
+    return { render, result, clear, exportRows, toCSV, toGeoJSON, LAYER_ID };
 })();
 
 if (typeof window !== 'undefined') {
