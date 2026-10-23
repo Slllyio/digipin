@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T07:05:41Z",
+  "generated": "2026-10-23T14:05:13Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -11792,6 +11792,439 @@
             "north": 18.64111328125
           },
           "json": "parking/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "places",
+      "title": "Businesses and services (Overture)",
+      "description": "Overture Maps places (release 2026-10-21.0, confidence \u2265 0.6, not marked closed) counted per block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, community and transport, plus offices, finance, real-estate agents, brand share and business mix. Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses list themselves online: dense in markets, thin in informal and older areas.",
+      "source": "pipeline/realestate/places.py (Overture Maps places theme via DuckDB)",
+      "license": "CDLA-Permissive-2.0 (Overture Maps places)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "places",
+          "label": "Businesses and services (Overture places)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            1,
+            312
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "community",
+          "label": "Government and community places",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "culture",
+          "label": "Cultural and historic places",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            15
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "education",
+          "label": "Schools, colleges and coaching",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            45
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "food",
+          "label": "Restaurants, caf\u00e9s and food",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            64
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "health",
+          "label": "Clinics, hospitals and pharmacies",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            238
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "leisure",
+          "label": "Gyms, salons, sport and entertainment",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "lodging",
+          "label": "Hotels and stays",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            81
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "services",
+          "label": "Business and household services",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            80
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "shopping",
+          "label": "Shops",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            111
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "transport",
+          "label": "Travel and transport places",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            36
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "offices",
+          "label": "Offices: IT, professional and business services",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            40
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "finance",
+          "label": "Banks, ATMs and financial services",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            37
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "property_agents",
+          "label": "Real-estate agents and services",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            16
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "branded_pct",
+          "label": "Share of places that are chains or brands",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "diversity",
+          "label": "Mix of business types (0 = one kind, 1 = even)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "0-1",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "places",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 4746,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "places/ahmedabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 11064,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "places/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 1976,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "places/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 6236,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.3134765625,
+            "north": 13.180908203125
+          },
+          "json": "places/chennai.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 18572,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "places/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 145,
+          "bbox": {
+            "west": 77.270263671875,
+            "south": 24.60009765625,
+            "east": 77.349365234375,
+            "north": 24.6748046875
+          },
+          "json": "places/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 8864,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "places/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 3235,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "places/indore_pilot.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 4124,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "places/jaipur.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 4957,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "places/kolkata.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 3863,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "places/lucknow.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 5826,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "places/mumbai.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 5646,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.43017578125,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "places/pune.json.gz",
           "parquet": null
         }
       ]

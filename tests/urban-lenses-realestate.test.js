@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -283,6 +283,17 @@ describe('Real-estate lenses on a hand-made grid', () => {
         const dry = L.frameFrom(codes, { ...base, 're_supply.new_floor_m2': nf, 'flood_future.any_pct_2050': codes.map(() => 0) });
         expect(L._lenses.riskygrowth(dry, {}).headline).toMatch(/^Almost none/);
         expect(L._lenses.riskygrowth(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('vitality: places per block, high streets and retail gaps', () => {
+        const pl = codes.map((_, i) => (i === 0 ? 300 : i < SIZE ? 30 : 0)), shop = pl.map(v => v / 2), food = pl.map(v => v / 4);
+        const f = L.frameFrom(codes, { ...base, 'places.places': pl, 'places.shopping': shop, 'places.food': food, 'places.branded_pct': codes.map(() => 10) });
+        const r = L._lenses.vitality(f, {});
+        expect(r.columns.places_km2[0]).toBeGreaterThan(r.columns.places_km2[1]);
+        expect(r.stats.some(s => /^High street 1/.test(s.label))).toBe(true);
+        expect(r.stats.find(s => /chains/.test(s.label)).value).toBe('10%');
+        expect(r.headline).toMatch(/high streets/);
+        expect(L._lenses.vitality(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('farText(): base vs asked FAR, rebuild and homes', () => {

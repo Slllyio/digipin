@@ -13,7 +13,7 @@
 const PropertyReport = (() => {
     'use strict';
     const SCHEMA = 'digipin.property/1';
-    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade'];
+    const LENSES = ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'vitality'];
     const EXTRA = ['land_value.prem_jobs_pct', 'land_value.prem_metro_pct', 'land_value.prem_amenity_pct', 'land_value.prem_neigh_pct',
         'land_value.prem_green_pct', 'land_value.prem_risk_pct', 'land_value.prem_noise_pct', 're_supply.far_now', 're_supply.headroom_m2',
         'building_dynamics.settled_year', 'building_dynamics.highrise_pct', 'building_dynamics.nonres_pct', 'building_dynamics.accel',
@@ -78,6 +78,7 @@ const PropertyReport = (() => {
                 row('First settled', fin(v.settled) ? (v.settled <= 1985 ? 'by 1985' : `around ${Math.round(v.settled)}`) : null),
                 row('High-rise share / non-residential share', fin(v.highrise) || fin(v.nonres) ? `${r1(v.highrise) ?? '–'}% / ${r1(v.nonres) ?? '–'}%` : null),
                 row('Height change 2016→2023', fin(v.dh) ? `${v.dh > 0 ? '+' : ''}${r1(v.dh, 1)} m` : null),
+                row('Businesses and services in the block (Overture)', fin(v.places) && v.places > 0 ? `${Math.round(v.places)}: ${Math.round(v.shops ?? 0)} shops, ${Math.round(v.food ?? 0)} eateries, ${Math.round(v.clinics ?? 0)} health, ${Math.round(v.schools ?? 0)} education${fin(v.brandPct) && v.brandPct > 0 ? `; ${Math.round(v.brandPct)}% chains` : ''}` : null, 'listed places only; informal shops under-counted'),
                 row('Wealth', fin(v.wealthPct) ? `${th(v.wealthPct)} percentile` : null),
                 row('Rental demand vs price', fin(v.yieldGap) ? `${v.yieldGap > 0 ? '+' : ''}${r1(v.yieldGap)} points` : null, 'job-reach rank minus land-value rank; high = strong rent for the price'),
                 row('Price-income gap', fin(v.priceGap) ? `${v.priceGap > 0 ? '+' : ''}${r1(v.priceGap)} points` : null, 'land-value rank minus wealth rank; high = displacement pressure'),
@@ -108,6 +109,7 @@ const PropertyReport = (() => {
         if (fin(v.jobsPct) && v.jobsPct >= 70) strengths.push('strong job reach');
         if (fin(v.metro) && v.metro <= 10) strengths.push('metro within a 10-minute walk');
         else if (fin(v.futureWalk) && v.futureWalk <= 10) strengths.push('a metro station coming within a 10-minute walk');
+        if (fin(v.places) && v.places >= 50) strengths.push('a busy commercial block');
         if (fin(v.upside) && v.upside >= 25) strengths.push('priced below its access');
         if (fin(v.yieldGap) && v.yieldGap >= 30) strengths.push('rental demand high for the price');
         if (fin(v.accel) && v.accel >= 1.5) strengths.push('building speeding up');
@@ -157,6 +159,7 @@ const PropertyReport = (() => {
             wlog: at('waterlogging.waterlogging_index'), noise: at('traffic_noise.lden_db'), encroach: col('encroach', 'encroach_score'),
             upside: col('undervalued', 'upside'), growth: col('nextgrowth', 'growth_score'),
             hot0: at('climate_future.hot_days_now'), hot1: at('climate_future.hot_days_2050'), hot2: at('climate_future.hot_days_2050_high'),
+            places: at('places.places'), shops: at('places.shopping'), food: at('places.food'), clinics: at('places.health'), schools: at('places.education'), brandPct: at('places.branded_pct'),
             cscore: col('climategrade', 'climate_score'),
             wstress: at('water_risk.water_stress_pct'), wstress50: at('water_risk.water_stress_2050_pct'), gwd: at('water_risk.groundwater_decline_cm_yr'),
             homeKw: col('solarhome', 'home_kwp'), payback: col('solarhome', 'payback_yr'), acCover: col('solarhome', 'ac_2050_covered_pct'),

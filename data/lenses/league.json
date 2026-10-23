@@ -252,6 +252,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 5.1,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 18.1,
@@ -599,6 +605,12 @@
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 7.1,
+     "unit": "per 1,000",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -948,6 +960,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 4,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 2,
@@ -1289,6 +1307,12 @@
      "value": 66.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 6.4,
+     "unit": "per 1,000",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -1638,6 +1662,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 5,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 108.7,
@@ -1973,6 +2003,12 @@
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 1.8,
+     "unit": "per 1,000",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2315,6 +2351,12 @@
      "value": 0.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 7.2,
+     "unit": "per 1,000",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -2664,6 +2706,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 4,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 3.8,
@@ -3005,6 +3053,12 @@
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 6.7,
+     "unit": "per 1,000",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -3348,6 +3402,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 3.8,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 137.5,
@@ -3683,6 +3743,12 @@
      "value": 10.8,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 5.1,
+     "unit": "per 1,000",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -4032,6 +4098,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 4.9,
+     "unit": "per 1,000",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 43.5,
@@ -4379,6 +4451,12 @@
      "value": 6.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "vitality": {
+     "label": "Businesses and services per 1,000 residents",
+     "value": 7.7,
+     "unit": "per 1,000",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",

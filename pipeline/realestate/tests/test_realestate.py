@@ -120,3 +120,18 @@ def test_metro_future_helpers():
     assert [r["id"] for r in rows] == ["Q1", "Q2", "Q3"]
     assert rows[1] == {"id": "Q2", "name": "B", "lat": 12.9, "lng": 77.6, "open": None, "state": "under_construction"}
     assert [r["id"] for r in mf.upcoming(rows)] == ["Q1", "Q2"]
+
+
+def test_places_classify_and_rows():
+    from pipeline.realestate import places as pl
+    assert pl.classify("food_and_drink", "indian_restaurant") == ("food", False, False, False)
+    assert pl.classify("services_and_business", "software_development")[1] is True
+    assert pl.classify("services_and_business", "bank_or_credit_union")[2] is True
+    assert pl.classify("services_and_business", "real_estate_service")[3] is True
+    assert pl.evenness({"food": 2}) is None
+    assert pl.evenness({k: 1 for k in pl.KINDS}) == 1.0
+    rows = pl.rows_from([(77.2, 28.6, "food_and_drink", "cafe", "Starbucks"), (77.2, 28.6, "shopping", "clothing_store", None),
+                         (77.2, 28.6, "health_care", "pharmacy", None)])
+    (row,) = rows.values()
+    assert row["places"] == 3 and row["food"] == 1 and row["shopping"] == 1 and row["health"] == 1
+    assert row["branded_pct"] == 33.3 and 0 < row["diversity"] < 1

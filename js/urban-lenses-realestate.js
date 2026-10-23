@@ -871,6 +871,58 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    // Commercial vitality from Overture places. A "high street" block is in the top 2% of the city by places; a retail
+    // gap is a block with under a quarter of the city's typical shops and eateries per resident within 1 km.
+    const VIT_KINDS = ['food', 'shopping', 'services', 'health', 'education', 'lodging', 'leisure', 'culture', 'community', 'transport'];
+    const VIT_LABEL = { food: 'food', shopping: 'shops', services: 'services', health: 'health', education: 'education', lodging: 'hotels', leisure: 'leisure', culture: 'culture', community: 'public offices', transport: 'transport' };
+    const HIGH_STREET_Q = 0.98, RETAIL_KM = 1, GAP_SHARE = 0.25, GAP_MIN_POP = 2000;
+
+    /** Commercial vitality: businesses per block, high streets, chain presence, office clusters and retail gaps. */
+    function vitality(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const pl = c['places.places'], pop = c['population.population'], br = c['places.branded_pct'];
+        const shop = c['places.shopping'], food = c['places.food'], off = c['places.offices'], agents = c['places.property_agents'];
+        if (!pl || !pop) return null;
+        const all = [], res = [];
+        let total = 0;
+        for (let i = 0; i < n; i++) { if (_fin(pl[i]) && pl[i] > 0) { all.push(i); total += pl[i]; } if (pop[i] > 0) res.push(i); }
+        if (all.length < 5 || res.length < 5) return null;
+        const density = new Float64Array(n).fill(NaN);
+        for (const i of all) density[i] = pl[i] / g.cellKm2;
+        const sorted = all.map(i => pl[i]).sort((a, b) => a - b), cut = sorted[Math.floor(HIGH_STREET_Q * (sorted.length - 1))];
+        const hs = all.filter(i => pl[i] >= cut && pl[i] >= 20);
+        const people = _sumOver(pop, res, () => true);
+        const stats = [{ label: 'Businesses and services mapped (Overture)', value: `${total.toLocaleString('en-IN')} (${_round(1000 * total / people, 1)} per 1,000 residents)`, raw: _round(1000 * total / people, 1) }];
+        let gapPeople = null;
+        if (shop && food) {
+            const retail = new Float64Array(n);
+            for (let i = 0; i < n; i++) retail[i] = (_fin(shop[i]) ? shop[i] : 0) + (_fin(food[i]) ? food[i] : 0);
+            const near = within(g, retail, RETAIL_KM), popNear = within(g, pop, RETAIL_KM), per = new Float64Array(n).fill(NaN);
+            for (const i of res) per[i] = popNear[i] > 0 ? 1000 * near[i] / popNear[i] : NaN;
+            const med = wquantile(per, pop, res.filter(i => _fin(per[i])), 0.5);
+            const gaps = res.filter(i => _fin(per[i]) && per[i] <= GAP_SHARE * med && popNear[i] >= GAP_MIN_POP);
+            gapPeople = _sumOver(pop, gaps, () => true);
+            stats.push({ label: `Shops and eateries within ${RETAIL_KM} km per 1,000 residents, median resident`, value: `${_round(med, 1)}` });
+            stats.push({ label: `Residents in retail gaps (under a quarter of that, with ${GAP_MIN_POP.toLocaleString('en-IN')}+ people within ${RETAIL_KM} km)`, value: `${_people(gapPeople)} (${_round(100 * gapPeople / people)}%)` });
+        }
+        if (br) {
+            const b = all.reduce((s, i) => s + (_fin(br[i]) ? br[i] * pl[i] / 100 : 0), 0);
+            stats.push({ label: 'Places that are chains or brands', value: `${_round(100 * b / total, 1)}%` });
+        }
+        if (off) stats.push({ label: 'Offices (IT, professional and business services)', value: `${Math.round(all.reduce((s, i) => s + (_fin(off[i]) ? off[i] : 0), 0)).toLocaleString('en-IN')}` });
+        if (agents) stats.push({ label: 'Real-estate agents and services', value: `${Math.round(all.reduce((s, i) => s + (_fin(agents[i]) ? agents[i] : 0), 0)).toLocaleString('en-IN')}` });
+        spaced(g, hs.sort((a, b) => pl[b] - pl[a]), 6).slice(0, 4).forEach((i, k) => {
+            const top = VIT_KINDS.filter(kd => c[`places.${kd}`] && _fin(c[`places.${kd}`][i])).sort((a, b) => c[`places.${b}`][i] - c[`places.${a}`][i]).slice(0, 2).map(kd => VIT_LABEL[kd]);
+            stats.push({ label: `High street ${k + 1}: ${g.codes[i]}`, value: `${Math.round(pl[i])} places${top.length ? `, mostly ${top.join(' and ')}` : ''}` });
+        });
+        return {
+            columns: { places_km2: density }, idx: all, weightKey: 'places_km2', noHotspots: true,
+            metric: { label: 'Businesses and services per 1,000 residents', value: _round(1000 * total / people, 1), unit: 'per 1,000', higherIs: 'better' },
+            headline: `About ${total.toLocaleString('en-IN')} businesses and services are mapped, ${_round(1000 * total / people, 1)} per 1,000 residents; ${hs.length} blocks form the high streets${gapPeople != null ? `, and ${_people(gapPeople)} residents live in retail gaps with few shops or eateries within ${RETAIL_KM} km` : ''}.`,
+            stats,
+        };
+    }
+
     /** Flood 2050: residents in the 1-in-100-year river or coastal flood zone, now and by 2050 (WRI Aqueduct). */
     function flood2050(fr) {
         const g = fr.grid, c = fr.cols, n = g.n;
@@ -1187,6 +1239,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['re_supply.new_floor_m2', 'flood_future.any_pct_2050', 'building_dynamics.proj_gain_pp', 'climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_per_c_2050', 'climate_future.warm_nights_2050', 'climate_future.warm_nights_per_c_2050', 'climate_future.cdd_now', 'climate_future.cdd_2050', 'climate_future.cooling_days_2050', 'surface_heat.uhi_anomaly_c', 'surface_heat.modis_night_c', 'humid_heat.humid_heat_days', 'water_risk.water_stress_2050_pct', 'water_risk.groundwater_decline_cm_yr', 'population.population'],
             method: 'New floor area 2016–2023 (Open Buildings 2.5D Temporal, from the Building hotspots lens) is weighted by the share of each block inside the 1-in-100-year river or sea flood zone by 2050 (WRI Aqueduct). The tilt compares that share with the share of all land in the zone: above 1 means new building leans toward flood land. Projected built-up gain 2020→2030 is GHSL. Grade D/E uses the Climate 2050 grade. Aqueduct is 1 km with no defences, so blocks partly in the zone count in proportion.',
             refs: 'Rentschler et al. 2023 (Nature, global settlement growth in flood zones); Sirko et al. 2023 (Open Buildings 2.5D Temporal); Pesaresi et al. 2023 (GHSL); Ward et al. 2020 (Aqueduct Floods)' },
+        { id: 'vitality', title: 'Commercial vitality', icon: '🛍️',
+            question: 'Where are the high streets, where do chains and offices cluster, and which dense areas lack shops?',
+            field: { key: 'places_km2', label: 'Businesses and services per km²', unit: 'per km²', higherIs: 'better', ramp: 'viridis' },
+            needs: ['places.places', 'places.food', 'places.shopping', 'places.services', 'places.health', 'places.education', 'places.lodging', 'places.leisure', 'places.culture', 'places.community', 'places.transport', 'places.offices', 'places.property_agents', 'places.branded_pct', 'population.population'],
+            method: `Overture Maps places (confidence ≥ 0.6, not closed) counted per block by Overture's taxonomy. High streets: blocks in the top ${100 - HIGH_STREET_Q * 100}% by places (at least 20). Retail gap: shops plus eateries within ${RETAIL_KM} km per 1,000 residents within ${RETAIL_KM} km below a quarter of the city's median resident, where at least ${GAP_MIN_POP.toLocaleString('en-IN')} people live within ${RETAIL_KM} km. Overture follows online listings, so informal markets and older bazaars are under-counted: read gaps as a lead to check on the ground.`,
+            refs: 'Overture Maps Foundation places theme (CDLA-Permissive-2.0); Jacobs 1961 (mixed uses); Hidalgo et al. 2020 (amenity mix and urban vitality)' },
         { id: 'encroach', equity: true, title: 'Encroachment watch', icon: '🚧',
             question: 'Which lakes, floodplains and green areas have been lost to building, and where is it still happening?',
             field: { key: 'encroach_score', label: 'Encroachment score (former water, floodplain and tree loss built up)', unit: 'points', higherIs: 'worse', ramp: 'reds' },
@@ -1195,7 +1253,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
 })();
 

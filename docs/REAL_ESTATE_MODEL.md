@@ -362,3 +362,29 @@ The lens also reports floor area in climate grade D/E blocks and GHSL's projecte
 In Chennai, 71% of the built-up land GHSL projects to 2030 also falls in the zone.
 
 Bengaluru has almost no land in Aqueduct's zone. Its flooding comes from drains and lakes, which the Waterlogging lens covers.
+
+## Businesses and services (`places`, lens `vitality`)
+
+`pipeline/realestate/places.py` counts Overture Maps places in each L7 block. It reads the places theme with DuckDB, keeps places with confidence ≥ 0.6 that are not marked closed, and groups them with Overture's level-1 taxonomy:
+
+- **Groups:** food, shopping, services, health, education, lodging, leisure, culture, community and transport.
+- **Keyword counts:** offices, finance and real-estate agents.
+- **Brand share** and **business mix** (Shannon evenness).
+
+All 13 cities hold about 6.7 lakh places, of which Delhi has 1.46 lakh. The data takes about 0.9 MB.
+
+The `vitality` lens reports:
+
+- **High streets:** the top 2% of blocks by number of places.
+- **Chain share and office counts.**
+- **Retail gaps:** places where fewer shops and eateries lie within 1 km per 1,000 residents than a quarter of the city median, and at least 2,000 people live within 1 km.
+
+| City | Residents in retail gaps |
+|---|---|
+| Delhi | 33.7 lakh (11%) |
+| Bengaluru | 8.7 lakh |
+| Mumbai | 6 lakh |
+
+Overture follows online listings, so informal markets are under-counted. Treat gaps as leads to check on the ground.
+
+The property report lists the block's businesses under Neighbourhood. The bake runs in the precompute-cells workflow.
