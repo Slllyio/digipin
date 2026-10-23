@@ -101,7 +101,7 @@ Each item gives four things:
 52. Sewage treatment plants and capacity | OSM/Wikidata | sanitation
 53. Hospitals with beds (Overture + OSM beds tag + Wikidata) | S3/OSM | health capacity
 54. ✅ Pharmacies and diagnostics (Overture) | S3 | health access
-55. Dengue/malaria risk proxy (standing water + temperature + humidity) | EE | vector lens
+55. ✅ Dengue/malaria risk proxy (standing water + temperature + rain; mosquito lens) | EE | vector lens
 56. Heat-health mortality estimate (Gasparrini ERFs on hot days) | derived | heat deaths lens
 57. ✅ Air-pollution premature deaths (GBD PM2.5 IER) | derived | air deaths lens
 58. Walkable shade on routes to clinics | derived | shade lens extension

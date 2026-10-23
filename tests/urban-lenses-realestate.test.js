@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -583,6 +583,21 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.protected_growth_pp[0]).toBe(20);
         expect(r.stats.find(x => /Building inside 1/.test(x.label)).value).toMatch(/^\+20 points/);
         expect(L._lenses.greenbelt(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('mosquito: warm wet months, standing water and crowding', () => {
+        const steps = Array.from({ length: 13 }, (_, k) => `${2025 + Math.floor(k / 12)}-${String(k % 12 + 1).padStart(2, '0')}`);
+        const f = L.frameFrom(codes, { ...base, 'waterlogging.waterlogging_index': codes.map((_, i) => (i === 0 ? 100 : 0)), 'population.density_km2': codes.map((_, i) => (i === 0 ? 50000 : 1000)) });
+        const warm = steps.map((_, k) => (k >= 5 && k <= 10 ? 30 : 12));             // Jun–Nov warm
+        f.cols['lst_monthly.lst_day_c@series'] = codes.map(() => warm);
+        f.cols['lst_monthly.lst_night_c@series'] = codes.map(() => warm);
+        f.cols['rain_monthly.rain_mm@series'] = codes.map(() => steps.map((_, k) => (k >= 5 && k <= 9 ? 100 : 0)));   // wet Jun–Oct, Nov by lag
+        f.steps = { lst_monthly: steps, rain_monthly: steps };
+        const r = L._lenses.mosquito(f, {});
+        expect(r.columns.mosquito_months[0]).toBe(6);
+        expect(r.stats[1].value).toBe('Jun, Jul, Aug, Sep, Oct, Nov');
+        expect(r.columns.mosquito_risk[0]).toBeGreaterThan(r.columns.mosquito_risk[1]);
+        expect(L._lenses.mosquito(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

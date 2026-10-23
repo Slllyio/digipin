@@ -939,3 +939,15 @@ The `landuse` dataset now carries `protected_pct` and `esz_pct`. Protected land 
 | Mumbai | 89.7 km² | 0.37 km² (0.4%) | 75.3 km², 2.7% | |
 
 Delhi's new building clusters in the Asola-Bhatti eco-sensitive zone and along Sangam Vihar. Boundaries are OpenStreetMap's, not the gazette notification.
+
+## Mosquito season and breeding risk (`mosquito` lens)
+
+Aedes aegypti, the dengue and chikungunya mosquito, transmits between about 18 and 34 °C, with a peak near 29 °C (Mordecai et al. 2017). For each of the last 12 months in `lst_monthly`, a block's month is suitable when the mean of day and night land surface temperature lies in that range and that month or the one before had at least 40 mm of rain (`rain_monthly`, CHIRPS). Land surface temperature is a rough stand-in for air temperature. The score is 40% suitable months, 30% waterlogging index and 30% within-city density percentile.
+
+| City | Suitable months (per resident) | People in blocks scoring 70+ |
+|---|---|---|
+| Kolkata | 8.7 (Mar–Nov) | 39.9 lakh (29%) |
+| Chennai | 8.1 | 6.8 lakh (8%) |
+| Delhi | 6.9 (May–Nov) | 2.1 lakh (0.7%) |
+
+It is an index of breeding conditions, not of cases. Water storage in homes, drainage and fogging matter as much and are not in the data.

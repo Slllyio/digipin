@@ -5,7 +5,7 @@
 const UrbanLensesPlanning = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people, _sumOver, within } = UrbanLenses._kit;
+    const { _fin, _round, _people, _sumOver, within, wquantile } = UrbanLenses._kit;
 
     const SPACING_KM = 1.5, TOP = 5;
 
@@ -251,7 +251,71 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Mosquito season and breeding risk. Aedes aegypti (dengue, chikungunya) transmits between about 18 and 34 °C
+    // with a peak near 29 °C (Mordecai et al. 2017). A month is suitable when the mean of day and night land surface
+    // temperature, a rough air-temperature proxy, is in that range and that month or the one before had RAIN_WET mm.
+    // Risk = 40% suitable months of the last 12, 30% waterlogging index, 30% density percentile.
+    const AEDES_MIN = 18, AEDES_MAX = 34, RAIN_WET = 40, MOSQ_TOP = 70;
+
+    function mosquito(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const day = c['lst_monthly.lst_day_c@series'], night = c['lst_monthly.lst_night_c@series'], rain = c['rain_monthly.rain_mm@series'];
+        const wl = c['waterlogging.waterlogging_index'], dens = c['population.density_km2'];
+        if (!day || !night || !rain || !pop) return null;
+        const steps = (fr.steps && fr.steps.lst_monthly) || [];
+        const num = x => (x == null ? NaN : Number(x));
+        const idx = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0 && day[i] && night[i] && rain[i]) idx.push(i);
+        if (idx.length < 5 || steps.length < 13) return null;
+        const months = new Float64Array(n).fill(NaN), byMonth = new Array(12).fill(0), seen = new Array(12).fill(0);
+        const T = day[idx[0]].length;
+        for (const i of idx) {
+            let k = 0, ok = 0;
+            for (let t = Math.max(1, T - 12); t < T; t++) {
+                const tm = (num(day[i][t]) + num(night[i][t])) / 2, r = Math.max(num(rain[i][t]) || 0, num(rain[i][t - 1]) || 0);
+                if (!Number.isFinite(tm)) continue;
+                ok++;
+                const m = Number(String(steps[t] || '').slice(5, 7)) - 1;
+                const yes = tm >= AEDES_MIN && tm <= AEDES_MAX && r >= RAIN_WET;
+                if (yes) k++;
+                if (m >= 0) { seen[m] += pop[i]; if (yes) byMonth[m] += pop[i]; }
+            }
+            if (ok >= 8) months[i] = k * 12 / ok;
+        }
+        const scored = idx.filter(i => _fin(months[i]));
+        if (scored.length < 5) return null;
+        const dSorted = dens ? scored.map(i => dens[i]).filter(_fin).sort((a, b) => a - b) : [];
+        const dPct = i => { if (!dens || !_fin(dens[i]) || !dSorted.length) return 50; let lo = 0, hi = dSorted.length; while (lo < hi) { const m = (lo + hi) >> 1; if (dSorted[m] < dens[i]) lo = m + 1; else hi = m; } return 100 * lo / dSorted.length; };
+        const risk = new Float64Array(n).fill(NaN);
+        for (const i of scored) risk[i] = 0.4 * (months[i] / 12 * 100) + 0.3 * (wl && _fin(wl[i]) ? Math.min(100, wl[i]) : 50) + 0.3 * dPct(i);
+        const all = _sumOver(pop, scored, () => true), top = scored.filter(i => risk[i] >= MOSQ_TOP), pTop = _sumOver(pop, top, () => true);
+        const meanMonths = scored.reduce((a, i) => a + months[i] * pop[i], 0) / Math.max(all, 1);
+        const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const season = byMonth.map((v, m) => (seen[m] ? v / seen[m] : 0)).map((v, m) => [MON[m], v]).filter(([, v]) => v >= 0.5).map(([m]) => m);
+        const stats = [
+            { label: 'Mosquito-suitable months in the last 12 (per resident)', value: `${_round(meanMonths, 1)}` },
+            { label: 'Months suitable for most residents', value: season.length ? season.join(', ') : 'none' },
+            { label: `People in high-risk blocks (score ${MOSQ_TOP}+)`, value: `${_people(pTop)} (${_round(100 * pTop / Math.max(all, 1), 1)}%)`, raw: Math.round(pTop) },
+        ];
+        spaced(g, top, Float64Array.from(risk, (x, i) => (_fin(x) ? x * 1e6 + (pop[i] || 0) : NaN))).slice(0, TOP).forEach((i, k) => stats.push({ label: `High risk ${k + 1}: ${g.codes[i]}`,
+            value: `score ${_round(risk[i])}; ${_round(months[i], 1)} suitable months${wl && _fin(wl[i]) ? `, waterlogging ${_round(wl[i])}` : ''}; ${_people(pop[i])} residents` }));
+        const q = wquantile(risk, pop, scored, 0.5);
+        return {
+            columns: { mosquito_risk: risk, mosquito_months: months }, idx: scored, weightKey: 'mosquito_risk', noHotspots: true,
+            metric: { label: 'People in high mosquito-breeding-risk blocks', value: Math.round(pTop), unit: 'people', higherIs: 'worse' },
+            headline: `The average resident lived through ${_round(meanMonths, 1)} months in the last year warm and wet enough for Aedes mosquitoes; ${_people(pTop)} people live in high-risk blocks where that season meets standing water and crowding (median score ${_round(q)}). This is a breeding-conditions index, not a count of dengue cases.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'mosquito', equity: true, title: 'Mosquito season and breeding risk', icon: '🦟',
+            question: 'Where and when are conditions right for dengue mosquitoes?',
+            field: { key: 'mosquito_risk', label: 'Mosquito breeding-conditions score', unit: '0-100', higherIs: 'worse', ramp: 'reds', domain: [20, 90] },
+            extra: [{ key: 'mosquito_months', label: 'Months in the last 12 warm and wet enough for Aedes', unit: 'months', higherIs: 'worse', ramp: 'heat', domain: [0, 8] }],
+            needs: ['lst_monthly.lst_day_c@series', 'lst_monthly.lst_night_c@series', 'rain_monthly.rain_mm@series', 'waterlogging.waterlogging_index', 'population.density_km2', 'population.population'],
+            method: `A month counts as suitable for Aedes aegypti, the dengue and chikungunya mosquito, when the mean of MODIS day and night land surface temperature (a rough proxy for air temperature) lies between ${AEDES_MIN} and ${AEDES_MAX} °C, the transmission range in Mordecai et al. 2017, and that month or the one before had ${RAIN_WET} mm of CHIRPS rain for breeding sites. Score = 40% suitable months of the last 12, 30% waterlogging index (standing water after rain), 30% within-city population density percentile (Aedes thrives in crowded, container-rich streets). An index of breeding conditions, not of cases: water storage habits, drainage and fogging matter as much and are not in the data.`,
+            refs: 'Mordecai et al. 2017 (PLoS NTD, thermal limits of Aedes transmission); CHIRPS; MODIS LST; NCVBDC dengue situation reports' },
         { id: 'greenbelt', equity: false, title: 'Building inside protected forests', icon: '🌳',
             question: 'How much building is creeping into parks, sanctuaries, reserve forests and their buffers?',
             field: { key: 'protected_growth_pp', label: 'New built-up 2016→2023 inside protected land or its eco-sensitive zone', unit: 'points', higherIs: 'worse', ramp: 'reds', domain: [0, 30] },
@@ -289,7 +353,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 
