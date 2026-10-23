@@ -19,7 +19,7 @@ const PropertyReport = (() => {
         'building_dynamics.settled_year', 'building_dynamics.highrise_pct', 'building_dynamics.nonres_pct', 'building_dynamics.accel',
         'building_dynamics.dw_built_change', 'building_dynamics.height_change_m', 'traffic_noise.lden_db', 'wealth.rwi',
         'air_trend.no2_change_pct', 'air_trend.pm25_2022', 'haze_mix.dust_share_pct', 'haze_mix.smoke_share_pct', 'haze_mix.sulphate_share_pct',
-        'haze_mix.dust_days_yr', 'subsoil.clay_60cm_pct'];
+        'haze_mix.dust_days_yr', 'subsoil.clay_60cm_pct', 'flight_paths.under_path', 'flight_paths.path_km'];
     const DRIVERS = { jobs: 'Job reach', metro: 'Metro walk', amenity: 'Shops and services', neigh: 'Neighbourhood and plot size',
         green: 'Green cover', risk: 'Flood and waterlogging', noise: 'Road noise' };
 
@@ -95,6 +95,7 @@ const PropertyReport = (() => {
                 row('Water stress (basin, WRI Aqueduct)', fin(v.wstress) ? `${v.wstress >= 100 ? `${r1(v.wstress / 100, 1)} times renewable supply` : `${Math.round(v.wstress)}% of renewable supply`}${fin(v.wstress50) ? `; ${v.wstress50 >= 100 ? `${r1(v.wstress50 / 100, 1)} times` : `${Math.round(v.wstress50)}%`} by 2050` : ''}` : null, 'city-wide; over 80% is extremely high'),
                 row('Humid-heat days (wet-bulb 28 °C or more): now → 2050', fin(v.hum0) && fin(v.hum1) ? `${Math.round(v.hum0)} → ${Math.round(v.hum1)} a year` : null, 'sweat stops cooling the body; city-scale'),
                 row('Air: NO₂ since 2019 / PM2.5 2022', fin(v.no2chg) || fin(v.pm22) ? `${fin(v.no2chg) ? `${v.no2chg >= 0 ? '+' : ''}${Math.round(v.no2chg)}%` : '–'} / ${fin(v.pm22) ? `${Math.round(v.pm22)} µg/m³` : '–'}` : null, 'satellite; India\'s annual standard is 40 µg/m³'),
+                row('Under a flight path', fin(v.fpath) ? (v.fpath ? `yes, ${fin(v.fpkm) ? `${v.fpkm.toFixed(1)} km from the runway end` : 'within 10 km of a runway end'}` : 'no') : null, 'OpenStreetMap runways; likely overflight, not measured noise'),
                 row('Haze mix: dust / smoke / sulphate', fin(v.dust) ? `${Math.round(v.dust)}% / ${Math.round(v.smoke)}% / ${Math.round(v.sulph)}%${fin(v.dustd) ? `; ${Math.round(v.dustd)} dust-haze days a year` : ''}` : null, 'CAMS model, city scale'),
                 row('Ground: clay at 60 cm / seismic zone', fin(v.clay60) || v.zone ? `${fin(v.clay60) ? `${Math.round(v.clay60)}%${v.clay60 >= 40 ? ' (expansive black cotton soil: deeper or piled footings)' : ''}` : '–'} / ${v.zone ? `zone ${v.zone}` : '–'}` : null, 'model soil map; get a soil test'),
                 row('Groundwater table', fin(v.gwd) && v.gwd > 0 ? `falling about ${r1(v.gwd, 1)} cm a year (1990–2014 trend)` : null, 'borewells go deeper'),
@@ -175,7 +176,7 @@ const PropertyReport = (() => {
             homeKw: col('solarhome', 'home_kwp'), payback: col('solarhome', 'payback_yr'), acCover: col('solarhome', 'ac_2050_covered_pct'),
             clay60: at('subsoil.clay_60cm_pct'), zone: UrbanLenses.SEISMIC_ZONE ? UrbanLenses.SEISMIC_ZONE[city] : null,
             hum0: at('humid_future.humid_days_now'), hum1: at('humid_future.humid_days_2050'), no2chg: at('air_trend.no2_change_pct'), pm22: at('air_trend.pm25_2022'),
-            dust: at('haze_mix.dust_share_pct'), smoke: at('haze_mix.smoke_share_pct'), sulph: at('haze_mix.sulphate_share_pct'), dustd: at('haze_mix.dust_days_yr'),
+            fpath: at('flight_paths.under_path'), fpkm: at('flight_paths.path_km'), dust: at('haze_mix.dust_share_pct'), smoke: at('haze_mix.smoke_share_pct'), sulph: at('haze_mix.sulphate_share_pct'), dustd: at('haze_mix.dust_days_yr'),
             roofAlb: at('roofs.roof_albedo'), darkRoof: at('roofs.dark_roof_pct'),
             flood50: at('flood_future.any_pct_2050'), flood50now: at('flood_future.any_pct_now'),
             hotBlock: col('streetheat', 'hot_2050_block'), cddBlock: col('streetheat', 'cdd_2050_block'), islandC: col('streetheat', 'heat_island_air_c'), cdd0: at('climate_future.cdd_now'),

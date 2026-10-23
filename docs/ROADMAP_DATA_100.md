@@ -79,8 +79,8 @@ Each item gives four things:
 33. Storm-surge 100-year (GTSR, Muis 2016) | open | coastal flood detail
 34. ✅ Fire hotspots near the city (FIRMS VIIRS) | EE | crop-burning season (fires + burning lens)
 35. ✅ Stubble-burning smoke source tracker (FIRMS × wind back-trajectory) | EE | Delhi air (partly: winter share in the burning lens (no back-trajectories))
-36. Noise from aircraft (airport runways + flight paths) | OSM + derived | noise lens
-37. Light pollution sky brightness (VIIRS radiance to SQM) | EE | night-sky lens
+36. ✅ Noise from aircraft (airport runways + flight paths) | OSM + derived | noise lens
+37. ❌ Light pollution sky brightness (VIIRS radiance to SQM) | EE | night-sky lens (skipped: the Falchi 2016 atlas is CC BY-NC)
 38. Soil sealing trend (GHSL imperviousness yearly) | EE | runoff lens
 39. ✅ Urban runoff coefficient per block (sealing + slope + soil) | derived | drainage lens
 40. Drainage density (OSM drains + MERIT streams) | OSM/EE | waterlogging
@@ -165,7 +165,7 @@ Each item gives four things:
 107. Brick kilns (Sentinel-2 detections, Boyd et al.) | open | air/land
 108. Lake encroachment by year (JRC GSW yearly) | EE | encroachment extension
 109. Urban farms and community gardens | OSM | food lens
-110. Night-sky dark spots for parks | EE | leisure
+110. ❌ Night-sky dark spots for parks | EE | leisure
 
 ## G. Platform and AI (111–120)
 

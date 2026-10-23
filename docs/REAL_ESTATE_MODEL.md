@@ -776,3 +776,23 @@ This is an upper bound on commercial space, because industry and public building
 | Mumbai | 34 million m² | |
 
 For comparison, brokers count Bengaluru's Grade A office stock at about 19 million m².
+
+## Under the flight paths
+
+The `flight_paths` dataset (L7, `pipeline/realestate/flightpaths.py`) merges OpenStreetMap runway segments from Overture and keeps runways of 2,000 m or more. Military airfields are included.
+
+A block counts as under a flight path when it lies beyond a runway end, within 10 km along the extended centreline, and within 0.5 km plus 10% of the distance out to either side.
+
+The `flightpath` lens and the property report count residents in three groups:
+
+- under a path;
+- within 3 km of a runway end, where aircraft pass below about 300 m;
+- within 2 km of a runway.
+
+| City | Residents under a path | Share of residents | Within 3 km of a runway end |
+|---|---|---|---|
+| Delhi | 25 lakh | 8.6% | 2.6 lakh |
+| Chennai | 8.7 lakh | 10% | |
+| Mumbai | 5.7 lakh | | 2.3 lakh |
+
+This marks where low overflights are likely. It does not measure noise.

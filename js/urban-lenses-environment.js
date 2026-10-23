@@ -885,6 +885,35 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Under the flight paths (pipeline/realestate/flightpaths.py). LOW_KM out is where aircraft are under ~300 m.
+    const LOW_KM = 3, RUNWAY_NEAR_KM = 2;
+
+    function flightpath(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const up = c['flight_paths.under_path'], pk = c['flight_paths.path_km'], rk = c['flight_paths.runway_km'], pop = c['population.population'];
+        if (!up || !pop) return null;
+        const res = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0 && _fin(up[i])) res.push(i);
+        if (res.length < 5 || !res.some(i => up[i] === 1)) return null;
+        const people = _sumOver(pop, res, () => true);
+        const under = _sumOver(pop, res, i => up[i] === 1), low = _sumOver(pop, res, i => up[i] === 1 && pk && _fin(pk[i]) && pk[i] <= LOW_KM);
+        const near = rk ? _sumOver(pop, res, i => _fin(rk[i]) && rk[i] <= RUNWAY_NEAR_KM) : 0;
+        const stats = [
+            { label: 'Residents under an approach or departure path (within 10 km of a runway end)', value: `${_people(under)} (${_round(100 * under / people)}%)`, raw: Math.round(under) },
+            { label: `Of them within ${LOW_KM} km of the runway end (aircraft below about 300 m)`, value: _people(low) },
+            { label: `Residents within ${RUNWAY_NEAR_KM} km of a jet runway`, value: _people(near) },
+        ];
+        const w = Float64Array.from({ length: n }, (_, i) => (up[i] === 1 && pk && _fin(pk[i]) ? pop[i] / Math.max(0.5, pk[i]) : 0));
+        spaced(g, res.filter(i => w[i] > 0), w).slice(0, 4).forEach((i, k) => stats.push({ label: `Most overflown ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(pk[i], 1)} km from the runway end; ${_people(pop[i])} residents` }));
+        return {
+            columns: { under_path: up, path_km: pk || up }, idx: res, weightKey: 'under_path', noHotspots: true,
+            metric: { label: 'Residents under flight paths', value: _round(100 * under / people), unit: '%', higherIs: 'worse' },
+            headline: `${_people(under)} residents (${_round(100 * under / people)}%) live under an approach or departure path; ${_people(low)} of them within ${LOW_KM} km of a runway end, where aircraft pass below about 300 m.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -1131,6 +1160,13 @@ const UrbanLensesEnvironment = (() => {
             needs: ['building_stock.cover_2023_pct', 'building_stock.height_2023_m', 'building_dynamics.nonres_pct', 'places.offices', 'places.shopping', 'places.food', 'population.population'],
             method: `Floor area = Open Buildings 2.5D 2023 roof cover × block area × storeys (height ÷ ${STOREY_M} m, at least 1). Non-residential = floor × GHSL 2020 non-residential share of built-up. That floor is split into office-like and shop-and-eatery-like in proportion to the block's listed offices against shops and eateries (Overture), half and half where none are listed. Industry, schools, hospitals and government buildings are all non-residential, so this is an upper bound on commercial space.`,
             refs: 'Sirko et al. 2023 (Open Buildings 2.5D); Pesaresi et al. 2023 (GHSL built-up characteristics); Overture Maps Foundation places' },
+        { id: 'flightpath', equity: true, title: 'Under the flight paths', icon: '✈️',
+            question: 'Who lives under the approach and departure paths, and where do aircraft fly lowest?',
+            field: { key: 'under_path', label: 'Under an approach or departure path', unit: 'yes/no', higherIs: 'worse', ramp: 'reds', domain: [0, 1] },
+            extra: [{ key: 'path_km', label: 'Distance out from the runway end', unit: 'km', higherIs: 'better', ramp: 'heat', domain: [0, 10] }],
+            needs: ['flight_paths.under_path', 'flight_paths.path_km', 'flight_paths.runway_km', 'population.population'],
+            method: `Runways of 2,000 m or more from OpenStreetMap (via Overture), merged from segments; military airfields are included. A block is under a path when it lies beyond a runway end, within 10 km along the extended centreline, and within 0.5 km plus 10% of the distance out to either side. On a 3° glide slope aircraft are about 50 m up per km out, so under ${LOW_KM} km they pass below about 300 m. Real tracks turn after take-off and change with wind, and traffic per runway is not included, so this marks likely overflight, not measured noise.`,
+            refs: 'ICAO Doc 8168 (PANS-OPS approach geometry); Basner et al. 2017 (aviation noise impacts); Overture Maps base theme (OpenStreetMap runways)' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -1146,7 +1182,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();
