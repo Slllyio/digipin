@@ -59,7 +59,7 @@ Each item gives four things:
 16. ✅ Overture places per block (shops, food, offices, health, education, brands) | S3 | Commercial vitality
 17. ✅ Retail catchment (Huff model on places + population) | derived | retail siting
 18. ✅ Mall and big-box presence (Overture shopping_mall, chains) | S3 | retail anchor lens
-19. Petrol pumps and EV chargers combined fuel map | S3/OSM | mobility energy
+19. ✅ Petrol pumps and EV chargers combined fuel map | S3/OSM | mobility energy (ev_charging.fuel and places.fuel; EV lens)
 20. Land-pooling and master-plan zones (where states publish GIS) | open GIS | zoning overlay
 
 ## B. Climate, hazards and environment (21–45)
@@ -75,7 +75,7 @@ Each item gives four things:
 29. ✅ Lightning flash density (NASA LIS/OTD climatology) | NASA | lightning risk
 30. ✅ Dust AOD and dust-storm days (CAMS instead of MERRA-2) | NASA | dust lens
 31. ✅ Wet-bulb 2050 (NEX-GDDP hurs + tasmax) | EE | humid heat future (humid_future (wet-bulb now and 2050))
-32. Sea-level rise 2100 bathtub on FABDEM (connected) | EE community | coastal long view
+32. ✅ Sea-level rise 2100 bathtub on FABDEM (connected) | EE community | coastal long view (covered by flood_future coastal 2050/2080 fields in the flood2050 lens)
 33. Storm-surge 100-year (GTSR, Muis 2016) | open | coastal flood detail
 34. ✅ Fire hotspots near the city (FIRMS VIIRS) | EE | crop-burning season (fires + burning lens)
 35. ✅ Stubble-burning smoke source tracker (FIRMS × wind back-trajectory) | EE | Delhi air (partly: winter share in the burning lens (no back-trajectories))
@@ -117,7 +117,7 @@ Each item gives four things:
 65. Metro ridership by station (DMRC/BMRCL open data where published) | open | transit lens
 66. Bus GTFS for Delhi (parked for key), Chennai, Hyderabad | key/open | bus frequency
 67. Railway suburban stations with frequency (Mumbai locals timetable) | open | rail access
-68. Airport access time | derived | travel lens
+68. ✅ Airport access time | derived | travel lens (`airport` lens)
 69. Truck routes and no-entry hours | OSM | freight
 70. ✅ Parking supply (existing parking lens) from OSM + places | OSM/S3 | parking lens extension
 71. Bike-share docks (Yulu/Bounce where open) | API | micro-mobility
@@ -139,7 +139,7 @@ Each item gives four things:
 84. ✅ Night-time economy (VIIRS late-night radiance × food/leisure places) | EE/S3 | night economy
 85. Tourism footfall proxy (Wikipedia page views of landmarks + hotels) | API | tourism lens
 86. ✅ Landmark and heritage sites (Wikidata, ASI list; heritage lens with AMASR 100 m / 300 m limits) | API | heritage lens
-87. Religious places and festival crowd zones | S3/OSM | crowd lens
+87. ✅ Religious places and festival crowd zones | S3/OSM | crowd lens (`crowds` lens)
 88. Schools by board and level (UDISE+ where open) | open | education lens
 89. ✅ Colleges and coaching hubs (Overture) | S3 | student housing demand
 90. ✅ Bank branches and ATMs per resident (financial inclusion) | S3 | finance lens

@@ -420,6 +420,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 30,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 532,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "cooling": {
      "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
      "value": 573549,
@@ -976,6 +988,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 53.2,
      "unit": "%",
+     "higherIs": null
+    },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 44,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 1675,
+     "unit": "blocks",
      "higherIs": null
     },
     "cooling": {
@@ -1542,6 +1566,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 40,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 494,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "cooling": {
      "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
      "value": 309919,
@@ -2098,6 +2134,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 65.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 36,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 857,
+     "unit": "blocks",
      "higherIs": null
     },
     "cooling": {
@@ -2664,6 +2712,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 45,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 3610,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "cooling": {
      "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
      "value": 2073184,
@@ -3190,6 +3250,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 70.5,
      "unit": "%",
+     "higherIs": null
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 96,
+     "unit": "blocks",
      "higherIs": null
     },
     "cooling": {
@@ -3736,6 +3802,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 57.6,
      "unit": "%",
+     "higherIs": null
+    },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 35,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 1325,
+     "unit": "blocks",
      "higherIs": null
     },
     "cooling": {
@@ -4302,6 +4380,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 32,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 1976,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "cooling": {
      "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
      "value": 922841,
@@ -4846,6 +4936,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 63.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 44,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 866,
+     "unit": "blocks",
      "higherIs": null
     },
     "cooling": {
@@ -5406,6 +5508,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 46,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 658,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "cooling": {
      "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
      "value": 282428,
@@ -5950,6 +6064,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 62.7,
      "unit": "%",
+     "higherIs": null
+    },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 42,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 711,
+     "unit": "blocks",
      "higherIs": null
     },
     "cooling": {
@@ -6516,6 +6642,18 @@
      "unit": "%",
      "higherIs": null
     },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 39,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 804,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "cooling": {
      "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
      "value": 673676,
@@ -7078,6 +7216,18 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 59.5,
      "unit": "%",
+     "higherIs": null
+    },
+    "airport": {
+     "label": "Median resident's peak-hour drive to the airport",
+     "value": 40,
+     "unit": "min",
+     "higherIs": "worse"
+    },
+    "crowds": {
+     "label": "Dense blocks among the city's busiest gathering clusters",
+     "value": 974,
+     "unit": "blocks",
      "higherIs": null
     },
     "cooling": {

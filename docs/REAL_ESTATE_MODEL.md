@@ -969,3 +969,11 @@ The 1975 epoch comes from coarse early Landsat imagery and is the least certain;
 Heat action plans (Ahmedabad from 2013, NDMA guidelines 2019) open public buildings with shade, water and cooling to people without a cool home. Hot blocks are the hottest quarter of residents by MODIS summer daytime land surface temperature (population-weighted 75th percentile within the city). Candidate cooling centres are Overture Maps libraries, shopping malls and community centres (`places.libraries`, `places.malls`, `places.community_centres`); a hot block is unserved when none lies within 1 km. Places of worship (`places.worship`, every `*_place_of_worship` category) are counted separately as a possible stand-in. Five sites are picked from unserved hot blocks by residents plus three times the residents aged 60 and over, at least 1.5 km apart.
 
 First run: Ahmedabad 5.7 lakh people (28.5% of the hottest quarter, 60,721 aged 60+) and Chennai 7.1 lakh have no candidate site within 1 km. Overture undercounts government libraries and community halls, so check ward records before siting.
+
+## Festival and crowd zones (`crowds` lens)
+
+Gathering places are Overture places of worship (every faith's `*_place_of_worship` category), shopping malls, culture and leisure, counted within 0.5 km. Crowd zones are lived-in blocks in the city's top 10% by that count that are also denser than the city median. Police stations within 2 km and fire stations within 3 km are checked from Overture, which undercounts both. First run: Delhi 3,610 crowd-zone blocks (77.5 lakh residents, 933 without listed police or fire cover), Mumbai 804, Kolkata 658. It finds likely crowd zones, not event sizes; NDMA's 2014 crowd-management guide asks for venue-by-venue plans.
+
+## Getting to the airport (`airport` lens)
+
+Straight-line distance to the nearest jet runway (`flight_paths.runway_km`, OSM runways of 1.8 km or more, only blocks within 30 km) × a 1.35 road detour, at 20 km/h peak and 35 km/h off-peak. Median resident at peak: Delhi 45 min, Mumbai 39 min, Kolkata 46 min. Not routed; the nearest runway can be an air force base.

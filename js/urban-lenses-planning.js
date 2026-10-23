@@ -391,7 +391,85 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Crowd zones. Festivals, fairs and weekend markets draw crowds to places of worship, malls, cultural sites and
+    // leisure spots; the crush risk rises where those cluster in dense, crowded streets far from police and fire cover.
+    const CROWD_KM = 0.5, CROWD_KINDS = ['worship', 'malls', 'culture', 'leisure'], POLICE_KM = 2, FIRE_KM = 3, CROWD_Q = 0.9;
+
+    function crowds(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], dens = c['population.density_km2'];
+        if (!pop || !dens || CROWD_KINDS.some(k => !c[`places.${k}`])) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const pull = within(g, Float64Array.from({ length: n }, (_, i) => CROWD_KINDS.reduce((a, k) => a + v(c[`places.${k}`], i), 0)), CROWD_KM);
+        const shrines = within(g, Float64Array.from({ length: n }, (_, i) => v(c['places.worship'], i)), CROWD_KM);
+        const police = c['places.police'] ? within(g, Float64Array.from({ length: n }, (_, i) => v(c['places.police'], i)), POLICE_KM) : null;
+        const fire = c['places.fire_stations'] ? within(g, Float64Array.from({ length: n }, (_, i) => v(c['places.fire_stations'], i)), FIRE_KM) : null;
+        const pq = wquantile(pull, null, idx, CROWD_Q), dq = wquantile(dens, null, idx, 0.5);
+        if (!_fin(pq) || pq <= 0) return null;
+        const score = new Float64Array(n).fill(NaN);
+        for (const i of idx) score[i] = Math.round(100 * Math.min(1, pull[i] / (2 * pq)) * (v(dens, i) >= dq ? 1 : 0.6));
+        const zones = idx.filter(i => pull[i] >= pq && v(dens, i) >= dq);
+        const far = zones.filter(i => (police && police[i] <= 0) || (fire && fire[i] <= 0));
+        const pz = _sumOver(pop, zones, () => true);
+        const stats = [
+            { label: `Gathering places within ${CROWD_KM} km at the city's top 10% of blocks`, value: `${_round(pq)} or more` },
+            { label: 'Crowd zones (that many gathering places and denser than the city median)', value: `${zones.length} blocks, ${_people(pz)} residents` },
+            { label: `…with no police station within ${POLICE_KM} km or fire station within ${FIRE_KM} km`, value: `${far.length} blocks` },
+        ];
+        spaced(g, zones, pull).forEach((i, k) => stats.push({
+            label: `Crowd zone ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(pull[i])} gathering places within ${CROWD_KM} km (${_round(shrines[i])} of worship); ${_round(v(dens, i))} people per km²${far.includes(i) ? '; far from police or fire cover' : ''}` }));
+        return {
+            columns: { crowd_score: score, gathering_places: pull }, idx, weightKey: 'crowd_score', noHotspots: true,
+            metric: { label: 'Dense blocks among the city\'s busiest gathering clusters', value: zones.length, unit: 'blocks', higherIs: null },
+            headline: `${zones.length} dense blocks, home to ${_people(pz)} people, sit among the city's busiest clusters of temples, mosques, churches, gurdwaras, malls and leisure spots, where festival and weekend crowds build up; ${far.length} of them have no police station within ${POLICE_KM} km or fire station within ${FIRE_KM} km listed. Plan crowd routes, barricades and medical posts for these first.`,
+            stats,
+        };
+    }
+
+    // Airport access. Straight-line distance to the nearest jet runway, a road detour factor and typical peak and
+    // off-peak car speeds give a rough door-to-terminal drive time.
+    const DETOUR = 1.35, PEAK_KMH = 20, OFF_KMH = 35, AIR_NEAR_MIN = 45;
+
+    function airport(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], rk = c['flight_paths.runway_km'];
+        if (!pop || !rk) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(pop[i]) && pop[i] > 0 && _fin(rk[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const peak = new Float64Array(n).fill(NaN), off = new Float64Array(n).fill(NaN);
+        for (const i of idx) { peak[i] = Math.round(60 * rk[i] * DETOUR / PEAK_KMH); off[i] = Math.round(60 * rk[i] * DETOUR / OFF_KMH); }
+        const all = _sumOver(pop, idx, () => true), med = wquantile(peak, pop, idx, 0.5), medOff = wquantile(off, pop, idx, 0.5);
+        const bands = [30, 45, 60, 90].map(m => [m, _sumOver(pop, idx, i => peak[i] <= m)]);
+        const stats = bands.map(([m, p]) => ({ label: `Within ${m} min of the runway at peak`, value: `${_people(p)} (${_round(100 * p / Math.max(all, 1))}%)` }));
+        stats.push({ label: 'Median resident, peak / off-peak', value: `${_round(med)} / ${_round(medOff)} min` });
+        stats.push({ label: 'Living within 2 km of a runway (noise and height limits)', value: _people(_sumOver(pop, idx, i => rk[i] <= 2)) });
+        const near = bands.find(b => b[0] === AIR_NEAR_MIN)[1];
+        return {
+            columns: { airport_peak_min: peak, airport_offpeak_min: off }, idx, weightKey: 'airport_peak_min', noHotspots: true,
+            metric: { label: 'Median resident\'s peak-hour drive to the airport', value: Math.round(med), unit: 'min', higherIs: 'worse' },
+            headline: `Half the city is within about ${_round(med)} minutes of a jet runway at peak hours (${_round(medOff)} off-peak); ${_round(100 * near / Math.max(all, 1))}% of residents can reach it in ${AIR_NEAR_MIN} minutes. These are rough drive times from straight-line distance, not routed, and the nearest runway can be an air force base.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'airport', equity: false, title: 'Getting to the airport', icon: '🛫',
+            question: 'How long is the drive to the airport from each neighbourhood?',
+            field: { key: 'airport_peak_min', label: 'Rough peak-hour drive to the nearest jet runway', unit: 'min', higherIs: 'worse', ramp: 'heat', domain: [10, 120] },
+            extra: [{ key: 'airport_offpeak_min', label: 'Rough off-peak drive', unit: 'min', higherIs: 'worse', ramp: 'heat', domain: [5, 90] }],
+            needs: ['flight_paths.runway_km', 'population.population'],
+            method: `Distance from each block centre to the nearest jet runway (OpenStreetMap runways of 1.8 km or more, as in the flight-path layer), times a road detour factor of ${DETOUR}, at ${PEAK_KMH} km/h peak and ${OFF_KMH} km/h off-peak, typical average car speeds reported for large Indian cities. Not routed: expressways and elevated roads make some trips much faster, and the nearest runway can be an air force base rather than the passenger airport.`,
+            refs: 'OpenStreetMap runways; Boston Consulting Group / Uber 2018 urban mobility in India; WorldPop' },
+        { id: 'crowds', equity: false, title: 'Festival and crowd zones', icon: '🪔',
+            question: 'Where do festival and weekend crowds build up, and is help close by?',
+            field: { key: 'crowd_score', label: 'Crowd-pull score (gathering places nearby × density)', unit: '0-100', higherIs: null, ramp: 'heat', domain: [0, 100] },
+            extra: [{ key: 'gathering_places', label: `Places of worship, malls, culture and leisure within ${CROWD_KM} km`, unit: 'places', higherIs: null, ramp: 'viridis', domain: [0, 60] }],
+            needs: ['places.worship', 'places.malls', 'places.culture', 'places.leisure', 'places.police', 'places.fire_stations', 'population.density_km2', 'population.population'],
+            method: `Gathering places are Overture Maps places of worship (every faith's category), shopping malls, culture (museums, theatres, landmarks) and leisure (parks, sports, entertainment), counted within ${CROWD_KM} km. Crowd zones are lived-in blocks in the city's top 10% by that count that are also denser than the city median: where processions, festival darshan, Friday prayers and weekend shopping meet narrow, crowded streets. Score = count ÷ twice the 90th percentile (capped), scaled to 60% outside dense blocks. Police within ${POLICE_KM} km and fire stations within ${FIRE_KM} km are from Overture and undercount. It locates likely crowd zones, not event sizes; NDMA crowd-management guidance asks for venue-by-venue plans.`,
+            refs: 'NDMA Managing Crowds at Events and Venues of Mass Gathering (2014); Overture Maps places; WorldPop' },
         { id: 'cooling', equity: true, title: 'Cooling centres for heat waves', icon: '🧊',
             question: 'Where should cooling centres open in a heat wave?',
             field: { key: 'cooling_gap', label: 'Hot block with (1) or without (2) a candidate cooling centre nearby', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
@@ -450,7 +528,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

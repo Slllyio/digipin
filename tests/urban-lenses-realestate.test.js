@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -622,6 +622,25 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.cooling_gap[codes.length - 1]).toBe(0);
         expect(r.stats.some(x => /^Cooling centre site 1/.test(x.label))).toBe(true);
         expect(L._lenses.cooling(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('crowds: dense blocks among the busiest gathering clusters', () => {
+        const z = codes.map(() => 0);
+        const f = L.frameFrom(codes, { ...base, 'places.worship': codes.map((_, i) => (i === 0 ? 30 : 0)), 'places.malls': z, 'places.culture': z,
+            'places.leisure': codes.map((_, i) => (i === SIZE * 6 + 6 ? 5 : 1)), 'places.police': z, 'places.fire_stations': z, 'population.density_km2': codes.map(() => 20000) });
+        const r = L._lenses.crowds(f, {});
+        expect(r.columns.gathering_places[0]).toBeGreaterThan(r.columns.gathering_places[codes.length - 1]);
+        expect(r.stats.some(x => /^Crowd zone 1/.test(x.label))).toBe(true);
+        expect(L._lenses.crowds(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('airport: rough peak and off-peak drive times from runway distance', () => {
+        const f = L.frameFrom(codes, { ...base, 'flight_paths.runway_km': codes.map((_, i) => 1 + col(i)) });
+        const r = L._lenses.airport(f, {});
+        expect(r.columns.airport_peak_min[0]).toBe(Math.round(60 * 1.35 / 20));
+        expect(r.columns.airport_offpeak_min[0]).toBe(Math.round(60 * 1.35 / 35));
+        expect(r.stats[0].label).toBe('Within 30 min of the runway at peak');
+        expect(L._lenses.airport(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
