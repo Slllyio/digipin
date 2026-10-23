@@ -15,26 +15,32 @@ Each item gives four things:
 
 | # | Item | Why first |
 |---|---|---|
-| 1 | Overture buildings: class, floors, height per block | Building use mix (residential/commercial/industrial) per block: core to real estate |
-| 2 | Overture transport segments: road class, speed, surface per block | Road quality and arterial frontage for land value and retail siting |
+| 1 | ❌ Overture buildings: class, floors, height per block | Building use mix (residential/commercial/industrial) per block: core to real estate |
+| 2 | ❌ Overture transport segments: road class, speed, surface per block | Road quality and arterial frontage for land value and retail siting |
 | 3 | Office and IT clusters → jobs proxy | Fills the missing jobs layer behind job access and rental demand |
 | 4 | Property-agent density → market-activity signal in land value | Turns places data into a price-model input |
 | 5 | Landslide susceptibility (NASA LHASA) | Hills in Mumbai, Pune, Bengaluru fringe, Bhopal |
 | 6 | Cyclone wind return levels (STORM) | Chennai, Kolkata, Mumbai: insurance and structure risk |
-| 7 | Earthquake zone (BIS IS 1893 zones) | Delhi zone IV, Kolkata III/IV: building code and insurance |
+| 7 | ✅ Earthquake zone (ground lens) (BIS IS 1893 zones) | Delhi zone IV, Kolkata III/IV: building code and insurance |
 | 8 | Lightning flash density (LIS/OTD) | Deaths, power cuts, solar/telecom asset risk |
 | 9 | Dust and dust storms (MERRA-2 / CAMS dust AOD) | Delhi/Jaipur/Ahmedabad pre-monsoon air |
-| 10 | Wet-bulb 2050 (CMIP6 hurs + tas) | Humid heat future for coastal cities |
+| 10 | ✅ Wet-bulb 2050 (CMIP6 hurs + tas) | Humid heat future for coastal cities |
 | 11 | Crop and green-belt loss at the edge (ESA WorldCereal / Dynamic World) | Peri-urban conversion pressure |
-| 12 | Air quality 2050 trend (Sentinel-5P NO2 trend extrapolated) | Where air is getting worse fastest |
+| 12 | ✅ Air trend (NO₂ 2019→2025, PM2.5 2012→2022, SO₂) | Where air is getting worse fastest |
 | 13 | Schools and hospitals capacity (Overture + OSM beds/levels) | Service gap lenses with size, not just count |
-| 14 | Tree planting potential (canopy gap × heat × pavement) | Cooling action siting |
-| 15 | Cool-roof potential (roof area × albedo × heat) | Cheap heat action per block |
+| 14 | ✅ Tree planting potential (canopy gap × heat × pavement) | Cooling action siting |
+| 15 | ✅ Cool-roof potential (roof area × albedo × heat) | Cheap heat action per block |
+
+## Also shipped from outside the top 15
+
+- ✅ Satellite embeddings: the "What changed" lens and "looks like this from space" search (items 116–117)
+- ✅ Open burning from VIIRS fires (items 34–35)
+- ✅ Ground conditions: subsoil clay, wet land and slopes (items 103 and 105)
 
 ## A. Buildings and real estate (1–20)
 
-1. ▶ Overture buildings class / subtype per block (residential, commercial, industrial, civic, religious) | S3 | land-use mix lens, property report
-2. ▶ Overture building floors and height where tagged | S3 | FAR check against Open Buildings 2.5D
+1. ❌ Overture buildings class / subtype per block (residential, commercial, industrial, civic, religious) | S3 | land-use mix lens, property report (dropped: under 1% of Indian buildings carry a class or height in Overture)
+2. ❌ Overture building floors and height where tagged | S3 | FAR check against Open Buildings 2.5D (dropped: under 1% of Indian buildings carry floors or height in Overture)
 3. Building age bands from WSF Evolution + GHSL epochs (exists as settled_year; add age histogram) | EE | redevelopment lens
 4. Building footprint shape: compactness, size class (small plots vs slabs) | EE Open Buildings v3 polygons | informal-housing and plot-size lens
 5. Informal / slum likelihood (small dense roofs + low RWI + low road access) | derived | housing-quality lens
@@ -66,11 +72,11 @@ Each item gives four things:
 28. ▶ Seismic zone (BIS IS 1893-2016) | open map digitised | quake risk
 29. ▶ Lightning flash density (NASA LIS/OTD climatology) | NASA | lightning risk
 30. ▶ Dust AOD and dust-storm days (MERRA-2) | NASA | dust lens
-31. ▶ Wet-bulb 2050 (NEX-GDDP hurs + tasmax) | EE | humid heat future
+31. ✅ Wet-bulb 2050 (NEX-GDDP hurs + tasmax) | EE | humid heat future (humid_future (wet-bulb now and 2050))
 32. Sea-level rise 2100 bathtub on FABDEM (connected) | EE community | coastal long view
 33. Storm-surge 100-year (GTSR, Muis 2016) | open | coastal flood detail
-34. Fire hotspots near the city (FIRMS VIIRS) | EE | crop-burning season
-35. Stubble-burning smoke source tracker (FIRMS × wind back-trajectory) | EE | Delhi air
+34. ✅ Fire hotspots near the city (FIRMS VIIRS) | EE | crop-burning season (fires + burning lens)
+35. ✅ Stubble-burning smoke source tracker (FIRMS × wind back-trajectory) | EE | Delhi air (partly: winter share in the burning lens (no back-trajectories))
 36. Noise from aircraft (airport runways + flight paths) | OSM + derived | noise lens
 37. Light pollution sky brightness (VIIRS radiance to SQM) | EE | night-sky lens
 38. Soil sealing trend (GHSL imperviousness yearly) | EE | runoff lens
@@ -86,8 +92,8 @@ Each item gives four things:
 
 46. CAMS PM2.5 forecast (next 5 days) | API | air alerts
 47. Ozone (Sentinel-5P O3 + CAMS) | EE | ozone lens
-48. SO2 from industry (Sentinel-5P) | EE | industry pollution
-49. Formaldehyde HCHO (Sentinel-5P) | EE | VOC hotspots
+48. ✅ SO2 from industry (Sentinel-5P) | EE | industry pollution (air_trend SO₂ hotspots)
+49. ✅ Formaldehyde HCHO (Sentinel-5P) | EE | VOC hotspots (already in air_quality (HCHO))
 50. Methane at landfills (Sentinel-5P CH4 + landfill locations) | EE/OSM | landfill lens
 51. Landfills and dumpsites (OSM landuse=landfill + Wikidata) | OSM | waste lens
 52. Sewage treatment plants and capacity | OSM/Wikidata | sanitation
@@ -102,7 +108,7 @@ Each item gives four things:
 
 ## D. Mobility and access (61–78)
 
-61. ▶ Overture transport segments: class, surface, speed limit | S3 | road quality
+61. ❌ Overture transport segments: class, surface, speed limit | S3 | road quality (dropped: road surface and speed are under 1% tagged in Overture for India)
 62. Road surface from Sentinel-2 (paved vs unpaved) | EE | road quality
 63. Footpath presence (OSM sidewalk tags) | OSM | walk lens
 64. Streetlights (OSM highway=street_lamp + VIIRS) | OSM/EE | night safety
@@ -139,20 +145,20 @@ Each item gives four things:
 92. Startups and IT parks (Wikidata, SEZ list) | open | innovation lens
 93. GST registrations by district | open | economy context
 94. Electricity reliability (power-cut reports, ESMI where open) | open | utilities
-95. Mobile broadband coverage (Ookla open data tiles) | S3 | digital access lens
+95. ❌ Mobile broadband coverage (Ookla open data tiles) | S3 | digital access lens (skipped: Ookla open data is CC BY-NC-SA (non-commercial))
 
 ## F. Land and nature (96–110)
 
 96. Crop-to-urban conversion at the edge (WorldCereal + Dynamic World) | EE | edge pressure
 97. Green-belt and ridge forest boundaries (Delhi Ridge, Aravalli) | open GIS | encroachment
-98. Protected areas and eco-sensitive zones (WDPA) | EE | no-build overlay
+98. ❌ Protected areas and eco-sensitive zones (WDPA) | EE | no-build overlay (skipped: WDPA needs an IBAT licence for commercial use; OSM protected areas in Actions instead)
 99. Biodiversity intactness (NHM BII) | open | nature lens
 100. Bird and wildlife sightings (GBIF occurrences) | API | nature lens
 101. Tree species diversity proxy (Sentinel-2 phenology) | EE | green quality
 102. Soil organic carbon and texture (SoilGrids; exists partly) | EE | gardens/recharge
-103. Slope stability and cut-fill (DEM curvature) | EE | construction cost
+103. ✅ Slope stability and cut-fill (DEM curvature) | EE | construction cost (slopes in the ground lens)
 104. Bedrock depth (Pelletier 2016) | EE | foundation cost
-105. Expansive black-cotton soil (SoilGrids clay + vertisol class) | EE | foundation risk
+105. ✅ Expansive black-cotton soil (SoilGrids clay + vertisol class) | EE | foundation risk (subsoil + ground lens)
 106. Quarries and mines (Global mining polygons, Maus 2022) | open | land damage
 107. Brick kilns (Sentinel-2 detections, Boyd et al.) | open | air/land
 108. Lake encroachment by year (JRC GSW yearly) | EE | encroachment extension
@@ -166,8 +172,8 @@ Each item gives four things:
 113. DISHA site memo: one-click climate + market + access due diligence | derived | agents
 114. Data-confidence per lens (coverage × source quality) | derived | confidence lens
 115. Scenario builder: add a metro / flyover / park and re-score | derived | what-if
-116. Embeddings per block (Google Satellite Embedding V1, 64-d) for similarity | EE | AI search
-117. Change detection with Satellite Embeddings year over year | EE | change lens
+116. ✅ Embeddings per block (Google Satellite Embedding V1, 64-d) for similarity | EE | AI search (embeddings + lookalike)
+117. ✅ Change detection with Satellite Embeddings year over year | EE | change lens (change lens)
 118. Building-use classifier from embeddings + places | EE/S3 | land-use mix
 119. Export any lens to GeoJSON / GeoParquet / CSV per DIGIPIN | derived | data API
 120. Public data API: static JSON per DIGIPIN prefix with every field | derived | developer API
