@@ -152,7 +152,7 @@ Each item gives four things:
 ## F. Land and nature (96–110)
 
 96. ✅ Crop-to-urban conversion at the edge (WorldCereal + Dynamic World) | EE | edge pressure
-97. Green-belt and ridge forest boundaries (Delhi Ridge, Aravalli) | open GIS | encroachment
+97. ✅ Green-belt and ridge forest boundaries (Delhi Ridge, Aravalli; Overture protected land + ESZ, greenbelt lens) | open GIS | encroachment
 98. ❌ Protected areas and eco-sensitive zones (WDPA) | EE | no-build overlay (skipped: WDPA needs an IBAT licence for commercial use; OSM protected areas in Actions instead)
 99. Biodiversity intactness (NHM BII) | open | nature lens
 100. Bird and wildlife sightings (GBIF occurrences) | API | nature lens

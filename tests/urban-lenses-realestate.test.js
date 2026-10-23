@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -571,6 +571,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats[0].raw).toBe(1);
         expect(r.headline).toMatch(/1 show two or more signs/);
         expect(L._lenses.monthly(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('greenbelt: building inside protected land and its eco-sensitive zone', () => {
+        const prot = codes.map((_, i) => (i < 4 ? 100 : 0)), esz = codes.map((_, i) => (i >= 4 && i < 8 ? 100 : 0));
+        const f = L.frameFrom(codes, { ...base, 'landuse.protected_pct': prot, 'landuse.esz_pct': esz, 'growth.built_2016_pct': codes.map(() => 5),
+            'growth.built_2023_pct': codes.map((_, i) => (i === 0 ? 25 : 5)) });
+        const r = L._lenses.greenbelt(f, {});
+        const k = f.grid.cellKm2;
+        expect(r.stats[1].raw).toBeCloseTo((0.25 + 3 * 0.05) * k, 3);
+        expect(r.columns.protected_growth_pp[0]).toBe(20);
+        expect(r.stats.find(x => /Building inside 1/.test(x.label)).value).toMatch(/^\+20 points/);
+        expect(L._lenses.greenbelt(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

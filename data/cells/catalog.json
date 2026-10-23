@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T21:42:52Z",
+  "generated": "2026-10-23T21:59:08Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -11320,7 +11320,7 @@
     {
       "id": "landuse",
       "title": "Mapped land use (Overture)",
-      "description": "Overture Maps base-theme land use (release 2026-10-21.0, from OpenStreetMap), grouped into residential, industrial, commercial, civic, military, construction, brownfield, landfill and quarry, and clipped to each block. It is mapped use, not the statutory master-plan zone, and coverage is uneven: mapped_pct shows how much of a block has any land use drawn. Protected-area polygons are left out because some cover whole districts.",
+      "description": "Overture Maps base-theme land use (release 2026-10-21.0, from OpenStreetMap), grouped into residential, industrial, commercial, civic, military, construction, brownfield, landfill and quarry, and clipped to each block. It is mapped use, not the statutory master-plan zone, and coverage is uneven: mapped_pct shows how much of a block has any land use drawn. Protected areas (national parks, sanctuaries, reserve forests, biodiversity parks) and their eco-sensitive zones are separate fields; polygons larger than about 2,400 km\u00b2 are dropped.",
       "source": "pipeline/realestate/landuse.py (Overture Maps base theme via DuckDB spatial)",
       "license": "ODbL 1.0 (OpenStreetMap via Overture Maps)",
       "group": "Real estate",
@@ -11438,6 +11438,30 @@
           "higherIs": "worse"
         },
         {
+          "key": "protected_pct",
+          "label": "National parks, sanctuaries, reserve forests and biodiversity parks",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens"
+        },
+        {
+          "key": "esz_pct",
+          "label": "Eco-sensitive zone around a protected area",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens"
+        },
+        {
           "key": "mapped_pct",
           "label": "Block area with any mapped land use",
           "type": "number",
@@ -11496,7 +11520,7 @@
         },
         {
           "name": "bhopal",
-          "cells": 2853,
+          "cells": 2940,
           "bbox": {
             "west": 77.31201171875,
             "south": 23.178466796875,
@@ -11508,7 +11532,7 @@
         },
         {
           "name": "chennai",
-          "cells": 5247,
+          "cells": 5412,
           "bbox": {
             "west": 80.12890625,
             "south": 12.899658203125,
@@ -11520,7 +11544,7 @@
         },
         {
           "name": "delhi",
-          "cells": 23669,
+          "cells": 25354,
           "bbox": {
             "west": 76.839599609375,
             "south": 28.399169921875,
@@ -11569,7 +11593,7 @@
         },
         {
           "name": "hyderabad",
-          "cells": 7723,
+          "cells": 7947,
           "bbox": {
             "west": 78.298583984375,
             "south": 17.298583984375,
@@ -11581,7 +11605,7 @@
         },
         {
           "name": "indore_pilot",
-          "cells": 3347,
+          "cells": 3465,
           "bbox": {
             "west": 75.59814453125,
             "south": 22.50390625,
@@ -11593,7 +11617,7 @@
         },
         {
           "name": "jaipur",
-          "cells": 1710,
+          "cells": 2179,
           "bbox": {
             "west": 75.69921875,
             "south": 26.799560546875,
@@ -11629,19 +11653,33 @@
         },
         {
           "name": "mumbai",
-          "cells": 7098,
+          "cells": 9532,
           "bbox": {
             "west": 72.779052734375,
             "south": 18.889404296875,
             "east": 72.9921875,
             "north": 19.271728515625
           },
-          "json": "landuse/mumbai.json.gz",
-          "parquet": null
+          "json": "landuse/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKP",
+              "4FKT"
+            ]
+          }
         },
         {
           "name": "pune",
-          "cells": 5730,
+          "cells": 5745,
           "bbox": {
             "west": 73.748046875,
             "south": 18.427978515625,

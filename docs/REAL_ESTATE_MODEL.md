@@ -928,3 +928,14 @@ Four monthly series already in the cell store are compared year on year: Dynamic
 | Bengaluru | 596 | 1,057 | 42 | 0 | 76 |
 
 Bengaluru's signs cluster on the Sarjapur and Hoskote fringe. The first version compared single months, and monsoon NO₂ noise flagged 13,607 Bengaluru blocks; the three-month window and the NO₂ floor fixed that.
+
+## Building inside protected forests (`greenbelt` lens)
+
+The `landuse` dataset now carries `protected_pct` and `esz_pct`. Protected land is Overture land use of subtype protected: national parks, wildlife sanctuaries, reserve forests and biodiversity parks. Polygons named as eco-sensitive zones (ESZ) are counted separately. Polygons over about 2,400 km² are dropped, because Pacific marine monuments that wrap the antimeridian otherwise cover every city, and so is `aboriginal_land`, which in Delhi is a mis-tagged ASI regulated area. The lens multiplies each block's protected and ESZ shares by Open Buildings Temporal built-up (2016 and 2023), WorldCover tree cover and Hansen tree loss, which assumes they are spread evenly over the block.
+
+| City | Protected land | Built over (2023) | ESZ mapped, built | Residents inside (by share) |
+|---|---|---|---|---|
+| Delhi | 63.3 km² | 0.76 km² (1.2%), 0.19 since 2016 | 42.1 km², 10.6%, +0.46 since 2016 | 4.8 lakh |
+| Mumbai | 89.7 km² | 0.37 km² (0.4%) | 75.3 km², 2.7% | |
+
+Delhi's new building clusters in the Asola-Bhatti eco-sensitive zone and along Sangam Vihar. Boundaries are OpenStreetMap's, not the gazette notification.

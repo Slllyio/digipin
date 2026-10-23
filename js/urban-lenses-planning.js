@@ -212,7 +212,53 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Protected forests and their buffers. Overture 'protected' land (national parks, sanctuaries, reserve forests,
+    // biodiversity parks) and eco-sensitive zones; building inside them from Open Buildings Temporal 2016 → 2023,
+    // assuming building is spread evenly over the block, and tree cover from WorldCover and Hansen loss.
+    function greenbelt(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const prot = c['landuse.protected_pct'], esz = c['landuse.esz_pct'];
+        const b16 = c['growth.built_2016_pct'], b23 = c['growth.built_2023_pct'], tree = c['land_cover.tree_pct'], lost = c['encroachment.tree_lost_pct'];
+        const pop = c['population.population'];
+        if (!prot || !b23) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const inP = [], inE = [];
+        for (let i = 0; i < n; i++) { if (v(prot, i) > 0) inP.push(i); if (v(esz, i) > 0) inE.push(i); }
+        if (!inP.length) return null;
+        const km2 = (cells, share, f) => cells.reduce((a, i) => a + v(share, i) / 100 * f(i) * g.cellKm2, 0);
+        const area = km2(inP, prot, () => 1), built = km2(inP, prot, i => v(b23, i) / 100), built16 = b16 ? km2(inP, prot, i => v(b16, i) / 100) : null;
+        const growth = Float64Array.from({ length: n }, (_, i) => (v(prot, i) + v(esz, i) > 0 ? Math.max(0, v(b23, i) - v(b16, i)) : NaN));
+        const stats = [
+            { label: 'Protected land mapped (parks, sanctuaries, reserve forests)', value: `${_round(area, 1)} km²` },
+            { label: 'Built over inside it, 2023', value: `${_round(built, 2)} km² (${_round(100 * built / Math.max(area, 1e-9), 1)}%)`, raw: _round(built, 3) },
+        ];
+        if (built16 != null) stats.push({ label: 'Of which built since 2016', value: `${_round(Math.max(0, built - built16), 2)} km²` });
+        if (tree) stats.push({ label: 'Tree cover inside (WorldCover 2021)', value: `${_round(100 * km2(inP, prot, i => v(tree, i) / 100) / Math.max(area, 1e-9))}%` });
+        if (lost) stats.push({ label: 'Tree cover lost inside since 2001 (Hansen)', value: `${_round(km2(inP, prot, i => v(lost, i) / 100), 2)} km²` });
+        if (esz && inE.length) {
+            const eArea = km2(inE, esz, () => 1), eBuilt = km2(inE, esz, i => v(b23, i) / 100), e16 = b16 ? km2(inE, esz, i => v(b16, i) / 100) : null;
+            stats.push({ label: 'Eco-sensitive zone mapped around them', value: `${_round(eArea, 1)} km², ${_round(100 * eBuilt / Math.max(eArea, 1e-9))}% built${e16 != null ? `, +${_round(Math.max(0, eBuilt - e16), 2)} km² since 2016` : ''}` });
+        }
+        const both = [...new Set([...inP, ...inE])], share = i => Math.min(100, v(prot, i) + v(esz, i)) / 100;
+        if (pop) stats.push({ label: 'Residents inside protected land or its buffer (by block share)', value: _people(both.reduce((a, i) => a + v(pop, i) * share(i), 0)) });
+        spaced(g, both.filter(i => growth[i] > 0), Float64Array.from(growth, (x, i) => (_fin(x) ? x * share(i) : NaN))).slice(0, TOP).forEach((i, k) => stats.push({ label: `Building inside ${k + 1}: ${g.codes[i]}`,
+            value: `+${_round(growth[i])} points built-up 2016→2023; ${Math.round(v(prot, i))}% protected, ${Math.round(v(esz, i))}% eco-sensitive` }));
+        return {
+            columns: { protected_growth_pp: growth, protected_pct: prot }, idx: both, weightKey: 'protected_growth_pp', noHotspots: true,
+            metric: { label: 'Protected land built over (2023)', value: _round(100 * built / Math.max(area, 1e-9), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_round(area, 1)} km² of national parks, sanctuaries and reserve forests is mapped here; ${_round(built, 2)} km² of it (${_round(100 * built / Math.max(area, 1e-9), 1)}%) is built over${built16 != null ? `, ${_round(Math.max(0, built - built16), 2)} km² of that since 2016` : ''}. Boundaries are OpenStreetMap's, not the gazette notification, so check before calling a block an encroachment.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'greenbelt', equity: false, title: 'Building inside protected forests', icon: '🌳',
+            question: 'How much building is creeping into parks, sanctuaries, reserve forests and their buffers?',
+            field: { key: 'protected_growth_pp', label: 'New built-up 2016→2023 inside protected land or its eco-sensitive zone', unit: 'points', higherIs: 'worse', ramp: 'reds', domain: [0, 30] },
+            extra: [{ key: 'protected_pct', label: 'Protected land (mapped)', unit: '% of block', higherIs: null, ramp: 'greens', domain: [0, 100] }],
+            needs: ['landuse.protected_pct', 'landuse.esz_pct', 'growth.built_2016_pct', 'growth.built_2023_pct', 'land_cover.tree_pct', 'encroachment.tree_lost_pct', 'population.population'],
+            method: 'Protected land is Overture Maps land use of subtype protected (from OpenStreetMap: national parks, wildlife sanctuaries, reserve forests, biodiversity parks); polygons named as eco-sensitive zones are counted separately. Built-up share from Google Open Buildings 2.5D Temporal (2016 and 2023), tree cover from ESA WorldCover 2021 and loss from Hansen Global Forest Change, each multiplied by the protected share of the block, which assumes they are spread evenly over it. OpenStreetMap boundaries are not the gazette notification.',
+            refs: 'Overture Maps land use; Google Open Buildings 2.5D Temporal; ESA WorldCover 2021; Hansen et al. 2013; Environment (Protection) Act 1986 eco-sensitive zone notifications' },
         { id: 'monthly', equity: false, title: 'What changed in a year', icon: '🛰️',
             question: 'What changed this month compared with a year ago?',
             field: { key: 'change_signs', label: 'Year-on-year change signs (new building, lights, greenery lost, NO₂ up)', unit: 'count', higherIs: null, ramp: 'heat', domain: [0, 3] },
@@ -243,7 +289,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

@@ -12,6 +12,8 @@ each L7 block (dataset ``landuse``); every field is the share of the block in th
     brownfield_pct    brownfield (cleared former industrial or built land)
     landfill_pct      landfills and dumps
     quarry_pct        quarries
+    protected_pct     national parks, sanctuaries, reserve forests and biodiversity parks (Overture 'protected')
+    esz_pct           eco-sensitive zones around them (protected polygons named ESZ)
     mapped_pct        any mapped land use (all classes), a measure of how complete the mapping is
 
     python -m pipeline.realestate.landuse --region all
@@ -41,12 +43,19 @@ GROUPS = {
     "quarry": ("quarry",),
 }
 _GROUP_OF = {cls: g for g, classes in GROUPS.items() for cls in classes}
+PROTECTED = ("protected", "esz")
+PROTECTED_MAX_DEG2 = 0.2      # about 2,400 km² at Indian latitudes
 
 
 def case_sql():
     """SQL CASE mapping an Overture land-use class to its group (NULL for the rest)."""
     whens = " ".join(f"WHEN class = '{cls}' THEN '{g}'" for cls, g in _GROUP_OF.items())
     return f"CASE {whens} ELSE NULL END"
+
+
+def protected_sql():
+    """SQL for a protected polygon's group: 'esz' for eco-sensitive-zone buffers, else 'protected'."""
+    return "CASE WHEN names.primary ILIKE '%ESZ%' OR names.primary ILIKE '%eco%sensitive%' THEN 'esz' ELSE 'protected' END"
 
 
 def fetch(region, release=RELEASE):
@@ -58,11 +67,14 @@ def fetch(region, release=RELEASE):
     lat = (s + n) / 2
     con = duckdb.connect()
     con.execute("INSTALL httpfs; LOAD httpfs; INSTALL spatial; LOAD spatial; SET s3_region='us-west-2';")
-    # 'protected' areas such as species-management zones can cover a whole state, so they are left out of the total.
+    # Protected areas keep their own groups (eco-sensitive zones apart); polygons over PROTECTED_MAX_DEG2, such as
+    # Pacific marine monuments that wrap the antimeridian, and 'aboriginal_land' (mis-tagged in India) are dropped.
     con.execute(f"""
-        CREATE TABLE g AS SELECT geometry AS geom, {case_sql()} AS grp
+        CREATE TABLE g AS SELECT geometry AS geom,
+            CASE WHEN subtype = 'protected' THEN {protected_sql()} ELSE {case_sql()} END AS grp
         FROM read_parquet('s3://overturemaps-us-west-2/release/{release}/theme=base/type=land_use/*')
-        WHERE bbox.xmax >= {w} AND bbox.xmin <= {e} AND bbox.ymax >= {s} AND bbox.ymin <= {n} AND subtype <> 'protected'
+        WHERE bbox.xmax >= {w} AND bbox.xmin <= {e} AND bbox.ymax >= {s} AND bbox.ymin <= {n}
+          AND (subtype <> 'protected' OR (class <> 'aboriginal_land' AND ST_Area(geometry) < {PROTECTED_MAX_DEG2}))
     """)
     cat = json.loads((CELLS / "catalog.json").read_text())
     pop = next(d for d in cat["datasets"] if d["id"] == "population")
@@ -91,7 +103,7 @@ def rows_for(got):
     for code, by in got.items():
         b = store.cell_bounds(code)
         cell = deg2_to_m2((b["east"] - b["west"]) * (b["north"] - b["south"]), (b["north"] + b["south"]) / 2)
-        shares = {f"{g}_pct": by.get(g, 0) for g in GROUPS} | {"mapped_pct": sum(by.values())}
+        shares = {f"{g}_pct": by.get(g, 0) for g in (*GROUPS, *PROTECTED)} | {"mapped_pct": sum(v for k, v in by.items() if k not in PROTECTED)}
         rows.append({"digipin": code, **{k: round(min(100.0, 100 * m2 / cell), 1) for k, m2 in shares.items()}})
     return rows
 
@@ -106,13 +118,18 @@ def cell_dataset(region, rows):
     worse = {"landfill", "quarry"}
     specs = [FieldSpec(f"{g}_pct", f"{label[g]} (mapped land use)", agg="mean", unit="% of block", domain=[0, 100 if g == "residential" else 50],
                        ramp="reds" if g in worse else "viridis", higher_is="worse" if g in worse else None) for g in GROUPS]
+    specs.append(FieldSpec("protected_pct", "National parks, sanctuaries, reserve forests and biodiversity parks", agg="mean", unit="% of block",
+                           domain=[0, 100], ramp="greens", higher_is=None))
+    specs.append(FieldSpec("esz_pct", "Eco-sensitive zone around a protected area", agg="mean", unit="% of block", domain=[0, 100],
+                           ramp="greens", higher_is=None))
     specs.append(FieldSpec("mapped_pct", "Block area with any mapped land use", agg="mean", unit="% of block", domain=[0, 100], ramp="viridis"))
     spec = DatasetSpec(
         id="landuse", title="Mapped land use (Overture)", level=LEVEL, fields=specs, group="Real estate",
         description=f"Overture Maps base-theme land use (release {RELEASE}, from OpenStreetMap), grouped into residential, industrial, "
                     "commercial, civic, military, construction, brownfield, landfill and quarry, and clipped to each block. It is "
                     "mapped use, not the statutory master-plan zone, and coverage is uneven: mapped_pct shows how much of a block "
-                    "has any land use drawn. Protected-area polygons are left out because some cover whole districts.",
+                    "has any land use drawn. Protected areas (national parks, sanctuaries, reserve forests, biodiversity parks) and their "
+                    "eco-sensitive zones are separate fields; polygons larger than about 2,400 km² are dropped.",
         source="pipeline/realestate/landuse.py (Overture Maps base theme via DuckDB spatial)",
         license="ODbL 1.0 (OpenStreetMap via Overture Maps)", default_field="industrial_pct", extrude=False)
     return store.write_dataset(CELLS, spec, region, store.bin_records(rows, LEVEL, specs), parquet=False)

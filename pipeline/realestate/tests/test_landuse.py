@@ -22,3 +22,13 @@ def test_rows_are_block_shares(monkeypatch):
     assert rows[0]["landfill_pct"] == 25.0
     assert rows[0]["mapped_pct"] == 50.0
     assert rows[0]["quarry_pct"] == 0.0
+
+
+def test_protected_and_esz_are_kept_out_of_mapped(monkeypatch):
+    from pipeline.cells import store
+    monkeypatch.setattr(store, "cell_bounds", lambda code: {"west": 0.0, "east": 0.001, "south": 0.0, "north": 0.001})
+    cell = lu.deg2_to_m2(1e-6, 0.0005)
+    rows = lu.rows_for({"ABC": {"protected": cell / 2, "esz": cell, "residential": cell / 10}})
+    assert rows[0]["protected_pct"] == 50.0 and rows[0]["esz_pct"] == 100.0
+    assert rows[0]["mapped_pct"] == 10.0
+    assert "ESZ" in lu.protected_sql()
