@@ -1,7 +1,73 @@
 {
-  "generated_at_iso": "2026-10-23T00:57:47Z",
+  "generated_at_iso": "2026-10-23T05:51:25Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-23 09:01:49|13.368,77.563",
+      "magnitude": 3.0,
+      "origin_time": "2026-10-23 09:01:49",
+      "latitude": 13.368,
+      "longitude": 77.563,
+      "depth_km": 10.0,
+      "region": "Bengaluru Rural, Karnataka",
+      "location": "44km N of Bengaluru, Karnataka, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 08:43:56|32.182,93.357",
+      "magnitude": 4.1,
+      "origin_time": "2026-10-23 08:43:56",
+      "latitude": 32.182,
+      "longitude": 93.357,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "484km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 08:23:47|32.260,93.714",
+      "magnitude": 4.6,
+      "origin_time": "2026-10-23 08:23:47",
+      "latitude": 32.26,
+      "longitude": 93.714,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "481km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 07:46:49|30.541,93.267",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-23 07:46:49",
+      "latitude": 30.541,
+      "longitude": 93.267,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "316km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 06:19:51|32.474,93.000",
+      "magnitude": 3.9,
+      "origin_time": "2026-10-23 06:19:51",
+      "latitude": 32.474,
+      "longitude": 93.0,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "525km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 06:05:13|32.542,93.835",
+      "magnitude": 4.4,
+      "origin_time": "2026-10-23 06:05:13",
+      "latitude": 32.542,
+      "longitude": 93.835,
+      "depth_km": 15.0,
+      "region": "China",
+      "location": "508km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-23 05:54:48|35.138,69.442",
       "magnitude": 4.1,
@@ -22,6 +88,17 @@
       "depth_km": 15.0,
       "region": "Tibet",
       "location": "509km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 05:48:43|32.287,93.727",
+      "magnitude": 4.2,
+      "origin_time": "2026-10-23 05:48:43",
+      "latitude": 32.287,
+      "longitude": 93.727,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "484km NNW of Pangin, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     },
     {
@@ -1573,83 +1650,6 @@
       "depth_km": 24.0,
       "region": "Noney, Manipur",
       "location": "49km WSW of Bishnupur, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-10 07:24:57|25.673,91.113",
-      "magnitude": 2.6,
-      "origin_time": "2026-10-10 07:24:57",
-      "latitude": 25.673,
-      "longitude": 91.113,
-      "depth_km": 5.0,
-      "region": "West Khasi Hills, Meghalaya",
-      "location": "75km WSW of Nongpoh, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-10 06:33:33|25.507,91.534",
-      "magnitude": 2.7,
-      "origin_time": "2026-10-10 06:33:33",
-      "latitude": 25.507,
-      "longitude": 91.534,
-      "depth_km": 5.0,
-      "region": "Eastern West Khasi Hills, Meghalaya",
-      "location": "32km NW of Cherrapunjee, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-10 03:19:39|28.012,92.671",
-      "magnitude": 3.7,
-      "origin_time": "2026-10-10 03:19:39",
-      "latitude": 28.012,
-      "longitude": 92.671,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "91km ENE of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-10 03:13:06|28.019,92.555",
-      "magnitude": 3.1,
-      "origin_time": "2026-10-10 03:13:06",
-      "latitude": 28.019,
-      "longitude": 92.555,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "82km NE of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-10 02:07:56|21.524,73.197",
-      "magnitude": 3.1,
-      "origin_time": "2026-10-10 02:07:56",
-      "latitude": 21.524,
-      "longitude": 73.197,
-      "depth_km": 10.0,
-      "region": "Bharuch, Gujarat",
-      "location": "54km NE of Surat, Gujarat, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-09 17:09:04|36.413,70.550",
-      "magnitude": 4.4,
-      "origin_time": "2026-10-09 17:09:04",
-      "latitude": 36.413,
-      "longitude": 70.55,
-      "depth_km": 210.0,
-      "region": "Afghanistan",
-      "location": "76km S of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-09 14:24:05|36.970,71.889",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-09 14:24:05",
-      "latitude": 36.97,
-      "longitude": 71.889,
-      "depth_km": 124.0,
-      "region": "Tajikistan",
-      "location": "119km E of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]

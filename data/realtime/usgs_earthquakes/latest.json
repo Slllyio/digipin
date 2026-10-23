@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-23T00:57:36Z",
+  "generated_at_iso": "2026-10-23T05:51:13Z",
   "count": 24,
   "records": [
+    {
+      "id": "us6000u49c",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-23T02:45:41.183000+00:00",
+      "latitude": -21.3469,
+      "longitude": -66.5795,
+      "depth_km": 235.829,
+      "place": "58 km SW of Atocha, Bolivia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u49c",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000u49a",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-23T02:17:01.507000+00:00",
+      "latitude": 27.9986,
+      "longitude": 100.6189,
+      "depth_km": 10.0,
+      "place": "18 km NNW of Yongning, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u49a",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000u48i",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-23T00:09:35.519000+00:00",
+      "latitude": -24.286,
+      "longitude": -67.3224,
+      "depth_km": 185.541,
+      "place": "102 km W of San Antonio de los Cobres, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u48i",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000u47n",
       "magnitude": 4.6,
@@ -253,42 +289,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u41y",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us6000u417",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-22T05:23:59.562000+00:00",
-      "latitude": -5.1295,
-      "longitude": 152.2467,
-      "depth_km": 57.317,
-      "place": "86 km S of Kokopo, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u417",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000u411",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-22T04:44:17.421000+00:00",
-      "latitude": 56.9659,
-      "longitude": -34.0939,
-      "depth_km": 10.0,
-      "place": "Reykjanes Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u411",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000u40r",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-22T03:35:17.429000+00:00",
-      "latitude": 14.8614,
-      "longitude": -93.8388,
-      "depth_km": 49.131,
-      "place": "97 km SW of El Palmarcito, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u40r",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
