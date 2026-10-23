@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -653,6 +653,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.rain_garden[0]).toBe(1);
         expect(r.columns.rain_garden[codes.length - 1]).toBe(0);
         expect(L._lenses.gardens(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('powerlines: residents and built-up land inside right-of-way corridors', () => {
+        const f = L.frameFrom(codes, { ...base, 'power_lines.corridor_pct': codes.map((_, i) => (col(i) === 3 ? 40 : 0)),
+            'power_lines.line_km': codes.map((_, i) => (col(i) === 3 ? 0.25 : 0)), 'power_lines.max_kv': codes.map((_, i) => (col(i) === 3 ? 400 : null)),
+            'power_lines.substations': codes.map(() => 0), 'built_up.built_pct': codes.map(() => 50) });
+        const r = L._lenses.powerlines(f, {});
+        const i = codes.findIndex((_, k) => col(k) === 3);
+        expect(r.columns.corridor_people[i]).toBeCloseTo(base['population.population'][i] * 0.4);
+        expect(r.columns.corridor_people[i + 1]).toBe(0);
+        expect(r.stats[0].value).toBe(`${SIZE * 0.25} km`);
+        expect(L._lenses.powerlines(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

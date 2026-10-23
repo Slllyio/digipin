@@ -981,3 +981,7 @@ Straight-line distance to the nearest jet runway (`flight_paths.runway_km`, OSM 
 ## Soil for gardens and rain gardens (`gardens` lens)
 
 New EE layer `topsoil` (L7, OpenLandMap 250 m surface soil, CC BY-SA 4.0): organic carbon (g/kg; stored as ×5 g/kg), pH (stored ×10), sand and clay. Garden score = 45% pH (full from 6 to 7.5), 35% organic carbon (zero at 2.5 g/kg, full at 10) and 20% texture (clay 35–45% scores 0.6, over 45% scores 0.3). Rain gardens need 40%+ sand and under 35% clay. Open land is WorldCover grass, bare and shrub. First run: Delhi has 284 km² of open land, 84% garden-ready and 24% draining for rain gardens; Pune's black soils drain on only 2%. SoilGrids 2.0 was tried first but masks built-up land, so it is blank in city cores.
+
+## Homes under power lines (`powerlines` lens)
+
+New dataset `power_lines` (L7, pipeline/realestate/powerlines.py): OpenStreetMap power lines of 66 kV and over from Overture's base infrastructure, with their `voltage` tag, buffered to the Ministry of Power 2015 right-of-way width (66 kV 18 m, 110 kV 22 m, 132 kV 27 m, 220 kV 35 m, 400 kV 46 m, 765 kV 67 m; untagged lines taken as 132 kV) and clipped to each block. Fields: line_km, corridor_pct, max_kv, substations. Residents and built-up land inside corridors are block totals times the corridor share, so they assume an even spread. First run: Delhi has 1,417 km of line and 48 km² of corridor, with roughly 3 lakh residents inside. The property report shows the corridor share for the block.

@@ -501,7 +501,50 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Power line corridors. The right-of-way under a transmission line is cleared of trees and, under the CEA safety
+    // regulations' clearances, of most building; homes inside it are encroachments with a fire and shock risk.
+    function powerlines(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, cor = c['power_lines.corridor_pct'], km = c['power_lines.line_km'], kv = c['power_lines.max_kv'];
+        const pop = c['population.population'], built = c['built_up.built_pct'];
+        if (!cor || !km || !pop) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || v(cor, i) > 0) idx.push(i);
+        if (idx.length < 5 || !idx.some(i => v(cor, i) > 0)) return null;
+        const inside = new Float64Array(n).fill(NaN), builtIn = new Float64Array(n).fill(NaN);
+        for (const i of idx) { inside[i] = v(pop, i) * v(cor, i) / 100; builtIn[i] = v(built, i) * v(cor, i) / 100; }
+        const sum = f => idx.reduce((a, i) => a + f(i), 0);
+        const lineKm = sum(i => v(km, i)), corKm2 = sum(i => v(cor, i) / 100 * g.cellKm2), people = sum(i => inside[i]);
+        const builtKm2 = built ? sum(i => builtIn[i] / 100 * g.cellKm2) : null;
+        const ehv = sum(i => (v(kv, i) >= 400 ? inside[i] : 0));
+        const stats = [
+            { label: 'High-voltage line mapped (66 kV and over)', value: `${_round(lineKm)} km` },
+            { label: 'Right-of-way corridors', value: `${_round(corKm2, 1)} km²` },
+            { label: 'Residents inside a corridor (if spread evenly over each block)', value: _people(people) },
+            { label: '…inside 400 kV and 765 kV corridors', value: _people(ehv) },
+        ];
+        if (builtKm2 !== null) stats.push({ label: 'Built-up land inside corridors', value: `${_round(builtKm2, 2)} km² (${_round(100 * builtKm2 / Math.max(corKm2, 1e-9))}% of corridor land)` });
+        stats.push({ label: 'Substations mapped', value: String(sum(i => v(c['power_lines.substations'], i))) });
+        spaced(g, idx.filter(i => inside[i] > 0), inside).forEach((i, k) => stats.push({
+            label: `Homes under the wires ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(v(cor, i))}% of the block in a ${_round(v(kv, i))} kV corridor; about ${_people(inside[i])} residents inside${built ? `, ${_round(v(built, i))}% built-up` : ''}` }));
+        return {
+            columns: { corridor_people: inside, corridor_pct: Float64Array.from({ length: n }, (_, i) => (idx.includes(i) ? v(cor, i) : NaN)) },
+            idx, weightKey: 'corridor_people', noHotspots: true,
+            metric: { label: 'Residents living inside power line corridors', value: Math.round(people), unit: 'people', higherIs: 'worse' },
+            headline: `Roughly ${_people(people)} people, counting each block's residents as spread evenly, live inside the right-of-way of ${_round(lineKm)} km of mapped high-voltage lines${builtKm2 !== null ? `, where ${_round(100 * builtKm2 / Math.max(corKm2, 1e-9))}% of the corridor land is built over` : ''}. Building there breaks the CEA clearances and risks fire and shock; check the corridor before buying near a tower line.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'powerlines', equity: true, title: 'Homes under power lines', icon: '⚡',
+            question: 'Who lives under high-voltage power lines?',
+            field: { key: 'corridor_people', label: 'Residents inside a power line right-of-way', unit: 'people', higherIs: 'worse', ramp: 'reds', domain: [0, 200] },
+            extra: [{ key: 'corridor_pct', label: 'Block inside a power line right-of-way', unit: '% of block', higherIs: 'worse', ramp: 'heat', domain: [0, 20] }],
+            needs: ['power_lines.corridor_pct', 'power_lines.line_km', 'power_lines.max_kv', 'power_lines.substations', 'built_up.built_pct', 'population.population'],
+            method: 'OpenStreetMap power lines of 66 kV and over (Overture Maps base infrastructure) with their voltage tag, buffered to the right-of-way width in the Ministry of Power\'s 2015 guidelines (66 kV 18 m up to 765 kV 67 m; untagged lines as 132 kV). Residents and built-up land inside a corridor are each block\'s WorldPop residents and GHSL built-up share times the corridor share, which assumes both are spread evenly over the block. Unmapped and underground lines are missing.',
+            refs: 'Ministry of Power, Guidelines for compensation towards Right of Way for transmission lines (2015); CEA (Measures relating to Safety and Electric Supply) Regulations 2010 and 2023; Overture Maps; WorldPop; GHSL' },
         { id: 'gardens', equity: false, title: 'Soil for gardens and rain gardens', icon: '🌱',
             question: 'Where is the soil good for gardens, farms and rain gardens?',
             field: { key: 'garden_score', label: 'Garden soil score (pH, organic carbon, texture)', unit: '0-100', higherIs: 'better', ramp: 'greens', domain: [50, 100] },
@@ -581,7 +624,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

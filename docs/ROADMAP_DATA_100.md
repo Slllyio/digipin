@@ -179,6 +179,7 @@ Each item gives four things:
 118. Building-use classifier from embeddings + places | EE/S3 | land-use mix
 119. ✅ Export any lens to GeoJSON / GeoParquet / CSV per DIGIPIN | derived | data API
 120. Public data API: static JSON per DIGIPIN prefix with every field | derived | developer API
+121. ✅ High-voltage power line corridors and substations (Overture/OSM voltage tags, MoP RoW widths) | S3 | `power_lines` dataset, `powerlines` lens, property report row
 
 ## Parked for the keys round
 
