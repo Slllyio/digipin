@@ -103,6 +103,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('do a due diligence check here')).toEqual({ type: 'propreport' });
         expect(M('which lakes have been encroached in Delhi')).toEqual({ type: 'lens', lens: 'encroach', city: 'delhi' });
         expect(M('how much flood damage do buildings face each year')).toEqual({ type: 'lens', lens: 'floodloss' });
+        expect(M('is new construction going into flood zones in Delhi')).toEqual({ type: 'lens', lens: 'riskygrowth', city: 'delhi' });
         expect(M('what is the climate risk in Delhi')).toEqual({ type: 'lens', lens: 'climategrade', city: 'delhi' });
         expect(M('is groundwater running out in Delhi')).toEqual({ type: 'lens', lens: 'waterrisk', city: 'delhi' });
         expect(M('is rooftop solar worth it for homes in Delhi')).toEqual({ type: 'lens', lens: 'solarhome', city: 'delhi' });

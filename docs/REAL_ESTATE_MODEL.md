@@ -337,3 +337,28 @@ Basins are large, so this is a city-level outlook. The property report lists wat
 | Bengaluru | A (12) | water |
 
 The reanalysis rarely reaches a 28 °C wet-bulb on the coast, and drainage is not in the score, which flatters Mumbai and Kolkata. The weights are a judgement call, not a calibration. The property report shows the block's grade and flags grades D and E.
+
+## Risky growth (lens `riskygrowth`)
+
+This lens checks whether new building is going into land that will flood by 2050.
+
+**Method**
+
+1. Take the new floor area built 2016–2023 (`re_supply.new_floor_m2`).
+2. Weight it by each block's share of the 2050 1-in-100-year flood zone (WRI Aqueduct).
+3. Divide by the share of all land in that zone to get the tilt. Above 1, new building leans toward flood land; below 1, it avoids it.
+
+The lens also reports floor area in climate grade D/E blocks and GHSL's projected built-up gain 2020→2030 inside the zone.
+
+**Results**
+
+| City | New floor area in the 2050 flood zone | Share of land in the zone | Tilt |
+|---|---|---|---|
+| Chennai | 66% | 53% | 1.26× |
+| Delhi | 19% | 24% | 0.82× |
+| Kolkata | 29% | 40% | 0.73× |
+| Mumbai | 21% | 29% | 0.73× |
+
+In Chennai, 71% of the built-up land GHSL projects to 2030 also falls in the zone.
+
+Bengaluru has almost no land in Aqueduct's zone. Its flooding comes from drains and lakes, which the Waterlogging lens covers.

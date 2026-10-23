@@ -246,6 +246,12 @@
      "unit": "0-100",
      "higherIs": "worse"
     },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 8.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 18.1,
@@ -586,6 +592,12 @@
      "label": "Climate 2050 risk for the average resident",
      "value": 12,
      "unit": "0-100",
+     "higherIs": "worse"
+    },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 0,
+     "unit": "%",
      "higherIs": "worse"
     },
     "encroach": {
@@ -930,6 +942,12 @@
      "unit": "0-100",
      "higherIs": "worse"
     },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 2,
@@ -1264,6 +1282,12 @@
      "label": "Climate 2050 risk for the average resident",
      "value": 57,
      "unit": "0-100",
+     "higherIs": "worse"
+    },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 66.3,
+     "unit": "%",
      "higherIs": "worse"
     },
     "encroach": {
@@ -1608,6 +1632,12 @@
      "unit": "0-100",
      "higherIs": "worse"
     },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 19.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 108.7,
@@ -1936,6 +1966,12 @@
      "label": "Climate 2050 risk for the average resident",
      "value": 34,
      "unit": "0-100",
+     "higherIs": "worse"
+    },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 0,
+     "unit": "%",
      "higherIs": "worse"
     },
     "encroach": {
@@ -2272,6 +2308,12 @@
      "label": "Climate 2050 risk for the average resident",
      "value": 24,
      "unit": "0-100",
+     "higherIs": "worse"
+    },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 0.9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "encroach": {
@@ -2616,6 +2658,12 @@
      "unit": "0-100",
      "higherIs": "worse"
     },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 3.8,
@@ -2950,6 +2998,12 @@
      "label": "Climate 2050 risk for the average resident",
      "value": 44,
      "unit": "0-100",
+     "higherIs": "worse"
+    },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 0,
+     "unit": "%",
      "higherIs": "worse"
     },
     "encroach": {
@@ -3288,6 +3342,12 @@
      "unit": "0-100",
      "higherIs": "worse"
     },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 29.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 137.5,
@@ -3616,6 +3676,12 @@
      "label": "Climate 2050 risk for the average resident",
      "value": 49,
      "unit": "0-100",
+     "higherIs": "worse"
+    },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 10.8,
+     "unit": "%",
      "higherIs": "worse"
     },
     "encroach": {
@@ -3960,6 +4026,12 @@
      "unit": "0-100",
      "higherIs": "worse"
     },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 21.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 43.5,
@@ -4300,6 +4372,12 @@
      "label": "Climate 2050 risk for the average resident",
      "value": 24,
      "unit": "0-100",
+     "higherIs": "worse"
+    },
+    "riskygrowth": {
+     "label": "Share of new floor area (2016–2023) built inside the 2050 flood zone",
+     "value": 6.7,
+     "unit": "%",
      "higherIs": "worse"
     },
     "encroach": {

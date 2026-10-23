@@ -834,6 +834,43 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    /** Risky growth: new floor area since 2016 and projected built-up to 2030 that lands in the 2050 flood zone or grade D/E blocks. */
+    function riskygrowth(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const nf = c['re_supply.new_floor_m2'], fl = c['flood_future.any_pct_2050'], gain = c['building_dynamics.proj_gain_pp'];
+        if (!nf || !fl) return null;
+        const cg = climategrade(fr), score = cg ? cg.columns.climate_score : null;
+        const risky = new Float64Array(n).fill(NaN), cells = [];
+        let floor = 0, wetFloor = 0, land = 0, wetLand = 0, deFloor = 0, gainKm2 = 0, wetGainKm2 = 0;
+        for (let i = 0; i < n; i++) {
+            if (!_fin(fl[i])) continue;
+            land += g.cellKm2; wetLand += g.cellKm2 * fl[i] / 100;
+            if (gain && _fin(gain[i]) && gain[i] > 0) { gainKm2 += g.cellKm2 * gain[i] / 100; wetGainKm2 += g.cellKm2 * gain[i] / 100 * fl[i] / 100; }
+            if (!_fin(nf[i]) || nf[i] <= 0) continue;
+            const w = nf[i] * fl[i] / 100;
+            risky[i] = w; cells.push(i);
+            floor += nf[i]; wetFloor += w;
+            if (score && _fin(score[i]) && score[i] >= 50) deFloor += nf[i];
+        }
+        if (cells.length < 5 || !floor) return null;
+        const shareNew = 100 * wetFloor / floor, shareLand = 100 * wetLand / (land || 1), tilt = shareLand >= 1 ? shareNew / shareLand : null;
+        const stats = [
+            { label: 'Floor area built 2016–2023 inside the 2050 100-year flood zone', value: `${_round(wetFloor / 1e6, 2)} km² (${_round(shareNew)}% of all new floor area)`, raw: _round(shareNew) },
+            { label: 'Share of the city\'s land in that flood zone', value: `${_round(shareLand)}%` },
+            { label: 'Is building avoiding flood land?', value: tilt == null ? '–' : tilt < 0.8 ? `yes: new floor area is ${_round(tilt, 2)}× as likely to be there as land in general` : tilt > 1.2 ? `no: new floor area is ${_round(tilt, 2)}× as likely to be there as land in general` : `neutral (${_round(tilt, 2)}×)` },
+        ];
+        if (score) stats.push({ label: 'New floor area 2016–2023 in climate grade D or E blocks', value: `${_round(deFloor / 1e6, 2)} km² (${_round(100 * deFloor / floor)}%)` });
+        if (gainKm2) stats.push({ label: 'Built-up land projected 2020→2030 (GHSL) inside the 2050 flood zone', value: `${_round(wetGainKm2, 1)} of ${_round(gainKm2, 1)} km² (${_round(100 * wetGainKm2 / gainKm2)}%)` });
+        spaced(g, cells.filter(i => risky[i] > 0), 4).slice(0, 3).forEach((i, k) => stats.push({ label: `Risky building hotspot ${k + 1}: ${g.codes[i]}`, value: `${_people(risky[i])} m² of new floor area in the flood zone (${Math.round(fl[i])}% of the block)` }));
+        return {
+            columns: { risky_floor_m2: risky }, idx: cells, weightKey: 'risky_floor_m2', noHotspots: true,
+            metric: { label: 'Share of new floor area (2016–2023) built inside the 2050 flood zone', value: _round(shareNew), unit: '%', higherIs: 'worse' },
+            headline: shareLand < 1 ? 'Almost none of the city lies in the 1-in-100-year river or sea flood zone of 2050 at Aqueduct\'s 1 km scale, so new building is not flagged here; local drainage flooding is in the Waterlogging lens.'
+                : `${_round(shareNew)}% of the floor area built since 2016 sits inside the 1-in-100-year flood zone of 2050, against ${_round(shareLand)}% of the city's land${tilt != null && tilt > 1.2 ? ': new building is drifting toward flood land' : tilt != null && tilt < 0.8 ? ': new building is mostly keeping out of it' : ''}.`,
+            stats,
+        };
+    }
+
     /** Flood 2050: residents in the 1-in-100-year river or coastal flood zone, now and by 2050 (WRI Aqueduct). */
     function flood2050(fr) {
         const g = fr.grid, c = fr.cols, n = g.n;
@@ -1144,6 +1181,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_per_c_2050', 'climate_future.warm_nights_2050', 'climate_future.warm_nights_per_c_2050', 'climate_future.cdd_now', 'climate_future.cdd_2050', 'climate_future.cooling_days_2050', 'surface_heat.uhi_anomaly_c', 'surface_heat.modis_night_c', 'vegetation.tree_canopy_pct', 'flood_future.any_pct_2050', 'humid_heat.humid_heat_days', 'water_risk.water_stress_2050_pct', 'water_risk.groundwater_decline_cm_yr', 'population.population'],
             method: 'Score = 100 × (0.40 heat + 0.35 flood + 0.25 water), each 0–1 on fixed scales so cities compare directly. Heat: 0.5 × days at 40 °C or more by 2050 with the block\'s heat island (60 days = 1) + 0.3 × nights at 28 °C or more (90 = 1), from the Street heat lens, + 0.2 × humid-heat days with a wet-bulb of 28 °C or more today (60 = 1; no 2050 wet-bulb yet). Flood: share of the block in the 1-in-100-year river or sea flood zone by 2050 (WRI Aqueduct). Water: 0.7 × basin water stress by 2050 (100% = 1) + 0.3 × groundwater decline (15 cm a year = 1). Grades: A under 20, B 20–35, C 35–50, D 50–65, E 65+. The weights are a judgement, not a calibration: read the parts as well as the grade.',
             refs: 'Thrasher et al. 2022 (NEX-GDDP-CMIP6); Ward et al. 2020 (Aqueduct Floods); Kuzma et al. 2023 (Aqueduct 4.0); OECD/JRC 2008 composite-indicator handbook' },
+        { id: 'riskygrowth', title: 'Risky growth', icon: '🏗️',
+            question: 'Is new building going into land that floods or overheats by 2050?',
+            field: { key: 'risky_floor_m2', label: 'New floor area (2016–2023) inside the 2050 flood zone', unit: 'm²', higherIs: 'worse', ramp: 'reds' },
+            needs: ['re_supply.new_floor_m2', 'flood_future.any_pct_2050', 'building_dynamics.proj_gain_pp', 'climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_per_c_2050', 'climate_future.warm_nights_2050', 'climate_future.warm_nights_per_c_2050', 'climate_future.cdd_now', 'climate_future.cdd_2050', 'climate_future.cooling_days_2050', 'surface_heat.uhi_anomaly_c', 'surface_heat.modis_night_c', 'humid_heat.humid_heat_days', 'water_risk.water_stress_2050_pct', 'water_risk.groundwater_decline_cm_yr', 'population.population'],
+            method: 'New floor area 2016–2023 (Open Buildings 2.5D Temporal, from the Building hotspots lens) is weighted by the share of each block inside the 1-in-100-year river or sea flood zone by 2050 (WRI Aqueduct). The tilt compares that share with the share of all land in the zone: above 1 means new building leans toward flood land. Projected built-up gain 2020→2030 is GHSL. Grade D/E uses the Climate 2050 grade. Aqueduct is 1 km with no defences, so blocks partly in the zone count in proportion.',
+            refs: 'Rentschler et al. 2023 (Nature, global settlement growth in flood zones); Sirko et al. 2023 (Open Buildings 2.5D Temporal); Pesaresi et al. 2023 (GHSL); Ward et al. 2020 (Aqueduct Floods)' },
         { id: 'encroach', equity: true, title: 'Encroachment watch', icon: '🚧',
             question: 'Which lakes, floodplains and green areas have been lost to building, and where is it still happening?',
             field: { key: 'encroach_score', label: 'Encroachment score (former water, floodplain and tree loss built up)', unit: 'points', higherIs: 'worse', ramp: 'reds' },
@@ -1152,7 +1195,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
 })();
 

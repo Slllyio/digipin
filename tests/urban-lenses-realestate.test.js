@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -270,6 +270,19 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(RE.climateGrade(65)).toBe('E');
         expect(r.headline).toMatch(/grades E/);
         expect(L._lenses.climategrade(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('riskygrowth: new floor area in the 2050 flood zone and the tilt against land', () => {
+        const nf = codes.map((_, i) => (i < SIZE ? 1000 : 10)), fl = codes.map((_, i) => (i < SIZE ? 100 : 0));
+        const f = L.frameFrom(codes, { ...base, 're_supply.new_floor_m2': nf, 'flood_future.any_pct_2050': fl });
+        const r = L._lenses.riskygrowth(f, {});
+        expect(r.columns.risky_floor_m2[0]).toBe(1000);
+        expect(r.columns.risky_floor_m2[SIZE]).toBe(0);
+        expect(r.metric.value).toBeGreaterThan(50);
+        expect(r.headline).toMatch(/drifting toward flood land/);
+        const dry = L.frameFrom(codes, { ...base, 're_supply.new_floor_m2': nf, 'flood_future.any_pct_2050': codes.map(() => 0) });
+        expect(L._lenses.riskygrowth(dry, {}).headline).toMatch(/^Almost none/);
+        expect(L._lenses.riskygrowth(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('farText(): base vs asked FAR, rebuild and homes', () => {
