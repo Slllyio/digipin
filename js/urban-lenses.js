@@ -1983,7 +1983,7 @@ const UrbanLenses = (() => {
                 continue;
             }
             fields.push({ key: f.key, label: f.label, type: 'number', agg: f.unit === 'people' ? 'sum' : 'mean', unit: f.unit,
-                ramp: f.ramp, higherIs: f.higherIs || undefined });
+                ramp: f.ramp, higherIs: f.higherIs || undefined, ...(Array.isArray(f.domain) ? { domain: f.domain.slice() } : {}) });
         }
         if (!fields.length) return null;
         const order = result.layer.cells.map((c, i) => i).sort((a, b) => (result.layer.cells[a] < result.layer.cells[b] ? -1 : 1));
