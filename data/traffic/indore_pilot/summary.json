@@ -735,21 +735,81 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 31,
-    "stops_with_heat_data": 31,
-    "pct_hot_bare": 64.5,
-    "pct_riders_at_hot_bare": 39.5,
-    "median_stop_lst_c": 41.7,
+    "stops": 103,
+    "stops_with_heat_data": 103,
+    "pct_hot_bare": 58.3,
+    "pct_riders_at_hot_bare": 36.3,
+    "median_stop_lst_c": 41.2,
     "top_stops": [
       {
+        "digipin": "3MC8788",
+        "name": "Bus stop near madhumilan Mandir",
+        "lon": 75.87417,
+        "lat": 22.71395,
+        "residents_5min": 25020,
+        "lst_c": 42.2,
+        "canopy_pct": 4.8,
+        "priority": 171497
+      },
+      {
         "digipin": "3MC87FF",
-        "name": "Indore Gangwal Bus Stand",
-        "lon": 75.84086,
-        "lat": 22.71292,
+        "name": "Gangwal Bus Stand",
+        "lon": 75.84098,
+        "lat": 22.71288,
         "residents_5min": 22223,
         "lst_c": 42.5,
         "canopy_pct": 3.1,
         "priority": 161506
+      },
+      {
+        "digipin": "3M9FJ56",
+        "name": "Musakhedi Square",
+        "lon": 75.89975,
+        "lat": 22.69259,
+        "residents_5min": 17776,
+        "lst_c": 43.5,
+        "canopy_pct": 1.7,
+        "priority": 148527
+      },
+      {
+        "digipin": "3M9FF4M",
+        "name": "Palasia",
+        "lon": 75.8872,
+        "lat": 22.72475,
+        "residents_5min": 29852,
+        "lst_c": 40.7,
+        "canopy_pct": 14.1,
+        "priority": 146164
+      },
+      {
+        "digipin": "3M9FF4M",
+        "name": "AICTSL Stop Palasia",
+        "lon": 75.88698,
+        "lat": 22.72492,
+        "residents_5min": 29852,
+        "lst_c": 40.7,
+        "canopy_pct": 14.1,
+        "priority": 146164
+      },
+      {
+        "digipin": "3M9FFK5",
+        "name": "City Bus Stop Zanjeerwala Square",
+        "lon": 75.87947,
+        "lat": 22.72601,
+        "residents_5min": 31965,
+        "lst_c": 40.0,
+        "canopy_pct": 11.7,
+        "priority": 141125
+      },
+      {
+        "digipin": "3M9FFK5",
+        "name": "Janjeervala Square Bus Stop",
+        "lon": 75.88058,
+        "lat": 22.72673,
+        "residents_5min": 31965,
+        "lst_c": 40.0,
+        "canopy_pct": 11.7,
+        "priority": 141125
       },
       {
         "digipin": "3M9FFMC",
@@ -762,84 +822,24 @@
         "priority": 130135
       },
       {
-        "digipin": "3M9FFMK",
-        "name": "Geeta Bhavan BRT Bus Stop",
-        "lon": 75.8844,
-        "lat": 22.71897,
-        "residents_5min": 27259,
-        "lst_c": 40.4,
-        "canopy_pct": 14.5,
-        "priority": 125855
+        "digipin": "3MC88MF",
+        "name": "Badwali Chowki",
+        "lon": 75.84943,
+        "lat": 22.72245,
+        "residents_5min": 24439,
+        "lst_c": 41.1,
+        "canopy_pct": 14.1,
+        "priority": 128058
       },
       {
-        "digipin": "3MC8PFP",
-        "name": "Rau Bus Stand",
-        "lon": 75.81045,
-        "lat": 22.63662,
-        "residents_5min": 18583,
-        "lst_c": 42.0,
-        "canopy_pct": 5.1,
-        "priority": 123447
-      },
-      {
-        "digipin": "3MC878C",
-        "name": "Indor Bus Station",
-        "lon": 75.86876,
-        "lat": 22.71396,
-        "residents_5min": 17358,
-        "lst_c": 42.3,
-        "canopy_pct": 10.3,
-        "priority": 113662
-      },
-      {
-        "digipin": "3MC878F",
-        "name": "Sarwate Bus Stand",
-        "lon": 75.86835,
-        "lat": 22.71394,
-        "residents_5min": 15340,
-        "lst_c": 42.7,
-        "canopy_pct": 4.0,
-        "priority": 113393
-      },
-      {
-        "digipin": "3M9FFL6",
-        "name": "Treebo Omni Palace - Hotel",
-        "lon": 75.88192,
-        "lat": 22.71774,
-        "residents_5min": 26841,
-        "lst_c": 39.6,
-        "canopy_pct": 12.3,
-        "priority": 108282
-      },
-      {
-        "digipin": "3M9FFMF",
-        "name": "Velocity Terminal",
-        "lon": 75.88416,
-        "lat": 22.72325,
-        "residents_5min": 28948,
-        "lst_c": 39.7,
-        "canopy_pct": 24.6,
-        "priority": 102586
-      },
-      {
-        "digipin": "3MC88TM",
-        "name": "Indore Nagar Palika Nigam Bus Stop",
-        "lon": 75.8705,
-        "lat": 22.71515,
-        "residents_5min": 19893,
-        "lst_c": 41.2,
-        "canopy_pct": 20.1,
-        "priority": 98546
-      },
-      {
-        "digipin": "3MC887T",
-        "name": "City Bus Stasion",
-        "lon": 75.87459,
-        "lat": 22.73273,
-        "residents_5min": 13697,
-        "lst_c": 41.6,
-        "canopy_pct": 2.9,
-        "priority": 87779
+        "digipin": "3M9FCJM",
+        "name": "Khizrabad Square (Chouraha)",
+        "lon": 75.91405,
+        "lat": 22.73328,
+        "residents_5min": 21145,
+        "lst_c": 41.1,
+        "canopy_pct": 1.2,
+        "priority": 127437
       }
     ],
     "thresholds": {
@@ -848,7 +848,8 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "overture": 31
+      "osm": 76,
+      "overture": 27
     }
   },
   "parking": {
@@ -871,16 +872,16 @@
         "pressure": 2.88
       },
       {
-        "digipin": "3MC9L64",
-        "demand_ecs": 191,
-        "supply_ecs": 62,
-        "pressure": 3.1
-      },
-      {
         "digipin": "3MC87MJ",
         "demand_ecs": 241,
         "supply_ecs": 112,
         "pressure": 2.14
+      },
+      {
+        "digipin": "3MC9L64",
+        "demand_ecs": 191,
+        "supply_ecs": 62,
+        "pressure": 3.1
       },
       {
         "digipin": "3MC9LKP",
@@ -889,16 +890,16 @@
         "pressure": 9.02
       },
       {
-        "digipin": "34MTTF4",
-        "demand_ecs": 216,
-        "supply_ecs": 90,
-        "pressure": 2.4
-      },
-      {
         "digipin": "3MC9LL9",
         "demand_ecs": 126,
         "supply_ecs": 0,
         "pressure": 125.79
+      },
+      {
+        "digipin": "34MTTF4",
+        "demand_ecs": 216,
+        "supply_ecs": 90,
+        "pressure": 2.4
       },
       {
         "digipin": "34MTTFT",
