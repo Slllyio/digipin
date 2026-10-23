@@ -54,7 +54,7 @@ Each item gives four things:
 11. RERA project registrations (state portals; scraping fragile) | API/key | supply pipeline
 12. Circle rates for more states (Maharashtra ASR, Karnataka guidance values) | open PDFs | land-value calibration
 13. Rental listings index (99acres/MagicBricks) | key | rent lens (parked for keys)
-14. Hotel and serviced-apartment density (Overture lodging) | S3 | tourism demand lens
+14. ✅ Hotel and serviced-apartment density (Overture lodging) | S3 | tourism demand lens
 15. ✅ Co-working spaces (Overture) | S3 | office demand
 16. ✅ Overture places per block (shops, food, offices, health, education, brands) | S3 | Commercial vitality
 17. ✅ Retail catchment (Huff model on places + population) | derived | retail siting

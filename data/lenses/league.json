@@ -390,6 +390,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 148,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 2,
@@ -887,6 +893,12 @@
      "value": 43.4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 40,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -1386,6 +1398,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 13,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 5,
@@ -1877,6 +1895,12 @@
      "value": 64,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 199,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -2376,6 +2400,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 56,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 37,
@@ -2843,6 +2873,12 @@
      "value": 15.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 22,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3335,6 +3371,12 @@
      "value": 55,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 160,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3834,6 +3876,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 110,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 9,
@@ -4325,6 +4373,12 @@
      "value": 46.8,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 49,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -4818,6 +4872,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 39,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 23,
@@ -5303,6 +5363,12 @@
      "value": 44.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 185,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -5808,6 +5874,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 245,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 21,
@@ -6305,6 +6377,12 @@
      "value": 39,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "stay": {
+     "label": "Underserved blocks for hotels",
+     "value": 118,
+     "unit": "blocks",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",

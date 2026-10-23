@@ -1068,6 +1068,53 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Hotel demand against supply. Visitors come for sights (culture), business (offices), treatment (hospitals) and
+    // trains and buses (transport); hotels and hostels are the supply. Both are summed within STAY_KM and ranked as
+    // within-city percentiles; a gap of STAY_GAP points or more where demand is in the top STAY_DEMAND share is an
+    // underserved block.
+    const STAY_KM = 1.5, STAY_GAP = 30, STAY_DEMAND = 70;
+
+    function stay(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const P = k => c[`places.${k}`];
+        if (!P('lodging') || !P('culture')) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const kinds = { sights: ['culture'], business: ['offices'], medical: ['hospitals'], transit: ['transport'] };
+        const near = {};
+        for (const [k, ks] of Object.entries(kinds)) near[k] = within(g, Float64Array.from({ length: n }, (_, i) => ks.reduce((a, kk) => a + v(P(kk), i), 0)), STAY_KM);
+        const supply = within(g, Float64Array.from({ length: n }, (_, i) => v(P('lodging'), i) + v(P('hostels'), i)), STAY_KM);
+        const idx = [];
+        for (let i = 0; i < n; i++) if ((!pop || pop[i] > 0) && (near.sights[i] + near.business[i] + near.medical[i] + near.transit[i] > 0)) idx.push(i);
+        if (idx.length < 5) return null;
+        const pct = arr => {
+            const sorted = idx.map(i => arr[i]).sort((a, b) => a - b), out = new Float64Array(n).fill(NaN);
+            for (const i of idx) { let lo = 0, hi = sorted.length; while (lo < hi) { const m = (lo + hi) >> 1; if (sorted[m] < arr[i]) lo = m + 1; else hi = m; } out[i] = 100 * lo / sorted.length; }
+            return out;
+        };
+        const dp = Object.fromEntries(Object.keys(kinds).map(k => [k, pct(near[k])]));
+        const W = { sights: 0.4, business: 0.25, medical: 0.15, transit: 0.2 };
+        const demand = new Float64Array(n).fill(NaN);
+        for (const i of idx) demand[i] = Object.keys(W).reduce((a, k) => a + W[k] * dp[k][i], 0);
+        const dRank = pct(demand), sRank = pct(supply), gap = new Float64Array(n).fill(NaN);
+        for (const i of idx) gap[i] = dRank[i] - sRank[i];
+        const under = idx.filter(i => dRank[i] >= STAY_DEMAND && gap[i] >= STAY_GAP);
+        const tot = k => idx.reduce((a, i) => a + v(P(k), i), 0);
+        const stats = [
+            { label: 'Hotels, guest houses and hostels listed', value: Math.round(tot('lodging') + tot('hostels')).toLocaleString('en-IN') },
+            { label: 'Sights, offices, hospitals and transport stops listed', value: Math.round(tot('culture') + tot('offices') + tot('hospitals') + tot('transport')).toLocaleString('en-IN') },
+            { label: `Underserved blocks (visitor pull in the top ${100 - STAY_DEMAND}%, hotels ${STAY_GAP}+ points behind)`, value: under.length.toLocaleString('en-IN'), raw: under.length },
+        ];
+        const why = i => Object.entries(dp).sort((a, b) => W[b[0]] * b[1][i] - W[a[0]] * a[1][i])[0][0];
+        spaced(g, under, gap).slice(0, TOP).forEach((i, k) => stats.push({ label: `Hotel gap ${k + 1}: ${g.codes[i]}`,
+            value: `${Math.round(supply[i])} places to stay within ${STAY_KM} km; pull mostly ${why(i)}` }));
+        return {
+            columns: { stay_gap: gap, visitor_pull: dRank, stay_supply: sRank }, idx, weightKey: 'stay_gap', noHotspots: true,
+            metric: { label: 'Underserved blocks for hotels', value: under.length, unit: 'blocks', higherIs: null },
+            headline: `${under.length.toLocaleString('en-IN')} blocks draw visitors (sights, offices, hospitals, stations) but have far fewer places to stay nearby than the city norm: the clearest openings for hotels and serviced apartments.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -1350,6 +1397,14 @@ const UrbanLensesEnvironment = (() => {
                 'waterlogging.wetness_index'],
             method: `Annual recharge per block = annual rain (CHIRPS) × the unbuilt, non-water share (Dynamic World) × a rainfall infiltration factor by soil group (SoilGrids sand and clay): ${RIF.join(', ')} from sandy to clayey ground, after the Central Ground Water Board GEC-2015 norms. The same rain on built-over ground is counted as recharge lost to sealing. Blocks at least ${RECHARGE_OPEN}% open are scored for recharge sites: soil 35%, slope 25% (flat best), open share 20%, wetness index 20% (low ground where water gathers). Geology and lineaments, which matter a lot in hard-rock cities, are not in the data, so treat the score as a first screen before a hydrogeological survey.`,
             refs: 'CGWB Groundwater Estimation Committee 2015 methodology; Machiwal, Jha & Mal 2011 (Water Resour. Manag.); Dynamic World; CHIRPS; SoilGrids' },
+        { id: 'stay', equity: false, title: 'Hotel demand gap', icon: '🏨',
+            question: 'Where do visitors come but few hotels stand?',
+            field: { key: 'stay_gap', label: 'Visitor pull minus hotel supply (percentile points)', unit: 'points', higherIs: null, ramp: 'diverging', domain: [-60, 60] },
+            extra: [{ key: 'visitor_pull', label: 'Visitor pull (percentile)', unit: '0-100', higherIs: null, ramp: 'viridis', domain: [0, 100] },
+                { key: 'stay_supply', label: 'Places to stay nearby (percentile)', unit: '0-100', higherIs: null, ramp: 'viridis', domain: [0, 100] }],
+            needs: ['places.lodging', 'places.hostels', 'places.culture', 'places.offices', 'places.hospitals', 'places.transport', 'population.population'],
+            method: `Overture Maps places within ${STAY_KM} km of each block. Visitor pull = 40% sights (cultural and historic places), 25% business (offices), 15% medical (hospitals) and 20% transit (travel and transport places), each as a within-city percentile. Supply = hotels, guest houses and hostels (Overture lodging), also as a percentile. The gap is pull minus supply; a block with pull in the top ${100 - STAY_DEMAND}% and a gap of ${STAY_GAP}+ points is underserved. Listings, not rooms, so one big hotel counts once.`,
+            refs: 'Overture Maps Foundation places; Yang, Luo & Law 2014 (hotel location, Tourism Management)' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -1365,7 +1420,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lightning, recharge, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lightning, recharge, stay, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

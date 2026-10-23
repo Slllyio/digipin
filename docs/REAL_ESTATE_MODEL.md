@@ -852,3 +852,7 @@ Annual recharge per block is annual rain (CHIRPS) × the unbuilt, non-water shar
 | Chennai | 28 million m³ | 49 million m³ (64%) |
 
 Blocks at least 20% open are scored as recharge sites (soil 35%, flat slope 25%, open share 20%, wetness index 20%) and the top tenth are listed, spaced 1.5 km apart. Geology and lineaments, which decide recharge in hard-rock cities like Bengaluru and Hyderabad, are not in the data, so the score is a first screen before a hydrogeological survey. The `water_risk.groundwater_decline_cm_yr` field is not used here because its values do not read as a physical cm-a-year trend.
+
+## Hotel demand gap (`stay` lens)
+
+Visitors come to a block for sights (Overture cultural and historic places), business (offices), treatment (hospitals) and travel (stations and stops). Each is summed within 1.5 km, ranked as a within-city percentile and weighted 40/25/15/20 into visitor pull. Hotels, guest houses and hostels within 1.5 km are the supply, also ranked. The gap is pull minus supply. A block with pull in the city's top 30% and a gap of 30 points or more is underserved: Delhi has 56 such blocks, Jaipur 49. The hotel belt around Mahipalpur by the airport shows as oversupplied (blue), as expected. Listings are not rooms, so one large hotel counts once.

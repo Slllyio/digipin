@@ -30,6 +30,7 @@ const DishaIntel = (() => {
             coolroof: /\b(cool[\s-]?roofs?|white[\s-]?(roofs?|paint\w*|wash\w*)|roof (albedo|colou?r|paint\w*|coating)|dark roofs?|(tin|metal|concrete) roofs?\b.{0,20}\b(hot|heat)|reflective (roofs?|paint|coating))\b/i,
             jobsmap: /\b(where (are|is) (the )?jobs|employment (centres?|centers?|hubs?|density)|job (density|hubs?|centres?|map)|bedroom (areas?|suburbs?|communit\w*)|jobs[\s-]?(housing|homes) balance|business districts?|cbd)\b/i,
             lakehealth: /\b(lakes?|ponds?|tanks?|reservoirs?)\b.{0,30}\b(health|algae|algal|weeds?|hyacinth|froth\w*|foam\w*|shrink\w*|shrank|dying|polluted|green|dry(ing)?)\b|\b(lake|water) (quality|health)\b/i,
+            stay: /\b(hotel (gaps?|demand|opportunit(y|ies)|sites?)|where (to|should (we|i)) (build|open) an? (hotel|guest ?house|serviced apartment)|serviced apartments?|hospitality demand)\b/i,
             recharge: /\b(groundwater recharge|recharge (pits?|wells?|ponds?|zones?|sites?)|rain ?water harvesting (sites?|potential)|where (should|to) (we )?recharge)\b/i,
             lightning: /\b(lightning|thunder ?storms?|thunderbolts?|bijli gir)\b/i,
             anchors: /\b(student (housing|hubs?|areas?|accommodation)|co[\s-]?living|pg (accommodation|demand)|paying guest|coaching (hubs?|centres?|centers?)|rental demand (drivers?|anchors?)|near (colleges|hospitals))\b/i,

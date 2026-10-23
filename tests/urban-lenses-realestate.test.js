@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -485,6 +485,15 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(Number.isNaN(r.columns.recharge_score[0])).toBe(true);
         expect(r.columns.recharge_score[codes.length - 1]).toBeGreaterThan(80);
         expect(L._lenses.recharge(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('stay: sights with no hotels nearby are a hotel gap', () => {
+        const west = codes.map((_, i) => (col(i) < 4 ? (4 - col(i)) * 10 : 0)), east = codes.map((_, i) => (col(i) >= 8 ? 5 : 0));
+        const f = L.frameFrom(codes, { ...base, 'places.culture': west, 'places.lodging': east, 'places.transport': east });
+        const r = L._lenses.stay(f, {});
+        expect(r.columns.stay_gap[0]).toBeGreaterThan(0);
+        expect(r.columns.stay_gap[SIZE - 1]).toBeLessThan(0);
+        expect(L._lenses.stay(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
