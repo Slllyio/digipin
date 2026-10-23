@@ -995,6 +995,79 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Lightning. NASA LIS/OTD climatology at about 55 km, so a regional figure: expected ground strikes a year on
+    // the lived-in area.
+    function lightning(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, cg = c['lightning.cg_rate'], pop = c['population.population'];
+        if (!cg) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(cg[i]) && (!pop || pop[i] > 0)) idx.push(i);
+        if (idx.length < 5) return null;
+        const strikes = idx.reduce((a, i) => a + cg[i] * g.cellKm2, 0);
+        const mean = idx.reduce((a, i) => a + cg[i], 0) / idx.length;
+        const hi = wquantile(cg, null, idx, 0.9), lo = wquantile(cg, null, idx, 0.1);
+        const flash = c['lightning.flash_rate'];
+        const stats = [
+            { label: 'Ground strikes a year on lived-in blocks (estimate)', value: Math.round(strikes).toLocaleString('en-IN'), raw: Math.round(strikes) },
+            { label: 'Ground strikes per km² a year', value: `${_round(mean, 1)} (from ${_round(lo, 1)} to ${_round(hi, 1)} across the city)` },
+        ];
+        if (flash) stats.push({ label: 'All flashes per km² a year, cloud included', value: `${_round(idx.reduce((a, i) => a + (_fin(flash[i]) ? flash[i] : 0), 0) / idx.length, 1)}` });
+        return {
+            columns: { cg_rate: cg }, idx, weightKey: 'cg_rate', noHotspots: true,
+            metric: { label: 'Ground strikes per km² a year', value: _round(mean, 1), unit: 'strikes/km²/yr', higherIs: 'worse' },
+            headline: `About ${Math.round(strikes).toLocaleString('en-IN')} lightning strikes a year are expected to hit the ground on lived-in blocks here (${_round(mean, 1)} per km²). The source grid is about 55 km, so the map shows the regional climate, not street-level risk.`,
+            stats,
+        };
+    }
+
+    // Groundwater recharge. Annual recharge = rain × pervious share × an infiltration factor by soil group, after
+    // CGWB GEC-2015 norms (sandy alluvium 0.22 down to clayey ground 0.08). Sealed ground recharges nothing, so the
+    // built share shows what sealing already costs. Siting score for open land: soil 35%, gentle slope 25%, open
+    // share 20%, wetness (water collects there) 20%.
+    const RIF = [0.22, 0.16, 0.11, 0.08], RECHARGE_OPEN = 20, RECHARGE_TOP = 0.9;
+
+    function recharge(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const built = c['land_cover.built_pct'], water = c['land_cover.water_pct'], rain = c['rainfall.rain_annual_mm'];
+        const sand = c['soil.sand_pct'], clay = c['soil.clay_pct'], slope = c['terrain.slope_deg'], twi = c['waterlogging.wetness_index'];
+        if (!built || !rain) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(built[i]) && _fin(rain[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const m2 = g.cellKm2 * 1e6, now = new Float64Array(n).fill(NaN), score = new Float64Array(n).fill(NaN);
+        const twiIdx = twi ? idx.filter(i => _fin(twi[i])) : [];
+        const twiLo = twiIdx.length ? wquantile(twi, null, twiIdx, 0.1) : 0, twiHi = twiIdx.length ? wquantile(twi, null, twiIdx, 0.9) : 1;
+        let got = 0, lost = 0;
+        for (const i of idx) {
+            const sg = _soilGroup(sand && sand[i], clay && clay[i]);
+            const wat = water && _fin(water[i]) ? water[i] : 0, open = Math.max(0, 100 - built[i] - wat);
+            const vol = rain[i] / 1000 * m2 * RIF[sg];
+            now[i] = vol * open / 100; got += now[i]; lost += vol * built[i] / 100;
+            if (open < RECHARGE_OPEN) continue;
+            const s = slope && _fin(slope[i]) ? slope[i] : 2;
+            const slopeF = s <= 2 ? 1 : s <= 5 ? 0.7 : s <= 10 ? 0.4 : 0.1;
+            const wetF = twi && _fin(twi[i]) && twiHi > twiLo ? Math.min(1, Math.max(0, (twi[i] - twiLo) / (twiHi - twiLo))) : 0.5;
+            score[i] = 100 * (0.35 * [1, 0.75, 0.45, 0.2][sg] + 0.25 * slopeF + 0.2 * open / 100 + 0.2 * wetF);
+        }
+        if (got + lost <= 0) return null;
+        const scored = idx.filter(i => _fin(score[i]));
+        const top = scored.length ? wquantile(score, null, scored, RECHARGE_TOP) : Infinity;
+        const best = scored.filter(i => score[i] >= top);
+        const stats = [
+            { label: 'Rain that soaks into the ground a year (estimate)', value: `${_round(got / 1e6, 1)} million m³`, raw: Math.round(got) },
+            { label: 'Recharge lost to built-over ground a year', value: `${_round(lost / 1e6, 1)} million m³ (${_round(100 * lost / (got + lost))}% of what open ground would take)` },
+            { label: `Open blocks (${RECHARGE_OPEN}%+ unbuilt) scored for recharge sites`, value: scored.length.toLocaleString('en-IN') },
+        ];
+        spaced(g, best, score).slice(0, TOP).forEach((i, k) => stats.push({ label: `Recharge site ${k + 1}: ${g.codes[i]}`,
+            value: `score ${_round(score[i])}; ${Math.round(100 - built[i])}% open, ${['sandy', 'loamy', 'clay-loam', 'clayey'][_soilGroup(sand && sand[i], clay && clay[i])]} soil` }));
+        return {
+            columns: { recharge_score: score, recharge_m3: now }, idx, weightKey: 'recharge_m3', noHotspots: true,
+            metric: { label: 'Recharge lost to built-over ground', value: _round(100 * lost / (got + lost)), unit: '%', higherIs: 'worse' },
+            headline: `About ${_round(got / 1e6, 1)} million m³ of rain soaks into the ground here each year; built-over ground already blocks ${_round(lost / 1e6, 1)} million m³ more (${_round(100 * lost / (got + lost))}%). The top ${best.length.toLocaleString('en-IN')} open blocks, with permeable soil, gentle slopes and low ground where water collects, are the best places for recharge pits, ponds and wells.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -1263,6 +1336,20 @@ const UrbanLensesEnvironment = (() => {
             needs: ['places.colleges', 'places.coaching', 'places.hospitals', 'places.offices', 'places.coworking', 'places.hostels', 'population.population'],
             method: `Overture Maps places in exact categories: college or university; tutoring, coaching and test preparation; hospital; offices (IT, professional and business services) and co-working spaces. Each kind is summed within ${ANCHOR_KM} km of every lived-in block and ranked as a within-city percentile; the score is the mean of the three. Counts are listings, not seats, beds or desks, so a big campus counts once; hostels are shown next to student hubs as existing supply.`,
             refs: 'Overture Maps Foundation places; JLL/Knight Frank India student and co-living housing reports; Smith 2005 (studentification)' },
+        { id: 'lightning', equity: false, title: 'Lightning', icon: '⚡',
+            question: 'How much lightning strikes this city?',
+            field: { key: 'cg_rate', label: 'Ground strikes per km² a year (estimate)', unit: 'strikes/km²/yr', higherIs: 'worse', ramp: 'heat', domain: [0, 8] },
+            needs: ['lightning.cg_rate', 'lightning.flash_rate', 'population.population'],
+            method: 'NASA LIS/OTD 0.5° High Resolution Flash Climatology (1995–2014 mean of satellite-seen lightning), interpolated to each block. Ground strikes use the Prentice & Mackerras latitude rule for the cloud-to-ground share (about 15–19% across India). Strikes on lived-in blocks = ground strike density × block area, summed.',
+            refs: 'Cecil, Buechler & Blakeslee 2014 (Atmos. Res.); Prentice & Mackerras 1977 (J. Appl. Meteorol.)' },
+        { id: 'recharge', equity: false, title: 'Groundwater recharge', icon: '💧',
+            question: 'Where does rain recharge groundwater, and where should recharge pits and ponds go?',
+            field: { key: 'recharge_score', label: 'Recharge site suitability (open blocks)', unit: '0-100', higherIs: 'better', ramp: 'blues', domain: [20, 90] },
+            extra: [{ key: 'recharge_m3', label: 'Rain recharged a year (estimate)', unit: 'm³', higherIs: 'better', ramp: 'blues' }],
+            needs: ['land_cover.built_pct', 'land_cover.water_pct', 'rainfall.rain_annual_mm', 'soil.sand_pct', 'soil.clay_pct', 'terrain.slope_deg',
+                'waterlogging.wetness_index'],
+            method: `Annual recharge per block = annual rain (CHIRPS) × the unbuilt, non-water share (Dynamic World) × a rainfall infiltration factor by soil group (SoilGrids sand and clay): ${RIF.join(', ')} from sandy to clayey ground, after the Central Ground Water Board GEC-2015 norms. The same rain on built-over ground is counted as recharge lost to sealing. Blocks at least ${RECHARGE_OPEN}% open are scored for recharge sites: soil 35%, slope 25% (flat best), open share 20%, wetness index 20% (low ground where water gathers). Geology and lineaments, which matter a lot in hard-rock cities, are not in the data, so treat the score as a first screen before a hydrogeological survey.`,
+            refs: 'CGWB Groundwater Estimation Committee 2015 methodology; Machiwal, Jha & Mal 2011 (Water Resour. Manag.); Dynamic World; CHIRPS; SoilGrids' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -1278,7 +1365,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lightning, recharge, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -463,6 +463,28 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.anchor_score[mid]).toBeGreaterThan(r.columns.anchor_score[SIZE * 11 + 11]);
         expect(r.stats.find(x => /Student hub 1/.test(x.label)).value).toMatch(/^10 within 2 km; 5 hostels$/);
         expect(L._lenses.anchors(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('lightning: ground strikes summed over lived-in blocks', () => {
+        const f = L.frameFrom(codes, { ...base, 'lightning.cg_rate': codes.map(() => 2) });
+        const r = L._lenses.lightning(f, {});
+        expect(r.metric.value).toBe(2);
+        expect(r.headline).toMatch(/2 per km²/);
+        expect(r.stats[0].raw).toBe(Math.round(2 * f.grid.cellKm2 * codes.length));
+        expect(L._lenses.lightning(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('recharge: sandy open ground recharges, built ground counts as lost', () => {
+        const half = codes.map((_, i) => (i < codes.length / 2 ? 90 : 10));
+        const f = L.frameFrom(codes, { ...base, 'land_cover.built_pct': half, 'land_cover.water_pct': codes.map(() => 0), 'rainfall.rain_annual_mm': codes.map(() => 1000),
+            'soil.sand_pct': codes.map(() => 80), 'soil.clay_pct': codes.map(() => 5), 'terrain.slope_deg': codes.map(() => 1) });
+        const r = L._lenses.recharge(f, {});
+        const m2 = f.grid.cellKm2 * 1e6;
+        expect(r.stats[0].raw).toBe(Math.round(codes.length / 2 * m2 * 0.22 * (0.1 + 0.9)));
+        expect(r.metric.value).toBe(50);
+        expect(Number.isNaN(r.columns.recharge_score[0])).toBe(true);
+        expect(r.columns.recharge_score[codes.length - 1]).toBeGreaterThan(80);
+        expect(L._lenses.recharge(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

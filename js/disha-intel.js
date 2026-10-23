@@ -30,6 +30,8 @@ const DishaIntel = (() => {
             coolroof: /\b(cool[\s-]?roofs?|white[\s-]?(roofs?|paint\w*|wash\w*)|roof (albedo|colou?r|paint\w*|coating)|dark roofs?|(tin|metal|concrete) roofs?\b.{0,20}\b(hot|heat)|reflective (roofs?|paint|coating))\b/i,
             jobsmap: /\b(where (are|is) (the )?jobs|employment (centres?|centers?|hubs?|density)|job (density|hubs?|centres?|map)|bedroom (areas?|suburbs?|communit\w*)|jobs[\s-]?(housing|homes) balance|business districts?|cbd)\b/i,
             lakehealth: /\b(lakes?|ponds?|tanks?|reservoirs?)\b.{0,30}\b(health|algae|algal|weeds?|hyacinth|froth\w*|foam\w*|shrink\w*|shrank|dying|polluted|green|dry(ing)?)\b|\b(lake|water) (quality|health)\b/i,
+            recharge: /\b(groundwater recharge|recharge (pits?|wells?|ponds?|zones?|sites?)|rain ?water harvesting (sites?|potential)|where (should|to) (we )?recharge)\b/i,
+            lightning: /\b(lightning|thunder ?storms?|thunderbolts?|bijli gir)\b/i,
             anchors: /\b(student (housing|hubs?|areas?|accommodation)|co[\s-]?living|pg (accommodation|demand)|paying guest|coaching (hubs?|centres?|centers?)|rental demand (drivers?|anchors?)|near (colleges|hospitals))\b/i,
             services: /\b(banking deserts?|no (bank|atm|clinic|pharmacy|chemist|school)s? (nearby|within|near)|(banks?|atms?|clinics?|pharmac\w+|chemists?) (per|within|near(by)?|access)|everyday services|basic services)\b/i,
             flightpath: /\b(flight ?paths?|aircraft noise|airport noise|planes? (fly|flying) (over|low)|under the (flight|approach)|approach path|overflights?|low[\s-]?flying (planes?|aircraft))\b/i,

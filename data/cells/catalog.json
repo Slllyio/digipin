@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T20:48:02Z",
+  "generated": "2026-10-23T20:56:39Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -11063,6 +11063,207 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "lightning",
+      "title": "Lightning (NASA LIS/OTD)",
+      "description": "NASA LIS/OTD 0.5\u00b0 High Resolution Flash Climatology (Cecil et al. 2014), the 1995\u20132014 mean of total lightning seen from orbit, interpolated to each block. Ground strikes use the Prentice & Mackerras (1977) latitude rule for the cloud-to-ground share (about 15\u201319% across India). The grid is about 55 km, so this shows the regional lightning climate, not differences between neighbouring streets.",
+      "source": "pipeline/safety/lightning.py (NASA GHRC DAAC, LISOTD_HRFC_V2.3.2015)",
+      "license": "NASA open data (no restrictions)",
+      "group": "Hazards",
+      "level": 6,
+      "approxCellM": 975,
+      "fields": [
+        {
+          "key": "flash_rate",
+          "label": "Lightning flashes per km\u00b2 per year (all types)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "flashes/km\u00b2/yr",
+          "domain": [
+            0,
+            40
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cg_rate",
+          "label": "Estimated ground strikes per km\u00b2 per year",
+          "type": "number",
+          "agg": "mean",
+          "unit": "strikes/km\u00b2/yr",
+          "domain": [
+            0,
+            8
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "cg_rate",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 504,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.6845703125,
+            "north": 23.1279296875
+          },
+          "json": "lightning/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 1368,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.8271484375,
+            "east": 77.7822265625,
+            "north": 13.1435546875
+          },
+          "json": "lightning/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 442,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.3212890625
+          },
+          "json": "lightning/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 688,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.8974609375,
+            "east": 80.322265625,
+            "north": 13.1875
+          },
+          "json": "lightning/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 3304,
+          "bbox": {
+            "west": 76.8330078125,
+            "south": 28.392578125,
+            "east": 77.3515625,
+            "north": 28.884765625
+          },
+          "json": "lightning/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 100,
+          "bbox": {
+            "west": 77.263671875,
+            "south": 24.595703125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "lightning/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1080,
+          "bbox": {
+            "west": 78.2919921875,
+            "south": 17.2919921875,
+            "east": 78.6083984375,
+            "north": 17.5556640625
+          },
+          "json": "lightning/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 2209,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.4951171875,
+            "east": 76.0068359375,
+            "north": 22.908203125
+          },
+          "json": "lightning/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 624,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.927734375,
+            "north": 27.00390625
+          },
+          "json": "lightning/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 480,
+          "bbox": {
+            "west": 88.2763671875,
+            "south": 22.4423828125,
+            "east": 88.4521484375,
+            "north": 22.6533203125
+          },
+          "json": "lightning/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 529,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "lightning/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 1099,
+          "bbox": {
+            "west": 72.7724609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.2783203125
+          },
+          "json": "lightning/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 700,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.42578125,
+            "east": 73.994140625,
+            "north": 18.6455078125
+          },
+          "json": "lightning/pune.json",
+          "parquet": null
         }
       ]
     },

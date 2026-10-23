@@ -825,3 +825,30 @@ Three kinds of place drive rental demand in Indian cities: colleges and coaching
 | Pune | 1,618 | 1,446 | 1,135 | 3,194 |
 
 Counts are listings, not seats, beds or desks, so a large campus counts once and a coaching street of fifty small centres counts fifty times. Mall counts are stored in `places.malls` for later retail lenses.
+
+## Lightning (`lightning` lens, `lightning` dataset)
+
+NASA's LIS/OTD 0.5° High Resolution Flash Climatology (Cecil et al. 2014) is the 1995–2014 mean of lightning seen by two orbiting sensors. `pipeline/safety/lightning.py` interpolates it bilinearly to every L6 block and estimates ground strikes with the Prentice & Mackerras (1977) latitude rule, which puts the cloud-to-ground share at about 15–19% across India. The file needs a NASA Earthdata token (`EARTHDATA_TOKEN`), and since it is a fixed climatology one bake is enough.
+
+| City | Ground strikes per km² a year |
+|---|---|
+| Kolkata | 3.7 |
+| Delhi | 2.8 |
+| Chennai | 2.3 |
+| Jaipur | 2.2 |
+| Mumbai | 1.1 |
+| Ahmedabad | 0.8 |
+
+The grid is about 55 km, so the lens gives a city-scale figure and a gentle gradient, not street-level risk. A diurnal cycle is not in this file (the 2.5° hourly array in it is sensor detection efficiency, not flashes).
+
+## Groundwater recharge (`recharge` lens)
+
+Annual recharge per block is annual rain (CHIRPS) × the unbuilt, non-water share of the block (Dynamic World) × a rainfall infiltration factor by soil group from SoilGrids sand and clay: 0.22 for sandy ground, 0.16 loamy, 0.11 clay-loam and 0.08 clayey, after the Central Ground Water Board's GEC-2015 norms. The same rain on built-over ground is counted as recharge lost to sealing.
+
+| City | Recharged a year | Lost to built-over ground |
+|---|---|---|
+| Delhi | 256 million m³ | 138 million m³ (35%) |
+| Bengaluru | 95 million m³ | 73 million m³ (43%) |
+| Chennai | 28 million m³ | 49 million m³ (64%) |
+
+Blocks at least 20% open are scored as recharge sites (soil 35%, flat slope 25%, open share 20%, wetness index 20%) and the top tenth are listed, spaced 1.5 km apart. Geology and lineaments, which decide recharge in hard-rock cities like Bengaluru and Hyderabad, are not in the data, so the score is a first screen before a hydrogeological survey. The `water_risk.groundwater_decline_cm_yr` field is not used here because its values do not read as a physical cm-a-year trend.

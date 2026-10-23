@@ -22,7 +22,7 @@ Each item gives four things:
 | 5 | Landslide susceptibility (NASA LHASA) | Hills in Mumbai, Pune, Bengaluru fringe, Bhopal |
 | 6 | Cyclone wind return levels (STORM) | Chennai, Kolkata, Mumbai: insurance and structure risk |
 | 7 | ✅ Earthquake zone (ground lens) (BIS IS 1893 zones) | Delhi zone IV, Kolkata III/IV: building code and insurance |
-| 8 | Lightning flash density (LIS/OTD) | Deaths, power cuts, solar/telecom asset risk |
+| 8 | ✅ Lightning flash density (lightning lens) (LIS/OTD) | Deaths, power cuts, solar/telecom asset risk |
 | 9 | ✅ Dust and dust storms (CAMS dust share and dust-haze days; airtrend lens) | Delhi/Jaipur/Ahmedabad pre-monsoon air |
 | 10 | ✅ Wet-bulb 2050 (CMIP6 hurs + tas) | Humid heat future for coastal cities |
 | 11 | ✅ Crop and green-belt loss at the edge (Dynamic World; farmloss lens) | Peri-urban conversion pressure |
@@ -72,7 +72,7 @@ Each item gives four things:
 26. ▶ Landslide susceptibility (NASA LHASA global) | EE community / NASA | hazard lens
 27. ▶ Cyclone wind 10/100-year return speeds (STORM, Bloemendaal 2020) | open download | wind risk
 28. ✅ Seismic zone (BIS IS 1893-2016) | open map digitised | quake risk
-29. ▶ Lightning flash density (NASA LIS/OTD climatology) | NASA | lightning risk
+29. ✅ Lightning flash density (NASA LIS/OTD climatology) | NASA | lightning risk
 30. ✅ Dust AOD and dust-storm days (CAMS instead of MERRA-2) | NASA | dust lens
 31. ✅ Wet-bulb 2050 (NEX-GDDP hurs + tasmax) | EE | humid heat future (humid_future (wet-bulb now and 2050))
 32. Sea-level rise 2100 bathtub on FABDEM (connected) | EE community | coastal long view
@@ -88,7 +88,7 @@ Each item gives four things:
 42. ✅ Water quality chlorophyll / turbidity in lakes (Sentinel-2) | EE | lake lens
 43. ✅ Mangrove extent and loss (Global Mangrove Watch) | EE | coastal buffer
 44. Coastal erosion / shoreline change (Landsat shoreline) | EE | coast lens
-45. Groundwater recharge potential (soil + slope + land cover) | EE | recharge siting
+45. ✅ Groundwater recharge potential (soil + slope + land cover) | EE | recharge siting
 
 ## C. Air and health (46–60)
 

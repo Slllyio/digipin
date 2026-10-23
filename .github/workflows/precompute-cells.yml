@@ -44,6 +44,7 @@ jobs:
     timeout-minutes: 240
     env:
       PYTHONPATH: .
+      EARTHDATA_TOKEN: ${{ secrets.EARTHDATA_TOKEN }}
       REGION: ${{ github.event.inputs.region || 'all' }}
     steps:
       - uses: actions/checkout@v4
@@ -100,6 +101,7 @@ jobs:
                 python -m pipeline.realestate.parks --region "$DIGIPIN_REGION" || echo "Overture parks bake skipped"
                 python -m pipeline.realestate.stalled --region "$DIGIPIN_REGION" || echo "construction sites bake skipped"
                 python -m pipeline.realestate.flightpaths --region "$DIGIPIN_REGION" || echo "flight paths bake skipped"
+                [ -n "$EARTHDATA_TOKEN" ] && pip install -q h5py && python -m pipeline.safety.lightning --region "$DIGIPIN_REGION" || echo "lightning bake skipped (needs EARTHDATA_TOKEN)"
                 python -m pipeline.realestate.land_value --region "$DIGIPIN_REGION" || echo "land value bake skipped"
                 python -m pipeline.realestate.supply --region "$DIGIPIN_REGION" || echo "real-estate supply bake skipped"
                 if [ "$DIGIPIN_REGION" = delhi ]; then python -m pipeline.realestate.calibrate || echo "Delhi calibration skipped"; fi
