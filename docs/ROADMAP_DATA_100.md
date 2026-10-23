@@ -69,8 +69,8 @@ Each item gives four things:
 23. ✅ Flood 2050 river + coast (Aqueduct) | EE
 24. ✅ Water risk now and 2050 (Aqueduct 4.0) | EE
 25. ✅ Climate 2050 grade A–E | derived
-26. ▶ Landslide susceptibility (NASA LHASA global) | EE community / NASA | hazard lens
-27. ▶ Cyclone wind 10/100-year return speeds (STORM, Bloemendaal 2020) | open download | wind risk
+26. ⏸ Landslide susceptibility (NASA LHASA global) | EE community / NASA | hazard lens (parked: needs GES DISC EULA approval on the Earthdata account)
+27. ❌ Cyclone wind 10/100-year return speeds (STORM, Bloemendaal 2020) | open download | wind risk (skipped: data.4tu.nl unreachable from the bake host)
 28. ✅ Seismic zone (BIS IS 1893-2016) | open map digitised | quake risk
 29. ✅ Lightning flash density (NASA LIS/OTD climatology) | NASA | lightning risk
 30. ✅ Dust AOD and dust-storm days (CAMS instead of MERRA-2) | NASA | dust lens
@@ -106,13 +106,13 @@ Each item gives four things:
 57. ✅ Air-pollution premature deaths (GBD PM2.5 IER) | derived | air deaths lens
 58. Walkable shade on routes to clinics | derived | shade lens extension
 59. ✅ Green space per resident (WHO 9 m² target) | derived | green lens extension
-60. Cooling centres siting (libraries, malls, temples with AC) | S3 | heat action plan
+60. ✅ Cooling centres siting (libraries, malls, temples with AC) | S3 | heat action plan (`cooling` lens)
 
 ## D. Mobility and access (61–78)
 
 61. ❌ Overture transport segments: class, surface, speed limit | S3 | road quality (dropped: road surface and speed are under 1% tagged in Overture for India)
 62. Road surface from Sentinel-2 (paved vs unpaved) | EE | road quality
-63. Footpath presence (OSM sidewalk tags) | OSM | walk lens
+63. ❌ Footpath presence (OSM sidewalk tags) | OSM | walk lens (too sparse: Delhi has 96 km tagged)
 64. ✅ Streetlights (VIIRS light on station walks: existing nightwalk lens) (OSM highway=street_lamp + VIIRS) | OSM/EE | night safety
 65. Metro ridership by station (DMRC/BMRCL open data where published) | open | transit lens
 66. Bus GTFS for Delhi (parked for key), Chennai, Hyderabad | key/open | bus frequency
@@ -155,7 +155,7 @@ Each item gives four things:
 97. ✅ Green-belt and ridge forest boundaries (Delhi Ridge, Aravalli; Overture protected land + ESZ, greenbelt lens) | open GIS | encroachment
 98. ❌ Protected areas and eco-sensitive zones (WDPA) | EE | no-build overlay (skipped: WDPA needs an IBAT licence for commercial use; OSM protected areas in Actions instead)
 99. Biodiversity intactness (NHM BII) | open | nature lens
-100. Bird and wildlife sightings (GBIF occurrences) | API | nature lens
+100. ❌ Bird and wildlife sightings (GBIF occurrences) | API | nature lens (skipped: records mix in CC BY-NC)
 101. Tree species diversity proxy (Sentinel-2 phenology) | EE | green quality
 102. Soil organic carbon and texture (SoilGrids; exists partly) | EE | gardens/recharge
 103. ✅ Slope stability and cut-fill (DEM curvature) | EE | construction cost (slopes in the ground lens)

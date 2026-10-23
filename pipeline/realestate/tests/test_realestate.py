@@ -139,3 +139,11 @@ def test_places_classify_and_rows():
                          (77.2, 28.6, "shopping", "shopping_mall", None)])
     (row,) = rows.values()
     assert row["colleges"] == 1 and row["coaching"] == 1 and row["malls"] == 1 and row["coworking"] == 0
+
+
+def test_anchor_of_worship_suffix():
+    from pipeline.realestate import places
+    assert places.anchor_of("hindu_place_of_worship") == "worship"
+    assert places.anchor_of("library") == "libraries"
+    assert places.anchor_of("gas_station") == "fuel"
+    assert places.anchor_of("bakery") is None

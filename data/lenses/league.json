@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 573549,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "buildingage": {
      "label": "Median build year (per resident)",
      "value": 1975,
@@ -971,6 +977,12 @@
      "value": 53.2,
      "unit": "%",
      "higherIs": null
+    },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 1370335,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "buildingage": {
      "label": "Median build year (per resident)",
@@ -1530,6 +1542,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 309919,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "buildingage": {
      "label": "Median build year (per resident)",
      "value": 1995,
@@ -2081,6 +2099,12 @@
      "value": 65.8,
      "unit": "%",
      "higherIs": null
+    },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 709104,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "buildingage": {
      "label": "Median build year (per resident)",
@@ -2640,6 +2664,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 2073184,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "buildingage": {
      "label": "Median build year (per resident)",
      "value": 1975,
@@ -3161,6 +3191,12 @@
      "value": 70.5,
      "unit": "%",
      "higherIs": null
+    },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 72835,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "buildingage": {
      "label": "Median build year (per resident)",
@@ -3701,6 +3737,12 @@
      "value": 57.6,
      "unit": "%",
      "higherIs": null
+    },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 681471,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "buildingage": {
      "label": "Median build year (per resident)",
@@ -4260,6 +4302,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 922841,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "buildingage": {
      "label": "Median build year (per resident)",
      "value": 1990,
@@ -4799,6 +4847,12 @@
      "value": 63.8,
      "unit": "%",
      "higherIs": null
+    },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 487682,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "buildingage": {
      "label": "Median build year (per resident)",
@@ -5352,6 +5406,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 282428,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "buildingage": {
      "label": "Median build year (per resident)",
      "value": 1975,
@@ -5891,6 +5951,12 @@
      "value": 62.7,
      "unit": "%",
      "higherIs": null
+    },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 244081,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "buildingage": {
      "label": "Median build year (per resident)",
@@ -6450,6 +6516,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 673676,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "buildingage": {
      "label": "Median build year (per resident)",
      "value": 1975,
@@ -7007,6 +7079,12 @@
      "value": 59.5,
      "unit": "%",
      "higherIs": null
+    },
+    "cooling": {
+     "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
+     "value": 682309,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "buildingage": {
      "label": "Median build year (per resident)",

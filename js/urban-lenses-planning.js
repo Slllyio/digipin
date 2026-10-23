@@ -350,7 +350,55 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Cooling centres. Heat action plans (Ahmedabad 2013 onwards, NDMA 2019 guidelines) open public buildings with
+    // shade, water and fans or air-conditioning to people without a cool home. Candidate sites here are listed
+    // libraries, malls and community centres; places of worship, which several plans also use, are reported apart.
+    const COOL_KM = 1, COOL_KINDS = ['libraries', 'malls', 'community_centres'], HOT_Q = 0.75;
+
+    function cooling(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], lst = c['surface_heat.lst_day_c'];
+        if (!pop || !lst || COOL_KINDS.some(k => !c[`places.${k}`])) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const old = c['demographics.elderly_60plus'], worship = c['places.worship'];
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && _fin(lst[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const hotT = wquantile(lst, pop, idx, HOT_Q);
+        const sites = within(g, Float64Array.from({ length: n }, (_, i) => COOL_KINDS.reduce((a, k) => a + v(c[`places.${k}`], i), 0)), COOL_KM);
+        const shrines = worship ? within(g, Float64Array.from({ length: n }, (_, i) => v(worship, i)), COOL_KM) : null;
+        const gap = new Float64Array(n).fill(NaN);
+        const hot = idx.filter(i => lst[i] >= hotT), unserved = hot.filter(i => sites[i] <= 0);
+        for (const i of idx) gap[i] = lst[i] >= hotT ? (sites[i] > 0 ? 1 : 2) : 0;
+        const all = _sumOver(pop, idx, () => true), pHot = _sumOver(pop, hot, () => true), pGap = _sumOver(pop, unserved, () => true);
+        const eGap = old ? _sumOver(old, unserved, () => true) : null;
+        const viaShrine = shrines ? _sumOver(pop, unserved.filter(i => shrines[i] > 0), () => true) : null;
+        const stats = [
+            { label: `Hottest quarter of residents (day surface ≥ ${_round(hotT, 1)} °C)`, value: _people(pHot) },
+            { label: `…with no library, mall or community centre within ${COOL_KM} km`, value: `${_people(pGap)} (${_round(100 * pGap / Math.max(pHot, 1))}% of them)` },
+        ];
+        if (eGap !== null) stats.push({ label: '…of whom aged 60 and over', value: _people(eGap) });
+        if (viaShrine !== null) stats.push({ label: '…who do have a place of worship within 1 km (a possible stand-in)', value: _people(viaShrine) });
+        stats.push({ label: 'Share of all residents in hot blocks without a candidate site', value: `${_round(100 * pGap / Math.max(all, 1), 1)}%` });
+        const need = Float64Array.from({ length: n }, (_, i) => (old ? v(old, i) * 3 : 0) + v(pop, i));
+        spaced(g, unserved, need).forEach((i, k) => stats.push({
+            label: `Cooling centre site ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(lst[i], 1)} °C; ${_people(v(pop, i))} residents${old ? `, ${_people(v(old, i))} aged 60+` : ''}` }));
+        return {
+            columns: { cooling_gap: gap, cool_sites_1km: sites }, idx, weightKey: 'cooling_gap', noHotspots: true,
+            metric: { label: `Residents in the hottest blocks with no candidate cooling centre within ${COOL_KM} km`, value: Math.round(pGap), unit: 'people', higherIs: 'worse' },
+            headline: `${_people(pGap)} people in the hottest quarter of the city (${_round(100 * pGap / Math.max(pHot, 1))}% of that quarter) have no listed library, mall or community centre within ${COOL_KM} km to open as a cooling centre${eGap !== null ? `, ${_people(eGap)} of them aged 60 or over` : ''}. The five sites listed are the hottest unserved blocks with the most older residents, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'cooling', equity: true, title: 'Cooling centres for heat waves', icon: '🧊',
+            question: 'Where should cooling centres open in a heat wave?',
+            field: { key: 'cooling_gap', label: 'Hot block with (1) or without (2) a candidate cooling centre nearby', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
+            extra: [{ key: 'cool_sites_1km', label: `Libraries, malls and community centres within ${COOL_KM} km`, unit: 'places', higherIs: 'better', ramp: 'viridis', domain: [0, 10] }],
+            needs: ['surface_heat.lst_day_c', 'places.libraries', 'places.malls', 'places.community_centres', 'places.worship', 'demographics.elderly_60plus', 'population.population'],
+            method: `Hot blocks are those in the hottest quarter of residents by MODIS summer daytime land surface temperature (population-weighted 75th percentile within the city). Candidate cooling centres are Overture Maps places listed as libraries, shopping malls and community centres, public or semi-public buildings with shade, water and cooling; a hot block is unserved when none lies within ${COOL_KM} km (straight line between block centres). Places of worship, which the Ahmedabad Heat Action Plan and others also open, are counted separately as a possible stand-in. Sites are picked greedily from unserved hot blocks by residents plus three times the residents aged 60 and over, at least ${SPACING_KM} km apart. Overture undercounts government libraries and community halls, so check ward records before siting.`,
+            refs: 'Ahmedabad Heat Action Plan (AMC, 2013 onwards); NDMA Guidelines for Preparation of Action Plan on Heat Wave (2019); Overture Maps places; MODIS LST; WorldPop' },
         { id: 'buildingage', equity: false, title: 'How old is the city?', icon: '🏚️',
             question: 'When was each part of the city built?',
             field: { key: 'median_build_year', label: 'Year half of today\'s built area was standing', unit: 'year', higherIs: null, ramp: 'viridis', domain: [1975, 2020] },
@@ -402,7 +450,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

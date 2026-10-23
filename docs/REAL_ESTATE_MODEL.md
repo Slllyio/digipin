@@ -963,3 +963,9 @@ The lens reads the GHSL built-up series in `builtup_yearly` (every five years fr
 | Bengaluru | 26% | 9% | 32% | 27% | 6% |
 
 The 1975 epoch comes from coarse early Landsat imagery and is the least certain; it probably reads high. Footprints only: rebuilding or adding floors on the same plot does not show.
+
+## Cooling centres for heat waves (`cooling` lens)
+
+Heat action plans (Ahmedabad from 2013, NDMA guidelines 2019) open public buildings with shade, water and cooling to people without a cool home. Hot blocks are the hottest quarter of residents by MODIS summer daytime land surface temperature (population-weighted 75th percentile within the city). Candidate cooling centres are Overture Maps libraries, shopping malls and community centres (`places.libraries`, `places.malls`, `places.community_centres`); a hot block is unserved when none lies within 1 km. Places of worship (`places.worship`, every `*_place_of_worship` category) are counted separately as a possible stand-in. Five sites are picked from unserved hot blocks by residents plus three times the residents aged 60 and over, at least 1.5 km apart.
+
+First run: Ahmedabad 5.7 lakh people (28.5% of the hottest quarter, 60,721 aged 60+) and Chennai 7.1 lakh have no candidate site within 1 km. Overture undercounts government libraries and community halls, so check ward records before siting.

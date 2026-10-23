@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -610,6 +610,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.built_by_1990_pct[0]).toBe(50);
         expect(r.stats[0].label).toBe('Built by 1975');
         expect(L._lenses.buildingage(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('cooling: hot blocks with and without a candidate cooling centre nearby', () => {
+        const z = codes.map(() => 0);
+        const f = L.frameFrom(codes, { ...base, 'surface_heat.lst_day_c': codes.map((_, i) => (i < SIZE * 6 ? 45 : 35)),
+            'places.libraries': codes.map((_, i) => (i === 0 ? 1 : 0)), 'places.malls': z, 'places.community_centres': z, 'places.worship': z });
+        const r = L._lenses.cooling(f, {});
+        expect(r.columns.cooling_gap[0]).toBe(1);
+        expect(r.columns.cooling_gap[SIZE * 6 - 1]).toBe(2);
+        expect(r.columns.cooling_gap[codes.length - 1]).toBe(0);
+        expect(r.stats.some(x => /^Cooling centre site 1/.test(x.label))).toBe(true);
+        expect(L._lenses.cooling(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
