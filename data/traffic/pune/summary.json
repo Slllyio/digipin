@@ -1034,16 +1034,16 @@
         "pressure": 2.34
       },
       {
-        "digipin": "4FP3CTL",
-        "demand_ecs": 171,
-        "supply_ecs": 48,
-        "pressure": 3.55
-      },
-      {
         "digipin": "4FP3CTT",
         "demand_ecs": 185,
         "supply_ecs": 62,
         "pressure": 2.97
+      },
+      {
+        "digipin": "4FP3CTL",
+        "demand_ecs": 171,
+        "supply_ecs": 48,
+        "pressure": 3.55
       },
       {
         "digipin": "4FP32FJ",

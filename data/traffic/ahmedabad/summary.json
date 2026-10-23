@@ -943,16 +943,16 @@
     "overflow_ecs": 63305,
     "hotspots": [
       {
-        "digipin": "3KLK2FT",
-        "demand_ecs": 548,
-        "supply_ecs": 77,
-        "pressure": 7.14
-      },
-      {
         "digipin": "3KLK2F6",
         "demand_ecs": 562,
         "supply_ecs": 91,
         "pressure": 6.17
+      },
+      {
+        "digipin": "3KLK2FT",
+        "demand_ecs": 548,
+        "supply_ecs": 77,
+        "pressure": 7.14
       },
       {
         "digipin": "3KLK2CK",
