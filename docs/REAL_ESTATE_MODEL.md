@@ -762,3 +762,17 @@ The `ghost` lens looks at new-build blocks. A block counts as new-build when it 
 | Bengaluru | 261 | | 10% |
 
 Night light spills between neighbouring blocks, so treat flagged blocks as places to check, not as vacancy counts.
+
+## Commercial floor space
+
+The `floorspace` lens estimates floor area per block as Open Buildings 2023 roof cover × block area × storeys, counting one storey per 3.5 m of height. It multiplies that by the GHSL 2020 non-residential share of built-up. The non-residential floor is then split into office-like and shop-and-eatery-like space, in proportion to the listed offices against shops and eateries in Overture.
+
+This is an upper bound on commercial space, because industry and public buildings are non-residential too.
+
+| City | Non-residential floor | Office-like part |
+|---|---|---|
+| Delhi | 48 million m² | 20 million m² |
+| Bengaluru | 43 million m² | 15 million m² |
+| Mumbai | 34 million m² | |
+
+For comparison, brokers count Bengaluru's Grade A office stock at about 19 million m².

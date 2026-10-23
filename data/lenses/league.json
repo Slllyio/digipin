@@ -354,6 +354,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 18.7,
+     "unit": "million m²",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 2,
@@ -815,6 +821,12 @@
      "value": 10.2,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 43,
+     "unit": "million m²",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -1278,6 +1290,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 2.8,
+     "unit": "million m²",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 5,
@@ -1733,6 +1751,12 @@
      "value": 5.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 4.4,
+     "unit": "million m²",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -2196,6 +2220,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 48.3,
+     "unit": "million m²",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 37,
@@ -2633,6 +2663,12 @@
      "value": 32.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 0,
+     "unit": "million m²",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3089,6 +3125,12 @@
      "value": 13.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 19.3,
+     "unit": "million m²",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3552,6 +3594,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 9.8,
+     "unit": "million m²",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 9,
@@ -4007,6 +4055,12 @@
      "value": 20.4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 1.9,
+     "unit": "million m²",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -4464,6 +4518,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 13.4,
+     "unit": "million m²",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 23,
@@ -4913,6 +4973,12 @@
      "value": 17.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 4.3,
+     "unit": "million m²",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -5382,6 +5448,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 33.7,
+     "unit": "million m²",
+     "higherIs": null
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 21,
@@ -5843,6 +5915,12 @@
      "value": 15.2,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "floorspace": {
+     "label": "Non-residential floor space",
+     "value": 10.3,
+     "unit": "million m²",
+     "higherIs": null
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",

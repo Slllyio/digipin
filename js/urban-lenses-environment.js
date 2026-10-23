@@ -845,6 +845,46 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Commercial floor space. Floor area (Open Buildings roof cover × storeys) × GHSL non-residential share, split
+    // between office-like and retail-like by the block's mix of listed offices and shops/eateries.
+    function floorspace(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const cov = c['building_stock.cover_2023_pct'], h = c['building_stock.height_2023_m'], nr = c['building_dynamics.nonres_pct'];
+        const off = c['places.offices'], shop = c['places.shopping'], food = c['places.food'], pop = c['population.population'];
+        if (!cov || !h || !nr) return null;
+        const m2 = g.cellKm2 * 1e6, com = new Float64Array(n).fill(NaN), offF = new Float64Array(n).fill(NaN);
+        const idx = [];
+        let all = 0, offAll = 0, retAll = 0, total = 0;
+        for (let i = 0; i < n; i++) {
+            if (!_fin(cov[i]) || !_fin(h[i]) || !_fin(nr[i]) || cov[i] <= 0) continue;
+            const floor = cov[i] / 100 * m2 * Math.max(1, Math.round(h[i] / STOREY_M));
+            const cf = floor * Math.min(100, nr[i]) / 100;
+            const o = off && _fin(off[i]) ? off[i] : 0, r = (shop && _fin(shop[i]) ? shop[i] : 0) + (food && _fin(food[i]) ? food[i] : 0);
+            const oShare = o + r > 0 ? o / (o + r) : 0.5;
+            com[i] = cf; offF[i] = cf * oShare;
+            all += cf; offAll += cf * oShare; retAll += cf * (1 - oShare); total += floor;
+            idx.push(i);
+        }
+        if (idx.length < 5 || all <= 0) return null;
+        const people = pop ? _sumOver(pop, idx.filter(i => pop[i] > 0), () => true) : 0;
+        const sorted = idx.map(i => com[i]).sort((a, b) => b - a);
+        const top = sorted.slice(0, Math.ceil(0.05 * idx.length)).reduce((a, b) => a + b, 0);
+        const stats = [
+            { label: 'Commercial and other non-residential floor space', value: `about ${_round(all / 1e6, 1)} million m² (${_round(100 * all / total)}% of all floor)`, raw: Math.round(all) },
+            { label: 'Office-like / shop-and-eatery-like (by listed business mix)', value: `${_round(offAll / 1e6, 1)} / ${_round(retAll / 1e6, 1)} million m²` },
+            { label: 'Share in the densest 5% of blocks', value: `${_round(100 * top / all)}%` },
+        ];
+        if (people) stats.push({ label: 'Non-residential floor per resident', value: `${_round(all / people, 1)} m²` });
+        spaced(g, idx, com).slice(0, 5).forEach((i, k) => stats.push({ label: `Commercial district ${k + 1}: ${g.codes[i]}`,
+            value: `about ${Math.round(com[i] / 1e3)} thousand m² non-residential; ${_round(100 * offF[i] / com[i])}% office-like` }));
+        return {
+            columns: { commercial_m2: com, office_m2: offF }, idx, weightKey: 'commercial_m2', noHotspots: true,
+            metric: { label: 'Non-residential floor space', value: _round(all / 1e6, 1), unit: 'million m²', higherIs: null },
+            headline: `The city has about ${_round(all / 1e6, 1)} million m² of commercial and other non-residential floor (${_round(100 * all / total)}% of all floor), ${_round(100 * top / all)}% of it in the densest 5% of blocks.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -1084,6 +1124,13 @@ const UrbanLensesEnvironment = (() => {
             needs: ['building_stock.buildings_2023', 'building_stock.new_buildings', 'building_stock.cover_2023_pct', 'building_stock.height_2023_m', 'nightlights.radiance', 'places.places'],
             method: `Floor area = Open Buildings 2.5D 2023 roof cover × block area × storeys (height ÷ ${STOREY_M} m). Blocks with ${GHOST_FLOOR.toLocaleString('en-IN')}+ m² of floor where ${GHOST_NEW}%+ of 2023 buildings were not there in 2016 are new-build. One looks empty when its VIIRS 2025 radiance per hectare of roof is in the city's bottom ${GHOST_DARK_Q * 100}%, its radiance is below the median built block, and it has under ${GHOST_PLACES_PER_HA} listed business (Overture) per hectare of floor. Night light spills from neighbours over ~460 m and new towers can be lit only in common areas, so treat flagged blocks as places to check, not vacancy counts.`,
             refs: 'Elvidge et al. 2017 (VIIRS); Sirko et al. 2023 (Open Buildings 2.5D temporal); Chi et al. 2015 (ghost cities from night lights and points of interest)' },
+        { id: 'floorspace', equity: false, title: 'Commercial floor space', icon: '🏢',
+            question: 'How much office and shop floor space is there, and where is it concentrated?',
+            field: { key: 'commercial_m2', label: 'Non-residential floor space', unit: 'm²', higherIs: null, ramp: 'viridis' },
+            extra: [{ key: 'office_m2', label: 'Office-like floor space', unit: 'm²', higherIs: null, ramp: 'viridis' }],
+            needs: ['building_stock.cover_2023_pct', 'building_stock.height_2023_m', 'building_dynamics.nonres_pct', 'places.offices', 'places.shopping', 'places.food', 'population.population'],
+            method: `Floor area = Open Buildings 2.5D 2023 roof cover × block area × storeys (height ÷ ${STOREY_M} m, at least 1). Non-residential = floor × GHSL 2020 non-residential share of built-up. That floor is split into office-like and shop-and-eatery-like in proportion to the block's listed offices against shops and eateries (Overture), half and half where none are listed. Industry, schools, hospitals and government buildings are all non-residential, so this is an upper bound on commercial space.`,
+            refs: 'Sirko et al. 2023 (Open Buildings 2.5D); Pesaresi et al. 2023 (GHSL built-up characteristics); Overture Maps Foundation places' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -1099,7 +1146,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();
