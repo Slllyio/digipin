@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -598,6 +598,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats[1].value).toBe('Jun, Jul, Aug, Sep, Oct, Nov');
         expect(r.columns.mosquito_risk[0]).toBeGreaterThan(r.columns.mosquito_risk[1]);
         expect(L._lenses.mosquito(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('buildingage: area built per epoch and the median build year', () => {
+        const f = L.frameFrom(codes, base);
+        f.cols['builtup_yearly.built_pct@series'] = codes.map((_, i) => (i < 72 ? [10, 20, 40, 40] : [0, 0, 10, 40]));
+        f.steps = { builtup_yearly: ['1975', '1990', '2005', '2020'] };
+        const r = L._lenses.buildingage(f, {});
+        expect(r.columns.median_build_year[0]).toBe(1990);
+        expect(r.columns.median_build_year[codes.length - 1]).toBe(2020);
+        expect(r.columns.built_by_1990_pct[0]).toBe(50);
+        expect(r.stats[0].label).toBe('Built by 1975');
+        expect(L._lenses.buildingage(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

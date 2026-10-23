@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1975,
+     "unit": "year",
+     "higherIs": null
+    },
     "mosquito": {
      "label": "People in high mosquito-breeding-risk blocks",
      "value": 0,
@@ -964,6 +970,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 53.2,
      "unit": "%",
+     "higherIs": null
+    },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1990,
+     "unit": "year",
      "higherIs": null
     },
     "mosquito": {
@@ -1518,6 +1530,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1995,
+     "unit": "year",
+     "higherIs": null
+    },
     "mosquito": {
      "label": "People in high mosquito-breeding-risk blocks",
      "value": 0,
@@ -2062,6 +2080,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 65.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1985,
+     "unit": "year",
      "higherIs": null
     },
     "mosquito": {
@@ -2616,6 +2640,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1975,
+     "unit": "year",
+     "higherIs": null
+    },
     "mosquito": {
      "label": "People in high mosquito-breeding-risk blocks",
      "value": 210306,
@@ -3130,6 +3160,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 70.5,
      "unit": "%",
+     "higherIs": null
+    },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 2000,
+     "unit": "year",
      "higherIs": null
     },
     "mosquito": {
@@ -3664,6 +3700,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 57.6,
      "unit": "%",
+     "higherIs": null
+    },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1985,
+     "unit": "year",
      "higherIs": null
     },
     "mosquito": {
@@ -4218,6 +4260,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1990,
+     "unit": "year",
+     "higherIs": null
+    },
     "mosquito": {
      "label": "People in high mosquito-breeding-risk blocks",
      "value": 0,
@@ -4750,6 +4798,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 63.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1995,
+     "unit": "year",
      "higherIs": null
     },
     "mosquito": {
@@ -5298,6 +5352,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1975,
+     "unit": "year",
+     "higherIs": null
+    },
     "mosquito": {
      "label": "People in high mosquito-breeding-risk blocks",
      "value": 3989835,
@@ -5830,6 +5890,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 62.7,
      "unit": "%",
+     "higherIs": null
+    },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1990,
+     "unit": "year",
      "higherIs": null
     },
     "mosquito": {
@@ -6384,6 +6450,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1975,
+     "unit": "year",
+     "higherIs": null
+    },
     "mosquito": {
      "label": "People in high mosquito-breeding-risk blocks",
      "value": 0,
@@ -6934,6 +7006,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 59.5,
      "unit": "%",
+     "higherIs": null
+    },
+    "buildingage": {
+     "label": "Median build year (per resident)",
+     "value": 1995,
+     "unit": "year",
      "higherIs": null
     },
     "mosquito": {

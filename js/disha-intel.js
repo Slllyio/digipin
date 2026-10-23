@@ -24,6 +24,7 @@ const DishaIntel = (() => {
         compare: /\b(compare|vs\.?|versus|better than)\b/i,
         // Urban lenses (js/urban-lenses.js): combined-dataset questions about people.
         lens: {
+            buildingage: /\b(how old is|building age|old(est)? (buildings?|neighbou?rhoods?|areas?)|when was .{0,20}built|built (before|after) (19|20)\d\d)\b/i,
             mosquito: /\b(mosquito\w*|dengue|chikungunya|aedes|malaria|vector[\s-]borne)\b/i,
             greenbelt: /\b(ridge|reserve forests?|national parks?|(wildlife )?sanctuar(y|ies)|eco[\s-]?sensitive zones?|esz|protected (forests?|areas?|land))\b/i,
             monthly: /\b(year[\s-]on[\s-]year (changes?|signs?)|compared? (with|to) (a|last) year ago|new (construction|building) this (month|year)|lights? (came|coming) on)\b/i,

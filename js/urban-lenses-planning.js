@@ -308,7 +308,56 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Building age. GHSL built-up share every five years since 1975: each epoch's increase is the area built in
+    // those five years. A block's median build year is when half of today's built area was standing.
+    function buildingage(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, ser = c['builtup_yearly.built_pct@series'], pop = c['population.population'];
+        const steps = ((fr.steps && fr.steps.builtup_yearly) || []).map(Number);
+        if (!ser || steps.length < 3) return null;
+        const num = x => (x == null ? NaN : Number(x));
+        const idx = [], median = new Float64Array(n).fill(NaN), oldShare = new Float64Array(n).fill(NaN);
+        const byEpoch = new Array(steps.length).fill(0);
+        for (let i = 0; i < n; i++) {
+            const a = ser[i];
+            if (!a) continue;
+            const last = num(a[steps.length - 1]);
+            if (!Number.isFinite(last) || last < 5) continue;
+            idx.push(i);
+            let prev = 0, done = false;
+            for (let t = 0; t < steps.length; t++) {
+                const v = Math.max(prev, Number.isFinite(num(a[t])) ? num(a[t]) : prev);       // built area does not shrink in GHSL
+                byEpoch[t] += (v - prev) / 100 * g.cellKm2;
+                if (!done && v >= last / 2) { median[i] = steps[t]; done = true; }
+                if (steps[t] === 1990) oldShare[i] = 100 * v / last;
+                prev = v;
+            }
+        }
+        if (idx.length < 5) return null;
+        const total = byEpoch.reduce((a, b) => a + b, 0);
+        const decade = {};
+        steps.forEach((y, t) => { const d = y <= 1975 ? 'by 1975' : y <= 1990 ? '1976–1990' : y <= 2005 ? '1991–2005' : y <= 2015 ? '2006–2015' : `2016–${steps[steps.length - 1]}`; decade[d] = (decade[d] || 0) + byEpoch[t]; });
+        const stats = Object.entries(decade).map(([k, v]) => ({ label: `Built ${k}`, value: `${_round(v, 1)} km² (${_round(100 * v / Math.max(total, 1e-9))}%)` }));
+        const w = pop ? idx.filter(i => pop[i] > 0) : idx;
+        const medYear = wquantile(median, pop || null, w.length ? w : idx, 0.5);
+        const yr = Math.round(medYear) <= steps[0] ? `${steps[0]} or earlier` : `${Math.round(medYear)}`;
+        stats.push({ label: 'Median build year of the home a resident lives in (by block)', value: yr, raw: Math.round(medYear) });
+        const newest = Object.entries(decade).pop();
+        return {
+            columns: { median_build_year: median, built_by_1990_pct: oldShare }, idx, weightKey: 'median_build_year', noHotspots: true,
+            metric: { label: 'Median build year (per resident)', value: Math.round(medYear), unit: 'year', higherIs: null },
+            headline: `${_round(100 * (decade['by 1975'] || 0) / Math.max(total, 1e-9))}% of today's built-up area was standing by 1975 and ${_round(100 * newest[1] / Math.max(total, 1e-9))}% went up in ${newest[0]}; half the residents live in blocks mostly built by ${yr}. The 1975 epoch comes from coarse early Landsat imagery and is the least certain, and GHSL sees footprints from space, so rebuilding on the same plot does not count as new.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'buildingage', equity: false, title: 'How old is the city?', icon: '🏚️',
+            question: 'When was each part of the city built?',
+            field: { key: 'median_build_year', label: 'Year half of today\'s built area was standing', unit: 'year', higherIs: null, ramp: 'viridis', domain: [1975, 2020] },
+            extra: [{ key: 'built_by_1990_pct', label: 'Share of today\'s built area standing by 1990', unit: '%', higherIs: null, ramp: 'heat', domain: [0, 100] }],
+            needs: ['builtup_yearly.built_pct@series', 'population.population'],
+            method: 'GHSL built-up surface (Landsat and Sentinel-2) every five years from 1975. Each epoch\'s increase in a block\'s built-up share is the area built in those five years (GHSL built area is treated as never shrinking); the median build year is the first epoch by which half of the latest built area was standing. Blocks under 5% built are left out. Footprints only: rebuilding or adding floors on the same plot does not show.',
+            refs: 'Pesaresi et al. 2023 (GHSL GHS-BUILT-S R2023A); European Commission JRC' },
         { id: 'mosquito', equity: true, title: 'Mosquito season and breeding risk', icon: '🦟',
             question: 'Where and when are conditions right for dengue mosquitoes?',
             field: { key: 'mosquito_risk', label: 'Mosquito breeding-conditions score', unit: '0-100', higherIs: 'worse', ramp: 'reds', domain: [20, 90] },
@@ -353,7 +402,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

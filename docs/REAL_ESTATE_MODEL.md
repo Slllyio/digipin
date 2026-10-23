@@ -951,3 +951,15 @@ Aedes aegypti, the dengue and chikungunya mosquito, transmits between about 18 a
 | Delhi | 6.9 (May–Nov) | 2.1 lakh (0.7%) |
 
 It is an index of breeding conditions, not of cases. Water storage in homes, drainage and fogging matter as much and are not in the data.
+
+## How old is the city? (`buildingage` lens)
+
+The lens reads the GHSL built-up series in `builtup_yearly` (every five years from 1975). Each epoch's increase in a block's built-up share counts as area built in those five years, treating GHSL built area as never shrinking. A block's median build year is the first epoch by which half of its latest built area was standing.
+
+| City | By 1975 | 1976–90 | 1991–2005 | 2006–15 | 2016–20 |
+|---|---|---|---|---|---|
+| Kolkata | 71% | 9% | 14% | 5% | 1% |
+| Delhi | 56% | 11% | 20% | 9% | 4% |
+| Bengaluru | 26% | 9% | 32% | 27% | 6% |
+
+The 1975 epoch comes from coarse early Landsat imagery and is the least certain; it probably reads high. Footprints only: rebuilding or adding floors on the same plot does not show.
