@@ -150,7 +150,75 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // What changed in a year. The latest three months with good coverage against the same three months a year
+    // before (which cancels the season and smooths a cloudy month) in four monthly satellite series. A block is
+    // flagged for new building (built-up +15 points), lights coming on (radiance +50% and +2 nW), greenery lost
+    // (NDVI -0.15) or dirtier air (NO2 +30% from at least NO2_FLOOR).
+    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const _mon = st => { const m = /^(\d{4})-(\d{2})/.exec(st || ''); return m ? `${MONTHS[Number(m[2]) - 1]} ${m[1]}` : String(st); };
+    const NO2_FLOOR = 40;
+    const CHANGE_SIGNS = [
+        { key: 'construction_monthly.built_pct', name: 'new building', test: (a, b) => b - a >= 15, size: (a, b) => b - a, fmt: d => `+${_round(d)} points built-up` },
+        { key: 'nightlights_monthly.radiance', name: 'lights coming on', test: (a, b) => b >= a * 1.5 && b - a >= 2, size: (a, b) => b - a, fmt: d => `+${_round(d, 1)} nW/cm²/sr` },
+        { key: 'ndvi_monthly.ndvi', name: 'greenery lost', test: (a, b) => a - b >= 0.15, size: (a, b) => a - b, fmt: d => `NDVI down ${_round(d, 2)}` },
+        { key: 'no2_monthly.no2_umol_m2', name: 'dirtier air', test: (a, b) => a >= NO2_FLOOR && b >= a * 1.3, size: (a, b) => (b - a) / a * 100, fmt: d => `NO₂ up ${_round(d)}%` },
+    ];
+    const COVER_MIN = 0.5, WIN = 3;
+
+    function monthly(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const idx = [];
+        for (let i = 0; i < n; i++) if (!pop || pop[i] > 0) idx.push(i);
+        const flags = new Float64Array(n).fill(NaN), stats = [], found = [];
+        const num = x => (x == null ? NaN : Number(x));
+        const mean3 = (a, k) => {
+            let t = 0, m = 0;
+            for (let j = k - WIN + 1; j <= k; j++) { const x = num(a[j]); if (Number.isFinite(x)) { t += x; m++; } }
+            return m >= 2 ? t / m : NaN;
+        };
+        for (const S of CHANGE_SIGNS) {
+            const ser = c[`${S.key}@series`], ds = S.key.split('.')[0], steps = (fr.steps && fr.steps[ds]) || [];
+            if (!ser || steps.length < 12 + WIN) continue;
+            // Latest window that most blocks have, with the same window a year earlier.
+            let t = -1;
+            for (let k = steps.length - 1; k >= 11 + WIN && t < 0; k--) {
+                let ok = 0;
+                for (const i of idx) if (ser[i] && Number.isFinite(mean3(ser[i], k)) && Number.isFinite(mean3(ser[i], k - 12))) ok++;
+                if (ok >= COVER_MIN * idx.length) t = k;
+            }
+            if (t < 0) continue;
+            const hit = [], size = new Float64Array(n).fill(NaN);
+            for (const i of idx) {
+                if (!ser[i]) continue;
+                const a = mean3(ser[i], t - 12), b = mean3(ser[i], t);
+                if (!Number.isFinite(a) || !Number.isFinite(b)) continue;
+                if (!_fin(flags[i])) flags[i] = 0;
+                if (S.test(a, b)) { hit.push(i); flags[i] += 1; size[i] = S.size(a, b); }
+            }
+            const when = `${_mon(steps[t - WIN + 1])}–${_mon(steps[t])} vs a year before`;
+            found.push({ S, hit });
+            stats.push({ label: `Blocks with ${S.name} (${when})`, value: hit.length.toLocaleString('en-IN'), raw: hit.length });
+            spaced(g, hit, size).slice(0, 2).forEach((i, k) => stats.push({ label: `${S.name[0].toUpperCase()}${S.name.slice(1)} ${k + 1}: ${g.codes[i]}`, value: S.fmt(size[i]) }));
+        }
+        if (!found.length) return null;
+        const scored = idx.filter(i => _fin(flags[i]));
+        const multi = scored.filter(i => flags[i] >= 2).length;
+        const parts = found.map(f => `${f.hit.length.toLocaleString('en-IN')} ${f.S.name}`);
+        return {
+            columns: { change_signs: flags }, idx: scored, weightKey: 'change_signs', noHotspots: true,
+            metric: { label: 'Blocks with a year-on-year change sign', value: scored.filter(i => flags[i] >= 1).length, unit: 'blocks', higherIs: null },
+            headline: `Latest three months against the same months a year earlier: ${parts.join(', ')} blocks; ${multi.toLocaleString('en-IN')} show two or more signs at once, the likeliest places where something real happened. Cloud and haze can still fake a sign, so check a flagged block on the satellite view.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'monthly', equity: false, title: 'What changed in a year', icon: '🛰️',
+            question: 'What changed this month compared with a year ago?',
+            field: { key: 'change_signs', label: 'Year-on-year change signs (new building, lights, greenery lost, NO₂ up)', unit: 'count', higherIs: null, ramp: 'heat', domain: [0, 3] },
+            needs: CHANGE_SIGNS.map(S => `${S.key}@series`).concat(['population.population']),
+            method: `Four monthly satellite series in the cell store: Dynamic World built-up probability, VIIRS night lights, Sentinel-2 NDVI and Sentinel-5P NO₂. For each, the mean of the latest three months that at least half the lived-in blocks have is compared with the same three months a year earlier, which cancels the season and smooths over a cloudy month. Signs: built-up up 15+ points (new building), radiance up 50% and 2+ nW/cm²/sr (lights coming on), NDVI down 0.15+ (greenery lost), NO₂ up 30%+ from at least ${NO2_FLOOR} µmol/m² (dirtier air; NO₂ is a 1 km-scale field, so this marks districts, not streets). Cloud and haze can still fake a sign; two signs together are more telling.`,
+            refs: 'Brown et al. 2022 (Dynamic World); Elvidge et al. 2017 (VIIRS); Sentinel-2; Sentinel-5P TROPOMI' },
         { id: 'reach', equity: true, title: 'Everyday and public services reach', icon: '📮',
             question: 'Who lives far from a grocer, pharmacy, preschool, post office, police or fire station?',
             field: { key: 'services_lacking', label: 'Services of six with none listed nearby', unit: 'count', higherIs: 'worse', ramp: 'reds', domain: [0, 6] },
@@ -175,7 +243,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

@@ -24,6 +24,7 @@ const DishaIntel = (() => {
         compare: /\b(compare|vs\.?|versus|better than)\b/i,
         // Urban lenses (js/urban-lenses.js): combined-dataset questions about people.
         lens: {
+            monthly: /\b(year[\s-]on[\s-]year (changes?|signs?)|compared? (with|to) (a|last) year ago|new (construction|building) this (month|year)|lights? (came|coming) on)\b/i,
             reach: /\b(post offices?|police stations?|fire stations?|pharmac(y|ies)|chemists?|grocer(y|ies|s)?|kirana|preschools?|cr[eè]ches?|day ?care)\b.{0,40}\b(far|near(by)?|reach|access|missing|lack\w*|gaps?|distance|within)\b|\b(far|lack\w*|no|missing)\b.{0,25}\b(post offices?|police stations?|fire stations?|pharmac(y|ies)|grocer(y|ies|s)?|preschools?)\b/i,
             landmix: /\b(land[\s-]?use mix|mixed[\s-]use|(homes?|houses?|people|residents?) (next to|near|beside) (industr\w*|factor(y|ies))|industrial (areas?|zones?) (near|next to) (homes?|houses?))\b/i,
             heritage: /\b(monuments?|heritage (zones?|limits?|sites?|buildings?)|asi (zones?|limits?|restrictions?|noc|rules?)|prohibited (area|zone)|regulated (area|zone)|nma (permission|noc)|amasr)\b/i,

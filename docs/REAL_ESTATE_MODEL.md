@@ -917,3 +917,14 @@ Only a quarter to two-fifths of lived-in land has a use drawn in OpenStreetMap, 
 | Mumbai | 9.2 lakh (5%) | grocer within 0.5 km: 42.9 lakh |
 
 Overture lists far fewer kirana shops, post offices and fire stations than exist (Delhi has 203 post offices and 39 fire stations listed), so every gap is first a listing gap to check, and the headline says so.
+
+## What changed in a year (`monthly` lens)
+
+Four monthly series already in the cell store are compared year on year: Dynamic World built-up probability, VIIRS night lights, Sentinel-2 NDVI and Sentinel-5P NO₂. For each series the lens takes the mean of the latest three months that at least half the lived-in blocks have, and compares it with the same three months a year earlier. That cancels the season and smooths over a cloudy month. A block shows a sign for new building (built-up +15 points), lights coming on (radiance +50% and at least +2 nW/cm²/sr), greenery lost (NDVI −0.15) or dirtier air (NO₂ +30% from at least 40 µmol/m²). Blocks with two or more signs are the likeliest real changes.
+
+| City | New building | Lights on | Greenery lost | Dirtier air | Two or more signs |
+|---|---|---|---|---|---|
+| Delhi | 337 | 545 | 40 | 272 | 11 |
+| Bengaluru | 596 | 1,057 | 42 | 0 | 76 |
+
+Bengaluru's signs cluster on the Sarjapur and Hoskote fringe. The first version compared single months, and monsoon NO₂ noise flagged 13,607 Bengaluru blocks; the three-month window and the NO₂ floor fixed that.

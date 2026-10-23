@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -556,6 +556,21 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats[0].label).toBe('No grocer listed within 0.5 km');
         expect(r.stats[5].raw).toBe(0);                                        // a 3 km fire radius covers the 3 km grid
         expect(L._lenses.reach(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('monthly: latest three months against a year earlier flag new building and lights', () => {
+        const steps = Array.from({ length: 24 }, (_, k) => `${2025 + Math.floor(k / 12)}-${String(k % 12 + 1).padStart(2, '0')}`);
+        const f = L.frameFrom(codes, base);
+        f.cols['construction_monthly.built_pct@series'] = codes.map((_, i) => steps.map((_, k) => (i === 0 && k >= 12 ? 70 : 20)));
+        f.cols['nightlights_monthly.radiance@series'] = codes.map((_, i) => steps.map((_, k) => (i === 0 && k >= 12 ? 9 : 3)));
+        f.steps = { construction_monthly: steps, nightlights_monthly: steps };
+        const r = L._lenses.monthly(f, {});
+        expect(r.columns.change_signs[0]).toBe(2);
+        expect(r.columns.change_signs[1]).toBe(0);
+        expect(r.stats[0].label).toBe('Blocks with new building (Oct 2026–Dec 2026 vs a year before)');
+        expect(r.stats[0].raw).toBe(1);
+        expect(r.headline).toMatch(/1 show two or more signs/);
+        expect(L._lenses.monthly(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

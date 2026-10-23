@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 1230,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
      "value": 1847933,
@@ -952,6 +958,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 53.2,
      "unit": "%",
+     "higherIs": null
+    },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 1619,
+     "unit": "blocks",
      "higherIs": null
     },
     "reach": {
@@ -1488,6 +1500,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 482,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
      "value": 1824823,
@@ -2014,6 +2032,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 65.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 1865,
+     "unit": "blocks",
      "higherIs": null
     },
     "reach": {
@@ -2550,6 +2574,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 1183,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
      "value": 8226439,
@@ -3046,6 +3076,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 70.5,
      "unit": "%",
+     "higherIs": null
+    },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 221,
+     "unit": "blocks",
      "higherIs": null
     },
     "reach": {
@@ -3568,6 +3604,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 57.6,
      "unit": "%",
+     "higherIs": null
+    },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 3929,
+     "unit": "blocks",
      "higherIs": null
     },
     "reach": {
@@ -4104,6 +4146,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 525,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
      "value": 2196730,
@@ -4618,6 +4666,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 63.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 551,
+     "unit": "blocks",
      "higherIs": null
     },
     "reach": {
@@ -5148,6 +5202,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 424,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
      "value": 720243,
@@ -5662,6 +5722,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 62.7,
      "unit": "%",
+     "higherIs": null
+    },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 642,
+     "unit": "blocks",
      "higherIs": null
     },
     "reach": {
@@ -6204,6 +6270,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 748,
+     "unit": "blocks",
+     "higherIs": null
+    },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
      "value": 922188,
@@ -6736,6 +6808,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 59.5,
      "unit": "%",
+     "higherIs": null
+    },
+    "monthly": {
+     "label": "Blocks with a year-on-year change sign",
+     "value": 3739,
+     "unit": "blocks",
      "higherIs": null
     },
     "reach": {

@@ -113,21 +113,21 @@ Each item gives four things:
 61. ❌ Overture transport segments: class, surface, speed limit | S3 | road quality (dropped: road surface and speed are under 1% tagged in Overture for India)
 62. Road surface from Sentinel-2 (paved vs unpaved) | EE | road quality
 63. Footpath presence (OSM sidewalk tags) | OSM | walk lens
-64. Streetlights (OSM highway=street_lamp + VIIRS) | OSM/EE | night safety
+64. ✅ Streetlights (VIIRS light on station walks: existing nightwalk lens) (OSM highway=street_lamp + VIIRS) | OSM/EE | night safety
 65. Metro ridership by station (DMRC/BMRCL open data where published) | open | transit lens
 66. Bus GTFS for Delhi (parked for key), Chennai, Hyderabad | key/open | bus frequency
 67. Railway suburban stations with frequency (Mumbai locals timetable) | open | rail access
 68. Airport access time | derived | travel lens
 69. Truck routes and no-entry hours | OSM | freight
-70. Parking supply from OSM + places | OSM/S3 | parking lens extension
+70. ✅ Parking supply (existing parking lens) from OSM + places | OSM/S3 | parking lens extension
 71. Bike-share docks (Yulu/Bounce where open) | API | micro-mobility
 72. Auto-rickshaw stands | OSM | last-mile
 73. Traffic accidents by road (iRAD summaries where public) | open | road safety
-74. School zones and safe routes | OSM | school-run lens
+74. ✅ School zones and safe routes (existing roadsafety and schoolrun lenses) | OSM | school-run lens
 75. Ride-hailing price proxy (distance × surge zones) | derived | mobility cost
 76. Congestion from Uber Movement archive (Mumbai, Delhi, Bengaluru, Hyderabad 2016–2020) | open archive | traffic calibration
-77. Isochrones by car with time of day (existing traffic model) | derived | access lens
-78. Freight logistics parks and warehouses (Overture/OSM) | S3/OSM | logistics lens
+77. ✅ Isochrones by car with time of day (existing ambulance lens: hospital by road at 9 am vs 3 am) (existing traffic model) | derived | access lens
+78. ✅ Freight logistics parks and warehouses (existing freight lens) (Overture/OSM) | S3/OSM | logistics lens
 
 ## E. People and economy (79–95)
 
@@ -169,7 +169,7 @@ Each item gives four things:
 
 ## G. Platform and AI (111–120)
 
-111. Per-block "what changed this month" digest across all datasets | derived | alerts
+111. ✅ Per-block "what changed this month" digest across all datasets (monthly lens: built-up, lights, NDVI, NO₂ year on year) | derived | alerts
 112. Comparable-block search across all 13 cities on the new fields | derived | similar()
 113. DISHA site memo: one-click climate + market + access due diligence | derived | agents
 114. Data-confidence per lens (coverage × source quality) | derived | confidence lens
