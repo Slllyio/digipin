@@ -113,6 +113,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('is the air in Delhi getting cleaner or dirtier? air getting better')).toEqual({ type: 'lens', lens: 'airtrend', city: 'delhi' });
         expect(M('where are the jobs in Delhi')).toEqual({ type: 'lens', lens: 'jobsmap', city: 'delhi' });
         expect(M('which lakes in Delhi are polluted with algae')).toEqual({ type: 'lens', lens: 'lakehealth', city: 'delhi' });
+        expect(M('where are the banking deserts in Delhi')).toEqual({ type: 'lens', lens: 'services', city: 'delhi' });
         expect(M('who lives under the flight path in Delhi')).toEqual({ type: 'lens', lens: 'flightpath', city: 'delhi' });
         expect(M('how much office floor space does Pune have')).toEqual({ type: 'lens', lens: 'floorspace', city: 'pune' });
         expect(M('where are the empty flats in Pune')).toEqual({ type: 'lens', lens: 'ghost', city: 'pune' });

@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -440,6 +440,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats[1].value).toBe('3,000');                      // cols 0-2: 1-3 km out
         expect(r.stats.find(x => /Most overflown 1/.test(x.label)).label).toContain(codes[SIZE * 5]);
         expect(L._lenses.flightpath(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('services: banks, clinics and schools within 1 km, deserts and gaps', () => {
+        const one = i => (i === SIZE * 2 + 2 ? 3 : 0);
+        const f = L.frameFrom(codes, { ...base, 'places.finance': codes.map((_, i) => one(i)), 'places.health': codes.map((_, i) => one(i)),
+            'places.education': codes.map(() => 1) }, { city: 'delhi' });
+        const r = L._lenses.services(f, {});
+        expect(r.columns.services_missing[SIZE * 2 + 2]).toBe(0);
+        expect(r.columns.services_missing[SIZE * 11 + 11]).toBe(2);
+        expect(r.headline).toMatch(/and 0 have none of the three/);
+        expect(r.stats.find(x => /Service gap 1/.test(x.label)).value).toMatch(/^no bank or ATM, clinic or pharmacy within 1 km/);
+        expect(L._lenses.services(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

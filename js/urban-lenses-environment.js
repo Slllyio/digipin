@@ -914,6 +914,44 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Everyday services within SERVICE_KM of home: banks and ATMs, clinics and pharmacies, schools and colleges
+    // (Overture places). A desert is a lived-in block with none of a kind within SERVICE_KM.
+    const SERVICE_KM = 1, SERVICE_KINDS = [['finance', 'Banks and ATMs', 'bank or ATM'], ['health', 'Clinics, hospitals and pharmacies', 'clinic or pharmacy'],
+        ['education', 'Schools, colleges and coaching', 'school']];
+
+    function services(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const have = SERVICE_KINDS.filter(([k]) => c[`places.${k}`]);
+        if (!pop || have.length < 2) return null;
+        const res = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0) res.push(i);
+        if (res.length < 5) return null;
+        const popNear = within(g, Float64Array.from(pop, v => (v > 0 ? v : 0)), SERVICE_KM);
+        const missing = new Float64Array(n).fill(NaN), per = {};
+        for (const i of res) missing[i] = 0;
+        const people = _sumOver(pop, res, () => true), stats = [];
+        for (const [k, label] of have) {
+            const near = within(g, Float64Array.from(c[`places.${k}`], v => (_fin(v) ? v : 0)), SERVICE_KM);
+            per[k] = near;
+            for (const i of res) if (near[i] === 0) missing[i]++;
+            const desert = _sumOver(pop, res, i => near[i] === 0);
+            let tot = 0;
+            for (const v of c[`places.${k}`]) if (_fin(v)) tot += v;
+            stats.push({ label: `${label}: residents with none within ${SERVICE_KM} km`, value: `${_people(desert)} (${_round(100 * desert / people)}%); ${_round(1e4 * tot / people, 1)} listed per 10,000 residents` });
+        }
+        const none = _sumOver(pop, res, i => missing[i] === have.length), some = _sumOver(pop, res, i => missing[i] > 0);
+        stats.unshift({ label: `Residents missing at least one of these within ${SERVICE_KM} km`, value: `${_people(some)} (${_round(100 * some / people)}%)`, raw: Math.round(some) });
+        const gap = Float64Array.from({ length: n }, (_, i) => (missing[i] > 0 ? missing[i] * popNear[i] : 0));
+        spaced(g, res.filter(i => missing[i] > 0), gap).slice(0, 4).forEach((i, k) => stats.push({ label: `Service gap ${k + 1}: ${g.codes[i]}`,
+            value: `no ${have.filter(([kk]) => per[kk][i] === 0).map(([, , sh]) => sh).join(', ')} within ${SERVICE_KM} km; ${_people(popNear[i])} people around` }));
+        return {
+            columns: { services_missing: missing }, idx: res, weightKey: 'services_missing',
+            metric: { label: 'Residents missing a bank, clinic or school within 1 km', value: _round(100 * some / people), unit: '%', higherIs: 'worse' },
+            headline: `${_people(some)} residents (${_round(100 * some / people)}%) have no listed bank or ATM, clinic or pharmacy, or school within ${SERVICE_KM} km, and ${_people(none)} have none of the three.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -1167,6 +1205,12 @@ const UrbanLensesEnvironment = (() => {
             needs: ['flight_paths.under_path', 'flight_paths.path_km', 'flight_paths.runway_km', 'population.population'],
             method: `Runways of 2,000 m or more from OpenStreetMap (via Overture), merged from segments; military airfields are included. A block is under a path when it lies beyond a runway end, within 10 km along the extended centreline, and within 0.5 km plus 10% of the distance out to either side. On a 3° glide slope aircraft are about 50 m up per km out, so under ${LOW_KM} km they pass below about 300 m. Real tracks turn after take-off and change with wind, and traffic per runway is not included, so this marks likely overflight, not measured noise.`,
             refs: 'ICAO Doc 8168 (PANS-OPS approach geometry); Basner et al. 2017 (aviation noise impacts); Overture Maps base theme (OpenStreetMap runways)' },
+        { id: 'services', equity: true, title: 'Everyday services', icon: '🏦',
+            question: 'Who lives more than a kilometre from a bank, a clinic or a school?',
+            field: { key: 'services_missing', label: 'Kinds of everyday service missing within 1 km (of 3)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['places.finance', 'places.health', 'places.education', 'population.population'],
+            method: `Overture Maps places (confidence 0.6+, not closed) counted within ${SERVICE_KM} km of each lived-in block: banks, ATMs and financial services; clinics, hospitals and pharmacies; schools, colleges and coaching. A block misses a kind when none is listed within ${SERVICE_KM} km. Overture under-lists small and informal providers (local clinics, anganwadis, small schools), so gaps are where listings are thin as well as where services are missing; RBI's financial-inclusion target is a banking outlet within 5 km of every village.`,
+            refs: 'Overture Maps Foundation places; RBI Financial Inclusion Plan; Weiss et al. 2020 (global access to healthcare)' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -1182,7 +1226,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

@@ -100,7 +100,7 @@ Each item gives four things:
 51. Landfills and dumpsites (OSM landuse=landfill + Wikidata) | OSM | waste lens
 52. Sewage treatment plants and capacity | OSM/Wikidata | sanitation
 53. Hospitals with beds (Overture + OSM beds tag + Wikidata) | S3/OSM | health capacity
-54. Pharmacies and diagnostics (Overture) | S3 | health access
+54. ✅ Pharmacies and diagnostics (Overture) | S3 | health access
 55. Dengue/malaria risk proxy (standing water + temperature + humidity) | EE | vector lens
 56. Heat-health mortality estimate (Gasparrini ERFs on hot days) | derived | heat deaths lens
 57. ✅ Air-pollution premature deaths (GBD PM2.5 IER) | derived | air deaths lens
@@ -142,7 +142,7 @@ Each item gives four things:
 87. Religious places and festival crowd zones | S3/OSM | crowd lens
 88. Schools by board and level (UDISE+ where open) | open | education lens
 89. Colleges and coaching hubs (Overture) | S3 | student housing demand
-90. Bank branches and ATMs per resident (financial inclusion) | S3 | finance lens
+90. ✅ Bank branches and ATMs per resident (financial inclusion) | S3 | finance lens
 91. Post offices and India Post services (DIGIPIN home!) | open | postal lens
 92. Startups and IT parks (Wikidata, SEZ list) | open | innovation lens
 93. GST registrations by district | open | economy context

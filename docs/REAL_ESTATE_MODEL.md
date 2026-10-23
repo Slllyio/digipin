@@ -796,3 +796,21 @@ The `flightpath` lens and the property report count residents in three groups:
 | Mumbai | 5.7 lakh | | 2.3 lakh |
 
 This marks where low overflights are likely. It does not measure noise.
+
+## Everyday services
+
+The `services` lens counts Overture places within 1 km of each lived-in block in three groups:
+
+- banks and ATMs;
+- clinics, hospitals and pharmacies;
+- schools, colleges and coaching.
+
+A block counts as missing a kind when none of that kind is listed within 1 km. The lens names the blocks with the most people around them that miss one or more kinds.
+
+| City | Residents missing at least one kind |
+|---|---|
+| Delhi | 4.5% |
+| Pune | 1.5% |
+| Guna | 28% |
+
+Overture under-lists small and informal providers, so a gap can mean thin listings rather than a missing service.
