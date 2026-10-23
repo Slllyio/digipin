@@ -1098,6 +1098,44 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    // Open burning. A block burns "often" with 3 or more fire days a year at its worst spot; 30 or more is almost
+    // always a steady industrial heat source (furnaces, kilns, flares) rather than fires.
+    const FIRE_OFTEN = 3, FIRE_INDUSTRY = 30, SMOKE_KM = 1;
+
+    /** Open burning: where VIIRS sees fires again and again, who lives in the smoke, and what is likely burning. */
+    function burning(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const fd = c['fires.fire_days_yr'], wd = c['fires.winter_fire_days_yr'], pop = c['population.population'];
+        const crop = c['land_cover.crop_pct'], bare = c['land_cover.bare_pct'], built = c['land_cover.built_pct'];
+        if (!fd || !pop) return null;
+        const cells = [];
+        for (let i = 0; i < n; i++) if (_fin(fd[i])) cells.push(i);
+        if (cells.length < 5) return null;
+        const often = new Float64Array(n);
+        for (const i of cells) often[i] = fd[i] >= FIRE_OFTEN && fd[i] < FIRE_INDUSTRY ? 1 : 0;
+        const near = within(g, often, SMOKE_KM);
+        const res = cells.filter(i => pop[i] > 0), people = _sumOver(pop, res, () => true);
+        const inSmoke = _sumOver(pop, res, i => near[i] > 0);
+        const hot = cells.filter(i => often[i]), ind = cells.filter(i => fd[i] >= FIRE_INDUSTRY);
+        const wShare = wd ? hot.reduce((s, i) => s + (_fin(wd[i]) ? wd[i] : 0), 0) / Math.max(1e-9, hot.reduce((s, i) => s + fd[i], 0)) : null;
+        const kind = i => (crop && crop[i] >= 30 ? 'farmland: crop-residue burning' : bare && bare[i] >= 20 ? 'bare ground: dump, landfill or kiln'
+            : built && built[i] >= 50 ? 'built-up: garbage or industrial burning' : 'mixed land');
+        const stats = [
+            { label: `Blocks with fires on ${FIRE_OFTEN} or more days a year`, value: `${hot.length}`, raw: hot.length },
+            { label: `Residents within ${SMOKE_KM} km of them`, value: `${_people(inSmoke)} (${_round(100 * inSmoke / people, 1)}%)` },
+        ];
+        if (wShare != null && hot.length) stats.push({ label: 'Share of those fire days in October–February (crop and garbage burning season)', value: `${_round(100 * wShare)}%` });
+        if (ind.length) stats.push({ label: `Steady heat sources (${FIRE_INDUSTRY}+ days a year: furnaces, kilns, flares)`, value: `${ind.length} blocks` });
+        spaced(g, hot, fd).slice(0, 4).forEach((i, k) => stats.push({ label: `Burning hotspot ${k + 1}: ${g.codes[i]}`, value: `${_round(fd[i], 1)} days a year; ${kind(i)}` }));
+        return {
+            columns: { fire_days_yr: fd }, idx: cells, weightKey: 'fire_days_yr', noHotspots: true,
+            metric: { label: `Residents within ${SMOKE_KM} km of frequent open burning`, value: Math.round(inSmoke), unit: 'people', higherIs: 'worse' },
+            headline: hot.length ? `Satellites see fires on ${FIRE_OFTEN} or more days a year in ${hot.length} blocks, with ${_people(inSmoke)} residents living within ${SMOKE_KM} km${wShare != null ? `; ${_round(100 * wShare)}% of those fire days fall in October–February` : ''}.`
+                : `Satellites see no block burning on ${FIRE_OFTEN} or more days a year.`,
+            stats,
+        };
+    }
+
     /** Flood 2050: residents in the 1-in-100-year river or coastal flood zone, now and by 2050 (WRI Aqueduct). */
     function flood2050(fr) {
         const g = fr.grid, c = fr.cols, n = g.n;
@@ -1436,6 +1474,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['air_trend.no2_change_pct', 'air_trend.no2_2019', 'air_trend.no2_latest', 'air_trend.pm25_2012', 'air_trend.pm25_2022', 'air_trend.so2_umol_m2', 'population.population'],
             method: `Sentinel-5P TROPOMI tropospheric NO₂ annual means, 2019 against 2025 (~5 km columns, so neighbouring blocks share values); Washington University satellite-derived surface PM2.5 (V6.GL, ~1 km), 2012 against 2022; and the 2025 SO₂ column, which is noisy except near big sources (hotspots are named only above ${SO2_NOTABLE} µmol/m²). Changes under ${AIR_FLAT}% are within weather swings between years and count as flat. Columns measure the whole air above a place, not what reaches the street.`,
             refs: 'Veefkind et al. 2012 (TROPOMI); van Donkelaar et al. 2021 (V5/V6.GL PM2.5); NCAP progress reports (MoEFCC)' },
+        { id: 'burning', equity: true, title: 'Open burning', icon: '🔥',
+            question: 'Where do satellites see fires again and again, and who lives in the smoke?',
+            field: { key: 'fire_days_yr', label: 'Days a year with an active fire', unit: 'days', higherIs: 'worse', ramp: 'reds', domain: [0, 20] },
+            needs: ['fires.fire_days_yr', 'fires.winter_fire_days_yr', 'land_cover.crop_pct', 'land_cover.bare_pct', 'land_cover.built_pct', 'population.population'],
+            method: `NASA VIIRS (Suomi NPP) 375 m active-fire detections of nominal or high confidence since September 2023, counted as days a year at each block's most-burned spot. Blocks with ${FIRE_OFTEN}–${FIRE_INDUSTRY} days a year count as frequent burning; ${FIRE_INDUSTRY} or more is nearly always a steady heat source such as a furnace or kiln and is listed apart. Residents within ${SMOKE_KM} km of a frequent-burning block are counted. The likely kind comes from ESA WorldCover. The satellite passes about 1:30 am and pm, so small and short fires are missed.`,
+            refs: 'Schroeder et al. 2014 (VIIRS 375 m active fire); NASA FIRMS; CAQM directions on open burning; Jethva et al. 2019 (crop-residue fires)' },
         { id: 'vitality', title: 'Commercial vitality', icon: '🛍️',
             question: 'Where are the high streets, where do chains and offices cluster, and which dense areas lack shops?',
             field: { key: 'places_km2', label: 'Businesses and services per km²', unit: 'per km²', higherIs: 'better', ramp: 'viridis', domain: [0, 1000] },
@@ -1450,7 +1494,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, coolroof, change, airtrend }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, coolroof, change, airtrend, burning }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText };
 })();
 

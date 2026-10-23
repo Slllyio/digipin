@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'burning']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -230,6 +230,17 @@ describe('Real-estate lenses on a hand-made grid', () => {
         const dry = L.frameFrom(codes, { ...base, 'flood_future.any_pct_now': zero, 'flood_future.any_pct_2050': zero });
         expect(L._lenses.flood2050(dry, {}).headline).toMatch(/^No residents/);
         expect(L._lenses.flood2050(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('burning: frequent fire blocks, residents in the smoke, steady heat sources apart', () => {
+        const fd = codes.map((_, i) => (i === 0 ? 5 : i === SIZE * 6 + 6 ? 40 : 0));
+        const f = L.frameFrom(codes, { ...base, 'fires.fire_days_yr': fd, 'fires.winter_fire_days_yr': codes.map((_, i) => (i === 0 ? 4 : 0)), 'land_cover.crop_pct': codes.map((_, i) => (i === 0 ? 60 : 0)) }, { city: 'delhi' });
+        const r = L._lenses.burning(f, {});
+        expect(r.stats[0].value).toBe('1');
+        expect(r.headline).toMatch(/80% of those fire days fall in October–February/);
+        expect(r.stats.some(x => /Steady heat sources/.test(x.label) && x.value === '1 blocks')).toBe(true);
+        expect(r.stats.find(x => /Burning hotspot 1/.test(x.label)).value).toMatch(/crop-residue/);
+        expect(L._lenses.burning(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('airtrend: NO₂ change for residents, flat band, PM2.5 trend and SO₂ hotspots', () => {

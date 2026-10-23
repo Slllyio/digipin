@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T18:46:13Z",
+  "generated": "2026-10-23T18:52:11Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -6845,6 +6845,220 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "fires",
+      "title": "Fires and open burning (VIIRS)",
+      "description": "NASA LANCE VIIRS (Suomi NPP) 375 m active-fire detections, nominal or high confidence, from 2023-09-01 to the latest pass (3.1 years), as days a year at the block's most-burned 375 m spot, the October\u2013February share and summed fire radiative power. Satellites pass about 1:30 am and pm, so short fires are missed; hot rooftops, flares and kilns can also trigger detections.",
+      "source": "NASA LANCE SNPP VIIRS C2 active fire via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "NASA open data (no restrictions; cite NASA FIRMS)",
+      "group": "Open Data (satellite)",
+      "level": 6,
+      "approxCellM": 975,
+      "fields": [
+        {
+          "key": "fire_days_yr",
+          "label": "Days a year with an active fire (most-burned spot in the block)",
+          "type": "number",
+          "agg": "max",
+          "unit": "days",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "winter_fire_days_yr",
+          "label": "Of them October\u2013February (crop residue, garbage and warmth fires)",
+          "type": "number",
+          "agg": "max",
+          "unit": "days",
+          "domain": [
+            0,
+            15
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "fire_mw_yr",
+          "label": "Fire radiative power a year, summed over the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "MW",
+          "domain": [
+            0,
+            541.1
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "fire_days_yr",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 504,
+          "bbox": {
+            "west": 72.4736328125,
+            "south": 22.943359375,
+            "east": 72.6845703125,
+            "north": 23.1279296875
+          },
+          "json": "fires/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 1368,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.8271484375,
+            "east": 77.7822265625,
+            "north": 13.1435546875
+          },
+          "json": "fires/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 442,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.3212890625
+          },
+          "json": "fires/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 726,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.8974609375,
+            "east": 80.322265625,
+            "north": 13.1875
+          },
+          "json": "fires/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 3304,
+          "bbox": {
+            "west": 76.8330078125,
+            "south": 28.392578125,
+            "east": 77.3515625,
+            "north": 28.884765625
+          },
+          "json": "fires/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 100,
+          "bbox": {
+            "west": 77.263671875,
+            "south": 24.595703125,
+            "east": 77.3515625,
+            "north": 24.68359375
+          },
+          "json": "fires/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1080,
+          "bbox": {
+            "west": 78.2919921875,
+            "south": 17.2919921875,
+            "east": 78.6083984375,
+            "north": 17.5556640625
+          },
+          "json": "fires/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 2209,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.4951171875,
+            "east": 76.0068359375,
+            "north": 22.908203125
+          },
+          "json": "fires/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 624,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.927734375,
+            "north": 27.00390625
+          },
+          "json": "fires/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 480,
+          "bbox": {
+            "west": 88.2763671875,
+            "south": 22.4423828125,
+            "east": 88.4521484375,
+            "north": 22.6533203125
+          },
+          "json": "fires/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 529,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "fires/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 1125,
+          "bbox": {
+            "west": 72.7724609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.2783203125
+          },
+          "json": "fires/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 700,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.42578125,
+            "east": 73.994140625,
+            "north": 18.6455078125
+          },
+          "json": "fires/pune.json",
+          "parquet": null
         }
       ]
     },

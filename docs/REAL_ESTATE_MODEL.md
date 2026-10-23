@@ -484,3 +484,27 @@ The `coolroof` lens reports:
 | Ahmedabad | 6% | 4.6 lakh | ₹147 crore |
 
 In humid cities, concrete weathers dark. Ahmedabad has 42% light roofs, partly thanks to its cool-roof programme.
+
+## Open burning
+
+The `fires` dataset is at L6 and built by `pipeline/cells/ee_layers.py --layer fires`. It counts NASA VIIRS 375 m active-fire detections from September 2023 onward, nominal or high confidence only.
+
+| Field | Meaning |
+|---|---|
+| `fire_days_yr` | Days a year with a fire at the block's most-burned spot |
+| `winter_fire_days_yr` | The October–February part of that count |
+| `fire_mw_yr` | Fire radiative power summed over the block |
+
+The `burning` lens sorts blocks into two groups:
+
+- **Frequent burning:** 3 to 30 fire days a year.
+- **Steady heat sources:** more than 30 days a year. These are almost always furnaces or kilns, so the lens lists them separately.
+
+It also counts residents within 1 km of frequent burning, and uses WorldCover to label the likely cause: crop land, bare ground, or built-up land.
+
+| City | Residents within 1 km of frequent burning | Fire days in October–February |
+|---|---|---|
+| Delhi | 10 lakh | 55% |
+| Ahmedabad | 7.2 lakh | 80% |
+| Chennai | 3.7 lakh | 60% |
+| Indore | none | |

@@ -1439,6 +1439,57 @@ def air_trend(region):
     return spec, _table(level, rows, specs)
 
 
+# ── fires (VIIRS 375 m active fire: garbage, landfill, crop and industrial burning) ──
+
+FIRE_FROM = "2023-09-01"         # start of the NASA LANCE VIIRS C2 record in Earth Engine
+
+
+def fires(region):
+    """Days with an active fire seen by VIIRS per block since Sep 2023: open burning, landfill fires and crop burning."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 6
+    col = ee.ImageCollection("NASA/LANCE/SNPP_VIIRS/C2").filterBounds(geom).filterDate(FIRE_FROM, ee.Date(f"{YEAR + 1}-12-31"))
+
+    def day(im):
+        f = im.select("frp").gt(0).And(im.select("confidence").gte(1)).unmask(0)
+        m = ee.Date(im.get("system:time_start")).get("month")
+        winter = ee.Number(m).gte(10).Or(ee.Number(m).lte(2))
+        return ee.Image.cat([f.rename("d"), f.multiply(winter).rename("w"), im.select("frp").unmask(0).rename("frp")]).toFloat()
+    d = col.map(day)
+    tot = d.sum()
+    img = ee.Image.cat([tot.select("d").rename("dmax"), tot.select("w").rename("wmax"), tot.select("frp").rename("frp")])
+    first = ee.Date(FIRE_FROM)
+    years = ee.Date(col.aggregate_max("system:time_start")).difference(first, "year").getInfo()
+    raw = gee.fetch(gee.to_cells(img.select(["dmax", "wmax"]), 375, "max").addBands(gee.to_cells(img.select("frp"), 375, "mean")),
+                    bbox, level)
+    k = 1 / max(years, 0.5)
+    rows = {}
+    for c, x in raw.items():
+        if x.get("dmax") is None:
+            continue
+        px = gee.cell_area_km2(c) / (0.375 ** 2)
+        rows[c] = {"fire_days_yr": _r(x["dmax"] * k, 1), "winter_fire_days_yr": _r((x.get("wmax") or 0) * k, 1),
+                   "fire_mw_yr": _r((x.get("frp") or 0) * px * k, 1)}
+    specs = [
+        FieldSpec("fire_days_yr", "Days a year with an active fire (most-burned spot in the block)", agg="max", unit="days",
+                  domain=[0, 20], ramp="reds", higher_is="worse"),
+        FieldSpec("winter_fire_days_yr", "Of them October–February (crop residue, garbage and warmth fires)", agg="max",
+                  unit="days", domain=[0, 15], ramp="reds", higher_is="worse"),
+        FieldSpec("fire_mw_yr", "Fire radiative power a year, summed over the block", agg="sum", unit="MW",
+                  ramp="reds", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="fires", title="Fires and open burning (VIIRS)", level=level, fields=specs, group=GROUP,
+        description=f"NASA LANCE VIIRS (Suomi NPP) 375 m active-fire detections, nominal or high confidence, from {FIRE_FROM} "
+                    f"to the latest pass ({years:.1f} years), as days a year at the block's most-burned 375 m spot, the "
+                    "October–February share and summed fire radiative power. Satellites pass about 1:30 am and pm, so short "
+                    "fires are missed; hot rooftops, flares and kilns can also trigger detections.",
+        source="NASA LANCE SNPP VIIRS C2 active fire via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="NASA open data (no restrictions; cite NASA FIRMS)", default_field="fire_days_yr")
+    return spec, _table(level, rows, specs)
+
+
 # ── roofs: how much sun they reflect (Sentinel-2 albedo on Open Buildings roofs) ──
 
 # Thresholds are for 10 m pixel albedo, which blends roofs with parapets, tanks and shade: the median Lucknow roof
@@ -1509,7 +1560,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires,
 }
 
 

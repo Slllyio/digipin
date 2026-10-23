@@ -28,6 +28,7 @@ const DishaIntel = (() => {
             floodloss: /\b(flood (damage|losses?|cost)|expected (annual )?(damage|loss)|climate risk to (property|buildings|homes)|(property|buildings?|homes?|real estate)\b.{0,25}\b(climate|flood) risk|value at risk|insur\w*)\b/i,
             housinggap: /\b(housing (gap|shortages?|deficits?|demand|need)|shortage of (homes|housing)|enough (homes|housing)|(homes|houses|housing) (needed|required) by 2030|how many (homes|houses) (are )?needed)\b/i,
             coolroof: /\b(cool[\s-]?roofs?|white[\s-]?(roofs?|paint\w*|wash\w*)|roof (albedo|colou?r|paint\w*|coating)|dark roofs?|(tin|metal|concrete) roofs?\b.{0,20}\b(hot|heat)|reflective (roofs?|paint|coating))\b/i,
+            burning: /\b(open burning|(garbage|waste|trash|stubble|crop[\s-]?residue|parali|landfill) (burning|fires?)|burning (garbage|waste|stubble|crop)|fires? (near|around)|active fires?|firms)\b/i,
             airtrend: /\b(air (getting|got|becoming) (better|worse|cleaner|dirtier)|(cleaner|dirtier) air|air (quality )?trend|pollution (trend|rising|falling|getting (better|worse))|no2 (trend|since|rise|fall)|sulph?ur dioxide|\bso2\b)\b/i,
             change: /\b(changed (the )?most|changing (fastest|most|now)|change (detection|since \d{4})|since 2017|before and after|new (development|construction) since)\b/i,
             vitality: /\b(high streets?|commercial (vitality|activity|hubs?|areas?|streets?)|busiest (market|street|area)s?|retail (gap|desert|opportunit\w*)|(shops|businesses|restaurants|offices) (per|density)|chains?|brands? presence)\b/i,

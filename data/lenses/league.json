@@ -270,6 +270,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 716466,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 5.1,
@@ -640,6 +646,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": -16.3,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 0,
+     "unit": "people",
      "higherIs": "worse"
     },
     "vitality": {
@@ -1014,6 +1026,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 0,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 4,
@@ -1378,6 +1396,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 7.1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 370364,
+     "unit": "people",
      "higherIs": "worse"
     },
     "vitality": {
@@ -1746,6 +1770,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 1004244,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 5,
@@ -2104,6 +2134,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 1.6,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 0,
+     "unit": "people",
      "higherIs": "worse"
     },
     "vitality": {
@@ -2470,6 +2506,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 2.2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 244264,
+     "unit": "people",
      "higherIs": "worse"
     },
     "vitality": {
@@ -2844,6 +2886,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 0,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 4,
@@ -3208,6 +3256,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 2.9,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 0,
+     "unit": "people",
      "higherIs": "worse"
     },
     "vitality": {
@@ -3576,6 +3630,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 38636,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 3.8,
@@ -3934,6 +3994,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 1.4,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 0,
+     "unit": "people",
      "higherIs": "worse"
     },
     "vitality": {
@@ -4308,6 +4374,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 462401,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 4.9,
@@ -4678,6 +4750,12 @@
      "label": "Change in NO₂ for the average resident since 2019",
      "value": 1.4,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "burning": {
+     "label": "Residents within 1 km of frequent open burning",
+     "value": 35625,
+     "unit": "people",
      "higherIs": "worse"
     },
     "vitality": {
