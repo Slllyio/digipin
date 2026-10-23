@@ -157,7 +157,7 @@ Each item gives four things:
 99. Biodiversity intactness (NHM BII) | open | nature lens
 100. ❌ Bird and wildlife sightings (GBIF occurrences) | API | nature lens (skipped: records mix in CC BY-NC)
 101. Tree species diversity proxy (Sentinel-2 phenology) | EE | green quality
-102. Soil organic carbon and texture (SoilGrids; exists partly) | EE | gardens/recharge
+102. ✅ Soil organic carbon and texture (SoilGrids; exists partly) | EE | gardens/recharge (`topsoil` layer from OpenLandMap, since SoilGrids masks cities; `gardens` lens)
 103. ✅ Slope stability and cut-fill (DEM curvature) | EE | construction cost (slopes in the ground lens)
 104. Bedrock depth (Pelletier 2016) | EE | foundation cost
 105. ✅ Expansive black-cotton soil (SoilGrids clay + vertisol class) | EE | foundation risk (subsoil + ground lens)

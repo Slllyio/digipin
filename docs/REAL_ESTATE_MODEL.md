@@ -977,3 +977,7 @@ Gathering places are Overture places of worship (every faith's `*_place_of_worsh
 ## Getting to the airport (`airport` lens)
 
 Straight-line distance to the nearest jet runway (`flight_paths.runway_km`, OSM runways of 1.8 km or more, only blocks within 30 km) × a 1.35 road detour, at 20 km/h peak and 35 km/h off-peak. Median resident at peak: Delhi 45 min, Mumbai 39 min, Kolkata 46 min. Not routed; the nearest runway can be an air force base.
+
+## Soil for gardens and rain gardens (`gardens` lens)
+
+New EE layer `topsoil` (L7, OpenLandMap 250 m surface soil, CC BY-SA 4.0): organic carbon (g/kg; stored as ×5 g/kg), pH (stored ×10), sand and clay. Garden score = 45% pH (full from 6 to 7.5), 35% organic carbon (zero at 2.5 g/kg, full at 10) and 20% texture (clay 35–45% scores 0.6, over 45% scores 0.3). Rain gardens need 40%+ sand and under 35% clay. Open land is WorldCover grass, bare and shrub. First run: Delhi has 284 km² of open land, 84% garden-ready and 24% draining for rain gardens; Pune's black soils drain on only 2%. SoilGrids 2.0 was tried first but masks built-up land, so it is blank in city cores.

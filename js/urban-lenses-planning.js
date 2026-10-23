@@ -455,7 +455,60 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Gardens and rain gardens. Most vegetables and shade trees do best in near-neutral soil (pH 6 to 7.5) with
+    // some organic matter; rain gardens need soil that drains, roughly a sandy or loamy texture under 35% clay.
+    const PH_LO = 6, PH_HI = 7.5, PH_ALK = 8, SOC_POOR = 5, SOC_GOOD = 10, RAIN_SAND = 40, RAIN_CLAY = 35;
+
+    function gardens(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, ph = c['topsoil.ph'], soc = c['topsoil.soc_g_kg'], sand = c['topsoil.sand_pct'], clay = c['topsoil.clay_pct'];
+        const pop = c['population.population'];
+        if (!ph || !soc || !sand || !clay) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const open = i => v(c['land_cover.grass_pct'], i) + v(c['land_cover.bare_pct'], i) + v(c['land_cover.shrub_pct'], i);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(ph[i]) && _fin(soc[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const score = new Float64Array(n).fill(NaN), rain = new Float64Array(n).fill(NaN);
+        for (const i of idx) {
+            const p = ph[i], phS = p >= PH_LO && p <= PH_HI ? 1 : p > PH_HI ? Math.max(0, 1 - (p - PH_HI) / 1.5) : Math.max(0, 1 - (PH_LO - p) / 1.5);
+            const socS = Math.max(0, Math.min(1, (soc[i] - SOC_POOR / 2) / (SOC_GOOD - SOC_POOR / 2)));
+            const drains = sand[i] >= RAIN_SAND && clay[i] < RAIN_CLAY;
+            const texS = clay[i] >= 45 ? 0.3 : clay[i] >= RAIN_CLAY ? 0.6 : 1;
+            score[i] = Math.round(100 * (0.45 * phS + 0.35 * socS + 0.2 * texS));
+            rain[i] = drains ? 1 : 0;
+        }
+        const km2 = i => g.cellKm2 * open(i) / 100, sumKm = f => idx.reduce((a, i) => a + (f(i) ? km2(i) : 0), 0);
+        const openAll = sumKm(() => true);
+        const alk = sumKm(i => ph[i] > PH_ALK), poor = sumKm(i => soc[i] < SOC_POOR), drainKm = sumKm(i => rain[i] === 1), good = sumKm(i => score[i] >= 70);
+        const share = x => `${_round(x, 1)} km² (${_round(100 * x / Math.max(openAll, 1e-9))}%)`;
+        const stats = [
+            { label: 'Open land (grass, bare and scrub)', value: `${_round(openAll, 1)} km²` },
+            { label: 'Open land with garden-ready soil (score 70+)', value: share(good) },
+            { label: `…alkaline, pH above ${PH_ALK} (needs gypsum or compost)`, value: share(alk) },
+            { label: `…low in organic matter, under ${SOC_POOR} g/kg`, value: share(poor) },
+            { label: `…draining well enough for rain gardens (sand ${RAIN_SAND}%+, clay under ${RAIN_CLAY}%)`, value: share(drainKm) },
+        ];
+        const lived = idx.filter(i => v(pop, i) > 0 && score[i] >= 70 && open(i) >= 10);
+        spaced(g, lived, Float64Array.from({ length: n }, (_, i) => open(i) * v(pop, i))).forEach((i, k) => stats.push({
+            label: `Community garden site ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(open(i))}% open land; pH ${_round(ph[i], 1)}, ${_round(soc[i], 1)} g/kg carbon${rain[i] ? ', drains for a rain garden' : ''}; ${_people(v(pop, i))} residents` }));
+        const medPh = wquantile(ph, null, idx, 0.5);
+        return {
+            columns: { garden_score: score, rain_garden: rain }, idx, weightKey: 'garden_score', noHotspots: true,
+            metric: { label: 'Open land with garden-ready soil', value: _round(good, 1), unit: 'km²', higherIs: 'better' },
+            headline: `${_round(100 * good / Math.max(openAll, 1e-9))}% of the city's ${_round(openAll, 1)} km² of open land has soil ready for gardens; the typical topsoil is pH ${_round(medPh, 1)}, ${_round(100 * alk / Math.max(openAll, 1e-9))}% of open land is alkaline and ${_round(100 * drainKm / Math.max(openAll, 1e-9))}% drains well enough for a rain garden. Soil maps are 250 m predictions; a home or plot can be fill or rubble, so test before planting.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'gardens', equity: false, title: 'Soil for gardens and rain gardens', icon: '🌱',
+            question: 'Where is the soil good for gardens, farms and rain gardens?',
+            field: { key: 'garden_score', label: 'Garden soil score (pH, organic carbon, texture)', unit: '0-100', higherIs: 'better', ramp: 'greens', domain: [50, 100] },
+            extra: [{ key: 'rain_garden', label: 'Soil drains well enough for a rain garden', unit: 'yes/no', higherIs: 'better', ramp: 'blues', domain: [0, 1] }],
+            needs: ['topsoil.ph', 'topsoil.soc_g_kg', 'topsoil.sand_pct', 'topsoil.clay_pct', 'land_cover.grass_pct', 'land_cover.bare_pct', 'land_cover.shrub_pct', 'population.population'],
+            method: `OpenLandMap 250 m predictions of surface soil (Hengl et al.). Score = 45% pH (full marks from ${PH_LO} to ${PH_HI}, falling to zero 1.5 units outside), 35% organic carbon (zero at ${SOC_POOR / 2} g/kg, full at ${SOC_GOOD}), 20% texture (clay 35–45% scores 0.6, over 45% 0.3). Rain gardens need draining soil: ${RAIN_SAND}% sand or more and clay under ${RAIN_CLAY}%. Open land is ESA WorldCover grass, bare and shrub. Community garden sites are lived-in blocks scoring 70+ with at least 10% open land, ranked by open land × residents, ${SPACING_KM} km apart. Urban soil is often fill; test before planting.`,
+            refs: 'Hengl et al. (OpenLandMap soil, CC BY-SA 4.0); ESA WorldCover 2021; ICAR soil health card pH classes; CPWD / MoHUA rain garden guidance' },
         { id: 'airport', equity: false, title: 'Getting to the airport', icon: '🛫',
             question: 'How long is the drive to the airport from each neighbourhood?',
             field: { key: 'airport_peak_min', label: 'Rough peak-hour drive to the nearest jet runway', unit: 'min', higherIs: 'worse', ramp: 'heat', domain: [10, 120] },
@@ -528,7 +581,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

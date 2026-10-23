@@ -1537,6 +1537,44 @@ def subsoil(region):
     return spec, _table(level, rows, specs)
 
 
+# ── topsoil: what grows and what soaks in (OpenLandMap surface soil) ──
+
+def topsoil(region):
+    """Surface soil per block: organic carbon, pH, sand and clay at 0 cm (OpenLandMap 250 m)."""
+    ee = gee.init()
+    _, bbox = _bbox(region)
+    level = 7
+    sol = "OpenLandMap/SOL/SOL_"
+    img = ee.Image.cat([
+        ee.Image(sol + "ORGANIC-CARBON_USDA-6A1C_M/v02").select("b0").rename("soc"),
+        ee.Image(sol + "PH-H2O_USDA-4C1A2A_M/v02").select("b0").rename("ph"),
+        ee.Image(sol + "SAND-WFRACTION_USDA-3A1A1A_M/v02").select("b0").rename("sand"),
+        ee.Image(sol + "CLAY-WFRACTION_USDA-3A1A1A_M/v02").select("b0").rename("clay"),
+    ])
+    raw = gee.fetch(gee.to_cells(img, 250), bbox, level)
+    rows = {}
+    for c, x in raw.items():
+        if x.get("ph") is None:
+            continue
+        # Organic carbon is stored in units of 5 g/kg and pH × 10.
+        rows[c] = {"soc_g_kg": _r(x["soc"] * 5, 1) if x.get("soc") is not None else None, "ph": _r(x["ph"] / 10, 2),
+                   "sand_pct": _r(x.get("sand")), "clay_pct": _r(x.get("clay"))}
+    specs = [
+        FieldSpec("soc_g_kg", "Topsoil organic carbon", agg="mean", unit="g/kg", domain=[2, 20], ramp="greens", higher_is="better"),
+        FieldSpec("ph", "Topsoil pH (in water)", agg="mean", unit="pH", domain=[5.5, 9], ramp="diverging", higher_is=None),
+        FieldSpec("sand_pct", "Topsoil sand", agg="mean", unit="%", domain=[10, 70], ramp="viridis", higher_is=None),
+        FieldSpec("clay_pct", "Topsoil clay", agg="mean", unit="%", domain=[10, 60], ramp="reds", higher_is=None),
+    ]
+    spec = DatasetSpec(
+        id="topsoil", title="Topsoil for gardens and rain gardens (OpenLandMap)", level=level, fields=specs, group=GROUP,
+        description="Predicted surface (0 cm) organic carbon, pH, sand and clay from OpenLandMap's 250 m soil maps (Hengl et al.). "
+                    "Under built-up land these are what the soil was, or is in open patches, not the fill and rubble in a garden; "
+                    "test before planting.",
+        source="OpenLandMap soil v02 (Hengl et al.) via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="CC BY-SA 4.0 (OpenLandMap)", default_field="ph")
+    return spec, _table(level, rows, specs)
+
+
 # ── lakes: extent, algae, turbidity and weeds (Sentinel-2, dry season) ──
 
 LAKE_FROM = 2019                 # first full Sentinel-2 L2A year over India
@@ -1876,7 +1914,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil,
 }
 
 
