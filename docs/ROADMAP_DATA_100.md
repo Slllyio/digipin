@@ -15,7 +15,7 @@ Each item gives four things:
 
 | # | Item | Why first |
 |---|---|---|
-| 1 | ❌ Overture buildings: class, floors, height per block | Building use mix (residential/commercial/industrial) per block: core to real estate |
+| 1 | ❌ Overture buildings: class, floors, height per block (use mix now comes from Overture land use: landmix lens) | Building use mix (residential/commercial/industrial) per block: core to real estate |
 | 2 | ❌ Overture transport segments: road class, speed, surface per block | Road quality and arterial frontage for land value and retail siting |
 | 3 | ✅ Office and IT clusters → jobs proxy (jobsmap lens) | Fills the missing jobs layer behind job access and rental demand |
 | 4 | ✅ Property-agent density → market-activity signal (market lens) | Turns places data into a price-model input |

@@ -1,11 +1,11 @@
 /**
- * Planning and regulation lenses for UrbanLenses: construction limits around protected monuments. They read
- * the heritage cell dataset (pipeline/realestate/heritage.py). Registers itself on load, after urban-lenses.js.
+ * Planning and regulation lenses for UrbanLenses: construction limits around protected monuments and land-use mix.
+ * They read the heritage and landuse cell datasets (pipeline/realestate/heritage.py, landuse.py). Registers itself on load, after urban-lenses.js.
  */
 const UrbanLensesPlanning = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people } = UrbanLenses._kit;
+    const { _fin, _round, _people, _sumOver, within } = UrbanLenses._kit;
 
     const SPACING_KM = 1.5, TOP = 5;
 
@@ -59,7 +59,63 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Land-use mix. Mapped land use (Overture, from OpenStreetMap) within MIX_KM of each lived-in block, in four
+    // groups; the mix is Shannon evenness (0 one use, 100 an even spread). Homes next to industry: blocks with
+    // INDUSTRY_NEXT% or more industrial land within INDUSTRY_KM.
+    const MIX_KM = 1, INDUSTRY_KM = 0.5, INDUSTRY_NEXT = 20, MIX_GROUPS = ['residential', 'commercial', 'civic', 'industrial'];
+
+    function landmix(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const L = Object.fromEntries(MIX_GROUPS.map(k => [k, c[`landuse.${k}_pct`]]));
+        if (MIX_GROUPS.some(k => !L[k]) || !pop) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const near = Object.fromEntries(MIX_GROUPS.map(k => [k, within(g, Float64Array.from({ length: n }, (_, i) => v(L[k], i)), MIX_KM)]));
+        const ind = within(g, Float64Array.from({ length: n }, (_, i) => v(L.industrial, i)), INDUSTRY_KM, true);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const mix = new Float64Array(n).fill(NaN);
+        for (const i of idx) {
+            const tot = MIX_GROUPS.reduce((a, k) => a + near[k][i], 0);
+            if (tot <= 0) continue;
+            let h = 0;
+            for (const k of MIX_GROUPS) { const p = near[k][i] / tot; if (p > 0) h -= p * Math.log(p); }
+            mix[i] = 100 * h / Math.log(MIX_GROUPS.length);
+        }
+        const scored = idx.filter(i => _fin(mix[i]));
+        if (scored.length < 5) return null;
+        const next = idx.filter(i => ind[i] >= INDUSTRY_NEXT);
+        const exposed = _sumOver(pop, next, () => true), all = _sumOver(pop, idx, () => true);
+        const area = k => idx.reduce((a, i) => a + v(L[k], i), 0);
+        const tot = MIX_GROUPS.reduce((a, k) => a + area(k), 0);
+        const mapped = c['landuse.mapped_pct'];
+        const cover = mapped ? idx.reduce((a, i) => a + v(mapped, i), 0) / idx.length : null;
+        const meanMix = scored.reduce((a, i) => a + mix[i], 0) / scored.length;
+        const stats = [
+            { label: 'Mapped land in lived-in blocks: homes / commerce / civic / industry', value: MIX_GROUPS.map(k => `${_round(100 * area(k) / Math.max(tot, 1e-9))}%`).join(' / ') },
+            { label: 'Average land-use mix within 1 km (0 one use, 100 even)', value: `${_round(meanMix)}` },
+            { label: `People in homes with ${INDUSTRY_NEXT}%+ industrial land within ${INDUSTRY_KM} km`, value: `${_people(exposed)} (${_round(100 * exposed / Math.max(all, 1), 1)}%)`, raw: Math.round(exposed) },
+        ];
+        if (cover != null) stats.push({ label: 'Share of lived-in land with any land use mapped (coverage)', value: `${_round(cover)}%` });
+        spaced(g, scored.filter(i => v(pop, i) > 0), mix).slice(0, 3).forEach((i, k) => stats.push({ label: `Most mixed ${k + 1}: ${g.codes[i]}`, value: `mix ${_round(mix[i])}` }));
+        spaced(g, next, Float64Array.from({ length: n }, (_, i) => ind[i] * v(pop, i))).slice(0, 3).forEach((i, k) => stats.push({ label: `Homes beside industry ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(ind[i])}% industrial within ${INDUSTRY_KM} km; ${_people(v(pop, i))} residents` }));
+        return {
+            columns: { landuse_mix: mix, industry_near_pct: ind }, idx: scored, weightKey: 'landuse_mix', noHotspots: true,
+            metric: { label: 'Average land-use mix within 1 km', value: _round(meanMix), unit: '0-100', higherIs: 'better' },
+            headline: `Homes here sit in an average land-use mix of ${_round(meanMix)} out of 100 within 1 km, and ${_people(exposed)} people (${_round(100 * exposed / Math.max(all, 1), 1)}%) live with ${INDUSTRY_NEXT}%+ industrial land within ${INDUSTRY_KM} km.${cover != null && cover < 50 ? ` Only ${_round(cover)}% of lived-in land has a use mapped, so read the mix as a sketch.` : ''}`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'landmix', equity: false, title: 'Land-use mix and homes beside industry', icon: '🧩',
+            question: 'How mixed are neighbourhoods, and who lives next to industry?',
+            field: { key: 'landuse_mix', label: 'Land-use mix within 1 km (Shannon evenness)', unit: '0-100', higherIs: 'better', ramp: 'viridis', domain: [0, 100] },
+            extra: [{ key: 'industry_near_pct', label: `Industrial land within ${INDUSTRY_KM} km`, unit: '% of land', higherIs: 'worse', ramp: 'reds', domain: [0, 60] }],
+            needs: ['landuse.residential_pct', 'landuse.commercial_pct', 'landuse.civic_pct', 'landuse.industrial_pct', 'landuse.mapped_pct', 'population.population'],
+            method: `Overture Maps land use (from OpenStreetMap) grouped into homes, commerce (commercial and retail), civic (schools, hospitals, institutions, religious) and industry (industrial and works), summed within ${MIX_KM} km of each lived-in block. Mix = Shannon entropy of the four shares ÷ ln 4 × 100, a standard land-use mix measure in walkability research. Homes beside industry are lived-in blocks whose land within ${INDUSTRY_KM} km is ${INDUSTRY_NEXT}% or more industrial. Mapping is uneven, so the coverage figure shows how much land has a use drawn at all.`,
+            refs: 'Frank et al. 2006 (land-use mix entropy, J. Am. Planning Assoc.); Overture Maps land use; WorldPop' },
         { id: 'heritage', equity: false, title: 'Monument construction limits', icon: '🏛️',
             question: 'Where do protected monuments limit building?',
             field: { key: 'heritage_limit_pct', label: `Block area within ${REGULATED_M} m of a national monument`, unit: '% of block', higherIs: null, ramp: 'heat', domain: [0, 100] },
@@ -71,7 +127,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

@@ -893,3 +893,15 @@ Mumbai's map lights up around Deonar (Govandi, Shivaji Nagar, Mankhurd) and the 
 | Lucknow | 29 | 0.9 km² | 5.9 km² | 1.3 lakh |
 
 Wikidata holds one point per monument, not the notified boundary, so zones around forts, tomb gardens and large complexes are too small. State Protected Monuments follow state rules and are counted but not zoned. The property report adds a "Monument limits (ASI)" row.
+
+## Land-use mix and homes beside industry (`landmix` lens)
+
+Using the `landuse` dataset, the lens sums mapped homes, commerce (commercial and retail), civic land (schools, hospitals, institutions, religious) and industry (industrial and works) within 1 km of each lived-in block. Mix is the Shannon entropy of the four shares ÷ ln 4, scaled to 0–100 (Frank et al. 2006). Homes beside industry are lived-in blocks whose land within 0.5 km is at least 20% industrial.
+
+| City | Average mix | Homes beside industry | Land with a use mapped |
+|---|---|---|---|
+| Delhi | 26 | 26.7 lakh (9.1%) | 38% |
+| Kolkata | 26 | 7.7 lakh (5.7%) | 32% |
+| Pune | 29 | 1.8 lakh (2.8%) | 24% |
+
+Only a quarter to two-fifths of lived-in land has a use drawn in OpenStreetMap, so the headline says so when coverage is under half.

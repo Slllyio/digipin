@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 21.1,
+     "unit": "0-100",
+     "higherIs": "better"
+    },
     "heritage": {
      "label": "Land under monument construction limits",
      "value": 9.7,
@@ -941,6 +947,12 @@
      "value": 53.2,
      "unit": "%",
      "higherIs": null
+    },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 47.2,
+     "unit": "0-100",
+     "higherIs": "better"
     },
     "heritage": {
      "label": "Land under monument construction limits",
@@ -1464,6 +1476,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 17.2,
+     "unit": "0-100",
+     "higherIs": "better"
+    },
     "heritage": {
      "label": "Land under monument construction limits",
      "value": 0.3,
@@ -1979,6 +1997,12 @@
      "value": 65.8,
      "unit": "%",
      "higherIs": null
+    },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 44.5,
+     "unit": "0-100",
+     "higherIs": "better"
     },
     "heritage": {
      "label": "Land under monument construction limits",
@@ -2502,6 +2526,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 26.3,
+     "unit": "0-100",
+     "higherIs": "better"
+    },
     "heritage": {
      "label": "Land under monument construction limits",
      "value": 27.2,
@@ -2987,6 +3017,12 @@
      "value": 70.5,
      "unit": "%",
      "higherIs": null
+    },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 0,
+     "unit": "0-100",
+     "higherIs": "better"
     },
     "encroach": {
      "label": "Former water now built up",
@@ -3497,6 +3533,12 @@
      "value": 57.6,
      "unit": "%",
      "higherIs": null
+    },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 27,
+     "unit": "0-100",
+     "higherIs": "better"
     },
     "heritage": {
      "label": "Land under monument construction limits",
@@ -4020,6 +4062,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 12.7,
+     "unit": "0-100",
+     "higherIs": "better"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 3.8,
@@ -4523,6 +4571,12 @@
      "value": 63.8,
      "unit": "%",
      "higherIs": null
+    },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 13.8,
+     "unit": "0-100",
+     "higherIs": "better"
     },
     "heritage": {
      "label": "Land under monument construction limits",
@@ -5040,6 +5094,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 26.1,
+     "unit": "0-100",
+     "higherIs": "better"
+    },
     "heritage": {
      "label": "Land under monument construction limits",
      "value": 1.8,
@@ -5543,6 +5603,12 @@
      "value": 62.7,
      "unit": "%",
      "higherIs": null
+    },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 18,
+     "unit": "0-100",
+     "higherIs": "better"
     },
     "heritage": {
      "label": "Land under monument construction limits",
@@ -6072,6 +6138,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 47.7,
+     "unit": "0-100",
+     "higherIs": "better"
+    },
     "heritage": {
      "label": "Land under monument construction limits",
      "value": 2.4,
@@ -6593,6 +6665,12 @@
      "value": 59.5,
      "unit": "%",
      "higherIs": null
+    },
+    "landmix": {
+     "label": "Average land-use mix within 1 km",
+     "value": 29.3,
+     "unit": "0-100",
+     "higherIs": "better"
     },
     "heritage": {
      "label": "Land under monument construction limits",

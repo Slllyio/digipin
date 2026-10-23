@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -528,6 +528,21 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.metric.value).toBeCloseTo(1.2 * f.grid.cellKm2, 1);
         expect(r.stats.find(x => /zone 1/.test(x.label)).value).toBe('50% prohibited, 50% regulated; 50% built-up');
         expect(L._lenses.heritage(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('landmix: an even spread of uses scores high, homes beside industry are counted', () => {
+        const q = k => codes.map((_, i) => (i % 4 === k ? 40 : 0));
+        const f = L.frameFrom(codes, { ...base, 'landuse.residential_pct': q(0), 'landuse.commercial_pct': q(1), 'landuse.civic_pct': q(2), 'landuse.industrial_pct': q(3) });
+        const r = L._lenses.landmix(f, {});
+        expect(r.metric.value).toBeGreaterThan(95);
+        expect(r.stats[2].raw).toBe(0);                                      // a tenth industrial nearby, under 20%
+        const one = L.frameFrom(codes, { ...base, 'landuse.residential_pct': codes.map(() => 50), 'landuse.commercial_pct': codes.map(() => 0),
+            'landuse.civic_pct': codes.map(() => 0), 'landuse.industrial_pct': codes.map(() => 0) });
+        expect(L._lenses.landmix(one, {}).metric.value).toBe(0);
+        const ind = L.frameFrom(codes, { ...base, 'landuse.residential_pct': codes.map(() => 50), 'landuse.commercial_pct': codes.map(() => 0),
+            'landuse.civic_pct': codes.map(() => 0), 'landuse.industrial_pct': codes.map(() => 30) });
+        expect(L._lenses.landmix(ind, {}).stats[2].raw).toBe(1000 * codes.length);
+        expect(L._lenses.landmix(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
