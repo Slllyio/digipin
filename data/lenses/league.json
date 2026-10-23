@@ -240,6 +240,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 54,
+     "unit": "0-100",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 18.1,
@@ -574,6 +580,12 @@
      "label": "Water stress by 2050 for the average resident (business as usual)",
      "value": 71,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 12,
+     "unit": "0-100",
      "higherIs": "worse"
     },
     "encroach": {
@@ -912,6 +924,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 35,
+     "unit": "0-100",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 2,
@@ -1240,6 +1258,12 @@
      "label": "Water stress by 2050 for the average resident (business as usual)",
      "value": 136,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 57,
+     "unit": "0-100",
      "higherIs": "worse"
     },
     "encroach": {
@@ -1578,6 +1602,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 52,
+     "unit": "0-100",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 108.7,
@@ -1900,6 +1930,12 @@
      "label": "Water stress by 2050 for the average resident (business as usual)",
      "value": 1115,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 34,
+     "unit": "0-100",
      "higherIs": "worse"
     },
     "encroach": {
@@ -2230,6 +2266,12 @@
      "label": "Water stress by 2050 for the average resident (business as usual)",
      "value": 673,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 24,
+     "unit": "0-100",
      "higherIs": "worse"
     },
     "encroach": {
@@ -2568,6 +2610,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 32,
+     "unit": "0-100",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 3.8,
@@ -2896,6 +2944,12 @@
      "label": "Water stress by 2050 for the average resident (business as usual)",
      "value": 1090,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 44,
+     "unit": "0-100",
      "higherIs": "worse"
     },
     "encroach": {
@@ -3228,6 +3282,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 22,
+     "unit": "0-100",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 137.5,
@@ -3550,6 +3610,12 @@
      "label": "Water stress by 2050 for the average resident (business as usual)",
      "value": 745,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 49,
+     "unit": "0-100",
      "higherIs": "worse"
     },
     "encroach": {
@@ -3888,6 +3954,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 16,
+     "unit": "0-100",
+     "higherIs": "worse"
+    },
     "encroach": {
      "label": "Former water now built up",
      "value": 43.5,
@@ -4222,6 +4294,12 @@
      "label": "Water stress by 2050 for the average resident (business as usual)",
      "value": 139,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "climategrade": {
+     "label": "Climate 2050 risk for the average resident",
+     "value": 24,
+     "unit": "0-100",
      "higherIs": "worse"
     },
     "encroach": {

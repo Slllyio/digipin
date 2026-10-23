@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -255,6 +255,21 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats.find(s => /2030/.test(s.label)).value).toBe('90% → 1.2 times');
         expect(r.stats.find(s => /Groundwater/.test(s.label)).value).toMatch(/2.4 m more by 2050/);
         expect(L._lenses.waterrisk(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('climategrade: heat, flood and water on fixed scales, graded A–E', () => {
+        const k = v => codes.map(() => v);
+        const f = L.frameFrom(codes, { ...base, 'climate_future.hot_days_2050': k(60), 'climate_future.hot_days_per_c_2050': k(5), 'climate_future.warm_nights_2050': k(90),
+            'surface_heat.uhi_anomaly_c': k(0), 'humid_heat.humid_heat_days': k(60), 'flood_future.any_pct_2050': codes.map((_, i) => (i < SIZE ? 100 : 0)),
+            'water_risk.water_stress_2050_pct': k(100), 'water_risk.groundwater_decline_cm_yr': k(15) });
+        const r = L._lenses.climategrade(f, {});
+        expect(r.columns.climate_score[0]).toBeCloseTo(100);                      // worst on every part
+        expect(r.columns.climate_score[SIZE]).toBeCloseTo(65);                    // dry: 40 + 25
+        expect(RE.climateGrade(10)).toBe('A');
+        expect(RE.climateGrade(64.9)).toBe('D');
+        expect(RE.climateGrade(65)).toBe('E');
+        expect(r.headline).toMatch(/grades E/);
+        expect(L._lenses.climategrade(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('farText(): base vs asked FAR, rebuild and homes', () => {

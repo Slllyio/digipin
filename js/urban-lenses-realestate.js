@@ -792,6 +792,48 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    // Climate 2050 grade: absolute 0–1 scales so blocks and cities compare directly.
+    const CG_W = { heat: 0.4, flood: 0.35, water: 0.25 }, CG_GRADES = [[20, 'A'], [35, 'B'], [50, 'C'], [65, 'D'], [Infinity, 'E']];
+    const cgGrade = v => CG_GRADES.find(([t]) => v < t)[1];
+    const clamp01 = v => Math.max(0, Math.min(1, v));
+
+    /** Climate 2050 grade per block: heat (with the block's heat island), 100-year flood and water stress, A (low) to E. */
+    function climategrade(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const sh = streetheat(fr);
+        const fl = c['flood_future.any_pct_2050'], hum = c['humid_heat.humid_heat_days'], ws = c['water_risk.water_stress_2050_pct'], gtd = c['water_risk.groundwater_decline_cm_yr'];
+        if (!sh || !pop || (!fl && !ws)) return null;
+        const hot = sh.columns.hot_2050_block, warm = sh.columns.warm_2050_block;
+        const score = new Float64Array(n).fill(NaN), parts = { heat: new Float64Array(n), flood: new Float64Array(n), water: new Float64Array(n) };
+        const cells = [];
+        for (const i of sh.idx) {
+            const heat = 0.5 * clamp01(hot[i] / 60) + 0.3 * (_fin(warm[i]) ? clamp01(warm[i] / 90) : 0) + 0.2 * (hum && _fin(hum[i]) ? clamp01(hum[i] / 60) : 0);
+            const flood = fl && _fin(fl[i]) ? clamp01(fl[i] / 100) : 0;
+            const water = ws && _fin(ws[i]) ? 0.7 * clamp01(ws[i] / 100) + 0.3 * (gtd && _fin(gtd[i]) ? clamp01(gtd[i] / 15) : 0) : 0;
+            parts.heat[i] = heat; parts.flood[i] = flood; parts.water[i] = water;
+            score[i] = 100 * (CG_W.heat * heat + CG_W.flood * flood + CG_W.water * water);
+            cells.push(i);
+        }
+        if (cells.length < 5) return null;
+        const people = _sumOver(pop, cells, () => true);
+        const pw = a => cells.reduce((s, i) => s + a[i] * pop[i], 0) / people;
+        const avg = pw(score), byGrade = {};
+        for (const i of cells) { const k = cgGrade(score[i]); byGrade[k] = (byGrade[k] || 0) + pop[i]; }
+        const lead = Object.entries({ heat: CG_W.heat * pw(parts.heat), flood: CG_W.flood * pw(parts.flood), water: CG_W.water * pw(parts.water) }).sort((a, b) => b[1] - a[1])[0][0];
+        const stats = [
+            { label: 'Climate 2050 risk, average resident (0 = none, 100 = extreme)', value: `${Math.round(avg)} (grade ${cgGrade(avg)})`, raw: Math.round(avg) },
+            { label: 'Residents by grade, A (lowest risk) to E', value: CG_GRADES.map(([, k]) => `${k} ${_round(100 * (byGrade[k] || 0) / people)}%`).join(' · ') },
+            { label: 'Heat / flood / water share of the risk', value: ['heat', 'flood', 'water'].map(k => `${Math.round(100 * CG_W[k] * pw(parts[k]) / (avg / 100 || 1))}%`).join(' / ') },
+            { label: 'Residents in grade D or E blocks', value: `${_people((byGrade.D || 0) + (byGrade.E || 0))}` },
+        ];
+        return {
+            columns: { climate_score: score }, idx: cells, weightKey: 'climate_score',
+            metric: { label: 'Climate 2050 risk for the average resident', value: Math.round(avg), unit: '0-100', higherIs: 'worse' },
+            headline: `The average resident's block grades ${cgGrade(avg)} for climate risk by 2050 (${Math.round(avg)}/100), driven mostly by ${lead}; ${_round(100 * ((byGrade.D || 0) + (byGrade.E || 0)) / people)}% of residents live in grade D or E blocks.`,
+            stats,
+        };
+    }
+
     /** Flood 2050: residents in the 1-in-100-year river or coastal flood zone, now and by 2050 (WRI Aqueduct). */
     function flood2050(fr) {
         const g = fr.grid, c = fr.cols, n = g.n;
@@ -1096,6 +1138,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['water_risk.water_stress_pct', 'water_risk.water_stress_2030_pct', 'water_risk.water_stress_2050_pct', 'water_risk.water_stress_2050_opt_pct', 'water_risk.water_stress_2050_pes_pct', 'water_risk.groundwater_decline_cm_yr', 'water_risk.depletion_pct', 'water_risk.drought_risk', 'water_risk.unimproved_water_pct', 'water_risk.unimproved_sanitation_pct', 'population.population'],
             method: 'WRI Aqueduct 4.0 per sub-basin: water stress = withdrawals ÷ renewable surface and ground water (PCR-GLOBWB 2, 1979–2019); groundwater table decline is the 1990–2014 trend; drinking water and sanitation are district shares. 2030 and 2050 come from Aqueduct\'s future runs (business as usual SSP3 RCP7.0, optimistic SSP1 RCP2.6, pessimistic SSP5 RCP8.5), which use different models from the baseline: compare 2030 with 2050, not today with 2050. Basins are large, so this is a city outlook; piped supply from distant reservoirs (Mumbai, Chennai, Bengaluru) is counted at the basin of use.',
             refs: 'Kuzma et al. 2023 (Aqueduct 4.0, WRI); Sutanudjaja et al. 2018 (PCR-GLOBWB 2); CGWB Dynamic Ground Water Resources 2023' },
+        { id: 'climategrade', equity: true, title: 'Climate 2050 grade', icon: '🧭',
+            question: 'How exposed is each block to heat, flooding and water shortage by 2050, from A to E?',
+            field: { key: 'climate_score', label: 'Climate 2050 risk (0–100; A under 20, E 65+)', unit: '0-100', higherIs: 'worse', ramp: 'reds' },
+            needs: ['climate_future.hot_days_now', 'climate_future.hot_days_2050', 'climate_future.hot_days_per_c_2050', 'climate_future.warm_nights_2050', 'climate_future.warm_nights_per_c_2050', 'climate_future.cdd_now', 'climate_future.cdd_2050', 'climate_future.cooling_days_2050', 'surface_heat.uhi_anomaly_c', 'surface_heat.modis_night_c', 'vegetation.tree_canopy_pct', 'flood_future.any_pct_2050', 'humid_heat.humid_heat_days', 'water_risk.water_stress_2050_pct', 'water_risk.groundwater_decline_cm_yr', 'population.population'],
+            method: 'Score = 100 × (0.40 heat + 0.35 flood + 0.25 water), each 0–1 on fixed scales so cities compare directly. Heat: 0.5 × days at 40 °C or more by 2050 with the block\'s heat island (60 days = 1) + 0.3 × nights at 28 °C or more (90 = 1), from the Street heat lens, + 0.2 × humid-heat days with a wet-bulb of 28 °C or more today (60 = 1; no 2050 wet-bulb yet). Flood: share of the block in the 1-in-100-year river or sea flood zone by 2050 (WRI Aqueduct). Water: 0.7 × basin water stress by 2050 (100% = 1) + 0.3 × groundwater decline (15 cm a year = 1). Grades: A under 20, B 20–35, C 35–50, D 50–65, E 65+. The weights are a judgement, not a calibration: read the parts as well as the grade.',
+            refs: 'Thrasher et al. 2022 (NEX-GDDP-CMIP6); Ward et al. 2020 (Aqueduct Floods); Kuzma et al. 2023 (Aqueduct 4.0); OECD/JRC 2008 composite-indicator handbook' },
         { id: 'encroach', equity: true, title: 'Encroachment watch', icon: '🚧',
             question: 'Which lakes, floodplains and green areas have been lost to building, and where is it still happening?',
             field: { key: 'encroach_score', label: 'Encroachment score (former water, floodplain and tree loss built up)', unit: 'points', higherIs: 'worse', ramp: 'reds' },
@@ -1104,8 +1152,8 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText }, 'tod');
-    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText };
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
+    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
 })();
 
 if (typeof window !== 'undefined') {

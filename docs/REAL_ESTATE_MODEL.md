@@ -306,3 +306,34 @@ What the data shows:
 | Mumbai | 12% | not available |
 
 Basins are large, so this is a city-level outlook. The property report lists water stress and groundwater decline under Risk, and flags groundwater falling 10 cm or more a year.
+
+## Climate 2050 grade (lens `climategrade`)
+
+**Score** = 100 × (0.40 × heat + 0.35 × flood + 0.25 × water). Each part runs from 0 to 1 on a fixed scale, so blocks and cities compare directly.
+
+- **Heat** = 0.5 × (days at 40 °C or more by 2050, taking the block's own heat island into account; 60 days scores 1) + 0.3 × (nights at 28 °C or more; 90 nights scores 1) + 0.2 × (today's humid-heat days with a wet-bulb of 28 °C or more; 60 days scores 1).
+- **Flood** = the share of the block inside the 1-in-100-year river or sea flood zone by 2050, from WRI Aqueduct.
+- **Water** = 0.7 × (basin water stress by 2050; 100% scores 1) + 0.3 × (groundwater decline; 15 cm a year scores 1).
+
+**Grades:**
+
+| Grade | Score |
+|---|---|
+| A | under 20 |
+| B | 20–35 |
+| C | 35–50 |
+| D | 50–65 |
+| E | 65 or more |
+
+**Average resident:**
+
+| City | Grade (score) | Main driver |
+|---|---|---|
+| Chennai | D (57) | flood |
+| Ahmedabad | D (54) | heat |
+| Delhi | D (52) | water and heat |
+| Kolkata | B (22) | heat |
+| Mumbai | A (16) | flood |
+| Bengaluru | A (12) | water |
+
+The reanalysis rarely reaches a 28 °C wet-bulb on the coast, and drainage is not in the score, which flatters Mumbai and Kolkata. The weights are a judgement call, not a calibration. The property report shows the block's grade and flags grades D and E.
