@@ -282,6 +282,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 304426,
+     "unit": "trees",
+     "higherIs": null
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 5.1,
@@ -410,7 +416,7 @@
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
-     "value": 26.2,
+     "value": 26.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -666,6 +672,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 1213671,
+     "unit": "trees",
+     "higherIs": null
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 7.1,
@@ -728,7 +740,7 @@
     },
     "green": {
      "label": "Residents with green space within 300 m",
-     "value": 71.8,
+     "value": 71.9,
      "unit": "%",
      "higherIs": "better"
     },
@@ -1049,6 +1061,12 @@
      "value": 1.6,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 404516,
+     "unit": "trees",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -1427,6 +1445,12 @@
      "value": 61.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 279531,
+     "unit": "trees",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -1812,6 +1836,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 1710744,
+     "unit": "trees",
+     "higherIs": null
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 5,
@@ -2183,6 +2213,12 @@
      "value": 79.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 106410,
+     "unit": "trees",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -2561,6 +2597,12 @@
      "value": 34.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 1279111,
+     "unit": "trees",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -2946,6 +2988,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 1034599,
+     "unit": "trees",
+     "higherIs": null
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 4,
@@ -3323,6 +3371,12 @@
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 833897,
+     "unit": "trees",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -3702,6 +3756,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 82734,
+     "unit": "trees",
+     "higherIs": null
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 3.8,
@@ -4074,6 +4134,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 534112,
+     "unit": "trees",
+     "higherIs": null
+    },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
      "value": 5.1,
@@ -4202,7 +4268,7 @@
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
-     "value": 16,
+     "value": 15.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -4457,6 +4523,12 @@
      "value": 11.6,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 212046,
+     "unit": "trees",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",
@@ -4841,6 +4913,12 @@
      "value": 90.6,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "treeplant": {
+     "label": "Trees that fit on open land toward 30% canopy",
+     "value": 1073428,
+     "unit": "trees",
+     "higherIs": null
     },
     "vitality": {
      "label": "Businesses and services per 1,000 residents",

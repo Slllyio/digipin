@@ -28,6 +28,7 @@ const DishaIntel = (() => {
             floodloss: /\b(flood (damage|losses?|cost)|expected (annual )?(damage|loss)|climate risk to (property|buildings|homes)|(property|buildings?|homes?|real estate)\b.{0,25}\b(climate|flood) risk|value at risk|insur\w*)\b/i,
             housinggap: /\b(housing (gap|shortages?|deficits?|demand|need)|shortage of (homes|housing)|enough (homes|housing)|(homes|houses|housing) (needed|required) by 2030|how many (homes|houses) (are )?needed)\b/i,
             coolroof: /\b(cool[\s-]?roofs?|white[\s-]?(roofs?|paint\w*|wash\w*)|roof (albedo|colou?r|paint\w*|coating)|dark roofs?|(tin|metal|concrete) roofs?\b.{0,20}\b(hot|heat)|reflective (roofs?|paint|coating))\b/i,
+            treeplant: /\b(plant(ing)? (trees|saplings)|tree[\s-]?planting|how many trees|trees? (needed|to plant)|afforest\w*|urban forest\w*|miyawaki)\b/i,
             ground: /\b(black cotton|expansive (soil|clay)|soil (test|type|conditions?|for (building|construction|foundations?))|ground conditions?|foundations?|seismic|earthquake (zone|risk)|bearing capacity)\b/i,
             burning: /\b(open burning|(garbage|waste|trash|stubble|crop[\s-]?residue|parali|landfill) (burning|fires?)|burning (garbage|waste|stubble|crop)|fires? (near|around)|active fires?|firms)\b/i,
             airtrend: /\b(air (getting|got|becoming) (better|worse|cleaner|dirtier)|(cleaner|dirtier) air|air (quality )?trend|pollution (trend|rising|falling|getting (better|worse))|no2 (trend|since|rise|fall)|sulph?ur dioxide|\bso2\b)\b/i,

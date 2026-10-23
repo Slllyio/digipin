@@ -1178,6 +1178,48 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    // Tree planting. 3-30-300 asks for 30% canopy around every home; a mature shade tree's crown covers about 50 m².
+    // Open land (grass, shrub, bare) in the block is where new trees can go without breaking up paving.
+    const CANOPY_TARGET = 30, CROWN_M2 = 50, OPEN_USABLE = 0.5;
+
+    /** Plant trees here: trees each block needs for 30% canopy, how many fit on its open land, hottest gaps first. */
+    function treeplant(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const can = c['vegetation.tree_canopy_pct'], pop = c['population.population'], lst = c['surface_heat.lst_day_c'];
+        const grass = c['land_cover.grass_pct'], bare = c['land_cover.bare_pct'], shrub = c['land_cover.shrub_pct'];
+        if (!can || !pop || !(grass || bare || shrub)) return null;
+        const res = [];
+        for (let i = 0; i < n; i++) if (pop[i] > 0 && _fin(can[i])) res.push(i);
+        if (res.length < 5) return null;
+        const m2 = g.cellKm2 * 1e6, v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        let hotMean = null;
+        if (lst) { let sm = 0, w = 0; for (const i of res) if (_fin(lst[i])) { sm += lst[i] * pop[i]; w += pop[i]; } hotMean = w ? sm / w : null; }
+        const need = new Float64Array(n).fill(NaN), fit = new Float64Array(n).fill(NaN), prio = new Float64Array(n).fill(NaN);
+        let needAll = 0, fitAll = 0;
+        for (const i of res) {
+            const gap = Math.max(0, CANOPY_TARGET - can[i]) / 100 * m2 / CROWN_M2;
+            const room = (v(grass, i) + v(bare, i) + v(shrub, i)) / 100 * m2 * OPEN_USABLE / CROWN_M2;
+            need[i] = gap; fit[i] = Math.min(gap, room); needAll += gap; fitAll += fit[i];
+            const heat = hotMean != null && _fin(lst[i]) ? 1 + Math.max(0, lst[i] - hotMean) / 3 : 1;
+            prio[i] = fit[i] * heat * Math.min(1, pop[i] / 2000);
+        }
+        const people = _sumOver(pop, res, () => true), low = _sumOver(pop, res, i => can[i] < CANOPY_TARGET);
+        const stats = [
+            { label: `Trees needed for ${CANOPY_TARGET}% canopy in every lived-in block (about ${CROWN_M2} m² of crown each)`, value: `${_people(needAll)}`, raw: Math.round(needAll) },
+            { label: `Of them that fit on the blocks' own open land (half of grass, shrub and bare ground)`, value: `${_people(fitAll)} (${_round(100 * fitAll / Math.max(1, needAll))}%)` },
+            { label: `Residents in blocks under ${CANOPY_TARGET}% canopy`, value: `${_people(low)} (${_round(100 * low / people)}%)` },
+            { label: 'The rest needs street trees, rooftop and courtyard planting, or parks on reclaimed land', value: `${_people(Math.max(0, needAll - fitAll))} trees` },
+        ];
+        spaced(g, res.filter(i => prio[i] > 0), prio).slice(0, 4).forEach((i, k) => stats.push({ label: `Plant first ${k + 1}: ${g.codes[i]}`,
+            value: `${Math.round(fit[i]).toLocaleString('en-IN')} trees fit; canopy ${_round(can[i])}%${hotMean != null && _fin(lst[i]) ? `, ${_round(lst[i] - hotMean, 1)} °C hotter than the average home` : ''}` }));
+        return {
+            columns: { plant_trees: fit, trees_needed: need }, idx: res, weightKey: 'plant_trees', noHotspots: true,
+            metric: { label: `Trees that fit on open land toward ${CANOPY_TARGET}% canopy`, value: Math.round(fitAll), unit: 'trees', higherIs: null },
+            headline: `Bringing every lived-in block to ${CANOPY_TARGET}% tree canopy takes about ${_people(needAll)} trees; ${_people(fitAll)} (${_round(100 * fitAll / Math.max(1, needAll))}%) fit on open ground in those blocks, and the rest needs street and rooftop planting.`,
+            stats,
+        };
+    }
+
     /** Flood 2050: residents in the 1-in-100-year river or coastal flood zone, now and by 2050 (WRI Aqueduct). */
     function flood2050(fr) {
         const g = fr.grid, c = fr.cols, n = g.n;
@@ -1528,6 +1570,13 @@ const UrbanLensesRealEstate = (() => {
             needs: ['subsoil.clay_60cm_pct', 'terrain.hand_m', 'terrain.slope_deg', 'waterlogging.waterlogging_index', 'building_stock.new_buildings', 'population.population'],
             method: `Expansive clay: OpenLandMap predicted clay of ${CLAY_EXPANSIVE}% or more at 60 cm (250 m). Low-lying or wet: a waterlogging index of ${WLOG_HIGH}+ (the Waterlogging lens), or under ${HAND_LOW_M} m above the nearest drainage line (MERIT Hydro HAND) where that index is missing. Steep: a slope of ${SLOPE_STEEP}° or more (Copernicus DEM). Seismic zone is the city's zone in IS 1893 (Part 1): 2016, Annex E. Soil maps are model predictions under cities: they say where to test, not what a borehole will find.`,
             refs: 'IS 1893 (Part 1): 2016; IS 2911 (Part 3) under-reamed piles; IS 13920 ductile detailing; Hengl et al. 2017 (SoilGrids/OpenLandMap); Yamazaki et al. 2019 (MERIT Hydro)' },
+        { id: 'treeplant', equity: true, title: 'Plant trees here', icon: '🌱',
+            question: 'How many trees does each neighbourhood need for 30% canopy, where can they go, and where first?',
+            field: { key: 'plant_trees', label: 'Trees that fit on the block\'s open land toward 30% canopy', unit: 'trees', higherIs: null, ramp: 'greens' },
+            extra: [{ key: 'trees_needed', label: 'Trees needed for 30% canopy', unit: 'trees', higherIs: 'worse', ramp: 'reds' }],
+            needs: ['vegetation.tree_canopy_pct', 'land_cover.grass_pct', 'land_cover.bare_pct', 'land_cover.shrub_pct', 'surface_heat.lst_day_c', 'population.population'],
+            method: `Canopy gap = ${CANOPY_TARGET}% (the 3-30-300 rule) minus the block's tree canopy ≥ 5 m (Meta/WRI 1 m canopy height), turned into trees at ${CROWN_M2} m² of mature crown each. Room = ${OPEN_USABLE * 100}% of the block's grass, shrub and bare ground (ESA WorldCover), as paths, playing fields and utilities take the rest. Priority = trees that fit × (1 + degrees the block's daytime surface is above the resident average ÷ 3) × residents (full weight at 2,000). Private land, ownership and soil are not modelled.`,
+            refs: 'Konijnendijk 2023 (3-30-300 rule); Tolan et al. 2024 (Meta/WRI canopy height); Zanaga et al. 2022 (ESA WorldCover); Ziter et al. 2019 (canopy cooling thresholds)' },
         { id: 'vitality', title: 'Commercial vitality', icon: '🛍️',
             question: 'Where are the high streets, where do chains and offices cluster, and which dense areas lack shops?',
             field: { key: 'places_km2', label: 'Businesses and services per km²', unit: 'per km²', higherIs: 'better', ramp: 'viridis', domain: [0, 1000] },
@@ -1542,7 +1591,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, coolroof, change, airtrend, burning, ground }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText, SEISMIC_ZONE }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, coolroof, change, airtrend, burning, ground, treeplant }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText, SEISMIC_ZONE }, 'tod');
     return { ENTRIES, SEISMIC_ZONE, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade, lookalike, lookalikeText };
 })();
 

@@ -531,3 +531,17 @@ It also gives the city's seismic zone from IS 1893 (Part 1): 2016, Annex E: Delh
 | Delhi, Jaipur, Lucknow | 0% |
 
 The property report shows the clay at 60 cm and the seismic zone, and flags expansive clay as a risk. Soil maps are model predictions under cities, so treat them as a reason to test the soil, not as test results.
+
+## Plant trees here
+
+The `treeplant` lens works out each lived-in block's canopy gap. The target is 30% tree canopy, from the 3-30-300 rule. It converts the gap into trees, assuming about 50 m² of crown per mature tree.
+
+It then checks how many of those trees fit on half of the block's grass, shrub and bare ground. Priority goes to blocks with room for trees that are also hotter than the average home and have many residents.
+
+| City | Trees needed | Fit on the blocks' own open ground |
+|---|---|---|
+| Delhi | 89 lakh | 17 lakh (19%) |
+| Bengaluru | 46 lakh | 12 lakh (27%) |
+| Chennai | 24 lakh | 2.8 lakh (12%) |
+
+The trees that don't fit need street trees, rooftop and courtyard planting, or parks on reclaimed land.

@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'burning', 'ground']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'burning', 'ground', 'treeplant']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -230,6 +230,19 @@ describe('Real-estate lenses on a hand-made grid', () => {
         const dry = L.frameFrom(codes, { ...base, 'flood_future.any_pct_now': zero, 'flood_future.any_pct_2050': zero });
         expect(L._lenses.flood2050(dry, {}).headline).toMatch(/^No residents/);
         expect(L._lenses.flood2050(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('treeplant: canopy gap in trees, room on open land, hot blocks first', () => {
+        const k = v => codes.map(() => v);
+        const f = L.frameFrom(codes, { ...base, 'vegetation.tree_canopy_pct': k(10), 'land_cover.grass_pct': codes.map((_, i) => (col(i) < 6 ? 20 : 0)),
+            'land_cover.bare_pct': k(0), 'land_cover.shrub_pct': k(0), 'surface_heat.lst_day_c': codes.map((_, i) => (i < SIZE * 6 ? 44 : 40)) }, { city: 'delhi' });
+        const r = L._lenses.treeplant(f, {});
+        const gap = 0.2 * f.grid.cellKm2 * 1e6 / 50;
+        expect(r.columns.trees_needed[0]).toBeCloseTo(gap, 3);
+        expect(r.columns.plant_trees[0]).toBeCloseTo(0.5 * gap, 3);                      // half the 20% grass usable = 10% of the block
+        expect(r.columns.plant_trees[SIZE - 1]).toBe(0);
+        expect(r.stats.find(x => /Plant first 1/.test(x.label)).label).toMatch(new RegExp(codes.slice(0, SIZE * 6).filter((_, i) => i % SIZE < 6).join('|')));
+        expect(L._lenses.treeplant(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
