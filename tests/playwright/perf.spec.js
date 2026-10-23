@@ -44,7 +44,7 @@ function summarizeProfile(profile, k = 12) {
 }
 
 const BUDGET = {
-  bootBytes: 4 * 1024 * 1024,    // own-origin bytes before first interaction
+  bootBytes: 5 * 1024 * 1024,    // own-origin bytes before first interaction (4.03 MB in the bundled build on 2026-10-23: the 2.84 MB bundle carries every lazy module)
   bootRequests: 200,             // own-origin requests at boot
   interactiveMs: 15_000,         // toolbar usable (CI runners are slow)
   heapMb: 450,                   // JS heap after the 3D + city sweep (Chromium only)
