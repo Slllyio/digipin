@@ -396,6 +396,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 1.8,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 2,
@@ -899,6 +905,12 @@
      "value": 40,
      "unit": "blocks",
      "higherIs": null
+    },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 11.9,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -1404,6 +1416,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 0.8,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 5,
@@ -1901,6 +1919,12 @@
      "value": 199,
      "unit": "blocks",
      "higherIs": null
+    },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 10.4,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -2406,6 +2430,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 19.3,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 37,
@@ -2879,6 +2909,12 @@
      "value": 22,
      "unit": "blocks",
      "higherIs": null
+    },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 0,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3377,6 +3413,12 @@
      "value": 160,
      "unit": "blocks",
      "higherIs": null
+    },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 2.9,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3882,6 +3924,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 0.8,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 9,
@@ -4380,6 +4428,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 0.1,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 1,
@@ -4544,7 +4598,7 @@
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 13.4,
+     "value": 13.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -4598,7 +4652,7 @@
     },
     "feeder": {
      "label": "Feeder-range residents with no bus stop nearby",
-     "value": 54.1,
+     "value": 54,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -4878,6 +4932,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 8.2,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 23,
@@ -4916,7 +4976,7 @@
     },
     "transit": {
      "label": "Residents with convenient public transport (SDG 11.2.1)",
-     "value": 70.3,
+     "value": 70.5,
      "unit": "%",
      "higherIs": "better"
     },
@@ -5369,6 +5429,12 @@
      "value": 185,
      "unit": "blocks",
      "higherIs": null
+    },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 2.8,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -5880,6 +5946,12 @@
      "unit": "blocks",
      "higherIs": null
     },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 9.7,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 21,
@@ -6383,6 +6455,12 @@
      "value": 118,
      "unit": "blocks",
      "higherIs": null
+    },
+    "waterloss": {
+     "label": "Water area lost since 1990–2000",
+     "value": 2,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",

@@ -163,7 +163,7 @@ Each item gives four things:
 105. ✅ Expansive black-cotton soil (SoilGrids clay + vertisol class) | EE | foundation risk (subsoil + ground lens)
 106. Quarries and mines (Global mining polygons, Maus 2022) | open | land damage
 107. Brick kilns (Sentinel-2 detections, Boyd et al.) | open | air/land
-108. Lake encroachment by year (JRC GSW yearly) | EE | encroachment extension
+108. ✅ Lake encroachment by year (JRC GSW yearly) | EE | encroachment extension
 109. Urban farms and community gardens | OSM | food lens
 110. ❌ Night-sky dark spots for parks | EE | leisure
 

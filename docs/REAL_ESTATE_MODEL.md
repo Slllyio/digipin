@@ -856,3 +856,14 @@ Blocks at least 20% open are scored as recharge sites (soil 35%, flat slope 25%,
 ## Hotel demand gap (`stay` lens)
 
 Visitors come to a block for sights (Overture cultural and historic places), business (offices), treatment (hospitals) and travel (stations and stops). Each is summed within 1.5 km, ranked as a within-city percentile and weighted 40/25/15/20 into visitor pull. Hotels, guest houses and hostels within 1.5 km are the supply, also ranked. The gap is pull minus supply. A block with pull in the city's top 30% and a gap of 30 points or more is underserved: Delhi has 56 such blocks, Jaipur 49. The hotel belt around Mahipalpur by the airport shows as oversupplied (blue), as expected. Listings are not rooms, so one large hotel counts once.
+
+## Lost lakes and ponds, dated (`waterloss` lens, `water_history` dataset)
+
+The `water_history` Earth Engine layer reads the JRC Global Surface Water yearly history (Landsat, 30 m, 1984–2021). For four windows (1988–92, 1998–2002, 2008–12, 2019–21) it records the share of each block that held seasonal or permanent water in any year. A pixel counts as lost water if it held water around 1990 or 2000 and none in 2019–21, since early Landsat years have gaps over India. The last year a lost pixel held water dates the loss.
+
+| City | Water lost | Last seen before 2000 / 2000s / 2010s | In blocks now 30%+ built |
+|---|---|---|---|
+| Bengaluru | 11.9 km² | 2.0 / 5.1 / 4.8 km² | 6% |
+| Chennai | 10.4 km² | 3.7 / 3.5 / 3.2 km² | 40% |
+
+Chennai's loss clusters in the south around the Pallikaranai marsh. River channels that moved and seasonal ponds through a run of dry years also read as loss, so the lens is a list of places to check on the satellite view, not a finding of encroachment.

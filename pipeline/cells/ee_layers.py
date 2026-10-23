@@ -1711,6 +1711,54 @@ def mangroves(region):
     return spec, _table(level, rows, specs)
 
 
+# ── water bodies by decade: when lakes and ponds were lost (JRC yearly history) ─
+
+GSW_YEARLY = "JRC/GSW1_4/YearlyHistory"
+WATER_EPOCHS = {"1990": (1988, 1992), "2000": (1998, 2002), "2010": (2008, 2012), "2020": (2019, 2021)}
+
+
+def water_history(region):
+    """Surface water per block by decade (any seasonal or permanent water in a 3–5 year window), the share lost since
+    1990–2000 and the mean last year those lost pixels held water."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    yearly = ee.ImageCollection(GSW_YEARLY).filterBounds(geom)
+
+    def wet(y0, y1):
+        col = yearly.filter(ee.Filter.rangeContains("year", y0, y1))
+        return col.map(lambda im: im.select("waterClass").gte(2)).max().unmask(0)
+    ep = {k: wet(*v) for k, v in WATER_EPOCHS.items()}
+    lost = ep["1990"].Or(ep["2000"]).And(ep["2020"].Not())   # early Landsat years have gaps, so either epoch counts
+    years = yearly.filter(ee.Filter.rangeContains("year", 1988, 2021)) \
+        .map(lambda im: ee.Image.constant(im.get("year")).toFloat().updateMask(im.select("waterClass").gte(2)))
+    last = years.max().updateMask(lost)
+    img = ee.Image.cat([*(ep[k].rename(f"w{k}") for k in WATER_EPOCHS), lost.rename("lost"), last.rename("last")])
+    raw = gee.fetch(gee.to_cells(img, 30), bbox, level, tile=64)
+    rows = {}
+    for c, x in raw.items():
+        w = {k: x.get(f"w{k}") or 0 for k in WATER_EPOCHS}
+        if max(w.values()) < 0.02:
+            continue
+        rows[c] = {**{f"water_{k}_pct": _r(100 * v) for k, v in w.items()}, "water_lost_pct": _r(100 * (x.get("lost") or 0)),
+                   "lost_year": _r(x.get("last"), 0) if (x.get("lost") or 0) >= 0.01 and x.get("last") else None}
+    specs = [*(FieldSpec(f"water_{k}_pct", f"Surface water around {k} ({a}–{b})", agg="mean", unit="% of block", domain=[0, 100], ramp="blues")
+               for k, (a, b) in WATER_EPOCHS.items()),
+             FieldSpec("water_lost_pct", "Block area that held water around 1990 or 2000 and none in 2019–2021", agg="mean", unit="% of block",
+                       domain=[0, 30], ramp="reds", higher_is="worse"),
+             FieldSpec("lost_year", "Last year the lost water was seen (mean)", agg="mean", unit="year", domain=[1988, 2018], ramp="viridis",
+                       higher_is=None)]
+    spec = DatasetSpec(
+        id="water_history", title="Water bodies by decade (JRC yearly)", level=level, fields=specs, group=GROUP,
+        description="JRC Global Surface Water yearly history (Landsat, 30 m, 1984–2021): the share of each block that held seasonal or "
+                    "permanent water in any year of four windows (1988–92, 1998–2002, 2008–12, 2019–21), the share that held water around "
+                    "1990 or 2000 and none in 2019–2021, and the mean last year that lost water was seen, which dates when a pond or lake went. "
+                    "Early Landsat years have gaps over India, and a dry run of years can read as loss for seasonal ponds.",
+        source=f"{GSW_YEARLY} via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (Pekel et al. 2016, EC JRC / Google)", default_field="water_lost_pct")
+    return spec, _table(level, rows, specs)
+
+
 # ── farmland at the edge: cropland lost since 2018 (Dynamic World) ────────────
 
 FARM_FROM = 2018      # first full year of Sentinel-2 L2A over India
@@ -1828,7 +1876,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history,
 }
 
 

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-23T21:12:08Z",
+  "generated": "2026-10-23T21:16:01Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -21068,6 +21068,254 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "water_history",
+      "title": "Water bodies by decade (JRC yearly)",
+      "description": "JRC Global Surface Water yearly history (Landsat, 30 m, 1984\u20132021): the share of each block that held seasonal or permanent water in any year of four windows (1988\u201392, 1998\u20132002, 2008\u201312, 2019\u201321), the share that held water around 1990 or 2000 and none in 2019\u20132021, and the mean last year that lost water was seen, which dates when a pond or lake went. Early Landsat years have gaps over India, and a dry run of years can read as loss for seasonal ponds.",
+      "source": "JRC/GSW1_4/YearlyHistory via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "CC BY 4.0 (Pekel et al. 2016, EC JRC / Google)",
+      "group": "Open Data (satellite)",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "water_1990_pct",
+          "label": "Surface water around 1990 (1988\u20131992)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "water_2000_pct",
+          "label": "Surface water around 2000 (1998\u20132002)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "water_2010_pct",
+          "label": "Surface water around 2010 (2008\u20132012)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "water_2020_pct",
+          "label": "Surface water around 2020 (2019\u20132021)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "water_lost_pct",
+          "label": "Block area that held water around 1990 or 2000 and none in 2019\u20132021",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "lost_year",
+          "label": "Last year the lost water was seen (mean)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "year",
+          "domain": [
+            1988,
+            2018
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "water_lost_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 496,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "water_history/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 1634,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "water_history/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 996,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.5185546875,
+            "north": 23.3212890625
+          },
+          "json": "water_history/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 4313,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.320068359375,
+            "north": 13.180908203125
+          },
+          "json": "water_history/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 4275,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "water_history/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 89,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "water_history/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1657,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "water_history/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 1389,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "water_history/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 83,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 26.99072265625
+          },
+          "json": "water_history/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 1786,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "water_history/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 618,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.94677734375
+          },
+          "json": "water_history/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 7764,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "water_history/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 741,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "water_history/pune.json",
+          "parquet": null
         }
       ]
     },

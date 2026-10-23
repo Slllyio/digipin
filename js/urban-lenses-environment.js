@@ -1115,6 +1115,43 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Water bodies lost, dated. JRC yearly water history: area that held water around 1990 or 2000 and none in
+    // 2019–21, split by the decade it was last seen, and how much of it is built on today.
+    const WLOST_MIN = 5, WLOST_BUILT = 30;
+
+    function waterloss(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const lost = c['water_history.water_lost_pct'], yr = c['water_history.lost_year'], built = c['land_cover.built_pct'];
+        if (!lost) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(lost[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const km2 = i => lost[i] / 100 * g.cellKm2;
+        const total = idx.reduce((a, i) => a + km2(i), 0);
+        const dec = { 'before 2000': 0, '2000s': 0, '2010s': 0 };
+        let builtKm2 = 0;
+        for (const i of idx) {
+            const y = yr && _fin(yr[i]) ? yr[i] : null;
+            if (y != null) dec[y < 2000 ? 'before 2000' : y < 2010 ? '2000s' : '2010s'] += km2(i);
+            if (built && _fin(built[i]) && built[i] >= WLOST_BUILT) builtKm2 += km2(i);
+        }
+        const lostIdx = idx.filter(i => lost[i] >= WLOST_MIN);
+        const stats = [
+            { label: 'Water area lost since 1990–2000 (none seen in 2019–21)', value: `${_round(total, 1)} km²`, raw: _round(total, 2) },
+            ...Object.entries(dec).filter(([, v]) => v > 0).map(([k, v]) => ({ label: `Last seen ${k}`, value: `${_round(v, 1)} km²` })),
+        ];
+        if (built) stats.push({ label: `Of it, in blocks now ${WLOST_BUILT}%+ built-up`, value: `${_round(builtKm2, 1)} km² (${_round(100 * builtKm2 / Math.max(total, 1e-9))}%)` });
+        spaced(g, lostIdx, lost).slice(0, TOP).forEach((i, k) => stats.push({ label: `Lost water ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(lost[i])}% of the block${yr && _fin(yr[i]) ? `, last seen ${Math.round(yr[i])}` : ''}${built && _fin(built[i]) ? `; ${Math.round(built[i])}% built now` : ''}` }));
+        const top = Object.entries(dec).sort((a, b) => b[1] - a[1])[0];
+        return {
+            columns: { water_lost_pct: lost, lost_year: yr || new Float64Array(n).fill(NaN) }, idx: lostIdx.length ? lostIdx : idx, weightKey: 'water_lost_pct', noHotspots: true,
+            metric: { label: 'Water area lost since 1990–2000', value: _round(total, 1), unit: 'km²', higherIs: 'worse' },
+            headline: `${_round(total, 1)} km² of lakes, ponds and river channels that held water around 1990–2000 showed none in 2019–21${top[1] > 0 ? `; most was last seen ${top[0]}` : ''}${built ? `, and ${_round(100 * builtKm2 / Math.max(total, 1e-9))}% of it lies in blocks that are now built-up` : ''}.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -1405,6 +1442,13 @@ const UrbanLensesEnvironment = (() => {
             needs: ['places.lodging', 'places.hostels', 'places.culture', 'places.offices', 'places.hospitals', 'places.transport', 'population.population'],
             method: `Overture Maps places within ${STAY_KM} km of each block. Visitor pull = 40% sights (cultural and historic places), 25% business (offices), 15% medical (hospitals) and 20% transit (travel and transport places), each as a within-city percentile. Supply = hotels, guest houses and hostels (Overture lodging), also as a percentile. The gap is pull minus supply; a block with pull in the top ${100 - STAY_DEMAND}% and a gap of ${STAY_GAP}+ points is underserved. Listings, not rooms, so one big hotel counts once.`,
             refs: 'Overture Maps Foundation places; Yang, Luo & Law 2014 (hotel location, Tourism Management)' },
+        { id: 'waterloss', equity: false, title: 'Lost lakes and ponds', icon: '🏞️',
+            question: 'Which lakes and ponds have disappeared, and when?',
+            field: { key: 'water_lost_pct', label: 'Block area that held water around 1990–2000 and none in 2019–21', unit: '% of block', higherIs: 'worse', ramp: 'reds', domain: [0, 40] },
+            extra: [{ key: 'lost_year', label: 'Last year the lost water was seen', unit: 'year', higherIs: null, ramp: 'viridis', domain: [1988, 2018] }],
+            needs: ['water_history.water_lost_pct', 'water_history.lost_year', 'land_cover.built_pct'],
+            method: `JRC Global Surface Water yearly history (Landsat, 30 m, 1984–2021). A pixel is lost water if it held seasonal or permanent water in any year of 1988–92 or 1998–2002 and in none of 2019–21; the last year it held water dates the loss. Areas are summed per block and split by decade; blocks now at least ${WLOST_BUILT}% built-up (Dynamic World) mark loss to building. River channels that moved and seasonal ponds through a run of dry years also read as loss, so check the satellite view before calling a block encroached.`,
+            refs: 'Pekel et al. 2016 (Nature), JRC Global Surface Water; Ramachandra et al. 2016 (Bengaluru lake loss)' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -1420,7 +1464,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lightning, recharge, stay, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lightning, recharge, stay, waterloss, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();
