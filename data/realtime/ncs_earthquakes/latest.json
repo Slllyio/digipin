@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-10-22T22:36:26Z",
+  "generated_at_iso": "2026-10-23T00:57:47Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-23 05:54:48|35.138,69.442",
+      "magnitude": 4.1,
+      "origin_time": "2026-10-23 05:54:48",
+      "latitude": 35.138,
+      "longitude": 69.442,
+      "depth_km": 25.0,
+      "region": "Afghanistan",
+      "location": "68km NNE of Kabul , Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 05:54:19|32.492,93.618",
+      "magnitude": 4.4,
+      "origin_time": "2026-10-23 05:54:19",
+      "latitude": 32.492,
+      "longitude": 93.618,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "509km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 04:56:49|28.919,64.678",
+      "magnitude": 4.9,
+      "origin_time": "2026-10-23 04:56:49",
+      "latitude": 28.919,
+      "longitude": 64.678,
+      "depth_km": 15.0,
+      "region": "Pakistan",
+      "location": "758km SW of Kabul , Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-23 02:43:21|31.242,77.692",
       "magnitude": 2.7,
@@ -1617,39 +1650,6 @@
       "depth_km": 124.0,
       "region": "Tajikistan",
       "location": "119km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-09 11:34:46|28.191,88.054",
-      "magnitude": 3.2,
-      "origin_time": "2026-10-09 11:34:46",
-      "latitude": 28.191,
-      "longitude": 88.054,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "87km NW of Lachung, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-09 07:45:47|28.200,87.438",
-      "magnitude": 2.9,
-      "origin_time": "2026-10-09 07:45:47",
-      "latitude": 28.2,
-      "longitude": 87.438,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "120km NW of Yuksom, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-09 06:48:40|25.837,90.597",
-      "magnitude": 2.7,
-      "origin_time": "2026-10-09 06:48:40",
-      "latitude": 25.837,
-      "longitude": 90.597,
-      "depth_km": 10.0,
-      "region": "North Garo Hills, Meghalaya",
-      "location": "53km NE of Tura, Meghalaya, India",
       "review_status": "Reviewed"
     }
   ]

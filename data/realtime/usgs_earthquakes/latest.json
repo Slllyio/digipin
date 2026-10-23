@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-10-22T22:36:21Z",
-  "count": 22,
+  "generated_at_iso": "2026-10-23T00:57:36Z",
+  "count": 24,
   "records": [
+    {
+      "id": "us6000u47n",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-22T21:37:56.543000+00:00",
+      "latitude": -21.6653,
+      "longitude": -68.3401,
+      "depth_km": 141.88,
+      "place": "49 km S of Ollagüe, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u47n",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000u47l",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-22T21:09:59.090000+00:00",
+      "latitude": 48.3802,
+      "longitude": 154.9209,
+      "depth_km": 50.389,
+      "place": "269 km SSW of Severo-Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u47l",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us6000u473",
       "magnitude": 5.0,
@@ -156,7 +180,7 @@
       "place": "191 km ENE of Nagqu, China",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u43g",
       "tsunami": 0,
-      "significance": 1003
+      "significance": 1004
     },
     {
       "id": "us6000u432",
