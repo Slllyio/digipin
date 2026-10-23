@@ -745,3 +745,20 @@ Share of residents in likely-informal blocks:
 | Delhi | 5.7% |
 
 Read the lens for where settlements are, not for how many people live in them.
+
+## Empty new buildings
+
+The `ghost` lens looks at new-build blocks. A block counts as new-build when it has at least 20,000 m² of floor and 40% or more of its 2023 buildings were not there in 2016. It flags one as possibly empty when all three of these hold:
+
+- its 2025 night light per hectare of roof is in the city's bottom quarter;
+- its radiance is below the median built block;
+- it has fewer than one listed business per hectare of floor.
+
+| City | Flagged blocks | Floor area | Share of new floor since 2016 |
+|---|---|---|---|
+| Delhi (including the Gurugram edge) | 183 | 7.8 million m² | 17% |
+| Pune | 141 | | 15% |
+| Hyderabad | 225 | | 14% |
+| Bengaluru | 261 | | 10% |
+
+Night light spills between neighbouring blocks, so treat flagged blocks as places to check, not as vacancy counts.

@@ -799,6 +799,52 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Empty new buildings. New-build blocks (GHOST_NEW% or more of the 2023 buildings went up after 2016, and at least
+    // GHOST_FLOOR m² of floor) that are dark at 1:30 am for their roof area and have almost no listed businesses.
+    const GHOST_NEW = 40, GHOST_FLOOR = 20000, GHOST_DARK_Q = 0.25, GHOST_PLACES_PER_HA = 1;
+
+    function ghost(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const nb = c['building_stock.buildings_2023'], nw = c['building_stock.new_buildings'], cov = c['building_stock.cover_2023_pct'];
+        const h = c['building_stock.height_2023_m'], rad = c['nightlights.radiance'], pl = c['places.places'];
+        if (!nb || !nw || !cov || !h || !rad) return null;
+        const m2 = g.cellKm2 * 1e6, floor = new Float64Array(n).fill(NaN), lpf = new Float64Array(n).fill(NaN);
+        const built = [];
+        for (let i = 0; i < n; i++) {
+            if (!_fin(nb[i]) || !(nb[i] > 0) || !_fin(cov[i]) || !_fin(h[i]) || !_fin(rad[i])) continue;
+            floor[i] = cov[i] / 100 * m2 * Math.max(1, Math.round(h[i] / STOREY_M));
+            if (floor[i] < GHOST_FLOOR) continue;
+            lpf[i] = rad[i] / (cov[i] / 100 * m2 / 1e4);
+            built.push(i);
+        }
+        if (built.length < 20) return null;
+        const darkCut = wquantile(lpf, null, built, GHOST_DARK_Q), radMed = wquantile(rad, null, built, 0.5);
+        const isNew = i => _fin(nw[i]) && 100 * nw[i] / nb[i] >= GHOST_NEW;
+        const newIdx = built.filter(isNew);
+        const flag = new Float64Array(n).fill(NaN);
+        let ghostFloor = 0, newFloor = 0;
+        for (const i of built) {
+            const ha = floor[i] / 1e4, places = pl && _fin(pl[i]) ? pl[i] : 0;
+            flag[i] = isNew(i) && lpf[i] <= darkCut && rad[i] < radMed && places / ha < GHOST_PLACES_PER_HA ? 1 : 0;
+            if (isNew(i)) newFloor += floor[i];
+            if (flag[i]) ghostFloor += floor[i];
+        }
+        const ghosts = built.filter(i => flag[i] === 1);
+        const stats = [
+            { label: `New-build blocks (${GHOST_NEW}%+ of buildings put up after 2016)`, value: `${newIdx.length} blocks, about ${_round(newFloor / 1e6, 1)} million m² of floor` },
+            { label: 'Of them dark at night for their size and with almost no businesses', value: `${ghosts.length} blocks, about ${_round(ghostFloor / 1e6, 2)} million m² (${_round(100 * ghostFloor / Math.max(1, newFloor))}%)`, raw: ghosts.length },
+        ];
+        const fl = Float64Array.from({ length: n }, (_, i) => (flag[i] === 1 ? floor[i] : 0));
+        spaced(g, ghosts, fl).slice(0, 5).forEach((i, k) => stats.push({ label: `Possibly empty ${k + 1}: ${g.codes[i]}`,
+            value: `about ${Math.round(floor[i] / 1e3)} thousand m² of floor, ${Math.round(100 * nw[i] / nb[i])}% built after 2016; ${_round(rad[i], 1)} nW/cm²/sr at night` }));
+        return {
+            columns: { ghost_block: flag, light_per_roof: lpf }, idx: built, weightKey: 'light_per_roof', noHotspots: true,
+            metric: { label: 'New floor space that looks empty', value: _round(100 * ghostFloor / Math.max(1, newFloor)), unit: '%', higherIs: 'worse' },
+            headline: `${ghosts.length} new-build blocks, about ${_round(ghostFloor / 1e6, 2)} million m² of floor (${_round(100 * ghostFloor / Math.max(1, newFloor))}% of new building since 2016), are dark at night for their size and have almost no businesses: likely unsold, unoccupied or still being fitted out.`,
+            stats,
+        };
+    }
+
     // Lake health. Blocks with at least LAKE_MIN% water in either year are joined into lakes by edge contact.
     // NDCI above 0.1 is algae-rich water (Mishra & Mishra 2012); 30%+ of the old water surface gone green is weed-choked.
     const LAKE_MIN = 20, NDCI_ALGAE = 0.1, WEED_CHOKED = 30, LAKE_SHRUNK = 0.2;
@@ -1031,6 +1077,13 @@ const UrbanLensesEnvironment = (() => {
             needs: ['building_stock.buildings_2023', 'building_stock.cover_2023_pct', 'building_stock.height_2023_m', 'wealth.wealth_quintile', 'population.population'],
             method: `Four signs per lived-in block with 20+ buildings: mean footprint under ${SMALL_M2} m² (Open Buildings 2.5D 2023 roof cover × block area ÷ building count); roof cover ${INF_COVER}%+; mean height under ${LOW_M} m; Meta Relative Wealth Index quintile 1–2. ${INF_LIKELY}+ signs = likely informal. Open Buildings often merges touching slum roofs into one polygon, which inflates footprints, so dense settlements can be undercounted. This is a look-alike from space, not a legal status: notified slums, urban villages and old walled cores can all score high, and Census 2011 slum shares (Mumbai 41%, Delhi 15%) count differently.`,
             refs: 'Kuffer, Pfeffer & Sliuzas 2016 (slums from space); Sirko et al. 2023 (Open Buildings 2.5D); Chi et al. 2022 (Relative Wealth Index); Census of India 2011 slum tables' },
+        { id: 'ghost', equity: false, title: 'Empty new buildings', icon: '👻',
+            question: 'Where has the city built a lot since 2016 that still looks empty at night?',
+            field: { key: 'ghost_block', label: 'New-build block that looks empty (dark, no businesses)', unit: 'yes/no', higherIs: 'worse', ramp: 'reds', domain: [0, 1] },
+            extra: [{ key: 'light_per_roof', label: 'Night light per hectare of roof', unit: 'nW/cm²/sr per ha', higherIs: null, ramp: 'viridis' }],
+            needs: ['building_stock.buildings_2023', 'building_stock.new_buildings', 'building_stock.cover_2023_pct', 'building_stock.height_2023_m', 'nightlights.radiance', 'places.places'],
+            method: `Floor area = Open Buildings 2.5D 2023 roof cover × block area × storeys (height ÷ ${STOREY_M} m). Blocks with ${GHOST_FLOOR.toLocaleString('en-IN')}+ m² of floor where ${GHOST_NEW}%+ of 2023 buildings were not there in 2016 are new-build. One looks empty when its VIIRS 2025 radiance per hectare of roof is in the city's bottom ${GHOST_DARK_Q * 100}%, its radiance is below the median built block, and it has under ${GHOST_PLACES_PER_HA} listed business (Overture) per hectare of floor. Night light spills from neighbours over ~460 m and new towers can be lit only in common areas, so treat flagged blocks as places to check, not vacancy counts.`,
+            refs: 'Elvidge et al. 2017 (VIIRS); Sirko et al. 2023 (Open Buildings 2.5D temporal); Chi et al. 2015 (ghost cities from night lights and points of interest)' },
         { id: 'lakehealth', equity: false, title: 'Lake health', icon: '🏞️',
             question: 'Which lakes are shrinking, green with algae or choked with weeds?',
             field: { key: 'lake_problems', label: 'Lake problems (lost water, algae, weeds)', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -1046,7 +1099,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, lakehealth, jobsmap },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

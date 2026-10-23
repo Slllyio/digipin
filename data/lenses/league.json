@@ -348,6 +348,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 10.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 2,
@@ -803,6 +809,12 @@
      "value": 9.3,
      "unit": "%",
      "higherIs": null
+    },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 10.2,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -1260,6 +1272,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 18.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 5,
@@ -1709,6 +1727,12 @@
      "value": 8.9,
      "unit": "%",
      "higherIs": null
+    },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 5.9,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -2166,6 +2190,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 17.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 37,
@@ -2597,6 +2627,12 @@
      "value": 12.3,
      "unit": "%",
      "higherIs": null
+    },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 32.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3047,6 +3083,12 @@
      "value": 8.4,
      "unit": "%",
      "higherIs": null
+    },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 13.5,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -3504,6 +3546,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 32.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 9,
@@ -3953,6 +4001,12 @@
      "value": 9,
      "unit": "%",
      "higherIs": null
+    },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 20.4,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -4404,6 +4458,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 11.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 23,
@@ -4847,6 +4907,12 @@
      "value": 18,
      "unit": "%",
      "higherIs": null
+    },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 17.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
@@ -5310,6 +5376,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 8.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",
      "value": 21,
@@ -5765,6 +5837,12 @@
      "value": 3.8,
      "unit": "%",
      "higherIs": null
+    },
+    "ghost": {
+     "label": "New floor space that looks empty",
+     "value": 15.2,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "lakehealth": {
      "label": "Lakes with algae, weeds or lost water",

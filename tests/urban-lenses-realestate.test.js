@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -404,6 +404,19 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.metric.value).toBeCloseTo(100 * 4 / 12, 0);
         expect(r.columns.footprint_m2[0]).toBeCloseTo(0.5 * f.grid.cellKm2 * 1e6 / 1500, 6);
         expect(L._lenses.informal(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('ghost: new-build blocks dark for their roof area with almost no businesses', () => {
+        const k = v => codes.map(() => v);
+        const g0 = SIZE * 3 + 3;
+        const f = L.frameFrom(codes, { ...base, 'building_stock.buildings_2023': k(100), 'building_stock.new_buildings': codes.map((_, i) => (i === g0 ? 80 : 10)),
+            'building_stock.cover_2023_pct': k(40), 'building_stock.height_2023_m': k(30), 'nightlights.radiance': codes.map((_, i) => (i === g0 ? 2 : 10 + (i % 7))),
+            'places.places': codes.map((_, i) => (i === g0 ? 0 : 50)) }, { city: 'delhi' });
+        const r = L._lenses.ghost(f, {});
+        expect(r.columns.ghost_block[g0]).toBe(1);
+        expect(codes.filter((_, i) => r.columns.ghost_block[i] === 1)).toHaveLength(1);
+        expect(r.stats.find(x => /Possibly empty 1/.test(x.label)).label).toContain(codes[g0]);
+        expect(L._lenses.ghost(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
