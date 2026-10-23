@@ -881,3 +881,15 @@ The `dumps` lens treats any block holding 0.5 ha or more of landfill or quarry a
 | Bengaluru | 2.2 lakh (1.7%) | 1.6 / 5.3 km² |
 
 Mumbai's map lights up around Deonar (Govandi, Shivaji Nagar, Mankhurd) and the Kanjurmarg site. The Maus et al. global mining polygons were checked first, but none fall inside the 13 cities.
+
+## Monument construction limits (`heritage` lens, `heritage` dataset)
+
+`pipeline/realestate/heritage.py` pulls every Wikidata item in India with a heritage designation (P1435) and coordinates inside each city's box: Monuments of National Importance, State Protected Monuments and other listings such as municipal heritage grades. The Ancient Monuments and Archaeological Sites and Remains Act 1958, amended in 2010, bans new construction within 100 m of a national monument's protected limits. From 100 m to 300 m, building needs National Monuments Authority permission and follows the height limits in that monument's heritage bye-laws. Each L7 block is sampled on an 8 × 8 grid for its share in each zone. The lens lives in a new module, `js/urban-lenses-planning.js`, because the environment module is close to the 150 kB cap.
+
+| City | National monuments | Prohibited area | Regulated area | Residents inside |
+|---|---|---|---|---|
+| Delhi | 179 | 4.1 km² | 23.1 km² | 6.3 lakh |
+| Ahmedabad | 55 | 1.4 km² | 8.3 km² | 4.6 lakh |
+| Lucknow | 29 | 0.9 km² | 5.9 km² | 1.3 lakh |
+
+Wikidata holds one point per monument, not the notified boundary, so zones around forts, tomb gardens and large complexes are too small. State Protected Monuments follow state rules and are counted but not zoned. The property report adds a "Monument limits (ASI)" row.

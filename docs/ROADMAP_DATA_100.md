@@ -138,7 +138,7 @@ Each item gives four things:
 83. Gig and informal work proxy (two-wheeler density × places) | derived | economy lens
 84. ✅ Night-time economy (VIIRS late-night radiance × food/leisure places) | EE/S3 | night economy
 85. Tourism footfall proxy (Wikipedia page views of landmarks + hotels) | API | tourism lens
-86. Landmark and heritage sites (Wikidata, ASI list) | API | heritage lens
+86. ✅ Landmark and heritage sites (Wikidata, ASI list; heritage lens with AMASR 100 m / 300 m limits) | API | heritage lens
 87. Religious places and festival crowd zones | S3/OSM | crowd lens
 88. Schools by board and level (UDISE+ where open) | open | education lens
 89. ✅ Colleges and coaching hubs (Overture) | S3 | student housing demand
