@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-23T05:51:13Z",
-  "count": 24,
+  "generated_at_iso": "2026-10-23T11:02:03Z",
+  "count": 22,
   "records": [
+    {
+      "id": "us6000u4bk",
+      "magnitude": 5.7,
+      "origin_time_utc": "2026-10-23T10:19:16.729000+00:00",
+      "latitude": 38.7199,
+      "longitude": 14.152,
+      "depth_km": 10.0,
+      "place": "61 km WNW of Leni, Italy",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4bk",
+      "tsunami": 0,
+      "significance": 502
+    },
+    {
+      "id": "us6000u4bg",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-23T09:51:39.628000+00:00",
+      "latitude": 38.7219,
+      "longitude": 14.2527,
+      "depth_km": 10.0,
+      "place": "53 km WNW of Leni, Italy",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4bg",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000u4b3",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-23T09:09:36.956000+00:00",
+      "latitude": 6.5678,
+      "longitude": 123.8685,
+      "depth_km": 591.289,
+      "place": "18 km WNW of Bantogon, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4b3",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000u49c",
       "magnitude": 4.5,
@@ -229,66 +265,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u432",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us6000u42q",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-22T10:57:52.259000+00:00",
-      "latitude": -2.8037,
-      "longitude": 102.1272,
-      "depth_km": 135.261,
-      "place": "85 km NNW of Curup, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u42q",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u42e",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-22T10:07:41.749000+00:00",
-      "latitude": 36.677,
-      "longitude": 71.3996,
-      "depth_km": 174.513,
-      "place": "11 km W of Ashkāsham, Afghanistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u42e",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000u423",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-22T08:34:18.537000+00:00",
-      "latitude": 53.7958,
-      "longitude": 160.2671,
-      "depth_km": 61.06,
-      "place": "136 km NE of Petropavlovsk-Kamchatsky, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u423",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000u41z",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-22T08:06:35.200000+00:00",
-      "latitude": 13.8474,
-      "longitude": 145.2184,
-      "depth_km": 99.23,
-      "place": "49 km NE of Yigo Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u41z",
-      "tsunami": 0,
-      "significance": 329
-    },
-    {
-      "id": "us6000u41y",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-22T07:49:29.455000+00:00",
-      "latitude": -62.4088,
-      "longitude": 163.5214,
-      "depth_km": 10.0,
-      "place": "Balleny Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u41y",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }

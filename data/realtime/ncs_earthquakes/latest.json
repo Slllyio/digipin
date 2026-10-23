@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-10-23T05:51:25Z",
+  "generated_at_iso": "2026-10-23T11:02:16Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-23 16:04:04|25.562,91.234",
+      "magnitude": 3.1,
+      "origin_time": "2026-10-23 16:04:04",
+      "latitude": 25.562,
+      "longitude": 91.234,
+      "depth_km": 10.0,
+      "region": "West Khasi Hills, Meghalaya",
+      "location": "59km WNW of Cherrapunjee, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 14:03:19|32.402,93.675",
+      "magnitude": 4.1,
+      "origin_time": "2026-10-23 14:03:19",
+      "latitude": 32.402,
+      "longitude": 93.675,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "498km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 12:22:24|32.132,93.475",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-23 12:22:24",
+      "latitude": 32.132,
+      "longitude": 93.475,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "476km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-23 11:18:06|24.933,95.194",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-23 11:18:06",
+      "latitude": 24.933,
+      "longitude": 95.194,
+      "depth_km": 130.0,
+      "region": "Myanmar",
+      "location": "72km E of Ukhrul, Manipur, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-23 09:01:49|13.368,77.563",
       "magnitude": 3.0,
@@ -1606,50 +1650,6 @@
       "depth_km": 30.0,
       "region": "Noney, Manipur",
       "location": "21km W of Bishnupur, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-10 20:07:30|30.744,78.414",
-      "magnitude": 4.2,
-      "origin_time": "2026-10-10 20:07:30",
-      "latitude": 30.744,
-      "longitude": 78.414,
-      "depth_km": 11.0,
-      "region": "Uttarkashi, Uttarakhand",
-      "location": "2km NW of Uttarkashi, Uttarakhand, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-10 17:28:26|32.993,75.698",
-      "magnitude": 1.8,
-      "origin_time": "2026-10-10 17:28:26",
-      "latitude": 32.993,
-      "longitude": 75.698,
-      "depth_km": 5.0,
-      "region": "Doda, Jammu & Kashmir",
-      "location": "71km E of Katra, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-10 15:40:53|30.005,79.950",
-      "magnitude": 2.8,
-      "origin_time": "2026-10-10 15:40:53",
-      "latitude": 30.005,
-      "longitude": 79.95,
-      "depth_km": 5.0,
-      "region": "Bageshwar, Uttarakhand",
-      "location": "53km NNW of Pithoragarh, Uttarakhand, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-10 12:00:19|24.532,93.282",
-      "magnitude": 2.7,
-      "origin_time": "2026-10-10 12:00:19",
-      "latitude": 24.532,
-      "longitude": 93.282,
-      "depth_km": 24.0,
-      "region": "Noney, Manipur",
-      "location": "49km WSW of Bishnupur, Manipur, India",
       "review_status": "Reviewed"
     }
   ]
