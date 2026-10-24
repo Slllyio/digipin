@@ -904,6 +904,13 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(RE.reScorecard({ cities: { a: city('A', 1, 1, 1) } })).toBeNull();
     });
 
+    it('similarEverywhereText(): one best match per city, most similar first', () => {
+        const t = RE.similarEverywhereText({ fromCity: 'delhi', ref: { code: '39J4M98' }, matches: [{ city: 'pune', code: '4FP4C73', similarity: 91, differs: [] }, { city: 'mumbai', code: '4FK5CM7', similarity: 84, differs: ['hotter'] }] });
+        expect(t.split('\n')[0]).toMatch(/most like 39J4M98/);
+        expect(t).toMatch(/2\. .*4FK5CM7: 84% similar; hotter/);
+        expect(RE.similarEverywhereText(null)).toMatch(/outside the populated blocks/);
+    });
+
     it('similarText(): reference profile and ranked matches', () => {
         const t = RE.similarText({ fromCity: 'delhi', toCity: 'pune', ref: { code: '39J4M98', profile: [{ label: 'land value', pct: 98 }, { label: 'density', pct: 50 }, { label: 'wealth', pct: 3 }] },
             matches: [{ code: '4FP4C73', similarity: 94, differs: [] }, { code: '4FP493F', similarity: 90, differs: ['more high-rise'] }] });

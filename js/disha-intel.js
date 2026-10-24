@@ -259,7 +259,8 @@ const DishaIntel = (() => {
         const like = /\b(places?|areas?|localit(y|ies)|neighbou?rhoods?|blocks?|colon(y|ies)|spots?)\s+(like|similar to)\s+(this|here|the selected)\b|\b(similar|comparable) (places?|areas?|localit(y|ies)|neighbou?rhoods?|blocks?)\b|\bcomparables?\b|\bwhere else (is|are) (like|similar)\b/i;
         if (like.test(q)) {
             const out = { type: 'similar' };
-            if (named.length) out.city = named[named.length - 1];
+            if (/\b(every|each|all|other) (the )?(other )?cit(y|ies)\b|\bacross (all )?(the )?cities\b|\bcity by city\b/i.test(q)) out.all = true;
+            else if (named.length) out.city = named[named.length - 1];
             return out;
         }
         const siting = /\bwhere (should|to|could|would|can)\b.{0,40}\b(clinics?|hospitals?|health (centre|center)s?|schools?|parks?|cool roofs?|ev|charg\w*)\b|\b(best|ideal|suitable) (locations?|sites?|places?) for\b|\bsite (selection|suitability)\b|\bsiting\b/i;
@@ -439,8 +440,14 @@ const DishaIntel = (() => {
                 const from = UrbanInsights.cityAt(CellStore, center.lat, center.lng);
                 if (!from) { el.textContent = 'That spot is outside the cities I have data for.'; return ''; }
                 if (typeof UrbanLenses === 'undefined' || !UrbanLenses.similar) { el.textContent = 'The real-estate lenses did not load.'; return ''; }
-                const s = await UrbanLenses.similar({ fromCity: from, lat: center.lat, lng: center.lng, toCity: intent.city || from }, CellStore);
-                r = { kind: 'similar', s };
+                if (intent.all && UrbanLenses.similarEverywhere) {
+                    el.textContent = 'Searching every city for the closest match…';
+                    const s = await UrbanLenses.similarEverywhere({ fromCity: from, lat: center.lat, lng: center.lng, cities: _cities().map(c => c.name) }, CellStore);
+                    r = { kind: 'similarall', s };
+                } else {
+                    const s = await UrbanLenses.similar({ fromCity: from, lat: center.lat, lng: center.lng, toCity: intent.city || from }, CellStore);
+                    r = { kind: 'similar', s };
+                }
             } else if (intent.type === 'lookalike') {
                 if (!center) { el.textContent = 'Click a block on the map first, then ask for places that look like it.'; return ''; }
                 const from = UrbanInsights.cityAt(CellStore, center.lat, center.lng);
@@ -547,6 +554,7 @@ const DishaIntel = (() => {
         if (r.kind === 'roadwhatif') return RoadWhatIf.askText(r.a);
         if (r.kind === 'propreport') return PropertyReport.text(r.m);
         if (r.kind === 'similar') return UrbanLenses.similarText(r.s);
+        if (r.kind === 'similarall') return UrbanLenses.similarEverywhereText(r.s);
         if (r.kind === 'lookalike') return UrbanLenses.lookalikeText(r.s);
         if (r.kind === 'stationwhatif') return stationText(r);
         if (r.kind === 'farwhatif') return UrbanLenses.farText(r.f);
@@ -712,13 +720,20 @@ const DishaIntel = (() => {
             b.type = 'button';
             b.addEventListener('click', () => PropertyReport.open(r.m));
             el.appendChild(b);
+        } else if (r.kind === 'similarall') {
+            head.textContent = 'Places like this in every city';
+            el.appendChild(head);
+            const [first, ...rest] = UrbanLenses.similarEverywhereText(r.s).split('\n');
+            el.appendChild(_el('div', 'ui-headline', first));
+            rest.forEach(line => el.appendChild(_el('div', 'disha-scan-row', line)));
+            el.appendChild(_el('div', 'disha-scan-hint', 'Each city\'s best match on percentiles within its own city: land value (double weight), density, job reach, metro walk, wealth, shops, newness, high-rise share, greenery, roof cover, surface heat and flood exposure, smoothed over 500 m.'));
         } else if (r.kind === 'similar') {
             head.textContent = 'Places like this';
             el.appendChild(head);
             const [first, ...rest] = UrbanLenses.similarText(r.s).split('\n');
             el.appendChild(_el('div', 'ui-headline', first));
             rest.forEach(line => el.appendChild(_el('div', 'disha-scan-row', line)));
-            el.appendChild(_el('div', 'disha-scan-hint', 'Matched on each block\'s percentile within its own city (land value counts double): land value, density, job reach, metro walk, wealth, shops, newness, high-rise share and greenery, smoothed over 500 m.'));
+            el.appendChild(_el('div', 'disha-scan-hint', 'Matched on each block\'s percentile within its own city (land value counts double): land value, density, job reach, metro walk, wealth, shops, newness, high-rise share, greenery, roof cover, surface heat and flood exposure, smoothed over 500 m.'));
         } else if (r.kind === 'lookalike') {
             head.textContent = 'Looks like this from space';
             el.appendChild(head);

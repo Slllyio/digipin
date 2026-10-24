@@ -170,7 +170,7 @@ Each item gives four things:
 ## G. Platform and AI (111–120)
 
 111. ✅ Per-block "what changed this month" digest across all datasets (monthly lens: built-up, lights, NDVI, NO₂ year on year) | derived | alerts
-112. Comparable-block search across all 13 cities on the new fields | derived | similar()
+112. ✅ Comparable-block search across all 13 cities on the new fields | derived | similar() (`similarEverywhere`, DISHA "comparable localities in every city"; roof cover, surface heat and flood exposure added to the match)
 113. DISHA site memo: one-click climate + market + access due diligence | derived | agents
 114. ✅ Data-confidence per lens (coverage × source quality) | derived | confidence lens (exists as the `confidence` lens)
 115. Scenario builder: add a metro / flyover / park and re-score | derived | what-if

@@ -1066,7 +1066,8 @@ const UrbanLensesRealEstate = (() => {
         ['job_access.jobs_car_pct', 'job reach', 1, 'more jobs in reach', 'fewer jobs in reach'], ['rail_access.metro_walk_min', 'metro walk', 1, 'further from metro', 'nearer metro', true],
         ['wealth.rwi', 'wealth', 1, 'wealthier', 'less wealthy'], ['osm_amenities.poi_total', 'shops and services', 1, 'more shops', 'fewer shops'],
         ['building_dynamics.settled_year', 'newness', 1, 'newer', 'older'], ['building_dynamics.highrise_pct', 'high-rise share', 1, 'more high-rise', 'fewer high-rises'],
-        ['vegetation.ndvi', 'greenery', 0.5, 'greener', 'less green']];
+        ['vegetation.ndvi', 'greenery', 0.5, 'greener', 'less green'], ['building_stock.cover_2023_pct', 'roof cover', 0.5, 'more packed', 'more open'],
+        ['surface_heat.lst_day_c', 'surface heat', 0.5, 'hotter', 'cooler'], ['flood_future.any_pct_now', 'flood exposure', 0.5, 'more flood-prone', 'less flood-prone']];
     const SIM_KM = 0.5, SIM_EXCLUDE_KM = 3;
 
     async function _simFrame(city, store) {
@@ -1111,6 +1112,27 @@ const UrbanLensesRealEstate = (() => {
         });
         const profile = SIM_FEATURES.map(([, label, , , , inv], f) => ref[f] != null && { label: inv ? 'metro access' : label, pct: Math.round(100 * (inv ? 1 - ref[f] : ref[f])) }).filter(Boolean);
         return { fromCity, toCity: toCity || fromCity, ref: { code, profile }, matches };
+    }
+
+    /** The best match for a reference block in every other city: [{ city, code, similarity, differs }], most similar first. */
+    async function similarEverywhere({ fromCity, lat, lng, cities }, store) {
+        const out = [];
+        let ref = null;
+        for (const city of cities) {
+            if (city === fromCity) continue;
+            const r = await similar({ fromCity, lat, lng, toCity: city, k: 1 }, store);
+            if (!r) return null;
+            ref = r.ref;
+            if (r.matches.length) out.push({ city, ...r.matches[0] });
+        }
+        return { fromCity, ref, matches: out.sort((a, b) => b.similarity - a.similarity) };
+    }
+
+    function similarEverywhereText(r) {
+        if (!r || !r.ref) return 'That spot is outside the populated blocks I have data for. Click a block inside the city and ask again.';
+        const L = typeof UrbanInsights !== 'undefined' ? UrbanInsights.cityLabel : (c => c);
+        return [`The block most like ${r.ref.code} in ${L(r.fromCity)}, city by city:`,
+            ...r.matches.map((m, i) => `${i + 1}. ${L(m.city)} ${m.code}: ${m.similarity}% similar${m.differs.length ? `; ${m.differs.join(', ')}` : ''}`)].join('\n');
     }
 
     function similarText(r) {
@@ -1256,8 +1278,8 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
-    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
+    return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
 })();
 
 if (typeof window !== 'undefined') {

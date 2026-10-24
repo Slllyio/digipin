@@ -99,6 +99,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('where will the city grow next')).toEqual({ type: 'lens', lens: 'nextgrowth' });
         expect(M('find places like this in Pune')).toEqual({ type: 'similar', city: 'pune' });
         expect(M('show comparable localities')).toEqual({ type: 'similar' });
+        expect(M('find comparable localities in every city')).toEqual({ type: 'similar', all: true });
         expect(M('find places that look like this from space in Pune')).toEqual({ type: 'lookalike', city: 'pune' });
         expect(M('satellite lookalikes of this block')).toEqual({ type: 'lookalike' });
         expect(M('give me a property report for this spot')).toEqual({ type: 'propreport' });

@@ -1012,3 +1012,7 @@ Uses `water_history` (JRC yearly water 1990 and 2020) in blocks within 2 km of a
 ## Packed blocks with no setbacks (`packed` lens)
 
 Open Buildings 2.5D Temporal roof cover (2023) over the whole block, streets included. Bye-laws cap plot coverage at roughly 60–75% for small residential plots, so 50%+ of a whole block under roofs means plots built almost wall to wall. Tall packed blocks average 10 m or more. Delhi: 74.9 lakh residents (25.5%) in packed blocks; Kolkata 11%; Mumbai 2.8% (Open Buildings merges slum roofs into fewer, larger shapes, so dense slums may read lower).
+
+## Comparable blocks in every city
+
+`UrbanLenses.similarEverywhere({ fromCity, lat, lng, cities })` runs `similar()` against each other city and returns the best match per city, most similar first; DISHA answers "comparable localities in every city" with it. The match features now also include roof cover, daytime surface heat and present-day flood exposure (half weight each). A Delhi block at Lodhi Road finds 93% matches in Bengaluru, Hyderabad and Mumbai; Guna's best is 81%. All 12 cities take about 13 s.
