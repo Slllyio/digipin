@@ -1,6 +1,6 @@
 {
  "schema": "digipin.lens-league/1",
- "generated": "2026-10-23",
+ "generated": "2026-10-24",
  "cities": {
   "ahmedabad": {
    "label": "Ahmedabad",
@@ -419,6 +419,12 @@
      "value": 48.2,
      "unit": "%",
      "higherIs": null
+    },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 0.1,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
@@ -1019,6 +1025,12 @@
      "value": 53.2,
      "unit": "%",
      "higherIs": null
+    },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 6.7,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
@@ -1626,6 +1638,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 0.4,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
      "value": 10741,
@@ -2225,6 +2243,12 @@
      "value": 65.8,
      "unit": "%",
      "higherIs": null
+    },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 1.4,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
@@ -2831,6 +2855,12 @@
      "value": 55.8,
      "unit": "%",
      "higherIs": null
+    },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 1.8,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
@@ -3978,6 +4008,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 0.8,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
      "value": 116250,
@@ -4584,6 +4620,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 0.2,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
      "value": 26599,
@@ -5171,6 +5213,12 @@
      "value": 63.8,
      "unit": "%",
      "higherIs": null
+    },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 0.1,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
@@ -5772,6 +5820,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 0.1,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
      "value": 210999,
@@ -6359,6 +6413,12 @@
      "value": 62.7,
      "unit": "%",
      "higherIs": null
+    },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 0,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
@@ -6966,6 +7026,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 0.1,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
      "value": 1801634,
@@ -7571,6 +7637,12 @@
      "value": 59.5,
      "unit": "%",
      "higherIs": null
+    },
+    "cityfarms": {
+     "label": "Mapped farmland in fast-building blocks",
+     "value": 0.7,
+     "unit": "km²",
+     "higherIs": "worse"
     },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",

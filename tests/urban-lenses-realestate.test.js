@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -695,6 +695,17 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.drain_density[codes.length - 1]).toBe(0);
         expect(r.stats.some(x => /^Drain needed 1/.test(x.label))).toBe(true);
         expect(L._lenses.drainage(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('cityfarms: mapped farmland and the share building up fast', () => {
+        const f = L.frameFrom(codes, { ...base, 'landuse.farm_pct': codes.map((_, i) => (col(i) < 2 ? 80 : 0)),
+            'growth.built_2016_pct': codes.map(() => 5), 'growth.built_2023_pct': codes.map((_, i) => (col(i) === 0 ? 25 : 7)) });
+        const r = L._lenses.cityfarms(f, {});
+        expect(r.columns.farm_pressure[0]).toBe(2);
+        expect(r.columns.farm_pressure[1]).toBe(1);
+        expect(r.columns.farm_pressure[5]).toBe(0);
+        expect(r.stats[1].value).toMatch(/\(50%\)$/);
+        expect(L._lenses.cityfarms(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

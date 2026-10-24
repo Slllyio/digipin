@@ -12,6 +12,7 @@ each L7 block (dataset ``landuse``); every field is the share of the block in th
     brownfield_pct    brownfield (cleared former industrial or built land)
     landfill_pct      landfills and dumps
     quarry_pct        quarries
+    farm_pct          farmland, farmyards, orchards, allotments and plant nurseries
     protected_pct     national parks, sanctuaries, reserve forests and biodiversity parks (Overture 'protected')
     esz_pct           eco-sensitive zones around them (protected polygons named ESZ)
     mapped_pct        any mapped land use (all classes), a measure of how complete the mapping is
@@ -41,6 +42,7 @@ GROUPS = {
     "brownfield": ("brownfield",),
     "landfill": ("landfill",),
     "quarry": ("quarry",),
+    "farm": ("farmland", "farmyard", "orchard", "allotments", "plant_nursery", "greenhouse_horticulture", "vineyard"),
 }
 _GROUP_OF = {cls: g for g, classes in GROUPS.items() for cls in classes}
 PROTECTED = ("protected", "esz")
@@ -114,7 +116,7 @@ def cell_dataset(region, rows):
     label = {"residential": "Residential", "industrial": "Industrial and works", "commercial": "Commercial and retail",
              "civic": "Schools, hospitals, institutions and religious", "military": "Military and airfields",
              "construction": "Construction and greenfield sites", "brownfield": "Brownfield land", "landfill": "Landfills and dumps",
-             "quarry": "Quarries"}
+             "quarry": "Quarries", "farm": "Farmland, orchards, allotments and nurseries"}
     worse = {"landfill", "quarry"}
     specs = [FieldSpec(f"{g}_pct", f"{label[g]} (mapped land use)", agg="mean", unit="% of block", domain=[0, 100 if g == "residential" else 50],
                        ramp="reds" if g in worse else "viridis", higher_is="worse" if g in worse else None) for g in GROUPS]
@@ -126,7 +128,7 @@ def cell_dataset(region, rows):
     spec = DatasetSpec(
         id="landuse", title="Mapped land use (Overture)", level=LEVEL, fields=specs, group="Real estate",
         description=f"Overture Maps base-theme land use (release {RELEASE}, from OpenStreetMap), grouped into residential, industrial, "
-                    "commercial, civic, military, construction, brownfield, landfill and quarry, and clipped to each block. It is "
+                    "commercial, civic, military, construction, brownfield, landfill, quarry and farm, and clipped to each block. It is "
                     "mapped use, not the statutory master-plan zone, and coverage is uneven: mapped_pct shows how much of a block "
                     "has any land use drawn. Protected areas (national parks, sanctuaries, reserve forests, biodiversity parks) and their "
                     "eco-sensitive zones are separate fields; polygons larger than about 2,400 km² are dropped.",

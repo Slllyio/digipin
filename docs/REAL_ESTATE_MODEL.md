@@ -996,3 +996,7 @@ New dataset `street_infra` (L7, pipeline/realestate/streetinfra.py) counts OpenS
 ## Drains, nallahs and wastewater works (`drainage` lens)
 
 New dataset `drains` (L7, pipeline/realestate/drains.py): OpenStreetMap drains and ditches (`canal` subtype, classes drain and ditch) and canals from Overture's base water theme, with the share of each block within 100 m of a drain and the area of wastewater basins (sewage treatment plants and effluent ponds). The lens shows mapped drain length within 1 km per km², residents beside an open drain, waterlogging-prone blocks (index 50+) with no main drain mapped within 1 km, and residents within 1 km of a wastewater works. Delhi: 416 km of mapped drains in lived-in areas, 15 lakh residents within 100 m of one, and 2,301 of 4,915 waterlogging-prone blocks with none within 1 km. Most other cities map under 50 km of drains, and the headline then says the gaps are mapping gaps.
+
+## Farms inside the city (`cityfarms` lens)
+
+The `landuse` dataset gained `farm_pct`: OpenStreetMap farmland, farmyards, orchards, allotments, plant nurseries, greenhouses and vineyards (Overture land use). The lens maps farm blocks and flags those whose Open Buildings built-up share rose 5+ points from 2016 to 2023 as farms under pressure; it also counts residents with farmland mapped within 1 km. It complements `farmloss`, which uses Dynamic World land cover.

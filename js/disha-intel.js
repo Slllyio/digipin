@@ -26,6 +26,7 @@ const DishaIntel = (() => {
         lens: {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
+            cityfarms: /\b(farm ?land (left |inside |in )|farms? (inside|within|in) the city|urban (agriculture|farms?|farming)|allotments?|orchards?|plant nurser(y|ies))\b/i,
             drainage: /\b(nall?ahs?|open drains?|storm[\s-]?water drains?|drainage (network|gaps?|density)|no drains?|sewage (treatment|plants?)|stps?|effluent)\b/i,
             toilets: /\b((public|community) (toilets?|restrooms?|urinals?)|toilets?|restrooms?|drinking[\s-]?water (points?|taps?|fountains?)|water (taps?|points?) (on|in) the street)\b/i,
             gated: /\b(gated (communit(y|ies)|colon(y|ies)|societ(y|ies)|streets?|areas?)|(street|colony|road) (gates?|barriers?)|closed (streets?|roads?|colon(y|ies)))\b/i,

@@ -81,7 +81,7 @@ Each item gives four things:
 35. ✅ Stubble-burning smoke source tracker (FIRMS × wind back-trajectory) | EE | Delhi air (partly: winter share in the burning lens (no back-trajectories))
 36. ✅ Noise from aircraft (airport runways + flight paths) | OSM + derived | noise lens
 37. ❌ Light pollution sky brightness (VIIRS radiance to SQM) | EE | night-sky lens (skipped: the Falchi 2016 atlas is CC BY-NC)
-38. Soil sealing trend (GHSL imperviousness yearly) | EE | runoff lens
+38. ✅ Soil sealing trend (GHSL imperviousness yearly) | EE | runoff lens (covered by builtup_yearly in the buildingage and runoff lenses)
 39. ✅ Urban runoff coefficient per block (sealing + slope + soil) | derived | drainage lens
 40. ✅ Drainage density (OSM drains + MERIT streams) | OSM/EE | waterlogging (`drains` dataset, `drainage` lens)
 41. ✅ Lake and wetland health (Sentinel-2 water extent trend + NDCI) | EE | lake lens
@@ -111,7 +111,7 @@ Each item gives four things:
 ## D. Mobility and access (61–78)
 
 61. ❌ Overture transport segments: class, surface, speed limit | S3 | road quality (dropped: road surface and speed are under 1% tagged in Overture for India)
-62. Road surface from Sentinel-2 (paved vs unpaved) | EE | road quality
+62. ❌ Road surface from Sentinel-2 (paved vs unpaved) | EE | road quality (skipped: OSM surface tags cover only 20% of Delhi road length, and a Sentinel-2 classifier would need training labels)
 63. ❌ Footpath presence (OSM sidewalk tags) | OSM | walk lens (too sparse: Delhi has 96 km tagged)
 64. ✅ Streetlights (VIIRS light on station walks: existing nightwalk lens) (OSM highway=street_lamp + VIIRS) | OSM/EE | night safety
 65. Metro ridership by station (DMRC/BMRCL open data where published) | open | transit lens
@@ -164,7 +164,7 @@ Each item gives four things:
 106. ✅ Quarries and mines (Overture/OSM quarries; Maus 2022 global mines has none inside the 13 cities) | open | land damage
 107. ❌ Brick kilns (Sentinel-2 detections, Boyd et al.) | open | air/land (skipped: SentinelKilnDB is CC BY-NC)
 108. ✅ Lake encroachment by year (JRC GSW yearly) | EE | encroachment extension
-109. Urban farms and community gardens | OSM | food lens
+109. ✅ Urban farms and community gardens | OSM | food lens (`landuse.farm_pct`, `cityfarms` lens; soil side in `gardens`)
 110. ❌ Night-sky dark spots for parks | EE | leisure
 
 ## G. Platform and AI (111–120)

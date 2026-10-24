@@ -423,7 +423,7 @@
     {
       "id": "air_quality",
       "title": "Air quality (satellite)",
-      "description": "Sentinel-5P TROPOMI column means for 2025 (NO\u2082, CO, aerosol index, HCHO; ~5 km native) and the Washington University satellite-derived surface PM2.5 (V6.GL, ~1 km, latest year 2022). Columns are not ground concentrations; use for spatial contrast.",
+      "description": "Sentinel-5P TROPOMI column means for 2025 (NO₂, CO, aerosol index, HCHO; ~5 km native) and the Washington University satellite-derived surface PM2.5 (V6.GL, ~1 km, latest year 2022). Columns are not ground concentrations; use for spatial contrast.",
       "source": "Copernicus Sentinel-5P OFFL L3 + ACAG V6.GL.02 PM2.5 (awesome-gee-community catalog) via Earth Engine",
       "license": "Copernicus open licence; PM2.5 free for research (WUSTL ACAG)",
       "group": "Open Data (satellite)",
@@ -435,7 +435,7 @@
           "label": "PM2.5, annual mean (2022)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b5g/m\u00b3",
+          "unit": "µg/m³",
           "domain": [
             0,
             120
@@ -445,10 +445,10 @@
         },
         {
           "key": "no2_umol_m2",
-          "label": "Tropospheric NO\u2082 (2025 mean)",
+          "label": "Tropospheric NO₂ (2025 mean)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b5mol/m\u00b2",
+          "unit": "µmol/m²",
           "domain": [
             34.4,
             105.7
@@ -461,7 +461,7 @@
           "label": "CO column (2025 mean)",
           "type": "number",
           "agg": "mean",
-          "unit": "mmol/m\u00b2",
+          "unit": "mmol/m²",
           "domain": [
             35.82,
             46.1
@@ -487,7 +487,7 @@
           "label": "Formaldehyde HCHO (2025 mean)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b5mol/m\u00b2",
+          "unit": "µmol/m²",
           "domain": [
             138.3,
             275.7
@@ -663,7 +663,7 @@
     {
       "id": "air_trend",
       "title": "Air quality trend (satellite)",
-      "description": "Sentinel-5P TROPOMI tropospheric NO\u2082 annual means for 2019 and 2025 and their change, the 2025 SO\u2082 column (industry and power plants; noisy away from big sources), and Washington University satellite-derived surface PM2.5 (V6.GL, ~1 km) for 2012 and 2022. NO\u2082 is a ~5 km column and tracks traffic and combustion; a single year can swing with weather and lockdowns, so read changes under 10% as flat.",
+      "description": "Sentinel-5P TROPOMI tropospheric NO₂ annual means for 2019 and 2025 and their change, the 2025 SO₂ column (industry and power plants; noisy away from big sources), and Washington University satellite-derived surface PM2.5 (V6.GL, ~1 km) for 2012 and 2022. NO₂ is a ~5 km column and tracks traffic and combustion; a single year can swing with weather and lockdowns, so read changes under 10% as flat.",
       "source": "Copernicus Sentinel-5P OFFL L3 + ACAG V6.GL PM2.5 (awesome-gee-community catalog) via Earth Engine",
       "license": "Copernicus open licence; PM2.5 free for research (WUSTL ACAG)",
       "group": "Open Data (satellite)",
@@ -672,10 +672,10 @@
       "fields": [
         {
           "key": "no2_2019",
-          "label": "Tropospheric NO\u2082 (2019 mean)",
+          "label": "Tropospheric NO₂ (2019 mean)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b5mol/m\u00b2",
+          "unit": "µmol/m²",
           "domain": [
             23.1,
             197.7
@@ -685,10 +685,10 @@
         },
         {
           "key": "no2_latest",
-          "label": "Tropospheric NO\u2082 (2025 mean)",
+          "label": "Tropospheric NO₂ (2025 mean)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b5mol/m\u00b2",
+          "unit": "µmol/m²",
           "domain": [
             28.2,
             153.0
@@ -698,7 +698,7 @@
         },
         {
           "key": "no2_change_pct",
-          "label": "Change in NO\u2082 2019\u21922025",
+          "label": "Change in NO₂ 2019→2025",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -714,7 +714,7 @@
           "label": "PM2.5 (2012 annual mean)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b5g/m\u00b3",
+          "unit": "µg/m³",
           "domain": [
             0,
             120
@@ -727,7 +727,7 @@
           "label": "PM2.5 (2022 annual mean)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b5g/m\u00b3",
+          "unit": "µg/m³",
           "domain": [
             0,
             120
@@ -737,7 +737,7 @@
         },
         {
           "key": "pm25_change_pct",
-          "label": "Change in PM2.5 2012\u21922022",
+          "label": "Change in PM2.5 2012→2022",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -750,10 +750,10 @@
         },
         {
           "key": "so2_umol_m2",
-          "label": "SO\u2082 column (2025 mean)",
+          "label": "SO₂ column (2025 mean)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b5mol/m\u00b2",
+          "unit": "µmol/m²",
           "domain": [
             -84.5,
             316.0
@@ -929,7 +929,7 @@
     {
       "id": "building_dynamics",
       "title": "Building dynamics",
-      "description": "When and how fast each block was built, from Earth Engine's building prediction datasets: Google Open Buildings 2.5D Temporal yearly counts and heights (2016\u20132023), the World Settlement Footprint Evolution (1985\u20132015), GHSL built-up surface for 1975, 2020 and its 2030 projection, GHSL 2018 building-height and use classes, and Dynamic World built-area probability for 2023 and 2026. Model outputs: counts and heights carry several metres and a few buildings of error per block.",
+      "description": "When and how fast each block was built, from Earth Engine's building prediction datasets: Google Open Buildings 2.5D Temporal yearly counts and heights (2016–2023), the World Settlement Footprint Evolution (1985–2015), GHSL built-up surface for 1975, 2020 and its 2030 projection, GHSL 2018 building-height and use classes, and Dynamic World built-area probability for 2023 and 2026. Model outputs: counts and heights carry several metres and a few buildings of error per block.",
       "source": "pipeline/realestate/building_dynamics.py via Earth Engine (GOOGLE/Research/open-buildings-temporal/v1, JRC/GHSL/P2023A, projects/sat-io/open-datasets/WSF/WSF_EVO, GOOGLE/DYNAMICWORLD/V1)",
       "license": "CC BY 4.0 (Open Buildings, GHSL, WSF Evolution, Dynamic World)",
       "group": "Real estate",
@@ -938,7 +938,7 @@
       "fields": [
         {
           "key": "build_year",
-          "label": "Median year of new buildings (2017\u20132023)",
+          "label": "Median year of new buildings (2017–2023)",
           "type": "number",
           "agg": "mean",
           "unit": "year",
@@ -950,10 +950,10 @@
         },
         {
           "key": "accel",
-          "label": "Construction acceleration vs the city (2020\u201323 pace \u00f7 2016\u201320)",
+          "label": "Construction acceleration vs the city (2020–23 pace ÷ 2016–20)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00d7",
+          "unit": "×",
           "domain": [
             0,
             3
@@ -962,7 +962,7 @@
         },
         {
           "key": "height_change_m",
-          "label": "Change in mean building height 2016\u21922023",
+          "label": "Change in mean building height 2016→2023",
           "type": "number",
           "agg": "mean",
           "unit": "m",
@@ -1010,7 +1010,7 @@
         },
         {
           "key": "proj_gain_pp",
-          "label": "Projected built-up gain 2020\u21922030 (GHSL)",
+          "label": "Projected built-up gain 2020→2030 (GHSL)",
           "type": "number",
           "agg": "mean",
           "unit": "pp",
@@ -1046,7 +1046,7 @@
         },
         {
           "key": "dw_built_change",
-          "label": "Built-area probability change 2023\u21922026 (Dynamic World)",
+          "label": "Built-area probability change 2023→2026 (Dynamic World)",
           "type": "number",
           "agg": "mean",
           "unit": "pp",
@@ -1355,7 +1355,7 @@
     },
     {
       "id": "building_stock",
-      "title": "Building stock 2016\u20132023",
+      "title": "Building stock 2016–2023",
       "description": "Building counts, roof cover and height from Google Open Buildings 2.5D Temporal (annual, 4 m effective resolution) for 2016 and 2023. Counts are the model's fractional-count estimate and run higher than the v3 polygon count in dense cores.",
       "source": "Google Open Buildings 2.5D Temporal v1 via Earth Engine",
       "license": "CC BY 4.0 + ODbL (Google Open Buildings)",
@@ -1389,7 +1389,7 @@
         },
         {
           "key": "new_buildings",
-          "label": "New buildings 2016\u21922023",
+          "label": "New buildings 2016→2023",
           "type": "number",
           "agg": "sum",
           "unit": "count",
@@ -1401,7 +1401,7 @@
         },
         {
           "key": "growth_pct",
-          "label": "Building growth 2016\u21922023",
+          "label": "Building growth 2016→2023",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -1735,7 +1735,7 @@
     {
       "id": "built_up",
       "title": "Built-up area (GHSL)",
-      "description": "Built surface, non-residential share, 2000\u21922020 expansion, built volume and height from GHSL R2023A (100 m); degree of urbanisation from GHS-SMOD (1 km).",
+      "description": "Built surface, non-residential share, 2000→2020 expansion, built volume and height from GHSL R2023A (100 m); degree of urbanisation from GHS-SMOD (1 km).",
       "source": "JRC GHSL GHS-BUILT-S/V/H + GHS-SMOD R2023A via Earth Engine",
       "license": "CC BY 4.0 (European Commission JRC)",
       "group": "Open Data (satellite)",
@@ -1768,7 +1768,7 @@
         },
         {
           "key": "built_change_pct",
-          "label": "New built surface 2000\u21922020",
+          "label": "New built surface 2000→2020",
           "type": "number",
           "agg": "mean",
           "unit": "pp of cell",
@@ -1783,7 +1783,7 @@
           "label": "Built volume density",
           "type": "number",
           "agg": "mean",
-          "unit": "m\u00b3/m\u00b2",
+          "unit": "m³/m²",
           "domain": [
             0.0,
             21.09
@@ -2126,7 +2126,7 @@
     },
     {
       "id": "builtup_yearly",
-      "title": "Built-up land, 1975\u20132020",
+      "title": "Built-up land, 1975–2020",
       "description": "Share of each cell covered by buildings in each GHSL epoch (every 5 years), from Landsat and Sentinel-2. Play it to watch the city grow.",
       "source": "JRC GHSL GHS-BUILT-S R2023A via Earth Engine (scripts/build_cell_timeseries.py)",
       "license": "JRC GHSL, CC BY 4.0",
@@ -2462,7 +2462,7 @@
     {
       "id": "bus_service",
       "title": "Bus service (timetable)",
-      "description": "Weekday bus service from the city's open GTFS timetable: stops, routes, departures and the gap between buses at each cell's busiest stop in the 07:00\u201310:00 peak. Only cities with an open feed. Source for this city: BMTC (Namma BMTC app, community GTFS by Vonter).",
+      "description": "Weekday bus service from the city's open GTFS timetable: stops, routes, departures and the gap between buses at each cell's busiest stop in the 07:00–10:00 peak. Only cities with an open feed. Source for this city: BMTC (Namma BMTC app, community GTFS by Vonter).",
       "source": "pipeline/traffic/gtfs_cells.py over BMTC (Namma BMTC app, community GTFS by Vonter)",
       "license": "ODbL 1.0",
       "group": "Traffic & mobility",
@@ -2471,7 +2471,7 @@
       "fields": [
         {
           "key": "best_headway_min",
-          "label": "Minutes between buses at the busiest stop (07\u201310 h)",
+          "label": "Minutes between buses at the busiest stop (07–10 h)",
           "type": "number",
           "agg": "min",
           "unit": "min",
@@ -2484,7 +2484,7 @@
         },
         {
           "key": "peak_departures_hr",
-          "label": "Bus departures per hour (07\u201310 h)",
+          "label": "Bus departures per hour (07–10 h)",
           "type": "number",
           "agg": "sum",
           "unit": "per hour",
@@ -2558,7 +2558,7 @@
     {
       "id": "bus_stop_heat",
       "title": "Heat and shade at bus stops",
-      "description": "Bus stops from OpenStreetMap, open GTFS feeds and Overture Maps places, each with the daytime land surface temperature and tree canopy of its cell and the residents within about a 5-minute walk. Hot and bare: 40+ \u00b0C surface with under 10% canopy. Priority = residents \u00d7 degrees above 35 \u00b0C \u00d7 unshaded share. Surface temperature is not air temperature, and 30 m canopy misses single trees and shelter roofs.",
+      "description": "Bus stops from OpenStreetMap, open GTFS feeds and Overture Maps places, each with the daytime land surface temperature and tree canopy of its cell and the residents within about a 5-minute walk. Hot and bare: 40+ °C surface with under 10% canopy. Priority = residents × degrees above 35 °C × unshaded share. Surface temperature is not air temperature, and 30 m canopy misses single trees and shelter roofs.",
       "source": "pipeline/traffic/bus_stop_heat.py over bus stops + surface_heat + vegetation + population",
       "license": "ODbL (OpenStreetMap, BMTC GTFS) + CDLA-Permissive-2.0 (Overture places) + derived EE layers",
       "group": "Traffic & mobility",
@@ -2579,7 +2579,7 @@
         },
         {
           "key": "hot_bare_stops",
-          "label": "Bus stops at 40+ \u00b0C surface with under 10% tree canopy",
+          "label": "Bus stops at 40+ °C surface with under 10% tree canopy",
           "type": "number",
           "agg": "sum",
           "unit": "stops",
@@ -2595,7 +2595,7 @@
           "label": "Daytime surface temperature at the stops",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             30,
             50
@@ -2618,7 +2618,7 @@
         },
         {
           "key": "shelter_priority",
-          "label": "Shelter / tree priority (waiting residents \u00d7 heat \u00d7 no shade)",
+          "label": "Shelter / tree priority (waiting residents × heat × no shade)",
           "type": "number",
           "agg": "max",
           "unit": "score",
@@ -2797,7 +2797,7 @@
     {
       "id": "climate_future",
       "title": "Climate 2050 (CMIP6, downscaled)",
-      "description": "Heat and extreme rain by 2041\u20132060 against today. A six-model NASA NEX-GDDP-CMIP6 ensemble (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM) gives the change from 1995\u20132014: hot-season (Mar\u2013Jun) daytime and monsoon (May\u2013Sep) night-time warming, added to every ERA5-Land day of 2015\u20132024 to count days \u2265 40 \u00b0C and nights \u2265 28 \u00b0C; and the ratio of the mean annual wettest day, applied to CHIRPS 2005\u20132024. Climate models are ~25 km and reanalysis ~9 km, so this is a city- and district-scale outlook: street-level heat comes from Land surface temperature.",
+      "description": "Heat and extreme rain by 2041–2060 against today. A six-model NASA NEX-GDDP-CMIP6 ensemble (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM) gives the change from 1995–2014: hot-season (Mar–Jun) daytime and monsoon (May–Sep) night-time warming, added to every ERA5-Land day of 2015–2024 to count days ≥ 40 °C and nights ≥ 28 °C; and the ratio of the mean annual wettest day, applied to CHIRPS 2005–2024. Climate models are ~25 km and reanalysis ~9 km, so this is a city- and district-scale outlook: street-level heat comes from Land surface temperature.",
       "source": "NASA NEX-GDDP-CMIP6, ECMWF ERA5-Land and UCSB CHIRPS via Earth Engine (pipeline/cells/ee_layers.py)",
       "license": "NEX-GDDP-CMIP6: CC BY 4.0 (most models); ERA5-Land: Copernicus licence; CHIRPS: public domain",
       "group": "Open Data (satellite)",
@@ -2806,7 +2806,7 @@
       "fields": [
         {
           "key": "hot_days_now",
-          "label": "Days \u2265 40 \u00b0C a year (2015\u20132024)",
+          "label": "Days ≥ 40 °C a year (2015–2024)",
           "type": "number",
           "agg": "mean",
           "unit": "days",
@@ -2819,7 +2819,7 @@
         },
         {
           "key": "hot_days_2050",
-          "label": "Days \u2265 40 \u00b0C a year by 2050 (SSP2-4.5)",
+          "label": "Days ≥ 40 °C a year by 2050 (SSP2-4.5)",
           "type": "number",
           "agg": "mean",
           "unit": "days",
@@ -2832,7 +2832,7 @@
         },
         {
           "key": "hot_days_2050_high",
-          "label": "Days \u2265 40 \u00b0C a year by 2050 (SSP5-8.5)",
+          "label": "Days ≥ 40 °C a year by 2050 (SSP5-8.5)",
           "type": "number",
           "agg": "mean",
           "unit": "days",
@@ -2845,7 +2845,7 @@
         },
         {
           "key": "warm_nights_now",
-          "label": "Nights \u2265 28 \u00b0C a year now",
+          "label": "Nights ≥ 28 °C a year now",
           "type": "number",
           "agg": "mean",
           "unit": "nights",
@@ -2858,7 +2858,7 @@
         },
         {
           "key": "warm_nights_2050",
-          "label": "Nights \u2265 28 \u00b0C a year by 2050 (SSP2-4.5)",
+          "label": "Nights ≥ 28 °C a year by 2050 (SSP2-4.5)",
           "type": "number",
           "agg": "mean",
           "unit": "nights",
@@ -2874,7 +2874,7 @@
           "label": "Hot-season daytime warming by 2050 (SSP2-4.5)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             0,
             3
@@ -2887,7 +2887,7 @@
           "label": "Hot-season daytime warming by 2050 (SSP5-8.5)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             0,
             4
@@ -2897,7 +2897,7 @@
         },
         {
           "key": "wettest_day_mm",
-          "label": "Wettest day of the year, average (2005\u20132024)",
+          "label": "Wettest day of the year, average (2005–2024)",
           "type": "number",
           "agg": "mean",
           "unit": "mm",
@@ -2923,10 +2923,10 @@
         },
         {
           "key": "hot_days_per_c_now",
-          "label": "Extra days \u2265 40 \u00b0C per 1 \u00b0C of local warming, now",
+          "label": "Extra days ≥ 40 °C per 1 °C of local warming, now",
           "type": "number",
           "agg": "mean",
-          "unit": "days/\u00b0C",
+          "unit": "days/°C",
           "domain": [
             0.0,
             17.0
@@ -2936,10 +2936,10 @@
         },
         {
           "key": "hot_days_per_c_2050",
-          "label": "Extra days \u2265 40 \u00b0C per 1 \u00b0C of local warming, 2050",
+          "label": "Extra days ≥ 40 °C per 1 °C of local warming, 2050",
           "type": "number",
           "agg": "mean",
-          "unit": "days/\u00b0C",
+          "unit": "days/°C",
           "domain": [
             0.0,
             15.1
@@ -2949,10 +2949,10 @@
         },
         {
           "key": "warm_nights_per_c_now",
-          "label": "Extra nights \u2265 28 \u00b0C per 1 \u00b0C of local warming, now",
+          "label": "Extra nights ≥ 28 °C per 1 °C of local warming, now",
           "type": "number",
           "agg": "mean",
-          "unit": "nights/\u00b0C",
+          "unit": "nights/°C",
           "domain": [
             0.0,
             41.8
@@ -2962,10 +2962,10 @@
         },
         {
           "key": "warm_nights_per_c_2050",
-          "label": "Extra nights \u2265 28 \u00b0C per 1 \u00b0C of local warming, 2050",
+          "label": "Extra nights ≥ 28 °C per 1 °C of local warming, 2050",
           "type": "number",
           "agg": "mean",
-          "unit": "nights/\u00b0C",
+          "unit": "nights/°C",
           "domain": [
             0.0,
             58.5
@@ -2975,10 +2975,10 @@
         },
         {
           "key": "cdd_now",
-          "label": "Cooling degree-days a year (base 24 \u00b0C), now",
+          "label": "Cooling degree-days a year (base 24 °C), now",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0C\u00b7days",
+          "unit": "°C·days",
           "domain": [
             233.0,
             1621.6
@@ -2988,10 +2988,10 @@
         },
         {
           "key": "cdd_2050",
-          "label": "Cooling degree-days a year (base 24 \u00b0C), 2050 (SSP2-4.5)",
+          "label": "Cooling degree-days a year (base 24 °C), 2050 (SSP2-4.5)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0C\u00b7days",
+          "unit": "°C·days",
           "domain": [
             427.7,
             1981.0
@@ -3001,7 +3001,7 @@
         },
         {
           "key": "cooling_days_2050",
-          "label": "Days a year with a mean \u2265 24 \u00b0C by 2050",
+          "label": "Days a year with a mean ≥ 24 °C by 2050",
           "type": "number",
           "agg": "mean",
           "unit": "days",
@@ -3193,7 +3193,7 @@
     {
       "id": "climate_zones",
       "title": "Local climate zones",
-      "description": "Stewart & Oke Local Climate Zones from the global WUDAPT-based map (Demuzere et al. 2022, 100 m, ~2018): the standard urban-form classes used in heat studies (compact/open high-, mid- and low-rise, lightweight low-rise, industry, trees, water). Lightweight low-rise often marks informal or temporary housing, but it is a remote-sensing class, not a slum census. Typical classification accuracy is ~70\u201380%.",
+      "description": "Stewart & Oke Local Climate Zones from the global WUDAPT-based map (Demuzere et al. 2022, 100 m, ~2018): the standard urban-form classes used in heat studies (compact/open high-, mid- and low-rise, lightweight low-rise, industry, trees, water). Lightweight low-rise often marks informal or temporary housing, but it is a remote-sensing class, not a slum census. Typical classification accuracy is ~70–80%.",
       "source": "RUB Climatology global LCZ map v1 via Earth Engine",
       "license": "CC BY 4.0 (Demuzere et al. 2022)",
       "group": "Open Data (satellite)",
@@ -3245,7 +3245,7 @@
         },
         {
           "key": "compact_pct",
-          "label": "Compact built form (LCZ 1\u20133)",
+          "label": "Compact built form (LCZ 1–3)",
           "type": "number",
           "agg": "mean",
           "unit": "% of cell",
@@ -3257,7 +3257,7 @@
         },
         {
           "key": "open_pct",
-          "label": "Open built form (LCZ 4\u20136)",
+          "label": "Open built form (LCZ 4–6)",
           "type": "number",
           "agg": "mean",
           "unit": "% of cell",
@@ -3293,7 +3293,7 @@
         },
         {
           "key": "natural_pct",
-          "label": "Natural cover (LCZ A\u2013G)",
+          "label": "Natural cover (LCZ A–G)",
           "type": "number",
           "agg": "mean",
           "unit": "% of cell",
@@ -3614,7 +3614,7 @@
           "label": "CO column",
           "type": "number",
           "agg": "mean",
-          "unit": "mmol/m\u00b2",
+          "unit": "mmol/m²",
           "domain": [
             25.05,
             50.19
@@ -3820,7 +3820,7 @@
     {
       "id": "commute_carbon",
       "title": "Commute length and carbon",
-      "description": "Mean motorised trip length from each ~1 km home zone in the demand model's morning matrix (gravity on arterial times, straight line \u00d7 1.3), and tailpipe CO2 per resident at the model's city-wide mode mix (0.036 kg per person-km: two-wheelers, cars, autos, buses). Shows the cost of distance between homes and activity, not of car ownership.",
+      "description": "Mean motorised trip length from each ~1 km home zone in the demand model's morning matrix (gravity on arterial times, straight line × 1.3), and tailpipe CO2 per resident at the model's city-wide mode mix (0.036 kg per person-km: two-wheelers, cars, autos, buses). Shows the cost of distance between homes and activity, not of car ownership.",
       "source": "pipeline/traffic/commute_carbon.py over the demand model",
       "license": "ODbL (OpenStreetMap) + CC BY 4.0 (GHSL) + CDLA-Permissive-2.0 (Overture)",
       "group": "Traffic & mobility",
@@ -4395,7 +4395,7 @@
     {
       "id": "crossings",
       "title": "Pedestrian crossing gaps",
-      "description": "How far a pedestrian walks along a main road (trunk, primary, secondary, busy tertiary) before a junction or mapped crosswalk lets them cross: Overture Maps road segments chained through connectors that no other road or path meets. Stretches over 500 m are gaps (IRC 103 asks for a crossing every 80\u2013250 m in busy areas). Mapped crosswalks are sparse in India, so gaps count junctions as crossings and are a lower bound on the walk.",
+      "description": "How far a pedestrian walks along a main road (trunk, primary, secondary, busy tertiary) before a junction or mapped crosswalk lets them cross: Overture Maps road segments chained through connectors that no other road or path meets. Stretches over 500 m are gaps (IRC 103 asks for a crossing every 80–250 m in busy areas). Mapped crosswalks are sparse in India, so gaps count junctions as crossings and are a lower bound on the walk.",
       "source": "pipeline/traffic/crossings.py over Overture Maps transportation 2026-10-21.0",
       "license": "ODbL (Overture transportation, from OpenStreetMap)",
       "group": "Traffic & mobility",
@@ -4646,7 +4646,7 @@
     {
       "id": "cycling",
       "title": "Low-stress cycling network",
-      "description": "Overture Maps streets classed by Level of Traffic Stress from the road class (main roads motorway\u2013tertiary are high stress), joined into islands that never pass through a main-road junction. Shows how far a cautious rider can go from each cell and which junction crossings would join the most people to a bigger island. No lane, speed-limit or signal data.",
+      "description": "Overture Maps streets classed by Level of Traffic Stress from the road class (main roads motorway–tertiary are high stress), joined into islands that never pass through a main-road junction. Shows how far a cautious rider can go from each cell and which junction crossings would join the most people to a bigger island. No lane, speed-limit or signal data.",
       "source": "pipeline/traffic/cycling.py over Overture Maps transportation 2026-10-21.0",
       "license": "ODbL (Overture transportation, from OpenStreetMap)",
       "group": "Traffic & mobility",
@@ -4709,7 +4709,7 @@
           "label": "Area you can cycle without crossing a main road",
           "type": "number",
           "agg": "mean",
-          "unit": "km\u00b2",
+          "unit": "km²",
           "domain": [
             0,
             10
@@ -5082,7 +5082,7 @@
         },
         {
           "key": "children_pct",
-          "label": "Children 0\u201314",
+          "label": "Children 0–14",
           "type": "number",
           "agg": "mean",
           "unit": "% of residents",
@@ -5118,7 +5118,7 @@
         },
         {
           "key": "dependency_ratio",
-          "label": "Dependency ratio (0\u201314 and 60+ per 100 aged 15\u201359)",
+          "label": "Dependency ratio (0–14 and 60+ per 100 aged 15–59)",
           "type": "number",
           "agg": "mean",
           "unit": "per 100",
@@ -5661,7 +5661,7 @@
     {
       "id": "embeddings",
       "title": "Satellite embeddings (AlphaEarth)",
-      "description": "Google Satellite Embedding V1 (AlphaEarth Foundations): a 64-number summary per 10 m pixel of a year of optical, radar, thermal, terrain and climate data. Each block holds the first 12 principal components of its mean 2025 embedding (one PCA across all cities, 91% of the variance), used to find look-alike blocks anywhere, and the change since 2017 and 2023 as 1 \u2212 cosine similarity of the block's mean embeddings. Change catches new building, cleared land, new water and greening alike: it says how much, not what.",
+      "description": "Google Satellite Embedding V1 (AlphaEarth Foundations): a 64-number summary per 10 m pixel of a year of optical, radar, thermal, terrain and climate data. Each block holds the first 12 principal components of its mean 2025 embedding (one PCA across all cities, 91% of the variance), used to find look-alike blocks anywhere, and the change since 2017 and 2023 as 1 − cosine similarity of the block's mean embeddings. Change catches new building, cleared land, new water and greening alike: it says how much, not what.",
       "source": "GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL via Earth Engine (pipeline/cells/embeddings.py)",
       "license": "CC BY 4.0 (Google Satellite Embedding)",
       "group": "Open Data (satellite)",
@@ -6136,7 +6136,7 @@
     {
       "id": "emergency_access",
       "title": "Hospital access by time of day",
-      "description": "Drive time from each home cell to the nearest hospital at 03:00 (free flow), 09:00 and 18:00, on the arterial network with the demand model's congestion (BPR at each road's modelled V/C). Hospitals and schools are Overture Maps places (confidence \u2265 0.6). General-traffic speed, arterials only, no bed or emergency-ward data.",
+      "description": "Drive time from each home cell to the nearest hospital at 03:00 (free flow), 09:00 and 18:00, on the arterial network with the demand model's congestion (BPR at each road's modelled V/C). Hospitals and schools are Overture Maps places (confidence ≥ 0.6). General-traffic speed, arterials only, no bed or emergency-ward data.",
       "source": "pipeline/traffic/emergency_access.py over Overture Maps places 2026-10-21.0 + data/traffic road_los.geojson",
       "license": "CDLA-Permissive-2.0 / ODbL (Overture) + ODbL (OpenStreetMap)",
       "group": "Traffic & mobility",
@@ -6481,7 +6481,7 @@
     {
       "id": "encroachment",
       "title": "Encroachment watch",
-      "description": "Water bodies, floodplains and tree cover lost to building: JRC Global Surface Water transitions (1984\u20132021), JRC/GloFAS 1-in-100-year floodplain with Open Buildings 2.5D Temporal new buildings (2016\u21922023), Hansen Global Forest Change tree loss (2001\u20132024) and Dynamic World built-up for 2023 and 2025\u201326. Satellite screens: confirm against land records and master plan zoning before calling anything illegal.",
+      "description": "Water bodies, floodplains and tree cover lost to building: JRC Global Surface Water transitions (1984–2021), JRC/GloFAS 1-in-100-year floodplain with Open Buildings 2.5D Temporal new buildings (2016→2023), Hansen Global Forest Change tree loss (2001–2024) and Dynamic World built-up for 2023 and 2025–26. Satellite screens: confirm against land records and master plan zoning before calling anything illegal.",
       "source": "pipeline/realestate/encroachment.py via Earth Engine (JRC/GSW1_4, JRC/CEMS_GLOFAS, GOOGLE/Research/open-buildings-temporal/v1, UMD/hansen/global_forest_change_2025_v1_13, GOOGLE/DYNAMICWORLD/V1)",
       "license": "CC BY 4.0 (JRC, Hansen/UMD, Open Buildings, Dynamic World)",
       "group": "Real estate",
@@ -6516,7 +6516,7 @@
         },
         {
           "key": "flood_new_pct",
-          "label": "New buildings in the 100-year floodplain (2016\u21922023)",
+          "label": "New buildings in the 100-year floodplain (2016→2023)",
           "type": "number",
           "agg": "mean",
           "unit": "% of block",
@@ -6529,7 +6529,7 @@
         },
         {
           "key": "tree_lost_pct",
-          "label": "Tree cover lost 2001\u20132024",
+          "label": "Tree cover lost 2001–2024",
           "type": "number",
           "agg": "mean",
           "unit": "% of block",
@@ -7107,7 +7107,7 @@
         },
         {
           "key": "crop_change_pp",
-          "label": "Change in cropland 2018\u21922025",
+          "label": "Change in cropland 2018→2025",
           "type": "number",
           "agg": "mean",
           "unit": "points",
@@ -7365,7 +7365,7 @@
     {
       "id": "fires",
       "title": "Fires and open burning (VIIRS)",
-      "description": "NASA LANCE VIIRS (Suomi NPP) 375 m active-fire detections, nominal or high confidence, from 2023-09-01 to the latest pass (3.1 years), as days a year at the block's most-burned 375 m spot, the October\u2013February share and summed fire radiative power. Satellites pass about 1:30 am and pm, so short fires are missed; hot rooftops, flares and kilns can also trigger detections.",
+      "description": "NASA LANCE VIIRS (Suomi NPP) 375 m active-fire detections, nominal or high confidence, from 2023-09-01 to the latest pass (3.1 years), as days a year at the block's most-burned 375 m spot, the October–February share and summed fire radiative power. Satellites pass about 1:30 am and pm, so short fires are missed; hot rooftops, flares and kilns can also trigger detections.",
       "source": "NASA LANCE SNPP VIIRS C2 active fire via Earth Engine (pipeline/cells/ee_layers.py)",
       "license": "NASA open data (no restrictions; cite NASA FIRMS)",
       "group": "Open Data (satellite)",
@@ -7387,7 +7387,7 @@
         },
         {
           "key": "winter_fire_days_yr",
-          "label": "Of them October\u2013February (crop residue, garbage and warmth fires)",
+          "label": "Of them October–February (crop residue, garbage and warmth fires)",
           "type": "number",
           "agg": "max",
           "unit": "days",
@@ -8539,7 +8539,7 @@
         },
         {
           "key": "built_change_pp",
-          "label": "Built-up change 2016\u219223",
+          "label": "Built-up change 2016→23",
           "type": "number",
           "agg": "mean",
           "unit": "pp",
@@ -8932,7 +8932,7 @@
         },
         {
           "key": "dust_aod_premonsoon",
-          "label": "Dust optical depth, Mar\u2013Jun mean",
+          "label": "Dust optical depth, Mar–Jun mean",
           "type": "number",
           "agg": "mean",
           "unit": "AOD",
@@ -9181,7 +9181,7 @@
         },
         {
           "key": "regulated_pct",
-          "label": "100\u2013300 m from a national monument (AMASR regulated area)",
+          "label": "100–300 m from a national monument (AMASR regulated area)",
           "type": "number",
           "agg": "mean",
           "unit": "% of block",
@@ -9375,7 +9375,7 @@
     {
       "id": "humid_future",
       "title": "Humid heat 2050 (wet-bulb, CMIP6)",
-      "description": "Afternoon wet-bulb temperature (Stull 2011, daily maximum temperature with the mean dew point) on every ERA5-Land day of 2015\u20132024, and the same days shifted by the six-model NEX-GDDP-CMIP6 change to 2041\u20132060 in March\u2013September maximum temperature and relative humidity (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM). Days at a wet-bulb of 28 \u00b0C or more are humid-heat days; 31 \u00b0C or more is where lab studies find healthy young people can no longer shed heat. A ~9\u201325 km city-scale outlook; reanalysis runs 1\u20132 \u00b0C cool in cities.",
+      "description": "Afternoon wet-bulb temperature (Stull 2011, daily maximum temperature with the mean dew point) on every ERA5-Land day of 2015–2024, and the same days shifted by the six-model NEX-GDDP-CMIP6 change to 2041–2060 in March–September maximum temperature and relative humidity (ACCESS-CM2, EC-Earth3, MIROC6, MPI-ESM1-2-HR, MRI-ESM2-0, NorESM2-MM). Days at a wet-bulb of 28 °C or more are humid-heat days; 31 °C or more is where lab studies find healthy young people can no longer shed heat. A ~9–25 km city-scale outlook; reanalysis runs 1–2 °C cool in cities.",
       "source": "NASA NEX-GDDP-CMIP6 and ECMWF ERA5-Land via Earth Engine (pipeline/cells/ee_layers.py)",
       "license": "NEX-GDDP-CMIP6: CC BY 4.0 (most models); ERA5-Land: Copernicus licence",
       "group": "Open Data (satellite)",
@@ -9384,7 +9384,7 @@
       "fields": [
         {
           "key": "humid_days_now",
-          "label": "Humid-heat days a year, wet-bulb \u2265 28 \u00b0C (2015\u20132024)",
+          "label": "Humid-heat days a year, wet-bulb ≥ 28 °C (2015–2024)",
           "type": "number",
           "agg": "mean",
           "unit": "days",
@@ -9423,7 +9423,7 @@
         },
         {
           "key": "danger_days_now",
-          "label": "Dangerous humid-heat days, wet-bulb \u2265 31 \u00b0C, now",
+          "label": "Dangerous humid-heat days, wet-bulb ≥ 31 °C, now",
           "type": "number",
           "agg": "mean",
           "unit": "days",
@@ -9436,7 +9436,7 @@
         },
         {
           "key": "danger_days_2050",
-          "label": "Dangerous humid-heat days (\u2265 31 \u00b0C) by 2050 (SSP2-4.5)",
+          "label": "Dangerous humid-heat days (≥ 31 °C) by 2050 (SSP2-4.5)",
           "type": "number",
           "agg": "mean",
           "unit": "days",
@@ -9449,7 +9449,7 @@
         },
         {
           "key": "danger_days_2050_high",
-          "label": "Dangerous humid-heat days (\u2265 31 \u00b0C) by 2050 (SSP5-8.5)",
+          "label": "Dangerous humid-heat days (≥ 31 °C) by 2050 (SSP5-8.5)",
           "type": "number",
           "agg": "mean",
           "unit": "days",
@@ -9465,7 +9465,7 @@
           "label": "Peak afternoon wet-bulb, now",
           "type": "number",
           "agg": "max",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             24,
             34
@@ -9478,7 +9478,7 @@
           "label": "Peak afternoon wet-bulb by 2050 (SSP2-4.5)",
           "type": "number",
           "agg": "max",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             24,
             34
@@ -9491,7 +9491,7 @@
           "label": "Peak afternoon wet-bulb by 2050 (SSP5-8.5)",
           "type": "number",
           "agg": "max",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             24,
             34
@@ -9679,7 +9679,7 @@
     {
       "id": "humid_heat",
       "title": "Heat & humid heat (ERA5-Land)",
-      "description": "Air-temperature heat stress for 2025 from ERA5-Land daily aggregates (~9 km reanalysis): days with a maximum \u2265 40 \u00b0C (the IMD plains heatwave threshold), nights with a minimum \u2265 28 \u00b0C, and afternoon wet-bulb (Stull 2011, daily max temperature with mean dew point) \u2014 humid-heat days are wet-bulb \u2265 28 \u00b0C. Reanalysis smooths the urban heat island and usually reads 1\u20132 \u00b0C below city stations; use Land surface temperature for street-scale contrast.",
+      "description": "Air-temperature heat stress for 2025 from ERA5-Land daily aggregates (~9 km reanalysis): days with a maximum ≥ 40 °C (the IMD plains heatwave threshold), nights with a minimum ≥ 28 °C, and afternoon wet-bulb (Stull 2011, daily max temperature with mean dew point) — humid-heat days are wet-bulb ≥ 28 °C. Reanalysis smooths the urban heat island and usually reads 1–2 °C below city stations; use Land surface temperature for street-scale contrast.",
       "source": "ECMWF ERA5-Land daily aggregated via Earth Engine",
       "license": "Copernicus licence (ECMWF / C3S)",
       "group": "Open Data (satellite)",
@@ -9688,7 +9688,7 @@
       "fields": [
         {
           "key": "hot_days_40c",
-          "label": "Days \u2265 40 \u00b0C (2025)",
+          "label": "Days ≥ 40 °C (2025)",
           "type": "number",
           "agg": "mean",
           "unit": "days",
@@ -9701,7 +9701,7 @@
         },
         {
           "key": "warm_nights_28c",
-          "label": "Nights \u2265 28 \u00b0C (2025)",
+          "label": "Nights ≥ 28 °C (2025)",
           "type": "number",
           "agg": "mean",
           "unit": "nights",
@@ -9714,7 +9714,7 @@
         },
         {
           "key": "humid_heat_days",
-          "label": "Humid-heat days, wet-bulb \u2265 28 \u00b0C (2025)",
+          "label": "Humid-heat days, wet-bulb ≥ 28 °C (2025)",
           "type": "number",
           "agg": "mean",
           "unit": "days",
@@ -9730,7 +9730,7 @@
           "label": "Hottest day (2025)",
           "type": "number",
           "agg": "max",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             34,
             48
@@ -9743,7 +9743,7 @@
           "label": "Peak afternoon wet-bulb (2025)",
           "type": "number",
           "agg": "max",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             24,
             32
@@ -9941,7 +9941,7 @@
         },
         {
           "key": "jobs_transit_pct",
-          "label": "\u2026 within 45 min by train and walking",
+          "label": "… within 45 min by train and walking",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -10133,7 +10133,7 @@
     {
       "id": "lakes",
       "title": "Lake health (Sentinel-2)",
-      "description": "Dry-season (Feb\u2013Apr) Sentinel-2 L2A medians for 2019 and 2025: open water (MNDWI > 0.2), the normalised difference chlorophyll index (Mishra & Mishra 2012) and turbidity index (Lacaux et al. 2007) over today's clear water (NDVI < 0.1), and the share of 2019 water that is now green (NDVI > 0.3: water hyacinth, reeds or infill). Only blocks with at least 2% water in either year are kept. One season's median swings with the monsoon before it, so read small changes as noise.",
+      "description": "Dry-season (Feb–Apr) Sentinel-2 L2A medians for 2019 and 2025: open water (MNDWI > 0.2), the normalised difference chlorophyll index (Mishra & Mishra 2012) and turbidity index (Lacaux et al. 2007) over today's clear water (NDVI < 0.1), and the share of 2019 water that is now green (NDVI > 0.3: water hyacinth, reeds or infill). Only blocks with at least 2% water in either year are kept. One season's median swings with the monsoon before it, so read small changes as noise.",
       "source": "Copernicus Sentinel-2 L2A via Earth Engine (pipeline/cells/ee_layers.py)",
       "license": "Copernicus open licence",
       "group": "Open Data (satellite)",
@@ -10142,7 +10142,7 @@
       "fields": [
         {
           "key": "water_2019_pct",
-          "label": "Open water, Feb\u2013Apr 2019",
+          "label": "Open water, Feb–Apr 2019",
           "type": "number",
           "agg": "mean",
           "unit": "% of block",
@@ -10154,7 +10154,7 @@
         },
         {
           "key": "water_now_pct",
-          "label": "Open water, Feb\u2013Apr 2025",
+          "label": "Open water, Feb–Apr 2025",
           "type": "number",
           "agg": "mean",
           "unit": "% of block",
@@ -10166,7 +10166,7 @@
         },
         {
           "key": "water_change_pp",
-          "label": "Change in open water 2019\u21922025",
+          "label": "Change in open water 2019→2025",
           "type": "number",
           "agg": "mean",
           "unit": "points",
@@ -10851,7 +10851,7 @@
           "label": "Land-value quintile within the city",
           "type": "number",
           "agg": "mean",
-          "unit": "1\u20135",
+          "unit": "1–5",
           "domain": [
             1,
             5
@@ -11170,7 +11170,7 @@
     },
     {
       "id": "landcover_yearly",
-      "title": "Land cover by year, 2016\u20132025",
+      "title": "Land cover by year, 2016–2025",
       "description": "Yearly mean Dynamic World class probability from every Sentinel-2 scene: how much of each cell reads as built-up, trees, water or crops. Recent change at 10 m detail, averaged to the cell.",
       "source": "Google / WRI Dynamic World V1 via Earth Engine (scripts/build_cell_timeseries.py)",
       "license": "CC BY 4.0",
@@ -11543,7 +11543,7 @@
     {
       "id": "landuse",
       "title": "Mapped land use (Overture)",
-      "description": "Overture Maps base-theme land use (release 2026-10-21.0, from OpenStreetMap), grouped into residential, industrial, commercial, civic, military, construction, brownfield, landfill and quarry, and clipped to each block. It is mapped use, not the statutory master-plan zone, and coverage is uneven: mapped_pct shows how much of a block has any land use drawn. Protected areas (national parks, sanctuaries, reserve forests, biodiversity parks) and their eco-sensitive zones are separate fields; polygons larger than about 2,400 km\u00b2 are dropped.",
+      "description": "Overture Maps base-theme land use (release 2026-10-21.0, from OpenStreetMap), grouped into residential, industrial, commercial, civic, military, construction, brownfield, landfill, quarry and farm, and clipped to each block. It is mapped use, not the statutory master-plan zone, and coverage is uneven: mapped_pct shows how much of a block has any land use drawn. Protected areas (national parks, sanctuaries, reserve forests, biodiversity parks) and their eco-sensitive zones are separate fields; polygons larger than about 2,400 km² are dropped.",
       "source": "pipeline/realestate/landuse.py (Overture Maps base theme via DuckDB spatial)",
       "license": "ODbL 1.0 (OpenStreetMap via Overture Maps)",
       "group": "Real estate",
@@ -11661,6 +11661,18 @@
           "higherIs": "worse"
         },
         {
+          "key": "farm_pct",
+          "label": "Farmland, orchards, allotments and nurseries (mapped land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of block",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "viridis"
+        },
+        {
           "key": "protected_pct",
           "label": "National parks, sanctuaries, reserve forests and biodiversity parks",
           "type": "number",
@@ -11712,7 +11724,7 @@
             "east": 72.68017578125,
             "north": 23.121337890625
           },
-          "json": "landuse/ahmedabad.json",
+          "json": "landuse/ahmedabad.json.gz",
           "parquet": null
         },
         {
@@ -11859,7 +11871,7 @@
             "east": 88.4521484375,
             "north": 22.651123046875
           },
-          "json": "landuse/kolkata.json",
+          "json": "landuse/kolkata.json.gz",
           "parquet": null
         },
         {
@@ -11917,7 +11929,7 @@
     {
       "id": "lightning",
       "title": "Lightning (NASA LIS/OTD)",
-      "description": "NASA LIS/OTD 0.5\u00b0 High Resolution Flash Climatology (Cecil et al. 2014), the 1995\u20132014 mean of total lightning seen from orbit, interpolated to each block. Ground strikes use the Prentice & Mackerras (1977) latitude rule for the cloud-to-ground share (about 15\u201319% across India). The grid is about 55 km, so this shows the regional lightning climate, not differences between neighbouring streets.",
+      "description": "NASA LIS/OTD 0.5° High Resolution Flash Climatology (Cecil et al. 2014), the 1995–2014 mean of total lightning seen from orbit, interpolated to each block. Ground strikes use the Prentice & Mackerras (1977) latitude rule for the cloud-to-ground share (about 15–19% across India). The grid is about 55 km, so this shows the regional lightning climate, not differences between neighbouring streets.",
       "source": "pipeline/safety/lightning.py (NASA GHRC DAAC, LISOTD_HRFC_V2.3.2015)",
       "license": "NASA open data (no restrictions)",
       "group": "Hazards",
@@ -11926,10 +11938,10 @@
       "fields": [
         {
           "key": "flash_rate",
-          "label": "Lightning flashes per km\u00b2 per year (all types)",
+          "label": "Lightning flashes per km² per year (all types)",
           "type": "number",
           "agg": "mean",
-          "unit": "flashes/km\u00b2/yr",
+          "unit": "flashes/km²/yr",
           "domain": [
             0,
             40
@@ -11939,10 +11951,10 @@
         },
         {
           "key": "cg_rate",
-          "label": "Estimated ground strikes per km\u00b2 per year",
+          "label": "Estimated ground strikes per km² per year",
           "type": "number",
           "agg": "mean",
-          "unit": "strikes/km\u00b2/yr",
+          "unit": "strikes/km²/yr",
           "domain": [
             0,
             8
@@ -12130,7 +12142,7 @@
           "label": "Daytime LST",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             19.0,
             42.4
@@ -12143,7 +12155,7 @@
           "label": "Night-time LST",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             9.2,
             27.9
@@ -12382,7 +12394,7 @@
         },
         {
           "key": "mangrove_change_pp",
-          "label": "Change in mangroves 1996\u21922020",
+          "label": "Change in mangroves 1996→2020",
           "type": "number",
           "agg": "mean",
           "unit": "points",
@@ -13184,7 +13196,7 @@
           "label": "Night-time radiance (2025 median)",
           "type": "number",
           "agg": "mean",
-          "unit": "nW/cm\u00b2/sr",
+          "unit": "nW/cm²/sr",
           "domain": [
             0,
             80
@@ -13515,7 +13527,7 @@
           "label": "Night-time radiance",
           "type": "number",
           "agg": "mean",
-          "unit": "nW/cm\u00b2/sr",
+          "unit": "nW/cm²/sr",
           "domain": [
             0.0,
             71.9
@@ -13851,8 +13863,8 @@
     },
     {
       "id": "no2_monthly",
-      "title": "Air quality: NO\u2082 column (monthly)",
-      "description": "Monthly mean Sentinel-5P TROPOMI tropospheric NO\u2082 column. Traffic and combustion raise it; native pixels are ~5.5 \u00d7 3.5 km, so neighbouring cells share values.",
+      "title": "Air quality: NO₂ column (monthly)",
+      "description": "Monthly mean Sentinel-5P TROPOMI tropospheric NO₂ column. Traffic and combustion raise it; native pixels are ~5.5 × 3.5 km, so neighbouring cells share values.",
       "source": "Copernicus Sentinel-5P OFFL L3 NO2 via Earth Engine (scripts/build_cell_timeseries.py)",
       "license": "Copernicus Sentinel data, free and open",
       "group": "Time series",
@@ -13861,10 +13873,10 @@
       "fields": [
         {
           "key": "no2_umol_m2",
-          "label": "Tropospheric NO\u2082",
+          "label": "Tropospheric NO₂",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b5mol/m\u00b2",
+          "unit": "µmol/m²",
           "domain": [
             18.9,
             155.8
@@ -14072,7 +14084,7 @@
       "title": "Amenities (OpenStreetMap)",
       "description": "Points of interest per cell in each category of the score engine's OSM classifier (pipeline/scores/osm_classify.py). Counts reflect OSM mapping completeness as well as reality.",
       "source": "OpenStreetMap via Geofabrik extract (pipeline/cells/osm_layers.py)",
-      "license": "ODbL (\u00a9 OpenStreetMap contributors)",
+      "license": "ODbL (© OpenStreetMap contributors)",
       "group": "Open Data (OpenStreetMap)",
       "level": 7,
       "approxCellM": 244,
@@ -14430,9 +14442,9 @@
     {
       "id": "osm_roads",
       "title": "Roads & buildings (OpenStreetMap)",
-      "description": "Road length per km\u00b2 by class (segments credited to the cell of their midpoint), junction density, and mapped building count and footprint cover from OpenStreetMap.",
+      "description": "Road length per km² by class (segments credited to the cell of their midpoint), junction density, and mapped building count and footprint cover from OpenStreetMap.",
       "source": "OpenStreetMap via Geofabrik extract (pipeline/cells/osm_layers.py)",
-      "license": "ODbL (\u00a9 OpenStreetMap contributors)",
+      "license": "ODbL (© OpenStreetMap contributors)",
       "group": "Open Data (OpenStreetMap)",
       "level": 7,
       "approxCellM": 244,
@@ -14442,7 +14454,7 @@
           "label": "Road density (all drivable)",
           "type": "number",
           "agg": "mean",
-          "unit": "km/km\u00b2",
+          "unit": "km/km²",
           "domain": [
             0.0,
             130.18
@@ -14451,10 +14463,10 @@
         },
         {
           "key": "major_km_km2",
-          "label": "Major roads (motorway\u2013primary)",
+          "label": "Major roads (motorway–primary)",
           "type": "number",
           "agg": "mean",
-          "unit": "km/km\u00b2",
+          "unit": "km/km²",
           "domain": [
             0.0,
             130.18
@@ -14466,7 +14478,7 @@
           "label": "Secondary & tertiary roads",
           "type": "number",
           "agg": "mean",
-          "unit": "km/km\u00b2",
+          "unit": "km/km²",
           "domain": [
             0.0,
             41.29
@@ -14478,7 +14490,7 @@
           "label": "Local & residential streets",
           "type": "number",
           "agg": "mean",
-          "unit": "km/km\u00b2",
+          "unit": "km/km²",
           "domain": [
             0.0,
             101.02
@@ -14490,7 +14502,7 @@
           "label": "Footpaths & cycleways",
           "type": "number",
           "agg": "mean",
-          "unit": "km/km\u00b2",
+          "unit": "km/km²",
           "domain": [
             0.0,
             57.15
@@ -14503,7 +14515,7 @@
           "label": "Street junctions",
           "type": "number",
           "agg": "mean",
-          "unit": "per km\u00b2",
+          "unit": "per km²",
           "domain": [
             0.0,
             2846.7
@@ -14809,9 +14821,9 @@
     {
       "id": "osm_walk",
       "title": "Walking network (OpenStreetMap)",
-      "description": "A compact walking graph: which of the 8 neighbouring cells a pedestrian can reach along a mapped street, footway or path (everything but motorways; foot=no and private access excluded), plus walkable length per km\u00b2. The lenses run Dijkstra over these links for network walking distance.",
+      "description": "A compact walking graph: which of the 8 neighbouring cells a pedestrian can reach along a mapped street, footway or path (everything but motorways; foot=no and private access excluded), plus walkable length per km². The lenses run Dijkstra over these links for network walking distance.",
       "source": "OpenStreetMap via Geofabrik extract (pipeline/cells/osm_layers.py)",
-      "license": "ODbL (\u00a9 OpenStreetMap contributors)",
+      "license": "ODbL (© OpenStreetMap contributors)",
       "group": "Open Data (OpenStreetMap)",
       "level": 7,
       "approxCellM": 244,
@@ -14846,7 +14858,7 @@
           "label": "Walkable street & path density",
           "type": "number",
           "agg": "mean",
-          "unit": "km/km\u00b2",
+          "unit": "km/km²",
           "domain": [
             0.0,
             109.17
@@ -15392,7 +15404,7 @@
           "label": "Public green and play space (Overture land use)",
           "type": "number",
           "agg": "sum",
-          "unit": "m\u00b2",
+          "unit": "m²",
           "domain": [
             0,
             126799
@@ -15582,7 +15594,7 @@
     {
       "id": "places",
       "title": "Businesses and services (Overture)",
-      "description": "Overture Maps places (release 2026-10-21.0, confidence \u2265 0.6, not marked closed) counted per block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, brand share and business mix. Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses list themselves online: dense in markets, thin in informal and older areas.",
+      "description": "Overture Maps places (release 2026-10-21.0, confidence ≥ 0.6, not marked closed) counted per block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, brand share and business mix. Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses list themselves online: dense in markets, thin in informal and older areas.",
       "source": "pipeline/realestate/places.py (Overture Maps places theme via DuckDB)",
       "license": "CDLA-Permissive-2.0 (Overture Maps places)",
       "group": "Real estate",
@@ -15643,7 +15655,7 @@
         },
         {
           "key": "food",
-          "label": "Restaurants, caf\u00e9s and food",
+          "label": "Restaurants, cafés and food",
           "type": "number",
           "agg": "sum",
           "unit": "places",
@@ -16228,7 +16240,7 @@
           "label": "Surface PM2.5",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b5g/m\u00b3",
+          "unit": "µg/m³",
           "domain": [
             7.2,
             132.5
@@ -16434,7 +16446,7 @@
     {
       "id": "population",
       "title": "Population (GHSL)",
-      "description": "Residents per cell from the JRC Global Human Settlement Layer GHS-POP R2023A (100 m), with 2000\u21922020 growth and the 2030 projection.",
+      "description": "Residents per cell from the JRC Global Human Settlement Layer GHS-POP R2023A (100 m), with 2000→2020 growth and the 2030 projection.",
       "source": "JRC GHSL GHS-POP R2023A via Earth Engine (pipeline/cells/ee_layers.py)",
       "license": "CC BY 4.0 (European Commission JRC)",
       "group": "Open Data (satellite)",
@@ -16458,7 +16470,7 @@
           "label": "Population density",
           "type": "number",
           "agg": "mean",
-          "unit": "people/km\u00b2",
+          "unit": "people/km²",
           "domain": [
             0.0,
             448156.0
@@ -16467,7 +16479,7 @@
         },
         {
           "key": "change_2000_2020_pct",
-          "label": "Growth 2000\u21922020",
+          "label": "Growth 2000→2020",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -17013,7 +17025,7 @@
     {
       "id": "rail_access",
       "title": "Metro & rail station access",
-      "description": "Walking time from each home cell to the nearest metro station and to any metro or suburban rail station (straight line \u00d7 1.3 at 4.8 km/h). Stations are Overture Maps and OpenStreetMap station points classed by the nearest Overture rail track (subway/light rail/monorail = metro).",
+      "description": "Walking time from each home cell to the nearest metro station and to any metro or suburban rail station (straight line × 1.3 at 4.8 km/h). Stations are Overture Maps and OpenStreetMap station points classed by the nearest Overture rail track (subway/light rail/monorail = metro).",
       "source": "pipeline/traffic/rail_stations.py over Overture Maps 2026-10-21.0 + OpenStreetMap",
       "license": "CDLA-Permissive-2.0 / ODbL (Overture) + ODbL (OpenStreetMap)",
       "group": "Traffic & mobility",
@@ -17570,7 +17582,7 @@
         },
         {
           "key": "rain_monsoon_mm",
-          "label": "Monsoon rainfall Jun\u2013Sep 2025",
+          "label": "Monsoon rainfall Jun–Sep 2025",
           "type": "number",
           "agg": "mean",
           "unit": "mm",
@@ -17595,7 +17607,7 @@
         },
         {
           "key": "heavy_rain_days",
-          "label": "Heavy-rain days 2025 (\u2265 64.5 mm, IMD)",
+          "label": "Heavy-rain days 2025 (≥ 64.5 mm, IMD)",
           "type": "number",
           "agg": "mean",
           "unit": "days",
@@ -17608,7 +17620,7 @@
         },
         {
           "key": "rain_10yr_mean_mm",
-          "label": "Mean annual rainfall 2016\u20132025",
+          "label": "Mean annual rainfall 2016–2025",
           "type": "number",
           "agg": "mean",
           "unit": "mm",
@@ -17798,7 +17810,7 @@
     {
       "id": "re_supply",
       "title": "Real-estate supply",
-      "description": "What was built 2016\u20132023 (Open Buildings 2.5D Temporal new buildings \u00d7 footprint \u00d7 storeys), vacant buildable land (ESA WorldCover bare, grass and shrub inside the urban area, outside water, floodplain and mapped parks), floor area ratio now (GHSL volume) and the headroom under the city's typical base FAR (indicative, not plot-level zoning), plus the 2035 urban projection.",
+      "description": "What was built 2016–2023 (Open Buildings 2.5D Temporal new buildings × footprint × storeys), vacant buildable land (ESA WorldCover bare, grass and shrub inside the urban area, outside water, floodplain and mapped parks), floor area ratio now (GHSL volume) and the headroom under the city's typical base FAR (indicative, not plot-level zoning), plus the 2035 urban projection.",
       "source": "pipeline/realestate/supply.py over building_stock, land_cover, built_up, water, osm_amenities, growth",
       "license": "CC BY 4.0 (Open Buildings, ESA WorldCover, GHSL) + ODbL (OpenStreetMap)",
       "group": "Real estate",
@@ -17807,10 +17819,10 @@
       "fields": [
         {
           "key": "new_floor_m2",
-          "label": "Floor area built 2016\u20132023",
+          "label": "Floor area built 2016–2023",
           "type": "number",
           "agg": "sum",
-          "unit": "m\u00b2",
+          "unit": "m²",
           "domain": [
             2,
             383303
@@ -17819,10 +17831,10 @@
         },
         {
           "key": "build_rate",
-          "label": "Construction intensity (floor area per km\u00b2 a year)",
+          "label": "Construction intensity (floor area per km² a year)",
           "type": "number",
           "agg": "mean",
-          "unit": "m\u00b2/km\u00b2/yr",
+          "unit": "m²/km²/yr",
           "domain": [
             6.0,
             959289.0
@@ -17858,7 +17870,7 @@
           "label": "Floor area left under the city's base FAR",
           "type": "number",
           "agg": "sum",
-          "unit": "m\u00b2",
+          "unit": "m²",
           "domain": [
             90,
             151211
@@ -18175,7 +18187,7 @@
     {
       "id": "roofs",
       "title": "Roof albedo (Sentinel-2)",
-      "description": "Broadband shortwave albedo from the 2025 March\u2013May Sentinel-2 L2A median (cloud-masked; Liang 2001 coefficients as in Naegeli et al. 2017) averaged over 10 m pixels that are at least half roof in Google Open Buildings 2.5D Temporal 2023. A 10 m pixel blends a roof with its parapets, tanks and shade, so values bunch around 0.18: dark here means under 0.17 (tar, dark tin, weathered concrete) and light 0.25 or more (whitewashed). Cool-roof paint or lime wash reaches 0.6\u20130.8.",
+      "description": "Broadband shortwave albedo from the 2025 March–May Sentinel-2 L2A median (cloud-masked; Liang 2001 coefficients as in Naegeli et al. 2017) averaged over 10 m pixels that are at least half roof in Google Open Buildings 2.5D Temporal 2023. A 10 m pixel blends a roof with its parapets, tanks and shade, so values bunch around 0.18: dark here means under 0.17 (tar, dark tin, weathered concrete) and light 0.25 or more (whitewashed). Cool-roof paint or lime wash reaches 0.6–0.8.",
       "source": "Copernicus Sentinel-2 L2A + Google Open Buildings 2.5D Temporal via Earth Engine",
       "license": "Copernicus open licence; Open Buildings CC BY 4.0",
       "group": "Open Data (satellite)",
@@ -18470,7 +18482,7 @@
     {
       "id": "scores",
       "title": "Intelligence scores",
-      "description": "~20 composite urban scores (walkability, livability, flood risk\u2026) precomputed per cell from a bulk OSM extract.",
+      "description": "~20 composite urban scores (walkability, livability, flood risk…) precomputed per cell from a bulk OSM extract.",
       "source": "pipeline/scores/build_tile.py",
       "license": "ODbL (OpenStreetMap)",
       "group": "Cell Data",
@@ -18905,7 +18917,7 @@
     {
       "id": "sites",
       "title": "Construction sites: started, building, stalled",
-      "description": "Two dry seasons a year apart (December\u2013May) of the monthly Dynamic World built-up and bare-ground probabilities in construction_monthly. In blocks at least 15% built-up, a site is bare ground of 25% or more: stalled if it stays bare and built-up moves under 5 points in a year, building up if built-up rises 10+ points, cleared this year if bare ground rises 15+ points or built-up falls 10+ while bare ground rises as much (demolition). Quarries, dry plots and fair grounds can read as stalled sites; check on the satellite view.",
+      "description": "Two dry seasons a year apart (December–May) of the monthly Dynamic World built-up and bare-ground probabilities in construction_monthly. In blocks at least 15% built-up, a site is bare ground of 25% or more: stalled if it stays bare and built-up moves under 5 points in a year, building up if built-up rises 10+ points, cleared this year if bare ground rises 15+ points or built-up falls 10+ while bare ground rises as much (demolition). Quarries, dry plots and fair grounds can read as stalled sites; check on the satellite view.",
       "source": "pipeline/realestate/stalled.py (from construction_monthly, Dynamic World V1)",
       "license": "CC BY 4.0 (Dynamic World)",
       "group": "Real estate",
@@ -18914,7 +18926,7 @@
       "fields": [
         {
           "key": "bare_then",
-          "label": "Bare ground, Dec 2024\u2013May 2025",
+          "label": "Bare ground, Dec 2024–May 2025",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -18926,7 +18938,7 @@
         },
         {
           "key": "bare_now",
-          "label": "Bare ground, Dec 2025\u2013May 2026",
+          "label": "Bare ground, Dec 2025–May 2026",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -18938,7 +18950,7 @@
         },
         {
           "key": "built_then",
-          "label": "Built-up, Dec 2024\u2013May 2025",
+          "label": "Built-up, Dec 2024–May 2025",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -18950,7 +18962,7 @@
         },
         {
           "key": "built_now",
-          "label": "Built-up, Dec 2025\u2013May 2026",
+          "label": "Built-up, Dec 2025–May 2026",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -19833,7 +19845,7 @@
           "label": "Soil bulk density at 60 cm",
           "type": "number",
           "agg": "mean",
-          "unit": "g/cm\u00b3",
+          "unit": "g/cm³",
           "domain": [
             1.2,
             1.8
@@ -20138,7 +20150,7 @@
     {
       "id": "surface_heat",
       "title": "Land surface temperature",
-      "description": "Pre-monsoon (Mar\u2013Jun 2025) median surface temperature from Landsat 8/9 thermal (30 m, ~10:30 local), its anomaly against the city median (urban heat island), and MODIS day/night means (1 km). Surface, not air, temperature.",
+      "description": "Pre-monsoon (Mar–Jun 2025) median surface temperature from Landsat 8/9 thermal (30 m, ~10:30 local), its anomaly against the city median (urban heat island), and MODIS day/night means (1 km). Surface, not air, temperature.",
       "source": "USGS Landsat 8/9 Collection 2 L2 + MODIS MOD11A2 v6.1 via Earth Engine",
       "license": "Public domain (USGS / NASA)",
       "group": "Open Data (satellite)",
@@ -20150,7 +20162,7 @@
           "label": "Surface temperature, pre-monsoon 2025 (Landsat)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             25,
             55
@@ -20163,7 +20175,7 @@
           "label": "Hotter than the city median",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             -8,
             8
@@ -20173,10 +20185,10 @@
         },
         {
           "key": "modis_day_c",
-          "label": "Daytime LST Apr\u2013Jun 2025 (MODIS, 1 km)",
+          "label": "Daytime LST Apr–Jun 2025 (MODIS, 1 km)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             25,
             55
@@ -20186,10 +20198,10 @@
         },
         {
           "key": "modis_night_c",
-          "label": "Night-time LST Apr\u2013Jun 2025 (MODIS, 1 km)",
+          "label": "Night-time LST Apr–Jun 2025 (MODIS, 1 km)",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0C",
+          "unit": "°C",
           "domain": [
             15,
             35
@@ -20518,7 +20530,7 @@
         },
         {
           "key": "relief_m",
-          "label": "Local relief (max \u2212 min)",
+          "label": "Local relief (max − min)",
           "type": "number",
           "agg": "max",
           "unit": "m",
@@ -20533,7 +20545,7 @@
           "label": "Mean slope",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b0",
+          "unit": "°",
           "domain": [
             0.0,
             31.37
@@ -21207,7 +21219,7 @@
     {
       "id": "traffic",
       "title": "Traffic congestion (structural)",
-      "description": "Road-network betweenness \u2192 level-of-service per cell. Structural congestion, not live delays (docs/TRAFFIC_MODEL.md).",
+      "description": "Road-network betweenness → level-of-service per cell. Structural congestion, not live delays (docs/TRAFFIC_MODEL.md).",
       "source": "pipeline/traffic/traffic_grid.py",
       "license": "ODbL (OpenStreetMap)",
       "group": "Cell Data",
@@ -21853,7 +21865,7 @@
         },
         {
           "key": "l10_18h_db",
-          "label": "Road noise L10 (06\u201324 h)",
+          "label": "Road noise L10 (06–24 h)",
           "type": "number",
           "agg": "max",
           "unit": "dB(A)",
@@ -22146,7 +22158,7 @@
     {
       "id": "vegetation",
       "title": "Vegetation & tree canopy",
-      "description": "Sentinel-2 NDVI medians for 2025 (cloud-masked, annual, dry and post-monsoon) and Meta/WRI 1 m canopy height (mean height, share \u2265 5 m).",
+      "description": "Sentinel-2 NDVI medians for 2025 (cloud-masked, annual, dry and post-monsoon) and Meta/WRI 1 m canopy height (mean height, share ≥ 5 m).",
       "source": "Copernicus Sentinel-2 L2A + Meta/WRI High Resolution Canopy Height via Earth Engine",
       "license": "Copernicus open licence; canopy height CC BY 4.0",
       "group": "Open Data (satellite)",
@@ -22168,7 +22180,7 @@
         },
         {
           "key": "ndvi_dry",
-          "label": "NDVI, dry season (Mar\u2013May)",
+          "label": "NDVI, dry season (Mar–May)",
           "type": "number",
           "agg": "mean",
           "unit": "index",
@@ -22181,7 +22193,7 @@
         },
         {
           "key": "ndvi_wet",
-          "label": "NDVI, post-monsoon (Aug\u2013Oct)",
+          "label": "NDVI, post-monsoon (Aug–Oct)",
           "type": "number",
           "agg": "mean",
           "unit": "index",
@@ -22206,7 +22218,7 @@
         },
         {
           "key": "tree_canopy_pct",
-          "label": "Tree canopy \u2265 5 m",
+          "label": "Tree canopy ≥ 5 m",
           "type": "number",
           "agg": "mean",
           "unit": "% of cell",
@@ -22517,7 +22529,7 @@
     {
       "id": "water",
       "title": "Surface water & river flood hazard",
-      "description": "Landsat-derived surface-water history (JRC Global Surface Water 1984\u20132021, 30 m) and modelled riverine flood extent/depth for 10- and 100-year return periods (Copernicus GloFAS flood hazard v2.1, ~90 m). The model ignores embankments and drains, and does not cover pluvial/urban waterlogging.",
+      "description": "Landsat-derived surface-water history (JRC Global Surface Water 1984–2021, 30 m) and modelled riverine flood extent/depth for 10- and 100-year return periods (Copernicus GloFAS flood hazard v2.1, ~90 m). The model ignores embankments and drains, and does not cover pluvial/urban waterlogging.",
       "source": "JRC Global Surface Water v1.4 + CEMS GloFAS Flood Hazard v2.1 via Earth Engine",
       "license": "CC BY 4.0 (European Commission JRC)",
       "group": "Open Data (satellite)",
@@ -22526,7 +22538,7 @@
       "fields": [
         {
           "key": "water_occurrence_pct",
-          "label": "Surface-water occurrence 1984\u20132021",
+          "label": "Surface-water occurrence 1984–2021",
           "type": "number",
           "agg": "mean",
           "unit": "% of time",
@@ -22538,7 +22550,7 @@
         },
         {
           "key": "permanent_water_pct",
-          "label": "Permanent water (\u2265 75% of time)",
+          "label": "Permanent water (≥ 75% of time)",
           "type": "number",
           "agg": "mean",
           "unit": "% of cell",
@@ -22899,7 +22911,7 @@
     {
       "id": "water_history",
       "title": "Water bodies by decade (JRC yearly)",
-      "description": "JRC Global Surface Water yearly history (Landsat, 30 m, 1984\u20132021): the share of each block that held seasonal or permanent water in any year of four windows (1988\u201392, 1998\u20132002, 2008\u201312, 2019\u201321), the share that held water around 1990 or 2000 and none in 2019\u20132021, and the mean last year that lost water was seen, which dates when a pond or lake went. Early Landsat years have gaps over India, and a dry run of years can read as loss for seasonal ponds.",
+      "description": "JRC Global Surface Water yearly history (Landsat, 30 m, 1984–2021): the share of each block that held seasonal or permanent water in any year of four windows (1988–92, 1998–2002, 2008–12, 2019–21), the share that held water around 1990 or 2000 and none in 2019–2021, and the mean last year that lost water was seen, which dates when a pond or lake went. Early Landsat years have gaps over India, and a dry run of years can read as loss for seasonal ponds.",
       "source": "JRC/GSW1_4/YearlyHistory via Earth Engine (pipeline/cells/ee_layers.py)",
       "license": "CC BY 4.0 (Pekel et al. 2016, EC JRC / Google)",
       "group": "Open Data (satellite)",
@@ -22908,7 +22920,7 @@
       "fields": [
         {
           "key": "water_1990_pct",
-          "label": "Surface water around 1990 (1988\u20131992)",
+          "label": "Surface water around 1990 (1988–1992)",
           "type": "number",
           "agg": "mean",
           "unit": "% of block",
@@ -22920,7 +22932,7 @@
         },
         {
           "key": "water_2000_pct",
-          "label": "Surface water around 2000 (1998\u20132002)",
+          "label": "Surface water around 2000 (1998–2002)",
           "type": "number",
           "agg": "mean",
           "unit": "% of block",
@@ -22932,7 +22944,7 @@
         },
         {
           "key": "water_2010_pct",
-          "label": "Surface water around 2010 (2008\u20132012)",
+          "label": "Surface water around 2010 (2008–2012)",
           "type": "number",
           "agg": "mean",
           "unit": "% of block",
@@ -22944,7 +22956,7 @@
         },
         {
           "key": "water_2020_pct",
-          "label": "Surface water around 2020 (2019\u20132021)",
+          "label": "Surface water around 2020 (2019–2021)",
           "type": "number",
           "agg": "mean",
           "unit": "% of block",
@@ -22956,7 +22968,7 @@
         },
         {
           "key": "water_lost_pct",
-          "label": "Block area that held water around 1990 or 2000 and none in 2019\u20132021",
+          "label": "Block area that held water around 1990 or 2000 and none in 2019–2021",
           "type": "number",
           "agg": "mean",
           "unit": "% of block",
@@ -23147,7 +23159,7 @@
     {
       "id": "water_risk",
       "title": "Water risk now and 2050 (WRI Aqueduct)",
-      "description": "WRI Aqueduct 4.0 per sub-basin (HydroBASINS level 6, split by state): water stress and depletion (PCR-GLOBWB 2, 1979\u20132019), groundwater table decline (1990\u20132014 trend), drought risk and access to drinking water and sanitation; and 2050 stress and depletion under business-as-usual (SSP3 RCP7.0), optimistic (SSP1 RCP2.6) and pessimistic (SSP5 RCP8.5) futures. The future runs use a different model set from the baseline, so compare 2030 with 2050, not baseline with 2050. Basin values cover the whole catchment, so every block in a basin gets the same number: a city-level outlook, not a block one.",
+      "description": "WRI Aqueduct 4.0 per sub-basin (HydroBASINS level 6, split by state): water stress and depletion (PCR-GLOBWB 2, 1979–2019), groundwater table decline (1990–2014 trend), drought risk and access to drinking water and sanitation; and 2050 stress and depletion under business-as-usual (SSP3 RCP7.0), optimistic (SSP1 RCP2.6) and pessimistic (SSP5 RCP8.5) futures. The future runs use a different model set from the baseline, so compare 2030 with 2050, not baseline with 2050. Basin values cover the whole catchment, so every block in a basin gets the same number: a city-level outlook, not a block one.",
       "source": "WRI/Aqueduct_Water_Risk/V4 via Earth Engine (pipeline/cells/ee_layers.py)",
       "license": "CC BY 4.0 (WRI)",
       "group": "Open Data (satellite)",
@@ -23156,7 +23168,7 @@
       "fields": [
         {
           "key": "water_stress_pct",
-          "label": "Baseline water stress (withdrawals \u00f7 available supply)",
+          "label": "Baseline water stress (withdrawals ÷ available supply)",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -23221,7 +23233,7 @@
         },
         {
           "key": "depletion_pct",
-          "label": "Water depletion (consumption \u00f7 available supply)",
+          "label": "Water depletion (consumption ÷ available supply)",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -23247,7 +23259,7 @@
         },
         {
           "key": "groundwater_decline_cm_yr",
-          "label": "Groundwater table decline (1990\u20132014 trend)",
+          "label": "Groundwater table decline (1990–2014 trend)",
           "type": "number",
           "agg": "mean",
           "unit": "cm/yr",
@@ -23478,7 +23490,7 @@
     {
       "id": "waterlogging",
       "title": "Rain waterlogging",
-      "description": "Where heavy rain pools, independent of rivers. Combines Sentinel-1 radar passes that saw standing water on normally dry land in the wet seasons 2021\u20132025 (VV under \u221216 dB and 3 dB darker than the Feb\u2013Apr median after a 30 m median filter, outside JRC water), hollows below the surrounding 300 m (Copernicus DEM), the topographic wetness index and height above drainage (MERIT Hydro) and sealed surface (GHSL). The index weights near-drainage 25%, radar-observed water 25%, wetness 20%, hollows 15%, sealing 15%. Radar misses water between tall buildings (double bounce), so dense cores lean on terrain; drains and pumping are not modelled.",
+      "description": "Where heavy rain pools, independent of rivers. Combines Sentinel-1 radar passes that saw standing water on normally dry land in the wet seasons 2021–2025 (VV under −16 dB and 3 dB darker than the Feb–Apr median after a 30 m median filter, outside JRC water), hollows below the surrounding 300 m (Copernicus DEM), the topographic wetness index and height above drainage (MERIT Hydro) and sealed surface (GHSL). The index weights near-drainage 25%, radar-observed water 25%, wetness 20%, hollows 15%, sealing 15%. Radar misses water between tall buildings (double bounce), so dense cores lean on terrain; drains and pumping are not modelled.",
       "source": "Copernicus Sentinel-1 GRD + Copernicus DEM GLO-30 + MERIT Hydro + JRC GSW + GHSL GHS-BUILT-S via Earth Engine",
       "license": "Copernicus open licence; MERIT Hydro CC BY-NC 4.0; GHSL/GSW CC BY 4.0",
       "group": "Open Data (satellite)",
@@ -23518,7 +23530,7 @@
         },
         {
           "key": "monsoon_water_pct",
-          "label": "Seen waterlogged by radar, wet seasons 2021\u20132025",
+          "label": "Seen waterlogged by radar, wet seasons 2021–2025",
           "type": "number",
           "agg": "mean",
           "unit": "% of passes",
@@ -23560,7 +23572,7 @@
           "label": "Largest upstream catchment draining through",
           "type": "number",
           "agg": "max",
-          "unit": "km\u00b2",
+          "unit": "km²",
           "domain": [
             0.01,
             38242.96
@@ -23905,7 +23917,7 @@
           "label": "RWI uncertainty",
           "type": "number",
           "agg": "mean",
-          "unit": "\u00b1 index",
+          "unit": "± index",
           "domain": [
             0.37,
             0.629

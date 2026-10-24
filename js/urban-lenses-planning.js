@@ -665,7 +665,49 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Farms inside the city. Mapped farmland, orchards, allotments and nurseries (OpenStreetMap land use), and how much
+    // of it sits in blocks building up fast, where it is likely to be the next layout.
+    const FARM_FAST_PP = 5, FARM_KM = 1;
+
+    function cityfarms(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, farm = c['landuse.farm_pct'], pop = c['population.population'];
+        const b16 = c['growth.built_2016_pct'], b23 = c['growth.built_2023_pct'];
+        if (!farm) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(farm[i]) || v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5 || !idx.some(i => v(farm, i) > 0)) return null;
+        const km2 = i => v(farm, i) / 100 * g.cellKm2;
+        const gain = i => v(b23, i) - v(b16, i);
+        const fast = new Float64Array(n).fill(NaN);
+        for (const i of idx) fast[i] = v(farm, i) > 0 ? (b16 && b23 && gain(i) >= FARM_FAST_PP ? 2 : 1) : 0;
+        const total = idx.reduce((a, i) => a + km2(i), 0), atRisk = idx.reduce((a, i) => a + (fast[i] === 2 ? km2(i) : 0), 0);
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(farm, i)), FARM_KM);
+        const all = _sumOver(pop, idx, () => true), pNear = _sumOver(pop, idx, i => near[i] > 0);
+        const stats = [
+            { label: 'Mapped farmland, orchards, allotments and nurseries', value: `${_round(total, 1)} km²` },
+            { label: `…in blocks whose built-up share rose ${FARM_FAST_PP}+ points from 2016 to 2023`, value: `${_round(atRisk, 1)} km² (${_round(100 * atRisk / Math.max(total, 1e-9))}%)` },
+            { label: `Residents with farmland mapped within ${FARM_KM} km`, value: `${_people(pNear)} (${_round(100 * pNear / Math.max(all, 1))}%)` },
+        ];
+        spaced(g, idx.filter(i => fast[i] === 2), Float64Array.from({ length: n }, (_, i) => km2(i) * gain(i))).forEach((i, k) => stats.push({
+            label: `Farm under pressure ${k + 1}: ${g.codes[i]}`, value: `${_round(v(farm, i))}% farmland; built-up ${_round(v(b16, i))}% → ${_round(v(b23, i))}%` }));
+        return {
+            columns: { farm_pressure: fast, farm_pct: Float64Array.from({ length: n }, (_, i) => (idx.includes(i) ? v(farm, i) : NaN)) },
+            idx, weightKey: 'farm_pct', noHotspots: true,
+            metric: { label: 'Mapped farmland in fast-building blocks', value: _round(atRisk, 1), unit: 'km²', higherIs: 'worse' },
+            headline: `${_round(total, 1)} km² of farmland, orchards and nurseries are mapped inside the city's box; ${_round(100 * atRisk / Math.max(total, 1e-9))}% of it lies in blocks that built up ${FARM_FAST_PP}+ points between 2016 and 2023, the likeliest next layouts. Mapping of peri-urban fields is patchy, and the farmloss lens tracks satellite-seen loss.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'cityfarms', equity: false, title: 'Farms inside the city', icon: '🌾',
+            question: 'Where is farmland left inside the city, and which of it is being built over?',
+            field: { key: 'farm_pressure', label: 'Farm block (1) or farm block building up fast (2)', unit: '0-2', higherIs: 'worse', ramp: 'heat', domain: [0, 2] },
+            extra: [{ key: 'farm_pct', label: 'Mapped farmland, orchards, allotments and nurseries', unit: '% of block', higherIs: null, ramp: 'greens', domain: [0, 100] }],
+            needs: ['landuse.farm_pct', 'growth.built_2016_pct', 'growth.built_2023_pct', 'population.population'],
+            method: `OpenStreetMap land use (Overture Maps) of farmland, farmyards, orchards, allotments, plant nurseries, greenhouses and vineyards, clipped to each block. A farm block is under pressure when its built-up share (Google Open Buildings 2.5D Temporal) rose ${FARM_FAST_PP} points or more from 2016 to 2023. OpenStreetMap maps peri-urban fields unevenly; the farmloss lens uses Dynamic World land cover instead.`,
+            refs: 'OpenStreetMap via Overture Maps; Google Open Buildings 2.5D Temporal; WorldPop' },
         { id: 'drainage', equity: true, title: 'Drains, nallahs and wastewater works', icon: '🕳️',
             question: 'Where does rainwater have no drain, and who lives beside an open nallah?',
             field: { key: 'drain_density', label: `Main drain length within ${DRAIN_KM} km`, unit: 'km/km²', higherIs: 'better', ramp: 'blues', domain: [0, 2] },
@@ -772,7 +814,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 
