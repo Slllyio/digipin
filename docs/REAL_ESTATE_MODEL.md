@@ -1032,3 +1032,7 @@ For each lived-in block the nearest clinic, hospital or pharmacy (Overture `plac
 ## Delivery riders: hubs and rest stops (`riders` lens)
 
 Delivery demand per block is the count of Overture eateries plus grocers within 1 km (`delivery_places_1km`). Rider hubs are the top 5% of blocks (at least 30). Each hub is checked for an OpenStreetMap public toilet and drinking-water point within 500 m and for heat (MODIS day surface at or above the residents' median, under 10% canopy). Rest-stop picks rank hubs missing a toilet or water by demand, 1.5 times for hot ones, 1.5 km apart. About 70–85% of hubs in Delhi, Bengaluru and Mumbai have no toilet or water point mapped within 500 m; OSM undercounts both, so these are places to check, not proven gaps.
+
+## Summer shade from trees (`summershade` lens, `tree_season` layer)
+
+The `tree_season` Earth Engine layer reads Sentinel-2 NDVI medians for March–May and August–October only over tree canopy (Meta/WRI height ≥ 5 m at each 20 m sample). Per block: `summer_leafy_pct` (canopy with NDVI ≥ 0.4 in the hot months), `tree_ndvi_rise` (greening into the post-monsoon, high for deciduous trees) and `tree_phen_sd` (the spread of that greening across the block's trees, a variety proxy under the spectral variation hypothesis). The lens reports the canopy-weighted share still in leaf, residents in leafy blocks (10%+ canopy) where under 40% of the canopy keeps its leaves, and picks hot blocks for evergreen or late-shedding planting. Water stress also makes trees look leafless, and the spread is not a species count.

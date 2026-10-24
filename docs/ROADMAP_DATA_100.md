@@ -156,7 +156,7 @@ Each item gives four things:
 98. ❌ Protected areas and eco-sensitive zones (WDPA) | EE | no-build overlay (skipped: WDPA needs an IBAT licence for commercial use; OSM protected areas in Actions instead)
 99. Biodiversity intactness (NHM BII) | open | nature lens
 100. ❌ Bird and wildlife sightings (GBIF occurrences) | API | nature lens (skipped: records mix in CC BY-NC)
-101. Tree species diversity proxy (Sentinel-2 phenology) | EE | green quality
+101. ✅ Tree species diversity proxy (Sentinel-2 phenology) | EE | green quality (`tree_season` layer: summer-leafy share, greening and its spread over Meta canopy; `summershade` lens)
 102. ✅ Soil organic carbon and texture (SoilGrids; exists partly) | EE | gardens/recharge (`topsoil` layer from OpenLandMap, since SoilGrids masks cities; `gardens` lens)
 103. ✅ Slope stability and cut-fill (DEM curvature) | EE | construction cost (slopes in the ground lens)
 104. Bedrock depth (Pelletier 2016) | EE | foundation cost

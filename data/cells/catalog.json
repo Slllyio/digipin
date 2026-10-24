@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-24T01:03:40Z",
+  "generated": "2026-10-24T01:23:22Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -22733,6 +22733,304 @@
             "north": 18.654296875
           },
           "json": "traffic_noise/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "tree_season",
+      "title": "Tree canopy through the seasons (Sentinel-2)",
+      "description": "Sentinel-2 NDVI medians for 2025 (Mar-May and Aug-Oct), read only over tree canopy (Meta/WRI canopy \u2265 5 m at each 20 m sample). Share of canopy still in leaf in the hot months, the mean greening from summer to post-monsoon (high where trees are deciduous) and its spread across the block's trees: by the spectral variation hypothesis a mix of species greens on different schedules, so a wider spread hints at more kinds of tree. A proxy, not a species count.",
+      "source": "Copernicus Sentinel-2 L2A + Meta/WRI High Resolution Canopy Height via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "Copernicus open licence; canopy height CC BY 4.0",
+      "group": "Open Data (satellite)",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "summer_leafy_pct",
+          "label": "Tree canopy still in leaf in Mar-May (NDVI \u2265 0.4)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of canopy",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "tree_ndvi_rise",
+          "label": "Tree greening from Mar-May to Aug-Oct (NDVI rise)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "NDVI",
+          "domain": [
+            -0.05,
+            0.3
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "tree_phen_sd",
+          "label": "Spread of tree greening across the block (variety proxy)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "NDVI",
+          "domain": [
+            0,
+            0.15
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "summer_leafy_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 5712,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "tree_season/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 15247,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "tree_season/bengaluru/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "bhopal",
+          "cells": 3739,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "tree_season/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 6036,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.3134765625,
+            "north": 13.180908203125
+          },
+          "json": "tree_season/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 31847,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "tree_season/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 567,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "tree_season/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 9217,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "tree_season/hyderabad/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 20505,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "tree_season/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 6226,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "tree_season/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 6456,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "tree_season/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 7136,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "tree_season/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 10830,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "tree_season/mumbai/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 7165,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "tree_season/pune.json",
           "parquet": null
         }
       ]

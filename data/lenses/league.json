@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 48.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",
      "value": 100,
@@ -1061,6 +1067,12 @@
      "value": 53.2,
      "unit": "%",
      "higherIs": null
+    },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 72.3,
+     "unit": "%",
+     "higherIs": "better"
     },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",
@@ -1710,6 +1722,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 58.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",
      "value": 94.9,
@@ -2351,6 +2369,12 @@
      "value": 65.8,
      "unit": "%",
      "higherIs": null
+    },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 70.2,
+     "unit": "%",
+     "higherIs": "better"
     },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",
@@ -3006,6 +3030,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 75.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",
      "value": 69.3,
@@ -3618,6 +3648,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 51,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "cyclone": {
      "label": "50-year cyclone wind (sustained, residents' median)",
      "value": 59,
@@ -4211,6 +4247,12 @@
      "value": 57.6,
      "unit": "%",
      "higherIs": null
+    },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 70.9,
+     "unit": "%",
+     "higherIs": "better"
     },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",
@@ -4860,6 +4902,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 22.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",
      "value": 100,
@@ -5489,6 +5537,12 @@
      "value": 63.8,
      "unit": "%",
      "higherIs": null
+    },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 28.1,
+     "unit": "%",
+     "higherIs": "better"
     },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",
@@ -6132,6 +6186,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 69.6,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",
      "value": 85.5,
@@ -6767,6 +6827,12 @@
      "value": 62.7,
      "unit": "%",
      "higherIs": null
+    },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 74.2,
+     "unit": "%",
+     "higherIs": "better"
     },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",
@@ -7415,6 +7481,12 @@
      "value": 43.8,
      "unit": "%",
      "higherIs": null
+    },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 73.6,
+     "unit": "%",
+     "higherIs": "better"
     },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",
@@ -8069,6 +8141,12 @@
      "value": 59.5,
      "unit": "%",
      "higherIs": null
+    },
+    "summershade": {
+     "label": "Tree canopy in leaf in March-May",
+     "value": 64.4,
+     "unit": "%",
+     "higherIs": "better"
     },
     "riders": {
      "label": "Rider hubs with no toilet or water point mapped within 500 m",

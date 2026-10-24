@@ -1906,6 +1906,50 @@ def roofs(region):
     return spec, _table(level, rows, specs)
 
 
+# ── tree_season: which trees keep their leaves through the hot months (Sentinel-2 over tree canopy) ──
+
+LEAFY_NDVI = 0.4                 # NDVI a tree crown keeps when in leaf
+
+
+def tree_season(region):
+    """Phenology of tree canopy per block: summer-leafy share, dry-to-wet NDVI rise and its spread (a variety proxy)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    dry, wet = _s2(geom, 3, 5), _s2(geom, 8, 10)
+    chc = ee.ImageCollection("projects/meta-forest-monitoring-okw37/assets/CanopyHeight").filterBounds(geom)
+    ch = chc.mosaic().select("cover_code").setDefaultProjection(chc.first().projection())
+    tree = ch.gte(5)              # sampled at the 20 m working scale by to_cells
+    rise = wet.subtract(dry)
+    img = ee.Image.cat([dry.gte(LEAFY_NDVI).rename("leafy"), rise.rename("rise"), rise.pow(2).rename("rise2"),
+                        tree.rename("tree")]).updateMask(tree)
+    raw = gee.fetch(gee.to_cells(img, 20), bbox, level, tile=64)
+    rows = {}
+    for c, x in raw.items():
+        if x.get("leafy") is None or x.get("rise") is None:
+            continue
+        sd = math.sqrt(max(0.0, (x.get("rise2") or 0) - x["rise"] ** 2))
+        rows[c] = {"summer_leafy_pct": _r(100 * x["leafy"]), "tree_ndvi_rise": _r(x["rise"], 3), "tree_phen_sd": _r(sd, 3)}
+    specs = [
+        FieldSpec("summer_leafy_pct", f"Tree canopy still in leaf in Mar-May (NDVI ≥ {LEAFY_NDVI})", agg="mean", unit="% of canopy",
+                  domain=[0, 100], ramp="greens", higher_is="better"),
+        FieldSpec("tree_ndvi_rise", "Tree greening from Mar-May to Aug-Oct (NDVI rise)", agg="mean", unit="NDVI", domain=[-0.05, 0.3],
+                  ramp="viridis", higher_is=None),
+        FieldSpec("tree_phen_sd", "Spread of tree greening across the block (variety proxy)", agg="mean", unit="NDVI", domain=[0, 0.15],
+                  ramp="viridis", higher_is="better"),
+    ]
+    spec = DatasetSpec(
+        id="tree_season", title="Tree canopy through the seasons (Sentinel-2)", level=level, fields=specs, group=GROUP,
+        description=f"Sentinel-2 NDVI medians for {YEAR} (Mar-May and Aug-Oct), read only over tree canopy (Meta/WRI canopy ≥ 5 m "
+                    "at each 20 m sample). Share of canopy still in leaf in the hot months, the mean greening "
+                    "from summer to post-monsoon (high where trees are deciduous) and its spread across the block's trees: by "
+                    "the spectral variation hypothesis a mix of species greens on different schedules, so a wider spread hints "
+                    "at more kinds of tree. A proxy, not a species count.",
+        source="Copernicus Sentinel-2 L2A + Meta/WRI High Resolution Canopy Height via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="Copernicus open licence; canopy height CC BY 4.0", default_field="summer_leafy_pct")
+    return spec, _table(level, rows, specs)
+
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -1914,7 +1958,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season,
 }
 
 

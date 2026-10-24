@@ -106,6 +106,7 @@ const DishaIntel = (() => {
             commute: /\b(commut\w*|trip (length|distance)s?|how far (do )?people (travel|commute))\b.{0,40}\b(carbon|co2|emissions?|footprint|distance|long\w*|km|far)\b|\b(transport|travel|commut\w*) (carbon|co2|emissions?|footprint)\b/i,
             feeder: /\b(last[\s-]?mile|first[\s-]?mile|feeder (bus\w*|routes?|services?))\b/i,
             busheat: /\b(add|more|new|build|need\w*|install) (bus )?shelters?\b|\b(bus (stops?|shelters?)|bus[\s-]?stop shelters?|waiting (for (the|a) bus|in the sun))\b.{0,40}\b(heat|hot|sun|shade|shad(ed|y)|shelters?|trees?)\b|\b(heat|hot|sun|shade|shelters?)\b.{0,30}\bbus (stops?|shelters?)\b/i,
+            summershade: /\b(summer shade|shade in (the )?summer|trees? (lose|losing|drop|dropping|shed|shedding) (their )?leaves|deciduous|evergreen (trees?|shade)|leafless trees?|tree (species )?diversity)\b/i,
             jobaccess: /\b(jobs?|work(places?)?|employment|offices?)\b.{0,40}\b(reach\w*|within \d+ ?min\w*|access\w*|commut\w*|by (car|train|metro|public transport|transit))\b|\b(job|employment) access\w*\b|\b(reach|get to)\b.{0,20}\b(jobs?|work)\b/i,
             cleanwalk: /\b(exhaust|fumes|pollut\w*|air quality|breath\w*)\b.{0,40}\b(walk\w*|routes?|commut\w*|school run|way to school|cycl\w*)\b|\b(walk\w*|routes?|commut\w*)\b.{0,40}\b(exhaust|fumes|pollut\w*)\b|\bclean(er)? (air )?routes?\b/i,
             freight: /\b(trucks?|lorr(y|ies)|freight|logistics|goods vehicles?|hgvs?|warehous\w*|godowns?|delivery vans?)\b/i,

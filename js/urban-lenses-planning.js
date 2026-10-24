@@ -1036,7 +1036,53 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Summer shade. Many Indian street and park trees (teak, gulmohar, silk cotton, some figs) drop their leaves in
+    // the hot dry months, exactly when shade matters; evergreen and late-shedding trees keep it.
+    const SUMMER_CANOPY_MIN = 10, SUMMER_LEAFY_LOW = 40;
+
+    function summershade(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const leafy = c['tree_season.summer_leafy_pct'], sd = c['tree_season.tree_phen_sd'], tree = c['vegetation.tree_canopy_pct'], lst = c['surface_heat.lst_day_c'];
+        if (!leafy || !tree) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(leafy[i]) && v(tree, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        let can = 0, green = 0;
+        for (const i of idx) { can += tree[i]; green += tree[i] * leafy[i] / 100; }
+        const lived = idx.filter(i => v(pop, i) > 0);
+        const hotT = lst ? wquantile(lst, pop, lived.filter(i => _fin(lst[i])), 0.75) : null;
+        const shady = lived.filter(i => tree[i] >= SUMMER_CANOPY_MIN);
+        const bareSummer = shady.filter(i => leafy[i] < SUMMER_LEAFY_LOW);
+        const hotBare = hotT !== null ? bareSummer.filter(i => _fin(lst[i]) && lst[i] >= hotT) : [];
+        const pShady = _sumOver(pop, shady, () => true), pBare = _sumOver(pop, bareSummer, () => true), pHot = _sumOver(pop, hotBare, () => true);
+        const sdMed = sd ? wquantile(sd, tree, idx.filter(i => _fin(sd[i])), 0.5) : null;
+        const stats = [
+            { label: 'Tree canopy still in leaf in March-May (canopy-weighted)', value: `${_round(100 * green / Math.max(can, 1e-9))}%` },
+            { label: `Residents in blocks with ${SUMMER_CANOPY_MIN}%+ tree canopy`, value: _people(pShady) },
+            { label: `…where under ${SUMMER_LEAFY_LOW}% of that canopy is in leaf in summer`, value: `${_people(pBare)} (${_round(100 * pBare / Math.max(pShady, 1))}%)` },
+        ];
+        if (hotT !== null) stats.push({ label: `…and in the hottest quarter (day surface ≥ ${_round(hotT, 1)} °C)`, value: _people(pHot) });
+        if (sdMed !== null) stats.push({ label: 'Typical spread of tree greening within a block (variety proxy, NDVI)', value: String(_round(sdMed, 3)) });
+        const score = Float64Array.from({ length: n }, (_, i) => v(pop, i) * (hotT !== null && lst[i] >= hotT ? 2 : 1) * (100 - v(leafy, i)) / 100);
+        spaced(g, hotT !== null ? hotBare : bareSummer, score).forEach((i, k) => stats.push({
+            label: `Add evergreen shade ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(tree[i])}% canopy, ${_round(leafy[i])}% of it in leaf in summer${lst && _fin(lst[i]) ? `; ${_round(lst[i], 1)} °C` : ''}; ${_people(v(pop, i))} residents` }));
+        return {
+            columns: { summer_leafy_pct: Float64Array.from(leafy) }, idx,
+            metric: { label: 'Tree canopy in leaf in March-May', value: _round(100 * green / Math.max(can, 1e-9)), unit: '%', higherIs: 'better' },
+            headline: `${_round(100 * green / Math.max(can, 1e-9))}% of the city's tree canopy is still in leaf in March-May. ${_people(pBare)} people live in leafy blocks where under ${SUMMER_LEAFY_LOW}% of the canopy keeps its leaves through the hot months${hotT !== null ? `, ${_people(pHot)} of them in the hottest quarter` : ''}: the shade is gone when it is needed most. The blocks listed are where evergreen or late-shedding trees would add the most summer shade, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'summershade', equity: true, title: 'Summer shade from trees', icon: '🍃',
+            question: 'Do the trees still give shade in the hot months?',
+            field: { key: 'summer_leafy_pct', label: 'Tree canopy still in leaf in March-May', unit: '% of canopy', higherIs: 'better', ramp: 'greens', domain: [0, 100] },
+            needs: ['tree_season.summer_leafy_pct', 'tree_season.tree_phen_sd', 'vegetation.tree_canopy_pct', 'surface_heat.lst_day_c', 'population.population'],
+            method: `Sentinel-2 NDVI (2025 March-May median) read only over tree canopy (Meta/WRI canopy height ≥ 5 m): a crown counts as in leaf at NDVI 0.4 or more. Blocks with at least ${SUMMER_CANOPY_MIN}% tree canopy are leafy; leafy blocks with under ${SUMMER_LEAFY_LOW}% of that canopy in leaf lose most of their shade in summer. Hot is the residents' hottest quarter by MODIS summer day surface temperature. Picks rank those blocks by residents, doubled when hot, at least ${SPACING_KM} km apart. The spread of greening across a block's trees is a variety proxy (spectral variation hypothesis), not a species count. Stressed or unwatered trees also look leafless, and small street trees share a 20 m pixel with roofs and road, so dense cores read leafless more often than they are.`,
+            refs: 'Copernicus Sentinel-2; Tolan et al. 2024 (Meta/WRI canopy height); Rocchini et al. 2010 (spectral variation hypothesis); MODIS LST' },
         { id: 'riders', equity: true, title: 'Delivery riders: hubs and rest stops', icon: '🛵',
             question: 'Where do delivery riders wait, and where do they need rest stops?',
             field: { key: 'delivery_places_1km', label: `Eateries and grocers within ${RIDER_KM} km (delivery demand)`, unit: 'places', higherIs: null, ramp: 'viridis', domain: [0, 300] },
@@ -1193,7 +1239,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone, riders }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone, riders, summershade }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 
