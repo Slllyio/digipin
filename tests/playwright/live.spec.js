@@ -236,7 +236,7 @@ test.describe('live feeds', () => {
     const rows = await page.evaluate(() => SatPasses.rows());
     // Sorted soonest first, within the week, each with an outlook.
     expect(rows.map((r) => r.t)).toEqual([...rows.map((r) => r.t)].sort((a, b) => a - b));
-    expect(rows.every((r) => r.t > Date.now() && r.t < Date.now() + 7.1 * 864e5)).toBe(true);
+    expect(rows.every((r) => r.t > Date.now() - 120_000 && r.t < Date.now() + 7.1 * 864e5)).toBe(true);
     // Fixture epochs are re-dated to now, so which satellites pass depends on the hour; the wide-swath daily ones always do.
     expect(rows.length).toBeGreaterThanOrEqual(3);
     expect(rows.some((r) => r.meta.kind === 'optical')).toBe(true);

@@ -177,6 +177,7 @@ const SatPasses = (() => {
         if (!meta || !meta.swathKm) return [];
         const half = meta.swathKm / 2;
         return closeApproaches(el, lat, lng, fromMs, fromMs + days * DAY_MS, half + viewKm)
+            .filter(p => p.t >= fromMs)
             .map(p => ({ ...p, sunEl: sunElevation(lat, lng, p.t), covers: p.offsetKm + viewKm <= half ? 'all' : 'part' }))
             .filter(p => (meta.kind === 'optical' || meta.daylight) ? p.sunEl >= 10 : true);
     }
