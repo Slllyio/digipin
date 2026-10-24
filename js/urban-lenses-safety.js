@@ -198,6 +198,49 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Homes beside factories. Industry inside housing (workshops in residential lanes, like the 2019 Anaj Mandi and 2022
+    // Mundka fires in Delhi) puts fire, fumes and stored chemicals beside bedrooms. An industrial block has INDUSTRY_PCT
+    // of its mapped land in industrial use (OpenStreetMap via Overture land use); a mixed block has both INDUSTRY_PCT
+    // industry and HOMES_PCT housing; hot means satellite thermal anomalies (VIIRS, furnaces, kilns or burning) there.
+    const INDUSTRY_PCT = 20, HOMES_PCT = 20, NEXT_KM = 0.5, HOT_DAYS = 1;
+
+    function factoryhomes(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const ind = c['landuse.industrial_pct'], res = c['landuse.residential_pct'], fire = c['fires.fire_days_yr'];
+        if (!ind || !res) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const isInd = Float64Array.from({ length: n }, (_, i) => (v(ind, i) >= INDUSTRY_PCT ? 1 : 0));
+        const nearInd = within(g, isInd, NEXT_KM);
+        const mixed = i => isInd[i] > 0 && v(res, i) >= HOMES_PCT, hot = i => v(fire, i) >= HOT_DAYS;
+        const level = i => (mixed(i) ? (hot(i) ? 3 : 2) : nearInd[i] > 0 ? 1 : 0);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = level(i);
+        const indBlocks = [];
+        for (let i = 0; i < n; i++) if (isInd[i]) indBlocks.push(i);
+        if (!indBlocks.length) return null;
+        const near = idx.filter(i => level(i) >= 1), mix = idx.filter(i => level(i) >= 2), hots = idx.filter(i => level(i) === 3);
+        const all = _sumOver(pop, idx, () => true), pNear = _sumOver(pop, near, () => true), pMix = _sumOver(pop, mix, () => true);
+        const stats = [
+            { label: `Industrial blocks (${INDUSTRY_PCT}%+ of mapped land)`, value: String(indBlocks.length) },
+            { label: `Residents within ${NEXT_KM * 1000} m of an industrial block`, value: `${_people(pNear)} (${_round(100 * pNear / (all || 1))}%)` },
+            { label: `…in mixed blocks, with homes (${HOMES_PCT}%+) and industry side by side`, value: `${mix.length} blocks, ${_people(pMix)} residents` },
+        ];
+        if (fire) stats.push({ label: '…mixed blocks with satellite thermal anomalies (furnaces, kilns or burning)', value: `${hots.length} blocks, ${_people(_sumOver(pop, hots, () => true))} residents` });
+        const score = Float64Array.from({ length: n }, (_, i) => v(pop, i) * level(i) * (1 + v(ind, i) / 100));
+        spaced(g, mix.length ? mix : near, score).forEach((i, k) => stats.push({
+            label: `Inspect ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(v(pop, i))} residents; ${_round(v(ind, i))}% industrial, ${_round(v(res, i))}% housing${hot(i) ? `; thermal anomalies ${_round(v(fire, i), 1)} days a year` : ''}` }));
+        return {
+            columns: { factory_homes: out }, idx, weightKey: 'factory_homes', noHotspots: true,
+            metric: { label: `Residents within ${NEXT_KM * 1000} m of industry`, value: _round(100 * pNear / (all || 1)), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pNear)} residents (${_round(100 * pNear / (all || 1))}%) live within ${NEXT_KM * 1000} m of an industrial block, and ${_people(pMix)} live in ${mix.length} blocks where homes and industry share the same ground${fire ? `, ${hots.length} of them with furnace or burning hotspots seen from space` : ''}. Mixed blocks are where fire, fumes and stored chemicals sit closest to bedrooms. The blocks listed are the most crowded, the first for fire and pollution inspections, at least ${SPACING_KM} km apart. Land use is only as complete as the map; unmapped workshops are missed.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -224,10 +267,16 @@ const UrbanLensesSafety = (() => {
             needs: ['terrain.hand_m', 'soil.sand_pct', 'building_stock.height_2023_m', 'population.population'],
             method: `Soft ground is a block whose mean height above the nearest drain (MERIT Hydro HAND) is under ${SOFT_HAND_M} m: young floodplain and coastal sediments with a shallow water table, which amplify shaking. Sandy soft ground has ${SAND_PCT}% or more sand in the topsoil (SoilGrids 250 m), the soils that liquefy when saturated. Tall means a mean building height of ${QUAKE_TALL_M} m or more (Google Open Buildings 2.5D, 2023), about five storeys, whose sway period can match soft soil. The seismic zone is IS 1893 (Part 1): 2016. This is a proxy: borehole data, shear-wave velocity and groundwater depth are not open, and published microzonation studies (Delhi 2016, Kolkata, Chennai) are the authority where they exist.`,
             refs: 'MERIT Hydro (Yamazaki et al. 2019); SoilGrids 2.0 (Poggio et al. 2021); Google Open Buildings 2.5D Temporal; IS 1893 (Part 1): 2016; NDMA Guidelines on Seismic Microzonation (2011)' },
+        { id: 'factoryhomes', equity: false, title: 'Homes beside factories', icon: '🏭',
+            question: 'Where do homes and factories share the same ground?',
+            field: { key: 'factory_homes', label: `Within ${NEXT_KM * 1000} m of industry (1), mixed block (2), mixed with thermal hotspots (3)`, unit: '0-3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['landuse.industrial_pct', 'landuse.residential_pct', 'fires.fire_days_yr', 'population.population'],
+            method: `Industrial blocks have ${INDUSTRY_PCT}% or more of their land mapped as industrial in OpenStreetMap land use (via Overture Maps); mixed blocks also have ${HOMES_PCT}% or more mapped as housing. Thermal hotspots are VIIRS 375 m active-fire detections on ${HOT_DAYS} or more days a year, which in a city are mostly furnaces, kilns and waste burning. Residents within ${NEXT_KM * 1000} m are counted on the block grid. Land-use polygons can overlap, so the two shares can add past 100%. Hazardous-industry registers (Major Accident Hazard units under the MSIHC Rules 1989) and factory licences are not open, and mapping of land use is uneven, so this shows where to inspect, not which units are unsafe.`,
+            refs: 'OpenStreetMap land use via Overture Maps; NASA FIRMS VIIRS 375 m active fires; MSIHC Rules 1989; Master Plan for Delhi 2021 (non-conforming industrial areas)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

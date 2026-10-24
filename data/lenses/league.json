@@ -444,6 +444,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 24.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1137,6 +1143,12 @@
     "quake": {
      "label": "Residents on soft ground",
      "value": 5.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 30,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1842,6 +1854,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 9.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2535,6 +2553,12 @@
     "quake": {
      "label": "Residents on soft ground",
      "value": 45.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 36.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3243,6 +3267,12 @@
     "quake": {
      "label": "Residents on soft ground",
      "value": 56.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 20.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -4542,6 +4572,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 10.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.9,
@@ -5244,6 +5280,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 13.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -5925,6 +5967,12 @@
     "quake": {
      "label": "Residents on soft ground",
      "value": 26.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 9.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6624,6 +6672,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 22,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -7311,6 +7365,12 @@
     "quake": {
      "label": "Residents on soft ground",
      "value": 62.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 10.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -8013,6 +8073,12 @@
     "quake": {
      "label": "Residents on soft ground",
      "value": 15.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 40.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -8721,6 +8787,12 @@
     "quake": {
      "label": "Residents on soft ground",
      "value": 7.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "factoryhomes": {
+     "label": "Residents within 500 m of industry",
+     "value": 10.6,
      "unit": "%",
      "higherIs": "worse"
     },
