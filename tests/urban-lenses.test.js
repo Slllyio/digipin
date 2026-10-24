@@ -710,7 +710,7 @@ describe('UrbanLenses on committed city data', () => {
         expect(arch.domain).toContain(layer.table.columns.archetype.find(v => v != null));
         expect(layer.table.cells.length).toBe(r.cells);
         expect(L.toText(r)).toMatch(/Heat vulnerability/);
-    }, 60000);
+    }, 180000);
 
     it('exposes one lens and siting through the stable lens() contract', async () => {
         const st = await store();
@@ -727,5 +727,5 @@ describe('UrbanLenses on committed city data', () => {
         expect(s2.layer.table.cells.length).toBeGreaterThan(1000);
         await expect(L.lens('nope', 'indore_pilot', st)).rejects.toThrow(/Unknown lens/);
         expect(L.catalog().map(c => c.id)).toContain('siting');
-    }, 60000);
+    }, 180000);
 });

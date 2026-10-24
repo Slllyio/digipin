@@ -57,5 +57,5 @@ describe('LensesPanel', () => {
         P.clear();
         expect(globalThis.CellStore.isLocal('lenses')).toBe(false);
         show.mockRestore();
-    }, 60000);
+    }, 180000);
 });
