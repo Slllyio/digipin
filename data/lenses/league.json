@@ -432,6 +432,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 7.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1113,6 +1119,12 @@
     "oldtall": {
      "label": "Residents in old blocks with buildings 10 m+",
      "value": 4.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 3.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1806,6 +1818,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 2.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2487,6 +2505,12 @@
     "oldtall": {
      "label": "Residents in old blocks with buildings 10 m+",
      "value": 5.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 78.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3186,6 +3210,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 10.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -3840,6 +3870,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "railnoise": {
      "label": "Residents within 150 m of a mainline railway",
      "value": 8.9,
@@ -4455,6 +4491,12 @@
     "oldtall": {
      "label": "Residents in old blocks with buildings 10 m+",
      "value": 15.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 3.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5148,6 +5190,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 0.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -5817,6 +5865,12 @@
     "oldtall": {
      "label": "Residents in old blocks with buildings 10 m+",
      "value": 2.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 0.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6504,6 +6558,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 15.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -7179,6 +7239,12 @@
     "oldtall": {
      "label": "Residents in old blocks with buildings 10 m+",
      "value": 2.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 16.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -7869,6 +7935,12 @@
     "oldtall": {
      "label": "Residents in old blocks with buildings 10 m+",
      "value": 36.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 30.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -8565,6 +8637,12 @@
     "oldtall": {
      "label": "Residents in old blocks with buildings 10 m+",
      "value": 5.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "critwater": {
+     "label": "Hospitals on flood-prone or waterlogged ground",
+     "value": 4.8,
      "unit": "%",
      "higherIs": "worse"
     },

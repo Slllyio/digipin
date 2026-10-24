@@ -110,6 +110,55 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Critical facilities on wet ground. A hospital, fire station or police station that floods is lost exactly when it
+    // is needed. A block is flood-prone where FLOOD_PCT of it lies in the 1-in-100-year river or coastal flood (Aqueduct),
+    // and waterlogged where its rain waterlogging index reaches WET_INDEX (radar-seen standing water, hollows, wetness).
+    const FLOOD_PCT = 25, WET_INDEX = 60, CARE_KM_WET = 3;
+    const FACILITIES = [['places.hospitals', 'hospitals', 'hospital'], ['places.fire_stations', 'fire stations', 'fire station'], ['places.police', 'police stations', 'police station'], ['emergency_access.schools', 'schools (relief camps)', 'school']];
+
+    function critwater(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const fl = c['flood_future.any_pct_now'], wl = c['waterlogging.waterlogging_index'], hosp = c['places.hospitals'];
+        if (!(fl || wl) || !hosp) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const level = i => (v(fl, i) >= FLOOD_PCT ? 2 : v(wl, i) >= WET_INDEX ? 1 : 0);
+        const any = i => FACILITIES.some(([k]) => v(c[k], i) > 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (any(i)) idx.push(i);
+        if (idx.length < 5) return null;
+        const wet = new Float64Array(n).fill(NaN);
+        for (const i of idx) wet[i] = level(i);
+        const stats = [];
+        for (const [k, label] of FACILITIES) {
+            const a = c[k];
+            if (!a) continue;
+            let tot = 0, f = 0, w = 0;
+            for (const i of idx) { const x = v(a, i); tot += x; if (level(i) === 2) f += x; else if (level(i) === 1) w += x; }
+            if (tot) stats.unshift({ label: `${label[0].toUpperCase()}${label.slice(1)} in flood-prone / waterlogged blocks`, value: `${_round(f)} / ${_round(w)} of ${_round(tot)}` });
+        }
+        stats.reverse();
+        // Residents whose every hospital within CARE_KM_WET sits on wet ground: in a flood they have none nearby.
+        const dry = within(g, Float64Array.from({ length: n }, (_, i) => (level(i) ? 0 : v(hosp, i))), CARE_KM_WET);
+        const allNear = within(g, Float64Array.from({ length: n }, (_, i) => v(hosp, i)), CARE_KM_WET);
+        const lived = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) lived.push(i);
+        const stranded = lived.filter(i => allNear[i] > 0 && dry[i] <= 0);
+        const pStr = _sumOver(pop, stranded, () => true), pAll = _sumOver(pop, lived, () => true);
+        stats.push({ label: `Residents whose every hospital within ${CARE_KM_WET} km is on wet ground`, value: `${_people(pStr)} (${_round(100 * pStr / (pAll || 1), 1)}%)` });
+        const totH = idx.reduce((a, i) => a + v(hosp, i), 0), wetH = idx.reduce((a, i) => a + (level(i) ? v(hosp, i) : 0), 0);
+        const people = within(g, Float64Array.from({ length: n }, (_, i) => v(pop, i)), CARE_KM_WET);
+        const score = Float64Array.from({ length: n }, (_, i) => (level(i) ? FACILITIES.reduce((a, [k]) => a + v(c[k], i), 0) * people[i] * level(i) : 0));
+        spaced(g, idx.filter(i => level(i) > 0), score).forEach((i, k) => stats.push({
+            label: `Flood-proof ${k + 1}: ${g.codes[i]}`,
+            value: `${FACILITIES.filter(([key]) => v(c[key], i) > 0).map(([key, l, one]) => `${_round(v(c[key], i))} ${v(c[key], i) === 1 ? one : l.replace(/ \(.*\)/, '')}`).join(', ')}; ${level(i) === 2 ? `${_round(v(fl, i))}% in the 100-year flood` : `waterlogging index ${_round(v(wl, i))}`}; ${_people(people[i])} residents within ${CARE_KM_WET} km` }));
+        return {
+            columns: { facility_wet: wet }, idx, weightKey: 'facility_wet', noHotspots: true,
+            metric: { label: 'Hospitals on flood-prone or waterlogged ground', value: _round(100 * wetH / (totH || 1)), unit: '%', higherIs: 'worse' },
+            headline: `${_round(wetH)} of ${_round(totH)} listed hospitals stand on flood-prone or waterlogged ground, and ${_people(pStr)} residents have no hospital within ${CARE_KM_WET} km that stays dry. Fire and police stations and the schools that serve as relief camps are counted the same way. The blocks listed hold the most emergency services on wet ground, weighted by how many people they serve: the first to flood-proof (raised plinths, backup power above flood level, a dry access road).`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -124,10 +173,16 @@ const UrbanLensesSafety = (() => {
             needs: ['building_dynamics.settled_year', 'building_dynamics.built_1975_pct', 'building_dynamics.height_change_m', 'building_stock.height_2023_m', 'population.population'],
             method: `Old blocks were settled by ${OLD_YEAR} in the World Settlement Footprint Evolution (Landsat, 1985–2015, so ${OLD_YEAR} means "by ${OLD_YEAR}") or were at least ${OLD_1975}% built in GHSL 1975. Tall means a mean building height of ${TALL_M} m or more in Google Open Buildings 2.5D (2023), about three storeys. Floors added means the block's mean height grew ${ADDED_M}-${REBUILT_M} m from 2016 to 2023, half a storey to a storey across the block; a rise of ${REBUILT_M} m or more counts as rebuilt and drops out, since new towers on old land are built to current codes. Picks weigh residents by height, capped at ${MID_M} m. Construction year of single buildings is not in open data, and heights are model estimates (±3 m per building), so the map shows where audits should start, not which buildings are unsafe. Mumbai's municipal law (MMC Act s. 353B) already asks owners of buildings over 30 years old to file a structural audit.`,
             refs: 'World Settlement Footprint Evolution (Marconcini et al. 2021); GHSL P2023A; Google Open Buildings 2.5D Temporal (Sirko et al. 2023); IS 1893 (Part 1): 2016; IS 13920: 2016; MMC Act 1888 s. 353B' },
+        { id: 'critwater', equity: false, title: 'Emergency services on wet ground', icon: '🏥',
+            question: 'Which hospitals, fire and police stations flood or waterlog?',
+            field: { key: 'facility_wet', label: 'Blocks with emergency services: dry (0), waterlogged (1), in the 100-year flood (2)', unit: '0-2', higherIs: 'worse', ramp: 'blues', domain: [0, 2] },
+            needs: ['places.hospitals', 'places.fire_stations', 'places.police', 'emergency_access.schools', 'flood_future.any_pct_now', 'waterlogging.waterlogging_index', 'population.population'],
+            method: `Hospitals, fire stations and police stations are Overture Maps places; schools (used as relief camps) are OpenStreetMap. A block is flood-prone where ${FLOOD_PCT}% or more of it lies in WRI Aqueduct's 1-in-100-year river or coastal flood today (about 1 km, no defences), and waterlogged where its rain waterlogging index (Sentinel-1 standing water 2021–2025, hollows, wetness and height above drainage) is ${WET_INDEX} or more. Stranded residents have at least one listed hospital within ${CARE_KM_WET} km, all of them on wet ground. A facility's own plinth, generator and access road are not in open data, so the picks are where to check first.`,
+            refs: 'Overture Maps places; OpenStreetMap; WRI Aqueduct Floods v2; Sentinel-1 GRD; NDMA Guidelines on Hospital Safety (2016); NDMA Urban Flooding Guidelines (2010)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall }, {}, 'jobsmap');
-    return { marketfire, oldtall, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {
