@@ -528,6 +528,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 6.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1305,6 +1311,12 @@
     "fuelsafe": {
      "label": "Fuel stations sharing a block with a school or hospital",
      "value": 49.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 3.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -2100,6 +2112,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 2.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2883,6 +2901,12 @@
     "fuelsafe": {
      "label": "Fuel stations sharing a block with a school or hospital",
      "value": 34.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 0.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3681,6 +3705,12 @@
     "fuelsafe": {
      "label": "Fuel stations sharing a block with a school or hospital",
      "value": 25.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 4.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5124,6 +5154,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 1.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.9,
@@ -5910,6 +5946,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 17.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6675,6 +6717,12 @@
     "fuelsafe": {
      "label": "Fuel stations sharing a block with a school or hospital",
      "value": 36,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 5.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -7464,6 +7512,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 0.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -8235,6 +8289,12 @@
     "fuelsafe": {
      "label": "Fuel stations sharing a block with a school or hospital",
      "value": 45.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 2.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9036,6 +9096,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 0.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -9831,6 +9897,12 @@
     "fuelsafe": {
      "label": "Fuel stations sharing a block with a school or hospital",
      "value": 41.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "carekit": {
+     "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
+     "value": 1,
      "unit": "%",
      "higherIs": "worse"
     },

@@ -811,6 +811,51 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Tests, teeth and eyes. Blood tests and scans, dental care and cataract checks are mostly paid for out of pocket at
+    // private labs and clinics; the lens counts listed ones within reach of where people live, and old-age homes against
+    // the over-60s. Government dispensaries and hospital labs are only partly listed, so gaps are where to check first.
+    const LAB_KM = 2, DENT_KM = 2, EYE_KM = 3;
+
+    function carekit(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], old = c['demographics.elderly_60plus'];
+        const lab = c['places.diagnostics'], dent = c['places.dental'], eye = c['places.eyecare'], homes = c['places.elder_homes'];
+        if (!pop || !lab || !dent || !eye) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        const sum = a => idx.reduce((s, i) => s + v(a, i), 0);
+        if (idx.length < 5 || sum(lab) < 10) return null;
+        const reach = (a, km) => within(g, Float64Array.from({ length: n }, (_, i) => v(a, i)), km);
+        const labN = reach(lab, LAB_KM), dentN = reach(dent, DENT_KM), eyeN = reach(eye, EYE_KM);
+        const gaps = new Float64Array(n).fill(NaN);
+        for (const i of idx) gaps[i] = (labN[i] <= 0 ? 1 : 0) + (dentN[i] <= 0 ? 1 : 0) + (eyeN[i] <= 0 ? 1 : 0);
+        const all = _sumOver(pop, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
+        const noLab = _sumOver(pop, idx, i => labN[i] <= 0), noDent = _sumOver(pop, idx, i => dentN[i] <= 0);
+        const noEye = _sumOver(pop, idx, i => eyeN[i] <= 0), none = _sumOver(pop, idx, i => gaps[i] === 3);
+        const stats = [
+            { label: 'Diagnostic labs and imaging centres / dentists / eye clinics listed', value: `${_round(sum(lab))} / ${_round(sum(dent))} / ${_round(sum(eye))}` },
+            { label: `Residents with no lab or scan centre within ${LAB_KM} km`, value: `${_people(noLab)} (${pct(noLab)}%)` },
+            { label: `…with no dentist within ${DENT_KM} km`, value: `${_people(noDent)} (${pct(noDent)}%)` },
+            { label: `…with no eye clinic within ${EYE_KM} km`, value: `${_people(noEye)} (${pct(noEye)}%)` },
+            { label: '…with none of the three', value: `${_people(none)} (${pct(none)}%)` },
+        ];
+        if (old) {
+            const o = _sumOver(old, idx, () => true), oEye = _sumOver(old, idx, i => eyeN[i] <= 0);
+            stats.push({ label: `Residents 60+ (cataract age) with no eye clinic within ${EYE_KM} km`, value: `${_people(oEye)} (${_round(100 * oEye / (o || 1), 1)}%)` });
+            if (homes && sum(homes) > 0) stats.push({ label: 'Residents 60+ per listed old-age home or senior service', value: _people(o / sum(homes)) });
+        }
+        const far = idx.filter(i => labN[i] <= 0);
+        spaced(g, far, Float64Array.from({ length: n }, (_, i) => v(pop, i) * (1 + (_fin(gaps[i]) ? gaps[i] : 0)))).forEach((i, k) => stats.push({
+            label: `Care point ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(v(pop, i))} residents; missing ${[labN[i] <= 0 && 'a lab', dentN[i] <= 0 && 'a dentist', eyeN[i] <= 0 && 'an eye clinic'].filter(Boolean).join(', ')}` }));
+        return {
+            columns: { care_gaps: gaps, labs_2km: labN }, idx, weightKey: 'care_gaps', noHotspots: true,
+            metric: { label: `Residents with no diagnostic lab or scan centre listed within ${LAB_KM} km`, value: pct(noLab), unit: '%', higherIs: 'worse' },
+            headline: `${_people(noLab)} residents (${pct(noLab)}%) have no diagnostic lab or scan centre listed within ${LAB_KM} km, ${pct(noDent)}% no dentist within ${DENT_KM} km and ${pct(noEye)}% no eye clinic within ${EYE_KM} km; ${_people(none)} lack all three. Collection centres, hospital labs and government dispensaries are only partly listed, so the blocks named are where to check for a gap first.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -937,10 +982,17 @@ const UrbanLensesSafety = (() => {
             needs: ['places.fuel', 'emergency_access.schools', 'places.hospitals', 'building_stock.cover_2023_pct', 'flood_future.any_pct_now', 'population.population'],
             method: `Fuel stations are Overture Maps places (petrol, diesel and CNG). Each station block is flagged when it also holds an OpenStreetMap school or Overture hospital, when ${PACKED_PCT}%+ of it is under roofs (Open Buildings 2023), and when ${FLOOD_PCT}%+ of it lies in Aqueduct's 1-in-100-year flood. Siting rules (Petroleum Rules 2002 and oil-company and state guidelines) set distances of tens of metres from schools and hospitals, finer than a block, so a flag means "measure here", not a breach.`,
             refs: 'Overture Maps places; OpenStreetMap; Google Open Buildings 2.5D; WRI Aqueduct Floods v2; Petroleum Rules 2002 (PESO); OISD-STD-244 (retail outlet safety)' },
+        { id: 'carekit', equity: true, title: 'Tests, teeth and eyes', icon: '🔬',
+            question: 'Where are people far from a diagnostic lab, a dentist or an eye clinic?',
+            field: { key: 'care_gaps', label: 'Missing within reach: lab, dentist, eye clinic', unit: 'of 3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            extra: [{ key: 'labs_2km', label: `Diagnostic labs and scan centres within ${LAB_KM} km`, unit: 'places', higherIs: 'better' }],
+            needs: ['places.diagnostics', 'places.dental', 'places.eyecare', 'places.elder_homes', 'demographics.elderly_60plus', 'population.population'],
+            method: `Labs are Overture Maps places in the diagnostic imaging, laboratory testing and radiology categories; dentists every dental clinic and dentist category; eye clinics vision and eye care clinics, ophthalmologists and optometrists (not opticians' shops). Reach is straight-line distance between block centres: ${LAB_KM} km for a lab, ${DENT_KM} km for a dentist and ${EYE_KM} km for an eye clinic. Old-age homes are retirement homes and senior citizen services. Listings follow where clinics list themselves online, so public dispensaries, hospital departments and sample-collection points are undercounted.`,
+            refs: 'Overture Maps places; WorldPop age structure; National Programme for Control of Blindness and Visual Impairment; Free Diagnostics Service Initiative (NHM, 2015)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

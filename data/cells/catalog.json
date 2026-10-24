@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-24T06:31:02Z",
+  "generated": "2026-10-24T07:44:13Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -16152,7 +16152,7 @@
     {
       "id": "places",
       "title": "Businesses and services (Overture)",
-      "description": "Overture Maps places (release 2026-10-21.0, confidence \u2265 0.6, not marked closed) counted per block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, tech firms, corporate offices, maternity and children's doctors, event venues, freight and wholesale, brand share and business mix. Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses list themselves online: dense in markets, thin in informal and older areas.",
+      "description": "Overture Maps places (release 2026-10-21.0, confidence \u2265 0.6, not marked closed) counted per block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, tech firms, corporate offices, maternity and children's doctors, event venues, freight and wholesale, diagnostic labs, dentists, eye clinics, old-age homes, brand share and business mix. Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses list themselves online: dense in markets, thin in informal and older areas.",
       "source": "pipeline/realestate/places.py (Overture Maps places theme via DuckDB)",
       "license": "CDLA-Permissive-2.0 (Overture Maps places)",
       "group": "Real estate",
@@ -16624,6 +16624,57 @@
           "domain": [
             0,
             7
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "diagnostics",
+          "label": "Diagnostic labs, imaging and radiology centres",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            10
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "dental",
+          "label": "Dentists and dental clinics",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            11
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "eyecare",
+          "label": "Eye clinics, ophthalmologists and optometrists",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            3
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "elder_homes",
+          "label": "Old-age homes, retirement homes and senior citizen services",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            2
           ],
           "ramp": "viridis"
         },

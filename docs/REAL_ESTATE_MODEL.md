@@ -1136,3 +1136,7 @@ The school and hospital safety check (`siteCheck`) run over Wikidata heritage li
 ## Fuel stations among homes (`fuelsafe` lens, js/urban-lenses-safety.js)
 
 Overture fuel stations flagged per block for sharing it with a school (OSM) or hospital (Overture), standing in a packed block (50%+ under roofs) and lying in Aqueduct's 100-year flood. Blocks are about 250 m across, coarser than the tens of metres the Petroleum Rules and OISD siting standards set, so a flag means measure there. Delhi: 123 of 485 listed stations share a block with a school or hospital, 56 in the 100-year flood; Mumbai 141 of 236.
+
+## Tests, teeth and eyes (`carekit` lens, js/urban-lenses-safety.js)
+
+Four new Overture place counts per block (`places.diagnostics`, `dental`, `eyecare`, `elder_homes`; pipeline/realestate/places.py) give the reach of everyday out-of-pocket care: a diagnostic lab or scan centre within 2 km, a dentist within 2 km and an eye clinic within 3 km. Map: how many of the three are missing (0-3). Extra stats: residents 60+ with no eye clinic (cataract age) and residents 60+ per listed old-age home. Delhi: 4.4% of residents have no lab within 2 km and 17.5% no eye clinic within 3 km (20% of over-60s); Bengaluru 19% have no eye clinic nearby; Mumbai's gaps are under 2%. Eye clinics are thinly listed (166 in Delhi) and government dispensaries and hospital departments are undercounted, so the picks are blocks to check, not proven deserts.

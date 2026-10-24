@@ -27,6 +27,7 @@ const DishaIntel = (() => {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
             builduse: /\b(building use|land use (map|class\w*)|what (are|is) (the )?(buildings?|blocks?) used for|residential or commercial|commercial or residential|which (blocks|areas) are (residential|commercial|industrial))\b/i,
+            carekit: /\b(diagnostic (labs?|centres?|centers?)|path(ology)? labs?|blood tests?|scan (centres?|centers?)|mri|ct scans?|x-?rays?|dentists?|dental|eye (clinics?|care|doctors?|hospitals?)|ophthalmolog\w*|cataract\w*|optometrists?|old[- ]age homes?)\b/i,
             fuelsafe: /\b(petrol (pumps?|stations?)|fuel (stations?|pumps?)|cng (stations?|pumps?)|gas stations?)\b/i,
             heritagesafe: /\b(monuments?|heritage( sites?| buildings?| structures?)?|forts?|havelis?)\b.{0,40}\b(at risk|risks?|flood\w*|earthquakes?|hazards?|damage\w*|danger\w*|safe(ty)?)\b/i,
             quarries: /\b(quarr(y|ies)|quarry pits?|stone crush\w*|mining pits?|flooded pits?)\b/i,

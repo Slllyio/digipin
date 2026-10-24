@@ -11,7 +11,7 @@ Per L7 block (dataset ``places``), counting Overture places with confidence
     property_agents     real-estate agents and services (a market-activity proxy)
     hospitals, colleges, coaching, malls, coworking, hostels, post_offices, police, fire_stations,
                         pharmacies, grocers, preschools, libraries, community_centres, fuel, worship, tech, corporate,
-                        obgyn, paediatric, events, freight, wholesale
+                        obgyn, paediatric, events, freight, wholesale, diagnostics, dental, eyecare, elder_homes
                         exact Overture categories (see ANCHORS), for demand-anchor and service-reach lenses
     branded_pct         share of places that carry a brand (chains)
     diversity           Shannon evenness of the level-1 mix (0 = one kind, 1 = even)
@@ -68,6 +68,10 @@ ANCHORS = {
     "freight": ("freight_and_cargo_service", "freight_forwarding_agency", "motor_freight_trucking", "railroad_freight", "shipping_center",
                 "courier_and_delivery_service", "warehouse", "storage_facility", "distribution_service", "b2b_transportation_and_storage_service"),
     "wholesale": ("wholesaler",),               # plus every '*_wholesaler' and 'wholesale_*' category, see anchor_of()     # plus every other 'pediatric_*' specialty, see anchor_of()
+    "diagnostics": ("diagnostic_imaging", "laboratory_testing", "laboratory", "radiology", "medical_laboratory"),
+    "dental": ("dental_clinic", "dentist", "general_dentistry", "pediatric_dentist", "orthodontist", "endodontist", "periodontist"),
+    "eyecare": ("vision_or_eye_care_clinic", "ophthalmologist", "optometrist", "eye_care_clinic"),
+    "elder_homes": ("retirement_home", "senior_citizen_service", "assisted_living_facility", "nursing_home"),
     "worship": ("place_of_worship",),          # plus every '<faith>_place_of_worship' category, see anchor_of()
 }
 _ANCHOR_OF = {cat: k for k, cats in ANCHORS.items() for cat in cats}
@@ -79,6 +83,8 @@ def anchor_of(primary):
         return _ANCHOR_OF[primary]
     if primary and primary.endswith("_place_of_worship"):
         return "worship"
+    if primary == "pediatric_dentist":
+        return "dental"
     if primary and primary.startswith("pediatric_"):
         return "paediatric"
     return "wholesale" if primary and (primary.endswith("_wholesaler") or primary.startswith("wholesale_")) else None
@@ -180,6 +186,11 @@ def cell_dataset(region, rows):
         FieldSpec("events", "Banquet halls, event venues, wedding and party services", agg="sum", unit="places", ramp="viridis", higher_is=None),
         FieldSpec("freight", "Freight, cargo, courier and warehousing", agg="sum", unit="places", ramp="viridis", higher_is=None),
         FieldSpec("wholesale", "Wholesalers", agg="sum", unit="places", ramp="viridis", higher_is=None),
+        FieldSpec("diagnostics", "Diagnostic labs, imaging and radiology centres", agg="sum", unit="places", ramp="viridis", higher_is="better"),
+        FieldSpec("dental", "Dentists and dental clinics", agg="sum", unit="places", ramp="viridis", higher_is="better"),
+        FieldSpec("eyecare", "Eye clinics, ophthalmologists and optometrists", agg="sum", unit="places", ramp="viridis", higher_is="better"),
+        FieldSpec("elder_homes", "Old-age homes, retirement homes and senior citizen services", agg="sum", unit="places", ramp="viridis",
+                  higher_is=None),
         FieldSpec("branded_pct", "Share of places that are chains or brands", agg="mean", unit="%", domain=[0, 30], ramp="viridis", higher_is=None),
         FieldSpec("diversity", "Mix of business types (0 = one kind, 1 = even)", agg="mean", unit="0-1", domain=[0, 1], ramp="viridis", higher_is="better"),
     ]
@@ -187,7 +198,7 @@ def cell_dataset(region, rows):
         id="places", title="Businesses and services (Overture)", level=LEVEL, fields=specs, group="Real estate",
         description=f"Overture Maps places (release {RELEASE}, confidence ≥ {MIN_CONF}, not marked closed) counted per "
                     "block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, "
-                    "community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, tech firms, corporate offices, maternity and children's doctors, event venues, freight and wholesale, brand share and business mix. "
+                    "community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, tech firms, corporate offices, maternity and children's doctors, event venues, freight and wholesale, diagnostic labs, dentists, eye clinics, old-age homes, brand share and business mix. "
                     "Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses "
                     "list themselves online: dense in markets, thin in informal and older areas.",
         source="pipeline/realestate/places.py (Overture Maps places theme via DuckDB)",

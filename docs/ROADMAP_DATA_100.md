@@ -207,6 +207,7 @@ Each item gives four things:
 146. ✅ Quarries and flooded pits near homes: quarry land × open water × residents and children within 500 m (OSM land use, ESA WorldCover, WorldPop) | derived | `quarries` lens
 147. ✅ Heritage at risk: listed monuments × flood, waterlogging, soft ground in seismic zones, packed lanes, industry and traffic (Wikidata + safety checks) | derived | `heritagesafe` lens
 148. ✅ Fuel stations among homes: petrol and CNG stations sharing blocks with schools and hospitals, packed blocks and floodplains (Overture, OSM, Open Buildings, Aqueduct) | derived | `fuelsafe` lens
+149. ✅ Tests, teeth and eyes: diagnostic labs and scan centres, dentists and eye clinics within reach, and old-age homes per over-60 (Overture places) | S3 | `carekit` lens (places gained `diagnostics`, `dental`, `eyecare`, `elder_homes`)
 
 ## Parked for the keys round
 
