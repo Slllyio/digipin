@@ -1586,7 +1586,7 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 84.4,
+     "value": 84.6,
      "unit": "%",
      "higherIs": "better"
     },
@@ -1634,7 +1634,7 @@
     },
     "confidence": {
      "label": "OSM building completeness per resident",
-     "value": 32.3,
+     "value": 32.4,
      "unit": "%",
      "higherIs": "better"
     },

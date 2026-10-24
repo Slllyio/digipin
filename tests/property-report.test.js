@@ -17,6 +17,16 @@ describe('PropertyReport', () => {
         expect(m.sections[2].rows.find(r => r.label.startsWith('Housing need')).value).toBe('300 homes short');
     });
 
+    it('assemble(): coal, landfill, power-cut and level-crossing rows', () => {
+        const m = PR.assemble({ coalkm: 8, coalpl: 40.2, fillup: 45, dark: 6.5, lcx: 1 });
+        const risk = m.sections.find(x => x.title === 'Risk').rows;
+        expect(risk.find(r => r.label === 'Nearest coal power plant').value).toBe('8 km; upwind coal index 40.2');
+        expect(risk.find(r => r.label === 'Landfill upwind').value).toMatch(/^45% of the wind/);
+        expect(risk.find(r => r.label === 'Night-time power cuts').value).toMatch(/6\.5% of clear nights/);
+        expect(risk.find(r => r.label === 'Railway level crossing')).toBeTruthy();
+        expect(m.risks).toEqual(['downwind of a landfill', 'frequent night power cuts', 'a coal power plant within 10 km']);
+    });
+
     it('assemble(): development feasibility rows', () => {
         const m = PR.assemble({ price: 95800, rlv: 120.5, redevGain: 40, far: 0.8, tod: 90, baseFar: 2 });
         const fe = m.sections.find(s => s.title === 'Development feasibility').rows;

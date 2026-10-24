@@ -20,7 +20,8 @@ const PropertyReport = (() => {
         'building_dynamics.dw_built_change', 'building_dynamics.height_change_m', 'traffic_noise.lden_db', 'wealth.rwi',
         'air_trend.no2_change_pct', 'air_trend.pm25_2022', 'haze_mix.dust_share_pct', 'haze_mix.smoke_share_pct', 'haze_mix.sulphate_share_pct',
         'haze_mix.dust_days_yr', 'subsoil.clay_60cm_pct', 'flight_paths.under_path', 'flight_paths.path_km',
-        'lightning.cg_rate', 'heritage.prohibited_pct', 'heritage.regulated_pct', 'heritage.monument_m', 'power_lines.corridor_pct', 'power_lines.max_kv'];
+        'lightning.cg_rate', 'heritage.prohibited_pct', 'heritage.regulated_pct', 'heritage.monument_m', 'power_lines.corridor_pct', 'power_lines.max_kv',
+        'power_plants.coal_km', 'power_plants.coal_plume', 'downwind.landfill_upwind', 'blackouts.dark_nights_pct', 'level_crossings.crossings'];
     const DRIVERS = { jobs: 'Job reach', metro: 'Metro walk', amenity: 'Shops and services', neigh: 'Neighbourhood and plot size',
         green: 'Green cover', risk: 'Flood and waterlogging', noise: 'Road noise' };
 
@@ -98,6 +99,10 @@ const PropertyReport = (() => {
                 row('Air: NO₂ since 2019 / PM2.5 2022', fin(v.no2chg) || fin(v.pm22) ? `${fin(v.no2chg) ? `${v.no2chg >= 0 ? '+' : ''}${Math.round(v.no2chg)}%` : '–'} / ${fin(v.pm22) ? `${Math.round(v.pm22)} µg/m³` : '–'}` : null, 'satellite; India\'s annual standard is 40 µg/m³'),
                 row('Under a flight path', fin(v.fpath) ? (v.fpath ? `yes, ${fin(v.fpkm) ? `${v.fpkm.toFixed(1)} km from the runway end` : 'within 10 km of a runway end'}` : 'no') : null, 'OpenStreetMap runways; likely overflight, not measured noise'),
                 row('Power line corridor', fin(v.pwr) ? (v.pwr > 0 ? `${Math.round(v.pwr)}% of the block inside a ${fin(v.pkv) ? `${Math.round(v.pkv)} kV ` : ''}line's right-of-way: no building under the wires` : 'a high-voltage line crosses the block, outside its right-of-way here') : 'no high-voltage line mapped in the block', 'OpenStreetMap lines; underground lines not shown'),
+                row('Nearest coal power plant', fin(v.coalkm) ? `${r1(v.coalkm)} km${fin(v.coalpl) ? `; upwind coal index ${r1(v.coalpl, 1)}` : ''}` : null, 'WRI power plant database; the index weighs MW by how often the wind blows from each plant'),
+                row('Landfill upwind', fin(v.fillup) && v.fillup > 0 ? `${Math.round(v.fillup)}% of the wind blows from a mapped landfill within 3 km` : null, 'smoke when it burns, odour most days'),
+                row('Night-time power cuts', fin(v.dark) ? `dark on ${r1(v.dark, 1)}% of clear nights while the city stayed lit` : null, 'NASA Black Marble 2023–24, ~1 km; misses evening load-shedding'),
+                row('Railway level crossing', fin(v.lcx) && v.lcx > 0 ? `${Math.round(v.lcx)} in the block: gate waits and trains' horns` : null),
                 row('Monument limits (ASI)', fin(v.hpro) ? (v.hpro > 0 ? `${Math.round(v.hpro)}% of the block within 100 m of a national monument: no new construction` : v.hreg > 0 ? `${Math.round(v.hreg)}% within 100–300 m: NMA permission and height limits` : `none; nearest national monument ${fin(v.hm) ? `${(v.hm / 1000).toFixed(1)} km` : 'far'} away`) : null, 'Wikidata points, not notified boundaries; confirm with ASI'),
                 row('Lightning ground strikes', fin(v.cg) ? `${v.cg.toFixed(1)} per km² a year` : null, 'NASA LIS/OTD 1995–2014, regional scale'),
                 row('Haze mix: dust / smoke / sulphate', fin(v.dust) ? `${Math.round(v.dust)}% / ${Math.round(v.smoke)}% / ${Math.round(v.sulph)}%${fin(v.dustd) ? `; ${Math.round(v.dustd)} dust-haze days a year` : ''}` : null, 'CAMS model, city scale'),
@@ -133,6 +138,9 @@ const PropertyReport = (() => {
         if (fin(v.wlog) && v.wlog >= 65) risks.push('very high waterlogging');
         if (fin(v.noise) && v.noise >= 70) risks.push('loud road noise');
         if (fin(v.encroach) && v.encroach >= 2) risks.push('encroachment flags');
+        if (fin(v.fillup) && v.fillup >= 30) risks.push('downwind of a landfill');
+        if (fin(v.dark) && v.dark >= 5) risks.push('frequent night power cuts');
+        if (fin(v.coalkm) && v.coalkm <= 10) risks.push('a coal power plant within 10 km');
         if (fin(v.hotBlock ?? v.hot1) && (v.hotBlock ?? v.hot1) >= 45) risks.push(`about ${Math.round(v.hotBlock ?? v.hot1)} days a year at 40 °C by 2050`);
         if (fin(v.cscore) && v.cscore >= 50) risks.push(`climate 2050 grade ${UrbanLenses.climateGrade ? UrbanLenses.climateGrade(v.cscore) : 'D or E'}`);
         if (fin(v.gwd) && v.gwd >= 10) risks.push('groundwater falling fast');
@@ -180,7 +188,7 @@ const PropertyReport = (() => {
             homeKw: col('solarhome', 'home_kwp'), payback: col('solarhome', 'payback_yr'), acCover: col('solarhome', 'ac_2050_covered_pct'),
             clay60: at('subsoil.clay_60cm_pct'), zone: UrbanLenses.SEISMIC_ZONE ? UrbanLenses.SEISMIC_ZONE[city] : null,
             hum0: at('humid_future.humid_days_now'), hum1: at('humid_future.humid_days_2050'), no2chg: at('air_trend.no2_change_pct'), pm22: at('air_trend.pm25_2022'),
-            fpath: at('flight_paths.under_path'), fpkm: at('flight_paths.path_km'), dust: at('haze_mix.dust_share_pct'), smoke: at('haze_mix.smoke_share_pct'), sulph: at('haze_mix.sulphate_share_pct'), dustd: at('haze_mix.dust_days_yr'), cg: at('lightning.cg_rate'), hpro: at('heritage.prohibited_pct'), hreg: at('heritage.regulated_pct'), hm: at('heritage.monument_m'), pwr: at('power_lines.corridor_pct'), pkv: at('power_lines.max_kv'),
+            fpath: at('flight_paths.under_path'), fpkm: at('flight_paths.path_km'), dust: at('haze_mix.dust_share_pct'), smoke: at('haze_mix.smoke_share_pct'), sulph: at('haze_mix.sulphate_share_pct'), dustd: at('haze_mix.dust_days_yr'), cg: at('lightning.cg_rate'), hpro: at('heritage.prohibited_pct'), hreg: at('heritage.regulated_pct'), hm: at('heritage.monument_m'), pwr: at('power_lines.corridor_pct'), pkv: at('power_lines.max_kv'), coalkm: at('power_plants.coal_km'), coalpl: at('power_plants.coal_plume'), fillup: at('downwind.landfill_upwind'), dark: at('blackouts.dark_nights_pct'), lcx: at('level_crossings.crossings'),
             roofAlb: at('roofs.roof_albedo'), darkRoof: at('roofs.dark_roof_pct'),
             flood50: at('flood_future.any_pct_2050'), flood50now: at('flood_future.any_pct_now'),
             hotBlock: col('streetheat', 'hot_2050_block'), cddBlock: col('streetheat', 'cdd_2050_block'), islandC: col('streetheat', 'heat_island_air_c'), cdd0: at('climate_future.cdd_now'),
