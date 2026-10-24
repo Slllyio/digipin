@@ -988,7 +988,61 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Delivery riders. Food-delivery and quick-commerce riders wait in clusters near restaurants and grocers between
+    // orders, often for hours in the sun with nowhere to sit, drink or use a toilet. Rider hubs are the blocks with
+    // the most eateries and grocers within RIDER_KM; rest stops go where hubs are hot and lack toilets and water.
+    const RIDER_KM = 1, RIDER_Q = 0.95, RIDER_MIN = 30, REST_KM = 0.5;
+
+    function riders(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const food = c['places.food'], groc = c['places.grocers'], lst = c['surface_heat.lst_day_c'], tree = c['vegetation.tree_canopy_pct'];
+        const t = c['street_infra.toilets'], w = c['street_infra.drinking_water'];
+        if (!food || !groc || !pop) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || v(food, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const orders = within(g, Float64Array.from({ length: n }, (_, i) => v(food, i) + v(groc, i)), RIDER_KM);
+        const q = Math.max(RIDER_MIN, wquantile(orders, null, idx, RIDER_Q));
+        const hubs = idx.filter(i => orders[i] >= q);
+        if (!hubs.length) return null;
+        const toil = t ? within(g, Float64Array.from({ length: n }, (_, i) => v(t, i)), REST_KM) : null;
+        const water = w ? within(g, Float64Array.from({ length: n }, (_, i) => v(w, i)), REST_KM) : null;
+        const hotT = lst ? wquantile(lst, pop, idx.filter(i => _fin(lst[i])), 0.5) : null;
+        const lacks = i => (toil && toil[i] <= 0) || (water && water[i] <= 0);
+        const hot = i => hotT !== null && _fin(lst[i]) && lst[i] >= hotT && v(tree, i) < 10;
+        const need = Float64Array.from({ length: n }, (_, i) => orders[i] * (lacks(i) ? 1 : 0) * (hot(i) ? 1.5 : 1));
+        const gaps = hubs.filter(i => lacks(i));
+        const share = a => (a.length ? `${a.length} of ${hubs.length} (${_round(100 * a.length / hubs.length)}%)` : `0 of ${hubs.length}`);
+        const allPlaces = idx.reduce((a, i) => a + v(food, i) + v(groc, i), 0);
+        const inHubs = hubs.reduce((a, i) => a + v(food, i) + v(groc, i), 0);
+        const stats = [
+            { label: `Rider hubs: blocks with ${_round(q)}+ eateries and grocers within ${RIDER_KM} km (city's top 5%)`, value: `${hubs.length} blocks` },
+            { label: 'Share of all eateries and grocers inside hub blocks', value: `${_round(100 * inHubs / Math.max(allPlaces, 1))}%` },
+        ];
+        if (toil) stats.push({ label: `Hubs with no public toilet mapped within ${REST_KM * 1000} m`, value: share(hubs.filter(i => toil[i] <= 0)) });
+        if (water) stats.push({ label: `Hubs with no drinking-water point mapped within ${REST_KM * 1000} m`, value: share(hubs.filter(i => water[i] <= 0)) });
+        if (hotT !== null) stats.push({ label: `Hubs that are hot (day surface ≥ ${_round(hotT, 1)} °C) and nearly treeless`, value: share(hubs.filter(hot)) });
+        spaced(g, gaps, need).forEach((i, k) => stats.push({
+            label: `Rider rest stop ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(orders[i])} eateries and grocers within ${RIDER_KM} km${_fin(lst?.[i]) ? `; ${_round(lst[i], 1)} °C` : ''}${toil && toil[i] <= 0 ? '; no toilet' : ''}${water && water[i] <= 0 ? '; no water point' : ''}` }));
+        const hub = new Float64Array(n).fill(NaN);
+        for (const i of idx) hub[i] = orders[i];
+        return {
+            columns: { delivery_places_1km: hub }, idx,
+            metric: { label: 'Rider hubs with no toilet or water point mapped within 500 m', value: _round(100 * gaps.length / hubs.length), unit: '%', higherIs: 'worse' },
+            headline: `${hubs.length} blocks are delivery-rider hubs, with ${_round(q)} or more eateries and grocers within ${RIDER_KM} km. ${_round(100 * gaps.length / hubs.length)}% of them have no public toilet or drinking-water point mapped within ${REST_KM * 1000} m. The rest stops listed are the busiest such hubs, with hot, treeless ones weighted up, at least ${SPACING_KM} km apart. OpenStreetMap misses many toilets and taps, so treat gaps as places to check.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'riders', equity: true, title: 'Delivery riders: hubs and rest stops', icon: '🛵',
+            question: 'Where do delivery riders wait, and where do they need rest stops?',
+            field: { key: 'delivery_places_1km', label: `Eateries and grocers within ${RIDER_KM} km (delivery demand)`, unit: 'places', higherIs: null, ramp: 'viridis', domain: [0, 300] },
+            needs: ['places.food', 'places.grocers', 'street_infra.toilets', 'street_infra.drinking_water', 'surface_heat.lst_day_c', 'vegetation.tree_canopy_pct', 'population.population'],
+            method: `Delivery demand is the count of Overture Maps restaurants, cafés and food places plus grocery and convenience stores within ${RIDER_KM} km. Rider hubs are blocks in the city's top 5% of that count (and at least ${RIDER_MIN}), where food-delivery and quick-commerce riders wait between orders. A hub lacks rest facilities when OpenStreetMap maps no public toilet or no drinking-water point within ${REST_KM * 1000} m; hot means a summer day surface temperature (MODIS) at or above the residents' median and under 10% tree canopy. Rest-stop picks rank hubs lacking facilities by demand, half again for hot ones, at least ${SPACING_KM} km apart. Rider counts are not public, so demand stands in for where riders gather.`,
+            refs: 'NITI Aayog 2022 (India\'s Booming Gig and Platform Economy); Rajasthan Platform Based Gig Workers (Registration and Welfare) Act 2023; Overture Maps places; OpenStreetMap; MODIS LST' },
         { id: 'cyclone', equity: false, title: 'Cyclone wind risk', icon: '🌀',
             question: 'How strong a cyclone wind should buildings here be ready for?',
             field: { key: 'wind_rl50_kmh', label: '50-year cyclone wind (sustained)', unit: 'km/h', higherIs: 'worse', ramp: 'reds', domain: [40, 140] },
@@ -1139,7 +1193,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone, riders }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

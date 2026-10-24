@@ -135,7 +135,7 @@ Each item gives four things:
 80. Census 2011 ward population and literacy (where ward shapes exist) | open | equity lens
 81. NFHS-5 district health and wealth indicators | open | district context
 82. SECC / PMAY beneficiary density (where published) | open | housing need
-83. Gig and informal work proxy (two-wheeler density × places) | derived | economy lens
+83. ✅ Gig and informal work proxy (two-wheeler density × places) | derived | economy lens (`riders` lens: delivery-rider hubs from eateries and grocers, rest-stop gaps from toilets, water and heat; vehicle registrations are not open per block)
 84. ✅ Night-time economy (VIIRS late-night radiance × food/leisure places) | EE/S3 | night economy
 85. ✅ Tourism footfall proxy (Wikipedia page views of landmarks + hotels) | API | tourism lens (`landmarks` dataset uses Wikipedia language editions, since the page-view API rate-limits this host; `tourism` lens)
 86. ✅ Landmark and heritage sites (Wikidata, ASI list; heritage lens with AMASR 100 m / 300 m limits) | API | heritage lens
