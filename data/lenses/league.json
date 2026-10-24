@@ -732,6 +732,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 11.6,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 18.4,
@@ -1559,6 +1565,12 @@
      "value": 36.7,
      "unit": "ha",
      "higherIs": "worse"
+    },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 32.3,
+     "unit": "%",
+     "higherIs": null
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -2394,6 +2406,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 7.1,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 8.8,
@@ -3228,6 +3246,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 20.2,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 13.1,
@@ -4061,6 +4085,12 @@
      "value": 108.7,
      "unit": "ha",
      "higherIs": "worse"
+    },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 25,
+     "unit": "%",
+     "higherIs": null
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -5568,6 +5598,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 14.6,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 12,
@@ -6384,6 +6420,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 3.9,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 14.4,
@@ -7187,6 +7229,12 @@
      "value": 0.2,
      "unit": "ha",
      "higherIs": "worse"
+    },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 9.4,
+     "unit": "%",
+     "higherIs": null
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -8022,6 +8070,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 39.2,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 36.3,
@@ -8819,6 +8873,12 @@
      "value": 18.3,
      "unit": "ha",
      "higherIs": "worse"
+    },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 26.3,
+     "unit": "%",
+     "higherIs": null
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
@@ -9672,6 +9732,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 40.2,
+     "unit": "%",
+     "higherIs": null
+    },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
      "value": 35.1,
@@ -10499,6 +10565,12 @@
      "value": 63,
      "unit": "ha",
      "higherIs": "worse"
+    },
+    "views": {
+     "label": "Tower blocks with a water or big-park view",
+     "value": 11.3,
+     "unit": "%",
+     "higherIs": null
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",

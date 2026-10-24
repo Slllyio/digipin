@@ -1143,6 +1143,47 @@ const UrbanLensesRealEstate = (() => {
             ...r.matches.map((m, i) => `${i + 1}. ${m.code}: ${m.similarity}% similar${m.differs.length ? `; ${m.differs.join(', ')}` : ''}`)].join('\n');
     }
 
+    // Rooms with a view. Flats high enough to see over their neighbours and close to the sea, a lake, a river or a big
+    // park sell at a premium (sea-facing in Mumbai, lake-facing in Bengaluru and Hyderabad). Towers are blocks whose mean
+    // building height clears VIEW_M; the view is open water or big green within VIEW_KM that is more than a pond. The
+    // frame holds lived-in blocks only, so open water shows up as shoreline blocks that are partly water.
+    const VIEW_M = 20, VIEW_KM = 0.4, WATER_PCT = 30, GREEN_PCT = 50, OPEN_MIN = 2, GREEN_MIN = 3;
+
+    function views(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], h = c['building_stock.height_2023_m'];
+        const wat = c['water.permanent_water_pct'], park = c['parks.park_pct'], big = c['parks.big_park'], vi = c['land_value.value_index'];
+        if (!h || !(wat || park)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const water = Float64Array.from({ length: n }, (_, i) => (v(wat, i) >= WATER_PCT ? 1 : 0));
+        const green = Float64Array.from({ length: n }, (_, i) => (v(park, i) >= GREEN_PCT || v(big, i) > 0 ? 1 : 0));
+        const wN = within(g, water, VIEW_KM), gN = within(g, green, VIEW_KM);
+        const towers = [];
+        for (let i = 0; i < n; i++) if (v(h, i) >= VIEW_M) towers.push(i);
+        if (towers.length < 5) return null;
+        const kind = i => (wN[i] >= OPEN_MIN ? 2 : 0) + (gN[i] >= GREEN_MIN ? 1 : 0);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of towers) out[i] = kind(i);
+        const viewT = towers.filter(i => kind(i) > 0), plain = towers.filter(i => kind(i) === 0);
+        const med = cells => { const a = cells.map(i => v(vi, i)).filter(x => x > 0).sort((x, y) => x - y); return a.length ? a[a.length >> 1] : null; };
+        const stats = [
+            { label: `Tower blocks (mean height ${VIEW_M} m or more)`, value: String(towers.length) },
+            { label: '…with a water view (sea, lake or river within 400 m)', value: String(towers.filter(i => kind(i) >= 2).length) },
+            { label: '…with a big-park view', value: String(towers.filter(i => kind(i) % 2 === 1).length) },
+            { label: 'Residents in view towers', value: _people(_sumOver(pop, viewT, () => true)) },
+        ];
+        const mv = med(viewT), mp = med(plain);
+        if (vi && mv && mp) stats.push({ label: 'Land value index, view towers vs other towers (median, model not market)', value: `${_round(mv)} vs ${_round(mp)}` });
+        spaced(g, viewT, Float64Array.from({ length: n }, (_, i) => v(h, i) * (1 + kind(i)) * (1 + v(vi, i) / 100))).forEach((i, k) => stats.push({
+            label: `View ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(v(h, i))} m mean height; ${kind(i) === 3 ? 'water and park' : kind(i) === 2 ? 'water' : 'park'} view` }));
+        return {
+            columns: { view_kind: out }, idx: towers, weightKey: 'view_kind', noHotspots: true,
+            metric: { label: 'Tower blocks with a water or big-park view', value: _round(100 * viewT.length / towers.length, 1), unit: '%', higherIs: null },
+            headline: `${viewT.length} of ${towers.length} tower blocks (${_round(100 * viewT.length / towers.length)}%) stand within ${VIEW_KM * 1000} m of open water or a big park, where upper floors look out over it and command a premium. Heights are block means from Open Buildings, so single towers in low blocks are missed and a view can be blocked by a taller neighbour.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'landvalue', equity: false, title: 'Land value', icon: '🏷️',
             question: 'Where is land dearest and cheapest, and what drives the difference?',
@@ -1276,9 +1317,15 @@ const UrbanLensesRealEstate = (() => {
             needs: ['encroachment.water_lost_pct', 'encroachment.water_built_pct', 'encroachment.flood_new_pct', 'encroachment.tree_lost_pct', 'encroachment.tree_built_pct', 'encroachment.recent_built_pct'],
             method: 'Lost water is JRC Global Surface Water (Landsat, 1984–2021) permanent or seasonal water that has gone; built means Dynamic World (Sentinel-2) labels it built most of the time in 2025–26; built since 2023 needs a mean built probability of at least 0.6 now and at most 0.3 in 2023, since labels flicker in dense blocks. New floodplain building is Open Buildings 2.5D Temporal presence of at least 0.5 in 2023 and below 0.2 in 2016 inside the JRC/GloFAS 1-in-100-year zone. Tree loss is Hansen Global Forest Change (≥ 30% canopy in 2000, lost 2001–2024). The score weights floodplain building 3× and building since 2023 2×. Satellite screens only: some loss is legal (planned reclamation, metro depots), so confirm against land records and the master plan.',
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
+        { id: 'views', equity: false, title: 'Rooms with a view', icon: '🌅',
+            question: 'Which tall blocks look out over the sea, a lake or a big park?',
+            field: { key: 'view_kind', label: 'Tower view: park (1), water (2), both (3)', unit: '0-3', higherIs: null, ramp: 'blues', domain: [0, 3] },
+            needs: ['building_stock.height_2023_m', 'water.permanent_water_pct', 'parks.park_pct', 'parks.big_park', 'land_value.value_index', 'population.population'],
+            method: `Towers are blocks whose mean building height is ${VIEW_M} m or more (Open Buildings 2.5D, 2023). A water view needs ${OPEN_MIN}+ shoreline blocks with ${WATER_PCT}%+ permanent water (JRC Global Surface Water) within ${VIEW_KM * 1000} m, so ponds do not count; a park view ${GREEN_MIN}+ blocks ${GREEN_PCT}%+ park or part of a big park (OSM). Line of sight, orientation and floor are not modelled. The land value index is DISHA's model (its green driver already rewards parks), not market prices.`,
+            refs: 'Google Open Buildings 2.5D Temporal; JRC Global Surface Water; OpenStreetMap parks; Benson et al. 1998 and Jim & Chen 2009 (hedonic value of views)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, views }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
 })();
 

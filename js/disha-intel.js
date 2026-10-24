@@ -27,6 +27,7 @@ const DishaIntel = (() => {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
             builduse: /\b(building use|land use (map|class\w*)|what (are|is) (the )?(buildings?|blocks?) used for|residential or commercial|commercial or residential|which (blocks|areas) are (residential|commercial|industrial))\b/i,
+            views: /\b(sea[- ]?(facing|views?)|lake[- ]?(facing|views?)|park[- ]?(facing|views?)|river[- ]?(facing|views?)|views? (of|over) the (sea|lake|park|river)|rooms? with a view|flats? with (a )?views?|best views?)\b/i,
             railgates: /\b(level crossings?|railway (gates?|crossings?)|railroad crossings?|rail(way)? fatak|phatak|road over ?bridges?|rail over ?bridges?|robs?|rubs?|road under ?bridges?)\b/i,
             schoolgap: /\b(school (gaps?|access|deserts?|seats?|shortages?)|(children|kids)\b.{0,40}\bno schools?|no schools? (within|near(by)?)|schools? within (1|one|walking) ?(km|distance)|right to education|rte norms?|school[- ]age children)\b/i,
             wildedge: /\b(leopards?|wild ?life conflict|human[- ]wildlife|forest edges?|snake ?bites?|wild animals?|homes? (near|next to|beside) (the )?forests?)\b/i,

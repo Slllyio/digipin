@@ -1164,3 +1164,7 @@ Forest blocks have 60%+ tree cover (ESA WorldCover) or 50%+ mapped protected lan
 ## Railway level crossings (`railgates` lens, js/urban-lenses-safety.js)
 
 New dataset `level_crossings` (pipeline/realestate/levelcrossings.py): connectors shared by an Overture (OSM) mainline or suburban rail segment and a road segment, counted per L7 block with how many sit on main roads (trunk to tertiary) and the busiest road class. Delhi has 150 mapped (service roads in yards and depots left out), 78 on main roads; Kolkata 171, Lucknow 118. The lens maps crossings (1), on main roads (2) and in the top quarter of road blocks by the traffic model's peak PCU (3), with residents and schools within 500 m, and ranks bridge candidates by peak traffic and road class. Train counts (the Railways' TVU criterion) are not open.
+
+## Rooms with a view (`views` lens, js/urban-lenses-realestate.js)
+
+Tower blocks (mean Open Buildings height 20 m+) within 400 m of open water (2+ shoreline blocks with 30%+ JRC permanent water; the frame holds lived-in blocks only, so lakes and sea show up as their shores) or a big park (3+ blocks 50%+ park or part of a big OSM park). Map: park view 1, water 2, both 3. Mumbai: 689 of 1,712 tower blocks have a view, 98 over water (Worli, Malabar Hill, Mahim, Bandra); in Bengaluru and Hyderabad the model's land value index is about 10% higher for park-view towers (the index's green driver contributes, so not a market premium). Line of sight and orientation are not modelled.

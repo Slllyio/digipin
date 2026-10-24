@@ -213,6 +213,7 @@ Each item gives four things:
 152. ✅ Homes on the forest edge: residents and young children within 500 m of large forest or protected land, on dark edges (ESA WorldCover, OSM protected areas, VIIRS) | derived | `wildedge` lens (human-wildlife conflict and forest fire)
 153. ✅ A school within 1 km: school-age children (WorldPop 5-14) against mapped schools within the RTE 1 km and 3 km norms, and young people against colleges (WorldPop, OSM, Overture) | EE | `schoolgap` lens (demographics gained `school_age`, `youth_15_24`)
 154. ✅ Railway level crossings: rail and road meeting at grade, on main roads and in heavy traffic, with bridge candidates (Overture/OSM transportation, traffic model) | S3 | `railgates` lens (new dataset `level_crossings`)
+155. ✅ Rooms with a view: tower blocks within 400 m of sea, lake, river or big park, and the land-value gap (Open Buildings, JRC water, OSM parks) | derived | `views` lens
 
 ## Parked for the keys round
 
