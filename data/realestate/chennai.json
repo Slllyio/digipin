@@ -1,0 +1,109 @@
+{
+  "region": "chennai",
+  "anchor": {
+    "hpi_yoy_pct": 8.2,
+    "scope": "city",
+    "source": "National Housing Bank RESIDEX press release, Oct-Dec 2025 (Q3 FY26), HPI @ Assessment Prices, year-on-year change",
+    "period": "2025-Q4"
+  },
+  "land_value": {
+    "cells": 7641,
+    "p10": 62.3,
+    "p50": 90.0,
+    "p90": 127.2,
+    "p99": 153.6,
+    "spread_p90_p10": 2.04,
+    "mean_abs_premium_pct": {
+      "jobs": 7.6,
+      "metro": 1.9,
+      "amenity": 8.4,
+      "neigh": 10.9,
+      "green": 1.3,
+      "risk": 3.5,
+      "noise": 1.3
+    },
+    "inputs_missing": []
+  },
+  "supply": {
+    "base_far": 2.0,
+    "new_floor_km2_2016_2023": 84.51,
+    "vacant_km2": 9.7,
+    "headroom_km2": 242.3,
+    "hotspots": [
+      {
+        "digipin": "4T37JMC",
+        "new_floor_m2": 136921,
+        "build_rate": 335514,
+        "far_now": 2.83,
+        "urban_2035_pct": 36.2
+      },
+      {
+        "digipin": "4T325KJ",
+        "new_floor_m2": 129535,
+        "build_rate": 317378,
+        "far_now": 0.81,
+        "headroom_m2": 46557,
+        "urban_2035_pct": 27.2
+      },
+      {
+        "digipin": "4T37K3K",
+        "new_floor_m2": 121776,
+        "build_rate": 298376,
+        "far_now": 2.67,
+        "urban_2035_pct": 8.4
+      },
+      {
+        "digipin": "4T37KCT",
+        "new_floor_m2": 116111,
+        "build_rate": 284501,
+        "far_now": 6.4,
+        "urban_2035_pct": 19.2
+      },
+      {
+        "digipin": "4T3294L",
+        "new_floor_m2": 105219,
+        "build_rate": 257870,
+        "far_now": 7.24,
+        "urban_2035_pct": 32.8
+      },
+      {
+        "digipin": "4T323T2",
+        "new_floor_m2": 101522,
+        "build_rate": 248769,
+        "far_now": 1.54,
+        "headroom_m2": 27012,
+        "urban_2035_pct": 61.3
+      },
+      {
+        "digipin": "4T38K2L",
+        "new_floor_m2": 98116,
+        "build_rate": 240538,
+        "far_now": 2.89,
+        "urban_2035_pct": 34.0
+      },
+      {
+        "digipin": "4T39TMK",
+        "new_floor_m2": 90599,
+        "build_rate": 222065,
+        "far_now": 4.97,
+        "urban_2035_pct": 60.6
+      },
+      {
+        "digipin": "4T39PFP",
+        "new_floor_m2": 84305,
+        "build_rate": 206658,
+        "far_now": 0.15,
+        "headroom_m2": 15553,
+        "urban_2035_pct": 10.5
+      },
+      {
+        "digipin": "4T39P89",
+        "new_floor_m2": 83072,
+        "build_rate": 203640,
+        "far_now": 1.15,
+        "headroom_m2": 44086,
+        "urban_2035_pct": 39.4
+      }
+    ]
+  }
+}

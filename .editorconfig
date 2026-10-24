@@ -1,0 +1,19 @@
+# Editor defaults. Indent width is left per-file for JS/HTML/CSS because the
+# existing code mixes 2 and 4 spaces; match the file you are editing.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.py]
+indent_size = 4
+
+[*.{yml,yaml,json}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

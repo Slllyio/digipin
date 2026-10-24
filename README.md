@@ -2,7 +2,7 @@
 
 A browser-based urban-analytics platform built on India Post's **DigiPin** grid.
 Every location in India resolves to a 10-character DigiPin code addressing a
-~4×4 m cell. Click any cell and the app pulls **160+ live urban features** from
+~4×4 m cell; any prefix of it names a coarser cell (level 6 ≈ 1 km, level 7 ≈ 245 m, see [docs/DIGIPIN_LEVELS.md](docs/DIGIPIN_LEVELS.md)). Click any cell and the app pulls **160+ live urban features** from
 free public APIs, computes ~30 intelligence scores, renders heat / growth /
 flood / building overlays, and lets you interrogate the location through a
 grounded LLM assistant (**DISHA**).
@@ -45,7 +45,7 @@ No build step. Serve the repo root over HTTP (a `file://` open won't work
 because of module + fetch behaviour):
 
 ```sh
-python serve.py          # http://localhost:5500
+python serve.py          # http://localhost:8080
 # or any static server:
 npx serve .
 ```
@@ -67,7 +67,7 @@ Easiest is local Ollama (free, no key):
 ```sh
 ollama pull qwen2.5
 ollama serve
-# optionally build the tuned persona:  ollama create disha -f Modelfile
+# optionally build the tuned persona:  ollama create disha -f training-data/Modelfile
 ```
 
 Or open the ⚙ panel in the app and paste a **Groq** key (free tier) or any
@@ -126,11 +126,12 @@ for the source catalogue, JSON-Schema quality contracts, and politeness rules.
 ## Testing
 
 ```sh
-npm install && npm test     # Vitest — frontend unit + regression (136 tests)
-pytest -q                   # Python — scrapers + smoke (33 tests)
+npm install && npm test     # Vitest — frontend unit + regression
+pytest -q                   # Python — pipeline, scrapers + smoke
+npm run check               # lint + orphan-JS guard + both suites
 ```
 
-CI (`.github/workflows/webpack.yml`) runs both across Node 18/20/22, rejects
+CI (`.github/workflows/ci.yml`) runs on pushes and PRs to `main` and `dev`, across Node 18/20/22, rejects
 merge-conflict markers, and runs an **orphan-JS guard** that fails the build if
 a `js/*.js` module is committed but never wired into a `<script>` tag.
 
@@ -199,20 +200,20 @@ all CDN scripts.
 
 | Path | What |
 |---|---|
-| `index.html`, `js/`, `css/` | the DigiPin Urban Intelligence PWA |
-| `scrapers/` | Python real-time data scraper framework |
-| `pipeline/` | offline raster/vector extraction (heat, growth, tiles) |
-| `data/realtime/` | committed JSON snapshots from the scrapers |
-| `docs/` | architecture + design notes |
-| `training-data/`, `Modelfile` | DISHA fine-tuning (QLoRA) + Ollama persona |
-| `tests/`, `pytest.ini`, `vitest.config.js` | test suites |
-| `extras/` | demo & presentation tooling (video recorder, PPT generator, slide viewer) — **not part of the PWA**; see `extras/README.md` |
-| `guna-twin-city/` | a separate prototype digital-twin for Guna (self-contained sub-project; not part of the main PWA) |
+| `index.html`, `app.html`, `js/`, `css/`, `assets/`, `sw.js`, `manifest.json` | the DigiPin Urban Intelligence PWA (landing page + map app) |
+| `data/` | static data the app fetches: scores, cells, heights, realtime snapshots |
+| `pipeline/` | offline Python builds that produce `data/` ([pipeline/README.md](pipeline/README.md)) |
+| `scrapers/` | real-time scraper framework ([scrapers/README.md](scrapers/README.md)) |
+| `proxy/` | Cloudflare Worker proxy for keyed APIs |
+| `scripts/` | build and CI helper scripts |
+| `tests/` | Vitest, pytest and Playwright suites, plus manual dev pages |
+| `docs/` | design notes and model write-ups, indexed in [docs/README.md](docs/README.md) |
+| `training-data/` | DISHA fine-tuning (QLoRA) + Ollama `Modelfile` |
+| `extras/` | demo video and slide tooling, **not part of the PWA** ([extras/README.md](extras/README.md)) |
+| `guna-twin-city/` | separate Guna prototype that reuses `../js/` ([guna-twin-city/README.md](guna-twin-city/README.md)) |
 
-> The demo / slide-deck tooling now lives under `extras/` so the product tree
-> (`index.html`, `js/`, `css/`) stays focused. `guna-twin-city/` is kept in place
-> because it loads the main app's modules via `../js/...`; relocating it would
-> break those relative paths, so it remains a clearly-labelled sibling for now.
+Conventions (naming, where new files go, adding a JS module, data rules) and
+the full check list are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

@@ -1,0 +1,939 @@
+{
+  "region": "hyderabad",
+  "total_segments": 9295,
+  "graph_nodes": 9721,
+  "graph_edges": 9171,
+  "bridge_count": 5156,
+  "los_distribution": {
+    "B": 439,
+    "A": 7822,
+    "F": 593,
+    "D": 142,
+    "C": 185,
+    "E": 114
+  },
+  "top_bottlenecks": [
+    {
+      "osm_id": 312362774,
+      "name": "Greenlands Road",
+      "highway": "primary",
+      "betweenness": 0.062803,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.43616,
+      "lng": 78.45606
+    },
+    {
+      "osm_id": 166456720,
+      "name": "Begumpet Railway Flyover",
+      "highway": "primary",
+      "betweenness": 0.062767,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.43791,
+      "lng": 78.45695
+    },
+    {
+      "osm_id": 432570531,
+      "name": "Begumpet Railway Flyover",
+      "highway": "primary",
+      "betweenness": 0.062733,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.44177,
+      "lng": 78.45804
+    },
+    {
+      "osm_id": 313336330,
+      "name": "Public Garden Road",
+      "highway": "trunk",
+      "betweenness": 0.061378,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.39647,
+      "lng": 78.47114
+    },
+    {
+      "osm_id": 313221673,
+      "name": "Public Garden Road",
+      "highway": "trunk",
+      "betweenness": 0.061023,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.40168,
+      "lng": 78.46887
+    },
+    {
+      "osm_id": 1271351925,
+      "name": "Sardar Vallabhai Patel Chowk",
+      "highway": "trunk",
+      "betweenness": 0.061018,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.40055,
+      "lng": 78.46996
+    },
+    {
+      "osm_id": 313221156,
+      "name": "",
+      "highway": "trunk",
+      "betweenness": 0.060976,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.39968,
+      "lng": 78.47059
+    },
+    {
+      "osm_id": 1271363576,
+      "name": "",
+      "highway": "trunk",
+      "betweenness": 0.060933,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.39896,
+      "lng": 78.47086
+    },
+    {
+      "osm_id": 166456956,
+      "name": "Sardar Patel Road",
+      "highway": "primary",
+      "betweenness": 0.060765,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.44304,
+      "lng": 78.4597
+    },
+    {
+      "osm_id": 207472309,
+      "name": "Masab Tank Road",
+      "highway": "primary",
+      "betweenness": 0.060402,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.40398,
+      "lng": 78.45394
+    },
+    {
+      "osm_id": 1096488864,
+      "name": "Mahavir Marg",
+      "highway": "trunk",
+      "betweenness": 0.060298,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.40313,
+      "lng": 78.45698
+    },
+    {
+      "osm_id": 314517312,
+      "name": "Sardar Patel Road",
+      "highway": "primary",
+      "betweenness": 0.060091,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.44498,
+      "lng": 78.46407
+    },
+    {
+      "osm_id": 1371627408,
+      "name": "Sardar Patel Road",
+      "highway": "primary",
+      "betweenness": 0.059336,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.44434,
+      "lng": 78.46854
+    },
+    {
+      "osm_id": 1371627412,
+      "name": "Sardar Patel Road",
+      "highway": "primary",
+      "betweenness": 0.059305,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.44413,
+      "lng": 78.46995
+    },
+    {
+      "osm_id": 1424928162,
+      "name": "Sardar Patel Road",
+      "highway": "primary",
+      "betweenness": 0.059274,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.44411,
+      "lng": 78.47012
+    },
+    {
+      "osm_id": 432570534,
+      "name": "Greenlands Road",
+      "highway": "primary",
+      "betweenness": 0.058325,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.43519,
+      "lng": 78.45562
+    },
+    {
+      "osm_id": 311215928,
+      "name": "",
+      "highway": "primary_link",
+      "betweenness": 0.052395,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.38846,
+      "lng": 78.47635
+    },
+    {
+      "osm_id": 313337280,
+      "name": "Bank Street",
+      "highway": "primary",
+      "betweenness": 0.049729,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.38573,
+      "lng": 78.48011
+    },
+    {
+      "osm_id": 310183962,
+      "name": "Koti Women's College Road",
+      "highway": "primary",
+      "betweenness": 0.048639,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.38504,
+      "lng": 78.48468
+    },
+    {
+      "osm_id": 1288030781,
+      "name": "Koti Women's College Road",
+      "highway": "primary",
+      "betweenness": 0.048593,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 17.38487,
+      "lng": 78.48719
+    }
+  ],
+  "critical_links": [
+    {
+      "osm_id": 28268981,
+      "name": "Maula Ali Road",
+      "highway": "primary",
+      "betweenness": 0.018103,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 17.43566,
+      "lng": 78.54359
+    },
+    {
+      "osm_id": 314669576,
+      "name": "Gayatri Nagar Main Road",
+      "highway": "tertiary",
+      "betweenness": 0.014964,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 17.47195,
+      "lng": 78.56199
+    },
+    {
+      "osm_id": 348677156,
+      "name": "Service Road",
+      "highway": "secondary",
+      "betweenness": 0.0108,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 17.39511,
+      "lng": 78.34851
+    },
+    {
+      "osm_id": 420684107,
+      "name": "Gayatri Nagar Main Road",
+      "highway": "tertiary",
+      "betweenness": 0.015023,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 17.46664,
+      "lng": 78.56116
+    },
+    {
+      "osm_id": 434881593,
+      "name": "Service Road",
+      "highway": "secondary",
+      "betweenness": 0.011988,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 17.38872,
+      "lng": 78.35131
+    },
+    {
+      "osm_id": 778337146,
+      "name": "Service Road",
+      "highway": "secondary",
+      "betweenness": 0.010742,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 17.39976,
+      "lng": 78.34425
+    },
+    {
+      "osm_id": 824133057,
+      "name": "Service Road",
+      "highway": "secondary",
+      "betweenness": 0.010683,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 17.39994,
+      "lng": 78.34389
+    },
+    {
+      "osm_id": 826400132,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.017229,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 17.45983,
+      "lng": 78.55761
+    },
+    {
+      "osm_id": 1274836119,
+      "name": "",
+      "highway": "primary",
+      "betweenness": 0.017287,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 17.45925,
+      "lng": 78.55729
+    },
+    {
+      "osm_id": 1338816373,
+      "name": "Gayatri Nagar Main Road",
+      "highway": "tertiary",
+      "betweenness": 0.015081,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 17.46562,
+      "lng": 78.56192
+    },
+    {
+      "osm_id": 1521344457,
+      "name": "Service Road",
+      "highway": "secondary",
+      "betweenness": 0.012105,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 17.38671,
+      "lng": 78.351
+    }
+  ],
+  "demand_model": {
+    "zones": 1060,
+    "origins": 1022,
+    "peak_pcu_total_trips": 271848,
+    "roads_los_e_f": 1413,
+    "roads_los_d": 486,
+    "roads_total": 9287,
+    "roads_los_e_f_by_period": {
+      "am": 1394,
+      "pm": 1326,
+      "mid": 60
+    },
+    "hourly": {
+      "share_pct": [
+        0.6,
+        0.4,
+        0.3,
+        0.3,
+        0.5,
+        1.1,
+        2.4,
+        4.4,
+        7.0,
+        9.0,
+        7.6,
+        5.6,
+        5.0,
+        4.8,
+        4.6,
+        4.8,
+        5.4,
+        7.0,
+        8.8,
+        7.8,
+        5.6,
+        3.6,
+        2.2,
+        1.2
+      ],
+      "mix": [
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0.8,
+          0,
+          0.2
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0.8,
+          0.2
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "periods": [
+        "am",
+        "pm",
+        "mid"
+      ],
+      "period_share": {
+        "am": 0.09,
+        "pm": 0.08800000000000001,
+        "mid": 0.048
+      },
+      "bpr": [
+        0.15,
+        4
+      ],
+      "max_slowdown": 4.0,
+      "los_bands": [
+        0.35,
+        0.55,
+        0.75,
+        0.9,
+        1.0
+      ]
+    },
+    "assumptions": {
+      "trips_per_capita": 0.9,
+      "pcu_per_trip": 0.37,
+      "peak_share": 0.09,
+      "beta_per_min": 0.1,
+      "mid_beta_per_min": 0.15
+    }
+  },
+  "road_flood": {
+    "very_high": 18.1,
+    "high": 360.9,
+    "river_flood": 78.0,
+    "total": 2591.6,
+    "pct_very_high": 0.7,
+    "pct_high_or_worse": 14.6
+  },
+  "noise_air": {
+    "residents_total": 9070685,
+    "residents_near_modelled_roads": 7200228,
+    "residents_lden_ge_53": 6278966,
+    "residents_lden_ge_65": 1977540,
+    "nox_t_day": 11.93,
+    "co2_t_day": 2916.2,
+    "nox_vs_s5p_no2_spearman_l5": 0.6,
+    "l5_cells_compared": 86,
+    "assumptions": {
+      "veh_per_pcu": 1.4,
+      "heavy_pct": 5.0,
+      "share_18h": 0.968,
+      "ef_g_per_vkm": {
+        "nox": 0.45,
+        "pm25": 0.025,
+        "co2": 110.0
+      },
+      "reach_m": 300.0,
+      "method": "CRTN 1988 + Abbott & Nelson 2002 Lden"
+    }
+  },
+  "emergency_access": {
+    "hospitals": 1879,
+    "pct_within_10_night": 99.3,
+    "pct_within_10_am": 99.3,
+    "pct_within_10_pm": 99.3,
+    "pct_over_20_peak": 0.0,
+    "source": "Overture Maps places 2026-10-21.0; demand model link times"
+  },
+  "rail_access": {
+    "metro_stations": 54,
+    "rail_stations": 45,
+    "pct_within_10_walk_metro": 12.2,
+    "pct_within_10_walk_any": 18.5,
+    "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
+  },
+  "ev_charging": {
+    "chargers": 18,
+    "chargers_by_source": {
+      "osm": 2,
+      "overture": 16
+    },
+    "parking": 12,
+    "fuel": 461,
+    "chargers_per_lakh": 0.2,
+    "pct_vkm_within_2km": 34.5,
+    "pct_pop_within_2km": 24.4
+  },
+  "cycling": {
+    "lowstress_km": 16478,
+    "cycleway_km": 24.2,
+    "highstress_km": 1771,
+    "islands": 6747,
+    "islands_over_5_km2": 44,
+    "largest_island_km2": 47.6,
+    "pct_residents_small_island": 14.9,
+    "pct_residents_no_lowstress_street": 0.1,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "crossings": {
+    "main_km": 1589,
+    "pct_main_km_on_long_gaps": 12.2,
+    "median_gap_m": 324,
+    "crosswalks_mapped": 38,
+    "gap_threshold_m": 500.0,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "wholesale": 168,
+      "industry": 1489,
+      "logistics": 314
+    },
+    "truck_trips_day": 10732,
+    "gateway_nodes": 2018,
+    "road_km_500_trucks_day": 0.0,
+    "busiest_truck_roads": [
+      {
+        "name": "Habsiguda Main Road",
+        "trucks_day": 2440
+      },
+      {
+        "name": "Sardar Patel Road",
+        "trucks_day": 924
+      },
+      {
+        "name": "Shilpa Layout road",
+        "trucks_day": 908
+      },
+      {
+        "name": "Hyderabad - Mancherial Highway",
+        "trucks_day": 720
+      },
+      {
+        "name": "Maula Ali Road",
+        "trucks_day": 708
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
+  },
+  "job_access": {
+    "zones": 1058,
+    "pop_mean_jobs_car_pct": 81.3,
+    "pop_mean_jobs_transit_pct": 8.7,
+    "stations": 99,
+    "threshold_min": 45.0,
+    "assumptions": {
+      "wait_min": 5.0,
+      "ride_kmh": 33.0,
+      "walk_max_min": 20.0,
+      "all_stations_connected": true
+    }
+  },
+  "bus_stop_heat": {
+    "stops": 663,
+    "stops_with_heat_data": 663,
+    "pct_hot_bare": 19.5,
+    "pct_riders_at_hot_bare": 17.0,
+    "median_stop_lst_c": 39.2,
+    "top_stops": [
+      {
+        "digipin": "42257C3",
+        "name": "Dilsukhnagar",
+        "lon": 78.52409,
+        "lat": 17.36878,
+        "residents_5min": 30649,
+        "lst_c": 39.8,
+        "canopy_pct": 4.6,
+        "priority": 140348
+      },
+      {
+        "digipin": "42257C3",
+        "name": "Dilsukhnagar",
+        "lon": 78.52343,
+        "lat": 17.36843,
+        "residents_5min": 30649,
+        "lst_c": 39.8,
+        "canopy_pct": 4.6,
+        "priority": 140348
+      },
+      {
+        "digipin": "42257C3",
+        "name": "Dilsukhnagar",
+        "lon": 78.52456,
+        "lat": 17.36841,
+        "residents_5min": 30649,
+        "lst_c": 39.8,
+        "canopy_pct": 4.6,
+        "priority": 140348
+      },
+      {
+        "digipin": "42257C3",
+        "name": "Dilsukhnagar",
+        "lon": 78.52286,
+        "lat": 17.36844,
+        "residents_5min": 30649,
+        "lst_c": 39.8,
+        "canopy_pct": 4.6,
+        "priority": 140348
+      },
+      {
+        "digipin": "42257C3",
+        "name": "",
+        "lon": 78.52415,
+        "lat": 17.36841,
+        "residents_5min": 30649,
+        "lst_c": 39.8,
+        "canopy_pct": 4.6,
+        "priority": 140348
+      },
+      {
+        "digipin": "4225793",
+        "name": "Chaitanyapuri Bus Stop",
+        "lon": 78.53291,
+        "lat": 17.36855,
+        "residents_5min": 29565,
+        "lst_c": 39.7,
+        "canopy_pct": 2.8,
+        "priority": 135065
+      },
+      {
+        "digipin": "422579J",
+        "name": "Chaitanyapuri",
+        "lon": 78.53029,
+        "lat": 17.36829,
+        "residents_5min": 29304,
+        "lst_c": 39.5,
+        "canopy_pct": 2.4,
+        "priority": 128703
+      },
+      {
+        "digipin": "42257PC",
+        "name": "Karmanghat Bus Stop",
+        "lon": 78.5325,
+        "lat": 17.34448,
+        "residents_5min": 25605,
+        "lst_c": 39.6,
+        "canopy_pct": 3.4,
+        "priority": 113778
+      },
+      {
+        "digipin": "422527J",
+        "name": "",
+        "lon": 78.50477,
+        "lat": 17.35954,
+        "residents_5min": 19833,
+        "lst_c": 41.1,
+        "canopy_pct": 6.0,
+        "priority": 113722
+      },
+      {
+        "digipin": "4225C9J",
+        "name": "A.C. Guards",
+        "lon": 78.45949,
+        "lat": 17.4028,
+        "residents_5min": 26989,
+        "lst_c": 39.9,
+        "canopy_pct": 15.6,
+        "priority": 111616
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "osm": 518,
+      "overture": 145
+    }
+  },
+  "parking": {
+    "cells": 8492,
+    "demand_ecs": 389563,
+    "lots_mapped": 12,
+    "pct_demand_in_overflow": 4.3,
+    "overflow_ecs": 5366,
+    "hotspots": [
+      {
+        "digipin": "4222T7L",
+        "demand_ecs": 270,
+        "supply_ecs": 114,
+        "pressure": 2.38
+      },
+      {
+        "digipin": "422CTL5",
+        "demand_ecs": 163,
+        "supply_ecs": 25,
+        "pressure": 6.43
+      },
+      {
+        "digipin": "4222T6F",
+        "demand_ecs": 266,
+        "supply_ecs": 137,
+        "pressure": 1.95
+      },
+      {
+        "digipin": "422749J",
+        "demand_ecs": 114,
+        "supply_ecs": 0,
+        "pressure": 113.86
+      },
+      {
+        "digipin": "422749F",
+        "demand_ecs": 132,
+        "supply_ecs": 24,
+        "pressure": 5.45
+      },
+      {
+        "digipin": "42274C6",
+        "demand_ecs": 185,
+        "supply_ecs": 79,
+        "pressure": 2.35
+      },
+      {
+        "digipin": "4222CM2",
+        "demand_ecs": 181,
+        "supply_ecs": 77,
+        "pressure": 2.36
+      },
+      {
+        "digipin": "4222CK2",
+        "demand_ecs": 205,
+        "supply_ecs": 105,
+        "pressure": 1.94
+      },
+      {
+        "digipin": "422742J",
+        "demand_ecs": 114,
+        "supply_ecs": 14,
+        "pressure": 8.13
+      },
+      {
+        "digipin": "422745L",
+        "demand_ecs": 120,
+        "supply_ecs": 33,
+        "pressure": 3.59
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
+  },
+  "commute_carbon": {
+    "zones": 1022,
+    "pop_mean_trip_km": 10.77,
+    "co2_kg_resident_day": 0.349,
+    "co2_kt_year": 1156.2,
+    "inner_fifth_trip_km": 9.66,
+    "outer_fifth_trip_km": 12.73,
+    "assumptions": {
+      "detour": 1.3,
+      "intra_km": 0.6,
+      "kg_co2_per_pkm_mix": 0.036,
+      "modes": {
+        "two_wheeler": {
+          "share": 0.4,
+          "kg_per_pkm": 0.0292
+        },
+        "car": {
+          "share": 0.15,
+          "kg_per_pkm": 0.0875
+        },
+        "auto": {
+          "share": 0.15,
+          "kg_per_pkm": 0.035
+        },
+        "bus": {
+          "share": 0.3,
+          "kg_per_pkm": 0.02
+        }
+      }
+    }
+  }
+}

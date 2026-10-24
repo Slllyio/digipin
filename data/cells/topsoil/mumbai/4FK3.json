@@ -1,0 +1,1 @@
+{"version":1,"dataset":"topsoil","region":"mumbai","level":7,"fields":["soc_g_kg","ph","sand_pct","clay_pct"],"cells":["4FK3876","4FK3877","4FK3878","4FK3886","4FK3888","4FK388T"],"columns":{"soc_g_kg":[10.5,13.9,18.4,15.0,30.5,16.3],"ph":[6.81,6.66,6.4,6.61,6.51,6.53],"sand_pct":[40.2,40.2,35.8,35.4,34.3,35.1],"clay_pct":[32.8,34.3,36.4,37.7,37.2,37.5]}}

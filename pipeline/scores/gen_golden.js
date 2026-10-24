@@ -294,6 +294,12 @@ const MODELS = {
           args: [['FC9'], [strip(pins[0]).substring(0, 5)], [strip(pins[1]).substring(0, 8)]],
         },
         format_pin: { call: (a) => G.format(...a), args: [['FC9'], ['FC98K2'], ['FC98K2P3T7'], ['F']] },
+        cell_degrees: { call: (a) => G.cellDegrees(...a), args: [[1], [6], [7], [10]] },
+        to_index: { call: (a) => G.toIndex(...a), args: [['F'], [strip(pins[0]).substring(0, 6)], [pins[1]]] },
+        from_index: { call: (a) => G.fromIndex(...a), args: [[1, 3, 0], [6, 2000, 1500], [3, -1, 0], [3, 0, 64]] },
+        parent: { call: (a) => G.parent(...a), args: [[strip(pins[0]).substring(0, 7)], [pins[2], 4], ['3']] },
+        children: { call: (a) => G.children(...a), args: [[strip(pins[3]).substring(0, 5)]] },
+        neighbors: { call: (a) => G.neighbors(...a), args: [[strip(pins[0]).substring(0, 6)], [strip(pins[1]).substring(0, 8)], ['L']] },
       };
     },
   },

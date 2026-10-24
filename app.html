@@ -10,7 +10,7 @@
          + the four pinned CDN files below (covered by their SRI hashes).
          If a CDN compromise serves modified content, the integrity check
          fails and the script never executes. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://unpkg.com https://fonts.gstatic.com data:; connect-src 'self' https: wss: data: blob: http://localhost:11434; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://unpkg.com https://fonts.gstatic.com data:; connect-src 'self' https: wss: data: blob: http://localhost:11434; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
 
     <!--
       Optional runtime configuration. Uncomment and fill in to enable:
@@ -36,13 +36,34 @@
     </script>
     -->
 
+    <!-- Slow-link notes for the loading splash (markup at the top of <body>).
+         In the head, before the stylesheets: a body script would wait for the
+         CSS, which on a slow link is itself seconds. Elements are looked up
+         when each timer fires. -->
+    <script>
+        (function () {
+            var sub = function () { return document.querySelector('#app-splash .splash-sub'); };
+            var alive = function () { var s = document.getElementById('app-splash'); return s && !s.classList.contains('is-done'); };
+            // UIPolish is defined by one of the last deferred scripts: while it is
+            // missing the scripts are still arriving, which is the link, not the map.
+            setTimeout(function () {
+                var el = sub();
+                if (alive() && el && typeof window.UIPolish === 'undefined') { el.textContent = 'Still loading — the connection looks slow. The app works offline after its first full load.'; el.classList.add('is-slow'); }
+            }, 6000);
+            setTimeout(function () {
+                var el = sub();
+                if (alive() && el) { el.textContent = 'This is taking longer than usual. Keep waiting, or reload to try again.'; }
+            }, 40000);
+        })();
+    </script>
+
     <!-- MapLibre GL JS -->
     <link rel="stylesheet"
-          href="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.css"
-          integrity="sha384-m6tadjb5ohv1Fw3GJynIWn5c1scKfW7kxSXuDrhlq1gdXPn7I7UL0sSKDfCUErOb"
+          href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css"
+          integrity="sha384-uTttxo/aOKbdE5RlD/SPzSDoDmNvGlUYPjONi2MN/b7c9HPSvW07OIuyP7uL6jxK"
           crossorigin="anonymous" />
-    <script defer src="https://unpkg.com/maplibre-gl@4.1.3/dist/maplibre-gl.js"
-            integrity="sha384-3w1F5OvxlTQbswBbpJFQNorFWnAG1Q1PXQ1vYDhq38n+mse5l7ig3gCDHBEQ3GAN"
+    <script defer src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"
+            integrity="sha384-5+cfbwT0iiub6VsQAdn6yz16nr6sDiQoHx6tm4O8OVYXHYOxcffFmCJBL0dgdvGp"
             crossorigin="anonymous"></script>
 
     <!-- PMTiles v3 — IIFE global build for MapLibre addProtocol -->
@@ -50,17 +71,14 @@
             integrity="sha384-MjejsnWXHmuz93aE35YWLh5AbS/6ceRB3Vb+ukOwqFzJRTpQ8vvbkLbNV7I0QK4f"
             crossorigin="anonymous"></script>
 
-    <!-- GeoRaster for COG/GeoTIFF rendering -->
-    <script defer src="https://unpkg.com/georaster@1.6.0/dist/georaster.browser.bundle.min.js"
-            integrity="sha384-k/E847ELHPuDVPWoArQHQe5LUD8YSFwxlUaH63fF618o/Y0Gnu4FQ1xjuL280spp"
-            crossorigin="anonymous"></script>
+    <!-- georaster (COG/GeoTIFF) is loaded on first use by js/lazy-libs.js, not here. -->
 
     <!-- deck.gl — WebGL 3D layer used for the dark-theme "digital twin" building
          view (true wireframe-extruded glass volumes that MapLibre can't render).
          Optional: the buildings overlay falls back to MapLibre fill-extrusion if
          this fails to load. -->
-    <script defer src="https://unpkg.com/deck.gl@9.0.27/dist.min.js"
-            integrity="sha384-KZR1hNzBrVTMJRamX9VDVN7gzZ9VX8cgIVS33QSfkd0tkEbpL+Xl7q6uWem7hoGt"
+    <script defer src="https://unpkg.com/deck.gl@9.3.11/dist.min.js"
+            integrity="sha384-n9TufhIL8BMsQ8I/frAQGFsg2D/50T9gjWMitdG+F1HtTxSz62ol4tnA1nXOoeun"
             crossorigin="anonymous"></script>
 
     <!-- Custom Styles -->
@@ -88,6 +106,10 @@
         } catch (e) { /* storage blocked — fall back to bare dark CSS / en */ }
     </script>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/analyses.css">
+    <link rel="stylesheet" href="css/polish.css">
+    <link rel="stylesheet" href="css/insights.css">
+    <link rel="stylesheet" href="css/agents.css">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -100,11 +122,22 @@
 </head>
 <body>
 
+    <!-- Loading splash, in the HTML so it paints with the page. The ~130
+         deferred scripts run only once they have all arrived (13 s on a
+         fast-3G link, ~50 s on slow 3G), and js/ui-polish.js reuses this
+         element rather than creating one. UIPolish.hideSplash() removes it
+         when the map has loaded (or the engine is missing). The timers in the
+         head say so when the link is slow: a page that shows nothing moving
+         for half a minute reads as broken. -->
+    <div id="app-splash" role="status" aria-live="polite">
+        <div class="splash-mark" aria-hidden="true">DP</div>
+        <div class="splash-title">DigiPin Intelligence</div>
+        <div class="splash-sub">Loading the city grid…</div>
+        <div class="splash-bar" aria-hidden="true"><span></span></div>
+    </div>
+
     <!-- Keyboard/screen-reader skip link — first focusable element. -->
     <a href="#map" class="skip-link">Skip to map</a>
-
-    <!-- ===== MAP ===== -->
-    <div id="map" role="application" aria-label="Interactive DigiPin grid map of India" tabindex="-1"></div>
 
     <!-- ===== TOP BAR ===== -->
     <div id="top-bar" role="search" aria-label="Search for locations">
@@ -125,7 +158,15 @@
     </div>
 
     <!-- ===== TOOLBAR ===== -->
-    <div id="toolbar" aria-label="Map tools">
+    <div id="toolbar" role="toolbar" aria-label="Map tools">
+        <button class="toolbar-btn" id="btn-insights" title="Urban Intelligence — city dashboard, what’s notable here, compare areas, what-if scenarios (key: i)">
+            <span class="tb-icon">&#9678;</span>
+            <span class="tb-label">Intel</span>
+        </button>
+        <button class="toolbar-btn" id="btn-agents" title="Agents — run a site, flood, heat, access, growth or change analysis on an area and get a report plus a map layer">
+            <span class="tb-icon">&#10022;</span>
+            <span class="tb-label">Agents</span>
+        </button>
         <button class="toolbar-btn" id="btn-heatmap" title="Heatmap Overlay">
             <span class="tb-icon">&#9632;</span>
             <span class="tb-label" data-i18n="tb.heatmap">Heatmap</span>
@@ -154,6 +195,10 @@
         <button class="toolbar-btn" id="btn-sun" title="Sun &amp; shadow study — light the 3D buildings from the real solar position for a date/time">
             <span class="tb-icon">&#9728;&#65039;</span>
             <span class="tb-label" data-i18n="tb.sun">Sun</span>
+        </button>
+        <button class="toolbar-btn" id="btn-massing" title="Proposed massing — sketch a building in 3D and see its floor area, density (FAR) and shadow">
+            <span class="tb-icon">&#127959;&#65039;</span>
+            <span class="tb-label" data-i18n="tb.massing">Massing</span>
         </button>
         <button class="toolbar-btn" id="btn-pitch" title="Pitch map — export a presentation-ready PNG of the current view">
             <span class="tb-icon">&#128247;</span>
@@ -196,6 +241,10 @@
             <span class="tb-icon">&#128193;</span>
             <span class="tb-label" data-i18n="tb.views">Views</span>
         </button>
+        <button class="toolbar-btn" id="btn-analyses" title="Analyses — saved, re-runnable analyses over an area, with shareable reports">
+            <span class="tb-icon">&#128203;</span>
+            <span class="tb-label">Analyses</span>
+        </button>
         <button class="toolbar-btn" id="btn-growth" title="Urban Growth Forecast">
             <span class="tb-icon">&#128200;</span>
             <span class="tb-label" data-i18n="tb.growth">Growth</span>
@@ -216,6 +265,10 @@
             <span class="tb-icon">&#128737;&#65039;</span>
             <span class="tb-label" data-i18n="tb.mobility">L&amp;O</span>
         </button>
+        <button class="toolbar-btn" id="btn-emergency" title="Emergency Accessibility Index — how quickly police / authorities can reach each cell in an incident (0–100; green = reachable, red = isolated)">
+            <span class="tb-icon">&#128680;</span>
+            <span class="tb-label" data-i18n="tb.emergency">Access</span>
+        </button>
         <button class="toolbar-btn" id="btn-heat" title="Urban Heat Island">
             <span class="tb-icon">&#127777;&#65039;</span>
             <span class="tb-label" data-i18n="tb.heat">Heat</span>
@@ -231,6 +284,38 @@
         <button class="toolbar-btn" id="btn-viewshed" title="Viewshed — line-of-sight from map centre (DEM)">
             <span class="tb-icon">&#128065;</span>
             <span class="tb-label" data-i18n="tb.viewshed">Viewshed</span>
+        </button>
+        <button class="toolbar-btn" id="btn-sentinel" title="Sentinel-2 — latest clear satellite scene over the selected cell (10 m, live)">
+            <span class="tb-icon">&#128752;</span>
+            <span class="tb-label" data-i18n="tb.sentinel">Sentinel-2</span>
+        </button>
+        <button class="toolbar-btn" id="btn-livenow" title="Live now — weather, air, river flow and correlations with the cells in view (live)">
+            <span class="tb-icon">&#128308;</span>
+            <span class="tb-label" data-i18n="tb.livenow">Live now</span>
+        </button>
+        <button class="toolbar-btn" id="btn-livesky" title="Live sky — aircraft over the city in 3D at their real altitude (ADS-B)">
+            <span class="tb-icon">&#9992;&#65039;</span>
+            <span class="tb-label" data-i18n="tb.livesky">Live sky</span>
+        </button>
+        <button class="toolbar-btn" id="btn-places" title="Places nearby — notable places from Wikipedia, each with its DIGIPIN (live)">
+            <span class="tb-icon">&#128205;</span>
+            <span class="tb-label" data-i18n="tb.places">Places</span>
+        </button>
+        <button class="toolbar-btn" id="btn-satpasses" title="Satellite passes — when Sentinel-2, Landsat, Sentinel-1 and ISRO satellites next image this view, with the cloud forecast (live)">
+            <span class="tb-icon">&#128752;</span>
+            <span class="tb-label" data-i18n="tb.satpasses">Satellites</span>
+        </button>
+        <button class="toolbar-btn" id="btn-pointcloud" title="Point cloud — view your LiDAR / drone survey (LAS, LAZ, COPC, EPT) in 3D">
+            <span class="tb-icon">&#9729;</span>
+            <span class="tb-label" data-i18n="tb.pointcloud">Point cloud</span>
+        </button>
+        <button class="toolbar-btn" id="btn-swipe" title="Swipe compare — two layers side by side with a draggable divider">
+            <span class="tb-icon">&#8596;</span>
+            <span class="tb-label" data-i18n="tb.swipe">Swipe</span>
+        </button>
+        <button class="toolbar-btn" id="btn-hydrology" title="Hydrology — where rain ponds and runs, from the DEM (Whitebox in the browser)">
+            <span class="tb-icon">&#128167;</span>
+            <span class="tb-label" data-i18n="tb.hydrology">Hydrology</span>
         </button>
         <button class="toolbar-btn" id="btn-kde" title="Hotspot — kernel-density surface of a score">
             <span class="tb-icon">&#128293;</span>
@@ -258,6 +343,11 @@
             <div id="query-list" role="group" aria-label="Available queries"></div>
         </div>
     </nav>
+
+    <!-- ===== MAP =====
+         After the chrome in the DOM so Tab reaches search, tools and queries
+         before the map's own controls (it sits underneath them via z-index). -->
+    <div id="map" role="application" aria-label="Interactive DigiPin grid map of India" tabindex="-1"></div>
 
     <!-- ===== DETAIL PANEL (floating, draggable, resizable) ===== -->
     <aside id="detail-panel" class="floating-dialog" role="dialog" aria-label="Location details">
@@ -358,11 +448,22 @@
         <div id="saved-views-list" class="bm-list"></div>
     </aside>
 
+    <!-- ===== ANALYSES PANEL ===== -->
+    <aside id="analyses-panel" aria-label="Saved analyses and reports">
+        <div class="bm-panel-header">
+            <h3>&#128203; Analyses</h3>
+            <button class="close-btn" onclick="AnalysesPanel.closePanel()" aria-label="Close analyses">&#10005;</button>
+        </div>
+        <div id="analyses-list" class="bm-list"></div>
+    </aside>
+
     <!-- ===== TOAST CONTAINER ===== -->
     <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
 
     <!-- ===== SCRIPTS ===== -->
     <script defer src="js/digipin.js"></script>
+    <!-- CDN libraries loaded on first use (georaster) -->
+    <script defer src="js/lazy-libs.js"></script>
     <!-- IndexedDB persistent cache layer (used by data-fetcher) -->
     <script defer src="js/data-fetcher-cache.js"></script>
     <!-- Growth feature trio + realtime orchestrator -->
@@ -380,12 +481,17 @@
     <script defer src="js/realtime-traffic.js"></script>
     <script defer src="js/traffic-widget.js"></script>
     <script defer src="js/traffic-overlay.js"></script>
+    <script defer src="js/road-whatif.js"></script>
+    <script defer src="js/traffic-buildings.js"></script>
     <!-- Law & Order Mobility (access resilience: chokepoints + sealable pockets + police reach) -->
     <script defer src="js/mobility-score.js"></script>
     <script defer src="js/mobility-grid.js"></script>
+    <script defer src="js/emergency-access-score.js"></script>
+    <script defer src="js/emergency-access.js"></script>
     <script defer src="js/realtime-mobility.js"></script>
     <script defer src="js/mobility-widget.js"></script>
     <script defer src="js/mobility-overlay.js"></script>
+    <script defer src="js/emergency-access-overlay.js"></script>
     <!-- Heat feature trio + realtime orchestrator -->
     <script defer src="js/heat-score.js"></script>
     <script defer src="js/realtime-heat.js"></script>
@@ -405,21 +511,28 @@
     <script defer src="js/data-fetcher.js"></script>
     <script defer src="js/precomputed-scores.js"></script>
     <script defer src="js/score-choropleth.js"></script>
+    <script defer src="js/data-status.js"></script>
+    <script defer src="js/crash-guard.js"></script>
     <script defer src="js/cell-store.js"></script>
     <script defer src="js/cell-layers.js"></script>
     <script defer src="js/cell-ingest.js"></script>
+    <script defer src="js/cell-profile.js"></script>
+    <script defer src="js/time-slider.js"></script>
     <script defer src="js/footprint-grid.js"></script>
     <script defer src="js/building-intelligence.js"></script>
     <script defer src="js/overture-release.js"></script>
     <script defer src="js/terrain.js"></script>
     <script defer src="js/buildings-deck.js"></script>
+    <script defer src="js/building-data.js"></script>
     <script defer src="js/overture-buildings.js"></script>
     <script defer src="js/theme.js"></script>
+    <script defer src="js/i18n-ui.js"></script>
     <script defer src="js/i18n.js"></script>
     <script defer src="js/real-estate-model.js"></script>
     <script defer src="js/real-estate-widget.js"></script>
     <script defer src="js/map.js"></script>
     <script defer src="js/keyboard-nav.js"></script>
+    <script defer src="js/cell-hierarchy.js"></script>
     <script defer src="js/panel.js"></script>
     <script defer src="js/query-engine.js"></script>
     <script defer src="js/disha-cache.js"></script>
@@ -429,6 +542,13 @@
     <script defer src="js/text2map-embeddings.js"></script>
     <script defer src="js/text2map.js"></script>
     <script defer src="js/text2map-results-layer.js"></script>
+    <script defer src="js/provenance.js"></script>
+    <script defer src="js/map-snapshot.js"></script>
+    <script defer src="js/open-data-finder.js"></script>
+    <script defer src="js/disha-mentions.js"></script>
+    <script defer src="js/disha-intel.js"></script>
+    <script defer src="js/disha-tools.js"></script>
+    <script defer src="js/disha-agent.js"></script>
     <script defer src="js/disha-panel.js"></script>
     <script defer src="js/compare.js"></script>
     <script defer src="js/isochrone.js"></script>
@@ -441,27 +561,69 @@
     <script defer src="js/building-intel-dialog.js"></script>
     <script defer src="js/scores-dialog.js"></script>
     <script defer src="js/digital-twin-layers.js"></script>
+    <!-- Bharatlas: India-wide PMTiles (pincodes, admin boundaries) for per-cell containment. -->
+    <script defer src="js/bharatlas.js"></script>
     <script defer src="js/training-data-gen.js"></script>
     <!-- "Must-have map types" overlays: bivariate choropleth, NDVI vegetation, viewshed -->
     <script defer src="js/bivariate-overlay.js"></script>
     <script defer src="js/ndvi-overlay.js"></script>
     <script defer src="js/viewshed.js"></script>
+    <script defer src="js/terrain-hydrology.js"></script>
+    <script defer src="js/layer-swipe.js"></script>
+    <script defer src="js/sentinel-imagery.js"></script>
+    <script defer src="js/point-cloud.js"></script>
+    <script defer src="js/live-now.js"></script>
+    <script defer src="js/live-sky.js"></script>
+    <script defer src="js/places-nearby.js"></script>
+    <script defer src="js/sat-passes.js"></script>
+    <script defer src="js/live-search.js"></script>
+    <script defer src="js/layer-counts.js"></script>
     <script defer src="js/kde-overlay.js"></script>
     <script defer src="js/accessibility-overlay.js"></script>
     <script defer src="js/url-state.js"></script>
     <script defer src="js/saved-views.js"></script>
+    <script defer src="js/analysis.js"></script>
+    <script defer src="js/analyses-panel.js"></script>
+    <script defer src="js/urban-insights.js"></script>
+    <script defer src="js/urban-lenses.js"></script>
+    <script defer src="js/urban-lenses-mobility.js"></script>
+    <script defer src="js/urban-lenses-realestate.js"></script>
+    <script defer src="js/urban-lenses-environment.js"></script>
+    <script defer src="js/urban-lenses-planning.js"></script>
+    <script defer src="js/urban-lenses-safety.js"></script>
+    <script defer src="js/property-report.js"></script>
+    <script defer src="js/lenses-panel.js"></script>
+    <script defer src="js/scenario-lenses.js"></script>
+    <script defer src="js/city-tour.js"></script>
+    <script defer src="js/intel-brief.js"></script>
+    <script defer src="js/insights-panel.js"></script>
+    <script defer src="js/urban-agents.js"></script>
+    <script defer src="js/agents-panel.js"></script>
     <script defer src="js/onboarding.js"></script>
     <script defer src="js/layers-panel.js"></script>
     <script defer src="js/dtdl-export.js"></script>
     <script defer src="js/export-dialog.js"></script>
     <script defer src="js/footprint-export.js"></script>
     <script defer src="js/pitch-map.js"></script>
+    <script defer src="js/quality-3d.js"></script>
+    <script defer src="js/massing-sketch.js"></script>
+    <script defer src="js/night-city.js"></script>
+    <script defer src="js/sun-shadows.js"></script>
     <script defer src="js/sun-study.js"></script>
+    <script defer src="js/camera-presets.js"></script>
+    <script defer src="js/view-handoff.js"></script>
+    <script defer src="js/sun-hours.js"></script>
+    <script defer src="js/floor-area.js"></script>
+    <script defer src="js/gltf-export.js"></script>
     <script defer src="js/site-brief.js"></script>
     <script defer src="js/measure-tool.js"></script>
     <script defer src="js/present-mode.js"></script>
     <script defer src="js/annotations.js"></script>
     <script defer src="js/app.js"></script>
+    <!-- Visual finish: icon set, horizon haze, splash, city overview ribbon -->
+    <script defer src="js/ui-polish.js"></script>
+    <script defer src="js/trees-3d.js"></script>
+    <script defer src="js/city-overview.js"></script>
     <script>
     // Wire the toggle-overlay toolbar buttons: flip the overlay, then reflect
     // the on/off state via the .active class (styling) and aria-pressed (so
@@ -472,10 +634,19 @@
         ['btn-scenario',  () => window.ScenarioPanel],
         ['btn-traffic',   () => window.TrafficOverlay],
         ['btn-mobility',  () => window.MobilityOverlay],
+        ['btn-emergency', () => window.EmergencyAccessOverlay],
         ['btn-heat',      () => window.HeatOverlay],
         ['btn-ndvi',      () => window.NDVIOverlay],
         ['btn-bivariate', () => window.BivariateOverlay],
         ['btn-viewshed',  () => window.Viewshed],
+        ['btn-hydrology', () => window.TerrainHydrology],
+        ['btn-swipe',     () => window.LayerSwipe],
+        ['btn-sentinel',  () => window.SentinelImagery],
+        ['btn-pointcloud', () => window.PointCloud],
+        ['btn-livenow',   () => window.LiveNow],
+        ['btn-livesky',   () => window.LiveSky],
+        ['btn-places',    () => window.PlacesNearby],
+        ['btn-satpasses', () => window.SatPasses],
         ['btn-kde',       () => window.KDEOverlay],
         ['btn-access',    () => window.AccessibilityOverlay],
         ['btn-choropleth', () => window.ScoreChoropleth],

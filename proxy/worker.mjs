@@ -27,6 +27,8 @@ const UPSTREAMS = {
     'bhoonidhi-api.nrsc.gov.in': {},
     'api.open-elevation.com': {},
     'api.worldpop.org': {},
+    // Live ADS-B aircraft (LiveSky): open data (ODbL) but no CORS headers.
+    'api.adsb.lol': {},
 };
 
 const CORS_HEADERS = {

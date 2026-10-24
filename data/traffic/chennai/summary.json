@@ -1,0 +1,999 @@
+{
+  "region": "chennai",
+  "total_segments": 6762,
+  "graph_nodes": 6822,
+  "graph_edges": 6709,
+  "bridge_count": 3244,
+  "los_distribution": {
+    "A": 5398,
+    "C": 230,
+    "B": 324,
+    "D": 142,
+    "E": 80,
+    "F": 588
+  },
+  "top_bottlenecks": [
+    {
+      "osm_id": 240321177,
+      "name": "General Hospital Road",
+      "highway": "primary",
+      "betweenness": 0.077025,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.08178,
+      "lng": 80.27635
+    },
+    {
+      "osm_id": 443502557,
+      "name": "Anna Salai (Mount Road)",
+      "highway": "primary",
+      "betweenness": 0.071061,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.02586,
+      "lng": 80.23066
+    },
+    {
+      "osm_id": 102457958,
+      "name": "Mambalam Canal Bridge",
+      "highway": "primary",
+      "betweenness": 0.071013,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.02508,
+      "lng": 80.22942
+    },
+    {
+      "osm_id": 355461070,
+      "name": "Anna Salai (Mount Road)",
+      "highway": "primary",
+      "betweenness": 0.070964,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.02484,
+      "lng": 80.22912
+    },
+    {
+      "osm_id": 217848742,
+      "name": "Evening Bazaar Road",
+      "highway": "secondary",
+      "betweenness": 0.070323,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.08277,
+      "lng": 80.27874
+    },
+    {
+      "osm_id": 22965366,
+      "name": "Evening Bazaar Road",
+      "highway": "secondary",
+      "betweenness": 0.070255,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.08516,
+      "lng": 80.27948
+    },
+    {
+      "osm_id": 1082485667,
+      "name": "Anna Salai (Mount Road)",
+      "highway": "primary",
+      "betweenness": 0.069329,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.02372,
+      "lng": 80.22766
+    },
+    {
+      "osm_id": 22977109,
+      "name": "Anna Salai (Mount Road)",
+      "highway": "primary",
+      "betweenness": 0.069281,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.01977,
+      "lng": 80.22457
+    },
+    {
+      "osm_id": 23647177,
+      "name": "Maraimalai Adigal Bridge",
+      "highway": "primary",
+      "betweenness": 0.069236,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.01811,
+      "lng": 80.22469
+    },
+    {
+      "osm_id": 214413795,
+      "name": "Anna Salai (Mount Road)",
+      "highway": "primary",
+      "betweenness": 0.069193,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.01576,
+      "lng": 80.22528
+    },
+    {
+      "osm_id": 1082485668,
+      "name": "Anna Salai (Mount Road)",
+      "highway": "primary",
+      "betweenness": 0.068627,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.01552,
+      "lng": 80.22509
+    },
+    {
+      "osm_id": 1078273882,
+      "name": "Anna Salai (Mount Road)",
+      "highway": "primary",
+      "betweenness": 0.06806,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.01464,
+      "lng": 80.2241
+    },
+    {
+      "osm_id": 1078273883,
+      "name": "Anna Salai (Mount Road)",
+      "highway": "primary",
+      "betweenness": 0.06781,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.01429,
+      "lng": 80.22372
+    },
+    {
+      "osm_id": 1189655636,
+      "name": "Netaji Subhash Chandra Bose Road",
+      "highway": "tertiary",
+      "betweenness": 0.066,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.08869,
+      "lng": 80.2812
+    },
+    {
+      "osm_id": 217845078,
+      "name": "Wall Tax Road",
+      "highway": "trunk",
+      "betweenness": 0.065999,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.0974,
+      "lng": 80.27528
+    },
+    {
+      "osm_id": 1533873623,
+      "name": "Rasappa Chetty Street",
+      "highway": "tertiary",
+      "betweenness": 0.065997,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.08588,
+      "lng": 80.2808
+    },
+    {
+      "osm_id": 1098504489,
+      "name": "Netaji Subhash Chandra Bose Road",
+      "highway": "tertiary",
+      "betweenness": 0.065938,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.08897,
+      "lng": 80.28025
+    },
+    {
+      "osm_id": 28275782,
+      "name": "Netaji Subhash Chandra Bose Road",
+      "highway": "tertiary",
+      "betweenness": 0.065877,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.09054,
+      "lng": 80.2771
+    },
+    {
+      "osm_id": 1283900228,
+      "name": "Wall Tax Road",
+      "highway": "trunk",
+      "betweenness": 0.065824,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.09232,
+      "lng": 80.2753
+    },
+    {
+      "osm_id": 28903425,
+      "name": "Rattan Bazaar Road",
+      "highway": "secondary",
+      "betweenness": 0.065486,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 13.08776,
+      "lng": 80.28134
+    }
+  ],
+  "critical_links": [
+    {
+      "osm_id": 26480972,
+      "name": "Tiruvalluvar Street",
+      "highway": "tertiary",
+      "betweenness": 0.017968,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.1364,
+      "lng": 80.25519
+    },
+    {
+      "osm_id": 26524193,
+      "name": "Ethiraj Salai",
+      "highway": "secondary",
+      "betweenness": 0.013949,
+      "los_grade": "D",
+      "congestion_risk": 89,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.06509,
+      "lng": 80.25785
+    },
+    {
+      "osm_id": 34634447,
+      "name": "Ennore High Road",
+      "highway": "secondary",
+      "betweenness": 0.016918,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.13835,
+      "lng": 80.2816
+    },
+    {
+      "osm_id": 125206035,
+      "name": "Kathivakkam High Road",
+      "highway": "secondary",
+      "betweenness": 0.020893,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.1263,
+      "lng": 80.27816
+    },
+    {
+      "osm_id": 240472104,
+      "name": "Binny Road",
+      "highway": "secondary",
+      "betweenness": 0.014833,
+      "los_grade": "E",
+      "congestion_risk": 95,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.06347,
+      "lng": 80.26175
+    },
+    {
+      "osm_id": 240472105,
+      "name": "Commander-In-Chief Bridge",
+      "highway": "secondary",
+      "betweenness": 0.014734,
+      "los_grade": "E",
+      "congestion_risk": 94,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.06366,
+      "lng": 80.2609
+    },
+    {
+      "osm_id": 240472111,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.014636,
+      "los_grade": "E",
+      "congestion_risk": 93,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.06394,
+      "lng": 80.26002
+    },
+    {
+      "osm_id": 837717489,
+      "name": "Tiruvalluvar Street",
+      "highway": "tertiary",
+      "betweenness": 0.017871,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.13648,
+      "lng": 80.25508
+    },
+    {
+      "osm_id": 1081264285,
+      "name": "Tiruvalluvar Street",
+      "highway": "tertiary",
+      "betweenness": 0.013949,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.13742,
+      "lng": 80.24791
+    },
+    {
+      "osm_id": 1081264286,
+      "name": "Tiruvalluvar Street",
+      "highway": "tertiary",
+      "betweenness": 0.017774,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.13665,
+      "lng": 80.25311
+    },
+    {
+      "osm_id": 1188800422,
+      "name": "Ennore High Road",
+      "highway": "secondary",
+      "betweenness": 0.016819,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.15048,
+      "lng": 80.28731
+    },
+    {
+      "osm_id": 1287592047,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.014538,
+      "los_grade": "E",
+      "congestion_risk": 93,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.06436,
+      "lng": 80.25914
+    },
+    {
+      "osm_id": 1522203183,
+      "name": "Ethiraj Salai",
+      "highway": "secondary",
+      "betweenness": 0.013654,
+      "los_grade": "D",
+      "congestion_risk": 87,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.06693,
+      "lng": 80.25529
+    },
+    {
+      "osm_id": 1532576390,
+      "name": "Ethiraj Salai",
+      "highway": "secondary",
+      "betweenness": 0.013556,
+      "los_grade": "D",
+      "congestion_risk": 86,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.06706,
+      "lng": 80.25515
+    },
+    {
+      "osm_id": 1540007941,
+      "name": "Ethiraj Salai",
+      "highway": "secondary",
+      "betweenness": 0.013752,
+      "los_grade": "D",
+      "congestion_risk": 88,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.06582,
+      "lng": 80.25657
+    },
+    {
+      "osm_id": 1540007942,
+      "name": "Ethiraj Salai",
+      "highway": "secondary",
+      "betweenness": 0.01385,
+      "los_grade": "D",
+      "congestion_risk": 88,
+      "is_bridge": true,
+      "criticality": "critical",
+      "lat": 13.0655,
+      "lng": 80.257
+    }
+  ],
+  "demand_model": {
+    "zones": 592,
+    "origins": 577,
+    "peak_pcu_total_trips": 260040,
+    "roads_los_e_f": 1552,
+    "roads_los_d": 551,
+    "roads_total": 6743,
+    "roads_los_e_f_by_period": {
+      "am": 1527,
+      "pm": 1473,
+      "mid": 122
+    },
+    "hourly": {
+      "share_pct": [
+        0.6,
+        0.4,
+        0.3,
+        0.3,
+        0.5,
+        1.1,
+        2.4,
+        4.4,
+        7.0,
+        9.0,
+        7.6,
+        5.6,
+        5.0,
+        4.8,
+        4.6,
+        4.8,
+        5.4,
+        7.0,
+        8.8,
+        7.8,
+        5.6,
+        3.6,
+        2.2,
+        1.2
+      ],
+      "mix": [
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0.8,
+          0,
+          0.2
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0.8,
+          0.2
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "periods": [
+        "am",
+        "pm",
+        "mid"
+      ],
+      "period_share": {
+        "am": 0.09,
+        "pm": 0.08800000000000001,
+        "mid": 0.048
+      },
+      "bpr": [
+        0.15,
+        4
+      ],
+      "max_slowdown": 4.0,
+      "los_bands": [
+        0.35,
+        0.55,
+        0.75,
+        0.9,
+        1.0
+      ]
+    },
+    "assumptions": {
+      "trips_per_capita": 0.9,
+      "pcu_per_trip": 0.37,
+      "peak_share": 0.09,
+      "beta_per_min": 0.1,
+      "mid_beta_per_min": 0.15
+    }
+  },
+  "road_flood": {
+    "very_high": 17.6,
+    "high": 580.6,
+    "river_flood": 639.5,
+    "total": 1806.5,
+    "pct_very_high": 1.0,
+    "pct_high_or_worse": 33.1
+  },
+  "noise_air": {
+    "residents_total": 8676690,
+    "residents_near_modelled_roads": 7525008,
+    "residents_lden_ge_53": 6798097,
+    "residents_lden_ge_65": 2326241,
+    "nox_t_day": 9.86,
+    "co2_t_day": 2410.3,
+    "nox_vs_s5p_no2_spearman_l5": 0.33,
+    "l5_cells_compared": 44,
+    "assumptions": {
+      "veh_per_pcu": 1.4,
+      "heavy_pct": 5.0,
+      "share_18h": 0.968,
+      "ef_g_per_vkm": {
+        "nox": 0.45,
+        "pm25": 0.025,
+        "co2": 110.0
+      },
+      "reach_m": 300.0,
+      "method": "CRTN 1988 + Abbott & Nelson 2002 Lden"
+    }
+  },
+  "emergency_access": {
+    "hospitals": 1254,
+    "pct_within_10_night": 99.9,
+    "pct_within_10_am": 99.8,
+    "pct_within_10_pm": 99.8,
+    "pct_over_20_peak": 0.0,
+    "source": "Overture Maps places 2026-10-21.0; demand model link times"
+  },
+  "rail_access": {
+    "metro_stations": 58,
+    "rail_stations": 78,
+    "pct_within_10_walk_metro": 19.9,
+    "pct_within_10_walk_any": 35.3,
+    "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
+  },
+  "ev_charging": {
+    "chargers": 22,
+    "chargers_by_source": {
+      "osm": 6,
+      "overture": 16
+    },
+    "parking": 140,
+    "fuel": 237,
+    "chargers_per_lakh": 0.25,
+    "pct_vkm_within_2km": 56.7,
+    "pct_pop_within_2km": 55.5
+  },
+  "cycling": {
+    "lowstress_km": 8794,
+    "cycleway_km": 5.3,
+    "highstress_km": 1362,
+    "islands": 5900,
+    "islands_over_5_km2": 21,
+    "largest_island_km2": 15.5,
+    "pct_residents_small_island": 30.3,
+    "pct_residents_no_lowstress_street": 0.3,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "crossings": {
+    "main_km": 1295,
+    "pct_main_km_on_long_gaps": 13.1,
+    "median_gap_m": 285,
+    "crosswalks_mapped": 26,
+    "gap_threshold_m": 500.0,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 1538,
+      "logistics": 386,
+      "wholesale": 177
+    },
+    "truck_trips_day": 11846,
+    "gateway_nodes": 464,
+    "road_km_500_trucks_day": 6.6,
+    "busiest_truck_roads": [
+      {
+        "name": "General Hospital Road",
+        "trucks_day": 3222
+      },
+      {
+        "name": "Muthialpet Roundabout",
+        "trucks_day": 2548
+      },
+      {
+        "name": "Anna Salai (Mount Road)",
+        "trucks_day": 1856
+      },
+      {
+        "name": "EVR Periyar Salai",
+        "trucks_day": 1404
+      },
+      {
+        "name": "Ebrahim Sahib Street",
+        "trucks_day": 1380
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
+  },
+  "job_access": {
+    "zones": 591,
+    "pop_mean_jobs_car_pct": 80.2,
+    "pop_mean_jobs_transit_pct": 20.9,
+    "stations": 136,
+    "threshold_min": 45.0,
+    "assumptions": {
+      "wait_min": 5.0,
+      "ride_kmh": 33.0,
+      "walk_max_min": 20.0,
+      "all_stations_connected": true
+    }
+  },
+  "bus_stop_heat": {
+    "stops": 906,
+    "stops_with_heat_data": 906,
+    "pct_hot_bare": 68.3,
+    "pct_riders_at_hot_bare": 66.5,
+    "median_stop_lst_c": 41.8,
+    "top_stops": [
+      {
+        "digipin": "4T39TL6",
+        "name": "Vadapalani Bus Stand",
+        "lon": 80.20695,
+        "lat": 13.04932,
+        "residents_5min": 35345,
+        "lst_c": 43.2,
+        "canopy_pct": 7.7,
+        "priority": 267512
+      },
+      {
+        "digipin": "4T38L6J",
+        "name": "TVS",
+        "lon": 80.26254,
+        "lat": 13.06077,
+        "residents_5min": 28351,
+        "lst_c": 43.5,
+        "canopy_pct": 1.8,
+        "priority": 236646
+      },
+      {
+        "digipin": "4T38L6J",
+        "name": "Spencer Plaza",
+        "lon": 80.26107,
+        "lat": 13.06062,
+        "residents_5min": 28351,
+        "lst_c": 43.5,
+        "canopy_pct": 1.8,
+        "priority": 236646
+      },
+      {
+        "digipin": "4T3844T",
+        "name": "Loane Square",
+        "lon": 80.28574,
+        "lat": 13.09146,
+        "residents_5min": 26245,
+        "lst_c": 44.0,
+        "canopy_pct": 2.9,
+        "priority": 229355
+      },
+      {
+        "digipin": "4T38MJM",
+        "name": "",
+        "lon": 80.2738,
+        "lat": 13.06525,
+        "residents_5min": 26453,
+        "lst_c": 43.7,
+        "canopy_pct": 0.5,
+        "priority": 228990
+      },
+      {
+        "digipin": "4T38MJ3",
+        "name": "Simson",
+        "lon": 80.2738,
+        "lat": 13.07029,
+        "residents_5min": 24663,
+        "lst_c": 44.4,
+        "canopy_pct": 1.3,
+        "priority": 228818
+      },
+      {
+        "digipin": "4T38MJ3",
+        "name": "P.Orr & Sons",
+        "lon": 80.2737,
+        "lat": 13.07065,
+        "residents_5min": 24663,
+        "lst_c": 44.4,
+        "canopy_pct": 1.3,
+        "priority": 228818
+      },
+      {
+        "digipin": "4T38MJK",
+        "name": "Shanti Theatre",
+        "lon": 80.27057,
+        "lat": 13.06726,
+        "residents_5min": 25564,
+        "lst_c": 44.2,
+        "canopy_pct": 3.2,
+        "priority": 227663
+      },
+      {
+        "digipin": "4T328L5",
+        "name": "Olympia Tech Park",
+        "lon": 80.20459,
+        "lat": 13.01409,
+        "residents_5min": 25779,
+        "lst_c": 44.1,
+        "canopy_pct": 5.8,
+        "priority": 220983
+      },
+      {
+        "digipin": "4T328L5",
+        "name": "Olympia Tech Park",
+        "lon": 80.20458,
+        "lat": 13.01486,
+        "residents_5min": 25779,
+        "lst_c": 44.1,
+        "canopy_pct": 5.8,
+        "priority": 220983
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "osm": 736,
+      "overture": 170
+    }
+  },
+  "parking": {
+    "cells": 6745,
+    "demand_ecs": 402056,
+    "lots_mapped": 140,
+    "pct_demand_in_overflow": 4.8,
+    "overflow_ecs": 7000,
+    "hotspots": [
+      {
+        "digipin": "4T324J5",
+        "demand_ecs": 305,
+        "supply_ecs": 123,
+        "pressure": 2.48
+      },
+      {
+        "digipin": "4T3243K",
+        "demand_ecs": 253,
+        "supply_ecs": 73,
+        "pressure": 3.44
+      },
+      {
+        "digipin": "4T384MF",
+        "demand_ecs": 418,
+        "supply_ecs": 242,
+        "pressure": 1.73
+      },
+      {
+        "digipin": "4T384MC",
+        "demand_ecs": 333,
+        "supply_ecs": 158,
+        "pressure": 2.11
+      },
+      {
+        "digipin": "4T324J7",
+        "demand_ecs": 362,
+        "supply_ecs": 200,
+        "pressure": 1.81
+      },
+      {
+        "digipin": "4T3844K",
+        "demand_ecs": 364,
+        "supply_ecs": 210,
+        "pressure": 1.73
+      },
+      {
+        "digipin": "4T38453",
+        "demand_ecs": 362,
+        "supply_ecs": 213,
+        "pressure": 1.7
+      },
+      {
+        "digipin": "4T324J3",
+        "demand_ecs": 261,
+        "supply_ecs": 117,
+        "pressure": 2.22
+      },
+      {
+        "digipin": "4T324JT",
+        "demand_ecs": 294,
+        "supply_ecs": 151,
+        "pressure": 1.94
+      },
+      {
+        "digipin": "4T37KC2",
+        "demand_ecs": 350,
+        "supply_ecs": 218,
+        "pressure": 1.6
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
+  },
+  "commute_carbon": {
+    "zones": 577,
+    "pop_mean_trip_km": 9.22,
+    "co2_kg_resident_day": 0.299,
+    "co2_kt_year": 948.8,
+    "inner_fifth_trip_km": 8.13,
+    "outer_fifth_trip_km": 10.96,
+    "assumptions": {
+      "detour": 1.3,
+      "intra_km": 0.6,
+      "kg_co2_per_pkm_mix": 0.036,
+      "modes": {
+        "two_wheeler": {
+          "share": 0.4,
+          "kg_per_pkm": 0.0292
+        },
+        "car": {
+          "share": 0.15,
+          "kg_per_pkm": 0.0875
+        },
+        "auto": {
+          "share": 0.15,
+          "kg_per_pkm": 0.035
+        },
+        "bus": {
+          "share": 0.3,
+          "kg_per_pkm": 0.02
+        }
+      }
+    }
+  }
+}

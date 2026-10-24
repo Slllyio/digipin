@@ -271,16 +271,60 @@ const Text2Map = (() => {
             .sort((a, b) => b.score - a.score);
     }
 
-    /**
-     * End-to-end Text2Map: question → parsed weighting → ranked cells.
-     * Returns { parsed, results, mode } where mode is 'precomputed' | 'live' and
-     * parsed is the {weights, primaryScore, label, source} used. Null if the
-     * question could not be parsed at all (no provider AND no keyword match).
-     */
-    async function run(question, bounds, onStatus) {
-        const parsed = await parse(question);
-        if (!parsed) return null;
+    /** Human label for a score id from the live vocabulary (falls back to the id). */
+    function scoreLabel(id) {
+        const s = (typeof DataFetcher !== 'undefined' && DataFetcher.computeScores)
+            ? DataFetcher.computeScores({})[id] : null;
+        return (s && s.label) || id;
+    }
 
+    /**
+     * The steps a ranking will take, shown before it runs ("plan before run").
+     * Pure: `opts` = { gridReady, provider, labelFor }. Each step is
+     * { title, detail, source }.
+     */
+    function plan(parsed, opts = {}) {
+        if (!parsed || !parsed.weights) return [];
+        const labelFor = opts.labelFor || scoreLabel;
+        const pinned = new Set(parsed.pinned || []);
+        const parsers = {
+            llm: 'the connected language model', embeddings: 'on-device embeddings',
+            lexicon: 'the offline keyword lexicon', keyword: 'a canned query match',
+        };
+        const weights = Object.entries(parsed.weights)
+            .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
+            .map(([id, w]) => `${labelFor(id)} ${w > 0 ? '+' : '\u2212'}${Math.abs(w).toFixed(1)}${pinned.has(id) ? ' (pinned)' : ''}`);
+        return [
+            {
+                title: 'Read the question',
+                detail: `Weights: ${weights.join(', ')}`,
+                source: `Parsed by ${parsers[parsed.source] || parsed.source || 'unknown'}${parsed.source === 'llm' && opts.provider ? ' (' + opts.provider + ')' : ''}`,
+            },
+            {
+                title: 'Score every DIGIPIN cell in view',
+                detail: 'Weighted sum of the scores above for each cell',
+                source: opts.gridReady
+                    ? 'Precomputed DIGIPIN score grid (pipeline/scores), no live calls'
+                    : 'Live sampling of public APIs for the current view (slower)',
+            },
+            {
+                title: `Rank and show the top ${TOP_N}`,
+                detail: 'Highlighted on the map and listed in this chat',
+                source: 'In your browser',
+            },
+            {
+                title: 'Explain the result',
+                detail: 'A short written summary of why these cells rank highest',
+                source: opts.provider ? `DISHA via ${opts.provider}` : 'DISHA',
+            },
+        ];
+    }
+
+    /**
+     * Rank for an already-parsed weighting. Returns { parsed, results, mode }
+     * where mode is 'precomputed' | 'live'.
+     */
+    async function rank(parsed, question, bounds, onStatus) {
         const ranked = await rankPrecomputed(parsed.weights, bounds);
         if (ranked) {
             return { parsed, results: ranked.slice(0, TOP_N), mode: 'precomputed' };
@@ -294,8 +338,23 @@ const Text2Map = (() => {
         return { parsed, results: [], mode: 'live' };
     }
 
+    /**
+     * End-to-end Text2Map: question → parsed weighting → ranked cells.
+     * Returns { parsed, results, mode } where mode is 'precomputed' | 'live' and
+     * parsed is the {weights, primaryScore, label, source} used. Null if the
+     * question could not be parsed at all (no provider AND no keyword match).
+     */
+    async function run(question, bounds, onStatus) {
+        const parsed = await parse(question);
+        if (!parsed) return null;
+        return rank(parsed, question, bounds, onStatus);
+    }
+
     return {
         run,
+        rank,
+        plan,
+        scoreLabel,
         parse,
         parseWithLLM,
         parseWithLexicon,

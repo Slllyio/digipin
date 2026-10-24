@@ -14,8 +14,20 @@ const MobilityOverlay = (() => {
     const PT_LAYER = 'mobility-overlay-points';
     const LINE_LAYER = 'mobility-overlay-lines';
     const LEGEND_ID = 'mobility-legend';
-    const REGION = 'indore_pilot';
-    const URL = `./data/safety/${REGION}/chokepoints.geojson`;
+    const DEFAULT_REGION = 'indore_pilot';
+
+    /** Region to load: the selected city's cell-store region (Indore when unknown). */
+    function region() {
+        try {
+            if (typeof CitySelector !== 'undefined' && CitySelector.currentArea) {
+                const a = CitySelector.currentArea();
+                if (a && a.region) return a.region;
+            }
+        } catch { /* selector not ready */ }
+        return DEFAULT_REGION;
+    }
+    /** Chokepoint GeoJSON URL for a region (default: the selected city). */
+    function dataUrl(r) { return `./data/safety/${r || region()}/chokepoints.geojson`; }
 
     // kind → colour + legend label. Lines (seal/critical) vs points (OSM chokepoints).
     const KINDS = [
@@ -31,6 +43,7 @@ const MobilityOverlay = (() => {
     let _map = null;
     let _abort = null;
     let _popup = null;
+    let _unsub = null;
 
     /** Colour for a chokepoint kind (grey when unknown). */
     function colorFor(kind) {
@@ -111,7 +124,7 @@ const MobilityOverlay = (() => {
         if (typeof App !== 'undefined') App.showToast('Law & Order Mobility', 'Loading chokepoints…', 'info');
         let gj;
         try {
-            const r = await fetch(URL, { cache: 'force-cache', signal });
+            const r = await fetch(dataUrl(), { cache: 'force-cache', signal });
             if (!r.ok) throw new Error(`no data (${r.status})`);
             gj = await r.json();
         } catch (e) {
@@ -161,11 +174,18 @@ const MobilityOverlay = (() => {
     function _removeLegend() { const el = document.getElementById(LEGEND_ID); if (el) el.remove(); }
 
     /** Activate the overlay and load data. */
-    function attach() { _active = true; refresh(); }
+    function attach() {
+        _active = true;
+        if (!_unsub && typeof CitySelector !== 'undefined' && CitySelector.onChange) {
+            _unsub = CitySelector.onChange(() => { if (_active) refresh(); });
+        }
+        refresh();
+    }
     /** Deactivate the overlay: abort fetches, drop the popup/legend, and remove layers/source. */
     function detach() {
         _active = false;
         if (_abort) { _abort.abort(); _abort = null; }
+        if (_unsub) { _unsub(); _unsub = null; }
         if (_popup) { _popup.remove(); _popup = null; }
         _removeLegend();
         const map = _map_();
@@ -182,7 +202,7 @@ const MobilityOverlay = (() => {
     /** Whether the overlay is currently active. */
     function isVisible() { return _active; }
 
-    return { attach, detach, toggle, isVisible, refresh, colorFor, radiusFor, KINDS };
+    return { attach, detach, toggle, isVisible, refresh, colorFor, radiusFor, region, dataUrl, KINDS };
 })();
 
 if (typeof window !== 'undefined') window.MobilityOverlay = MobilityOverlay;

@@ -61,3 +61,22 @@ describe('DISHAProviders.normalizeConfig()', () => {
         }
     });
 });
+
+describe('DISHAProviders.mergeToolCallDeltas()', () => {
+    it('stitches streamed tool-call fragments by index', () => {
+        const acc = [];
+        DP.mergeToolCallDeltas(acc, [{ index: 0, id: 'call_1', function: { name: 'getCellData', arguments: '{"co' } }]);
+        DP.mergeToolCallDeltas(acc, [{ index: 0, function: { arguments: 'de":"39J"}' } }]);
+        DP.mergeToolCallDeltas(acc, [{ index: 1, id: 'call_2', function: { name: 'rankCells', arguments: '{}' } }]);
+        expect(acc).toEqual([
+            { id: 'call_1', name: 'getCellData', arguments: '{"code":"39J"}' },
+            { id: 'call_2', name: 'rankCells', arguments: '{}' },
+        ]);
+    });
+    it('does not duplicate a name repeated on later fragments', () => {
+        const acc = [];
+        DP.mergeToolCallDeltas(acc, [{ index: 0, id: 'a', function: { name: 'flyTo', arguments: '' } }]);
+        DP.mergeToolCallDeltas(acc, [{ index: 0, function: { name: 'flyTo', arguments: '{}' } }]);
+        expect(acc[0]).toEqual({ id: 'a', name: 'flyTo', arguments: '{}' });
+    });
+});

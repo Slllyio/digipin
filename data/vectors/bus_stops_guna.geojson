@@ -1,0 +1,1 @@
+{"type":"FeatureCollection","source":"OpenStreetMap highway=bus_stop; open GTFS stops; Overture Maps places 2026-10-21.0","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[77.30648,24.643461]},"properties":{"name":"Guna Bus Stop","src":"overture"}}]}

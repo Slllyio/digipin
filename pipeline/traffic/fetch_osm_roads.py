@@ -16,7 +16,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
 import logging
 import time
 from pathlib import Path
@@ -99,8 +98,8 @@ def fetch(region=None, classes=None):
 
     out = Path(f"data/vectors/osm_roads_{region}.geojson")
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps({"type": "FeatureCollection", "features": feats},
-                              separators=(",", ":")))
+    from pipeline.traffic.compact import dumps_lines   # stays under the repo's file budget
+    out.write_text(dumps_lines(feats))
     log.info("wrote %s — %d road segments (%.2f MB)",
              out, len(feats), out.stat().st_size / 1e6)
     return out

@@ -1,0 +1,806 @@
+{
+  "region": "delhi",
+  "total_segments": 19398,
+  "graph_nodes": 21126,
+  "graph_edges": 19200,
+  "bridge_count": 11224,
+  "los_distribution": {
+    "F": 1267,
+    "A": 16251,
+    "C": 545,
+    "D": 307,
+    "B": 891,
+    "E": 137
+  },
+  "top_bottlenecks": [
+    {
+      "osm_id": 1474862453,
+      "name": "Vikas Marg",
+      "highway": "primary",
+      "betweenness": 0.023048,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62878,
+      "lng": 77.275
+    },
+    {
+      "osm_id": 264711057,
+      "name": "",
+      "highway": "trunk",
+      "betweenness": 0.023014,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.59391,
+      "lng": 77.16521
+    },
+    {
+      "osm_id": 554798484,
+      "name": "",
+      "highway": "trunk",
+      "betweenness": 0.022999,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.59326,
+      "lng": 77.16378
+    },
+    {
+      "osm_id": 1312987915,
+      "name": "Flyover",
+      "highway": "trunk",
+      "betweenness": 0.022984,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.59275,
+      "lng": 77.16233
+    },
+    {
+      "osm_id": 754391963,
+      "name": "Flyover",
+      "highway": "trunk",
+      "betweenness": 0.02297,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.5927,
+      "lng": 77.16216
+    },
+    {
+      "osm_id": 28412404,
+      "name": "Mahatma Gandhi Marg",
+      "highway": "primary",
+      "betweenness": 0.022693,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.56588,
+      "lng": 77.23009
+    },
+    {
+      "osm_id": 44316344,
+      "name": "Mahatma Gandhi Marg",
+      "highway": "primary_link",
+      "betweenness": 0.022686,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.5665,
+      "lng": 77.2284
+    },
+    {
+      "osm_id": 447602096,
+      "name": "Sikandra Road",
+      "highway": "secondary",
+      "betweenness": 0.022315,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62574,
+      "lng": 77.23265
+    },
+    {
+      "osm_id": 447602095,
+      "name": "Sikandra Road",
+      "highway": "secondary",
+      "betweenness": 0.022311,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62564,
+      "lng": 77.23457
+    },
+    {
+      "osm_id": 447602098,
+      "name": "",
+      "highway": "secondary_link",
+      "betweenness": 0.022311,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62575,
+      "lng": 77.23436
+    },
+    {
+      "osm_id": 80499271,
+      "name": "Sikandra Road",
+      "highway": "secondary",
+      "betweenness": 0.02231,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62563,
+      "lng": 77.23558
+    },
+    {
+      "osm_id": 313547225,
+      "name": "",
+      "highway": "secondary",
+      "betweenness": 0.022254,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.55647,
+      "lng": 77.13244
+    },
+    {
+      "osm_id": 733803588,
+      "name": "Indra Prasth Marg",
+      "highway": "secondary",
+      "betweenness": 0.021659,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.6281,
+      "lng": 77.2467
+    },
+    {
+      "osm_id": 446923135,
+      "name": "Vikas Marg",
+      "highway": "primary",
+      "betweenness": 0.021494,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62845,
+      "lng": 77.27455
+    },
+    {
+      "osm_id": 733803585,
+      "name": "Vikas Marg",
+      "highway": "secondary",
+      "betweenness": 0.021409,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62819,
+      "lng": 77.24969
+    },
+    {
+      "osm_id": 754372054,
+      "name": "Flyover",
+      "highway": "trunk",
+      "betweenness": 0.021285,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.59236,
+      "lng": 77.16111
+    },
+    {
+      "osm_id": 70255392,
+      "name": "Vikas Marg",
+      "highway": "secondary",
+      "betweenness": 0.021236,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.6282,
+      "lng": 77.25053
+    },
+    {
+      "osm_id": 1453820690,
+      "name": "Indraprastha Marg",
+      "highway": "secondary",
+      "betweenness": 0.021233,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62768,
+      "lng": 77.24143
+    },
+    {
+      "osm_id": 70255395,
+      "name": "Vikas Marg",
+      "highway": "secondary",
+      "betweenness": 0.021223,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.6282,
+      "lng": 77.25159
+    },
+    {
+      "osm_id": 370543237,
+      "name": "Indraprastha Marg",
+      "highway": "secondary",
+      "betweenness": 0.021222,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62784,
+      "lng": 77.24331
+    }
+  ],
+  "critical_links": [],
+  "demand_model": {
+    "zones": 3129,
+    "origins": 2690,
+    "peak_pcu_total_trips": 881747,
+    "roads_los_e_f": 6990,
+    "roads_los_d": 790,
+    "roads_total": 18938,
+    "roads_los_e_f_by_period": {
+      "am": 6884,
+      "pm": 6718,
+      "mid": 1330
+    },
+    "hourly": {
+      "share_pct": [
+        0.6,
+        0.4,
+        0.3,
+        0.3,
+        0.5,
+        1.1,
+        2.4,
+        4.4,
+        7.0,
+        9.0,
+        7.6,
+        5.6,
+        5.0,
+        4.8,
+        4.6,
+        4.8,
+        5.4,
+        7.0,
+        8.8,
+        7.8,
+        5.6,
+        3.6,
+        2.2,
+        1.2
+      ],
+      "mix": [
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0.8,
+          0,
+          0.2
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0.5,
+          0,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0.8,
+          0.2
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0.5,
+          0.5
+        ],
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "periods": [
+        "am",
+        "pm",
+        "mid"
+      ],
+      "period_share": {
+        "am": 0.09,
+        "pm": 0.08800000000000001,
+        "mid": 0.048
+      },
+      "bpr": [
+        0.15,
+        4
+      ],
+      "max_slowdown": 4.0,
+      "los_bands": [
+        0.35,
+        0.55,
+        0.75,
+        0.9,
+        1.0
+      ]
+    },
+    "assumptions": {
+      "trips_per_capita": 0.9,
+      "pcu_per_trip": 0.37,
+      "peak_share": 0.09,
+      "beta_per_min": 0.1,
+      "mid_beta_per_min": 0.15
+    }
+  },
+  "road_flood": {
+    "very_high": 240.9,
+    "high": 1686.7,
+    "river_flood": 2577.9,
+    "total": 7229.1,
+    "pct_very_high": 3.3,
+    "pct_high_or_worse": 26.7
+  },
+  "noise_air": {
+    "residents_total": 29420982,
+    "residents_near_modelled_roads": 20639474,
+    "residents_lden_ge_53": 19605638,
+    "residents_lden_ge_65": 8626347,
+    "nox_t_day": 51.11,
+    "co2_t_day": 12493.0,
+    "nox_vs_s5p_no2_spearman_l5": 0.82,
+    "l5_cells_compared": 216,
+    "assumptions": {
+      "veh_per_pcu": 1.4,
+      "heavy_pct": 5.0,
+      "share_18h": 0.968,
+      "ef_g_per_vkm": {
+        "nox": 0.45,
+        "pm25": 0.025,
+        "co2": 110.0
+      },
+      "reach_m": 300.0,
+      "method": "CRTN 1988 + Abbott & Nelson 2002 Lden"
+    }
+  },
+  "emergency_access": {
+    "hospitals": 2704,
+    "pct_within_10_night": 91.1,
+    "pct_within_10_am": 83.4,
+    "pct_within_10_pm": 83.6,
+    "pct_over_20_peak": 4.4,
+    "source": "Overture Maps places 2026-10-21.0; demand model link times"
+  },
+  "rail_access": {
+    "metro_stations": 252,
+    "rail_stations": 75,
+    "pct_within_10_walk_metro": 26.2,
+    "pct_within_10_walk_any": 29.6,
+    "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
+  },
+  "ev_charging": {
+    "chargers": 168,
+    "chargers_by_source": {
+      "osm": 126,
+      "overture": 42
+    },
+    "parking": 220,
+    "fuel": 556,
+    "chargers_per_lakh": 0.57,
+    "pct_vkm_within_2km": 51.7,
+    "pct_pop_within_2km": 46.9
+  },
+  "cycling": {
+    "lowstress_km": 32513,
+    "cycleway_km": 77.6,
+    "highstress_km": 4648,
+    "islands": 9532,
+    "islands_over_5_km2": 72,
+    "largest_island_km2": 149.7,
+    "pct_residents_small_island": 11.4,
+    "pct_residents_no_lowstress_street": 0.4,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "crossings": {
+    "main_km": 4113,
+    "pct_main_km_on_long_gaps": 24.7,
+    "median_gap_m": 552,
+    "crosswalks_mapped": 700,
+    "gap_threshold_m": 500.0,
+    "source": "Overture Maps transportation 2026-10-21.0"
+  },
+  "freight": {
+    "establishments": {
+      "industry": 4508,
+      "logistics": 1103,
+      "wholesale": 374
+    },
+    "truck_trips_day": 33512,
+    "gateway_nodes": 2509,
+    "road_km_500_trucks_day": 13.5,
+    "busiest_truck_roads": [
+      {
+        "name": "Nityanand Marg",
+        "trucks_day": 2738
+      },
+      {
+        "name": "Jawaharlal Nehru Marg",
+        "trucks_day": 1616
+      },
+      {
+        "name": "Rani Jhansi Flyover",
+        "trucks_day": 1408
+      },
+      {
+        "name": "Outer Ring Road",
+        "trucks_day": 1216
+      },
+      {
+        "name": "Mandi House Chowk",
+        "trucks_day": 968
+      }
+    ],
+    "assumptions": {
+      "trucks_per_establishment": {
+        "logistics": 12,
+        "wholesale": 6,
+        "industry": 4
+      },
+      "nox_g_km": 5.0
+    },
+    "source": "Overture Maps places 2026-10-21.0; demand model arterials"
+  },
+  "job_access": {
+    "zones": 3139,
+    "pop_mean_jobs_car_pct": 9.6,
+    "pop_mean_jobs_transit_pct": 7.6,
+    "stations": 327,
+    "threshold_min": 45.0,
+    "assumptions": {
+      "wait_min": 5.0,
+      "ride_kmh": 33.0,
+      "walk_max_min": 20.0,
+      "all_stations_connected": true
+    }
+  },
+  "bus_stop_heat": {
+    "stops": 2474,
+    "stops_with_heat_data": 2474,
+    "pct_hot_bare": 25.1,
+    "pct_riders_at_hot_bare": 25.7,
+    "median_stop_lst_c": 39.3,
+    "top_stops": [
+      {
+        "digipin": "39J365K",
+        "name": "Bhajanpura",
+        "lon": 77.26404,
+        "lat": 28.70336,
+        "residents_5min": 51762,
+        "lst_c": 40.5,
+        "canopy_pct": 1.8,
+        "priority": 279567
+      },
+      {
+        "digipin": "39J4973",
+        "name": "Golcha Cinema",
+        "lon": 77.24031,
+        "lat": 28.64349,
+        "residents_5min": 52655,
+        "lst_c": 40.4,
+        "canopy_pct": 4.5,
+        "priority": 271542
+      },
+      {
+        "digipin": "39J4973",
+        "name": "Golcha Cinema",
+        "lon": 77.2405,
+        "lat": 28.64466,
+        "residents_5min": 52655,
+        "lst_c": 40.4,
+        "canopy_pct": 4.5,
+        "priority": 271542
+      },
+      {
+        "digipin": "39J3646",
+        "name": "Bhajanpura",
+        "lon": 77.2634,
+        "lat": 28.70369,
+        "residents_5min": 51714,
+        "lst_c": 40.3,
+        "canopy_pct": 1.4,
+        "priority": 270247
+      },
+      {
+        "digipin": "39J3646",
+        "name": "Bhajanpura Bus Stop",
+        "lon": 77.2636,
+        "lat": 28.70333,
+        "residents_5min": 51714,
+        "lst_c": 40.3,
+        "canopy_pct": 1.4,
+        "priority": 270247
+      },
+      {
+        "digipin": "39J492K",
+        "name": "Zakir Hussain College",
+        "lon": 77.23004,
+        "lat": 28.64119,
+        "residents_5min": 45465,
+        "lst_c": 41.4,
+        "canopy_pct": 8.4,
+        "priority": 266534
+      },
+      {
+        "digipin": "39J492K",
+        "name": "Zakir Hussain College",
+        "lon": 77.22963,
+        "lat": 28.64113,
+        "residents_5min": 45465,
+        "lst_c": 41.4,
+        "canopy_pct": 8.4,
+        "priority": 266534
+      },
+      {
+        "digipin": "39J4C9P",
+        "name": "Faiz Road",
+        "lon": 77.1993,
+        "lat": 28.64847,
+        "residents_5min": 55467,
+        "lst_c": 40.2,
+        "canopy_pct": 11.5,
+        "priority": 255259
+      },
+      {
+        "digipin": "39J4C9P",
+        "name": "",
+        "lon": 77.19828,
+        "lat": 28.64942,
+        "residents_5min": 55467,
+        "lst_c": 40.2,
+        "canopy_pct": 11.5,
+        "priority": 255259
+      },
+      {
+        "digipin": "39J4C9P",
+        "name": "Faiz Road",
+        "lon": 77.19973,
+        "lat": 28.64944,
+        "residents_5min": 55467,
+        "lst_c": 40.2,
+        "canopy_pct": 11.5,
+        "priority": 255259
+      }
+    ],
+    "thresholds": {
+      "hot_c": 40.0,
+      "bare_canopy_pct": 10.0,
+      "comfort_c": 35.0
+    },
+    "sources": {
+      "osm": 1936,
+      "overture": 538
+    }
+  },
+  "parking": {
+    "cells": 21065,
+    "demand_ecs": 1317162,
+    "lots_mapped": 220,
+    "pct_demand_in_overflow": 21.0,
+    "overflow_ecs": 178731,
+    "hotspots": [
+      {
+        "digipin": "39J49K6",
+        "demand_ecs": 640,
+        "supply_ecs": 121,
+        "pressure": 5.29
+      },
+      {
+        "digipin": "39J5FK9",
+        "demand_ecs": 635,
+        "supply_ecs": 123,
+        "pressure": 5.15
+      },
+      {
+        "digipin": "39J4944",
+        "demand_ecs": 647,
+        "supply_ecs": 150,
+        "pressure": 4.3
+      },
+      {
+        "digipin": "39J4L39",
+        "demand_ecs": 666,
+        "supply_ecs": 203,
+        "pressure": 3.27
+      },
+      {
+        "digipin": "3C77T97",
+        "demand_ecs": 507,
+        "supply_ecs": 74,
+        "pressure": 6.89
+      },
+      {
+        "digipin": "39J4282",
+        "demand_ecs": 482,
+        "supply_ecs": 55,
+        "pressure": 8.74
+      },
+      {
+        "digipin": "39J53MJ",
+        "demand_ecs": 413,
+        "supply_ecs": 0,
+        "pressure": 413.31
+      },
+      {
+        "digipin": "39J44PK",
+        "demand_ecs": 517,
+        "supply_ecs": 109,
+        "pressure": 4.74
+      },
+      {
+        "digipin": "3C77T8J",
+        "demand_ecs": 483,
+        "supply_ecs": 76,
+        "pressure": 6.4
+      },
+      {
+        "digipin": "39JK7M8",
+        "demand_ecs": 686,
+        "supply_ecs": 289,
+        "pressure": 2.37
+      }
+    ],
+    "assumptions": {
+      "away_share": 0.5,
+      "ecs_per_trip": 0.177,
+      "accumulation": 0.6,
+      "bay_m": 5.5,
+      "usable_kerb": 0.4,
+      "lot_ecs": 40.0
+    }
+  },
+  "commute_carbon": {
+    "zones": 2690,
+    "pop_mean_trip_km": 12.21,
+    "co2_kg_resident_day": 0.396,
+    "co2_kt_year": 4250.0,
+    "inner_fifth_trip_km": 10.37,
+    "outer_fifth_trip_km": 15.12,
+    "assumptions": {
+      "detour": 1.3,
+      "intra_km": 0.6,
+      "kg_co2_per_pkm_mix": 0.036,
+      "modes": {
+        "two_wheeler": {
+          "share": 0.4,
+          "kg_per_pkm": 0.0292
+        },
+        "car": {
+          "share": 0.15,
+          "kg_per_pkm": 0.0875
+        },
+        "auto": {
+          "share": 0.15,
+          "kg_per_pkm": 0.035
+        },
+        "bus": {
+          "share": 0.3,
+          "kg_per_pkm": 0.02
+        }
+      }
+    }
+  }
+}
