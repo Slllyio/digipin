@@ -1100,3 +1100,7 @@ Item 67 asked for Mumbai locals with frequency; no open timetable or GTFS is rea
 ## Older people in walk-up flats (`walkups` lens, js/urban-lenses-safety.js)
 
 Residents 60+ (WorldPop age structure) in blocks whose mean building height is 9-15 m (about three to five storeys): the NBC 2016 asks for lifts above 15 m, so these are mostly climbed on foot. Pharmacies within 500 m are Overture places. The map shows older residents per walk-up block. Delhi: 5.9 lakh (36%) of 16.1 lakh older residents, 1.6 lakh with no pharmacy within 500 m; Mumbai 29%; Kolkata 23%; Bengaluru 14%.
+
+## Monsoon tree-fall risk (`treefall` lens, js/urban-lenses-safety.js)
+
+Tall canopy over busy roads, for pre-monsoon tree surveys and pruning. The vegetation dataset's `canopy_m` is the block-wide mean of Meta/WRI 1 m canopy height, so the trees' own height is `canopy_m` divided by tree cover (the share 5 m+); tall means 10 m+ over 15%+ of the block. Busy blocks are in the city's top half by OSM main and secondary road density. Map: 1 tall canopy, 2 over busy roads. Picks weigh road density, cover, tree height, CHIRPS heavy-rain days and cyclone wind. Main road under tall canopy: Delhi about 248 km, Mumbai 214 km, Bengaluru 200 km. Species, rot and trenching damage need a tree census.

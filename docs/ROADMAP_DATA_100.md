@@ -198,6 +198,7 @@ Each item gives four things:
 137. ✅ Hospital safety check: the same six hazards at every hospital block (NDMA hospital safety guidelines) | derived | `hospitalsafe` lens
 138. ✅ Crowded local-train stations: residents per suburban station by nearest-station catchment (rail_access, WorldPop) | derived | `stationload` lens
 139. ✅ Older people in walk-up flats: residents 60+ in 3-5 storey blocks × pharmacy reach (WorldPop, Open Buildings, Overture) | derived | `walkups` lens
+140. ✅ Monsoon tree-fall risk: tall canopy over busy main roads × heavy rain and cyclone wind (Meta canopy height, OSM, CHIRPS, IBTrACS) | derived | `treefall` lens
 
 ## Parked for the keys round
 

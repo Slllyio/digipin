@@ -462,6 +462,50 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Trees that fall in the monsoon. Old rain trees, gulmohars and peepals over busy roads come down in storms every
+    // year, on cars, wires and people. Tall canopy is a mean tree height of TALL_TREE_M or more (Meta canopy height)
+    // (block mean height over tree cover) covering TREE_COVER_PCT of the block; busy means main and secondary road density in the city's top half.
+    const TALL_TREE_M = 10, TREE_COVER_PCT = 15;
+
+    function treefall(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const ch = c['vegetation.canopy_m'], cov = c['vegetation.tree_canopy_pct'], major = c['osm_roads.major_km_km2'], sec = c['osm_roads.secondary_km_km2'];
+        const heavy = c['rainfall.heavy_rain_days'], wind = c['cyclones.wind_rl50_kmh'];
+        if (!ch || !cov || !major) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const roads = Float64Array.from({ length: n }, (_, i) => v(major, i) + v(sec, i));
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || roads[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const withRoad = idx.filter(i => roads[i] > 0);
+        const busyQ = withRoad.length ? wquantile(roads, null, withRoad, 0.5) : Infinity;
+        // canopy_m is the block-wide mean height, so the trees' own height is that divided by their cover.
+        const treeH = i => (v(cov, i) > 0 ? v(ch, i) / (v(cov, i) / 100) : 0);
+        const tall = i => v(cov, i) >= TREE_COVER_PCT && treeH(i) >= TALL_TREE_M, busy = i => roads[i] > 0 && roads[i] >= busyQ;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = tall(i) ? (busy(i) ? 2 : 1) : 0;
+        const ts = idx.filter(tall), bs = ts.filter(busy);
+        // Main-road length under tall canopy: road density × block area × canopy share.
+        const km = bs.reduce((a, i) => a + roads[i] * g.cellKm2 * v(cov, i) / 100, 0);
+        const pB = _sumOver(pop, bs, () => true);
+        const stats = [
+            { label: `Blocks with tall trees (${TALL_TREE_M} m+, ${TREE_COVER_PCT}%+ canopy)`, value: String(ts.length) },
+            { label: '…over busy main roads (city\'s top half by main-road density)', value: `${bs.length} blocks, about ${Math.round(km)} km of main road under canopy` },
+            { label: '…residents in those blocks', value: _people(pB) },
+        ];
+        if (heavy) stats.push({ label: 'Heavy-rain days a year in those blocks (mean)', value: _round(bs.reduce((a, i) => a + v(heavy, i), 0) / (bs.length || 1), 1) });
+        const score = Float64Array.from({ length: n }, (_, i) => (tall(i) && busy(i) ? roads[i] * v(cov, i) * treeH(i) * (1 + v(heavy, i) / 10) * (1 + Math.max(0, v(wind, i) - 60) / 60) : 0));
+        spaced(g, bs.length ? bs : ts, score).forEach((i, k) => stats.push({
+            label: `Prune ${k + 1}: ${g.codes[i]}`,
+            value: `trees about ${_round(treeH(i))} m tall over ${_round(v(cov, i))}% of the block; ${_round(roads[i], 1)} km of main road per km²${heavy ? `; ${_round(v(heavy, i), 1)} heavy-rain days a year` : ''}` }));
+        return {
+            columns: { tree_fall: out }, idx, weightKey: 'tree_fall', noHotspots: true,
+            metric: { label: 'Main road under tall canopy', value: Math.round(km), unit: 'km', higherIs: null },
+            headline: `About ${Math.round(km)} km of busy main road runs under tall tree canopy, in ${bs.length} blocks home to ${_people(pB)} residents. These are the city's shadiest streets and also where storms bring trees down on traffic, wires and walkers. The blocks listed have the tallest, densest canopy over the busiest roads${heavy ? ' and the most heavy-rain days' : ''}: the first for pre-monsoon tree surveys and pruning (not felling), at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -532,10 +576,16 @@ const UrbanLensesSafety = (() => {
             needs: ['demographics.elderly_60plus', 'building_stock.height_2023_m', 'places.pharmacies'],
             method: `Residents aged 60+ are WorldPop age structure per block. Walk-up blocks have a mean building height of ${WALKUP_LO}-${WALKUP_HI} m in Google Open Buildings 2.5D (2023), about three to five storeys: the National Building Code 2016 asks for lifts above 15 m, so most such buildings have none. Pharmacies are Overture Maps places within ${PHARMA_KM * 1000} m. A block average mixes buildings, and lift retrofits are not in open data, so this ranks where to look.`,
             refs: 'WorldPop age structures; Google Open Buildings 2.5D Temporal; National Building Code 2016 Part 4 and Part 8 (lifts); Harmonised Guidelines for Universal Accessibility (MoHUA 2021)' },
+        { id: 'treefall', equity: false, title: 'Monsoon tree-fall risk', icon: '🌳',
+            question: 'Where do tall trees hang over busy roads before the monsoon?',
+            field: { key: 'tree_fall', label: 'Tall canopy (1), over busy main roads (2)', unit: '0-2', higherIs: 'worse', ramp: 'greens', domain: [0, 2] },
+            needs: ['vegetation.canopy_m', 'vegetation.tree_canopy_pct', 'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'rainfall.heavy_rain_days', 'cyclones.wind_rl50_kmh', 'population.population'],
+            method: `Tall canopy covers ${TREE_COVER_PCT}% or more of the block with trees about ${TALL_TREE_M} m tall or more on average: the block's mean canopy height divided by its tree cover (Meta and WRI 1 m canopy height, from the vegetation dataset). Busy blocks are in the city's top half by OpenStreetMap main and secondary road density. Road length under canopy is road density × block area × canopy share. Picks weigh road density, canopy, height, heavy-rain days (CHIRPS) and cyclone wind. Tree species, age, rot and root damage from trenching, the real causes of falls, need a street tree census; this shows where to survey first.`,
+            refs: 'Meta/WRI High Resolution Canopy Height (Tolan et al. 2024); OpenStreetMap; CHIRPS; IBTrACS; Indian Roads Congress IRC:SP:21 (roadside plantation)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {
