@@ -1124,3 +1124,7 @@ Every block in the sites dataset (cleared this year, building up, or stalled wit
 ## Hotel cluster fire safety (`hotelfire` lens, js/urban-lenses-safety.js)
 
 Cluster blocks have 10+ Overture lodging places within 500 m and sit in the top 3% of blocks with any (the top tenth flagged 1,831 Delhi blocks, too many to act on). Flags: packed (50%+ under roofs), no main road within 300 m, no listed fire station within 3 km, settled by 1985. Map: 1 cluster, 2 one flag, 3 two or more. Delhi: 555 cluster blocks (35+ lodgings within 500 m), 118 with two or more flags, led by Paharganj and Karol Bagh; Mumbai 188, 14 flagged twice. Built around the 2019 Hotel Arpit Palace fire.
+
+## Quarries and flooded pits near homes (`quarries` lens, js/urban-lenses-safety.js)
+
+Blocks with 10%+ mapped as quarry (OSM land use via Overture), flooded where 5%+ is open water (ESA WorldCover); residents and children within 500 m. Map: 1 near a quarry, 2 near a flooded pit. Bengaluru: 161 quarry blocks, 37 holding water, 8,399 residents within 500 m of a flooded pit; Hyderabad 58 and 11. Quarry mapping is patchy (Jaipur has none mapped), so the counts are a floor.

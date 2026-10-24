@@ -730,6 +730,45 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Quarries beside homes. Working quarries blast and throw dust; abandoned ones fill with rain into deep, steep-sided
+    // pits where children swim and drown. A quarry block has QUARRY_PCT of its land mapped as quarry (OpenStreetMap);
+    // flooded means PIT_WATER_PCT of it is open water (ESA WorldCover). Residents and children within NEXT_KM are counted.
+    const QUARRY_PCT = 10, PIT_WATER_PCT = 5;
+
+    function quarries(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], qy = c['landuse.quarry_pct'];
+        if (!qy) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const water = c['land_cover.water_pct'], kids = c['demographics.children_pct'];
+        const isQ = i => v(qy, i) >= QUARRY_PCT, wet = i => isQ(i) && v(water, i) >= PIT_WATER_PCT;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || isQ(i)) idx.push(i);
+        const qs = idx.filter(isQ);
+        if (idx.length < 5 || !qs.length) return null;
+        const nearQ = within(g, Float64Array.from({ length: n }, (_, i) => (isQ(i) ? 1 : 0)), NEXT_KM);
+        const nearW = within(g, Float64Array.from({ length: n }, (_, i) => (wet(i) ? 1 : 0)), NEXT_KM);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = nearW[i] > 0 ? 2 : nearQ[i] > 0 ? 1 : 0;
+        const nq = idx.filter(i => v(pop, i) > 0 && nearQ[i] > 0), nw = idx.filter(i => v(pop, i) > 0 && nearW[i] > 0);
+        const child = i => v(pop, i) * v(kids, i) / 100;
+        const sum = (list, f) => list.reduce((a, i) => a + f(i), 0);
+        const ppl = within(g, Float64Array.from({ length: n }, (_, i) => v(pop, i)), NEXT_KM);
+        const stats = [
+            { label: `Quarry blocks (${QUARRY_PCT}%+ mapped as quarry)`, value: `${qs.length}, ${qs.filter(wet).length} holding water` },
+            { label: `Residents within ${NEXT_KM * 1000} m of a quarry`, value: _people(sum(nq, i => v(pop, i))) },
+            { label: `…of a flooded quarry pit`, value: `${_people(sum(nw, i => v(pop, i)))}${kids ? `, about ${_people(sum(nw, child))} of them children` : ''}` },
+        ];
+        spaced(g, qs, Float64Array.from({ length: n }, (_, i) => (isQ(i) ? ppl[i] * (wet(i) ? 3 : 1) : 0))).forEach((i, k) => stats.push({
+            label: `Fence or fill ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(v(qy, i))}% quarry${wet(i) ? `, ${_round(v(water, i))}% standing water` : ''}; ${_people(ppl[i])} residents within ${NEXT_KM * 1000} m` }));
+        return {
+            columns: { quarry_near: out }, idx, weightKey: 'quarry_near', noHotspots: true,
+            metric: { label: 'Residents within 500 m of a flooded quarry pit', value: Math.round(sum(nw, i => v(pop, i))), unit: 'people', higherIs: 'worse' },
+            headline: `${qs.length} blocks are mapped as quarries, ${qs.filter(wet).length} of them holding water. ${_people(sum(nq, i => v(pop, i)))} residents live within ${NEXT_KM * 1000} m of one, breathing blast dust${nw.length ? `, and ${_people(sum(nw, i => v(pop, i)))} within ${NEXT_KM * 1000} m of a flooded pit${kids ? ` (about ${_people(sum(nw, child))} children)` : ''}: deep, cold, steep-sided water where children swim and drown` : ''}. Quarry mapping is patchy, so treat these as a floor. The quarries listed have the most people around them, the first to fence, sign or fill, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -837,10 +876,16 @@ const UrbanLensesSafety = (() => {
             needs: ['places.lodging', 'building_stock.cover_2023_pct', 'building_dynamics.settled_year', 'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'places.fire_stations', 'population.population'],
             method: `Hotels and guest houses are Overture Maps lodging places. Cluster blocks have ${HUB_MIN} or more within ${HUB_KM * 1000} m and sit in the city's top ${Math.round(100 * (1 - HOTEL_Q))}% of blocks with any. Flags: ${PACKED_PCT}%+ under roofs (Open Buildings 2023); no OpenStreetMap main or secondary road within ${DEEP_KM * 1000} m; no fire station listed within ${FIRE_KM} km (where ${FIRE_MIN}+ are listed); settled by ${OLD_YEAR} (WSF Evolution). Fire NOCs, rooftop structures and exits are not in open data.`,
             refs: 'Overture Maps places; Google Open Buildings 2.5D; OpenStreetMap; WSF Evolution; National Building Code 2016 Part 4; Delhi Fire Service Rules 2010' },
+        { id: 'quarries', equity: false, title: 'Quarries and flooded pits near homes', icon: '⛏️',
+            question: 'Where do people live beside quarries and water-filled pits?',
+            field: { key: 'quarry_near', label: `Within ${NEXT_KM * 1000} m of a quarry (1), of a flooded pit (2)`, unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
+            needs: ['landuse.quarry_pct', 'land_cover.water_pct', 'demographics.children_pct', 'population.population'],
+            method: `Quarry blocks have ${QUARRY_PCT}% or more of their land mapped as quarry in OpenStreetMap land use (via Overture). Flooded quarries also have ${PIT_WATER_PCT}% or more open water in ESA WorldCover 2021. Residents and children (WorldPop age structure) within ${NEXT_KM * 1000} m are counted on the block grid. Whether a quarry is working or abandoned, fenced or guarded is not in open data, and unmapped pits are missed.`,
+            refs: 'OpenStreetMap landuse=quarry via Overture Maps; ESA WorldCover 2021; WorldPop; Mines and Minerals (Development and Regulation) Act 1957 (mine closure)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

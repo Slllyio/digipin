@@ -1284,6 +1284,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "quarries": {
+     "label": "Residents within 500 m of a flooded quarry pit",
+     "value": 8399,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -2058,6 +2064,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "quarries": {
+     "label": "Residents within 500 m of a flooded quarry pit",
+     "value": 0,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2824,6 +2836,12 @@
      "label": "Hotel clusters with two or more fire flags",
      "value": 26.2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "quarries": {
+     "label": "Residents within 500 m of a flooded quarry pit",
+     "value": 33900,
+     "unit": "people",
      "higherIs": "worse"
     },
     "events": {
@@ -3604,6 +3622,12 @@
      "label": "Hotel clusters with two or more fire flags",
      "value": 21.3,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "quarries": {
+     "label": "Residents within 500 m of a flooded quarry pit",
+     "value": 0,
+     "unit": "people",
      "higherIs": "worse"
     },
     "events": {
@@ -5022,6 +5046,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "quarries": {
+     "label": "Residents within 500 m of a flooded quarry pit",
+     "value": 8502,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.9,
@@ -5794,6 +5824,12 @@
      "label": "Hotel clusters with two or more fire flags",
      "value": 0,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "quarries": {
+     "label": "Residents within 500 m of a flooded quarry pit",
+     "value": 11128,
+     "unit": "people",
      "higherIs": "worse"
     },
     "events": {
@@ -8868,6 +8904,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "quarries": {
+     "label": "Residents within 500 m of a flooded quarry pit",
+     "value": 58553,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -9646,6 +9688,12 @@
      "label": "Hotel clusters with two or more fire flags",
      "value": 2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "quarries": {
+     "label": "Residents within 500 m of a flooded quarry pit",
+     "value": 1123,
+     "unit": "people",
      "higherIs": "worse"
     },
     "events": {

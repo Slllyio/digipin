@@ -204,6 +204,7 @@ Each item gives four things:
 143. ✅ Rooftop rainwater: roof area × annual rain × runoff, per resident and against groundwater decline (Open Buildings, CHIRPS, CGWB norms) | derived | `rainharvest` lens
 144. ✅ Construction dust and heat: building sites near schools, hospitals and homes, and hot sites for outdoor workers (Dynamic World sites, Landsat LST, OSM, Overture) | derived | `sitedust` lens
 145. ✅ Hotel cluster fire safety: hotel and guest-house clusters × packed blocks × deep lanes × fire-station reach × old stock (Overture, Open Buildings, OSM, WSF) | derived | `hotelfire` lens
+146. ✅ Quarries and flooded pits near homes: quarry land × open water × residents and children within 500 m (OSM land use, ESA WorldCover, WorldPop) | derived | `quarries` lens
 
 ## Parked for the keys round
 
