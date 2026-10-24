@@ -1152,3 +1152,7 @@ New dataset `downwind` (pipeline/realestate/downwind.py): per lived-in block, ma
 ## Power cuts from space (`powercuts` lens, js/urban-lenses-safety.js)
 
 New L6 dataset `blackouts` (pipeline/realestate/blackouts.py): NASA Black Marble VNP46A2 daily night lights for 2023-2024, high-quality cloud-free nights only. For each lit ~1 km block (median 5+ nW/cm²/sr), a night counts as dark when its radiance relative to its own median falls below half of that night's citywide median ratio, which cancels haze and thin cloud. `dark_nights_pct` is the share of good nights (about 400 of 731 in Delhi) that were dark. The lens counts residents in blocks dark on 5%+ of clear nights, with over-60s, 40 °C heat and hospitals in them. VIIRS passes at about 1:30 am, so evening load-shedding is missed, and switched-off street lights count too; dim peri-urban blocks are noisiest.
+
+## Homes on the forest edge (`wildedge` lens, js/urban-lenses-safety.js)
+
+Forest blocks have 60%+ tree cover (ESA WorldCover) or 50%+ mapped protected land, with 25+ such blocks within 1 km so that parks and leafy colonies do not count. Lived-in blocks within 500 m of one are the edge (1); lived-in blocks inside are 2. Stats add children under 5 and the darkest quarter of blocks by VIIRS night radiance. Mumbai: 11.2 lakh residents (6.3%) on the edge, tracing the Sanjay Gandhi National Park and Aarey ring; Delhi 5.2% (the Ridge and Asola); Bengaluru 1.4%. Leopard sightings and attacks are not open data, so this is exposure, not incidents.

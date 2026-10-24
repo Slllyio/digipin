@@ -552,6 +552,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 0.1,
+     "unit": "%",
+     "higherIs": null
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1355,6 +1361,12 @@
      "value": 1.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 1.4,
+     "unit": "%",
+     "higherIs": null
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -2172,6 +2184,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 2.1,
+     "unit": "%",
+     "higherIs": null
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2981,6 +2999,12 @@
      "value": 3.6,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 1.5,
+     "unit": "%",
+     "higherIs": null
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -3803,6 +3827,12 @@
      "value": 1.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 5.2,
+     "unit": "%",
+     "higherIs": null
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -5280,6 +5310,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 1.4,
+     "unit": "%",
+     "higherIs": null
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.9,
@@ -6084,6 +6120,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 0.4,
+     "unit": "%",
+     "higherIs": null
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6863,6 +6905,12 @@
      "value": 3.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 2.3,
+     "unit": "%",
+     "higherIs": null
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -7674,6 +7722,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 2.6,
+     "unit": "%",
+     "higherIs": null
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -8465,6 +8519,12 @@
      "value": 0.9,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 3,
+     "unit": "%",
+     "higherIs": null
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -9288,6 +9348,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 6.3,
+     "unit": "%",
+     "higherIs": null
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -10103,6 +10169,12 @@
      "value": 1.4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "wildedge": {
+     "label": "Residents within 500 m of large forest",
+     "value": 2.5,
+     "unit": "%",
+     "higherIs": null
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",

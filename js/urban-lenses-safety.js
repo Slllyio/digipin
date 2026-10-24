@@ -971,6 +971,48 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Homes on the forest edge. Where housing meets large forest (Aarey and Sanjay Gandhi National Park in Mumbai,
+    // Bannerghatta, the Delhi Ridge), leopards, snakes and forest fires reach homes; children outdoors at dusk on dark,
+    // unlit edges are most at risk. Forest is a block mostly under trees or protected; the edge is lived-in blocks near one.
+    const FOREST_TREE_PCT = 60, FOREST_PROT_PCT = 50, FOREST_MIN = 25, EDGE_KM = 0.5, DARK_Q = 0.25;
+
+    function wildedge(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], tree = c['land_cover.tree_pct'];
+        const prot = c['landuse.protected_pct'], kids = c['demographics.under5'], rad = c['nightlights.radiance'];
+        if (!pop || !tree) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const forest = Float64Array.from({ length: n }, (_, i) => (v(tree, i) >= FOREST_TREE_PCT || v(prot, i) >= FOREST_PROT_PCT ? 1 : 0));
+        // a lone wooded block is a park, not a forest: require FOREST_MIN forest blocks within 1 km
+        const mass = within(g, forest, 1);
+        const big = Float64Array.from({ length: n }, (_, i) => (forest[i] && mass[i] >= FOREST_MIN ? 1 : 0));
+        const near = within(g, big, EDGE_KM);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        const edge = idx.filter(i => near[i] > 0 && !big[i]);
+        if (idx.length < 5 || edge.length < 3) return null;
+        const all = _sumOver(pop, idx, () => true), pE = _sumOver(pop, edge, () => true);
+        const darkQ = rad ? wquantile(rad, pop, idx, DARK_Q) : null;
+        const dark = rad ? edge.filter(i => v(rad, i) <= darkQ) : [];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = big[i] ? 2 : near[i] > 0 ? 1 : 0;
+        const stats = [
+            { label: `Residents within ${EDGE_KM * 1000} m of large forest or protected land`, value: `${_people(pE)} (${_round(100 * pE / (all || 1), 1)}%)` },
+        ];
+        if (kids) stats.push({ label: '…of them children under 5', value: _people(_sumOver(kids, edge, () => true)) });
+        if (rad) stats.push({ label: "…in the darkest quarter of the city's blocks at night", value: _people(_sumOver(pop, dark, () => true)) });
+        stats.push({ label: 'Residents living inside forest or protected blocks', value: _people(_sumOver(pop, idx, i => big[i] > 0)) });
+        const score = Float64Array.from({ length: n }, (_, i) => v(pop, i) * (1 + v(near, i) / 10) * (rad && v(rad, i) <= darkQ ? 2 : 1));
+        spaced(g, edge, score).forEach((i, k) => stats.push({
+            label: `Edge to light and fence ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(pop[i])} residents${kids ? `, ${_people(v(kids, i))} under 5` : ''}; ${_round(near[i])} forest blocks within ${EDGE_KM * 1000} m${rad ? `; night radiance ${_round(v(rad, i), 1)}` : ''}` }));
+        return {
+            columns: { forest_edge: out }, idx, weightKey: 'forest_edge', noHotspots: true,
+            metric: { label: `Residents within ${EDGE_KM * 1000} m of large forest`, value: _round(100 * pE / (all || 1), 1), unit: '%', higherIs: null },
+            headline: `${_people(pE)} residents live within ${EDGE_KM * 1000} m of large forest or protected land, where wildlife (leopards on Mumbai's, Pune's and Bengaluru's edges), snakes and fire reach homes${rad ? `; ${_people(_sumOver(pop, dark, () => true))} of them in the darkest blocks at night` : ''}. Street lights, toilets indoors and cleared garbage on these edges cut conflicts; the blocks named have the most people on the darkest edges.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -1122,10 +1164,16 @@ const UrbanLensesSafety = (() => {
             needs: ['blackouts.dark_nights_pct', 'demographics.elderly_60plus', 'humid_heat.hot_days_40c', 'places.hospitals', 'population.population'],
             method: `NASA Black Marble VNP46A2 daily night lights (2023-2024, BRDF and moonlight corrected), high-quality cloud-free nights only, about 500 m pixels averaged to ~1 km blocks. A lit block (median 5+ nW/cm²/sr) counts a dark night when its lights, relative to its own median, fall below half of that night's citywide median ratio, so haze and thin cloud that dim the whole city cancel out. VIIRS passes at about 1:30 am, so evening load-shedding is missed; switched-off street lights and sensor artefacts also count. Discom feeder outage logs (where published) are the ground truth to check against.`,
             refs: 'Román et al. 2018 (NASA Black Marble); Mann, Melaas & Malik 2016 (night lights and Indian power supply); ESMI (Prayas Energy Group) outage monitoring' },
+        { id: 'wildedge', equity: false, title: 'Homes on the forest edge', icon: '🐆',
+            question: 'Where do homes meet forest, leopards and forest fire?',
+            field: { key: 'forest_edge', label: 'Forest edge (1), inside forest or protected land (2)', unit: '0-2', higherIs: null, ramp: 'greens', domain: [0, 2] },
+            needs: ['land_cover.tree_pct', 'landuse.protected_pct', 'demographics.under5', 'nightlights.radiance', 'population.population'],
+            method: `Forest blocks have ${FOREST_TREE_PCT}%+ tree cover (ESA WorldCover) or ${FOREST_PROT_PCT}%+ mapped protected land (OpenStreetMap), with at least ${FOREST_MIN} such blocks within 1 km so that parks do not count. Edge blocks are lived-in blocks within ${EDGE_KM * 1000} m of one. Dark blocks are the city's darkest quarter by VIIRS night radiance, resident-weighted. Leopard sightings and attack records are not open data; Mumbai's Aarey and SGNP edges are the documented case.`,
+            refs: 'ESA WorldCover 2021; OpenStreetMap protected areas; VIIRS night lights; Bhatia et al. 2013 and Odden et al. 2014 (leopards in human landscapes); MoEFCC human-leopard conflict guidelines (2011)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

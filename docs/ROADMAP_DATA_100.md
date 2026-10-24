@@ -210,6 +210,7 @@ Each item gives four things:
 149. ✅ Tests, teeth and eyes: diagnostic labs and scan centres, dentists and eye clinics within reach, and old-age homes per over-60 (Overture places) | S3 | `carekit` lens (places gained `diagnostics`, `dental`, `eyecare`, `elder_homes`)
 150. ✅ Coal smoke upwind: coal, gas and oil power plants within 150 km, weighted by how often the wind blows from each plant to the block (WRI Global Power Plant Database, ERA5-Land daily wind) | EE | `coalplume` lens (new dataset `power_plants`, pipeline/realestate/powerplants.py)
 151. ✅ Downwind of the dump: residents downwind of landfills and industrial land, by the city wind rose (OSM land use, ERA5-Land daily wind) | EE | `dumpsmoke` lens (new dataset `downwind`, pipeline/realestate/downwind.py)
+152. ✅ Homes on the forest edge: residents and young children within 500 m of large forest or protected land, on dark edges (ESA WorldCover, OSM protected areas, VIIRS) | derived | `wildedge` lens (human-wildlife conflict and forest fire)
 
 ## Parked for the keys round
 
