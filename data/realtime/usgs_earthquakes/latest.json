@@ -1,7 +1,91 @@
 {
-  "generated_at_iso": "2026-10-24T14:04:35Z",
-  "count": 45,
+  "generated_at_iso": "2026-10-24T17:26:57Z",
+  "count": 48,
   "records": [
+    {
+      "id": "us6000u4n8",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-24T16:54:15.523000+00:00",
+      "latitude": -14.2056,
+      "longitude": 165.9365,
+      "depth_km": 10.0,
+      "place": "153 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4n8",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000u4my",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-24T15:45:47.533000+00:00",
+      "latitude": -13.9412,
+      "longitude": 165.1696,
+      "depth_km": 10.0,
+      "place": "238 km WNW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4my",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000u4mn",
+      "magnitude": 5.8,
+      "origin_time_utc": "2026-10-24T15:24:19.882000+00:00",
+      "latitude": -54.0304,
+      "longitude": 7.0149,
+      "depth_km": 12.486,
+      "place": "Bouvet Island region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4mn",
+      "tsunami": 0,
+      "significance": 518
+    },
+    {
+      "id": "us6000u4mm",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-24T15:19:25.185000+00:00",
+      "latitude": -13.8535,
+      "longitude": 165.4608,
+      "depth_km": 10.0,
+      "place": "217 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4mm",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000u4ml",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-24T15:07:40.810000+00:00",
+      "latitude": -13.8267,
+      "longitude": 165.5148,
+      "depth_km": 10.0,
+      "place": "215 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4ml",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000u4mi",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-24T13:53:00.775000+00:00",
+      "latitude": -13.7777,
+      "longitude": 165.5398,
+      "depth_km": 10.0,
+      "place": "216 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4mi",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000u4mg",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-24T13:26:34.296000+00:00",
+      "latitude": 32.5629,
+      "longitude": 93.694,
+      "depth_km": 10.0,
+      "place": "195 km NE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4mg",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000u4m9",
       "magnitude": 4.7,
@@ -459,6 +543,18 @@
       "significance": 326
     },
     {
+      "id": "us6000u4gs",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-23T20:58:01.491000+00:00",
+      "latitude": 23.7861,
+      "longitude": 121.9479,
+      "depth_km": 10.0,
+      "place": "40 km ESE of Hualien City, Taiwan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4gs",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
       "id": "us6000u4gm",
       "magnitude": 4.9,
       "origin_time_utc": "2026-10-23T20:48:16.356000+00:00",
@@ -481,66 +577,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4gj",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us6000u4f5",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-23T17:06:25.116000+00:00",
-      "latitude": 25.9295,
-      "longitude": 95.6545,
-      "depth_km": 116.703,
-      "place": "91 km ESE of Tuensang, India",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4f5",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000u4e2",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-23T16:07:51.754000+00:00",
-      "latitude": 40.4159,
-      "longitude": 142.572,
-      "depth_km": 38.138,
-      "place": "72 km ENE of Noda, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4e2",
-      "tsunami": 0,
-      "significance": 401
-    },
-    {
-      "id": "us6000u4dx",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-23T15:32:13.051000+00:00",
-      "latitude": 38.8141,
-      "longitude": 14.3074,
-      "depth_km": 10.0,
-      "place": "52 km WNW of Malfa, Italy",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4dx",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000u4dk",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-23T14:41:16.206000+00:00",
-      "latitude": 32.5642,
-      "longitude": 94.1749,
-      "depth_km": 10.0,
-      "place": "233 km ENE of Nagqu, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4dk",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000u4df",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-23T14:14:04.311000+00:00",
-      "latitude": 32.5717,
-      "longitude": 93.9443,
-      "depth_km": 10.0,
-      "place": "215 km NE of Nagqu, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4df",
-      "tsunami": 0,
-      "significance": 340
     }
   ]
 }
