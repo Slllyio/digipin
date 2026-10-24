@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-24T05:53:52Z",
+  "generated_at_iso": "2026-10-24T10:18:32Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-24 15:36:44|21.867,95.697",
+      "magnitude": 4.1,
+      "origin_time": "2026-10-24 15:36:44",
+      "latitude": 21.867,
+      "longitude": 95.697,
+      "depth_km": 10.0,
+      "region": "Myanmar",
+      "location": "26km W of Burma, Myanmar",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-24 14:09:59|32.532,93.723",
+      "magnitude": 5.4,
+      "origin_time": "2026-10-24 14:09:59",
+      "latitude": 32.532,
+      "longitude": 93.723,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "510km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-24 10:09:56|39.768,75.918",
       "magnitude": 4.2,
@@ -1628,28 +1650,6 @@
       "depth_km": 60.0,
       "region": "Andaman Sea",
       "location": "158km SSE of Portblair, Andaman and Nicobar island, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-12 20:03:20|20.014,72.926",
-      "magnitude": 2.4,
-      "origin_time": "2026-10-12 20:03:20",
-      "latitude": 20.014,
-      "longitude": 72.926,
-      "depth_km": 5.0,
-      "region": "Palghar, Maharashtra",
-      "location": "90km W of Nashik, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-12 18:56:16|27.578,92.421",
-      "magnitude": 2.7,
-      "origin_time": "2026-10-12 18:56:16",
-      "latitude": 27.578,
-      "longitude": 92.421,
-      "depth_km": 7.0,
-      "region": "Bichom, Arunachal Pradesh",
-      "location": "53km E of Tawang, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

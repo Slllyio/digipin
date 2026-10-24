@@ -1,7 +1,211 @@
 {
-  "generated_at_iso": "2026-10-24T05:53:01Z",
-  "count": 31,
+  "generated_at_iso": "2026-10-24T10:18:24Z",
+  "count": 46,
   "records": [
+    {
+      "id": "us6000u4lr",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-24T09:38:49.138000+00:00",
+      "latitude": -14.1348,
+      "longitude": 165.8048,
+      "depth_km": 10.0,
+      "place": "169 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4lr",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000u4lp",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-24T09:07:00.782000+00:00",
+      "latitude": -14.1064,
+      "longitude": 165.2758,
+      "depth_km": 10.0,
+      "place": "219 km WNW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4lp",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000u4lm",
+      "magnitude": 5.9,
+      "origin_time_utc": "2026-10-24T08:56:28.815000+00:00",
+      "latitude": -13.9418,
+      "longitude": 165.6471,
+      "depth_km": 10.0,
+      "place": "196 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4lm",
+      "tsunami": 0,
+      "significance": 536
+    },
+    {
+      "id": "us6000u4ll",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-24T08:45:55.500000+00:00",
+      "latitude": -13.9869,
+      "longitude": 165.7108,
+      "depth_km": 10.0,
+      "place": "187 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4ll",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000u4lg",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-10-24T08:39:53.139000+00:00",
+      "latitude": 32.5629,
+      "longitude": 94.048,
+      "depth_km": 10.0,
+      "place": "223 km ENE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4lg",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us6000u4ld",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-24T08:33:48.499000+00:00",
+      "latitude": 53.5186,
+      "longitude": -165.0962,
+      "depth_km": 35.0,
+      "place": "81 km SSE of Akutan, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4ld",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000u4lb",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-24T08:29:20.689000+00:00",
+      "latitude": 43.3139,
+      "longitude": 82.1076,
+      "depth_km": 10.0,
+      "place": "41 km SSE of Kax, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4lb",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000u4lc",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-10-24T08:28:02.029000+00:00",
+      "latitude": -13.7972,
+      "longitude": 165.6088,
+      "depth_km": 10.0,
+      "place": "209 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4lc",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000u4l9",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-10-24T08:22:46.296000+00:00",
+      "latitude": -13.833,
+      "longitude": 165.4664,
+      "depth_km": 10.0,
+      "place": "218 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4l9",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000u4l8",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-24T08:20:01.035000+00:00",
+      "latitude": -13.805,
+      "longitude": 165.4469,
+      "depth_km": 10.0,
+      "place": "222 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4l8",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000u4kw",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-24T06:58:03.586000+00:00",
+      "latitude": -13.8532,
+      "longitude": 165.7268,
+      "depth_km": 10.0,
+      "place": "195 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4kw",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us6000u4ku",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-24T06:52:04.142000+00:00",
+      "latitude": -13.8777,
+      "longitude": 165.4237,
+      "depth_km": 10.0,
+      "place": "219 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4ku",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000u4kq",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-10-24T06:43:09.602000+00:00",
+      "latitude": -14.5918,
+      "longitude": 167.3063,
+      "depth_km": 194.632,
+      "place": "55 km NNE of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4kq",
+      "tsunami": 0,
+      "significance": 465
+    },
+    {
+      "id": "us6000u4kt",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-24T06:20:56.869000+00:00",
+      "latitude": -13.8228,
+      "longitude": 165.6213,
+      "depth_km": 10.0,
+      "place": "206 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4kt",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000u4kj",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-10-24T06:04:16.367000+00:00",
+      "latitude": -14.1278,
+      "longitude": 165.7535,
+      "depth_km": 10.0,
+      "place": "174 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4kj",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us6000u4kh",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-24T05:37:46.052000+00:00",
+      "latitude": -14.051,
+      "longitude": 165.8047,
+      "depth_km": 10.0,
+      "place": "175 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4kh",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000u4ke",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-24T05:35:54.921000+00:00",
+      "latitude": -13.9786,
+      "longitude": 165.7483,
+      "depth_km": 10.0,
+      "place": "184 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4ke",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000u4k6",
       "magnitude": 5.8,
@@ -144,7 +348,7 @@
       "place": "197 km WNW of Port-Olry, Vanuatu",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4j2",
       "tsunami": 1,
-      "significance": 733
+      "significance": 734
     },
     {
       "id": "us6000u4ib",
@@ -349,30 +553,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4bk",
       "tsunami": 0,
       "significance": 504
-    },
-    {
-      "id": "us6000u4bg",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-23T09:51:39.628000+00:00",
-      "latitude": 38.7219,
-      "longitude": 14.2527,
-      "depth_km": 10.0,
-      "place": "53 km WNW of Leni, Italy",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4bg",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u4b3",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-23T09:09:36.956000+00:00",
-      "latitude": 6.5678,
-      "longitude": 123.8685,
-      "depth_km": 591.289,
-      "place": "18 km WNW of Bantogon, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4b3",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
