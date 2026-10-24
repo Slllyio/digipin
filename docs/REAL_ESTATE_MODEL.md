@@ -1080,3 +1080,7 @@ Industry among housing, the setting of Delhi's 2019 Anaj Mandi and 2022 Mundka f
 ## Storm-surge shelter gaps (`refuge` lens, js/urban-lenses-safety.js)
 
 Residents in blocks with 25%+ of their area in Aqueduct's coastal 1-in-100-year flood today or by 2050 (RCP4.5), and whether a school (OSM) or community hall (Overture) lies within 1 km. Map: 1 surge zone with a refuge, 2 none within 1 km. Wind-only exposure was tried and dropped: a 89 km/h 50-year wind covers all of Chennai and Kolkata, and pucca homes ride out wind; the surge is what forces evacuation. Kolkata: 18.2 lakh in the surge zone today, 41,882 with no refuge within 1 km, about 5,600 exposed residents per refuge; Mumbai 4.6 lakh, 78,080 with none. Aqueduct puts no Chennai block 25% in the coastal flood, so Chennai returns nothing; inland cities too.
+
+## Fire engines in packed lanes (`firelanes` lens, js/urban-lenses-safety.js)
+
+Adds road access to the `packed` lens. Packed blocks have 50%+ under roofs (Open Buildings 2023); deep means no OSM main or secondary road in the block or within 300 m, so a fire tender (about 4.5 m of road, NBC 2016 Part 4) stops short; far means no Overture fire station within 3 km, judged where 5+ are listed. Map: 1 packed, 2 deep, 3 deep and far. DISHA now sends "fire tender/engine access" questions here rather than to `packed`. Delhi: 17 lakh residents in 766 deep packed blocks, 522 of them also far from a listed station; Mumbai only 48,254 (Open Buildings merges dense slum roofs less, and Mumbai's road grid is denser).

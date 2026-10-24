@@ -285,6 +285,48 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Fire engines in packed lanes. A fire tender needs a road about 4.5 m wide (NBC 2016 Part 4); in packed old
+    // quarters and unplanned colonies the nearest such road can be hundreds of metres from a burning house. Packed means
+    // roofs cover PACKED_PCT of the block; deep means no main or secondary road (OSM) in the block or within DEEP_KM;
+    // far means no fire station listed within FIRE_KM (judged only where FIRE_MIN stations are listed).
+    const DEEP_KM = 0.3;
+
+    function firelanes(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const cover = c['building_stock.cover_2023_pct'], major = c['osm_roads.major_km_km2'], sec = c['osm_roads.secondary_km_km2'];
+        const fire = c['places.fire_stations'];
+        if (!cover || !major || !fire) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const road = within(g, Float64Array.from({ length: n }, (_, i) => v(major, i) + v(sec, i)), DEEP_KM);
+        const stations = idx.reduce((a, i) => a + v(fire, i), 0);
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(fire, i)), FIRE_KM);
+        const judged = stations >= FIRE_MIN;
+        const packed = i => v(cover, i) >= PACKED_PCT, deep = i => packed(i) && road[i] <= 0, far = i => judged && near[i] <= 0;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = packed(i) ? 1 + (deep(i) ? 1 : 0) + (deep(i) && far(i) ? 1 : 0) : 0;
+        const ps = idx.filter(packed), ds = ps.filter(deep), fs = ds.filter(far);
+        const all = _sumOver(pop, idx, () => true), pP = _sumOver(pop, ps, () => true), pD = _sumOver(pop, ds, () => true);
+        const stats = [
+            { label: `Residents in packed blocks (${PACKED_PCT}%+ under roofs)`, value: `${_people(pP)} (${_round(100 * pP / (all || 1))}%)` },
+            { label: `…with no main or secondary road in or within ${DEEP_KM * 1000} m of the block`, value: `${ds.length} blocks, ${_people(pD)} residents` },
+        ];
+        if (judged) stats.push({ label: `…and no fire station listed within ${FIRE_KM} km`, value: `${fs.length} blocks, ${_people(_sumOver(pop, fs, () => true))} residents` });
+        else stats.push({ label: 'Fire stations listed', value: `${stations}, too few to judge reach` });
+        const score = Float64Array.from({ length: n }, (_, i) => (deep(i) ? v(pop, i) * (1 + v(cover, i) / 100) * (far(i) ? 2 : 1) : 0));
+        spaced(g, ds.length ? ds : ps, score).forEach((i, k) => stats.push({
+            label: `Fire access ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(v(pop, i))} residents; ${_round(v(cover, i))}% under roofs; ${road[i] > 0 ? 'a main road nearby' : `no main road within ${DEEP_KM * 1000} m`}${judged ? `; ${near[i] > 0 ? `${_round(near[i])} fire station${near[i] > 1 ? 's' : ''}` : 'no fire station'} within ${FIRE_KM} km` : ''}` }));
+        return {
+            columns: { fire_lanes: out }, idx, weightKey: 'fire_lanes', noHotspots: true,
+            metric: { label: 'Residents in packed blocks far from a main road', value: _round(100 * pD / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pD)} residents live in ${ds.length} packed blocks (${PACKED_PCT}% or more under roofs) with no main or secondary road within ${DEEP_KM * 1000} m, where a fire tender must stop short and run hoses down narrow lanes${judged ? `; ${fs.length} of those blocks also have no fire station listed within ${FIRE_KM} km` : ''}. The blocks listed are the most crowded, where hydrants, small fire vehicles (bike and mist units) and kept-clear access lanes would help most, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -323,10 +365,16 @@ const UrbanLensesSafety = (() => {
             needs: ['flood_future.coast_pct_now', 'flood_future.coast_pct_2050', 'cyclones.wind_rl50_kmh', 'emergency_access.schools', 'places.community_centres', 'population.population'],
             method: `Exposed blocks have ${SURGE_PCT}% or more of their area in WRI Aqueduct's 1-in-100-year coastal flood today or by 2050 under RCP4.5 (storm surge, sea-level rise and subsidence, about 1 km, no defences). Refuges are schools (OpenStreetMap) and community halls (Overture), the buildings disaster plans open as shelters. Per-refuge load is the exposed residents within ${REFUGE_KM} km divided by the refuges there. Cyclone wind alone is left out: pucca homes ride it out, while the surge forces people to move. Whether a building is raised, sound and stocked is not in open data; inland cities return nothing.`,
             refs: 'WRI Aqueduct Floods v2; IBTrACS; NDMA Guidelines on Management of Cyclones (2008); National Cyclone Risk Mitigation Project (multipurpose cyclone shelters)' },
+        { id: 'firelanes', equity: false, title: 'Fire engines in packed lanes', icon: '🚒',
+            question: 'Where are homes packed deep in lanes a fire engine cannot reach?',
+            field: { key: 'fire_lanes', label: `Packed (1), plus no main road within ${DEEP_KM * 1000} m (2), plus no fire station within ${FIRE_KM} km (3)`, unit: '0-3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['building_stock.cover_2023_pct', 'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'places.fire_stations', 'population.population'],
+            method: `Packed blocks have ${PACKED_PCT}% or more of their area under roofs (Google Open Buildings 2.5D, 2023). Deep means no OpenStreetMap main or secondary road in the block or within ${DEEP_KM * 1000} m, so a fire tender (which needs a road about 4.5 m wide, NBC 2016 Part 4) stops short. Far means no Overture-listed fire station within ${FIRE_KM} km, judged only where ${FIRE_MIN} or more stations are listed (Overture lists fewer than half of them). Lane widths are not in open data, so this is where to check access, not a fire-risk rating.`,
+            refs: 'Google Open Buildings 2.5D Temporal; OpenStreetMap roads; Overture Maps places; National Building Code 2016 Part 4; Standing Fire Advisory Council norms' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {
