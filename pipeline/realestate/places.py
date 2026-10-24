@@ -10,7 +10,8 @@ Per L7 block (dataset ``places``), counting Overture places with confidence
     finance             banks, ATMs and other financial services
     property_agents     real-estate agents and services (a market-activity proxy)
     hospitals, colleges, coaching, malls, coworking, hostels, post_offices, police, fire_stations,
-                        pharmacies, grocers, preschools, libraries, community_centres, fuel, worship, tech, corporate
+                        pharmacies, grocers, preschools, libraries, community_centres, fuel, worship, tech, corporate,
+                        obgyn, paediatric
                         exact Overture categories (see ANCHORS), for demand-anchor and service-reach lenses
     branded_pct         share of places that carry a brand (chains)
     diversity           Shannon evenness of the level-1 mix (0 = one kind, 1 = even)
@@ -61,6 +62,8 @@ ANCHORS = {
     "fuel": ("gas_station",),
     "tech": ("software_development", "information_technology_company", "biotechnology_company", "b2b_science_and_technology_service"),
     "corporate": ("corporate_or_business_office",),
+    "obgyn": ("obstetrics_and_gynecology", "maternity_center"),
+    "paediatric": ("pediatric_clinic",),     # plus every other 'pediatric_*' specialty, see anchor_of()
     "worship": ("place_of_worship",),          # plus every '<faith>_place_of_worship' category, see anchor_of()
 }
 _ANCHOR_OF = {cat: k for k, cats in ANCHORS.items() for cat in cats}
@@ -70,7 +73,9 @@ def anchor_of(primary):
     """The ANCHORS key for an Overture primary category, or None."""
     if primary in _ANCHOR_OF:
         return _ANCHOR_OF[primary]
-    return "worship" if primary and primary.endswith("_place_of_worship") else None
+    if primary and primary.endswith("_place_of_worship"):
+        return "worship"
+    return "paediatric" if primary and primary.startswith("pediatric_") else None
 
 
 def classify(level1, primary):
@@ -164,6 +169,8 @@ def cell_dataset(region, rows):
                   higher_is=None),
         FieldSpec("tech", "Software, IT, biotech and science firms", agg="sum", unit="places", ramp="viridis", higher_is=None),
         FieldSpec("corporate", "Corporate and business offices", agg="sum", unit="places", ramp="viridis", higher_is=None),
+        FieldSpec("obgyn", "Obstetrics, gynaecology and maternity centres", agg="sum", unit="places", ramp="viridis", higher_is="better"),
+        FieldSpec("paediatric", "Children's doctors and clinics", agg="sum", unit="places", ramp="viridis", higher_is="better"),
         FieldSpec("branded_pct", "Share of places that are chains or brands", agg="mean", unit="%", domain=[0, 30], ramp="viridis", higher_is=None),
         FieldSpec("diversity", "Mix of business types (0 = one kind, 1 = even)", agg="mean", unit="0-1", domain=[0, 1], ramp="viridis", higher_is="better"),
     ]
@@ -171,7 +178,7 @@ def cell_dataset(region, rows):
         id="places", title="Businesses and services (Overture)", level=LEVEL, fields=specs, group="Real estate",
         description=f"Overture Maps places (release {RELEASE}, confidence ≥ {MIN_CONF}, not marked closed) counted per "
                     "block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, "
-                    "community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, tech firms, corporate offices, brand share and business mix. "
+                    "community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, tech firms, corporate offices, maternity and children's doctors, brand share and business mix. "
                     "Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses "
                     "list themselves online: dense in markets, thin in informal and older areas.",
         source="pipeline/realestate/places.py (Overture Maps places theme via DuckDB)",

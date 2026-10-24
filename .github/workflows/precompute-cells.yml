@@ -105,6 +105,7 @@ jobs:
                 python -m pipeline.realestate.streetinfra --region "$DIGIPIN_REGION" || echo "street infrastructure bake skipped"
                 python -m pipeline.realestate.drains --region "$DIGIPIN_REGION" || echo "drains bake skipped"
                 python -m pipeline.realestate.cyclones --region "$DIGIPIN_REGION" || echo "cyclone winds bake skipped"
+                python -m pipeline.realestate.railways --region "$DIGIPIN_REGION" || echo "railways bake skipped"
                 python -m pipeline.realestate.landmarks --region "$DIGIPIN_REGION" || echo "landmarks bake skipped"
                 python -m pipeline.realestate.stalled --region "$DIGIPIN_REGION" || echo "construction sites bake skipped"
                 python -m pipeline.realestate.flightpaths --region "$DIGIPIN_REGION" || echo "flight paths bake skipped"

@@ -1233,7 +1233,101 @@ const UrbanLensesPlanning = (() => {
         return { city, edits: placed, localKm: LOCAL_KM, residentsNear: Math.round(_sumOver(pop, near, () => true)), lenses };
     }
 
+    // Train noise. WHO (2018) links railway noise above 54 dB Lden to health harm; Indian mainlines add horns, freight
+    // and night trains. Without train counts, distance to the track stands in for the noise level.
+    function railnoise(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const near = c['railways.rail_near_pct'], band = c['railways.rail_band_pct'], km = c['railways.rail_km'];
+        if (!pop || !near || !band) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        let pNear = 0, pBand = 0, track = 0;
+        for (const i of idx) { pNear += pop[i] * v(near, i) / 100; pBand += pop[i] * v(band, i) / 100; track += v(km, i); }
+        const all = _sumOver(pop, idx, () => true);
+        if (track < 1) return null;
+        const vi = c['land_value.value_index'];
+        const close = idx.filter(i => v(near, i) >= 50), far = idx.filter(i => v(band, i) === 0);
+        const sens = ['places.education', 'places.hospitals'].filter(k => c[k]);
+        const stats = [
+            { label: 'Mainline and suburban track in lived-in blocks', value: `${_round(track)} km` },
+            { label: 'Residents within 50 m of a mainline track', value: `${_people(pNear)} (${_round(100 * pNear / all, 1)}%)` },
+            { label: 'Residents within 150 m', value: `${_people(pBand)} (${_round(100 * pBand / all, 1)}%)` },
+        ];
+        if (sens.length) {
+            const k = idx.filter(i => v(near, i) >= 25).reduce((a, i) => a + sens.reduce((b, key) => b + v(c[key], i), 0), 0);
+            stats.push({ label: 'Schools, colleges and hospitals in blocks a quarter or more within 50 m', value: String(k) });
+        }
+        if (vi && close.length >= 5 && far.length >= 5) {
+            stats.push({ label: 'Median land value index: blocks mostly within 50 m vs blocks over 150 m away (central lines mix location into this)',
+                value: `${_round(wquantile(vi, pop, close.filter(i => _fin(vi[i])), 0.5))} vs ${_round(wquantile(vi, pop, far.filter(i => _fin(vi[i])), 0.5))}` });
+        }
+        const score = Float64Array.from({ length: n }, (_, i) => v(pop, i) * v(near, i) / 100);
+        spaced(g, idx.filter(i => score[i] > 0), score).forEach((i, k) => stats.push({
+            label: `Noise barrier or track-side greening ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(score[i])} residents within 50 m of the track` }));
+        return {
+            columns: { rail_band_pct: Float64Array.from(band), rail_near_pct: Float64Array.from(near) }, idx,
+            metric: { label: 'Residents within 150 m of a mainline railway', value: _round(100 * pBand / all, 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pBand)} people (${_round(100 * pBand / all, 1)}% of residents) live within 150 m of a mainline or suburban railway, ${_people(pNear)} of them within 50 m, where horns, freight and night trains are loudest. The blocks listed have the most residents beside the track, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
+    // Mother and child care. Antenatal visits and a sick toddler both need a doctor close by; the lens counts listed
+    // obstetrics, gynaecology and maternity places and children's doctors within reach of where young children live.
+    const MCH_KM = 3;
+
+    function mothercare(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, kids = c['demographics.under5'], ob = c['places.obgyn'], pd = c['places.paediatric'];
+        if (!kids || !ob || !pd) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(kids, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const obN = within(g, Float64Array.from({ length: n }, (_, i) => v(ob, i)), MCH_KM);
+        const pdN = within(g, Float64Array.from({ length: n }, (_, i) => v(pd, i)), MCH_KM);
+        const listed = idx.reduce((a, i) => a + v(ob, i) + v(pd, i), 0);
+        if (listed < 10) return null;
+        const gap = new Float64Array(n).fill(NaN);
+        for (const i of idx) gap[i] = (obN[i] <= 0 ? 1 : 0) + (pdN[i] <= 0 ? 1 : 0);
+        const all = _sumOver(kids, idx, () => true);
+        const noOb = _sumOver(kids, idx, i => obN[i] <= 0), noPd = _sumOver(kids, idx, i => pdN[i] <= 0), none = _sumOver(kids, idx, i => gap[i] === 2);
+        const both = idx.filter(i => gap[i] === 2);
+        const stats = [
+            { label: 'Obstetrics, gynaecology and maternity places listed', value: String(idx.reduce((a, i) => a + v(ob, i), 0)) },
+            { label: "Children's doctors and clinics listed", value: String(idx.reduce((a, i) => a + v(pd, i), 0)) },
+            { label: `Children under 5 with no maternity or gynaecology listing within ${MCH_KM} km`, value: `${_people(noOb)} (${_round(100 * noOb / all)}%)` },
+            { label: `…with no children's doctor within ${MCH_KM} km`, value: `${_people(noPd)} (${_round(100 * noPd / all)}%)` },
+            { label: '…with neither', value: `${_people(none)} (${_round(100 * none / all)}%)` },
+            { label: 'Births a year in those blocks (under-5s ÷ 5)', value: _people(none / 5) },
+        ];
+        spaced(g, both, Float64Array.from({ length: n }, (_, i) => v(kids, i))).forEach((i, k) => stats.push({
+            label: `Mother-and-child clinic ${k + 1}: ${g.codes[i]}`, value: `${_people(v(kids, i))} children under 5 in the block` }));
+        return {
+            columns: { mch_gap: gap, obgyn_3km: obN }, idx, weightKey: 'mch_gap', noHotspots: true,
+            metric: { label: `Children under 5 with no maternity or children's doctor listed within ${MCH_KM} km`, value: _round(100 * none / all, 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(none)} children under 5 (${_round(100 * none / all, 1)}%) live more than ${MCH_KM} km from any listed maternity, gynaecology or children's doctor; ${_round(100 * noOb / all)}% have no maternity or gynaecology listing nearby. Government PHCs, anganwadis and ASHA visits are not in these listings, so gaps are where private care is missing and public care should be checked.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'mothercare', equity: true, title: 'Care for mothers and young children', icon: '🤱',
+            question: 'Where do young children live far from a maternity or children\'s doctor?',
+            field: { key: 'mch_gap', label: 'Missing within 3 km: maternity or gynaecology (1), children\'s doctor (1), both (2)', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
+            extra: [{ key: 'obgyn_3km', label: `Obstetrics, gynaecology and maternity places within ${MCH_KM} km`, unit: 'places', higherIs: 'better', ramp: 'viridis', domain: [0, 30] }],
+            needs: ['places.obgyn', 'places.paediatric', 'demographics.under5', 'population.population'],
+            method: `Overture Maps places listed as obstetrics and gynaecology or maternity centres, and as paediatric clinics or any paediatric specialty, counted within ${MCH_KM} km (straight line) of each block; children under 5 from WorldPop age structure. Births a year are approximated as under-5s ÷ 5. Overture lists private clinics and hospitals well and government sub-centres, PHCs, urban health and wellness centres and anganwadis poorly, so read gaps as missing private listings and check public facilities before acting.`,
+            refs: 'Overture Maps places; WorldPop age structures; NFHS-5 (2019-21) institutional births; National Health Mission urban health and wellness centres' },
+        { id: 'railnoise', equity: true, title: 'Living beside the railway', icon: '🚆',
+            question: 'Who lives beside a railway line, with its noise and horns?',
+            field: { key: 'rail_band_pct', label: 'Block within 150 m of a mainline track', unit: '% of block', higherIs: 'worse', ramp: 'reds', domain: [0, 100] },
+            extra: [{ key: 'rail_near_pct', label: 'Block within 50 m of a mainline track', unit: '% of block', higherIs: 'worse', ramp: 'reds', domain: [0, 100] }],
+            needs: ['railways.rail_near_pct', 'railways.rail_band_pct', 'railways.rail_km', 'places.education', 'places.hospitals', 'land_value.value_index', 'population.population'],
+            method: 'OpenStreetMap railway track via Overture Maps: every rail class except metro, light rail, tram and monorail counts as mainline or suburban. Residents are counted by the share of each block within 50 m and 150 m of the track (WorldPop residents spread evenly over the block). WHO\'s 2018 guideline sets 54 dB Lden for railway noise; without train counts and speeds there is no decibel model, so distance bands stand in, and yards and sidings count as track. Metro lines are left out because OSM here does not say whether they run underground.',
+            refs: 'WHO Environmental Noise Guidelines for the European Region (2018); Overture Maps transportation; OpenStreetMap; WorldPop' },
         { id: 'builduse', equity: false, title: 'What the buildings are used for', icon: '🏢',
             question: 'Which blocks are homes, shops and offices, industry or institutions?',
             field: { key: 'use_class', label: 'Main use: 1 homes, 2 shops and offices, 3 industry, 4 institutions and campuses', unit: 'class', higherIs: null, ramp: 'viridis', domain: [1, 4] },
@@ -1404,7 +1498,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone, riders, summershade, builduse }, { rescore, applyEdit }, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone, riders, summershade, builduse, railnoise, mothercare }, { rescore, applyEdit }, 'jobsmap');
     return { ENTRIES };
 })();
 

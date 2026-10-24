@@ -154,12 +154,12 @@ Each item gives four things:
 96. ✅ Crop-to-urban conversion at the edge (WorldCereal + Dynamic World) | EE | edge pressure
 97. ✅ Green-belt and ridge forest boundaries (Delhi Ridge, Aravalli; Overture protected land + ESZ, greenbelt lens) | open GIS | encroachment
 98. ❌ Protected areas and eco-sensitive zones (WDPA) | EE | no-build overlay (skipped: WDPA needs an IBAT licence for commercial use; OSM protected areas in Actions instead)
-99. Biodiversity intactness (NHM BII) | open | nature lens
+99. ❌ Biodiversity intactness (NHM BII) | open | nature lens (skipped: every NHM BII release is CC BY-NC or other-NC)
 100. ❌ Bird and wildlife sightings (GBIF occurrences) | API | nature lens (skipped: records mix in CC BY-NC)
 101. ✅ Tree species diversity proxy (Sentinel-2 phenology) | EE | green quality (`tree_season` layer: summer-leafy share, greening and its spread over Meta canopy; `summershade` lens)
 102. ✅ Soil organic carbon and texture (SoilGrids; exists partly) | EE | gardens/recharge (`topsoil` layer from OpenLandMap, since SoilGrids masks cities; `gardens` lens)
 103. ✅ Slope stability and cut-fill (DEM curvature) | EE | construction cost (slopes in the ground lens)
-104. Bedrock depth (Pelletier 2016) | EE | foundation cost
+104. ⏸ Bedrock depth (Pelletier 2016) | EE | foundation cost (parked: not in Earth Engine; ORNL DAAC download needs the Earthdata account to approve the ORNL app, with the GES DISC approval)
 105. ✅ Expansive black-cotton soil (SoilGrids clay + vertisol class) | EE | foundation risk (subsoil + ground lens)
 106. ✅ Quarries and mines (Overture/OSM quarries; Maus 2022 global mines has none inside the 13 cities) | open | land damage
 107. ❌ Brick kilns (Sentinel-2 detections, Boyd et al.) | open | air/land (skipped: SentinelKilnDB is CC BY-NC)
@@ -182,6 +182,11 @@ Each item gives four things:
 121. ✅ High-voltage power line corridors and substations (Overture/OSM voltage tags, MoP RoW widths) | S3 | `power_lines` dataset, `powerlines` lens, property report row
 122. ✅ Public toilets and drinking-water points (Overture/OSM street objects) | S3 | `street_infra` dataset, `toilets` lens
 123. ✅ Gated colonies from street gates and barriers (Overture/OSM) | S3 | `gated` lens
+124. ✅ Railway noise bands: residents within 50 and 150 m of mainline track (Overture transportation rail) | S3 | `railnoise` lens
+125. ✅ Maternity, gynaecology and children's doctors (Overture categories) | S3 | `mothercare` lens
+126. ❌ EV charging stations (Overture `ev_charging_station`) | S3 | EV gap lens (skipped: only 44 listed in all of Delhi)
+127. Wedding and banquet halls: weekend traffic and noise clusters (Overture) | S3 | event lens
+128. Freight, cargo and warehouse clusters (Overture freight and storage categories) | S3 | logistics lens
 
 ## Parked for the keys round
 

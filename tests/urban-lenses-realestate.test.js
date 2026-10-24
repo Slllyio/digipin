@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -825,6 +825,27 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(m.local.after).toBeLessThan(m.local.before);
         expect(m.local.residentsChanged).toBeGreaterThan(0);
         await expect(L.rescore('delhi', null, { edits: [{ kind: 'tram', code: codes[0] }], only: ['metro'], frame: f })).rejects.toThrow(/Unknown edit/);
+    });
+
+    it('railnoise: residents within 50 and 150 m of a mainline track', () => {
+        const f = L.frameFrom(codes, { ...base, 'railways.rail_near_pct': codes.map((_, i) => (col(i) === 0 ? 100 : 0)),
+            'railways.rail_band_pct': codes.map((_, i) => (col(i) < 2 ? 100 : 0)), 'railways.rail_km': codes.map((_, i) => (col(i) === 0 ? 0.25 : 0)) });
+        const r = L._lenses.railnoise(f, {});
+        expect(r.metric.value).toBe(16.7);
+        expect(r.stats[1].value).toBe('12,000 (8.3%)');
+        expect(r.stats.some(x => /^Noise barrier/.test(x.label))).toBe(true);
+        expect(L._lenses.railnoise(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('mothercare: under-5s far from maternity and children\'s doctors', () => {
+        const f = L.frameFrom(codes, { ...base, 'demographics.under5': codes.map(() => 100),
+            'places.obgyn': codes.map((_, i) => (i === 0 ? 10 : 0)), 'places.paediatric': codes.map((_, i) => (i === 0 ? 5 : 0)) });
+        const r = L._lenses.mothercare(f, {});
+        expect(r.columns.mch_gap[0]).toBe(0);
+        expect(r.columns.mch_gap[n - 1]).toBe(2);
+        expect(r.stats[0].value).toBe('10');
+        expect(r.stats.some(x => /^Mother-and-child clinic 1/.test(x.label))).toBe(true);
+        expect(L._lenses.mothercare(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
