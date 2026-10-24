@@ -2776,7 +2776,7 @@ html[lang="hi"] textarea {
    Layers panel (btn-dt-layers) as a row with a visibility switch. The buttons
    stay in the DOM (hidden) because the panel drives them programmatically
    (their click handlers own the toggle logic — see js/layers-panel.js). */
-#btn-heatmap, #btn-wards, #btn-lcz, #btn-buildings, #btn-3d, #btn-terrain, #btn-sun, #btn-lulc,
+#btn-heatmap, #btn-wards, #btn-lcz, #btn-buildings, #btn-terrain, #btn-sun, #btn-lulc,
 #btn-roads, #btn-growth, #btn-heat, #btn-ndvi, #btn-bivariate,
 #btn-viewshed, #btn-kde, #btn-access, #btn-choropleth, #btn-measure, #btn-annotate,
 #btn-ca-growth, #btn-scenario, #btn-traffic, #btn-mobility, #btn-area,

@@ -612,7 +612,10 @@ const App = (() => {
                 is3d = !is3d;
                 btn3d.classList.toggle('active', is3d);
                 if (is3d) {
-                    map.easeTo({ pitch: 60, duration: 1000 });
+                    // Below street-block zoom the extrusions are specks on the
+                    // horizon and 3D looks empty, so come in close enough to see them.
+                    const z = map.getZoom();
+                    map.easeTo({ pitch: 60, duration: 1000, ...(z < 15 ? { zoom: 15.5 } : {}) });
                     // Auto-enable 3D buildings (Overture) if none are showing yet.
                     if (typeof OvertureBuildings !== 'undefined' && !OvertureBuildings.isActive()) {
                         try {
