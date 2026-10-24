@@ -1,0 +1,87 @@
+name: Deploy dev preview to GitHub Pages
+
+# Publishes the integration branch at <pages-url>/dev/ so the latest work can
+# be tried in a browser before dev is promoted to main. The Pages site holds a
+# single artifact, so this job rebuilds main at the root exactly as deploy.yml
+# does and adds dev under dev/; the main site is unchanged. A later deploy.yml
+# run (push to main) publishes main alone and drops dev/ until dev's next push.
+#
+# If the run fails at "deploy" with a branch protection error, the
+# github-pages environment only allows main: add dev under Settings ->
+# Environments -> github-pages -> Deployment branches and tags.
+
+on:
+  push:
+    branches: [dev]
+    paths-ignore:
+      - 'docs/**'
+      - 'tests/**'
+      - '**.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # dev gets dozens of pushes a day; only the newest build matters.
+    concurrency:
+      group: dev-preview-build
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+          path: dev
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyarrow
+      - name: Build main (site root)
+        working-directory: main
+        run: python -m pipeline.cells.parquet
+      - name: Build dev (dev/)
+        working-directory: dev
+        run: |
+          python -m pipeline.cells.parquet
+          python scripts/build_bundle.py
+      - name: Stage static site
+        # Same excludes as deploy.yml: only the runtime files the app fetches.
+        run: |
+          stage() {
+            mkdir -p "$2"
+            rsync -a \
+              --exclude='.git' --exclude='node_modules' --exclude='extras' \
+              --exclude='pipeline' --exclude='scrapers' --exclude='tests' \
+              --exclude='guna-twin-city' --exclude='training-data' \
+              --exclude='proxy' --exclude='scripts' --exclude='docs' \
+              --exclude='.github' --exclude='_site' \
+              "$1"/ "$2"/
+          }
+          stage main _site
+          stage dev _site/dev
+          du -sh _site _site/dev
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}dev/app.html
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
