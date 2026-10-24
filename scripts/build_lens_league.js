@@ -21,7 +21,7 @@ globalThis.fetch = async (url) => {
     return new Response(fs.readFileSync(f), { status: 200 });
 };
 for (const [file, name] of [['js/digipin.js', 'DigiPin'], ['js/analysis.js', 'Analysis'], ['js/cell-store.js', 'CellStore'],
-    ['js/urban-insights.js', 'UrbanInsights'], ['js/urban-lenses.js', 'UrbanLenses'], ['js/urban-lenses-mobility.js', 'UrbanLensesMobility'], ['js/urban-lenses-realestate.js', 'UrbanLensesRealEstate'], ['js/urban-lenses-environment.js', 'UrbanLensesEnvironment'], ['js/urban-lenses-planning.js', 'UrbanLensesPlanning']]) {
+    ['js/urban-insights.js', 'UrbanInsights'], ['js/urban-lenses.js', 'UrbanLenses'], ['js/urban-lenses-mobility.js', 'UrbanLensesMobility'], ['js/urban-lenses-realestate.js', 'UrbanLensesRealEstate'], ['js/urban-lenses-environment.js', 'UrbanLensesEnvironment'], ['js/urban-lenses-planning.js', 'UrbanLensesPlanning'], ['js/urban-lenses-safety.js', 'UrbanLensesSafety']]) {
     const code = fs.readFileSync(path.join(ROOT, file), 'utf-8') + `\nif (typeof ${name} !== 'undefined') globalThis.${name} = ${name};`;
     vm.runInThisContext(code, { filename: file });
 }

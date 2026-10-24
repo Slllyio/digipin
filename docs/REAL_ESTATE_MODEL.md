@@ -1056,3 +1056,7 @@ The `places` dataset gained `obgyn` (Overture obstetrics and gynaecology, matern
 ## Wedding season: banquet halls and event clusters (`events` lens)
 
 The `places` dataset gained `events` (Overture party and event planning, where most banquet halls and marriage gardens are filed, plus event venues, wedding planning and caterers), `freight` and `wholesale`. The lens counts event places within 1 km; clusters are the top 5% of blocks (at least 10). It reports residents within 500 m of a cluster and the clusters whose main-road network within 1 km is thinner than the residents' median (blocks with no mapped main road nearby are treated as unmapped, not thin), and picks clusters for wedding-date traffic and parking plans. Delhi: 2,095 listings, 62 lakh residents within 500 m of a cluster.
+
+## Fire risk in crowded markets (`marketfire` lens, js/urban-lenses-safety.js)
+
+The planning module reached the 150 kB per-module budget, so new lenses go in `js/urban-lenses-safety.js` (loaded after the planning module in app.html, sw.js, tests/setup.js and scripts/build_lens_league.js). Market blocks are the top 5% by Overture shops and eateries within 500 m (at least 50); packed means Open Buildings roofs cover 50%+ of the block; far means no listed fire station within 3 km, judged only where 5+ stations are listed. The map scores 1 (market), 2 (packed market), 3 (packed and far). Overture lists under half of the real fire stations (Delhi 29), so "far" overstates gaps. Delhi: 1,863 market blocks, 314 packed, 34 packed and far.

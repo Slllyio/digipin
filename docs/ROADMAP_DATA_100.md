@@ -187,6 +187,7 @@ Each item gives four things:
 126. ❌ EV charging stations (Overture `ev_charging_station`) | S3 | EV gap lens (skipped: only 44 listed in all of Delhi)
 127. ✅ Wedding and banquet halls: weekend traffic and noise clusters (Overture) | S3 | `events` lens (places gained `events`)
 128. ✅ Freight, cargo and warehouse clusters (Overture freight and storage categories) | S3 | logistics lens (covered by the `freight` lens; places also gained `freight` and `wholesale` counts)
+129. ✅ Fire risk in crowded markets: shop density × roof cover × fire-station reach (Overture, Open Buildings) | derived | `marketfire` lens (new module js/urban-lenses-safety.js)
 
 ## Parked for the keys round
 

@@ -27,6 +27,7 @@ const DishaIntel = (() => {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
             builduse: /\b(building use|land use (map|class\w*)|what (are|is) (the )?(buildings?|blocks?) used for|residential or commercial|commercial or residential|which (blocks|areas) are (residential|commercial|industrial))\b/i,
+            marketfire: /\b(markets?|bazaars?)\b.{0,30}\bfire\b|\b(market fires?|fire (risk|hazard|safety) (in|of) (the )?(markets?|bazaars?)|(markets?|bazaars?) fire (risk|hazard|safety)|fire audit)\b/i,
             events: /\b(banquet halls?|marriage (halls?|gardens?)|wedding (season|venues?|halls?|traffic|processions?)|baraat|event venues?)\b/i,
             mothercare: /\b(maternity|gyn(a)?ecolog\w*|obstetric\w*|p(a)?ediatric\w*|child(ren)?'?s? doctors?|antenatal|pregnan\w*|mother and child|newborns?)\b/i,
             railnoise: /\b(train noise|railway noise|rail noise|(near|beside|next to|along) (the )?(railway|railway lines?|rail lines?|train tracks?|tracks)|live (near|by) (the )?(railway|tracks))\b/i,
