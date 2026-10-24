@@ -510,7 +510,7 @@
     "highstress_km": 1952,
     "islands": 9093,
     "islands_over_5_km2": 9,
-    "largest_island_km2": 48.9,
+    "largest_island_km2": 49.0,
     "pct_residents_small_island": 59.3,
     "pct_residents_no_lowstress_street": 0.4,
     "source": "Overture Maps transportation 2026-10-21.0"
@@ -578,111 +578,111 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 1856,
-    "stops_with_heat_data": 1856,
-    "pct_hot_bare": 14.9,
-    "pct_riders_at_hot_bare": 14.1,
-    "median_stop_lst_c": 40.5,
+    "stops": 247,
+    "stops_with_heat_data": 247,
+    "pct_hot_bare": 21.1,
+    "pct_riders_at_hot_bare": 19.6,
+    "median_stop_lst_c": 40.7,
     "top_stops": [
       {
-        "digipin": "4FK7F6P",
-        "name": "Yashodham Nagar",
-        "lon": 72.95464,
-        "lat": 19.20826,
-        "residents_5min": 60114,
-        "lst_c": 45.5,
-        "canopy_pct": 4.2,
-        "priority": 604687
+        "digipin": "4FK2C46",
+        "name": "Rudra Travels",
+        "lon": 72.832,
+        "lat": 19.21231,
+        "residents_5min": 50153,
+        "lst_c": 43.9,
+        "canopy_pct": 8.0,
+        "priority": 410653
       },
       {
-        "digipin": "4FK7FT9",
-        "name": "Sawarkar Nagar",
-        "lon": 72.9543,
-        "lat": 19.20591,
-        "residents_5min": 54823,
-        "lst_c": 45.5,
-        "canopy_pct": 6.2,
-        "priority": 539952
-      },
-      {
-        "digipin": "4FK7J7F",
-        "name": "Kisan Nagar",
-        "lon": 72.9498,
-        "lat": 19.18961,
-        "residents_5min": 45961,
-        "lst_c": 46.0,
-        "canopy_pct": 2.1,
-        "priority": 494954
-      },
-      {
-        "digipin": "4FK225K",
-        "name": "",
-        "lon": 72.86962,
-        "lat": 19.17546,
-        "residents_5min": 65147,
-        "lst_c": 42.5,
+        "digipin": "4FK5MML",
+        "name": "C. P. Tank",
+        "lon": 72.82564,
+        "lat": 18.95326,
+        "residents_5min": 57952,
+        "lst_c": 42.1,
         "canopy_pct": 4.7,
-        "priority": 465638
+        "priority": 392121
       },
       {
-        "digipin": "4FK2TLJ",
-        "name": "Krishna Nagar",
-        "lon": 72.88797,
-        "lat": 19.09987,
-        "residents_5min": 39725,
-        "lst_c": 46.7,
-        "canopy_pct": 1.5,
-        "priority": 457811
-      },
-      {
-        "digipin": "4FK7CLP",
-        "name": "",
-        "lon": 72.96239,
-        "lat": 19.20001,
-        "residents_5min": 51210,
+        "digipin": "4FK8MC3",
+        "name": "Anand Nagar Bus Depo",
+        "lon": 72.96942,
+        "lat": 19.26609,
+        "residents_5min": 44498,
         "lst_c": 44.4,
-        "canopy_pct": 7.6,
-        "priority": 444790
+        "canopy_pct": 8.7,
+        "priority": 381891
       },
       {
-        "digipin": "4FK7FTC",
-        "name": "Sawarkar Nagar",
-        "lon": 72.95058,
-        "lat": 19.20644,
-        "residents_5min": 46186,
-        "lst_c": 45.3,
-        "canopy_pct": 7.3,
-        "priority": 440989
+        "digipin": "4FK25L7",
+        "name": "MSRTC",
+        "lon": 72.85925,
+        "lat": 19.13369,
+        "residents_5min": 34504,
+        "lst_c": 45.6,
+        "canopy_pct": 1.4,
+        "priority": 360622
       },
       {
-        "digipin": "4FK7CLM",
-        "name": "",
-        "lon": 72.96119,
-        "lat": 19.2007,
-        "residents_5min": 47901,
+        "digipin": "4FK732K",
+        "name": "Thane East Satis",
+        "lon": 72.97637,
+        "lat": 19.1853,
+        "residents_5min": 39857,
+        "lst_c": 44.3,
+        "canopy_pct": 6.7,
+        "priority": 345835
+      },
+      {
+        "digipin": "4FK732K",
+        "name": "Kopri Bus Station",
+        "lon": 72.97667,
+        "lat": 19.18491,
+        "residents_5min": 39857,
+        "lst_c": 44.3,
+        "canopy_pct": 6.7,
+        "priority": 345835
+      },
+      {
+        "digipin": "4FK732J",
+        "name": "Louiswadi Bus Stop",
+        "lon": 72.97547,
+        "lat": 19.1868,
+        "residents_5min": 37964,
         "lst_c": 44.6,
-        "canopy_pct": 4.8,
-        "priority": 437777
+        "canopy_pct": 5.6,
+        "priority": 344045
       },
       {
-        "digipin": "4FK7CLK",
-        "name": "",
-        "lon": 72.95883,
-        "lat": 19.20168,
-        "residents_5min": 40428,
-        "lst_c": 46.3,
-        "canopy_pct": 9.8,
-        "priority": 412066
+        "digipin": "4FK732J",
+        "name": "Patlipada Bus Stop",
+        "lon": 72.97581,
+        "lat": 19.18698,
+        "residents_5min": 37964,
+        "lst_c": 44.6,
+        "canopy_pct": 5.6,
+        "priority": 344045
       },
       {
-        "digipin": "4FK7CLK",
-        "name": "",
-        "lon": 72.95761,
-        "lat": 19.20198,
-        "residents_5min": 40428,
-        "lst_c": 46.3,
-        "canopy_pct": 9.8,
-        "priority": 412066
+        "digipin": "4FK5M4C",
+        "name": "Madan Pura Bus Stop",
+        "lon": 72.82803,
+        "lat": 18.97052,
+        "residents_5min": 49929,
+        "lst_c": 42.4,
+        "canopy_pct": 6.9,
+        "priority": 343981
+      },
+      {
+        "digipin": "4FK2CMT",
+        "name": "Shiv Mandir-Janta Colony Bus Stop",
+        "lon": 72.83385,
+        "lat": 19.19995,
+        "residents_5min": 31472,
+        "lst_c": 45.7,
+        "canopy_pct": 1.8,
+        "priority": 330689
       }
     ],
     "thresholds": {
@@ -691,8 +691,7 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "osm": 1649,
-      "overture": 207
+      "overture": 247
     }
   },
   "parking": {
@@ -752,16 +751,16 @@
         "pressure": 3.59
       },
       {
-        "digipin": "4FK8MMM",
-        "demand_ecs": 863,
-        "supply_ecs": 212,
-        "pressure": 4.07
-      },
-      {
         "digipin": "4FKPC2L",
         "demand_ecs": 875,
         "supply_ecs": 224,
         "pressure": 3.9
+      },
+      {
+        "digipin": "4FK8MMM",
+        "demand_ecs": 863,
+        "supply_ecs": 212,
+        "pressure": 4.07
       }
     ],
     "assumptions": {

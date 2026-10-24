@@ -794,16 +794,15 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 107,
+    "chargers": 85,
     "chargers_by_source": {
-      "osm": 22,
       "overture": 85
     },
     "parking": 17,
     "fuel": 203,
-    "chargers_per_lakh": 1.66,
-    "pct_vkm_within_2km": 82.5,
-    "pct_pop_within_2km": 86.2
+    "chargers_per_lakh": 1.32,
+    "pct_vkm_within_2km": 79.2,
+    "pct_pop_within_2km": 82.9
   },
   "cycling": {
     "lowstress_km": 8295,
@@ -879,111 +878,111 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 65,
-    "stops_with_heat_data": 65,
-    "pct_hot_bare": 44.6,
-    "pct_riders_at_hot_bare": 33.5,
+    "stops": 552,
+    "stops_with_heat_data": 552,
+    "pct_hot_bare": 52.0,
+    "pct_riders_at_hot_bare": 40.0,
     "median_stop_lst_c": 42.3,
     "top_stops": [
       {
-        "digipin": "4FP47JJ",
-        "name": "Raison park marekt yard near bus depo",
-        "lon": 73.87167,
-        "lat": 18.48344,
-        "residents_5min": 34491,
-        "lst_c": 42.0,
-        "canopy_pct": 8.5,
-        "priority": 220915
-      },
-      {
-        "digipin": "4FP2L63",
-        "name": "Hindustan Petroleum Corporation Limited",
-        "lon": 73.93542,
-        "lat": 18.54506,
-        "residents_5min": 28354,
-        "lst_c": 43.6,
-        "canopy_pct": 9.6,
-        "priority": 220435
-      },
-      {
-        "digipin": "4FP46FF",
-        "name": "Upper Bus Depot",
-        "lon": 73.87228,
-        "lat": 18.46061,
-        "residents_5min": 21517,
-        "lst_c": 45.3,
-        "canopy_pct": 1.1,
-        "priority": 219187
-      },
-      {
-        "digipin": "4FP48K8",
-        "name": "Bombay Garage Bus Stand",
-        "lon": 73.8798,
-        "lat": 18.51263,
-        "residents_5min": 25021,
-        "lst_c": 44.5,
-        "canopy_pct": 8.5,
-        "priority": 217495
-      },
-      {
-        "digipin": "4FP4948",
-        "name": "Shanipar",
-        "lon": 73.85313,
-        "lat": 18.51282,
-        "residents_5min": 27649,
-        "lst_c": 42.3,
-        "canopy_pct": 4.0,
-        "priority": 193764
-      },
-      {
-        "digipin": "4FP472L",
-        "name": "ICICI Bank Limited, Pune-Kondhwa",
-        "lon": 73.89006,
-        "lat": 18.47904,
-        "residents_5min": 30662,
+        "digipin": "4FP4774",
+        "name": "Indira Vasahat",
+        "lon": 73.90063,
+        "lat": 18.48157,
+        "residents_5min": 42851,
         "lst_c": 42.1,
-        "canopy_pct": 11.9,
-        "priority": 191794
+        "canopy_pct": 10.8,
+        "priority": 271384
       },
       {
-        "digipin": "4FP42TF",
-        "name": "Vijay Dalvi Chowk",
-        "lon": 73.86408,
-        "lat": 18.46908,
-        "residents_5min": 29464,
-        "lst_c": 42.4,
-        "canopy_pct": 14.6,
-        "priority": 186201
+        "digipin": "4FP2L49",
+        "name": "Dutt Mandir Bus Stop",
+        "lon": 73.92133,
+        "lat": 18.54675,
+        "residents_5min": 38606,
+        "lst_c": 42.2,
+        "canopy_pct": 7.1,
+        "priority": 258228
       },
       {
-        "digipin": "4FP3TLL",
-        "name": "ONE Broadband, Shivaji Nagar",
-        "lon": 73.87232,
-        "lat": 18.53278,
-        "residents_5min": 21720,
-        "lst_c": 43.9,
-        "canopy_pct": 9.8,
-        "priority": 174364
+        "digipin": "4FP497P",
+        "name": "Nana Peth",
+        "lon": 73.86876,
+        "lat": 18.51485,
+        "residents_5min": 31875,
+        "lst_c": 43.4,
+        "canopy_pct": 6.1,
+        "priority": 251417
       },
       {
-        "digipin": "4FP48FJ",
-        "name": "Pune Bus Station",
-        "lon": 73.87326,
-        "lat": 18.52801,
-        "residents_5min": 21194,
+        "digipin": "4FP4969",
+        "name": "A.D. Camp Chowk",
+        "lon": 73.86886,
+        "lat": 18.51255,
+        "residents_5min": 28175,
+        "lst_c": 44.4,
+        "canopy_pct": 5.7,
+        "priority": 249749
+      },
+      {
+        "digipin": "4FP2L3M",
+        "name": "Matchwell Company Bus Stop",
+        "lon": 73.91855,
+        "lat": 18.54954,
+        "residents_5min": 35027,
+        "lst_c": 42.7,
+        "canopy_pct": 9.6,
+        "priority": 243816
+      },
+      {
+        "digipin": "4FP4773",
+        "name": "Borde Nagar",
+        "lon": 73.9004,
+        "lat": 18.4849,
+        "residents_5min": 35609,
+        "lst_c": 42.3,
+        "canopy_pct": 8.4,
+        "priority": 238110
+      },
+      {
+        "digipin": "4FP492L",
+        "name": "Appa Balwant Chowk (Hujurpaga)",
+        "lon": 73.85375,
+        "lat": 18.51489,
+        "residents_5min": 27275,
+        "lst_c": 44.0,
+        "canopy_pct": 4.1,
+        "priority": 235411
+      },
+      {
+        "digipin": "4FP492L",
+        "name": "Ganpati Chowk",
+        "lon": 73.85492,
+        "lat": 18.51488,
+        "residents_5min": 27275,
+        "lst_c": 44.0,
+        "canopy_pct": 4.1,
+        "priority": 235411
+      },
+      {
+        "digipin": "4FP47LP",
+        "name": "Bus Stop",
+        "lon": 73.87606,
+        "lat": 18.46157,
+        "residents_5min": 22421,
+        "lst_c": 45.5,
+        "canopy_pct": 0.6,
+        "priority": 234008
+      },
+      {
+        "digipin": "4FP2L75",
+        "name": "",
+        "lon": 73.93887,
+        "lat": 18.55139,
+        "residents_5min": 26437,
         "lst_c": 43.8,
-        "canopy_pct": 13.0,
-        "priority": 162261
-      },
-      {
-        "digipin": "4FP48FJ",
-        "name": "PMC Bus depot",
-        "lon": 73.87286,
-        "lat": 18.52756,
-        "residents_5min": 21194,
-        "lst_c": 43.8,
-        "canopy_pct": 13.0,
-        "priority": 162261
+        "canopy_pct": 4.1,
+        "priority": 223107
       }
     ],
     "thresholds": {
@@ -992,7 +991,8 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "overture": 65
+      "osm": 491,
+      "overture": 61
     }
   },
   "parking": {
