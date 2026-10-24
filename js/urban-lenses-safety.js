@@ -332,8 +332,10 @@ const UrbanLensesSafety = (() => {
     // zone III or higher, a packed block deep in lanes, industry within NEXT_KM, and road noise of LOUD_DB or more.
     const LOUD_DB = 70;
 
-    function schoolsafe(fr) {
-        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], sch = c['emergency_access.schools'];
+    /** Hazards counted at each block holding `key` sites (one/many name them; col is the output column). */
+    function siteCheck(fr, key, one, many, col, policy) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], sch = c[key];
+        const Many = many[0].toUpperCase() + many.slice(1), One = one[0].toUpperCase() + one.slice(1);
         if (!sch) return null;
         const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
         const idx = [];
@@ -359,21 +361,24 @@ const UrbanLensesSafety = (() => {
         for (const i of idx) count[i] = HAZ.reduce((a, h) => a + (h[3](i) ? 1 : 0), 0);
         const total = idx.reduce((a, i) => a + sch[i], 0);
         const share = pred => _round(100 * idx.reduce((a, i) => a + (pred(i) ? sch[i] : 0), 0) / total);
-        const stats = HAZ.map(([, label, , test]) => ({ label: `Schools ${label}`, value: `${share(test)}%` }));
+        const stats = HAZ.map(([, label, , test]) => ({ label: `${Many} ${label}`, value: `${share(test)}%` }));
         const multi = idx.filter(i => count[i] >= 2);
-        stats.unshift({ label: 'Schools mapped', value: _round(total).toLocaleString('en-IN') },
-            { label: 'Schools facing two or more hazards', value: `${share(i => count[i] >= 2)}% (${multi.length} blocks)` });
+        stats.unshift({ label: `${Many} mapped`, value: _round(total).toLocaleString('en-IN') },
+            { label: `${Many} facing two or more hazards`, value: `${share(i => count[i] >= 2)}% (${multi.length} blocks)` });
         const score = Float64Array.from({ length: n }, (_, i) => (count[i] >= 1 ? count[i] * count[i] * v(sch, i) * (1 + v(pop, i) / 10000) : 0));
         spaced(g, multi.length ? multi : idx.filter(i => count[i] >= 1), score).forEach((i, k) => stats.push({
-            label: `School check ${k + 1}: ${g.codes[i]}`,
-            value: `${_round(sch[i])} school${sch[i] > 1 ? 's' : ''}; ${HAZ.filter(h => h[3](i)).map(h => h[1]).join(', ') || 'no hazard flagged'}` }));
+            label: `${One} check ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(sch[i])} ${sch[i] > 1 ? many : one}; ${HAZ.filter(h => h[3](i)).map(h => h[1]).join(', ') || 'no hazard flagged'}` }));
         return {
-            columns: { school_hazards: count }, idx, weightKey: 'school_hazards', noHotspots: true,
-            metric: { label: 'Schools facing two or more hazards', value: share(i => count[i] >= 2), unit: '%', higherIs: 'worse' },
-            headline: `${share(i => count[i] >= 2)}% of the city's ${_round(total).toLocaleString('en-IN')} mapped schools sit in blocks with two or more hazards out of ${HAZ.length} checked (${HAZ.map(h => h[0]).join(', ')}), and ${share(i => count[i] >= 1)}% face at least one. The blocks listed have the most schools with the most hazards, the first for the hazard audits the NDMA School Safety Policy asks for, at least ${SPACING_KM} km apart.`,
+            columns: { [col]: count }, idx, weightKey: col, noHotspots: true,
+            metric: { label: `${Many} facing two or more hazards`, value: share(i => count[i] >= 2), unit: '%', higherIs: 'worse' },
+            headline: `${share(i => count[i] >= 2)}% of the city's ${_round(total).toLocaleString('en-IN')} mapped ${many} sit in blocks with two or more hazards out of ${HAZ.length} checked (${HAZ.map(h => h[0]).join(', ')}), and ${share(i => count[i] >= 1)}% face at least one. The blocks listed have the most ${many} with the most hazards, the first for hazard audits under ${policy}, at least ${SPACING_KM} km apart.`,
             stats,
         };
     }
+
+    const schoolsafe = fr => siteCheck(fr, 'emergency_access.schools', 'school', 'schools', 'school_hazards', 'the NDMA School Safety Policy');
+    const hospitalsafe = fr => siteCheck(fr, 'places.hospitals', 'hospital', 'hospitals', 'hospital_hazards', 'the NDMA hospital safety guidelines');
 
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
@@ -426,10 +431,17 @@ const UrbanLensesSafety = (() => {
                 'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'landuse.industrial_pct', 'traffic_noise.lden_db', 'population.population'],
             method: `Schools are OpenStreetMap schools counted per block. Each block with a school is checked against six hazards, with the thresholds of the other safety lenses: ${FLOOD_PCT}%+ of the block in the 1-in-100-year river or coastal flood (Aqueduct); a rain waterlogging index of ${WET_INDEX}+; soft ground under ${SOFT_HAND_M} m above the nearest drain where the city is in seismic zone III or higher; ${PACKED_PCT}%+ under roofs with no main or secondary road within ${DEEP_KM * 1000} m; industry within ${NEXT_KM * 1000} m; and modelled road noise of ${LOUD_DB} dB Lden or more. A hazard whose data is missing for a city is skipped. Building condition, fire exits and drills are not in open data.`,
             refs: 'NDMA School Safety Policy Guidelines (2016); OpenStreetMap; WRI Aqueduct Floods v2; MERIT Hydro; Google Open Buildings 2.5D; WHO Environmental Noise Guidelines (2018)' },
+        { id: 'hospitalsafe', equity: false, title: 'Hospital safety check', icon: '🏥',
+            question: 'Which hospitals face floods, quakes, fire access, industry or road noise?',
+            field: { key: 'hospital_hazards', label: 'Hazards at blocks with hospitals (flood, waterlogging, soft ground, packed lanes, industry, noise)', unit: 'hazards', higherIs: 'worse', ramp: 'reds', domain: [0, 4] },
+            needs: ['places.hospitals', 'flood_future.any_pct_now', 'waterlogging.waterlogging_index', 'terrain.hand_m', 'building_stock.cover_2023_pct',
+                'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'landuse.industrial_pct', 'traffic_noise.lden_db', 'population.population'],
+            method: `Places listed as hospitals in Overture Maps, counted per block, checked against the same six hazards as the school safety check: ${FLOOD_PCT}%+ of the block in the 1-in-100-year flood; a waterlogging index of ${WET_INDEX}+; soft ground under ${SOFT_HAND_M} m above the nearest drain in seismic zone III or higher; ${PACKED_PCT}%+ under roofs with no main road within ${DEEP_KM * 1000} m (ambulance and fire access); industry within ${NEXT_KM * 1000} m; road noise of ${LOUD_DB} dB Lden or more (WHO advises much less near wards). Structural and fire-safety status is not in open data.`,
+            refs: 'NDMA Guidelines on Hospital Safety (2016); Overture Maps places; WRI Aqueduct Floods v2; MERIT Hydro; Google Open Buildings 2.5D; WHO Environmental Noise Guidelines (2018)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

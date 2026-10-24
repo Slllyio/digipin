@@ -27,6 +27,7 @@ const DishaIntel = (() => {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
             builduse: /\b(building use|land use (map|class\w*)|what (are|is) (the )?(buildings?|blocks?) used for|residential or commercial|commercial or residential|which (blocks|areas) are (residential|commercial|industrial))\b/i,
+            hospitalsafe: /\b(hospital safety|safe(st)? hospitals?|unsafe hospitals?|hospitals?\b.{0,30}\b(hazards?|disasters?|earthquakes?|unsafe|at risk|risky))\b/i,
             schoolsafe: /\b(school safety|safe(st)? schools?|unsafe schools?|schools?\b.{0,30}\b(hazards?|disasters?|floods?|earthquakes?|unsafe|at risk|risky))\b/i,
             firelanes: /\b(fire (engines?|tenders?|brigades?|trucks?)|fire ?fighters?)\b.{0,40}\b(reach|access|enter|lanes?|gall(y|ies)|narrow|get (in|to))\b|\b(narrow (lanes?|gall(y|ies)|streets?))\b.{0,30}\bfires?\b/i,
             refuge: /\b(cyclone|storm[\s-]?surge|surge)\b.{0,30}\b(shelters?|refuges?|evacuat\w*|relief camps?)\b|\b(shelters?|refuges?|evacuat\w*)\b.{0,30}\b(cyclones?|storm[\s-]?surge)\b/i,

@@ -1088,3 +1088,7 @@ Adds road access to the `packed` lens. Packed blocks have 50%+ under roofs (Open
 ## School safety check (`schoolsafe` lens, js/urban-lenses-safety.js)
 
 A compound of the safety lenses at every block with an OSM school, for the hazard audits in the NDMA School Safety Policy (2016). Six checks, with the thresholds used by the other safety lenses: 100-year flood 25%+, waterlogging index 60+, soft ground (HAND under 2 m) in seismic zone III or higher, packed with no main road within 300 m, industry within 500 m, road noise of 70 dB Lden or more. A check is skipped where the city lacks the data (Bengaluru, in zone II, has 5). The map counts hazards per school block. Delhi: 27% of 6,376 schools face two or more hazards (56% are on soft ground in zone IV); Mumbai 30%; Bengaluru 3%.
+
+## Hospital safety check (`hospitalsafe` lens, js/urban-lenses-safety.js)
+
+The school safety check run over Overture hospitals (both lenses share `siteCheck`). Delhi: 20% of 2,719 listed hospitals face two or more hazards, 47% stand on soft ground in zone IV; Chennai: 50%, mostly because Aqueduct puts 78% of its hospitals in the 100-year flood. DISHA sends "hospitals that flood" to `critwater` and "hospital safety / hospitals at risk" here.
