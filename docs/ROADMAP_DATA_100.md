@@ -185,8 +185,8 @@ Each item gives four things:
 124. ✅ Railway noise bands: residents within 50 and 150 m of mainline track (Overture transportation rail) | S3 | `railnoise` lens
 125. ✅ Maternity, gynaecology and children's doctors (Overture categories) | S3 | `mothercare` lens
 126. ❌ EV charging stations (Overture `ev_charging_station`) | S3 | EV gap lens (skipped: only 44 listed in all of Delhi)
-127. Wedding and banquet halls: weekend traffic and noise clusters (Overture) | S3 | event lens
-128. Freight, cargo and warehouse clusters (Overture freight and storage categories) | S3 | logistics lens
+127. ✅ Wedding and banquet halls: weekend traffic and noise clusters (Overture) | S3 | `events` lens (places gained `events`)
+128. ✅ Freight, cargo and warehouse clusters (Overture freight and storage categories) | S3 | logistics lens (covered by the `freight` lens; places also gained `freight` and `wholesale` counts)
 
 ## Parked for the keys round
 

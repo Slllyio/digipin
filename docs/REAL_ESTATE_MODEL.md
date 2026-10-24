@@ -1052,3 +1052,7 @@ Only about 15–45% of built-up blocks (5%+ roof cover) have land use mapped in 
 ## Care for mothers and young children (`mothercare` lens)
 
 The `places` dataset gained `obgyn` (Overture obstetrics and gynaecology, maternity centres) and `paediatric` (paediatric clinics and every `pediatric_*` specialty). The lens counts both within 3 km of each block with children under 5 (WorldPop), reports under-5s missing either or both, approximates births as under-5s ÷ 5, and picks the blocks with the most under-5s lacking both for a mother-and-child clinic. Overture lists private care; government PHCs, urban health and wellness centres and anganwadis are largely missing.
+
+## Wedding season: banquet halls and event clusters (`events` lens)
+
+The `places` dataset gained `events` (Overture party and event planning, where most banquet halls and marriage gardens are filed, plus event venues, wedding planning and caterers), `freight` and `wholesale`. The lens counts event places within 1 km; clusters are the top 5% of blocks (at least 10). It reports residents within 500 m of a cluster and the clusters whose main-road network within 1 km is thinner than the residents' median (blocks with no mapped main road nearby are treated as unmapped, not thin), and picks clusters for wedding-date traffic and parking plans. Delhi: 2,095 listings, 62 lakh residents within 500 m of a cluster.

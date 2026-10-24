@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 15,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",
      "value": 3.6,
@@ -1085,6 +1091,12 @@
      "value": 53.2,
      "unit": "%",
      "higherIs": null
+    },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 22.3,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",
@@ -1758,6 +1770,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 7.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",
      "value": 16.9,
@@ -2423,6 +2441,12 @@
      "value": 65.8,
      "unit": "%",
      "higherIs": null
+    },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 19.6,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",
@@ -3101,6 +3125,12 @@
      "value": 55.8,
      "unit": "%",
      "higherIs": null
+    },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 21.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",
@@ -4344,6 +4374,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 17.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",
      "value": 6.2,
@@ -5016,6 +5052,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 22.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",
      "value": 35.8,
@@ -5669,6 +5711,12 @@
      "value": 63.8,
      "unit": "%",
      "higherIs": null
+    },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 26.9,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",
@@ -6336,6 +6384,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 10.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",
      "value": 3.1,
@@ -6995,6 +7049,12 @@
      "value": 62.7,
      "unit": "%",
      "higherIs": null
+    },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 25.4,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",
@@ -7667,6 +7727,12 @@
      "value": 43.8,
      "unit": "%",
      "higherIs": null
+    },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 17.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",
@@ -8345,6 +8411,12 @@
      "value": 59.5,
      "unit": "%",
      "higherIs": null
+    },
+    "events": {
+     "label": "Residents within 500 m of an event-venue cluster",
+     "value": 27,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "mothercare": {
      "label": "Children under 5 with no maternity or children's doctor listed within 3 km",

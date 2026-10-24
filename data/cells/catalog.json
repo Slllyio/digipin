@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-24T05:14:48Z",
+  "generated": "2026-10-24T05:21:58Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -16152,7 +16152,7 @@
     {
       "id": "places",
       "title": "Businesses and services (Overture)",
-      "description": "Overture Maps places (release 2026-10-21.0, confidence \u2265 0.6, not marked closed) counted per block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, tech firms, corporate offices, maternity and children's doctors, brand share and business mix. Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses list themselves online: dense in markets, thin in informal and older areas.",
+      "description": "Overture Maps places (release 2026-10-21.0, confidence \u2265 0.6, not marked closed) counted per block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, tech firms, corporate offices, maternity and children's doctors, event venues, freight and wholesale, brand share and business mix. Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses list themselves online: dense in markets, thin in informal and older areas.",
       "source": "pipeline/realestate/places.py (Overture Maps places theme via DuckDB)",
       "license": "CDLA-Permissive-2.0 (Overture Maps places)",
       "group": "Real estate",
@@ -16590,6 +16590,42 @@
           ],
           "ramp": "viridis",
           "higherIs": "better"
+        },
+        {
+          "key": "events",
+          "label": "Banquet halls, event venues, wedding and party services",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            13
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "freight",
+          "label": "Freight, cargo, courier and warehousing",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            8
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "wholesale",
+          "label": "Wholesalers",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            7
+          ],
+          "ramp": "viridis"
         },
         {
           "key": "branded_pct",

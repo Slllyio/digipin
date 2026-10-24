@@ -1313,7 +1313,60 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Wedding season. Banquet halls and marriage gardens cluster along arterial roads; on auspicious dates their
+    // processions, parking and late-night music spill onto the street. Clusters on thin road networks jam first.
+    const EVENT_KM = 1, EVENT_Q = 0.95, EVENT_MIN = 10, EVENT_NEAR_KM = 0.5;
+
+    function events(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], ev = c['places.events'], major = c['osm_roads.major_km_km2'];
+        if (!ev || !pop) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || v(ev, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(ev, i)), EVENT_KM);
+        const q = Math.max(EVENT_MIN, wquantile(near, null, idx, EVENT_Q));
+        const hubs = idx.filter(i => near[i] >= q);
+        const total = idx.reduce((a, i) => a + v(ev, i), 0);
+        if (!hubs.length || total < 30) return null;
+        const hubMask = new Float64Array(n);
+        for (const i of hubs) hubMask[i] = 1;
+        const beside = within(g, hubMask, EVENT_NEAR_KM);
+        const pBeside = _sumOver(pop, idx, i => beside[i] > 0);
+        const all = _sumOver(pop, idx, () => true);
+        // Main roads are absent from most single blocks, so compare the road network within EVENT_KM.
+        const roads = major ? within(g, Float64Array.from({ length: n }, (_, i) => v(major, i)), EVENT_KM) : null;
+        const mq = roads ? wquantile(roads, pop, idx, 0.5) : null;
+        // No main road at all within EVENT_KM in a venue cluster means the roads are unmapped there, not absent.
+        const isThin = i => mq !== null && roads[i] > 0 && roads[i] < mq;
+        const thin = hubs.filter(isThin);
+        const score = Float64Array.from({ length: n }, (_, i) => near[i] * (isThin(i) ? 1.5 : 1));
+        const stats = [
+            { label: 'Banquet halls, event venues, wedding and party services listed', value: String(total) },
+            { label: `Event clusters: blocks with ${_round(q)}+ within ${EVENT_KM} km (city's top 5%)`, value: `${hubs.length} blocks` },
+            { label: `Residents within ${EVENT_NEAR_KM * 1000} m of a cluster (music, crackers, processions)`, value: `${_people(pBeside)} (${_round(100 * pBeside / all)}%)` },
+        ];
+        if (mq !== null) stats.push({ label: 'Clusters on thinner main roads than the city median (jam first on wedding dates)', value: `${thin.length} of ${hubs.length}` });
+        spaced(g, hubs, score).forEach((i, k) => stats.push({
+            label: `Wedding-season traffic plan ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(near[i])} venues and services within ${EVENT_KM} km${mq !== null && roads[i] > 0 ? `; main roads within ${EVENT_KM} km at ${_round(100 * roads[i] / Math.max(mq, 1e-9))}% of the residents' median` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = near[i];
+        return {
+            columns: { event_venues_1km: out }, idx,
+            metric: { label: `Residents within ${EVENT_NEAR_KM * 1000} m of an event-venue cluster`, value: _round(100 * pBeside / all, 1), unit: '%', higherIs: 'worse' },
+            headline: `${total} banquet halls, event venues and wedding and party services are listed; ${hubs.length} blocks form clusters with ${_round(q)} or more within ${EVENT_KM} km, and ${_people(pBeside)} people (${_round(100 * pBeside / all)}%) live within ${EVENT_NEAR_KM * 1000} m of one.${mq !== null ? ` ${thin.length} of the clusters sit on thinner main roads than the city median, where wedding-date traffic and parking jam first.` : ''} The blocks listed need traffic and parking plans on auspicious dates.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'events', equity: false, title: 'Wedding season: banquet halls and event clusters', icon: '💒',
+            question: 'Where do banquet halls cluster, and who lives with the wedding-season noise and traffic?',
+            field: { key: 'event_venues_1km', label: `Banquet halls, event venues and wedding services within ${EVENT_KM} km`, unit: 'places', higherIs: null, ramp: 'viridis', domain: [0, 60] },
+            needs: ['places.events', 'osm_roads.major_km_km2', 'population.population'],
+            method: `Overture Maps places listed as party and event planning (where most banquet halls and marriage gardens are filed), event venues, wedding planning and caterers, counted within ${EVENT_KM} km. Clusters are the top 5% of blocks (and at least ${EVENT_MIN}). Residents within ${EVENT_NEAR_KM * 1000} m of a cluster live with late-night music, crackers and processions; clusters whose main-road density within ${EVENT_KM} km (OSM primary to tertiary roads) is below the residents' median jam first. The Noise Pollution Rules 2000 ban loudspeakers between 10 pm and 6 am, with limited festival exemptions. Planners and caterers working from offices inflate some counts.`,
+            refs: 'Overture Maps places; OpenStreetMap; Noise Pollution (Regulation and Control) Rules 2000' },
         { id: 'mothercare', equity: true, title: 'Care for mothers and young children', icon: '🤱',
             question: 'Where do young children live far from a maternity or children\'s doctor?',
             field: { key: 'mch_gap', label: 'Missing within 3 km: maternity or gynaecology (1), children\'s doctor (1), both (2)', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
@@ -1498,7 +1551,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone, riders, summershade, builduse, railnoise, mothercare }, { rescore, applyEdit }, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone, riders, summershade, builduse, railnoise, mothercare, events }, { rescore, applyEdit }, 'jobsmap');
     return { ENTRIES };
 })();
 
