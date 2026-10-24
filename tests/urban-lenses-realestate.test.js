@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -706,6 +706,17 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.farm_pressure[5]).toBe(0);
         expect(r.stats[1].value).toMatch(/\(50%\)$/);
         expect(L._lenses.cityfarms(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('tourism: landmark pull, visitor magnets and hotel gaps', () => {
+        const f = L.frameFrom(codes, { ...base, 'landmarks.pull': codes.map((_, i) => (i === 0 ? 100 : i === codes.length - 1 ? 80 : 0)),
+            'landmarks.landmarks': codes.map((_, i) => (i === 0 || i === codes.length - 1 ? 1 : 0)),
+            'places.lodging': codes.map((_, i) => (col(i) < 3 ? 5 : 0)), 'places.food': codes.map(() => 1) });
+        const r = L._lenses.tourism(f, {});
+        expect(r.columns.landmark_pull[0]).toBe(100);
+        expect(r.stats[0].value).toBe('2');
+        expect(r.stats.some(x => /^Visitor magnet 1/.test(x.label))).toBe(true);
+        expect(L._lenses.tourism(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

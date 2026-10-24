@@ -700,7 +700,53 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Visitor magnets. Landmark pull is the sum of Wikipedia language editions for visitor landmarks within PULL_KM;
+    // a hotel gap is a high-pull area with few places to stay within STAY_KM, a lead for hotels, homestays and serviced flats.
+    const PULL_KM = 1.5, STAY_KM = 1, PULL_Q = 0.9;
+
+    function tourism(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pull = c['landmarks.pull'], lm = c['landmarks.landmarks'];
+        const lodging = c['places.lodging'], food = c['places.food'], pop = c['population.population'];
+        if (!pull || !lm) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || v(lm, i) > 0) idx.push(i);
+        if (idx.length < 5 || !idx.some(i => v(lm, i) > 0)) return null;
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(pull, i)), PULL_KM);
+        const stays = lodging ? within(g, Float64Array.from({ length: n }, (_, i) => v(lodging, i)), STAY_KM) : null;
+        const eats = food ? within(g, Float64Array.from({ length: n }, (_, i) => v(food, i)), STAY_KM) : null;
+        const pq = wquantile(near, null, idx.filter(i => near[i] > 0), PULL_Q);
+        const col = new Float64Array(n).fill(NaN);
+        for (const i of idx) col[i] = near[i];
+        const magnets = idx.filter(i => near[i] > 0 && near[i] >= pq);
+        const sq = stays ? wquantile(stays, null, magnets, 0.25) : null;
+        const gaps = stays ? magnets.filter(i => stays[i] <= Math.max(sq, 2)) : [];
+        const total = idx.reduce((a, i) => a + v(lm, i), 0);
+        const stats = [
+            { label: 'Visitor landmarks known in 3+ Wikipedia languages', value: String(total) },
+            { label: `Landmark-pull blocks (top 10%, ${_round(pq)}+ language editions within ${PULL_KM} km)`, value: `${magnets.length} blocks` },
+        ];
+        if (stays) stats.push({ label: `…with ${_round(Math.max(sq, 2))} or fewer places to stay within ${STAY_KM} km (hotel gap)`, value: `${gaps.length} blocks` });
+        spaced(g, magnets, near).forEach((i, k) => stats.push({
+            label: `Visitor magnet ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(near[i])} language editions of landmarks within ${PULL_KM} km${stays ? `; ${_round(stays[i])} places to stay` : ''}${eats ? ` and ${_round(eats[i])} eateries within ${STAY_KM} km` : ''}` }));
+        spaced(g, gaps, near, 3).forEach((i, k) => stats.push({
+            label: `Hotel gap ${k + 1}: ${g.codes[i]}`, value: `${_round(near[i])} editions of landmarks nearby but only ${_round(stays[i])} places to stay within ${STAY_KM} km` }));
+        return {
+            columns: { landmark_pull: col }, idx, weightKey: 'landmark_pull', noHotspots: true,
+            metric: { label: 'Visitor landmarks known in 3+ Wikipedia languages', value: total, unit: 'landmarks', higherIs: null },
+            headline: `${total} visitor landmarks are well known enough to have articles in three or more Wikipedia languages; the top 10% of blocks by landmark pull are the city's visitor magnets${stays ? `, and ${gaps.length} of those ${magnets.length} blocks have few places to stay within ${STAY_KM} km` : ''}. Language editions measure fame, not footfall.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'tourism', equity: false, title: 'Visitor magnets and hotel gaps', icon: '🧭',
+            question: 'Where do visitors go, and where are places to stay short?',
+            field: { key: 'landmark_pull', label: `Landmark pull within ${PULL_KM} km (Wikipedia language editions)`, unit: 'editions', higherIs: null, ramp: 'heat', domain: [0, 150] },
+            needs: ['landmarks.pull', 'landmarks.landmarks', 'places.lodging', 'places.food', 'population.population'],
+            method: `Visitor landmarks are Wikidata items that are attractions (places of worship, tombs, forts, museums, monuments, palaces, parks, zoos, lakes, beaches, markets, stadiums and similar) with articles in 3+ Wikipedia languages; each counts by its number of language editions, an open stand-in for fame (Wikipedia page views were rate-limited). Pull is the sum within ${PULL_KM} km. Visitor magnets are the top 10% of blocks by pull; a hotel gap is a magnet in the lowest quarter of magnets for Overture lodging places (hotels, guest houses, hostels) within ${STAY_KM} km.`,
+            refs: 'Wikidata (CC0); Overture Maps places; Ministry of Tourism India Tourism Statistics' },
         { id: 'cityfarms', equity: false, title: 'Farms inside the city', icon: '🌾',
             question: 'Where is farmland left inside the city, and which of it is being built over?',
             field: { key: 'farm_pressure', label: 'Farm block (1) or farm block building up fast (2)', unit: '0-2', higherIs: 'worse', ramp: 'heat', domain: [0, 2] },
@@ -814,7 +860,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

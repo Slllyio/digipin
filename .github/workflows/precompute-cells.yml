@@ -104,6 +104,7 @@ jobs:
                 python -m pipeline.realestate.powerlines --region "$DIGIPIN_REGION" || echo "power lines bake skipped"
                 python -m pipeline.realestate.streetinfra --region "$DIGIPIN_REGION" || echo "street infrastructure bake skipped"
                 python -m pipeline.realestate.drains --region "$DIGIPIN_REGION" || echo "drains bake skipped"
+                python -m pipeline.realestate.landmarks --region "$DIGIPIN_REGION" || echo "landmarks bake skipped"
                 python -m pipeline.realestate.stalled --region "$DIGIPIN_REGION" || echo "construction sites bake skipped"
                 python -m pipeline.realestate.flightpaths --region "$DIGIPIN_REGION" || echo "flight paths bake skipped"
                 [ -n "$EARTHDATA_TOKEN" ] && pip install -q h5py && python -m pipeline.safety.lightning --region "$DIGIPIN_REGION" || echo "lightning bake skipped (needs EARTHDATA_TOKEN)"

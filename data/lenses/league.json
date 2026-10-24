@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 48,
+     "unit": "landmarks",
+     "higherIs": null
+    },
     "cityfarms": {
      "label": "Mapped farmland in fast-building blocks",
      "value": 0.1,
@@ -1024,6 +1030,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 53.2,
      "unit": "%",
+     "higherIs": null
+    },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 67,
+     "unit": "landmarks",
      "higherIs": null
     },
     "cityfarms": {
@@ -1638,6 +1650,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 15,
+     "unit": "landmarks",
+     "higherIs": null
+    },
     "cityfarms": {
      "label": "Mapped farmland in fast-building blocks",
      "value": 0.4,
@@ -2242,6 +2260,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 65.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 92,
+     "unit": "landmarks",
      "higherIs": null
     },
     "cityfarms": {
@@ -2854,6 +2878,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 55.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 136,
+     "unit": "landmarks",
      "higherIs": null
     },
     "cityfarms": {
@@ -4008,6 +4038,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 77,
+     "unit": "landmarks",
+     "higherIs": null
+    },
     "cityfarms": {
      "label": "Mapped farmland in fast-building blocks",
      "value": 0.8,
@@ -4620,6 +4656,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 10,
+     "unit": "landmarks",
+     "higherIs": null
+    },
     "cityfarms": {
      "label": "Mapped farmland in fast-building blocks",
      "value": 0.2,
@@ -5212,6 +5254,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 63.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 27,
+     "unit": "landmarks",
      "higherIs": null
     },
     "cityfarms": {
@@ -5820,6 +5868,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 56,
+     "unit": "landmarks",
+     "higherIs": null
+    },
     "cityfarms": {
      "label": "Mapped farmland in fast-building blocks",
      "value": 0.1,
@@ -6412,6 +6466,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 62.7,
      "unit": "%",
+     "higherIs": null
+    },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 16,
+     "unit": "landmarks",
      "higherIs": null
     },
     "cityfarms": {
@@ -7026,6 +7086,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 71,
+     "unit": "landmarks",
+     "higherIs": null
+    },
     "cityfarms": {
      "label": "Mapped farmland in fast-building blocks",
      "value": 0.1,
@@ -7636,6 +7702,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 59.5,
      "unit": "%",
+     "higherIs": null
+    },
+    "tourism": {
+     "label": "Visitor landmarks known in 3+ Wikipedia languages",
+     "value": 33,
+     "unit": "landmarks",
      "higherIs": null
     },
     "cityfarms": {

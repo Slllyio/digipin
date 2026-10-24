@@ -1000,3 +1000,7 @@ New dataset `drains` (L7, pipeline/realestate/drains.py): OpenStreetMap drains a
 ## Farms inside the city (`cityfarms` lens)
 
 The `landuse` dataset gained `farm_pct`: OpenStreetMap farmland, farmyards, orchards, allotments, plant nurseries, greenhouses and vineyards (Overture land use). The lens maps farm blocks and flags those whose Open Buildings built-up share rose 5+ points from 2016 to 2023 as farms under pressure; it also counts residents with farmland mapped within 1 km. It complements `farmloss`, which uses Dynamic World land cover.
+
+## Visitor magnets and hotel gaps (`tourism` lens)
+
+New dataset `landmarks` (L7, pipeline/realestate/landmarks.py): Wikidata visitor attractions (about 40 classes: places of worship, tombs, forts, museums, monuments, palaces, parks, zoos, lakes, beaches, markets, stadiums and more) with articles in 3+ Wikipedia languages; each block gets the count, the summed language editions (pull) and the best-known landmark's editions. Wikipedia page views were the plan, but the Wikimedia REST API rate-limits this host, so language editions stand in for fame. The lens sums pull within 1.5 km; visitor magnets are the top 10% of blocks, and hotel gaps are magnets in the lowest quarter for Overture lodging within 1 km. Delhi: 136 landmarks, 504 magnet blocks, 126 with few places to stay.
