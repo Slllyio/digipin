@@ -327,6 +327,54 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // School safety. The NDMA School Safety Policy (2016) asks for a hazard check of every school. Each block with a
+    // school is checked against the hazards above: river or coastal flood, rain waterlogging, soft ground in seismic
+    // zone III or higher, a packed block deep in lanes, industry within NEXT_KM, and road noise of LOUD_DB or more.
+    const LOUD_DB = 70;
+
+    function schoolsafe(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], sch = c['emergency_access.schools'];
+        if (!sch) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(sch, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const zone = (UrbanLenses.SEISMIC_ZONE || {})[fr.city];
+        const shaky = zone && zone !== 'II';
+        const fl = c['flood_future.any_pct_now'], wl = c['waterlogging.waterlogging_index'], hand = c['terrain.hand_m'];
+        const cover = c['building_stock.cover_2023_pct'], major = c['osm_roads.major_km_km2'], sec = c['osm_roads.secondary_km_km2'];
+        const ind = c['landuse.industrial_pct'], noise = c['traffic_noise.lden_db'];
+        const road = major ? within(g, Float64Array.from({ length: n }, (_, i) => v(major, i) + v(sec, i)), DEEP_KM) : null;
+        const nearInd = ind ? within(g, Float64Array.from({ length: n }, (_, i) => (v(ind, i) >= INDUSTRY_PCT ? 1 : 0)), NEXT_KM) : null;
+        const HAZ = [
+            ['flood', 'in the 100-year flood', fl, i => v(fl, i) >= FLOOD_PCT],
+            ['waterlog', 'waterlogged', wl, i => v(wl, i) >= WET_INDEX],
+            ['quake', `on soft ground in seismic zone ${zone || ''}`, shaky && hand, i => _fin(hand[i]) && hand[i] < SOFT_HAND_M],
+            ['lanes', 'packed, with no main road within 300 m', cover && road, i => v(cover, i) >= PACKED_PCT && road[i] <= 0],
+            ['industry', `within ${NEXT_KM * 1000} m of industry`, nearInd, i => nearInd[i] > 0],
+            ['noise', `with road noise of ${LOUD_DB} dB+`, noise, i => v(noise, i) >= LOUD_DB],
+        ].filter(h => h[2]);
+        if (!HAZ.length) return null;
+        const count = new Float64Array(n).fill(NaN);
+        for (const i of idx) count[i] = HAZ.reduce((a, h) => a + (h[3](i) ? 1 : 0), 0);
+        const total = idx.reduce((a, i) => a + sch[i], 0);
+        const share = pred => _round(100 * idx.reduce((a, i) => a + (pred(i) ? sch[i] : 0), 0) / total);
+        const stats = HAZ.map(([, label, , test]) => ({ label: `Schools ${label}`, value: `${share(test)}%` }));
+        const multi = idx.filter(i => count[i] >= 2);
+        stats.unshift({ label: 'Schools mapped', value: _round(total).toLocaleString('en-IN') },
+            { label: 'Schools facing two or more hazards', value: `${share(i => count[i] >= 2)}% (${multi.length} blocks)` });
+        const score = Float64Array.from({ length: n }, (_, i) => (count[i] >= 1 ? count[i] * count[i] * v(sch, i) * (1 + v(pop, i) / 10000) : 0));
+        spaced(g, multi.length ? multi : idx.filter(i => count[i] >= 1), score).forEach((i, k) => stats.push({
+            label: `School check ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(sch[i])} school${sch[i] > 1 ? 's' : ''}; ${HAZ.filter(h => h[3](i)).map(h => h[1]).join(', ') || 'no hazard flagged'}` }));
+        return {
+            columns: { school_hazards: count }, idx, weightKey: 'school_hazards', noHotspots: true,
+            metric: { label: 'Schools facing two or more hazards', value: share(i => count[i] >= 2), unit: '%', higherIs: 'worse' },
+            headline: `${share(i => count[i] >= 2)}% of the city's ${_round(total).toLocaleString('en-IN')} mapped schools sit in blocks with two or more hazards out of ${HAZ.length} checked (${HAZ.map(h => h[0]).join(', ')}), and ${share(i => count[i] >= 1)}% face at least one. The blocks listed have the most schools with the most hazards, the first for the hazard audits the NDMA School Safety Policy asks for, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -371,10 +419,17 @@ const UrbanLensesSafety = (() => {
             needs: ['building_stock.cover_2023_pct', 'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'places.fire_stations', 'population.population'],
             method: `Packed blocks have ${PACKED_PCT}% or more of their area under roofs (Google Open Buildings 2.5D, 2023). Deep means no OpenStreetMap main or secondary road in the block or within ${DEEP_KM * 1000} m, so a fire tender (which needs a road about 4.5 m wide, NBC 2016 Part 4) stops short. Far means no Overture-listed fire station within ${FIRE_KM} km, judged only where ${FIRE_MIN} or more stations are listed (Overture lists fewer than half of them). Lane widths are not in open data, so this is where to check access, not a fire-risk rating.`,
             refs: 'Google Open Buildings 2.5D Temporal; OpenStreetMap roads; Overture Maps places; National Building Code 2016 Part 4; Standing Fire Advisory Council norms' },
+        { id: 'schoolsafe', equity: false, title: 'School safety check', icon: '🏫',
+            question: 'Which schools face floods, quakes, fire access, industry or road noise?',
+            field: { key: 'school_hazards', label: 'Hazards at blocks with schools (flood, waterlogging, soft ground, packed lanes, industry, noise)', unit: 'hazards', higherIs: 'worse', ramp: 'reds', domain: [0, 4] },
+            needs: ['emergency_access.schools', 'flood_future.any_pct_now', 'waterlogging.waterlogging_index', 'terrain.hand_m', 'building_stock.cover_2023_pct',
+                'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'landuse.industrial_pct', 'traffic_noise.lden_db', 'population.population'],
+            method: `Schools are OpenStreetMap schools counted per block. Each block with a school is checked against six hazards, with the thresholds of the other safety lenses: ${FLOOD_PCT}%+ of the block in the 1-in-100-year river or coastal flood (Aqueduct); a rain waterlogging index of ${WET_INDEX}+; soft ground under ${SOFT_HAND_M} m above the nearest drain where the city is in seismic zone III or higher; ${PACKED_PCT}%+ under roofs with no main or secondary road within ${DEEP_KM * 1000} m; industry within ${NEXT_KM * 1000} m; and modelled road noise of ${LOUD_DB} dB Lden or more. A hazard whose data is missing for a city is skipped. Building condition, fire exits and drills are not in open data.`,
+            refs: 'NDMA School Safety Policy Guidelines (2016); OpenStreetMap; WRI Aqueduct Floods v2; MERIT Hydro; Google Open Buildings 2.5D; WHO Environmental Noise Guidelines (2018)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

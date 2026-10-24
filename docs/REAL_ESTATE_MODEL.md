@@ -1084,3 +1084,7 @@ Residents in blocks with 25%+ of their area in Aqueduct's coastal 1-in-100-year 
 ## Fire engines in packed lanes (`firelanes` lens, js/urban-lenses-safety.js)
 
 Adds road access to the `packed` lens. Packed blocks have 50%+ under roofs (Open Buildings 2023); deep means no OSM main or secondary road in the block or within 300 m, so a fire tender (about 4.5 m of road, NBC 2016 Part 4) stops short; far means no Overture fire station within 3 km, judged where 5+ are listed. Map: 1 packed, 2 deep, 3 deep and far. DISHA now sends "fire tender/engine access" questions here rather than to `packed`. Delhi: 17 lakh residents in 766 deep packed blocks, 522 of them also far from a listed station; Mumbai only 48,254 (Open Buildings merges dense slum roofs less, and Mumbai's road grid is denser).
+
+## School safety check (`schoolsafe` lens, js/urban-lenses-safety.js)
+
+A compound of the safety lenses at every block with an OSM school, for the hazard audits in the NDMA School Safety Policy (2016). Six checks, with the thresholds used by the other safety lenses: 100-year flood 25%+, waterlogging index 60+, soft ground (HAND under 2 m) in seismic zone III or higher, packed with no main road within 300 m, industry within 500 m, road noise of 70 dB Lden or more. A check is skipped where the city lacks the data (Bengaluru, in zone II, has 5). The map counts hazards per school block. Delhi: 27% of 6,376 schools face two or more hazards (56% are on soft ground in zone IV); Mumbai 30%; Bengaluru 3%.

@@ -194,6 +194,7 @@ Each item gives four things:
 133. ✅ Homes beside factories: industrial land next to and mixed with housing, with satellite thermal hotspots (OSM land use, VIIRS) | derived | `factoryhomes` lens
 134. ✅ Storm-surge shelter gaps: coastal 100-year flood residents × schools and community halls within 1 km (Aqueduct, OSM, Overture) | derived | `refuge` lens
 135. ✅ Fire engines in packed lanes: roof cover × distance to a main road × fire-station reach (Open Buildings, OSM, Overture) | derived | `firelanes` lens
+136. ✅ School safety check: flood, waterlogging, soft ground in seismic zones, packed lanes, industry and road noise at every school block (NDMA School Safety Policy) | derived | `schoolsafe` lens
 
 ## Parked for the keys round
 

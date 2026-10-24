@@ -456,6 +456,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 15.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1161,6 +1167,12 @@
     "firelanes": {
      "label": "Residents in packed blocks far from a main road",
      "value": 0.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1878,6 +1890,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 0.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2583,6 +2601,12 @@
     "firelanes": {
      "label": "Residents in packed blocks far from a main road",
      "value": 0.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 42.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3306,6 +3330,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 27.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -3978,6 +4008,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "railnoise": {
      "label": "Residents within 150 m of a mainline railway",
      "value": 8.9,
@@ -4617,6 +4653,12 @@
     "firelanes": {
      "label": "Residents in packed blocks far from a main road",
      "value": 1.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 1.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5334,6 +5376,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 1.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6027,6 +6075,12 @@
     "firelanes": {
      "label": "Residents in packed blocks far from a main road",
      "value": 1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 0.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6744,6 +6798,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 38.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -7443,6 +7503,12 @@
     "firelanes": {
      "label": "Residents in packed blocks far from a main road",
      "value": 2.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 16.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -8166,6 +8232,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 29.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -8883,6 +8955,12 @@
     "firelanes": {
      "label": "Residents in packed blocks far from a main road",
      "value": 0.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "schoolsafe": {
+     "label": "Schools facing two or more hazards",
+     "value": 3.5,
      "unit": "%",
      "higherIs": "worse"
     },
