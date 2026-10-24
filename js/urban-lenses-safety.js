@@ -556,6 +556,52 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Coaching hubs. Students crowd into coaching classes, libraries and PG hostels packed into old blocks, often in
+    // basements: the 2023 Mukherjee Nagar fire and the 2024 Old Rajinder Nagar basement flood in Delhi. A hub block has
+    // HUB_MIN coaching centres within HUB_KM and is in the city's top tenth; it is then checked for waterlogging
+    // (basements flood first), packed lanes (fire access) and distance to a fire station.
+    const HUB_KM = 0.5, HUB_MIN = 10, HUB_Q = 0.9;
+
+    function coaching(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], co = c['places.coaching'];
+        if (!co) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const wl = c['waterlogging.waterlogging_index'], cover = c['building_stock.cover_2023_pct'], fire = c['places.fire_stations'];
+        const major = c['osm_roads.major_km_km2'], sec = c['osm_roads.secondary_km_km2'], hostels = c['places.hostels'];
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || v(co, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(co, i)), HUB_KM);
+        const q = Math.max(HUB_MIN, wquantile(near, null, idx.filter(i => near[i] > 0), HUB_Q));
+        const hubs = idx.filter(i => near[i] >= q);
+        if (!hubs.length) return null;
+        const road = major ? within(g, Float64Array.from({ length: n }, (_, i) => v(major, i) + v(sec, i)), DEEP_KM) : null;
+        const fs = fire ? within(g, Float64Array.from({ length: n }, (_, i) => v(fire, i)), FIRE_KM) : null;
+        const stations = fire ? idx.reduce((a, i) => a + v(fire, i), 0) : 0;
+        const CHECKS = [
+            ['waterlogged (basements flood first)', i => v(wl, i) >= WET_INDEX * 0.75],
+            ['packed, no main road within 300 m', i => road && v(cover, i) >= PACKED_PCT && road[i] <= 0],
+            [`no fire station within ${FIRE_KM} km`, i => stations >= FIRE_MIN && fs[i] <= 0],
+            [`packed (${PACKED_PCT}%+ under roofs)`, i => v(cover, i) >= PACKED_PCT],
+        ];
+        const flags = i => CHECKS.filter(([, t]) => t(i)).map(([l]) => l);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = near[i] >= q ? 1 + Math.min(2, flags(i).length) : 0;
+        const stats = [{ label: `Coaching hub blocks (${_round(q)}+ coaching centres within ${HUB_KM * 1000} m)`, value: String(hubs.length) }];
+        for (const [l, t] of CHECKS) stats.push({ label: `…${l}`, value: String(hubs.filter(t).length) });
+        const score = Float64Array.from({ length: n }, (_, i) => (near[i] >= q ? near[i] * (1 + flags(i).length) * (1 + v(hostels, i) / 10) : 0));
+        spaced(g, hubs, score).forEach((i, k) => stats.push({
+            label: `Hub ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(near[i])} coaching centres within ${HUB_KM * 1000} m${hostels && v(hostels, i) > 0 ? `, ${_round(v(hostels, i))} hostel${v(hostels, i) > 1 ? 's' : ''} in the block` : ''}; ${flags(i).join(', ') || 'no hazard flagged'}` }));
+        const flagged = hubs.filter(i => flags(i).length).length;
+        return {
+            columns: { coaching_hub: out }, idx, weightKey: 'coaching_hub', noHotspots: true,
+            metric: { label: 'Coaching hub blocks with a hazard flag', value: _round(100 * flagged / hubs.length), unit: '%', higherIs: 'worse' },
+            headline: `${hubs.length} blocks are coaching hubs, with ${_round(q)} or more coaching centres within ${HUB_KM * 1000} m; ${flagged} of them carry a hazard flag (waterlogging, packed buildings or lanes, or a far fire station). Students study and sleep here in basements and upper floors of crowded buildings, the setting of Delhi's 2023 Mukherjee Nagar fire and 2024 Old Rajinder Nagar basement flood. The hubs listed are the biggest and most flagged, the first for basement, exit and fire-safety checks, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -638,10 +684,16 @@ const UrbanLensesSafety = (() => {
             needs: ['power_lines.substations', 'flood_future.any_pct_now', 'flood_future.any_pct_2050', 'waterlogging.waterlogging_index', 'population.population'],
             method: `Substations are OpenStreetMap power substations counted per block (the power_lines dataset). A substation's block is flood-prone with ${FLOOD_PCT}%+ of it in WRI Aqueduct's 1-in-100-year river or coastal flood (today or by 2050, RCP4.5) and waterlogged with a rain waterlogging index of ${WET_INDEX}+. Each lived-in block within ${SUB_KM} km of a substation is assigned its nearest one. Plinth heights, flood walls and the real feeder network are not open, so this is where to check, not who will lose power.`,
             refs: 'OpenStreetMap power=substation; WRI Aqueduct Floods v2; Sentinel-1; CEA (Technical Standards for Construction of Electrical Plants and Electric Lines) Regulations 2022; Maharashtra fact-finding report on the 26 July 2005 floods' },
+        { id: 'coaching', equity: false, title: 'Coaching hub safety', icon: '📚',
+            question: 'Which coaching hubs flood, pack tight or sit far from a fire station?',
+            field: { key: 'coaching_hub', label: 'Coaching hub (1), plus one hazard flag (2), plus two or more (3)', unit: '0-3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['places.coaching', 'places.hostels', 'waterlogging.waterlogging_index', 'building_stock.cover_2023_pct', 'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'places.fire_stations', 'population.population'],
+            method: `Coaching centres and hostels are Overture Maps places. Hub blocks have ${HUB_MIN} or more coaching centres within ${HUB_KM * 1000} m and sit in the city's top ${Math.round(100 * (1 - HUB_Q))}% of blocks with any. Flags: a rain waterlogging index of ${WET_INDEX * 0.75} or more (basements flood before streets do, so a lower bar than critwater); ${PACKED_PCT}%+ under roofs with no main road within ${DEEP_KM * 1000} m; no fire station listed within ${FIRE_KM} km (where ${FIRE_MIN}+ are listed). Basement use, exits and fire NOCs are not in open data.`,
+            refs: 'Overture Maps places; Google Open Buildings 2.5D; OpenStreetMap; Delhi Fire Service; MHA guidelines on fire safety in coaching centres (2024); Guidelines for Regulation of Coaching Centres (Ministry of Education, 2024)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

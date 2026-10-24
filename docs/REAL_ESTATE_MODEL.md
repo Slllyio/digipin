@@ -1108,3 +1108,7 @@ Tall canopy over busy roads, for pre-monsoon tree surveys and pruning. The veget
 ## Substations under water (`gridflood` lens, js/urban-lenses-safety.js)
 
 OSM substations (power_lines dataset) checked against critwater's thresholds (25%+ in Aqueduct's 100-year flood, or waterlogging index 60+), plus those dry today but flood-prone by 2050. Each lived-in block within 3 km is assigned its nearest substation; the map shows that substation's state (0 dry, 1 waterlogged, 2 flood). Delhi: 75 of 337 mapped substations wet, nearest for 70.9 lakh residents; Chennai 29 of 53 (Aqueduct's broad floodplain again), 60.5 lakh; Mumbai 15 of 77, 31.1 lakh. Feeder networks, plinths and flood walls are not open.
+
+## Coaching hub safety (`coaching` lens, js/urban-lenses-safety.js)
+
+Hub blocks have 10+ Overture coaching centres within 500 m and sit in the top tenth of blocks with any. Each hub is flagged for waterlogging (index 45+, a lower bar than critwater because basements flood first), packed lanes (50%+ under roofs, no main road within 300 m), no fire station within 3 km (where 5+ are listed) and packed buildings. Map: 1 hub, 2 one flag, 3 two or more. Picks weigh centre count, flags and hostels. Delhi: 617 hub blocks, 451 flagged (261 waterlogged); Hyderabad 99, 72 far from a listed fire station. The 2023 Mukherjee Nagar fire and the 2024 Old Rajinder Nagar basement flood are the cases it is built around; basement use and fire NOCs are not open.

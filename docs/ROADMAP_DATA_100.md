@@ -200,6 +200,7 @@ Each item gives four things:
 139. ✅ Older people in walk-up flats: residents 60+ in 3-5 storey blocks × pharmacy reach (WorldPop, Open Buildings, Overture) | derived | `walkups` lens
 140. ✅ Monsoon tree-fall risk: tall canopy over busy main roads × heavy rain and cyclone wind (Meta canopy height, OSM, CHIRPS, IBTrACS) | derived | `treefall` lens
 141. ✅ Substations under water: power substations in flood and waterlogging zones, now and by 2050, and the residents nearest each (OSM, Aqueduct, Sentinel-1) | derived | `gridflood` lens
+142. ✅ Coaching hub safety: coaching-centre clusters × waterlogging (basements) × packed lanes × fire-station reach (Overture, Sentinel-1, Open Buildings, OSM) | derived | `coaching` lens
 
 ## Parked for the keys round
 

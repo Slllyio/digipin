@@ -492,6 +492,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 32.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1233,6 +1239,12 @@
     "gridflood": {
      "label": "Substations on flood-prone or waterlogged ground",
      "value": 1.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 55.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1986,6 +1998,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 21.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2727,6 +2745,12 @@
     "gridflood": {
      "label": "Substations on flood-prone or waterlogged ground",
      "value": 54.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 63.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3483,6 +3507,12 @@
     "gridflood": {
      "label": "Substations on flood-prone or waterlogged ground",
      "value": 22.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 73.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -4860,6 +4890,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 77.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.9,
@@ -5610,6 +5646,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 11.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6339,6 +6381,12 @@
     "gridflood": {
      "label": "Substations on flood-prone or waterlogged ground",
      "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 35,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -7092,6 +7140,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 50.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -7827,6 +7881,12 @@
     "gridflood": {
      "label": "Substations on flood-prone or waterlogged ground",
      "value": 9.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 77.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -8586,6 +8646,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 27.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -9339,6 +9405,12 @@
     "gridflood": {
      "label": "Substations on flood-prone or waterlogged ground",
      "value": 3.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "coaching": {
+     "label": "Coaching hub blocks with a hazard flag",
+     "value": 42.2,
      "unit": "%",
      "higherIs": "worse"
     },
