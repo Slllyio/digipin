@@ -426,6 +426,42 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Older people in walk-ups. The National Building Code asks for a lift above 15 m, so three- to five-storey blocks
+    // (WALKUP_LO to WALKUP_HI metres on average) are mostly climbed on foot: hard on knees and hearts, and slow to
+    // evacuate or carry a patient down. Care is near when a pharmacy is listed within PHARMA_KM.
+    const WALKUP_LO = 9, WALKUP_HI = 15, PHARMA_KM = 0.5;
+
+    function walkups(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, old = c['demographics.elderly_60plus'], h = c['building_stock.height_2023_m'];
+        const ph = c['places.pharmacies'];
+        if (!old || !h) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(old, i) > 0 && v(h, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const near = ph ? within(g, Float64Array.from({ length: n }, (_, i) => v(ph, i)), PHARMA_KM) : null;
+        const walk = i => h[i] >= WALKUP_LO && h[i] < WALKUP_HI, far = i => near && near[i] <= 0;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = walk(i) ? old[i] : 0;
+        const ws = idx.filter(walk), fs = ws.filter(far);
+        const all = _sumOver(old, idx, () => true), pW = _sumOver(old, ws, () => true), pF = _sumOver(old, fs, () => true);
+        const stats = [
+            { label: 'Residents aged 60+', value: _people(all) },
+            { label: `…in blocks of ${WALKUP_LO}-${WALKUP_HI} m buildings (about 3-5 storeys, mostly without lifts)`, value: `${_people(pW)} (${_round(100 * pW / (all || 1))}%)` },
+        ];
+        if (near) stats.push({ label: `…with no pharmacy listed within ${PHARMA_KM * 1000} m`, value: `${_people(pF)} (${fs.length} blocks)` });
+        const score = Float64Array.from({ length: n }, (_, i) => (walk(i) ? v(old, i) * (far(i) ? 2 : 1) : 0));
+        spaced(g, ws, score).forEach((i, k) => stats.push({
+            label: `Walk-up ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(old[i])} residents aged 60+; buildings ${_round(h[i])} m on average${near ? `; ${near[i] > 0 ? `${_round(near[i])} pharmac${near[i] > 1 ? 'ies' : 'y'}` : 'no pharmacy'} within ${PHARMA_KM * 1000} m` : ''}` }));
+        return {
+            columns: { elderly_walkup: out }, idx, weightKey: 'elderly_walkup', noHotspots: true,
+            metric: { label: 'Older residents in walk-up blocks', value: _round(100 * pW / (all || 1)), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pW)} residents aged 60 or over (${_round(100 * pW / (all || 1))}%) live in blocks of three- to five-storey buildings, the height band where the building code does not require a lift${near ? `; ${_people(pF)} of them have no pharmacy listed within ${PHARMA_KM * 1000} m` : ''}. These are where stair lifts, ground-floor transfers, doorstep medicine delivery and stretcher-friendly stairwells matter most. The blocks listed have the most older people, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -490,10 +526,16 @@ const UrbanLensesSafety = (() => {
             needs: ['rail_access.rail_stations', 'population.population'],
             method: `Suburban rail stations are Overture Maps and OpenStreetMap station points on mainline track (the rail_access dataset). Every lived-in block within ${CATCH_KM} km of a station is assigned to its nearest one (straight line on the block grid), and a station's load is the residents assigned to it, split across stations in the same block. This is a catchment, not ridership: it misses commuters who change trains, ride from farther away or choose a faster station, and open timetables (item 67) are still not available for Mumbai locals.`,
             refs: 'Overture Maps; OpenStreetMap; WorldPop; Commissioner of Railway Safety reports on suburban crowding' },
+        { id: 'walkups', equity: true, title: 'Older people in walk-up flats', icon: '🪜',
+            question: 'Where do older people live up stairs with no lift?',
+            field: { key: 'elderly_walkup', label: `Residents 60+ in blocks of ${WALKUP_LO}-${WALKUP_HI} m buildings`, unit: 'people', higherIs: 'worse', ramp: 'reds', domain: [0, 1500] },
+            needs: ['demographics.elderly_60plus', 'building_stock.height_2023_m', 'places.pharmacies'],
+            method: `Residents aged 60+ are WorldPop age structure per block. Walk-up blocks have a mean building height of ${WALKUP_LO}-${WALKUP_HI} m in Google Open Buildings 2.5D (2023), about three to five storeys: the National Building Code 2016 asks for lifts above 15 m, so most such buildings have none. Pharmacies are Overture Maps places within ${PHARMA_KM * 1000} m. A block average mixes buildings, and lift retrofits are not in open data, so this ranks where to look.`,
+            refs: 'WorldPop age structures; Google Open Buildings 2.5D Temporal; National Building Code 2016 Part 4 and Part 8 (lifts); Harmonised Guidelines for Universal Accessibility (MoHUA 2021)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

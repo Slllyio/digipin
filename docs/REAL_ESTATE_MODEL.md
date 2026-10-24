@@ -1096,3 +1096,7 @@ The school safety check run over Overture hospitals (both lenses share `siteChec
 ## Crowded local-train stations (`stationload` lens, js/urban-lenses-safety.js)
 
 Item 67 asked for Mumbai locals with frequency; no open timetable or GTFS is reachable, so this ships the catchment half. Every lived-in block within 2 km of a suburban rail station (rail_access, Overture + OSM) is assigned to its nearest station on the block grid; a station's load is its assigned residents, split across stations sharing a block. The map shows each block's station load. Mumbai: 100 stations, 1.5 crore residents within 2 km, median 1.1 lakh per station, busiest tenth 3 lakh+. A catchment is not ridership: interchanges, long-distance commuters and fast-train choice are missing.
+
+## Older people in walk-up flats (`walkups` lens, js/urban-lenses-safety.js)
+
+Residents 60+ (WorldPop age structure) in blocks whose mean building height is 9-15 m (about three to five storeys): the NBC 2016 asks for lifts above 15 m, so these are mostly climbed on foot. Pharmacies within 500 m are Overture places. The map shows older residents per walk-up block. Delhi: 5.9 lakh (36%) of 16.1 lakh older residents, 1.6 lakh with no pharmacy within 500 m; Mumbai 29%; Kolkata 23%; Bengaluru 14%.

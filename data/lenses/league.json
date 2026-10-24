@@ -474,6 +474,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 18.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1198,6 +1204,12 @@
      "label": "Residents per suburban station (median)",
      "value": 91894,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 14.2,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -1932,6 +1944,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 13.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2656,6 +2674,12 @@
      "label": "Residents per suburban station (median)",
      "value": 73412,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 12.7,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -3396,6 +3420,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 36.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -4080,6 +4110,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 1.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "railnoise": {
      "label": "Residents within 150 m of a mainline railway",
      "value": 8.9,
@@ -4738,6 +4774,12 @@
      "label": "Residents per suburban station (median)",
      "value": 64317,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 35,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -5472,6 +5514,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 11.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6184,6 +6232,12 @@
      "label": "Residents per suburban station (median)",
      "value": 124009,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -6918,6 +6972,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 23.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -7636,6 +7696,12 @@
      "label": "Residents per suburban station (median)",
      "value": 69673,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 9.9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -8376,6 +8442,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 28.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -9112,6 +9184,12 @@
      "label": "Residents per suburban station (median)",
      "value": 53648,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "walkups": {
+     "label": "Older residents in walk-up blocks",
+     "value": 31.3,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {

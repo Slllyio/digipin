@@ -133,7 +133,7 @@ Each item gives four things:
 
 79. ✅ Jobs proxy from offices + places + non-residential floor space | derived | job access
 80. Census 2011 ward population and literacy (where ward shapes exist) | open | equity lens
-81. NFHS-5 district health and wealth indicators | open | district context
+81. ⏸ NFHS-5 district health and wealth indicators | open | district context (rchiips.org unreachable; the DHS API serves NFHS-5 by state only)
 82. SECC / PMAY beneficiary density (where published) | open | housing need
 83. ✅ Gig and informal work proxy (two-wheeler density × places) | derived | economy lens (`riders` lens: delivery-rider hubs from eateries and grocers, rest-stop gaps from toilets, water and heat; vehicle registrations are not open per block)
 84. ✅ Night-time economy (VIIRS late-night radiance × food/leisure places) | EE/S3 | night economy
@@ -197,6 +197,7 @@ Each item gives four things:
 136. ✅ School safety check: flood, waterlogging, soft ground in seismic zones, packed lanes, industry and road noise at every school block (NDMA School Safety Policy) | derived | `schoolsafe` lens
 137. ✅ Hospital safety check: the same six hazards at every hospital block (NDMA hospital safety guidelines) | derived | `hospitalsafe` lens
 138. ✅ Crowded local-train stations: residents per suburban station by nearest-station catchment (rail_access, WorldPop) | derived | `stationload` lens
+139. ✅ Older people in walk-up flats: residents 60+ in 3-5 storey blocks × pharmacy reach (WorldPop, Open Buildings, Overture) | derived | `walkups` lens
 
 ## Parked for the keys round
 

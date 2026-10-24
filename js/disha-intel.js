@@ -27,6 +27,7 @@ const DishaIntel = (() => {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
             builduse: /\b(building use|land use (map|class\w*)|what (are|is) (the )?(buildings?|blocks?) used for|residential or commercial|commercial or residential|which (blocks|areas) are (residential|commercial|industrial))\b/i,
+            walkups: /\b(walk[\s-]?ups?|no lifts?|without (a )?lifts?|no elevators?|without (an )?elevators?|stairs?)\b.{0,40}\b(elderly|old(er)? (people|residents)|seniors?|aged)\b|\b(elderly|old(er)? (people|residents)|seniors?|senior citizens)\b.{0,40}\b(walk[\s-]?ups?|stairs?|lifts?|elevators?|upper floors?)\b/i,
             stationload: /\b(local trains?|mumbai locals?|suburban (rail|railway|trains?|stations?)|(crowded|busiest|overcrowded) (local |rail(way)? |train |suburban )?stations?|station crowding)\b/i,
             hospitalsafe: /\b(hospital safety|safe(st)? hospitals?|unsafe hospitals?|hospitals?\b.{0,30}\b(hazards?|disasters?|earthquakes?|unsafe|at risk|risky))\b/i,
             schoolsafe: /\b(school safety|safe(st)? schools?|unsafe schools?|schools?\b.{0,30}\b(hazards?|disasters?|floods?|earthquakes?|unsafe|at risk|risky))\b/i,
