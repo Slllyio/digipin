@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 33.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",
      "value": 872,
@@ -1043,6 +1049,12 @@
      "value": 53.2,
      "unit": "%",
      "higherIs": null
+    },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 29.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",
@@ -1674,6 +1686,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 33.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",
      "value": 72,
@@ -2297,6 +2315,12 @@
      "value": 65.8,
      "unit": "%",
      "higherIs": null
+    },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 25.8,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",
@@ -2934,6 +2958,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 28.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",
      "value": 1376,
@@ -3528,6 +3558,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 28.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "packed": {
      "label": "Residents in packed blocks",
      "value": 14088,
@@ -4109,6 +4145,12 @@
      "value": 57.6,
      "unit": "%",
      "higherIs": null
+    },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 31.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",
@@ -4740,6 +4782,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 26.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",
      "value": 227,
@@ -5351,6 +5399,12 @@
      "value": 63.8,
      "unit": "%",
      "higherIs": null
+    },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 34.9,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",
@@ -5976,6 +6030,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 21.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",
      "value": 351,
@@ -6593,6 +6653,12 @@
      "value": 62.7,
      "unit": "%",
      "higherIs": null
+    },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 33.3,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",
@@ -7223,6 +7289,12 @@
      "value": 43.8,
      "unit": "%",
      "higherIs": null
+    },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 7.6,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",
@@ -7859,6 +7931,12 @@
      "value": 59.5,
      "unit": "%",
      "higherIs": null
+    },
+    "shadecare": {
+     "label": "Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare",
+     "value": 23.4,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "techhubs": {
      "label": "Software, IT, biotech and science firms listed",

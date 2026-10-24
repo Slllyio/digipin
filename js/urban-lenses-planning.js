@@ -5,7 +5,7 @@
 const UrbanLensesPlanning = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people, _sumOver, within, wquantile } = UrbanLenses._kit;
+    const { _fin, _round, _people, _sumOver, within, wquantile, _net, DIRS } = UrbanLenses._kit;
 
     const SPACING_KM = 1.5, TOP = 5;
 
@@ -860,7 +860,96 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Shaded walk to care. The nearest clinic, hospital or pharmacy is found on the walking network, the route is
+    // traced back cell by cell, and each step is scored for tree shade and summer surface heat.
+    const CARE_KM = 2, SHADE_MIN = 10, SHADE_HOT_Q = 0.5, EXPOSED_PCT = 50;
+
+    /** Network route from the reach search r (js, ds in settled order) back from cell t to its origin: [[cell, metres]]. */
+    function traceBack(g, r, t) {
+        const d = new Map();
+        for (let q = 0; q < r.len; q++) d.set(r.js[q], r.ds[q]);
+        const out = [];
+        let j = t;
+        for (let guard = 0; guard < 400 && d.get(j) > 1e-9; guard++) {
+            let prev = -1, step = 0;
+            for (const [a, b] of DIRS) {
+                const k = g.cellAt(j, a, b), dk = d.get(k);
+                if (k < 0 || dk == null) continue;
+                const s = Math.hypot(a * g.dy, b * g.dx);
+                if (Math.abs(dk + s - d.get(j)) < 1e-6) { prev = k; step = s; break; }
+            }
+            if (prev < 0) break;
+            out.push([j, 1000 * step]);
+            j = prev;
+        }
+        return out;
+    }
+
+    function shadecare(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const tree = c['vegetation.tree_canopy_pct'], lst = c['surface_heat.lst_day_c'];
+        const care = c['places.health'], osm = c['osm_amenities.healthcare'];
+        if (!pop || !tree || !lst || (!care && !osm)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && _fin(lst[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const hotT = wquantile(lst, pop, idx, SHADE_HOT_Q);
+        const isCare = j => v(care, j) + v(osm, j) > 0;
+        const bare = j => v(tree, j) < SHADE_MIN && _fin(lst[j]) && lst[j] >= hotT;
+        const net = _net(fr);
+        const exposed = new Float64Array(n).fill(NaN), walk = new Float64Array(n).fill(NaN), through = new Float64Array(n);
+        let pOwn = 0, pNone = 0, pRoute = 0, pExposed = 0, mRoute = 0, mBare = 0, pOff = 0;
+        for (const i of idx) {
+            const r = net.reach(i, CARE_KM, isCare);
+            if (!r.len || !r.hit) { pNone += pop[i]; continue; }
+            const t = r.js[r.len - 1];
+            if (t === i) { pOwn += pop[i]; exposed[i] = 0; walk[i] = 0; continue; }
+            if (!r.net) { pOff += pop[i]; continue; }
+            const route = traceBack(g, r, t);
+            let len = 0, hot = 0;
+            for (const [j, m] of route) {
+                len += m;
+                if (bare(j)) { hot += m; through[j] += pop[i]; }
+            }
+            if (!(len > 0)) continue;
+            walk[i] = Math.round(len);
+            exposed[i] = Math.round(100 * hot / len);
+            pRoute += pop[i]; mRoute += pop[i] * len; mBare += pop[i] * hot;
+            if (exposed[i] >= EXPOSED_PCT) pExposed += pop[i];
+        }
+        if (!(pRoute > 0)) return null;
+        const all = _sumOver(pop, idx, () => true), avg = Math.round(mRoute / pRoute / 10) * 10;
+        const plant = [];
+        for (let j = 0; j < n; j++) if (through[j] > 0) plant.push(j);
+        const stats = [
+            { label: `Hot (day surface ≥ ${_round(hotT, 1)} °C, the city's residents' median) and bare (tree canopy under ${SHADE_MIN}%)`, value: 'counts as exposed' },
+            { label: 'Residents with a clinic, hospital or pharmacy in their own block', value: _people(pOwn) },
+            { label: `Residents walking to one within ${CARE_KM} km on the network`, value: _people(pRoute) },
+            { label: `…whose walk is at least ${EXPOSED_PCT}% hot and bare`, value: `${_people(pExposed)} (${_round(100 * pExposed / pRoute)}%)` },
+            { label: 'Average walk, and its hot and bare share', value: `${avg} m, ${_round(100 * mBare / Math.max(mRoute, 1))}%` },
+            { label: `No listed care within ${CARE_KM} km`, value: _people(pNone) },
+        ];
+        spaced(g, plant, through).forEach((j, k) => stats.push({
+            label: `Shade trees first ${k + 1}: ${g.codes[j]}`,
+            value: `on the walk to care for ${_people(through[j])} residents; ${_round(lst[j], 1)} °C, ${_round(v(tree, j))}% canopy` }));
+        stats.push({ label: 'Care in reach but block not on the walking network (not traced)', value: _people(pOff) });
+        return {
+            columns: { care_walk_exposed_pct: exposed, care_walk_m: walk }, idx,
+            metric: { label: `Residents whose walk to the nearest clinic or pharmacy is mostly hot and bare`, value: _round(100 * pExposed / Math.max(all, 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pExposed)} people (${_round(100 * pExposed / Math.max(all, 1), 1)}% of residents) walk to their nearest clinic, hospital or pharmacy along a route that is at least ${EXPOSED_PCT}% hot and treeless; the average walk is ${avg} m, ${_round(100 * mBare / Math.max(mRoute, 1))}% of it exposed. The blocks listed are where shade trees would cover the most walks to care, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'shadecare', equity: true, title: 'Shaded walk to the clinic', icon: '🌳',
+            question: 'How much of the walk to the nearest clinic is in the sun?',
+            field: { key: 'care_walk_exposed_pct', label: 'Share of the walk to the nearest clinic or pharmacy that is hot and treeless', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 100] },
+            extra: [{ key: 'care_walk_m', label: 'Walk to the nearest clinic, hospital or pharmacy', unit: 'm', higherIs: 'worse', ramp: 'heat', domain: [0, 2000] }],
+            needs: ['places.health', 'osm_amenities.healthcare', 'vegetation.tree_canopy_pct', 'surface_heat.lst_day_c', 'population.population', 'osm_walk.links'],
+            method: `For every lived-in block, the nearest clinic, hospital or pharmacy (Overture Maps health places or OSM healthcare) within ${CARE_KM} km is found on DigiPin's walking network (OSM footways and streets between neighbouring blocks), and the route is traced back block by block. A step counts as hot and bare when its block has under ${SHADE_MIN}% of its area under trees 5 m or taller (Meta/WRI 1 m canopy height) and a summer daytime surface temperature (MODIS) at or above the city's population-weighted median. Planting priority adds up the residents whose walk crosses each hot, bare block. Block-level routes (about 250 m steps) show which corridors matter, not which side of the street to plant.`,
+            refs: 'Overture Maps places; OpenStreetMap; Tolan et al. 2024 (Meta/WRI canopy height); MODIS LST; NDMA heat-wave guidelines (2019)' },
         { id: 'techhubs', equity: false, title: 'Tech hubs and IT parks', icon: '💻',
             question: 'Where are the tech and IT clusters, and who lives within reach of them?',
             field: { key: 'tech_firms_1km', label: `Software, IT, biotech and science firms within ${TECH_KM} km`, unit: 'firms', higherIs: null, ramp: 'viridis', domain: [0, 80] },
@@ -998,7 +1087,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -746,6 +746,20 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats[0].value).toBe('40');
         expect(r.stats.some(x => /^Tech hub 1/.test(x.label))).toBe(true);
         expect(L._lenses.techhubs(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('shadecare: traces the walk to the nearest clinic and scores shade along it', () => {
+        const care = codes.map((_, i) => (i === 0 ? 3 : 0));
+        const tree = codes.map((_, i) => (i === 1 ? 50 : 0));
+        const f = L.frameFrom(codes, { ...base, 'places.health': care, 'vegetation.tree_canopy_pct': tree, 'surface_heat.lst_day_c': codes.map(() => 40),
+            'osm_walk.links': codes.map(() => 255) });
+        const r = L._lenses.shadecare(f, {});
+        expect(r.columns.care_walk_exposed_pct[0]).toBe(0);
+        expect(r.columns.care_walk_exposed_pct[1]).toBe(100);
+        expect(r.columns.care_walk_exposed_pct[2]).toBe(50);
+        expect(r.columns.care_walk_m[2]).toBeGreaterThan(r.columns.care_walk_m[1]);
+        expect(r.stats.find(x => /^Shade trees first 1/.test(x.label)).label).toContain(codes[0]);
+        expect(L._lenses.shadecare(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

@@ -104,7 +104,7 @@ Each item gives four things:
 55. ✅ Dengue/malaria risk proxy (standing water + temperature + rain; mosquito lens) | EE | vector lens
 56. ❌ Heat-health mortality estimate (Gasparrini ERFs on hot days) | derived | heat deaths lens (skipped: de Bont 2024 gives +14.7% deaths on city-level heatwave days, so a block map would be uniform)
 57. ✅ Air-pollution premature deaths (GBD PM2.5 IER) | derived | air deaths lens
-58. Walkable shade on routes to clinics | derived | shade lens extension
+58. ✅ Walkable shade on routes to clinics | derived | shade lens extension (`shadecare` lens: network route traced block by block, canopy × surface heat)
 59. ✅ Green space per resident (WHO 9 m² target) | derived | green lens extension
 60. ✅ Cooling centres siting (libraries, malls, temples with AC) | S3 | heat action plan (`cooling` lens)
 
