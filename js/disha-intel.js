@@ -26,6 +26,7 @@ const DishaIntel = (() => {
         lens: {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
+            builduse: /\b(building use|land use (map|class\w*)|what (are|is) (the )?(buildings?|blocks?) used for|residential or commercial|commercial or residential|which (blocks|areas) are (residential|commercial|industrial))\b/i,
             riders: /\b(delivery (riders?|boys?|partners?|workers?|executives?)|gig (workers?|economy|work)|riders? (rest|hubs?|stops?)|swiggy|zomato|blinkit|zepto|quick[- ]commerce|dark stores?)\b/i,
             cyclone: /\b(cyclones?|cyclonic|hurricanes?|typhoons?|storm winds?|wind (risk|speed|load|zones?)|is ?875)\b/i,
             shadecare: /\b(shad(e|ed|y) (walk|route|path)s? to (the )?(clinic|hospital|pharmac(y|ies)|doctor|health ?care)|walk(ing)? to (the )?(clinic|hospital|pharmacy|doctor) in the (sun|heat)|sun on the way to (the )?(clinic|hospital|doctor))\b/i,

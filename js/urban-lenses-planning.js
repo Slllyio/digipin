@@ -1076,7 +1076,96 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Building use. Overture land use (OpenStreetMap landuse polygons) labels only the blocks someone has mapped. A
+    // Gaussian naive Bayes classifier learns each use from those blocks, in a space of satellite embeddings, building
+    // height and cover, night lights, GHSL's non-residential share and business listings, and labels every block.
+    const USE_CLASSES = [['residential', 'Homes'], ['commercial', 'Shops and offices'], ['industrial', 'Industry'], ['civic', 'Institutions and campuses']];
+    const USE_LABEL_PCT = 50, USE_MAPPED_PCT = 50, USE_TEST_EVERY = 5, USE_BUILT_PCT = 5;
+    const USE_FEATURES = [...Array.from({ length: 12 }, (_, k) => [`embeddings.e${k}`, x => x]), ['building_stock.height_2023_m', x => x],
+        ['building_stock.cover_2023_pct', x => x], ['nightlights.radiance', x => Math.log1p(Math.max(0, x))], ['built_up.nonres_share_pct', x => x],
+        ['population.density_km2', x => Math.log1p(Math.max(0, x))], ['places.places', x => Math.log1p(x)], ['places.offices', x => Math.log1p(x)], ['places.shopping', x => Math.log1p(x)]];
+
+    function builduse(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], mapped = c['landuse.mapped_pct'];
+        const share = USE_CLASSES.map(([k]) => c[`landuse.${k}_pct`]), mil = c['landuse.military_pct'];
+        const cover = c['building_stock.cover_2023_pct'];
+        if (!mapped || share.some(a => !a) || !c['embeddings.e0'] || !cover) return null;
+        const feats = USE_FEATURES.filter(([k]) => c[k]);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(c['embeddings.e0'][i]) && cover[i] >= USE_BUILT_PCT) idx.push(i);
+        if (idx.length < 50) return null;
+        // Standardise each feature over the city; missing values sit at the mean.
+        const d = feats.length, X = new Float64Array(n * d);
+        feats.forEach(([k, f], j) => {
+            let s1 = 0, s2 = 0, m = 0;
+            for (const i of idx) if (_fin(c[k][i])) { const x = f(c[k][i]); s1 += x; s2 += x * x; m++; }
+            const mu = m ? s1 / m : 0, sd = m ? Math.sqrt(Math.max(1e-12, s2 / m - mu * mu)) : 1;
+            for (const i of idx) X[i * d + j] = _fin(c[k][i]) ? (f(c[k][i]) - mu) / sd : 0;
+        });
+        const labelOf = i => {
+            if (!(mapped[i] >= USE_MAPPED_PCT)) return -1;
+            let best = -1, top = USE_LABEL_PCT - 1e-9;
+            share.forEach((a, k) => { const x = (a[i] || 0) + (k === 3 && mil ? mil[i] || 0 : 0); if (x > top) { top = x; best = k; } });
+            return best;
+        };
+        const labelled = idx.map(i => [i, labelOf(i)]).filter(([, l]) => l >= 0);
+        const fit = rows => {
+            const cen = USE_CLASSES.map(() => new Float64Array(d)), vr = USE_CLASSES.map(() => new Float64Array(d)), cnt = new Array(USE_CLASSES.length).fill(0);
+            for (const [i, l] of rows) { cnt[l]++; for (let j = 0; j < d; j++) { const x = X[i * d + j]; cen[l][j] += x; vr[l][j] += x * x; } }
+            cen.forEach((v, l) => { if (cnt[l]) for (let j = 0; j < d; j++) { v[j] /= cnt[l]; vr[l][j] = Math.max(0.05, vr[l][j] / cnt[l] - v[j] * v[j]); } });
+            const tot = cnt.reduce((a, b) => a + b, 0);
+            const logdet = vr.map(v => v.reduce((a, x) => a + Math.log(x), 0));
+            return { cen, vr, cnt, prior: cnt.map((x, l) => (x ? Math.log(x / tot) - 0.5 * logdet[l] : -Infinity)) };
+        };
+        const classify = (m, i) => {
+            const dist = m.cen.map((v, l) => { if (!m.cnt[l]) return Infinity; let s2 = 0; for (let j = 0; j < d; j++) { const e = X[i * d + j] - v[j]; s2 += e * e / m.vr[l][j]; } return s2; });
+            const sc = dist.map((x, l) => -0.5 * x + m.prior[l]), top = Math.max(...sc);
+            const w = sc.map(x => Math.exp(x - top));
+            const sum = w.reduce((a, b) => a + b, 0);
+            const p = w.map(x => x / sum);
+            return [p.indexOf(Math.max(...p)), p];
+        };
+        // Hold out every fifth labelled block to measure accuracy, then refit on all of them.
+        const test = labelled.filter((_, t) => t % USE_TEST_EVERY === 0), train = labelled.filter((_, t) => t % USE_TEST_EVERY !== 0);
+        const present = fit(train).cnt.filter(x => x > 0).length;
+        if (present < 2 || test.length < 10) return null;
+        const m0 = fit(train);
+        let hit = 0;
+        const tp = new Array(USE_CLASSES.length).fill(0), tn = new Array(USE_CLASSES.length).fill(0);
+        for (const [i, l] of test) { tn[l]++; if (classify(m0, i)[0] === l) { hit++; tp[l]++; } }
+        const acc = hit / test.length;
+        const m = fit(labelled);
+        const use = new Float64Array(n).fill(NaN), nonres = new Float64Array(n).fill(NaN);
+        const blocks = new Array(USE_CLASSES.length).fill(0), people = new Array(USE_CLASSES.length).fill(0);
+        for (const i of idx) {
+            const [k, p] = classify(m, i);
+            use[i] = k + 1;
+            nonres[i] = Math.round(100 * (1 - p[0]));
+            blocks[k]++;
+            people[k] += pop && _fin(pop[i]) ? pop[i] : 0;
+        }
+        const stats = [
+            { label: 'Blocks with mapped land use used to train', value: `${labelled.length} of ${idx.length}` },
+            { label: 'Accuracy on held-out mapped blocks', value: `${_round(100 * acc)}% (one in ${USE_TEST_EVERY} held out)` },
+            ...USE_CLASSES.map(([, name], k) => ({ label: `${name}: blocks (residents)`, value: `${blocks[k]} (${_people(people[k])})${tn[k] ? `; ${_round(100 * tp[k] / tn[k])}% of held-out ${name.toLowerCase()} found` : ''}` })),
+        ];
+        return {
+            columns: { use_class: use, nonres_prob_pct: nonres }, idx,
+            metric: { label: 'Blocks classed as mostly non-residential', value: _round(100 * (idx.length - blocks[0]) / idx.length), unit: '%', higherIs: null },
+            headline: `Land use is mapped for ${_round(100 * labelled.length / idx.length)}% of built-up blocks; a classifier trained on them labels the rest from satellite embeddings, building height and cover, night lights and business listings, and gets ${_round(100 * acc)}% of held-out mapped blocks right. ${_round(100 * blocks[0] / idx.length)}% of blocks read as mostly homes, ${_round(100 * blocks[1] / idx.length)}% shops and offices, ${_round(100 * blocks[2] / idx.length)}% industry and ${_round(100 * blocks[3] / idx.length)}% institutions and campuses.${acc < 0.7 ? ' Treat the map as rough here: too few or too unrepresentative blocks are mapped.' : ''}`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'builduse', equity: false, title: 'What the buildings are used for', icon: '🏢',
+            question: 'Which blocks are homes, shops and offices, industry or institutions?',
+            field: { key: 'use_class', label: 'Main use: 1 homes, 2 shops and offices, 3 industry, 4 institutions and campuses', unit: 'class', higherIs: null, ramp: 'viridis', domain: [1, 4] },
+            extra: [{ key: 'nonres_prob_pct', label: 'Chance the block is mostly not homes', unit: '%', higherIs: null, ramp: 'viridis', domain: [0, 100] }],
+            needs: ['landuse.residential_pct', 'landuse.commercial_pct', 'landuse.industrial_pct', 'landuse.civic_pct', 'landuse.military_pct', 'landuse.mapped_pct',
+                ...USE_FEATURES.map(([k]) => k), 'population.population'],
+            method: `Training labels are blocks where Overture land use (OpenStreetMap landuse polygons) covers at least ${USE_MAPPED_PCT}% and one use takes ${USE_LABEL_PCT}% or more (military counts with institutions). Features, standardised per city: the 12 principal components of Google's satellite embeddings (AlphaEarth), Open Buildings 2.5D height and roof cover, VIIRS night lights, GHSL's non-residential built share WorldPop population density and Overture counts of all places, offices and shops. Only blocks with at least ${USE_BUILT_PCT}% roof cover are classed. A Gaussian naive Bayes classifier (per-use mean and variance of each feature, priors from the share of each use among mapped blocks) assigns every block its most likely use; the chance of non-residential use is its posterior probability. Accuracy is measured on every ${USE_TEST_EVERY}th mapped block, held out of training. Mapped blocks are not a random sample (big campuses and industrial estates get mapped first), so small mixed-use blocks are the least certain.`,
+            refs: 'Overture Maps land use; Brown et al. 2025 (Google Satellite Embedding); Google Open Buildings 2.5D; GHSL GHS-BUILT-S non-residential; VIIRS' },
         { id: 'summershade', equity: true, title: 'Summer shade from trees', icon: '🍃',
             question: 'Do the trees still give shade in the hot months?',
             field: { key: 'summer_leafy_pct', label: 'Tree canopy still in leaf in March-May', unit: '% of canopy', higherIs: 'better', ramp: 'greens', domain: [0, 100] },
@@ -1239,7 +1328,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone, riders, summershade }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone, riders, summershade, builduse }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 
