@@ -26,6 +26,7 @@ const DishaIntel = (() => {
         lens: {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
+            packed: /\b(packed (blocks?|buildings?|areas?)|wall[\s-]to[\s-]wall|no setbacks?|setbacks?|ground coverage|over[\s-]?(built|crowded) (blocks?|lanes?|areas?)|fire[\s-]?tender access)\b/i,
             coast: /\b(coast(line|al) (change|erosion|regulation|zone)|crz|reclaim(ed|ation)|land (reclaimed|from the sea)|shoreline|sea (erosion|encroach\w*))\b/i,
             tourism: /\b(touris(ts?|m)|visitor (magnets?|spots?|attractions?|hotspots?)|landmarks?|sightseeing|where do visitors go)\b/i,
             cityfarms: /\b(farm ?land (left |inside |in )|farms? (inside|within|in) the city|urban (agriculture|farms?|farming)|allotments?|orchards?|plant nurser(y|ies))\b/i,

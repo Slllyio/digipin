@@ -779,7 +779,46 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Packed blocks. Building bye-laws cap ground coverage (roughly 60–75% of a plot for small residential plots) and
+    // require setbacks; a whole block with half or more of its land under roofs, streets included, has almost no gaps
+    // between buildings. Tall and packed means poor daylight and air, and hard fire-tender access.
+    const PACKED_PCT = 50, TALL_M = 10;
+
+    function packed(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, cov = c['building_stock.cover_2023_pct'], h = c['building_stock.height_2023_m'];
+        const pop = c['population.population'], fire = c['places.fire_stations'];
+        if (!cov) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(cov[i]) && v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const fireNear = fire ? within(g, Float64Array.from({ length: n }, (_, i) => v(fire, i)), 3) : null;
+        const col = new Float64Array(n).fill(NaN);
+        for (const i of idx) col[i] = cov[i];
+        const pk = idx.filter(i => cov[i] >= PACKED_PCT), tall = pk.filter(i => v(h, i) >= TALL_M);
+        const all = _sumOver(pop, idx, () => true), pPk = _sumOver(pop, pk, () => true), pTall = _sumOver(pop, tall, () => true);
+        const stats = [
+            { label: `Residents in packed blocks (${PACKED_PCT}%+ of all land under roofs)`, value: `${_people(pPk)} (${_round(100 * pPk / Math.max(all, 1), 1)}%)` },
+            { label: `…where buildings average ${TALL_M} m (about three storeys) or more`, value: `${_people(pTall)} in ${tall.length} blocks` },
+        ];
+        if (fireNear) stats.push({ label: '…packed blocks with no fire station listed within 3 km', value: `${pk.filter(i => fireNear[i] <= 0).length} of ${pk.length}` });
+        spaced(g, pk, Float64Array.from({ length: n }, (_, i) => v(cov, i) * v(pop, i))).forEach((i, k) => stats.push({
+            label: `Most packed ${k + 1}: ${g.codes[i]}`, value: `${_round(cov[i])}% roof cover, ${_round(v(h, i), 1)} m mean height; ${_people(v(pop, i))} residents` }));
+        return {
+            columns: { roof_cover_pct: col }, idx, weightKey: 'roof_cover_pct', noHotspots: true,
+            metric: { label: 'Residents in packed blocks', value: Math.round(pPk), unit: 'people', higherIs: 'worse' },
+            headline: `${_people(pPk)} people (${_round(100 * pPk / Math.max(all, 1), 1)}%) live in blocks where roofs cover ${PACKED_PCT}% or more of all the land, streets included, leaving almost no setbacks or open space; ${_people(pTall)} of them in blocks averaging three storeys or more, where daylight, air and fire-tender access suffer. Typical of urban villages, old cores and unauthorised colonies.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'packed', equity: true, title: 'Packed blocks with no setbacks', icon: '🧱',
+            question: 'Where are buildings packed wall to wall with no setbacks?',
+            field: { key: 'roof_cover_pct', label: 'Share of all block land under roofs (2023)', unit: '% of block', higherIs: 'worse', ramp: 'reds', domain: [0, 70] },
+            needs: ['building_stock.cover_2023_pct', 'building_stock.height_2023_m', 'places.fire_stations', 'population.population'],
+            method: `Google Open Buildings 2.5D Temporal (2023) roof cover and mean building height per block. Building bye-laws cap ground coverage on a plot (roughly 60–75% for small residential plots, less for larger ones) and require setbacks; since a block also holds streets, ${PACKED_PCT}%+ of the whole block under roofs means plots are built almost wall to wall. Tall means a mean height of ${TALL_M} m or more. Fire stations within 3 km are Overture places and undercount. Coverage is from satellite footprints, so courtyards and lightwells under 4 m are missed.`,
+            refs: 'Google Open Buildings 2.5D Temporal; Model Building Bye-Laws 2016 (TCPO); National Building Code 2016 Part 4 (fire); WorldPop' },
         { id: 'coast', equity: false, title: 'Coastline change and the CRZ band', icon: '🌊',
             question: 'How has the coastline moved, and who lives in the coastal regulation band?',
             field: { key: 'coast_change', label: 'Water 1990 minus water 2020 (positive = land made, negative = land lost)', unit: 'points', higherIs: null, ramp: 'diverging', domain: [-50, 50] },
@@ -905,7 +944,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

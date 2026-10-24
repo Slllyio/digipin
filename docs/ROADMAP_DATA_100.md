@@ -50,7 +50,7 @@ Each item gives four things:
 7. ✅ Vacant building signal (no night light growth + no places + built) | derived | vacancy lens
 8. ✅ Commercial floor-space estimate (places × building class × height) | derived | office/retail supply
 9. ✅ Stalled-construction detector (bare soil steady for 24 months in construction_monthly) | EE | construction agent
-10. Plot-level setback/coverage compliance proxy (cover vs base FAR rules) | derived | FAR what-if
+10. ✅ Plot-level setback/coverage compliance proxy (cover vs base FAR rules) | derived | FAR what-if (`packed` lens, block-level roof cover and height)
 11. RERA project registrations (state portals; scraping fragile) | API/key | supply pipeline
 12. Circle rates for more states (Maharashtra ASR, Karnataka guidance values) | open PDFs | land-value calibration
 13. Rental listings index (99acres/MagicBricks) | key | rent lens (parked for keys)

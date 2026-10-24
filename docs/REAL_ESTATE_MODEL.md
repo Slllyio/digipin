@@ -1008,3 +1008,7 @@ New dataset `landmarks` (L7, pipeline/realestate/landmarks.py): Wikidata visitor
 ## Coastline change and the CRZ band (`coast` lens)
 
 Uses `water_history` (JRC yearly water 1990 and 2020) in blocks within 2 km of any 2080 coastal flood exposure (`flood_future.coast_pct_2080_high`), so inland lakes stay out. Land made is the drop in water share, land lost the rise. The Coastal Regulation Zone band is land within 500 m of blocks that are 80%+ water in 2020 (sea, creek or tidal river). Mumbai: 8.2 km² made and 6.5 km² lost since 1990, about 2.5 lakh residents in the band; Kolkata's tidal Hooghly and the East Kolkata wetlands count too. Salt pans and mudflats flip between land and water in Landsat maps.
+
+## Packed blocks with no setbacks (`packed` lens)
+
+Open Buildings 2.5D Temporal roof cover (2023) over the whole block, streets included. Bye-laws cap plot coverage at roughly 60–75% for small residential plots, so 50%+ of a whole block under roofs means plots built almost wall to wall. Tall packed blocks average 10 m or more. Delhi: 74.9 lakh residents (25.5%) in packed blocks; Kolkata 11%; Mumbai 2.8% (Open Buildings merges slum roofs into fewer, larger shapes, so dense slums may read lower).

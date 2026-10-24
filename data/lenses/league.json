@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 763234,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "tourism": {
      "label": "Visitor landmarks known in 3+ Wikipedia languages",
      "value": 48,
@@ -1031,6 +1037,12 @@
      "value": 53.2,
      "unit": "%",
      "higherIs": null
+    },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 1810447,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "tourism": {
      "label": "Visitor landmarks known in 3+ Wikipedia languages",
@@ -1650,6 +1662,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 181953,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "tourism": {
      "label": "Visitor landmarks known in 3+ Wikipedia languages",
      "value": 15,
@@ -2261,6 +2279,12 @@
      "value": 65.8,
      "unit": "%",
      "higherIs": null
+    },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 1107672,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "coast": {
      "label": "Land made from water near the coast since 1990",
@@ -2886,6 +2910,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 7488764,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "tourism": {
      "label": "Visitor landmarks known in 3+ Wikipedia languages",
      "value": 136,
@@ -3468,6 +3498,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 14088,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
      "value": 300935,
@@ -4043,6 +4079,12 @@
      "value": 57.6,
      "unit": "%",
      "higherIs": null
+    },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 1036495,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "tourism": {
      "label": "Visitor landmarks known in 3+ Wikipedia languages",
@@ -4662,6 +4704,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 433978,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "tourism": {
      "label": "Visitor landmarks known in 3+ Wikipedia languages",
      "value": 10,
@@ -5261,6 +5309,12 @@
      "value": 63.8,
      "unit": "%",
      "higherIs": null
+    },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 517893,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "tourism": {
      "label": "Visitor landmarks known in 3+ Wikipedia languages",
@@ -5874,6 +5928,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 1520114,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "coast": {
      "label": "Land made from water near the coast since 1990",
      "value": 6.77,
@@ -6479,6 +6539,12 @@
      "value": 62.7,
      "unit": "%",
      "higherIs": null
+    },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 663409,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "tourism": {
      "label": "Visitor landmarks known in 3+ Wikipedia languages",
@@ -7097,6 +7163,12 @@
      "value": 43.8,
      "unit": "%",
      "higherIs": null
+    },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 502282,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "coast": {
      "label": "Land made from water near the coast since 1990",
@@ -7721,6 +7793,12 @@
      "value": 59.5,
      "unit": "%",
      "higherIs": null
+    },
+    "packed": {
+     "label": "Residents in packed blocks",
+     "value": 298907,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "tourism": {
      "label": "Visitor landmarks known in 3+ Wikipedia languages",
