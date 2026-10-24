@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-10-24T19:40:36Z",
-  "count": 49,
+  "generated_at_iso": "2026-10-24T21:54:28Z",
+  "count": 47,
   "records": [
+    {
+      "id": "us6000u4pa",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-10-24T20:35:04.576000+00:00",
+      "latitude": 52.1565,
+      "longitude": 159.1963,
+      "depth_km": 70.184,
+      "place": "101 km SSE of Vilyuchinsk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4pa",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us6000u4ny",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-24T19:18:20.515000+00:00",
+      "latitude": -20.025,
+      "longitude": 168.7941,
+      "depth_km": 22.398,
+      "place": "73 km SW of Isangel, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4ny",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us6000u4nv",
       "magnitude": 5.0,
@@ -541,54 +565,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4h7",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us6000u4h0",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-23T21:41:04.400000+00:00",
-      "latitude": 7.9163,
-      "longitude": 127.1813,
-      "depth_km": 10.0,
-      "place": "73 km ENE of Kinablangan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4h0",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000u4gs",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-23T20:58:01.491000+00:00",
-      "latitude": 23.7861,
-      "longitude": 121.9479,
-      "depth_km": 10.0,
-      "place": "40 km ESE of Hualien City, Taiwan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4gs",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u4gm",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-23T20:48:16.356000+00:00",
-      "latitude": 23.8528,
-      "longitude": 121.929,
-      "depth_km": 13.817,
-      "place": "35 km ESE of Hualien City, Taiwan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4gm",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u4gj",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-23T20:37:41.989000+00:00",
-      "latitude": 32.4693,
-      "longitude": 93.943,
-      "depth_km": 10.0,
-      "place": "209 km ENE of Nagqu, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4gj",
-      "tsunami": 0,
-      "significance": 354
     }
   ]
 }
