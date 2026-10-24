@@ -173,7 +173,7 @@ Each item gives four things:
 112. ✅ Comparable-block search across all 13 cities on the new fields | derived | similar() (`similarEverywhere`, DISHA "comparable localities in every city"; roof cover, surface heat and flood exposure added to the match)
 113. ✅ DISHA site memo: one-click climate + market + access due diligence | derived | agents (covered by the property report: panel button and DISHA `propreport`, now with lightning, monument limits and power line rows)
 114. ✅ Data-confidence per lens (coverage × source quality) | derived | confidence lens (exists as the `confidence` lens)
-115. Scenario builder: add a metro / flyover / park and re-score | derived | what-if
+115. ✅ Scenario builder: add a metro / flyover / park and re-score | derived | what-if (Intel What-if gains New metro station, New clinic and New school: `UrbanLenses.rescore` re-runs every lens that reads the edited columns; parks, trees and road links were already there)
 116. ✅ Embeddings per block (Google Satellite Embedding V1, 64-d) for similarity | EE | AI search (embeddings + lookalike)
 117. ✅ Change detection with Satellite Embeddings year over year | EE | change lens (change lens)
 118. ✅ Building-use classifier from embeddings + places | EE/S3 | land-use mix (`builduse` lens: Gaussian naive Bayes trained on blocks with mapped Overture land use; 64–78% held-out accuracy)

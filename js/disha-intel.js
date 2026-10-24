@@ -281,6 +281,8 @@ const DishaIntel = (() => {
             const ra = roadAsk(q);
             if (ra) return named.length ? { type: 'roadwhatif', ...ra, city: named[0] } : { type: 'roadwhatif', ...ra };
             if (RE.closure.test(q)) return { type: 'whatif', scenario: 'closure' };
+            const fac = /\b(new|add(ed|ing)?|build|open(ed|ing)?|put)\b.{0,25}\b(metro (station|stop)|clinic|health (centre|center)|school)s?\b/i.exec(q);
+            if (fac) return { type: 'whatif', scenario: /metro/i.test(fac[0]) ? 'metro' : /school/i.test(fac[0]) ? 'school' : 'clinic' };
             if (RE.cool.test(q)) {
                 const m = /(\d{1,2})\s*(%|percent|pts|points)/i.exec(q);
                 return { type: 'whatif', scenario: 'cool', trees: m ? Number(m[1]) : 20 };

@@ -36,7 +36,8 @@ const InsightsPanel = (() => {
     let _city = null;          // dashboard city (region name)
     let _hereMode = 'hood';    // 'hood' (L5 of selection) | 'cell' (L6) | 'view'
     let _scenario = { type: 'park', boost: 40, factor: 1.5, level: 'severe', trees: 20 };
-    const SITE_TYPES = new Set(['park', 'density', 'cool', 'closure']);
+    const SITE_TYPES = new Set(['park', 'density', 'cool', 'closure', 'metro', 'clinic', 'school']);
+    const FACILITY = new Set(['metro', 'clinic', 'school']);
     let _cmp = { a: null, b: null };
     let _dash = null;          // cached dashboard
     let _seq = 0;
@@ -1002,7 +1003,7 @@ const InsightsPanel = (() => {
         const out = _el('div', 'ui-whatif-out');
         if (_plan.length) body.appendChild(_planBar(store, out));
         const seg = _el('div', 'ui-seg');
-        [['park', '🌳 New park'], ['density', '🏢 More density'], ['flood', '🌊 Flood event'], ['cool', '🌡 Trees for heat'], ['closure', '🚧 Road closure']].forEach(([t, label]) => {
+        [['park', '🌳 New park'], ['density', '🏢 More density'], ['flood', '🌊 Flood event'], ['cool', '🌡 Trees for heat'], ['closure', '🚧 Road closure'], ['metro', '🚇 New metro station'], ['clinic', '🏥 New clinic'], ['school', '🏫 New school']].forEach(([t, label]) => {
             seg.appendChild(_btn(label, () => { _scenario.type = t; render(); }, `ui-seg-btn${_scenario.type === t ? ' active' : ''}`));
         });
         body.appendChild(seg);
@@ -1011,11 +1012,12 @@ const InsightsPanel = (() => {
         const t = _scenario.type;
         if (SITE_TYPES.has(t)) {
             const c = sel ? sel.replace(/-/g, '') : '';
-            const site = t === 'closure' && c.length >= 7 ? `the ~250 m cell ${DigiPin.format(c.slice(0, 7))}` : `the ~1 km cell ${DigiPin.format(c.slice(0, 6))}`;
+            const site = (t === 'closure' || FACILITY.has(t)) && c.length >= 7 ? `the ~250 m cell ${DigiPin.format(c.slice(0, 7))}` : `the ~1 km cell ${DigiPin.format(c.slice(0, 6))}`;
             form.appendChild(_el('div', 'ui-muted', sel ? `Site: ${site} (the selected cell).` : 'Click a cell on the map to pick the site.'));
             if (t === 'park') form.appendChild(_slider('Green boost in the park cell', 'boost', 10, 80, 5, ' pts'));
             else if (t === 'density') form.appendChild(_slider('Residents', 'factor', 1.2, 4, 0.1, '×'));
             else if (t === 'cool') form.appendChild(_slider('Tree cover added', 'trees', 5, 60, 5, ' pts'));
+            else if (FACILITY.has(t)) form.appendChild(_el('div', 'ui-muted', 'Every urban lens that counts this kind of facility is re-run with it added, and compared within 2 km and city-wide. Takes a few seconds.'));
             else form.appendChild(_el('div', 'ui-muted', 'Every road in the site closes; traffic diverts onto the roads two cells around it. Zoom in and click a street cell for a single-block closure.'));
         } else {
             const s = document.createElement('select');
@@ -1060,7 +1062,8 @@ const InsightsPanel = (() => {
     function _scLabel(sc) {
         const code = sc.code ? DigiPin.format(sc.code) : '';
         return sc.label || ({ park: `Park at ${code}`, density: `${sc.factor}× density at ${code}`, flood: `${sc.level} flood`,
-            cool: `+${sc.trees} pts trees at ${code}`, closure: `Road closure at ${code}` }[sc.type] || sc.type);
+            cool: `+${sc.trees} pts trees at ${code}`, closure: `Road closure at ${code}`, metro: `Metro station at ${code}`,
+            clinic: `Clinic at ${code}`, school: `School at ${code}` }[sc.type] || sc.type);
     }
 
     function addToPlan(r) {
@@ -1177,7 +1180,7 @@ const InsightsPanel = (() => {
         act.appendChild(_btn('Copy as text', () => _copy(UrbanInsights.toText(r)), 'ui-chip'));
         act.appendChild(_btn('Printable brief', () => openBrief({ plan: r }), 'ui-chip'));
         out.appendChild(act);
-        out.insertBefore(_lensCard(r.items.filter(x => x.kind === 'whatif')), act);
+        out.insertBefore(_lensCard(r.items.filter(x => x.kind === 'whatif' && !FACILITY.has(x.type))), act);
         _paintPlan(r);
         out.appendChild(_el('p', 'ui-method', r.method));
         out.appendChild(_sourcesFooter(r.sources));
@@ -1231,7 +1234,7 @@ const InsightsPanel = (() => {
 
     // ── 3D: plan layer + camera ─────────────────────────────────────────────
 
-    const PLAN_SIGN = { park: -1, cool: -1, density: 0.5, flood: 1, closure: 1 };
+    const PLAN_SIGN = { park: -1, cool: -1, density: 0.5, flood: 1, closure: 1, metro: -1, clinic: -1, school: -1 };
 
     /** One L7 layer for a plan: + where it adds burden (flood, closure, density), − where it adds benefit. */
     function planLayer(r) {
@@ -1345,7 +1348,8 @@ const InsightsPanel = (() => {
         act.appendChild(_btn('Printable brief', () => openBrief({ whatif: r, area: r.area && !r.area.city ? r.area : null }), 'ui-chip'));
         act.appendChild(_btn('➕ Add to plan', () => addToPlan(r), 'ui-chip', 'Keep this scenario and stack it with others'));
         out.appendChild(act);
-        out.insertBefore(_lensCard(r), act);
+        // Facility what-ifs re-ran the lenses themselves; their rows above are the lens view.
+        if (!FACILITY.has(r.type)) out.insertBefore(_lensCard(r), act);
         const how = _el('details', 'ui-how');
         how.appendChild(_el('summary', null, 'How this is computed'));
         how.appendChild(_el('div', 'ui-formula', r.formula));

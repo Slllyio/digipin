@@ -98,11 +98,11 @@ const DISHATools = (() => {
         {
             name: 'whatIf', type: 'whatif', kind: 'read', agentOnly: true,
             args: {
-                scenario: { type: 'enum', values: ['park', 'density', 'flood', 'cool', 'closure'], required: true },
+                scenario: { type: 'enum', values: ['park', 'density', 'flood', 'cool', 'closure', 'metro', 'clinic', 'school'], required: true },
                 code: { type: 'digipin' }, factor: { type: 'number' }, trees: { type: 'number' },
                 level: { type: 'enum', values: ['moderate', 'severe', 'extreme'] },
             },
-            desc: 'Simulate a new park, more density (factor), more tree cover for heat (cool, trees = points added) or a road closure at a cell (code), or a flood event (level) over the map view: affected cells, buildings, roads and services.',
+            desc: 'Simulate a new park, more density (factor), more tree cover for heat (cool, trees = points added) a road closure, or a new metro station, clinic or school (re-scores every urban lens that counts it) at a cell (code), or a flood event (level) over the map view: affected cells, buildings, roads and services.',
             example: '[ACTION] whatIf scenario:park code:34M-P6L',
         },
         {

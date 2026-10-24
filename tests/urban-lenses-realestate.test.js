@@ -815,6 +815,18 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(L._lenses.builduse(L.frameFrom(codes, base), {})).toBeNull();
     });
 
+    it('rescore: a new metro station shortens walks near it and re-runs the lenses that read them', async () => {
+        const walk = codes.map(() => 30);
+        const f = L.frameFrom(codes, { ...base, 'rail_access.metro_walk_min': walk, 'rail_access.metro_stations': codes.map(() => 0) }, { city: 'delhi' });
+        const r = await L.rescore('delhi', null, { edits: [{ kind: 'metro', code: codes[SIZE * 6 + 6] }], only: ['metro'], frame: f });
+        expect(r.edits[0].code).toBe(codes[SIZE * 6 + 6]);
+        expect(f.cols['rail_access.metro_walk_min'][SIZE * 6 + 6]).toBe(30);
+        const m = r.lenses.find(x => x.id === 'metro');
+        expect(m.local.after).toBeLessThan(m.local.before);
+        expect(m.local.residentsChanged).toBeGreaterThan(0);
+        await expect(L.rescore('delhi', null, { edits: [{ kind: 'tram', code: codes[0] }], only: ['metro'], frame: f })).rejects.toThrow(/Unknown edit/);
+    });
+
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
         const clay = codes.map((_, i) => (col(i) < 6 ? 50 : 20));
         const hand = codes.map((_, i) => (i < SIZE * 6 ? 0.5 : 10));

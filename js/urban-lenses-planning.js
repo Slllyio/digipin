@@ -1157,6 +1157,82 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Scenario builder. Drop a new metro station, clinic or school on the map, edit the frame's columns the way the
+    // bake would have, and re-run every lens that reads those columns: before and after, side by side.
+    const WALK_M_PER_MIN = 80, WALK_DETOUR = 1.3, METRO_MAX_WALK = 20, LOCAL_KM = 2;
+    const EDITS = {
+        metro: { label: 'metro station', keys: ['rail_access.metro_walk_min', 'rail_access.metro_stations', 'osm_transit.rapid', 'osm_transit.stops'] },
+        clinic: { label: 'clinic', keys: ['places.health', 'osm_amenities.healthcare'] },
+        school: { label: 'school', keys: ['places.education', 'osm_amenities.education'] },
+    };
+
+    function applyEdit(fr, e) {
+        const g = fr.grid, c = fr.cols;
+        const code = String(e.code || (typeof DigiPin !== 'undefined' ? DigiPin.encode(e.lat, e.lng) : '')).replace(/-/g, '').toUpperCase().slice(0, 7);
+        const s = g.codes.indexOf(code);
+        if (s < 0) throw new Error(`${code || 'That point'} is outside the city's blocks.`);
+        const bump = (k, d = 1) => { if (c[k]) c[k][s] = (_fin(c[k][s]) ? c[k][s] : 0) + d; };
+        if (e.kind === 'metro') {
+            bump('rail_access.metro_stations'); bump('osm_transit.rapid'); bump('osm_transit.stops');
+            const w = c['rail_access.metro_walk_min'];
+            if (w) for (let i = 0; i < g.n; i++) {
+                const km = Math.hypot((g.row[i] - g.row[s]) * g.dy, (g.col[i] - g.col[s]) * g.dx);
+                const min = km * 1000 * WALK_DETOUR / WALK_M_PER_MIN;
+                if (min <= METRO_MAX_WALK && !(w[i] <= min)) w[i] = Math.round(min * 10) / 10;
+            }
+        } else if (EDITS[e.kind]) {
+            for (const k of EDITS[e.kind].keys) bump(k);
+        } else throw new Error(`Unknown edit "${e.kind}". Try ${Object.keys(EDITS).join(', ')}.`);
+        return code;
+    }
+
+    /**
+     * Re-score lenses with edits: { edits: [{ kind: 'metro'|'clinic'|'school', lat, lng | code }], only? }.
+     * Runs every lens that reads an edited column (or `only`) on the city's frame and on an edited copy, and
+     * returns { city, edits, lenses: [{ id, title, label, unit, higherIs, before, after, change, better }] }.
+     */
+    async function rescore(city, store, opts = {}) {
+        const edits = (opts.edits || []).slice(0, 8);
+        if (!edits.length) throw new Error('Add at least one edit: a metro station, clinic or school.');
+        const keys = new Set(edits.flatMap(e => (EDITS[e.kind] || { keys: [] }).keys));
+        const ids = opts.only && opts.only.length ? opts.only
+            : UrbanLenses.LENSES.filter(l => l.needs.some(k => keys.has(k.replace(/@.*$/, '')))).map(l => l.id);
+        if (!ids.length) return { city, edits: [], lenses: [] };
+        const fr = opts.frame || await UrbanLenses.frame(city, store, UrbanLenses.allNeeds(ids));
+        const cols = { ...fr.cols };
+        for (const k of keys) if (cols[k]) cols[k] = Float64Array.from(cols[k]);
+        const fr2 = { ...fr, cols };
+        const placed = edits.map(e => ({ ...e, code: applyEdit(fr2, e) }));
+        const base = await UrbanLenses.run(city, store, { only: ids, frame: fr, hotspots: false });
+        const next = await UrbanLenses.run(city, store, { only: ids, frame: fr2, hotspots: false });
+        // Local view: residents within LOCAL_KM of any edit, where one station or clinic actually shows.
+        const g = fr.grid, pop = fr.cols['population.population'];
+        const at = placed.map(e => g.codes.indexOf(e.code));
+        const near = [];
+        for (let i = 0; i < g.n; i++) if (pop && pop[i] > 0 && at.some(s => Math.hypot((g.row[i] - g.row[s]) * g.dy, (g.col[i] - g.col[s]) * g.dx) <= LOCAL_KM)) near.push(i);
+        const lenses = [];
+        for (const a of base.lenses) {
+            const b = next.lenses.find(x => x.id === a.id);
+            if (!a.metric || !b || !b.metric || !_fin(a.metric.value) || !_fin(b.metric.value)) continue;
+            const f = a.fields[0], ca = base._work.done[a.id].columns[f.key], cb = next._work.done[a.id].columns[f.key];
+            let moved = 0, w = 0, ma = 0, mb = 0;
+            if (ca && cb) for (const i of near) {
+                if (!_fin(ca[i]) || !_fin(cb[i])) continue;
+                w += pop[i]; ma += pop[i] * ca[i]; mb += pop[i] * cb[i];
+                if (Math.abs(cb[i] - ca[i]) > 1e-9) moved += pop[i];
+            }
+            const change = b.metric.value - a.metric.value;
+            if (!moved && !change) continue;
+            const dir = (d, hi) => (d === 0 || !hi ? null : (d > 0) === (hi === 'better'));
+            lenses.push({ id: a.id, title: a.title, label: a.metric.label, unit: a.metric.unit, higherIs: a.metric.higherIs,
+                before: a.metric.value, after: b.metric.value, change: Math.round(change * 100) / 100, better: dir(change, a.metric.higherIs),
+                local: w ? { label: f.label, unit: f.unit, before: _round(ma / w, 2), after: _round(mb / w, 2), better: dir(mb - ma, f.higherIs), residentsChanged: Math.round(moved) } : null,
+                headline: b.headline });
+        }
+        lenses.sort((x, y) => (y.local ? y.local.residentsChanged : 0) - (x.local ? x.local.residentsChanged : 0));
+        return { city, edits: placed, localKm: LOCAL_KM, residentsNear: Math.round(_sumOver(pop, near, () => true)), lenses };
+    }
+
     const ENTRIES = [
         { id: 'builduse', equity: false, title: 'What the buildings are used for', icon: '🏢',
             question: 'Which blocks are homes, shops and offices, industry or institutions?',
@@ -1328,7 +1404,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone, riders, summershade, builduse }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone, riders, summershade, builduse }, { rescore, applyEdit }, 'jobsmap');
     return { ENTRIES };
 })();
 

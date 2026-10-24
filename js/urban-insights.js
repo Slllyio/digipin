@@ -1321,21 +1321,62 @@ const UrbanInsights = (() => {
     }
 
     /**
+     * A new metro station, clinic or school at a cell: every urban lens that reads the edited columns is re-run
+     * with the facility added (UrbanLenses.rescore) and compared, city-wide and within 2 km of the site.
+     */
+    async function _facility(sc, store) {
+        if (typeof UrbanLenses === 'undefined' || !UrbanLenses.rescore) throw new Error('The urban lenses are not loaded.');
+        let code = String(sc.code || '').replace(/-/g, '').toUpperCase();
+        if (code.length < 6) throw new Error('Pick a cell (at least 6 DIGIPIN characters) for the site.');
+        const ctr = DigiPin.decodePartial(code);
+        if (code.length < 7) code = DigiPin.encode(ctr.lat, ctr.lng).replace(/-/g, '').slice(0, 7);
+        code = code.slice(0, 7);
+        const city = cityAt(store, ctr.lat, ctr.lng);
+        if (!city) throw new Error(`${_code(code)} is outside the covered cities.`);
+        const r = await UrbanLenses.rescore(city, store, { edits: [{ kind: sc.type, code }] });
+        const what = { metro: 'metro station', clinic: 'clinic', school: 'school' }[sc.type];
+        const moved = r.lenses.filter(l => l.local && l.local.residentsChanged > 0);
+        const top = moved[0];
+        return {
+            title: `New ${what} at ${_code(code)}`,
+            summary: moved.length
+                ? `A ${what} at ${_code(code)} changes ${moved.length} urban lens${moved.length > 1 ? 'es' : ''} for the ${r.residentsNear.toLocaleString('en-IN')} residents within ${r.localKm} km`
+                    + (top ? `; the biggest shift is ${top.local.label.toLowerCase()} (${top.local.before} → ${top.local.after}${top.local.unit ? ` ${top.local.unit}` : ''}) for ${top.local.residentsChanged.toLocaleString('en-IN')} residents.` : '.')
+                : `A ${what} at ${_code(code)} changes none of the urban lenses: the area is already served.`,
+            metrics: [
+                ...moved.slice(0, 8).map(l => ({ label: `${l.title}: ${l.local.label} (within ${r.localKm} km)`, before: l.local.before, after: l.local.after })),
+                ...r.lenses.filter(l => l.change).slice(0, 4).map(l => ({ label: `${l.title}: ${l.label} (city)`, before: l.before, after: l.after })),
+                { label: `Residents within ${r.localKm} km`, value: r.residentsNear.toLocaleString('en-IN') },
+            ],
+            lenses: r.lenses, cells: [{ code, digipin: _code(code), target: true }],
+            layer: { key: 'site', label: `New ${what}`, unit: '', higherIs: null, level: 7, values: [[code, 1]] },
+            formula: 'Each lens is re-run on the city frame with the facility added the way the bake would count it, and compared with the frame as baked.',
+            assumptions: [
+                sc.type === 'metro'
+                    ? 'The station adds a metro and transit stop at the cell and shortens metro walks to the straight-line distance × 1.3 at 80 m a minute (as the rail-access bake), up to 20 minutes.'
+                    : `The ${what} adds one ${what === 'clinic' ? 'health place' : 'education place'} to the cell in both the Overture and OSM counts.`,
+                'Everything else is held fixed: no new trips, prices or development respond to the facility.',
+            ],
+            sources: [], city,
+        };
+    }
+
+    /**
      * Run a what-if scenario. { type: 'park', code, boost } |
      * { type: 'density', code, factor } | { type: 'flood', level, area|city|lat,lng } |
-     * { type: 'cool', code, trees } | { type: 'closure', code }.
+     * { type: 'cool', code, trees } | { type: 'closure', code } | { type: 'metro' | 'clinic' | 'school', code }.
      * opts.heights = a baked height grid ({ level, cells }) for building counts.
      */
     async function whatIf(scenario, store, opts = {}) {
         store = store || (typeof CellStore !== 'undefined' ? CellStore : null);
         if (!scenario || !store) throw new Error('No scenario.');
-        const run = { park: _park, density: _density, flood: _flood, cool: _cool, closure: _closure }[scenario.type];
-        if (!run) throw new Error(`Unknown scenario "${scenario.type}". Try park, density, flood, cool or closure.`);
+        const run = { park: _park, density: _density, flood: _flood, cool: _cool, closure: _closure, metro: _facility, clinic: _facility, school: _facility }[scenario.type];
+        if (!run) throw new Error(`Unknown scenario "${scenario.type}". Try park, density, flood, cool, closure, metro, clinic or school.`);
         const res = await run(scenario, store, opts);
         return { schema: SCHEMA, kind: 'whatif', type: scenario.type, scenario, ranAt: (opts.now ? opts.now() : new Date()).toISOString(), ...res };
     }
 
-    const BENEFIT = { park: true, cool: true, density: null, flood: false, closure: false };
+    const BENEFIT = { park: true, cool: true, density: null, flood: false, closure: false, metro: true, clinic: true, school: true };
 
     /**
      * A plan: several what-ifs run together. Each runs on its own (their models
