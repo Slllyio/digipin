@@ -1057,6 +1057,50 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Railway level crossings. Gates closed for every train jam main roads, hold up ambulances and see people cross
+    // under the boom; Setu Bharatam and Railways' plans replace them with road over- and under-bridges. Crossings are
+    // where Overture (OSM) road and rail segments share a node; busy ones rank by the traffic model's peak load.
+    const GATE_NEAR_KM = 0.5, BUSY_Q = 0.75;
+
+    function railgates(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], lc = c['level_crossings.crossings'];
+        const main = c['level_crossings.crossings_main'], rank = c['level_crossings.road_rank'], pcu = c['traffic_load.peak_pcu'];
+        const sch = c['emergency_access.schools'];
+        if (!lc) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const gates = [];
+        for (let i = 0; i < n; i++) if (v(lc, i) > 0) gates.push(i);
+        const total = gates.reduce((s, i) => s + lc[i], 0);
+        if (total < 3) return null;
+        const roads = [];
+        for (let i = 0; i < n; i++) if (v(pcu, i) > 0) roads.push(i);
+        const busyQ = pcu && roads.length ? wquantile(pcu, null, roads, BUSY_Q) : Infinity;
+        const level = i => (v(lc, i) <= 0 ? 0 : v(main, i) > 0 ? (v(pcu, i) >= busyQ ? 3 : 2) : 1);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || v(lc, i) > 0) idx.push(i);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = level(i);
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(lc, i)), GATE_NEAR_KM);
+        const pNear = _sumOver(pop, idx, i => near[i] > 0), all = _sumOver(pop, idx, () => true);
+        const schNear = idx.reduce((s, i) => s + (near[i] > 0 ? v(sch, i) : 0), 0);
+        const stats = [
+            { label: 'Railway level crossings mapped', value: String(_round(total)) },
+            { label: '…on main roads (trunk to tertiary)', value: String(_round(gates.reduce((s, i) => s + v(main, i), 0))) },
+            { label: "…on main roads in the city's busiest quarter of road blocks at peak", value: String(gates.filter(i => level(i) === 3).length) },
+            { label: `Residents within ${GATE_NEAR_KM * 1000} m of a level crossing`, value: `${_people(pNear)} (${_round(100 * pNear / (all || 1), 1)}%)` },
+            { label: `Schools within ${GATE_NEAR_KM * 1000} m of a level crossing`, value: String(_round(schNear)) },
+        ];
+        spaced(g, gates.filter(i => level(i) >= 2), Float64Array.from({ length: n }, (_, i) => v(pcu, i) * (1 + v(rank, i)) + v(main, i))).forEach((i, k) => stats.push({
+            label: `Bridge candidate ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(lc[i])} crossing${lc[i] > 1 ? 's' : ''}, ${_round(v(main, i))} on a main road${pcu ? `; ${_people(v(pcu, i))} PCU an hour at peak` : ''}; ${_people(near[i] > 0 ? v(pop, i) : 0)} residents in the block` }));
+        return {
+            columns: { rail_gate: out }, idx, weightKey: 'rail_gate', noHotspots: true,
+            metric: { label: 'Level crossings on main roads', value: gates.reduce((s, i) => s + v(main, i), 0), unit: 'crossings', higherIs: 'worse' },
+            headline: `${_round(total)} railway level crossings are mapped, ${_round(gates.reduce((s, i) => s + v(main, i), 0))} of them on main roads and ${gates.filter(i => level(i) === 3).length} in the busiest traffic. ${_people(pNear)} residents live within ${GATE_NEAR_KM * 1000} m of one. The blocks named carry the most peak traffic over a crossing: first in line for a road over- or under-bridge.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -1221,10 +1265,16 @@ const UrbanLensesSafety = (() => {
             needs: ['demographics.school_age', 'demographics.youth_15_24', 'emergency_access.schools', 'places.colleges', 'population.population'],
             method: `School-age children are WorldPop 2020 ages 5-14 (100 m, district age profiles spread over settlements). Schools are OpenStreetMap schools counted per block; colleges are Overture Maps colleges and universities. Reach is straight-line distance between block centres: ${RTE_KM} km and ${UPPER_KM} km follow the Right of Children to Free and Compulsory Education Act 2009 state rules for primary and upper primary schools. OSM under-maps government and budget private schools, so a gap is a place to check against UDISE+, not a confirmed one.`,
             refs: 'WorldPop age structures 2020; OpenStreetMap; Overture Maps places; RTE Act 2009 and state RTE rules (neighbourhood school norms); UDISE+' },
+        { id: 'railgates', equity: false, title: 'Railway level crossings', icon: '🚧',
+            question: 'Which railway level crossings jam main roads and need a bridge?',
+            field: { key: 'rail_gate', label: 'Level crossing (1), on a main road (2), in heavy traffic (3)', unit: '0-3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['level_crossings.crossings', 'level_crossings.crossings_main', 'level_crossings.road_rank', 'traffic_load.peak_pcu', 'emergency_access.schools', 'population.population'],
+            method: `Level crossings are connectors shared by an Overture Maps (OpenStreetMap) mainline or suburban rail segment and a road segment; metro, tram, footpaths and tracks are left out. Main roads are trunk, primary, secondary and tertiary. Heavy traffic is the city's top quarter of road blocks by the traffic model's peak load (PCU an hour). Train counts per crossing (train vehicle units, the Railways' TVU test for a bridge) are not open, so the ranking uses road traffic only.`,
+            refs: 'Overture Maps transportation (OpenStreetMap); Indian Railways Works Manual (TVU criteria for ROB/RUB); Setu Bharatam programme (2016); DISHA traffic model' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge, schoolgap }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge, schoolgap, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge, schoolgap, railgates }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge, schoolgap, railgates, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

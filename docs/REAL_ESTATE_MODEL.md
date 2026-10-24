@@ -1160,3 +1160,7 @@ Forest blocks have 60%+ tree cover (ESA WorldCover) or 50%+ mapped protected lan
 ## A school within 1 km (`schoolgap` lens, js/urban-lenses-safety.js)
 
 `demographics` gained `school_age` (5-14) and `youth_15_24` from the same WorldPop 2020 age-sex rasters (pipeline/cells/ee_layers.py). The lens checks every school-age child against OpenStreetMap schools within 1 km (the RTE primary norm) and 3 km (upper primary), with children per mapped school nearby and young people with no college within 5 km. Delhi: 5.7% of children have no mapped school within 1 km; Mumbai 7.7%; Bengaluru 3.6%. OSM misses many government and budget schools, so the named blocks are to be checked against UDISE+ (item 88, still parked).
+
+## Railway level crossings (`railgates` lens, js/urban-lenses-safety.js)
+
+New dataset `level_crossings` (pipeline/realestate/levelcrossings.py): connectors shared by an Overture (OSM) mainline or suburban rail segment and a road segment, counted per L7 block with how many sit on main roads (trunk to tertiary) and the busiest road class. Delhi has 150 mapped (service roads in yards and depots left out), 78 on main roads; Kolkata 171, Lucknow 118. The lens maps crossings (1), on main roads (2) and in the top quarter of road blocks by the traffic model's peak PCU (3), with residents and schools within 500 m, and ranks bridge candidates by peak traffic and road class. Train counts (the Railways' TVU criterion) are not open.

@@ -564,6 +564,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 35,
+     "unit": "crossings",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1378,6 +1384,12 @@
      "label": "Children 5-14 with no mapped school within 1 km",
      "value": 3.6,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 54,
+     "unit": "crossings",
      "higherIs": "worse"
     },
     "events": {
@@ -2208,6 +2220,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 14,
+     "unit": "crossings",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -3028,6 +3046,12 @@
      "label": "Children 5-14 with no mapped school within 1 km",
      "value": 2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 35,
+     "unit": "crossings",
      "higherIs": "worse"
     },
     "events": {
@@ -3864,6 +3888,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 78,
+     "unit": "crossings",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -4600,6 +4630,12 @@
      "label": "Children 5-14 with no mapped school within 1 km",
      "value": 28.8,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 3,
+     "unit": "crossings",
      "higherIs": "worse"
     },
     "railnoise": {
@@ -5356,6 +5392,12 @@
      "label": "Children 5-14 with no mapped school within 1 km",
      "value": 2.6,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 20,
+     "unit": "crossings",
      "higherIs": "worse"
     },
     "events": {
@@ -6174,6 +6216,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 20,
+     "unit": "crossings",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6964,6 +7012,12 @@
      "label": "Children 5-14 with no mapped school within 1 km",
      "value": 5.5,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 23,
+     "unit": "crossings",
      "higherIs": "worse"
     },
     "events": {
@@ -7788,6 +7842,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 91,
+     "unit": "crossings",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -8590,6 +8650,12 @@
      "label": "Children 5-14 with no mapped school within 1 km",
      "value": 6.7,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 47,
+     "unit": "crossings",
      "higherIs": "worse"
     },
     "events": {
@@ -9426,6 +9492,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 46,
+     "unit": "crossings",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -10252,6 +10324,12 @@
      "label": "Children 5-14 with no mapped school within 1 km",
      "value": 2.1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "railgates": {
+     "label": "Level crossings on main roads",
+     "value": 18,
+     "unit": "crossings",
      "higherIs": "worse"
     },
     "events": {
