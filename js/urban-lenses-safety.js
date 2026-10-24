@@ -159,6 +159,45 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Earthquake shaking on soft ground. Young river and coastal sediments with a shallow water table amplify shaking
+    // and, where they are sandy, can liquefy; tall buildings on them sway longest. Soft ground is height above the
+    // nearest drain under SOFT_HAND_M (MERIT Hydro, a proxy for floodplain alluvium and shallow groundwater); sandy
+    // means SAND_PCT or more sand in the topsoil (SoilGrids); tall means a mean building height of QUAKE_TALL_M or more.
+    const SOFT_HAND_M = 2, SAND_PCT = 45, QUAKE_TALL_M = 15;
+
+    function quake(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const hand = c['terrain.hand_m'], sand = c['soil.sand_pct'], h = c['building_stock.height_2023_m'];
+        if (!hand || !h) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && _fin(hand[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const soft = i => hand[i] < SOFT_HAND_M, sandy = i => soft(i) && v(sand, i) >= SAND_PCT, tall = i => v(h, i) >= QUAKE_TALL_M;
+        const risk = new Float64Array(n).fill(NaN);
+        for (const i of idx) risk[i] = (soft(i) ? 1 : 0) + (sandy(i) ? 1 : 0) + (soft(i) && tall(i) ? 1 : 0);
+        const zone = (UrbanLenses.SEISMIC_ZONE || {})[fr.city];
+        const all = _sumOver(pop, idx, () => true);
+        const softs = idx.filter(soft), sandys = idx.filter(sandy), tallSoft = softs.filter(tall);
+        const pSoft = _sumOver(pop, softs, () => true), pTall = _sumOver(pop, tallSoft, () => true);
+        const stats = [];
+        if (zone) stats.push({ label: 'Seismic zone (IS 1893: 2016)', value: `Zone ${zone}` });
+        stats.push(
+            { label: `Residents on soft ground (under ${SOFT_HAND_M} m above the nearest drain)`, value: `${_people(pSoft)} (${_round(100 * pSoft / (all || 1))}%)` },
+            { label: `…on sandy soft ground (${SAND_PCT}%+ sand), where shaking can liquefy the soil`, value: `${sandys.length} blocks, ${_people(_sumOver(pop, sandys, () => true))} residents` },
+            { label: `…in blocks of buildings ${QUAKE_TALL_M} m+ on soft ground`, value: `${tallSoft.length} blocks, ${_people(pTall)} residents` });
+        const score = Float64Array.from({ length: n }, (_, i) => (soft(i) ? v(pop, i) * (1 + (sandy(i) ? 1 : 0)) * (tall(i) ? 2 : 1) : 0));
+        spaced(g, softs, score).forEach((i, k) => stats.push({
+            label: `Check ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(v(pop, i))} residents; ${_round(hand[i], 1)} m above the nearest drain${sand ? `, ${_round(v(sand, i))}% sand` : ''}; buildings ${_round(v(h, i))} m on average` }));
+        return {
+            columns: { quake_ground: risk }, idx, weightKey: 'quake_ground', noHotspots: true,
+            metric: { label: 'Residents on soft ground', value: _round(100 * pSoft / (all || 1)), unit: '%', higherIs: 'worse' },
+            headline: `${zone ? `Seismic zone ${zone}. ` : ''}${_people(pSoft)} residents (${_round(100 * pSoft / (all || 1))}%) live on soft, low, wet ground less than ${SOFT_HAND_M} m above the nearest drain or river, where earthquake shaking is amplified; ${sandys.length} of those blocks are sandy enough to liquefy, and ${_people(pTall)} residents live in blocks of buildings ${QUAKE_TALL_M} m or taller on soft ground. Seismic microzonation maps, where a city has one, replace this proxy. The blocks listed are where soil tests and retrofits should start, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -179,10 +218,16 @@ const UrbanLensesSafety = (() => {
             needs: ['places.hospitals', 'places.fire_stations', 'places.police', 'emergency_access.schools', 'flood_future.any_pct_now', 'waterlogging.waterlogging_index', 'population.population'],
             method: `Hospitals, fire stations and police stations are Overture Maps places; schools (used as relief camps) are OpenStreetMap. A block is flood-prone where ${FLOOD_PCT}% or more of it lies in WRI Aqueduct's 1-in-100-year river or coastal flood today (about 1 km, no defences), and waterlogged where its rain waterlogging index (Sentinel-1 standing water 2021–2025, hollows, wetness and height above drainage) is ${WET_INDEX} or more. Stranded residents have at least one listed hospital within ${CARE_KM_WET} km, all of them on wet ground. A facility's own plinth, generator and access road are not in open data, so the picks are where to check first.`,
             refs: 'Overture Maps places; OpenStreetMap; WRI Aqueduct Floods v2; Sentinel-1 GRD; NDMA Guidelines on Hospital Safety (2016); NDMA Urban Flooding Guidelines (2010)' },
+        { id: 'quake', equity: false, title: 'Earthquake shaking on soft ground', icon: '🫨',
+            question: 'Who lives on soft or sandy ground that shakes hardest in an earthquake?',
+            field: { key: 'quake_ground', label: `Soft ground (1), plus sandy (2), plus buildings ${QUAKE_TALL_M} m+ (3)`, unit: '0-3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['terrain.hand_m', 'soil.sand_pct', 'building_stock.height_2023_m', 'population.population'],
+            method: `Soft ground is a block whose mean height above the nearest drain (MERIT Hydro HAND) is under ${SOFT_HAND_M} m: young floodplain and coastal sediments with a shallow water table, which amplify shaking. Sandy soft ground has ${SAND_PCT}% or more sand in the topsoil (SoilGrids 250 m), the soils that liquefy when saturated. Tall means a mean building height of ${QUAKE_TALL_M} m or more (Google Open Buildings 2.5D, 2023), about five storeys, whose sway period can match soft soil. The seismic zone is IS 1893 (Part 1): 2016. This is a proxy: borehole data, shear-wave velocity and groundwater depth are not open, and published microzonation studies (Delhi 2016, Kolkata, Chennai) are the authority where they exist.`,
+            refs: 'MERIT Hydro (Yamazaki et al. 2019); SoilGrids 2.0 (Poggio et al. 2021); Google Open Buildings 2.5D Temporal; IS 1893 (Part 1): 2016; NDMA Guidelines on Seismic Microzonation (2011)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

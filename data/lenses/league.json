@@ -438,6 +438,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 59.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1125,6 +1131,12 @@
     "critwater": {
      "label": "Hospitals on flood-prone or waterlogged ground",
      "value": 3.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 5.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1824,6 +1836,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 13.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2511,6 +2529,12 @@
     "critwater": {
      "label": "Hospitals on flood-prone or waterlogged ground",
      "value": 78.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 45.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3216,6 +3240,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 56.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -3876,6 +3906,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 19.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "railnoise": {
      "label": "Residents within 150 m of a mainline railway",
      "value": 8.9,
@@ -4497,6 +4533,12 @@
     "critwater": {
      "label": "Hospitals on flood-prone or waterlogged ground",
      "value": 3.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 10,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5196,6 +5238,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 20.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -5871,6 +5919,12 @@
     "critwater": {
      "label": "Hospitals on flood-prone or waterlogged ground",
      "value": 0.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 26.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6564,6 +6618,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 65.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -7245,6 +7305,12 @@
     "critwater": {
      "label": "Hospitals on flood-prone or waterlogged ground",
      "value": 16.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 62.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -7941,6 +8007,12 @@
     "critwater": {
      "label": "Hospitals on flood-prone or waterlogged ground",
      "value": 30.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 15.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -8643,6 +8715,12 @@
     "critwater": {
      "label": "Hospitals on flood-prone or waterlogged ground",
      "value": 4.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "quake": {
+     "label": "Residents on soft ground",
+     "value": 7.9,
      "unit": "%",
      "higherIs": "worse"
     },
