@@ -96,7 +96,7 @@ Each item gives four things:
 47. ❌ Ozone (Sentinel-5P O3 + CAMS) | EE | ozone lens (skipped: the Sentinel-5P ozone product is a total column, mostly stratospheric, so it says nothing about street-level ozone)
 48. ✅ SO2 from industry (Sentinel-5P) | EE | industry pollution (air_trend SO₂ hotspots)
 49. ✅ Formaldehyde HCHO (Sentinel-5P) | EE | VOC hotspots (already in air_quality (HCHO))
-50. Methane at landfills (Sentinel-5P CH4 + landfill locations) | EE/OSM | landfill lens
+50. ❌ Methane at landfills (Sentinel-5P CH4 + landfill locations) | EE/OSM | landfill lens (skipped: dry-season 2022–25 mean is only ~12 ppb higher at Ghazipur than central Delhi, and west Mumbai reads as high as Deonar, so the 7 km pixels can't separate landfills from noise)
 51. ✅ Landfills and dumpsites (OSM landuse=landfill + Wikidata) | OSM | waste lens
 52. ✅ Sewage treatment plants and capacity | OSM/Wikidata | sanitation (wastewater basins in `drains`; capacity not open)
 53. Hospitals with beds (Overture + OSM beds tag + Wikidata) | S3/OSM | health capacity
@@ -118,10 +118,10 @@ Each item gives four things:
 66. Bus GTFS for Delhi (parked for key), Chennai, Hyderabad | key/open | bus frequency
 67. Railway suburban stations with frequency (Mumbai locals timetable) | open | rail access
 68. ✅ Airport access time | derived | travel lens (`airport` lens)
-69. Truck routes and no-entry hours | OSM | freight
+69. ❌ Truck routes and no-entry hours | OSM | freight (skipped: only 15 km of Delhi roads carry an hgv restriction in OSM)
 70. ✅ Parking supply (existing parking lens) from OSM + places | OSM/S3 | parking lens extension
-71. Bike-share docks (Yulu/Bounce where open) | API | micro-mobility
-72. Auto-rickshaw stands | OSM | last-mile
+71. ❌ Bike-share docks (Yulu/Bounce where open) | API | micro-mobility (skipped: no open dock feeds; OSM has 66 bicycle_rental points in Delhi)
+72. ❌ Auto-rickshaw stands | OSM | last-mile (skipped: Overture lists one taxi stand in Delhi)
 73. Traffic accidents by road (iRAD summaries where public) | open | road safety
 74. ✅ School zones and safe routes (existing roadsafety and schoolrun lenses) | OSM | school-run lens
 75. Ride-hailing price proxy (distance × surge zones) | derived | mobility cost
