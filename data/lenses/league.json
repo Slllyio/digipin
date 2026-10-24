@@ -534,6 +534,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 17.4,
+     "unit": "index",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1318,6 +1324,12 @@
      "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
      "value": 3.2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 0.8,
+     "unit": "index",
      "higherIs": "worse"
     },
     "events": {
@@ -2118,6 +2130,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 2.4,
+     "unit": "index",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2908,6 +2926,12 @@
      "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
      "value": 0.9,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 52.7,
+     "unit": "index",
      "higherIs": "worse"
     },
     "events": {
@@ -3714,6 +3738,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 32.1,
+     "unit": "index",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -4432,6 +4462,12 @@
      "label": "Fuel stations sharing a block with a school or hospital",
      "value": 36.4,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 38.3,
+     "unit": "index",
      "higherIs": "worse"
     },
     "railnoise": {
@@ -5158,6 +5194,12 @@
      "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
      "value": 1.1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 0.6,
+     "unit": "index",
      "higherIs": "worse"
     },
     "events": {
@@ -5950,6 +5992,12 @@
      "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
      "value": 17.9,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 1.2,
+     "unit": "index",
      "higherIs": "worse"
     },
     "events": {
@@ -7518,6 +7566,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 19.7,
+     "unit": "index",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -8296,6 +8350,12 @@
      "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
      "value": 2.5,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 4.2,
+     "unit": "index",
      "higherIs": "worse"
     },
     "events": {
@@ -9102,6 +9162,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 11.1,
+     "unit": "index",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -9904,6 +9970,12 @@
      "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
      "value": 1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "coalplume": {
+     "label": "Upwind coal index (resident-weighted)",
+     "value": 5.1,
+     "unit": "index",
      "higherIs": "worse"
     },
     "events": {

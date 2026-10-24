@@ -856,6 +856,48 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Coal smoke upwind. Coal plants' tall stacks carry sulphur dioxide and fine sulphate particles tens of kilometres
+    // downwind; the lens ranks blocks by coal capacity weighted by how often the wind blows from each plant towards them.
+    const COAL_NEAR_KM = 20, PLUME_Q = 0.9;
+
+    function coalplume(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], plume = c['power_plants.coal_plume'];
+        const ckm = c['power_plants.coal_km'], c50 = c['power_plants.coal_mw_50km'], kids = c['demographics.under5'], pm = c['air_quality.pm25_ugm3'];
+        if (!pop || !plume) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && _fin(plume[i])) idx.push(i);
+        if (idx.length < 5 || !idx.some(i => plume[i] > 0)) return null;
+        const all = _sumOver(pop, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
+        const mean = idx.reduce((s, i) => s + pop[i] * plume[i], 0) / (all || 1);
+        const q = wquantile(plume, pop, idx, PLUME_Q);
+        const top = idx.filter(i => plume[i] >= q && plume[i] > 0), pTop = _sumOver(pop, top, () => true);
+        const near = ckm ? _sumOver(pop, idx, i => _fin(ckm[i]) && ckm[i] <= COAL_NEAR_KM) : 0;
+        const cap = idx.reduce((m, i) => Math.max(m, v(c50, i)), 0);
+        const stats = [
+            { label: 'Coal power capacity within 50 km of the most exposed block', value: `${_people(cap)} MW` },
+            { label: `Residents within ${COAL_NEAR_KM} km of a coal plant`, value: `${_people(near)} (${pct(near)}%)` },
+            { label: 'Upwind coal index, resident-weighted mean', value: String(_round(mean, 1)) },
+            { label: `Residents in the most exposed tenth (index ${_round(q, 1)}+)`, value: _people(pTop) },
+        ];
+        if (kids) stats.push({ label: '…of them children under 5', value: _people(_sumOver(kids, top, () => true)) });
+        if (pm) {
+            const pmTop = top.reduce((s, i) => s + pop[i] * v(pm, i), 0) / (pTop || 1);
+            stats.push({ label: 'Satellite PM2.5 in the most exposed tenth vs the city', value: `${_round(pmTop, 1)} vs ${_round(idx.reduce((s, i) => s + pop[i] * v(pm, i), 0) / (all || 1), 1)} µg/m³` });
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = plume[i];
+        spaced(g, top, Float64Array.from({ length: n }, (_, i) => v(pop, i) * v(plume, i))).forEach((i, k) => stats.push({
+            label: `SO₂ monitor ${k + 1}: ${g.codes[i]}`,
+            value: `upwind coal index ${_round(plume[i], 1)}; ${ckm && _fin(ckm[i]) ? `nearest coal plant ${_round(ckm[i])} km; ` : ''}${_people(pop[i])} residents` }));
+        return {
+            columns: { coal_plume: out }, idx, weightKey: 'coal_plume', noHotspots: true,
+            metric: { label: 'Upwind coal index (resident-weighted)', value: _round(mean, 1), unit: 'index', higherIs: 'worse' },
+            headline: `${_people(near)} residents (${pct(near)}%) live within ${COAL_NEAR_KM} km of a coal power plant, and ${_people(pTop)} live in the tenth of the city most often downwind of coal capacity. The index weighs each plant's megawatts by how often the wind blows from it towards the block and by distance; it shows where SO₂ and sulphate monitors and FGD deadlines matter most, not measured pollution.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -989,10 +1031,16 @@ const UrbanLensesSafety = (() => {
             needs: ['places.diagnostics', 'places.dental', 'places.eyecare', 'places.elder_homes', 'demographics.elderly_60plus', 'population.population'],
             method: `Labs are Overture Maps places in the diagnostic imaging, laboratory testing and radiology categories; dentists every dental clinic and dentist category; eye clinics vision and eye care clinics, ophthalmologists and optometrists (not opticians' shops). Reach is straight-line distance between block centres: ${LAB_KM} km for a lab, ${DENT_KM} km for a dentist and ${EYE_KM} km for an eye clinic. Old-age homes are retirement homes and senior citizen services. Listings follow where clinics list themselves online, so public dispensaries, hospital departments and sample-collection points are undercounted.`,
             refs: 'Overture Maps places; WorldPop age structure; National Programme for Control of Blindness and Visual Impairment; Free Diagnostics Service Initiative (NHM, 2015)' },
+        { id: 'coalplume', equity: false, title: 'Coal smoke upwind', icon: '🏭',
+            question: 'Which neighbourhoods sit downwind of coal power plants?',
+            field: { key: 'coal_plume', label: 'Upwind coal index (MW × downwind wind share ÷ km)', unit: 'index', higherIs: 'worse', ramp: 'reds' },
+            needs: ['power_plants.coal_plume', 'power_plants.coal_km', 'power_plants.coal_mw_50km', 'demographics.under5', 'air_quality.pm25_ugm3', 'population.population'],
+            method: `Coal, gas and oil plants within 150 km come from the WRI Global Power Plant Database (a 2018-2021 snapshot; known retirements such as Delhi's Badarpur removed). Each coal plant adds its capacity × the share of ERA5-Land monthly 10 m wind (2015-2024, speed-weighted, at the city centre) blowing from it towards the block within ±45°, divided by the distance in km (at least 5). The most exposed tenth is by residents. Stack heights, flue-gas desulphurisation status, load factors and terrain are left out: this ranks where plumes are likelier to arrive, it does not measure them.`,
+            refs: 'WRI Global Power Plant Database (Byers et al. 2019); ECMWF ERA5-Land; MoEFCC thermal power plant SO₂ norms (2015, FGD deadlines revised 2021 and 2022); CREA studies of Indian coal plant plumes' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {
