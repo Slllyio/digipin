@@ -380,6 +380,52 @@ const UrbanLensesSafety = (() => {
     const schoolsafe = fr => siteCheck(fr, 'emergency_access.schools', 'school', 'schools', 'school_hazards', 'the NDMA School Safety Policy');
     const hospitalsafe = fr => siteCheck(fr, 'places.hospitals', 'hospital', 'hospitals', 'hospital_hazards', 'the NDMA hospital safety guidelines');
 
+    // Crowded suburban stations. Without open timetables or ticket counts, a station's load is the residents for whom
+    // it is the nearest suburban rail station, within CATCH_KM (a walk or a short shared-auto ride). Overloaded
+    // platforms and doorways are where commuters fall from trains and crowds crush on foot-overbridges.
+    const CATCH_KM = 2;
+
+    function stationload(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], st = c['rail_access.rail_stations'];
+        if (!st || !pop) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const stations = [];
+        for (let i = 0; i < n; i++) if (v(st, i) > 0) stations.push(i);
+        if (stations.length < 3) return null;
+        const load = new Float64Array(n), nearest = new Int32Array(n).fill(-1), dist = new Float64Array(n).fill(Infinity);
+        const idx = [];
+        for (let i = 0; i < n; i++) {
+            if (v(pop, i) <= 0) continue;
+            for (const j of stations) {
+                const d = Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx);
+                if (d < dist[i]) { dist[i] = d; nearest[i] = j; }
+            }
+            if (dist[i] <= CATCH_KM) { load[nearest[i]] += pop[i]; idx.push(i); }
+        }
+        const per = j => load[j] / v(st, j);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = per(nearest[i]);
+        const served = idx.reduce((a, i) => a + pop[i], 0);
+        const all = _sumOver(pop, Array.from({ length: n }, (_, i) => i).filter(i => v(pop, i) > 0), () => true);
+        const loads = stations.map(per).sort((a, b) => b - a);
+        const totalSt = stations.reduce((a, j) => a + v(st, j), 0);
+        const stats = [
+            { label: 'Suburban rail stations mapped', value: String(totalSt) },
+            { label: `Residents within ${CATCH_KM} km of one`, value: `${_people(served)} (${_round(100 * served / (all || 1))}%)` },
+            { label: 'Residents per station, median station', value: _people(loads[Math.floor(loads.length / 2)]) },
+            { label: 'Residents per station, busiest tenth', value: `${_people(loads[Math.floor(loads.length / 10)])} or more` },
+        ];
+        spaced(g, stations, Float64Array.from({ length: n }, (_, i) => (v(st, i) > 0 ? per(i) : 0))).forEach((j, k) => stats.push({
+            label: `Crowded station ${k + 1}: ${g.codes[j]}`,
+            value: `${_people(per(j))} residents for whom it is the nearest suburban station within ${CATCH_KM} km` }));
+        return {
+            columns: { station_load: out }, idx, weightKey: 'station_load', noHotspots: true,
+            metric: { label: 'Residents per suburban station (median)', value: _round(loads[Math.floor(loads.length / 2)]), unit: 'people', higherIs: 'worse' },
+            headline: `${totalSt} suburban rail stations serve ${_people(served)} residents within ${CATCH_KM} km. The median station is the nearest for ${_people(loads[Math.floor(loads.length / 2)])} people, and the busiest tenth for ${_people(loads[Math.floor(loads.length / 10)])} or more: the catchments where platforms, doorways and foot-overbridges fill first. The stations listed have the largest catchments, at least ${SPACING_KM} km apart. Catchment size stands in for ridership; open timetables and ticket counts would sharpen it.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -438,10 +484,16 @@ const UrbanLensesSafety = (() => {
                 'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'landuse.industrial_pct', 'traffic_noise.lden_db', 'population.population'],
             method: `Places listed as hospitals in Overture Maps, counted per block, checked against the same six hazards as the school safety check: ${FLOOD_PCT}%+ of the block in the 1-in-100-year flood; a waterlogging index of ${WET_INDEX}+; soft ground under ${SOFT_HAND_M} m above the nearest drain in seismic zone III or higher; ${PACKED_PCT}%+ under roofs with no main road within ${DEEP_KM * 1000} m (ambulance and fire access); industry within ${NEXT_KM * 1000} m; road noise of ${LOUD_DB} dB Lden or more (WHO advises much less near wards). Structural and fire-safety status is not in open data.`,
             refs: 'NDMA Guidelines on Hospital Safety (2016); Overture Maps places; WRI Aqueduct Floods v2; MERIT Hydro; Google Open Buildings 2.5D; WHO Environmental Noise Guidelines (2018)' },
+        { id: 'stationload', equity: false, title: 'Crowded local-train stations', icon: '🚆',
+            question: 'Which suburban rail stations serve the most people?',
+            field: { key: 'station_load', label: 'Residents sharing this block\'s nearest suburban station', unit: 'people per station', higherIs: 'worse', ramp: 'reds', domain: [0, 300000] },
+            needs: ['rail_access.rail_stations', 'population.population'],
+            method: `Suburban rail stations are Overture Maps and OpenStreetMap station points on mainline track (the rail_access dataset). Every lived-in block within ${CATCH_KM} km of a station is assigned to its nearest one (straight line on the block grid), and a station's load is the residents assigned to it, split across stations in the same block. This is a catchment, not ridership: it misses commuters who change trains, ride from farther away or choose a faster station, and open timetables (item 67) are still not available for Mumbai locals.`,
+            refs: 'Overture Maps; OpenStreetMap; WorldPop; Commissioner of Railway Safety reports on suburban crowding' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

@@ -468,6 +468,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 161734,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1186,6 +1192,12 @@
      "label": "Hospitals facing two or more hazards",
      "value": 6.2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 91894,
+     "unit": "people",
      "higherIs": "worse"
     },
     "events": {
@@ -1914,6 +1926,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 74579,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2632,6 +2650,12 @@
      "label": "Hospitals facing two or more hazards",
      "value": 50.4,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 73412,
+     "unit": "people",
      "higherIs": "worse"
     },
     "events": {
@@ -3364,6 +3388,12 @@
      "label": "Hospitals facing two or more hazards",
      "value": 20.3,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 105261,
+     "unit": "people",
      "higherIs": "worse"
     },
     "events": {
@@ -4704,6 +4734,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 64317,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.9,
@@ -5430,6 +5466,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 25182,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6136,6 +6178,12 @@
      "label": "Hospitals facing two or more hazards",
      "value": 0.7,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 124009,
+     "unit": "people",
      "higherIs": "worse"
     },
     "events": {
@@ -6864,6 +6912,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 97047,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -7576,6 +7630,12 @@
      "label": "Hospitals facing two or more hazards",
      "value": 22.1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 69673,
+     "unit": "people",
      "higherIs": "worse"
     },
     "events": {
@@ -8310,6 +8370,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 109312,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -9040,6 +9106,12 @@
      "label": "Hospitals facing two or more hazards",
      "value": 5.2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "stationload": {
+     "label": "Residents per suburban station (median)",
+     "value": 53648,
+     "unit": "people",
      "higherIs": "worse"
     },
     "events": {

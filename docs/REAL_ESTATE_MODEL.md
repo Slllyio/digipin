@@ -1092,3 +1092,7 @@ A compound of the safety lenses at every block with an OSM school, for the hazar
 ## Hospital safety check (`hospitalsafe` lens, js/urban-lenses-safety.js)
 
 The school safety check run over Overture hospitals (both lenses share `siteCheck`). Delhi: 20% of 2,719 listed hospitals face two or more hazards, 47% stand on soft ground in zone IV; Chennai: 50%, mostly because Aqueduct puts 78% of its hospitals in the 100-year flood. DISHA sends "hospitals that flood" to `critwater` and "hospital safety / hospitals at risk" here.
+
+## Crowded local-train stations (`stationload` lens, js/urban-lenses-safety.js)
+
+Item 67 asked for Mumbai locals with frequency; no open timetable or GTFS is reachable, so this ships the catchment half. Every lived-in block within 2 km of a suburban rail station (rail_access, Overture + OSM) is assigned to its nearest station on the block grid; a station's load is its assigned residents, split across stations sharing a block. The map shows each block's station load. Mumbai: 100 stations, 1.5 crore residents within 2 km, median 1.1 lakh per station, busiest tenth 3 lakh+. A catchment is not ridership: interchanges, long-distance commuters and fast-train choice are missing.

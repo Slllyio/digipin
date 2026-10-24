@@ -116,7 +116,7 @@ Each item gives four things:
 64. ✅ Streetlights (VIIRS light on station walks: existing nightwalk lens) (OSM highway=street_lamp + VIIRS) | OSM/EE | night safety
 65. Metro ridership by station (DMRC/BMRCL open data where published) | open | transit lens
 66. Bus GTFS for Delhi (parked for key), Chennai, Hyderabad | key/open | bus frequency
-67. Railway suburban stations with frequency (Mumbai locals timetable) | open | rail access
+67. ⏸ Railway suburban stations with frequency (Mumbai locals timetable) | open | rail access (catchment half shipped as `stationload`, item 138; no open timetable)
 68. ✅ Airport access time | derived | travel lens (`airport` lens)
 69. ❌ Truck routes and no-entry hours | OSM | freight (skipped: only 15 km of Delhi roads carry an hgv restriction in OSM)
 70. ✅ Parking supply (existing parking lens) from OSM + places | OSM/S3 | parking lens extension
@@ -196,6 +196,7 @@ Each item gives four things:
 135. ✅ Fire engines in packed lanes: roof cover × distance to a main road × fire-station reach (Open Buildings, OSM, Overture) | derived | `firelanes` lens
 136. ✅ School safety check: flood, waterlogging, soft ground in seismic zones, packed lanes, industry and road noise at every school block (NDMA School Safety Policy) | derived | `schoolsafe` lens
 137. ✅ Hospital safety check: the same six hazards at every hospital block (NDMA hospital safety guidelines) | derived | `hospitalsafe` lens
+138. ✅ Crowded local-train stations: residents per suburban station by nearest-station catchment (rail_access, WorldPop) | derived | `stationload` lens
 
 ## Parked for the keys round
 
