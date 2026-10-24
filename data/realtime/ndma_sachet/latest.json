@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-24T21:54:33Z",
+  "generated_at_iso": "2026-10-24T23:59:44Z",
   "count": 100,
   "records": [
+    {
+      "id": "1792883063805041",
+      "headline": "Lt to Mod Ra with  Lt TSL is likely to occur at isol places over ARY, CGP, Chennai, CDL, DRM, DND, KLCHI, KNCHP, KYK, Karur, KRSH, MYLD, NMKL, Perambalur, PDKT, Ranipet, SLM, Tenkasi, TNJ, Theni, TRVL, TRP, TRM, TRN, TRV, TRM, VLR, VLP, VRD, PDC in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 24 Oct 2026 23:07:52 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792883063805041",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1792883059914007",
+      "headline": "Lt to Mod Ra with  Lt TSL is likely to occur at isol places over ARY, CGP, Chennai, CDL, DRM, DND, KLCHI, KNCHP, KYK, Karur, KRSH, MYLD, NMKL, Perambalur, PDKT, Ranipet, SLM, Tenkasi, TNJ, Theni, TRVL, TRP, TRM, TRN, TRV, TRM, VLR, VLP, VRD, PDC in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 24 Oct 2026 23:04:24 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792883059914007",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1792878599065013",
       "headline": "अगले 3 घंटों में गौतमबुद्ध नगर के कुछ इलाकों में आंधी (हवा की गति 30-40 किमी प्रति घंटा) और बिजली कड़कने के साथ हल्की से मध्यम बारिश होने की प्रबल संभावना है।",
@@ -1076,28 +1098,6 @@
       "area": "",
       "published_utc": "Sat, 24 Oct 2026 06:11:44 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792822222228008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792821946553008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 06:07:05 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792821946553008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792821442079008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 05:58:15 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792821442079008",
       "severity": "Minor",
       "category": "Other",
       "tags": []
