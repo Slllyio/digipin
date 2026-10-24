@@ -751,16 +751,16 @@
         "pressure": 3.59
       },
       {
-        "digipin": "4FKPC2L",
-        "demand_ecs": 875,
-        "supply_ecs": 224,
-        "pressure": 3.9
-      },
-      {
         "digipin": "4FK8MMM",
         "demand_ecs": 863,
         "supply_ecs": 212,
         "pressure": 4.07
+      },
+      {
+        "digipin": "4FKPC2L",
+        "demand_ecs": 875,
+        "supply_ecs": 224,
+        "pressure": 3.9
       }
     ],
     "assumptions": {
