@@ -1076,3 +1076,7 @@ A site-effect proxy to sit beside the city's IS 1893 zone (from the ground lens)
 ## Homes beside factories (`factoryhomes` lens, js/urban-lenses-safety.js)
 
 Industry among housing, the setting of Delhi's 2019 Anaj Mandi and 2022 Mundka fires. Industrial blocks have 20%+ of their land mapped industrial (OSM land use via Overture); mixed blocks also have 20%+ mapped housing; hot adds VIIRS thermal anomalies on 1+ day a year (furnaces, kilns, burning). Map: 1 within 500 m of an industrial block, 2 mixed, 3 mixed and hot. OSM land-use polygons overlap, so shares can add past 100%. Delhi: 61.5 lakh residents (21%) within 500 m of industry, 3 lakh in 238 mixed blocks, 23 of them hot; Mumbai 41% within 500 m. MAH unit registers and factory licences are not open.
+
+## Storm-surge shelter gaps (`refuge` lens, js/urban-lenses-safety.js)
+
+Residents in blocks with 25%+ of their area in Aqueduct's coastal 1-in-100-year flood today or by 2050 (RCP4.5), and whether a school (OSM) or community hall (Overture) lies within 1 km. Map: 1 surge zone with a refuge, 2 none within 1 km. Wind-only exposure was tried and dropped: a 89 km/h 50-year wind covers all of Chennai and Kolkata, and pucca homes ride out wind; the surge is what forces evacuation. Kolkata: 18.2 lakh in the surge zone today, 41,882 with no refuge within 1 km, about 5,600 exposed residents per refuge; Mumbai 4.6 lakh, 78,080 with none. Aqueduct puts no Chennai block 25% in the coastal flood, so Chennai returns nothing; inland cities too.

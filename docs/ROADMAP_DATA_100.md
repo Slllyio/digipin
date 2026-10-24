@@ -192,6 +192,7 @@ Each item gives four things:
 131. ✅ Emergency services on wet ground: hospitals, fire and police stations and relief-camp schools in the 100-year flood or waterlogging zones (Overture, OSM, Aqueduct, Sentinel-1) | derived | `critwater` lens
 132. ✅ Earthquake shaking on soft ground: low wet ground × sandy soil × tall buildings, with the IS 1893 zone (MERIT Hydro, SoilGrids, Open Buildings) | derived | `quake` lens
 133. ✅ Homes beside factories: industrial land next to and mixed with housing, with satellite thermal hotspots (OSM land use, VIIRS) | derived | `factoryhomes` lens
+134. ✅ Storm-surge shelter gaps: coastal 100-year flood residents × schools and community halls within 1 km (Aqueduct, OSM, Overture) | derived | `refuge` lens
 
 ## Parked for the keys round
 

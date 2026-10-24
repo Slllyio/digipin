@@ -6678,6 +6678,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "refuge": {
+     "label": "Surge-zone residents with no refuge within 1 km",
+     "value": 2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -8079,6 +8085,12 @@
     "factoryhomes": {
      "label": "Residents within 500 m of industry",
      "value": 40.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "refuge": {
+     "label": "Surge-zone residents with no refuge within 1 km",
+     "value": 14.9,
      "unit": "%",
      "higherIs": "worse"
     },

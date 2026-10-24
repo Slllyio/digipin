@@ -241,6 +241,50 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Storm-surge refuge. In a city most homes are pucca and ride out the wind; the surge is what forces people out.
+    // Exposed blocks have SURGE_PCT of their area in the coastal 1-in-100-year flood today or by 2050 (storm surge, sea
+    // level and subsidence, Aqueduct). Schools and community halls are the refuges disaster plans open (Odisha's
+    // multipurpose cyclone shelters are schools); a block is covered with one within REFUGE_KM, a walk in rising wind.
+    const SURGE_PCT = 25, REFUGE_KM = 1;
+
+    function refuge(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const now = c['flood_future.coast_pct_now'], later = c['flood_future.coast_pct_2050'], wind = c['cyclones.wind_rl50_kmh'];
+        const sch = c['emergency_access.schools'], hall = c['places.community_centres'];
+        if (!(now || later) || !(sch || hall)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const exposedNow = i => v(now, i) >= SURGE_PCT, exposed = i => exposedNow(i) || v(later, i) >= SURGE_PCT;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        const hit = idx.filter(exposed);
+        if (idx.length < 5 || !hit.length) return null;
+        const halls = within(g, Float64Array.from({ length: n }, (_, i) => v(sch, i) + v(hall, i)), REFUGE_KM);
+        const crowd = within(g, Float64Array.from({ length: n }, (_, i) => (exposed(i) ? v(pop, i) : 0)), REFUGE_KM);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = !exposed(i) ? 0 : halls[i] > 0 ? 1 : 2;
+        const none = hit.filter(i => halls[i] <= 0);
+        const pHit = _sumOver(pop, hit, () => true), pNow = _sumOver(pop, hit.filter(exposedNow), () => true), pNone = _sumOver(pop, none, () => true);
+        const covered = hit.filter(i => halls[i] > 0);
+        const perRefuge = covered.length ? wquantile(Float64Array.from({ length: n }, (_, i) => (halls[i] > 0 ? crowd[i] / halls[i] : 0)), pop, covered, 0.5) : 0;
+        const windMax = wind ? Math.max(0, ...hit.map(i => v(wind, i))) : 0;
+        const stats = [
+            { label: `Residents in the coastal 100-year flood (${SURGE_PCT}%+ of the block), today / by 2050`, value: `${_people(pNow)} / ${_people(pHit)}` },
+            { label: `…with no school or community hall within ${REFUGE_KM} km`, value: `${_people(pNone)} (${none.length} blocks)` },
+            { label: `…exposed residents per school or hall within ${REFUGE_KM} km (median resident)`, value: Math.round(perRefuge).toLocaleString('en-IN') },
+        ];
+        if (windMax) stats.push({ label: 'Strongest 50-year cyclone wind in the surge zone', value: `${_round(windMax)} km/h` });
+        const score = Float64Array.from({ length: n }, (_, i) => (exposed(i) ? crowd[i] / (1 + halls[i]) * (exposedNow(i) ? 2 : 1) : 0));
+        spaced(g, hit, score).forEach((i, k) => stats.push({
+            label: `Shelter ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(crowd[i])} exposed residents within ${REFUGE_KM} km; ${halls[i] > 0 ? `${_round(halls[i])} school${halls[i] > 1 ? 's or halls' : ' or hall'}` : 'no school or hall'}; ${_round(Math.max(v(now, i), v(later, i)))}% of the block in the surge zone${exposedNow(i) ? '' : ' by 2050'}` }));
+        return {
+            columns: { refuge_gap: out }, idx, weightKey: 'refuge_gap', noHotspots: true,
+            metric: { label: 'Surge-zone residents with no refuge within 1 km', value: _round(100 * pNone / (pHit || 1)), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pNow)} residents live in the coastal 100-year flood zone today, ${_people(pHit)} by 2050, where a cyclone's storm surge forces people out of their homes. ${_people(pNone)} of them have no school or community hall within ${REFUGE_KM} km to shelter in, and for the median resident each nearby refuge serves ${Math.round(perRefuge).toLocaleString('en-IN')} exposed people. The blocks listed have the most exposed residents per refuge, the first places for a raised, cyclone-proof shelter, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -273,10 +317,16 @@ const UrbanLensesSafety = (() => {
             needs: ['landuse.industrial_pct', 'landuse.residential_pct', 'fires.fire_days_yr', 'population.population'],
             method: `Industrial blocks have ${INDUSTRY_PCT}% or more of their land mapped as industrial in OpenStreetMap land use (via Overture Maps); mixed blocks also have ${HOMES_PCT}% or more mapped as housing. Thermal hotspots are VIIRS 375 m active-fire detections on ${HOT_DAYS} or more days a year, which in a city are mostly furnaces, kilns and waste burning. Residents within ${NEXT_KM * 1000} m are counted on the block grid. Land-use polygons can overlap, so the two shares can add past 100%. Hazardous-industry registers (Major Accident Hazard units under the MSIHC Rules 1989) and factory licences are not open, and mapping of land use is uneven, so this shows where to inspect, not which units are unsafe.`,
             refs: 'OpenStreetMap land use via Overture Maps; NASA FIRMS VIIRS 375 m active fires; MSIHC Rules 1989; Master Plan for Delhi 2021 (non-conforming industrial areas)' },
+        { id: 'refuge', equity: false, title: 'Storm-surge shelter gaps', icon: '🌀',
+            question: 'Who in the cyclone storm-surge zone has no shelter nearby?',
+            field: { key: 'refuge_gap', label: `In the surge zone with a refuge (1), none within ${REFUGE_KM} km (2)`, unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
+            needs: ['flood_future.coast_pct_now', 'flood_future.coast_pct_2050', 'cyclones.wind_rl50_kmh', 'emergency_access.schools', 'places.community_centres', 'population.population'],
+            method: `Exposed blocks have ${SURGE_PCT}% or more of their area in WRI Aqueduct's 1-in-100-year coastal flood today or by 2050 under RCP4.5 (storm surge, sea-level rise and subsidence, about 1 km, no defences). Refuges are schools (OpenStreetMap) and community halls (Overture), the buildings disaster plans open as shelters. Per-refuge load is the exposed residents within ${REFUGE_KM} km divided by the refuges there. Cyclone wind alone is left out: pucca homes ride it out, while the surge forces people to move. Whether a building is raised, sound and stocked is not in open data; inland cities return nothing.`,
+            refs: 'WRI Aqueduct Floods v2; IBTrACS; NDMA Guidelines on Management of Cyclones (2008); National Cyclone Risk Mitigation Project (multipurpose cyclone shelters)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {
