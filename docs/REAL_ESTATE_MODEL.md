@@ -1016,3 +1016,7 @@ Open Buildings 2.5D Temporal roof cover (2023) over the whole block, streets inc
 ## Comparable blocks in every city
 
 `UrbanLenses.similarEverywhere({ fromCity, lat, lng, cities })` runs `similar()` against each other city and returns the best match per city, most similar first; DISHA answers "comparable localities in every city" with it. The match features now also include roof cover, daytime surface heat and present-day flood exposure (half weight each). A Delhi block at Lodhi Road finds 93% matches in Bengaluru, Hyderabad and Mumbai; Guna's best is 81%. All 12 cities take about 13 s.
+
+## Tech hubs and IT parks (`techhubs` lens)
+
+The `places` dataset gained `tech` (Overture software development, information technology company, biotechnology company and B2B science and technology service) and `corporate` (corporate and business offices). The lens counts tech firms within 1 km; hubs are the densest 5% of blocks with at least 5 firms. It reports the share of firms in hubs, residents within 5 km of a hub, hubs within a 15-minute walk of the metro, and the hubs' median value index against the city's. Wikidata has too few IT parks and SEZs with coordinates to use, so firms are counted by listing, not jobs.

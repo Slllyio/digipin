@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 872,
+     "unit": "firms",
+     "higherIs": null
+    },
     "packed": {
      "label": "Residents in packed blocks",
      "value": 763234,
@@ -1036,6 +1042,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 53.2,
      "unit": "%",
+     "higherIs": null
+    },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 1276,
+     "unit": "firms",
      "higherIs": null
     },
     "packed": {
@@ -1662,6 +1674,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 72,
+     "unit": "firms",
+     "higherIs": null
+    },
     "packed": {
      "label": "Residents in packed blocks",
      "value": 181953,
@@ -2278,6 +2296,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 65.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 710,
+     "unit": "firms",
      "higherIs": null
     },
     "packed": {
@@ -2908,6 +2932,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 55.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 1376,
+     "unit": "firms",
      "higherIs": null
     },
     "packed": {
@@ -4080,6 +4110,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 728,
+     "unit": "firms",
+     "higherIs": null
+    },
     "packed": {
      "label": "Residents in packed blocks",
      "value": 1036495,
@@ -4704,6 +4740,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 227,
+     "unit": "firms",
+     "higherIs": null
+    },
     "packed": {
      "label": "Residents in packed blocks",
      "value": 433978,
@@ -5308,6 +5350,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 63.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 346,
+     "unit": "firms",
      "higherIs": null
     },
     "packed": {
@@ -5928,6 +5976,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 351,
+     "unit": "firms",
+     "higherIs": null
+    },
     "packed": {
      "label": "Residents in packed blocks",
      "value": 1520114,
@@ -6538,6 +6592,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 62.7,
      "unit": "%",
+     "higherIs": null
+    },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 180,
+     "unit": "firms",
      "higherIs": null
     },
     "packed": {
@@ -7162,6 +7222,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 43.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 617,
+     "unit": "firms",
      "higherIs": null
     },
     "packed": {
@@ -7792,6 +7858,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 59.5,
      "unit": "%",
+     "higherIs": null
+    },
+    "techhubs": {
+     "label": "Software, IT, biotech and science firms listed",
+     "value": 673,
+     "unit": "firms",
      "higherIs": null
     },
     "packed": {

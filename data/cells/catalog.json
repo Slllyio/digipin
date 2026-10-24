@@ -15793,7 +15793,7 @@
     {
       "id": "places",
       "title": "Businesses and services (Overture)",
-      "description": "Overture Maps places (release 2026-10-21.0, confidence \u2265 0.6, not marked closed) counted per block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, brand share and business mix. Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses list themselves online: dense in markets, thin in informal and older areas.",
+      "description": "Overture Maps places (release 2026-10-21.0, confidence \u2265 0.6, not marked closed) counted per block by Overture's taxonomy: food, shops, services, health, education, stays, leisure, culture, community and transport, plus offices, finance, real-estate agents, hospitals, colleges, coaching, malls, co-working, hostels, post offices, police and fire stations, pharmacies, grocers, preschools, libraries, community centres, fuel stations, places of worship, tech firms, corporate offices, brand share and business mix. Overture merges Meta and Microsoft listings with open data, so coverage follows where businesses list themselves online: dense in markets, thin in informal and older areas.",
       "source": "pipeline/realestate/places.py (Overture Maps places theme via DuckDB)",
       "license": "CDLA-Permissive-2.0 (Overture Maps places)",
       "group": "Real estate",
@@ -16179,6 +16179,30 @@
           "domain": [
             0,
             9
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "tech",
+          "label": "Software, IT, biotech and science firms",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            25
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "corporate",
+          "label": "Corporate and business offices",
+          "type": "number",
+          "agg": "sum",
+          "unit": "places",
+          "domain": [
+            0,
+            3
           ],
           "ramp": "viridis"
         },

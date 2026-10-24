@@ -76,7 +76,7 @@ Each item gives four things:
 30. ✅ Dust AOD and dust-storm days (CAMS instead of MERRA-2) | NASA | dust lens
 31. ✅ Wet-bulb 2050 (NEX-GDDP hurs + tasmax) | EE | humid heat future (humid_future (wet-bulb now and 2050))
 32. ✅ Sea-level rise 2100 bathtub on FABDEM (connected) | EE community | coastal long view (covered by flood_future coastal 2050/2080 fields in the flood2050 lens)
-33. Storm-surge 100-year (GTSR, Muis 2016) | open | coastal flood detail
+33. ✅ Storm-surge 100-year (GTSR, Muis 2016) | open | coastal flood detail (covered: the Aqueduct coastal flood maps in `flood_future` are built on GTSR extreme sea levels; the raw GTSR files sit on data.4tu.nl, unreachable here)
 34. ✅ Fire hotspots near the city (FIRMS VIIRS) | EE | crop-burning season (fires + burning lens)
 35. ✅ Stubble-burning smoke source tracker (FIRMS × wind back-trajectory) | EE | Delhi air (partly: winter share in the burning lens (no back-trajectories))
 36. ✅ Noise from aircraft (airport runways + flight paths) | OSM + derived | noise lens
@@ -144,7 +144,7 @@ Each item gives four things:
 89. ✅ Colleges and coaching hubs (Overture) | S3 | student housing demand
 90. ✅ Bank branches and ATMs per resident (financial inclusion) | S3 | finance lens
 91. ✅ Post offices and India Post services (DIGIPIN home!; reach lens, Overture listings) | open | postal lens
-92. Startups and IT parks (Wikidata, SEZ list) | open | innovation lens
+92. ✅ Startups and IT parks (Wikidata, SEZ list) | open | innovation lens (`places.tech` from Overture categories, since Wikidata lists few IT parks; `techhubs` lens)
 93. GST registrations by district | open | economy context
 94. Electricity reliability (power-cut reports, ESMI where open) | open | utilities
 95. ❌ Mobile broadband coverage (Ookla open data tiles) | S3 | digital access lens (skipped: Ookla open data is CC BY-NC-SA (non-commercial))

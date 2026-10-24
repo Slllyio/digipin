@@ -812,7 +812,61 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Tech hubs. Software, IT, biotech and science firms (Overture places) within TECH_KM; hubs are the densest TECH_Q
+    // of blocks. Hub reach: residents living within HUB_KM of a hub, a rough commute shed.
+    const TECH_KM = 1, TECH_Q = 0.95, HUB_KM = 5, METRO_OK_MIN = 15;
+
+    function techhubs(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, tech = c['places.tech'], pop = c['population.population'];
+        const cow = c['places.coworking'], metro = c['rail_access.metro_walk_min'], vi = c['land_value.value_index'];
+        if (!tech) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || v(tech, i) > 0) idx.push(i);
+        const total = idx.reduce((a, i) => a + v(tech, i), 0);
+        if (idx.length < 5 || total < 20) return null;
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(tech, i)), TECH_KM);
+        const tq = wquantile(near, null, idx.filter(i => near[i] > 0), TECH_Q);
+        const hubs = idx.filter(i => near[i] >= Math.max(tq, 5));
+        const hubMask = Float64Array.from({ length: n }, () => 0);
+        for (const i of hubs) hubMask[i] = 1;
+        const shed = within(g, hubMask, HUB_KM);
+        const col = new Float64Array(n).fill(NaN);
+        for (const i of idx) col[i] = near[i];
+        const all = _sumOver(pop, idx, () => true), pShed = _sumOver(pop, idx, i => shed[i] > 0);
+        const inHubs = hubs.reduce((a, i) => a + v(tech, i), 0);
+        const stats = [
+            { label: 'Software, IT, biotech and science firms listed', value: String(total) },
+            { label: `Hub blocks (densest 5%, ${_round(Math.max(tq, 5))}+ firms within ${TECH_KM} km)`, value: `${hubs.length} blocks with ${_round(100 * inHubs / Math.max(total, 1))}% of firms` },
+            { label: `Residents within ${HUB_KM} km of a hub`, value: `${_people(pShed)} (${_round(100 * pShed / Math.max(all, 1))}%)` },
+        ];
+        if (metro) {
+            const ok = hubs.filter(i => _fin(metro[i]) && metro[i] <= METRO_OK_MIN).length;
+            stats.push({ label: `Hub blocks within a ${METRO_OK_MIN}-minute walk of a metro station`, value: `${ok} of ${hubs.length}` });
+        }
+        if (vi) {
+            const med = a => wquantile(vi, null, a.filter(i => _fin(vi[i])), 0.5);
+            const hv = med(hubs), cv = med(idx);
+            if (_fin(hv) && _fin(cv)) stats.push({ label: 'Median land value index, hubs vs city', value: `${_round(hv)} vs ${_round(cv)}` });
+        }
+        spaced(g, hubs, near, TOP).forEach((i, k) => stats.push({
+            label: `Tech hub ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(near[i])} firms within ${TECH_KM} km${cow ? `, ${_round(v(cow, i))} co-working spaces in the block` : ''}${metro && _fin(metro[i]) ? `; metro ${_round(metro[i])} min walk` : ''}` }));
+        return {
+            columns: { tech_firms_1km: col }, idx, weightKey: 'tech_firms_1km', noHotspots: true,
+            metric: { label: 'Software, IT, biotech and science firms listed', value: total, unit: 'firms', higherIs: null },
+            headline: `${total} software, IT, biotech and science firms are listed; ${_round(100 * inHubs / Math.max(total, 1))}% sit in ${hubs.length} hub blocks, and ${_round(100 * pShed / Math.max(all, 1))}% of residents live within ${HUB_KM} km of one. Overture lists firms by office, not headcount, so a campus of 20,000 counts once.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'techhubs', equity: false, title: 'Tech hubs and IT parks', icon: '💻',
+            question: 'Where are the tech and IT clusters, and who lives within reach of them?',
+            field: { key: 'tech_firms_1km', label: `Software, IT, biotech and science firms within ${TECH_KM} km`, unit: 'firms', higherIs: null, ramp: 'viridis', domain: [0, 80] },
+            needs: ['places.tech', 'places.coworking', 'rail_access.metro_walk_min', 'land_value.value_index', 'population.population'],
+            method: `Overture Maps places in the categories software development, information technology company, biotechnology company and B2B science and technology service, counted within ${TECH_KM} km of each block. Hubs are blocks in the densest 5% (and at least 5 firms). The commute shed is residents within ${HUB_KM} km (straight line) of a hub. Metro walk is DigiPin's walking time to the nearest metro station; the value index is the hedonic land-value index (100 = median home). Firms are counted by listing, not by jobs, and SEZ boundaries are not open data.`,
+            refs: 'Overture Maps places; NASSCOM Strategic Review; Ministry of Commerce SEZ list (names only)' },
         { id: 'packed', equity: true, title: 'Packed blocks with no setbacks', icon: '🧱',
             question: 'Where are buildings packed wall to wall with no setbacks?',
             field: { key: 'roof_cover_pct', label: 'Share of all block land under roofs (2023)', unit: '% of block', higherIs: 'worse', ramp: 'reds', domain: [0, 70] },
@@ -944,7 +998,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 
