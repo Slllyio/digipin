@@ -178,7 +178,7 @@ Each item gives four things:
 117. ✅ Change detection with Satellite Embeddings year over year | EE | change lens (change lens)
 118. Building-use classifier from embeddings + places | EE/S3 | land-use mix
 119. ✅ Export any lens to GeoJSON / GeoParquet / CSV per DIGIPIN | derived | data API
-120. Public data API: static JSON per DIGIPIN prefix with every field | derived | developer API
+120. ✅ Public data API: static JSON per DIGIPIN prefix with every field | derived | developer API (docs/DATA_API.md on reading data/cells directly; `python -m pipeline.cells.lookup <code>` returns every field at one place)
 121. ✅ High-voltage power line corridors and substations (Overture/OSM voltage tags, MoP RoW widths) | S3 | `power_lines` dataset, `powerlines` lens, property report row
 122. ✅ Public toilets and drinking-water points (Overture/OSM street objects) | S3 | `street_infra` dataset, `toilets` lens
 123. ✅ Gated colonies from street gates and barriers (Overture/OSM) | S3 | `gated` lens

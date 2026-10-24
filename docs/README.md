@@ -11,6 +11,7 @@ the repo.
 |---|---|
 | [DIGITAL_TWIN_ARCHITECTURE.md](DIGITAL_TWIN_ARCHITECTURE.md) | Data formats, tiling and serving choices for the digital twin |
 | [CELL_STORE.md](CELL_STORE.md) | Per-DIGIPIN-cell data store (`data/cells/`), layer registry, ingest API |
+| [DATA_API.md](DATA_API.md) | Reading the open data as static JSON: catalog, cell codes, region files, one-place lookup |
 | [METHODOLOGY.md](METHODOLOGY.md) | How the scores are computed and which sources feed them |
 | [ANALYSES.md](ANALYSES.md) | Saved analyses: JSON templates that re-run over any area into a sourced report |
 
