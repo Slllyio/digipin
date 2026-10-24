@@ -27,6 +27,7 @@ const DishaIntel = (() => {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
             builduse: /\b(building use|land use (map|class\w*)|what (are|is) (the )?(buildings?|blocks?) used for|residential or commercial|commercial or residential|which (blocks|areas) are (residential|commercial|industrial))\b/i,
+            rainharvest: /\b(rain\s?water harvest\w*|rooftop (rain|harvest\w*)|harvest\w* (rain|rainwater)|rwh)\b/i,
             coaching: /\b(coaching (centres?|centers?|hubs?|institutes?|classes)|tuition (centres?|hubs?)|(pg|paying guest|student) hostels?|basement (librar(y|ies)|classes|flood\w*))\b.{0,40}\b(safe\w*|fires?|flood\w*|hazards?|risk\w*|basements?)\b|\b(mukherjee nagar|rajinder nagar)\b/i,
             gridflood: /\b(sub-?stations?|power (grid|supply)|electricity|power cuts?|blackouts?|outages?)\b.{0,40}\b(flood\w*|waterlog\w*|under water|inundat\w*)\b|\b(flood\w*|waterlog\w*)\b.{0,30}\b(sub-?stations?|blackouts?|power cuts?|outages?)\b/i,
             treefall: /\b(tree[\s-]?falls?|trees? (falling|fall(ing)? on|uproot\w*|collaps\w*)|fallen trees?|uprooted trees?|(tree )?prun(e|ing)|trees?\b.{0,30}\b(monsoon|storms?)\b.{0,20}\b(roads?|fall))\b/i,

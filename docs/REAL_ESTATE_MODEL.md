@@ -1112,3 +1112,7 @@ OSM substations (power_lines dataset) checked against critwater's thresholds (25
 ## Coaching hub safety (`coaching` lens, js/urban-lenses-safety.js)
 
 Hub blocks have 10+ Overture coaching centres within 500 m and sit in the top tenth of blocks with any. Each hub is flagged for waterlogging (index 45+, a lower bar than critwater because basements flood first), packed lanes (50%+ under roofs, no main road within 300 m), no fire station within 3 km (where 5+ are listed) and packed buildings. Map: 1 hub, 2 one flag, 3 two or more. Picks weigh centre count, flags and hostels. Delhi: 617 hub blocks, 451 flagged (261 waterlogged); Hyderabad 99, 72 far from a listed fire station. The 2023 Mukherjee Nagar fire and the 2024 Old Rajinder Nagar basement flood are the cases it is built around; basement use and fire NOCs are not open.
+
+## Rooftop rainwater (`rainharvest` lens, js/urban-lenses-safety.js)
+
+Roof area (Open Buildings 2023 cover × block area) × CHIRPS annual rain × 0.8 (CGWB runoff coefficient for hard roofs) is each block's harvestable rain; spread over the year and its residents it gives litres per resident a day against the CPHEEO 135 l/day norm. Picks weigh volume by the water_risk groundwater decline. Delhi: about 276 million m³ a year, 21 l per resident a day for the median resident (19% of city need); Chennai 39 l (33%); Mumbai 20 l. Commercial blocks with few residents show very high per-resident figures. The safety module's header now reads "safety and resilience".

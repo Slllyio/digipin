@@ -498,6 +498,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 16.8,
+     "unit": "l",
+     "higherIs": "better"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1247,6 +1253,12 @@
      "value": 55.6,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 15.7,
+     "unit": "l",
+     "higherIs": "better"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -2004,6 +2016,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 36.3,
+     "unit": "l",
+     "higherIs": "better"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2753,6 +2771,12 @@
      "value": 63.4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 39.4,
+     "unit": "l",
+     "higherIs": "better"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -3516,6 +3540,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 20.6,
+     "unit": "l",
+     "higherIs": "better"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -4212,6 +4242,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 40.5,
+     "unit": "l",
+     "higherIs": "better"
+    },
     "railnoise": {
      "label": "Residents within 150 m of a mainline railway",
      "value": 8.9,
@@ -4895,6 +4931,12 @@
      "value": 77.8,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 36.5,
+     "unit": "l",
+     "higherIs": "better"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -5652,6 +5694,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 26.9,
+     "unit": "l",
+     "higherIs": "better"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6389,6 +6437,12 @@
      "value": 35,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 39.3,
+     "unit": "l",
+     "higherIs": "better"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -7146,6 +7200,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 23.1,
+     "unit": "l",
+     "higherIs": "better"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -7889,6 +7949,12 @@
      "value": 77.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 34.7,
+     "unit": "l",
+     "higherIs": "better"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -8652,6 +8718,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 20.3,
+     "unit": "l",
+     "higherIs": "better"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -9413,6 +9485,12 @@
      "value": 42.2,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "rainharvest": {
+     "label": "Roof rain per resident a day (median)",
+     "value": 17.6,
+     "unit": "l",
+     "higherIs": "better"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",

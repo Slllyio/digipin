@@ -1,6 +1,6 @@
 /**
- * Safety lenses for UrbanLenses: fire risk in crowded markets and other hazards where people, buildings and access
- * meet. They read places, building_stock and osm_roads. Registers itself on load, after urban-lenses.js.
+ * Safety and resilience lenses for UrbanLenses: fire risk in crowded markets and other hazards where people, buildings
+ * and access meet, and what roofs can give back (rainwater). They read places, building_stock and osm_roads. Registers itself on load, after urban-lenses.js.
  */
 const UrbanLensesSafety = (() => {
     'use strict';
@@ -602,6 +602,44 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Rooftop rainwater. Every roof is a catchment: roof area × annual rain × RUNOFF (CGWB's coefficient for hard roofs)
+    // is what a block could harvest. Set against each resident's need of LPCD litres a day (CPHEEO) and the local fall
+    // in groundwater, it shows where harvesting tanks and recharge wells pay back most.
+    const RUNOFF = 0.8, LPCD = 135;
+
+    function rainharvest(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const cover = c['building_stock.cover_2023_pct'], rain = c['rainfall.rain_annual_mm'], fall = c['water_risk.groundwater_decline_cm_yr'];
+        if (!cover || !rain) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(cover, i) > 0 && v(rain, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const m3 = Float64Array.from({ length: n }, (_, i) => v(cover, i) / 100 * g.cellKm2 * 1e6 * v(rain, i) / 1000 * RUNOFF);
+        const lpd = new Float64Array(n).fill(NaN);
+        for (const i of idx) lpd[i] = v(pop, i) > 0 ? m3[i] * 1000 / 365 / pop[i] : NaN;
+        const total = idx.reduce((a, i) => a + m3[i], 0), people = _sumOver(pop, idx, () => true);
+        const lived = idx.filter(i => v(pop, i) > 0);
+        const med = lived.length ? wquantile(lpd, pop, lived, 0.5) : 0;
+        const falling = fall ? lived.filter(i => v(fall, i) > 0) : [];
+        const stats = [
+            { label: 'Rain falling on roofs a year (80% captured)', value: `${_round(total / 1e6, 1)} million m³` },
+            { label: '…per resident a day, median resident', value: `${_round(med)} litres (${_round(100 * med / LPCD)}% of the ${LPCD} l/day norm)` },
+            { label: '…as a share of what residents need in a year', value: `${_round(100 * total * 1000 / 365 / (people * LPCD || 1))}%` },
+        ];
+        if (fall) stats.push({ label: 'Residents where groundwater is falling', value: `${_people(_sumOver(pop, falling, () => true))} (${_round(100 * _sumOver(pop, falling, () => true) / (people || 1))}%)` });
+        const score = Float64Array.from({ length: n }, (_, i) => m3[i] * (1 + Math.max(0, v(fall, i)) / 10));
+        spaced(g, lived, score).forEach((i, k) => stats.push({
+            label: `Harvest ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(m3[i] / 1000, 1)} thousand m³ a year off ${_round(v(cover, i))}% roof cover; ${_round(lpd[i])} l per resident a day${fall ? `; groundwater ${v(fall, i) > 0 ? `falling ${_round(v(fall, i), 1)} cm a year` : 'steady or rising'}` : ''}` }));
+        return {
+            columns: { harvest_m3: m3, harvest_lpd: lpd }, idx, weightKey: 'harvest_m3', noHotspots: true,
+            metric: { label: 'Roof rain per resident a day (median)', value: _round(med), unit: 'l', higherIs: 'better' },
+            headline: `About ${_round(total / 1e6, 1)} million m³ of rain falls on the city's roofs each year and could be caught at ${Math.round(RUNOFF * 100)}% efficiency: ${_round(med)} litres per resident a day for the median resident, ${_round(100 * total * 1000 / 365 / (people * LPCD || 1))}% of what the whole city needs at ${LPCD} litres a day. Most of it runs into drains in a few monsoon weeks, so storage or recharge wells decide how much is kept. The blocks listed would yield the most${falling.length ? ', weighted to where groundwater is falling' : ''}, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -690,10 +728,17 @@ const UrbanLensesSafety = (() => {
             needs: ['places.coaching', 'places.hostels', 'waterlogging.waterlogging_index', 'building_stock.cover_2023_pct', 'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'places.fire_stations', 'population.population'],
             method: `Coaching centres and hostels are Overture Maps places. Hub blocks have ${HUB_MIN} or more coaching centres within ${HUB_KM * 1000} m and sit in the city's top ${Math.round(100 * (1 - HUB_Q))}% of blocks with any. Flags: a rain waterlogging index of ${WET_INDEX * 0.75} or more (basements flood before streets do, so a lower bar than critwater); ${PACKED_PCT}%+ under roofs with no main road within ${DEEP_KM * 1000} m; no fire station listed within ${FIRE_KM} km (where ${FIRE_MIN}+ are listed). Basement use, exits and fire NOCs are not in open data.`,
             refs: 'Overture Maps places; Google Open Buildings 2.5D; OpenStreetMap; Delhi Fire Service; MHA guidelines on fire safety in coaching centres (2024); Guidelines for Regulation of Coaching Centres (Ministry of Education, 2024)' },
+        { id: 'rainharvest', equity: false, title: 'Rooftop rainwater', icon: '🌧️',
+            question: 'How much rain could roofs catch, and where does it matter most?',
+            field: { key: 'harvest_m3', label: 'Rain off roofs a year (80% captured)', unit: 'm³', higherIs: 'better', ramp: 'blues', domain: [0, 60000] },
+            extra: [{ key: 'harvest_lpd', label: 'Roof rain per resident a day', unit: 'litres', higherIs: 'better', ramp: 'blues', domain: [0, 135] }],
+            needs: ['building_stock.cover_2023_pct', 'rainfall.rain_annual_mm', 'water_risk.groundwater_decline_cm_yr', 'population.population'],
+            method: `Roof area is Google Open Buildings 2.5D roof cover (2023) × block area; rain is the CHIRPS annual mean (rainfall dataset); the runoff coefficient is ${RUNOFF} for hard roofs (CGWB Manual on Artificial Recharge of Ground Water, 2007). Litres per resident a day spread the year's catch over 365 days against the CPHEEO norm of ${LPCD} l/day for sewered cities; in practice it falls in a few monsoon months, so tank size limits what is used directly. Groundwater trend is the water_risk dataset (GRACE-based, coarse). Many cities make rooftop harvesting compulsory on larger plots (Delhi for plots of 100 m² and more).`,
+            refs: 'Google Open Buildings 2.5D Temporal; CHIRPS; CGWB Manual on Artificial Recharge (2007); CPHEEO Manual on Water Supply (1999); Delhi Jal Board rainwater harvesting rules' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {
