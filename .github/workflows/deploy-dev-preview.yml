@@ -45,8 +45,11 @@ jobs:
           python-version: '3.12'
       - run: pip install pyarrow
       - name: Build main (site root)
+        # Mirrors main's own deploy.yml, which grows these steps over time.
         working-directory: main
-        run: python -m pipeline.cells.parquet
+        run: |
+          if [ -f pipeline/cells/parquet.py ]; then python -m pipeline.cells.parquet; fi
+          if [ -f scripts/build_bundle.py ]; then python scripts/build_bundle.py; fi
       - name: Build dev (dev/)
         working-directory: dev
         run: |
