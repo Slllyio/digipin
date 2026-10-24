@@ -199,6 +199,7 @@ Each item gives four things:
 138. ✅ Crowded local-train stations: residents per suburban station by nearest-station catchment (rail_access, WorldPop) | derived | `stationload` lens
 139. ✅ Older people in walk-up flats: residents 60+ in 3-5 storey blocks × pharmacy reach (WorldPop, Open Buildings, Overture) | derived | `walkups` lens
 140. ✅ Monsoon tree-fall risk: tall canopy over busy main roads × heavy rain and cyclone wind (Meta canopy height, OSM, CHIRPS, IBTrACS) | derived | `treefall` lens
+141. ✅ Substations under water: power substations in flood and waterlogging zones, now and by 2050, and the residents nearest each (OSM, Aqueduct, Sentinel-1) | derived | `gridflood` lens
 
 ## Parked for the keys round
 

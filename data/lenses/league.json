@@ -486,6 +486,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 9.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1223,6 +1229,12 @@
      "value": 200,
      "unit": "km",
      "higherIs": null
+    },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 1.4,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -1968,6 +1980,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2705,6 +2723,12 @@
      "value": 23,
      "unit": "km",
      "higherIs": null
+    },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 54.7,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -3455,6 +3479,12 @@
      "value": 248,
      "unit": "km",
      "higherIs": null
+    },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 22.3,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -4824,6 +4854,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 6.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.9,
@@ -5568,6 +5604,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6293,6 +6335,12 @@
      "value": 3,
      "unit": "km",
      "higherIs": null
+    },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -7038,6 +7086,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 40,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -7769,6 +7823,12 @@
      "value": 29,
      "unit": "km",
      "higherIs": null
+    },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 9.7,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -8520,6 +8580,12 @@
      "unit": "km",
      "higherIs": null
     },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 19.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -9269,6 +9335,12 @@
      "value": 45,
      "unit": "km",
      "higherIs": null
+    },
+    "gridflood": {
+     "label": "Substations on flood-prone or waterlogged ground",
+     "value": 3.7,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",

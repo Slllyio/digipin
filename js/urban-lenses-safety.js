@@ -506,6 +506,56 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Substations under water. A flooded substation is switched off for safety, blacking out pumps, hospitals and lifts
+    // far beyond the flood itself (Mumbai 2005, Chennai 2015). Substations (OpenStreetMap) are checked against the flood
+    // and waterlogging thresholds of critwater; residents for whom a wet substation is the nearest within SUB_KM are counted.
+    const SUB_KM = 3;
+
+    function gridflood(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], sub = c['power_lines.substations'];
+        const fl = c['flood_future.any_pct_now'], wl = c['waterlogging.waterlogging_index'], fl50 = c['flood_future.any_pct_2050'];
+        if (!sub || !(fl || wl)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const subs = [];
+        for (let i = 0; i < n; i++) if (v(sub, i) > 0) subs.push(i);
+        if (subs.length < 3) return null;
+        const level = i => (v(fl, i) >= FLOOD_PCT ? 2 : v(wl, i) >= WET_INDEX ? 1 : 0);
+        const later = i => !level(i) && v(fl50, i) >= FLOOD_PCT;
+        const idx = [], nearest = new Int32Array(n).fill(-1);
+        for (let i = 0; i < n; i++) {
+            if (v(pop, i) <= 0) continue;
+            let best = Infinity;
+            for (const j of subs) {
+                const d = Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx);
+                if (d < best) { best = d; nearest[i] = j; }
+            }
+            if (best <= SUB_KM) idx.push(i);
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = level(nearest[i]);
+        const total = subs.reduce((a, j) => a + sub[j], 0);
+        const count = pred => subs.reduce((a, j) => a + (pred(j) ? sub[j] : 0), 0);
+        const dark = idx.filter(i => level(nearest[i]) > 0), pDark = _sumOver(pop, dark, () => true), pAll = _sumOver(pop, idx, () => true);
+        const stats = [
+            { label: 'Substations mapped', value: String(total) },
+            { label: `…in the 100-year flood (${FLOOD_PCT}%+ of the block) / waterlogged`, value: `${count(j => level(j) === 2)} / ${count(j => level(j) === 1)}` },
+        ];
+        if (fl50) stats.push({ label: '…dry today but in the 100-year flood by 2050', value: String(count(later)) });
+        stats.push({ label: `Residents whose nearest substation (within ${SUB_KM} km) is on wet ground`, value: `${_people(pDark)} (${_round(100 * pDark / (pAll || 1))}% of those near one)` });
+        const served = new Float64Array(n);
+        for (const i of idx) served[nearest[i]] += pop[i];
+        const wet = subs.filter(j => level(j) > 0);
+        spaced(g, wet, Float64Array.from({ length: n }, (_, j) => served[j] * level(j))).forEach((j, k) => stats.push({
+            label: `Raise or wall ${k + 1}: ${g.codes[j]}`,
+            value: `${_round(sub[j])} substation${sub[j] > 1 ? 's' : ''}; ${level(j) === 2 ? `${_round(v(fl, j))}% of the block in the 100-year flood` : `waterlogging index ${_round(v(wl, j))}`}; nearest for ${_people(served[j])} residents` }));
+        return {
+            columns: { substation_wet: out }, idx, weightKey: 'substation_wet', noHotspots: true,
+            metric: { label: 'Substations on flood-prone or waterlogged ground', value: _round(100 * count(j => level(j) > 0) / (total || 1)), unit: '%', higherIs: 'worse' },
+            headline: `${count(j => level(j) > 0)} of ${total} mapped substations stand on flood-prone or waterlogged ground${fl50 && count(later) ? `, and ${count(later)} more join them by 2050` : ''}. ${_people(pDark)} residents have one of those as their nearest substation: when it floods and is switched off, their pumps, lifts and clinics go dark too. The substations listed serve the most people, the first to raise or flood-wall, at least ${SPACING_KM} km apart. Grid feeds are not public, so the nearest substation stands in for the one that serves a home.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -582,10 +632,16 @@ const UrbanLensesSafety = (() => {
             needs: ['vegetation.canopy_m', 'vegetation.tree_canopy_pct', 'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'rainfall.heavy_rain_days', 'cyclones.wind_rl50_kmh', 'population.population'],
             method: `Tall canopy covers ${TREE_COVER_PCT}% or more of the block with trees about ${TALL_TREE_M} m tall or more on average: the block's mean canopy height divided by its tree cover (Meta and WRI 1 m canopy height, from the vegetation dataset). Busy blocks are in the city's top half by OpenStreetMap main and secondary road density. Road length under canopy is road density × block area × canopy share. Picks weigh road density, canopy, height, heavy-rain days (CHIRPS) and cyclone wind. Tree species, age, rot and root damage from trenching, the real causes of falls, need a street tree census; this shows where to survey first.`,
             refs: 'Meta/WRI High Resolution Canopy Height (Tolan et al. 2024); OpenStreetMap; CHIRPS; IBTrACS; Indian Roads Congress IRC:SP:21 (roadside plantation)' },
+        { id: 'gridflood', equity: false, title: 'Substations under water', icon: '⚡',
+            question: 'Which power substations flood, and who loses power when they do?',
+            field: { key: 'substation_wet', label: 'Nearest substation: dry (0), waterlogged (1), in the 100-year flood (2)', unit: '0-2', higherIs: 'worse', ramp: 'blues', domain: [0, 2] },
+            needs: ['power_lines.substations', 'flood_future.any_pct_now', 'flood_future.any_pct_2050', 'waterlogging.waterlogging_index', 'population.population'],
+            method: `Substations are OpenStreetMap power substations counted per block (the power_lines dataset). A substation's block is flood-prone with ${FLOOD_PCT}%+ of it in WRI Aqueduct's 1-in-100-year river or coastal flood (today or by 2050, RCP4.5) and waterlogged with a rain waterlogging index of ${WET_INDEX}+. Each lived-in block within ${SUB_KM} km of a substation is assigned its nearest one. Plinth heights, flood walls and the real feeder network are not open, so this is where to check, not who will lose power.`,
+            refs: 'OpenStreetMap power=substation; WRI Aqueduct Floods v2; Sentinel-1; CEA (Technical Standards for Construction of Electrical Plants and Electric Lines) Regulations 2022; Maharashtra fact-finding report on the 26 July 2005 floods' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {
