@@ -211,6 +211,7 @@ Each item gives four things:
 150. ✅ Coal smoke upwind: coal, gas and oil power plants within 150 km, weighted by how often the wind blows from each plant to the block (WRI Global Power Plant Database, ERA5-Land daily wind) | EE | `coalplume` lens (new dataset `power_plants`, pipeline/realestate/powerplants.py)
 151. ✅ Downwind of the dump: residents downwind of landfills and industrial land, by the city wind rose (OSM land use, ERA5-Land daily wind) | EE | `dumpsmoke` lens (new dataset `downwind`, pipeline/realestate/downwind.py)
 152. ✅ Homes on the forest edge: residents and young children within 500 m of large forest or protected land, on dark edges (ESA WorldCover, OSM protected areas, VIIRS) | derived | `wildedge` lens (human-wildlife conflict and forest fire)
+153. ✅ A school within 1 km: school-age children (WorldPop 5-14) against mapped schools within the RTE 1 km and 3 km norms, and young people against colleges (WorldPop, OSM, Overture) | EE | `schoolgap` lens (demographics gained `school_age`, `youth_15_24`)
 
 ## Parked for the keys round
 

@@ -558,6 +558,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 3.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1367,6 +1373,12 @@
      "value": 1.4,
      "unit": "%",
      "higherIs": null
+    },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 3.6,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -2190,6 +2202,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -3005,6 +3023,12 @@
      "value": 1.5,
      "unit": "%",
      "higherIs": null
+    },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 2,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -3834,6 +3858,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 5.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -4563,6 +4593,12 @@
     "powercuts": {
      "label": "Residents in blocks dark on 5%+ of clear nights",
      "value": 2.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 28.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5315,6 +5351,12 @@
      "value": 1.4,
      "unit": "%",
      "higherIs": null
+    },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 2.6,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -6126,6 +6168,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 20.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6911,6 +6959,12 @@
      "value": 2.3,
      "unit": "%",
      "higherIs": null
+    },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 5.5,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -7728,6 +7782,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 1.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -8525,6 +8585,12 @@
      "value": 3,
      "unit": "%",
      "higherIs": null
+    },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 6.7,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -9354,6 +9420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 7.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -10175,6 +10247,12 @@
      "value": 2.5,
      "unit": "%",
      "higherIs": null
+    },
+    "schoolgap": {
+     "label": "Children 5-14 with no mapped school within 1 km",
+     "value": 2.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",

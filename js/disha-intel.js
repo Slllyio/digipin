@@ -27,6 +27,7 @@ const DishaIntel = (() => {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
             builduse: /\b(building use|land use (map|class\w*)|what (are|is) (the )?(buildings?|blocks?) used for|residential or commercial|commercial or residential|which (blocks|areas) are (residential|commercial|industrial))\b/i,
+            schoolgap: /\b(school (gaps?|access|deserts?|seats?|shortages?)|(children|kids)\b.{0,40}\bno schools?|no schools? (within|near(by)?)|schools? within (1|one|walking) ?(km|distance)|right to education|rte norms?|school[- ]age children)\b/i,
             wildedge: /\b(leopards?|wild ?life conflict|human[- ]wildlife|forest edges?|snake ?bites?|wild animals?|homes? (near|next to|beside) (the )?forests?)\b/i,
             powercuts: /\b(power ?cuts?|power outages?|blackouts?|load[- ]?shedding|(lose|losing|without) (power|electricity)|electricity (cuts?|outages?|supply|reliability)|unreliable (power|electricity))\b/i,
             dumpsmoke: /\b(downwind of\b.{0,20}\b(landfills?|dumps?|garbage|factor(y|ies)|industr\w*)|landfill (smoke|smell|odou?r|fires?)|garbage (smoke|smell|odou?r)|dump(ing)? (site )?(smoke|smell|odou?r|fires?)|smell from\b.{0,20}\b(landfills?|dumps?))\b/i,

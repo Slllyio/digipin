@@ -848,13 +848,14 @@ def demographics(region):
     def total(ages, sexes=("M", "F")):
         return ee.Image.cat([wp.select(f"{s}_{a}") for s in sexes for a in ages]) \
             .reduce(ee.Reducer.sum())
-    under5, child = (0, 1), (0, 1, 5, 10)
+    under5, child, school, youth = (0, 1), (0, 1, 5, 10), (5, 10), (15, 20)
     old = (60, 65, 70, 75, 80)
     allages = (0, 1) + tuple(range(5, 81, 5))
     km2 = ee.Image.pixelArea().divide(1e6)
     img = ee.Image.cat([wp.select("population").rename("tot"), total(under5).rename("u5"),
                         total(child).rename("u15"), total(old).rename("o60"),
-                        total(allages, ("F",)).rename("fem")]).divide(km2)
+                        total(allages, ("F",)).rename("fem"), total(school).rename("s514"),
+                        total(youth).rename("y1524")]).divide(km2)
     raw = gee.fetch(gee.to_cells(img, 100), bbox, level)
     rows = {}
     for code, x in raw.items():
@@ -871,6 +872,8 @@ def demographics(region):
             "women_pct": _r(100 * x["fem"] * a / tot) if ok else None,
             "dependency_ratio": _r(100 * (u15 + o60) / work) if ok and work > 0 else None,
             "wp_population": round(tot),
+            "school_age": round(x["s514"] * a) if x.get("s514") is not None else None,
+            "youth_15_24": round(x["y1524"] * a) if x.get("y1524") is not None else None,
         }
     specs = [
         FieldSpec("under5", "Children under 5", agg="sum", unit="people", ramp="viridis"),
@@ -885,11 +888,15 @@ def demographics(region):
                   agg="mean", unit="per 100", domain=[30, 70], ramp="reds"),
         FieldSpec("wp_population", "Residents (WorldPop 2020)", agg="sum", unit="people",
                   ramp="viridis"),
+        FieldSpec("school_age", "Children of school age (5–14)", agg="sum", unit="people",
+                  ramp="viridis"),
+        FieldSpec("youth_15_24", "Young people aged 15–24", agg="sum", unit="people",
+                  ramp="viridis"),
     ]
     spec = DatasetSpec(
         id="demographics", title="Age & sex (WorldPop)", level=level, fields=specs, group=GROUP,
         description="Age and sex structure per cell from WorldPop 2020 constrained-to-settlement "
-                    "estimates (100 m): children under 5, people 60+, shares of children, "
+                    "estimates (100 m): children under 5, school-age children (5–14), young people (15–24), people 60+, shares of children, "
                     "elderly and women, and the dependency ratio. Census 2011 district age "
                     "profiles spread by a model: the age and sex shares are set per district, so they "
                     "separate cities and districts, not streets; the totals differ "

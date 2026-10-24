@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-24T08:30:38Z",
+  "generated": "2026-10-24T08:46:12Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -5620,7 +5620,7 @@
     {
       "id": "demographics",
       "title": "Age & sex (WorldPop)",
-      "description": "Age and sex structure per cell from WorldPop 2020 constrained-to-settlement estimates (100 m): children under 5, people 60+, shares of children, elderly and women, and the dependency ratio. Census 2011 district age profiles spread by a model: the age and sex shares are set per district, so they separate cities and districts, not streets; the totals differ from GHSL residents.",
+      "description": "Age and sex structure per cell from WorldPop 2020 constrained-to-settlement estimates (100 m): children under 5, school-age children (5\u201314), young people (15\u201324), people 60+, shares of children, elderly and women, and the dependency ratio. Census 2011 district age profiles spread by a model: the age and sex shares are set per district, so they separate cities and districts, not streets; the totals differ from GHSL residents.",
       "source": "WorldPop Global Project Population Data: age/sex structures 2020 (100 m) via Earth Engine",
       "license": "CC BY 4.0 (WorldPop, University of Southampton)",
       "group": "Open Data (satellite)",
@@ -5710,6 +5710,30 @@
             12520
           ],
           "ramp": "viridis"
+        },
+        {
+          "key": "school_age",
+          "label": "Children of school age (5\u201314)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "people",
+          "domain": [
+            0,
+            2060
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "youth_15_24",
+          "label": "Young people aged 15\u201324",
+          "type": "number",
+          "agg": "sum",
+          "unit": "people",
+          "domain": [
+            0,
+            2373
+          ],
+          "ramp": "viridis"
         }
       ],
       "default": {
@@ -5765,7 +5789,7 @@
             "east": 77.520751953125,
             "north": 23.3212890625
           },
-          "json": "demographics/bhopal.json",
+          "json": "demographics/bhopal.json.gz",
           "parquet": null
         },
         {
@@ -5930,7 +5954,7 @@
             "east": 88.4521484375,
             "north": 22.651123046875
           },
-          "json": "demographics/kolkata.json",
+          "json": "demographics/kolkata.json.gz",
           "parquet": null
         },
         {

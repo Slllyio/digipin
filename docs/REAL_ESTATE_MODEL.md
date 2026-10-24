@@ -1156,3 +1156,7 @@ New L6 dataset `blackouts` (pipeline/realestate/blackouts.py): NASA Black Marble
 ## Homes on the forest edge (`wildedge` lens, js/urban-lenses-safety.js)
 
 Forest blocks have 60%+ tree cover (ESA WorldCover) or 50%+ mapped protected land, with 25+ such blocks within 1 km so that parks and leafy colonies do not count. Lived-in blocks within 500 m of one are the edge (1); lived-in blocks inside are 2. Stats add children under 5 and the darkest quarter of blocks by VIIRS night radiance. Mumbai: 11.2 lakh residents (6.3%) on the edge, tracing the Sanjay Gandhi National Park and Aarey ring; Delhi 5.2% (the Ridge and Asola); Bengaluru 1.4%. Leopard sightings and attacks are not open data, so this is exposure, not incidents.
+
+## A school within 1 km (`schoolgap` lens, js/urban-lenses-safety.js)
+
+`demographics` gained `school_age` (5-14) and `youth_15_24` from the same WorldPop 2020 age-sex rasters (pipeline/cells/ee_layers.py). The lens checks every school-age child against OpenStreetMap schools within 1 km (the RTE primary norm) and 3 km (upper primary), with children per mapped school nearby and young people with no college within 5 km. Delhi: 5.7% of children have no mapped school within 1 km; Mumbai 7.7%; Bengaluru 3.6%. OSM misses many government and budget schools, so the named blocks are to be checked against UDISE+ (item 88, still parked).

@@ -1013,6 +1013,50 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // School within walking distance. The Right to Education rules ask for a primary school within 1 km of every child
+    // and an upper primary within 3 km. The lens counts school-age children (5-14) against mapped schools in reach.
+    const RTE_KM = 1, UPPER_KM = 3, COLLEGE_KM = 5;
+
+    function schoolgap(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, kids = c['demographics.school_age'], sch = c['emergency_access.schools'];
+        const youth = c['demographics.youth_15_24'], col = c['places.colleges'];
+        if (!kids || !sch) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(kids, i) > 0) idx.push(i);
+        const schools = Float64Array.from({ length: n }, (_, i) => v(sch, i));
+        if (idx.length < 5 || schools.reduce((a, b) => a + b, 0) < 10) return null;
+        const near = within(g, schools, RTE_KM), far = within(g, schools, UPPER_KM);
+        const kidsNear = within(g, Float64Array.from({ length: n }, (_, i) => v(kids, i)), RTE_KM);
+        const all = _sumOver(kids, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
+        const none1 = _sumOver(kids, idx, i => near[i] <= 0), none3 = _sumOver(kids, idx, i => far[i] <= 0);
+        const per = new Float64Array(n).fill(NaN);
+        for (const i of idx) per[i] = near[i] > 0 ? kidsNear[i] / near[i] : NaN;
+        const gap = new Float64Array(n).fill(NaN);
+        for (const i of idx) gap[i] = near[i] <= 0 ? (far[i] <= 0 ? 2 : 1) : 0;
+        const crowd = wquantile(per, kids, idx.filter(i => _fin(per[i])), 0.5);
+        const stats = [
+            { label: 'Children aged 5-14', value: _people(all) },
+            { label: 'Schools mapped (OpenStreetMap)', value: String(_round(idx.reduce((a, i) => a + v(sch, i), 0))) },
+            { label: `Children with no mapped school within ${RTE_KM} km (RTE primary norm)`, value: `${_people(none1)} (${pct(none1)}%)` },
+            { label: `…with none within ${UPPER_KM} km (upper primary norm)`, value: `${_people(none3)} (${pct(none3)}%)` },
+            { label: `School-age children per mapped school within ${RTE_KM} km, typical child`, value: _people(crowd) },
+        ];
+        if (youth && col) {
+            const cn = within(g, Float64Array.from({ length: n }, (_, i) => v(col, i)), COLLEGE_KM);
+            const y = _sumOver(youth, idx, () => true), yNone = _sumOver(youth, idx, i => cn[i] <= 0);
+            stats.push({ label: `Young people 15-24 with no college listed within ${COLLEGE_KM} km`, value: `${_people(yNone)} (${_round(100 * yNone / (y || 1), 1)}%)` });
+        }
+        spaced(g, idx.filter(i => near[i] <= 0), Float64Array.from({ length: n }, (_, i) => kidsNear[i])).forEach((i, k) => stats.push({
+            label: `School site ${k + 1}: ${g.codes[i]}`, value: `${_people(kidsNear[i])} children 5-14 within ${RTE_KM} km and no mapped school` }));
+        return {
+            columns: { school_gap: gap, kids_per_school: per }, idx, weightKey: 'school_gap', noHotspots: true,
+            metric: { label: `Children 5-14 with no mapped school within ${RTE_KM} km`, value: pct(none1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(none1)} children aged 5-14 (${pct(none1)}%) have no mapped school within ${RTE_KM} km, the Right to Education norm for primary schools, and ${_people(none3)} none within ${UPPER_KM} km. OpenStreetMap misses many government and low-fee schools, so check the blocks named against UDISE+ before calling them gaps; the typical child shares a nearby school with ${_people(crowd)} others.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -1170,10 +1214,17 @@ const UrbanLensesSafety = (() => {
             needs: ['land_cover.tree_pct', 'landuse.protected_pct', 'demographics.under5', 'nightlights.radiance', 'population.population'],
             method: `Forest blocks have ${FOREST_TREE_PCT}%+ tree cover (ESA WorldCover) or ${FOREST_PROT_PCT}%+ mapped protected land (OpenStreetMap), with at least ${FOREST_MIN} such blocks within 1 km so that parks do not count. Edge blocks are lived-in blocks within ${EDGE_KM * 1000} m of one. Dark blocks are the city's darkest quarter by VIIRS night radiance, resident-weighted. Leopard sightings and attack records are not open data; Mumbai's Aarey and SGNP edges are the documented case.`,
             refs: 'ESA WorldCover 2021; OpenStreetMap protected areas; VIIRS night lights; Bhatia et al. 2013 and Odden et al. 2014 (leopards in human landscapes); MoEFCC human-leopard conflict guidelines (2011)' },
+        { id: 'schoolgap', equity: true, title: 'A school within 1 km', icon: '🏫',
+            question: 'Which children have no school within walking distance?',
+            field: { key: 'school_gap', label: 'No mapped school within 1 km (1), nor 3 km (2)', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
+            extra: [{ key: 'kids_per_school', label: `Children 5-14 per mapped school within ${RTE_KM} km`, unit: 'children', higherIs: 'worse' }],
+            needs: ['demographics.school_age', 'demographics.youth_15_24', 'emergency_access.schools', 'places.colleges', 'population.population'],
+            method: `School-age children are WorldPop 2020 ages 5-14 (100 m, district age profiles spread over settlements). Schools are OpenStreetMap schools counted per block; colleges are Overture Maps colleges and universities. Reach is straight-line distance between block centres: ${RTE_KM} km and ${UPPER_KM} km follow the Right of Children to Free and Compulsory Education Act 2009 state rules for primary and upper primary schools. OSM under-maps government and budget private schools, so a gap is a place to check against UDISE+, not a confirmed one.`,
+            refs: 'WorldPop age structures 2020; OpenStreetMap; Overture Maps places; RTE Act 2009 and state RTE rules (neighbourhood school norms); UDISE+' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge, schoolgap }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge, schoolgap, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {
