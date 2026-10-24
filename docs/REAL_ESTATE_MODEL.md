@@ -1128,3 +1128,7 @@ Cluster blocks have 10+ Overture lodging places within 500 m and sit in the top 
 ## Quarries and flooded pits near homes (`quarries` lens, js/urban-lenses-safety.js)
 
 Blocks with 10%+ mapped as quarry (OSM land use via Overture), flooded where 5%+ is open water (ESA WorldCover); residents and children within 500 m. Map: 1 near a quarry, 2 near a flooded pit. Bengaluru: 161 quarry blocks, 37 holding water, 8,399 residents within 500 m of a flooded pit; Hyderabad 58 and 11. Quarry mapping is patchy (Jaipur has none mapped), so the counts are a floor.
+
+## Heritage at risk (`heritagesafe` lens, js/urban-lenses-safety.js)
+
+The school and hospital safety check (`siteCheck`) run over Wikidata heritage listings of all grades (summed into a `heritage.all` column on the frame). Delhi: 8% of 196 listed monuments face two or more hazards; Kolkata 53% of 230 (soft delta ground, river flood, industry and traffic); Ahmedabad 19% of 64. Built for the hazard audits in the NDMA guidelines on cultural heritage sites and precincts (2017).

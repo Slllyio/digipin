@@ -516,6 +516,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "heritagesafe": {
+     "label": "Monuments facing two or more hazards",
+     "value": 18.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -2070,6 +2076,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "heritagesafe": {
+     "label": "Monuments facing two or more hazards",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2842,6 +2854,12 @@
      "label": "Residents within 500 m of a flooded quarry pit",
      "value": 33900,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "heritagesafe": {
+     "label": "Monuments facing two or more hazards",
+     "value": 22.2,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -3628,6 +3646,12 @@
      "label": "Residents within 500 m of a flooded quarry pit",
      "value": 0,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "heritagesafe": {
+     "label": "Monuments facing two or more hazards",
+     "value": 8.2,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -5050,6 +5074,12 @@
      "label": "Residents within 500 m of a flooded quarry pit",
      "value": 8502,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "heritagesafe": {
+     "label": "Monuments facing two or more hazards",
+     "value": 0,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -6588,6 +6618,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "heritagesafe": {
+     "label": "Monuments facing two or more hazards",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 26.9,
@@ -7362,6 +7398,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "heritagesafe": {
+     "label": "Monuments facing two or more hazards",
+     "value": 53,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -8121,6 +8163,12 @@
     "hotelfire": {
      "label": "Hotel clusters with two or more fire flags",
      "value": 16.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "heritagesafe": {
+     "label": "Monuments facing two or more hazards",
+     "value": 18.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -8910,6 +8958,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "heritagesafe": {
+     "label": "Monuments facing two or more hazards",
+     "value": 20.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -9694,6 +9748,12 @@
      "label": "Residents within 500 m of a flooded quarry pit",
      "value": 1123,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "heritagesafe": {
+     "label": "Monuments facing two or more hazards",
+     "value": 10.7,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {

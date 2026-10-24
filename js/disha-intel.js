@@ -27,6 +27,7 @@ const DishaIntel = (() => {
             crowds: /\b(crowds?|crowded (places|zones?|areas?)|stampedes?|festival (crowds?|rush)|mass gatherings?|processions?)\b/i,
             airport: /\b((drive|travel|time|distance|far|long|get(ting)?) (to|from) (the )?airport|airport (access|drive|commute|connectivity|travel time)|close (to|by) (the )?airport)\b/i,
             builduse: /\b(building use|land use (map|class\w*)|what (are|is) (the )?(buildings?|blocks?) used for|residential or commercial|commercial or residential|which (blocks|areas) are (residential|commercial|industrial))\b/i,
+            heritagesafe: /\b(monuments?|heritage( sites?| buildings?| structures?)?|forts?|havelis?)\b.{0,40}\b(at risk|risks?|flood\w*|earthquakes?|hazards?|damage\w*|danger\w*|safe(ty)?)\b/i,
             quarries: /\b(quarr(y|ies)|quarry pits?|stone crush\w*|mining pits?|flooded pits?)\b/i,
             hotelfire: /\b(hotels?|guest ?houses?|lodges?|budget hotels?)\b.{0,40}\b(fires?|fire safety|fire risk|fire nocs?)\b|\b(fires?|fire safety)\b.{0,30}\b(hotels?|guest ?houses?)\b|\barpit palace\b/i,
             sitedust: /\b(construction|building sites?|sites?)\b.{0,30}\b(dust)\b|\bdust\b.{0,30}\b(construction|building sites?)\b|\b(construction|building site) (workers?|labou?rers?)\b.{0,30}\b(heat|hot)\b/i,

@@ -379,6 +379,13 @@ const UrbanLensesSafety = (() => {
 
     const schoolsafe = fr => siteCheck(fr, 'emergency_access.schools', 'school', 'schools', 'school_hazards', 'the NDMA School Safety Policy');
     const hospitalsafe = fr => siteCheck(fr, 'places.hospitals', 'hospital', 'hospitals', 'hospital_hazards', 'the NDMA hospital safety guidelines');
+    // Listed monuments of all three grades, summed into one column for siteCheck.
+    function heritagesafe(fr) {
+        const c = fr.cols, keys = ['heritage.national', 'heritage.state', 'heritage.local'].filter(k => c[k]);
+        if (!keys.length) return null;
+        c['heritage.all'] = Float64Array.from({ length: fr.grid.n }, (_, i) => keys.reduce((a, k) => a + (_fin(c[k][i]) ? c[k][i] : 0), 0));
+        return siteCheck(fr, 'heritage.all', 'monument', 'monuments', 'heritage_hazards', 'the NDMA guidelines on cultural heritage sites (2017)');
+    }
 
     // Crowded suburban stations. Without open timetables or ticket counts, a station's load is the residents for whom
     // it is the nearest suburban rail station, within CATCH_KM (a walk or a short shared-auto ride). Overloaded
@@ -882,10 +889,17 @@ const UrbanLensesSafety = (() => {
             needs: ['landuse.quarry_pct', 'land_cover.water_pct', 'demographics.children_pct', 'population.population'],
             method: `Quarry blocks have ${QUARRY_PCT}% or more of their land mapped as quarry in OpenStreetMap land use (via Overture). Flooded quarries also have ${PIT_WATER_PCT}% or more open water in ESA WorldCover 2021. Residents and children (WorldPop age structure) within ${NEXT_KM * 1000} m are counted on the block grid. Whether a quarry is working or abandoned, fenced or guarded is not in open data, and unmapped pits are missed.`,
             refs: 'OpenStreetMap landuse=quarry via Overture Maps; ESA WorldCover 2021; WorldPop; Mines and Minerals (Development and Regulation) Act 1957 (mine closure)' },
+        { id: 'heritagesafe', equity: false, title: 'Heritage at risk', icon: '🏛️',
+            question: 'Which monuments face floods, waterlogging, soft ground, packed lanes, industry or traffic?',
+            field: { key: 'heritage_hazards', label: 'Hazards at blocks with listed monuments (flood, waterlogging, soft ground, packed lanes, industry, noise)', unit: 'hazards', higherIs: 'worse', ramp: 'reds', domain: [0, 4] },
+            needs: ['heritage.national', 'heritage.state', 'heritage.local', 'flood_future.any_pct_now', 'waterlogging.waterlogging_index', 'terrain.hand_m', 'building_stock.cover_2023_pct',
+                'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'landuse.industrial_pct', 'traffic_noise.lden_db', 'population.population'],
+            method: `Monuments are Wikidata heritage listings (national, state and other grades) counted per block, checked against the six hazards of the school safety check: ${FLOOD_PCT}%+ of the block in the 1-in-100-year flood; a waterlogging index of ${WET_INDEX}+ (rising damp and foundation scour); soft ground under ${SOFT_HAND_M} m above the nearest drain in seismic zone III or higher; ${PACKED_PCT}%+ under roofs with no main road within ${DEEP_KM * 1000} m (fire access); industry within ${NEXT_KM * 1000} m (soot and acid deposition); road noise of ${LOUD_DB} dB Lden or more (heavy traffic and vibration). A monument's own condition and conservation plan are not in open data.`,
+            refs: 'Wikidata; NDMA National Disaster Management Guidelines: Management of Cultural Heritage Sites and Precincts (2017); AMASR Act 1958 (amended 2010); WRI Aqueduct Floods v2; MERIT Hydro' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {
