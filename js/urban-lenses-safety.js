@@ -66,6 +66,50 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Old buildings, now tall. Frames built before 1985 went up before IS 1893 and IS 13920 shaped how Indian buildings
+    // resist earthquakes, and many have since had floors added on top. An old block was settled by OLD_YEAR (WSF
+    // Evolution) or at least OLD_1975 percent built in 1975 (GHSL); tall means a mean building height of TALL_M or more
+    // (about G+2); added means mean height rose ADDED_M to REBUILT_M from 2016 to 2023 (Open Buildings 2.5D Temporal),
+    // about half a storey to a storey across the block. A bigger rise means the old stock was torn down and rebuilt.
+    const OLD_YEAR = 1985, OLD_1975 = 20, TALL_M = 10, ADDED_M = 1.5, REBUILT_M = 4, MID_M = 25;
+
+    function oldtall(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const sy = c['building_dynamics.settled_year'], b75 = c['building_dynamics.built_1975_pct'];
+        const h = c['building_stock.height_2023_m'], dh = c['building_dynamics.height_change_m'];
+        if (!h || !(sy || b75)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && v(h, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const old = i => (sy && _fin(sy[i]) && sy[i] <= OLD_YEAR) || v(b75, i) >= OLD_1975;
+        const rebuilt = i => v(dh, i) >= REBUILT_M, added = i => v(dh, i) >= ADDED_M && !rebuilt(i);
+        const olds = idx.filter(old), tall = olds.filter(i => h[i] >= TALL_M && !rebuilt(i)), grown = olds.filter(added);
+        const both = tall.filter(added);
+        const due = new Float64Array(n).fill(NaN);
+        for (const i of idx) due[i] = old(i) ? (rebuilt(i) ? 1 : 1 + (h[i] >= TALL_M ? 1 : 0) + (added(i) ? 1 : 0)) : 0;
+        const all = _sumOver(pop, idx, () => true), pOld = _sumOver(pop, olds, () => true), pTall = _sumOver(pop, tall, () => true);
+        const zone = (UrbanLenses.SEISMIC_ZONE || {})[fr.city];
+        const stats = [
+            { label: `Blocks settled by ${OLD_YEAR}`, value: `${olds.length} of ${idx.length} blocks, ${_people(pOld)} residents` },
+            { label: `…with buildings ${TALL_M} m tall or more on average (about G+2)`, value: `${tall.length} blocks, ${_people(pTall)} residents (${_round(100 * pTall / (all || 1))}% of the city)` },
+            { label: `…where mean height rose ${ADDED_M}-${REBUILT_M} m since 2016 (floors added)`, value: `${grown.length} blocks` },
+            { label: `…rebuilt (mean height up ${REBUILT_M} m or more), left out above`, value: `${olds.filter(rebuilt).length} blocks` },
+            { label: '…old, tall and with floors added', value: `${both.length} blocks, ${_people(_sumOver(pop, both, () => true))} residents` },
+        ];
+        if (zone) stats.push({ label: 'Seismic zone (IS 1893: 2016)', value: `Zone ${zone}` });
+        const score = Float64Array.from({ length: n }, (_, i) => v(pop, i) * Math.min(v(h, i), MID_M) * (added(i) ? 1.5 : 1));
+        spaced(g, tall.length ? tall : olds, score).forEach((i, k) => stats.push({
+            label: `Audit ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(v(pop, i))} residents; buildings ${_round(h[i])} m on average${dh && _fin(dh[i]) ? `, ${dh[i] >= 0 ? '+' : ''}${_round(dh[i], 1)} m since 2016` : ''}` }));
+        return {
+            columns: { audit_due: due }, idx, weightKey: 'audit_due', noHotspots: true,
+            metric: { label: `Residents in old blocks with buildings ${TALL_M} m+`, value: _round(100 * pTall / (all || 1)), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pTall)} residents live in ${tall.length} blocks that were settled by ${OLD_YEAR} and now have buildings ${TALL_M} m or more tall on average; in ${both.length} of them mean height rose by half a storey to a storey since 2016, a sign of floors added on old frames.${zone ? ` The city is in seismic zone ${zone}.` : ''} Buildings this old went up before India's earthquake codes were widely applied, so these blocks are where structural audits matter most. The blocks listed are the most crowded, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -74,10 +118,16 @@ const UrbanLensesSafety = (() => {
             needs: ['places.shopping', 'places.food', 'places.fire_stations', 'building_stock.cover_2023_pct', 'population.population'],
             method: `Market blocks are the city's top 5% by Overture Maps shops and eateries within ${MARKET_KM * 1000} m (and at least ${MARKET_MIN}). Packed means Google Open Buildings 2.5D (2023) roofs cover ${PACKED_PCT}% or more of the block, so buildings stand wall to wall. Far means no Overture-listed fire station within ${FIRE_KM} km straight line, a rough stand-in for the 3-5 minute urban response the Standing Fire Advisory Council norms aim for; reach is only judged where at least ${FIRE_MIN} stations are listed. Lane widths, wiring and stock are not in open data, so the picks are where to audit first, not a fire-risk rating.`,
             refs: 'Overture Maps places; Google Open Buildings 2.5D Temporal; Standing Fire Advisory Council norms (DGFS, MHA); National Building Code 2016 Part 4' },
+        { id: 'oldtall', equity: false, title: 'Old buildings, now tall', icon: '🏚️',
+            question: 'Where do people live in old, tall buildings that need a structural audit?',
+            field: { key: 'audit_due', label: `Settled by ${OLD_YEAR} (1), plus buildings ${TALL_M} m+ (2), plus floors added since 2016 (3)`, unit: '0-3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['building_dynamics.settled_year', 'building_dynamics.built_1975_pct', 'building_dynamics.height_change_m', 'building_stock.height_2023_m', 'population.population'],
+            method: `Old blocks were settled by ${OLD_YEAR} in the World Settlement Footprint Evolution (Landsat, 1985–2015, so ${OLD_YEAR} means "by ${OLD_YEAR}") or were at least ${OLD_1975}% built in GHSL 1975. Tall means a mean building height of ${TALL_M} m or more in Google Open Buildings 2.5D (2023), about three storeys. Floors added means the block's mean height grew ${ADDED_M}-${REBUILT_M} m from 2016 to 2023, half a storey to a storey across the block; a rise of ${REBUILT_M} m or more counts as rebuilt and drops out, since new towers on old land are built to current codes. Picks weigh residents by height, capped at ${MID_M} m. Construction year of single buildings is not in open data, and heights are model estimates (±3 m per building), so the map shows where audits should start, not which buildings are unsafe. Mumbai's municipal law (MMC Act s. 353B) already asks owners of buildings over 30 years old to file a structural audit.`,
+            refs: 'World Settlement Footprint Evolution (Marconcini et al. 2021); GHSL P2023A; Google Open Buildings 2.5D Temporal (Sirko et al. 2023); IS 1893 (Part 1): 2016; IS 13920: 2016; MMC Act 1888 s. 353B' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire }, {}, 'jobsmap');
-    return { marketfire, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall }, {}, 'jobsmap');
+    return { marketfire, oldtall, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

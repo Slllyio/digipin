@@ -426,6 +426,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 9.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1101,6 +1107,12 @@
     "marketfire": {
      "label": "Market blocks packed 50%+ under roofs",
      "value": 10.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 4.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1788,6 +1800,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 3.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2463,6 +2481,12 @@
     "marketfire": {
      "label": "Market blocks packed 50%+ under roofs",
      "value": 17.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 5.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3156,6 +3180,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 22.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -3804,6 +3834,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "railnoise": {
      "label": "Residents within 150 m of a mainline railway",
      "value": 8.9,
@@ -4413,6 +4449,12 @@
     "marketfire": {
      "label": "Market blocks packed 50%+ under roofs",
      "value": 6.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 15.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5100,6 +5142,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 2.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -5763,6 +5811,12 @@
     "marketfire": {
      "label": "Market blocks packed 50%+ under roofs",
      "value": 12.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 2.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6444,6 +6498,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 16.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -7113,6 +7173,12 @@
     "marketfire": {
      "label": "Market blocks packed 50%+ under roofs",
      "value": 16.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 2.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -7797,6 +7863,12 @@
     "marketfire": {
      "label": "Market blocks packed 50%+ under roofs",
      "value": 5.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 36.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -8487,6 +8559,12 @@
     "marketfire": {
      "label": "Market blocks packed 50%+ under roofs",
      "value": 7.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "oldtall": {
+     "label": "Residents in old blocks with buildings 10 m+",
+     "value": 5.5,
      "unit": "%",
      "higherIs": "worse"
     },

@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -868,6 +868,20 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats.find(x => x.label === 'Fire stations listed').value).toBe('6');
         expect(r.stats.some(x => /^Fire audit 1/.test(x.label))).toBe(true);
         expect(L._lenses.marketfire(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('oldtall: old blocks, tall buildings, floors added and rebuilt blocks left out', () => {
+        const f = L.frameFrom(codes, { ...base, 'building_dynamics.settled_year': codes.map((_, i) => (col(i) < 6 ? 1985 : 2010)),
+            'building_stock.height_2023_m': codes.map((_, i) => (col(i) < 3 ? 15 : 6)),
+            'building_dynamics.height_change_m': codes.map((_, i) => (i === 0 ? 2 : i === 1 ? 8 : 0)) }, { city: 'delhi' });
+        const r = L._lenses.oldtall(f, {});
+        expect(r.columns.audit_due[0]).toBe(3);
+        expect(r.columns.audit_due[1]).toBe(1);
+        expect(r.columns.audit_due[SIZE * 11 + 11]).toBe(0);
+        expect(r.stats.find(x => /floors added\)$/.test(x.label)).value).toBe('1 blocks');
+        expect(r.headline).toMatch(/seismic zone IV/);
+        expect(r.stats.some(x => /^Audit 1/.test(x.label))).toBe(true);
+        expect(L._lenses.oldtall(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {
