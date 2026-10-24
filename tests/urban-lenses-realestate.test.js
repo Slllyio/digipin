@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'lakehealth', 'jobsmap']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -760,6 +760,21 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.care_walk_m[2]).toBeGreaterThan(r.columns.care_walk_m[1]);
         expect(r.stats.find(x => /^Shade trees first 1/.test(x.label)).label).toContain(codes[0]);
         expect(L._lenses.shadecare(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('cyclone: 50-year wind, IMD class and the classes residents reach', () => {
+        const rl = codes.map((_, i) => (col(i) < 7 ? 130 : 100));
+        const f = L.frameFrom(codes, { ...base, 'cyclones.wind_rl50_kmh': rl, 'cyclones.wind_max_kmh': codes.map((_, i) => (i === 5 ? 160 : 120)),
+            'cyclones.gale_years': codes.map(() => 12), 'cyclones.storms_200km': codes.map(() => 25) });
+        const r = L._lenses.cyclone(f, {});
+        expect(r.headline).toMatch(/very severe cyclonic storm strength/);
+        expect(r.stats[1].value).toBe(`160 km/h at ${codes[5]} (very severe cyclonic storm strength)`);
+        expect(r.stats.find(x => /very severe cyclonic storm strength \(118/.test(x.label)).value).toMatch(/\(58.3%\)$/);
+        expect(r.stats.find(x => /reaches severe cyclonic storm strength/.test(x.label)).value).toMatch(/\(100%\)$/);
+        const calm = L._lenses.cyclone(L.frameFrom(codes, { ...base, 'cyclones.wind_rl50_kmh': codes.map(() => 40), 'cyclones.wind_max_kmh': codes.map(() => 45),
+            'cyclones.gale_years': codes.map(() => 0) }), {});
+        expect(calm.headline).toMatch(/^No cyclone brought gale-force wind/);
+        expect(L._lenses.cyclone(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

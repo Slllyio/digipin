@@ -942,7 +942,59 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // Cyclone winds. IMD's scale for the sustained wind: cyclonic storm 62-88 km/h, severe 89-117, very severe
+    // 118-165, extremely severe 166-221, super cyclone 222+.
+    const IMD_SCALE = [[222, 'super cyclone'], [166, 'extremely severe cyclonic storm'], [118, 'very severe cyclonic storm'], [89, 'severe cyclonic storm'], [62, 'cyclonic storm']];
+    const imdClass = kmh => (IMD_SCALE.find(([t]) => kmh >= t) || [0, 'below cyclonic-storm'])[1];
+    const TOWER_M = 30;
+
+    function cyclone(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const rl = c['cyclones.wind_rl50_kmh'], mx = c['cyclones.wind_max_kmh'], gale = c['cyclones.gale_years'], near = c['cyclones.storms_200km'];
+        if (!pop || !rl || !mx) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && _fin(rl[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const all = _sumOver(pop, idx, () => true);
+        const med = wquantile(rl, pop, idx, 0.5);
+        let top = idx[0];
+        for (const i of idx) if (mx[i] > mx[top]) top = i;
+        const galeMax = Math.max(...idx.map(i => v(gale, i))), nearMax = Math.max(...idx.map(i => v(near, i)));
+        const stats = [
+            { label: 'Typical 50-year sustained wind (residents\' median)', value: `${Math.round(med)} km/h, ${imdClass(med)} strength` },
+            { label: 'Strongest modelled wind 1981-2024', value: `${Math.round(mx[top])} km/h at ${g.codes[top]} (${imdClass(mx[top])} strength)` },
+            { label: 'Seasons with gale-force wind (62 km/h+), most exposed block', value: `${galeMax} of 44` },
+            { label: 'Cyclonic storms whose centre passed within 200 km', value: String(nearMax) },
+        ];
+        // From the strongest class reached down to the first that covers everyone.
+        for (const [t, name] of IMD_SCALE) {
+            const p = _sumOver(pop, idx, i => rl[i] >= t);
+            if (p > 0) stats.push({ label: `Residents whose 50-year wind reaches ${name} strength (${t} km/h+)`, value: `${_people(p)} (${_round(100 * p / all)}%)` });
+            if (p >= all) break;
+        }
+        const ht = c['building_stock.height_2023_m'];
+        const towers = ht ? _sumOver(pop, idx, i => v(ht, i) >= TOWER_M && rl[i] >= 89) : 0;
+        if (towers > 0) {
+            stats.push({ label: `Residents in blocks of ${TOWER_M} m+ buildings facing severe-storm winds (glass and cladding risk)`, value: _people(towers) });
+        }
+        const headline = galeMax === 0
+            ? `No cyclone brought gale-force wind (62 km/h) here in 44 seasons; the 50-year wind is about ${Math.round(med)} km/h from weakening depressions, so cyclone wind is not a design driver.`
+            : `The 50-year cyclone wind across the city is about ${Math.round(med)} km/h sustained (${imdClass(med)} strength). Gale-force wind reached the most exposed blocks in ${galeMax} of 44 seasons, and ${nearMax} cyclonic storms passed within 200 km; the strongest modelled wind was ${Math.round(mx[top])} km/h.`;
+        return {
+            columns: { wind_rl50_kmh: Float64Array.from(rl) }, idx,
+            metric: { label: '50-year cyclone wind (sustained, residents\' median)', value: Math.round(med), unit: 'km/h', higherIs: 'worse' },
+            headline, stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'cyclone', equity: false, title: 'Cyclone wind risk', icon: '🌀',
+            question: 'How strong a cyclone wind should buildings here be ready for?',
+            field: { key: 'wind_rl50_kmh', label: '50-year cyclone wind (sustained)', unit: 'km/h', higherIs: 'worse', ramp: 'reds', domain: [40, 140] },
+            needs: ['cyclones.wind_rl50_kmh', 'cyclones.wind_max_kmh', 'cyclones.gale_years', 'cyclones.storms_200km', 'building_stock.height_2023_m', 'population.population'],
+            method: 'Every North Indian Ocean storm of 1981-2024 in IBTrACS (JTWC 1-minute winds, else IMD 3-minute winds scaled to 1-minute) is interpolated to 30-minute steps and turned into a wind field with a modified Rankine vortex: wind rises to the maximum at the radius of maximum wind (JTWC, else Willoughby et al. 2006) and falls as (R/r)^0.5 beyond it. Each block keeps its strongest wind per season; the 50-year level is a Gumbel fit to the seasons with storm wind, mixed with how often such seasons come. Winds are 1-minute sustained in open exposure: built-up roughness lowers street-level wind, while gusts run higher, so compare with IS 875 (Part 3) basic wind speeds (3-second gusts) only after a gust factor. Forward-motion asymmetry and storm surge are not modelled.',
+            refs: 'Knapp et al. 2010 (IBTrACS); Willoughby, Darling and Rahn 2006; IMD cyclone classification; BIS IS 875 (Part 3) 2015' },
         { id: 'shadecare', equity: true, title: 'Shaded walk to the clinic', icon: '🌳',
             question: 'How much of the walk to the nearest clinic is in the sun?',
             field: { key: 'care_walk_exposed_pct', label: 'Share of the walk to the nearest clinic or pharmacy that is hot and treeless', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 100] },
@@ -1087,7 +1139,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast, packed, techhubs, shadecare, cyclone }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

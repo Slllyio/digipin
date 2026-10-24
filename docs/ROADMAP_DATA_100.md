@@ -20,7 +20,7 @@ Each item gives four things:
 | 3 | ✅ Office and IT clusters → jobs proxy (jobsmap lens) | Fills the missing jobs layer behind job access and rental demand |
 | 4 | ✅ Property-agent density → market-activity signal (market lens) | Turns places data into a price-model input |
 | 5 | Landslide susceptibility (NASA LHASA) | Hills in Mumbai, Pune, Bengaluru fringe, Bhopal |
-| 6 | Cyclone wind return levels (STORM) | Chennai, Kolkata, Mumbai: insurance and structure risk |
+| 6 | ✅ Cyclone wind return levels (IBTrACS tracks; cyclone lens) | Chennai, Kolkata, Mumbai: insurance and structure risk |
 | 7 | ✅ Earthquake zone (ground lens) (BIS IS 1893 zones) | Delhi zone IV, Kolkata III/IV: building code and insurance |
 | 8 | ✅ Lightning flash density (lightning lens) (LIS/OTD) | Deaths, power cuts, solar/telecom asset risk |
 | 9 | ✅ Dust and dust storms (CAMS dust share and dust-haze days; airtrend lens) | Delhi/Jaipur/Ahmedabad pre-monsoon air |
@@ -70,7 +70,7 @@ Each item gives four things:
 24. ✅ Water risk now and 2050 (Aqueduct 4.0) | EE
 25. ✅ Climate 2050 grade A–E | derived
 26. ⏸ Landslide susceptibility (NASA LHASA global) | EE community / NASA | hazard lens (parked: needs GES DISC EULA approval on the Earthdata account)
-27. ❌ Cyclone wind 10/100-year return speeds (STORM, Bloemendaal 2020) | open download | wind risk (skipped: data.4tu.nl unreachable from the bake host)
+27. ✅ Cyclone wind 10/100-year return speeds (STORM, Bloemendaal 2020) | open download | wind risk (STORM sits on data.4tu.nl, unreachable here, so `cyclones` models the wind field from NOAA IBTrACS best tracks 1981–2024 instead; `cyclone` lens)
 28. ✅ Seismic zone (BIS IS 1893-2016) | open map digitised | quake risk
 29. ✅ Lightning flash density (NASA LIS/OTD climatology) | NASA | lightning risk
 30. ✅ Dust AOD and dust-storm days (CAMS instead of MERRA-2) | NASA | dust lens
