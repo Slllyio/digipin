@@ -898,6 +898,45 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Smoke downwind of dumps and factories. Landfill fires (Ghazipur, Deonar, Perungudi, Brahmapuram) and odour, and
+    // industrial stacks, reach the blocks the wind blows towards most often; the downwind dataset weights each source's
+    // area by that wind share and distance.
+    const OFTEN_PCT = 30, SMOKE_Q = 0.9;
+
+    function dumpsmoke(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], ls = c['downwind.landfill_smoke'];
+        const is = c['downwind.industry_smoke'], up = c['downwind.landfill_upwind'], kids = c['demographics.under5'];
+        if (!pop || !ls) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && _fin(ls[i])) idx.push(i);
+        if (idx.length < 5 || !idx.some(i => ls[i] > 0)) return null;
+        const all = _sumOver(pop, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
+        const often = idx.filter(i => ls[i] > 0 && v(up, i) >= OFTEN_PCT), pOften = _sumOver(pop, often, () => true);
+        const near = _sumOver(pop, idx, i => ls[i] > 0);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = ls[i];
+        const stats = [
+            { label: 'Residents within 3 km of a mapped landfill or dump, on its downwind side', value: `${_people(near)} (${pct(near)}%)` },
+            { label: `…where ${OFTEN_PCT}%+ of the wind blows from a landfill`, value: `${_people(pOften)} (${pct(pOften)}%)` },
+        ];
+        if (kids) stats.push({ label: '…of them children under 5', value: _people(_sumOver(kids, often, () => true)) });
+        if (is) {
+            const q = wquantile(is, pop, idx, SMOKE_Q);
+            const topI = idx.filter(i => v(is, i) >= q && v(is, i) > 0);
+            stats.push({ label: 'Residents most often downwind of industrial land (top tenth, within 3 km)', value: _people(_sumOver(pop, topI, () => true)) });
+        }
+        spaced(g, idx.filter(i => ls[i] > 0), Float64Array.from({ length: n }, (_, i) => v(pop, i) * v(ls, i))).forEach((i, k) => stats.push({
+            label: `Air and odour check ${k + 1}: ${g.codes[i]}`,
+            value: `landfill smoke index ${_round(ls[i], 1)}; ${_round(v(up, i))}% of the wind from a landfill; ${_people(pop[i])} residents` }));
+        return {
+            columns: { landfill_smoke: out }, idx, weightKey: 'landfill_smoke', noHotspots: true,
+            metric: { label: `Residents where ${OFTEN_PCT}%+ of the wind blows from a landfill within 3 km`, value: pct(pOften), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pOften)} residents (${pct(pOften)}%) live within 3 km of a mapped landfill or dump that ${OFTEN_PCT}% or more of the wind blows from, the first to get its smoke when it burns and its smell every day. The blocks named carry the most landfill area upwind for the most people: places for air monitors, fire watch and odour complaints to be logged. Unmapped dumps are missing.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -1037,10 +1076,16 @@ const UrbanLensesSafety = (() => {
             needs: ['power_plants.coal_plume', 'power_plants.coal_km', 'power_plants.coal_mw_50km', 'demographics.under5', 'air_quality.pm25_ugm3', 'population.population'],
             method: `Coal, gas and oil plants within 150 km come from the WRI Global Power Plant Database (a 2018-2021 snapshot; known retirements such as Delhi's Badarpur removed). Each coal plant adds its capacity × the share of ERA5-Land monthly 10 m wind (2015-2024, speed-weighted, at the city centre) blowing from it towards the block within ±45°, divided by the distance in km (at least 5). The most exposed tenth is by residents. Stack heights, flue-gas desulphurisation status, load factors and terrain are left out: this ranks where plumes are likelier to arrive, it does not measure them.`,
             refs: 'WRI Global Power Plant Database (Byers et al. 2019); ECMWF ERA5-Land; MoEFCC thermal power plant SO₂ norms (2015, FGD deadlines revised 2021 and 2022); CREA studies of Indian coal plant plumes' },
+        { id: 'dumpsmoke', equity: true, title: 'Downwind of the dump', icon: '🗑️',
+            question: 'Who lives downwind of landfills and industrial land?',
+            field: { key: 'landfill_smoke', label: 'Landfill smoke downwind (ha × wind share ÷ km)', unit: 'index', higherIs: 'worse', ramp: 'reds' },
+            needs: ['downwind.landfill_smoke', 'downwind.industry_smoke', 'downwind.landfill_upwind', 'demographics.under5', 'population.population'],
+            method: `Landfill and dump land is OpenStreetMap land use (via Overture), counted where a block holds 2 ha or more, and industrial land blocks with 10%+ industrial use. Each source's area counts towards a lived-in block in proportion to the share of ERA5-Land daily 10 m wind (2020-2024, speed-weighted, one rose per city) blowing from it towards the block within ±45°, divided by distance (at least 0.5 km), out to 3 km. "Often downwind" means ${OFTEN_PCT}%+ of the wind comes from a landfill's direction. Sea and land breezes, night-time inversions and fire events are not modelled, and unmapped dumps (common in Pune, Jaipur and Lucknow) are missing.`,
+            refs: 'OpenStreetMap land use; ECMWF ERA5-Land; Solid Waste Management Rules 2016 (buffer zones); CPCB legacy waste and landfill fire guidelines (2019)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

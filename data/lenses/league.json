@@ -540,6 +540,12 @@
      "unit": "index",
      "higherIs": "worse"
     },
+    "dumpsmoke": {
+     "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
+     "value": 5.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1330,6 +1336,12 @@
      "label": "Upwind coal index (resident-weighted)",
      "value": 0.8,
      "unit": "index",
+     "higherIs": "worse"
+    },
+    "dumpsmoke": {
+     "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
+     "value": 1.8,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -2136,6 +2148,12 @@
      "unit": "index",
      "higherIs": "worse"
     },
+    "dumpsmoke": {
+     "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
+     "value": 1.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2932,6 +2950,12 @@
      "label": "Upwind coal index (resident-weighted)",
      "value": 52.7,
      "unit": "index",
+     "higherIs": "worse"
+    },
+    "dumpsmoke": {
+     "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
+     "value": 8.6,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -3742,6 +3766,12 @@
      "label": "Upwind coal index (resident-weighted)",
      "value": 32.1,
      "unit": "index",
+     "higherIs": "worse"
+    },
+    "dumpsmoke": {
+     "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
+     "value": 6.8,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -5200,6 +5230,12 @@
      "label": "Upwind coal index (resident-weighted)",
      "value": 0.6,
      "unit": "index",
+     "higherIs": "worse"
+    },
+    "dumpsmoke": {
+     "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
+     "value": 0.1,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -7572,6 +7608,12 @@
      "unit": "index",
      "higherIs": "worse"
     },
+    "dumpsmoke": {
+     "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
+     "value": 1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -9166,6 +9208,12 @@
      "label": "Upwind coal index (resident-weighted)",
      "value": 11.1,
      "unit": "index",
+     "higherIs": "worse"
+    },
+    "dumpsmoke": {
+     "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
+     "value": 6.9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
