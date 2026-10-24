@@ -467,9 +467,19 @@ const UrbanInsights = (() => {
             while (t >= w && !_isNum(arr[t])) t--;
             return t >= w && _isNum(arr[t - w]) ? { step: t, delta: Number(arr[t]) - Number(arr[t - w]) } : null;
         };
-        const seriesMean = (idx) => steps.map((_, t) => _round(_mean(idx.map(i => (col[i] || [])[t])), 3));
+        // One pass over the cells (the per-step idx.map allocated a cell-sized
+        // array per step and froze the Intel dashboard for seconds on big cities).
+        const seriesMean = (idx) => {
+            const sum = new Float64Array(T), cnt = new Int32Array(T);
+            for (const i of idx) {
+                const a = col[i];
+                if (!a) continue;
+                for (let t = 0; t < T; t++) { const v = a[t]; if (_isNum(v)) { sum[t] += Number(v); cnt[t]++; } }
+            }
+            return steps.map((_, t) => _round(cnt[t] ? sum[t] / cnt[t] : null, 3));
+        };
         const cityYoy = idxC.map(i => yoy(col[i])).filter(_isNum);
-        const areaYoy = idxA.map(i => yoy(col[i])).filter(_isNum);
+        const areaYoy = idxA === idxC ? cityYoy : idxA.map(i => yoy(col[i])).filter(_isNum);
         if (!areaYoy.length || cityYoy.length < 5) return null;
         const cs = stats(cityYoy);
         const level = stats(idxC.map(i => _mean((col[i] || []).slice(-w))));
@@ -487,10 +497,11 @@ const UrbanInsights = (() => {
             }
             anomalies.sort((x, y) => Math.abs(y.z) - Math.abs(x.z));
         }
+        const areaSeries = seriesMean(idxA);
         return {
             window: w, steps, unit: spec.time && spec.time.unit,
-            area: { yoy: _round(aMean, 3), series: seriesMean(idxA) },
-            city: { yoy: _round(cs.mean, 3), sd: _round(cs.sd, 3), series: seriesMean(idxC) },
+            area: { yoy: _round(aMean, 3), series: areaSeries },
+            city: { yoy: _round(cs.mean, 3), sd: _round(cs.sd, 3), series: idxA === idxC ? areaSeries : seriesMean(idxC) },
             levelSd: level.sd,
             anomalies: anomalies.slice(0, 5), anomalyCount: anomalies.length,
             to: `${steps[T - w]}–${steps[T - 1]}`, from: `${steps[T - 2 * w]}–${steps[T - w - 1]}`,
@@ -1522,6 +1533,7 @@ const UrbanInsights = (() => {
             let usedHere = false;
             for (const f of spec.fields) {
                 if (f.type && f.type !== 'number') continue;
+                await _breathe();   // one field per task: a city's trends are seconds of maths
                 const tr = trendOf(spec, table, f, idx, idx);
                 if (!tr) continue;
                 const ser = tr.city.series;

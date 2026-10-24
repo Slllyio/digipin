@@ -4,6 +4,10 @@ Short running log of QA / performance passes over the integrated `dev`
 branch. Newest pass first. Each entry says how the pass was run, what was
 checked, what was found, and what shipped as a result.
 
+## 2026-10-24 — the Lenses tab no longer freezes the page for a minute
+
+Reported on the live dev preview ("hanging too much"). Profiled the published bundle in Chromium (CDP sampling profiler + long-task observer, Delhi): opening Intel → Lenses ran all 144 lenses with 55 s of main-thread long tasks, the longest 5.1 s; 37 s of it was `grid().cellAt`, a `Map` lookup keyed by `row·1e6+col`, called hundreds of millions of times through `within()`. The grid now keeps a dense `Int32Array` over the city's lattice bounding box and `within()` walks flat typed arrays (same offsets, same summation order, so results are unchanged). After: 10.6 s of long tasks spread over the run, longest 0.86 s. Opening Intel (`UrbanInsights.changes` → `trendOf`) went from 3.1 s / longest 0.7 s to 1.4 s / longest 0.22 s: `seriesMean` is one pass instead of a cell-sized array per step, the city series is reused when area = city, and `changes()` yields between fields.
+
 ## 2026-10-21 — first tile handoffs measured on the runner (960×600 sweep)
 
 - **Finding (runs 39684637866 / 39684646688, 13a0742):** with the sweep on a 960×600 canvas the runner delivered footprint tiles to the map for the first time since the counters went in. Bundled job: Delhi 1 tile in 3.5 s, Kolkata 8 of 11 handed tiles in 15.2 s and drew 5,786 polygons, Bengaluru all 15 in 23.2 s (too late for a harvest before the 33 s window closed); Mumbai, Hyderabad and Chennai still 0 of 8–23. Source job: Delhi only. Every arrival in a batch carries the same timestamp to the millisecond (23214–23217 ms), so the replies queue behind the main thread and are released together, not trickled: the starvation model holds. Main thread still blocked for 90–95 % of each window (longest task 1.5–3.5 s), GPU syncs 4–8 per city against the budget of 24.

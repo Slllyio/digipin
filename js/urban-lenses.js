@@ -318,15 +318,23 @@ const UrbanLenses = (() => {
     function grid(codes) {
         const n = codes.length;
         const row = new Int32Array(n), col = new Int32Array(n), lat = new Float64Array(n), lng = new Float64Array(n);
-        const at = new Map();
-        let latSum = 0;
+        let latSum = 0, rmin = Infinity, rmax = -Infinity, cmin = Infinity, cmax = -Infinity;
         for (let i = 0; i < n; i++) {
             const c = DigiPin.decodePartial(codes[i]);
             lat[i] = c.lat; lng[i] = c.lng; latSum += c.lat;
             row[i] = Math.floor((c.lat - 2.5) / CELL_DEG);
             col[i] = Math.floor((c.lng - 63.5) / CELL_DEG);
-            at.set(row[i] * 1e6 + col[i], i);
+            if (row[i] < rmin) rmin = row[i];
+            if (row[i] > rmax) rmax = row[i];
+            if (col[i] < cmin) cmin = col[i];
+            if (col[i] > cmax) cmax = col[i];
         }
+        // Cell index by lattice position, as a dense array over the city's
+        // bounding box: lenses look neighbours up hundreds of millions of times
+        // and a Map keyed by row·1e6+col cost the Lenses tab ~40 s of frozen page.
+        const R = n ? rmax - rmin + 1 : 0, C = n ? cmax - cmin + 1 : 0;
+        const at = new Int32Array(R * C).fill(-1);
+        for (let i = 0; i < n; i++) at[(row[i] - rmin) * C + (col[i] - cmin)] = i;
         const lat0 = n ? latSum / n : 20;
         const dy = CELL_DEG * KM_LAT, dx = CELL_DEG * KM_LNG * Math.cos(lat0 * Math.PI / 180);
         const _off = new Map();
@@ -346,10 +354,10 @@ const UrbanLenses = (() => {
         }
         /** Index of the cell at row+a, col+b, or -1. */
         function cellAt(i, a, b) {
-            const j = at.get((row[i] + a) * 1e6 + (col[i] + b));
-            return j == null ? -1 : j;
+            const r = row[i] + a - rmin, c = col[i] + b - cmin;
+            return r < 0 || r >= R || c < 0 || c >= C ? -1 : at[r * C + c];
         }
-        return { n, codes, row, col, lat, lng, dx, dy, cellKm2: dx * dy, offsets, cellAt };
+        return { n, codes, row, col, lat, lng, dx, dy, cellKm2: dx * dy, offsets, cellAt, lattice: { at, R, C, rmin, cmin } };
     }
 
     /**
@@ -1451,12 +1459,35 @@ const UrbanLenses = (() => {
     /** Sum (or mean) of `values` within `km` of each cell. */
     function within(g, values, km, mean = false) {
         const off = g.offsets(km), out = new Float64Array(g.n);
+        if (!g.lattice) {
+            for (let i = 0; i < g.n; i++) {
+                let s = 0, k = 0;
+                for (const [a, b] of off) {
+                    const j = g.cellAt(i, a, b);
+                    if (j < 0 || !_fin(values[j])) continue;
+                    s += values[j]; k++;
+                }
+                out[i] = mean ? (k ? s / k : NaN) : s;
+            }
+            return out;
+        }
+        // Same sum in the same offset order, on flat typed arrays: the value
+        // laid out on the lattice (NaN where no cell or no value) and the
+        // offsets as row/col deltas, so the inner loop does no Map or tuple work.
+        const { at, R, C, rmin, cmin } = g.lattice;
+        const lv = new Float64Array(R * C).fill(NaN);
+        for (let p = 0; p < at.length; p++) { const j = at[p]; if (j >= 0 && _fin(values[j])) lv[p] = values[j]; }
+        const m = off.length, da = new Int32Array(m), db = new Int32Array(m);
+        for (let o = 0; o < m; o++) { da[o] = off[o][0]; db[o] = off[o][1]; }
         for (let i = 0; i < g.n; i++) {
+            const r0 = g.row[i] - rmin, c0 = g.col[i] - cmin;
             let s = 0, k = 0;
-            for (const [a, b] of off) {
-                const j = g.cellAt(i, a, b);
-                if (j < 0 || !_fin(values[j])) continue;
-                s += values[j]; k++;
+            for (let o = 0; o < m; o++) {
+                const r = r0 + da[o], c = c0 + db[o];
+                if (r < 0 || r >= R || c < 0 || c >= C) continue;
+                const v = lv[r * C + c];
+                if (v !== v) continue;
+                s += v; k++;
             }
             out[i] = mean ? (k ? s / k : NaN) : s;
         }
