@@ -546,6 +546,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 0.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1341,6 +1347,12 @@
     "dumpsmoke": {
      "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
      "value": 1.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 1.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -2154,6 +2166,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 5.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2955,6 +2973,12 @@
     "dumpsmoke": {
      "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
      "value": 8.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 3.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3774,6 +3798,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 1.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -4498,6 +4528,12 @@
      "label": "Upwind coal index (resident-weighted)",
      "value": 38.3,
      "unit": "index",
+     "higherIs": "worse"
+    },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 2.9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "railnoise": {
@@ -5235,6 +5271,12 @@
     "dumpsmoke": {
      "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
      "value": 0.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 0.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6036,6 +6078,12 @@
      "unit": "index",
      "higherIs": "worse"
     },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 6.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6807,6 +6855,12 @@
     "carekit": {
      "label": "Residents with no diagnostic lab or scan centre listed within 2 km",
      "value": 5.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 3.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -7614,6 +7668,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 0.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -8398,6 +8458,12 @@
      "label": "Upwind coal index (resident-weighted)",
      "value": 4.2,
      "unit": "index",
+     "higherIs": "worse"
+    },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 0.9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -9216,6 +9282,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 8.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -10024,6 +10096,12 @@
      "label": "Upwind coal index (resident-weighted)",
      "value": 5.1,
      "unit": "index",
+     "higherIs": "worse"
+    },
+    "powercuts": {
+     "label": "Residents in blocks dark on 5%+ of clear nights",
+     "value": 1.4,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {

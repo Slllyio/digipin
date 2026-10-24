@@ -937,6 +937,40 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Power cuts from space. On a clear night a block whose lights drop while the rest of the city stays lit has most
+    // likely lost supply; NASA's Black Marble daily night lights give two years of such nights for every ~1 km block.
+    const CUTS_PCT = 5, CUTS_HEAT_C = 40;
+
+    function powercuts(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], dark = c['blackouts.dark_nights_pct'];
+        const old = c['demographics.elderly_60plus'], hot = c['humid_heat.hot_days_40c'], care = c['places.hospitals'];
+        if (!pop || !dark) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && _fin(dark[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const all = _sumOver(pop, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
+        const mean = idx.reduce((s, i) => s + pop[i] * dark[i], 0) / (all || 1);
+        const freq = idx.filter(i => dark[i] >= CUTS_PCT), pF = _sumOver(pop, freq, () => true);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = dark[i];
+        const stats = [
+            { label: 'Clear nights a block went dark while the city stayed lit, resident-weighted', value: `${_round(mean, 1)}%` },
+            { label: `Residents in blocks dark on ${CUTS_PCT}%+ of clear nights`, value: `${_people(pF)} (${pct(pF)}%)` },
+        ];
+        if (old) stats.push({ label: '…of them aged 60+', value: _people(_sumOver(old, freq, () => true)) });
+        if (hot) stats.push({ label: `…in blocks with ${CUTS_HEAT_C} °C+ days most years (fans and coolers stop)`, value: _people(_sumOver(pop, freq, i => v(hot, i) >= 1)) });
+        if (care) stats.push({ label: '…hospitals listed in those blocks (backup power to check)', value: String(_round(freq.reduce((s, i) => s + v(care, i), 0))) });
+        spaced(g, freq, Float64Array.from({ length: n }, (_, i) => v(pop, i) * v(dark, i))).forEach((i, k) => stats.push({
+            label: `Feeder to check ${k + 1}: ${g.codes[i]}`, value: `dark on ${_round(dark[i], 1)}% of clear nights; ${_people(pop[i])} residents` }));
+        return {
+            columns: { dark_nights_pct: out }, idx, weightKey: 'dark_nights_pct', noHotspots: true,
+            metric: { label: `Residents in blocks dark on ${CUTS_PCT}%+ of clear nights`, value: pct(pF), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pF)} residents (${pct(pF)}%) live in blocks that went dark on ${CUTS_PCT}% or more of clear nights while the rest of the city stayed lit, the signature of local power cuts in NASA's daily night-lights record. The typical resident's block went dark on ${_round(mean, 1)}% of clear nights. Satellite passes are after midnight, so evening load-shedding is missed and street lights switched off count too: read these as feeders to check.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -1082,10 +1116,16 @@ const UrbanLensesSafety = (() => {
             needs: ['downwind.landfill_smoke', 'downwind.industry_smoke', 'downwind.landfill_upwind', 'demographics.under5', 'population.population'],
             method: `Landfill and dump land is OpenStreetMap land use (via Overture), counted where a block holds 2 ha or more, and industrial land blocks with 10%+ industrial use. Each source's area counts towards a lived-in block in proportion to the share of ERA5-Land daily 10 m wind (2020-2024, speed-weighted, one rose per city) blowing from it towards the block within ±45°, divided by distance (at least 0.5 km), out to 3 km. "Often downwind" means ${OFTEN_PCT}%+ of the wind comes from a landfill's direction. Sea and land breezes, night-time inversions and fire events are not modelled, and unmapped dumps (common in Pune, Jaipur and Lucknow) are missing.`,
             refs: 'OpenStreetMap land use; ECMWF ERA5-Land; Solid Waste Management Rules 2016 (buffer zones); CPCB legacy waste and landfill fire guidelines (2019)' },
+        { id: 'powercuts', equity: true, title: 'Power cuts from space', icon: '🔌',
+            question: 'Which neighbourhoods lose power most often?',
+            field: { key: 'dark_nights_pct', label: 'Clear nights the block went dark while the city stayed lit', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 20] },
+            needs: ['blackouts.dark_nights_pct', 'demographics.elderly_60plus', 'humid_heat.hot_days_40c', 'places.hospitals', 'population.population'],
+            method: `NASA Black Marble VNP46A2 daily night lights (2023-2024, BRDF and moonlight corrected), high-quality cloud-free nights only, about 500 m pixels averaged to ~1 km blocks. A lit block (median 5+ nW/cm²/sr) counts a dark night when its lights, relative to its own median, fall below half of that night's citywide median ratio, so haze and thin cloud that dim the whole city cancel out. VIIRS passes at about 1:30 am, so evening load-shedding is missed; switched-off street lights and sensor artefacts also count. Discom feeder outage logs (where published) are the ground truth to check against.`,
+            refs: 'Román et al. 2018 (NASA Black Marble); Mann, Melaas & Malik 2016 (night lights and Indian power supply); ESMI (Prayas Energy Group) outage monitoring' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

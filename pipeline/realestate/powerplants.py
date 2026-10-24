@@ -85,11 +85,8 @@ def exposure(cells, plants, rose_):
 
 
 def _ee():
-    import ee
-    from google.oauth2.credentials import Credentials
-    import os
-    ee.Initialize(Credentials(token="proxy-injected"), project=os.environ.get("GEE_PROJECT", "van-suraksha-alert"))
-    return ee
+    from pipeline.cells import earthengine as gee
+    return gee.init()          # service-account key in CI, proxy-injected token in cloud sessions
 
 
 def fetch_plants(ee, bbox):

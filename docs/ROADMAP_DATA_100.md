@@ -146,7 +146,7 @@ Each item gives four things:
 91. ✅ Post offices and India Post services (DIGIPIN home!; reach lens, Overture listings) | open | postal lens
 92. ✅ Startups and IT parks (Wikidata, SEZ list) | open | innovation lens (`places.tech` from Overture categories, since Wikidata lists few IT parks; `techhubs` lens)
 93. GST registrations by district | open | economy context
-94. Electricity reliability (power-cut reports, ESMI where open) | open | utilities
+94. ✅ Electricity reliability: local power cuts from NASA Black Marble daily night lights (blocks dark while the city stays lit; ESMI has no open API) | EE | `powercuts` lens (new dataset `blackouts`, pipeline/realestate/blackouts.py)
 95. ❌ Mobile broadband coverage (Ookla open data tiles) | S3 | digital access lens (skipped: Ookla open data is CC BY-NC-SA (non-commercial))
 
 ## F. Land and nature (96–110)
