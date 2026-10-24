@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-10-24T17:26:57Z",
-  "count": 48,
+  "generated_at_iso": "2026-10-24T19:40:36Z",
+  "count": 49,
   "records": [
+    {
+      "id": "us6000u4nv",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-24T19:07:15.895000+00:00",
+      "latitude": -13.975,
+      "longitude": 165.6556,
+      "depth_km": 10.0,
+      "place": "193 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4nv",
+      "tsunami": 0,
+      "significance": 385
+    },
     {
       "id": "us6000u4n8",
       "magnitude": 4.8,
