@@ -872,16 +872,16 @@
         "pressure": 2.88
       },
       {
-        "digipin": "3MC87MJ",
-        "demand_ecs": 241,
-        "supply_ecs": 112,
-        "pressure": 2.14
-      },
-      {
         "digipin": "3MC9L64",
         "demand_ecs": 191,
         "supply_ecs": 62,
         "pressure": 3.1
+      },
+      {
+        "digipin": "3MC87MJ",
+        "demand_ecs": 241,
+        "supply_ecs": 112,
+        "pressure": 2.14
       },
       {
         "digipin": "3MC9LKP",
@@ -890,16 +890,16 @@
         "pressure": 9.02
       },
       {
-        "digipin": "3MC9LL9",
-        "demand_ecs": 126,
-        "supply_ecs": 0,
-        "pressure": 125.79
-      },
-      {
         "digipin": "34MTTF4",
         "demand_ecs": 216,
         "supply_ecs": 90,
         "pressure": 2.4
+      },
+      {
+        "digipin": "3MC9LL9",
+        "demand_ecs": 126,
+        "supply_ecs": 0,
+        "pressure": 125.79
       },
       {
         "digipin": "34MTTFT",
