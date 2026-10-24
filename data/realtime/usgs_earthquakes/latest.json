@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-23T22:38:36Z",
-  "count": 18,
+  "generated_at_iso": "2026-10-24T01:07:01Z",
+  "count": 20,
   "records": [
+    {
+      "id": "us6000u4i8",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-24T00:07:56.787000+00:00",
+      "latitude": 32.5271,
+      "longitude": 93.9004,
+      "depth_km": 10.0,
+      "place": "209 km ENE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4i8",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000u4hr",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-23T22:42:51.088000+00:00",
+      "latitude": -15.4328,
+      "longitude": 168.2523,
+      "depth_km": 10.0,
+      "place": "115 km NE of Norsup, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4hr",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us6000u4hi",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-23T22:24:16.303000+00:00",
+      "latitude": 54.2668,
+      "longitude": 86.2951,
+      "depth_km": 10.0,
+      "place": "6 km ENE of Starobachaty, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4hi",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us6000u4h7",
       "magnitude": 5.1,
@@ -72,7 +108,7 @@
       "place": "72 km ENE of Noda, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4e2",
       "tsunami": 0,
-      "significance": 400
+      "significance": 401
     },
     {
       "id": "us6000u4dx",
@@ -203,18 +239,6 @@
       "depth_km": 10.0,
       "place": "18 km NNW of Yongning, China",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u49a",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us6000u48i",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-23T00:09:35.519000+00:00",
-      "latitude": -24.286,
-      "longitude": -67.3224,
-      "depth_km": 185.541,
-      "place": "102 km W of San Antonio de los Cobres, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u48i",
       "tsunami": 0,
       "significance": 312
     }

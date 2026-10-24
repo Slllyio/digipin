@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-10-23T22:38:35Z",
+  "generated_at_iso": "2026-10-24T01:07:07Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-24 05:38:12|31.485,93.528",
+      "magnitude": 4.5,
+      "origin_time": "2026-10-24 05:38:12",
+      "latitude": 31.485,
+      "longitude": 93.528,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "405km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-24 04:54:08|33.127,76.006",
+      "magnitude": 2.4,
+      "origin_time": "2026-10-24 04:54:08",
+      "latitude": 33.127,
+      "longitude": 76.006,
+      "depth_km": 5.0,
+      "region": "Kishtwar, Jammu and Kashmir",
+      "location": "101km E of Katra, Jammu and Kashmir, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-24 04:09:08|32.920,93.761",
+      "magnitude": 4.6,
+      "origin_time": "2026-10-24 04:09:08",
+      "latitude": 32.92,
+      "longitude": 93.761,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "550km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-24 03:39:55|36.324,70.736",
       "magnitude": 4.0,
@@ -1617,39 +1650,6 @@
       "depth_km": 5.0,
       "region": "Chamba, Himachal Pradesh",
       "location": "18km N of Dharamshala, Himachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-12 13:57:02|29.954,92.610",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-12 13:57:02",
-      "latitude": 29.954,
-      "longitude": 92.61,
-      "depth_km": 135.0,
-      "region": "Tibet",
-      "location": "273km NNE of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-12 13:49:27|36.526,70.726",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-12 13:49:27",
-      "latitude": 36.526,
-      "longitude": 70.726,
-      "depth_km": 138.0,
-      "region": "Afghanistan",
-      "location": "65km SSE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-12 12:56:47|38.130,75.194",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-12 12:56:47",
-      "latitude": 38.13,
-      "longitude": 75.194,
-      "depth_km": 90.0,
-      "region": "Xinjiang",
-      "location": "406km NNW of Kargil, Laddakh, India",
       "review_status": "Reviewed"
     }
   ]
