@@ -740,7 +740,52 @@ const UrbanLensesPlanning = (() => {
         };
     }
 
+    // The coast. In blocks near the sea (any 2080 coastal flood exposure within COAST_KM), compare JRC water in 1990 and
+    // 2020: land made from water (reclamation, port and road works) and land lost to water (erosion, new channels). The
+    // Coastal Regulation Zone covers land within 500 m of the high-tide line; blocks within CRZ_KM of open sea stand in for it.
+    const COAST_KM = 2, CRZ_KM = 0.5, SEA_PCT = 80;
+
+    function coast(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, w90 = c['water_history.water_1990_pct'], w20 = c['water_history.water_2020_pct'];
+        const cst = c['flood_future.coast_pct_2080_high'], pop = c['population.population'], built = c['built_up.built_pct'];
+        if (!w90 || !w20 || !cst) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const zone = within(g, Float64Array.from({ length: n }, (_, i) => (v(cst, i) > 0 ? 1 : 0)), COAST_KM);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (zone[i] > 0 && _fin(w90[i]) && _fin(w20[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const sea = within(g, Float64Array.from({ length: n }, (_, i) => (zone[i] > 0 && v(w20, i) >= SEA_PCT ? 1 : 0)), CRZ_KM);
+        const change = new Float64Array(n).fill(NaN);
+        for (const i of idx) change[i] = _round(w90[i] - w20[i], 1);
+        const km2 = (f) => idx.reduce((a, i) => a + Math.max(0, f(i)) / 100 * g.cellKm2, 0);
+        const made = km2(i => w90[i] - w20[i]), lost = km2(i => w20[i] - w90[i]);
+        const crz = idx.filter(i => sea[i] > 0 && v(w20, i) < SEA_PCT);
+        const pCrz = _sumOver(pop, crz, () => true), bCrz = built ? crz.reduce((a, i) => a + v(built, i) / 100 * g.cellKm2, 0) : null;
+        const stats = [
+            { label: `Land made from water since 1990 (blocks within ${COAST_KM} km of coastal flooding)`, value: `${_round(made, 2)} km²` },
+            { label: 'Land lost to water since 1990', value: `${_round(lost, 2)} km²` },
+            { label: `Residents within ${CRZ_KM * 1000} m of open sea, creek or tidal river (Coastal Regulation Zone band)`, value: _people(pCrz) },
+        ];
+        if (bCrz !== null) stats.push({ label: '…built-up land in that band', value: `${_round(bCrz, 2)} km²` });
+        spaced(g, idx.filter(i => change[i] >= 10), change, 3).forEach((i, k) => stats.push({
+            label: `Made land ${k + 1}: ${g.codes[i]}`, value: `water ${_round(w90[i])}% of the block in 1990, ${_round(w20[i])}% in 2020` }));
+        spaced(g, idx.filter(i => change[i] <= -10), Float64Array.from({ length: n }, (_, i) => -change[i]), 3).forEach((i, k) => stats.push({
+            label: `Land lost ${k + 1}: ${g.codes[i]}`, value: `water ${_round(w90[i])}% in 1990, ${_round(w20[i])}% in 2020` }));
+        return {
+            columns: { coast_change: change }, idx, weightKey: 'coast_change', noHotspots: true,
+            metric: { label: 'Land made from water near the coast since 1990', value: _round(made, 2), unit: 'km²', higherIs: null },
+            headline: `Near the coast, ${_round(made, 2)} km² of water became land between 1990 and 2020 and ${_round(lost, 2)} km² of land became water; about ${_people(pCrz)} people live within ${CRZ_KM * 1000} m of open sea, creek or tidal river, the band the Coastal Regulation Zone rules restrict. Salt pans, mudflats and mangrove edges flip between land and water in satellite maps, and the CRZ line is drawn from the notified high-tide line, not this proxy.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'coast', equity: false, title: 'Coastline change and the CRZ band', icon: '🌊',
+            question: 'How has the coastline moved, and who lives in the coastal regulation band?',
+            field: { key: 'coast_change', label: 'Water 1990 minus water 2020 (positive = land made, negative = land lost)', unit: 'points', higherIs: null, ramp: 'diverging', domain: [-50, 50] },
+            needs: ['water_history.water_1990_pct', 'water_history.water_2020_pct', 'flood_future.coast_pct_2080_high', 'built_up.built_pct', 'population.population'],
+            method: `JRC Global Surface Water yearly history (Landsat) gives each block's water share in 1990 and 2020; only blocks within ${COAST_KM} km of any 2080 coastal flood exposure (WRI Aqueduct, high scenario) count, so inland lakes stay out. Land made is the drop in water share, land lost the rise. The Coastal Regulation Zone band is approximated by land blocks within ${CRZ_KM * 1000} m of blocks that are ${SEA_PCT}%+ water in 2020; the real CRZ follows the notified high-tide line in each state's coastal zone management plan.`,
+            refs: 'Pekel et al. 2016 (JRC Global Surface Water); WRI Aqueduct Floods; CRZ Notification 2019 (MoEFCC)' },
         { id: 'tourism', equity: false, title: 'Visitor magnets and hotel gaps', icon: '🧭',
             question: 'Where do visitors go, and where are places to stay short?',
             field: { key: 'landmark_pull', label: `Landmark pull within ${PULL_KM} km (Wikipedia language editions)`, unit: 'editions', higherIs: null, ramp: 'heat', domain: [0, 150] },
@@ -860,7 +905,7 @@ const UrbanLensesPlanning = (() => {
             refs: 'AMASR Act 1958 and Amendment and Validation Act 2010; National Monuments Authority; Wikidata (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { heritage, landmix, reach, monthly, greenbelt, mosquito, buildingage, cooling, crowds, airport, gardens, powerlines, toilets, gated, drainage, cityfarms, tourism, coast }, {}, 'jobsmap');
     return { ENTRIES };
 })();
 

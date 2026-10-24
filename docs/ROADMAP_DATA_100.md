@@ -87,7 +87,7 @@ Each item gives four things:
 41. ✅ Lake and wetland health (Sentinel-2 water extent trend + NDCI) | EE | lake lens
 42. ✅ Water quality chlorophyll / turbidity in lakes (Sentinel-2) | EE | lake lens
 43. ✅ Mangrove extent and loss (Global Mangrove Watch) | EE | coastal buffer
-44. Coastal erosion / shoreline change (Landsat shoreline) | EE | coast lens
+44. ✅ Coastal erosion / shoreline change (Landsat shoreline) | EE | coast lens (`coast` lens on JRC water 1990 vs 2020 near the coast, with a CRZ band proxy)
 45. ✅ Groundwater recharge potential (soil + slope + land cover) | EE | recharge siting
 
 ## C. Air and health (46–60)

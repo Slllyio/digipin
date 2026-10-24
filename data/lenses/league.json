@@ -2262,6 +2262,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "coast": {
+     "label": "Land made from water near the coast since 1990",
+     "value": 1.65,
+     "unit": "km²",
+     "higherIs": null
+    },
     "tourism": {
      "label": "Visitor landmarks known in 3+ Wikipedia languages",
      "value": 92,
@@ -5868,6 +5874,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "coast": {
+     "label": "Land made from water near the coast since 1990",
+     "value": 6.77,
+     "unit": "km²",
+     "higherIs": null
+    },
     "tourism": {
      "label": "Visitor landmarks known in 3+ Wikipedia languages",
      "value": 56,
@@ -7084,6 +7096,12 @@
      "label": "Share of jobs in the busiest tenth of blocks",
      "value": 43.8,
      "unit": "%",
+     "higherIs": null
+    },
+    "coast": {
+     "label": "Land made from water near the coast since 1990",
+     "value": 8.15,
+     "unit": "km²",
      "higherIs": null
     },
     "tourism": {

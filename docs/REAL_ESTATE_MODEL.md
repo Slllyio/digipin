@@ -1004,3 +1004,7 @@ The `landuse` dataset gained `farm_pct`: OpenStreetMap farmland, farmyards, orch
 ## Visitor magnets and hotel gaps (`tourism` lens)
 
 New dataset `landmarks` (L7, pipeline/realestate/landmarks.py): Wikidata visitor attractions (about 40 classes: places of worship, tombs, forts, museums, monuments, palaces, parks, zoos, lakes, beaches, markets, stadiums and more) with articles in 3+ Wikipedia languages; each block gets the count, the summed language editions (pull) and the best-known landmark's editions. Wikipedia page views were the plan, but the Wikimedia REST API rate-limits this host, so language editions stand in for fame. The lens sums pull within 1.5 km; visitor magnets are the top 10% of blocks, and hotel gaps are magnets in the lowest quarter for Overture lodging within 1 km. Delhi: 136 landmarks, 504 magnet blocks, 126 with few places to stay.
+
+## Coastline change and the CRZ band (`coast` lens)
+
+Uses `water_history` (JRC yearly water 1990 and 2020) in blocks within 2 km of any 2080 coastal flood exposure (`flood_future.coast_pct_2080_high`), so inland lakes stay out. Land made is the drop in water share, land lost the rise. The Coastal Regulation Zone band is land within 500 m of blocks that are 80%+ water in 2020 (sea, creek or tidal river). Mumbai: 8.2 km² made and 6.5 km² lost since 1990, about 2.5 lakh residents in the band; Kolkata's tidal Hooghly and the East Kolkata wetlands count too. Salt pans and mudflats flip between land and water in Landsat maps.
