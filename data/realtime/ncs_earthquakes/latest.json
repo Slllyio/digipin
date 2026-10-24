@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-24T01:07:07Z",
+  "generated_at_iso": "2026-10-24T05:53:52Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-24 10:09:56|39.768,75.918",
+      "magnitude": 4.2,
+      "origin_time": "2026-10-24 10:09:56",
+      "latitude": 39.768,
+      "longitude": 75.918,
+      "depth_km": 10.0,
+      "region": "Xinjiang",
+      "location": "363km SSE of Bishkek, Kyrgyzstan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-24 09:25:54|34.180,94.818",
+      "magnitude": 4.4,
+      "origin_time": "2026-10-24 09:25:54",
+      "latitude": 34.18,
+      "longitude": 94.818,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "672km N of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-24 05:38:12|31.485,93.528",
       "magnitude": 4.5,
@@ -1628,28 +1650,6 @@
       "depth_km": 7.0,
       "region": "Bichom, Arunachal Pradesh",
       "location": "53km E of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-12 17:44:18|26.384,95.817",
-      "magnitude": 3.5,
-      "origin_time": "2026-10-12 17:44:18",
-      "latitude": 26.384,
-      "longitude": 95.817,
-      "depth_km": 93.0,
-      "region": "Myanmar",
-      "location": "130km E of Mokokchung, Nagaland, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-12 16:40:32|32.381,76.358",
-      "magnitude": 3.1,
-      "origin_time": "2026-10-12 16:40:32",
-      "latitude": 32.381,
-      "longitude": 76.358,
-      "depth_km": 5.0,
-      "region": "Chamba, Himachal Pradesh",
-      "location": "18km N of Dharamshala, Himachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
