@@ -776,6 +776,41 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Fuel stations among homes. Petrol and CNG stations store tens of thousands of litres under the forecourt; siting
+    // rules keep them clear of schools and hospitals and out of crowded lanes. At block scale (about 250 m) a station
+    // is flagged when its block also holds a school or hospital, is packed, or lies in the 100-year flood (tank leaks).
+    function fuelsafe(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], fuel = c['places.fuel'];
+        if (!fuel) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const sch = c['emergency_access.schools'], hosp = c['places.hospitals'], cover = c['building_stock.cover_2023_pct'], fl = c['flood_future.any_pct_now'];
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(fuel, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const CHECKS = [
+            ['sharing a block with a school or hospital', i => v(sch, i) + v(hosp, i) > 0],
+            [`in a packed block (${PACKED_PCT}%+ under roofs)`, i => v(cover, i) >= PACKED_PCT],
+            ['in the 100-year flood', i => v(fl, i) >= FLOOD_PCT],
+        ];
+        const flags = i => CHECKS.filter(([, t]) => t(i)).map(([l]) => l);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = flags(i).length;
+        const total = idx.reduce((a, i) => a + fuel[i], 0);
+        const count = t => idx.reduce((a, i) => a + (t(i) ? fuel[i] : 0), 0);
+        const stats = [{ label: 'Fuel stations listed', value: String(total) }];
+        for (const [l, t] of CHECKS) stats.push({ label: `…${l}`, value: String(count(t)) });
+        const multi = count(i => flags(i).length >= 2);
+        spaced(g, idx, Float64Array.from({ length: n }, (_, i) => (v(fuel, i) > 0 ? flags(i).length * (1 + v(pop, i) / 1000) : 0))).forEach((i, k) => stats.push({
+            label: `Fuel station check ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(fuel[i])} station${fuel[i] > 1 ? 's' : ''}; ${_people(v(pop, i))} residents in the block; ${flags(i).join(', ') || 'no flag'}` }));
+        return {
+            columns: { fuel_flags: out }, idx, weightKey: 'fuel_flags', noHotspots: true,
+            metric: { label: 'Fuel stations sharing a block with a school or hospital', value: _round(100 * count(CHECKS[0][1]) / (total || 1)), unit: '%', higherIs: 'worse' },
+            headline: `${count(CHECKS[0][1])} of ${total} listed fuel stations share a block (about 250 m across) with a school or hospital, ${count(CHECKS[1][1])} stand in packed blocks and ${count(CHECKS[2][1])} in the 100-year flood; ${multi} carry two or more of these flags. The stations listed have the most flags and the most residents around them, the first to check against the siting and safety-distance rules, at least ${SPACING_KM} km apart. A block cannot show the 30-50 m distances the rules set, so this is where to measure.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -896,10 +931,16 @@ const UrbanLensesSafety = (() => {
                 'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'landuse.industrial_pct', 'traffic_noise.lden_db', 'population.population'],
             method: `Monuments are Wikidata heritage listings (national, state and other grades) counted per block, checked against the six hazards of the school safety check: ${FLOOD_PCT}%+ of the block in the 1-in-100-year flood; a waterlogging index of ${WET_INDEX}+ (rising damp and foundation scour); soft ground under ${SOFT_HAND_M} m above the nearest drain in seismic zone III or higher; ${PACKED_PCT}%+ under roofs with no main road within ${DEEP_KM * 1000} m (fire access); industry within ${NEXT_KM * 1000} m (soot and acid deposition); road noise of ${LOUD_DB} dB Lden or more (heavy traffic and vibration). A monument's own condition and conservation plan are not in open data.`,
             refs: 'Wikidata; NDMA National Disaster Management Guidelines: Management of Cultural Heritage Sites and Precincts (2017); AMASR Act 1958 (amended 2010); WRI Aqueduct Floods v2; MERIT Hydro' },
+        { id: 'fuelsafe', equity: false, title: 'Fuel stations among homes', icon: '⛽',
+            question: 'Which petrol pumps sit beside schools, hospitals, packed homes or floodwater?',
+            field: { key: 'fuel_flags', label: 'Flags at fuel-station blocks (school or hospital, packed, flood)', unit: 'flags', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['places.fuel', 'emergency_access.schools', 'places.hospitals', 'building_stock.cover_2023_pct', 'flood_future.any_pct_now', 'population.population'],
+            method: `Fuel stations are Overture Maps places (petrol, diesel and CNG). Each station block is flagged when it also holds an OpenStreetMap school or Overture hospital, when ${PACKED_PCT}%+ of it is under roofs (Open Buildings 2023), and when ${FLOOD_PCT}%+ of it lies in Aqueduct's 1-in-100-year flood. Siting rules (Petroleum Rules 2002 and oil-company and state guidelines) set distances of tens of metres from schools and hospitals, finer than a block, so a flag means "measure here", not a breach.`,
+            refs: 'Overture Maps places; OpenStreetMap; Google Open Buildings 2.5D; WRI Aqueduct Floods v2; Petroleum Rules 2002 (PESO); OISD-STD-244 (retail outlet safety)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

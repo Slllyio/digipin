@@ -206,6 +206,7 @@ Each item gives four things:
 145. ✅ Hotel cluster fire safety: hotel and guest-house clusters × packed blocks × deep lanes × fire-station reach × old stock (Overture, Open Buildings, OSM, WSF) | derived | `hotelfire` lens
 146. ✅ Quarries and flooded pits near homes: quarry land × open water × residents and children within 500 m (OSM land use, ESA WorldCover, WorldPop) | derived | `quarries` lens
 147. ✅ Heritage at risk: listed monuments × flood, waterlogging, soft ground in seismic zones, packed lanes, industry and traffic (Wikidata + safety checks) | derived | `heritagesafe` lens
+148. ✅ Fuel stations among homes: petrol and CNG stations sharing blocks with schools and hospitals, packed blocks and floodplains (Overture, OSM, Open Buildings, Aqueduct) | derived | `fuelsafe` lens
 
 ## Parked for the keys round
 

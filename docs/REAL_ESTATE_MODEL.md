@@ -1132,3 +1132,7 @@ Blocks with 10%+ mapped as quarry (OSM land use via Overture), flooded where 5%+
 ## Heritage at risk (`heritagesafe` lens, js/urban-lenses-safety.js)
 
 The school and hospital safety check (`siteCheck`) run over Wikidata heritage listings of all grades (summed into a `heritage.all` column on the frame). Delhi: 8% of 196 listed monuments face two or more hazards; Kolkata 53% of 230 (soft delta ground, river flood, industry and traffic); Ahmedabad 19% of 64. Built for the hazard audits in the NDMA guidelines on cultural heritage sites and precincts (2017).
+
+## Fuel stations among homes (`fuelsafe` lens, js/urban-lenses-safety.js)
+
+Overture fuel stations flagged per block for sharing it with a school (OSM) or hospital (Overture), standing in a packed block (50%+ under roofs) and lying in Aqueduct's 100-year flood. Blocks are about 250 m across, coarser than the tens of metres the Petroleum Rules and OISD siting standards set, so a flag means measure there. Delhi: 123 of 485 listed stations share a block with a school or hospital, 56 in the 100-year flood; Mumbai 141 of 236.

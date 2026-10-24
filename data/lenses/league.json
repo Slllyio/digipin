@@ -522,6 +522,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 46.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1294,6 +1300,12 @@
      "label": "Residents within 500 m of a flooded quarry pit",
      "value": 8399,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 49.5,
+     "unit": "%",
      "higherIs": "worse"
     },
     "events": {
@@ -2082,6 +2094,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 37.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2859,6 +2877,12 @@
     "heritagesafe": {
      "label": "Monuments facing two or more hazards",
      "value": 22.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 34.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3654,6 +3678,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 25.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -4368,6 +4398,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 36.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "railnoise": {
      "label": "Residents within 150 m of a mainline railway",
      "value": 8.9,
@@ -5079,6 +5115,12 @@
     "heritagesafe": {
      "label": "Monuments facing two or more hazards",
      "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 49.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5862,6 +5904,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 22.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6621,6 +6669,12 @@
     "heritagesafe": {
      "label": "Monuments facing two or more hazards",
      "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 36,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -7404,6 +7458,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 55.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -8169,6 +8229,12 @@
     "heritagesafe": {
      "label": "Monuments facing two or more hazards",
      "value": 18.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 45.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -8964,6 +9030,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 59.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -9753,6 +9825,12 @@
     "heritagesafe": {
      "label": "Monuments facing two or more hazards",
      "value": 10.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "fuelsafe": {
+     "label": "Fuel stations sharing a block with a school or hospital",
+     "value": 41.7,
      "unit": "%",
      "higherIs": "worse"
     },
