@@ -504,6 +504,18 @@
      "unit": "l",
      "higherIs": "better"
     },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 1.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 10.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 15,
@@ -1259,6 +1271,18 @@
      "value": 15.7,
      "unit": "l",
      "higherIs": "better"
+    },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 16.9,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -2022,6 +2046,18 @@
      "unit": "l",
      "higherIs": "better"
     },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 0.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 8.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 7.8,
@@ -2777,6 +2813,18 @@
      "value": 39.4,
      "unit": "l",
      "higherIs": "better"
+    },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 0.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 26.2,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -3546,6 +3594,18 @@
      "unit": "l",
      "higherIs": "better"
     },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 23,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 21.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 21.1,
@@ -4248,6 +4308,18 @@
      "unit": "l",
      "higherIs": "better"
     },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 0.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "railnoise": {
      "label": "Residents within 150 m of a mainline railway",
      "value": 8.9,
@@ -4937,6 +5009,18 @@
      "value": 36.5,
      "unit": "l",
      "higherIs": "better"
+    },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 0.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 21.9,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -5700,6 +5784,18 @@
      "unit": "l",
      "higherIs": "better"
     },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 0.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 22.3,
@@ -6443,6 +6539,18 @@
      "value": 39.3,
      "unit": "l",
      "higherIs": "better"
+    },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 1.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 9.4,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -7206,6 +7314,18 @@
      "unit": "l",
      "higherIs": "better"
     },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 0.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 17.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 10.7,
@@ -7955,6 +8075,18 @@
      "value": 34.7,
      "unit": "l",
      "higherIs": "better"
+    },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 16.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 16.1,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
@@ -8724,6 +8856,18 @@
      "unit": "l",
      "higherIs": "better"
     },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 2.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 7.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
      "value": 17.1,
@@ -9491,6 +9635,18 @@
      "value": 17.6,
      "unit": "l",
      "higherIs": "better"
+    },
+    "sitedust": {
+     "label": "Residents within 500 m of active construction",
+     "value": 0.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "hotelfire": {
+     "label": "Hotel clusters with two or more fire flags",
+     "value": 2,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",

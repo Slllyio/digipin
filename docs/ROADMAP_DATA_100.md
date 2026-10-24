@@ -202,6 +202,8 @@ Each item gives four things:
 141. ✅ Substations under water: power substations in flood and waterlogging zones, now and by 2050, and the residents nearest each (OSM, Aqueduct, Sentinel-1) | derived | `gridflood` lens
 142. ✅ Coaching hub safety: coaching-centre clusters × waterlogging (basements) × packed lanes × fire-station reach (Overture, Sentinel-1, Open Buildings, OSM) | derived | `coaching` lens
 143. ✅ Rooftop rainwater: roof area × annual rain × runoff, per resident and against groundwater decline (Open Buildings, CHIRPS, CGWB norms) | derived | `rainharvest` lens
+144. ✅ Construction dust and heat: building sites near schools, hospitals and homes, and hot sites for outdoor workers (Dynamic World sites, Landsat LST, OSM, Overture) | derived | `sitedust` lens
+145. ✅ Hotel cluster fire safety: hotel and guest-house clusters × packed blocks × deep lanes × fire-station reach × old stock (Overture, Open Buildings, OSM, WSF) | derived | `hotelfire` lens
 
 ## Parked for the keys round
 

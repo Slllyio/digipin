@@ -640,6 +640,96 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Construction dust and heat. Open sites throw dust over the homes, classrooms and wards beside them, and their
+    // labourers work in the open through the pre-monsoon heat. Sites are cleared (1), building up (2) or stalled bare (3)
+    // in the sites dataset; sensitive means a school or hospital within DUST_KM; hot means a surface temperature HOT_ABOVE_C
+    // above the city median (Landsat, pre-monsoon), with no drinking-water point mapped within DUST_KM.
+    const DUST_KM = 0.5, HOT_ABOVE_C = 2;
+
+    function sitedust(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], st = c['sites.site_status'];
+        if (!st) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const sch = c['emergency_access.schools'], hosp = c['places.hospitals'], uhi = c['surface_heat.uhi_anomaly_c'], water = c['street_infra.drinking_water'];
+        const active = i => v(st, i) >= 1;   // cleared, building up or stalled: all bare ground that blows dust
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || active(i)) idx.push(i);
+        const sites = idx.filter(active);
+        if (idx.length < 5 || !sites.length) return null;
+        const sens = within(g, Float64Array.from({ length: n }, (_, i) => v(sch, i) + v(hosp, i)), DUST_KM);
+        const ppl = within(g, Float64Array.from({ length: n }, (_, i) => v(pop, i)), DUST_KM);
+        const tap = water ? within(g, Float64Array.from({ length: n }, (_, i) => v(water, i)), DUST_KM) : null;
+        const hot = i => v(uhi, i) >= HOT_ABOVE_C, dry = i => tap && tap[i] <= 0;
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = active(i) ? 1 + (sens[i] > 0 ? 1 : 0) + (hot(i) ? 1 : 0) : 0;
+        const nearSens = sites.filter(i => sens[i] > 0), hotSites = sites.filter(hot), hotDry = hotSites.filter(dry);
+        // Residents within DUST_KM of any active site.
+        const nearSite = within(g, Float64Array.from({ length: n }, (_, i) => (active(i) ? 1 : 0)), DUST_KM);
+        const exposed = idx.filter(i => v(pop, i) > 0 && nearSite[i] > 0);
+        const pExp = _sumOver(pop, exposed, () => true), all = _sumOver(pop, idx, () => true);
+        const stats = [
+            { label: 'Construction blocks (cleared, building up or stalled bare)', value: String(sites.length) },
+            { label: `Residents within ${DUST_KM * 1000} m of one`, value: `${_people(pExp)} (${_round(100 * pExp / (all || 1))}%)` },
+            { label: `…sites with a school or hospital within ${DUST_KM * 1000} m`, value: String(nearSens.length) },
+            { label: `…sites ${HOT_ABOVE_C}°C+ hotter than the city (surface, pre-monsoon)`, value: `${hotSites.length}${tap ? `, ${hotDry.length} with no drinking-water point mapped within ${DUST_KM * 1000} m` : ''}` },
+        ];
+        const score = Float64Array.from({ length: n }, (_, i) => (active(i) ? ppl[i] * (1 + sens[i]) * (hot(i) ? 1.5 : 1) : 0));
+        spaced(g, sites, score).forEach((i, k) => stats.push({
+            label: `Dust control ${k + 1}: ${g.codes[i]}`,
+            value: `${['', 'cleared this year', 'building up', 'stalled, still bare'][v(st, i)] || 'site'}; ${_people(ppl[i])} residents and ${_round(sens[i])} school${sens[i] === 1 ? '' : 's'} or hospitals within ${DUST_KM * 1000} m${hot(i) ? `; ${_round(v(uhi, i), 1)}°C above the city` : ''}` }));
+        return {
+            columns: { site_dust: out }, idx, weightKey: 'site_dust', noHotspots: true,
+            metric: { label: `Residents within ${DUST_KM * 1000} m of active construction`, value: _round(100 * pExp / (all || 1)), unit: '%', higherIs: 'worse' },
+            headline: `${sites.length} blocks are construction sites (cleared, building up or stalled bare), and ${_people(pExp)} residents live within ${DUST_KM * 1000} m of one; ${nearSens.length} of those sites have a school or hospital within ${DUST_KM * 1000} m. ${hotSites.length} sites are ${HOT_ABOVE_C}°C or more hotter than the city at the surface, where labourers work in the open through April and May${tap ? `, ${hotDry.length} with no drinking-water point mapped nearby` : ''}. The sites listed have the most neighbours, classrooms and wards around them: the first for dust screens, wet suppression and covered loads, and for shaded rest and water for workers, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
+    // Budget-hotel clusters. Guest houses packed into old, narrow-laned quarters burn with guests asleep who do not
+    // know the exits (Karol Bagh's Hotel Arpit Palace, 2019). A cluster block has HUB_MIN lodgings within HUB_KM and is
+    // in the city's top HOTEL_Q share; it is flagged for packed buildings, deep lanes, a far fire station and old stock.
+    const HOTEL_Q = 0.97;
+
+    function hotelfire(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], lodge = c['places.lodging'];
+        if (!lodge) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const cover = c['building_stock.cover_2023_pct'], fire = c['places.fire_stations'], sy = c['building_dynamics.settled_year'];
+        const major = c['osm_roads.major_km_km2'], sec = c['osm_roads.secondary_km_km2'];
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || v(lodge, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(lodge, i)), HUB_KM);
+        const q = Math.max(HUB_MIN, wquantile(near, null, idx.filter(i => near[i] > 0), HOTEL_Q));
+        const hubs = idx.filter(i => near[i] >= q);
+        if (!hubs.length) return null;
+        const road = major ? within(g, Float64Array.from({ length: n }, (_, i) => v(major, i) + v(sec, i)), DEEP_KM) : null;
+        const fs = fire ? within(g, Float64Array.from({ length: n }, (_, i) => v(fire, i)), FIRE_KM) : null;
+        const stations = fire ? idx.reduce((a, i) => a + v(fire, i), 0) : 0;
+        const CHECKS = [
+            [`packed (${PACKED_PCT}%+ under roofs)`, i => v(cover, i) >= PACKED_PCT],
+            [`no main road within ${DEEP_KM * 1000} m`, i => road && road[i] <= 0],
+            [`no fire station within ${FIRE_KM} km`, i => stations >= FIRE_MIN && fs[i] <= 0],
+            [`settled by ${OLD_YEAR}`, i => sy && _fin(sy[i]) && sy[i] <= OLD_YEAR],
+        ];
+        const flags = i => CHECKS.filter(([, t]) => t(i)).map(([l]) => l);
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = near[i] >= q ? 1 + Math.min(2, flags(i).length) : 0;
+        const stats = [{ label: `Hotel cluster blocks (${_round(q)}+ hotels and guest houses within ${HUB_KM * 1000} m)`, value: String(hubs.length) }];
+        for (const [l, t] of CHECKS) stats.push({ label: `…${l}`, value: String(hubs.filter(t).length) });
+        const score = Float64Array.from({ length: n }, (_, i) => (near[i] >= q ? near[i] * (1 + flags(i).length) : 0));
+        spaced(g, hubs, score).forEach((i, k) => stats.push({
+            label: `Hotel audit ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(near[i])} hotels and guest houses within ${HUB_KM * 1000} m; ${flags(i).join(', ') || 'no hazard flagged'}` }));
+        const multi = hubs.filter(i => flags(i).length >= 2).length;
+        return {
+            columns: { hotel_fire: out }, idx, weightKey: 'hotel_fire', noHotspots: true,
+            metric: { label: 'Hotel clusters with two or more fire flags', value: _round(100 * multi / hubs.length), unit: '%', higherIs: 'worse' },
+            headline: `${hubs.length} blocks are hotel and guest-house clusters, with ${_round(q)} or more within ${HUB_KM * 1000} m; ${multi} of them carry two or more fire flags (packed buildings, no main road within ${DEEP_KM * 1000} m, a far fire station, old stock). Guests asleep in unfamiliar buildings are the hardest to get out, as Karol Bagh's 2019 Hotel Arpit Palace fire showed. The clusters listed are the biggest and most flagged, the first for fire NOC, exit and rooftop-structure checks, at least ${SPACING_KM} km apart.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
@@ -735,10 +825,22 @@ const UrbanLensesSafety = (() => {
             needs: ['building_stock.cover_2023_pct', 'rainfall.rain_annual_mm', 'water_risk.groundwater_decline_cm_yr', 'population.population'],
             method: `Roof area is Google Open Buildings 2.5D roof cover (2023) × block area; rain is the CHIRPS annual mean (rainfall dataset); the runoff coefficient is ${RUNOFF} for hard roofs (CGWB Manual on Artificial Recharge of Ground Water, 2007). Litres per resident a day spread the year's catch over 365 days against the CPHEEO norm of ${LPCD} l/day for sewered cities; in practice it falls in a few monsoon months, so tank size limits what is used directly. Groundwater trend is the water_risk dataset (GRACE-based, coarse). Many cities make rooftop harvesting compulsory on larger plots (Delhi for plots of 100 m² and more).`,
             refs: 'Google Open Buildings 2.5D Temporal; CHIRPS; CGWB Manual on Artificial Recharge (2007); CPHEEO Manual on Water Supply (1999); Delhi Jal Board rainwater harvesting rules' },
+        { id: 'sitedust', equity: false, title: 'Construction dust and heat', icon: '🏗️',
+            question: 'Which building sites throw dust on schools and homes, and where do workers bake?',
+            field: { key: 'site_dust', label: `Construction site (1), plus a school or hospital within ${DUST_KM * 1000} m (2), plus a hot site (3)`, unit: '0-3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['sites.site_status', 'emergency_access.schools', 'places.hospitals', 'surface_heat.uhi_anomaly_c', 'street_infra.drinking_water', 'population.population'],
+            method: `Sites are blocks cleared this year, building up or stalled with bare ground in the sites dataset (Dynamic World built-up and bare-ground probabilities, two dry seasons apart). Residents, OpenStreetMap schools and Overture hospitals within ${DUST_KM * 1000} m are counted on the block grid. Hot sites have a pre-monsoon Landsat surface temperature ${HOT_ABOVE_C}°C or more above the city median; drinking-water points are OpenStreetMap. Site size, dust-control measures and worker numbers are not in open data, so this shows where to inspect.`,
+            refs: 'Dynamic World (Brown et al. 2022); Landsat 8/9 thermal; OpenStreetMap; Overture Maps; Construction and Demolition Waste Management Rules 2016; CAQM dust-mitigation directions; NDMA heat action plan guidelines (2019)' },
+        { id: 'hotelfire', equity: false, title: 'Hotel cluster fire safety', icon: '🏨',
+            question: 'Which hotel and guest-house clusters are packed, deep in lanes or far from a fire station?',
+            field: { key: 'hotel_fire', label: 'Hotel cluster (1), plus one fire flag (2), plus two or more (3)', unit: '0-3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['places.lodging', 'building_stock.cover_2023_pct', 'building_dynamics.settled_year', 'osm_roads.major_km_km2', 'osm_roads.secondary_km_km2', 'places.fire_stations', 'population.population'],
+            method: `Hotels and guest houses are Overture Maps lodging places. Cluster blocks have ${HUB_MIN} or more within ${HUB_KM * 1000} m and sit in the city's top ${Math.round(100 * (1 - HOTEL_Q))}% of blocks with any. Flags: ${PACKED_PCT}%+ under roofs (Open Buildings 2023); no OpenStreetMap main or secondary road within ${DEEP_KM * 1000} m; no fire station listed within ${FIRE_KM} km (where ${FIRE_MIN}+ are listed); settled by ${OLD_YEAR} (WSF Evolution). Fire NOCs, rooftop structures and exits are not in open data.`,
+            refs: 'Overture Maps places; Google Open Buildings 2.5D; OpenStreetMap; WSF Evolution; National Building Code 2016 Part 4; Delhi Fire Service Rules 2010' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {

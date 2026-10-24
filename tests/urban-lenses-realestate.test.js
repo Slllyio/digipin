@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -1023,6 +1023,27 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.harvest_lpd[0]).toBeCloseTo(0.5 * km2 * 1e6 * 0.8 * 1000 / 365 / 1000, 1);
         expect(r.stats.some(x => /^Harvest 1/.test(x.label))).toBe(true);
         expect(L._lenses.rainharvest(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('sitedust: construction sites near schools and hospitals, hot sites', () => {
+        const f = L.frameFrom(codes, { ...base, 'sites.site_status': codes.map((_, i) => (i === 0 ? 2 : i === 5 ? 3 : 0)),
+            'emergency_access.schools': codes.map((_, i) => (i === 1 ? 1 : 0)), 'surface_heat.uhi_anomaly_c': codes.map((_, i) => (i === 0 ? 3 : 0)) });
+        const r = L._lenses.sitedust(f, {});
+        expect(r.columns.site_dust[0]).toBe(3);
+        expect(r.columns.site_dust[5]).toBe(1);
+        expect(r.columns.site_dust[SIZE * 11]).toBe(0);
+        expect(r.stats[0].value).toBe('2');
+        expect(L._lenses.sitedust(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('hotelfire: hotel clusters flagged for packed blocks, deep lanes and old stock', () => {
+        const f = L.frameFrom(codes, { ...base, 'places.lodging': codes.map((_, i) => (i === 0 ? 60 : i === n - 1 ? 1 : 0)),
+            'building_stock.cover_2023_pct': codes.map((_, i) => (col(i) < 2 ? 70 : 20)), 'building_dynamics.settled_year': codes.map(() => 1985) });
+        const r = L._lenses.hotelfire(f, {});
+        expect(r.columns.hotel_fire[0]).toBe(3);
+        expect(r.columns.hotel_fire[n - 1]).toBe(0);
+        expect(r.stats.some(x => /^Hotel audit 1/.test(x.label))).toBe(true);
+        expect(L._lenses.hotelfire(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('ground: expansive clay, low wet land, slopes and the seismic zone', () => {

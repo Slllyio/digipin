@@ -1116,3 +1116,11 @@ Hub blocks have 10+ Overture coaching centres within 500 m and sit in the top te
 ## Rooftop rainwater (`rainharvest` lens, js/urban-lenses-safety.js)
 
 Roof area (Open Buildings 2023 cover × block area) × CHIRPS annual rain × 0.8 (CGWB runoff coefficient for hard roofs) is each block's harvestable rain; spread over the year and its residents it gives litres per resident a day against the CPHEEO 135 l/day norm. Picks weigh volume by the water_risk groundwater decline. Delhi: about 276 million m³ a year, 21 l per resident a day for the median resident (19% of city need); Chennai 39 l (33%); Mumbai 20 l. Commercial blocks with few residents show very high per-resident figures. The safety module's header now reads "safety and resilience".
+
+## Construction dust and heat (`sitedust` lens, js/urban-lenses-safety.js)
+
+Every block in the sites dataset (cleared this year, building up, or stalled with bare ground; all blow dust) with residents, OSM schools and Overture hospitals counted within 500 m, and flagged hot where its pre-monsoon Landsat surface temperature is 2°C+ above the city median (labourers working in the open). Map: 1 site, 2 near a school or hospital, 3 also hot. Delhi: 554 site blocks, 67.7 lakh residents within 500 m, 481 sites near a school or hospital. The sites dataset is thin for Bengaluru (25 blocks), so its figures understate construction there.
+
+## Hotel cluster fire safety (`hotelfire` lens, js/urban-lenses-safety.js)
+
+Cluster blocks have 10+ Overture lodging places within 500 m and sit in the top 3% of blocks with any (the top tenth flagged 1,831 Delhi blocks, too many to act on). Flags: packed (50%+ under roofs), no main road within 300 m, no listed fire station within 3 km, settled by 1985. Map: 1 cluster, 2 one flag, 3 two or more. Delhi: 555 cluster blocks (35+ lodgings within 500 m), 118 with two or more flags, led by Paharganj and Karol Bagh; Mumbai 188, 14 flagged twice. Built around the 2019 Hotel Arpit Palace fire.
