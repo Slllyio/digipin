@@ -714,16 +714,16 @@
         "pressure": 572.6
       },
       {
-        "digipin": "2TFJ448",
-        "demand_ecs": 542,
-        "supply_ecs": 0,
-        "pressure": 542.34
-      },
-      {
         "digipin": "2TFCL8T",
         "demand_ecs": 542,
         "supply_ecs": 0,
         "pressure": 541.95
+      },
+      {
+        "digipin": "2TFJ448",
+        "demand_ecs": 542,
+        "supply_ecs": 0,
+        "pressure": 542.34
       },
       {
         "digipin": "2TFJ437",

@@ -510,7 +510,7 @@
     "highstress_km": 4648,
     "islands": 9532,
     "islands_over_5_km2": 72,
-    "largest_island_km2": 150.0,
+    "largest_island_km2": 149.7,
     "pct_residents_small_island": 11.4,
     "pct_residents_no_lowstress_street": 0.4,
     "source": "Overture Maps transportation 2026-10-21.0"
@@ -578,12 +578,52 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 624,
-    "stops_with_heat_data": 624,
-    "pct_hot_bare": 35.7,
-    "pct_riders_at_hot_bare": 34.4,
-    "median_stop_lst_c": 39.7,
+    "stops": 2474,
+    "stops_with_heat_data": 2474,
+    "pct_hot_bare": 25.1,
+    "pct_riders_at_hot_bare": 25.7,
+    "median_stop_lst_c": 39.3,
     "top_stops": [
+      {
+        "digipin": "39J365K",
+        "name": "Bhajanpura",
+        "lon": 77.26404,
+        "lat": 28.70336,
+        "residents_5min": 51762,
+        "lst_c": 40.5,
+        "canopy_pct": 1.8,
+        "priority": 279567
+      },
+      {
+        "digipin": "39J4973",
+        "name": "Golcha Cinema",
+        "lon": 77.24031,
+        "lat": 28.64349,
+        "residents_5min": 52655,
+        "lst_c": 40.4,
+        "canopy_pct": 4.5,
+        "priority": 271542
+      },
+      {
+        "digipin": "39J4973",
+        "name": "Golcha Cinema",
+        "lon": 77.2405,
+        "lat": 28.64466,
+        "residents_5min": 52655,
+        "lst_c": 40.4,
+        "canopy_pct": 4.5,
+        "priority": 271542
+      },
+      {
+        "digipin": "39J3646",
+        "name": "Bhajanpura",
+        "lon": 77.2634,
+        "lat": 28.70369,
+        "residents_5min": 51714,
+        "lst_c": 40.3,
+        "canopy_pct": 1.4,
+        "priority": 270247
+      },
       {
         "digipin": "39J3646",
         "name": "Bhajanpura Bus Stop",
@@ -595,94 +635,54 @@
         "priority": 270247
       },
       {
-        "digipin": "39J4924",
-        "name": "Turkman Gate Bus Stop",
-        "lon": 77.2328,
-        "lat": 28.642,
-        "residents_5min": 45157,
-        "lst_c": 41.3,
-        "canopy_pct": 11.7,
-        "priority": 251204
-      },
-      {
-        "digipin": "39J497C",
-        "name": "Dariya Ganj Bus Stop",
-        "lon": 77.24007,
-        "lat": 28.64717,
-        "residents_5min": 49853,
-        "lst_c": 40.5,
-        "canopy_pct": 8.4,
-        "priority": 251159
-      },
-      {
-        "digipin": "39J4C94",
-        "name": "East Park Road Bus Stop",
-        "lon": 77.19733,
-        "lat": 28.65082,
-        "residents_5min": 53769,
-        "lst_c": 40.0,
-        "canopy_pct": 7.1,
-        "priority": 249757
-      },
-      {
-        "digipin": "39J5FK9",
-        "name": "Nirman Vihar Bus Stop",
-        "lon": 77.2869,
-        "lat": 28.637,
-        "residents_5min": 36999,
-        "lst_c": 41.3,
-        "canopy_pct": 1.3,
-        "priority": 230063
-      },
-      {
-        "digipin": "39J3T99",
-        "name": "Ghonda Chowk Bus Stop",
-        "lon": 77.27005,
-        "lat": 28.6905,
-        "residents_5min": 48359,
-        "lst_c": 40.1,
-        "canopy_pct": 6.8,
-        "priority": 229860
-      },
-      {
-        "digipin": "39J2KF6",
-        "name": "Jawahar Nagar Bus Stop",
-        "lon": 77.2897,
-        "lat": 28.72012,
-        "residents_5min": 34404,
-        "lst_c": 41.6,
-        "canopy_pct": 2.1,
-        "priority": 222298
-      },
-      {
-        "digipin": "39J3655",
-        "name": "B Block Yamuna Vihar Bus Stop",
-        "lon": 77.26947,
-        "lat": 28.70297,
-        "residents_5min": 48192,
-        "lst_c": 39.9,
-        "canopy_pct": 6.0,
-        "priority": 221972
-      },
-      {
-        "digipin": "39J4932",
-        "name": "Kamla Market Bada Akhada Bus Stop",
-        "lon": 77.22599,
-        "lat": 28.64337,
-        "residents_5min": 38258,
+        "digipin": "39J492K",
+        "name": "Zakir Hussain College",
+        "lon": 77.23004,
+        "lat": 28.64119,
+        "residents_5min": 45465,
         "lst_c": 41.4,
-        "canopy_pct": 11.6,
-        "priority": 216448
+        "canopy_pct": 8.4,
+        "priority": 266534
       },
       {
-        "digipin": "39J3T5J",
-        "name": "Kishan Gunj Bus Stop",
-        "lon": 77.26507,
-        "lat": 28.67066,
-        "residents_5min": 38757,
-        "lst_c": 40.5,
-        "canopy_pct": 0.8,
-        "priority": 211458
+        "digipin": "39J492K",
+        "name": "Zakir Hussain College",
+        "lon": 77.22963,
+        "lat": 28.64113,
+        "residents_5min": 45465,
+        "lst_c": 41.4,
+        "canopy_pct": 8.4,
+        "priority": 266534
+      },
+      {
+        "digipin": "39J4C9P",
+        "name": "Faiz Road",
+        "lon": 77.1993,
+        "lat": 28.64847,
+        "residents_5min": 55467,
+        "lst_c": 40.2,
+        "canopy_pct": 11.5,
+        "priority": 255259
+      },
+      {
+        "digipin": "39J4C9P",
+        "name": "",
+        "lon": 77.19828,
+        "lat": 28.64942,
+        "residents_5min": 55467,
+        "lst_c": 40.2,
+        "canopy_pct": 11.5,
+        "priority": 255259
+      },
+      {
+        "digipin": "39J4C9P",
+        "name": "Faiz Road",
+        "lon": 77.19973,
+        "lat": 28.64944,
+        "residents_5min": 55467,
+        "lst_c": 40.2,
+        "canopy_pct": 11.5,
+        "priority": 255259
       }
     ],
     "thresholds": {
@@ -691,7 +691,8 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "overture": 624
+      "osm": 1936,
+      "overture": 538
     }
   },
   "parking": {
