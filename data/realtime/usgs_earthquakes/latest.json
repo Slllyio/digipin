@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-10-25T09:18:20Z",
-  "count": 30,
+  "generated_at_iso": "2026-10-25T13:49:50Z",
+  "count": 29,
   "records": [
+    {
+      "id": "us6000u4ty",
+      "magnitude": 5.9,
+      "origin_time_utc": "2026-10-25T11:25:57.101000+00:00",
+      "latitude": 32.4625,
+      "longitude": 94.0534,
+      "depth_km": 7.0,
+      "place": "218 km ENE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4ty",
+      "tsunami": 0,
+      "significance": 536
+    },
+    {
+      "id": "us6000u4tx",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-10-25T11:24:14.089000+00:00",
+      "latitude": 32.3695,
+      "longitude": 93.8872,
+      "depth_km": 10.0,
+      "place": "199 km ENE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4tx",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us6000u4tq",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-10-25T10:30:27.588000+00:00",
+      "latitude": -4.3644,
+      "longitude": 143.0843,
+      "depth_km": 72.349,
+      "place": "33 km ESE of Ambunti, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4tq",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us6000u4tf",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-25T09:11:17.412000+00:00",
+      "latitude": 22.5515,
+      "longitude": 142.9691,
+      "depth_km": 133.076,
+      "place": "Volcano Islands, Japan region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4tf",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000u4tc",
       "magnitude": 5.4,
@@ -301,66 +349,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4mi",
       "tsunami": 0,
       "significance": 354
-    },
-    {
-      "id": "us6000u4mg",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-24T13:26:34.296000+00:00",
-      "latitude": 32.5629,
-      "longitude": 93.694,
-      "depth_km": 10.0,
-      "place": "195 km NE of Nagqu, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4mg",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000u4m9",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-24T11:48:08.678000+00:00",
-      "latitude": 19.805,
-      "longitude": 122.0872,
-      "depth_km": 10.0,
-      "place": "72 km S of Basco, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4m9",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000u4m6",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-24T11:20:27.157000+00:00",
-      "latitude": 13.3207,
-      "longitude": 51.5108,
-      "depth_km": 10.0,
-      "place": "148 km NNW of Kilmia, Yemen",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4m6",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u4m5",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-24T11:14:00.121000+00:00",
-      "latitude": -13.8212,
-      "longitude": 165.7345,
-      "depth_km": 10.0,
-      "place": "196 km W of Sola, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4m5",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u4lr",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-24T09:38:49.138000+00:00",
-      "latitude": -14.1348,
-      "longitude": 165.8048,
-      "depth_km": 10.0,
-      "place": "169 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4lr",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }
