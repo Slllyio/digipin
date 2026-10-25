@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-25T13:49:55Z",
+  "generated_at_iso": "2026-10-25T17:24:09Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-25 22:16:47|32.869,94.059",
+      "magnitude": 4.5,
+      "origin_time": "2026-10-25 22:16:47",
+      "latitude": 32.869,
+      "longitude": 94.059,
+      "depth_km": 15.0,
+      "region": "China",
+      "location": "538km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-25 20:55:46|32.685,93.925",
+      "magnitude": 3.9,
+      "origin_time": "2026-10-25 20:55:46",
+      "latitude": 32.685,
+      "longitude": 93.925,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "521km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-25 17:47:06|32.060,93.531",
       "magnitude": 3.8,
@@ -1628,28 +1650,6 @@
       "depth_km": 75.0,
       "region": "Pakistan",
       "location": "129km SSE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-15 12:01:09|27.880,88.304",
-      "magnitude": 2.6,
-      "origin_time": "2026-10-15 12:01:09",
-      "latitude": 27.88,
-      "longitude": 88.304,
-      "depth_km": 10.0,
-      "region": "Mangan, Sikkim",
-      "location": "48km WNW of Lachung, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-15 04:58:32|19.498,77.217",
-      "magnitude": 2.9,
-      "origin_time": "2026-10-15 04:58:32",
-      "latitude": 19.498,
-      "longitude": 77.217,
-      "depth_km": 5.0,
-      "region": "Hingoli, Maharashtra",
-      "location": "130km NW of Nizamabad, Telangana, India",
       "review_status": "Reviewed"
     }
   ]
