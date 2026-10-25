@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-10-25T19:51:33Z",
+  "generated_at_iso": "2026-10-25T22:17:43Z",
   "count": 100,
   "records": [
+    {
+      "id": "1792962839485008",
+      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 25 Oct 2026 21:14:29 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792962839485008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1792961563648008",
+      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 25 Oct 2026 20:53:19 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792961563648008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1792961178727008",
+      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 25 Oct 2026 20:47:09 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792961178727008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1792957591411041",
       "headline": "Moderate Rain with thunderstorm and lightning is likely to occur at isolated places over Mayiladuthurai, Nagapattinam, Pudukkottai, Ramanathapuram, Sivaganga and Karaikal in next 3 hours.",
@@ -1067,39 +1100,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792843122193008",
       "severity": "Minor",
       "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792842952035008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 11:56:35 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792842952035008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792842963597007",
-      "headline": "Moderate Rain is very likely to occur at a few places over Tenkasi, Thanjavur, Theni, The Nilgiris, Thiruvallur, Thiruvarur, Thoothukkudi, Tiruchirappalli, Tirunelveli, Tiruppur, Tiruvannamalai, Vellore, Viluppuram, Virudhunagar, Karaikal, Pondicherry in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 11:56:07 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792842963597007",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1792842837704007",
-      "headline": "Isol Moderate Rain TS is very likely to occur at isolated places over Chengalpattu, Chennai, Coimbatore, Dindigul, Kallakurichi, Kancheepuram, Kanniyakumari, Madurai, Mayiladuthurai, Nagapattinam, Pudukkottai, Ramanathapuram, Ranipet, Salem, Sivaganga, Tirupathur, Tiruppur, Tiruvannamalai in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 11:54:00 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792842837704007",
-      "severity": "Moderate",
-      "category": "Met-Storm",
       "tags": []
     }
   ]

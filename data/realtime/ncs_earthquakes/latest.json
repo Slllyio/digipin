@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-25T19:51:36Z",
+  "generated_at_iso": "2026-10-25T22:17:51Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-26 03:31:41|32.065,93.728",
+      "magnitude": 4.5,
+      "origin_time": "2026-10-26 03:31:41",
+      "latitude": 32.065,
+      "longitude": 93.728,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "460km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-26 01:04:07|25.461,91.407",
+      "magnitude": 2.6,
+      "origin_time": "2026-10-26 01:04:07",
+      "latitude": 25.461,
+      "longitude": 91.407,
+      "depth_km": 10.0,
+      "region": "South West Khasi Hills, Meghalaya",
+      "location": "38km WNW of Cherrapunjee, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-25 23:14:22|36.157,71.240",
       "magnitude": 5.5,
@@ -1628,28 +1650,6 @@
       "depth_km": 10.0,
       "region": "Kishtwar, Jammu and Kashmir",
       "location": "109km SSW of Alchi(Leh),Ladakh,India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-15 16:22:06|27.406,87.216",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-15 16:22:06",
-      "latitude": 27.406,
-      "longitude": 87.216,
-      "depth_km": 10.0,
-      "region": "Nepal",
-      "location": "99km W of Yuksom, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-15 15:21:30|37.262,70.505",
-      "magnitude": 4.4,
-      "origin_time": "2026-10-15 15:21:30",
-      "latitude": 37.262,
-      "longitude": 70.505,
-      "depth_km": 15.0,
-      "region": "Afghanistan",
-      "location": "18km NNW of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]
