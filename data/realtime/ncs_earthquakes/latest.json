@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-25T04:27:21Z",
+  "generated_at_iso": "2026-10-25T09:18:38Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-25 13:52:23|30.951,93.099",
+      "magnitude": 3.6,
+      "origin_time": "2026-10-25 13:52:23",
+      "latitude": 30.951,
+      "longitude": 93.099,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "364km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-25 12:51:44|29.574,80.292",
+      "magnitude": 3.7,
+      "origin_time": "2026-10-25 12:51:44",
+      "latitude": 29.574,
+      "longitude": 80.292,
+      "depth_km": 11.0,
+      "region": "Pithoragarh, Uttarakhand",
+      "location": "7km E of Pithoragarh, Uttarakhand, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-25 05:53:32|27.151,89.696",
       "magnitude": 2.5,
@@ -1628,28 +1650,6 @@
       "depth_km": 55.0,
       "region": "Kamjong, Manipur",
       "location": "31km E of Shirui, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-14 20:57:07|26.231,92.225",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-14 20:57:07",
-      "latitude": 26.231,
-      "longitude": 92.225,
-      "depth_km": 14.0,
-      "region": "Morigaon, Assam",
-      "location": "49km ENE of Guwahati, Assam, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-14 18:47:48|13.156,92.636",
-      "magnitude": 3.7,
-      "origin_time": "2026-10-14 18:47:48",
-      "latitude": 13.156,
-      "longitude": 92.636,
-      "depth_km": 10.0,
-      "region": "Bay of Bengal",
-      "location": "39km WSW of Diglipur, Andaman and Nicobar island, India",
       "review_status": "Reviewed"
     }
   ]
