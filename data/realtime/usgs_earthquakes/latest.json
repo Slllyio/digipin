@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-25T17:24:03Z",
-  "count": 23,
+  "generated_at_iso": "2026-10-25T19:51:34Z",
+  "count": 24,
   "records": [
+    {
+      "id": "us6000u4vb",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-25T17:49:58.419000+00:00",
+      "latitude": 52.1923,
+      "longitude": -178.8056,
+      "depth_km": 152.896,
+      "place": "153 km WNW of Adak, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4vb",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us6000u4va",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-10-25T17:44:23.735000+00:00",
+      "latitude": 36.274,
+      "longitude": 71.1025,
+      "depth_km": 110.025,
+      "place": "59 km SW of Ashkāsham, Afghanistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4va",
+      "tsunami": 0,
+      "significance": 418
+    },
+    {
+      "id": "us6000u4v1",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-25T17:11:49.932000+00:00",
+      "latitude": -16.0993,
+      "longitude": -73.4741,
+      "depth_km": 62.095,
+      "place": "19 km NE of Atico, Peru",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4v1",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us6000u4ty",
       "magnitude": 5.9,
@@ -108,7 +144,7 @@
       "place": "17 km SE of Ambelókipoi, Greece",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4sm",
       "tsunami": 0,
-      "significance": 371
+      "significance": 372
     },
     {
       "id": "us6000u4s5",
@@ -253,30 +289,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4pa",
       "tsunami": 0,
       "significance": 432
-    },
-    {
-      "id": "us6000u4ny",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-24T19:18:20.515000+00:00",
-      "latitude": -20.025,
-      "longitude": 168.7941,
-      "depth_km": 22.398,
-      "place": "73 km SW of Isangel, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4ny",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us6000u4nv",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-24T19:07:15.895000+00:00",
-      "latitude": -13.975,
-      "longitude": 165.6556,
-      "depth_km": 10.0,
-      "place": "193 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4nv",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }
