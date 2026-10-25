@@ -1,7 +1,84 @@
 {
-  "generated_at_iso": "2026-10-24T23:59:44Z",
+  "generated_at_iso": "2026-10-25T04:27:19Z",
   "count": 100,
   "records": [
+    {
+      "id": "1792898097424041",
+      "headline": "Moderate Rain with Heavy spells thunderstorm is very likely to occur at a few places over Ariyalur, Cuddalore, Mayiladuthurai, Nagapattinam, Thanjavur, Thiruvallur, Thiruvarur, Viluppuram, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 25 Oct 2026 03:17:19 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792898097424041",
+      "severity": "Severe",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1792898095485007",
+      "headline": "Moderate Rain with Heavy spells thunderstorm is very likely to occur at a few places over Ariyalur, Cuddalore, Mayiladuthurai, Nagapattinam, Thanjavur, Thiruvallur, Thiruvarur, Viluppuram, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 25 Oct 2026 03:14:57 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792898095485007",
+      "severity": "Severe",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1792897745415016",
+      "headline": "River Gandak at Dumariaghat in Gopalganj district of Bihar continues to flow in above normal flood situation at 6:00 am today.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 25 Oct 2026 03:09:06 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792897745415016",
+      "severity": "Minor",
+      "category": "Met-Flood",
+      "tags": []
+    },
+    {
+      "id": "1792895598707006",
+      "headline": "അടുത്ത 3 മണിക്കൂറിൽ TVM, KLM, PTA, ALP, KTM  ജില്ലകളിൽ ഒറ്റപ്പെട്ടയിടങ്ങളിൽ ഇടിമിന്നലോടുകൂടിയ ഇടത്തരം മഴയ്ക്കും 40-50 kmph വരെ വേഗതയിൽ ശക്തമായ കാറ്റിനും സാധ്യത. 08.00 AM, 25.10.2026 IMD-KSDMA",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 25 Oct 2026 02:39:35 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792895598707006",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1792891799411041",
+      "headline": "Lt to Mod Ra with LT TSL is likely at Isol places of CHN, VLR, RPT, TVLAI, TPT, TVL, KANCH, CGL, SLM, KRS, DRM, TRP, PDC, CDL, KKL, NPY, MDR, KAR, DND, RMD, KYK, TRN, THN, TENKSI, PDKT, TNJ, TIRV, ARY, ERD, KALL, SVG, PER and NMKL districts for next 03 Hrs.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 25 Oct 2026 01:32:35 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792891799411041",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1792891794098007",
+      "headline": "Lt to Mod Ra with LT TSL is likely at Isol places of CHN, VLR, RPT, TVLAI, TPT, TVL, KANCH, CGL, SLM, KRS, DRM, TRP, PDC, CDL, KKL, NPY, MDR, KAR, DND, RMD, KYK, TRN, THN, TENKSI, PDKT, TNJ, TIRV, ARY, ERD, KALL, SVG, PER and NMKL districts for next 03 Hrs.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 25 Oct 2026 01:30:00 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792891794098007",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1792887450005009",
+      "headline": "अगले ३ घंटों के दौरान उक्त जनपदों में कहीं-कहीं गर्जन के साथ आकाशीय बिजली चमकने/झोंकेदार हवाएं (30-40 Kmph) चलने एवं वर्षा के तीव्र दौर होने की संभावना है |",
+      "description": "",
+      "area": "",
+      "published_utc": "Sun, 25 Oct 2026 00:19:49 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792887450005009",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1792883063805041",
       "headline": "Lt to Mod Ra with  Lt TSL is likely to occur at isol places over ARY, CGP, Chennai, CDL, DRM, DND, KLCHI, KNCHP, KYK, Karur, KRSH, MYLD, NMKL, Perambalur, PDKT, Ranipet, SLM, Tenkasi, TNJ, Theni, TRVL, TRP, TRM, TRN, TRV, TRM, VLR, VLP, VRD, PDC in next 3 hours.",
@@ -1021,83 +1098,6 @@
       "area": "",
       "published_utc": "Sat, 24 Oct 2026 07:38:24 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792827442567008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792826697894008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 07:26:11 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792826697894008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792826190442008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 07:18:23 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792826190442008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792824525077008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 06:50:17 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792824525077008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792824372178008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 06:47:07 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792824372178008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792823939052008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 06:40:10 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792823939052008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792823779073008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 06:37:13 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792823779073008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792822222228008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 06:11:44 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792822222228008",
       "severity": "Minor",
       "category": "Other",
       "tags": []

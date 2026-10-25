@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-10-24T23:59:44Z",
+  "generated_at_iso": "2026-10-25T04:27:21Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-25 05:53:32|27.151,89.696",
+      "magnitude": 2.5,
+      "origin_time": "2026-10-25 05:53:32",
+      "latitude": 27.151,
+      "longitude": 89.696,
+      "depth_km": 17.0,
+      "region": "Bhutan",
+      "location": "36km S of Thimphu, Bhutan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-25 05:48:06|31.403,93.078",
+      "magnitude": 3.9,
+      "origin_time": "2026-10-25 05:48:06",
+      "latitude": 31.403,
+      "longitude": 93.078,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "411km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-25 04:38:08|36.315,71.701",
+      "magnitude": 4.3,
+      "origin_time": "2026-10-25 04:38:08",
+      "latitude": 36.315,
+      "longitude": 71.701,
+      "depth_km": 107.0,
+      "region": "Pakistan",
+      "location": "134km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-25 03:42:32|36.451,70.118",
       "magnitude": 3.5,
@@ -1617,39 +1650,6 @@
       "depth_km": 10.0,
       "region": "Bay of Bengal",
       "location": "39km WSW of Diglipur, Andaman and Nicobar island, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-14 18:05:18|20.018,72.944",
-      "magnitude": 2.3,
-      "origin_time": "2026-10-14 18:05:18",
-      "latitude": 20.018,
-      "longitude": 72.944,
-      "depth_km": 5.0,
-      "region": "Palghar, Maharashtra",
-      "location": "88km W of Nashik, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-14 17:59:48|24.170,93.929",
-      "magnitude": 3.3,
-      "origin_time": "2026-10-14 17:59:48",
-      "latitude": 24.17,
-      "longitude": 93.929,
-      "depth_km": 78.0,
-      "region": "Chandel, Manipur",
-      "location": "39km SSE of Moirang, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-14 09:33:22|34.858,69.507",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-14 09:33:22",
-      "latitude": 34.858,
-      "longitude": 69.507,
-      "depth_km": 15.0,
-      "region": "Afghanistan",
-      "location": "43km NE of Kabul , Afghanistan",
       "review_status": "Reviewed"
     }
   ]
