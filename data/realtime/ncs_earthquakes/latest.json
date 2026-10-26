@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-25T22:17:51Z",
+  "generated_at_iso": "2026-10-26T00:32:51Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-26 05:07:35|24.863,94.915",
+      "magnitude": 3.9,
+      "origin_time": "2026-10-26 05:07:35",
+      "latitude": 24.863,
+      "longitude": 94.915,
+      "depth_km": 115.0,
+      "region": "Myanmar",
+      "location": "44km E of Ukhrul, Manipur, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-26 04:34:07|32.404,94.409",
+      "magnitude": 4.1,
+      "origin_time": "2026-10-26 04:34:07",
+      "latitude": 32.404,
+      "longitude": 94.409,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "481km N of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-26 03:31:41|32.065,93.728",
       "magnitude": 4.5,
@@ -1628,28 +1650,6 @@
       "depth_km": 5.0,
       "region": "Bhutan",
       "location": "40km S of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-15 20:14:52|23.904,93.418",
-      "magnitude": 3.2,
-      "origin_time": "2026-10-15 20:14:52",
-      "latitude": 23.904,
-      "longitude": 93.418,
-      "depth_km": 10.0,
-      "region": "Myanmar",
-      "location": "21km E of Ngopa, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-15 16:30:33|33.373,76.574",
-      "magnitude": 2.8,
-      "origin_time": "2026-10-15 16:30:33",
-      "latitude": 33.373,
-      "longitude": 76.574,
-      "depth_km": 10.0,
-      "region": "Kishtwar, Jammu and Kashmir",
-      "location": "109km SSW of Alchi(Leh),Ladakh,India",
       "review_status": "Reviewed"
     }
   ]
