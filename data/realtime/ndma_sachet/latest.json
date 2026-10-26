@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-26T00:32:57Z",
+  "generated_at_iso": "2026-10-26T05:19:05Z",
   "count": 100,
   "records": [
+    {
+      "id": "1792988633444041",
+      "headline": "Light to Moderate Rain with Thunderstorm and Lightningh is very likely to occur at isolated places over Cuddalore, Mayiladuthurai, Nagapattinam, Ramanathapuram, Thiruvarur, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 26 Oct 2026 04:26:05 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792988633444041",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1792988631804007",
+      "headline": "Light to Moderate Rain with Thunderstorm and Lightningh is very likely to occur at isolated places over Cuddalore, Mayiladuthurai, Nagapattinam, Ramanathapuram, Thiruvarur, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 26 Oct 2026 04:23:54 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792988631804007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
     {
       "id": "1792962839485008",
       "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
@@ -1076,28 +1098,6 @@
       "area": "",
       "published_utc": "Sat, 24 Oct 2026 12:10:55 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792843808034008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792842966376041",
-      "headline": "Moderate Rain is very likely to occur at a few places over Tenkasi, Thanjavur, Theni, The Nilgiris, Thiruvallur, Thiruvarur, Thoothukkudi, Tiruchirappalli, Tirunelveli, Tiruppur, Tiruvannamalai, Vellore, Viluppuram, Virudhunagar, Karaikal, Pondicherry in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 11:59:35 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792842966376041",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1792843122193008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 11:59:15 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792843122193008",
       "severity": "Minor",
       "category": "Other",
       "tags": []

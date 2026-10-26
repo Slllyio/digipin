@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-10-26T00:32:51Z",
+  "generated_at_iso": "2026-10-26T05:19:11Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-26 08:58:15|32.660,93.911",
+      "magnitude": 4.2,
+      "origin_time": "2026-10-26 08:58:15",
+      "latitude": 32.66,
+      "longitude": 93.911,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "519km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-26 08:07:52|36.491,71.325",
+      "magnitude": 3.6,
+      "origin_time": "2026-10-26 08:07:52",
+      "latitude": 36.491,
+      "longitude": 71.325,
+      "depth_km": 79.0,
+      "region": "Afghanistan",
+      "location": "96km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-26 06:38:24|25.602,90.695",
+      "magnitude": 3.0,
+      "origin_time": "2026-10-26 06:38:24",
+      "latitude": 25.602,
+      "longitude": 90.695,
+      "depth_km": 5.0,
+      "region": "East Garo Hills, Meghalaya",
+      "location": "50km ENE of Tura, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-26 06:28:40|27.410,88.050",
+      "magnitude": 3.3,
+      "origin_time": "2026-10-26 06:28:40",
+      "latitude": 27.41,
+      "longitude": 88.05,
+      "depth_km": 10.0,
+      "region": "Nepal",
+      "location": "17km WNW of Yuksom, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-26 06:06:13|36.851,73.141",
+      "magnitude": 3.6,
+      "origin_time": "2026-10-26 06:06:13",
+      "latitude": 36.851,
+      "longitude": 73.141,
+      "depth_km": 15.0,
+      "region": "Pakistan",
+      "location": "231km E of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-26 05:07:35|24.863,94.915",
       "magnitude": 3.9,
@@ -1595,61 +1650,6 @@
       "depth_km": 7.0,
       "region": "Palghar, Maharashtra",
       "location": "85km W of Nashik, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-17 01:05:20|28.807,87.501",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-17 01:05:20",
-      "latitude": 28.807,
-      "longitude": 87.501,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "173km NW of Lachung, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-16 13:53:21|24.959,95.218",
-      "magnitude": 3.7,
-      "origin_time": "2026-10-16 13:53:21",
-      "latitude": 24.959,
-      "longitude": 95.218,
-      "depth_km": 180.0,
-      "region": "Myanmar",
-      "location": "74km E of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-16 10:47:13|36.697,71.391",
-      "magnitude": 4.2,
-      "origin_time": "2026-10-16 10:47:13",
-      "latitude": 36.697,
-      "longitude": 71.391,
-      "depth_km": 170.0,
-      "region": "Afghanistan",
-      "location": "87km ESE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-16 02:14:06|24.176,91.676",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-16 02:14:06",
-      "latitude": 24.176,
-      "longitude": 91.676,
-      "depth_km": 11.0,
-      "region": "Khowai, Tripura",
-      "location": "53km WSW of Dharmanagar, Tripura, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-15 23:21:59|27.222,91.945",
-      "magnitude": 2.8,
-      "origin_time": "2026-10-15 23:21:59",
-      "latitude": 27.222,
-      "longitude": 91.945,
-      "depth_km": 5.0,
-      "region": "Bhutan",
-      "location": "40km S of Tawang, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

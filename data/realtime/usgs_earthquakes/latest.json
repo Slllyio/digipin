@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-10-26T00:32:47Z",
-  "count": 22,
+  "generated_at_iso": "2026-10-26T05:19:02Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us6000u4y1",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-26T04:53:40.479000+00:00",
+      "latitude": -8.443,
+      "longitude": 121.5729,
+      "depth_km": 10.0,
+      "place": "45 km NNW of Ende, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4y1",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000u4y2",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-26T04:53:35.102000+00:00",
+      "latitude": -14.0694,
+      "longitude": 165.6991,
+      "depth_km": 10.0,
+      "place": "182 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4y2",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000u4xp",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-26T03:59:22.208000+00:00",
+      "latitude": -10.0437,
+      "longitude": 123.2505,
+      "depth_km": 35.0,
+      "place": "41 km WNW of Kupang, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4xp",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000u4xa",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-26T01:22:20.998000+00:00",
+      "latitude": -13.8803,
+      "longitude": 165.5831,
+      "depth_km": 10.0,
+      "place": "205 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4xa",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us6000u4wi",
       "magnitude": 4.8,
@@ -17,9 +65,9 @@
     {
       "id": "us6000u4we",
       "magnitude": 5.3,
-      "origin_time_utc": "2026-10-25T22:14:15.949000+00:00",
-      "latitude": 27.8376,
-      "longitude": 139.6752,
+      "origin_time_utc": "2026-10-25T22:14:16.010000+00:00",
+      "latitude": 27.8572,
+      "longitude": 139.6916,
       "depth_km": 485.13,
       "place": "Bonin Islands, Japan region",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4we",
@@ -181,90 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4sv",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000u4sm",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-25T05:15:44.196000+00:00",
-      "latitude": 37.6512,
-      "longitude": 21.0112,
-      "depth_km": 10.0,
-      "place": "17 km SE of Ambelókipoi, Greece",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4sm",
-      "tsunami": 0,
-      "significance": 372
-    },
-    {
-      "id": "us6000u4s5",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-10-25T03:29:10.551000+00:00",
-      "latitude": -6.1737,
-      "longitude": 147.1659,
-      "depth_km": 80.779,
-      "place": "63 km NNE of Lae, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4s5",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us6000u4rr",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-25T02:36:32.787000+00:00",
-      "latitude": 27.6872,
-      "longitude": 139.7389,
-      "depth_km": 498.883,
-      "place": "Bonin Islands, Japan region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4rr",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000u4rf",
-      "magnitude": 6.1,
-      "origin_time_utc": "2026-10-25T02:24:00.476000+00:00",
-      "latitude": -14.9964,
-      "longitude": 167.3039,
-      "depth_km": 116.0,
-      "place": "25 km ENE of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4rf",
-      "tsunami": 0,
-      "significance": 574
-    },
-    {
-      "id": "us6000u4r9",
-      "magnitude": 6.5,
-      "origin_time_utc": "2026-10-25T02:09:23.818000+00:00",
-      "latitude": 27.7953,
-      "longitude": 139.6184,
-      "depth_km": 492.376,
-      "place": "Bonin Islands, Japan region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4r9",
-      "tsunami": 1,
-      "significance": 650
-    },
-    {
-      "id": "us6000u4r7",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-25T02:06:10.299000+00:00",
-      "latitude": -14.4542,
-      "longitude": 165.7028,
-      "depth_km": 10.0,
-      "place": "161 km WNW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4r7",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us6000u4r3",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-25T01:46:23.382000+00:00",
-      "latitude": -14.3846,
-      "longitude": 165.6863,
-      "depth_km": 10.0,
-      "place": "166 km WNW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4r3",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }
