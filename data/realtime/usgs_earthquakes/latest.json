@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-26T05:19:02Z",
-  "count": 19,
+  "generated_at_iso": "2026-10-26T11:22:44Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us6000u4yr",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-10-26T10:13:01.234000+00:00",
+      "latitude": -18.283,
+      "longitude": -178.0109,
+      "depth_km": 641.812,
+      "place": "283 km E of Levuka, Fiji",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4yr",
+      "tsunami": 0,
+      "significance": 465
+    },
+    {
+      "id": "us6000u4yj",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-26T08:10:33.644000+00:00",
+      "latitude": 44.7225,
+      "longitude": 147.9339,
+      "depth_km": 139.439,
+      "place": "56 km S of Kuril’sk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4yj",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us6000u4yi",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-26T07:48:16.240000+00:00",
+      "latitude": 40.2886,
+      "longitude": 77.9297,
+      "depth_km": 10.0,
+      "place": "107 km WNW of Tumxuk, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4yi",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us6000u4y1",
       "magnitude": 5.0,
@@ -135,6 +171,18 @@
       "significance": 340
     },
     {
+      "id": "us6000u4u2",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-25T12:09:05.522000+00:00",
+      "latitude": 0.1306,
+      "longitude": 126.1478,
+      "depth_km": 43.812,
+      "place": "155 km WSW of Ternate, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4u2",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
       "id": "us6000u4ty",
       "magnitude": 5.9,
       "origin_time_utc": "2026-10-25T11:25:57.101000+00:00",
@@ -157,78 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4tx",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us6000u4tq",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-10-25T10:30:27.588000+00:00",
-      "latitude": -4.3644,
-      "longitude": 143.0843,
-      "depth_km": 72.349,
-      "place": "33 km ESE of Ambunti, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4tq",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us6000u4tf",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-25T09:11:17.412000+00:00",
-      "latitude": 22.5515,
-      "longitude": 142.9691,
-      "depth_km": 133.076,
-      "place": "Volcano Islands, Japan region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4tf",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000u4tc",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-10-25T08:41:00.034000+00:00",
-      "latitude": -13.8848,
-      "longitude": 165.5769,
-      "depth_km": 10.0,
-      "place": "205 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4tc",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us6000u4t8",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-25T07:44:32.506000+00:00",
-      "latitude": 53.4937,
-      "longitude": -165.1559,
-      "depth_km": 35.068,
-      "place": "82 km SSE of Akutan, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4t8",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000u4t4",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-25T07:11:49.640000+00:00",
-      "latitude": -16.0676,
-      "longitude": -74.747,
-      "depth_km": 26.454,
-      "place": "50 km SW of Atiquipa, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4t4",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000u4sv",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-25T06:04:22.644000+00:00",
-      "latitude": 37.849,
-      "longitude": 141.8415,
-      "depth_km": 52.782,
-      "place": "74 km SSE of Onagawa Chō, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4sv",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }

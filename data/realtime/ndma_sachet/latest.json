@@ -1,7 +1,95 @@
 {
-  "generated_at_iso": "2026-10-26T05:19:05Z",
+  "generated_at_iso": "2026-10-26T11:22:47Z",
   "count": 100,
   "records": [
+    {
+      "id": "1793012959058041",
+      "headline": "Light to Moderate Rain with light Thunderstorm and lightning is likely to occur at isolated places over Chengalpattu, Cuddalore, Dindigul, Kancheepuram, Madurai, Mayiladuthurai, Nagapattinam, Ramanathapuram, Sivaganga, Theni, Thiruvarur, Virudhunagar, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 26 Oct 2026 11:16:54 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793012959058041",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1793012952611007",
+      "headline": "Light to Moderate Rain with light Thunderstorm and lightning is likely to occur at isolated places over Chengalpattu, Cuddalore, Dindigul, Kancheepuram, Madurai, Mayiladuthurai, Nagapattinam, Ramanathapuram, Sivaganga, Theni, Thiruvarur, Virudhunagar, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 26 Oct 2026 11:09:15 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793012952611007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1793002134319006",
+      "headline": "അടുത്ത 24 മണിക്കൂറിൽ തിരുവനന്തപുരം, കൊല്ലം, പത്തനംതിട്ട ജില്ലകളിൽ ഒറ്റപ്പെട്ടയിടങ്ങളിൽ മലവെള്ളപ്പാച്ചിലിനു സാധ്യത. 26.10.2026; 01.38 PM ; IMD - KSDMA",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 26 Oct 2026 08:29:57 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793002134319006",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1793001335057041",
+      "headline": "Light to Moderate Rain with light Thunderstorm and lightning is likely to occur at isolated places over Cuddalore, Kanniyakumari, Mayiladuthurai, Nagapattinam, Ramanathapuram, Thiruvarur, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 26 Oct 2026 07:57:57 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793001335057041",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1793001334234007",
+      "headline": "Light to Moderate Rain with light Thunderstorm and lightning is likely to occur at isolated places over Cuddalore, Kanniyakumari, Mayiladuthurai, Nagapattinam, Ramanathapuram, Thiruvarur, Karaikal, Pondicherry in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 26 Oct 2026 07:55:36 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793001334234007",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1792997961004038",
+      "headline": "Heavy  rain (07-11 cm) accompanied with thunderstorm and lightning are very likely to occur at one or two places over Andaman and Nicobar  Islands in the next 24 hours. People are advised to stay at safe places.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 26 Oct 2026 07:29:28 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792997961004038",
+      "severity": "Severe",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1792998227227038",
+      "headline": "Squally weather with strong surface wind 40-50 Kmph gusting to 60 kmph very likely along and off  Andaman and Nicobar coast. Sea conditions are very likely to be  rough. Fishermen are advised not to venture into the Andaman sea till 27-10-2026.",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 26 Oct 2026 07:28:10 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792998227227038",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1792993500931008",
+      "headline": "అర్నబ్ తుపాను ఎల్లుండికి అతితీవ్ర తుపానుగా విశాఖ-బాపట్ల మధ్య తీరం దాటే అవకాశం ఉంది.దీని ప్రభావంతో రాత్రి నుంచి భారీ-అతిభారీ వర్షాలు కురిసే అకాశం ఉంది.అప్రమత్తంగా ఉండండి~ ఆంధ్రప్రదేశ్ ప్రభుత్వం",
+      "description": "",
+      "area": "",
+      "published_utc": "Mon, 26 Oct 2026 05:47:08 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792993500931008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1792988633444041",
       "headline": "Light to Moderate Rain with Thunderstorm and Lightningh is very likely to occur at isolated places over Cuddalore, Mayiladuthurai, Nagapattinam, Ramanathapuram, Thiruvarur, Karaikal, Pondicherry in next 3 hours.",
@@ -1012,94 +1100,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792846219927028",
       "severity": "Moderate",
       "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1792846147728008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 12:49:44 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792846147728008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792845967425008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 12:46:52 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792845967425008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792845757084036",
-      "headline": "ਅਗਲੇ 3 ਘੰਟਿਆਂ ਦੌਰਾਨ ਬਰਨਾਲਾ, ਫਰੀਦਕੋਟ, ਮਾਨਸਾ ਅਤੇ ਮੋਗਾ ਵਿੱਚ  ਮੀਂਹ ਅਤੇ ਤੇਜ਼ ਹਵਾਵਾਂ  ਚੱਲਣ ਦੀ ਸੰਭਾਵਨਾ ਹੈ। ਕਿਸੇ ਵੀ ਐਮਰਜੈਂਸੀ ਦੀ ਸਥਿਤੀ ਵਿੱਚ 112 ਤੇ ਕਾਲ ਕਰੋ। ਪੰਜਾਬ SDMA।",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 12:46:25 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792845757084036",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792845759207024",
-      "headline": "Thunderstorm with Lightning,rain and  Gusty winds(40-60 kmph) is likely to occur at isolated places over Bhiwani, Fatehabad, Sirsa in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 12:45:04 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792845759207024",
-      "severity": "Minor",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1792845633088008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 12:41:44 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792845633088008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792844879887008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 12:28:47 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792844879887008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792844285175008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 12:20:19 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792844285175008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792843808034008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 12:10:55 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792843808034008",
-      "severity": "Minor",
-      "category": "Other",
       "tags": []
     }
   ]

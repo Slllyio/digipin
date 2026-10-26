@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-26T05:19:11Z",
+  "generated_at_iso": "2026-10-26T11:22:47Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-26 11:52:59|25.514,90.723",
+      "magnitude": 2.9,
+      "origin_time": "2026-10-26 11:52:59",
+      "latitude": 25.514,
+      "longitude": 90.723,
+      "depth_km": 5.0,
+      "region": "East Garo Hills, Meghalaya",
+      "location": "52km E of Tura, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-26 11:15:51|26.849,68.767",
+      "magnitude": 4.2,
+      "origin_time": "2026-10-26 11:15:51",
+      "latitude": 26.849,
+      "longitude": 68.767,
+      "depth_km": 77.0,
+      "region": "Pakistan",
+      "location": "428km W of Jodhpur, Rajasthan, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-26 08:58:15|32.660,93.911",
       "magnitude": 4.2,
@@ -1628,28 +1650,6 @@
       "depth_km": 10.0,
       "region": "Shimla, Himachal Pradesh",
       "location": "40km ENE of Shimla, Himachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-17 03:47:31|20.075,72.965",
-      "magnitude": 2.3,
-      "origin_time": "2026-10-17 03:47:31",
-      "latitude": 20.075,
-      "longitude": 72.965,
-      "depth_km": 6.0,
-      "region": "Palghar, Maharashtra",
-      "location": "86km W of Nashik, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-17 03:33:33|20.066,72.974",
-      "magnitude": 2.2,
-      "origin_time": "2026-10-17 03:33:33",
-      "latitude": 20.066,
-      "longitude": 72.974,
-      "depth_km": 7.0,
-      "region": "Palghar, Maharashtra",
-      "location": "85km W of Nashik, Maharashtra, India",
       "review_status": "Reviewed"
     }
   ]
