@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-26T17:31:20Z",
-  "count": 18,
+  "generated_at_iso": "2026-10-26T21:52:23Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us7000ttbh",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-26T19:36:16.160000+00:00",
+      "latitude": -20.3438,
+      "longitude": -68.6903,
+      "depth_km": 119.519,
+      "place": "100 km E of La Tirana, Chile",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttbh",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000ttb5",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-26T18:07:04.209000+00:00",
+      "latitude": 38.6442,
+      "longitude": 71.0764,
+      "depth_km": 47.345,
+      "place": "74 km SE of Rasht, Tajikistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttb5",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000ttby",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-26T15:08:25.118000+00:00",
+      "latitude": -14.2093,
+      "longitude": 165.9223,
+      "depth_km": 10.0,
+      "place": "154 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttby",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us6000u4zb",
       "magnitude": 5.2,
@@ -25,18 +61,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4z7",
       "tsunami": 0,
       "significance": 326
-    },
-    {
-      "id": "aka2026vfhvld",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-26T11:38:04.221000+00:00",
-      "latitude": 53.461,
-      "longitude": -165.093,
-      "depth_km": 3.1,
-      "place": "87 km SSE of Akutan, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026vfhvld",
-      "tsunami": 0,
-      "significance": 354
     },
     {
       "id": "us6000u4z6",
@@ -181,42 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4wc",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us6000u4vy",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-25T20:30:42.515000+00:00",
-      "latitude": -14.2065,
-      "longitude": 165.7734,
-      "depth_km": 10.0,
-      "place": "167 km WNW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4vy",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000u4vb",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-25T17:49:58.419000+00:00",
-      "latitude": 52.1923,
-      "longitude": -178.8056,
-      "depth_km": 152.896,
-      "place": "153 km WNW of Adak, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4vb",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000u4va",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-10-25T17:44:23.735000+00:00",
-      "latitude": 36.274,
-      "longitude": 71.1025,
-      "depth_km": 110.025,
-      "place": "59 km SW of Ashkāsham, Afghanistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4va",
-      "tsunami": 0,
-      "significance": 418
     }
   ]
 }

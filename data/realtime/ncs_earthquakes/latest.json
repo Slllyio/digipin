@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-26T17:31:15Z",
+  "generated_at_iso": "2026-10-26T21:52:25Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-27 02:54:09|33.151,94.056",
+      "magnitude": 3.9,
+      "origin_time": "2026-10-27 02:54:09",
+      "latitude": 33.151,
+      "longitude": 94.056,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "569km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-26 23:37:01|38.626,70.823",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-26 23:37:01",
+      "latitude": 38.626,
+      "longitude": 70.823,
+      "depth_km": 10.0,
+      "region": "Tajikistan",
+      "location": "171km N of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-26 20:19:14|27.597,89.020",
       "magnitude": 3.0,
@@ -1628,28 +1650,6 @@
       "depth_km": 15.0,
       "region": "Kyrgyzstan",
       "location": "371km SSW of Bishkek, Kyrgyzstan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-17 10:37:00|27.944,66.532",
-      "magnitude": 5.8,
-      "origin_time": "2026-10-17 10:37:00",
-      "latitude": 27.944,
-      "longitude": 66.532,
-      "depth_km": 15.0,
-      "region": "Pakistan",
-      "location": "665km W of Bikaner, Rajasthan, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-17 09:05:27|27.232,89.710",
-      "magnitude": 2.7,
-      "origin_time": "2026-10-17 09:05:27",
-      "latitude": 27.232,
-      "longitude": 89.71,
-      "depth_km": 9.0,
-      "region": "Bhutan",
-      "location": "27km SSE of Thimphu, Bhutan",
       "review_status": "Reviewed"
     }
   ]
