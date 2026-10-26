@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-10-26T11:22:44Z",
-  "count": 17,
+  "generated_at_iso": "2026-10-26T17:31:20Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us6000u4zb",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-10-26T12:13:30.652000+00:00",
+      "latitude": -13.8613,
+      "longitude": 165.6029,
+      "depth_km": 10.0,
+      "place": "205 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4zb",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us6000u4z7",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-26T11:38:06.778000+00:00",
+      "latitude": 53.5071,
+      "longitude": -165.1239,
+      "depth_km": 35.0,
+      "place": "81 km SSE of Akutan, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4z7",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "aka2026vfhvld",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-26T11:38:04.221000+00:00",
+      "latitude": 53.461,
+      "longitude": -165.093,
+      "depth_km": 3.1,
+      "place": "87 km SSE of Akutan, Alaska",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/aka2026vfhvld",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us6000u4z6",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-26T11:17:55.055000+00:00",
+      "latitude": -13.9396,
+      "longitude": 165.3858,
+      "depth_km": 10.0,
+      "place": "218 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4z6",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us6000u4z3",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-26T11:01:55.933000+00:00",
+      "latitude": -59.8141,
+      "longitude": -27.7087,
+      "depth_km": 173.493,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4z3",
+      "tsunami": 0,
+      "significance": 354
+    },
     {
       "id": "us6000u4yr",
       "magnitude": 5.5,
@@ -157,54 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4va",
       "tsunami": 0,
       "significance": 418
-    },
-    {
-      "id": "us6000u4v1",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-25T17:11:49.932000+00:00",
-      "latitude": -16.0993,
-      "longitude": -73.4741,
-      "depth_km": 62.095,
-      "place": "19 km NE of Atico, Peru",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4v1",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us6000u4u2",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-25T12:09:05.522000+00:00",
-      "latitude": 0.1306,
-      "longitude": 126.1478,
-      "depth_km": 43.812,
-      "place": "155 km WSW of Ternate, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4u2",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us6000u4ty",
-      "magnitude": 5.9,
-      "origin_time_utc": "2026-10-25T11:25:57.101000+00:00",
-      "latitude": 32.4625,
-      "longitude": 94.0534,
-      "depth_km": 7.0,
-      "place": "218 km ENE of Nagqu, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4ty",
-      "tsunami": 0,
-      "significance": 536
-    },
-    {
-      "id": "us6000u4tx",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-25T11:24:14.089000+00:00",
-      "latitude": 32.3695,
-      "longitude": 93.8872,
-      "depth_km": 10.0,
-      "place": "199 km ENE of Nagqu, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4tx",
-      "tsunami": 0,
-      "significance": 400
     }
   ]
 }

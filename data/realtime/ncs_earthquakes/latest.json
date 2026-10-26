@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-26T11:22:47Z",
+  "generated_at_iso": "2026-10-26T17:31:15Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-26 20:19:14|27.597,89.020",
+      "magnitude": 3.0,
+      "origin_time": "2026-10-26 20:19:14",
+      "latitude": 27.597,
+      "longitude": 89.02,
+      "depth_km": 5.0,
+      "region": "Tibet",
+      "location": "29km ESE of Lachung, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-26 18:08:35|33.830,94.156",
+      "magnitude": 4.3,
+      "origin_time": "2026-10-26 18:08:35",
+      "latitude": 33.83,
+      "longitude": 94.156,
+      "depth_km": 15.0,
+      "region": "China",
+      "location": "641km N of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-26 11:52:59|25.514,90.723",
       "magnitude": 2.9,
@@ -1628,28 +1650,6 @@
       "depth_km": 9.0,
       "region": "Bhutan",
       "location": "27km SSE of Thimphu, Bhutan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-17 07:25:59|22.225,95.816",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-17 07:25:59",
-      "latitude": 22.225,
-      "longitude": 95.816,
-      "depth_km": 15.0,
-      "region": "Myanmar",
-      "location": "37km NNW of Burma, Myanmar",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-17 04:36:27|31.298,77.529",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-17 04:36:27",
-      "latitude": 31.298,
-      "longitude": 77.529,
-      "depth_km": 10.0,
-      "region": "Shimla, Himachal Pradesh",
-      "location": "40km ENE of Shimla, Himachal Pradesh, India",
       "review_status": "Reviewed"
     }
   ]
