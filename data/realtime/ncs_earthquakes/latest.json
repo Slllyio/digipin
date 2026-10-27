@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-10-27T12:32:21Z",
+  "generated_at_iso": "2026-10-27T18:17:18Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-27 22:52:47|14.352,93.080",
+      "magnitude": 4.5,
+      "origin_time": "2026-10-27 22:52:47",
+      "latitude": 14.352,
+      "longitude": 93.08,
+      "depth_km": 10.0,
+      "region": "Bay of Bengal",
+      "location": "121km N of Diglipur, Andaman and Nicobar island, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-27 21:27:00|36.352,71.308",
+      "magnitude": 4.6,
+      "origin_time": "2026-10-27 21:27:00",
+      "latitude": 36.352,
+      "longitude": 71.308,
+      "depth_km": 125.0,
+      "region": "Afghanistan",
+      "location": "107km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-27 19:39:06|36.183,70.073",
+      "magnitude": 4.6,
+      "origin_time": "2026-10-27 19:39:06",
+      "latitude": 36.183,
+      "longitude": 70.073,
+      "depth_km": 113.0,
+      "region": "Afghanistan",
+      "location": "110km SSW of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-27 18:19:25|30.075,79.908",
+      "magnitude": 2.8,
+      "origin_time": "2026-10-27 18:19:25",
+      "latitude": 30.075,
+      "longitude": 79.908,
+      "depth_km": 5.0,
+      "region": "Bageshwar, Uttarakhand",
+      "location": "62km NNW of Pithoragarh, Uttarakhand, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-27 15:20:50|20.912,79.167",
       "magnitude": 3.0,
@@ -1606,50 +1650,6 @@
       "depth_km": 5.0,
       "region": "Khargone, Madhya Pradesh",
       "location": "137km S of Indore, Madhya Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 11:02:30|27.624,87.280",
-      "magnitude": 2.8,
-      "origin_time": "2026-10-18 11:02:30",
-      "latitude": 27.624,
-      "longitude": 87.28,
-      "depth_km": 5.0,
-      "region": "Nepal",
-      "location": "97km WNW of Yuksom, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 10:03:33|28.731,76.695",
-      "magnitude": 2.2,
-      "origin_time": "2026-10-18 10:03:33",
-      "latitude": 28.731,
-      "longitude": 76.695,
-      "depth_km": 5.0,
-      "region": "Jhajjar, Haryana",
-      "location": "14km NNE of Jhajjar, Haryana",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 06:59:25|28.503,94.419",
-      "magnitude": 3.4,
-      "origin_time": "2026-10-18 06:59:25",
-      "latitude": 28.503,
-      "longitude": 94.419,
-      "depth_km": 5.0,
-      "region": "Shi Yomi, Arunachal Pradesh",
-      "location": "63km NNW of Basar, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 04:04:22|23.013,94.837",
-      "magnitude": 3.4,
-      "origin_time": "2026-10-18 04:04:22",
-      "latitude": 23.013,
-      "longitude": 94.837,
-      "depth_km": 90.0,
-      "region": "Myanmar",
-      "location": "161km ESE of Champhai, Mizoram, India",
       "review_status": "Reviewed"
     }
   ]

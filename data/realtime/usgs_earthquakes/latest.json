@@ -1,7 +1,67 @@
 {
-  "generated_at_iso": "2026-10-27T12:32:17Z",
-  "count": 18,
+  "generated_at_iso": "2026-10-27T18:17:55Z",
+  "count": 21,
   "records": [
+    {
+      "id": "us7000ttgq",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-27T15:31:42.073000+00:00",
+      "latitude": -23.7469,
+      "longitude": -179.7358,
+      "depth_km": 509.065,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttgq",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000ttgm",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-27T15:26:02.987000+00:00",
+      "latitude": 7.706,
+      "longitude": -81.584,
+      "depth_km": 10.0,
+      "place": "27 km W of Río Grande, Panama",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttgm",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000ttgf",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-10-27T14:44:00.933000+00:00",
+      "latitude": -9.1162,
+      "longitude": 110.3305,
+      "depth_km": 10.0,
+      "place": "128 km S of Pundong, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttgf",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us7000ttgh",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-27T14:43:09.497000+00:00",
+      "latitude": -9.3662,
+      "longitude": 110.2973,
+      "depth_km": 20.614,
+      "place": "156 km S of Pundong, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttgh",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000ttgc",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-27T14:09:06.874000+00:00",
+      "latitude": 36.2043,
+      "longitude": 69.9044,
+      "depth_km": 115.076,
+      "place": "41 km S of Farkhār, Afghanistan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttgc",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000ttfx",
       "magnitude": 4.6,
@@ -193,30 +253,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttbh",
       "tsunami": 0,
       "significance": 370
-    },
-    {
-      "id": "us7000ttb5",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-26T18:07:04.209000+00:00",
-      "latitude": 38.6442,
-      "longitude": 71.0764,
-      "depth_km": 47.345,
-      "place": "74 km SE of Rasht, Tajikistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttb5",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000ttby",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-26T15:08:25.118000+00:00",
-      "latitude": -14.2093,
-      "longitude": 165.9223,
-      "depth_km": 10.0,
-      "place": "154 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttby",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
