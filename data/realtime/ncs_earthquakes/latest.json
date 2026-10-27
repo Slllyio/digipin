@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-26T21:52:25Z",
+  "generated_at_iso": "2026-10-27T01:08:26Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-27 04:43:43|26.547,96.264",
+      "magnitude": 3.7,
+      "origin_time": "2026-10-27 04:43:43",
+      "latitude": 26.547,
+      "longitude": 96.264,
+      "depth_km": 139.0,
+      "region": "Myanmar",
+      "location": "138km SSW of Changlang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-27 04:05:32|31.792,93.074",
+      "magnitude": 3.9,
+      "origin_time": "2026-10-27 04:05:32",
+      "latitude": 31.792,
+      "longitude": 93.074,
+      "depth_km": 10.0,
+      "region": "Tibet",
+      "location": "451km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-27 02:54:09|33.151,94.056",
       "magnitude": 3.9,
@@ -1628,28 +1650,6 @@
       "depth_km": 10.0,
       "region": "Mirpur, Jammu and Kashmir",
       "location": "66km W of Rajouri, Jammu and Kashmir",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-17 14:12:35|24.239,82.502",
-      "magnitude": 3.5,
-      "origin_time": "2026-10-17 14:12:35",
-      "latitude": 24.239,
-      "longitude": 82.502,
-      "depth_km": 10.0,
-      "region": "Singrauli, Madhya Pradesh",
-      "location": "140km NNW of Ambikapur, Chhattisgarh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-17 11:07:42|39.620,73.554",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-17 11:07:42",
-      "latitude": 39.62,
-      "longitude": 73.554,
-      "depth_km": 15.0,
-      "region": "Kyrgyzstan",
-      "location": "371km SSW of Bishkek, Kyrgyzstan",
       "review_status": "Reviewed"
     }
   ]
