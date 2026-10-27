@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-10-27T06:16:02Z",
+  "generated_at_iso": "2026-10-27T12:32:21Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-27 15:20:50|20.912,79.167",
+      "magnitude": 3.0,
+      "origin_time": "2026-10-27 15:20:50",
+      "latitude": 20.912,
+      "longitude": 79.167,
+      "depth_km": 8.0,
+      "region": "Nagpur, Maharashtra",
+      "location": "27km SSE of Nagpur, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-27 15:17:12|22.338,82.513",
+      "magnitude": 3.5,
+      "origin_time": "2026-10-27 15:17:12",
+      "latitude": 22.338,
+      "longitude": 82.513,
+      "depth_km": 7.0,
+      "region": "Korba, Chhattishgarh",
+      "location": "48km NE of Bilaspur, Chhattisgarh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-27 15:05:58|20.962,79.178",
+      "magnitude": 2.3,
+      "origin_time": "2026-10-27 15:05:58",
+      "latitude": 20.962,
+      "longitude": 79.178,
+      "depth_km": 10.0,
+      "region": "Nagpur, Maharashtra",
+      "location": "22km SSE of Nagpur, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-27 14:59:23|31.800,78.221",
+      "magnitude": 3.0,
+      "origin_time": "2026-10-27 14:59:23",
+      "latitude": 31.8,
+      "longitude": 78.221,
+      "depth_km": 5.0,
+      "region": "Kinnaur, Himachal Pradesh",
+      "location": "106km E of Kullu, Himachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-27 09:17:17|27.491,88.774",
       "magnitude": 2.7,
@@ -1606,50 +1650,6 @@
       "depth_km": 90.0,
       "region": "Myanmar",
       "location": "161km ESE of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 03:58:36|37.497,72.708",
-      "magnitude": 3.7,
-      "origin_time": "2026-10-18 03:58:36",
-      "latitude": 37.497,
-      "longitude": 72.708,
-      "depth_km": 10.0,
-      "region": "Tajikistan",
-      "location": "195km ENE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 02:38:25|22.185,99.112",
-      "magnitude": 4.2,
-      "origin_time": "2026-10-18 02:38:25",
-      "latitude": 22.185,
-      "longitude": 99.112,
-      "depth_km": 10.0,
-      "region": "Myanmar",
-      "location": "159km NE of Hkolam ,Myanmar",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 02:02:25|34.724,73.267",
-      "magnitude": 3.4,
-      "origin_time": "2026-10-18 02:02:25",
-      "latitude": 34.724,
-      "longitude": 73.267,
-      "depth_km": 130.0,
-      "region": "Pakistan",
-      "location": "117km N of Islamabad, Pakistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 00:00:54|33.731,86.176",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-18 00:00:54",
-      "latitude": 33.731,
-      "longitude": 86.176,
-      "depth_km": 163.0,
-      "region": "Tibet",
-      "location": "673km N of Kathmandu, Nepal",
       "review_status": "Reviewed"
     }
   ]
