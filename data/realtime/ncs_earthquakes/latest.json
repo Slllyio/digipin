@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-27T18:17:18Z",
+  "generated_at_iso": "2026-10-27T22:28:36Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-28 00:27:54|32.658,93.917",
+      "magnitude": 5.0,
+      "origin_time": "2026-10-28 00:27:54",
+      "latitude": 32.658,
+      "longitude": 93.917,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "518km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-27 22:52:47|14.352,93.080",
       "magnitude": 4.5,
@@ -1639,17 +1650,6 @@
       "depth_km": 72.0,
       "region": "Kamjong, Manipur",
       "location": "10km WSW of Ukhrul, Manipur, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 12:15:23|21.483,75.953",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-18 12:15:23",
-      "latitude": 21.483,
-      "longitude": 75.953,
-      "depth_km": 5.0,
-      "region": "Khargone, Madhya Pradesh",
-      "location": "137km S of Indore, Madhya Pradesh, India",
       "review_status": "Reviewed"
     }
   ]

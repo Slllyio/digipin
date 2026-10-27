@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-10-27T18:17:55Z",
-  "count": 21,
+  "generated_at_iso": "2026-10-27T22:28:37Z",
+  "count": 19,
   "records": [
+    {
+      "id": "us7000ttis",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-10-27T18:57:53.135000+00:00",
+      "latitude": 32.5388,
+      "longitude": 93.9028,
+      "depth_km": 10.0,
+      "place": "210 km ENE of Nagqu, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttis",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us7000tth4",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-27T16:07:53.845000+00:00",
+      "latitude": 18.2708,
+      "longitude": 119.8508,
+      "depth_km": 10.0,
+      "place": "70 km WNW of Callaguip, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tth4",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000ttgq",
       "magnitude": 5.0,
@@ -205,54 +229,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttd1",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000ttci",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-26T21:18:11.526000+00:00",
-      "latitude": -36.4594,
-      "longitude": 138.5321,
-      "depth_km": 10.0,
-      "place": "98 km S of Encounter Bay, Australia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttci",
-      "tsunami": 0,
-      "significance": 352
-    },
-    {
-      "id": "us7000ttc8",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-26T20:52:11.505000+00:00",
-      "latitude": -32.2811,
-      "longitude": -71.3014,
-      "depth_km": 47.738,
-      "place": "20 km NNW of La Ligua, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttc8",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ttc6",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-26T20:41:25.106000+00:00",
-      "latitude": 5.6361,
-      "longitude": 126.5418,
-      "depth_km": 75.119,
-      "place": "89 km SSE of Pondaguitan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttc6",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000ttbh",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-26T19:36:16.160000+00:00",
-      "latitude": -20.3438,
-      "longitude": -68.6903,
-      "depth_km": 119.519,
-      "place": "100 km E of La Tirana, Chile",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttbh",
-      "tsunami": 0,
-      "significance": 370
     }
   ]
 }
