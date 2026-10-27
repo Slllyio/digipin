@@ -1,16 +1,71 @@
 {
-  "generated_at_iso": "2026-10-27T01:08:22Z",
+  "generated_at_iso": "2026-10-27T06:16:02Z",
   "count": 100,
   "records": [
     {
-      "id": "1793062813816012",
-      "headline": "Moderate Thunderstorms,Rain and Lightning  with surface wind  30-40kmph  is very likely to occur at many places over Bhadrak, Ganjam, Jajapur, Kendrapara in next 3 hours.",
+      "id": "1793079972306008",
+      "headline": "బంగాళాఖాతంలోని అతితీవ్ర తుపాన్ ప్రభావంతోఈ రోజు మీప్రాంతంలో ఈదురుగాలులతో భారీ వర్షాలు కురిసే అవకాశం ఉంది.ప్రజలు అత్యంత అప్రమత్తంగా ఉండి జాగ్రత్తలు తీసుకోవాలి-ఆంధ్రప్రదేశ్ ప్రభుత్వం",
       "description": "",
       "area": "",
-      "published_utc": "Tue, 27 Oct 2026 01:00:15 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793062813816012",
-      "severity": "Moderate",
+      "published_utc": "Tue, 27 Oct 2026 05:56:51 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793079972306008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1793076694653018",
+      "headline": "Heavy Rain with squally winds(60-80kmph) is likely to occur at isolated places over Bastar, Dantewada, Sukma in next 24 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Tue, 27 Oct 2026 05:13:30 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793076694653018",
+      "severity": "Severe",
       "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1793075460735012",
+      "headline": "ଭାରତ ପାଣିପାଗ ବିଭାଗର ତଥ୍ୟ ଅନୁଯାୟୀ, ଆପଣଙ୍କ ଅଞ୍ଚଳର ଅନେକ ସ୍ଥାନରେ ହାଲୁକା ଘଡ଼ଘଡ଼ି ଏବଂ ବିଜୁଳି ସହିତ ମଧ୍ୟମରୁ ପ୍ରବଳ ବର୍ଷା ଏବଂ ପବନ ହେବାର ସମ୍ଭାବନା ରହିଛି । ଏଥିପ୍ରତି ସତର୍କ ରହିବାକୁ ଅନୁରୋଧ । SRC, Odisha",
+      "description": "",
+      "area": "",
+      "published_utc": "Tue, 27 Oct 2026 04:49:00 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793075460735012",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1793067649379008",
+      "headline": "బంగాళాఖాతంలోని అతితీవ్ర తుపాన్ ప్రభావంతో రోజు మీప్రాంతంలో ఈదురుగాలులతో భారీ వర్షాలు కురిసే అవకాశం ఉంది.ప్రజలు అత్యంత అప్రమత్తంగా ఉండి జాగ్రత్తలు తీసుకోవాలి-ఆంధ్రప్రదేశ్ ప్రభుత్వం",
+      "description": "",
+      "area": "",
+      "published_utc": "Tue, 27 Oct 2026 02:39:08 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793067649379008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1793062813816012",
+      "headline": "ଭାରତ ପାଣିପାଗ ବିଭାଗର ତଥ୍ୟ ଅନୁଯାୟୀ, ଆଗାମୀ ତିନି ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ମଧ୍ୟମ ଧରଣର ଘଡ଼ଘଡ଼ି, ବିଜୁଳି, ଏବଂ ପବନ ହେବାର ସମ୍ଭାବନା ରହିଛି । ଏଥିପ୍ରତି ସତର୍କ ରହିବାକୁ ଅନୁରୋଧ । SRC, Odisha",
+      "description": "",
+      "area": "",
+      "published_utc": "Tue, 27 Oct 2026 01:52:14 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793062813816012",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1793065350287012",
+      "headline": "ଭାରତ ପାଣିପାଗ ବିଭାଗର ତଥ୍ୟ ଅନୁଯାୟୀ, ଆଗାମୀ ତିନି ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ମଧ୍ୟମ ଧରଣର ଘଡ଼ଘଡ଼ି, ବିଜୁଳି, ଏବଂ ପବନ ହେବାର ସମ୍ଭାବନା ରହିଛି । ଏଥିପ୍ରତି ସତର୍କ ରହିବାକୁ ଅନୁରୋଧ । SRC, Odisha",
+      "description": "",
+      "area": "",
+      "published_utc": "Tue, 27 Oct 2026 01:51:03 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793065350287012",
+      "severity": "Minor",
+      "category": "Other",
       "tags": []
     },
     {
@@ -1043,61 +1098,6 @@
       "area": "",
       "published_utc": "Sat, 24 Oct 2026 16:59:25 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792861046918009",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792859773702029",
-      "headline": "पुढील ३ तासात कोल्हापूर, रत्नागिरी आणि सिंधुदुर्ग जिल्ह्यात काही ठिकाणी हलक्या ते मध्यम स्वरूपाच्या पावसाची, तसेच मेघगर्जनेसह विजा चमकण्याची शक्यता आहे. नागरिकांनी सतर्क राहवे. मंत्रालय,",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 16:41:44 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792859773702029",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792857313859013",
-      "headline": "अगले 3 घंटों के आपके जनपद के कुछ इलाकों में आंधी-तूफान (हवा की गति 30-40 किमी/घंटा, जो 50 किमी/घंटा तक पहुंच सकती है) और बिजली कड़कने के साथ मध्यम से तेज बारिश होने की संभावना है।",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 16:02:25 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792857313859013",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792856081858024",
-      "headline": "Rain/ Moderate Thunderstorms with Gusty winds (40-50kmph) is likely to occur at a few places over Ambala, Karnal, Kurukshetra, Yamunanagar in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 15:35:59 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792856081858024",
-      "severity": "Moderate",
-      "category": "Met-Storm",
-      "tags": []
-    },
-    {
-      "id": "1792855392814006",
-      "headline": "അടുത്ത 3 മണിക്കൂറിൽ KNR, KSG, PKD ജില്ലകളിൽ ഒറ്റപ്പെട്ടയിടങ്ങളിൽ ഇടിമിന്നലോടുകൂടിയ ഇടത്തരം മഴയ്ക്കും 40-50 kmph വരെ വേഗതയിൽ ശക്തമായ കാറ്റിനും സാധ്യത. 08.30 PM, 24.10.2026 IMD-KSDMA",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 15:28:59 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792855392814006",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1792853094078006",
-      "headline": "അടുത്ത 24 മണിക്കൂറിൽ പത്തനംതിട്ട ജില്ലയിൽ ഒറ്റപ്പെട്ടയിടങ്ങളിൽ വെള്ളപ്പൊക്കത്തിന് സാധ്യത. 24.10.2026; 08.14 PM ; IMD - KSDMA",
-      "description": "",
-      "area": "",
-      "published_utc": "Sat, 24 Oct 2026 14:52:51 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1792853094078006",
       "severity": "Minor",
       "category": "Other",
       "tags": []

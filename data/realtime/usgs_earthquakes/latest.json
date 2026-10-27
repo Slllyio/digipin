@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-10-27T01:08:20Z",
-  "count": 20,
+  "generated_at_iso": "2026-10-27T06:15:58Z",
+  "count": 18,
   "records": [
+    {
+      "id": "us7000tte4",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-27T02:02:55.847000+00:00",
+      "latitude": -10.6683,
+      "longitude": 161.3189,
+      "depth_km": 35.0,
+      "place": "69 km WSW of Kirakira, Solomon Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tte4",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000tte0",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-27T01:17:53.898000+00:00",
+      "latitude": 33.2845,
+      "longitude": 140.7128,
+      "depth_km": 66.715,
+      "place": "203 km SSE of Tateyama, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tte0",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000ttdt",
       "magnitude": 4.8,
@@ -48,7 +72,7 @@
       "place": "98 km S of Encounter Bay, Australia",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttci",
       "tsunami": 0,
-      "significance": 350
+      "significance": 351
     },
     {
       "id": "us7000ttc8",
@@ -193,54 +217,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4yi",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us6000u4y1",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-26T04:53:40.479000+00:00",
-      "latitude": -8.443,
-      "longitude": 121.5729,
-      "depth_km": 10.0,
-      "place": "45 km NNW of Ende, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4y1",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us6000u4y2",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-26T04:53:35.102000+00:00",
-      "latitude": -14.0694,
-      "longitude": 165.6991,
-      "depth_km": 10.0,
-      "place": "182 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4y2",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000u4xp",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-26T03:59:22.208000+00:00",
-      "latitude": -10.0437,
-      "longitude": 123.2505,
-      "depth_km": 35.0,
-      "place": "41 km WNW of Kupang, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4xp",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us6000u4xa",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-26T01:22:20.998000+00:00",
-      "latitude": -13.8803,
-      "longitude": 165.5831,
-      "depth_km": 10.0,
-      "place": "205 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000u4xa",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }

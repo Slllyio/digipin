@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-27T01:08:26Z",
+  "generated_at_iso": "2026-10-27T06:16:02Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-27 09:17:17|27.491,88.774",
+      "magnitude": 2.7,
+      "origin_time": "2026-10-27 09:17:17",
+      "latitude": 27.491,
+      "longitude": 88.774,
+      "depth_km": 5.0,
+      "region": "Mangan, Sikkim",
+      "location": "22km S of Lachung, Sikkim, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-27 04:43:43|26.547,96.264",
       "magnitude": 3.7,
@@ -1639,17 +1650,6 @@
       "depth_km": 163.0,
       "region": "Tibet",
       "location": "673km N of Kathmandu, Nepal",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-17 20:40:13|33.286,73.606",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-17 20:40:13",
-      "latitude": 33.286,
-      "longitude": 73.606,
-      "depth_km": 10.0,
-      "region": "Mirpur, Jammu and Kashmir",
-      "location": "66km W of Rajouri, Jammu and Kashmir",
       "review_status": "Reviewed"
     }
   ]
