@@ -870,6 +870,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "streetpoles": {
+     "label": "Street light poles per km of street",
+     "value": 29.8,
+     "unit": "poles/km",
+     "higherIs": "better"
+    },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
      "value": 26.1,

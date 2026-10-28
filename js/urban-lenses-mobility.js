@@ -1472,7 +1472,58 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // Street light poles. BBMP's pole survey says how densely streets are lit: lamps every 30-40 m on main roads and up
+    // to ~60 m on lanes means 15 or more poles per km of street, so a block under DIM_POLES per road km has dark
+    // stretches. Judged only on surveyed ground (SURVEY_SHARE of lived-in blocks within 500 m have listed poles).
+    const DIM_POLES = 15, SURVEY_SHARE = 0.75;
+
+    function streetpoles(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], pl = c['street_lights.poles'], led = c['street_lights.led'];
+        const road = c['osm_roads.road_km_km2'];
+        if (!pop || !pl || !road || !pl.some(v => v > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0), area = g.dx * g.dy;
+        const has = Float64Array.from({ length: n }, (_, i) => (v(pop, i) > 0 && v(pl, i) > 0 ? 1 : 0));
+        const lived = Float64Array.from({ length: n }, (_, i) => (v(pop, i) > 0 ? 1 : 0));
+        const hN = within(g, has, 0.5), lN = within(g, lived, 0.5);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && v(road, i) > 0 && lN[i] > 0 && hN[i] / lN[i] >= SURVEY_SHARE) idx.push(i);
+        if (idx.length < 5) return null;
+        const km = i => v(road, i) * area, per = i => v(pl, i) / km(i);
+        const poles = idx.reduce((a, i) => a + v(pl, i), 0), roadKm = idx.reduce((a, i) => a + km(i), 0);
+        const dim = idx.filter(i => per(i) < DIM_POLES), all = _sumOver(pop, idx, () => true), pDim = _sumOver(pop, dim, () => true);
+        const stats = [
+            { label: 'Street light poles listed (surveyed blocks)', value: _people(poles) },
+            { label: 'Poles per km of street', value: String(_round(poles / (roadKm || 1), 1)) },
+            { label: `Residents in blocks under ${DIM_POLES} poles per street km`, value: `${_people(pDim)} (${_round(100 * pDim / (all || 1))}%)` },
+            { label: 'Street km in those blocks', value: `${_people(dim.reduce((a, i) => a + km(i), 0))} km` },
+        ];
+        if (led) stats.push({ label: 'Poles with LED lamps', value: `${_round(100 * idx.reduce((a, i) => a + v(led, i), 0) / (poles || 1))}%` });
+        const need = Float64Array.from({ length: n }, (_, i) => (per(i) < DIM_POLES ? v(pop, i) * (DIM_POLES - per(i)) : 0));
+        const picks = [];
+        for (const i of dim.slice().sort((a, b) => need[b] - need[a])) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, k) => stats.push({ label: `Light here ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(per(i), 1)} poles per street km over ${_round(km(i), 1)} km of street; ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(per(i), 1);
+        return {
+            columns: { poles_per_km: out }, idx, weightKey: 'poles_per_km', noHotspots: true,
+            metric: { label: 'Street light poles per km of street', value: _round(poles / (roadKm || 1), 1), unit: 'poles/km', higherIs: 'better' },
+            headline: `BBMP's survey lists ${_people(poles)} street light poles here, ${_round(poles / (roadKm || 1), 1)} per km of mapped street; ${_people(pDim)} residents (${_round(100 * pDim / (all || 1))}%) live in blocks with under ${DIM_POLES} per km, where stretches go dark. Only four of BBMP's eight zones are mapped, and a listed pole may not be working.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'streetpoles', equity: true, title: 'Street light poles', icon: '💡',
+            question: 'Which streets have too few light poles to be lit at night?',
+            field: { key: 'poles_per_km', label: 'Street light poles per km of street', unit: 'poles/km', higherIs: 'better', ramp: 'viridis', domain: [0, 40] },
+            needs: ['street_lights.poles', 'street_lights.led', 'osm_roads.road_km_km2', 'population.population'],
+            method: `BBMP's 2024 street light pole maps on data.opencity.in (public domain) for Bangalore East, RR Nagar, Bommanahalli and Dasarahalli zones (about 1.9 lakh distinct poles, with lamp type), counted per block and divided by the block's OpenStreetMap street length. A block under ${DIM_POLES} poles per street km has gaps longer than the 30-60 m spacing urban lighting codes use. Blocks are judged only where ${SURVEY_SHARE * 100}% of the lived-in blocks within 500 m have listed poles, since the other zones are not mapped. Picks rank dim blocks by residents times the pole shortfall, 1 km apart. Pole counts say nothing about lamps that are out; VIIRS night light (Night walk lens) shows what actually glows.`,
+            refs: 'BBMP street light survey 2024 (OpenCity); OpenStreetMap; IS 1944 / NBC street lighting spacing' },
         { id: 'cleanwalk', equity: true, title: 'Exhaust on the walk to school', icon: '😷',
             question: 'How much traffic exhaust do children breathe on the walk to school, and is there a cleaner route?',
             field: { key: 'walk_exhaust', label: 'Traffic exhaust along the shortest walk (100 = busiest tenth of road cells)', unit: 'index', higherIs: 'worse', ramp: 'heat' },
@@ -1648,7 +1699,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk, crashrecord, anganwadi, freeclinic }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk, crashrecord, anganwadi, freeclinic, streetpoles }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

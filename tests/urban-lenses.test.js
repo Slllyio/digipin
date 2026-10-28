@@ -390,6 +390,20 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.freeclinic(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('streetpoles lens: poles per street km on surveyed ground', () => {
+        const half = (a, b) => codes.map((_, i) => (i % SIZE < SIZE / 2 ? a : b));
+        const pop = codes.map(() => 1000);
+        const f = L.frameFrom(codes, { 'population.population': pop, 'street_lights.poles': half(1, 30), 'street_lights.led': half(1, 0),
+            'osm_roads.road_km_km2': codes.map(() => 10) });
+        const r = L._lenses.streetpoles(f, {});
+        expect(r.stats[2].value).toMatch(/\(50%\)/);
+        expect(r.stats[4].value).toBe("3.2%");
+        expect(r.columns.poles_per_km[0]).toBeLessThan(15);
+        expect(r.columns.poles_per_km[SIZE - 1]).toBeGreaterThan(15);
+        expect(r.stats.some(s => /^Light here 1: /.test(s.label))).toBe(true);
+        expect(L._lenses.streetpoles(L.frameFrom(codes, { 'population.population': pop, 'osm_roads.road_km_km2': codes.map(() => 10) }), {})).toBeNull();
+    });
+
     it('crashrecord lens: residents by traffic police jurisdiction', () => {
         const half = (a, b) => codes.map((_, i) => (i % SIZE < SIZE / 2 ? a : b));
         const pop = codes.map(() => 100);

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T14:31:58Z",
+  "generated": "2026-10-28T14:42:22Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -31502,6 +31502,63 @@
             "north": 18.64111328125
           },
           "json": "street_infra/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "street_lights",
+      "title": "Street lights (BBMP pole survey)",
+      "description": "Street light poles from BBMP's 2024 street light maps on data.opencity.in for four of its eight zones (Bangalore East, RR Nagar, Bommanahalli, Dasarahalli), counted per block with how many carry LED lamps.",
+      "source": "pipeline/realestate/streetlights.py (OpenCity BBMP street light maps)",
+      "license": "Public domain (BBMP via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "poles",
+          "label": "Street light poles (BBMP survey)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "poles",
+          "domain": [
+            1,
+            224
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "led",
+          "label": "LED street light poles",
+          "type": "number",
+          "agg": "sum",
+          "unit": "poles",
+          "domain": [
+            0,
+            147
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "poles",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 4598,
+          "bbox": {
+            "west": 77.46142578125,
+            "south": 12.833740234375,
+            "east": 77.68115234375,
+            "north": 13.093017578125
+          },
+          "json": "street_lights/bengaluru.json",
           "parquet": null
         }
       ]
