@@ -888,7 +888,48 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    const VACANT_17 = 40;
+
+    function vacant2017(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, vac = c['landuse_2017.vacant_pct'], res = c['landuse_2017.residential_pct'];
+        const com = c['landuse_2017.commercial_pct'], ind = c['landuse_2017.industrial_pct'], fresh = c['building_stock.new_buildings'];
+        if (!vac || !res || !res.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0), nb = i => Math.max(v(fresh, i), 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(res[i]) || _fin(vac[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const km2 = (a, f = () => true) => idx.reduce((t, i) => t + (f(i) ? v(a, i) / 100 * g.cellKm2 : 0), 0);
+        const open17 = idx.filter(i => v(vac, i) >= VACANT_17);
+        const fills = open17.map(nb).sort((a, b) => a - b), medFill = fills.length ? fills[Math.floor(fills.length / 2)] : 0;
+        const still = open17.filter(i => nb(i) <= Math.min(medFill, 5)), filled = open17.filter(i => nb(i) > medFill);
+        const area = idx.length * g.cellKm2;
+        const stats = [
+            { label: 'Ground mapped in the 2017 land use map', value: `${_round(area, 0)} km²` },
+            { label: 'Residential; commercial; industrial (2017)', value: `${_round(100 * km2(res) / area)}%; ${_round(100 * km2(com) / area)}%; ${_round(100 * km2(ind) / area)}%` },
+            { label: 'Vacant land and unbuilt layouts in 2017', value: `${_round(km2(vac), 1)} km² (${_round(100 * km2(vac) / area)}%)` },
+            { label: `Blocks at least ${VACANT_17}% vacant in 2017`, value: `${open17.length}` },
+            ...(fresh ? [{ label: 'Of them, with few or no new buildings since 2016', value: `${still.length} (${_round(100 * still.length / (open17.length || 1))}%)` }] : []),
+        ];
+        const keep = Float64Array.from({ length: n }, (_, i) => v(vac, i) * g.cellKm2 / (1 + nb(i)));
+        spaced(g, still, keep, 4).forEach((i, k) => stats.push({ label: `Still open since 2017 ${k + 1}: ${g.codes[i]}`, value: `${_round(v(vac, i))}% vacant in 2017; ${Math.round(nb(i))} new buildings since 2016` }));
+        if (fresh) spaced(g, filled, Float64Array.from({ length: n }, (_, i) => nb(i)), 3).forEach((i, k) => stats.push({ label: `Filled in since 2017 ${k + 1}: ${g.codes[i]}`, value: `${_round(v(vac, i))}% vacant in 2017; ${Math.round(nb(i))} new buildings since 2016` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(v(vac, i));
+        return {
+            columns: { vacant_2017_pct: out }, idx, weightKey: 'vacant_2017_pct', noHotspots: true,
+            metric: { label: 'Vacant land and unbuilt layouts in 2017', value: _round(km2(vac), 1), unit: 'km²', higherIs: 'better' },
+            headline: `KSRSAC's 2017 map puts ${_round(km2(vac), 1)} km² of the city (${_round(100 * km2(vac) / area)}%) as vacant land or laid-out but unbuilt layouts. ${open17.length} blocks were at least ${VACANT_17}% vacant${fresh ? `; ${still.length} of them have added few or no buildings since 2016, the land still most likely open today` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'vacant2017', equity: false, title: 'Vacant land in 2017, and since', icon: '🏗️',
+            question: 'Where was land vacant in the official 2017 map, and which of it is still open?',
+            field: { key: 'vacant_2017_pct', label: 'Vacant land and unbuilt layouts in 2017 (KSRSAC)', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [0, 80] },
+            needs: ['landuse_2017.vacant_pct', 'landuse_2017.residential_pct', 'landuse_2017.commercial_pct', 'landuse_2017.industrial_pct', 'building_stock.new_buildings'],
+            method: `The Karnataka State Remote Sensing Applications Centre's 2017 urban land use map of the BBMP area on data.opencity.in (public domain; about 157,000 polygons). Each block is sampled on a 6 x 6 grid of points (about 40 m apart) and each point takes its polygon's class: residential, commercial, industrial, vacant land and laid-out but unbuilt layouts, civic, green, farm, water or road. Blocks at least ${VACANT_17}% vacant in 2017 are then checked against new buildings since 2016 from the building stock layer: those at or below the median (and at most 5) are "still open", those above it "filled in". The 2017 map covers the old BBMP area only, and its vacant class includes defence and government land kept open, so a pick is a lead to check, not a plot for sale.`,
+            refs: 'KSRSAC Bengaluru urban land use and land cover 2017 via OpenCity; NRSC LULC classification (level I-III); Google Open Buildings temporal' },
         { id: 'studenthousing', equity: false, title: 'Student housing near colleges', icon: '🎓',
             question: 'Where do colleges draw students but few hostels or PGs are listed nearby?',
             field: { key: 'student_gap', label: `College pull within ${STUDENT_KM} km per listed hostel or PG (plus one)`, unit: 'index', higherIs: 'worse', ramp: 'reds', domain: [0, 12] },
@@ -1023,6 +1064,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017 });
     return { ENTRIES };
 })();

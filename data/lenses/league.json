@@ -888,6 +888,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "vacant2017": {
+     "label": "Vacant land and unbuilt layouts in 2017",
+     "value": 94.5,
+     "unit": "km²",
+     "higherIs": "better"
+    },
     "studenthousing": {
      "label": "Blocks within 2 km of a college",
      "value": 17949,
