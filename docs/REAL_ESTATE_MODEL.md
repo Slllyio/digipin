@@ -1229,3 +1229,7 @@ Election Commission of India 2024 tables on data.opencity.in (public domain): ca
 
 `UrbanLenses.places()` adds the MP, so DISHA's "who is the MP here?" and the property report name them. The lens shows the resident-weighted turnout, residents in segments under 50% and in seats won by under 2%, and the lowest-turnout segments. Low turnout partly reflects stale electoral rolls, not only abstention.
 
+## Anganwadi reach (`anganwadi` lens in js/urban-lenses-mobility.js, `anganwadis` dataset, pipeline/realestate/anganwadis.py)
+
+Anganwadi (ICDS) centre points from data.opencity.in (public domain): the Telangana state map (35,364 centres) clipped to the Hyderabad region, the Karnataka KGIS map (65,654) clipped to Bengaluru, and Greater Chennai's 2023 map (1,806, corporation limits only). Duplicates are dropped and centres counted per L7 block. The lens walks the OpenStreetMap network (walkTree, out to 1 km) from every centre and counts children under five (WorldPop) more than 500 m away, those in mapped slum blocks, and residents per centre against the ICDS urban norm of 400-800; it picks up to five new-centre sites with at least 60 unserved children under five within 500 m, 1 km apart.
+

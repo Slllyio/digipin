@@ -906,6 +906,12 @@
      "unit": "crashes",
      "higherIs": "worse"
     },
+    "anganwadi": {
+     "label": "Children under 5 beyond a 500 m walk of an anganwadi",
+     "value": 31,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 4.9,
@@ -2613,6 +2619,12 @@
     "roadsafety": {
      "label": "Children whose walk to school crosses a fast, busy road",
      "value": 21.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "anganwadi": {
+     "label": "Children under 5 beyond a 500 m walk of an anganwadi",
+     "value": 41.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5037,6 +5049,12 @@
     "roadsafety": {
      "label": "Children whose walk to school crosses a fast, busy road",
      "value": 18.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "anganwadi": {
+     "label": "Children under 5 beyond a 500 m walk of an anganwadi",
+     "value": 36.9,
      "unit": "%",
      "higherIs": "worse"
     },

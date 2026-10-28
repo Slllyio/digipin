@@ -369,6 +369,17 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.busgap(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('anganwadi lens: children under 5 beyond a walk of a centre', () => {
+        const pop = codes.map(() => 100), kids = codes.map(() => 10);
+        const f = L.frameFrom(codes, { 'population.population': pop, 'demographics.under5': kids, 'anganwadis.centres': codes.map((_, i) => (i === 0 ? 1 : 0)) });
+        const r = L._lenses.anganwadi(f, {});
+        expect(r.stats[0].value).toBe('1');
+        expect(r.metric.value).toBeGreaterThan(50);
+        expect(r.columns.awc_walk_m[0]).toBe(0);
+        expect(r.stats.some(x => x.label.startsWith('New centre 1'))).toBe(true);
+        expect(L._lenses.anganwadi(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('crashrecord lens: residents by traffic police jurisdiction', () => {
         const half = (a, b) => codes.map((_, i) => (i % SIZE < SIZE / 2 ? a : b));
         const pop = codes.map(() => 100);

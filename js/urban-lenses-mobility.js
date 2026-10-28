@@ -1388,6 +1388,48 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // Anganwadi reach. Children under five walk (or are carried) to the anganwadi for meals, pre-school and immunisation;
+    // the ICDS urban norm is a centre for every 400-800 people, within easy walking distance.
+    const AWC_KM = 0.5, AWC_KIDS = 60;
+
+    function anganwadi(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], awc = c['anganwadis.centres'];
+        const kids = c['demographics.under5'], slum = c['slums_mapped.slum_pct'];
+        if (!pop || !awc || !awc.some(v => v > 0)) return null;
+        const idx = _residents(fr);
+        if (idx.length < 5) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const tree = walkTree(fr, i => awc[i] > 0, 2 * AWC_KM);
+        const kid = i => (kids && _fin(kids[i]) ? kids[i] : pop[i] * 0.08);
+        const far = idx.filter(i => !(tree.dist[i] <= AWC_KM));
+        const kAll = idx.reduce((a, i) => a + kid(i), 0), kFar = far.reduce((a, i) => a + kid(i), 0);
+        const centres = idx.reduce((a, i) => a + v(awc, i), 0), pAll = _sumOver(pop, idx, () => true);
+        const stats = [
+            { label: 'Anganwadi centres mapped in lived-in blocks', value: _people(centres) },
+            { label: 'Residents per centre (ICDS urban norm 400-800)', value: _people(pAll / Math.max(centres, 1)) },
+            { label: `Children under 5 more than ${AWC_KM * 1000} m walk from one`, value: `${_people(kFar)} of ${_people(kAll)} (${_round(100 * kFar / (kAll || 1))}%)` },
+        ];
+        if (slum && far.some(i => v(slum, i) >= 20)) stats.push({ label: '…of them in blocks a fifth or more mapped slum', value: _people(far.filter(i => v(slum, i) >= 20).reduce((a, i) => a + kid(i), 0)) });
+        const gap = new Float64Array(n);
+        for (const i of far) gap[i] = kid(i);
+        const need = within(g, gap, AWC_KM);
+        const picks = [];
+        for (const i of far.slice().sort((a, b) => need[b] - need[a])) {
+            if (picks.length >= 5 || need[i] < AWC_KIDS) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 2 * AWC_KM)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, k) => stats.push({ label: `New centre ${k + 1}: ${g.codes[i]}`, value: `${_people(need[i])} children under 5 within ${AWC_KM * 1000} m have none closer` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _fin(tree.dist[i]) ? _round(tree.dist[i] * 1000) : 2000 * AWC_KM;
+        return {
+            columns: { awc_walk_m: out }, idx, weightKey: 'awc_walk_m', noHotspots: true,
+            metric: { label: `Children under 5 beyond a ${AWC_KM * 1000} m walk of an anganwadi`, value: _round(100 * kFar / (kAll || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(kFar)} children under five (${_round(100 * kFar / (kAll || 1))}%) live more than a ${AWC_KM * 1000} m walk from an anganwadi, and the city has one centre for every ${_people(pAll / Math.max(centres, 1))} residents (the ICDS urban norm is 400-800 people in the areas it serves). Centres come from the state's anganwadi map, which can lag openings and closures.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'cleanwalk', equity: true, title: 'Exhaust on the walk to school', icon: '😷',
             question: 'How much traffic exhaust do children breathe on the walk to school, and is there a cleaner route?',
@@ -1442,6 +1484,12 @@ const UrbanLensesMobility = (() => {
             needs: ['road_crashes.fatal_per_km2', 'road_crashes.fatal_yr', 'road_crashes.crashes_yr', 'road_crashes.fatal_change_pct', 'population.population'],
             method: `Bengaluru Traffic Police station-wise crash tables for 2018-2025 and its 2022 jurisdiction map, both public domain on data.opencity.in. Each lived-in block takes its jurisdiction's crashes and fatal crashes a year (2023-2025 mean) and the fatal count per km²; stations opened since 2022 (Mahadevapura, Bellanduru, JP Nagar, Thalagattapura, Jnanabharathi, Kodigehalli) are added to the jurisdiction they were carved from, so the change against 2018-2019 compares like with like. 'Twice the median' uses the median jurisdiction's fatal crashes per km². Bengaluru only; no other city in DISHA publishes station-wise crash counts with a jurisdiction map.`,
             refs: 'Bengaluru Traffic Police station-wise road crash data 2018-2025 and jurisdiction map 2022 (data.opencity.in); MoRTH Road Accidents in India 2024; WHO 2023 Global status report on road safety' },
+        { id: 'anganwadi', equity: true, title: 'Anganwadi reach', icon: '🍼',
+            question: 'Which young children live too far from an anganwadi?',
+            field: { key: 'awc_walk_m', label: 'Walk to the nearest anganwadi', unit: 'm', higherIs: 'worse', ramp: 'reds', domain: [0, 1000] },
+            needs: ['anganwadis.centres', 'demographics.under5', 'slums_mapped.slum_pct', 'osm_walk.links', 'population.population'],
+            method: `Anganwadi (ICDS) centres from the state and city maps on data.opencity.in: Telangana for Hyderabad, Karnataka (KGIS) for Bengaluru, and Greater Chennai (2023). Children under 5 are WorldPop's under-5 count (8% of residents where missing). The walk follows the OpenStreetMap walking network between blocks, out to ${2 * AWC_KM} km. New-centre picks are blocks with at least ${AWC_KIDS} unserved children under 5 within ${AWC_KM * 1000} m, ${2 * AWC_KM} km apart. The ICDS urban norm is one centre per 400-800 people in the areas it serves, so the city-wide ratio overstates the gap where better-off homes do not use it. Chennai's map covers the corporation only, so suburbs such as Pallavaram show as gaps; the maps can lag openings and closures.`,
+            refs: 'Integrated Child Development Services (Ministry of Women and Child Development) population norms; Saksham Anganwadi and Poshan 2.0 guidelines 2022; OpenCity anganwadi maps' },
         { id: 'busgap', equity: true, title: 'Bus gaps on busy roads', icon: '🚌',
             question: 'Which busy commute corridors have no frequent bus?',
             field: { key: 'corridor_pcu', label: 'Peak-hour traffic on the nearest busy arterial', unit: 'PCU/h', higherIs: 'worse', ramp: 'heat' },
@@ -1552,7 +1600,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk, crashrecord }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk, crashrecord, anganwadi }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

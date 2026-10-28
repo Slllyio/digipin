@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T13:40:23Z",
+  "generated": "2026-10-28T13:54:44Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -922,6 +922,74 @@
             "north": 18.6455078125
           },
           "json": "air_trend/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "anganwadis",
+      "title": "Anganwadi centres (ICDS, OpenCity)",
+      "description": "Anganwadi (Integrated Child Development Services) centres per block from the state and city maps on data.opencity.in (hyderabad: Telangana anganwadis map; bengaluru: Karnataka anganwadis map (KGIS); chennai: Chennai anganwadis map 2023). Duplicate points dropped.",
+      "source": "pipeline/realestate/anganwadis.py (OpenCity anganwadi maps)",
+      "license": "Public domain (data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "centres",
+          "label": "Anganwadi centres",
+          "type": "number",
+          "agg": "sum",
+          "unit": "centres",
+          "domain": [
+            1,
+            11
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "centres",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 1429,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.13916015625
+          },
+          "json": "anganwadis/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 745,
+          "bbox": {
+            "west": 80.14208984375,
+            "south": 12.917236328125,
+            "east": 80.3134765625,
+            "north": 13.1787109375
+          },
+          "json": "anganwadis/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1281,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "anganwadis/hyderabad.json",
           "parquet": null
         }
       ]
