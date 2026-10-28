@@ -1,0 +1,1 @@
+{"version":1,"dataset":"stps","region":"chennai","level":7,"fields":["stps","capacity_mld","proposed"],"cells":["4T32668","4T32973","4T36FF4","4T37FM6","4T38CMT","4T38J7F","4T38L7C","4T39TJM"],"columns":{"stps":[1,1,1,1,1,1,1,1],"capacity_mld":[0,50,18,0.6,0,0,10,0],"proposed":[null,null,null,null,null,null,null,null]}}

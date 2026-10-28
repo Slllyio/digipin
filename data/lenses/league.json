@@ -876,6 +876,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stpnear": {
+     "label": "Residents within 500 m of a sewage treatment plant",
+     "value": 1.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "watergap": {
      "label": "Residents with no water line within 250 m",
      "value": 3.8,
@@ -2691,6 +2697,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "stpnear": {
+     "label": "Residents within 500 m of a sewage treatment plant",
+     "value": 0.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10413,6 +10425,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "stpnear": {
+     "label": "Residents within 500 m of a sewage treatment plant",
+     "value": 1.8,
      "unit": "%",
      "higherIs": "worse"
     },

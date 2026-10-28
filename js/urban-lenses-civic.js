@@ -8,7 +8,7 @@
 const UrbanLensesCivic = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people, _sumOver, within } = UrbanLenses._kit;
+    const { _fin, _round, _people, _sumOver, _residents, within } = UrbanLenses._kit;
 
     const SPACING_KM = 1.5, TOP = 5;
 
@@ -545,7 +545,51 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Sewage treatment plants. Homes beside a plant live with its smell and trucks, and a city whose plants are smaller
+    // than the sewage its people make sends the rest raw into lakes and rivers.
+    const STP_NEAR_KM = 0.5, STP_JUDGE_KM = 3, SEWAGE_LPCD = 135 * 0.8;   // CPHEEO: 135 L a day, 80% returns as sewage
+
+    function stpnear(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], st = c['stps.stps'], cap = c['stps.capacity_mld'], prop = c['stps.proposed'];
+        if (!pop || !st || !st.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const arr = k => Float64Array.from({ length: n }, (_, i) => v(k, i));
+        const stA = arr(st), near = within(g, stA, STP_NEAR_KM), mid = within(g, stA, 1), judge = within(g, stA, STP_JUDGE_KM);
+        const pNear = prop ? within(g, arr(prop), STP_NEAR_KM) : null;
+        const idx = _residents(fr).filter(i => judge[i] > 0);
+        if (idx.length < 5) return null;
+        const plants = stA.reduce((a, x) => a + x, 0), mld = arr(cap).reduce((a, x) => a + x, 0);
+        const people = _sumOver(pop, _residents(fr), () => true), made = people * SEWAGE_LPCD / 1e6;
+        const inNear = _sumOver(pop, idx.filter(i => near[i] > 0), () => true);
+        const stats = [
+            { label: 'Sewage treatment plants mapped', value: `${_round(plants)}${mld > 0 ? `, ${_people(mld)} MLD` : ''}` },
+            { label: `Residents within ${STP_NEAR_KM * 1000} m of a plant`, value: `${_people(inNear)} (${_round(100 * inNear / (people || 1), 1)}%)` },
+        ];
+        let noCap = 0;
+        for (let i = 0; i < n; i++) if (v(st, i) > 0 && !(v(cap, i) > 0)) noCap += v(st, i);
+        const capKnown = noCap <= plants * 0.15;   // a few plants without a listed capacity still give a fair total
+        if (capKnown && mld > 0) stats.push({ label: `Sewage made by ${_people(people)} residents (${SEWAGE_LPCD} L a day each) vs plant capacity`, value: `${_people(made)} MLD vs ${_people(mld)} MLD (${_round(100 * mld / (made || 1))}%)${noCap ? `; ${_round(noCap)} plant${noCap > 1 ? 's' : ''} without a listed capacity` : ''}` });
+        if (pNear && pNear.some(x => x > 0)) stats.push({ label: `Residents within ${STP_NEAR_KM * 1000} m of a proposed plant`, value: _people(_sumOver(pop, idx.filter(i => pNear[i] > 0 && !(near[i] > 0)), () => true)) });
+        const around = within(g, arr(pop), STP_NEAR_KM), sites = [];
+        for (let i = 0; i < n; i++) if (v(st, i) > 0) sites.push(i);
+        spaced(g, sites, around).forEach((i, k) => stats.push({ label: `Most hemmed-in plant ${k + 1}: ${g.codes[i]}`, value: `${_people(around[i])} residents within ${STP_NEAR_KM * 1000} m${v(cap, i) > 0 ? `; ${_round(v(cap, i))} MLD` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = near[i] > 0 ? 2 : mid[i] > 0 ? 1 : 0;
+        return {
+            columns: { stp_near: out }, idx, weightKey: 'stp_near', noHotspots: true,
+            metric: { label: `Residents within ${STP_NEAR_KM * 1000} m of a sewage treatment plant`, value: _round(100 * inNear / (people || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(inNear)} residents live within ${STP_NEAR_KM * 1000} m of one of the ${_round(plants)} mapped sewage treatment plants${capKnown && mld > 0 ? `, and the plants' rated capacity equals about ${_round(100 * mld / (made || 1))}% of the sewage the city's residents make (at ${SEWAGE_LPCD} litres a head a day; plants often run below their rating)` : ''}. Nearness flags smell and truck traffic to check on a visit, not a health risk.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'stpnear', equity: false, title: 'Sewage treatment plants nearby', icon: '🏭',
+            question: 'Who lives next to a sewage treatment plant, and can the plants treat the city\'s sewage?',
+            field: { key: 'stp_near', label: 'Sewage treatment plant within 500 m (2), within 1 km (1), farther (0)', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
+            needs: ['stps.stps', 'stps.capacity_mld', 'stps.proposed', 'population.population'],
+            method: `Sewage treatment plants on data.opencity.in (public domain): BWSSB's list of 39 plants with coordinates and capacity (Bengaluru, about 1,370 MLD), CMWSSB's plant outlines (Chennai, 8 plants; capacity only for some) and PMC's existing (9, about 470 MLD) and proposed (8) plants (Pune). Lived-in blocks within ${STP_JUDGE_KM} km of a plant are judged on the block grid: within ${STP_NEAR_KM * 1000} m, within 1 km, or farther. Where nearly every plant (85% or more) has a listed capacity, the total is set against the sewage the city's residents make at CPHEEO's 135 litres a head a day with 80% returned as sewage. Picks are plants ${SPACING_KM} km apart with the most residents within ${STP_NEAR_KM * 1000} m.`,
+            refs: 'CPHEEO Manual on Sewerage and Sewage Treatment Systems (2013); BWSSB, CMWSSB and PMC via OpenCity' },
         { id: 'watergap', equity: true, title: 'Piped water gaps', icon: '🚰',
             question: 'Which neighbourhoods have no piped water line nearby?',
             field: { key: 'water_cover_pct', label: 'Water line length as a share of street length (0 = none within 250 m)', unit: '%', higherIs: 'better', ramp: 'blues', domain: [0, 100] },
@@ -626,6 +670,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear });
     return { ENTRIES };
 })();
