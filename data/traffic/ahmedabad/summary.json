@@ -818,12 +818,62 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 78,
-    "stops_with_heat_data": 78,
-    "pct_hot_bare": 87.2,
-    "pct_riders_at_hot_bare": 85.2,
-    "median_stop_lst_c": 44.1,
+    "stops": 2008,
+    "stops_with_heat_data": 2008,
+    "pct_hot_bare": 83.0,
+    "pct_riders_at_hot_bare": 84.2,
+    "median_stop_lst_c": 44.0,
     "top_stops": [
+      {
+        "digipin": "3KLKC2P",
+        "name": "",
+        "lon": 72.55916,
+        "lat": 23.01459,
+        "residents_5min": 58177,
+        "lst_c": 42.7,
+        "canopy_pct": 8.4,
+        "priority": 410334
+      },
+      {
+        "digipin": "3KLKC59",
+        "name": "",
+        "lon": 72.55737,
+        "lat": 23.01347,
+        "residents_5min": 57409,
+        "lst_c": 42.4,
+        "canopy_pct": 7.8,
+        "priority": 391690
+      },
+      {
+        "digipin": "3KLK9T5",
+        "name": "",
+        "lon": 72.60164,
+        "lat": 22.99863,
+        "residents_5min": 45104,
+        "lst_c": 43.8,
+        "canopy_pct": 5.1,
+        "priority": 376673
+      },
+      {
+        "digipin": "3KLK9T4",
+        "name": "",
+        "lon": 72.60024,
+        "lat": 23.00048,
+        "residents_5min": 40722,
+        "lst_c": 44.2,
+        "canopy_pct": 1.3,
+        "priority": 369772
+      },
+      {
+        "digipin": "3KLK9T4",
+        "name": "",
+        "lon": 72.60069,
+        "lat": 22.99992,
+        "residents_5min": 40722,
+        "lst_c": 44.2,
+        "canopy_pct": 1.3,
+        "priority": 369772
+      },
       {
         "digipin": "3KLK25P",
         "name": "Popular Wheelers",
@@ -845,84 +895,34 @@
         "priority": 360208
       },
       {
-        "digipin": "3KLKCM3",
-        "name": "Vasna Bus Station",
-        "lon": 72.54805,
-        "lat": 23.00177,
-        "residents_5min": 37852,
-        "lst_c": 44.6,
-        "canopy_pct": 5.9,
-        "priority": 341940
+        "digipin": "3KLKC2T",
+        "name": "",
+        "lon": 72.55955,
+        "lat": 23.01404,
+        "residents_5min": 52904,
+        "lst_c": 42.2,
+        "canopy_pct": 7.5,
+        "priority": 352341
       },
       {
-        "digipin": "3KLK256",
-        "name": "Mukesh Industries Bus Stop",
-        "lon": 72.59532,
-        "lat": 22.97404,
-        "residents_5min": 23375,
-        "lst_c": 49.4,
-        "canopy_pct": 0.8,
-        "priority": 333907
+        "digipin": "3KLKC58",
+        "name": "",
+        "lon": 72.56098,
+        "lat": 23.01272,
+        "residents_5min": 51754,
+        "lst_c": 42.4,
+        "canopy_pct": 8.7,
+        "priority": 349660
       },
       {
-        "digipin": "3KLKCFP",
-        "name": "Nehru Nagar Bus Stop",
-        "lon": 72.54168,
-        "lat": 23.02255,
-        "residents_5min": 45811,
-        "lst_c": 42.5,
-        "canopy_pct": 7.3,
-        "priority": 318501
-      },
-      {
-        "digipin": "3KLKCMC",
-        "name": "Vasna Bus Stand",
-        "lon": 72.54768,
-        "lat": 23.0038,
-        "residents_5min": 39513,
+        "digipin": "3KLK9T6",
+        "name": "",
+        "lon": 72.60344,
+        "lat": 22.99996,
+        "residents_5min": 45353,
         "lst_c": 43.3,
-        "canopy_pct": 7.0,
-        "priority": 305001
-      },
-      {
-        "digipin": "3KLK9CC",
-        "name": "Mirjapur Chowk Bus Stop",
-        "lon": 72.583,
-        "lat": 23.03029,
-        "residents_5min": 35409,
-        "lst_c": 44.2,
-        "canopy_pct": 6.9,
-        "priority": 303285
-      },
-      {
-        "digipin": "3KLKC7M",
-        "name": "Paldi Bus Parking",
-        "lon": 72.56497,
-        "lat": 23.01452,
-        "residents_5min": 37018,
-        "lst_c": 43.4,
-        "canopy_pct": 5.9,
-        "priority": 292605
-      },
-      {
-        "digipin": "3KLK9P2",
-        "name": "BRTS Ahmedabad",
-        "lon": 72.59288,
-        "lat": 23.0026,
-        "residents_5min": 33210,
-        "lst_c": 43.9,
-        "canopy_pct": 3.9,
-        "priority": 284042
-      },
-      {
-        "digipin": "3KLKC7P",
-        "name": "Paldi ST Pick Up Stand",
-        "lon": 72.56606,
-        "lat": 23.0141,
-        "residents_5min": 34158,
-        "lst_c": 43.4,
-        "canopy_pct": 6.0,
-        "priority": 269712
+        "canopy_pct": 7.8,
+        "priority": 347068
       }
     ],
     "thresholds": {
@@ -931,7 +931,8 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "overture": 78
+      "overture": 78,
+      "gtfs": 1930
     }
   },
   "parking": {

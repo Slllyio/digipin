@@ -19,6 +19,12 @@ Feeds (ODbL or similar; downloaded at bake time, not committed):
                 via data.opencity.in (public domain)
     chennai     MTC, community GTFS from the MTC app timetables
                 (github.com/ungalsoththu/ChennaiGTFS, ODbL/PDDL, April 2026)
+    pune        PMPML, community GTFS built from PMPML's passenger information
+                system (github.com/croyla/pmpml-gtfs, MIT-0, October 2026)
+    ahmedabad   AMTS, Janmarg BRTS and Gandhinagar buses, community GTFS (github.com/croyla/amd-gtfs,
+                MIT, September 2026)
+    mumbai      BEST with Thane, Kalyan-Dombivli and Vasai-Virar buses, community
+                GTFS (github.com/croyla/mumbai-gtfs, MIT-0, August 2026)
     delhi       DTC/cluster buses, Delhi Open Transit Data (needs a free
                 registered key; skipped until the URL and key are set, or
                 pass a downloaded feed with --gtfs)
@@ -51,6 +57,12 @@ FEEDS = {
                   "name": "TGSRTC (Telangana open data GTFS, February 2026, via OpenCity)", "license": "Public domain (OpenCity)"},
     "chennai": {"url": "https://raw.githubusercontent.com/ungalsoththu/ChennaiGTFS/main/data/mtc-gtfs.zip",
                 "name": "MTC (MTC app timetables, community GTFS by UngalSoththu, April 2026)", "license": "ODbL 1.0 / PDDL"},
+    "pune": {"url": "https://raw.githubusercontent.com/croyla/pmpml-gtfs/main/pmpml_gtfs.zip",
+             "name": "PMPML (PMPML passenger information system, community GTFS by croyla, October 2026)", "license": "MIT-0"},
+    "ahmedabad": {"url": "https://raw.githubusercontent.com/croyla/amd-gtfs/main/gtfs.zip",
+                  "name": "AMTS, Janmarg BRTS and Gandhinagar city buses (community GTFS by croyla, September 2026)", "license": "MIT"},
+    "mumbai": {"url": "https://raw.githubusercontent.com/croyla/mumbai-gtfs/main/gtfs.zip",
+               "name": "BEST, TMT, KDMT and VVMT (community GTFS by croyla, August 2026)", "license": "MIT-0"},
     # Static GTFS from otd.delhi.gov.in needs a registered key; fill the
     # download URL in once one is issued (until then the region is skipped).
     "delhi": {"url": None, "key_env": "OTD_DELHI_KEY",

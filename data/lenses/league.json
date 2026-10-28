@@ -92,7 +92,7 @@
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 45,
+     "value": 2.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -134,7 +134,7 @@
     },
     "busheat": {
      "label": "Bus stops hot and unshaded",
-     "value": 87.2,
+     "value": 83,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -146,7 +146,7 @@
     },
     "feeder": {
      "label": "Feeder-range residents with no bus stop nearby",
-     "value": 70.3,
+     "value": 3.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9914,7 +9914,7 @@
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 0.4,
+     "value": 0.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9956,7 +9956,7 @@
     },
     "busheat": {
      "label": "Bus stops hot and unshaded",
-     "value": 21.1,
+     "value": 16.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9968,7 +9968,7 @@
     },
     "feeder": {
      "label": "Feeder-range residents with no bus stop nearby",
-     "value": 4.1,
+     "value": 4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10880,7 +10880,7 @@
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 0.6,
+     "value": 1.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10922,7 +10922,7 @@
     },
     "busheat": {
      "label": "Bus stops hot and unshaded",
-     "value": 44.6,
+     "value": 62.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10934,7 +10934,7 @@
     },
     "feeder": {
      "label": "Feeder-range residents with no bus stop nearby",
-     "value": 8.9,
+     "value": 6.3,
      "unit": "%",
      "higherIs": "worse"
     },

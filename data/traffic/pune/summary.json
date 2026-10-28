@@ -879,12 +879,52 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 552,
-    "stops_with_heat_data": 552,
-    "pct_hot_bare": 52.0,
-    "pct_riders_at_hot_bare": 40.0,
-    "median_stop_lst_c": 42.3,
+    "stops": 2320,
+    "stops_with_heat_data": 2320,
+    "pct_hot_bare": 62.9,
+    "pct_riders_at_hot_bare": 49.3,
+    "median_stop_lst_c": 43.3,
     "top_stops": [
+      {
+        "digipin": "4FP2L7T",
+        "name": "",
+        "lon": 73.9402,
+        "lat": 18.5498,
+        "residents_5min": 33314,
+        "lst_c": 44.6,
+        "canopy_pct": 6.1,
+        "priority": 300306
+      },
+      {
+        "digipin": "4FP475F",
+        "name": "",
+        "lon": 73.89,
+        "lat": 18.477,
+        "residents_5min": 34815,
+        "lst_c": 44.2,
+        "canopy_pct": 9.9,
+        "priority": 288588
+      },
+      {
+        "digipin": "4FP475F",
+        "name": "",
+        "lon": 73.8898,
+        "lat": 18.4768,
+        "residents_5min": 34815,
+        "lst_c": 44.2,
+        "canopy_pct": 9.9,
+        "priority": 288588
+      },
+      {
+        "digipin": "4FP2KL5",
+        "name": "",
+        "lon": 73.91118,
+        "lat": 18.57078,
+        "residents_5min": 36900,
+        "lst_c": 43.2,
+        "canopy_pct": 4.8,
+        "priority": 288056
+      },
       {
         "digipin": "4FP4774",
         "name": "Indira Vasahat",
@@ -896,6 +936,46 @@
         "priority": 271384
       },
       {
+        "digipin": "4FP48KK",
+        "name": "",
+        "lon": 73.8727,
+        "lat": 18.5092,
+        "residents_5min": 33752,
+        "lst_c": 43.5,
+        "canopy_pct": 8.2,
+        "priority": 263367
+      },
+      {
+        "digipin": "4FP48KK",
+        "name": "",
+        "lon": 73.87112,
+        "lat": 18.50736,
+        "residents_5min": 33752,
+        "lst_c": 43.5,
+        "canopy_pct": 8.2,
+        "priority": 263367
+      },
+      {
+        "digipin": "4FP4958",
+        "name": "",
+        "lon": 73.8618,
+        "lat": 18.513,
+        "residents_5min": 28368,
+        "lst_c": 44.5,
+        "canopy_pct": 2.5,
+        "priority": 262759
+      },
+      {
+        "digipin": "4FP48K4",
+        "name": "",
+        "lon": 73.8748,
+        "lat": 18.5084,
+        "residents_5min": 33621,
+        "lst_c": 43.4,
+        "canopy_pct": 8.5,
+        "priority": 258411
+      },
+      {
         "digipin": "4FP2L49",
         "name": "Dutt Mandir Bus Stop",
         "lon": 73.92133,
@@ -904,86 +984,6 @@
         "lst_c": 42.2,
         "canopy_pct": 7.1,
         "priority": 258228
-      },
-      {
-        "digipin": "4FP497P",
-        "name": "Nana Peth",
-        "lon": 73.86876,
-        "lat": 18.51485,
-        "residents_5min": 31875,
-        "lst_c": 43.4,
-        "canopy_pct": 6.1,
-        "priority": 251417
-      },
-      {
-        "digipin": "4FP4969",
-        "name": "A.D. Camp Chowk",
-        "lon": 73.86886,
-        "lat": 18.51255,
-        "residents_5min": 28175,
-        "lst_c": 44.4,
-        "canopy_pct": 5.7,
-        "priority": 249749
-      },
-      {
-        "digipin": "4FP2L3M",
-        "name": "Matchwell Company Bus Stop",
-        "lon": 73.91855,
-        "lat": 18.54954,
-        "residents_5min": 35027,
-        "lst_c": 42.7,
-        "canopy_pct": 9.6,
-        "priority": 243816
-      },
-      {
-        "digipin": "4FP4773",
-        "name": "Borde Nagar",
-        "lon": 73.9004,
-        "lat": 18.4849,
-        "residents_5min": 35609,
-        "lst_c": 42.3,
-        "canopy_pct": 8.4,
-        "priority": 238110
-      },
-      {
-        "digipin": "4FP492L",
-        "name": "Appa Balwant Chowk (Hujurpaga)",
-        "lon": 73.85375,
-        "lat": 18.51489,
-        "residents_5min": 27275,
-        "lst_c": 44.0,
-        "canopy_pct": 4.1,
-        "priority": 235411
-      },
-      {
-        "digipin": "4FP492L",
-        "name": "Ganpati Chowk",
-        "lon": 73.85492,
-        "lat": 18.51488,
-        "residents_5min": 27275,
-        "lst_c": 44.0,
-        "canopy_pct": 4.1,
-        "priority": 235411
-      },
-      {
-        "digipin": "4FP47LP",
-        "name": "Bus Stop",
-        "lon": 73.87606,
-        "lat": 18.46157,
-        "residents_5min": 22421,
-        "lst_c": 45.5,
-        "canopy_pct": 0.6,
-        "priority": 234008
-      },
-      {
-        "digipin": "4FP2L75",
-        "name": "",
-        "lon": 73.93887,
-        "lat": 18.55139,
-        "residents_5min": 26437,
-        "lst_c": 43.8,
-        "canopy_pct": 4.1,
-        "priority": 223107
       }
     ],
     "thresholds": {
@@ -993,7 +993,8 @@
     },
     "sources": {
       "osm": 491,
-      "overture": 61
+      "overture": 61,
+      "gtfs": 1768
     }
   },
   "parking": {

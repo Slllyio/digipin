@@ -4,8 +4,8 @@ Bus stops come from three open sources, merged within MERGE_M:
 
     OpenStreetMap   highway=bus_stop via Overpass (CI runners; skipped quietly
                     where Overpass is blocked)
-    GTFS            stops.txt of the open feeds in gtfs_cells.FEEDS (Bengaluru
-                    BMTC; Delhi once its key is set)
+    GTFS            stops.txt of the open feeds in gtfs_cells.FEEDS (BMTC,
+                    TGSRTC, MTC, PMPML, AMTS/BRTS, BEST; Delhi once its key is set)
     Overture Maps   places tagged bus_station / public_transit_facility_or_service
 
 Each stop takes the daytime land surface temperature (surface_heat.lst_day_c,

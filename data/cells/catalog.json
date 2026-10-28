@@ -3728,9 +3728,9 @@
     {
       "id": "bus_service",
       "title": "Bus service (timetable)",
-      "description": "Weekday bus service from the city's open GTFS timetable: stops, routes, departures and the gap between buses at each cell's busiest stop in the 07:00\u201310:00 peak. Only cities with an open feed (bengaluru: BMTC (Namma BMTC app, community GTFS by Vonter); hyderabad: TGSRTC (Telangana open data GTFS, February 2026, via OpenCity); chennai: MTC (MTC app timetables, community GTFS by UngalSoththu, April 2026)).",
-      "source": "pipeline/traffic/gtfs_cells.py over bengaluru: BMTC (Namma BMTC app, community GTFS by Vonter); hyderabad: TGSRTC (Telangana open data GTFS, February 2026, via OpenCity); chennai: MTC (MTC app timetables, community GTFS by UngalSoththu, April 2026)",
-      "license": "ODbL 1.0 (bengaluru); Public domain (OpenCity) (hyderabad); ODbL 1.0 / PDDL (chennai)",
+      "description": "Weekday bus service from the city's open GTFS timetable: stops, routes, departures and the gap between buses at each cell's busiest stop in the 07:00\u201310:00 peak. Only cities with an open feed (bengaluru: BMTC (Namma BMTC app, community GTFS by Vonter); hyderabad: TGSRTC (Telangana open data GTFS, February 2026, via OpenCity); chennai: MTC (MTC app timetables, community GTFS by UngalSoththu, April 2026); pune: PMPML (PMPML passenger information system, community GTFS by croyla, October 2026); ahmedabad: AMTS and Ahmedabad BRTS (community GTFS by croyla, September 2026); mumbai: BEST, TMT, KDMT and VVMT (community GTFS by croyla, August 2026)).",
+      "source": "pipeline/traffic/gtfs_cells.py over bengaluru: BMTC (Namma BMTC app, community GTFS by Vonter); hyderabad: TGSRTC (Telangana open data GTFS, February 2026, via OpenCity); chennai: MTC (MTC app timetables, community GTFS by UngalSoththu, April 2026); pune: PMPML (PMPML passenger information system, community GTFS by croyla, October 2026); ahmedabad: AMTS and Ahmedabad BRTS (community GTFS by croyla, September 2026); mumbai: BEST, TMT, KDMT and VVMT (community GTFS by croyla, August 2026)",
+      "license": "ODbL 1.0 (bengaluru); Public domain (OpenCity) (hyderabad); ODbL 1.0 / PDDL (chennai); MIT-0 (pune); MIT (ahmedabad); MIT-0 (mumbai)",
       "group": "Traffic & mobility",
       "level": 7,
       "approxCellM": 244,
@@ -3795,7 +3795,7 @@
           "unit": "stops",
           "domain": [
             1,
-            32
+            67
           ],
           "ramp": "viridis",
           "higherIs": "better"
@@ -3807,6 +3807,18 @@
         "heightM": 400.0
       },
       "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 2746,
+          "bbox": {
+            "west": 72.260498046875,
+            "south": 22.8203125,
+            "east": 72.86474609375,
+            "north": 23.33447265625
+          },
+          "json": "bus_service/ahmedabad.json",
+          "parquet": null
+        },
         {
           "name": "bengaluru",
           "cells": 5284,
@@ -3841,6 +3853,30 @@
             "north": 18.599365234375
           },
           "json": "bus_service/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 3537,
+          "bbox": {
+            "west": 72.757080078125,
+            "south": 18.898193359375,
+            "east": 73.185546875,
+            "north": 19.4892578125
+          },
+          "json": "bus_service/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 3945,
+          "bbox": {
+            "west": 73.4052734375,
+            "south": 18.102783203125,
+            "east": 74.4599609375,
+            "north": 18.893798828125
+          },
+          "json": "bus_service/pune.json",
           "parquet": null
         }
       ]
@@ -3914,7 +3950,7 @@
           "unit": "score",
           "domain": [
             0,
-            410653
+            604687
           ],
           "ramp": "reds",
           "higherIs": "worse"
@@ -3928,12 +3964,12 @@
       "regions": [
         {
           "name": "ahmedabad",
-          "cells": 74,
+          "cells": 1669,
           "bbox": {
             "west": 72.480224609375,
-            "south": 22.95654296875,
-            "east": 72.673583984375,
-            "north": 23.112548828125
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
           },
           "json": "bus_stop_heat/ahmedabad.json",
           "parquet": null
@@ -4060,24 +4096,24 @@
         },
         {
           "name": "mumbai",
-          "cells": 234,
+          "cells": 2642,
           "bbox": {
             "west": 72.78564453125,
-            "south": 18.906982421875,
-            "east": 72.98779296875,
-            "north": 19.267333984375
+            "south": 18.893798828125,
+            "east": 72.9921875,
+            "north": 19.271728515625
           },
           "json": "bus_stop_heat/mumbai.json",
           "parquet": null
         },
         {
           "name": "pune",
-          "cells": 61,
+          "cells": 1622,
           "bbox": {
-            "west": 73.7568359375,
+            "west": 73.748046875,
             "south": 18.43017578125,
-            "east": 73.98974609375,
-            "north": 18.62353515625
+            "east": 73.991943359375,
+            "north": 18.64111328125
           },
           "json": "bus_stop_heat/pune.json",
           "parquet": null
