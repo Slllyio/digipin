@@ -1219,3 +1219,7 @@ The lens counts residents in blocks at least 20% slum and residents × slum shar
 
 Point maps of public and community toilets on data.opencity.in: PMC Pune (547), GCC Chennai (613), BMC Mumbai (about 8,400 community and public toilet blocks with men's and women's seat counts) and GHMC Hyderabad (574, September 2018), counted per L7 block. The `toilets` lens (js/urban-lenses-planning.js) now takes, per block, the larger of this count and OpenStreetMap's, so its gaps in these four cities reflect the corporation network rather than missing mapping, and in Mumbai it adds residents per women's seat. Bengaluru's BBMP list on OpenCity has no licence, so it is not used.
 
+## Police station per block (`police_stations` dataset, pipeline/realestate/police.py)
+
+Law-and-order police station jurisdiction maps on data.opencity.in (public domain): Mumbai (91 stations), Bengaluru (120 KGIS boundaries, including the rural stations around the city) and Hyderabad (73). Each lived-in block takes the station whose polygon holds its centre; names drop "PS" and "Police Station" and keep the maps' spellings. `UrbanLenses.places()` carries it as `police`, so DISHA's "which police station is this?" (`whereis`) and the property report header name it.
+

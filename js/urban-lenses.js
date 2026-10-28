@@ -1946,7 +1946,7 @@ const UrbanLenses = (() => {
      */
     // Neighbourhood names (the neighbourhoods dataset: OSM colonies, sectors and villages via Overture) for block codes,
     // so pick lists read "Care point 1: 39J3286 · Mundka" instead of a bare code. Optional: no dataset, no names.
-    const _names = new Map();   // city -> Promise<Map<code, {label, place, area, district, pin, ward, body, assembly, lokSabha}>>
+    const _names = new Map();   // city -> Promise<Map<code, {label, place, area, district, pin, ward, body, assembly, lokSabha, police}>>
     const COMPASS = /^(north|south|east|west|central)(\s|-|$)/i;   // OSM zones named "South" read better as the district
     function places(city, store) {
         store = _store(store);
@@ -1957,7 +1957,7 @@ const UrbanLenses = (() => {
             return region ? _loadView(store, id, region.bbox).catch(() => null) : Promise.resolve(null);
         };
         const p = (async () => {
-            const [t, w, k] = await Promise.all([view('neighbourhoods'), view('wards'), view('constituencies')]);
+            const [t, w, k, ps] = await Promise.all([view('neighbourhoods'), view('wards'), view('constituencies'), view('police_stations')]);
             const out = new Map();
             if (!t || !t.cells || !t.columns || !t.columns.place) return out;
             const ward = new Map();
@@ -1971,6 +1971,7 @@ const UrbanLenses = (() => {
             };
             join(w, 'ward', (col, i) => ({ ward: col.ward[i], body: (col.body || [])[i] || null }));
             join(k, 'assembly', (col, i) => ({ assembly: col.assembly[i], lokSabha: (col.lok_sabha || [])[i] || null }));
+            join(ps, 'station', (col, i) => ({ police: col.station[i] }));
             const col = k => t.columns[k] || [];
             const [pl, ar, di, pin] = ['place', 'area', 'district', 'pin'].map(col);
             t.cells.forEach((c, i) => {
@@ -1980,7 +1981,7 @@ const UrbanLenses = (() => {
                 out.set(code, {
                     label: pl[i] ? (up ? `${pl[i]}, ${up}` : String(pl[i])) : '', place: pl[i] || null, area: ar[i] || null,
                     district: di[i] || null, pin: pin[i] || null, ward: wd.ward || null, body: wd.body || null,
-                    assembly: wd.assembly || null, lokSabha: wd.lokSabha || null,
+                    assembly: wd.assembly || null, lokSabha: wd.lokSabha || null, police: wd.police || null,
                 });
             });
             return out;

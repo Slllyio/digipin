@@ -219,7 +219,8 @@ const PropertyReport = (() => {
         let where = null;
         try { where = UrbanLenses.places ? (await UrbanLenses.places(city, store)).get(code) || null : null; } catch { where = null; }
         const place = where ? [where.label, where.pin ? `PIN ${where.pin}` : '', where.ward ? `${where.body ? `${where.body} ` : ''}ward ${where.ward}` : '',
-            where.assembly ? `${where.assembly} assembly${where.lokSabha ? `, ${where.lokSabha} Lok Sabha` : ''}` : ''].filter(Boolean).join(' · ') || null : null;
+            where.assembly ? `${where.assembly} assembly${where.lokSabha ? `, ${where.lokSabha} Lok Sabha` : ''}` : '',
+            where.police ? `${where.police} police station` : ''].filter(Boolean).join(' · ') || null : null;
         return { schema: SCHEMA, code, city, place, cityLabel: UrbanInsights.cityLabel(city), generatedAt: new Date().toISOString().slice(0, 10),
             ...model, comparables: comps ? comps.matches : [], sources: (fr.sources || []).map(s => s.title || s.id) };
     }

@@ -292,7 +292,7 @@ const DishaIntel = (() => {
             const v = Number(farq[1] || farq[2]);
             if (v > 0 && v <= 20) return { type: 'farwhatif', far: v };
         }
-        if (/\b(which|what|whose|who('s| is)?)\b.{0,40}\b(ward|pin ?code|pincode|postal code|post ?code|constituency|mla|mp|corporator|councillor|councilor|neighbou?rhood|locality|colony)\b|\b(ward|pin ?code|pincode|constituency|mla|corporator)\b.{0,20}\b(here|this (block|spot|place|area))\b/i.test(q) && /\b(this|here|my)\b/i.test(q) && !/\b(most|least|best|worst|top|rank\w*|hottest|which (wards|neighbou?rhoods|localities|colonies))\b/i.test(q)) return { type: 'whereis' };
+        if (/\b(which|what|whose|who('s| is)?)\b.{0,40}\b(ward|pin ?code|pincode|postal code|post ?code|constituency|mla|mp|corporator|councillor|councilor|neighbou?rhood|locality|colony|police station|thana)\b|\b(ward|pin ?code|pincode|constituency|mla|corporator|police station|thana)\b.{0,20}\b(here|this (block|spot|place|area))\b/i.test(q) && /\b(this|here|my)\b/i.test(q) && !/\b(most|least|best|worst|top|rank\w*|hottest|which (wards|neighbou?rhoods|localities|colonies))\b/i.test(q)) return { type: 'whereis' };
         if (/\b(property|real[\s-]?estate|investment|land) (report|brief|memo|check|due[\s-]?diligence)\b|\bdue[\s-]?diligence\b/i.test(q)) return { type: 'propreport' };
         const lookq = /\b(look(s|ing)? (the same|alike|like (this|here))|look-?alikes?|(physically|visually) (similar|alike)|same (built form|urban form|texture|look)|from (space|above|the sky|satellite)|satellite (twins?|look-?alikes?|similar\w*))\b/i;
         if (lookq.test(q) && /\b(like|similar|same|alike|twins?|look)\w*\b/i.test(q)) {
@@ -384,6 +384,7 @@ const DishaIntel = (() => {
         if (w.pin) lines.push(`PIN code: ${w.pin} (the code most addresses around it carry)`);
         if (w.ward) lines.push(`Municipal ward: ${w.ward}${w.body ? `, ${w.body}` : ''} (ward map may predate the latest delimitation)`);
         if (w.assembly) lines.push(`Assembly constituency: ${w.assembly}${w.lokSabha ? `; Lok Sabha: ${w.lokSabha}` : ''}`);
+        if (w.police) lines.push(`Police station: ${w.police} (law and order jurisdiction)`);
         return lines.join('\n');
     }
 

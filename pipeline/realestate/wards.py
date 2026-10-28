@@ -122,7 +122,8 @@ def kml_features(text):
             if rings:
                 polys.append(rings)
         if polys:
-            out.append({"properties": props, "geometry": {"type": "MultiPolygon", "coordinates": polys}})
+            nm = next((e.text.strip() for e in pm if tag(e) == "name" and e.text), None)
+            out.append({"properties": props, "name": nm, "geometry": {"type": "MultiPolygon", "coordinates": polys}})
     return out
 
 

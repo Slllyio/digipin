@@ -107,6 +107,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('which ward is this block in')).toEqual({ type: 'whereis' });
         expect(M('what is the pin code here')).toEqual({ type: 'whereis' });
         expect(M('who is the MLA for this area')).toEqual({ type: 'whereis' });
+        expect(M('which police station covers this block')).toEqual({ type: 'whereis' });
         expect(M('which neighbourhoods in Delhi are hottest')).not.toEqual({ type: 'whereis' });
         expect(M('which lakes have been encroached in Delhi')).toEqual({ type: 'lens', lens: 'encroach', city: 'delhi' });
         expect(M('how much flood damage do buildings face each year')).toEqual({ type: 'lens', lens: 'floodloss' });
