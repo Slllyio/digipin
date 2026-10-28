@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T20:02:40Z",
+  "generated": "2026-10-28T20:32:40Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -11827,6 +11827,193 @@
             "north": 17.452392578125
           },
           "json": "flood_reports/hyderabad.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "flood_zones",
+      "title": "Official flood hazard zones and return periods (Chennai)",
+      "description": "Share of each block in Chennai's five flood inundation hazard classes and inside the modelled flood extents of the 5, 10, 25, 50, 100 and 200-year return period flows, from the Chennai flooding maps on data.opencity.in.",
+      "source": "pipeline/realestate/floodzones.py (OpenCity Chennai flood hazard zones and return-period flows via DuckDB spatial)",
+      "license": "Public domain (via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "hazard_vhigh_pct",
+          "label": "Very High flood hazard zone",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "hazard_high_pct",
+          "label": "High flood hazard zone",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "hazard_mod_pct",
+          "label": "Moderate flood hazard zone",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "hazard_index",
+          "label": "Mean flood hazard class (1 very low to 5 very high)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "class",
+          "domain": [
+            1,
+            5
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rp5_pct",
+          "label": "Inside the 5-year flood extent",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rp10_pct",
+          "label": "Inside the 10-year flood extent",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rp25_pct",
+          "label": "Inside the 25-year flood extent",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rp50_pct",
+          "label": "Inside the 50-year flood extent",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rp100_pct",
+          "label": "Inside the 100-year flood extent",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rp200_pct",
+          "label": "Inside the 200-year flood extent",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rp100_deep_pct",
+          "label": "Inside the 100-year flood extent's high class",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "flood_rp_years",
+          "label": "Most frequent flood (return period) covering a quarter of the block",
+          "type": "number",
+          "agg": "min",
+          "unit": "years",
+          "domain": [
+            5,
+            200
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "flood_rp_years",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "chennai",
+          "cells": 6593,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.31787109375,
+            "north": 13.180908203125
+          },
+          "json": "flood_zones/chennai.json.gz",
           "parquet": null
         }
       ]

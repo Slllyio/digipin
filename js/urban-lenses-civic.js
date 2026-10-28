@@ -995,6 +995,38 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    function floodzones(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, vh = c['flood_zones.hazard_vhigh_pct'], hi = c['flood_zones.hazard_high_pct'];
+        const rpYrs = c['flood_zones.flood_rp_years'], pop = c['population.population'], rp = y => c[`flood_zones.rp${y}_pct`];
+        if (!vh || !hi || !vh.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(c['flood_zones.hazard_index']?.[i]) || _fin(rpYrs?.[i]) || v(vh, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const all = idx.reduce((t, i) => t + v(pop, i), 0) || 1;
+        const live = f => idx.reduce((t, i) => t + v(pop, i) * f(i) / 100, 0);
+        const hazPop = live(i => v(vh, i) + v(hi, i)), vhPop = live(i => v(vh, i));
+        const inRp = y => (rp(y) ? live(i => v(rp(y), i)) : 0);
+        const km2 = y => (rp(y) ? idx.reduce((t, i) => t + v(rp(y), i) / 100 * g.cellKm2, 0) : 0);
+        const stats = [
+            { label: 'Residents in the Very High or High flood hazard zone', value: `${_people(hazPop)} (${_round(100 * hazPop / all)}%)` },
+            { label: '…of them Very High', value: `${_people(vhPop)}` },
+        ];
+        for (const y of [5, 25, 100, 200]) if (rp(y)) stats.push({ label: `Residents inside the ${y}-year flood extent`, value: `${_people(inRp(y))} (${_round(100 * inRp(y) / all)}%); ${_round(km2(y), 1)} km²` });
+        const deep = c['flood_zones.rp100_deep_pct'], deepPop = deep ? live(i => v(deep, i)) : 0;
+        if (deep) stats.push({ label: 'Residents in the 100-year extent\'s high (deepest) class', value: `${_people(deepPop)} (${_round(100 * deepPop / all)}%)` });
+        const often = Float64Array.from({ length: n }, (_, i) => v(pop, i) * (v(rp(5), i) + v(rp(10), i)) / 100);
+        spaced(g, idx.filter(i => often[i] > 0), often, 4).forEach((i, k) => stats.push({ label: `Floods often ${k + 1}: ${g.codes[i]}`, value: `${_round(v(rp(5), i))}% inside the 5-year extent; ${_round(v(vh, i) + v(hi, i))}% high hazard; ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _fin(rpYrs?.[i]) && rpYrs[i] > 0 ? _round(100 / rpYrs[i], 1) : 0;
+        return {
+            columns: { flood_chance_pct: out }, idx, weightKey: 'flood_chance_pct', noHotspots: true,
+            metric: { label: 'Residents in Very High or High flood hazard zones', value: Math.round(hazPop), unit: 'people', higherIs: 'worse' },
+            headline: `${_people(hazPop)} residents (${_round(100 * hazPop / all)}%) live in Chennai's Very High or High flood hazard zones.${rp(5) ? ` ${_people(inRp(5))} live inside the modelled extent of a 5-year flood` : ''}${rp(100) ? `, and ${_people(inRp(100))} inside the 100-year extent${deep ? `, ${_people(deepPop)} of them in its deepest class` : ''}` : ''}.`,
+            stats,
+        };
+    }
+
     const GRAIN_BIG_M2 = 10000, GRAIN_MAX_M2 = 200000, GRAIN_OPEN_PCT = 30;
 
     function landgrain(fr) {
@@ -1077,6 +1109,12 @@ const UrbanLensesCivic = (() => {
             needs: ['service_areas.ward_power_units', 'service_areas.ward_water_units', 'service_areas.ward_police_units', 'service_areas.ward_id', 'population.population'],
             method: 'Utility boundary maps on data.opencity.in (public domain): BESCOM section offices (237) and BWSSB service stations (143) for Bengaluru, TNEB sections and CMWSSB depots for Chennai. Each lived-in block takes the section and field unit holding its centre (DuckDB spatial). For each ward (wards layer) the pipeline counts the distinct sections, field units and police stations (police layer, where mapped) covering its lived-in blocks; when boundaries line up a ward deals with one or two of each. Medians are over residents. The block\'s own section office and service station are in the service areas layer.',
             refs: 'Janaagraha Annual Survey of India\'s City-Systems (coterminous boundaries); 74th Constitutional Amendment; BESCOM, BWSSB, TNEB and CMWSSB via OpenCity' },
+        { id: 'floodzones', equity: true, title: 'Official flood zones and return periods', icon: '🌊',
+            question: 'Which blocks sit in the official flood hazard zones, and how often does a flood reach them?',
+            field: { key: 'flood_chance_pct', label: 'Yearly chance a modelled flood covers a quarter of the block (1 / return period)', unit: '%', higherIs: 'worse', ramp: 'blues', domain: [0, 20] },
+            needs: ['flood_zones.hazard_vhigh_pct', 'flood_zones.hazard_high_pct', 'flood_zones.hazard_mod_pct', 'flood_zones.hazard_index', 'flood_zones.rp5_pct', 'flood_zones.rp10_pct', 'flood_zones.rp25_pct', 'flood_zones.rp50_pct', 'flood_zones.rp100_pct', 'flood_zones.rp200_pct', 'flood_zones.flood_rp_years', 'flood_zones.rp100_deep_pct', 'population.population'],
+            method: 'The Chennai flooding maps on data.opencity.in (public domain): the flood inundation hazard zones (7,453 polygons in five classes, very low to very high) and the modelled flood extents of the 5, 10, 25, 50, 100 and 200-year return period flows. Each block is sampled on a 6 x 6 grid of points (DuckDB spatial) for its share in each hazard class and inside each extent; its return period is the most frequent flow whose extent covers at least a quarter of it, mapped as a yearly chance (20% for 5 years, 1% for 100 years, 0 when even the 200-year flow does not reach it). Residents are WorldPop counts split by those shares. A 5-year flood has a 1 in 5 chance each year. The extents come from a hydraulic model of the rivers and channels, not from street drainage, so local waterlogging can happen outside them; see the flood reports lens for that.',
+            refs: 'Chennai flood hazard and return-period flow maps via OpenCity; NDMA Guidelines on Management of Urban Flooding (2010); CWC flood zoning' },
         { id: 'landgrain', equity: false, title: 'Land parcel size and public land', icon: '📐',
             question: 'How finely is land split into survey parcels here, and where is assembly easiest or the land public?',
             field: { key: 'parcels_per_ha', label: 'Survey parcels per hectare (from the block\'s median parcel)', unit: 'parcels', higherIs: 'worse', ramp: 'reds', domain: [0, 20] },
@@ -1230,6 +1268,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit, metrowait, landgrain });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit, metrowait, landgrain, floodzones });
     return { ENTRIES };
 })();

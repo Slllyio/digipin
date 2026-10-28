@@ -2808,6 +2808,12 @@
      "unit": "offices",
      "higherIs": "worse"
     },
+    "floodzones": {
+     "label": "Residents in Very High or High flood hazard zones",
+     "value": 917964,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "watershedpave": {
      "label": "Micro-watersheds more than 25% built over",
      "value": 70.3,
