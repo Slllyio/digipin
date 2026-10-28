@@ -1200,6 +1200,47 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    // Flooded before, again. Reported flood spots and mapped past flood extents (OpenCity) count the events that reached
+    // each block; blocks hit by two or more are the ones buyers, insurers and drain engineers should look at first.
+    const AGAIN_MIN = 2;
+
+    function floodagain(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], ev = c['flood_reports.flood_events'];
+        const sp = c['flood_reports.flood_spots'], f15 = c['flood_reports.flooded_2015_pct'], f05 = c['flood_reports.flooded_2005_pct'];
+        const vi = c['land_value.value_index'], kids = c['demographics.under5'];
+        if (!pop || !ev) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
+        if (idx.length < 5 || !idx.some(i => v(ev, i) > 0)) return null;
+        const all = _sumOver(pop, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
+        const hit = idx.filter(i => v(ev, i) > 0), again = idx.filter(i => v(ev, i) >= AGAIN_MIN);
+        const pHit = _sumOver(pop, hit, () => true), pAgain = _sumOver(pop, again, () => true);
+        const stats = [
+            { label: 'Residents in blocks reached by a reported or mapped flood', value: `${_people(pHit)} (${pct(pHit)}%)` },
+            { label: `…by ${AGAIN_MIN} or more separate floods`, value: `${_people(pAgain)} (${pct(pAgain)}%)` },
+        ];
+        if (kids) stats.push({ label: '…children under 5 in repeat-flood blocks', value: _people(_sumOver(kids, again, () => true)) });
+        if (f15 && idx.some(i => v(f15, i) > 0)) stats.push({ label: 'Residents inside the mapped December 2015 inundation zone', value: _people(_sumOver(pop, idx, i => v(f15, i) >= 50)) });
+        if (f05 && idx.some(i => v(f05, i) > 0)) stats.push({ label: 'Residents inside the mapped 2005 flood extent', value: _people(_sumOver(pop, idx, i => v(f05, i) >= 50)) });
+        if (vi && again.length) {
+            const med = a => { const x = a.map(i => vi[i]).filter(_fin).sort((p, q) => p - q); return x.length ? x[x.length >> 1] : NaN; };
+            const a = med(again), b = med(idx);
+            if (_fin(a) && _fin(b)) stats.push({ label: 'Median land-value index, repeat-flood blocks vs the city', value: `${_round(a, 1)} vs ${_round(b, 1)}` });
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = v(ev, i);
+        spaced(g, again.length ? again : hit, Float64Array.from({ length: n }, (_, i) => v(pop, i) * (v(ev, i) + v(sp, i) / 10))).forEach((i, k) => stats.push({
+            label: `Drain audit ${k + 1}: ${g.codes[i]}`,
+            value: `${v(ev, i)} flood${v(ev, i) === 1 ? '' : 's'}; ${v(sp, i)} reported spot${v(sp, i) === 1 ? '' : 's'} within 300 m${f15 && v(f15, i) ? `; ${_round(v(f15, i))}% in the 2015 zone` : ''}; ${_people(pop[i])} residents` }));
+        return {
+            columns: { flood_events: out }, idx, weightKey: 'flood_events', noHotspots: true,
+            metric: { label: `Residents in blocks flooded ${AGAIN_MIN}+ times`, value: _round(pct(pAgain), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pAgain)} residents (${pct(pAgain)}%) live in blocks that ${AGAIN_MIN} or more separate floods reached, by the corporation's and residents' own flood maps, and ${_people(pHit)} where at least one did. These are reported floods, not a model: they show where water has already come, so they are the first places to check drains, plinth heights and insurance.`,
+            stats,
+        };
+    }
+
     function views(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], h = c['building_stock.height_2023_m'];
         const wat = c['water.permanent_water_pct'], park = c['parks.park_pct'], big = c['parks.big_park'], vi = c['land_value.value_index'];
@@ -1374,6 +1415,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['nfhs.stunted_pct', 'nfhs.women_anaemia_pct', 'nfhs.bp_women_pct', 'nfhs.bp_men_pct', 'nfhs.sugar_women_pct', 'nfhs.sugar_men_pct', 'nfhs.insurance_pct', 'demographics.under5', 'population.population'],
             method: `National Family Health Survey 2019-21 district fact sheets (IIPS and the Ministry of Health), spread to every block of the 2011-census district; districts formed since take their parent's boundary. Raised blood pressure averages the women's and men's shares (elevated or on medication); high sugar is over 140 mg/dl or on medication. Thresholds: stunting ${STUNT_PCT}% (India 35.5%), women's anaemia ${ANAEMIA_PCT}% (India 57%), raised blood pressure ${BP_PCT}%, health insurance under ${INSURED_PCT}% of households. Each district is a survey of about 900 households, so differences of a few points are within sampling error, and nothing here varies within a district.`,
             refs: 'NFHS-5 district fact sheets (IIPS, MoHFW 2021); CSV conversion github.com/SaiSiddhardhaKalla/NFHS and github.com/pratapvardhan/NFHS-5; Poshan Abhiyaan; Ayushman Bharat PM-JAY' },
+        { id: 'floodagain', equity: true, title: 'Flooded before', icon: '🌊',
+            question: 'Which blocks have flooded again and again?',
+            field: { key: 'flood_events', label: 'Separate floods that reached the block (reported or mapped)', unit: 'floods', higherIs: 'worse', ramp: 'blues', domain: [0, 4] },
+            needs: ['flood_reports.flood_events', 'flood_reports.flood_spots', 'flood_reports.flooded_2015_pct', 'flood_reports.flooded_2005_pct', 'land_value.value_index', 'demographics.under5', 'population.population'],
+            method: `Public-domain flood maps on data.opencity.in: Greater Chennai Corporation hotspots for 2005, 2015 and 2020 (Cyclone Nivar), 2015 stagnation and district hotspots, the mapped 2015 inundation zone and 2005 extent, crowd-sourced flooded streets of December 2015, Hyderabad's inundation points, and Bengaluru's flood-vulnerable, flood-prone and BBMP low-lying locations. A flood reaches a block when a reported spot lies within 300 m or, for 2005 and 2015, at least half the block lies inside the mapped extent; each event counts once, and the undated lists count as one 'recurring' event. Only Chennai, Bengaluru and Hyderabad have such maps there.`,
+            refs: 'OpenCity (data.opencity.in) flood maps from Greater Chennai Corporation, GHMC and BBMP; Chennai floods 2005, 2015 and 2020 (Cyclone Nivar)' },
         { id: 'views', equity: false, title: 'Rooms with a view', icon: '🌅',
             question: 'Which tall blocks look out over the sea, a lake or a big park?',
             field: { key: 'view_kind', label: 'Tower view: park (1), water (2), both (3)', unit: '0-3', higherIs: null, ramp: 'blues', domain: [0, 3] },
@@ -1382,7 +1429,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Google Open Buildings 2.5D Temporal; JRC Global Surface Water; OpenStreetMap parks; Benson et al. 1998 and Jim & Chen 2009 (hedonic value of views)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, views, districthealth }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, views, districthealth, floodagain }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
 })();
 

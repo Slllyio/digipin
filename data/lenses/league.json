@@ -1578,6 +1578,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floodagain": {
+     "label": "Residents in blocks flooded 2+ times",
+     "value": 1.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 32.3,
@@ -3267,6 +3273,12 @@
     "districthealth": {
      "label": "Children under 5 stunted (resident-weighted district average)",
      "value": 19.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "floodagain": {
+     "label": "Residents in blocks flooded 2+ times",
+     "value": 15.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5643,6 +5655,12 @@
     "districthealth": {
      "label": "Children under 5 stunted (resident-weighted district average)",
      "value": 34.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "floodagain": {
+     "label": "Residents in blocks flooded 2+ times",
+     "value": 0,
      "unit": "%",
      "higherIs": "worse"
     },

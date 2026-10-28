@@ -220,6 +220,8 @@ Each item gives four things:
 159. ✅ Municipal ward per block for 11 cities (MCD, BBMP, GHMC, BMC, GCC, PMC, KMC and others), with zone and corporation, for joining ward-level budgets, grievances and elections (DataMeet Municipal Spatial Data, CC BY 4.0) | GitHub | `wards` dataset, property report header
 160. ✅ Assembly and Lok Sabha constituency per block, with SC/ST reservation, 13 cities (2008 delimitation; DataMeet from ECI, CC BY 2.5 India) | GitHub | `constituencies` dataset, property report header
 161. ✅ DISHA "which ward / PIN code / constituency is this?" for a clicked block (neighbourhood, PIN, ward, assembly, Lok Sabha) | derived | `whereis` intent
+162. ✅ District health lens over NFHS-5 (stunting, anaemia, raised BP, sugar, insurance) by district | GitHub | `districthealth` lens
+163. ✅ Flooded before: reported flood spots and mapped 2005/2015 flood extents for Chennai, Bengaluru and Hyderabad (OpenCity, public domain) | OpenCity | `floodagain` lens (new dataset `flood_reports`, pipeline/realestate/floodreports.py)
 
 ## Parked for the keys round
 

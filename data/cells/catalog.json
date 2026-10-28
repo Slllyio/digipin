@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T10:44:17Z",
+  "generated": "2026-10-28T10:56:08Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -10068,6 +10068,122 @@
             "north": 18.6455078125
           },
           "json": "flood_future/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "flood_reports",
+      "title": "Reported flood spots and past floods (OpenCity)",
+      "description": "Places officials and residents reported flooding: Greater Chennai Corporation flood hotspots (2005, 2015, 2020), 2015 stagnation points and district hotspots, the mapped 2015 inundation zone and 2005 extent, crowd-sourced flooded streets of December 2015, Hyderabad's inundation points and Bengaluru's flood-vulnerable, flood-prone and BBMP low-lying locations, from public-domain maps on data.opencity.in. Reports, not a model: unreported flooding is missing and other cities have no such maps there.",
+      "source": "pipeline/realestate/floodreports.py (OpenCity KML maps via DuckDB spatial)",
+      "license": "Public domain (as marked on data.opencity.in)",
+      "group": "Hazards",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "flood_spots",
+          "label": "Reported flood spots within 300 m",
+          "type": "number",
+          "agg": "sum",
+          "unit": "spots",
+          "domain": [
+            1,
+            17
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "flood_events",
+          "label": "Flood events that reached the block (spot within 300 m or mapped extent)",
+          "type": "number",
+          "agg": "max",
+          "unit": "events",
+          "domain": [
+            1,
+            4
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "flooded_2015_pct",
+          "label": "Inside the mapped December 2015 inundation zone",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "flooded_2005_pct",
+          "label": "Inside the mapped 2005 flood extent",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "flooded_streets_2015",
+          "label": "Crowd-reported flooded street segments, December 2015",
+          "type": "number",
+          "agg": "sum",
+          "unit": "segments",
+          "ramp": "blues",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "flood_spots",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 1575,
+          "bbox": {
+            "west": 77.474609375,
+            "south": 12.855712890625,
+            "east": 77.766845703125,
+            "north": 13.11279296875
+          },
+          "json": "flood_reports/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 7514,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "flood_reports/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 118,
+          "bbox": {
+            "west": 78.3974609375,
+            "south": 17.311767578125,
+            "east": 78.51611328125,
+            "north": 17.452392578125
+          },
+          "json": "flood_reports/hyderabad.json",
           "parquet": null
         }
       ]

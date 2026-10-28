@@ -23,7 +23,7 @@ const PropertyReport = (() => {
         'lightning.cg_rate', 'heritage.prohibited_pct', 'heritage.regulated_pct', 'heritage.monument_m', 'power_lines.corridor_pct', 'power_lines.max_kv',
         'power_plants.coal_km', 'power_plants.coal_plume', 'downwind.landfill_upwind', 'blackouts.dark_nights_pct', 'level_crossings.crossings',
         'brick_kilns.kilns_10km', 'brick_kilns.kiln_km', 'nfhs.stunted_pct', 'nfhs.women_anaemia_pct', 'nfhs.bp_men_pct', 'nfhs.bp_women_pct',
-        'nfhs.insurance_pct'];
+        'nfhs.insurance_pct', 'flood_reports.flood_events', 'flood_reports.flood_spots'];
     const DRIVERS = { jobs: 'Job reach', metro: 'Metro walk', amenity: 'Shops and services', neigh: 'Neighbourhood and plot size',
         green: 'Green cover', risk: 'Flood and waterlogging', noise: 'Road noise' };
 
@@ -101,6 +101,7 @@ const PropertyReport = (() => {
                 row('Air: NO₂ since 2019 / PM2.5 2022', fin(v.no2chg) || fin(v.pm22) ? `${fin(v.no2chg) ? `${v.no2chg >= 0 ? '+' : ''}${Math.round(v.no2chg)}%` : '–'} / ${fin(v.pm22) ? `${Math.round(v.pm22)} µg/m³` : '–'}` : null, 'satellite; India\'s annual standard is 40 µg/m³'),
                 row('Under a flight path', fin(v.fpath) ? (v.fpath ? `yes, ${fin(v.fpkm) ? `${v.fpkm.toFixed(1)} km from the runway end` : 'within 10 km of a runway end'}` : 'no') : null, 'OpenStreetMap runways; likely overflight, not measured noise'),
                 row('Power line corridor', fin(v.pwr) ? (v.pwr > 0 ? `${Math.round(v.pwr)}% of the block inside a ${fin(v.pkv) ? `${Math.round(v.pkv)} kV ` : ''}line's right-of-way: no building under the wires` : 'a high-voltage line crosses the block, outside its right-of-way here') : 'no high-voltage line mapped in the block', 'OpenStreetMap lines; underground lines not shown'),
+                row('Past floods reported', fin(v.fev) && v.fev > 0 ? `${v.fev} separate flood${v.fev === 1 ? '' : 's'}${fin(v.fsp) && v.fsp > 0 ? `; ${v.fsp} reported spot${v.fsp === 1 ? '' : 's'} within 300 m` : ''}` : null, 'Corporation and crowd flood maps (OpenCity): Chennai, Bengaluru, Hyderabad'),
                 row('District health (NFHS-5)', fin(v.stunt) ? `children stunted ${r1(v.stunt, 1)}%${fin(v.anaem) ? `, women anaemic ${r1(v.anaem, 1)}%` : ''}${fin(v.bp) ? `, adults with raised BP ${r1(v.bp, 1)}%` : ''}${fin(v.insured) ? `, households insured ${r1(v.insured, 1)}%` : ''}` : null, 'District averages from the 2019-21 survey, not this block'),
                 row('Brick kilns within 10 km', fin(v.kilns) && v.kilns > 0 ? `${v.kilns}${fin(v.kilnkm) ? `; nearest ${r1(v.kilnkm, 1)} km` : ''}` : null, 'IGP brick kiln inventory (Gangetic plain only); kilns fire November to June'),
                 row('Nearest coal power plant', fin(v.coalkm) ? `${r1(v.coalkm)} km${fin(v.coalpl) ? `; upwind coal index ${r1(v.coalpl, 1)}` : ''}` : null, 'WRI power plant database; the index weighs MW by how often the wind blows from each plant'),
@@ -146,6 +147,7 @@ const PropertyReport = (() => {
         if (fin(v.dark) && v.dark >= 5) risks.push('frequent night power cuts');
         if (fin(v.coalkm) && v.coalkm <= 10) risks.push('a coal power plant within 10 km');
         if (fin(v.kilnkm) && v.kilnkm <= 3) risks.push('a brick kiln within 3 km');
+        if (fin(v.fev) && v.fev >= 2) risks.push('flooded in two or more past floods');
         if (fin(v.hotBlock ?? v.hot1) && (v.hotBlock ?? v.hot1) >= 45) risks.push(`about ${Math.round(v.hotBlock ?? v.hot1)} days a year at 40 °C by 2050`);
         if (fin(v.cscore) && v.cscore >= 50) risks.push(`climate 2050 grade ${UrbanLenses.climateGrade ? UrbanLenses.climateGrade(v.cscore) : 'D or E'}`);
         if (fin(v.gwd) && v.gwd >= 10) risks.push('groundwater falling fast');
@@ -193,7 +195,7 @@ const PropertyReport = (() => {
             homeKw: col('solarhome', 'home_kwp'), payback: col('solarhome', 'payback_yr'), acCover: col('solarhome', 'ac_2050_covered_pct'),
             clay60: at('subsoil.clay_60cm_pct'), zone: UrbanLenses.SEISMIC_ZONE ? UrbanLenses.SEISMIC_ZONE[city] : null,
             hum0: at('humid_future.humid_days_now'), hum1: at('humid_future.humid_days_2050'), no2chg: at('air_trend.no2_change_pct'), pm22: at('air_trend.pm25_2022'),
-            kilns: at('brick_kilns.kilns_10km'), stunt: at('nfhs.stunted_pct'), anaem: at('nfhs.women_anaemia_pct'), insured: at('nfhs.insurance_pct'),
+            kilns: at('brick_kilns.kilns_10km'), fev: at('flood_reports.flood_events'), fsp: at('flood_reports.flood_spots'), stunt: at('nfhs.stunted_pct'), anaem: at('nfhs.women_anaemia_pct'), insured: at('nfhs.insurance_pct'),
             bp: fin(at('nfhs.bp_men_pct')) && fin(at('nfhs.bp_women_pct')) ? (at('nfhs.bp_men_pct') + at('nfhs.bp_women_pct')) / 2 : null, kilnkm: at('brick_kilns.kiln_km'), fpath: at('flight_paths.under_path'), fpkm: at('flight_paths.path_km'), dust: at('haze_mix.dust_share_pct'), smoke: at('haze_mix.smoke_share_pct'), sulph: at('haze_mix.sulphate_share_pct'), dustd: at('haze_mix.dust_days_yr'), cg: at('lightning.cg_rate'), hpro: at('heritage.prohibited_pct'), hreg: at('heritage.regulated_pct'), hm: at('heritage.monument_m'), pwr: at('power_lines.corridor_pct'), pkv: at('power_lines.max_kv'), coalkm: at('power_plants.coal_km'), coalpl: at('power_plants.coal_plume'), fillup: at('downwind.landfill_upwind'), dark: at('blackouts.dark_nights_pct'), lcx: at('level_crossings.crossings'),
             roofAlb: at('roofs.roof_albedo'), darkRoof: at('roofs.dark_roof_pct'),
             flood50: at('flood_future.any_pct_2050'), flood50now: at('flood_future.any_pct_now'),
