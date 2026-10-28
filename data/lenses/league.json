@@ -842,7 +842,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 32.7,
+     "value": 36.9,
      "unit": "%",
      "higherIs": "better"
     },
@@ -1928,7 +1928,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 45.3,
+     "value": 48,
      "unit": "%",
      "higherIs": "better"
     },
@@ -2798,7 +2798,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 42.4,
+     "value": 47.7,
      "unit": "%",
      "higherIs": "better"
     },
@@ -3800,7 +3800,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 43.5,
+     "value": 47.2,
      "unit": "%",
      "higherIs": "better"
     },
@@ -4718,7 +4718,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 32.1,
+     "value": 35.3,
      "unit": "%",
      "higherIs": "better"
     },
@@ -5420,7 +5420,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 39.7,
+     "value": 45.2,
      "unit": "%",
      "higherIs": "better"
     },
@@ -6410,7 +6410,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 59.6,
+     "value": 65,
      "unit": "%",
      "higherIs": "better"
     },
@@ -7256,7 +7256,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 49.2,
+     "value": 55.7,
      "unit": "%",
      "higherIs": "better"
     },
@@ -8096,7 +8096,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 61.4,
+     "value": 67.6,
      "unit": "%",
      "higherIs": "better"
     },
@@ -9014,7 +9014,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 19.2,
+     "value": 21.7,
      "unit": "%",
      "higherIs": "better"
     },
@@ -9872,7 +9872,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 47.2,
+     "value": 51.5,
      "unit": "%",
      "higherIs": "better"
     },
@@ -10814,7 +10814,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 11.5,
+     "value": 12.8,
      "unit": "%",
      "higherIs": "better"
     },
@@ -11768,7 +11768,7 @@
     },
     "solar": {
      "label": "Rooftop solar vs residents’ use",
-     "value": 36.3,
+     "value": 41.7,
      "unit": "%",
      "higherIs": "better"
     },

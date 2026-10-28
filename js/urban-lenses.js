@@ -159,9 +159,9 @@ const UrbanLenses = (() => {
         { id: 'solar', title: 'Rooftop solar potential', icon: '☀',
             question: 'How much power could the city’s roofs make?',
             field: { key: 'solar_mwh', label: 'Rooftop solar potential', unit: 'MWh/yr', higherIs: 'better', ramp: 'heat' },
-            needs: ['building_stock.cover_2023_pct', 'osm_roads.building_cover_pct'],
-            method: `Roof area = building cover (Open Buildings 2023, else OSM) × cell area; ${ROOF_USABLE * 100}% usable; ${M2_PER_KWP} m² per kWp (MNRE); yield = kWp × NASA POWER annual irradiance × 365 × performance ratio ${PERF_RATIO}. Compared with ${KWH_PER_CAPITA.toLocaleString('en-IN')} kWh per resident per year (CEA 2023-24). Shading, roof slope and structure are ignored; the per-building sun-hours tool refines a site.`,
-            refs: 'Gagnon et al. 2016 (NREL rooftop PV); MNRE rooftop guidelines; NASA POWER; CEA General Review 2024' },
+            needs: ['building_stock.cover_2023_pct', 'osm_roads.building_cover_pct', 'solar_atlas.pvout_kwh_kwp'],
+            method: `Roof area = building cover (Open Buildings 2023, else OSM) × cell area; ${ROOF_USABLE * 100}% usable; ${M2_PER_KWP} m² per kWp (MNRE); yield = kWp × the Global Solar Atlas PV output per kWp for the block (Solargis model with local haze and cloud, about 1 km), or where that is missing NASA POWER annual irradiance × 365 × performance ratio ${PERF_RATIO}. Compared with ${KWH_PER_CAPITA.toLocaleString('en-IN')} kWh per resident per year (CEA 2023-24). Shading, roof slope and structure are ignored; the per-building sun-hours tool refines a site.`,
+            refs: 'Gagnon et al. 2016 (NREL rooftop PV); MNRE rooftop guidelines; Global Solar Atlas 2 (World Bank, Solargis); NASA POWER; CEA General Review 2024' },
         { id: 'confidence', title: 'Data confidence', icon: '🔎',
             question: 'How far can I trust the lenses here?',
             field: { key: 'confidence', label: 'Data confidence', unit: '0-100', higherIs: 'better', ramp: 'viridis' },
@@ -1558,17 +1558,19 @@ const UrbanLenses = (() => {
     function solar(fr) {
         const c = fr.cols, g = fr.grid, n = g.n, idx = _residents(fr);
         const cover = c['building_stock.cover_2023_pct'] || c['osm_roads.building_cover_pct'];
-        const ghi = GHI[fr.city];
+        const ghi = GHI[fr.city], pv = c['solar_atlas.pvout_kwh_kwp'];
         if (!cover || !ghi) return null;
-        const yieldKwh = ghi * 365 * PERF_RATIO;             // per kWp per year
+        const yieldKwh = ghi * 365 * PERF_RATIO;             // per kWp per year; Global Solar Atlas per block when baked
+        const yieldAt = i => (pv && _fin(pv[i]) && pv[i] > 0 ? pv[i] : yieldKwh);
         const mwh = new Float64Array(n).fill(NaN);
-        let kwp = 0, energy = 0, roofKm2 = 0;
+        let kwp = 0, energy = 0, roofKm2 = 0, pvKwp = 0;
         for (let i = 0; i < n; i++) {
             if (!_fin(cover[i]) || cover[i] <= 0) continue;
             const roof = (cover[i] / 100) * g.cellKm2 * 1e6;  // m²
             const cap = roof * ROOF_USABLE / M2_PER_KWP;
-            mwh[i] = cap * yieldKwh / 1000;
+            mwh[i] = cap * yieldAt(i) / 1000;
             kwp += cap; energy += mwh[i]; roofKm2 += roof / 1e6;
+            if (yieldAt(i) !== yieldKwh) pvKwp += cap;
         }
         if (!energy) return null;
         const pop = c['population.population'];
@@ -1588,7 +1590,9 @@ const UrbanLenses = (() => {
                 { label: 'Annual generation', value: `${Math.round(energy / 1e3).toLocaleString('en-IN')} GWh` },
                 { label: 'Share of residents’ consumption', value: `${_round(100 * energy / (demandMwh || 1))}%` },
                 { label: 'Residents in cells whose roofs out-produce them', value: _people(ssPeople), raw: Math.round(ssPeople) },
-                { label: 'Irradiance (NASA POWER)', value: `${ghi} kWh/m²/day · ${Math.round(yieldKwh)} kWh/kWp/yr` },
+                pvKwp > kwp / 2
+                    ? { label: 'Yield (Global Solar Atlas, roof-weighted)', value: `${Math.round(1000 * energy / kwp).toLocaleString('en-IN')} kWh/kWp/yr` }
+                    : { label: 'Irradiance (NASA POWER)', value: `${ghi} kWh/m²/day · ${Math.round(yieldKwh)} kWh/kWp/yr` },
             ],
         };
     }

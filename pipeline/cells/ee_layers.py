@@ -2024,6 +2024,38 @@ def wind(region):
     return spec, _table(level, rows, specs)
 
 
+def solar_atlas(region):
+    """Photovoltaic output and sunshine per block (Global Solar Atlas 2, about 1 km)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    gsa = "projects/sat-io/open-datasets/global_solar_atlas/"
+    months = ee.ImageCollection(gsa + "pvout_LTAm_AvgDailyTotals")
+    img = ee.Image.cat([ee.Image(gsa + "pvout_LTAy_AvgDailyTotals").rename("pv"), ee.Image(gsa + "ghi_LTAy_AvgDailyTotals").rename("ghi"),
+                        months.min().rename("pvmin"), months.max().rename("pvmax")])
+    raw = gee.fetch(gee.to_cells(img, 1000), bbox, level, tile=128)
+    rows = {}
+    for code, x in raw.items():
+        pv, lo, hi = x.get("pv"), x.get("pvmin"), x.get("pvmax")
+        if pv is None:
+            continue
+        rows[code] = {"pvout_kwh_kwp": _r(365 * pv, 0), "ghi_kwh_m2_day": _r(x.get("ghi"), 2),
+                      "pv_worst_month_pct": _r(100 * lo / hi) if lo is not None and hi else None}
+    specs = [
+        FieldSpec("pvout_kwh_kwp", "Solar PV output per kWp installed, per year", agg="mean", unit="kWh/kWp", domain=[1350, 1750], ramp="heat", higher_is="better"),
+        FieldSpec("ghi_kwh_m2_day", "Global horizontal irradiation", agg="mean", unit="kWh/m²/day", domain=[4.4, 5.8], ramp="heat", higher_is="better"),
+        FieldSpec("pv_worst_month_pct", "PV output in the worst month as a share of the best", agg="mean", unit="%", domain=[40, 90], ramp="heat", higher_is="better"),
+    ]
+    spec = DatasetSpec(
+        id="solar_atlas", title="Solar PV output (Global Solar Atlas)", level=level, fields=specs, group=GROUP,
+        description="Long-term yearly output of a standard fixed solar PV system per kWp, global horizontal irradiation and the "
+                    "worst month's output as a share of the best month's (the monsoon dip), from the Global Solar Atlas 2 "
+                    "(Solargis for the World Bank, about 1 km; haze and cloud are in the model).",
+        source="Global Solar Atlas 2 via the awesome-gee-community-catalog (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (World Bank Group, Solargis)", default_field="pvout_kwh_kwp")
+    return spec, _table(level, rows, specs)
+
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -2032,7 +2064,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "solar_atlas": solar_atlas,
 }
 
 

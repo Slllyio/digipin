@@ -719,9 +719,9 @@ const UrbanLensesRealEstate = (() => {
     function solarhome(fr) {
         const g = fr.grid, c = fr.cols, n = g.n;
         const cover = c['building_stock.cover_2023_pct'] || c['osm_roads.building_cover_pct'], pop = c['population.population'];
-        const cdd = c['climate_future.cdd_2050'], ghi = GHI[fr.city];
+        const cdd = c['climate_future.cdd_2050'], ghi = GHI[fr.city], pv = c['solar_atlas.pvout_kwh_kwp'];
         if (!cover || !pop || !ghi) return null;
-        const yieldKwh = ghi * 365 * PERF_RATIO;
+        const yieldCity = ghi * 365 * PERF_RATIO, yieldAt = i => (pv && _fin(pv[i]) && pv[i] > 0 ? pv[i] : yieldCity);
         const kw = new Float64Array(n).fill(NaN), pay = new Float64Array(n).fill(NaN), acShare = new Float64Array(n).fill(NaN);
         const cells = [];
         for (let i = 0; i < n; i++) {
@@ -730,8 +730,8 @@ const UrbanLensesRealEstate = (() => {
             const k = Math.min(MAX_HOME_KWP, roof / M2_PER_KWP);
             kw[i] = k; cells.push(i);
             if (k >= MIN_HOME_KWP) {
-                pay[i] = (k * PV_COST_KW - subsidy(k)) / (k * yieldKwh * TARIFF);
-                if (cdd && _fin(cdd[i]) && cdd[i] > 0) acShare[i] = Math.min(100, 100 * k * yieldKwh / (cdd[i] * AC_KWH_PER_CDD));
+                pay[i] = (k * PV_COST_KW - subsidy(k)) / (k * yieldAt(i) * TARIFF);
+                if (cdd && _fin(cdd[i]) && cdd[i] > 0) acShare[i] = Math.min(100, 100 * k * yieldAt(i) / (cdd[i] * AC_KWH_PER_CDD));
             }
         }
         if (cells.length < 5) return null;
@@ -740,6 +740,7 @@ const UrbanLensesRealEstate = (() => {
         const medPay = fit.length ? wquantile(pay, pop, fit, 0.5) : null;
         const acFull = cdd ? _sumOver(pop, fit, i => acShare[i] >= 100) : null;
         const kwFit = fit.reduce((s, i) => s + kw[i] * pop[i] / HH_SIZE, 0);
+        const yieldKwh = people ? cells.reduce((s, i) => s + pop[i] * yieldAt(i), 0) / people : yieldCity;
         const stats = [
             { label: `Residents whose home's share of roof fits at least ${MIN_HOME_KWP} kW`, value: `${_people(fitPeople)} (${_round(100 * fitPeople / people)}%)`, raw: _round(100 * fitPeople / people) },
             { label: 'Home systems that fit, up to 3 kW each', value: `${_round(kwFit / 1e6, 2)} GW, ₹${Math.round(fit.reduce((s, i) => s + subsidy(kw[i]) * pop[i] / HH_SIZE, 0) / 1e7).toLocaleString('en-IN')} crore of PM Surya Ghar subsidy` },
@@ -1463,8 +1464,8 @@ const UrbanLensesRealEstate = (() => {
         { id: 'solarhome', title: 'Home solar', icon: '🔆',
             question: 'Which homes have the roof for rooftop solar, how fast does it pay back, and can it run the AC in 2050?',
             field: { key: 'home_kwp', label: 'Rooftop solar a home can host', unit: 'kW', higherIs: 'better', ramp: 'greens' },
-            needs: ['building_stock.cover_2023_pct', 'osm_roads.building_cover_pct', 'climate_future.cdd_2050', 'population.population'],
-            method: `Roof per home = building cover (Open Buildings 2023, else OSM) × cell area × ${ROOF_USABLE * 100}% usable ÷ households (residents ÷ ${HH_SIZE}); ${M2_PER_KWP} m² per kW, capped at ${MAX_HOME_KWP} kW. Yield = city irradiance (NASA POWER) × 365 × ${PERF_RATIO}. Payback = (₹${PV_COST_KW.toLocaleString('en-IN')} a kW − PM Surya Ghar subsidy) ÷ (yield × ₹${TARIFF}/kWh). One AC uses about ${AC_KWH_PER_CDD} kWh per cooling degree-day (2050, SSP2-4.5), compared with annual output: storage and timing are ignored. Shading, roof strength and ownership are not modelled.`,
+            needs: ['building_stock.cover_2023_pct', 'osm_roads.building_cover_pct', 'climate_future.cdd_2050', 'solar_atlas.pvout_kwh_kwp', 'population.population'],
+            method: `Roof per home = building cover (Open Buildings 2023, else OSM) × cell area × ${ROOF_USABLE * 100}% usable ÷ households (residents ÷ ${HH_SIZE}); ${M2_PER_KWP} m² per kW, capped at ${MAX_HOME_KWP} kW. Yield = the block's Global Solar Atlas PV output per kW (Solargis, with local haze and cloud), else city irradiance (NASA POWER) × 365 × ${PERF_RATIO}. Payback = (₹${PV_COST_KW.toLocaleString('en-IN')} a kW − PM Surya Ghar subsidy) ÷ (yield × ₹${TARIFF}/kWh). One AC uses about ${AC_KWH_PER_CDD} kWh per cooling degree-day (2050, SSP2-4.5), compared with annual output: storage and timing are ignored. Shading, roof strength and ownership are not modelled.`,
             refs: 'MNRE PM Surya Ghar Muft Bijli Yojana guidelines 2024; MNRE rooftop benchmark costs; BEE star labelling for room ACs; NASA POWER; Census 2011 / NFHS-5 household size' },
         { id: 'waterrisk', title: 'Water risk', icon: '💧',
             question: 'How stretched is the city\'s water now and by 2050, and how fast is groundwater falling?',
