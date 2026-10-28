@@ -133,7 +133,7 @@ Each item gives four things:
 
 79. ✅ Jobs proxy from offices + places + non-residential floor space | derived | job access
 80. Census 2011 ward population and literacy (where ward shapes exist) | open | equity lens
-81. ⏸ NFHS-5 district health and wealth indicators | open | district context (rchiips.org unreachable; the DHS API serves NFHS-5 by state only)
+81. ✅ NFHS-5 district health and household indicators (stunting, anaemia, BP, sugar, insurance, clean fuel and more) for all 13 cities, from a GitHub CSV conversion of the IIPS fact sheets | GitHub | `districthealth` lens (new dataset `nfhs`, pipeline/realestate/nfhs.py)
 82. SECC / PMAY beneficiary density (where published) | open | housing need
 83. ✅ Gig and informal work proxy (two-wheeler density × places) | derived | economy lens (`riders` lens: delivery-rider hubs from eateries and grocers, rest-stop gaps from toilets, water and heat; vehicle registrations are not open per block)
 84. ✅ Night-time economy (VIIRS late-night radiance × food/leisure places) | EE/S3 | night economy

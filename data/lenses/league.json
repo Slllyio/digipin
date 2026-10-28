@@ -732,6 +732,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 35.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 11.6,
@@ -1564,6 +1570,12 @@
      "label": "Former water now built up",
      "value": 36.7,
      "unit": "ha",
+     "higherIs": "worse"
+    },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 31.3,
+     "unit": "%",
      "higherIs": "worse"
     },
     "views": {
@@ -2406,6 +2418,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 19.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 7.1,
@@ -3244,6 +3262,12 @@
      "label": "Former water now built up",
      "value": 286.2,
      "unit": "ha",
+     "higherIs": "worse"
+    },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 19.8,
+     "unit": "%",
      "higherIs": "worse"
     },
     "views": {
@@ -4092,6 +4116,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 28.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 25,
@@ -4774,6 +4804,12 @@
      "label": "Former water now built up",
      "value": 0.1,
      "unit": "ha",
+     "higherIs": "worse"
+    },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 31.9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "schoolrun": {
@@ -5604,6 +5640,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 34.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 14.6,
@@ -6426,6 +6468,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 28.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 3.9,
@@ -7234,6 +7282,12 @@
      "label": "Former water now built up",
      "value": 0.2,
      "unit": "ha",
+     "higherIs": "worse"
+    },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 25,
+     "unit": "%",
      "higherIs": "worse"
     },
     "views": {
@@ -8082,6 +8136,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 32.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 39.2,
@@ -8890,6 +8950,12 @@
      "label": "Former water now built up",
      "value": 18.3,
      "unit": "ha",
+     "higherIs": "worse"
+    },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 32.1,
+     "unit": "%",
      "higherIs": "worse"
     },
     "views": {
@@ -9750,6 +9816,12 @@
      "unit": "ha",
      "higherIs": "worse"
     },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 35.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 40.2,
@@ -10582,6 +10654,12 @@
      "label": "Former water now built up",
      "value": 63,
      "unit": "ha",
+     "higherIs": "worse"
+    },
+    "districthealth": {
+     "label": "Children under 5 stunted (resident-weighted district average)",
+     "value": 30.7,
+     "unit": "%",
      "higherIs": "worse"
     },
     "views": {

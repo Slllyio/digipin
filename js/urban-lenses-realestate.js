@@ -1149,6 +1149,57 @@ const UrbanLensesRealEstate = (() => {
     // frame holds lived-in blocks only, so open water shows up as shoreline blocks that are partly water.
     const VIEW_M = 20, VIEW_KM = 0.4, WATER_PCT = 30, GREEN_PCT = 50, OPEN_MIN = 2, GREEN_MIN = 3;
 
+    // District health (NFHS-5 2019-21). Survey values are district averages, so the lens groups blocks by district and
+    // asks how many residents live where child stunting, anaemia or raised blood pressure run high, and insurance low.
+    const STUNT_PCT = 30, ANAEMIA_PCT = 50, BP_PCT = 25, INSURED_PCT = 25;
+
+    function districthealth(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], st = c['nfhs.stunted_pct'];
+        const an = c['nfhs.women_anaemia_pct'], bpw = c['nfhs.bp_women_pct'], bpm = c['nfhs.bp_men_pct'], sw = c['nfhs.sugar_women_pct'];
+        const sm = c['nfhs.sugar_men_pct'], ins = c['nfhs.insurance_pct'], kids = c['demographics.under5'];
+        if (!pop || !st) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : NaN);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(pop[i]) && pop[i] > 0 && _fin(st[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const groups = new Map();       // one group per district: identical survey values
+        for (const i of idx) {
+            const k = [st, an, bpw, bpm, ins].map(a => v(a, i)).join('|');
+            const gr = groups.get(k) || { idx: [], pop: 0, rep: i, best: 0 };
+            gr.idx.push(i);
+            gr.pop += pop[i];
+            if (pop[i] > gr.best) { gr.best = pop[i]; gr.rep = i; }
+            groups.set(k, gr);
+        }
+        if (groups.size < 1) return null;
+        const all = _sumOver(pop, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
+        const bp = i => { const a = v(bpw, i), b = v(bpm, i); return _fin(a) && _fin(b) ? (a + b) / 2 : (_fin(a) ? a : b); };
+        const stunt = _sumOver(pop, idx, i => st[i] >= STUNT_PCT), anem = an ? _sumOver(pop, idx, i => v(an, i) >= ANAEMIA_PCT) : 0;
+        const hiBp = _sumOver(pop, idx, i => bp(i) >= BP_PCT), lowIns = ins ? _sumOver(pop, idx, i => v(ins, i) < INSURED_PCT) : 0;
+        const mean = idx.reduce((s, i) => s + pop[i] * st[i], 0) / (all || 1);
+        const stats = [
+            { label: 'NFHS-5 districts covering the city', value: String(groups.size) },
+            { label: `Residents in districts where ${STUNT_PCT}%+ of children under 5 are stunted`, value: `${_people(stunt)} (${pct(stunt)}%)` },
+        ];
+        if (kids) stats.push({ label: '…children under 5 among them', value: _people(_sumOver(kids, idx, i => st[i] >= STUNT_PCT)) });
+        if (an) stats.push({ label: `Residents in districts where ${ANAEMIA_PCT}%+ of women 15-49 are anaemic`, value: `${_people(anem)} (${pct(anem)}%)` });
+        if (bpw || bpm) stats.push({ label: `Residents in districts where ${BP_PCT}%+ of adults have raised blood pressure`, value: `${_people(hiBp)} (${pct(hiBp)}%)` });
+        if (ins) stats.push({ label: `Residents in districts where under ${INSURED_PCT}% of households have health insurance`, value: `${_people(lowIns)} (${pct(lowIns)}%)` });
+        [...groups.values()].sort((a, b) => b.pop - a.pop).slice(0, 8).forEach((gr, k) => {
+            const i = gr.rep, f = a => (_fin(v(a, i)) ? `${_round(v(a, i), 1)}%` : 'n/a');
+            stats.push({ label: `District ${k + 1}, around ${g.codes[i]}`,
+                value: `${_people(gr.pop)} residents; stunting ${f(st)}, women's anaemia ${f(an)}, raised BP ${_fin(bp(i)) ? `${_round(bp(i), 1)}%` : 'n/a'}, high sugar ${f(sw)} / ${f(sm)} (women / men), insured ${f(ins)}` });
+        });
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = st[i];
+        return {
+            columns: { stunted_pct: out }, idx, weightKey: 'stunted_pct', noHotspots: true,
+            metric: { label: 'Children under 5 stunted (resident-weighted district average)', value: _round(mean, 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(stunt)} residents (${pct(stunt)}%) live in districts where ${STUNT_PCT}% or more of children under 5 are stunted, and ${_people(hiBp)} where a quarter of adults have raised blood pressure. These are NFHS-5 (2019-21) district averages from about 900 households a district, one value per district; they set the context for clinics, anganwadis and screening camps, not block-level measurements.`,
+            stats,
+        };
+    }
+
     function views(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], h = c['building_stock.height_2023_m'];
         const wat = c['water.permanent_water_pct'], park = c['parks.park_pct'], big = c['parks.big_park'], vi = c['land_value.value_index'];
@@ -1317,6 +1368,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['encroachment.water_lost_pct', 'encroachment.water_built_pct', 'encroachment.flood_new_pct', 'encroachment.tree_lost_pct', 'encroachment.tree_built_pct', 'encroachment.recent_built_pct'],
             method: 'Lost water is JRC Global Surface Water (Landsat, 1984–2021) permanent or seasonal water that has gone; built means Dynamic World (Sentinel-2) labels it built most of the time in 2025–26; built since 2023 needs a mean built probability of at least 0.6 now and at most 0.3 in 2023, since labels flicker in dense blocks. New floodplain building is Open Buildings 2.5D Temporal presence of at least 0.5 in 2023 and below 0.2 in 2016 inside the JRC/GloFAS 1-in-100-year zone. Tree loss is Hansen Global Forest Change (≥ 30% canopy in 2000, lost 2001–2024). The score weights floodplain building 3× and building since 2023 2×. Satellite screens only: some loss is legal (planned reclamation, metro depots), so confirm against land records and the master plan.',
             refs: 'Pekel et al. 2016 (Global Surface Water); Hansen et al. 2013 (Global Forest Change); Brown et al. 2022 (Dynamic World); Google Open Buildings 2.5D Temporal' },
+        { id: 'districthealth', equity: true, title: 'District health (NFHS-5)', icon: '🩺',
+            question: 'How healthy are the districts this city spans: stunting, anaemia, blood pressure, insurance?',
+            field: { key: 'stunted_pct', label: 'Children under 5 stunted (NFHS-5 district)', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [10, 50] },
+            needs: ['nfhs.stunted_pct', 'nfhs.women_anaemia_pct', 'nfhs.bp_women_pct', 'nfhs.bp_men_pct', 'nfhs.sugar_women_pct', 'nfhs.sugar_men_pct', 'nfhs.insurance_pct', 'demographics.under5', 'population.population'],
+            method: `National Family Health Survey 2019-21 district fact sheets (IIPS and the Ministry of Health), spread to every block of the 2011-census district; districts formed since take their parent's boundary. Raised blood pressure averages the women's and men's shares (elevated or on medication); high sugar is over 140 mg/dl or on medication. Thresholds: stunting ${STUNT_PCT}% (India 35.5%), women's anaemia ${ANAEMIA_PCT}% (India 57%), raised blood pressure ${BP_PCT}%, health insurance under ${INSURED_PCT}% of households. Each district is a survey of about 900 households, so differences of a few points are within sampling error, and nothing here varies within a district.`,
+            refs: 'NFHS-5 district fact sheets (IIPS, MoHFW 2021); CSV conversion github.com/SaiSiddhardhaKalla/NFHS and github.com/pratapvardhan/NFHS-5; Poshan Abhiyaan; Ayushman Bharat PM-JAY' },
         { id: 'views', equity: false, title: 'Rooms with a view', icon: '🌅',
             question: 'Which tall blocks look out over the sea, a lake or a big park?',
             field: { key: 'view_kind', label: 'Tower view: park (1), water (2), both (3)', unit: '0-3', higherIs: null, ramp: 'blues', domain: [0, 3] },
@@ -1325,7 +1382,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Google Open Buildings 2.5D Temporal; JRC Global Surface Water; OpenStreetMap parks; Benson et al. 1998 and Jim & Chen 2009 (hedonic value of views)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, views }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, views, districthealth }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
 })();
 

@@ -33,6 +33,7 @@ const DishaIntel = (() => {
             wildedge: /\b(leopards?|wild ?life conflict|human[- ]wildlife|forest edges?|snake ?bites?|wild animals?|homes? (near|next to|beside) (the )?forests?)\b/i,
             powercuts: /\b(power ?cuts?|power outages?|blackouts?|load[- ]?shedding|(lose|losing|without) (power|electricity)|electricity (cuts?|outages?|supply|reliability)|unreliable (power|electricity))\b/i,
             dumpsmoke: /\b(downwind of\b.{0,20}\b(landfills?|dumps?|garbage|factor(y|ies)|industr\w*)|landfill (smoke|smell|odou?r|fires?)|garbage (smoke|smell|odou?r)|dump(ing)? (site )?(smoke|smell|odou?r|fires?)|smell from\b.{0,20}\b(landfills?|dumps?))\b/i,
+            districthealth: /\b(nfhs|stunt(ed|ing)|wasting|anaemi\w*|anemi\w*|malnutrition|malnourish\w*|blood pressure|hypertension|diabet\w*|blood sugar|health insurance|district health|child health)\b/i,
             kilnsmoke: /\b(brick ?kilns?|bhattas?|bhatta|kiln (smoke|pollution|belt)|zig ?zag kilns?)\b/i,
             coalplume: /\b(coal (power )?(plants?|stations?|smoke|plumes?)|thermal (power )?(plants?|stations?)|power plants?\b.{0,30}\b(smoke|pollut\w*|downwind|upwind|plumes?)|downwind of\b.{0,30}\bplants?|fly ?ash|so2|so₂|sulph(ur|ate) dioxide)\b/i,
             carekit: /\b(diagnostic (labs?|centres?|centers?)|path(ology)? labs?|blood tests?|scan (centres?|centers?)|mri|ct scans?|x-?rays?|dentists?|dental|eye (clinics?|care|doctors?|hospitals?)|ophthalmolog\w*|cataract\w*|optometrists?|old[- ]age homes?)\b/i,
