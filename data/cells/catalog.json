@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T18:04:25Z",
+  "generated": "2026-10-28T18:09:33Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -1190,6 +1190,18 @@
             "north": 27.00390625
           },
           "json": "birds/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 379,
+          "bbox": {
+            "west": 88.2763671875,
+            "south": 22.451171875,
+            "east": 88.4521484375,
+            "north": 22.6533203125
+          },
+          "json": "birds/kolkata.json",
           "parquet": null
         },
         {
