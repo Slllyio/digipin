@@ -369,6 +369,19 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.busgap(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('crashrecord lens: residents by traffic police jurisdiction', () => {
+        const half = (a, b) => codes.map((_, i) => (i % SIZE < SIZE / 2 ? a : b));
+        const pop = codes.map(() => 100);
+        const f = L.frameFrom(codes, { 'population.population': pop, 'road_crashes.fatal_per_km2': half(3, 0.5),
+            'road_crashes.fatal_yr': half(30, 10), 'road_crashes.crashes_yr': half(200, 80), 'road_crashes.fatal_change_pct': half(40, -10) });
+        const r = L._lenses.crashrecord(f, {});
+        expect(r.stats[0].value).toBe('2');
+        expect(r.metric.value).toBe(40);
+        expect(r.stats[2].value).toMatch(/\(50%\)/);
+        expect(r.stats.find(x => x.label.startsWith('Crash zone 1')).value).toMatch(/^3 fatal/);
+        expect(L._lenses.crashrecord(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('roadsafety lens: children whose walk to school crosses a fast, busy arterial', () => {
         // A fast arterial runs down the middle column; the school is on the west edge.
         const mid = Math.floor(SIZE / 2);

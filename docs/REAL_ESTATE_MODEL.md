@@ -1203,3 +1203,9 @@ UDISE+ 2024-25, the Ministry of Education's census of every school, comes per di
 
 The lens weights by school-age children (`demographics.school_age`) and counts those in PIN codes where government schools exceed 35 pupils per teacher (RTE schedule), where 10%+ of classrooms need major repair, and where under 90% of schools have a working girls' toilet; it lists the worst PIN-code areas. The property report shows the PIN code's schools, government share, pupils per teacher and repair share.
 
+## Recorded road crashes (`crashrecord` lens in js/urban-lenses-mobility.js, `road_crashes` dataset, pipeline/realestate/btpcrashes.py)
+
+Bengaluru Traffic Police publishes station-wise crash tables (2018-2020, 2021-2022, 2023, 2024, 2025: fatal, non-fatal and total cases) and a 2022 map of its 47 jurisdictions on data.opencity.in (public domain). Each lived-in Bengaluru block takes its jurisdiction's crashes and fatal crashes a year (2023-2025 mean), the same per km² (spheroid area of the polygon), and the change in fatal crashes against 2018-2019. Station spellings vary by year (`ALIAS`); stations opened after 2022 are added to the jurisdiction they were carved from (`PARENT`: Mahadevapura to K.R. Puram, Bellanduru to HSR Layout, JP Nagar to Jayanagar, Thalagattapura to Kumaraswamy Layout, Jnanabharathi to Kengeri, Kodigehalli to Hebbal, Chickpet to Upparpet), a judgement call that keeps years comparable. One unnamed airport polygon has no counts.
+
+The lens shows fatal crashes per km², counts residents where that is at least twice the median jurisdiction's and where fatal crashes rose 25% or more, and lists the densest jurisdictions. Unlike `roadsafety` (modelled exposure on the school walk) these are police records, but only per jurisdiction. The property report adds the jurisdiction's crashes a year and the fatal trend.
+

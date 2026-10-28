@@ -1343,6 +1343,51 @@ const UrbanLensesMobility = (() => {
         return lines.join('\n');
     }
 
+    // Recorded crashes. Bengaluru Traffic Police station-wise crash counts on its 2022 jurisdictions: where fatal crashes
+    // are densest, and where they have risen since before the pandemic.
+    const RISE_PCT = 25;
+
+    function crashrecord(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], fk = c['road_crashes.fatal_per_km2'];
+        const fy = c['road_crashes.fatal_yr'], cy = c['road_crashes.crashes_yr'], ch = c['road_crashes.fatal_change_pct'];
+        if (!pop || !fk || !fy) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : NaN);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(pop[i]) && pop[i] > 0 && _fin(fk[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const groups = new Map();       // one group per jurisdiction: identical counts
+        for (const i of idx) {
+            const k = `${v(cy, i)}|${v(fy, i)}`;
+            const gr = groups.get(k) || { pop: 0, rep: i, best: 0 };
+            gr.pop += pop[i];
+            if (pop[i] > gr.best) { gr.best = pop[i]; gr.rep = i; }
+            groups.set(k, gr);
+        }
+        const gs = [...groups.values()], fatal = gs.reduce((s, gr) => s + (v(fy, gr.rep) || 0), 0), all = gs.reduce((s, gr) => s + (v(cy, gr.rep) || 0), 0);
+        const dens = gs.map(gr => fk[gr.rep]).sort((a, b) => a - b), hi = 2 * dens[(dens.length - 1) >> 1];
+        const tot = _sumOver(pop, idx, () => true), pct = p => _round(100 * p / (tot || 1), 1);
+        const pHi = _sumOver(pop, idx, i => fk[i] >= hi), pRise = ch ? _sumOver(pop, idx, i => v(ch, i) >= RISE_PCT) : 0;
+        const stats = [
+            { label: 'Traffic police jurisdictions with crash records', value: String(gs.length) },
+            { label: 'Road crashes a year in them (2023-2025)', value: `${_people(all)}, ${_people(fatal)} fatal` },
+            { label: `Residents where fatal crashes per km² are twice the median jurisdiction's (${_round(hi, 2)}+)`, value: `${_people(pHi)} (${pct(pHi)}%)` },
+        ];
+        if (ch) stats.push({ label: `Residents where fatal crashes rose ${RISE_PCT}%+ since 2018-2019`, value: `${_people(pRise)} (${pct(pRise)}%)` });
+        gs.sort((a, b) => fk[b.rep] - fk[a.rep]).slice(0, 8).forEach((gr, k) => {
+            const i = gr.rep;
+            stats.push({ label: `Crash zone ${k + 1}, around ${g.codes[i]}`,
+                value: `${_round(fk[i], 2)} fatal crashes a year per km²; ${_round(v(fy, i), 1)} fatal of ${_round(v(cy, i))} crashes a year${_fin(v(ch, i)) ? `; fatal ${v(ch, i) >= 0 ? '+' : ''}${_round(v(ch, i))}% since 2018-19` : ''}` });
+        });
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = fk[i];
+        return {
+            columns: { fatal_per_km2: out }, idx, weightKey: 'fatal_per_km2', noHotspots: true,
+            metric: { label: 'Fatal road crashes a year (police records)', value: _round(fatal), unit: 'crashes', higherIs: 'worse' },
+            headline: `Police recorded about ${_people(all)} road crashes a year in 2023-2025, ${_people(fatal)} of them fatal; ${_people(pHi)} residents (${pct(pHi)}%) live where fatal crashes per km² are at least twice the median jurisdiction's${ch ? `, and ${_people(pRise)} where fatal crashes have risen ${RISE_PCT}% or more since 2018-2019` : ''}. Counts are per traffic police station, so every block in a jurisdiction shares its rate; through-traffic on highways and the ring road inflates the outer stations' totals.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'cleanwalk', equity: true, title: 'Exhaust on the walk to school', icon: '😷',
             question: 'How much traffic exhaust do children breathe on the walk to school, and is there a cleaner route?',
@@ -1391,6 +1436,12 @@ const UrbanLensesMobility = (() => {
                 'osm_walk.links', 'demographics.children_pct', 'wealth.rwi'],
             method: `Each child (residents × WorldPop share under 15, 25% where missing) walks the OpenStreetMap walking network to the nearest school (Overture Maps), out to ${SHADE_KM} km. A road cell is dangerous when the demand model's arterial has a free-flow speed of ${FAST_KMH}+ km/h (peak speed × (1 + peak delay), the speed traffic reaches outside the rush) and ${BUSY_PCU}+ PCU in the peak hour. The map shows the worst fatality risk along each child's route if struck at that speed (Rosén & Sander 2009: about ${_round(100 * fatalRisk(SAFE_KMH))}% at ${SAFE_KMH} km/h, ${_round(100 * fatalRisk(60))}% at 60 km/h); crossing priority is children walking through × that risk. No crossings, signals, footbridges or crash records in the open data, so it ranks exposure, not crashes.`,
             refs: 'Rosén & Sander 2009 (pedestrian fatality risk and impact speed); WHO 2023 Global status report on road safety; IRC SP 32-2023 (road safety for children near schools); Stockholm Declaration 2020 (30 km/h)' },
+        { id: 'crashrecord', equity: true, title: 'Recorded road crashes', icon: '🚑',
+            question: 'Where do the police record the most fatal road crashes, and where are they rising?',
+            field: { key: 'fatal_per_km2', label: 'Fatal road crashes a year per km² (traffic police jurisdiction)', unit: '/km²/yr', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['road_crashes.fatal_per_km2', 'road_crashes.fatal_yr', 'road_crashes.crashes_yr', 'road_crashes.fatal_change_pct', 'population.population'],
+            method: `Bengaluru Traffic Police station-wise crash tables for 2018-2025 and its 2022 jurisdiction map, both public domain on data.opencity.in. Each lived-in block takes its jurisdiction's crashes and fatal crashes a year (2023-2025 mean) and the fatal count per km²; stations opened since 2022 (Mahadevapura, Bellanduru, JP Nagar, Thalagattapura, Jnanabharathi, Kodigehalli) are added to the jurisdiction they were carved from, so the change against 2018-2019 compares like with like. 'Twice the median' uses the median jurisdiction's fatal crashes per km². Bengaluru only; no other city in DISHA publishes station-wise crash counts with a jurisdiction map.`,
+            refs: 'Bengaluru Traffic Police station-wise road crash data 2018-2025 and jurisdiction map 2022 (data.opencity.in); MoRTH Road Accidents in India 2024; WHO 2023 Global status report on road safety' },
         { id: 'busgap', equity: true, title: 'Bus gaps on busy roads', icon: '🚌',
             question: 'Which busy commute corridors have no frequent bus?',
             field: { key: 'corridor_pcu', label: 'Peak-hour traffic on the nearest busy arterial', unit: 'PCU/h', higherIs: 'worse', ramp: 'heat' },
@@ -1501,7 +1552,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk, crashrecord }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

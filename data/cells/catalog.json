@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T11:39:46Z",
+  "generated": "2026-10-28T11:54:51Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -28229,6 +28229,170 @@
               "4FP5",
               "4FPJ",
               "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "road_crashes",
+      "title": "Road crashes by traffic police station (Bengaluru, BTP)",
+      "description": "Bengaluru Traffic Police station-wise road crash counts (2018-2025) given to every lived-in block of the station's 2022 jurisdiction: crashes and fatal crashes a year (2023-2025 mean), the same per km\u00b2, and the change in fatal crashes since 2018-2019. Stations opened after 2022 are added to the jurisdiction they were carved from. Bengaluru only.",
+      "source": "pipeline/realestate/btpcrashes.py (BTP station-wise crash tables and 2022 jurisdiction map via data.opencity.in)",
+      "license": "Public domain (Bengaluru Traffic Police via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "station",
+          "label": "Traffic police station (2022 jurisdiction)",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "Adugodi",
+            "Ashokanagara",
+            "Banashankari",
+            "Banaswadi",
+            "Basavanagudi",
+            "Byatarayanapura",
+            "Chamarajpet",
+            "Chikkabanavara",
+            "Chikkajala",
+            "City Market",
+            "Cubbon Park",
+            "Devanahalli",
+            "Electronic City",
+            "H.A.L.",
+            "H.S.R.Layout",
+            "Halasur",
+            "Halasurgate",
+            "Hebbal",
+            "Hennur",
+            "High Grounds",
+            "Hulimavu",
+            "Jalahalli",
+            "Jayanagar",
+            "Jeevan Bheemanagar",
+            "K.R. Puram",
+            "Kadugondana Halli",
+            "Kamakshipalya",
+            "Kengeri",
+            "Kumaraswamy Layout",
+            "Madiwala",
+            "Magadi Road",
+            "Malleshwarm",
+            "Mico layout Bangalore",
+            "Peenya",
+            "Pulakeshinagar",
+            "R.T. Nagar",
+            "Rajaji Nagar",
+            "Sadashivanagar",
+            "Shivajinagar",
+            "Upparpet",
+            "V.V. Puram",
+            "Vijayanagar",
+            "Whitefield",
+            "Wilsongarden",
+            "Yelahanka",
+            "Yeshwanthapura"
+          ]
+        },
+        {
+          "key": "crashes_yr",
+          "label": "Road crashes a year in the jurisdiction (2023-2025)",
+          "type": "number",
+          "agg": "max",
+          "unit": "crashes/yr",
+          "domain": [
+            19,
+            363.3
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "fatal_yr",
+          "label": "Fatal road crashes a year in the jurisdiction (2023-2025)",
+          "type": "number",
+          "agg": "max",
+          "unit": "crashes/yr",
+          "domain": [
+            1,
+            56
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "crashes_per_km2",
+          "label": "Road crashes a year per km\u00b2 of the jurisdiction",
+          "type": "number",
+          "agg": "mean",
+          "unit": "/km\u00b2/yr",
+          "domain": [
+            1.32,
+            70.5
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "fatal_per_km2",
+          "label": "Fatal road crashes a year per km\u00b2 of the jurisdiction",
+          "type": "number",
+          "agg": "mean",
+          "unit": "/km\u00b2/yr",
+          "domain": [
+            0.201,
+            15.831
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "fatal_change_pct",
+          "label": "Fatal crashes 2023-2025 against 2018-2019",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            -60,
+            60
+          ],
+          "ramp": "diverging",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "fatal_per_km2",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 14916,
+          "bbox": {
+            "west": 77.454833984375,
+            "south": 12.83154296875,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "road_crashes/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
             ]
           }
         }

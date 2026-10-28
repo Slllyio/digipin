@@ -894,6 +894,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "crashrecord": {
+     "label": "Fatal road crashes a year (police records)",
+     "value": 835.8,
+     "unit": "crashes",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 4.9,
