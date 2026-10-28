@@ -1933,6 +1933,54 @@ const UrbanLenses = (() => {
      * Run lenses for a city. opts: { only: [ids], hotspots: true, permutations (LISA; 0 = Gi* and Moran only) }.
      * Returns { schema, city, cityLabel, lenses: [...], layer, sources, missing }.
      */
+    // Neighbourhood names (the neighbourhoods dataset: OSM colonies, sectors and villages via Overture) for block codes,
+    // so pick lists read "Care point 1: 39J3286 · Mundka" instead of a bare code. Optional: no dataset, no names.
+    const _names = new Map();   // city -> Promise<Map<code, {label, place, area, district, pin}>>
+    const COMPASS = /^(north|south|east|west|central)(\s|-|$)/i;   // OSM zones named "South" read better as the district
+    function places(city, store) {
+        store = _store(store);
+        if (!store || !store.get || !store.get('neighbourhoods')) return Promise.resolve(new Map());
+        if (_names.has(city)) return _names.get(city);
+        const p = (async () => {
+            const spec = store.get('neighbourhoods');
+            const region = (spec.regions || []).find(r => r.name === city);
+            if (!region) return new Map();
+            const t = await _loadView(store, 'neighbourhoods', region.bbox).catch(() => null);
+            const out = new Map();
+            if (!t || !t.cells || !t.columns || !t.columns.place) return out;
+            const col = k => t.columns[k] || [];
+            const [pl, ar, di, pin] = ['place', 'area', 'district', 'pin'].map(col);
+            t.cells.forEach((c, i) => {
+                if (!pl[i] && !pin[i]) return;
+                const up = ar[i] && ar[i] !== pl[i] && !COMPASS.test(ar[i]) ? ar[i] : (di[i] && di[i] !== pl[i] ? di[i] : '');
+                out.set(String(c).replace(/-/g, ''), {
+                    label: pl[i] ? (up ? `${pl[i]}, ${up}` : String(pl[i])) : '', place: pl[i] || null, area: ar[i] || null,
+                    district: di[i] || null, pin: pin[i] || null,
+                });
+            });
+            return out;
+        })();
+        _names.set(city, p);
+        p.catch(() => _names.delete(city));
+        return p;
+    }
+    /** Map of block code (no dashes) to "Place, Area" for a city; empty without the neighbourhoods dataset. */
+    async function names(city, store) {
+        const out = new Map();
+        for (const [c, r] of await places(city, store)) if (r.label) out.set(c, r.label);
+        return out;
+    }
+
+    /** Append neighbourhood names to stat labels that end in a block code. */
+    function nameStats(lenses, map) {
+        if (!map || !map.size) return;
+        for (const l of lenses) for (const st of l.stats || []) {
+            const m = /(?:^|[\s:])([0-9A-Z]{7})$/.exec(st.label);
+            const nm = m && map.get(m[1]);
+            if (nm) st.label = `${st.label} · ${nm}`;
+        }
+    }
+
     async function run(city, store, opts = {}) {
         const ids = (opts.only && opts.only.length ? opts.only : LENSES.map(l => l.id));
         const want = new Set(ids);
@@ -1976,6 +2024,7 @@ const UrbanLenses = (() => {
         const res = _residents(fr);
         const layer = { level: fr.level, cells: res.map(i => fr.grid.codes[i]), columns: {} };
         for (const [k, v] of Object.entries(layerCols)) layer.columns[k] = res.map(i => (_fin(v[i]) ? _round(v[i], 3) : null));
+        if (opts.names !== false && !opts.frame) nameStats(out, await names(city, store).catch(() => null));
         const result = {
             schema: SCHEMA, kind: 'lenses', city: fr.city, cityLabel: UrbanInsights.cityLabel(fr.city),
             ranAt: (opts.now ? opts.now() : new Date()).toISOString(),
@@ -2169,7 +2218,7 @@ const UrbanLenses = (() => {
         SCHEMA, LENS_SCHEMA, LENSES, PRESETS, ESSENTIALS, CELL_DEG, GHI,
         catalog, lens, site, areaProfile, leagueFor, ahp, within,
         prank, wmean, wquantile, gini, lorenz, palma, ols, pearson, grid, frameFrom, frame, allNeeds,
-        e2sfca, walkNet, pedShed, wrank, concIndex, DIRS, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText,
+        e2sfca, walkNet, pedShed, wrank, concIndex, DIRS, kmeans, silhouette, archetypeName, hotspots, run, clusters, toLayer, toText, names, places, _nameStats: nameStats,
         register, _lenses: RUN,
         _kit: { GHI, ROOF_USABLE, M2_PER_KWP, PERF_RATIO, KM_LAT, DIRS, _fin, _round, _people, _sumOver, _residents, _net, wmean, wquantile, within, frame, allNeeds },
     };

@@ -112,6 +112,19 @@ describe('UrbanLenses league', () => {
     });
 });
 
+describe('UrbanLenses neighbourhood names', () => {
+    it('appends a name to labels that end in a block code, and leaves others alone', () => {
+        const lenses = [{ stats: [{ label: 'Care point 1: 39J3286' }, { label: 'Residents: 39J3286 area' }, { label: 'Gap 2: 3C7682L' }] }];
+        L._nameStats(lenses, new Map([['39J3286', 'Saket, South Delhi']]));
+        expect(lenses[0].stats.map(s => s.label)).toEqual(['Care point 1: 39J3286 · Saket, South Delhi', 'Residents: 39J3286 area', 'Gap 2: 3C7682L']);
+        L._nameStats(lenses, null);           // no dataset: nothing changes
+        expect(lenses[0].stats[2].label).toBe('Gap 2: 3C7682L');
+    });
+    it('names() resolves empty without a neighbourhoods dataset', async () => {
+        expect((await L.names('delhi', { get: () => null })).size).toBe(0);
+    });
+});
+
 describe('UrbanLenses methods on a hand-made grid', () => {
     const SIZE = 12;
     const codes = block(22.72, 75.86, SIZE);
