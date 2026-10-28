@@ -11,7 +11,10 @@ parked at once at the late-morning peak.
 Supply is kerb on local and secondary streets (osm_roads km/km² × cell area,
 both sides, a car space every BAY_M, USABLE share left after junctions,
 driveways, bus stops and no-parking stretches) plus mapped parking lots
-(Overture places, LOT_ECS each). Main roads are left out. Per L7 cell
+(Overture places, LOT_ECS each). Where the corporation publishes its own lots
+with capacities (BMC's public parking lots, Mumbai; ``--official`` refreshes
+data/vectors/parking_lots_official_{region}.geojson) a block takes the larger
+of the official capacity and the mapped-lot estimate. Main roads are left out. Per L7 cell
 (dataset ``parking``):
 
     demand_ecs   vehicles parked at the late-morning peak, in car spaces
@@ -48,6 +51,7 @@ ACCUMULATION = 0.6             # share of the day's arriving vehicles parked at 
 BAY_M = 5.5
 USABLE = 0.4
 LOT_ECS = 40.0
+OFFICIAL = {"mumbai": ("mumbai-parking", "Mumbai Parking Lots")}   # OpenCity dataset, resource (public domain)
 MIN_DEMAND = 20.0
 TOP = 10
 
@@ -87,6 +91,45 @@ def _cols(ds, region, fields):
     return out
 
 
+def fetch_official(region):
+    """Official public parking lots with capacity -> data/vectors/parking_lots_official_{region}.geojson."""
+    import re
+
+    import requests
+
+    from pipeline.realestate.newroads import resource_url
+    pkg, name = OFFICIAL[region]
+    text = requests.get(resource_url(pkg, name), timeout=120).content.decode("utf-8-sig")
+    feats = []
+    for pm in re.findall(r"<Placemark.*?</Placemark>", text, re.S):
+        xy = re.search(r"<coordinates>\s*([^<]+?)\s*</coordinates>", pm)
+        val = dict(re.findall(r'<SimpleData name="([^"]+)">([^<]*)<', pm))
+        try:
+            x, y = map(float, xy.group(1).split(",")[:2])
+            cap = int(float(val.get("TOTAL") or 0))
+        except (AttributeError, ValueError):
+            continue
+        if cap > 0:
+            feats.append({"type": "Feature", "geometry": {"type": "Point", "coordinates": [round(x, 6), round(y, 6)]},
+                          "properties": {"code": val.get("CODE", ""), "spaces": cap,
+                                         "cars": int(float(val.get("LMV") or 0)), "goods": int(float(val.get("LCV") or 0)) + int(float(val.get("HMV") or 0))}})
+    VECTORS.mkdir(parents=True, exist_ok=True)
+    (VECTORS / f"parking_lots_official_{region}.geojson").write_text(json.dumps(
+        {"type": "FeatureCollection", "source": f"data.opencity.in/dataset/{pkg} (public domain)", "features": feats}, separators=(",", ":")))
+    return feats
+
+
+def official_spaces(region):
+    """{L7 code: vehicle spaces} from the official lots file, if any."""
+    p = VECTORS / f"parking_lots_official_{region}.geojson"
+    out = Counter()
+    if p.exists():
+        for f in json.loads(p.read_text())["features"]:
+            x, y = f["geometry"]["coordinates"]
+            out[digipin.encode(y, x).replace("-", "")[:LEVEL]] += f["properties"]["spaces"]
+    return out
+
+
 def compute(region, log=print):
     from pipeline.cells import earthengine as gee
     pop = _cols("population", region, ("population",))
@@ -103,6 +146,7 @@ def compute(region, log=print):
                     lots[digipin.encode(y, x).replace("-", "")[:LEVEL]] += 1
                 except Exception:
                     pass
+    official = official_spaces(region)
     attr = Counter()
     for c, (bp, nr) in built.items():
         if bp:
@@ -115,13 +159,13 @@ def compute(region, log=print):
     city_pop = sum(v[0] or 0 for v in pop.values())
     tot = sum(attr.values()) or 1.0
     rows = {}
-    for c in set(attr) | set(lots):
+    for c in set(attr) | set(lots) | (set(official) & set(built)):
         d = demand_ecs(city_pop, attr[c] / tot)
         sec, loc = roads.get(c, (None, None))
         street = ((sec or 0) + (loc or 0)) * gee.cell_area_km2(c)
-        s = kerb_ecs(street) + LOT_ECS * lots[c]
+        s = kerb_ecs(street) + max(LOT_ECS * lots[c], official[c])
         pr = pressure(d, s)
-        if pr is None and not lots[c]:
+        if pr is None and not lots[c] and not official[c]:
             continue
         r = {"demand_ecs": round(d), "supply_ecs": round(s)}
         if lots[c]:
@@ -132,7 +176,7 @@ def compute(region, log=print):
     dem = sum(r["demand_ecs"] for r in rows.values()) or 1
     over = [(c, r) for c, r in rows.items() if (r.get("pressure") or 0) > 1]
     top = sorted(over, key=lambda cr: -(cr[1]["demand_ecs"] - cr[1]["supply_ecs"]))[:TOP]
-    summ = {"cells": len(rows), "demand_ecs": round(dem), "lots_mapped": sum(lots.values()),
+    summ = {"cells": len(rows), "demand_ecs": round(dem), "lots_mapped": sum(lots.values()), "official_lot_spaces": sum(official.values()),
             "pct_demand_in_overflow": round(100 * sum(r["demand_ecs"] for _, r in over) / dem, 1),
             "overflow_ecs": round(sum(r["demand_ecs"] - r["supply_ecs"] for _, r in over)),
             "hotspots": [{"digipin": c, **r} for c, r in top],
@@ -187,8 +231,11 @@ def run(region, log=print):
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--region", default="all")
+    p.add_argument("--official", action="store_true", help="re-fetch the corporations' official parking lot lists first")
     a = p.parse_args(argv)
     for r in (list(CITY_PILOTS) if a.region == "all" else a.region.split(",")):
+        if a.official and r in OFFICIAL:
+            print(f"{r}: {len(fetch_official(r))} official lots")
         run(r)
     return 0
 

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T23:17:43Z",
+  "generated": "2026-10-28T23:25:13Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -28151,7 +28151,7 @@
           "unit": "car spaces",
           "domain": [
             0,
-            897
+            5347
           ],
           "ramp": "greens",
           "higherIs": "better"
@@ -39039,6 +39039,89 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "tb_care",
+      "title": "TB care sites (Karnataka health maps)",
+      "description": "TB units, CBNAAT testing sites, drug-resistant and district TB centres and nutrition rehabilitation centres from the Karnataka health department's KGIS maps on data.opencity.in.",
+      "source": "pipeline/realestate/tbcare.py (OpenCity Karnataka TB centre maps)",
+      "license": "Public domain (Karnataka health department via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "tb_units",
+          "label": "TB units (NTEP)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "units",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "tb_tests",
+          "label": "CBNAAT rapid TB testing sites",
+          "type": "number",
+          "agg": "sum",
+          "unit": "sites",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "drtb_centres",
+          "label": "Drug-resistant and district TB centres",
+          "type": "number",
+          "agg": "sum",
+          "unit": "centres",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "nrc",
+          "label": "Nutrition rehabilitation centres",
+          "type": "number",
+          "agg": "sum",
+          "unit": "centres",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "tb_units",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 28,
+          "bbox": {
+            "west": 77.47900390625,
+            "south": 12.87109375,
+            "east": 77.7470703125,
+            "north": 13.136962890625
+          },
+          "json": "tb_care/bengaluru.json",
+          "parquet": null
         }
       ]
     },

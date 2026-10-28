@@ -972,6 +972,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "tbcare": {
+     "label": "Residents more than 3 km from a TB unit",
+     "value": 5105515,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "metrowait": {
      "label": "Residents within 800 m of a metro station",
      "value": 20.7,
@@ -10370,7 +10376,7 @@
     },
     "parking": {
      "label": "Parking demand on overflowing streets",
-     "value": 49.9,
+     "value": 48.9,
      "unit": "%",
      "higherIs": "worse"
     },

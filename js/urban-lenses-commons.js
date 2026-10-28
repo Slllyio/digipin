@@ -1,6 +1,6 @@
 /**
  * Commons lenses for UrbanLenses: shared conditions every resident lives with, read from national and global open
- * data (how neighbourhoods were built, floods in the news, bad-air days, wind near the ground, the drift between government and private schools, hot summer nights, big roads to come, rain gauge gaps). Registers itself on load, after
+ * data (how neighbourhoods were built, floods in the news, bad-air days, wind near the ground, the drift between government and private schools, hot summer nights, big roads to come, rain gauge gaps, TB care reach). Registers itself on load, after
  * urban-lenses.js.
  */
 const UrbanLensesCommons = (() => {
@@ -10,12 +10,12 @@ const UrbanLensesCommons = (() => {
 
     const SPACING_KM = 1.5, TOP = 5;
 
-    /** Greedy picks from `cells` by descending `score`, at least SPACING_KM apart. */
-    function spaced(g, cells, score, k = TOP) {
+    /** Greedy picks from `cells` by descending `score`, at least `km` apart. */
+    function spaced(g, cells, score, k = TOP, km = SPACING_KM) {
         const picks = [];
         for (const i of cells.slice().sort((a, b) => score[b] - score[a])) {
             if (picks.length >= k) break;
-            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < SPACING_KM)) continue;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < km)) continue;
             picks.push(i);
         }
         return picks;
@@ -382,6 +382,53 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // TB care reach. Karnataka's TB units and CBNAAT testing sites (KGIS): TB clusters in crowded, poorer housing, so the
+    // test is how far slum residents must travel to the unit that diagnoses and treats them.
+    const TBU_KM = 3, TEST_KM = 5;
+
+    function tbcare(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, tbu = c['tb_care.tb_units'], test = c['tb_care.tb_tests'], dr = c['tb_care.drtb_centres'];
+        const pop = c['population.population'], slum = c['slums_mapped.slum_pct'];
+        if (!tbu || !tbu.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const count = a => (a ? Math.round(Array.from(a).reduce((s, x) => s + (_fin(x) ? x : 0), 0)) : 0);
+        const nearU = within(g, Float64Array.from({ length: n }, (_, i) => v(tbu, i) + v(dr, i)), TBU_KM);
+        const nearT = test ? within(g, Float64Array.from({ length: n }, (_, i) => v(test, i)), TEST_KM) : null;
+        const idx = _residents(fr);
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const slumPop = i => v(pop, i) * Math.min(v(slum, i), 100) / 100;
+        const far = idx.filter(i => nearU[i] < 0.5), farPop = far.reduce((s, i) => s + v(pop, i), 0);
+        const units = count(tbu), tests = count(test);
+        const stats = [
+            { label: 'TB units on the map', value: `${units}${dr ? ` (plus ${count(dr)} drug-resistant and district TB centres)` : ''}` },
+            { label: 'Residents per TB unit', value: _people(all / (units || 1)) },
+            { label: `Residents more than ${TBU_KM} km from a TB unit`, value: `${_people(farPop)} (${_round(100 * farPop / all, 1)}%)` },
+        ];
+        if (slum) {
+            const sAll = idx.reduce((s, i) => s + slumPop(i), 0), sFar = far.reduce((s, i) => s + slumPop(i), 0);
+            if (sAll > 0) stats.push({ label: `Residents of mapped slums more than ${TBU_KM} km from a TB unit`, value: `${_people(sFar)} of ${_people(sAll)} (${_round(100 * sFar / sAll, 1)}%)` });
+        }
+        if (nearT) {
+            const tFar = idx.filter(i => nearT[i] < 0.5).reduce((s, i) => s + v(pop, i), 0);
+            stats.push({ label: `Residents more than ${TEST_KM} km from a CBNAAT rapid test site (${tests} sites)`, value: `${_people(tFar)} (${_round(100 * tFar / all, 1)}%)` });
+        }
+        const need = Float64Array.from({ length: n }, (_, i) => (nearU[i] < 0.5 ? v(pop, i) + 4 * slumPop(i) : 0));
+        const gain = within(g, need, TBU_KM);
+        const farNear = within(g, Float64Array.from({ length: n }, (_, j) => (nearU[j] < 0.5 ? v(pop, j) : 0)), TBU_KM);
+        const slumNear = slum ? within(g, Float64Array.from({ length: n }, (_, j) => (nearU[j] < 0.5 ? slumPop(j) : 0)), TBU_KM) : null;
+        spaced(g, far, gain, 5, 2 * TBU_KM).forEach((i, k) => stats.push({ label: `New TB unit ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(farNear[i])} residents beyond reach within ${TBU_KM} km${slumNear && slumNear[i] >= 1 ? `, ${_people(slumNear[i])} of them in mapped slums` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = Math.min(nearU[i], 5);
+        return {
+            columns: { tb_units_3km: out }, idx, weightKey: 'tb_units_3km', noHotspots: true,
+            metric: { label: `Residents more than ${TBU_KM} km from a TB unit`, value: Math.round(farPop), unit: 'people', higherIs: 'worse' },
+            headline: `${units} TB units diagnose and treat TB for this city, one per ${_people(all / (units || 1))} residents; ${_people(farPop)} residents (${_round(100 * farPop / all, 1)}%) live more than ${TBU_KM} km from one${tests ? `, and ${tests} sites run the rapid CBNAAT test` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -431,8 +478,14 @@ const UrbanLensesCommons = (() => {
             needs: ['rain_gauges.rain_gauges', 'rain_gauges.weather_stations', 'flood_reports.flood_spots', 'waterlogging.waterlogging_index', 'population.population'],
             method: `Karnataka State Natural Disaster Monitoring Centre (KSNDMC) telemetric rain gauges and weather stations from the KGIS maps on data.opencity.in (public domain); gauges on both the state and the Bengaluru Urban layer count once. Each block counts gauges and stations within ${GAUGE_KM} km; residents are WorldPop. Flood spots are the reported flood-vulnerable and low-lying locations (flood_reports, within 300 m of a block); waterlogging-prone means the satellite waterlogging index is ${WLOG_PRONE} or more. New gauge picks are blocks ${SPACING_KM} km apart, beyond ${GAUGE_KM} km of a gauge, ranked by unmeasured blocks near flood spots (weighted heavily) and residents (twice in waterlogging-prone blocks) within ${GAUGE_KM} km. Urban convective storms can be a few kilometres across, so gauge spacing matters for street-level alerts. Bengaluru only.`,
             refs: 'KSNDMC telemetric rain gauge network via KGIS and data.opencity.in; WMO Guide to Hydrological Practices (WMO-No. 168), precipitation network density' },
+        { id: 'tbcare', equity: true, title: 'TB care reach', icon: '🫁',
+            question: 'How far must people, especially in slums, travel to a TB unit or a rapid TB test?',
+            field: { key: 'tb_units_3km', label: `TB units and centres within ${TBU_KM} km`, unit: 'units', higherIs: 'better', ramp: 'greens', domain: [0, 5] },
+            needs: ['tb_care.tb_units', 'tb_care.tb_tests', 'tb_care.drtb_centres', 'slums_mapped.slum_pct', 'population.population'],
+            method: `Karnataka health department maps on KGIS via data.opencity.in (public domain): National TB Elimination Programme TB units, CBNAAT molecular testing sites, drug-resistant and district TB centres. Each block counts TB units and centres within ${TBU_KM} km and CBNAAT sites within ${TEST_KM} km; residents are WorldPop and slum residents are residents × the share of the block inside a mapped slum. New TB unit picks are blocks ${2 * TBU_KM} km apart beyond ${TBU_KM} km of one, ranked by residents plus four times slum residents within ${TBU_KM} km. Sputum is also collected at many primary health centres and private labs, which these maps do not show, so this is reach to the programme's diagnosing and treating units. Bengaluru only.`,
+            refs: 'Karnataka health department TB facility maps (KGIS) via data.opencity.in; National TB Elimination Programme (NTEP) technical and operational guidelines' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare });
     return { ENTRIES };
 })();

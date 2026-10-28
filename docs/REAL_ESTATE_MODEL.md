@@ -1476,3 +1476,12 @@ reported flood spot (flood_reports, within 300 m) beyond it, and residents beyon
 (index 60+). New gauge picks are blocks 1.5 km apart ranked by unmeasured flood-spot blocks and residents within 2 km.
 First run: 133 gauges, 5.5 lakh residents (4.1%) beyond 2 km, 60 of 1,575 flood-spot blocks unmeasured.
 
+## TB care reach (`tbcare` lens, `tb_care` dataset, pipeline/realestate/tbcare.py)
+
+The Karnataka TB facility maps (KGIS, via data.opencity.in) are clipped to the Bengaluru map and binned per block. The
+lens counts TB units plus drug-resistant and district TB centres within 3 km of each block and CBNAAT sites within 5 km,
+and weights slum residents as residents × slums_mapped.slum_pct. New TB unit picks are 6 km apart, ranked by residents
+plus four times slum residents beyond reach within 3 km. Primary health centres that collect sputum are not on these
+maps. First run: 22 units, 38.5% of residents beyond 3 km, picks in Sunkadakatte, Rajiv Gandhi Nagar and Manjunatha
+Nagar.
+
