@@ -6,7 +6,7 @@ Per L7 block (dataset ``lake_buffers``):
     buffer30_pct   share in the statutory no-build buffer (%): 30 m in Bengaluru's zoning regulations; in Hyderabad
                    30 m round tanks of 10 ha or more and 9 m round smaller ones (GO Ms 168, 2012)
     buffer75_pct   share within 75 m (%, 30 m ring included): the buffer the National Green Tribunal ordered in 2016
-                   (stayed by the Supreme Court in 2019), kept as the wider screen
+                   (set aside by the Supreme Court in 2019), kept as the wider screen
 
 The Karnataka GIS wetland map gives 265 lakes, tanks and other wetlands in Bengaluru Urban as polygons, without names;
 GHMC's land-use map gives Hyderabad's reservoirs and tanks. Polygons are filled on a ~10 m raster and the buffers come
@@ -73,7 +73,7 @@ def cell_dataset(region, sh):
     specs = [
         FieldSpec("lake_pct", "Share of the block inside a mapped lake or tank", agg="mean", unit="%", domain=[0, 100], ramp="blues", higher_is="better"),
         FieldSpec("buffer30_pct", "Share in the statutory lake buffer (30 m; 9 m round Hyderabad tanks under 10 ha)", agg="mean", unit="%", domain=[0, 50], ramp="reds", higher_is="worse"),
-        FieldSpec("buffer75_pct", "Share within 75 m of a lake (NGT 2016 buffer, stayed)", agg="mean", unit="%", domain=[0, 80], ramp="reds", higher_is="worse"),
+        FieldSpec("buffer75_pct", "Share within 75 m of a lake (NGT 2016 buffer, set aside)", agg="mean", unit="%", domain=[0, 80], ramp="reds", higher_is="worse"),
     ]
     spec = DatasetSpec(
         id="lake_buffers", title="Lake buffer zones (official lake maps)", level=LEVEL, fields=specs, group="Environment",

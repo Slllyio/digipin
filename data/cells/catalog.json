@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T16:47:02Z",
+  "generated": "2026-10-28T16:55:47Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -7610,6 +7610,114 @@
               "4FP5",
               "4FPJ",
               "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "drain_buffers",
+      "title": "Storm-water drain buffers (BBMP drain maps)",
+      "description": "BBMP's 2022 primary, secondary and tertiary storm-water drain maps for Bengaluru via data.opencity.in: drain length per block and the share of the block in the Revised Master Plan 2015 drain buffer (50, 25 and 15 m from the centre) and the wider NGT 2016 buffer.",
+      "source": "pipeline/realestate/drainbuffers.py (BBMP storm-water drain maps via OpenCity)",
+      "license": "Public domain (BBMP via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "primary_m",
+          "label": "Primary storm-water drain (rajakaluve) length",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            6.791201857228455,
+            554.6697604153052
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "secondary_m",
+          "label": "Secondary storm-water drain length",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            0.03643342802783704,
+            710.718904035473
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "tertiary_m",
+          "label": "Tertiary storm-water drain length",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            0.010842523013785759,
+            1420.9003665032822
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "buffer_pct",
+          "label": "Share in the RMP 2015 drain buffer (50/25/15 m)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "buffer_ngt_pct",
+          "label": "Share in the NGT 2016 drain buffer (50/35/25 m, set aside)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "buffer_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 8490,
+          "bbox": {
+            "west": 77.459228515625,
+            "south": 12.8359375,
+            "east": 77.7822265625,
+            "north": 13.1435546875
+          },
+          "json": "drain_buffers/bengaluru/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
             ]
           }
         }

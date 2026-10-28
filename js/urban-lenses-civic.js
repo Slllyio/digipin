@@ -2,7 +2,7 @@
  * Civic lenses for UrbanLenses: what statutory plans and municipal facility lists say about a block (planned road
  * widths and new links, cremation and burial grounds, public borewells, waste bins, large
  * projects with environmental clearance, coastal and eco-sensitive building limits,
- * police stations, lake buffers, parks and layout open spaces). They read datasets baked from
+ * police stations, lake and drain buffers, parks and layout open spaces). They read datasets baked from
  * city and development-authority maps. Registers itself on load, after urban-lenses.js.
  */
 const UrbanLensesCivic = (() => {
@@ -304,7 +304,7 @@ const UrbanLensesCivic = (() => {
     }
 
     // Lake buffers. Bengaluru's zoning regulations keep a 30 m no-build buffer round every lake (the NGT's 2016 order of
-    // 75 m is stayed) and Hyderabad's building rules 30 m or 9 m by tank size; building there blocks inflow channels,
+    // 75 m was set aside by the Supreme Court in 2019) and Hyderabad's building rules 30 m or 9 m by tank size; building there blocks inflow channels,
     // and those plots carry the legal risk of a demolition drive.
     function lakebuffer(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], built = c['built_up.built_pct'];
@@ -325,7 +325,7 @@ const UrbanLensesCivic = (() => {
             { label: 'Lakes and tanks on the official map', value: `${_round(lakeKm2, 1)} km²` },
             { label: 'Land in the statutory no-build buffer', value: `${_round(a30, 1)} km²` },
             { label: '…of it built up (pro rata)', value: `${_round(k30, 2)} km² (${_round(100 * k30 / (a30 || 1))}%)` },
-            { label: 'Built up within 75 m (wider screen; NGT 2016 buffer for Bengaluru, stayed)', value: `${_round(k75, 2)} km²` },
+            { label: 'Built up within 75 m (wider screen; NGT 2016 buffer for Bengaluru, set aside in 2019)', value: `${_round(k75, 2)} km²` },
             { label: 'Residents living in the buffer (pro rata)', value: _people(p30) },
         ];
         spaced(g, idx.filter(i => in30[i] > 0), in30).forEach((i, k) => stats.push({ label: `Most built buffer ${k + 1}: ${g.codes[i]}`,
@@ -385,7 +385,50 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Drain buffers. Bengaluru's Revised Master Plan 2015 keeps building back from storm-water drains (50, 25 and 15 m
+    // from the centre of primary, secondary and tertiary drains); building there narrows the drains that flood in a
+    // cloudburst, and those plots are the ones the drain-clearance drives demolish.
+    function drainbuffer(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], built = c['built_up.built_pct'];
+        const bf = c['drain_buffers.buffer_pct'], ngt = c['drain_buffers.buffer_ngt_pct'];
+        if (!bf || !built) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(bf, i) > 0 || v(ngt, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const inBuf = Float64Array.from({ length: n }, (_, i) => v(built, i) / 100 * v(bf, i) / 100 * g.cellKm2);
+        let kB = 0, kN = 0, aB = 0, pB = 0;
+        const len = k => Array.from({ length: n }, (_, i) => v(c[`drain_buffers.${k}_m`], i)).reduce((a, b) => a + b, 0) / 1000;
+        for (let i = 0; i < n; i++) {
+            kB += inBuf[i]; kN += v(built, i) / 100 * v(ngt, i) / 100 * g.cellKm2;
+            aB += v(bf, i) / 100 * g.cellKm2; pB += v(pop, i) * v(bf, i) / 100;
+        }
+        const stats = [
+            { label: 'Storm-water drains mapped (primary, secondary, tertiary)', value: `${_round(len('primary'))} km, ${_round(len('secondary'))} km, ${_round(len('tertiary'))} km` },
+            { label: 'Land in the RMP 2015 drain buffer', value: `${_round(aB, 1)} km²` },
+            { label: '…of it built up (pro rata)', value: `${_round(kB, 1)} km² (${_round(100 * kB / (aB || 1))}%)` },
+            { label: 'Built up in the wider NGT 2016 buffer (set aside in 2019)', value: `${_round(kN, 1)} km²` },
+            { label: 'Residents living in the RMP buffer (pro rata)', value: _people(pB) },
+        ];
+        spaced(g, idx.filter(i => inBuf[i] > 0), inBuf).forEach((i, k) => stats.push({ label: `Most built drain buffer ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(v(bf, i))}% of the block in the buffer, ${_round(v(built, i))}% of the block built up` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(Math.min(v(bf, i), v(built, i)), 1);
+        return {
+            columns: { drain_built: out }, idx, weightKey: 'drain_built', noHotspots: true,
+            metric: { label: 'Share of the RMP 2015 drain buffer built up', value: _round(100 * kB / (aB || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `BBMP's drain maps put ${_round(aB, 1)} km² of Bengaluru inside the Revised Master Plan's storm-water drain buffer, and about ${_round(kB, 1)} km² of it (${_round(100 * kB / (aB || 1))}%) is built up, home to some ${_people(pB)} residents. Buffers are measured from the drain centreline and built land is pro rata within each block, so this flags blocks to survey, not plots.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'drainbuffer', equity: false, title: 'Storm-water drain buffer building', icon: '🌊',
+            question: 'How much building stands in the no-build buffer along storm-water drains?',
+            field: { key: 'drain_built', label: 'Built-up share inside the RMP 2015 drain buffer (upper bound per block)', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 60] },
+            needs: ['drain_buffers.buffer_pct', 'drain_buffers.buffer_ngt_pct', 'drain_buffers.primary_m', 'drain_buffers.secondary_m', 'drain_buffers.tertiary_m', 'built_up.built_pct', 'population.population'],
+            method: 'BBMP\'s 2022 primary, secondary and tertiary storm-water drain maps on data.opencity.in (public domain), drawn on a 10 m raster. The buffer is the Revised Master Plan 2015 zoning rule: 50 m from the centre of a primary drain (rajakaluve), 25 m from a secondary and 15 m from a tertiary; the National Green Tribunal\'s wider 2016 buffer (50, 35 and 25 m from the edge) was set aside by the Supreme Court in 2019 and is kept as a screen. Built land in the buffer is estimated pro rata (the block\'s built-up share times its buffer share), and the map value is the smaller of the two shares, an upper bound per block. Many tertiary drains run beside streets, so their buffer takes in road space as well as plots. Bengaluru only.',
+            refs: 'Revised Master Plan 2015 zoning regulations (BDA); NGT order in Forward Foundation v. State of Karnataka (2016); Supreme Court, Civil Appeal 5016 of 2016 (2019); BBMP via OpenCity' },
         { id: 'parkreach', equity: true, title: 'Neighbourhood park reach', icon: '🌳',
             question: 'Who has no park or playground nearby, and which reserved open spaces could fix it?',
             field: { key: 'park_near', label: `Listed park or playground within ${PARK_M} m (1 yes, 0 no)`, unit: '', higherIs: 'better', ramp: 'greens', domain: [0, 1] },
@@ -396,7 +439,7 @@ const UrbanLensesCivic = (() => {
             question: 'How much building stands inside the no-build buffer round lakes?',
             field: { key: 'buffer_built', label: 'Built-up share inside the statutory lake buffer (upper bound per block)', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 40] },
             needs: ['lake_buffers.lake_pct', 'lake_buffers.buffer30_pct', 'lake_buffers.buffer75_pct', 'built_up.built_pct', 'population.population'],
-            method: 'Lakes, tanks and other wetlands from the Karnataka GIS wetland map of Bengaluru Urban (265 polygons) and GHMC\'s reservoirs and tanks for Hyderabad (849 polygons) on data.opencity.in (public domain), filled on a 10 m raster. The statutory buffer is 30 m round every lake in Bengaluru\'s zoning regulations, and in Hyderabad 30 m round tanks of 10 ha or more and 9 m round smaller ones (GO Ms 168, 2012); 75 m is the buffer the National Green Tribunal ordered for Bengaluru in 2016 (stayed by the Supreme Court in 2019), kept as a wider screen. Built land in a buffer is estimated pro rata (the block\'s built-up share times its buffer share) and the map value is the smaller of the two shares, an upper bound on the buffer\'s built share in that block. Bengaluru and Hyderabad; the maps carry no lake names, and the mapped outline is not the surveyed full tank level.',
+            method: 'Lakes, tanks and other wetlands from the Karnataka GIS wetland map of Bengaluru Urban (265 polygons) and GHMC\'s reservoirs and tanks for Hyderabad (849 polygons) on data.opencity.in (public domain), filled on a 10 m raster. The statutory buffer is 30 m round every lake in Bengaluru\'s zoning regulations, and in Hyderabad 30 m round tanks of 10 ha or more and 9 m round smaller ones (GO Ms 168, 2012); 75 m is the buffer the National Green Tribunal ordered for Bengaluru in 2016 (set aside by the Supreme Court in 2019), kept as a wider screen. Built land in a buffer is estimated pro rata (the block\'s built-up share times its buffer share) and the map value is the smaller of the two shares, an upper bound on the buffer\'s built share in that block. Bengaluru and Hyderabad; the maps carry no lake names, and the mapped outline is not the surveyed full tank level.',
             refs: 'Revised Master Plan 2015 zoning regulations (BDA); NGT order in Forward Foundation v. State of Karnataka (2016); GO Ms 168 (2012) building rules; KGIS and GHMC via OpenCity' },
         { id: 'policereach', equity: true, title: 'Police station reach', icon: '🚓',
             question: 'Who lives far from a police station?',
@@ -442,6 +485,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer });
     return { ENTRIES };
 })();

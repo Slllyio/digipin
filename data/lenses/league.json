@@ -870,6 +870,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "drainbuffer": {
+     "label": "Share of the RMP 2015 drain buffer built up",
+     "value": 29.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lakebuffer": {
      "label": "Share of the statutory lake buffer built up",
      "value": 12.6,
