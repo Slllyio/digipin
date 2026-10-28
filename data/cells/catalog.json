@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T17:37:15Z",
+  "generated": "2026-10-28T17:43:56Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -1095,7 +1095,7 @@
           "unit": "species",
           "domain": [
             0,
-            278
+            323
           ],
           "ramp": "greens",
           "higherIs": "better"
@@ -1108,7 +1108,7 @@
           "unit": "species",
           "domain": [
             10.6,
-            110.8
+            135.1
           ],
           "ramp": "greens",
           "higherIs": "better"
@@ -1142,6 +1142,18 @@
             "north": 13.1787109375
           },
           "json": "birds/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 1519,
+          "bbox": {
+            "west": 76.841796875,
+            "south": 28.4013671875,
+            "east": 77.3515625,
+            "north": 28.884765625
+          },
+          "json": "birds/delhi.json",
           "parquet": null
         },
         {
