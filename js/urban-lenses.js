@@ -1935,27 +1935,35 @@ const UrbanLenses = (() => {
      */
     // Neighbourhood names (the neighbourhoods dataset: OSM colonies, sectors and villages via Overture) for block codes,
     // so pick lists read "Care point 1: 39J3286 · Mundka" instead of a bare code. Optional: no dataset, no names.
-    const _names = new Map();   // city -> Promise<Map<code, {label, place, area, district, pin}>>
+    const _names = new Map();   // city -> Promise<Map<code, {label, place, area, district, pin, ward, body}>>
     const COMPASS = /^(north|south|east|west|central)(\s|-|$)/i;   // OSM zones named "South" read better as the district
     function places(city, store) {
         store = _store(store);
         if (!store || !store.get || !store.get('neighbourhoods')) return Promise.resolve(new Map());
         if (_names.has(city)) return _names.get(city);
+        const view = id => {
+            const region = ((store.get(id) || {}).regions || []).find(r => r.name === city);
+            return region ? _loadView(store, id, region.bbox).catch(() => null) : Promise.resolve(null);
+        };
         const p = (async () => {
-            const spec = store.get('neighbourhoods');
-            const region = (spec.regions || []).find(r => r.name === city);
-            if (!region) return new Map();
-            const t = await _loadView(store, 'neighbourhoods', region.bbox).catch(() => null);
+            const [t, w] = await Promise.all([view('neighbourhoods'), view('wards')]);
             const out = new Map();
             if (!t || !t.cells || !t.columns || !t.columns.place) return out;
+            const ward = new Map();
+            if (w && w.cells && w.columns && w.columns.ward) {
+                w.cells.forEach((c, i) => {
+                    if (w.columns.ward[i]) ward.set(String(c).replace(/-/g, ''), { ward: w.columns.ward[i], body: (w.columns.body || [])[i] || null });
+                });
+            }
             const col = k => t.columns[k] || [];
             const [pl, ar, di, pin] = ['place', 'area', 'district', 'pin'].map(col);
             t.cells.forEach((c, i) => {
                 if (!pl[i] && !pin[i]) return;
+                const code = String(c).replace(/-/g, ''), wd = ward.get(code) || {};
                 const up = ar[i] && ar[i] !== pl[i] && !COMPASS.test(ar[i]) ? ar[i] : (di[i] && di[i] !== pl[i] ? di[i] : '');
-                out.set(String(c).replace(/-/g, ''), {
+                out.set(code, {
                     label: pl[i] ? (up ? `${pl[i]}, ${up}` : String(pl[i])) : '', place: pl[i] || null, area: ar[i] || null,
-                    district: di[i] || null, pin: pin[i] || null,
+                    district: di[i] || null, pin: pin[i] || null, ward: wd.ward || null, body: wd.body || null,
                 });
             });
             return out;

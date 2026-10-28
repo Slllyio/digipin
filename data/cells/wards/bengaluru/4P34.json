@@ -1,0 +1,1 @@
+{"version":1,"dataset":"wards","region":"bengaluru","level":7,"fields":["ward","ward_no","zone","body"],"cells":["4P34FF3","4P34FFC","4P34FFF"],"columns":{"ward":["116 Doddakanahalli","116 Doddakanahalli","116 Doddakanahalli"],"ward_no":["116","116","116"],"zone":[null,null,null],"body":["BBMP","BBMP","BBMP"]}}
