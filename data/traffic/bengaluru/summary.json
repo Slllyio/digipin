@@ -1,23 +1,23 @@
 {
   "region": "bengaluru",
-  "total_segments": 15261,
-  "graph_nodes": 14795,
-  "graph_edges": 15116,
-  "bridge_count": 5766,
+  "total_segments": 15273,
+  "graph_nodes": 14804,
+  "graph_edges": 15127,
+  "bridge_count": 5770,
   "los_distribution": {
-    "A": 11490,
-    "E": 177,
-    "F": 1315,
-    "B": 1150,
-    "D": 393,
-    "C": 736
+    "A": 11500,
+    "D": 422,
+    "F": 1305,
+    "B": 1072,
+    "C": 802,
+    "E": 172
   },
   "top_bottlenecks": [
     {
       "osm_id": 435249770,
       "name": "Richmond Road",
       "highway": "primary",
-      "betweenness": 0.048136,
+      "betweenness": 0.04905,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -29,7 +29,7 @@
       "osm_id": 1148408385,
       "name": "Raj Bhavan Road",
       "highway": "primary",
-      "betweenness": 0.045775,
+      "betweenness": 0.045761,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -41,7 +41,7 @@
       "osm_id": 503401204,
       "name": "Raj Bhavan Road",
       "highway": "primary",
-      "betweenness": 0.044984,
+      "betweenness": 0.044895,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -53,7 +53,7 @@
       "osm_id": 760700372,
       "name": "Cubbon Road",
       "highway": "primary",
-      "betweenness": 0.044951,
+      "betweenness": 0.044866,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -65,7 +65,7 @@
       "osm_id": 359476587,
       "name": "Cubbon Road",
       "highway": "primary",
-      "betweenness": 0.044933,
+      "betweenness": 0.04485,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -74,22 +74,10 @@
       "lng": 77.59696
     },
     {
-      "osm_id": 362900184,
-      "name": "Cubbon Road",
-      "highway": "primary",
-      "betweenness": 0.044324,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 12.98098,
-      "lng": 77.59718
-    },
-    {
       "osm_id": 580771983,
       "name": "Sheshadri Road",
       "highway": "primary",
-      "betweenness": 0.044041,
+      "betweenness": 0.044477,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -101,7 +89,7 @@
       "osm_id": 31235669,
       "name": "",
       "highway": "primary",
-      "betweenness": 0.044029,
+      "betweenness": 0.044464,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -113,7 +101,7 @@
       "osm_id": 139141579,
       "name": "",
       "highway": "primary",
-      "betweenness": 0.044017,
+      "betweenness": 0.044451,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -125,7 +113,7 @@
       "osm_id": 372018380,
       "name": "",
       "highway": "primary",
-      "betweenness": 0.044006,
+      "betweenness": 0.044438,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -134,10 +122,22 @@
       "lng": 77.57167
     },
     {
+      "osm_id": 362900184,
+      "name": "Cubbon Road",
+      "highway": "primary",
+      "betweenness": 0.04429,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 12.98098,
+      "lng": 77.59718
+    },
+    {
       "osm_id": 328835371,
       "name": "Hosur Road",
       "highway": "primary",
-      "betweenness": 0.043176,
+      "betweenness": 0.043572,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -149,7 +149,7 @@
       "osm_id": 363621124,
       "name": "Hosur Road",
       "highway": "primary",
-      "betweenness": 0.042991,
+      "betweenness": 0.043053,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -158,34 +158,10 @@
       "lng": 77.61405
     },
     {
-      "osm_id": 1469037766,
-      "name": "Mission Road",
-      "highway": "primary",
-      "betweenness": 0.040646,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 12.96537,
-      "lng": 77.58696
-    },
-    {
-      "osm_id": 36897705,
-      "name": "Mission Road",
-      "highway": "primary",
-      "betweenness": 0.04063,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 12.96514,
-      "lng": 77.58722
-    },
-    {
       "osm_id": 1052609696,
       "name": "Wheeler Road",
       "highway": "secondary",
-      "betweenness": 0.040578,
+      "betweenness": 0.042436,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -194,10 +170,22 @@
       "lng": 77.61419
     },
     {
+      "osm_id": 580771990,
+      "name": "Mysore Road",
+      "highway": "trunk",
+      "betweenness": 0.04106,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 12.95977,
+      "lng": 77.55615
+    },
+    {
       "osm_id": 763175330,
       "name": "Richmond Road",
       "highway": "primary",
-      "betweenness": 0.040276,
+      "betweenness": 0.040747,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -209,7 +197,7 @@
       "osm_id": 1298944073,
       "name": "Richmond Road",
       "highway": "primary",
-      "betweenness": 0.040168,
+      "betweenness": 0.040638,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -218,10 +206,34 @@
       "lng": 77.60872
     },
     {
+      "osm_id": 1469037766,
+      "name": "Mission Road",
+      "highway": "primary",
+      "betweenness": 0.040626,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 12.96537,
+      "lng": 77.58696
+    },
+    {
+      "osm_id": 36897705,
+      "name": "Mission Road",
+      "highway": "primary",
+      "betweenness": 0.040611,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 12.96514,
+      "lng": 77.58722
+    },
+    {
       "osm_id": 1347255640,
       "name": "Mission Road",
       "highway": "primary",
-      "betweenness": 0.040125,
+      "betweenness": 0.040109,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -230,22 +242,10 @@
       "lng": 77.58928
     },
     {
-      "osm_id": 764329021,
-      "name": "Mission Road",
-      "highway": "primary",
-      "betweenness": 0.040117,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 12.96442,
-      "lng": 77.58809
-    },
-    {
       "osm_id": 764329022,
       "name": "Mission Road",
       "highway": "primary",
-      "betweenness": 0.040117,
+      "betweenness": 0.040098,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -259,13 +259,13 @@
     "zones": 1360,
     "origins": 1210,
     "peak_pcu_total_trips": 397166,
-    "roads_los_e_f": 4462,
-    "roads_los_d": 738,
-    "roads_total": 14955,
+    "roads_los_e_f": 4474,
+    "roads_los_d": 726,
+    "roads_total": 14967,
     "roads_los_e_f_by_period": {
-      "am": 4377,
-      "pm": 4314,
-      "mid": 640
+      "am": 4376,
+      "pm": 4304,
+      "mid": 639
     },
     "hourly": {
       "share_pct": [
@@ -449,19 +449,19 @@
   },
   "road_flood": {
     "very_high": 39.9,
-    "high": 524.4,
+    "high": 525.3,
     "river_flood": 53.0,
-    "total": 3987.5,
+    "total": 3987.6,
     "pct_very_high": 1.0,
     "pct_high_or_worse": 14.2
   },
   "noise_air": {
     "residents_total": 13252113,
     "residents_near_modelled_roads": 11756630,
-    "residents_lden_ge_53": 11095502,
-    "residents_lden_ge_65": 5376073,
-    "nox_t_day": 19.95,
-    "co2_t_day": 4875.9,
+    "residents_lden_ge_53": 11099226,
+    "residents_lden_ge_65": 5368035,
+    "nox_t_day": 19.94,
+    "co2_t_day": 4874.8,
     "nox_vs_s5p_no2_spearman_l5": 0.65,
     "l5_cells_compared": 107,
     "assumptions": {
@@ -508,7 +508,7 @@
     "lowstress_km": 20861,
     "cycleway_km": 11.1,
     "highstress_km": 2583,
-    "islands": 13514,
+    "islands": 13515,
     "islands_over_5_km2": 56,
     "largest_island_km2": 56.3,
     "pct_residents_small_island": 32.3,
@@ -516,8 +516,8 @@
     "source": "Overture Maps transportation 2026-10-21.0"
   },
   "crossings": {
-    "main_km": 2383,
-    "pct_main_km_on_long_gaps": 11.8,
+    "main_km": 2384,
+    "pct_main_km_on_long_gaps": 11.7,
     "median_gap_m": 356,
     "crosswalks_mapped": 330,
     "gap_threshold_m": 500.0,
@@ -530,7 +530,7 @@
       "logistics": 540
     },
     "truck_trips_day": 16344,
-    "gateway_nodes": 1902,
+    "gateway_nodes": 1903,
     "road_km_500_trucks_day": 1.2,
     "busiest_truck_roads": [
       {
@@ -566,7 +566,7 @@
   },
   "job_access": {
     "zones": 1356,
-    "pop_mean_jobs_car_pct": 56.9,
+    "pop_mean_jobs_car_pct": 57.0,
     "pop_mean_jobs_transit_pct": 9.3,
     "stations": 125,
     "threshold_min": 45.0,
@@ -578,17 +578,17 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 5123,
-    "stops_with_heat_data": 5123,
-    "pct_hot_bare": 17.8,
-    "pct_riders_at_hot_bare": 10.7,
-    "median_stop_lst_c": 38.6,
+    "stops": 3805,
+    "stops_with_heat_data": 3805,
+    "pct_hot_bare": 18.8,
+    "pct_riders_at_hot_bare": 11.4,
+    "median_stop_lst_c": 38.7,
     "top_stops": [
       {
         "digipin": "4PJ77LF",
-        "name": "Kamakshipalya",
-        "lon": 77.52929,
-        "lat": 12.98381,
+        "name": "",
+        "lon": 77.52924,
+        "lat": 12.98385,
         "residents_5min": 40509,
         "lst_c": 41.4,
         "canopy_pct": 3.6,
@@ -675,14 +675,14 @@
         "priority": 218906
       },
       {
-        "digipin": "4P3JJ4K",
-        "name": "Central",
-        "lon": 77.57198,
-        "lat": 12.98961,
-        "residents_5min": 39976,
-        "lst_c": 40.7,
-        "canopy_pct": 5.6,
-        "priority": 215103
+        "digipin": "4P3JK42",
+        "name": "",
+        "lon": 77.57721,
+        "lat": 12.95624,
+        "residents_5min": 40685,
+        "lst_c": 40.6,
+        "canopy_pct": 8.1,
+        "priority": 209381
       }
     ],
     "thresholds": {
@@ -691,9 +691,8 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "osm": 2721,
-      "gtfs": 2175,
-      "overture": 227
+      "gtfs": 3539,
+      "overture": 266
     }
   },
   "parking": {
@@ -701,7 +700,7 @@
     "demand_ecs": 570907,
     "lots_mapped": 62,
     "pct_demand_in_overflow": 5.8,
-    "overflow_ecs": 11229,
+    "overflow_ecs": 11227,
     "hotspots": [
       {
         "digipin": "4P34F3F",
@@ -713,7 +712,7 @@
         "digipin": "4P3J3MJ",
         "demand_ecs": 394,
         "supply_ecs": 180,
-        "pressure": 2.19
+        "pressure": 2.18
       },
       {
         "digipin": "4P3J3M3",
@@ -777,7 +776,7 @@
     "zones": 1210,
     "pop_mean_trip_km": 10.91,
     "co2_kg_resident_day": 0.354,
-    "co2_kt_year": 1710.6,
+    "co2_kt_year": 1710.5,
     "inner_fifth_trip_km": 9.27,
     "outer_fifth_trip_km": 14.05,
     "assumptions": {

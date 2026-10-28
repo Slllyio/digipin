@@ -626,16 +626,15 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 22,
+    "chargers": 16,
     "chargers_by_source": {
-      "osm": 6,
       "overture": 16
     },
     "parking": 140,
     "fuel": 237,
-    "chargers_per_lakh": 0.25,
-    "pct_vkm_within_2km": 56.7,
-    "pct_pop_within_2km": 55.5
+    "chargers_per_lakh": 0.18,
+    "pct_vkm_within_2km": 38.7,
+    "pct_pop_within_2km": 35.9
   },
   "cycling": {
     "lowstress_km": 8794,
@@ -711,11 +710,11 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 207,
-    "stops_with_heat_data": 207,
-    "pct_hot_bare": 74.9,
-    "pct_riders_at_hot_bare": 72.7,
-    "median_stop_lst_c": 42.0,
+    "stops": 906,
+    "stops_with_heat_data": 906,
+    "pct_hot_bare": 68.3,
+    "pct_riders_at_hot_bare": 66.5,
+    "median_stop_lst_c": 41.8,
     "top_stops": [
       {
         "digipin": "4T39TL6",
@@ -728,94 +727,94 @@
         "priority": 267512
       },
       {
-        "digipin": "4T38MJP",
-        "name": "Wallajah Road Bus Stop",
-        "lon": 80.27567,
-        "lat": 13.06617,
-        "residents_5min": 26661,
-        "lst_c": 43.2,
-        "canopy_pct": 0.7,
-        "priority": 217090
-      },
-      {
-        "digipin": "4T38454",
-        "name": "Broadway Bus Stand",
-        "lon": 80.29013,
-        "lat": 13.0942,
-        "residents_5min": 21334,
-        "lst_c": 44.6,
-        "canopy_pct": 0.4,
-        "priority": 203987
-      },
-      {
-        "digipin": "4T38447",
-        "name": "Mannadi Bus Stop",
-        "lon": 80.28643,
-        "lat": 13.09578,
-        "residents_5min": 20664,
-        "lst_c": 44.6,
-        "canopy_pct": 0.5,
-        "priority": 197383
-      },
-      {
-        "digipin": "4T38L56",
+        "digipin": "4T38L6J",
         "name": "TVS",
-        "lon": 80.25996,
-        "lat": 13.05939,
-        "residents_5min": 26694,
-        "lst_c": 42.7,
-        "canopy_pct": 4.1,
-        "priority": 197117
-      },
-      {
-        "digipin": "4T39T8L",
-        "name": "Amjikarai Bus Stand",
-        "lon": 80.22675,
-        "lat": 13.07406,
-        "residents_5min": 21198,
-        "lst_c": 44.2,
-        "canopy_pct": 3.0,
-        "priority": 189171
-      },
-      {
-        "digipin": "4T39T43",
-        "name": "OYO 13006 Arumbakkam Inn",
-        "lon": 80.21158,
+        "lon": 80.26254,
         "lat": 13.06077,
-        "residents_5min": 19218,
-        "lst_c": 44.8,
-        "canopy_pct": 0.4,
-        "priority": 187583
+        "residents_5min": 28351,
+        "lst_c": 43.5,
+        "canopy_pct": 1.8,
+        "priority": 236646
       },
       {
-        "digipin": "4T384M2",
-        "name": "Broadway Bus Terminus",
-        "lon": 80.2838,
-        "lat": 13.0874,
-        "residents_5min": 22671,
+        "digipin": "4T38L6J",
+        "name": "Spencer Plaza",
+        "lon": 80.26107,
+        "lat": 13.06062,
+        "residents_5min": 28351,
+        "lst_c": 43.5,
+        "canopy_pct": 1.8,
+        "priority": 236646
+      },
+      {
+        "digipin": "4T3844T",
+        "name": "Loane Square",
+        "lon": 80.28574,
+        "lat": 13.09146,
+        "residents_5min": 26245,
+        "lst_c": 44.0,
+        "canopy_pct": 2.9,
+        "priority": 229355
+      },
+      {
+        "digipin": "4T38MJM",
+        "name": "",
+        "lon": 80.2738,
+        "lat": 13.06525,
+        "residents_5min": 26453,
         "lst_c": 43.7,
-        "canopy_pct": 4.9,
-        "priority": 187573
+        "canopy_pct": 0.5,
+        "priority": 228990
       },
       {
-        "digipin": "4T384M2",
-        "name": "Paris Bus Stop",
-        "lon": 80.2835,
-        "lat": 13.08771,
-        "residents_5min": 22671,
-        "lst_c": 43.7,
-        "canopy_pct": 4.9,
-        "priority": 187573
+        "digipin": "4T38MJ3",
+        "name": "Simson",
+        "lon": 80.2738,
+        "lat": 13.07029,
+        "residents_5min": 24663,
+        "lst_c": 44.4,
+        "canopy_pct": 1.3,
+        "priority": 228818
       },
       {
-        "digipin": "4T32699",
-        "name": "Vijayanagar Bus Stand",
-        "lon": 80.22144,
-        "lat": 12.97598,
-        "residents_5min": 21639,
-        "lst_c": 43.8,
-        "canopy_pct": 1.7,
-        "priority": 187186
+        "digipin": "4T38MJ3",
+        "name": "P.Orr & Sons",
+        "lon": 80.2737,
+        "lat": 13.07065,
+        "residents_5min": 24663,
+        "lst_c": 44.4,
+        "canopy_pct": 1.3,
+        "priority": 228818
+      },
+      {
+        "digipin": "4T38MJK",
+        "name": "Shanti Theatre",
+        "lon": 80.27057,
+        "lat": 13.06726,
+        "residents_5min": 25564,
+        "lst_c": 44.2,
+        "canopy_pct": 3.2,
+        "priority": 227663
+      },
+      {
+        "digipin": "4T328L5",
+        "name": "Olympia Tech Park",
+        "lon": 80.20459,
+        "lat": 13.01409,
+        "residents_5min": 25779,
+        "lst_c": 44.1,
+        "canopy_pct": 5.8,
+        "priority": 220983
+      },
+      {
+        "digipin": "4T328L5",
+        "name": "Olympia Tech Park",
+        "lon": 80.20458,
+        "lat": 13.01486,
+        "residents_5min": 25779,
+        "lst_c": 44.1,
+        "canopy_pct": 5.8,
+        "priority": 220983
       }
     ],
     "thresholds": {
@@ -824,7 +823,8 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "overture": 207
+      "osm": 736,
+      "overture": 170
     }
   },
   "parking": {

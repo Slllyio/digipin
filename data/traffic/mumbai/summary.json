@@ -493,15 +493,16 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 23,
+    "chargers": 28,
     "chargers_by_source": {
+      "osm": 5,
       "overture": 23
     },
     "parking": 65,
     "fuel": 254,
-    "chargers_per_lakh": 0.13,
-    "pct_vkm_within_2km": 45.6,
-    "pct_pop_within_2km": 46.4
+    "chargers_per_lakh": 0.16,
+    "pct_vkm_within_2km": 55.0,
+    "pct_pop_within_2km": 56.3
   },
   "cycling": {
     "lowstress_km": 6252,
@@ -509,7 +510,7 @@
     "highstress_km": 1950,
     "islands": 9080,
     "islands_over_5_km2": 9,
-    "largest_island_km2": 49.0,
+    "largest_island_km2": 48.9,
     "pct_residents_small_island": 58.2,
     "pct_residents_no_lowstress_street": 0.4,
     "source": "Overture Maps transportation 2026-10-21.0"
@@ -751,16 +752,16 @@
         "pressure": 3.59
       },
       {
-        "digipin": "4FK8MMM",
-        "demand_ecs": 863,
-        "supply_ecs": 212,
-        "pressure": 4.07
-      },
-      {
         "digipin": "4FKPC2L",
         "demand_ecs": 875,
         "supply_ecs": 224,
         "pressure": 3.9
+      },
+      {
+        "digipin": "4FK8MMM",
+        "demand_ecs": 863,
+        "supply_ecs": 212,
+        "pressure": 4.07
       }
     ],
     "assumptions": {
