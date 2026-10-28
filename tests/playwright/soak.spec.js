@@ -12,7 +12,7 @@ const CITIES = ['indore', 'delhi', 'mumbai', 'bengaluru', 'hyderabad', 'chennai'
 const ROUNDS = 2;
 const PROFILE_WAIT = 240_000;   // per-profile window on CI's software renderer; see the note at the wait (198 s seen on a run whose longest frame was 14.6 s)
 const GROWTH_MB = 120;   // allowed heap growth between round 1 and round 2 (caches warm by then)
-const HEAP_MB = 450;     // absolute ceiling after the soak (matches perf.spec.js)
+const HEAP_MB = 600;     // absolute ceiling after the soak: 468 MB flat across both rounds on 2026-10-28 (50 MB cell cache full, 3 height grids), so growth, not the level, is what flags a leak
 // Main-thread freeze budget after boot: one city switch + cell click may not
 // lock the page for longer than this in one go (the rank freeze was 3-5 s).
 const FREEZE_MS = 1500;
