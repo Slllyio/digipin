@@ -380,6 +380,16 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.anganwadi(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('freeclinic lens: residents beyond a walk of free primary care', () => {
+        const pop = codes.map(() => 1000);
+        const f = L.frameFrom(codes, { 'population.population': pop, 'public_care.primary': codes.map((_, i) => (i === 0 ? 1 : 0)) });
+        const r = L._lenses.freeclinic(f, {});
+        expect(r.stats[0].value).toBe('1');
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.columns.clinic_walk_m[0]).toBe(0);
+        expect(L._lenses.freeclinic(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('crashrecord lens: residents by traffic police jurisdiction', () => {
         const half = (a, b) => codes.map((_, i) => (i % SIZE < SIZE / 2 ? a : b));
         const pop = codes.map(() => 100);

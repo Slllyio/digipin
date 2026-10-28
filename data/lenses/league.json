@@ -912,6 +912,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "freeclinic": {
+     "label": "Residents beyond a 1 km walk of free primary care",
+     "value": 21.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 4.9,
@@ -2628,6 +2634,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "freeclinic": {
+     "label": "Residents beyond a 1 km walk of free primary care",
+     "value": 39.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 2.5,
@@ -3380,7 +3392,7 @@
     },
     "transit": {
      "label": "Residents with convenient public transport (SDG 11.2.1)",
-     "value": 82.9,
+     "value": 83,
      "unit": "%",
      "higherIs": "better"
     },
@@ -5055,6 +5067,12 @@
     "anganwadi": {
      "label": "Children under 5 beyond a 500 m walk of an anganwadi",
      "value": 36.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "freeclinic": {
+     "label": "Residents beyond a 1 km walk of free primary care",
+     "value": 33.2,
      "unit": "%",
      "higherIs": "worse"
     },

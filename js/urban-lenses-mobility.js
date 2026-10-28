@@ -1430,6 +1430,48 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // Free clinic reach. The corporations' own primary care network (UPHCs, Namma Clinics, health centres): who lives more
+    // than a 1 km walk from free primary care. Maps cover only the corporation or district, so only blocks within
+    // COVER_KM of a listed centre are judged.
+    const CLINIC_KM = 1, COVER_KM = 3, CLINIC_POP = 5000;
+
+    function freeclinic(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], pc = c['public_care.primary'];
+        const slum = c['slums_mapped.slum_pct'];
+        if (!pop || !pc || !pc.some(v => v > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const cover = within(g, Float64Array.from({ length: n }, (_, i) => v(pc, i)), COVER_KM);
+        const idx = _residents(fr).filter(i => cover[i] > 0);
+        if (idx.length < 5) return null;
+        const tree = walkTree(fr, i => pc[i] > 0, 2 * CLINIC_KM);
+        const far = idx.filter(i => !(tree.dist[i] <= CLINIC_KM));
+        const all = _sumOver(pop, idx, () => true), pFar = _sumOver(pop, far, () => true);
+        const centres = idx.reduce((a, i) => a + v(pc, i), 0);
+        const stats = [
+            { label: 'Public primary care centres listed', value: _people(centres) },
+            { label: 'Residents per centre in the area the list covers (NUHM norm: one UPHC per 50,000)', value: _people(all / Math.max(centres, 1)) },
+            { label: `Residents more than a ${CLINIC_KM} km walk from one`, value: `${_people(pFar)} (${_round(100 * pFar / (all || 1))}%)` },
+        ];
+        if (slum && far.some(i => v(slum, i) >= 20)) stats.push({ label: '…in blocks a fifth or more mapped slum', value: _people(_sumOver(pop, far, i => v(slum, i) >= 20)) });
+        const gap = new Float64Array(n);
+        for (const i of far) gap[i] = pop[i];
+        const need = within(g, gap, CLINIC_KM), picks = [];
+        for (const i of far.slice().sort((a, b) => need[b] - need[a])) {
+            if (picks.length >= 5 || need[i] < CLINIC_POP) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 2 * CLINIC_KM)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, k) => stats.push({ label: `New clinic ${k + 1}: ${g.codes[i]}`, value: `${_people(need[i])} residents within ${CLINIC_KM} km have none closer` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _fin(tree.dist[i]) ? _round(tree.dist[i] * 1000) : 2000 * CLINIC_KM;
+        return {
+            columns: { clinic_walk_m: out }, idx, weightKey: 'clinic_walk_m', noHotspots: true,
+            metric: { label: `Residents beyond a ${CLINIC_KM} km walk of free primary care`, value: _round(100 * pFar / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pFar)} residents (${_round(100 * pFar / (all || 1))}%) of the area the corporation's clinic list covers live more than a ${CLINIC_KM} km walk from a free public primary care centre. Private clinics and hospitals are not counted, and blocks more than ${COVER_KM} km from any listed centre are left out because the list may not cover them.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'cleanwalk', equity: true, title: 'Exhaust on the walk to school', icon: '😷',
             question: 'How much traffic exhaust do children breathe on the walk to school, and is there a cleaner route?',
@@ -1490,6 +1532,12 @@ const UrbanLensesMobility = (() => {
             needs: ['anganwadis.centres', 'demographics.under5', 'slums_mapped.slum_pct', 'osm_walk.links', 'population.population'],
             method: `Anganwadi (ICDS) centres from the state and city maps on data.opencity.in: Telangana for Hyderabad, Karnataka (KGIS) for Bengaluru, and Greater Chennai (2023). Children under 5 are WorldPop's under-5 count (8% of residents where missing). The walk follows the OpenStreetMap walking network between blocks, out to ${2 * AWC_KM} km. New-centre picks are blocks with at least ${AWC_KIDS} unserved children under 5 within ${AWC_KM * 1000} m, ${2 * AWC_KM} km apart. The ICDS urban norm is one centre per 400-800 people in the areas it serves, so the city-wide ratio overstates the gap where better-off homes do not use it. Chennai's map covers the corporation only, so suburbs such as Pallavaram show as gaps; the maps can lag openings and closures.`,
             refs: 'Integrated Child Development Services (Ministry of Women and Child Development) population norms; Saksham Anganwadi and Poshan 2.0 guidelines 2022; OpenCity anganwadi maps' },
+        { id: 'freeclinic', equity: true, title: 'Free clinic reach', icon: '🏥',
+            question: 'Who lives far from a free public clinic?',
+            field: { key: 'clinic_walk_m', label: 'Walk to the nearest public primary care centre', unit: 'm', higherIs: 'worse', ramp: 'reds', domain: [0, 2000] },
+            needs: ['public_care.primary', 'slums_mapped.slum_pct', 'osm_walk.links', 'population.population'],
+            method: `Public primary care centres from the corporations' maps on data.opencity.in: Greater Chennai UPHCs, Hyderabad district health centres, and BBMP UPHCs with Namma Clinics (2026) for Bengaluru. Mumbai City's maps round locations to about 1 km, too coarse for this. The walk follows the OpenStreetMap walking network out to ${2 * CLINIC_KM} km; only blocks within ${COVER_KM} km of a listed centre are judged, since the maps cover only the corporation or district. New-clinic picks need ${_people(CLINIC_POP)}+ unserved residents within ${CLINIC_KM} km, ${2 * CLINIC_KM} km apart. The National Urban Health Mission norm is one UPHC per 50,000 people.`,
+            refs: 'National Urban Health Mission framework (2013); Namma Clinic (Karnataka, 2022); OpenCity health facility maps' },
         { id: 'busgap', equity: true, title: 'Bus gaps on busy roads', icon: '🚌',
             question: 'Which busy commute corridors have no frequent bus?',
             field: { key: 'corridor_pcu', label: 'Peak-hour traffic on the nearest busy arterial', unit: 'PCU/h', higherIs: 'worse', ramp: 'heat' },
@@ -1600,7 +1648,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk, crashrecord, anganwadi }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk, crashrecord, anganwadi, freeclinic }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 
