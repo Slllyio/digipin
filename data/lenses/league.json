@@ -882,6 +882,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "potholes": {
+     "label": "Pothole complaints fixed within the two months",
+     "value": 19.5,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "pinsize": {
      "label": "Residents per pincode (median)",
      "value": 51566,

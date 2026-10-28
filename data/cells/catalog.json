@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T18:33:42Z",
+  "generated": "2026-10-28T18:38:47Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -29678,6 +29678,115 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "potholes",
+      "title": "Pothole complaints (BBMP Fix My Street 2022)",
+      "description": "BBMP's Fix My Street pothole and road-cut complaints for May and June 2022 on data.opencity.in: accepted complaints per block, how many were fixed, road surface to repair and the engineers' repair estimate.",
+      "source": "pipeline/realestate/potholes.py (OpenCity BBMP Fix My Street data)",
+      "license": "Public domain (BBMP via data.opencity.in)",
+      "group": "Mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "reports",
+          "label": "Pothole complaints (May-June 2022)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "reports",
+          "domain": [
+            1,
+            57
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "road_cuts",
+          "label": "Road-cut complaints (utility digging)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "reports",
+          "domain": [
+            1,
+            24
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "fixed",
+          "label": "Complaints fixed by end of June 2022",
+          "type": "number",
+          "agg": "sum",
+          "unit": "reports",
+          "domain": [
+            1,
+            41
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "pothole_m2",
+          "label": "Road surface to repair",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m2",
+          "domain": [
+            0,
+            3515.3
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "repair_rs",
+          "label": "Repair estimate",
+          "type": "number",
+          "agg": "sum",
+          "unit": "Rs",
+          "domain": [
+            0,
+            2660214.8000000003
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "main_road",
+          "label": "Complaints on arterial and sub-arterial roads",
+          "type": "number",
+          "agg": "sum",
+          "unit": "reports",
+          "domain": [
+            1,
+            27
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "reports",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 2931,
+          "bbox": {
+            "west": 77.472412109375,
+            "south": 12.842529296875,
+            "east": 77.7734375,
+            "north": 13.132568359375
+          },
+          "json": "potholes/bengaluru.json",
+          "parquet": null
         }
       ]
     },

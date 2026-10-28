@@ -711,7 +711,46 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    function potholes(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, rep = c['potholes.reports'], fixed = c['potholes.fixed'], cuts = c['potholes.road_cuts'];
+        const m2 = c['potholes.pothole_m2'], rs = c['potholes.repair_rs'], main = c['potholes.main_road'], road = c['osm_roads.road_km_km2'];
+        if (!rep || !rep.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(rep, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const sum = a => idx.reduce((t, i) => t + v(a, i), 0);
+        const total = sum(rep), done = sum(fixed), cut = sum(cuts), onMain = sum(main), area = sum(m2), cost = sum(rs);
+        const perKm = Float64Array.from({ length: n }, (_, i) => {
+            const km = v(road, i) * g.cellKm2;
+            return v(rep, i) > 0 ? v(rep, i) / Math.max(km, 0.5) : 0;
+        });
+        const open = Float64Array.from({ length: n }, (_, i) => Math.max(v(rep, i) - v(fixed, i), 0));
+        const stats = [
+            { label: 'Complaints the BBMP accepted (May-June 2022)', value: `${Math.round(total).toLocaleString('en-IN')}` },
+            { label: 'Fixed by the end of June 2022', value: `${Math.round(done).toLocaleString('en-IN')} (${_round(100 * done / total)}%)` },
+            { label: 'Roads dug up by a utility and left unrepaired', value: `${Math.round(cut).toLocaleString('en-IN')} (${_round(100 * cut / total)}%)` },
+            { label: 'On arterial and sub-arterial roads', value: `${Math.round(onMain).toLocaleString('en-IN')} (${_round(100 * onMain / total)}%)` },
+            { label: 'Road surface to repair; engineers\' estimate', value: `${Math.round(area).toLocaleString('en-IN')} m²; ₹${_round(cost / 1e7, 1)} crore` },
+        ];
+        spaced(g, idx, open, 5).forEach((i, k) => stats.push({ label: `Pothole cluster ${k + 1}: ${g.codes[i]}`, value: `${Math.round(v(rep, i))} complaints (${Math.round(v(fixed, i))} fixed); ${_round(perKm[i], 1)} per km of street` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(perKm[i], 1);
+        return {
+            columns: { pothole_per_km: out }, idx, weightKey: 'pothole_per_km', noHotspots: true,
+            metric: { label: 'Pothole complaints fixed within the two months', value: _round(100 * done / total), unit: '%', higherIs: 'better' },
+            headline: `In May and June 2022 the BBMP accepted ${Math.round(total).toLocaleString('en-IN')} pothole complaints across ${idx.length.toLocaleString('en-IN')} blocks and had fixed ${_round(100 * done / total)}% by the end of June. ${_round(100 * cut / total)}% were roads dug up by a utility and left open; ${_round(100 * onMain / total)}% were on main roads. The engineers put the repairs at ₹${_round(cost / 1e7, 1)} crore.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'potholes', equity: false, title: 'Pothole complaints', icon: '🕳️',
+            question: 'Where do people report potholes and dug-up roads, and how many got fixed?',
+            field: { key: 'pothole_per_km', label: 'Pothole complaints per km of street (May-June 2022)', unit: 'per km', higherIs: 'worse', ramp: 'reds', domain: [0, 20] },
+            needs: ['potholes.reports', 'potholes.fixed', 'potholes.road_cuts', 'potholes.pothole_m2', 'potholes.repair_rs', 'potholes.main_road', 'osm_roads.road_km_km2'],
+            method: `BBMP's Fix My Street pothole log for May and June 2022 on data.opencity.in (public domain): about 16,500 requests, of which the 13,400 the BBMP did not reject are kept, each with its location, status, work type (pothole or road cutting), road class, measured size and the engineer's repair estimate. Complaints are counted per block and set against the block's street length from OpenStreetMap (at least 0.5 km, so a short lane does not inflate the rate). Fixed means marked work done or resolved by the end of June 2022. Clusters are the blocks with the most unfixed complaints, ${SPACING_KM} km apart. It is a two-month snapshot of what was reported, not a survey of every road.`,
+            refs: 'BBMP Fix My Street (Sahaaya) pothole data via OpenCity; IRC:82-2015 Code of Practice for Maintenance of Bituminous Roads' },
         { id: 'pinsize', equity: false, title: 'Pincode crowding', icon: '📮',
             question: 'How many people share each pincode, and where is a pincode too coarse to find an address?',
             field: { key: 'pin_people', label: 'Residents sharing the block\'s pincode (thousands)', unit: 'thousand', higherIs: 'worse', ramp: 'reds', domain: [0, 800] },
@@ -816,6 +855,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes });
     return { ENTRIES };
 })();
