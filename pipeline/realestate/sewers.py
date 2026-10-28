@@ -1,20 +1,23 @@
-"""Sewer lines from the network maps for Bengaluru (BWSSB), Chennai (CMWSSB) and Pune (PMC) (OpenCity, public domain).
+"""Sewer lines from the network maps for Bengaluru (BWSSB), Chennai (CMWSSB), Pune (PMC) and Hyderabad (HMWSSB) (OpenCity,
+public domain).
 
 Per L7 block (dataset ``sewers``):
 
     sewer_m    length of sewer line in the block
     in_area    1 where the municipal corporation's ward map (``wards`` dataset) holds the block: the lens judges gaps only
-               there, as cantonments, other towns and villages past the limit run their own drainage
+               there, as cantonments, other towns and villages past the limit run their own drainage. Hyderabad's map covers
+               only the core city, so there it is the blocks inside the outline of a mapped HMWSSB section
     trunk_m    of it, trunk sewers: 300 mm across or more, or those PMC marks Trunk_Sewer in Pune (most of Pune's
                collection sewers are 300 mm themselves)
 
 Maps: BWSSB sewerage line maps (KGIS) by diameter, under 150 mm, 150-300 mm and 300 mm and above; CMWSSB's sewer main
 network (about 181,000 pipes, 4,200 km, pipe size as a code); PMC's drainage map, which OpenCity lists as storm-water
 drains but which is mostly the sewer network (road, nala and river sewers, about 2,190 km; its storm drains and nalas
-are left out here). Lines are walked in steps of about STEP_M and each step's
+are left out here); HMWSSB's core-city sewer lines for Hyderabad (about 90,000 lines, 3,260 km in 72 O&M sections; UTM
+zone 44N, converted here). Lines are walked in steps of about STEP_M and each step's
 length goes to the block holding its midpoint.
 
-    python -m pipeline.realestate.sewers --region bengaluru,chennai,pune
+    python -m pipeline.realestate.sewers --region bengaluru,chennai,pune,hyderabad
 """
 from __future__ import annotations
 
@@ -40,6 +43,8 @@ CHENNAI = ("https://data.opencity.in/dataset/c9844771-3129-4bc8-99d7-398dd93db1f
            "download/673f4683-9987-4101-b25c-8df48b448378.kmz")
 PUNE = ("https://data.opencity.in/dataset/a83b2053-2250-4e3c-9759-521c81679d24/resource/7b7bb529-d324-48c2-95eb-8eabbab4381b/"
         "download/4390b641-12ad-4438-bc6b-c938ea7ae5de.kmz")
+HYDERABAD = ("https://data.opencity.in/dataset/d2a3a13a-92a3-4064-ad2f-dc05b1794884/resource/0d23c2e3-6def-4dce-a444-654af5ae2831/"
+             "download/hyd_core_city_sewerline.zip")
 PLACEMARK = re.compile(r"<Placemark\b[^>]*>(.*?)</Placemark>", re.S)
 DIAM = re.compile(r'name="Diameter">([\d.]+)<')
 SIZE_CODE = re.compile(r'name="size_of_pipe_mm">(\d+)<')
@@ -134,12 +139,13 @@ def cell_dataset(region, acc, area=None):
         FieldSpec("in_area", "Inside the municipal corporation's wards", agg="max", unit="", domain=[0, 1], ramp="blues", higher_is="better"),
     ]
     spec = DatasetSpec(
-        id="sewers", title="Sewer network (BWSSB, CMWSSB and PMC maps)", level=LEVEL, fields=specs, group="Real estate",
+        id="sewers", title="Sewer network (BWSSB, CMWSSB, PMC and HMWSSB maps)", level=LEVEL, fields=specs, group="Real estate",
         description="BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter), CMWSSB's sewer main network for "
-                    "Chennai and PMC's drainage map (road, nala and river sewers) for Pune on data.opencity.in: sewer "
+                    "Chennai, PMC's drainage map (road, nala and river sewers) for Pune and HMWSSB's core-city sewer "
+                    "lines for Hyderabad on data.opencity.in: sewer "
                     "length per block and trunk sewers (300 mm and wider; PMC trunk sewers in Pune).",
-        source="pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps, CMWSSB sewer main network, PMC drainage map)",
-        license="Public domain (BWSSB, CMWSSB and PMC via data.opencity.in)", default_field="sewer_m", extrude=False)
+        source="pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps, CMWSSB sewer main network, PMC drainage map, HMWSSB core-city sewer lines)",
+        license="Public domain (BWSSB, CMWSSB, PMC and HMWSSB via data.opencity.in)", default_field="sewer_m", extrude=False)
     recs = [{"digipin": code, "sewer_m": round(r[0]), "trunk_m": round(r[1])}
             for code, r in acc.items()]
     recs += [{"digipin": code, "in_area": 1} for code in area or ()]
@@ -156,7 +162,70 @@ def read_kml(path):
         return f.read()
 
 
-SOURCES = {"bengaluru": [OPENCITY + p for p in MAPS], "chennai": [CHENNAI], "pune": [PUNE]}
+SOURCES = {"bengaluru": [OPENCITY + p for p in MAPS], "chennai": [CHENNAI], "pune": [PUNE], "hyderabad": [HYDERABAD]}
+
+
+def hmwssb_lines(doc):
+    """(coords [(lng, lat)], diameter_mm, None, section) per line of HMWSSB's GeoJSON (UTM zone 44N)."""
+    from pipeline.realestate.police import utm_to_lnglat
+    for f in doc.get("features") or []:
+        g, p = f.get("geometry") or {}, f.get("properties") or {}
+        parts = g.get("coordinates") or []
+        for line in parts if g.get("type") == "MultiLineString" else [parts]:
+            pts = [utm_to_lnglat(x, y) for x, y, *_ in line]
+            if len(pts) >= 2:
+                yield pts, p.get("SP_PIPE_DI"), None, (p.get("SECTION_NA") or "").strip()
+
+
+def hull(points):
+    """Convex hull of (x, y) points, counter-clockwise (monotone chain)."""
+    pts = sorted(set(points))
+    if len(pts) < 3:
+        return pts
+    cross = lambda o, a, b: (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    lo, hi = [], []
+    for q in pts:
+        while len(lo) >= 2 and cross(lo[-2], lo[-1], q) <= 0:
+            lo.pop()
+        lo.append(q)
+    for q in reversed(pts):
+        while len(hi) >= 2 and cross(hi[-2], hi[-1], q) <= 0:
+            hi.pop()
+        hi.append(q)
+    return lo[:-1] + hi[:-1]
+
+
+def inside(poly, x, y):
+    return len(poly) >= 3 and all((b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]) >= 0 for a, b in zip(poly, poly[1:] + poly[:1]))
+
+
+def section_cells(items, wards=None):
+    """L7 blocks whose centre lies inside the convex outline of a mapped section, and in a ward when ``wards`` is given."""
+    from pipeline.cells.store import cell_bounds, cell_code
+    step = 36 / 4 ** LEVEL
+    by = {}
+    for pts, _, _, sec in items:
+        by.setdefault(sec, []).extend(pts)
+    keep = set(wards) if wards is not None else None
+    out = set()
+    for pts in by.values():
+        h = hull(pts)
+        if len(h) < 3:
+            continue
+        xs, ys = [p[0] for p in h], [p[1] for p in h]
+        lat = min(ys)
+        while lat <= max(ys) + step:
+            lng = min(xs)
+            while lng <= max(xs) + step:
+                c = cell_code(LEVEL, lat, lng, None)
+                if c and c not in out:
+                    b = cell_bounds(c)
+                    cx, cy = (b["west"] + b["east"]) / 2, (b["south"] + b["north"]) / 2
+                    if inside(h, cx, cy) and (keep is None or c in keep):
+                        out.add(c)
+                lng += step / 2
+            lat += step / 2
+    return sorted(out)
 
 
 def main(argv=None):
@@ -165,16 +234,24 @@ def main(argv=None):
     ap.add_argument("--from-dir", help="read the maps (named as in the URLs) from this folder instead of downloading")
     a = ap.parse_args(argv)
     for region in a.region.split(","):
-        acc = {}
+        acc, area = {}, None
         with tempfile.TemporaryDirectory() as tmp:
             for url in SOURCES[region]:
                 name = url.rsplit("/", 1)[-1]
                 src = os.path.join(a.from_dir or tmp, name)
                 if not os.path.exists(src):
                     download(url, src)
+                if src.endswith(".zip"):
+                    import json
+                    import zipfile
+                    with zipfile.ZipFile(src) as z:
+                        items = list(hmwssb_lines(json.loads(z.read(next(n for n in z.namelist() if n.endswith(".geojson"))))))
+                    accumulate(((p, d, t) for p, d, t, _ in items), acc)
+                    area = section_cells(items, corporation_cells(region))
+                    continue
                 accumulate(lines(read_kml(src)), acc)
                 print(f"{region}: {name}: {sum(r[0] for r in acc.values()) / 1000:.0f} km so far")
-        info = cell_dataset(region, acc, corporation_cells(region))
+        info = cell_dataset(region, acc, area if area is not None else corporation_cells(region))
         print(f"{region}: {sum(r[0] for r in acc.values()) / 1000:.0f} km of sewer in {info['cells']} blocks")
     return 0
 

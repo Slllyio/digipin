@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T17:47:48Z",
+  "generated": "2026-10-28T17:55:23Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -31686,10 +31686,10 @@
     },
     {
       "id": "sewers",
-      "title": "Sewer network (BWSSB, CMWSSB and PMC maps)",
-      "description": "BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter), CMWSSB's sewer main network for Chennai and PMC's drainage map (road, nala and river sewers) for Pune on data.opencity.in: sewer length per block and trunk sewers (300 mm and wider; PMC trunk sewers in Pune).",
-      "source": "pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps, CMWSSB sewer main network, PMC drainage map)",
-      "license": "Public domain (BWSSB, CMWSSB and PMC via data.opencity.in)",
+      "title": "Sewer network (BWSSB, CMWSSB, PMC and HMWSSB maps)",
+      "description": "BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter), CMWSSB's sewer main network for Chennai, PMC's drainage map (road, nala and river sewers) for Pune and HMWSSB's core-city sewer lines for Hyderabad on data.opencity.in: sewer length per block and trunk sewers (300 mm and wider; PMC trunk sewers in Pune).",
+      "source": "pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps, CMWSSB sewer main network, PMC drainage map, HMWSSB core-city sewer lines)",
+      "license": "Public domain (BWSSB, CMWSSB, PMC and HMWSSB via data.opencity.in)",
       "group": "Real estate",
       "level": 7,
       "approxCellM": 244,
@@ -31701,7 +31701,7 @@
           "agg": "sum",
           "unit": "m",
           "domain": [
-            1,
+            0,
             7990
           ],
           "ramp": "blues",
@@ -31774,6 +31774,18 @@
             "north": 13.233642578125
           },
           "json": "sewers/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 2996,
+          "bbox": {
+            "west": 78.37548828125,
+            "south": 17.294189453125,
+            "east": 78.549072265625,
+            "north": 17.46337890625
+          },
+          "json": "sewers/hyderabad.json",
           "parquet": null
         },
         {
