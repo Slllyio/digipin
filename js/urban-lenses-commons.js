@@ -429,6 +429,51 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Citizen service centres. Karnataka's Common Service Centres and Grama One centres (OpenCity maps): where people get
+    // Aadhaar updates, certificates, bill payments and scheme applications done, which the poor and the elderly do in person.
+    const CSC_KM = 1;
+
+    function servicecentres(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, csc = c['service_centres.csc'], g1 = c['service_centres.grama_one'];
+        const pop = c['population.population'], old = c['demographics.elderly_60plus'], slum = c['slums_mapped.slum_pct'];
+        if (!csc || !csc.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const count = a => (a ? Math.round(Array.from(a).reduce((s, x) => s + (_fin(x) ? x : 0), 0)) : 0);
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(csc, i) + v(g1, i)), CSC_KM);
+        const idx = _residents(fr);
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const centres = count(csc), gone = count(g1);
+        const far = idx.filter(i => near[i] < 0.5), farPop = far.reduce((s, i) => s + v(pop, i), 0);
+        const stats = [
+            { label: 'Common Service Centres on the map', value: `${centres}${gone ? ` (plus ${gone} Grama One centres)` : ''}` },
+            { label: 'Residents per centre', value: _people(all / ((centres + gone) || 1)) },
+            { label: `Residents more than ${CSC_KM} km from a centre`, value: `${_people(farPop)} (${_round(100 * farPop / all, 1)}%)` },
+        ];
+        if (old) {
+            const oAll = idx.reduce((s, i) => s + v(old, i), 0), oFar = far.reduce((s, i) => s + v(old, i), 0);
+            if (oAll > 0) stats.push({ label: `Residents aged 60+ more than ${CSC_KM} km from a centre`, value: `${_people(oFar)} of ${_people(oAll)} (${_round(100 * oFar / oAll, 1)}%)` });
+        }
+        const slumPop = i => v(pop, i) * Math.min(v(slum, i), 100) / 100;
+        if (slum) {
+            const sAll = idx.reduce((s, i) => s + slumPop(i), 0), sFar = far.reduce((s, i) => s + slumPop(i), 0);
+            if (sAll > 0) stats.push({ label: `Residents of mapped slums more than ${CSC_KM} km from a centre`, value: `${_people(sFar)} of ${_people(sAll)} (${_round(100 * sFar / sAll, 1)}%)` });
+        }
+        const need = Float64Array.from({ length: n }, (_, i) => (near[i] < 0.5 ? v(pop, i) + 2 * v(old, i) + 2 * slumPop(i) : 0));
+        const gain = within(g, need, CSC_KM);
+        const farNear = within(g, Float64Array.from({ length: n }, (_, j) => (near[j] < 0.5 ? v(pop, j) : 0)), CSC_KM);
+        spaced(g, far, gain, 5, 2 * CSC_KM).forEach((i, k) => stats.push({ label: `New centre ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(farNear[i])} residents beyond reach within ${CSC_KM} km` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = Math.min(near[i], 10);
+        return {
+            columns: { service_centres_1km: out }, idx, weightKey: 'service_centres_1km', noHotspots: true,
+            metric: { label: `Residents more than ${CSC_KM} km from a citizen service centre`, value: Math.round(farPop), unit: 'people', higherIs: 'worse' },
+            headline: `${centres + gone} citizen service centres handle Aadhaar updates, certificates and bill payments here, one per ${_people(all / ((centres + gone) || 1))} residents; ${_people(farPop)} residents (${_round(100 * farPop / all, 1)}%) live more than ${CSC_KM} km from one.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -484,8 +529,14 @@ const UrbanLensesCommons = (() => {
             needs: ['tb_care.tb_units', 'tb_care.tb_tests', 'tb_care.drtb_centres', 'slums_mapped.slum_pct', 'population.population'],
             method: `Karnataka health department maps on KGIS via data.opencity.in (public domain): National TB Elimination Programme TB units, CBNAAT molecular testing sites, drug-resistant and district TB centres. Each block counts TB units and centres within ${TBU_KM} km and CBNAAT sites within ${TEST_KM} km; residents are WorldPop and slum residents are residents × the share of the block inside a mapped slum. New TB unit picks are blocks ${2 * TBU_KM} km apart beyond ${TBU_KM} km of one, ranked by residents plus four times slum residents within ${TBU_KM} km. Sputum is also collected at many primary health centres and private labs, which these maps do not show, so this is reach to the programme's diagnosing and treating units. Bengaluru only.`,
             refs: 'Karnataka health department TB facility maps (KGIS) via data.opencity.in; National TB Elimination Programme (NTEP) technical and operational guidelines' },
+        { id: 'servicecentres', equity: true, title: 'Citizen service centres', icon: '🏛️',
+            question: 'How far must people walk to get an Aadhaar update, a certificate or a scheme application done?',
+            field: { key: 'service_centres_1km', label: `Citizen service centres within ${CSC_KM} km`, unit: 'centres', higherIs: 'better', ramp: 'greens', domain: [0, 10] },
+            needs: ['service_centres.csc', 'service_centres.grama_one', 'demographics.elderly_60plus', 'slums_mapped.slum_pct', 'population.population'],
+            method: `Karnataka e-governance maps on data.opencity.in (public domain): Common Service Centre and Grama One locations in Bengaluru Urban district. Only the locations are used; operator names and phone numbers on the maps are not read. Each block counts centres within ${CSC_KM} km (straight line between block centres); residents and residents aged 60+ are WorldPop and slum residents are residents × the share of the block inside a mapped slum. New centre picks are blocks ${2 * CSC_KM} km apart beyond ${CSC_KM} km of a centre, ranked by residents plus twice the elderly and twice slum residents within ${CSC_KM} km. Bangalore One, ward offices, banks and post offices also offer some of these services and are not on these maps. Bengaluru only.`,
+            refs: 'Karnataka Centre for e-Governance, Common Service Centre and Grama One location maps via data.opencity.in; Ministry of Electronics and IT, CSC 2.0 scheme guidelines' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres });
     return { ENTRIES };
 })();

@@ -978,6 +978,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "servicecentres": {
+     "label": "Residents more than 1 km from a citizen service centre",
+     "value": 404671,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "metrowait": {
      "label": "Residents within 800 m of a metro station",
      "value": 20.7,

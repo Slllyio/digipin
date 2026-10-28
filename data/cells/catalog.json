@@ -36654,6 +36654,63 @@
       ]
     },
     {
+      "id": "service_centres",
+      "title": "Citizen service centres (CSC and Grama One)",
+      "description": "Common Service Centre and Grama One locations in Bengaluru Urban district from the Karnataka e-governance maps on data.opencity.in: where residents get Aadhaar updates, certificates, bill payments and scheme applications done.",
+      "source": "pipeline/realestate/servicecentres.py (OpenCity CSC and Grama One maps)",
+      "license": "Public domain (Karnataka e-governance via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "csc",
+          "label": "Common Service Centres",
+          "type": "number",
+          "agg": "sum",
+          "unit": "centres",
+          "domain": [
+            1,
+            6
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "grama_one",
+          "label": "Grama One centres",
+          "type": "number",
+          "agg": "sum",
+          "unit": "centres",
+          "domain": [
+            1,
+            3
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "csc",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 1267,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.77783203125,
+            "north": 13.141357421875
+          },
+          "json": "service_centres/bengaluru.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
       "id": "sewers",
       "title": "Sewer network (BWSSB, CMWSSB, PMC and HMWSSB maps)",
       "description": "BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter), CMWSSB's sewer main network for Chennai, PMC's drainage map (road, nala and river sewers) for Pune and HMWSSB's core-city sewer lines for Hyderabad on data.opencity.in: sewer length per block and trunk sewers (300 mm and wider; PMC trunk sewers in Pune).",

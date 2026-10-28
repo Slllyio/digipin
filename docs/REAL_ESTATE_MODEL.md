@@ -1485,3 +1485,15 @@ plus four times slum residents beyond reach within 3 km. Primary health centres 
 maps. First run: 22 units, 38.5% of residents beyond 3 km, picks in Sunkadakatte, Rajiv Gandhi Nagar and Manjunatha
 Nagar.
 
+
+## Citizen service centres (`servicecentres` lens, `service_centres` dataset, pipeline/realestate/servicecentres.py)
+
+Karnataka e-governance maps on data.opencity.in (package `grama-one-centres-in-karnataka-and-bengaluru`, public domain): Common
+Service Centre and Grama One locations in Bengaluru Urban district. The pipeline reads only `<coordinates>` from the KMLs; the
+maps also hold operator names and phone numbers, which are never parsed or stored. Points inside the Bengaluru box are deduped
+at about 1 m and summed per L7 block (`csc`, `grama_one`).
+
+The lens counts centres within 1 km of each block and reports residents, residents aged 60+ and slum residents beyond that.
+New centre picks are blocks 2 km apart beyond 1 km of a centre, ranked by residents + 2 × elderly + 2 × slum residents within
+1 km. Bangalore One, ward offices, banks and post offices also deliver some of these services and are not on the maps.
+Bengaluru: 1,508 centres, one per 8,788 residents; 3.1% of residents and 6.4% of the elderly are more than 1 km from one.
