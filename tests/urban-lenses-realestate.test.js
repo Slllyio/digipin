@@ -1160,8 +1160,9 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('hotnights: residents where streets stay hot at night', () => {
         const two = (a, b) => codes.map((_, i) => (col(i) < 6 ? a : b));
-        const f = L.frameFrom(codes, { ...base, 'night_heat.night_lst_c': two(27, 23), 'night_heat.night_anomaly_c': two(3, -1), 'demographics.elderly_60plus': two(50, 50) });
+        const f = L.frameFrom(codes, { ...base, 'night_heat.night_lst_c': two(27, 23), 'night_heat.night_anomaly_c': two(3, -1), 'demographics.elderly_60plus': two(50, 50), 'pm_heat.pm_lst_c': two(40, 45) });
         const r = L._lenses.hotnights(f, {});
+        expect(r.stats.find(s => /hottest-night blocks vs the rest/.test(s.label) && /cooling/i.test(s.label)).value).toBe('13 vs 22 °C');
         expect(r.metric.value).toBeGreaterThan(0);
         expect(r.metric.value).toBeLessThan(100);
         expect(r.stats.some(s => /^Hot night 1: /.test(s.label))).toBe(true);

@@ -1451,6 +1451,10 @@ re-centres on the night the median resident sleeps through (population-weighted 
 more above it with the elderly and under-5s among them, compares tree canopy, and picks blocks 1.5 km apart ranked by
 (residents + 3 × residents aged 60+) × heat above the median. First run: Delhi's median home 25.5 °C at night, 2 °C
 above the region; 15.8% of residents 1 °C hotter still, with 4.1% tree canopy against 8%.
+Afternoon peak (`pm_heat`, roadmap 231): the same ECOSTRESS product on cloud-free April-June afternoons, 11:30 to 16:30
+IST, pooled over 2018-2025 because the space station passes over a city on few afternoons a season (2023-25 alone left
+Chennai with 3 scenes). The lens reports overnight cooling (afternoon minus night, residents weighted) when afternoon data
+covers at least half the lived-in blocks; Delhi's homes cool 18.2 °C, its hottest-night blocks 16.8 °C.
 
 ## Big roads to come (`newroads` lens, `new_roads` dataset, pipeline/realestate/newroads.py)
 

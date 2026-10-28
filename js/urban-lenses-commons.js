@@ -233,7 +233,7 @@ const UrbanLensesCommons = (() => {
     function hotnights(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, an = c['night_heat.night_anomaly_c'], lst = c['night_heat.night_lst_c'];
         const pop = c['population.population'], old = c['demographics.elderly_60plus'], kid = c['demographics.under5'];
-        const day = c['surface_heat.lst_day_c'], tree = c['vegetation.tree_canopy_pct'];
+        const day = c['surface_heat.lst_day_c'], tree = c['vegetation.tree_canopy_pct'], pm = c['pm_heat.pm_lst_c'];
         if (!lst || !lst.some(_fin)) return null;
         const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
         const idx = _residents(fr).filter(i => _fin(lst[i]));
@@ -250,6 +250,12 @@ const UrbanLensesCommons = (() => {
             { label: 'Summer night surface temperature under the median resident', value: `${_round(med, 1)} °C` },
             { label: 'Spread across homes, coolest to hottest twentieth of blocks', value: `${_round(spread, 1)} °C` },
         ];
+        if (pm && idx.filter(i => _fin(pm[i])).length >= idx.length / 2) {     // afternoon scenes are sparse in cloudier cities
+            const drop = set => { const s = set.filter(i => _fin(pm[i])), w = s.reduce((a, i) => a + v(pop, i), 0); return w ? s.reduce((a, i) => a + v(pop, i) * (pm[i] - lst[i]), 0) / w : NaN; };
+            const hotSet = idx.filter(i => lst[i] - med >= HOT_NIGHT_C), rest = idx.filter(i => lst[i] - med < HOT_NIGHT_C);
+            stats.push({ label: 'Overnight cooling, summer afternoon to night (where residents live)', value: `${_round(drop(idx), 1)} °C` });
+            if (_fin(drop(hotSet)) && _fin(drop(rest))) stats.push({ label: 'Overnight cooling, hottest-night blocks vs the rest', value: `${_round(drop(hotSet), 1)} vs ${_round(drop(rest), 1)} °C` });
+        }
         if (_fin(uhi)) stats.push({ label: 'Average resident\'s night above the median block of the wider region (heat island)', value: `${uhi >= 0 ? '+' : ''}${_round(uhi, 1)} °C` });
         stats.push({ label: `Residents ${HOT_NIGHT_C} °C or more above the median resident's night`, value: `${_people(hotPop)} (${_round(100 * hotPop / all, 1)}%)` });
         if (old) stats.push({ label: '…of them aged 60 and over', value: _people(_sumOver(old, hot, i => _fin(old[i]))) });
@@ -260,7 +266,7 @@ const UrbanLensesCommons = (() => {
         }
         const score = Float64Array.from({ length: n }, (_, i) => (_fin(ex[i]) ? (v(pop, i) + 3 * v(old, i)) * Math.max(ex[i], 0) : 0));
         spaced(g, idx.filter(i => ex[i] > 0), score, 5).forEach((i, k) => stats.push({ label: `Hot night ${k + 1}: ${g.codes[i]}`,
-            value: `${_round(lst[i], 1)} °C at night (+${_round(ex[i], 1)} °C)${day && _fin(day[i]) ? `, ${_round(day[i], 1)} °C by day` : ''}${tree ? `; tree canopy ${_round(v(tree, i), 1)}%` : ''}; ${_people(v(pop, i))} residents${old ? `, ${_people(v(old, i))} aged 60+` : ''}` }));
+            value: `${_round(lst[i], 1)} °C at night (+${_round(ex[i], 1)} °C)${pm && _fin(pm[i]) ? `, ${_round(pm[i], 1)} °C in the afternoon` : day && _fin(day[i]) ? `, ${_round(day[i], 1)} °C by day` : ''}${tree ? `; tree canopy ${_round(v(tree, i), 1)}%` : ''}; ${_people(v(pop, i))} residents${old ? `, ${_people(v(old, i))} aged 60+` : ''}` }));
         const out = new Float64Array(n).fill(NaN);
         for (const i of idx) out[i] = ex[i];
         const hotOld = old ? _sumOver(old, hot, i => _fin(old[i])) : 0;
@@ -410,8 +416,8 @@ const UrbanLensesCommons = (() => {
         { id: 'hotnights', equity: true, title: 'Hot nights', icon: '🌙',
             question: 'Where do streets and roofs stay hot through summer nights, when bodies need to cool?',
             field: { key: 'night_excess_c', label: "Summer night surface temperature above the median resident's", unit: '°C', higherIs: 'worse', ramp: 'diverging', domain: [-3, 3] },
-            needs: ['night_heat.night_lst_c', 'night_heat.night_anomaly_c', 'night_heat.night_scenes', 'surface_heat.lst_day_c', 'vegetation.tree_canopy_pct', 'demographics.elderly_60plus', 'demographics.under5', 'population.population'],
-            method: `NASA ECOSTRESS (thermal radiometer on the International Space Station, public domain): land surface temperature at 70 m. The space station's drifting orbit passes at different hours, so night scenes exist, which the fixed-time Landsat and MODIS mornings and afternoons miss. Each block takes the median of cloud-free, non-water pixels from April to June nights (21:30 to 05:30 IST) in 2023 to 2025. The map shows each block against the night the median resident sleeps through, and hot-night blocks are ${HOT_NIGHT_C} °C or more above it; the heat island figure compares homes with the median block of the whole city region, farmland included. residents, the elderly and children under 5 are WorldPop. Picks are blocks ${SPACING_KM} km apart ranked by (residents + 3 × residents aged 60+) × heat above the median resident's night. Surface, not air, temperature, and some blocks rest on a handful of scenes (see night_scenes); a few overpasses near dawn run cooler than ones near midnight.`,
+            needs: ['night_heat.night_lst_c', 'night_heat.night_anomaly_c', 'night_heat.night_scenes', 'pm_heat.pm_lst_c', 'surface_heat.lst_day_c', 'vegetation.tree_canopy_pct', 'demographics.elderly_60plus', 'demographics.under5', 'population.population'],
+            method: `NASA ECOSTRESS (thermal radiometer on the International Space Station, public domain): land surface temperature at 70 m. The space station's drifting orbit passes at different hours, so night scenes exist, which the fixed-time Landsat and MODIS mornings and afternoons miss. Each block takes the median of cloud-free, non-water pixels from April to June nights (21:30 to 05:30 IST) in 2023 to 2025. The map shows each block against the night the median resident sleeps through, and hot-night blocks are ${HOT_NIGHT_C} °C or more above it; the heat island figure compares homes with the median block of the whole city region, farmland included. Overnight cooling is the drop from the median cloud-free afternoon (12:30 to 15:30 IST, same months and years) to the median night: blocks that cool least are holding the day's heat in concrete and asphalt. residents, the elderly and children under 5 are WorldPop. Picks are blocks ${SPACING_KM} km apart ranked by (residents + 3 × residents aged 60+) × heat above the median resident's night. Surface, not air, temperature, and some blocks rest on a handful of scenes (see night_scenes); a few overpasses near dawn run cooler than ones near midnight.`,
             refs: 'Hook and Hulley, ECOSTRESS L2T LSTE V2 (NASA LP DAAC); Laaidi et al. 2012, The impact of heat islands on mortality in Paris during the August 2003 heat wave (Environmental Health Perspectives); NDMA Heat Action Plan guidelines (2019)' },
         { id: 'newroads', equity: false, title: 'Big roads to come', icon: '🛣️',
             question: 'Where will the planned elevated corridors run, and who lives along them?',
