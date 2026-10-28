@@ -1185,7 +1185,64 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Fire station reach. Fire services aim to reach an urban fire within 3-5 minutes, which in Indian traffic means a
+    // station within about REACH_KM (Standing Fire Advisory Council: one station per 10 km² of built-up city). Stations
+    // are the fire services' own lists where OpenCity has them, topped up with OpenStreetMap/Overture.
+    const REACH_KM = 3, FAR_KM = 5, JUDGE_KM = 10, AREA_NORM = 10;
+
+    function firereach(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], fire = c['places.fire_stations'];
+        if (!pop || !fire) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const st = [];
+        for (let i = 0; i < n; i++) if (v(fire, i) > 0) st.push(i);
+        const stations = st.reduce((a, i) => a + v(fire, i), 0);
+        if (stations < FIRE_MIN) return null;
+        const km = new Float64Array(n).fill(Infinity);
+        for (let i = 0; i < n; i++) {
+            if (!(v(pop, i) > 0)) continue;
+            for (const j of st) {
+                const d = Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx);
+                if (d < km[i]) km[i] = d;
+            }
+        }
+        // Each list stops at its corporation: judge only blocks within JUDGE_KM of a listed station.
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && km[i] <= JUDGE_KM) idx.push(i);
+        if (idx.length < 5) return null;
+        const all = _sumOver(pop, idx, () => true), farIdx = idx.filter(i => km[i] > REACH_KM);
+        const pFar = _sumOver(pop, farIdx, () => true), pVery = _sumOver(pop, idx, i => km[i] > FAR_KM);
+        const area = idx.length * g.dx * g.dy;
+        const official = (fr.sources || []).some(s => s.id === 'fire_stations_official');
+        const stats = [
+            { label: `Fire stations listed${official ? ' (fire service list plus OpenStreetMap)' : ' (OpenStreetMap/Overture)'}`, value: String(stations) },
+            { label: 'Residents per station', value: _people(all / stations) },
+            { label: `Lived-in area per station (norm ${AREA_NORM} km²)`, value: `${_round(area / stations, 1)} km²` },
+            { label: `Residents more than ${REACH_KM} km from a fire station`, value: `${_people(pFar)} (${_round(100 * pFar / (all || 1))}%)` },
+            { label: `…more than ${FAR_KM} km`, value: `${_people(pVery)} (${_round(100 * pVery / (all || 1))}%)` },
+        ];
+        const farPop = Float64Array.from({ length: n }, (_, i) => (km[i] > REACH_KM && km[i] <= JUDGE_KM ? v(pop, i) : 0));
+        const gain = within(g, farPop, REACH_KM);
+        spaced(g, farIdx.filter(i => gain[i] > 0), gain).forEach((i, k) => stats.push({
+            label: `New station ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(gain[i])} residents now beyond ${REACH_KM} km would be within it; nearest station ${_round(km[i], 1)} km` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(km[i], 1);
+        return {
+            columns: { fire_km: out }, idx, weightKey: 'fire_km', noHotspots: true,
+            metric: { label: `Residents more than ${REACH_KM} km from a fire station`, value: _round(100 * pFar / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${stations} fire stations serve about ${_people(all / stations)} residents each; ${_people(pFar)} residents (${_round(100 * pFar / (all || 1))}%) live more than ${REACH_KM} km from one, beyond the 3-5 minute urban response the fire advisory norms aim for. Distances are straight-line from block centres, so traffic and lanes make real response slower.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'firereach', equity: true, title: 'Fire station reach', icon: '🚒',
+            question: 'Who lives too far from a fire station, and where should the next one go?',
+            field: { key: 'fire_km', label: 'Distance to the nearest fire station', unit: 'km', higherIs: 'worse', ramp: 'reds', domain: [0, 8] },
+            needs: ['places.fire_stations', 'population.population'],
+            method: `Fire stations from the fire services' own maps on data.opencity.in (public domain: Mumbai Fire Brigade, Pune Fire Brigade, Telangana Fire Services in Hyderabad 2018, Karnataka State Fire and Emergency Services for Bengaluru), topped up per block with OpenStreetMap/Overture where those list more; other cities use OpenStreetMap/Overture alone. Straight-line distance from each block centre to the nearest station; blocks more than ${JUDGE_KM} km from any listed station are not judged, since lists stop at the corporation. New-station picks are blocks, ${SPACING_KM} km apart, that bring the most residents now beyond ${REACH_KM} km within ${REACH_KM} km. Needs ${FIRE_MIN} or more stations listed.`,
+            refs: 'Standing Fire Advisory Council norms (response 3-5 min urban, one station per 10 km²); OpenCity fire station maps; OpenStreetMap; Overture Maps places' },
         { id: 'turnout', equity: true, title: 'Voter turnout 2024', icon: '🗳️',
             question: 'Where did the fewest people vote in the 2024 Lok Sabha election?',
             field: { key: 'turnout_pct', label: 'Lok Sabha 2024 turnout in the assembly segment (EVM)', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [40, 75] },
@@ -1369,7 +1426,7 @@ const UrbanLensesSafety = (() => {
             refs: 'Overture Maps transportation (OpenStreetMap); Indian Railways Works Manual (TVU criteria for ROB/RUB); Setu Bharatam programme (2016); DISHA traffic model' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, kilnsmoke, dumpsmoke, powercuts, wildedge, schoolgap, railgates, turnout }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, kilnsmoke, dumpsmoke, powercuts, wildedge, schoolgap, railgates, turnout, firereach }, {}, 'jobsmap');
     return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, kilnsmoke, dumpsmoke, powercuts, wildedge, schoolgap, railgates, ENTRIES };
 })();
 

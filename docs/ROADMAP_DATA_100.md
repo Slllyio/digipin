@@ -233,6 +233,8 @@ Each item gives four things:
 172. ✅ Lok Sabha 2024 results per block: MP and party, margin, and assembly-segment EVM turnout, leading party and NOTA for all 13 cities (ECI via OpenCity, public domain); DISHA names the MP | OpenCity | `turnout` lens (new dataset `elections_2024`, pipeline/realestate/elections.py)
 173. ✅ Anganwadi reach: ICDS centre maps for Hyderabad (Telangana), Bengaluru (Karnataka KGIS) and Chennai, walking distance for children under five and new-centre picks (OpenCity, public domain) | OpenCity | `anganwadi` lens (new dataset `anganwadis`, pipeline/realestate/anganwadis.py)
 174. ✅ Free clinic reach: corporation UPHCs, Namma Clinics and health centres for Chennai, Bengaluru and Hyderabad, walking distance and new-clinic picks (OpenCity, public domain) | OpenCity | `freeclinic` lens (new dataset `public_care`, pipeline/realestate/publiccare.py)
+175. ✅ Municipal tree census: Pune 2019 (about 4 million trees with girth, canopy, condition) and BBMP Bengaluru 2026, trees per resident, invasive and single-species blocks, big trees, planting picks (OpenCity, public domain) | OpenCity | `treecensus` lens (new dataset `tree_census`, pipeline/realestate/treecensus.py)
+176. ✅ Fire station reach: fire services' own station maps for Mumbai, Pune, Hyderabad and Bengaluru topping up OpenStreetMap/Overture counts in every fire lens, distance to the nearest station and new-station picks (OpenCity, public domain) | OpenCity | `firereach` lens (new dataset `fire_stations_official`, pipeline/realestate/firestations.py)
 
 ## Parked for the keys round
 

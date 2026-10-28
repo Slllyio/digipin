@@ -1312,7 +1312,58 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Street-tree census. The municipal census counts every tree: where trees per resident are lowest, where one species
+    // or invasive exotics dominate (pest and storm risk, little shade), and where the big old shade trees stand.
+    const TREE_PER_100 = 10, MONO_PCT = 40, INV_PCT = 25, SURVEYED = 0.75;
+
+    function treecensus(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], tr = c['tree_census.trees'];
+        const top = c['tree_census.top_share'], inv = c['tree_census.invasive_pct'], big = c['tree_census.big_trees'];
+        const poor = c['tree_census.poor_pct'], lst = c['surface_heat.lst_day_c'];
+        if (!pop || !tr || !tr.some(v => v > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        // Censuses run ward by ward (Bengaluru's is still under way): judge a block only inside surveyed ground, where
+        // SURVEYED of the lived-in blocks within 500 m have counted trees.
+        const has = Float64Array.from({ length: n }, (_, i) => (v(pop, i) > 0 && v(tr, i) > 0 ? 1 : 0));
+        const lived = Float64Array.from({ length: n }, (_, i) => (v(pop, i) > 0 ? 1 : 0));
+        const hN = within(g, has, 0.5), lN = within(g, lived, 0.5);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && lN[i] > 0 && hN[i] / lN[i] >= SURVEYED) idx.push(i);
+        if (idx.length < 5) return null;
+        const all = _sumOver(pop, idx, () => true), trees = idx.reduce((a, i) => a + v(tr, i), 0);
+        const per = i => 100 * v(tr, i) / Math.max(v(pop, i), 1);
+        const bare = idx.filter(i => per(i) < TREE_PER_100), pBare = _sumOver(pop, bare, () => true);
+        const mono = idx.filter(i => v(tr, i) >= 20 && v(top, i) >= MONO_PCT), invH = idx.filter(i => v(tr, i) >= 20 && v(inv, i) >= INV_PCT);
+        const stats = [
+            { label: 'Trees counted in the census (lived-in blocks)', value: _people(trees) },
+            { label: 'Trees per 100 residents', value: String(_round(100 * trees / (all || 1), 1)) },
+            { label: `Residents in blocks with under ${TREE_PER_100} trees per 100 people`, value: `${_people(pBare)} (${_round(100 * pBare / (all || 1))}%)` },
+            { label: `Blocks where one species is ${MONO_PCT}%+ of 20 or more trees`, value: String(mono.length) },
+            { label: `Blocks where invasive exotics are ${INV_PCT}%+ of the trees`, value: String(invH.length) },
+        ];
+        if (big && idx.some(i => v(big, i) > 0)) stats.push({ label: 'Big trees (girth 150 cm or more)', value: _people(idx.reduce((a, i) => a + v(big, i), 0)) });
+        if (poor && idx.some(i => v(poor, i) > 0)) stats.push({ label: 'Trees recorded dead, poor or average', value: `${_round(idx.reduce((a, i) => a + v(tr, i) * v(poor, i) / 100, 0) / (trees || 1) * 100, 1)}%` });
+        const need = Float64Array.from({ length: n }, (_, i) => (per(i) < TREE_PER_100 ? v(pop, i) * (lst && _fin(lst[i]) ? Math.max(1, lst[i] - 30) : 1) : 0));
+        spaced(g, bare, need).forEach((i, k) => stats.push({
+            label: `Plant here ${k + 1}: ${g.codes[i]}`,
+            value: `${v(tr, i)} trees for ${_people(pop[i])} residents${lst && _fin(lst[i]) ? `; ${_round(lst[i])} °C summer surface` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(per(i), 1);
+        return {
+            columns: { trees_per_100: out }, idx, weightKey: 'trees_per_100', noHotspots: true,
+            metric: { label: 'Census trees per 100 residents', value: _round(100 * trees / (all || 1), 1), unit: 'trees', higherIs: 'better' },
+            headline: `The municipal census counts ${_people(trees)} trees here, ${_round(100 * trees / (all || 1), 1)} per 100 residents; ${_people(pBare)} residents (${_round(100 * pBare / (all || 1))}%) live in blocks with under ${TREE_PER_100} per 100, and in ${invH.length} blocks invasive exotics such as subabul make up a quarter or more of the trees. Census coverage is uneven between wards, so a bare block can be an uncounted one.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'treecensus', equity: true, title: 'Tree census', icon: '🌳',
+            question: 'Where are trees fewest per person, and where do invasive or single species dominate?',
+            field: { key: 'trees_per_100', label: 'Census trees per 100 residents', unit: 'trees', higherIs: 'better', ramp: 'greens', domain: [0, 100] },
+            needs: ['tree_census.trees', 'tree_census.top_share', 'tree_census.invasive_pct', 'tree_census.big_trees', 'tree_census.poor_pct', 'surface_heat.lst_day_c', 'population.population'],
+            method: `Municipal tree censuses on data.opencity.in (public domain): Pune Municipal Corporation 2019 (about 4 million trees with girth, canopy and condition) and BBMP Bengaluru's ongoing census (July 2026 release, species and location). Trees are counted per block; a block is judged only inside surveyed ground, where ${SURVEYED * 100}% or more of the lived-in blocks within 500 m have counted trees, since censuses run ward by ward and stop at the corporation boundary. Invasive exotics are subabul (Leucaena), mesquite (Prosopis), earleaf acacia and gliricidia. Planting picks rank bare blocks (under ${TREE_PER_100} trees per 100 residents) by residents × degrees of summer surface heat above 30 °C.`,
+            refs: 'PMC Tree Census 2019; BBMP tree census (KGIS) 2024-26; Maharashtra (Urban Areas) Protection and Preservation of Trees Act 1975; Karnataka Preservation of Trees Act 1976' },
         { id: 'coolroof', equity: true, title: 'Cool roofs', icon: '🏠',
             question: 'Where are roofs dark and soaking up heat, who lives under them, and where would painting them white help most?',
             field: { key: 'cool_priority', label: 'Cool-roof priority (residents under dark roofs, weighted for heat, poverty and low-rise homes)', unit: 'people', higherIs: 'worse', ramp: 'reds' },
@@ -1508,7 +1559,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lightning, recharge, stay, waterloss, dumps, lakehealth, jobsmap },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lightning, recharge, stay, waterloss, dumps, lakehealth, jobsmap, treecensus },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

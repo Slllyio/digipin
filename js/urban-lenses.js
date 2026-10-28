@@ -485,6 +485,9 @@ const UrbanLenses = (() => {
         return [...set];
     }
 
+    // Official lists that top up a crowd-sourced count column: [column, dataset, field].
+    const TOPUPS = [['places.fire_stations', 'fire_stations_official', 'stations']];
+
     /**
      * Every `needs` field ("dataset.field") for a city, on the population L7
      * cells. A coarser dataset reads its parent cell; counts ('sum' fields)
@@ -583,6 +586,19 @@ const UrbanLenses = (() => {
                     used = true;
                 }
                 if (used) sources.push(UrbanInsights.sourceOf(spec, store));
+            }
+            // Official facility lists (OpenCity) top up OpenStreetMap/Overture counts: per cell, the larger count wins.
+            for (const [col, ds, f] of TOPUPS) {
+                const os = cols[col] && store.get(ds);
+                if (!os || !(os.regions || []).some(r => r.name === city)) continue;
+                const ot = await _loadView(store, ds, bbox).catch(() => null);
+                if (!ot || !ot.cells || !ot.columns || !ot.columns[f] || ot.level > LEVEL) continue;
+                const ix = new Map(ot.cells.map((c, i) => [c, i])), dst = cols[col];
+                for (let i = 0; i < g.n; i++) {
+                    const j = ix.get(codes[i].slice(0, ot.level)), v = j == null ? NaN : _num(ot.columns[f][j]);
+                    if (_fin(v) && !(v <= dst[i])) dst[i] = v;
+                }
+                sources.push(UrbanInsights.sourceOf(os, store));
             }
             return { city, level: LEVEL, grid: g, cols, steps, sources, missing };
         })();

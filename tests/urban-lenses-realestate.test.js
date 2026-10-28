@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout', 'treecensus', 'firereach']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -1137,6 +1137,34 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats[2].value).toMatch(/\(25%\)/);
         expect(r.stats.find(s => s.label.startsWith('Low turnout 1')).value).toMatch(/^45% turnout, NOTA 1.5%/);
         expect(L._lenses.turnout(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('firereach: distance to the nearest fire station and new-station picks', () => {
+        const S = 30, big = block(28.6, 77.2, S), ones = big.map(() => 1000);
+        const fire = big.map((_, i) => ([0, 2, S * 2, S * 2 + 2, S + 1].includes(i) ? 1 : 0));
+        const r = L._lenses.firereach(L.frameFrom(big, { 'population.population': ones, 'places.fire_stations': fire }), {});
+        expect(r.stats[0].value).toBe('5');
+        expect(r.columns.fire_km[0]).toBe(0);
+        expect(r.columns.fire_km[S * S - 1]).toBeGreaterThan(5);
+        expect(r.stats[3].value).not.toMatch(/\(0%\)/);
+        expect(r.stats.some(s => /^New station 1: /.test(s.label))).toBe(true);
+        const few = big.map((_, i) => (i === 0 ? 1 : 0));
+        expect(L._lenses.firereach(L.frameFrom(big, { 'population.population': ones, 'places.fire_stations': few }), {})).toBeNull();
+    });
+
+    it('treecensus: trees per 100 residents, invasive and single-species blocks', () => {
+        const two = (a, b) => codes.map((_, i) => (col(i) < 6 ? a : b));
+        const f = L.frameFrom(codes, { ...base, 'tree_census.trees': two(50, 300), 'tree_census.top_share': two(60, 20),
+            'tree_census.invasive_pct': two(30, 5), 'tree_census.big_trees': two(1, 10), 'tree_census.poor_pct': two(10, 10) });
+        const r = L._lenses.treecensus(f, {});
+        expect(r.columns.trees_per_100[0]).toBe(5);
+        expect(r.columns.trees_per_100[11]).toBe(30);
+        expect(r.metric.value).toBeCloseTo(17.5, 1);
+        expect(r.stats[2].value).toMatch(/\(50%\)/);
+        expect(r.stats[3].value).toBe('72');
+        expect(r.stats[4].value).toBe('72');
+        expect(r.stats.some(s => /^Plant here 1: /.test(s.label))).toBe(true);
+        expect(L._lenses.treecensus(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('districthealth: residents by NFHS-5 district', () => {

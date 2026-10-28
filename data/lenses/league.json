@@ -420,6 +420,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "firereach": {
+     "label": "Residents more than 3 km from a fire station",
+     "value": 51.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "turnout": {
      "label": "Lok Sabha 2024 turnout residents face",
      "value": 56.5,
@@ -1116,6 +1122,12 @@
      "unit": "per 1,000",
      "higherIs": "better"
     },
+    "treecensus": {
+     "label": "Census trees per 100 residents",
+     "value": 15.3,
+     "unit": "trees",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 978469,
@@ -1278,6 +1290,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "firereach": {
+     "label": "Residents more than 3 km from a fire station",
+     "value": 37.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "turnout": {
      "label": "Lok Sabha 2024 turnout residents face",
      "value": 55.5,
@@ -1358,7 +1376,7 @@
     },
     "coaching": {
      "label": "Coaching hub blocks with a hazard flag",
-     "value": 55.6,
+     "value": 47.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1376,7 +1394,7 @@
     },
     "hotelfire": {
      "label": "Hotel clusters with two or more fire flags",
-     "value": 16.9,
+     "value": 10.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1580,7 +1598,7 @@
     },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
-     "value": 2927953,
+     "value": 2587160,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -3000,6 +3018,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "firereach": {
+     "label": "Residents more than 3 km from a fire station",
+     "value": 49.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "turnout": {
      "label": "Lok Sabha 2024 turnout residents face",
      "value": 56.5,
@@ -3875,6 +3899,12 @@
      "value": 55.8,
      "unit": "%",
      "higherIs": null
+    },
+    "firereach": {
+     "label": "Residents more than 3 km from a fire station",
+     "value": 48.9,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "turnout": {
      "label": "Lok Sabha 2024 turnout residents face",
@@ -5436,6 +5466,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "firereach": {
+     "label": "Residents more than 3 km from a fire station",
+     "value": 39.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "turnout": {
      "label": "Lok Sabha 2024 turnout residents face",
      "value": 49.9,
@@ -5516,7 +5552,7 @@
     },
     "coaching": {
      "label": "Coaching hub blocks with a hazard flag",
-     "value": 77.8,
+     "value": 29.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5534,7 +5570,7 @@
     },
     "hotelfire": {
      "label": "Hotel clusters with two or more fire flags",
-     "value": 21.9,
+     "value": 5.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5744,7 +5780,7 @@
     },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
-     "value": 3428187,
+     "value": 2514131,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -7956,6 +7992,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "firereach": {
+     "label": "Residents more than 3 km from a fire station",
+     "value": 12.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "turnout": {
      "label": "Lok Sabha 2024 turnout residents face",
      "value": 69,
@@ -8808,6 +8850,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "firereach": {
+     "label": "Residents more than 3 km from a fire station",
+     "value": 56.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "turnout": {
      "label": "Lok Sabha 2024 turnout residents face",
      "value": 54.2,
@@ -9654,6 +9702,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "firereach": {
+     "label": "Residents more than 3 km from a fire station",
+     "value": 6.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "turnout": {
      "label": "Lok Sabha 2024 turnout residents face",
      "value": 54.8,
@@ -9974,7 +10028,7 @@
     },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
-     "value": 922188,
+     "value": 822628,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -10368,6 +10422,12 @@
      "unit": "per 1,000",
      "higherIs": "better"
     },
+    "treecensus": {
+     "label": "Census trees per 100 residents",
+     "value": 67.9,
+     "unit": "trees",
+     "higherIs": "better"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 2150850,
@@ -10530,6 +10590,12 @@
      "unit": "%",
      "higherIs": null
     },
+    "firereach": {
+     "label": "Residents more than 3 km from a fire station",
+     "value": 35.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "turnout": {
      "label": "Lok Sabha 2024 turnout residents face",
      "value": 52.4,
@@ -10610,7 +10676,7 @@
     },
     "coaching": {
      "label": "Coaching hub blocks with a hazard flag",
-     "value": 42.2,
+     "value": 36.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10832,7 +10898,7 @@
     },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
-     "value": 1958076,
+     "value": 1439647,
      "unit": "people",
      "higherIs": "worse"
     },
