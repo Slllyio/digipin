@@ -104,6 +104,8 @@ test.describe('resilience', () => {
     expect(await page.evaluate(() => CrashGuard.count())).toBe(0);
     // Link back: Retry fetches the grid and the row goes.
     await page.unroute('**/data/heights/*_heights_digipin.json*');
+    // The Layers menu is still open from the toggles and sits over the status row.
+    await page.keyboard.press('Escape');
     await row.locator('.ds-action').click();
     await expect(row).toHaveCount(0, { timeout: 120_000 });
     const stats = await page.evaluate(() => DeckBuildings.heightsCacheStats());
