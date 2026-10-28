@@ -1,7 +1,103 @@
 {
-  "generated_at_iso": "2026-10-28T01:34:45Z",
-  "count": 18,
+  "generated_at_iso": "2026-10-28T07:26:01Z",
+  "count": 25,
   "records": [
+    {
+      "id": "us7000ttmh",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-28T07:02:12.084000+00:00",
+      "latitude": -30.9564,
+      "longitude": -65.5684,
+      "depth_km": 186.301,
+      "place": "39 km SSW of Serrezuela, Argentina",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttmh",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000ttmb",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-28T06:12:47.777000+00:00",
+      "latitude": 51.2258,
+      "longitude": 159.5373,
+      "depth_km": 10.0,
+      "place": "205 km SSE of Vilyuchinsk, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttmb",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000ttm2",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-28T04:31:04.089000+00:00",
+      "latitude": -13.7421,
+      "longitude": 165.7007,
+      "depth_km": 10.0,
+      "place": "200 km W of Sola, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttm2",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000ttlt",
+      "magnitude": 5.6,
+      "origin_time_utc": "2026-10-28T02:59:48.387000+00:00",
+      "latitude": -14.0693,
+      "longitude": 165.8001,
+      "depth_km": 10.0,
+      "place": "174 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttlt",
+      "tsunami": 0,
+      "significance": 482
+    },
+    {
+      "id": "us7000ttlm",
+      "magnitude": 6.0,
+      "origin_time_utc": "2026-10-28T02:21:45.806000+00:00",
+      "latitude": -13.9312,
+      "longitude": 165.446,
+      "depth_km": 10.0,
+      "place": "214 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttlm",
+      "tsunami": 0,
+      "significance": 554
+    },
+    {
+      "id": "us7000ttlk",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-10-28T02:17:15.975000+00:00",
+      "latitude": -13.8123,
+      "longitude": 165.4612,
+      "depth_km": 10.0,
+      "place": "220 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttlk",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000ttli",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-28T02:13:55.226000+00:00",
+      "latitude": -13.8902,
+      "longitude": 165.4403,
+      "depth_km": 10.0,
+      "place": "217 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttli",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000ttld",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-10-28T01:39:11.004000+00:00",
+      "latitude": -13.8946,
+      "longitude": 165.389,
+      "depth_km": 10.0,
+      "place": "221 km NW of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttld",
+      "tsunami": 0,
+      "significance": 465
+    },
     {
       "id": "us7000ttlc",
       "magnitude": 5.2,
@@ -12,7 +108,7 @@
       "place": "6 km NW of Balangonan, Philippines",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttlc",
       "tsunami": 0,
-      "significance": 416
+      "significance": 418
     },
     {
       "id": "us7000ttkk",
@@ -205,18 +301,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttfb",
       "tsunami": 0,
       "significance": 518
-    },
-    {
-      "id": "us7000tte4",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-27T02:02:55.847000+00:00",
-      "latitude": -10.6683,
-      "longitude": 161.3189,
-      "depth_km": 35.0,
-      "place": "69 km WSW of Kirakira, Solomon Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tte4",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }

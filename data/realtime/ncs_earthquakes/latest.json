@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-10-28T01:34:48Z",
+  "generated_at_iso": "2026-10-28T07:26:17Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-28 12:37:39|37.311,72.194",
+      "magnitude": 4.6,
+      "origin_time": "2026-10-28 12:37:39",
+      "latitude": 37.311,
+      "longitude": 72.194,
+      "depth_km": 150.0,
+      "region": "Tajikistan",
+      "location": "147km E of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-28 11:01:38|38.440,73.464",
+      "magnitude": 4.4,
+      "origin_time": "2026-10-28 11:01:38",
+      "latitude": 38.44,
+      "longitude": 73.464,
+      "depth_km": 115.0,
+      "region": "Tajikistan",
+      "location": "296km ENE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-28 09:38:33|32.639,95.337",
+      "magnitude": 4.3,
+      "origin_time": "2026-10-28 09:38:33",
+      "latitude": 32.639,
+      "longitude": 95.337,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "500km N of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-28 07:56:06|25.544,91.056",
+      "magnitude": 3.1,
+      "origin_time": "2026-10-28 07:56:06",
+      "latitude": 25.544,
+      "longitude": 91.056,
+      "depth_km": 10.0,
+      "region": "West Khasi Hills, Meghalaya",
+      "location": "74km WNW of Cherrapunjee, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-28 07:29:10|24.443,94.584",
+      "magnitude": 3.5,
+      "origin_time": "2026-10-28 07:29:10",
+      "latitude": 24.443,
+      "longitude": 94.584,
+      "depth_km": 95.0,
+      "region": "Myanmar",
+      "location": "55km S of Ukhrul, Manipur, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-28 04:35:44|26.068,90.417",
       "magnitude": 2.7,
@@ -1595,61 +1650,6 @@
       "depth_km": 8.0,
       "region": "Bhutan",
       "location": "38km SSE of Tawang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-19 00:16:29|26.212,92.142",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-19 00:16:29",
-      "latitude": 26.212,
-      "longitude": 92.142,
-      "depth_km": 8.0,
-      "region": "Morigaon, Assam",
-      "location": "41km E of Guwahati, Assam, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 22:55:26|36.683,77.064",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-18 22:55:26",
-      "latitude": 36.683,
-      "longitude": 77.064,
-      "depth_km": 190.0,
-      "region": "Xinjiang",
-      "location": "251km NNE of Kargil, Laddakh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 21:00:54|27.270,88.463",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-18 21:00:54",
-      "latitude": 27.27,
-      "longitude": 88.463,
-      "depth_km": 7.0,
-      "region": "Gangtok, Sikkim",
-      "location": "10km ESE of Ravangla, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 20:40:06|37.084,71.983",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-18 20:40:06",
-      "latitude": 37.084,
-      "longitude": 71.983,
-      "depth_km": 145.0,
-      "region": "Tajikistan",
-      "location": "127km E of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 20:00:04|0.886,66.690",
-      "magnitude": 4.7,
-      "origin_time": "2026-10-18 20:00:04",
-      "latitude": 0.886,
-      "longitude": 66.69,
-      "depth_km": 10.0,
-      "region": "Indian Ocean",
-      "location": "841km WSW of Male, Maldives",
       "review_status": "Reviewed"
     }
   ]
