@@ -465,7 +465,53 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Storm-drain gaps on wet streets. Where a corporation's drain map shows few storm drains along a block's streets and
+    // the block pools water (the wettest quarter on the waterlogging index, or a reported flood spot), rain has nowhere to
+    // go. Drains are compared with OpenStreetMap street length; judged inside the corporation near its mapped network.
+    const SWD_THIN_PCT = 30, SWD_JUDGE_KM = 1.5, SWD_WET_Q = 0.75;
+
+    function stormgap(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], swd = c['storm_drains.swd_m'];
+        const road = c['osm_roads.road_km_km2'], wl = c['waterlogging.waterlogging_index'], spots = c['flood_reports.flood_spots'];
+        const area = c['storm_drains.in_area'], nalla = c['storm_drains.nalla_m'];
+        if (!pop || !swd || !road || !swd.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(swd, i) + v(nalla, i)), SWD_JUDGE_KM);
+        const inCity = area && area.some(x => x > 0), idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && v(road, i) > 0 && near[i] > 0 && (!inCity || v(area, i) > 0)) idx.push(i);
+        if (idx.length < 5) return null;
+        const cover = i => Math.min(100, 100 * v(swd, i) / (v(road, i) * g.cellKm2 * 1000));
+        const wls = idx.map(i => v(wl, i)).filter(x => x > 0).sort((a, b) => a - b);
+        const wetCut = wls.length ? wls[Math.floor(wls.length * SWD_WET_Q)] : Infinity;
+        const wet = i => v(wl, i) >= wetCut || v(spots, i) > 0;
+        const thin = idx.filter(i => cover(i) < SWD_THIN_PCT), wetThin = thin.filter(wet);
+        const all = _sumOver(pop, idx, () => true), pThin = _sumOver(pop, thin, () => true), pWet = _sumOver(pop, wetThin, () => true);
+        const km = k => _round(Array.from({ length: n }, (_, i) => v(c[`storm_drains.${k}`], i)).reduce((a, b) => a + b, 0) / 1000);
+        const stats = [
+            { label: 'Storm-water drains mapped', value: `${km('swd_m')} km${km('closed_m') > 0 ? ` (${km('closed_m')} km covered)` : ''}${km('nalla_m') > 0 ? `, plus ${km('nalla_m')} km of nalas and major drains` : ''}` },
+            { label: `Residents where drains run along under ${SWD_THIN_PCT}% of the streets`, value: `${_people(pThin)} (${_round(100 * pThin / (all || 1))}%)` },
+            { label: '…of them in blocks that pool water or had reported floods', value: `${_people(pWet)} (${_round(100 * pWet / (all || 1))}% of residents)` },
+        ];
+        const score = Float64Array.from({ length: n }, (_, i) => v(pop, i) * (1 + v(wl, i) / 100) * (1 + Math.min(3, v(spots, i))));
+        spaced(g, wetThin, score).forEach((i, k) => stats.push({ label: `Drain next ${k + 1}: ${g.codes[i]}`,
+            value: `drains along ${_round(cover(i))}% of the streets; waterlogging ${_round(v(wl, i))}/100${v(spots, i) > 0 ? `, ${_round(v(spots, i))} flood spot${v(spots, i) > 1 ? 's' : ''} nearby` : ''}; ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(cover(i));
+        return {
+            columns: { storm_cover_pct: out }, idx, weightKey: 'storm_cover_pct', noHotspots: true,
+            metric: { label: 'Residents on wet streets with few storm drains', value: _round(100 * pWet / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pThin)} residents (${_round(100 * pThin / (all || 1))}%) live where the corporation's map shows storm drains along under ${SWD_THIN_PCT}% of the streets, and ${_people(pWet)} of them are in blocks that pool water or have reported flood spots: the first places to build or desilt drains. Small lane drains are often left off the maps, so check a block on the ground before acting.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'stormgap', equity: true, title: 'Storm-drain gaps on wet streets', icon: '🌧️',
+            question: 'Which waterlogging-prone streets have no storm-water drains?',
+            field: { key: 'storm_cover_pct', label: 'Storm-drain length as a share of street length', unit: '%', higherIs: 'better', ramp: 'blues', domain: [0, 100] },
+            needs: ['storm_drains.swd_m', 'storm_drains.closed_m', 'storm_drains.nalla_m', 'storm_drains.in_area', 'osm_roads.road_km_km2', 'waterlogging.waterlogging_index', 'flood_reports.flood_spots', 'population.population'],
+            method: `Storm-water drain maps on data.opencity.in (public domain): GCC's 2023 drain map for Chennai (about 10,300 drains, 2,225 km, mostly covered), the storm drains and nalas in PMC's drainage map for Pune (1,122 km and 404 km). BBMP's maps hold only Bengaluru's major drains, too few to judge streets by. Each drain is cut into 25 m pieces and summed per block and compared with the block's OpenStreetMap street length (capped at 100%). Lived-in blocks inside the corporation's wards and within ${SWD_JUDGE_KM} km of a mapped drain are judged. A block is wet when it is in the wettest quarter of judged blocks on the waterlogging index (radar-seen standing water, hollows, wetness, height above drainage, sealing) or has a reported flood spot within 300 m. Picks are wet blocks with drains along under ${SWD_THIN_PCT}% of the streets, ${SPACING_KM} km apart, ranked by residents, waterlogging and flood spots.`,
+            refs: 'CPHEEO Manual on Storm Water Drainage Systems (2019); GCC, PMC and BBMP drain maps via OpenCity; waterlogging and flood_reports datasets' },
         { id: 'birdlife', equity: false, title: 'Birdlife', icon: '🐦',
             question: 'Where are birds richest, and which neighbourhoods has nobody surveyed?',
             field: { key: 'bird_rich', label: 'Bird species expected in 200 records (~1 km block)', unit: 'species', higherIs: 'better', ramp: 'greens', domain: [20, 100] },
@@ -534,6 +580,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap });
     return { ENTRIES };
 })();

@@ -2682,6 +2682,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "stormgap": {
+     "label": "Residents on wet streets with few storm drains",
+     "value": 37.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "birdlife": {
      "label": "Median bird species expected in 200 records",
      "value": 44.1,
@@ -10371,6 +10377,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "stormgap": {
+     "label": "Residents on wet streets with few storm drains",
+     "value": 19,
      "unit": "%",
      "higherIs": "worse"
     },

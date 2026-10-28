@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T17:31:56Z",
+  "generated": "2026-10-28T17:37:15Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -32498,6 +32498,96 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "storm_drains",
+      "title": "Storm-water drains (corporation maps)",
+      "description": "Storm-water drain length per block from the corporations' maps on data.opencity.in: GCC's 2023 drain map for Chennai (with covered drains) and the storm drains and nalas in PMC's drainage map for Pune.",
+      "source": "pipeline/realestate/stormdrains.py (OpenCity GCC and PMC drain maps)",
+      "license": "Public domain (GCC and PMC via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "swd_m",
+          "label": "Storm-water drain length",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            0.010842523013785759,
+            2647.187735675546
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "closed_m",
+          "label": "Covered storm-water drain length (GCC)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "nalla_m",
+          "label": "Nala and major drain length",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            6.791201857228455,
+            821.3753900501222
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "in_area",
+          "label": "Inside the municipal corporation's wards",
+          "type": "number",
+          "agg": "max",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "swd_m",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "chennai",
+          "cells": 6755,
+          "bbox": {
+            "west": 80.131103515625,
+            "south": 12.860107421875,
+            "east": 80.328857421875,
+            "north": 13.2314453125
+          },
+          "json": "storm_drains/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 7741,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.42138671875,
+            "east": 73.991943359375,
+            "north": 18.621337890625
+          },
+          "json": "storm_drains/pune.json",
+          "parquet": null
         }
       ]
     },
