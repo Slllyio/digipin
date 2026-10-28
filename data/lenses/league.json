@@ -888,6 +888,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "landchange": {
+     "label": "Open land converted 2011-2017",
+     "value": 79.4,
+     "unit": "km²",
+     "higherIs": "worse"
+    },
     "vacant2017": {
      "label": "Vacant land and unbuilt layouts in 2017",
      "value": 94.5,

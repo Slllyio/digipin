@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T19:19:03Z",
+  "generated": "2026-10-28T19:31:18Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -15758,6 +15758,160 @@
           },
           "json": "landuse/pune.json.gz",
           "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "landuse_2011",
+      "title": "Official land use 2011 (KSRSAC, Bengaluru)",
+      "description": "Share of each block in residential, commercial, industrial, vacant, civic, green, farm, water and road use in 2011, from the Karnataka State Remote Sensing Applications Centre's urban land use map of the BBMP area on data.opencity.in.",
+      "source": "pipeline/realestate/landuse2017.py (OpenCity KSRSAC Bengaluru urban land use 2011 via DuckDB spatial)",
+      "license": "Public domain (KSRSAC via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "residential_pct",
+          "label": "Residential (2011 land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "commercial_pct",
+          "label": "Commercial (2011 land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "industrial_pct",
+          "label": "Industrial (2011 land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "vacant_pct",
+          "label": "Vacant land and unbuilt layouts (2011 land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "civic_pct",
+          "label": "Schools, colleges, worship and utilities (2011 land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "green_pct",
+          "label": "Parks, playgrounds, plantations and scrub (2011 land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "farm_pct",
+          "label": "Crop and fallow land (2011 land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "water_pct",
+          "label": "Lakes, ponds, streams and drains (2011 land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "road_pct",
+          "label": "Roads and rail (2011 land use)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "vacant_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 12664,
+          "bbox": {
+            "west": 77.459228515625,
+            "south": 12.833740234375,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "landuse_2011/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
         }
       ]
     },

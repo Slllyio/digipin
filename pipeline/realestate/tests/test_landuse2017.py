@@ -22,3 +22,12 @@ def test_polygons_and_sample_points():
     assert cls == "vacant" and g["coordinates"][0][0][0] == g["coordinates"][0][0][-1]
     pts = list(lu.sample_points(["4P3JK37"], grid=2))
     assert len(pts) == 4 and all(p[0] == "4P3JK37" for p in pts)
+
+
+def test_2011_map_reads_numeric_description_class():
+    kml = ('<Placemark><description>18</description><MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>'
+           '77.5,12.9 77.51,12.9 77.51,12.91 77.5,12.9</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry></Placemark>'
+           '<Placemark><description>52</description><Polygon><outerBoundaryIs><LinearRing><coordinates>'
+           '77.5,12.9 77.51,12.9 77.51,12.91 77.5,12.9</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>')
+    got = list(lu.polygons(kml, 2011))
+    assert [c for c, _ in got] == ["vacant"]   # 18 = layouts; 52 = others, left out

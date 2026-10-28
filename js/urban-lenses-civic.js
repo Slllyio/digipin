@@ -923,7 +923,50 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    function landchange(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n;
+        const a = k => c[`landuse_2011.${k}_pct`], b = k => c[`landuse_2017.${k}_pct`];
+        if (!a('residential') || !b('residential') || !a('residential').some(x => x > 0)) return null;
+        const v = (arr, i) => (arr && _fin(arr[i]) ? arr[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if ((_fin(a('residential')[i]) || _fin(a('vacant')?.[i])) && (_fin(b('residential')[i]) || _fin(b('vacant')?.[i]))) idx.push(i);
+        if (idx.length < 5) return null;
+        const open = (f, i) => v(f('vacant'), i) + v(f('farm'), i);
+        const built = (f, i) => ['residential', 'commercial', 'industrial', 'civic', 'road'].reduce((t, k) => t + v(f(k), i), 0);
+        const conv = Float64Array.from({ length: n }, (_, i) => Math.max(open(a, i) - open(b, i), 0));
+        const km2 = fn => idx.reduce((t, i) => t + fn(i) / 100 * g.cellKm2, 0);
+        const open11 = km2(i => open(a, i)), open17 = km2(i => open(b, i)), converted = km2(i => conv[i]);
+        const gain = k => km2(i => Math.max(v(b(k), i) - v(a(k), i), 0));
+        const lost = k => km2(i => Math.max(v(a(k), i) - v(b(k), i), 0));
+        const builtGain = km2(i => Math.max(built(b, i) - built(a, i), 0));
+        const stats = [
+            { label: 'Vacant and farm land, 2011 to 2017', value: `${_round(open11, 1)} km² to ${_round(open17, 1)} km²` },
+            { label: 'Open land converted in blocks that lost it', value: `${_round(converted, 1)} km²` },
+            { label: 'Gross gain in homes; shops and offices; industry', value: `${_round(gain('residential'), 1)}; ${_round(gain('commercial'), 1)}; ${_round(gain('industrial'), 1)} km²` },
+            { label: 'Built-up ground added (all built classes and roads)', value: `${_round(builtGain, 1)} km²` },
+            { label: 'Green and water ground lost (gross)', value: `${_round(lost('green'), 1)} km² green; ${_round(lost('water'), 1)} km² water` },
+        ];
+        spaced(g, idx, conv, 5).forEach((i, k) => stats.push({ label: `Most converted ${k + 1}: ${g.codes[i]}`, value: `${_round(open(a, i))}% vacant or farm in 2011, ${_round(open(b, i))}% in 2017` }));
+        const wl = Float64Array.from({ length: n }, (_, i) => Math.max(v(a('water'), i) - v(b('water'), i), 0));
+        spaced(g, idx.filter(i => wl[i] >= 20), wl, 3).forEach((i, k) => stats.push({ label: `Water lost ${k + 1}: ${g.codes[i]}`, value: `${_round(v(a('water'), i))}% water in 2011, ${_round(v(b('water'), i))}% in 2017 (check: the two maps draw lakes differently)` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(conv[i]);
+        return {
+            columns: { converted_pct: out }, idx, weightKey: 'converted_pct', noHotspots: true,
+            metric: { label: 'Open land converted 2011-2017', value: _round(converted, 1), unit: 'km²', higherIs: 'worse' },
+            headline: `Between KSRSAC's 2011 and 2017 maps, vacant and farm land in the BBMP area went from ${_round(open11, 1)} km² to ${_round(open17, 1)} km²: ${_round(converted, 1)} km² was converted in the blocks that lost it, mostly to homes (${_round(gain('residential'), 1)} km² gross gain) with ${_round(gain('commercial') + gain('industrial'), 1)} km² to shops, offices and industry.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'landchange', equity: false, title: 'Land converted 2011-2017', icon: '🔄',
+            question: 'Which vacant and farm land turned into homes, shops or industry between 2011 and 2017?',
+            field: { key: 'converted_pct', label: 'Share of the block that went from vacant or farm (2011) to another use (2017)', unit: 'points', higherIs: 'worse', ramp: 'reds', domain: [0, 60] },
+            needs: ['landuse_2011.residential_pct', 'landuse_2011.commercial_pct', 'landuse_2011.industrial_pct', 'landuse_2011.vacant_pct', 'landuse_2011.farm_pct', 'landuse_2011.green_pct', 'landuse_2011.water_pct', 'landuse_2011.civic_pct', 'landuse_2011.road_pct',
+                'landuse_2017.residential_pct', 'landuse_2017.commercial_pct', 'landuse_2017.industrial_pct', 'landuse_2017.vacant_pct', 'landuse_2017.farm_pct', 'landuse_2017.green_pct', 'landuse_2017.water_pct', 'landuse_2017.civic_pct', 'landuse_2017.road_pct'],
+            method: 'KSRSAC\'s 2011 and 2017 urban land use maps of the BBMP area on data.opencity.in (public domain), each sampled per block on a 6 x 6 grid of points into the same nine groups (the 2011 map\'s numeric classes follow its published index). Converted land is the fall in vacant plus farm share from 2011 to 2017, block by block; gains and losses per class are gross (summed over blocks that gained or lost). The 2011 map rarely draws roads apart from the land beside them, so the lens compares built classes and roads together rather than residential alone, and the two maps outline lakes differently, so water losses are flagged for checking.',
+            refs: 'KSRSAC Bengaluru urban land use and land cover 2011 and 2017 via OpenCity; NRSC LULC classification' },
         { id: 'vacant2017', equity: false, title: 'Vacant land in 2017, and since', icon: '🏗️',
             question: 'Where was land vacant in the official 2017 map, and which of it is still open?',
             field: { key: 'vacant_2017_pct', label: 'Vacant land and unbuilt layouts in 2017 (KSRSAC)', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [0, 80] },
@@ -1064,6 +1107,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017 });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange });
     return { ENTRIES };
 })();
