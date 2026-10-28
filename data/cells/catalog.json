@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T19:31:18Z",
+  "generated": "2026-10-28T19:37:44Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -33940,6 +33940,157 @@
           },
           "json": "scores/pune.json",
           "parquet": "scores/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "service_areas",
+      "title": "Electricity and water service areas",
+      "description": "The electricity section and water field unit serving each lived-in block (BESCOM and BWSSB for Bengaluru, TNEB and CMWSSB for Chennai) and how many of each, and of police stations, the block's ward deals with, from the utilities' boundary maps on data.opencity.in.",
+      "source": "pipeline/realestate/serviceareas.py (OpenCity BESCOM, BWSSB, TNEB and CMWSSB boundary maps via DuckDB spatial)",
+      "license": "Public domain (BESCOM, BWSSB, TNEB and CMWSSB via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "power_unit",
+          "label": "Electricity section (number)",
+          "type": "number",
+          "agg": "max",
+          "domain": [
+            20,
+            150439
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "power_name",
+          "label": "Electricity section office",
+          "type": "category",
+          "agg": "mode"
+        },
+        {
+          "key": "water_unit",
+          "label": "Water utility field unit (number)",
+          "type": "number",
+          "agg": "max",
+          "domain": [
+            1,
+            199
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "water_name",
+          "label": "Water utility service station",
+          "type": "category",
+          "agg": "mode"
+        },
+        {
+          "key": "ward_power_units",
+          "label": "Electricity sections the ward deals with",
+          "type": "number",
+          "agg": "max",
+          "unit": "units",
+          "domain": [
+            1,
+            10
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "ward_water_units",
+          "label": "Water field units the ward deals with",
+          "type": "number",
+          "agg": "max",
+          "unit": "units",
+          "domain": [
+            1,
+            8
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "ward_police_units",
+          "label": "Police stations the ward deals with",
+          "type": "number",
+          "agg": "max",
+          "unit": "units",
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "ward_id",
+          "label": "Ward number (within the city, by name)",
+          "type": "number",
+          "agg": "max",
+          "domain": [
+            1,
+            369
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "ward_power_units",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 15998,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "service_areas/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "chennai",
+          "cells": 8890,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "service_areas/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
         }
       ]
     },

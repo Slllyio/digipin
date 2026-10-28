@@ -959,7 +959,49 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    function wardfit(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pw = c['service_areas.ward_power_units'], wt = c['service_areas.ward_water_units'];
+        const po = c['service_areas.ward_police_units'], pop = c['population.population'], wid = c['service_areas.ward_id'];
+        if (!pw || !wt || !pw.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pw, i) > 0 || v(wt, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const hasPolice = po && po.some(x => x > 0);
+        const total = Float64Array.from({ length: n }, (_, i) => v(pw, i) + v(wt, i) + (hasPolice ? v(po, i) : 0));
+        const wmed = a => {
+            const order = idx.slice().sort((x, y) => v(a, x) - v(a, y)), all = order.reduce((t, i) => t + Math.max(v(pop, i), 1e-9), 0);
+            let acc = 0;
+            for (const i of order) { acc += Math.max(v(pop, i), 1e-9); if (acc >= all / 2) return v(a, i); }
+            return 0;
+        };
+        const share = (a, k) => _round(100 * _sumOver(pop, idx, i => v(a, i) >= k) / (_sumOver(pop, idx, () => true) || 1));
+        const stats = [
+            { label: 'Electricity sections a ward deals with (median resident; share of residents in wards with 4 or more)', value: `${wmed(pw)}; ${share(pw, 4)}%` },
+            { label: 'Water field units a ward deals with (median; 4 or more)', value: `${wmed(wt)}; ${share(wt, 4)}%` },
+        ];
+        if (hasPolice) stats.push({ label: 'Police stations a ward deals with (median; 4 or more)', value: `${wmed(po)}; ${share(po, 4)}%` });
+        const firstPerWard = new Map();
+        for (const i of idx) { const k = wid ? v(wid, i) : i; if (!firstPerWard.has(k) || v(pop, i) > v(pop, firstPerWard.get(k))) firstPerWard.set(k, i); }
+        [...firstPerWard.values()].sort((a, b) => total[b] - total[a]).slice(0, 5).forEach((i, k) => stats.push({ label: `Most split ward ${k + 1}, at ${g.codes[i]}`, value: `${v(pw, i)} electricity sections, ${v(wt, i)} water units${hasPolice ? `, ${v(po, i)} police stations` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = total[i];
+        const agencies = hasPolice ? 'electricity, water and police' : 'electricity and water';
+        return {
+            columns: { ward_offices: out }, idx, weightKey: 'ward_offices', noHotspots: true,
+            metric: { label: `${agencies[0].toUpperCase()}${agencies.slice(1)} offices a ward deals with (median resident)`, value: wmed(total), unit: 'offices', higherIs: 'worse' },
+            headline: `Ward${hasPolice ? ', utility and police' : ' and utility'} boundaries do not line up. The median resident's ward is split across ${wmed(pw)} electricity sections and ${wmed(wt)} water field units${hasPolice ? ` and ${wmed(po)} police stations` : ''}; counted together, the median ward deals with ${wmed(total)} ${agencies} offices, and the most split ${Math.max(...idx.map(i => total[i]))}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'wardfit', equity: false, title: 'Ward and utility boundaries', icon: '🧩',
+            question: 'Which electricity and water offices serve this block, and how many does each ward have to deal with?',
+            field: { key: 'ward_offices', label: 'Electricity, water and police units the block\'s ward is split across', unit: 'offices', higherIs: 'worse', ramp: 'reds', domain: [2, 15] },
+            needs: ['service_areas.ward_power_units', 'service_areas.ward_water_units', 'service_areas.ward_police_units', 'service_areas.ward_id', 'population.population'],
+            method: 'Utility boundary maps on data.opencity.in (public domain): BESCOM section offices (237) and BWSSB service stations (143) for Bengaluru, TNEB sections and CMWSSB depots for Chennai. Each lived-in block takes the section and field unit holding its centre (DuckDB spatial). For each ward (wards layer) the pipeline counts the distinct sections, field units and police stations (police layer, where mapped) covering its lived-in blocks; when boundaries line up a ward deals with one or two of each. Medians are over residents. The block\'s own section office and service station are in the service areas layer.',
+            refs: 'Janaagraha Annual Survey of India\'s City-Systems (coterminous boundaries); 74th Constitutional Amendment; BESCOM, BWSSB, TNEB and CMWSSB via OpenCity' },
         { id: 'landchange', equity: false, title: 'Land converted 2011-2017', icon: '🔄',
             question: 'Which vacant and farm land turned into homes, shops or industry between 2011 and 2017?',
             field: { key: 'converted_pct', label: 'Share of the block that went from vacant or farm (2011) to another use (2017)', unit: 'points', higherIs: 'worse', ramp: 'reds', domain: [0, 60] },
@@ -1107,6 +1149,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit });
     return { ENTRIES };
 })();

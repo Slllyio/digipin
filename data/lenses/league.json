@@ -888,6 +888,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "wardfit": {
+     "label": "Electricity, water and police offices a ward deals with (median resident)",
+     "value": 7,
+     "unit": "offices",
+     "higherIs": "worse"
+    },
     "landchange": {
      "label": "Open land converted 2011-2017",
      "value": 79.4,
@@ -2782,6 +2788,12 @@
      "label": "Residents where rain pools",
      "value": 36,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "wardfit": {
+     "label": "Electricity and water offices a ward deals with (median resident)",
+     "value": 7,
+     "unit": "offices",
      "higherIs": "worse"
     },
     "watershedpave": {
