@@ -3728,9 +3728,9 @@
     {
       "id": "bus_service",
       "title": "Bus service (timetable)",
-      "description": "Weekday bus service from the city's open GTFS timetable: stops, routes, departures and the gap between buses at each cell's busiest stop in the 07:00\u201310:00 peak. Only cities with an open feed (bengaluru: BMTC (Namma BMTC app, community GTFS by Vonter); hyderabad: TGSRTC (Telangana open data GTFS, February 2026, via OpenCity)).",
-      "source": "pipeline/traffic/gtfs_cells.py over bengaluru: BMTC (Namma BMTC app, community GTFS by Vonter); hyderabad: TGSRTC (Telangana open data GTFS, February 2026, via OpenCity)",
-      "license": "ODbL 1.0 (bengaluru); Public domain (OpenCity) (hyderabad)",
+      "description": "Weekday bus service from the city's open GTFS timetable: stops, routes, departures and the gap between buses at each cell's busiest stop in the 07:00\u201310:00 peak. Only cities with an open feed (bengaluru: BMTC (Namma BMTC app, community GTFS by Vonter); hyderabad: TGSRTC (Telangana open data GTFS, February 2026, via OpenCity); chennai: MTC (MTC app timetables, community GTFS by UngalSoththu, April 2026)).",
+      "source": "pipeline/traffic/gtfs_cells.py over bengaluru: BMTC (Namma BMTC app, community GTFS by Vonter); hyderabad: TGSRTC (Telangana open data GTFS, February 2026, via OpenCity); chennai: MTC (MTC app timetables, community GTFS by UngalSoththu, April 2026)",
+      "license": "ODbL 1.0 (bengaluru); Public domain (OpenCity) (hyderabad); ODbL 1.0 / PDDL (chennai)",
       "group": "Traffic & mobility",
       "level": 7,
       "approxCellM": 244,
@@ -3817,6 +3817,18 @@
             "north": 17.773193359375
           },
           "json": "bus_service/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 3027,
+          "bbox": {
+            "west": 79.801513671875,
+            "south": 12.614013671875,
+            "east": 80.337646484375,
+            "north": 13.49072265625
+          },
+          "json": "bus_service/chennai.json",
           "parquet": null
         },
         {

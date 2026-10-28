@@ -2978,7 +2978,7 @@
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 2.5,
+     "value": 1.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3032,7 +3032,7 @@
     },
     "feeder": {
      "label": "Feeder-range residents with no bus stop nearby",
-     "value": 28.3,
+     "value": 12.8,
      "unit": "%",
      "higherIs": "worse"
     },

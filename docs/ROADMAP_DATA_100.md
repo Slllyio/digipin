@@ -277,6 +277,7 @@ Each item gives four things:
 216. ✅ Pune public clinics: PMC's list of its dawakhanas, health centres (32) and maternity homes (16) with coordinates added to `public_care`; `freeclinic` now covers Pune (28.6 lakh residents, 64%, more than a 1 km walk from a listed PMC centre) | data.opencity.in pune-healthcare-hospitals-and-clinics (public domain) | `freeclinic` lens
 217. ✅ Homes versus workplaces for all 13 cities: JRC GHS-BUILT-C 2018 (10 m) per block into `built_class` (non-residential share of built-up ground, buildings over 15 m, roads, open green), checked against Overture businesses; mostly residential pockets hold about a quarter of residents in Bengaluru and Delhi | Earth Engine JRC/GHSL/P2023A/GHS_BUILT_C (CC BY 4.0) | `homeswork` lens
 218. ✅ Air quality monitor gaps: TSPCB (Hyderabad) and KSPCB (Bengaluru) air and noise monitoring stations per block into `air_monitors`; half of Bengaluru's residents and 84% of Hyderabad's live more than 2 km from any station; new-station picks weighted by satellite PM2.5 | data.opencity.in (public domain) | `airmonitorgap` lens
+219. ✅ Chennai bus frequency: MTC timetables (community GTFS from the MTC app, UngalSoththu ChennaiGTFS, ODbL/PDDL, April 2026; 5,580 stops, 47,047 weekday trips) binned into `bus_service`; 1,597 Chennai blocks have a bus every 10 minutes or better at peak, and busgap now tests Chennai corridors on real frequency | github.com/ungalsoththu/ChennaiGTFS | `busgap` and `transit` lenses
 
 ## Parked for the keys round
 

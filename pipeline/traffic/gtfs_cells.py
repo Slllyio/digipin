@@ -17,6 +17,8 @@ Feeds (ODbL or similar; downloaded at bake time, not committed):
                 (github.com/Vonter/bmtc-gtfs, ODbL)
     hyderabad   TGSRTC city buses, Telangana open data GTFS (February 2026)
                 via data.opencity.in (public domain)
+    chennai     MTC, community GTFS from the MTC app timetables
+                (github.com/ungalsoththu/ChennaiGTFS, ODbL/PDDL, April 2026)
     delhi       DTC/cluster buses, Delhi Open Transit Data (needs a free
                 registered key; skipped until the URL and key are set, or
                 pass a downloaded feed with --gtfs)
@@ -47,6 +49,8 @@ FEEDS = {
                   "name": "BMTC (Namma BMTC app, community GTFS by Vonter)", "license": "ODbL 1.0"},
     "hyderabad": {"url": "https://data.opencity.in/dataset/88e2d145-7ec6-4666-88dd-6cf18b18312e/resource/1b0d18bb-b2fb-4a79-8ed0-1e071da5790c/download/telangana_opendata_gtfs_tgsrtc_08_february_2026.zip",
                   "name": "TGSRTC (Telangana open data GTFS, February 2026, via OpenCity)", "license": "Public domain (OpenCity)"},
+    "chennai": {"url": "https://raw.githubusercontent.com/ungalsoththu/ChennaiGTFS/main/data/mtc-gtfs.zip",
+                "name": "MTC (MTC app timetables, community GTFS by UngalSoththu, April 2026)", "license": "ODbL 1.0 / PDDL"},
     # Static GTFS from otd.delhi.gov.in needs a registered key; fill the
     # download URL in once one is issued (until then the region is skipped).
     "delhi": {"url": None, "key_env": "OTD_DELHI_KEY",
