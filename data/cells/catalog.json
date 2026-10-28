@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T19:51:55Z",
+  "generated": "2026-10-28T20:02:40Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -3726,6 +3726,110 @@
             "north": 18.8564453125
           },
           "json": "bus_stops_official/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "cadastre",
+      "title": "Survey parcels and public land (cadastral maps)",
+      "description": "Survey parcels per block, their median size and the share of the block in government or revenue kharab land, from the GHMC town survey map (Hyderabad), the BBMP-area revenue survey map (Bengaluru, KGIS) and the PMC revenue map (Pune) on data.opencity.in.",
+      "source": "pipeline/realestate/cadastre.py (OpenCity Hyderabad, Bengaluru and Pune cadastral maps via DuckDB spatial)",
+      "license": "Public domain (GHMC, Government of Karnataka and PMC via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "parcels",
+          "label": "Survey parcels (centre in the block)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "parcels",
+          "domain": [
+            1,
+            443
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "parcel_m2",
+          "label": "Median survey parcel size",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m2",
+          "domain": [
+            100,
+            20000
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "public_pct",
+          "label": "Government or kharab (public) land",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens"
+        }
+      ],
+      "default": {
+        "field": "parcel_m2",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 10237,
+          "bbox": {
+            "west": 77.459228515625,
+            "south": 12.833740234375,
+            "east": 77.784423828125,
+            "north": 13.1435546875
+          },
+          "json": "cadastre/bengaluru/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "hyderabad",
+          "cells": 2293,
+          "bbox": {
+            "west": 78.37548828125,
+            "south": 17.307373046875,
+            "east": 78.544677734375,
+            "north": 17.456787109375
+          },
+          "json": "cadastre/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 5507,
+          "bbox": {
+            "west": 73.73046875,
+            "south": 18.392822265625,
+            "east": 74.018310546875,
+            "north": 18.621337890625
+          },
+          "json": "cadastre/pune.json",
           "parquet": null
         }
       ]

@@ -900,6 +900,12 @@
      "unit": "offices",
      "higherIs": "worse"
     },
+    "landgrain": {
+     "label": "Median survey parcel",
+     "value": 18300,
+     "unit": "m²",
+     "higherIs": "better"
+    },
     "landchange": {
      "label": "Open land converted 2011-2017",
      "value": 79.4,
@@ -5362,6 +5368,12 @@
      "label": "Residents within 800 m of a metro station",
      "value": 19.1,
      "unit": "%",
+     "higherIs": "better"
+    },
+    "landgrain": {
+     "label": "Median survey parcel",
+     "value": 507,
+     "unit": "m²",
      "higherIs": "better"
     },
     "watershedpave": {
@@ -10649,6 +10661,12 @@
      "value": 23.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "landgrain": {
+     "label": "Median survey parcel",
+     "value": 40161,
+     "unit": "m²",
+     "higherIs": "better"
     },
     "watershedpave": {
      "label": "Micro-watersheds more than 25% built over",

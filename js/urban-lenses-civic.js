@@ -995,6 +995,41 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    const GRAIN_BIG_M2 = 10000, GRAIN_MAX_M2 = 200000, GRAIN_OPEN_PCT = 30;
+
+    function landgrain(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, size = c['cadastre.parcel_m2'], cnt = c['cadastre.parcels'], pub = c['cadastre.public_pct'];
+        const built = c['built_up.built_pct'];
+        if (!size || !size.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(size, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const perHa = Float64Array.from({ length: n }, (_, i) => (v(size, i) > 0 ? 10000 / size[i] : 0));
+        const order = idx.slice().sort((a, b) => size[a] - size[b]), med = size[order[Math.floor(order.length / 2)]];
+        const hasPub = pub && idx.some(i => v(pub, i) > 0);
+        const pubKm2 = hasPub ? idx.reduce((t, i) => t + v(pub, i) / 100 * g.cellKm2, 0) : 0, area = idx.length * g.cellKm2;
+        const open = idx.filter(i => size[i] >= GRAIN_BIG_M2 && size[i] <= GRAIN_MAX_M2 && v(pub, i) < 20 && (!built || v(built, i) < GRAIN_OPEN_PCT));
+        const fine = idx.filter(i => perHa[i] >= 10).length;
+        const stats = [
+            { label: 'Survey parcels mapped', value: `${Math.round(idx.reduce((t, i) => t + v(cnt, i), 0)).toLocaleString('en-IN')} in ${idx.length} blocks` },
+            { label: 'Median block\'s typical parcel; parcels to assemble a hectare', value: `${Math.round(med).toLocaleString('en-IN')} m²; ${_round(10000 / med, 1)}` },
+            { label: 'Blocks where a hectare spans 10 or more parcels', value: `${fine} (${_round(100 * fine / idx.length)}%)` },
+            ...(hasPub ? [{ label: 'Government or kharab (public) land', value: `${_round(pubKm2, 1)} km² (${_round(100 * pubKm2 / area)}% of mapped ground)` }] : []),
+            { label: `Mostly open, non-public blocks (under ${GRAIN_OPEN_PCT}% built) on parcels of 1 to 20 ha`, value: `${open.length}` },
+        ];
+        spaced(g, open, Float64Array.from({ length: n }, (_, i) => Math.min(v(size, i), 50000) * (1 - v(built, i) / 100)), 4).forEach((i, k) => stats.push({ label: `Easy assembly ${k + 1}: ${g.codes[i]}`, value: `median parcel ${_round(size[i] / 10000, 1)} ha; ${_round(v(built, i))}% built` }));
+        if (hasPub) spaced(g, idx.filter(i => v(pub, i) >= 50 && (!built || v(built, i) < 50)), Float64Array.from({ length: n }, (_, i) => v(pub, i) * (1 - v(built, i) / 100)), 3).forEach((i, k) => stats.push({ label: `Public land ${k + 1}: ${g.codes[i]}`, value: `${_round(v(pub, i))}% government or kharab land; ${_round(v(built, i))}% built` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(perHa[i], 1);
+        return {
+            columns: { parcels_per_ha: out }, idx, weightKey: 'parcels_per_ha', noHotspots: true,
+            metric: { label: 'Median survey parcel', value: Math.round(med), unit: 'm²', higherIs: 'better' },
+            headline: `In the median block the cadastral map's typical parcel is ${Math.round(med).toLocaleString('en-IN')} m², so ${med >= 10000 ? 'a one-hectare site can often sit on a single survey number' : `a one-hectare site means dealing with about ${_round(10000 / med, 1)} parcels and their owners`}${fine ? `; in ${fine} blocks it means 10 or more` : ''}.${hasPub ? ` ${_round(pubKm2, 1)} km² (${_round(100 * pubKm2 / area)}%) is government or kharab land.` : ''} ${open.length} mostly open blocks outside public land sit on parcels of 1 to 20 hectares, the easiest land to assemble.`,
+            stats,
+        };
+    }
+
     const METRO_WALK_KM = 0.8;
 
     function metrowait(fr) {
@@ -1042,6 +1077,12 @@ const UrbanLensesCivic = (() => {
             needs: ['service_areas.ward_power_units', 'service_areas.ward_water_units', 'service_areas.ward_police_units', 'service_areas.ward_id', 'population.population'],
             method: 'Utility boundary maps on data.opencity.in (public domain): BESCOM section offices (237) and BWSSB service stations (143) for Bengaluru, TNEB sections and CMWSSB depots for Chennai. Each lived-in block takes the section and field unit holding its centre (DuckDB spatial). For each ward (wards layer) the pipeline counts the distinct sections, field units and police stations (police layer, where mapped) covering its lived-in blocks; when boundaries line up a ward deals with one or two of each. Medians are over residents. The block\'s own section office and service station are in the service areas layer.',
             refs: 'Janaagraha Annual Survey of India\'s City-Systems (coterminous boundaries); 74th Constitutional Amendment; BESCOM, BWSSB, TNEB and CMWSSB via OpenCity' },
+        { id: 'landgrain', equity: false, title: 'Land parcel size and public land', icon: '📐',
+            question: 'How finely is land split into survey parcels here, and where is assembly easiest or the land public?',
+            field: { key: 'parcels_per_ha', label: 'Survey parcels per hectare (from the block\'s median parcel)', unit: 'parcels', higherIs: 'worse', ramp: 'reds', domain: [0, 20] },
+            needs: ['cadastre.parcel_m2', 'cadastre.parcels', 'cadastre.public_pct', 'built_up.built_pct'],
+            method: `Official cadastral maps on data.opencity.in (public domain): GHMC's town survey map for Hyderabad (about 147,000 parcels, each marked government or private), the KGIS revenue survey map of the BBMP area for Bengaluru (about 31,000 survey numbers plus stream, tank, road, canal and rail kharab strips) and PMC's revenue map for Pune (about 29,000 gut numbers). Each parcel's area is measured from its outline and it is counted in the block holding its centre; a block's value is its median parcel, and the city figure is the median over blocks. Public land is the block's share in parcels marked government, department, graveyard or GHMC (Hyderabad) or in kharab strips (Bengaluru), from a 6 x 6 point sample. Easy-assembly picks are blocks under ${GRAIN_OPEN_PCT}% built and under 20% public land whose median parcel is 1 to 20 hectares (larger single parcels are usually defence, palace or institutional estates), ${SPACING_KM} km apart; open land may still be zoned hill-top, green belt or lake buffer, so check the master plan. Revenue survey numbers are often sub-divided (hissa) on the ground, so the map's parcels are a floor on the owners a project meets.`,
+            refs: 'GHMC town survey, KGIS (Karnataka) and PMC revenue maps via OpenCity; Bhoomi and Dharani land records; RFCTLARR Act 2013 (land assembly)' },
         { id: 'landchange', equity: false, title: 'Land converted 2011-2017', icon: '🔄',
             question: 'Which vacant and farm land turned into homes, shops or industry between 2011 and 2017?',
             field: { key: 'converted_pct', label: 'Share of the block that went from vacant or farm (2011) to another use (2017)', unit: 'points', higherIs: 'worse', ramp: 'reds', domain: [0, 60] },
@@ -1189,6 +1230,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit, metrowait });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit, metrowait, landgrain });
     return { ENTRIES };
 })();

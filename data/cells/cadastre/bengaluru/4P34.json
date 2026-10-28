@@ -1,0 +1,1 @@
+{"version":1,"dataset":"cadastre","region":"bengaluru","level":7,"fields":["parcels","parcel_m2","public_pct"],"cells":["4P34FFC","4P34FFF"],"columns":{"parcels":[1,1],"parcel_m2":[129993.0,101832.0],"public_pct":[0.0,2.8]}}
