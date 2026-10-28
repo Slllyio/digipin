@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T18:59:14Z",
+  "generated": "2026-10-28T19:04:46Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -4818,6 +4818,128 @@
           },
           "json": "co_monthly/pune.json.gz",
           "parquet": "co_monthly/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "colleges",
+      "title": "Colleges and universities (Karnataka 2023 maps)",
+      "description": "Pre-university, degree, engineering and polytechnic colleges and universities per block from the Karnataka higher-education maps for Bengaluru Urban (2023, KGIS) on data.opencity.in.",
+      "source": "pipeline/realestate/colleges.py (OpenCity Karnataka college maps)",
+      "license": "Public domain (Government of Karnataka via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "pu",
+          "label": "Pre-university colleges",
+          "type": "number",
+          "agg": "sum",
+          "unit": "colleges",
+          "domain": [
+            1,
+            4
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "degree",
+          "label": "Degree colleges",
+          "type": "number",
+          "agg": "sum",
+          "unit": "colleges",
+          "domain": [
+            1,
+            4
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "govt_degree",
+          "label": "Government degree colleges",
+          "type": "number",
+          "agg": "sum",
+          "unit": "colleges",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "engineering",
+          "label": "Engineering colleges",
+          "type": "number",
+          "agg": "sum",
+          "unit": "colleges",
+          "domain": [
+            1,
+            3
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "polytechnic",
+          "label": "Polytechnics",
+          "type": "number",
+          "agg": "sum",
+          "unit": "colleges",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "university",
+          "label": "Universities",
+          "type": "number",
+          "agg": "sum",
+          "unit": "colleges",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "colleges",
+          "label": "Colleges and universities",
+          "type": "number",
+          "agg": "sum",
+          "unit": "colleges",
+          "domain": [
+            1,
+            8
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "colleges",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 930,
+          "bbox": {
+            "west": 77.336181640625,
+            "south": 12.68212890625,
+            "east": 77.797607421875,
+            "north": 13.2314453125
+          },
+          "json": "colleges/bengaluru.json",
+          "parquet": null
         }
       ]
     },

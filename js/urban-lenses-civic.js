@@ -854,7 +854,47 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    const STUDENT_KM = 2;
+    // outstation pull: universities and engineering colleges draw students from far more than PU colleges do
+    const PULL = { 'colleges.degree': 1, 'colleges.engineering': 2, 'colleges.polytechnic': 1, 'colleges.university': 3 };
+
+    function studenthousing(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, all = c['colleges.colleges'], hostels = c['places.hostels'];
+        if (!all || !all.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const pull = Float64Array.from({ length: n }, (_, i) => Object.entries(PULL).reduce((t, [k, w]) => t + w * v(c[k], i), 0));
+        const nearPull = within(g, pull, STUDENT_KM), nearCol = within(g, Float64Array.from({ length: n }, (_, i) => v(all, i)), STUDENT_KM);
+        const nearBeds = hostels ? within(g, Float64Array.from({ length: n }, (_, i) => v(hostels, i)), STUDENT_KM) : new Float64Array(n);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (nearCol[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const gap = Float64Array.from({ length: n }, (_, i) => (nearPull[i] > 0 ? nearPull[i] / (1 + nearBeds[i]) : 0));
+        const sum = k => idx.length && c[k] ? Array.from({ length: n }, (_, i) => v(c[k], i)).reduce((a, b) => a + b, 0) : 0;
+        const hubs = spaced(g, idx, nearPull, 3), gaps = spaced(g, idx.filter(i => nearPull[i] >= 5), gap, 5);
+        const stats = [
+            { label: 'Colleges and universities on the state maps', value: `${Math.round(sum('colleges.colleges'))} (${Math.round(sum('colleges.pu'))} PU, ${Math.round(sum('colleges.degree'))} degree, ${Math.round(sum('colleges.engineering'))} engineering, ${Math.round(sum('colleges.polytechnic'))} polytechnic, ${Math.round(sum('colleges.university'))} universities)` },
+            { label: `Hostels and PGs listed within ${STUDENT_KM} km of a college`, value: hostels ? `${Math.round(idx.reduce((t, i) => t + v(hostels, i), 0))}` : 'not mapped here' },
+        ];
+        hubs.forEach((i, k) => stats.push({ label: `College cluster ${k + 1}: ${g.codes[i]}`, value: `${Math.round(nearCol[i])} colleges within ${STUDENT_KM} km (pull ${Math.round(nearPull[i])}); ${Math.round(nearBeds[i])} hostels and PGs listed` }));
+        gaps.forEach((i, k) => stats.push({ label: `Student-housing gap ${k + 1}: ${g.codes[i]}`, value: `pull ${Math.round(nearPull[i])} from ${Math.round(nearCol[i])} colleges within ${STUDENT_KM} km, ${nearBeds[i] < 0.5 ? 'no' : `only ${Math.round(nearBeds[i])}`} hostels or PGs listed` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(gap[i], 1);
+        const top = gaps[0];
+        return {
+            columns: { student_gap: out }, idx, weightKey: 'student_gap', noHotspots: true,
+            metric: { label: `Blocks within ${STUDENT_KM} km of a college`, value: idx.length, unit: 'blocks', higherIs: 'better' },
+            headline: `The state maps place ${Math.round(sum('colleges.colleges'))} colleges and universities here. ${top !== undefined ? `The widest gap between student pull and listed hostels and PGs is around ${g.codes[top]}: ${Math.round(nearCol[top])} colleges within ${STUDENT_KM} km and ${nearBeds[top] < 0.5 ? 'no hostel or PG' : `${Math.round(nearBeds[top])} hostels or PGs`} listed.` : ''} Pull weights universities 3, engineering colleges 2 and degree colleges and polytechnics 1, for the students they draw from out of town.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'studenthousing', equity: false, title: 'Student housing near colleges', icon: '🎓',
+            question: 'Where do colleges draw students but few hostels or PGs are listed nearby?',
+            field: { key: 'student_gap', label: `College pull within ${STUDENT_KM} km per listed hostel or PG (plus one)`, unit: 'index', higherIs: 'worse', ramp: 'reds', domain: [0, 12] },
+            needs: ['colleges.colleges', 'colleges.pu', 'colleges.degree', 'colleges.engineering', 'colleges.polytechnic', 'colleges.university', 'places.hostels'],
+            method: `Karnataka's 2023 higher-education maps for Bengaluru Urban on data.opencity.in (public domain, KGIS): 706 PU colleges, 371 degree colleges, 97 engineering colleges, 70 polytechnics and 24 universities. For each block the lens adds up the colleges within ${STUDENT_KM} km on the block grid, weighted by how many students they draw from out of town (universities 3, engineering 2, degree and polytechnic 1; PU colleges 0, as their students mostly live at home), and divides by one plus the hostels and PGs Overture Maps lists within the same distance. Picks are blocks with a pull of at least 5, ${SPACING_KM} km apart. Overture misses many informal PGs, so a gap is a lead for a site visit, not a count of beds.`,
+            refs: 'Karnataka Department of Higher Education and KGIS (2023) via OpenCity; Overture Maps places; AISHE (All India Survey on Higher Education)' },
         { id: 'watershedpave', equity: false, title: 'Paved-over watersheds', icon: '💧',
             question: 'How much of each small catchment is paved over, and which are near the tipping point?',
             field: { key: 'mws_built_pct', label: 'Ground built over in the block\'s micro-watershed', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 60] },
@@ -983,6 +1023,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing });
     return { ENTRIES };
 })();

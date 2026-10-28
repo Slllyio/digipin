@@ -33,6 +33,7 @@ const DishaIntel = (() => {
             wildedge: /\b(leopards?|wild ?life conflict|human[- ]wildlife|forest edges?|snake ?bites?|wild animals?|homes? (near|next to|beside) (the )?forests?)\b/i,
             powercuts: /\b(power ?cuts?|power outages?|blackouts?|load[- ]?shedding|(lose|losing|without) (power|electricity)|electricity (cuts?|outages?|supply|reliability)|unreliable (power|electricity))\b/i,
             dumpsmoke: /\b(downwind of\b.{0,20}\b(landfills?|dumps?|garbage|factor(y|ies)|industr\w*)|landfill (smoke|smell|odou?r|fires?)|garbage (smoke|smell|odou?r)|dump(ing)? (site )?(smoke|smell|odou?r|fires?)|smell from\b.{0,20}\b(landfills?|dumps?))\b/i,
+            studenthousing: /\b(student[- ]housing (gaps?|shortages?|short)|(not enough|too few|few) (hostels?|pgs?)|hostels? near colleges?|pgs? near colleges?|college clusters?)\b/i,
             watershedpave: /\b((micro[- ]?)?watersheds?|catchments? (paved|built|concreted)|impervious (cover|surfaces?)|paved over|concreti[sz]ation)\b/i,
             bdalayout: /\b(bda (layouts?|sites?|plots?)|bangalore development authority|development authority layouts?|arkavathy|arkavathi)\b/i,
             revvillage: /\b(revenue villages?|land records?|7\/12|satbara|khasra|khatauni|jamabandi|survey numbers?|tehsil|taluk|which village)\b/i,
