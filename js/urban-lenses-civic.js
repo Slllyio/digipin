@@ -1,6 +1,7 @@
 /**
  * Civic lenses for UrbanLenses: what statutory plans and municipal facility lists say about a block (planned road
- * widths and new links, cremation and burial grounds, public borewells, waste bins). They read datasets baked from
+ * widths and new links, cremation and burial grounds, public borewells, waste bins, large
+ * projects with environmental clearance). They read datasets baked from
  * city and development-authority maps. Registers itself on load, after urban-lenses.js.
  */
 const UrbanLensesCivic = (() => {
@@ -178,7 +179,50 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Large-project pipeline. Every building project of 20,000 m² or more needs state environmental clearance, so the
+    // SEIAA map is where big apartment blocks, tech parks and malls are coming up: new supply for buyers and new load on
+    // roads, water and sewers around them.
+    const PROJ_KM = 2, PROJ_CLUSTER = 5;
+
+    function bigprojects(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], pj = c['big_projects.projects'];
+        const res = c['big_projects.residential'], com = c['big_projects.commercial'];
+        if (!pop || !pj || !pj.some(v => v > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(pj, i)), PROJ_KM);
+        const nRes = within(g, Float64Array.from({ length: n }, (_, i) => v(res, i)), PROJ_KM);
+        const nCom = within(g, Float64Array.from({ length: n }, (_, i) => v(com, i)), PROJ_KM);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || near[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const sum = a => { let t = 0; for (let i = 0; i < n; i++) t += v(a, i); return t; };
+        const total = sum(pj), all = _sumOver(pop, idx, () => true), busy = idx.filter(i => near[i] >= PROJ_CLUSTER);
+        const pBusy = _sumOver(pop, busy, () => true);
+        const stats = [
+            { label: 'Large projects cleared (20,000 m² or more)', value: _people(total) },
+            { label: '…residential', value: _people(sum(res)) },
+            { label: '…commercial (offices, IT parks, malls, hotels; mixed use in both)', value: _people(sum(com)) },
+            { label: `Residents with ${PROJ_CLUSTER} or more large projects within ${PROJ_KM} km`, value: `${_people(pBusy)} (${_round(100 * pBusy / (all || 1))}%)` },
+        ];
+        spaced(g, idx.filter(i => near[i] > 0), near).forEach((i, k) => stats.push({ label: `Cluster ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(near[i])} large projects within ${PROJ_KM} km (${_round(nRes[i])} residential, ${_round(nCom[i])} commercial)` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(near[i]);
+        return {
+            columns: { projects_2km: out }, idx, weightKey: 'projects_2km', noHotspots: true,
+            metric: { label: `Residents with ${PROJ_CLUSTER}+ large projects within ${PROJ_KM} km`, value: _round(100 * pBusy / (all || 1), 1), unit: '%', higherIs: 'better' },
+            headline: `SEIAA Karnataka has cleared ${_people(total)} construction projects of 20,000 m² or more in Bengaluru Urban, ${_people(sum(res))} residential and ${_people(sum(com))} commercial; ${_people(pBusy)} residents (${_round(100 * pBusy / (all || 1))}%) live with ${PROJ_CLUSTER} or more of them within ${PROJ_KM} km. Clearance is not completion: some projects are built, some stalled, and the map gives no dates or sizes.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'bigprojects', equity: false, title: 'Large-project pipeline', icon: '🏗️',
+            question: 'Where are big apartment and commercial projects coming up?',
+            field: { key: 'projects_2km', label: `Large projects (20,000 m²+) cleared within ${PROJ_KM} km`, unit: 'projects', higherIs: 'better', ramp: 'heat', domain: [0, 30] },
+            needs: ['big_projects.projects', 'big_projects.residential', 'big_projects.commercial', 'population.population'],
+            method: `SEIAA Karnataka's map of construction projects with state environmental clearance in Bengaluru Urban (KGIS, about 600 projects) on data.opencity.in (public domain). Projects of 20,000 m² or more built-up need this clearance (EIA Notification 2006, item 8(a)), so the map covers every large apartment, office, mall and hotel project that applied. The type is read from the project name (mixed use counts as both). Counts within ${PROJ_KM} km on the block grid; clusters are blocks ${SPACING_KM} km apart with the most projects nearby. The map has no dates, sizes or completion status. Bengaluru only.`,
+            refs: 'EIA Notification 2006 (item 8(a), building and construction projects); SEIAA Karnataka via KGIS and OpenCity' },
         { id: 'binreach', equity: true, title: 'Waste bin reach', icon: '🗑️',
             question: 'Where do residents have no public waste bin nearby?',
             field: { key: 'residents_per_bin', label: `Residents in the block per listed bin within ${BIN_M} m`, unit: 'people', higherIs: 'worse', ramp: 'reds', domain: [0, 5000] },
@@ -205,6 +249,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects });
     return { ENTRIES };
 })();

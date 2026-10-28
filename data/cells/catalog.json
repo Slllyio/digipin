@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T15:45:44Z",
+  "generated": "2026-10-28T15:50:48Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -990,6 +990,76 @@
             "north": 17.55126953125
           },
           "json": "anganwadis/hyderabad.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "big_projects",
+      "title": "Large construction projects (SEIAA clearances)",
+      "description": "Construction projects of 20,000 m\u00b2 or more built-up that SEIAA Karnataka cleared in Bengaluru Urban (KGIS map on data.opencity.in), counted per block, with residential and commercial counts read from the project names.",
+      "source": "pipeline/realestate/seiaa.py (OpenCity SEIAA construction project map)",
+      "license": "Public domain (SEIAA Karnataka / KGIS via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "projects",
+          "label": "Large projects with environmental clearance",
+          "type": "number",
+          "agg": "sum",
+          "unit": "projects",
+          "domain": [
+            1,
+            3
+          ],
+          "ramp": "heat",
+          "higherIs": "better"
+        },
+        {
+          "key": "residential",
+          "label": "Large residential projects",
+          "type": "number",
+          "agg": "sum",
+          "unit": "projects",
+          "domain": [
+            0,
+            3
+          ],
+          "ramp": "heat",
+          "higherIs": "better"
+        },
+        {
+          "key": "commercial",
+          "label": "Large commercial projects",
+          "type": "number",
+          "agg": "sum",
+          "unit": "projects",
+          "domain": [
+            0,
+            2
+          ],
+          "ramp": "heat",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "projects",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 525,
+          "bbox": {
+            "west": 77.406494140625,
+            "south": 12.71728515625,
+            "east": 77.793212890625,
+            "north": 13.1962890625
+          },
+          "json": "big_projects/bengaluru.json",
           "parquet": null
         }
       ]

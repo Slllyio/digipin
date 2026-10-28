@@ -870,6 +870,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "bigprojects": {
+     "label": "Residents with 5+ large projects within 2 km",
+     "value": 47.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "wellrisk": {
      "label": "Public borewells where sewers are missing or thin",
      "value": 12.3,
