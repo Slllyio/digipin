@@ -924,6 +924,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "canteen": {
+     "label": "Residents beyond a 1 km walk of a subsidised canteen",
+     "value": 39.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "freeclinic": {
      "label": "Residents beyond a 1 km walk of free primary care",
      "value": 21.2,
@@ -2655,6 +2661,12 @@
     "anganwadi": {
      "label": "Children under 5 beyond a 500 m walk of an anganwadi",
      "value": 41.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "canteen": {
+     "label": "Residents beyond a 1 km walk of a subsidised canteen",
+     "value": 16.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5109,6 +5121,12 @@
     "anganwadi": {
      "label": "Children under 5 beyond a 500 m walk of an anganwadi",
      "value": 36.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "canteen": {
+     "label": "Residents beyond a 1 km walk of a subsidised canteen",
+     "value": 48.7,
      "unit": "%",
      "higherIs": "worse"
     },

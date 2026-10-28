@@ -390,6 +390,18 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.freeclinic(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('canteen lens: residents beyond a walk of a subsidised canteen', () => {
+        const pop = codes.map(() => 1000);
+        const f = L.frameFrom(codes, { 'population.population': pop, 'canteens.canteens': codes.map((_, i) => (i === 0 ? 1 : 0)),
+            'slums_mapped.slum_pct': codes.map((_, i) => (i === SIZE * 8 + 8 ? 50 : 0)) });
+        const r = L._lenses.canteen(f, {});
+        expect(r.stats[0].value).toBe('1');
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.columns.canteen_walk_m[0]).toBe(0);
+        expect(r.stats[3].value).toMatch(/^500 of 500/);
+        expect(L._lenses.canteen(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('streetpoles lens: poles per street km on surveyed ground', () => {
         const half = (a, b) => codes.map((_, i) => (i % SIZE < SIZE / 2 ? a : b));
         const pop = codes.map(() => 1000);

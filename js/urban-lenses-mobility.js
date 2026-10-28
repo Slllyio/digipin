@@ -1472,6 +1472,50 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // Subsidised canteens. Indira Canteens, Amma Unavagams and Annapurna centres sell a meal for ₹1-10 to whoever walks
+    // in, mostly daily-wage workers. Who lives more than a MEAL_KM walk from one, and how many of them in mapped slums.
+    const MEAL_KM = 1, MEAL_POP = 5000;
+
+    function canteen(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], ct = c['canteens.canteens'];
+        const slum = c['slums_mapped.slum_pct'];
+        if (!pop || !ct || !ct.some(v => v > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const cover = within(g, Float64Array.from({ length: n }, (_, i) => v(ct, i)), COVER_KM);
+        const idx = _residents(fr).filter(i => cover[i] > 0);
+        if (idx.length < 5) return null;
+        const tree = walkTree(fr, i => ct[i] > 0, 2 * MEAL_KM);
+        const far = idx.filter(i => !(tree.dist[i] <= MEAL_KM));
+        const all = _sumOver(pop, idx, () => true), pFar = _sumOver(pop, far, () => true);
+        const sl = i => v(pop, i) * Math.min(100, v(slum, i)) / 100;
+        const stats = [
+            { label: 'Subsidised canteens listed', value: _people(idx.reduce((a, i) => a + v(ct, i), 0)) },
+            { label: 'Residents per canteen in the area the list covers', value: _people(all / Math.max(idx.reduce((a, i) => a + v(ct, i), 0), 1)) },
+            { label: `Residents more than a ${MEAL_KM} km walk from one`, value: `${_people(pFar)} (${_round(100 * pFar / (all || 1))}%)` },
+        ];
+        if (slum && idx.some(i => v(slum, i) > 0)) {
+            const sAll = idx.reduce((a, i) => a + sl(i), 0), sFar = far.reduce((a, i) => a + sl(i), 0);
+            stats.push({ label: `Slum residents more than a ${MEAL_KM} km walk from one`, value: `${_people(sFar)} of ${_people(sAll)} (${_round(100 * sFar / (sAll || 1))}%)` });
+        }
+        const gap = new Float64Array(n), farPop = new Float64Array(n);
+        for (const i of far) { gap[i] = pop[i] + sl(i); farPop[i] = pop[i]; }
+        const need = within(g, gap, MEAL_KM), reach = within(g, farPop, MEAL_KM), picks = [];
+        for (const i of far.slice().sort((a, b) => need[b] - need[a])) {
+            if (picks.length >= 5 || need[i] < MEAL_POP) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 2 * MEAL_KM)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, k) => stats.push({ label: `New canteen ${k + 1}: ${g.codes[i]}`, value: `${_people(reach[i])} residents within ${MEAL_KM} km have none closer` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _fin(tree.dist[i]) ? _round(tree.dist[i] * 1000) : 2000 * MEAL_KM;
+        return {
+            columns: { canteen_walk_m: out }, idx, weightKey: 'canteen_walk_m', noHotspots: true,
+            metric: { label: `Residents beyond a ${MEAL_KM} km walk of a subsidised canteen`, value: _round(100 * pFar / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pFar)} residents (${_round(100 * pFar / (all || 1))}%) of the area the canteen list covers live more than a ${MEAL_KM} km walk from a subsidised public canteen. Lists date from 2018-2023, so some canteens may have closed or opened since.`,
+            stats,
+        };
+    }
+
     // Street light poles. BBMP's pole survey says how densely streets are lit: lamps every 30-40 m on main roads and up
     // to ~60 m on lanes means 15 or more poles per km of street, so a block under DIM_POLES per road km has dark
     // stretches. Judged only on surveyed ground (SURVEY_SHARE of lived-in blocks within 500 m have listed poles).
@@ -1583,6 +1627,12 @@ const UrbanLensesMobility = (() => {
             needs: ['anganwadis.centres', 'demographics.under5', 'slums_mapped.slum_pct', 'osm_walk.links', 'population.population'],
             method: `Anganwadi (ICDS) centres from the state and city maps on data.opencity.in: Telangana for Hyderabad, Karnataka (KGIS) for Bengaluru, and Greater Chennai (2023). Children under 5 are WorldPop's under-5 count (8% of residents where missing). The walk follows the OpenStreetMap walking network between blocks, out to ${2 * AWC_KM} km. New-centre picks are blocks with at least ${AWC_KIDS} unserved children under 5 within ${AWC_KM * 1000} m, ${2 * AWC_KM} km apart. The ICDS urban norm is one centre per 400-800 people in the areas it serves, so the city-wide ratio overstates the gap where better-off homes do not use it. Chennai's map covers the corporation only, so suburbs such as Pallavaram show as gaps; the maps can lag openings and closures.`,
             refs: 'Integrated Child Development Services (Ministry of Women and Child Development) population norms; Saksham Anganwadi and Poshan 2.0 guidelines 2022; OpenCity anganwadi maps' },
+        { id: 'canteen', equity: true, title: 'Subsidised canteen reach', icon: '🍛',
+            question: 'Who lives far from a cheap public canteen?',
+            field: { key: 'canteen_walk_m', label: 'Walk to the nearest subsidised canteen', unit: 'm', higherIs: 'worse', ramp: 'reds', domain: [0, 2000] },
+            needs: ['canteens.canteens', 'slums_mapped.slum_pct', 'osm_walk.links', 'population.population'],
+            method: `Subsidised canteens from the city maps on data.opencity.in (public domain): Indira Canteens in Bengaluru (KGIS, 2022), Amma Unavagams in Chennai (GCC, 2023) and Annapurna meal centres in Hyderabad (GHMC, 2018). The walk follows the OpenStreetMap walking network; blocks more than ${COVER_KM} km from any listed canteen are left out, as each list covers only its corporation. New-canteen picks are blocks, ${2 * MEAL_KM} km apart, with the most residents beyond a ${MEAL_KM} km walk nearby, counting slum residents twice.`,
+            refs: 'Indira Canteen scheme (Karnataka, 2017); Amma Unavagam (Tamil Nadu, 2013); Annapurna meals (GHMC, 2014); OpenCity canteen maps' },
         { id: 'freeclinic', equity: true, title: 'Free clinic reach', icon: '🏥',
             question: 'Who lives far from a free public clinic?',
             field: { key: 'clinic_walk_m', label: 'Walk to the nearest public primary care centre', unit: 'm', higherIs: 'worse', ramp: 'reds', domain: [0, 2000] },
@@ -1699,7 +1749,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk, crashrecord, anganwadi, freeclinic, streetpoles }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk, crashrecord, anganwadi, freeclinic, streetpoles, canteen }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 
