@@ -870,6 +870,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "roadplan": {
+     "label": "Residents on roads planned 24 m or wider",
+     "value": 30.8,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "streetpoles": {
      "label": "Street light poles per km of street",
      "value": 29.8,

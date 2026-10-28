@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T15:23:12Z",
+  "generated": "2026-10-28T15:24:38Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -29630,6 +29630,104 @@
               "4P3F",
               "4P3J",
               "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "road_plan",
+      "title": "Planned road widths (Bengaluru RMP 2015)",
+      "description": "BDA's Revised Master Plan 2015 road width map on data.opencity.in: length of roads with a planned right of way per block, roads planned 24 m or wider, proposed new link roads and the widest planned road.",
+      "source": "pipeline/realestate/roadplan.py (OpenCity Bengaluru road width map)",
+      "license": "Public domain (BDA via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "plan_km",
+          "label": "RMP 2015 roads with a planned width",
+          "type": "number",
+          "agg": "sum",
+          "unit": "km",
+          "domain": [
+            0.002,
+            1.014
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "wide_km",
+          "label": "Roads planned 24 m wide or more",
+          "type": "number",
+          "agg": "sum",
+          "unit": "km",
+          "domain": [
+            0,
+            0.668
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "link_km",
+          "label": "New link roads proposed",
+          "type": "number",
+          "agg": "sum",
+          "unit": "km",
+          "domain": [
+            0,
+            0.949
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "max_width_m",
+          "label": "Widest planned road",
+          "type": "number",
+          "agg": "max",
+          "unit": "m",
+          "domain": [
+            12,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "max_width_m",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 8854,
+          "bbox": {
+            "west": 77.402099609375,
+            "south": 12.79638671875,
+            "east": 77.788818359375,
+            "north": 13.176513671875
+          },
+          "json": "road_plan/bengaluru/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ2",
               "4PJ6",
               "4PJ7",
               "4PJ8"
