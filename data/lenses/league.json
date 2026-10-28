@@ -870,6 +870,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "policereach": {
+     "label": "Residents more than 2 km from a police station",
+     "value": 11.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "buildlimits": {
      "label": "Residents inside a coastal or eco-sensitive building limit",
      "value": 0,
@@ -1646,7 +1652,7 @@
     },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
-     "value": 2587160,
+     "value": 2548136,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -5136,6 +5142,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "policereach": {
+     "label": "Residents more than 2 km from a police station",
+     "value": 18.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "binreach": {
      "label": "Residents with no public bin within 250 m",
      "value": 38.4,
@@ -5876,7 +5888,7 @@
     },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
-     "value": 2514131,
+     "value": 2397196,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -9402,6 +9414,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "policereach": {
+     "label": "Residents more than 2 km from a police station",
+     "value": 4.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lastrites": {
      "label": "Residents more than 3 km from a cremation or burial ground",
      "value": 7.8,
@@ -10136,7 +10154,7 @@
     },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
-     "value": 822628,
+     "value": 822594,
      "unit": "people",
      "higherIs": "worse"
     },

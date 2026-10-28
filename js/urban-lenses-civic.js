@@ -1,7 +1,8 @@
 /**
  * Civic lenses for UrbanLenses: what statutory plans and municipal facility lists say about a block (planned road
  * widths and new links, cremation and burial grounds, public borewells, waste bins, large
- * projects with environmental clearance, coastal and eco-sensitive building limits). They read datasets baked from
+ * projects with environmental clearance, coastal and eco-sensitive building limits,
+ * police stations). They read datasets baked from
  * city and development-authority maps. Registers itself on load, after urban-lenses.js.
  */
 const UrbanLensesCivic = (() => {
@@ -255,7 +256,60 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Police reach. BPR&D's norms ask for an urban police station for every 1-1.5 lakh residents; a station more than
+    // a few kilometres off means slower response and a long trip to file an FIR.
+    const POLICE_KM = 2, POLICE_JUDGE_KM = 3.5;   // without a jurisdiction map, beyond 3.5 km of every listed station is taken as outside the map's area
+
+    function policereach(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], ps = c['police_official.stations'];
+        if (!pop || !ps) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const st = [];
+        for (let i = 0; i < n; i++) if (v(ps, i) > 0) st.push(i);
+        if (st.length < 5) return null;
+        const km = new Float64Array(n).fill(Infinity);
+        for (let i = 0; i < n; i++) {
+            if (!(v(pop, i) > 0)) continue;
+            for (const j of st) {
+                const d = Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx);
+                if (d < km[i]) km[i] = d;
+            }
+        }
+        const area = c['police_official.in_area'], mapped = area && area.some(x => x > 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && (mapped ? v(area, i) > 0 : km[i] <= POLICE_JUDGE_KM)) idx.push(i);
+        if (idx.length < 5) return null;
+        const stations = st.reduce((a, i) => a + v(ps, i), 0), outposts = c['police_official.outposts'] ? Array.from({ length: n }, (_, i) => v(c['police_official.outposts'], i)).reduce((a, b) => a + b, 0) : 0;
+        const all = _sumOver(pop, idx, () => true), far = idx.filter(i => km[i] > POLICE_KM), pFar = _sumOver(pop, far, () => true);
+        const stats = [
+            { label: 'Police stations on the state police map', value: _people(stations) },
+            { label: 'Residents per station (BPR&D norm: 1-1.5 lakh)', value: _people(all / stations) },
+            { label: `Residents more than ${POLICE_KM} km from a station`, value: `${_people(pFar)} (${_round(100 * pFar / (all || 1))}%)` },
+        ];
+        if (outposts) stats.push({ label: 'Police outposts as well', value: _people(outposts) });
+        const inArea = new Uint8Array(n);
+        for (const i of idx) inArea[i] = 1;
+        const farPop = Float64Array.from({ length: n }, (_, i) => (inArea[i] && km[i] > POLICE_KM ? v(pop, i) : 0));
+        const gain = within(g, farPop, POLICE_KM);
+        spaced(g, far.filter(i => gain[i] > 0), gain).forEach((i, k) => stats.push({ label: `New station ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(gain[i])} residents now beyond ${POLICE_KM} km would be within it; nearest station ${_round(km[i], 1)} km` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(km[i], 1);
+        return {
+            columns: { police_km: out }, idx, weightKey: 'police_km', noHotspots: true,
+            metric: { label: `Residents more than ${POLICE_KM} km from a police station`, value: _round(100 * pFar / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `The state police map lists ${_people(stations)} police stations here, one for every ${_people(all / stations)} residents; ${_people(pFar)} residents (${_round(100 * pFar / (all || 1))}%) live more than ${POLICE_KM} km from one. Distances are straight-line; jurisdiction lines, not distance, decide which station takes a complaint.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'policereach', equity: true, title: 'Police station reach', icon: '🚓',
+            question: 'Who lives far from a police station?',
+            field: { key: 'police_km', label: 'Distance to the nearest police station', unit: 'km', higherIs: 'worse', ramp: 'reds', domain: [0, 5] },
+            needs: ['police_official.stations', 'police_official.outposts', 'police_official.in_area', 'population.population'],
+            method: `Police stations from the state police maps on data.opencity.in (public domain): Mumbai Police (101 stations), Karnataka Police KGIS for Bengaluru Urban (115 stations, 12 outposts) and Telangana Police for Hyderabad district and the Cyberabad and Rachakonda suburbs (95 law-and-order stations; traffic stations, quarters and offices left out by name). Straight-line distance from each lived-in block to the nearest station; only blocks inside the city police's own jurisdiction map are judged in Mumbai and Bengaluru (so Thane is not read as a gap in Mumbai Police's map); in Hyderabad, whose jurisdiction map covers only the city commissionerate, blocks more than ${POLICE_JUDGE_KM} km from every listed station are not judged. New-station picks are blocks ${SPACING_KM} km apart that bring the most residents now beyond ${POLICE_KM} km within ${POLICE_KM} km.`,
+            refs: 'BPR&D Data on Police Organisations (station norms); Mumbai, Karnataka and Telangana Police via OpenCity' },
         { id: 'buildlimits', equity: false, title: 'Coastal and eco-sensitive building limits', icon: '🚧',
             question: 'Where does coastal or forest law cap new building?',
             field: { key: 'limit_pct', label: 'Share of the block inside the Coastal Regulation Zone or an eco-sensitive zone', unit: '%', higherIs: 'worse', ramp: 'blues', domain: [0, 100] },
@@ -294,6 +348,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach });
     return { ENTRIES };
 })();

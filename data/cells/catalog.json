@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T16:02:50Z",
+  "generated": "2026-10-28T16:14:25Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -27043,6 +27043,109 @@
           },
           "json": "pm25_monthly/pune.json.gz",
           "parquet": "pm25_monthly/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "police_official",
+      "title": "Police stations (state police maps)",
+      "description": "Police stations from the state police maps on data.opencity.in, counted per block: Mumbai Police (BMC disaster management GIS), Karnataka Police KGIS stations and outposts for Bengaluru Urban, and Telangana Police stations for the Hyderabad region.",
+      "source": "pipeline/realestate/police.py (OpenCity police station maps)",
+      "license": "Public domain (Mumbai Police, Karnataka Police, Telangana Police via data.opencity.in)",
+      "group": "Safety",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "stations",
+          "label": "Police stations (state police map)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "stations",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "outposts",
+          "label": "Police outposts (Bengaluru)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "outposts",
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "in_area",
+          "label": "Inside the city police's jurisdiction map",
+          "type": "number",
+          "agg": "max",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "stations",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 20772,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "police_official/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "hyderabad",
+          "cells": 83,
+          "bbox": {
+            "west": 78.316162109375,
+            "south": 17.31396484375,
+            "east": 78.5732421875,
+            "north": 17.544677734375
+          },
+          "json": "police_official/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 7277,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.893798828125,
+            "east": 72.97900390625,
+            "north": 19.26953125
+          },
+          "json": "police_official/mumbai.json",
+          "parquet": null
         }
       ]
     },

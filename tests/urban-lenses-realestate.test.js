@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout', 'treecensus', 'firereach', 'pondcensus', 'roadplan', 'lastrites', 'wellrisk', 'binreach', 'bigprojects', 'buildlimits']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout', 'treecensus', 'firereach', 'pondcensus', 'roadplan', 'lastrites', 'wellrisk', 'binreach', 'bigprojects', 'buildlimits', 'policereach']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -1177,6 +1177,19 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.well_risk[10]).toBeGreaterThan(0);
         expect(r.metric.value).toBeGreaterThan(0);
         expect(L._lenses.wellrisk(L.frameFrom(codes, { ...base, 'borewells.borewells': wells }), {})).toBeNull();
+    });
+
+    it('policereach: distance to police stations, judged inside the mapped area', () => {
+        const S = 30, big = block(19.0, 72.85, S), ones = big.map(() => 1000);
+        const ps = big.map((_, i) => ([0, 2, S * 2, S * 2 + 2, S + 1].includes(i) ? 1 : 0));
+        const r = L._lenses.policereach(L.frameFrom(big, { 'population.population': ones, 'police_official.stations': ps }), {});
+        expect(r.stats[0].value).toBe('5');
+        expect(r.columns.police_km[0]).toBe(0);
+        expect(r.metric.value).toBeGreaterThan(0);
+        const area = big.map((_, i) => (Math.floor(i / S) < 4 && i % S < 4 ? 1 : 0));
+        const r2 = L._lenses.policereach(L.frameFrom(big, { 'population.population': ones, 'police_official.stations': ps, 'police_official.in_area': area }), {});
+        expect(r2.idx.length).toBe(16);
+        expect(L._lenses.policereach(L.frameFrom(big, { 'population.population': ones }), {})).toBeNull();
     });
 
     it('buildlimits: residents inside coastal and eco-sensitive limits', () => {
