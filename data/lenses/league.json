@@ -1866,6 +1866,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "birdlife": {
+     "label": "Median bird species expected in 200 records",
+     "value": 77.2,
+     "unit": "species",
+     "higherIs": "better"
+    },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
      "value": 18.2,

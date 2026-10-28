@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T18:22:55Z",
+  "generated": "2026-10-28T18:27:35Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -1106,10 +1106,6 @@
           "type": "number",
           "agg": "mean",
           "unit": "species",
-          "domain": [
-            10.6,
-            155.9
-          ],
           "ramp": "greens",
           "higherIs": "better"
         }
@@ -1145,6 +1141,18 @@
           "parquet": null
         },
         {
+          "name": "bhopal",
+          "cells": 225,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.1806640625,
+            "east": 77.52734375,
+            "north": 23.3212890625
+          },
+          "json": "birds/bhopal.json",
+          "parquet": null
+        },
+        {
           "name": "chennai",
           "cells": 566,
           "bbox": {
@@ -1166,6 +1174,18 @@
             "north": 28.884765625
           },
           "json": "birds/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 8,
+          "bbox": {
+            "west": 77.28125,
+            "south": 24.6396484375,
+            "east": 77.3515625,
+            "north": 24.6748046875
+          },
+          "json": "birds/guna.json",
           "parquet": null
         },
         {
