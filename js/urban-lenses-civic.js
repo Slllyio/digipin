@@ -304,7 +304,8 @@ const UrbanLensesCivic = (() => {
     }
 
     // Lake buffers. Bengaluru's zoning regulations keep a 30 m no-build buffer round every lake (the NGT's 2016 order of
-    // 75 m is stayed); building there blocks inflow channels, and those plots carry the legal risk of a demolition drive.
+    // 75 m is stayed) and Hyderabad's building rules 30 m or 9 m by tank size; building there blocks inflow channels,
+    // and those plots carry the legal risk of a demolition drive.
     function lakebuffer(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], built = c['built_up.built_pct'];
         const b30 = c['lake_buffers.buffer30_pct'], b75 = c['lake_buffers.buffer75_pct'], lake = c['lake_buffers.lake_pct'];
@@ -321,20 +322,20 @@ const UrbanLensesCivic = (() => {
             a30 += v(b30, i) / 100 * g.cellKm2; p30 += v(pop, i) * v(b30, i) / 100; lakeKm2 += v(lake, i) / 100 * g.cellKm2;
         }
         const stats = [
-            { label: 'Lakes and tanks on the wetland map', value: `${_round(lakeKm2, 1)} km²` },
-            { label: 'Land within the 30 m buffer', value: `${_round(a30, 1)} km²` },
+            { label: 'Lakes and tanks on the official map', value: `${_round(lakeKm2, 1)} km²` },
+            { label: 'Land in the statutory no-build buffer', value: `${_round(a30, 1)} km²` },
             { label: '…of it built up (pro rata)', value: `${_round(k30, 2)} km² (${_round(100 * k30 / (a30 || 1))}%)` },
-            { label: 'Built up within 75 m (NGT 2016 buffer, stayed)', value: `${_round(k75, 2)} km²` },
-            { label: 'Residents living in the 30 m buffer (pro rata)', value: _people(p30) },
+            { label: 'Built up within 75 m (wider screen; NGT 2016 buffer for Bengaluru, stayed)', value: `${_round(k75, 2)} km²` },
+            { label: 'Residents living in the buffer (pro rata)', value: _people(p30) },
         ];
         spaced(g, idx.filter(i => in30[i] > 0), in30).forEach((i, k) => stats.push({ label: `Most built buffer ${k + 1}: ${g.codes[i]}`,
-            value: `${_round(v(b30, i))}% of the block in the 30 m buffer, ${_round(v(built, i))}% of the block built up` }));
+            value: `${_round(v(b30, i))}% of the block in the buffer, ${_round(v(built, i))}% of the block built up` }));
         const out = new Float64Array(n).fill(NaN);
         for (const i of idx) out[i] = _round(Math.min(v(b30, i), v(built, i)), 1);
         return {
             columns: { buffer_built: out }, idx, weightKey: 'buffer_built', noHotspots: true,
-            metric: { label: 'Share of the 30 m lake buffer built up', value: _round(100 * k30 / (a30 || 1), 1), unit: '%', higherIs: 'worse' },
-            headline: `The wetland map's ${_round(lakeKm2, 1)} km² of lakes and tanks are ringed by ${_round(a30, 1)} km² of 30 m no-build buffer, of which about ${_round(k30, 2)} km² (${_round(100 * k30 / (a30 || 1))}%) is built up, home to some ${_people(p30)} residents. Figures are pro rata within each block, so they flag blocks to check against the survey sketch, not individual plots.`,
+            metric: { label: 'Share of the statutory lake buffer built up', value: _round(100 * k30 / (a30 || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `The official map's ${_round(lakeKm2, 1)} km² of lakes and tanks are ringed by ${_round(a30, 1)} km² of statutory no-build buffer, of which about ${_round(k30, 2)} km² (${_round(100 * k30 / (a30 || 1))}%) is built up, home to some ${_people(p30)} residents. Figures are pro rata within each block, so they flag blocks to check against the survey sketch, not individual plots.`,
             stats,
         };
     }
@@ -393,10 +394,10 @@ const UrbanLensesCivic = (() => {
             refs: 'URDPFI Guidelines 2015 (MoHUA), open space hierarchy; GHMC and PMC via OpenCity' },
         { id: 'lakebuffer', equity: false, title: 'Lake buffer building', icon: '🏞️',
             question: 'How much building stands inside the no-build buffer round lakes?',
-            field: { key: 'buffer_built', label: 'Built-up share inside the 30 m lake buffer (upper bound per block)', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 40] },
+            field: { key: 'buffer_built', label: 'Built-up share inside the statutory lake buffer (upper bound per block)', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 40] },
             needs: ['lake_buffers.lake_pct', 'lake_buffers.buffer30_pct', 'lake_buffers.buffer75_pct', 'built_up.built_pct', 'population.population'],
-            method: 'Lakes, tanks and other wetlands from the Karnataka GIS wetland map of Bengaluru Urban (265 polygons) on data.opencity.in (public domain), filled on a 10 m raster; the 30 m buffer is the no-build zone round lakes in Bengaluru\'s zoning regulations, and 75 m the buffer the National Green Tribunal ordered in 2016 (stayed by the Supreme Court in 2019). Built land in a buffer is estimated pro rata (the block\'s built-up share times its buffer share) and the map value is the smaller of the two shares, an upper bound on the buffer\'s built share in that block. Bengaluru only; the wetland map has no lake names.',
-            refs: 'Revised Master Plan 2015 zoning regulations (BDA); NGT order in Forward Foundation v. State of Karnataka (2016); KGIS wetlands via OpenCity' },
+            method: 'Lakes, tanks and other wetlands from the Karnataka GIS wetland map of Bengaluru Urban (265 polygons) and GHMC\'s reservoirs and tanks for Hyderabad (849 polygons) on data.opencity.in (public domain), filled on a 10 m raster. The statutory buffer is 30 m round every lake in Bengaluru\'s zoning regulations, and in Hyderabad 30 m round tanks of 10 ha or more and 9 m round smaller ones (GO Ms 168, 2012); 75 m is the buffer the National Green Tribunal ordered for Bengaluru in 2016 (stayed by the Supreme Court in 2019), kept as a wider screen. Built land in a buffer is estimated pro rata (the block\'s built-up share times its buffer share) and the map value is the smaller of the two shares, an upper bound on the buffer\'s built share in that block. Bengaluru and Hyderabad; the maps carry no lake names, and the mapped outline is not the surveyed full tank level.',
+            refs: 'Revised Master Plan 2015 zoning regulations (BDA); NGT order in Forward Foundation v. State of Karnataka (2016); GO Ms 168 (2012) building rules; KGIS and GHMC via OpenCity' },
         { id: 'policereach', equity: true, title: 'Police station reach', icon: '🚓',
             question: 'Who lives far from a police station?',
             field: { key: 'police_km', label: 'Distance to the nearest police station', unit: 'km', higherIs: 'worse', ramp: 'reds', domain: [0, 5] },

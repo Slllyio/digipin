@@ -871,7 +871,7 @@
      "higherIs": "worse"
     },
     "lakebuffer": {
-     "label": "Share of the 30 m lake buffer built up",
+     "label": "Share of the statutory lake buffer built up",
      "value": 12.6,
      "unit": "%",
      "higherIs": "worse"
@@ -5151,6 +5151,12 @@
     "parkreach": {
      "label": "Residents with no listed park or playground within 500 m",
      "value": 41.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "lakebuffer": {
+     "label": "Share of the statutory lake buffer built up",
+     "value": 20.1,
      "unit": "%",
      "higherIs": "worse"
     },

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T16:34:24Z",
+  "generated": "2026-10-28T16:47:02Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -13135,10 +13135,10 @@
     },
     {
       "id": "lake_buffers",
-      "title": "Lake buffer zones (Bengaluru wetland map)",
-      "description": "Share of each block inside a lake or tank on the Karnataka GIS wetland map of Bengaluru Urban (265 wetlands), and within 30 m and 75 m of one, via data.opencity.in.",
-      "source": "pipeline/realestate/lakebuffers.py (KGIS wetlands via OpenCity)",
-      "license": "Public domain (Karnataka GIS via data.opencity.in)",
+      "title": "Lake buffer zones (official lake maps)",
+      "description": "Share of each block inside a lake or tank, in its statutory no-build buffer and within 75 m of one: the Karnataka GIS wetland map of Bengaluru Urban (265 wetlands) and GHMC's reservoirs and tanks for Hyderabad, via data.opencity.in.",
+      "source": "pipeline/realestate/lakebuffers.py (KGIS wetlands and GHMC tanks via OpenCity)",
+      "license": "Public domain (Karnataka GIS and GHMC via data.opencity.in)",
       "group": "Environment",
       "level": 7,
       "approxCellM": 244,
@@ -13158,7 +13158,7 @@
         },
         {
           "key": "buffer30_pct",
-          "label": "Share in the 30 m lake buffer (no-build zone)",
+          "label": "Share in the statutory lake buffer (30 m; 9 m round Hyderabad tanks under 10 ha)",
           "type": "number",
           "agg": "mean",
           "unit": "%",
@@ -13199,6 +13199,18 @@
             "north": 13.141357421875
           },
           "json": "lake_buffers/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 3560,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "lake_buffers/hyderabad.json",
           "parquet": null
         }
       ]
