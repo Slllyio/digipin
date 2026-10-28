@@ -2791,8 +2791,8 @@
      "higherIs": "worse"
     },
     "wardfit": {
-     "label": "Electricity and water offices a ward deals with (median resident)",
-     "value": 7,
+     "label": "Electricity, water and police offices a ward deals with (median resident)",
+     "value": 9,
      "unit": "offices",
      "higherIs": "worse"
     },
