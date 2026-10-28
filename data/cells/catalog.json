@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T17:04:24Z",
+  "generated": "2026-10-28T17:13:02Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -26368,9 +26368,9 @@
     {
       "id": "parks_official",
       "title": "Parks, playgrounds and open spaces (corporation maps)",
-      "description": "Parks, playgrounds and layout open spaces from the corporations' own maps on data.opencity.in, counted per block: GHMC parks, playgrounds and open spaces left in approved layouts (Hyderabad, 2018) and PMC parks and gardens with their outlines (Pune).",
+      "description": "Parks, playgrounds and layout open spaces from the corporations' own maps on data.opencity.in, counted per block: GHMC parks, playgrounds and open spaces left in approved layouts (Hyderabad, 2018) and PMC parks and gardens with their outlines (Pune), and BMC gardens, parks, play grounds and zoos (Mumbai).",
       "source": "pipeline/realestate/parksofficial.py (OpenCity park maps)",
-      "license": "Public domain (GHMC and PMC via data.opencity.in)",
+      "license": "Public domain (GHMC, PMC and BMC via data.opencity.in)",
       "group": "Environment",
       "level": 7,
       "approxCellM": 244,
@@ -26394,6 +26394,10 @@
           "type": "number",
           "agg": "sum",
           "unit": "playgrounds",
+          "domain": [
+            1,
+            3
+          ],
           "ramp": "greens",
           "higherIs": "better"
         },
@@ -26412,9 +26416,17 @@
           "type": "number",
           "agg": "sum",
           "unit": "m\u00b2",
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "in_area",
+          "label": "Inside the area the corporation's map covers (Mumbai)",
+          "type": "number",
+          "agg": "max",
           "domain": [
-            134,
-            554031
+            0,
+            1
           ],
           "ramp": "greens",
           "higherIs": "better"
@@ -26436,6 +26448,18 @@
             "north": 17.544677734375
           },
           "json": "parks_official/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 7294,
+          "bbox": {
+            "west": 72.484619140625,
+            "south": 18.5927734375,
+            "east": 73.853515625,
+            "north": 19.26953125
+          },
+          "json": "parks_official/mumbai.json",
           "parquet": null
         },
         {

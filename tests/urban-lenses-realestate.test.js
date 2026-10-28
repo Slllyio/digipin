@@ -1204,6 +1204,9 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.park_near[0]).toBe(1);
         expect(r.metric.value).toBeGreaterThan(0);
         expect(r.stats.some(s => /^Open space to develop 1: /.test(s.label))).toBe(true);
+        const area = codes.map((_, i) => (col(i) < 4 ? 1 : 0));
+        const r3 = L._lenses.parkreach(L.frameFrom(codes, { ...base, 'parks_official.parks': pk, 'parks_official.in_area': area }), {});
+        expect(r3.idx.every(i => col(i) < 4)).toBe(true);
         const r2 = L._lenses.parkreach(L.frameFrom(codes, { ...base, 'parks_official.parks': pk }), {});
         expect(r2.stats.some(s => /^New park 1: /.test(s.label))).toBe(true);
         expect(L._lenses.parkreach(L.frameFrom(codes, base), {})).toBeNull();

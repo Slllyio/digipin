@@ -353,9 +353,10 @@ const UrbanLensesCivic = (() => {
         const green = Float64Array.from({ length: n }, (_, i) => v(pk, i) + v(pg, i));
         const total = green.reduce((a, b) => a + b, 0);
         if (total < 5) return null;
-        const near = within(g, green, PARK_M / 1000), listed = within(g, green, PARK_JUDGE_KM);
+        const near = within(g, green, PARK_M / 1000), area = c['parks_official.in_area'], mapped = area && area.some(x => x > 0);
+        const listed = mapped ? area : within(g, green, PARK_JUDGE_KM);
         const idx = [];
-        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && listed[i] > 0) idx.push(i);
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && v(listed, i) > 0) idx.push(i);
         if (idx.length < 5) return null;
         const all = _sumOver(pop, idx, () => true), far = idx.filter(i => !(near[i] > 0)), pFar = _sumOver(pop, far, () => true);
         const stats = [
@@ -364,7 +365,7 @@ const UrbanLensesCivic = (() => {
         if (pg) stats.push({ label: '…and playgrounds', value: _people(Array.from({ length: n }, (_, i) => v(pg, i)).reduce((a, b) => a + b, 0)) });
         if (c['parks_official.park_m2']) stats.push({ label: 'Garden area per resident', value: `${_round(Array.from({ length: n }, (_, i) => v(c['parks_official.park_m2'], i)).reduce((a, b) => a + b, 0) / (all || 1), 2)} m²` });
         stats.push({ label: `Residents with no listed park or playground within ${PARK_M} m`, value: `${_people(pFar)} (${_round(100 * pFar / (all || 1))}%)` });
-        const farPop = Float64Array.from({ length: n }, (_, i) => (v(pop, i) > 0 && listed[i] > 0 && !(near[i] > 0) ? v(pop, i) : 0));
+        const farPop = Float64Array.from({ length: n }, (_, i) => (v(pop, i) > 0 && v(listed, i) > 0 && !(near[i] > 0) ? v(pop, i) : 0));
         const gain = within(g, farPop, PARK_M / 1000);
         const allSpaces = os ? Array.from({ length: n }, (_, i) => i).filter(i => v(os, i) > 0 && gain[i] > 0) : [];
         if (os) {
@@ -480,8 +481,8 @@ const UrbanLensesCivic = (() => {
         { id: 'parkreach', equity: true, title: 'Neighbourhood park reach', icon: '🌳',
             question: 'Who has no park or playground nearby, and which reserved open spaces could fix it?',
             field: { key: 'park_near', label: `Listed park or playground within ${PARK_M} m (1 yes, 0 no)`, unit: '', higherIs: 'better', ramp: 'greens', domain: [0, 1] },
-            needs: ['parks_official.parks', 'parks_official.playgrounds', 'parks_official.open_spaces', 'parks_official.park_m2', 'population.population'],
-            method: `Parks, playgrounds and layout open spaces from the corporations' maps on data.opencity.in (public domain): GHMC parks (823), playgrounds (488) and open spaces left in approved layouts (1,355), 2018, for Hyderabad; PMC parks and gardens (198 outlines, about 200 ha) for Pune. A block is served when a listed park or playground lies within ${PARK_M} m on the block grid (URDPFI's housing-area park); blocks more than ${PARK_JUDGE_KM} km from any listed park are outside the corporation's map and not judged. Hyderabad picks are layout open spaces ${SPACING_KM} km apart with the most unserved residents within ${PARK_M} m; Pune picks are unserved blocks; the cantonments run their own gardens and are not on PMC's list.`,
+            needs: ['parks_official.parks', 'parks_official.playgrounds', 'parks_official.open_spaces', 'parks_official.park_m2', 'parks_official.in_area', 'population.population'],
+            method: `Parks, playgrounds and layout open spaces from the corporations' maps on data.opencity.in (public domain): GHMC parks (823), playgrounds (488) and open spaces left in approved layouts (1,355), 2018, for Hyderabad; PMC parks and gardens (198 outlines, about 200 ha) for Pune; BMC gardens, parks, play grounds and zoos (950; names with P.G., playground or maidan count as playgrounds) for Mumbai, judged only inside the BMC area. A block is served when a listed park or playground lies within ${PARK_M} m on the block grid (URDPFI's housing-area park); blocks more than ${PARK_JUDGE_KM} km from any listed park are outside the corporation's map and not judged. Hyderabad picks are layout open spaces ${SPACING_KM} km apart with the most unserved residents within ${PARK_M} m; Pune picks are unserved blocks; the cantonments run their own gardens and are not on PMC's list.`,
             refs: 'URDPFI Guidelines 2015 (MoHUA), open space hierarchy; GHMC and PMC via OpenCity' },
         { id: 'lakebuffer', equity: false, title: 'Lake buffer building', icon: '🏞️',
             question: 'How much building stands inside the no-build buffer round lakes?',

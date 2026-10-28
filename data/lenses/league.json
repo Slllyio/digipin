@@ -9462,6 +9462,12 @@
      "unit": "species",
      "higherIs": "better"
     },
+    "parkreach": {
+     "label": "Residents with no listed park or playground within 500 m",
+     "value": 19.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "policereach": {
      "label": "Residents more than 2 km from a police station",
      "value": 4.7,
