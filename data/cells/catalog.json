@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T15:05:43Z",
+  "generated": "2026-10-28T15:11:39Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -30716,6 +30716,63 @@
           },
           "json": "scores/pune.json",
           "parquet": "scores/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "sewers",
+      "title": "Sewer network (BWSSB maps)",
+      "description": "BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter) on data.opencity.in: sewer length per block and trunk sewers 300 mm and wider.",
+      "source": "pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps)",
+      "license": "Public domain (BWSSB via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "sewer_m",
+          "label": "Sewer line length",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            2,
+            7990
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "trunk_m",
+          "label": "Trunk sewer length (300 mm and above)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            0,
+            3438
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "sewer_m",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 7755,
+          "bbox": {
+            "west": 77.46142578125,
+            "south": 12.84912109375,
+            "east": 77.77783203125,
+            "north": 13.1171875
+          },
+          "json": "sewers/bengaluru.json",
+          "parquet": null
         }
       ]
     },

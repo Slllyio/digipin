@@ -1516,6 +1516,47 @@ const UrbanLensesMobility = (() => {
         };
     }
 
+    // Sewer gaps. Where BWSSB has laid no sewer in or next to a block, homes drain to septic tanks, soak pits or open
+    // drains that foul lakes and groundwater. A block is unsewered when no sewer runs within SEWER_NEAR_KM, and thin
+    // when sewers run along under THIN_PCT of its street length. Judged within SERVICE_KM of the mapped network.
+    const SEWER_NEAR_KM = 0.25, THIN_PCT = 30, SERVICE_KM = 2;
+
+    function sewergap(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], sw = c['sewers.sewer_m'];
+        const road = c['osm_roads.road_km_km2'], slum = c['slums_mapped.slum_pct'];
+        if (!pop || !sw || !sw.some(v => v > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0), area = g.dx * g.dy;
+        const swArr = Float64Array.from({ length: n }, (_, i) => v(sw, i));
+        const svc = within(g, swArr, SERVICE_KM), near = within(g, swArr, SEWER_NEAR_KM);
+        const idx = _residents(fr).filter(i => svc[i] > 0);
+        if (idx.length < 5) return null;
+        const pct = i => (road && v(road, i) > 0 ? Math.min(100, 100 * v(sw, i) / (v(road, i) * area * 1000)) : NaN);
+        const none = idx.filter(i => !(near[i] > 0)), thin = idx.filter(i => near[i] > 0 && pct(i) < THIN_PCT);
+        const all = _sumOver(pop, idx, () => true), pNone = _sumOver(pop, none, () => true), pThin = _sumOver(pop, thin, () => true);
+        const stats = [
+            { label: 'Sewer lines mapped', value: `${_people(swArr.reduce((a, x) => a + x, 0) / 1000)} km` },
+            { label: `Residents with no sewer within ${SEWER_NEAR_KM * 1000} m`, value: `${_people(pNone)} (${_round(100 * pNone / (all || 1))}%)` },
+            { label: `Residents with a sewer nearby but along under ${THIN_PCT}% of their streets`, value: `${_people(pThin)} (${_round(100 * pThin / (all || 1))}%)` },
+        ];
+        if (slum && none.some(i => v(slum, i) > 0)) stats.push({ label: 'Mapped slum residents with no sewer nearby', value: _people(none.reduce((a, i) => a + v(pop, i) * Math.min(100, v(slum, i)) / 100, 0)) });
+        const gapPop = Float64Array.from({ length: n }, (_, i) => (near[i] > 0 ? 0 : v(pop, i)));
+        const need = within(g, gapPop, 0.5), picks = [];
+        for (const i of none.slice().sort((a, b) => need[b] - need[a])) {
+            if (picks.length >= 5) break;
+            if (picks.some(j => Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx) < 1.5)) continue;
+            picks.push(i);
+        }
+        picks.forEach((i, k) => stats.push({ label: `Sewer next ${k + 1}: ${g.codes[i]}`, value: `${_people(need[i])} residents within 500 m with no sewer close by` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = near[i] > 0 ? (_fin(pct(i)) ? _round(pct(i)) : 100) : 0;
+        return {
+            columns: { sewer_cover_pct: out }, idx, weightKey: 'sewer_cover_pct', noHotspots: true,
+            metric: { label: `Residents with no sewer within ${SEWER_NEAR_KM * 1000} m`, value: _round(100 * pNone / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pNone)} residents (${_round(100 * pNone / (all || 1))}%) in the area BWSSB's sewer maps cover have no sewer line within ${SEWER_NEAR_KM * 1000} m, and ${_people(pThin)} more live where sewers run along under ${THIN_PCT}% of the streets; these homes rely on septic tanks, soak pits or open drains. The maps may lag new lines laid in the 110 villages added in 2007.`,
+            stats,
+        };
+    }
+
     // Street light poles. BBMP's pole survey says how densely streets are lit: lamps every 30-40 m on main roads and up
     // to ~60 m on lanes means 15 or more poles per km of street, so a block under DIM_POLES per road km has dark
     // stretches. Judged only on surveyed ground (SURVEY_SHARE of lived-in blocks within 500 m have listed poles).
@@ -1633,6 +1674,12 @@ const UrbanLensesMobility = (() => {
             needs: ['canteens.canteens', 'slums_mapped.slum_pct', 'osm_walk.links', 'population.population'],
             method: `Subsidised canteens from the city maps on data.opencity.in (public domain): Indira Canteens in Bengaluru (KGIS, 2022), Amma Unavagams in Chennai (GCC, 2023) and Annapurna meal centres in Hyderabad (GHMC, 2018). The walk follows the OpenStreetMap walking network; blocks more than ${COVER_KM} km from any listed canteen are left out, as each list covers only its corporation. New-canteen picks are blocks, ${2 * MEAL_KM} km apart, with the most residents beyond a ${MEAL_KM} km walk nearby, counting slum residents twice.`,
             refs: 'Indira Canteen scheme (Karnataka, 2017); Amma Unavagam (Tamil Nadu, 2013); Annapurna meals (GHMC, 2014); OpenCity canteen maps' },
+        { id: 'sewergap', equity: true, title: 'Sewer gaps', icon: '🚽',
+            question: 'Which neighbourhoods have no sewer line nearby?',
+            field: { key: 'sewer_cover_pct', label: 'Sewer length as a share of street length (0 = none within 250 m)', unit: '%', higherIs: 'better', ramp: 'blues', domain: [0, 100] },
+            needs: ['sewers.sewer_m', 'osm_roads.road_km_km2', 'slums_mapped.slum_pct', 'population.population'],
+            method: `BWSSB sewerage line maps (KGIS) on data.opencity.in (public domain), all diameters, about 10,400 km: each line is cut into 25 m pieces and summed per block. A block is unsewered when no sewer runs in it or within ${SEWER_NEAR_KM * 1000} m, and thin when its sewer length is under ${THIN_PCT}% of its OpenStreetMap street length. Blocks more than ${SERVICE_KM} km from any mapped sewer are not judged. Picks are unsewered blocks 1.5 km apart with the most unserved residents within 500 m. Bengaluru only.`,
+            refs: 'BWSSB sewerage network (KGIS) via OpenCity; CPHEEO Manual on Sewerage and Sewage Treatment (2013); AMRUT 2.0' },
         { id: 'freeclinic', equity: true, title: 'Free clinic reach', icon: '🏥',
             question: 'Who lives far from a free public clinic?',
             field: { key: 'clinic_walk_m', label: 'Walk to the nearest public primary care centre', unit: 'm', higherIs: 'worse', ramp: 'reds', domain: [0, 2000] },
@@ -1749,7 +1796,7 @@ const UrbanLensesMobility = (() => {
             refs: 'Overture Maps Foundation places; OpenStreetMap amenity=charging_station; Open Charge Map; MoP 2024 guidelines for EV charging infrastructure (a charger every 3 km in cities)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk, crashrecord, anganwadi, freeclinic, streetpoles, canteen }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
+    UrbanLenses.register(ENTRIES, { noise, traffic, ambulance, metro, jobaccess, busheat, parking, feeder, commute, jamcost, tod, schoolrun, ev, shade, busgap, roadsafety, cycling, nightwalk, crossing, freight, cleanwalk, crashrecord, anganwadi, freeclinic, streetpoles, canteen, sewergap }, { stationSites, stationWhatIf, stationAsk, walkTree, walkerLoad, routeMax, routeDose, fatalRisk, scorecard, scorecardText, MOBILITY_PILLARS: PILLARS });
     return { ENTRIES, stationSites, stationWhatIf, stationAsk };
 })();
 

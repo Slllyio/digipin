@@ -930,6 +930,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "sewergap": {
+     "label": "Residents with no sewer within 250 m",
+     "value": 8.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "freeclinic": {
      "label": "Residents beyond a 1 km walk of free primary care",
      "value": 21.2,

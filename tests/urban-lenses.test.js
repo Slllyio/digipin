@@ -402,6 +402,18 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.canteen(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('sewergap lens: residents with no sewer nearby', () => {
+        const pop = codes.map(() => 1000);
+        const sw = codes.map((_, i) => (i % SIZE < 3 ? 500 : 0));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'sewers.sewer_m': sw, 'osm_roads.road_km_km2': codes.map(() => 10) });
+        const r = L._lenses.sewergap(f, {});
+        expect(r.columns.sewer_cover_pct[0]).toBeGreaterThan(0);
+        expect(r.columns.sewer_cover_pct[7]).toBe(0);
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.stats.some(s => /^Sewer next 1: /.test(s.label))).toBe(true);
+        expect(L._lenses.sewergap(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
+    });
+
     it('streetpoles lens: poles per street km on surveyed ground', () => {
         const half = (a, b) => codes.map((_, i) => (i % SIZE < SIZE / 2 ? a : b));
         const pop = codes.map(() => 1000);
