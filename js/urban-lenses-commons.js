@@ -1,6 +1,6 @@
 /**
  * Commons lenses for UrbanLenses: shared conditions every resident lives with, read from national and global open
- * data (how neighbourhoods were built, floods in the news, bad-air days, wind near the ground, the drift between government and private schools, hot summer nights, big roads to come). Registers itself on load, after
+ * data (how neighbourhoods were built, floods in the news, bad-air days, wind near the ground, the drift between government and private schools, hot summer nights, big roads to come, rain gauge gaps). Registers itself on load, after
  * urban-lenses.js.
  */
 const UrbanLensesCommons = (() => {
@@ -329,6 +329,53 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Rain gauge gaps. KSNDMC's telemetric rain gauges report every 15 minutes and feed Bengaluru's flood alerts; where
+    // the nearest gauge is far, a cloudburst over a low-lying street can go unmeasured. New gauges go where reported
+    // flood spots and waterlogging-prone homes sit beyond reach of one.
+    const GAUGE_KM = 2, WLOG_PRONE = 60;
+
+    function raingaugegap(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, rg = c['rain_gauges.rain_gauges'], ws = c['rain_gauges.weather_stations'];
+        const pop = c['population.population'], spots = c['flood_reports.flood_spots'], wl = c['waterlogging.waterlogging_index'];
+        if (!rg || !rg.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const m = Float64Array.from({ length: n }, (_, i) => v(rg, i) + v(ws, i));
+        const near = within(g, m, GAUGE_KM);
+        const idx = _residents(fr);
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const gauges = Math.round(Array.from(rg).reduce((s, x) => s + (_fin(x) ? x : 0), 0)), stations = ws ? Math.round(Array.from(ws).reduce((s, x) => s + (_fin(x) ? x : 0), 0)) : 0;
+        const far = idx.filter(i => near[i] < 0.5), farPop = far.reduce((s, i) => s + v(pop, i), 0);
+        const prone = i => v(wl, i) >= WLOG_PRONE;
+        const stats = [
+            { label: 'Telemetric rain gauges on the map', value: `${gauges}${stations ? ` (plus ${stations} weather stations)` : ''}` },
+            { label: 'Residents per gauge', value: _people(all / ((gauges + stations) || 1)) },
+            { label: `Residents more than ${GAUGE_KM} km from any gauge`, value: `${_people(farPop)} (${_round(100 * farPop / all, 1)}%)` },
+        ];
+        const wet = i => v(spots, i) > 0;
+        if (spots) {
+            const blocks = Array.from({ length: n }, (_, i) => i).filter(wet);
+            stats.push({ label: `Blocks near a reported flood spot that are more than ${GAUGE_KM} km from a gauge`, value: `${blocks.filter(i => near[i] < 0.5).length} of ${blocks.length}` });
+        }
+        if (wl) {
+            const p = far.filter(prone).reduce((s, i) => s + v(pop, i), 0);
+            stats.push({ label: `Residents more than ${GAUGE_KM} km from a gauge in waterlogging-prone blocks (index ${WLOG_PRONE}+)`, value: _people(p) });
+        }
+        const need = Float64Array.from({ length: n }, (_, i) => (near[i] < 0.5 ? (wet(i) ? 20000 : 0) + v(pop, i) * (prone(i) ? 2 : 1) : 0));
+        const gain = within(g, need, GAUGE_KM), farPopNear = within(g, Float64Array.from({ length: n }, (_, j) => (near[j] < 0.5 ? v(pop, j) : 0)), GAUGE_KM);
+        const farSpotsNear = spots ? within(g, Float64Array.from({ length: n }, (_, j) => (near[j] < 0.5 && wet(j) ? 1 : 0)), GAUGE_KM) : null;
+        spaced(g, far, gain, 5).forEach((i, k) => stats.push({ label: `New gauge ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(farPopNear[i])} unmeasured residents within ${GAUGE_KM} km${farSpotsNear ? `, ${Math.round(farSpotsNear[i])} blocks near reported flood spots` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = Math.min(near[i], 5);
+        return {
+            columns: { gauges_2km: out }, idx, weightKey: 'gauges_2km', noHotspots: true,
+            metric: { label: `Residents more than ${GAUGE_KM} km from a telemetric rain gauge`, value: Math.round(farPop), unit: 'people', higherIs: 'worse' },
+            headline: `${gauges} telemetric rain gauges${stations ? ` and ${stations} weather stations` : ''} measure this city's rain every 15 minutes; ${_people(farPop)} residents (${_round(100 * farPop / all, 1)}%) live more than ${GAUGE_KM} km from the nearest, where a downpour over their street goes unmeasured.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -372,8 +419,14 @@ const UrbanLensesCommons = (() => {
             needs: ['new_roads.newroad_dist_m', 'new_roads.newroad_len_m', 'new_roads.newroad_ref', 'traffic_noise.lden_db', 'tree_census.trees', 'tree_census.big_trees', 'schools_official.schools', 'land_value.value_index', 'population.population'],
             method: `Alignment maps on data.opencity.in (public domain): Greater Bengaluru Authority's eleven elevated corridors from the August 2026 list (categories A to C, tenders floated), one centreline each (right-of-way edge lines drawn beside a centreline are dropped). Each block within 3 km takes the distance from its centre to the nearest alignment and the alignment length inside it. Residents are WorldPop; road noise is the traffic model's Lden; trees are the Bengaluru tree census. Alignments in tender documents can still shift, and an elevated corridor touches the ground only at its piers and ramps. Bengaluru only: the pipeline also reads MSRDC's Pune Outer Ring Road, but it runs almost entirely outside the Pune map.`,
             refs: 'Greater Bengaluru Authority elevated corridor documents (2026) via data.opencity.in' },
+        { id: 'raingaugegap', equity: true, title: 'Rain gauge gaps', icon: '🌧️',
+            question: 'Where does heavy rain fall unmeasured, far from any rain gauge?',
+            field: { key: 'gauges_2km', label: `Rain gauges and weather stations within ${GAUGE_KM} km`, unit: 'gauges', higherIs: 'better', ramp: 'blues', domain: [0, 5] },
+            needs: ['rain_gauges.rain_gauges', 'rain_gauges.weather_stations', 'flood_reports.flood_spots', 'waterlogging.waterlogging_index', 'population.population'],
+            method: `Karnataka State Natural Disaster Monitoring Centre (KSNDMC) telemetric rain gauges and weather stations from the KGIS maps on data.opencity.in (public domain); gauges on both the state and the Bengaluru Urban layer count once. Each block counts gauges and stations within ${GAUGE_KM} km; residents are WorldPop. Flood spots are the reported flood-vulnerable and low-lying locations (flood_reports, within 300 m of a block); waterlogging-prone means the satellite waterlogging index is ${WLOG_PRONE} or more. New gauge picks are blocks ${SPACING_KM} km apart, beyond ${GAUGE_KM} km of a gauge, ranked by unmeasured blocks near flood spots (weighted heavily) and residents (twice in waterlogging-prone blocks) within ${GAUGE_KM} km. Urban convective storms can be a few kilometres across, so gauge spacing matters for street-level alerts. Bengaluru only.`,
+            refs: 'KSNDMC telemetric rain gauge network via KGIS and data.opencity.in; WMO Guide to Hydrological Practices (WMO-No. 168), precipitation network density' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap });
     return { ENTRIES };
 })();

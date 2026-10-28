@@ -1463,3 +1463,12 @@ residents in crossed blocks, within 500 m and within 2 km, today's modelled road
 schools in crossed blocks, the land value index near the line, and residents within 500 m per corridor. First run:
 56.6 km, 3.2 lakh residents in crossed blocks, 12.9 lakh within 500 m, land value index 119 near the line against 99.
 
+## Rain gauge gaps (`raingaugegap` lens, `rain_gauges` dataset, pipeline/realestate/raingauges.py)
+
+KSNDMC's Karnataka telemetric rain gauge and weather station layers and the Bengaluru Urban rain gauge layer (KGIS,
+via data.opencity.in) are clipped to the Bengaluru map and merged (a gauge on both rain gauge layers within 100 m
+counts once). The lens counts gauges and stations within 2 km of every block, residents beyond that, blocks near a
+reported flood spot (flood_reports, within 300 m) beyond it, and residents beyond it in waterlogging-prone blocks
+(index 60+). New gauge picks are blocks 1.5 km apart ranked by unmeasured flood-spot blocks and residents within 2 km.
+First run: 133 gauges, 5.5 lakh residents (4.1%) beyond 2 km, 60 of 1,575 flood-spot blocks unmeasured.
+

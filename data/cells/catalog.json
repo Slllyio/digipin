@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T22:51:04Z",
+  "generated": "2026-10-28T22:57:34Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -33663,6 +33663,63 @@
             "north": 18.64111328125
           },
           "json": "railways/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "rain_gauges",
+      "title": "Rain gauges and weather stations (KSNDMC)",
+      "description": "Karnataka State Natural Disaster Monitoring Centre telemetric rain gauges (reporting every 15 minutes) and weather stations, from the KGIS maps on data.opencity.in; a gauge on both the state and the Bengaluru Urban layer counts once.",
+      "source": "pipeline/realestate/raingauges.py (OpenCity KSNDMC maps)",
+      "license": "Public domain (KSNDMC via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "rain_gauges",
+          "label": "Telemetric rain gauges (KSNDMC)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "gauges",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "weather_stations",
+          "label": "Telemetric weather stations (KSNDMC)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "stations",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "rain_gauges",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 136,
+          "bbox": {
+            "west": 77.45263671875,
+            "south": 12.83154296875,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "rain_gauges/bengaluru.json",
           "parquet": null
         }
       ]

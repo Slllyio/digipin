@@ -966,6 +966,12 @@
      "unit": "people",
      "higherIs": null
     },
+    "raingaugegap": {
+     "label": "Residents more than 2 km from a telemetric rain gauge",
+     "value": 548177,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "metrowait": {
      "label": "Residents within 800 m of a metro station",
      "value": 20.7,
