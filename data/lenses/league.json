@@ -888,6 +888,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "metrowait": {
+     "label": "Residents within 800 m of a metro station",
+     "value": 20.7,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "wardfit": {
      "label": "Electricity, water and police offices a ward deals with (median resident)",
      "value": 7,

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T19:46:46Z",
+  "generated": "2026-10-28T19:51:55Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -17020,9 +17020,9 @@
     {
       "id": "metro_service",
       "title": "Metro service (timetable)",
-      "description": "Weekday metro service from the city's open GTFS timetable: platforms, lines, departures and the gap between trains at each cell's busiest platform in the 07:00-10:00 peak (hyderabad: Hyderabad Metro Rail (Telangana open data GTFS, July 2026, via OpenCity)).",
-      "source": "pipeline/traffic/metro_gtfs.py over hyderabad: Hyderabad Metro Rail (Telangana open data GTFS, July 2026, via OpenCity)",
-      "license": "Public domain (OpenCity) (hyderabad)",
+      "description": "Weekday metro service from the city's open GTFS timetable: platforms, lines, departures and the gap between trains at each cell's busiest platform in the 07:00-10:00 peak (bengaluru: Namma Metro (BMRCL timetables, community GTFS by Vonter, August 2026); hyderabad: Hyderabad Metro Rail (Telangana open data GTFS, July 2026, via OpenCity)).",
+      "source": "pipeline/traffic/metro_gtfs.py over bengaluru: Namma Metro (BMRCL timetables, community GTFS by Vonter, August 2026); hyderabad: Hyderabad Metro Rail (Telangana open data GTFS, July 2026, via OpenCity)",
+      "license": "ODbL 1.0 (bengaluru); Public domain (OpenCity) (hyderabad)",
       "group": "Traffic & mobility",
       "level": 7,
       "approxCellM": 244,
@@ -17047,7 +17047,7 @@
           "agg": "sum",
           "unit": "per hour",
           "domain": [
-            10,
+            6,
             56
           ],
           "ramp": "viridis",
@@ -17060,7 +17060,7 @@
           "agg": "sum",
           "unit": "per day",
           "domain": [
-            174,
+            111,
             877
           ],
           "ramp": "viridis",
@@ -17099,6 +17099,18 @@
         "heightM": 400.0
       },
       "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 101,
+          "bbox": {
+            "west": 77.459228515625,
+            "south": 12.818359375,
+            "east": 77.758056640625,
+            "north": 13.057861328125
+          },
+          "json": "metro_service/bengaluru.json",
+          "parquet": null
+        },
         {
           "name": "hyderabad",
           "cells": 57,

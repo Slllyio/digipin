@@ -10,10 +10,12 @@ Bins a metro feed into cell dataset ``metro_service`` (L7), with the same counti
 
 Feeds:
 
+    bengaluru   Namma Metro (BMRCL), community GTFS built from BMRCL's published timetables and OpenStreetMap
+                (github.com/Vonter/bmrcl-gtfs, ODbL); stop times are estimates from published headways
     hyderabad   Hyderabad Metro Rail (L&T HMRL), Telangana open data GTFS (July 2026) via data.opencity.in
                 (public domain)
 
-    python -m pipeline.traffic.metro_gtfs --region hyderabad
+    python -m pipeline.traffic.metro_gtfs --region bengaluru,hyderabad
 """
 from __future__ import annotations
 
@@ -25,6 +27,8 @@ from pathlib import Path
 from pipeline.traffic.gtfs_cells import CELLS, LEVEL, cell_rows, read_feed
 
 FEEDS = {
+    "bengaluru": {"url": "https://raw.githubusercontent.com/Vonter/bmrcl-gtfs/main/gtfs/bmrcl.zip",
+                  "name": "Namma Metro (BMRCL timetables, community GTFS by Vonter, August 2026)", "license": "ODbL 1.0"},
     "hyderabad": {"url": "https://data.opencity.in/dataset/4e72c202-4cdb-4437-a629-ffcbe9519f73/resource/5fa250e1-3104-4ca7-ad31-4fa3321f6255/download/telangana_opendata_gtfs_hmrl_03_july_2026.zip",
                   "name": "Hyderabad Metro Rail (Telangana open data GTFS, July 2026, via OpenCity)", "license": "Public domain (OpenCity)"},
 }
