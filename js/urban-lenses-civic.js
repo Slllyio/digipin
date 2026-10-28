@@ -995,6 +995,48 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    const WORK_KM = 2, DORM_SHARE = 0.5;
+
+    function homeswork(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, non = c['built_class.nonres_pct'], built = c['built_class.built_pct'];
+        const tall = c['built_class.tall_pct'], pop = c['population.population'];
+        if (!non || !built || !non.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(built, i) >= 5 && _fin(non[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const builtKm2 = Float64Array.from({ length: n }, (_, i) => v(built, i) / 100 * g.cellKm2);
+        const nonKm2 = Float64Array.from({ length: n }, (_, i) => builtKm2[i] * v(non, i) / 100);
+        const totB = idx.reduce((t, i) => t + builtKm2[i], 0), totN = idx.reduce((t, i) => t + nonKm2[i], 0);
+        const all = idx.reduce((t, i) => t + v(pop, i), 0) || 1;
+        const nearNon = within(g, nonKm2, WORK_KM), nearB = within(g, builtKm2, WORK_KM);
+        const BIZ = ['shopping', 'offices', 'food', 'services', 'finance', 'corporate', 'wholesale'].map(k => c[`places.${k}`]).filter(Boolean);
+        const biz = Float64Array.from({ length: n }, (_, i) => BIZ.reduce((s, a) => s + v(a, i), 0));
+        const nearBiz = BIZ.length ? within(g, biz, WORK_KM) : null, nearPop = within(g, Float64Array.from({ length: n }, (_, i) => v(pop, i)), WORK_KM);
+        const cityBiz = BIZ.length ? idx.reduce((s, i) => s + biz[i], 0) / all : 0;
+        const cityShare = totN / (totB || 1);
+        const dorm = idx.filter(i => v(pop, i) > 0 && nearNon[i] / (nearB[i] || 1) < DORM_SHARE * cityShare
+            && (!nearBiz || nearBiz[i] / (nearPop[i] || 1) < DORM_SHARE * cityBiz));
+        const dormPop = dorm.reduce((t, i) => t + v(pop, i), 0);
+        const tallB = tall ? idx.reduce((t, i) => t + builtKm2[i] * v(tall, i) / 100, 0) : 0;
+        const stats = [
+            { label: 'Built-up ground mapped (GHSL 2018)', value: `${_round(totB, 1)} km²` },
+            { label: 'Of it non-residential (offices, shops, industry, institutions)', value: `${_round(totN, 1)} km² (${_round(100 * totN / (totB || 1))}%)` },
+            ...(tall ? [{ label: 'Built-up ground with buildings over 15 m', value: `${_round(tallB, 1)} km² (${_round(100 * tallB / (totB || 1))}%)` }] : []),
+            { label: `Residents where both non-residential building and businesses within ${WORK_KM} km are under half the city's rate`, value: `${_people(dormPop)} (${_round(100 * dormPop / all)}%)` },
+        ];
+        spaced(g, idx.filter(i => v(non, i) >= 50), nonKm2, 5).forEach((i, k) => stats.push({ label: `Workplace cluster ${k + 1}: ${g.codes[i]}`, value: `${_round(v(non, i))}% of ${_round(v(built, i))}% built-up ground non-residential${tall && v(tall, i) > 0 ? `; ${_round(v(tall, i))}% over 15 m` : ''}` }));
+        spaced(g, dorm, Float64Array.from({ length: n }, (_, i) => v(pop, i)), 3).forEach((i, k) => stats.push({ label: `Mostly residential pocket ${k + 1}: ${g.codes[i]}`, value: `${_people(v(pop, i))} residents; ${_round(100 * nearNon[i] / (nearB[i] || 1), 1)}% non-residential building within ${WORK_KM} km${nearBiz ? `; businesses per 1,000 residents ${_round(1000 * nearBiz[i] / (nearPop[i] || 1), 1)}` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(non[i]);
+        return {
+            columns: { nonres_pct: out }, idx, weightKey: 'nonres_pct', noHotspots: true,
+            metric: { label: 'Non-residential share of built-up ground', value: _round(100 * totN / (totB || 1), 1), unit: '%', higherIs: null },
+            headline: `GHSL's 2018 building map puts ${_round(100 * totN / (totB || 1))}% of the built-up ground here in offices, shops, industry and institutions and the rest in homes${tall ? `; ${_round(100 * tallB / (totB || 1))}% carries buildings over 15 m` : ''}. ${_people(dormPop)} residents (${_round(100 * dormPop / all)}%) live in mostly residential pockets, where both non-residential building and listed businesses within ${WORK_KM} km run under half the city's rate. The satellite classes read mixed shop-houses as homes, so the non-residential share is a floor.`,
+            stats,
+        };
+    }
+
     const GW_DEEP_M = 8;
 
     function gwdepth(fr) {
@@ -1170,6 +1212,12 @@ const UrbanLensesCivic = (() => {
             needs: ['service_areas.ward_power_units', 'service_areas.ward_water_units', 'service_areas.ward_police_units', 'service_areas.ward_id', 'population.population'],
             method: 'Utility boundary maps on data.opencity.in (public domain): BESCOM section offices (237) and BWSSB service stations (143) for Bengaluru, TNEB sections and CMWSSB depots for Chennai. Each lived-in block takes the section and field unit holding its centre (DuckDB spatial). For each ward (wards layer) the pipeline counts the distinct sections, field units and police stations (police layer, where mapped) covering its lived-in blocks; when boundaries line up a ward deals with one or two of each. Medians are over residents. The block\'s own section office and service station are in the service areas layer.',
             refs: 'Janaagraha Annual Survey of India\'s City-Systems (coterminous boundaries); 74th Constitutional Amendment; BESCOM, BWSSB, TNEB and CMWSSB via OpenCity' },
+        { id: 'homeswork', equity: false, title: 'Homes versus workplaces', icon: '🏢',
+            question: 'How much of the built city is homes and how much is offices, shops and industry, and who lives far from any workplace?',
+            field: { key: 'nonres_pct', label: 'Non-residential share of the block\'s built-up ground (GHSL 2018)', unit: '%', higherIs: null, ramp: 'viridis', domain: [0, 40] },
+            needs: ['built_class.nonres_pct', 'built_class.built_pct', 'built_class.tall_pct', 'places.shopping', 'places.offices', 'places.food', 'places.services', 'places.finance', 'places.corporate', 'places.wholesale', 'population.population'],
+            method: `The European Commission JRC's GHS-BUILT-C 2018 map (10 m, CC BY 4.0) classes every built pixel as residential or non-residential in five height bands, from satellite texture and height, read per block through Earth Engine. The lens weighs each block's non-residential share by its built-up ground; workplace clusters are blocks at least half non-residential, ${SPACING_KM} km apart, ranked by non-residential ground. Mostly residential pockets are populated blocks where, within ${WORK_KM} km, both the non-residential share of built-up ground and the businesses Overture Maps lists per resident (shops, offices, restaurants, services, finance, corporate and wholesale) are under half the city's own rate; the business check keeps market streets of shop-houses out. The classes are modelled, not surveyed: mixed buildings with shops below homes usually read as residential, so the non-residential share is a floor.`,
+            refs: 'Pesaresi et al. (2023) GHS-BUILT-C R2023A, JRC; Cervero (1989) jobs-housing balance; URDPFI Guidelines 2014 (mixed use)' },
         { id: 'gwdepth', equity: true, title: 'Groundwater depth by ward', icon: '🪣',
             question: 'How deep is the water table under each ward, and where is it falling?',
             field: { key: 'gw_may_m', label: 'Depth to groundwater in May 2023 at the ward\'s monitoring well', unit: 'm', higherIs: 'worse', ramp: 'reds', domain: [0, 15] },
@@ -1341,6 +1389,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit, metrowait, landgrain, floodzones, gwdepth, gwprospect });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit, metrowait, landgrain, floodzones, gwdepth, gwprospect, homeswork });
     return { ENTRIES };
 })();

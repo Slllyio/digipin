@@ -1957,6 +1957,44 @@ def tree_season(region):
     return spec, _table(level, rows, specs)
 
 
+def built_class(region):
+    """Homes versus other buildings, building height bands, roads and open green per block (GHSL GHS-BUILT-C 2018, 10 m)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    c = ee.Image("JRC/GHSL/P2023A/GHS_BUILT_C/2018").select("built_characteristics")
+    res, non = c.gte(11).And(c.lte(15)), c.gte(21).And(c.lte(25))
+    built = res.Or(non)
+    tall = c.remap([14, 15, 24, 25], [1, 1, 1, 1], 0)
+    img = ee.Image.cat([res.rename("res"), non.rename("non"), built.rename("built"), tall.rename("tall"),
+                        c.eq(5).rename("road"), c.eq(2).Or(c.eq(3)).rename("green")]).updateMask(c.gt(0))
+    raw = gee.fetch(gee.to_cells(img, 10), bbox, level, tile=64)
+    rows = {}
+    for code, x in raw.items():
+        b = x.get("built")
+        if b is None:
+            continue
+        rows[code] = {"built_pct": _r(100 * b), "nonres_pct": _r(100 * x["non"] / b) if b > 0.02 else None,
+                      "tall_pct": _r(100 * x["tall"] / b) if b > 0.02 else None,
+                      "road_pct": _r(100 * (x.get("road") or 0)), "green_open_pct": _r(100 * (x.get("green") or 0))}
+    pct = lambda k, label, ramp, hi: FieldSpec(k, label, agg="mean", unit="%", domain=[0, 100], ramp=ramp, higher_is=hi)
+    specs = [
+        pct("nonres_pct", "Non-residential share of built-up ground (offices, shops, industry, institutions)", "viridis", None),
+        pct("built_pct", "Built-up ground (GHSL 2018)", "reds", None),
+        pct("tall_pct", "Built-up ground with buildings over 15 m", "viridis", None),
+        pct("road_pct", "Road surface", "viridis", None),
+        pct("green_open_pct", "Open ground with medium or high vegetation", "greens", "better"),
+    ]
+    spec = DatasetSpec(
+        id="built_class", title="Homes versus other buildings (GHSL 2018)", level=level, fields=specs, group=GROUP,
+        description="The European Commission JRC's GHS-BUILT-C 2018 map at 10 m classes every built pixel as residential or "
+                    "non-residential in five height bands and open land as roads, water or vegetated: per block, the "
+                    "non-residential share of built-up ground, the share of buildings over 15 m, road surface and open green.",
+        source="JRC GHSL GHS-BUILT-C R2023A (2018) via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (European Commission, JRC)", default_field="nonres_pct")
+    return spec, _table(level, rows, specs)
+
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -1965,7 +2003,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class,
 }
 
 
