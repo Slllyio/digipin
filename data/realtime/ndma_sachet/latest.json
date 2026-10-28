@@ -1,7 +1,73 @@
 {
-  "generated_at_iso": "2026-10-28T19:44:54Z",
+  "generated_at_iso": "2026-10-28T23:40:47Z",
   "count": 100,
   "records": [
+    {
+      "id": "1793227321911012",
+      "headline": "Moderate Rain,Thunder,Lightning with wind speed 40-50 kmph is very likely to occur at a few places over Anugul, Baleshwar, Gajapati, Ganjam, Kendujhar, Khordha, Malkangiri, Mayurbhanj, Nabarangpur, Nayagarh, Puri, Rayagada, Sambalpur in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 28 Oct 2026 22:42:05 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793227321911012",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1793224339126009",
+      "headline": "अगले 3 घंटो में आपके क्षेत्र में कहीं-कहीं हल्की से मध्यम वर्षा / गर्जन एवं आकाशीय बिजली चमकने होने की संभावना है |",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 28 Oct 2026 21:54:37 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793224339126009",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1793224094119012",
+      "headline": "River Vamsadhara at Kashinagar in Gajapati district of Odisha continues to flow in above normal flood situation at 3:00 am today.",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 28 Oct 2026 21:48:15 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793224094119012",
+      "severity": "Minor",
+      "category": "Met-Flood",
+      "tags": []
+    },
+    {
+      "id": "1793216928189012",
+      "headline": "ଭାରତ ପାଣିପାଗ ବିଭାଗର ତଥ୍ୟ ଅନୁଯାୟୀ, ଆଗାମୀ ତିନି ଘଣ୍ଟା ମଧ୍ୟରେ ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ମଧ୍ୟମ ଧରଣର ଘଡ଼ଘଡ଼ି, ବିଜୁଳି ଏବଂ ବର୍ଷା ହେବାର ସମ୍ଭାବନା ରହିଛି । ଏଥିପ୍ରତି ସତର୍କ ରହିବାକୁ ଅନୁରୋଧ । SRC, Odisha",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 28 Oct 2026 21:27:14 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793216928189012",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1793221937397012",
+      "headline": "River Vamsadhara at Gunupur in Rayagada district of Odisha continues to flow in above normal flood situation at 2:00 am today.",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 28 Oct 2026 21:12:19 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793221937397012",
+      "severity": "Minor",
+      "category": "Met-Flood",
+      "tags": []
+    },
+    {
+      "id": "1793220617082008",
+      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
+      "description": "",
+      "area": "",
+      "published_utc": "Wed, 28 Oct 2026 20:50:59 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793220617082008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1793215214094015",
       "headline": "Thunderstorm with Lightning and Light to Moderate Rain is very likely to continue at a few places over Northern Parts of North Tripura for next 2-3 hours.",
@@ -1032,72 +1098,6 @@
       "area": "",
       "published_utc": "Tue, 27 Oct 2026 17:10:05 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793118941012008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793118328483008",
-      "headline": "బంగాళాఖాతంలోని అతితీవ్ర తుపాన్ ప్రభావంతో రేపు మీప్రాంతంలో ఈదురుగాలులతో కూడిన భారీ వర్షాలు కురిసే అవకాశం ఉంది.ప్రజలు అత్యంత అప్రమత్తంగా ఉండి జాగ్రత్తలు తీసుకోవాలి-ఆంధ్రప్రదేశ్ ప్రభుత్వం",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 27 Oct 2026 16:28:48 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793118328483008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793117523592008",
-      "headline": "బంగాళాఖాతంలోని అతితీవ్ర తుపాన్ ప్రభావంతో రేపు మీప్రాంతంలో ఈదురుగాలులతో కూడిన అత్యంత భారీ వర్షాలు కురిసే అవకాశం ఉంది.ప్రజలు అత్యంత అప్రమత్తంగా ఉండి జాగ్రత్తలు తీసుకోవాలి-ఆంధ్రప్రదేశ్ ప్రభుత్వం",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 27 Oct 2026 16:13:05 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793117523592008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793117190111008",
-      "headline": "బంగాళాఖాతంలోని అతితీవ్ర తుపాన్ ప్రభావంతో రేపు మీప్రాంతంలో ఈదురుగాలులతో భారీ వర్షాలు కురిసే అవకాశం ఉంది.ప్రజలు అత్యంత అప్రమత్తంగా ఉండి జాగ్రత్తలు తీసుకోవాలి-ఆంధ్రప్రదేశ్ ప్రభుత్వం",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 27 Oct 2026 16:07:18 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793117190111008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793115850571017",
-      "headline": "২৭-১০-২০২৬, ২১:১০ থেকে পরবর্তী ২-৩ ঘণ্টায় হাওড়া ও হুগলির কিছু অংশে হালকা বজ্রপাতসহ হালকা-মাঝারি বৃষ্টি এবং ৩০-৪০ কিমি/ঘণ্টা বেগে দমকা হাওয়া বওয়ার প্রবল সম্ভাবনা রয়েছে। (১৭২টি ক্যারেক্টার)",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 27 Oct 2026 15:49:04 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793115850571017",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793114934457008",
-      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 27 Oct 2026 15:30:18 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793114934457008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793111596994012",
-      "headline": "ଗଞ୍ଜାମ ଓ ପୁରୀ ଉପକୂଳ ପାଇଁ ଉଚ୍ଚ ତରଙ୍ଗ ସମ୍ବନ୍ଧୀୟ ଚେତାବନୀ।୨୭-୨୮ ତାରିଖ ମଧ୍ୟରେ ଉଚ୍ଚ ତରଙ୍ଗ ସୃଷ୍ଟି ହେବାର ପୂର୍ବାନୁମାନ କରାଯାଇଛି। ଛୋଟ ଜାହାଜ କିମ୍ବା ଡଙ୍ଗାଗୁଡ଼ିକୁ ଚଳାଚଳ ନ କରିବାକୁ ଅନୁରୋଧ |SRC, Odisha",
-      "description": "",
-      "area": "",
-      "published_utc": "Tue, 27 Oct 2026 15:22:56 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793111596994012",
       "severity": "Minor",
       "category": "Other",
       "tags": []

@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-10-28T19:44:20Z",
+  "generated_at_iso": "2026-10-28T23:40:23Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-29 04:27:48|31.450,78.239",
+      "magnitude": 2.5,
+      "origin_time": "2026-10-29 04:27:48",
+      "latitude": 31.45,
+      "longitude": 78.239,
+      "depth_km": 10.0,
+      "region": "Kinnaur, Himachal Pradesh",
+      "location": "82km NNW of Uttarkashi, Uttarakhand, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-29 03:16:35|31.374,93.306",
+      "magnitude": 4.3,
+      "origin_time": "2026-10-29 03:16:35",
+      "latitude": 31.374,
+      "longitude": 93.306,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "400km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-29 02:32:53|39.435,77.884",
+      "magnitude": 3.6,
+      "origin_time": "2026-10-29 02:32:53",
+      "latitude": 39.435,
+      "longitude": 77.884,
+      "depth_km": 30.0,
+      "region": "Xinjiang",
+      "location": "472km SE of Bishkek, Kyrgyzstan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-29 01:44:51|37.101,69.458",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-29 01:44:51",
+      "latitude": 37.101,
+      "longitude": 69.458,
+      "depth_km": 103.0,
+      "region": "Afghanistan",
+      "location": "96km W of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-28 23:18:25|32.656,94.064",
       "magnitude": 4.5,
@@ -1606,50 +1650,6 @@
       "depth_km": 10.0,
       "region": "West Khasi Hills, Meghalaya",
       "location": "64km WNW of Cherrapunjee, Meghalaya, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-19 18:51:31|22.788,93.802",
-      "magnitude": 3.3,
-      "origin_time": "2026-10-19 18:51:31",
-      "latitude": 22.788,
-      "longitude": 93.802,
-      "depth_km": 75.0,
-      "region": "Myanmar",
-      "location": "88km SE of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-19 13:36:56|17.089,75.570",
-      "magnitude": 3.3,
-      "origin_time": "2026-10-19 13:36:56",
-      "latitude": 17.089,
-      "longitude": 75.57,
-      "depth_km": 5.0,
-      "region": "Sangli, Maharashtra",
-      "location": "147km ENE of Kolhapur, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-19 11:59:45|23.564,93.462",
-      "magnitude": 4.0,
-      "origin_time": "2026-10-19 11:59:45",
-      "latitude": 23.564,
-      "longitude": 93.462,
-      "depth_km": 37.0,
-      "region": "Myanmar",
-      "location": "18km NE of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-19 11:51:52|28.194,87.192",
-      "magnitude": 3.3,
-      "origin_time": "2026-10-19 11:51:52",
-      "latitude": 28.194,
-      "longitude": 87.192,
-      "depth_km": 30.0,
-      "region": "Tibet",
-      "location": "136km NW of Yuksom, Sikkim, India",
       "review_status": "Reviewed"
     }
   ]

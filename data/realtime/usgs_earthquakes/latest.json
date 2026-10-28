@@ -1,7 +1,79 @@
 {
-  "generated_at_iso": "2026-10-28T19:44:30Z",
-  "count": 21,
+  "generated_at_iso": "2026-10-28T23:40:25Z",
+  "count": 26,
   "records": [
+    {
+      "id": "us7000ttv1",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-28T23:13:50.764000+00:00",
+      "latitude": 43.1303,
+      "longitude": 144.3697,
+      "depth_km": 130.142,
+      "place": "17 km N of Kushiro, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttv1",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000ttua",
+      "magnitude": 5.7,
+      "origin_time_utc": "2026-10-28T22:06:45.820000+00:00",
+      "latitude": -6.3231,
+      "longitude": 130.3957,
+      "depth_km": 142.0,
+      "place": "271 km WSW of Tual, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttua",
+      "tsunami": 0,
+      "significance": 500
+    },
+    {
+      "id": "us7000tttl",
+      "magnitude": 5.3,
+      "origin_time_utc": "2026-10-28T19:56:47.711000+00:00",
+      "latitude": 2.4277,
+      "longitude": 126.7587,
+      "depth_km": 35.0,
+      "place": "159 km WNW of Tobelo, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tttl",
+      "tsunami": 0,
+      "significance": 432
+    },
+    {
+      "id": "us7000ttth",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-10-28T19:45:32.958000+00:00",
+      "latitude": 58.1136,
+      "longitude": -32.1037,
+      "depth_km": 10.0,
+      "place": "Reykjanes Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttth",
+      "tsunami": 0,
+      "significance": 416
+    },
+    {
+      "id": "us7000ttt4",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-28T18:44:30.711000+00:00",
+      "latitude": 57.9607,
+      "longitude": -32.2017,
+      "depth_km": 10.0,
+      "place": "Reykjanes Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttt4",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000ttt2",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-28T18:32:23.536000+00:00",
+      "latitude": 35.7763,
+      "longitude": 140.6463,
+      "depth_km": 41.486,
+      "place": "6 km N of Asahi, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttt2",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000ttpk",
       "magnitude": 4.7,
@@ -241,18 +313,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttkk",
       "tsunami": 0,
       "significance": 403
-    },
-    {
-      "id": "us7000ttke",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-10-27T23:14:17.420000+00:00",
-      "latitude": 12.6676,
-      "longitude": 142.9938,
-      "depth_km": 100.998,
-      "place": "193 km WSW of Merizo Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttke",
-      "tsunami": 0,
-      "significance": 449
     }
   ]
 }
