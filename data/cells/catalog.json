@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T16:55:47Z",
+  "generated": "2026-10-28T17:04:24Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -1060,6 +1060,124 @@
             "north": 13.1962890625
           },
           "json": "big_projects/bengaluru.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "birds",
+      "title": "Bird species (GBIF citizen science)",
+      "description": "Bird records and species per ~1 km block since 2015 from GBIF occurrence data under CC0 or CC BY 4.0 (mostly the eBird Observation Dataset and iNaturalist research-grade), with species richness rarefied to 200 records so heavily and lightly birded blocks compare fairly.",
+      "source": "pipeline/realestate/birds.py (GBIF occurrence search API, faceted by species)",
+      "license": "CC BY 4.0 and CC0 (GBIF.org occurrence data; eBird, iNaturalist and other publishers)",
+      "group": "Environment",
+      "level": 6,
+      "approxCellM": 975,
+      "fields": [
+        {
+          "key": "records",
+          "label": "Bird records since 2015 (GBIF, survey effort)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "records",
+          "domain": [
+            1,
+            462980
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "species",
+          "label": "Bird species recorded since 2015",
+          "type": "number",
+          "agg": "max",
+          "unit": "species",
+          "domain": [
+            0,
+            278
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "rich200",
+          "label": "Bird species expected in 200 records (rarefied)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "species",
+          "domain": [
+            10.6,
+            110.8
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "rich200",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 1141,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.8271484375,
+            "east": 77.7822265625,
+            "north": 13.1435546875
+          },
+          "json": "birds/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 566,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.8974609375,
+            "east": 80.322265625,
+            "north": 13.1787109375
+          },
+          "json": "birds/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 715,
+          "bbox": {
+            "west": 78.30078125,
+            "south": 17.30078125,
+            "east": 78.6083984375,
+            "north": 17.5556640625
+          },
+          "json": "birds/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 668,
+          "bbox": {
+            "west": 72.78125,
+            "south": 18.8916015625,
+            "east": 72.9921875,
+            "north": 19.2783203125
+          },
+          "json": "birds/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 522,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.42578125,
+            "east": 73.994140625,
+            "north": 18.63671875
+          },
+          "json": "birds/pune.json",
           "parquet": null
         }
       ]

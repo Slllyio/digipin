@@ -2,7 +2,7 @@
  * Civic lenses for UrbanLenses: what statutory plans and municipal facility lists say about a block (planned road
  * widths and new links, cremation and burial grounds, public borewells, waste bins, large
  * projects with environmental clearance, coastal and eco-sensitive building limits,
- * police stations, lake and drain buffers, parks and layout open spaces). They read datasets baked from
+ * police stations, lake and drain buffers, parks and layout open spaces, birdlife). They read datasets baked from
  * city and development-authority maps. Registers itself on load, after urban-lenses.js.
  */
 const UrbanLensesCivic = (() => {
@@ -422,7 +422,55 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Birdlife. Citizen-science bird lists (eBird, iNaturalist) are the densest biodiversity record Indian cities have.
+    // Raw species counts follow birding effort, so blocks are compared on species expected in 200 records.
+    const BIRD_FEW = 20, BIRD_HOT = 1000;   // hotspots need 1,000+ records: a few long checklists can fake richness
+
+    function birdlife(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const rec = c['birds.records'], sp = c['birds.species'], rich = c['birds.rich200'], tree = c['vegetation.tree_canopy_pct'];
+        if (!rec || !rich || !rich.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        // The dataset is per ~1 km block: one representative block per parent code.
+        const first = new Map();
+        for (let i = 0; i < n; i++) { const k = g.codes[i].slice(0, 6); if (!first.has(k)) first.set(k, i); }
+        const reps = [...first.values()];
+        const rated = reps.filter(i => _fin(rich[i]));
+        if (rated.length < 5) return null;
+        const med = a => { const s = a.slice().sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : NaN; };
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 || _fin(rich[i])) idx.push(i);
+        const all = _sumOver(pop, idx, () => true), thin = idx.filter(i => v(rec, i) < BIRD_FEW), pThin = _sumOver(pop, thin, () => true);
+        const stats = [
+            { label: 'Bird records since 2015 (CC0 and CC BY)', value: _people(reps.reduce((a, i) => a + v(rec, i), 0)) },
+            { label: 'Most species in one ~1 km block', value: _people(Math.max(...reps.map(i => v(sp, i)))) },
+            { label: '~1 km blocks with 200+ records (comparable)', value: `${rated.length} of ${reps.length}` },
+            { label: 'Median species expected in 200 records', value: _round(med(rated.map(i => rich[i])), 1) },
+            { label: `Residents in blocks with under ${BIRD_FEW} records (unsurveyed)`, value: `${_people(pThin)} (${_round(100 * pThin / (all || 1))}%)` },
+        ];
+        if (tree) {
+            const t = rated.filter(i => _fin(tree[i])).sort((a, b) => tree[a] - tree[b]), k = Math.floor(t.length / 3);
+            if (k >= 3) stats.push({ label: 'Species in 200 records: least vs most tree canopy (thirds of rated blocks; lakes and scrub count as low canopy)', value: `${_round(med(t.slice(0, k).map(i => rich[i])), 1)} vs ${_round(med(t.slice(-k).map(i => rich[i])), 1)}` });
+        }
+        spaced(g, rated.filter(i => v(rec, i) >= BIRD_HOT), Float64Array.from({ length: n }, (_, i) => (_fin(rich[i]) ? rich[i] : 0))).forEach((i, k) => stats.push({ label: `Bird hotspot ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(rich[i], 1)} species expected in 200 records; ${_people(v(sp, i))} species in ${_people(v(rec, i))} records` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (let i = 0; i < n; i++) if (_fin(rich[i])) out[i] = _round(rich[i], 1);
+        return {
+            columns: { bird_rich: out }, idx, weightKey: 'bird_rich', noHotspots: true,
+            metric: { label: 'Median bird species expected in 200 records', value: _round(med(rated.map(i => rich[i])), 1), unit: 'species', higherIs: 'better' },
+            headline: `Citizen scientists have logged ${_people(reps.reduce((a, i) => a + v(rec, i), 0))} bird records here since 2015. Across the ${rated.length} ~1 km blocks with enough records to compare, a typical block yields ${_round(med(rated.map(i => rich[i])), 1)} species in 200 records; ${_people(pThin)} residents (${_round(100 * pThin / (all || 1))}%) live in blocks almost nobody has surveyed. Records follow birders, so gaps are gaps in watching, not proof of no birds.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'birdlife', equity: false, title: 'Birdlife', icon: '🐦',
+            question: 'Where are birds richest, and which neighbourhoods has nobody surveyed?',
+            field: { key: 'bird_rich', label: 'Bird species expected in 200 records (~1 km block)', unit: 'species', higherIs: 'better', ramp: 'greens', domain: [20, 100] },
+            needs: ['birds.records', 'birds.species', 'birds.rich200', 'vegetation.tree_canopy_pct', 'population.population'],
+            method: `GBIF occurrence records of birds since 2015 under CC0 or CC BY 4.0 only (mostly the eBird Observation Dataset and iNaturalist research-grade; CC BY-NC records left out), one GBIF search per ~1 km DIGIPIN block faceted by species. Richness is rarefied to 200 records with the hypergeometric expectation, so a birding hotspot and a lightly visited block compare fairly; blocks with fewer records are not rated. Blocks with under ${BIRD_FEW} records count as unsurveyed. Hotspots are blocks with ${BIRD_HOT} or more records, ${SPACING_KM} km apart, with the highest rarefied richness.`,
+            refs: 'GBIF.org occurrence search (CC0 and CC BY 4.0 records); eBird Observation Dataset (Cornell Lab of Ornithology); Gotelli & Colwell (2001), rarefaction' },
         { id: 'drainbuffer', equity: false, title: 'Storm-water drain buffer building', icon: '🌊',
             question: 'How much building stands in the no-build buffer along storm-water drains?',
             field: { key: 'drain_built', label: 'Built-up share inside the RMP 2015 drain buffer (upper bound per block)', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 60] },
@@ -485,6 +533,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife });
     return { ENTRIES };
 })();
