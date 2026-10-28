@@ -1209,3 +1209,9 @@ Bengaluru Traffic Police publishes station-wise crash tables (2018-2020, 2021-20
 
 The lens shows fatal crashes per km², counts residents where that is at least twice the median jurisdiction's and where fatal crashes rose 25% or more, and lists the densest jurisdictions. Unlike `roadsafety` (modelled exposure on the school walk) these are police records, but only per jurisdiction. The property report adds the jurisdiction's crashes a year and the fatal trend.
 
+## Mapped slums (`slummap` lens, `slums_mapped` dataset, pipeline/realestate/slums.py)
+
+The corporations' own slum boundary maps on data.opencity.in (public domain): Greater Chennai Corporation (887 polygons), GHMC Hyderabad (1,351, with notified or non-notified status), MCGM slum clusters 2015 (2,542, no attributes) and BBMP Bengaluru (509, with status; spellings such as "Non_Notofied" are normalised). A DuckDB overlay gives each lived-in block the share of its area inside a mapped slum, the number of slums touching it, and the notified share of that slum area. Blocks under 1% are dropped.
+
+The lens counts residents in blocks at least 20% slum and residents × slum share ("on slum land"), the part of them in mostly non-notified slums (Hyderabad, Bengaluru) and in blocks that also flood (`flood_reports`). Modelled population spreads people evenly, so it understates slum density: Mumbai shows 18% of residents in slum blocks against about 42% in the 2011 census. It complements the `informal` lens, which infers settlements from building form and wealth rather than official maps.
+

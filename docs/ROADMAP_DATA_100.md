@@ -225,6 +225,7 @@ Each item gives four things:
 164. ✅ Newest ward maps: Bengaluru GBA 2025 (369 wards, five corporations), Indore, Ahmedabad, Bhopal, Greater Jaipur 2024, GHMC and KMC 2022, plus Gurugram, Faridabad, Thane and Navi Mumbai for metro blocks (OpenCity, public domain) | OpenCity | `wards` dataset
 165. ✅ Government school strain: UDISE+ 2024-25 school census summed by PIN code (pupils per teacher, classrooms in major repair, girls' toilets, government share) for 7 cities (OpenCity, public domain) | OpenCity | `schoolstrain` lens (new dataset `schools_udise`, pipeline/realestate/udise.py)
 166. ✅ Recorded road crashes: Bengaluru Traffic Police station-wise crash and fatality counts 2018-2025 on its 2022 jurisdiction map (OpenCity, public domain) | OpenCity | `crashrecord` lens (new dataset `road_crashes`, pipeline/realestate/btpcrashes.py)
+167. ✅ Mapped slums: corporation slum boundary maps for Chennai, Hyderabad, Mumbai (2015 clusters) and Bengaluru, with notified status where recorded (OpenCity, public domain) | OpenCity | `slummap` lens (new dataset `slums_mapped`, pipeline/realestate/slums.py)
 
 ## Parked for the keys round
 

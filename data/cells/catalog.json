@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T11:54:51Z",
+  "generated": "2026-10-28T12:10:42Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -29640,6 +29640,110 @@
             "north": 18.64111328125
           },
           "json": "sites/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "slums_mapped",
+      "title": "Mapped slums (city slum boundary maps)",
+      "description": "Share of each lived-in block inside a slum on the city's own boundary map, how many mapped slums touch it, and how much of that slum area is notified (legally declared), where the map records it. Maps on data.opencity.in: Greater Chennai Corporation, GHMC Hyderabad (with notified status), MCGM slum clusters 2015 and BBMP Bengaluru (with notified status). Blocks under 1% slum are left out.",
+      "source": "pipeline/realestate/slums.py (OpenCity slum maps via DuckDB spatial)",
+      "license": "Public domain (city corporations via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "slum_pct",
+          "label": "Block area inside a mapped slum",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "slums",
+          "label": "Mapped slums touching the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "slums",
+          "domain": [
+            1,
+            18
+          ],
+          "ramp": "heat"
+        },
+        {
+          "key": "notified_pct",
+          "label": "Slum area notified (legally declared)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "slum_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 1023,
+          "bbox": {
+            "west": 77.472412109375,
+            "south": 12.838134765625,
+            "east": 77.771240234375,
+            "north": 13.1259765625
+          },
+          "json": "slums_mapped/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 1186,
+          "bbox": {
+            "west": 80.1376953125,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "slums_mapped/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 2572,
+          "bbox": {
+            "west": 78.302978515625,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "slums_mapped/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 2501,
+          "bbox": {
+            "west": 72.78125,
+            "south": 18.906982421875,
+            "east": 72.972412109375,
+            "north": 19.26513671875
+          },
+          "json": "slums_mapped/mumbai.json",
           "parquet": null
         }
       ]

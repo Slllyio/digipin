@@ -1290,6 +1290,44 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    // Mapped slums. The corporations' own slum boundary maps: who lives in or beside a slum, how much of it is notified
+    // (legally declared, so entitled to services), and how much of it sits on land that floods.
+    const SLUM_PCT = 20;
+
+    function slummap(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], sp = c['slums_mapped.slum_pct'];
+        const nt = c['slums_mapped.notified_pct'], ns = c['slums_mapped.slums'], fl = c['flood_reports.flood_events'];
+        if (!pop || !sp) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(pop[i]) && pop[i] > 0) idx.push(i);
+        const slum = idx.filter(i => v(sp, i) >= SLUM_PCT);
+        if (slum.length < 3) return null;
+        const all = _sumOver(pop, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
+        const pS = _sumOver(pop, slum, () => true), share = idx.reduce((a, i) => a + pop[i] * v(sp, i) / 100, 0);
+        const stats = [
+            { label: `Residents in blocks ${SLUM_PCT}%+ inside a mapped slum`, value: `${_people(pS)} (${pct(pS)}%)` },
+            { label: 'Residents on mapped slum land (by area share)', value: `${_people(share)} (${pct(share)}%)` },
+        ];
+        const known = slum.filter(i => nt && _fin(nt[i]));
+        if (known.length) {
+            const pN = _sumOver(pop, known, i => nt[i] < 50);
+            stats.push({ label: '…in mostly non-notified slums (no legal status)', value: `${_people(pN)} of ${_people(_sumOver(pop, known, () => true))}` });
+        }
+        if (fl && slum.some(i => v(fl, i) > 0)) stats.push({ label: '…where the block also floods (mapped or reported)', value: _people(_sumOver(pop, slum, i => v(fl, i) > 0)) });
+        spaced(g, slum, Float64Array.from({ length: n }, (_, i) => v(pop, i) * v(sp, i))).forEach((i, k) => stats.push({
+            label: `Slum block ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(v(sp, i))}% of the block mapped as slum; ${v(ns, i)} slum${v(ns, i) === 1 ? '' : 's'}${nt && _fin(nt[i]) ? `, ${_round(nt[i])}% notified` : ''}; ${_people(pop[i])} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = v(sp, i);
+        return {
+            columns: { slum_pct: out }, idx, weightKey: 'slum_pct', noHotspots: true,
+            metric: { label: `Residents in blocks ${SLUM_PCT}%+ mapped slum`, value: pct(pS), unit: '%', higherIs: null },
+            headline: `${_people(pS)} residents (${pct(pS)}%) live in blocks where a fifth or more of the land is a slum on the corporation's own map, and about ${_people(share)} on slum land itself. These are official boundaries, unlike the informal-settlement signs lens, so they miss settlements the city has not surveyed and keep ones since redeveloped.`,
+            stats,
+        };
+    }
+
     function views(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], h = c['building_stock.height_2023_m'];
         const wat = c['water.permanent_water_pct'], park = c['parks.park_pct'], big = c['parks.big_park'], vi = c['land_value.value_index'];
@@ -1476,6 +1514,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['schools_udise.pupils_per_teacher', 'schools_udise.repair_pct', 'schools_udise.girls_toilet_pct', 'schools_udise.govt_pct', 'schools_udise.schools', 'schools_udise.govt_pupils', 'demographics.school_age', 'population.population'],
             method: `UDISE+ 2024-25, the Ministry of Education's census of every school, from the district files on data.opencity.in. Schools carry a PIN code but no location, so each PIN code's schools are summed and every block takes its PIN code (the neighbourhoods dataset votes it from Overture addresses). Government means run by the education department, a local body or another government department, including central schools. Pupils per teacher is government enrolment over government teachers; repair is classrooms needing major repair over all classrooms; girls' toilets count girls' and co-ed government schools with at least one working girls' toilet. Thresholds: ${PTR_MAX} pupils per teacher (RTE Act schedule), ${REPAIR_PCT}% classrooms in major repair, under ${TOILET_PCT}% with toilets. Delhi, Mumbai, Bengaluru, Pune, Chennai, Hyderabad and Kolkata only.`,
             refs: 'UDISE+ 2024-25 (Ministry of Education) via data.opencity.in; Right of Children to Free and Compulsory Education Act 2009, schedule (pupil-teacher ratios); Swachh Vidyalaya' },
+        { id: 'slummap', equity: true, title: 'Mapped slums', icon: '🏘️',
+            question: 'Who lives in a slum on the city\'s own map, and is it notified?',
+            field: { key: 'slum_pct', label: 'Block area inside a mapped slum', unit: '%', higherIs: null, ramp: 'heat', domain: [0, 100] },
+            needs: ['slums_mapped.slum_pct', 'slums_mapped.slums', 'slums_mapped.notified_pct', 'flood_reports.flood_events', 'population.population'],
+            method: `Slum boundary maps published on data.opencity.in (public domain): Greater Chennai Corporation (887 slums), GHMC Hyderabad (1,351, with notified status), MCGM slum clusters 2015 (2,542) and BBMP Bengaluru (509, with notified status). Each lived-in block gets the share of its area inside a mapped slum (DuckDB spatial overlay); blocks under 1% are left out. Residents on slum land is residents × that share, which understates density inside slums. Notified slums are legally declared under state slum acts, so they get water, sanitation and protection from eviction; non-notified ones usually do not. Floods are the reported and mapped floods of the floodagain lens.`,
+            refs: 'OpenCity (data.opencity.in) slum maps from GCC, GHMC, MCGM and BBMP; Census of India 2011 slum tables; Karnataka Slum Areas Act 1973; Maharashtra Slum Areas Act 1971' },
         { id: 'views', equity: false, title: 'Rooms with a view', icon: '🌅',
             question: 'Which tall blocks look out over the sea, a lake or a big park?',
             field: { key: 'view_kind', label: 'Tower view: park (1), water (2), both (3)', unit: '0-3', higherIs: null, ramp: 'blues', domain: [0, 3] },
@@ -1484,7 +1528,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Google Open Buildings 2.5D Temporal; JRC Global Surface Water; OpenStreetMap parks; Benson et al. 1998 and Jim & Chen 2009 (hedonic value of views)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, views, districthealth, floodagain, schoolstrain }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, views, districthealth, floodagain, schoolstrain, slummap }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
 })();
 

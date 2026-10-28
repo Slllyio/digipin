@@ -1596,6 +1596,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "slummap": {
+     "label": "Residents in blocks 20%+ mapped slum",
+     "value": 4.5,
+     "unit": "%",
+     "higherIs": null
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 32.3,
@@ -3299,6 +3305,12 @@
      "value": 6.2,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "slummap": {
+     "label": "Residents in blocks 20%+ mapped slum",
+     "value": 4.9,
+     "unit": "%",
+     "higherIs": null
     },
     "views": {
      "label": "Tower blocks with a water or big-park view",
@@ -5693,6 +5705,12 @@
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "slummap": {
+     "label": "Residents in blocks 20%+ mapped slum",
+     "value": 18,
+     "unit": "%",
+     "higherIs": null
     },
     "views": {
      "label": "Tower blocks with a water or big-park view",
@@ -9881,6 +9899,12 @@
      "value": 60,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "slummap": {
+     "label": "Residents in blocks 20%+ mapped slum",
+     "value": 18,
+     "unit": "%",
+     "higherIs": null
     },
     "views": {
      "label": "Tower blocks with a water or big-park view",
