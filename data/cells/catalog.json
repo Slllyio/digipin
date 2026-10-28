@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T14:42:22Z",
+  "generated": "2026-10-28T14:49:14Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -14937,6 +14937,62 @@
             "north": 18.616943359375
           },
           "json": "level_crossings/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "libraries_official",
+      "title": "Public libraries (official maps)",
+      "description": "Public libraries from the library maps on data.opencity.in, counted per block: Pune's library list and the Karnataka Department of Public Libraries' Bengaluru map (2020). Tops up the OpenStreetMap/Overture library counts.",
+      "source": "pipeline/realestate/libraries.py (OpenCity library maps)",
+      "license": "Public domain (via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "libraries",
+          "label": "Public libraries (official list)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "libraries",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "libraries",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 102,
+          "bbox": {
+            "west": 77.476806640625,
+            "south": 12.842529296875,
+            "east": 77.749267578125,
+            "north": 13.13916015625
+          },
+          "json": "libraries_official/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 53,
+          "bbox": {
+            "west": 73.765625,
+            "south": 18.4609375,
+            "east": 73.94140625,
+            "north": 18.572998046875
+          },
+          "json": "libraries_official/pune.json",
           "parquet": null
         }
       ]

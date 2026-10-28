@@ -1248,3 +1248,7 @@ Fire station points from the fire services' maps on data.opencity.in (public dom
 ## Street light poles (`streetpoles` lens in js/urban-lenses-mobility.js, `street_lights` dataset, pipeline/realestate/streetlights.py)
 
 BBMP's 2024 street light maps on data.opencity.in (public domain) for Bangalore East, RR Nagar, Bommanahalli and Dasarahalli zones: about 1.9 lakh distinct poles (repeats within ~1 m dropped) with lamp type, counted per L7 block with how many are LED (33%). The lens divides poles by the block's OpenStreetMap street length and flags blocks under 15 poles per street km, where gaps exceed the 30-60 m spacing of urban lighting practice; it judges only surveyed ground (75% of lived-in blocks within 500 m have poles) and picks five dim blocks 1 km apart by residents times shortfall. Pune's ward-wise street light table assumes a flat 62 poles per km in every ward, so it is not used.
+
+## Official top-ups (`TOPUPS` in js/urban-lenses.js)
+
+Some crowd-sourced counts in the `places` dataset miss most of a city's public facilities. Where an official list exists, the lens loader takes, block by block, the larger of the two counts: `fire_stations_official.stations` tops up `places.fire_stations`, and `libraries_official.libraries` (Pune 54, Bengaluru 105 public libraries, pipeline/realestate/libraries.py) tops up `places.libraries`, which the cooling-centre lens reads (Pune's unserved hot-quarter residents fall from 41.2% to 40.3%). The official dataset is listed among the frame's sources when it is used.

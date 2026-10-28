@@ -486,7 +486,7 @@ const UrbanLenses = (() => {
     }
 
     // Official lists that top up a crowd-sourced count column: [column, dataset, field].
-    const TOPUPS = [['places.fire_stations', 'fire_stations_official', 'stations']];
+    const TOPUPS = [['places.fire_stations', 'fire_stations_official', 'stations'], ['places.libraries', 'libraries_official', 'libraries']];
 
     /**
      * Every `needs` field ("dataset.field") for a city, on the population L7
