@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T18:09:33Z",
+  "generated": "2026-10-28T18:22:55Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -30384,6 +30384,216 @@
               "4FP5",
               "4FPJ",
               "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "registration",
+      "title": "Sub-registrar offices (registration jurisdictions)",
+      "description": "The sub-registrar office whose jurisdiction holds each lived-in block (where property there is registered and whose guidance values apply), its district registrar office and the distance to the office, from Karnataka Stamps and Registration (Bengaluru Urban) and Tamil Nadu Registration (Chennai) maps on data.opencity.in.",
+      "source": "pipeline/realestate/registration.py (OpenCity SRO jurisdiction and office maps via DuckDB spatial)",
+      "license": "Public domain (Karnataka Stamps and Registration, Tamil Nadu Registration via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "sro",
+          "label": "Sub-registrar office (property registration)",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "Acchirapakkam",
+            "Adayar",
+            "Alandur",
+            "Ambattur",
+            "Annanagar",
+            "Ashok Nagar",
+            "Attibele",
+            "Avadi",
+            "Banasawadi",
+            "Banashankari",
+            "Basavanagudi",
+            "Begur",
+            "Bidarahalli",
+            "Bommanahalli",
+            "Btm Layout",
+            "Byatarayanapura",
+            "Chamarajpet",
+            "Chennai Central Joint Ii",
+            "Chennai North Joint I",
+            "Chennai South Joint I",
+            "Chennai South Joint Ii",
+            "Dasanapura",
+            "Devanahalli",
+            "Gandhinagar",
+            "Ganganagar",
+            "Halsoor",
+            "Hebbal",
+            "Hesaraghatta",
+            "Hosakote",
+            "Indiranagar",
+            "Jala",
+            "Jayanagar",
+            "Jigani",
+            "Jp Nagara",
+            "Kacharakanahalli",
+            "Kanakapura",
+            "Kengeri",
+            "Kodambakkam",
+            "Konnur",
+            "Krishnarajapuram",
+            "Kunrathur",
+            "Laggere",
+            "Madanayakanahalli",
+            "Madhavaram",
+            "Mahadevapura",
+            "Malleshwaram",
+            "Mylapore",
+            "Nagarabhavi",
+            "Neelankarai",
+            "Pallavaram",
+            "Pammal",
+            "Peenya",
+            "Periamet",
+            "Purasaivakkam",
+            "Rajajinagar",
+            "Redhills",
+            "Royapuram",
+            "Rr Nagar",
+            "Sarjapura",
+            "Selaiyur",
+            "Sembiam",
+            "Shanthinagar",
+            "Shivajinagar",
+            "Sriramapura",
+            "Tambaram Joint 1",
+            "Thiruvottiyur",
+            "Thiyagaraya Nagar",
+            "Triplicane",
+            "Varthur",
+            "Velacheri",
+            "Vijayanagar",
+            "Villivakkam",
+            "Virugambakkam",
+            "Yalahanka",
+            "Yeshwathapura"
+          ]
+        },
+        {
+          "key": "dro",
+          "label": "District registrar office",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "Bangalore Rural",
+            "Basavanagudi",
+            "Chengelpet",
+            "Chennai Central",
+            "Chennai North",
+            "Chennai South",
+            "Gandhinagar",
+            "Jayanagar",
+            "Rajajinagar",
+            "Ramanagara",
+            "Shivajinagar",
+            "Tambaram",
+            "Tiruvallur"
+          ]
+        },
+        {
+          "key": "sro_id",
+          "label": "Sub-registrar office code",
+          "type": "number",
+          "agg": "max",
+          "domain": [
+            1,
+            20655
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "sro_km",
+          "label": "Distance to the block's sub-registrar office",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0.01,
+            69.37
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "offices",
+          "label": "Registration offices in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "offices",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "sro",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "registration/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "chennai",
+          "cells": 8973,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "registration/chennai/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
             ]
           }
         }

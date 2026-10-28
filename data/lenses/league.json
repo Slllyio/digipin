@@ -876,6 +876,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "sroload": {
+     "label": "Residents per sub-registrar office (median)",
+     "value": 154728,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "basics": {
      "label": "Residents short of two or more basic networks",
      "value": 2.4,
@@ -2704,6 +2710,12 @@
      "label": "Residents where rain pools",
      "value": 36,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "sroload": {
+     "label": "Residents per sub-registrar office (median)",
+     "value": 262555,
+     "unit": "people",
      "higherIs": "worse"
     },
     "basics": {

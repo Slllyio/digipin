@@ -628,7 +628,57 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Property registration offices. Every plot registers at the sub-registrar office (SRO) whose jurisdiction holds it,
+    // and that office's guidance values apply. Offices serve very unequal populations, and fringe blocks can sit far
+    // from theirs.
+    const SRO_FAR_KM = 10;
+
+    function sroload(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], sid = c['registration.sro_id'], d = c['registration.sro_km'];
+        const big = c['big_projects.projects'];
+        if (!pop || !sid || !d || !sid.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr).filter(i => v(sid, i) > 0 && _fin(d[i]));
+        if (idx.length < 5) return null;
+        const groups = new Map();
+        for (const i of idx) {
+            const k = sid[i], gr = groups.get(k) || { pop: 0, big: 0, office: i, near: Infinity };
+            gr.pop += v(pop, i); gr.big += v(big, i);
+            if (d[i] < gr.near) { gr.near = d[i]; gr.office = i; }
+            groups.set(k, gr);
+        }
+        const list = [...groups.values()].sort((a, b) => b.pop - a.pop);
+        const all = _sumOver(pop, idx, () => true), far = _sumOver(pop, idx, i => d[i] > SRO_FAR_KM);
+        const med = list[Math.floor(list.length / 2)].pop;
+        const dist = idx.slice().sort((a, b) => d[a] - d[b]);
+        let acc = 0, medKm = 0;
+        for (const i of dist) { acc += v(pop, i); if (acc >= all / 2) { medKm = d[i]; break; } }
+        const stats = [
+            { label: 'Sub-registrar offices covering the city', value: `${list.length}` },
+            { label: 'Residents per office (median; busiest)', value: `${_people(med)}; ${_people(list[0].pop)}` },
+            { label: 'Distance to one\'s own office (half of residents within)', value: `${_round(medKm, 1)} km` },
+            { label: `Residents more than ${SRO_FAR_KM} km from their office`, value: `${_people(far)} (${_round(100 * far / (all || 1))}%)` },
+        ];
+        list.slice(0, 3).forEach((gr, k) => stats.push({ label: `Busiest office ${k + 1}, near ${g.codes[gr.office]}`, value: `${_people(gr.pop)} residents in its jurisdiction${big && gr.big > 0 ? `; ${_round(gr.big)} large project${gr.big > 1 ? 's' : ''}` : ''}` }));
+        const score = Float64Array.from({ length: n }, (_, i) => v(d, i) * v(pop, i));
+        spaced(g, idx.filter(i => d[i] > SRO_FAR_KM), score, 3).forEach((i, k) => stats.push({ label: `Far from its office ${k + 1}: ${g.codes[i]}`, value: `${_round(d[i], 1)} km to the sub-registrar office; ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(d[i], 1);
+        return {
+            columns: { sro_km: out }, idx, weightKey: 'sro_km', noHotspots: true,
+            metric: { label: 'Residents per sub-registrar office (median)', value: Math.round(med), unit: 'people', higherIs: 'worse' },
+            headline: `${list.length} sub-registrar offices register property across the city: the median office serves ${_people(med)} residents and the busiest ${_people(list[0].pop)}. Half of residents live within ${_round(medKm, 1)} km of their own office, and ${_people(far)} live more than ${SRO_FAR_KM} km away.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'sroload', equity: false, title: 'Property registration offices', icon: '🏛️',
+            question: 'Which sub-registrar office registers property here, and how loaded and far is it?',
+            field: { key: 'sro_km', label: 'Distance to the block\'s own sub-registrar office', unit: 'km', higherIs: 'worse', ramp: 'reds', domain: [0, 20] },
+            needs: ['registration.sro_id', 'registration.sro_km', 'big_projects.projects', 'population.population'],
+            method: `Sub-registrar office (SRO) jurisdictions and office locations on data.opencity.in (public domain): Karnataka Stamps and Registration for Bengaluru Urban (50 jurisdictions, KGIS office points) and Tamil Nadu Registration (697 jurisdictions and 699 offices, TNGIS) for Chennai. Each lived-in block takes the SRO whose jurisdiction holds its centre (DuckDB spatial), and the straight-line distance to that office (matched by name; a match more than 30 km away is dropped as another district's office of the same name). The lens sums residents per office (and SEIAA large projects in Bengaluru) and flags blocks more than ${SRO_FAR_KM} km from their office. The block's SRO and district registrar are in the registration layer; guidance values are set per SRO.`,
+            refs: 'Registration Act 1908; Karnataka Stamps and Registration Department (KAVERI); Tamil Nadu Registration Department (TNREGINET); OpenCity' },
         { id: 'basics', equity: true, title: 'Basic services together', icon: '🧰',
             question: 'Where are homes short of several basic services at once?',
             field: { key: 'basics_missing', label: 'Basic networks missing nearby (water line, sewer, storm drain, bin, toilet; mapped ones only)', unit: 'networks', higherIs: 'worse', ramp: 'reds', domain: [0, 4] },
@@ -721,6 +771,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload });
     return { ENTRIES };
 })();
