@@ -1,3 +1,7 @@
+import pytest
+
+pytest.importorskip("scipy")   # CI's python-tests job does not install scipy
+
 from pipeline.realestate.newroads import alignment, dedupe, nearest, records
 
 KML = """<kml><Placemark><LineString><coordinates>77.60,12.90 77.60,12.91 77.60,12.92</coordinates></LineString></Placemark>
