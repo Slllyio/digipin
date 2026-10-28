@@ -287,6 +287,7 @@ const DishaIntel = (() => {
             const v = Number(farq[1] || farq[2]);
             if (v > 0 && v <= 20) return { type: 'farwhatif', far: v };
         }
+        if (/\b(which|what|whose|who('s| is)?)\b.{0,40}\b(ward|pin ?code|pincode|postal code|post ?code|constituency|mla|mp|corporator|councillor|councilor|neighbou?rhood|locality|colony)\b|\b(ward|pin ?code|pincode|constituency|mla|corporator)\b.{0,20}\b(here|this (block|spot|place|area))\b/i.test(q) && /\b(this|here|my)\b/i.test(q) && !/\b(most|least|best|worst|top|rank\w*|hottest|which (wards|neighbou?rhoods|localities|colonies))\b/i.test(q)) return { type: 'whereis' };
         if (/\b(property|real[\s-]?estate|investment|land) (report|brief|memo|check|due[\s-]?diligence)\b|\bdue[\s-]?diligence\b/i.test(q)) return { type: 'propreport' };
         const lookq = /\b(look(s|ing)? (the same|alike|like (this|here))|look-?alikes?|(physically|visually) (similar|alike)|same (built form|urban form|texture|look)|from (space|above|the sky|satellite)|satellite (twins?|look-?alikes?|similar\w*))\b/i;
         if (lookq.test(q) && /\b(like|similar|same|alike|twins?|look)\w*\b/i.test(q)) {
@@ -367,6 +368,18 @@ const DishaIntel = (() => {
         let m;
         while ((m = re.exec(String(text || '')))) if (!out.includes(m[1])) out.push(m[1]);
         return out;
+    }
+
+    /** "Which ward / PIN / constituency is this?" for a block, from UrbanLenses.places. */
+    function whereText(r) {
+        const w = r.w;
+        if (!w) return `${DigiPin.format(r.code)} in ${r.cityLabel} has no neighbourhood, ward or constituency on file (it may be outside the lived-in blocks).`;
+        const lines = [];
+        if (w.label) lines.push(`Neighbourhood: ${w.label}${w.district && !w.label.includes(w.district) ? ` (${w.district} district)` : ''}`);
+        if (w.pin) lines.push(`PIN code: ${w.pin} (the code most addresses around it carry)`);
+        if (w.ward) lines.push(`Municipal ward: ${w.ward}${w.body ? `, ${w.body}` : ''} (ward map may predate the latest delimitation)`);
+        if (w.assembly) lines.push(`Assembly constituency: ${w.assembly}${w.lokSabha ? `; Lok Sabha: ${w.lokSabha}` : ''}`);
+        return lines.join('\n');
     }
 
     function _el(tag, cls, text) {
@@ -469,6 +482,13 @@ const DishaIntel = (() => {
                 r = await UrbanInsights.cityDashboard(CellStore);
             } else if (intent.type === 'compare') {
                 r = await UrbanInsights.compare(intent.a, intent.b, CellStore);
+            } else if (intent.type === 'whereis') {
+                if (!center) { el.textContent = 'Click a block on the map first, then ask which ward, PIN code or constituency it is in.'; return ''; }
+                const city = UrbanInsights.cityAt(CellStore, center.lat, center.lng);
+                if (!city) { el.textContent = 'That spot is outside the cities I have data for.'; return ''; }
+                const code = DigiPin.encode(center.lat, center.lng).replace(/-/g, '').slice(0, 7);
+                const w = UrbanLenses.places ? (await UrbanLenses.places(city, CellStore)).get(code) || null : null;
+                r = { kind: 'whereis', code, cityLabel: UrbanInsights.cityLabel(city), w };
             } else if (intent.type === 'propreport') {
                 if (!center) { el.textContent = 'Click a block on the map first, then ask for its property report.'; return ''; }
                 const city = UrbanInsights.cityAt(CellStore, center.lat, center.lng);
@@ -592,6 +612,7 @@ const DishaIntel = (() => {
             return `Briefing on ${r.cityLabel}${r.play ? ' (the 3D tour is now flying through these stops)' : ''}:\n${r.stops.map((x, i) => `${i + 1}. ${x.label}: ${x.caption}`).join('\n')}`;
         }
         if (r.kind === 'roadwhatif') return RoadWhatIf.askText(r.a);
+        if (r.kind === 'whereis') return whereText(r);
         if (r.kind === 'propreport') return PropertyReport.text(r.m);
         if (r.kind === 'similar') return UrbanLenses.similarText(r.s);
         if (r.kind === 'similarall') return UrbanLenses.similarEverywhereText(r.s);
@@ -751,6 +772,10 @@ const DishaIntel = (() => {
                 `${x.rank}. ${x.label} ${x.overall} · ${r.sc.pillars.map(p => `${p.label} ${x.pillars[p.id] ?? '–'}`).join(' · ')}`)));
             el.appendChild(_el('div', 'disha-scan-hint', `${r.sc.note ? r.sc.note.replace(/\.$/, '') : 'Each measure scores 0–100 between the worst and best city; pillars average their measures'} (${r.sc.pillars.map(p => `${p.label}: ${p.metrics.map(id => r.sc.metrics[id].label.replace(/^./, ch => ch.toLowerCase())).join(', ')}`).join('; ')}).`));
             el.appendChild(_openButton('Open the lenses', 'lenses'));
+        } else if (r.kind === 'whereis') {
+            head.textContent = `${DigiPin.format(r.code)} · ${r.cityLabel}`;
+            el.appendChild(head);
+            whereText(r).split('\n').forEach(line => el.appendChild(_el('div', 'disha-scan-row', line)));
         } else if (r.kind === 'propreport') {
             head.textContent = `Property report · ${DigiPin.format(r.m.code)} · ${r.m.cityLabel}`;
             el.appendChild(head);

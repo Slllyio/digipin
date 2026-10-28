@@ -218,6 +218,8 @@ Each item gives four things:
 157. ✅ PIN code per block: a distance-weighted vote of postcodes on Overture place addresses within 600 m, with its share (low on PIN boundaries); shown on the property report | Overture places | `neighbourhoods.pin`, `UrbanLenses.places`
 158. ✅ Brick-kiln smoke: 22,459 Gangetic-plain kilns with PM2.5 estimates, weighted by how often the wind blows from each to the block (IGP asset-level emissions inventory, CC BY 4.0; ERA5-Land wind); Delhi, Lucknow, Kolkata | S3 + EE | `kilnsmoke` lens (new dataset `brick_kilns`, pipeline/realestate/kilns.py)
 159. ✅ Municipal ward per block for 11 cities (MCD, BBMP, GHMC, BMC, GCC, PMC, KMC and others), with zone and corporation, for joining ward-level budgets, grievances and elections (DataMeet Municipal Spatial Data, CC BY 4.0) | GitHub | `wards` dataset, property report header
+160. ✅ Assembly and Lok Sabha constituency per block, with SC/ST reservation, 13 cities (2008 delimitation; DataMeet from ECI, CC BY 2.5 India) | GitHub | `constituencies` dataset, property report header
+161. ✅ DISHA "which ward / PIN code / constituency is this?" for a clicked block (neighbourhood, PIN, ward, assembly, Lok Sabha) | derived | `whereis` intent
 
 ## Parked for the keys round
 
