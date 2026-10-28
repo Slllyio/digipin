@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "birdlife": {
+     "label": "Median bird species expected in 200 records",
+     "value": 48.4,
+     "unit": "species",
+     "higherIs": "better"
+    },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
      "value": 28.6,
@@ -6960,6 +6966,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "birdlife": {
+     "label": "Median bird species expected in 200 records",
+     "value": 66.9,
+     "unit": "species",
+     "higherIs": "better"
+    },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
      "value": 16.8,
@@ -8651,6 +8663,12 @@
      "value": 36.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "birdlife": {
+     "label": "Median bird species expected in 200 records",
+     "value": 58.3,
+     "unit": "species",
+     "higherIs": "better"
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",

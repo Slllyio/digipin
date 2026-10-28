@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T17:55:23Z",
+  "generated": "2026-10-28T17:59:51Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -1108,7 +1108,7 @@
           "unit": "species",
           "domain": [
             10.6,
-            135.1
+            155.9
           ],
           "ramp": "greens",
           "higherIs": "better"
@@ -1120,6 +1120,18 @@
         "heightM": 400.0
       },
       "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 348,
+          "bbox": {
+            "west": 72.482421875,
+            "south": 22.9521484375,
+            "east": 72.6845703125,
+            "north": 23.1279296875
+          },
+          "json": "birds/ahmedabad.json",
+          "parquet": null
+        },
         {
           "name": "bengaluru",
           "cells": 1141,
@@ -1166,6 +1178,30 @@
             "north": 17.5556640625
           },
           "json": "birds/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 298,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.8017578125,
+            "east": 75.927734375,
+            "north": 27.00390625
+          },
+          "json": "birds/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 236,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "birds/lucknow.json",
           "parquet": null
         },
         {
