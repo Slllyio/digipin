@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 1825998,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "badairdays": {
      "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
      "value": 97,
@@ -904,6 +910,12 @@
      "label": "Residents where rain pools",
      "value": 20.5,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 5968027,
+     "unit": "people",
      "higherIs": "worse"
     },
     "badairdays": {
@@ -1998,6 +2010,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 793809,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "badairdays": {
      "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
      "value": 36,
@@ -2872,6 +2890,12 @@
      "label": "Residents where rain pools",
      "value": 36,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 6343021,
+     "unit": "people",
      "higherIs": "worse"
     },
     "badairdays": {
@@ -3882,6 +3906,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 10270806,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "badairdays": {
      "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
      "value": 243,
@@ -4806,6 +4836,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 51374,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "badairdays": {
      "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
      "value": 12,
@@ -5512,6 +5548,12 @@
      "label": "Residents where rain pools",
      "value": 25.1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 5294715,
+     "unit": "people",
      "higherIs": "worse"
     },
     "badairdays": {
@@ -6510,6 +6552,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 973838,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "badairdays": {
      "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
      "value": 34,
@@ -7362,6 +7410,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 935260,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "badairdays": {
      "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
      "value": 119,
@@ -8206,6 +8260,12 @@
      "label": "Residents where rain pools",
      "value": 43.2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 4736780,
+     "unit": "people",
      "higherIs": "worse"
     },
     "badairdays": {
@@ -9132,6 +9192,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 1134899,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "badairdays": {
      "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
      "value": 175,
@@ -9994,6 +10060,12 @@
      "label": "Residents where rain pools",
      "value": 26.1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 8631368,
+     "unit": "people",
      "higherIs": "worse"
     },
     "badairdays": {
@@ -10942,6 +11014,12 @@
      "label": "Residents where rain pools",
      "value": 23.7,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "floodnews": {
+     "label": "Residents within 500 m of a spot reported flooded on 3+ days",
+     "value": 2302345,
+     "unit": "people",
      "higherIs": "worse"
     },
     "badairdays": {

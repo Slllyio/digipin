@@ -1,12 +1,12 @@
 /**
  * Commons lenses for UrbanLenses: shared conditions every resident lives with, read from national and global open
- * data (bad-air days, wind near the ground, the drift between government and private schools). Registers itself on load, after
+ * data (floods in the news, bad-air days, wind near the ground, the drift between government and private schools). Registers itself on load, after
  * urban-lenses.js.
  */
 const UrbanLensesCommons = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people, _sumOver, _residents } = UrbanLenses._kit;
+    const { _fin, _round, _people, _sumOver, _residents, within } = UrbanLenses._kit;
 
     const SPACING_KM = 1.5, TOP = 5;
 
@@ -149,7 +149,48 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Floods in the news. Groundsource (Google Research, 2026) places on news-reported flood days, geocoded to a street,
+    // landmark or neighbourhood: where the same spots flood year after year, in every city, not just those with
+    // official flood maps.
+    const NEWS_KM = 0.5, NEWS_REPEAT = 3;
+
+    function floodnews(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, days = c['news_floods.flood_news_days'], recent = c['news_floods.flood_news_recent'];
+        const last = c['news_floods.flood_news_last'], pop = c['population.population'];
+        if (!days || !days.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const d = Float64Array.from({ length: n }, (_, i) => v(days, i));
+        const near = within(g, d, NEWS_KM), idx = _residents(fr);
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const exposed = idx.filter(i => near[i] >= NEWS_REPEAT), expPop = exposed.reduce((s, i) => s + v(pop, i), 0);
+        const spots = [];
+        for (let i = 0; i < n; i++) if (d[i] > 0) spots.push(i);
+        const totalDays = spots.reduce((s, i) => s + d[i], 0), rec = recent ? spots.reduce((s, i) => s + v(recent, i), 0) : 0;
+        const stats = [
+            { label: 'Blocks named in flood news (2000 to 2026)', value: String(spots.length) },
+            { label: 'Block-days of reported flooding', value: `${Math.round(totalDays).toLocaleString('en-IN')}${recent ? `, ${Math.round(rec).toLocaleString('en-IN')} since 2021` : ''}` },
+            { label: `Residents within ${NEWS_KM * 1000} m of spots reported flooded on ${NEWS_REPEAT}+ days`, value: `${_people(expPop)} (${_round(100 * expPop / all, 1)}%)` },
+        ];
+        spaced(g, spots, d, 8).forEach((i, k) => stats.push({ label: `Repeat flood spot ${k + 1}: ${g.codes[i]}`,
+            value: `${Math.round(d[i])} reported days${recent ? `, ${Math.round(v(recent, i))} since 2021` : ''}${last && _fin(last[i]) ? `, latest ${last[i]}` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = Math.min(near[i], 30);
+        return {
+            columns: { flood_news_500m: out }, idx, weightKey: 'flood_news_500m', noHotspots: true,
+            metric: { label: `Residents within ${NEWS_KM * 1000} m of a spot reported flooded on ${NEWS_REPEAT}+ days`, value: Math.round(expPop), unit: 'people', higherIs: 'worse' },
+            headline: `News reports placed floods in ${spots.length} blocks here on ${Math.round(totalDays).toLocaleString('en-IN')} block-days since 2000; ${_people(expPop)} residents (${_round(100 * expPop / all, 1)}%) live within ${NEWS_KM * 1000} m of a spot reported flooded on ${NEWS_REPEAT} or more days. These are reported floods: busy, newsworthy places and recent years are over-represented, and quiet streets that flood go unreported.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'floodnews', equity: true, title: 'Floods in the news', icon: '📰',
+            question: 'Which streets and neighbourhoods keep making the news for flooding?',
+            field: { key: 'flood_news_500m', label: `Reported flood days within ${NEWS_KM * 1000} m (capped at 30)`, unit: 'days', higherIs: 'worse', ramp: 'blues', domain: [0, 30] },
+            needs: ['news_floods.flood_news_days', 'news_floods.flood_news_recent', 'news_floods.flood_news_last', 'population.population'],
+            method: `Groundsource (Google Research, 2026, CC BY 4.0): flooded places extracted from news articles in many languages by Gemini and geocoded with the Google Maps geocoder, one record per place and day, 2000 to March 2026. Only records geocoded to a street, landmark or neighbourhood (footprint up to 2 km²) are kept, at the footprint's centre; district- and city-wide records are dropped. Each block counts distinct reported days; each resident's block sums the days within ${NEWS_KM * 1000} m. Repeat spots are blocks ${SPACING_KM} km apart with the most reported days. News coverage, not flood frequency: recall is higher for big events, busy places and recent years, and geocoding errors can cluster on ambiguous names. Works in every city, including those without official flood maps.`,
+            refs: 'Mayo, Zlydenko et al. 2026, Groundsource: a global dataset of flood events from news (EarthArXiv preprint; Zenodo 10.5281/zenodo.18647054)' },
         { id: 'badairdays', equity: true, title: 'Bad-air days', icon: '😷',
             question: 'On how many days a year is the air here above the safe limit?',
             field: { key: 'days_over_60', label: `Days in 2022 above ${NAAQS_24H} µg/m³ PM2.5`, unit: 'days', higherIs: 'worse', ramp: 'reds', domain: [0, 250] },
@@ -170,6 +211,6 @@ const UrbanLensesCommons = (() => {
             refs: 'UDISE+ 2021-22 and 2024-25 (Ministry of Education) via data.opencity.in; UDISE+ 2022-23 report (student-level data collection)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { badairdays, stillair, schooldrift });
+    UrbanLenses.register(ENTRIES, { floodnews, badairdays, stillair, schooldrift });
     return { ENTRIES };
 })();

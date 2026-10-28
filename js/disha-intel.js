@@ -76,6 +76,7 @@ const DishaIntel = (() => {
             turnout: /\b(voter )?turnout|\b(who|how many( people)?) (voted|didn'?t vote)|\bnota\b|\b(voting|polling) (percentage|rate)|\blow voting\b/i,
             freeclinic: /\b(free (clinics?|health ?care|doctors?|treatment)|(government|govt|public|municipal) (clinics?|dispensar\w*|health (centres?|centers?))|uphcs?|primary health (centres?|centers?)|phcs?|namma clinics?|mohalla clinics?|basti dawakhanas?)\b/i,
             anganwadi: /\b(anganwadis?|anganwadi centres?|icds|balwadis?|creches?|day ?care for (poor )?(children|kids))\b/i,
+            floodnews: /\b(floods? (in|from) (the )?news|news (reports? )?(of|about|on) flood(s|ing)?|(reported|repeated|recurring) (flood|waterlogging) (spots?|streets?|places?)|streets? (that )?(keeps? )?flood(s|ing)?( every year| again)?|where (does it|do streets) flood every (year|monsoon))\b/i,
             badairdays: /\b(bad[- ]air days?|(unhealthy|polluted|smoggy) days?|days? (above|over|exceeding) (the )?(safe |pm ?2\.?5 |naaqs |air quality )?(limit|standard)|how many days (is|was) (the )?air (bad|poor|unhealthy))\b/i,
             stillair: /\b(still air|stagnant air|no (breeze|wind)|(poor|bad|low) (air )?(ventilation|wind)|windless|trapped (smoke|exhaust|pollution|air))\b/i,
             schooldrift: /\b((leaving|left|moving (out of|away from)|exodus from|shift(ing)? (away )?from|drift from) (government|govt|sarkari|public) schools?|(government|govt|sarkari) school (enrol?ment|share) (trend|change|fall|drop|decline|rise)|private school (shift|drift|switch))\b/i,

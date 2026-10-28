@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T22:04:53Z",
+  "generated": "2026-10-28T22:11:51Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -25000,6 +25000,219 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "news_floods",
+      "title": "Floods reported in the news (Groundsource)",
+      "description": "Days on which news reports placed a flood in the block, from Google Research's Groundsource (2026): flooded places extracted from news articles by Gemini and geocoded, 2000 to March 2026. Only street, landmark and neighbourhood records (footprint up to 2 km\u00b2) are used. News coverage, not flood frequency: recent years and busy areas are over-reported.",
+      "source": "pipeline/realestate/newsfloods.py (Groundsource 2026 via the awesome-gee-community-catalog)",
+      "license": "CC BY 4.0 (Mayo, Zlydenko et al. 2026, Groundsource)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "flood_news_days",
+          "label": "Days with a news-reported flood in the block (2000 to 2026)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "days",
+          "domain": [
+            0,
+            10
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "flood_news_recent",
+          "label": "Of them, days since 2021",
+          "type": "number",
+          "agg": "sum",
+          "unit": "days",
+          "domain": [
+            0,
+            8
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "flood_news_last",
+          "label": "Year of the latest reported flood",
+          "type": "number",
+          "agg": "max",
+          "unit": "year",
+          "domain": [
+            2005,
+            2026
+          ],
+          "ramp": "blues"
+        }
+      ],
+      "default": {
+        "field": "flood_news_days",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 193,
+          "bbox": {
+            "west": 72.48681640625,
+            "south": 22.949951171875,
+            "east": 72.669189453125,
+            "north": 23.119140625
+          },
+          "json": "news_floods/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 1049,
+          "bbox": {
+            "west": 77.46142578125,
+            "south": 12.8359375,
+            "east": 77.7734375,
+            "north": 13.13916015625
+          },
+          "json": "news_floods/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 193,
+          "bbox": {
+            "west": 77.31201171875,
+            "south": 23.1806640625,
+            "east": 77.516357421875,
+            "north": 23.314697265625
+          },
+          "json": "news_floods/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 1443,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.30908203125,
+            "north": 13.180908203125
+          },
+          "json": "news_floods/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 1378,
+          "bbox": {
+            "west": 76.852783203125,
+            "south": 28.399169921875,
+            "east": 77.349365234375,
+            "north": 28.873779296875
+          },
+          "json": "news_floods/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "guna",
+          "cells": 12,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 24.63525390625,
+            "east": 77.3427734375,
+            "north": 24.668212890625
+          },
+          "json": "news_floods/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1250,
+          "bbox": {
+            "west": 78.30078125,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.549072265625
+          },
+          "json": "news_floods/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 196,
+          "bbox": {
+            "west": 75.692626953125,
+            "south": 22.501708984375,
+            "east": 75.98046875,
+            "north": 22.857666015625
+          },
+          "json": "news_floods/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 189,
+          "bbox": {
+            "west": 75.70361328125,
+            "south": 26.8017578125,
+            "east": 75.9189453125,
+            "north": 26.99951171875
+          },
+          "json": "news_floods/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 485,
+          "bbox": {
+            "west": 88.28515625,
+            "south": 22.451171875,
+            "east": 88.445556640625,
+            "north": 22.64892578125
+          },
+          "json": "news_floods/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 194,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.75341796875,
+            "east": 81.049560546875,
+            "north": 26.935791015625
+          },
+          "json": "news_floods/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 646,
+          "bbox": {
+            "west": 72.7900390625,
+            "south": 18.889404296875,
+            "east": 72.989990234375,
+            "north": 19.271728515625
+          },
+          "json": "news_floods/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 450,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.43017578125,
+            "east": 73.9853515625,
+            "north": 18.64111328125
+          },
+          "json": "news_floods/pune.json",
+          "parquet": null
         }
       ]
     },

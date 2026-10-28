@@ -1425,3 +1425,11 @@ breakpoints, the 2022 mean, the 95th-percentile day, and days above 60 in 2017. 
 residents with 100 or more days above the standard and picks blocks 1.5 km apart by residents × (poor days + a quarter
 of the days above 60). The 2017-2022 change mixes policy with weather years, so it is reported, not ranked.
 
+## Floods in the news (`floodnews` lens, `news_floods` dataset, pipeline/realestate/newsfloods.py)
+
+Groundsource records (one per place and day, extracted from news by Gemini and geocoded) are filtered in Earth Engine
+to footprints of 2 km² or less, so district- and city-wide reports drop out, and each kept record's centre is binned
+to its L7 block as a distinct day. The lens sums reported days within 500 m of each resident's block, counts residents
+near spots reported on 3 or more days and lists the repeat spots 1.5 km apart. It measures news coverage, which grows
+sharply after 2020 and favours busy, newsworthy places; it complements the official flood maps of `floodagain`.
+
