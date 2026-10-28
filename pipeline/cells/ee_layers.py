@@ -1995,6 +1995,35 @@ def built_class(region):
     return spec, _table(level, rows, specs)
 
 
+def wind(region):
+    """Mean wind speed near the ground and above the roofs per block (Global Wind Atlas 3, 250 m)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    col = "projects/sat-io/open-datasets/global_wind_atlas/wind-speed/gwa3_250_wind-speed_"
+    img = ee.Image.cat([ee.Image(col + "10m").rename("w10"), ee.Image(col + "100m").rename("w100")])
+    raw = gee.fetch(gee.to_cells(img, 250), bbox, level, tile=128)
+    rows = {}
+    for code, x in raw.items():
+        a, b = x.get("w10"), x.get("w100")
+        if a is None or b is None:
+            continue
+        rows[code] = {"wind10_ms": _r(a, 2), "wind100_ms": _r(b, 2), "wind_kept_pct": _r(100 * a / b) if b > 0.5 else None}
+    specs = [
+        FieldSpec("wind10_ms", "Mean wind speed at 10 m", agg="mean", unit="m/s", domain=[1, 5], ramp="blues", higher_is="better"),
+        FieldSpec("wind100_ms", "Mean wind speed at 100 m", agg="mean", unit="m/s", domain=[2, 8], ramp="blues", higher_is=None),
+        FieldSpec("wind_kept_pct", "Wind at 10 m as a share of wind at 100 m (lower: more sheltered by buildings and terrain)", agg="mean", unit="%", domain=[20, 70], ramp="blues", higher_is="better"),
+    ]
+    spec = DatasetSpec(
+        id="wind", title="Wind near the ground (Global Wind Atlas)", level=level, fields=specs, group=GROUP,
+        description="Mean annual wind speed at 10 m and 100 m above ground from the Global Wind Atlas 3 (DTU and the World "
+                    "Bank, 250 m, 2008-2017 reanalysis downscaled with terrain and surface roughness), and how much of the "
+                    "100 m wind survives at 10 m: a low share marks still, sheltered air where smoke and exhaust linger.",
+        source="Global Wind Atlas 3 via the awesome-gee-community-catalog (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (Technical University of Denmark and World Bank Group)", default_field="wind10_ms")
+    return spec, _table(level, rows, specs)
+
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -2003,7 +2032,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind,
 }
 
 

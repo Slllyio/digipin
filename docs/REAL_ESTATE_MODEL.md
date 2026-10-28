@@ -1408,3 +1408,12 @@ The JRC's GHS-BUILT-C 2018 map (10 m, CC BY 4.0) is read per block through Earth
 ## Air quality monitor gaps (`airmonitorgap` lens in js/urban-lenses-civic.js, `air_monitors` dataset, pipeline/realestate/airmonitors.py)
 
 State pollution control board station maps on data.opencity.in (public domain): TSPCB's continuous stations (November 2023) for Hyderabad, and for Bengaluru KSPCB's air quality monitor map (KGIS, continuous and manual), the 2023 continuous list and KSPCB's noise stations; a station on two lists within 300 m counts once. The lens counts stations within 2 km of each lived-in block and picks new sites where the most unmonitored residents breathe the worst satellite PM2.5. Bengaluru: 24 stations (11 continuous), 66 lakh residents (50%) more than 2 km from any; Hyderabad: 10 continuous stations inside the region, 76 lakh (84%) beyond 2 km.
+
+## Still air (`stillair` lens, `wind` dataset, pipeline/cells/ee_layers.py `wind`)
+
+Global Wind Atlas 3 mean annual wind at 10 m and 100 m (250 m grid, CC BY 4.0) per L7 block, and the 10 m speed as a
+share of the 100 m speed (about 42% over dense building, 58% over open ground, 75% at the sea front). Most blocks in
+Indian cities sit under 2 m/s (light air), so the lens ranks within the city: the stillest fifth of residents, and of
+them those on the top quarter of road PM2.5 exhaust from the traffic model. Picks are those blocks 1.5 km apart ranked
+by residents × exhaust × satellite PM2.5 ÷ wind. Annual means hide calm winter nights and inversions.
+

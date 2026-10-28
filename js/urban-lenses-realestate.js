@@ -1290,52 +1290,6 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
-    // Government school drift. UDISE+ share of pupils in government (versus private unaided) schools per PIN code, and
-    // its change since 2021-22: where families are leaving or returning to government schools.
-    const DRIFT_PP = 5;
-
-    function schooldrift(fr) {
-        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], sh = c['schools_udise.govt_share_pct'];
-        const ch = c['schools_udise.govt_share_change_pp'], age = c['demographics.school_age'];
-        if (!pop || !sh || !ch) return null;
-        const idx = [];
-        for (let i = 0; i < n; i++) if (_fin(pop[i]) && pop[i] > 0 && _fin(ch[i]) && _fin(sh[i])) idx.push(i);
-        if (idx.length < 5) return null;
-        const w = age && idx.some(i => age[i] > 0) ? age : pop, who = w === age ? 'school-age children' : 'residents';
-        const all = _sumOver(w, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
-        const mean = a => idx.reduce((s, i) => s + (_fin(w[i]) ? w[i] : 0) * a[i], 0) / (all || 1);
-        const leaving = _sumOver(w, idx, i => ch[i] <= -DRIFT_PP), back = _sumOver(w, idx, i => ch[i] >= DRIFT_PP);
-        const groups = new Map();       // one group per PIN code
-        for (const i of idx) {
-            const k = `${sh[i]}|${ch[i]}`;
-            const gr = groups.get(k) || { w: 0, rep: i, best: 0 };
-            gr.w += _fin(w[i]) ? w[i] : 0;
-            if (pop[i] > gr.best) { gr.best = pop[i]; gr.rep = i; }
-            groups.set(k, gr);
-        }
-        const list = [...groups.values()];
-        const stats = [
-            { label: 'PIN-code school areas with both years', value: String(groups.size) },
-            { label: `Pupils in government schools (the average ${who === 'school-age children' ? 'child' : 'resident'}'s PIN code)`, value: `${_round(mean(sh), 1)}%` },
-            { label: 'Change since 2021-22, weighted', value: `${_round(mean(ch), 1)} pp` },
-            { label: `${who[0].toUpperCase()}${who.slice(1)} where the government share fell ${DRIFT_PP}+ points`, value: `${_people(leaving)} (${pct(leaving)}%)` },
-            { label: `…where it rose ${DRIFT_PP}+ points`, value: `${_people(back)} (${pct(back)}%)` },
-        ];
-        const line = gr => `${_round(ch[gr.rep], 1)} pp to ${_round(sh[gr.rep], 1)}% government; ${_people(gr.w)} ${who}`;
-        list.filter(gr => ch[gr.rep] <= -DRIFT_PP).sort((a, b) => ch[a.rep] - ch[b.rep]).slice(0, 5)
-            .forEach((gr, k) => stats.push({ label: `Leaving ${k + 1}, around ${g.codes[gr.rep]}`, value: line(gr) }));
-        list.filter(gr => ch[gr.rep] >= DRIFT_PP).sort((a, b) => ch[b.rep] - ch[a.rep]).slice(0, 3)
-            .forEach((gr, k) => stats.push({ label: `Returning ${k + 1}, around ${g.codes[gr.rep]}`, value: line(gr) }));
-        const out = new Float64Array(n).fill(NaN);
-        for (const i of idx) out[i] = ch[i];
-        return {
-            columns: { govt_share_change_pp: out }, idx, weightKey: 'govt_share_change_pp', noHotspots: true,
-            metric: { label: `${who[0].toUpperCase()}${who.slice(1)} where the government school share fell ${DRIFT_PP}+ points since 2021-22`, value: pct(leaving), unit: '%', higherIs: null },
-            headline: `In the average ${who === 'school-age children' ? 'child' : 'resident'}'s PIN code, ${_round(mean(sh), 1)}% of pupils in government and private unaided schools are in government schools, ${_round(Math.abs(mean(ch)), 1)} points ${mean(ch) < 0 ? 'down' : 'up'} on 2021-22; ${_people(leaving)} ${who} (${pct(leaving)}%) live where the share fell ${DRIFT_PP} points or more. Shares, not counts, are compared because UDISE+ began verifying individual pupils in 2022-23, and 2021-22 was a pandemic year when many families had moved to government schools.`,
-            stats,
-        };
-    }
-
     // Mapped slums. The corporations' own slum boundary maps: who lives in or beside a slum, how much of it is notified
     // (legally declared, so entitled to services), and how much of it sits on land that floods.
     const SLUM_PCT = 20;
@@ -1560,12 +1514,6 @@ const UrbanLensesRealEstate = (() => {
             needs: ['schools_udise.pupils_per_teacher', 'schools_udise.repair_pct', 'schools_udise.girls_toilet_pct', 'schools_udise.govt_pct', 'schools_udise.schools', 'schools_udise.govt_pupils', 'demographics.school_age', 'population.population'],
             method: `UDISE+ 2024-25, the Ministry of Education's census of every school, from the district files on data.opencity.in. Schools carry a PIN code but no location, so each PIN code's schools are summed and every block takes its PIN code (the neighbourhoods dataset votes it from Overture addresses). Government means run by the education department, a local body or another government department, including central schools. Pupils per teacher is government enrolment over government teachers; repair is classrooms needing major repair over all classrooms; girls' toilets count girls' and co-ed government schools with at least one working girls' toilet. Thresholds: ${PTR_MAX} pupils per teacher (RTE Act schedule), ${REPAIR_PCT}% classrooms in major repair, under ${TOILET_PCT}% with toilets. Delhi, Mumbai, Bengaluru, Pune, Chennai, Hyderabad and Kolkata only.`,
             refs: 'UDISE+ 2024-25 (Ministry of Education) via data.opencity.in; Right of Children to Free and Compulsory Education Act 2009, schedule (pupil-teacher ratios); Swachh Vidyalaya' },
-        { id: 'schooldrift', equity: true, title: 'Leaving government schools', icon: '🎒',
-            question: 'Where are families moving children out of government schools, and where are they coming back?',
-            field: { key: 'govt_share_change_pp', label: 'Change in the government school share of pupils since 2021-22', unit: 'pp', higherIs: null, ramp: 'diverging', domain: [-20, 20] },
-            needs: ['schools_udise.govt_share_pct', 'schools_udise.govt_share_change_pp', 'demographics.school_age', 'population.population'],
-            method: `UDISE+ 2021-22 and 2024-25 district school files on data.opencity.in. Pupils in government schools (education department, local bodies, other departments, central schools) and in private unaided schools are summed by PIN code; aided schools are left out of both. Each block takes its PIN code's share of pupils in government schools and its change in percentage points; PIN codes with under 200 such pupils in a year are left out. Counts are not compared because from 2022-23 UDISE+ verified individual pupils, which removed duplicate and ghost enrolment; 2021-22 also came right after the pandemic, when many families had moved to government schools, so part of a fall is that move unwinding. ${DRIFT_PP} points or more counts as a real shift. Delhi, Mumbai, Bengaluru, Pune, Chennai, Hyderabad and Kolkata only.`,
-            refs: 'UDISE+ 2021-22 and 2024-25 (Ministry of Education) via data.opencity.in; UDISE+ 2022-23 report (student-level data collection)' },
         { id: 'slummap', equity: true, title: 'Mapped slums', icon: '🏘️',
             question: 'Who lives in a slum on the city\'s own map, and is it notified?',
             field: { key: 'slum_pct', label: 'Block area inside a mapped slum', unit: '%', higherIs: null, ramp: 'heat', domain: [0, 100] },
@@ -1580,7 +1528,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Google Open Buildings 2.5D Temporal; JRC Global Surface Water; OpenStreetMap parks; Benson et al. 1998 and Jim & Chen 2009 (hedonic value of views)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { schooldrift, landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, views, districthealth, floodagain, schoolstrain, slummap }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, views, districthealth, floodagain, schoolstrain, slummap }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
 })();
 
