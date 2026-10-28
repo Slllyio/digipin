@@ -2646,6 +2646,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "binreach": {
+     "label": "Residents with no public bin within 250 m",
+     "value": 13.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lastrites": {
      "label": "Residents more than 3 km from a cremation or burial ground",
      "value": 8,
@@ -5109,6 +5115,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 25.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "binreach": {
+     "label": "Residents with no public bin within 250 m",
+     "value": 38.4,
      "unit": "%",
      "higherIs": "worse"
     },

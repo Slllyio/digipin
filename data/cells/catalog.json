@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T15:40:03Z",
+  "generated": "2026-10-28T15:45:44Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -37780,6 +37780,62 @@
             "north": 18.621337890625
           },
           "json": "wards/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "waste_bins",
+      "title": "Public waste bins (corporation maps)",
+      "description": "Public waste bins from the corporations' maps on data.opencity.in, counted per block: GCC street bins (Chennai, 2022) and GHMC dumper bins (Hyderabad, 2018).",
+      "source": "pipeline/realestate/wastebins.py (OpenCity bin maps)",
+      "license": "Public domain (GCC, GHMC via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "bins",
+          "label": "Public waste bins (corporation list)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "bins",
+          "domain": [
+            1,
+            16
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "bins",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "chennai",
+          "cells": 2933,
+          "bbox": {
+            "west": 80.135498046875,
+            "south": 12.899658203125,
+            "east": 80.3134765625,
+            "north": 13.180908203125
+          },
+          "json": "waste_bins/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 1306,
+          "bbox": {
+            "west": 78.31396484375,
+            "south": 17.302978515625,
+            "east": 78.5908203125,
+            "north": 17.531494140625
+          },
+          "json": "waste_bins/hyderabad.json",
           "parquet": null
         }
       ]

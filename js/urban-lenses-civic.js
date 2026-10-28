@@ -1,7 +1,7 @@
 /**
  * Civic lenses for UrbanLenses: what statutory plans and municipal facility lists say about a block (planned road
- * widths and new links, cremation and burial grounds, public borewells). They read datasets baked from city and development-authority
- * maps. Registers itself on load, after urban-lenses.js.
+ * widths and new links, cremation and burial grounds, public borewells, waste bins). They read datasets baked from
+ * city and development-authority maps. Registers itself on load, after urban-lenses.js.
  */
 const UrbanLensesCivic = (() => {
     'use strict';
@@ -144,7 +144,47 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Waste bin reach. Where no public bin stands within a short walk, rubbish piles up on street corners and vacant
+    // plots (the "garbage vulnerable points" cities chase). Residents with no listed bin within BIN_M, judged where the
+    // list reaches (within BIN_JUDGE_KM of a listed bin).
+    const BIN_M = 250, BIN_JUDGE_KM = 1;
+
+    function binreach(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], bn = c['waste_bins.bins'];
+        if (!pop || !bn || !bn.some(v => v > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const arr = Float64Array.from({ length: n }, (_, i) => v(bn, i));
+        const near = within(g, arr, BIN_M / 1000), cover = within(g, arr, BIN_JUDGE_KM);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && cover[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const bins = idx.reduce((a, i) => a + v(bn, i), 0), all = _sumOver(pop, idx, () => true);
+        const none = idx.filter(i => !(near[i] > 0)), pNone = _sumOver(pop, none, () => true);
+        const stats = [
+            { label: 'Public bins listed', value: _people(bins) },
+            { label: 'Residents per bin', value: _people(all / Math.max(bins, 1)) },
+            { label: `Residents with no listed bin within ${BIN_M} m`, value: `${_people(pNone)} (${_round(100 * pNone / (all || 1))}%)` },
+        ];
+        const gap = Float64Array.from({ length: n }, (_, i) => (near[i] > 0 ? 0 : v(pop, i)));
+        const need = within(g, gap, 0.5);
+        spaced(g, none, need).forEach((i, k) => stats.push({ label: `Bins needed ${k + 1}: ${g.codes[i]}`, value: `${_people(need[i])} residents within 500 m have no bin within ${BIN_M} m` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(v(pop, i) / Math.max(near[i], 0.5));
+        return {
+            columns: { residents_per_bin: out }, idx, weightKey: 'residents_per_bin', noHotspots: true,
+            metric: { label: `Residents with no public bin within ${BIN_M} m`, value: _round(100 * pNone / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `The corporation lists ${_people(bins)} public bins here, one for every ${_people(all / Math.max(bins, 1))} residents; ${_people(pNone)} residents (${_round(100 * pNone / (all || 1))}%) have none within ${BIN_M} m. Door-to-door collection replaces bins in many wards, so a gap is a place to check collection, not proof of dumping.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'binreach', equity: true, title: 'Waste bin reach', icon: '🗑️',
+            question: 'Where do residents have no public waste bin nearby?',
+            field: { key: 'residents_per_bin', label: `Residents in the block per listed bin within ${BIN_M} m`, unit: 'people', higherIs: 'worse', ramp: 'reds', domain: [0, 5000] },
+            needs: ['waste_bins.bins', 'population.population'],
+            method: `Public bins from the corporations' maps on data.opencity.in (public domain): GCC street bins for Chennai (2022, about 11,000) and GHMC dumper bins for Hyderabad (2018, about 2,900; many since removed under GHMC's bin-free drive). Straight-line reach of ${BIN_M} m on the block grid; blocks more than ${BIN_JUDGE_KM} km from any listed bin are not judged. Picks are unserved blocks ${SPACING_KM} km apart with the most unserved residents within 500 m.`,
+            refs: 'Solid Waste Management Rules 2016; Swachh Bharat Mission (Urban) 2.0 garbage-free cities protocol; OpenCity bin maps' },
         { id: 'wellrisk', equity: true, title: 'Borewells beside septic tanks', icon: '🚰',
             question: 'Which public borewells sit where homes have no sewer?',
             field: { key: 'well_risk', label: 'Borewell block: sewered (0), thinly sewered (1), no sewer nearby (2)', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
@@ -165,6 +205,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach });
     return { ENTRIES };
 })();

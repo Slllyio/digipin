@@ -245,6 +245,7 @@ Each item gives four things:
 184. ✅ Hyderabad community halls: GHMC's 2018 map (1,264 in the region) topping up `places.community_centres`; Hyderabad's hot-quarter residents with no cooling-centre candidate within 1 km fall from 29.3% to 11.5% (OpenCity, public domain) | OpenCity | loader top-up (new dataset `community_halls`, pipeline/realestate/communityhalls.py)
 185. ✅ Cremation and burial grounds: BMC, PMC, GCC and BBMP maps (Mumbai 189, Pune 76, Chennai 210, Bengaluru 80), distance, residents per site, electric or gas crematoriums, new-site picks (OpenCity, public domain) | OpenCity | `lastrites` lens in js/urban-lenses-civic.js (new dataset `funeral_sites`, pipeline/realestate/funeral.py)
 186. ✅ Borewells beside septic tanks: BWSSB public borewell map (about 7,200 wells) crossed with the sewer network; 12% of public borewells stand where sewers are missing or thin (OpenCity, public domain) | OpenCity | `wellrisk` lens in js/urban-lenses-civic.js (new dataset `borewells`, pipeline/realestate/borewells.py)
+187. ✅ Waste bin reach: GCC street bins (Chennai 2022, 8,130 in the region) and GHMC dumper bins (Hyderabad 2018, 2,505), residents with no bin within 250 m (Chennai 13%, Hyderabad 38%) (OpenCity, public domain) | OpenCity | `binreach` lens in js/urban-lenses-civic.js (new dataset `waste_bins`, pipeline/realestate/wastebins.py)
 
 ## Parked for the keys round
 
