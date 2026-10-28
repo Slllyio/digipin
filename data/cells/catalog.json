@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T19:42:47Z",
+  "generated": "2026-10-28T19:46:46Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -17013,6 +17013,102 @@
             "north": 18.56640625
           },
           "json": "metro_future/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "metro_service",
+      "title": "Metro service (timetable)",
+      "description": "Weekday metro service from the city's open GTFS timetable: platforms, lines, departures and the gap between trains at each cell's busiest platform in the 07:00-10:00 peak (hyderabad: Hyderabad Metro Rail (Telangana open data GTFS, July 2026, via OpenCity)).",
+      "source": "pipeline/traffic/metro_gtfs.py over hyderabad: Hyderabad Metro Rail (Telangana open data GTFS, July 2026, via OpenCity)",
+      "license": "Public domain (OpenCity) (hyderabad)",
+      "group": "Traffic & mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "best_headway_min",
+          "label": "Minutes between trains at the busiest platform (07-10 h)",
+          "type": "number",
+          "agg": "min",
+          "unit": "min",
+          "domain": [
+            2,
+            20
+          ],
+          "ramp": "heat",
+          "higherIs": "worse"
+        },
+        {
+          "key": "peak_departures_hr",
+          "label": "Train departures per hour (07-10 h)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "per hour",
+          "domain": [
+            10,
+            56
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "departures_day",
+          "label": "Train departures per weekday",
+          "type": "number",
+          "agg": "sum",
+          "unit": "per day",
+          "domain": [
+            174,
+            877
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "routes",
+          "label": "Metro lines calling",
+          "type": "number",
+          "agg": "max",
+          "unit": "lines",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "stops",
+          "label": "Metro platforms",
+          "type": "number",
+          "agg": "sum",
+          "unit": "platforms",
+          "domain": [
+            1,
+            4
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "best_headway_min",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "hyderabad",
+          "cells": 57,
+          "bbox": {
+            "west": 78.37109375,
+            "south": 17.34912109375,
+            "east": 78.562255859375,
+            "north": 17.500732421875
+          },
+          "json": "metro_service/hyderabad.json",
           "parquet": null
         }
       ]

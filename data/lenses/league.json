@@ -5352,6 +5352,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "metrowait": {
+     "label": "Residents within 800 m of a metro station",
+     "value": 19.1,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "watershedpave": {
      "label": "Micro-watersheds more than 25% built over",
      "value": 50,

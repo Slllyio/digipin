@@ -995,7 +995,47 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    const METRO_WALK_KM = 0.8;
+
+    function metrowait(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, hw = c['metro_service.best_headway_min'], dep = c['metro_service.peak_departures_hr'];
+        const pop = c['population.population'];
+        if (!hw || !pop || !hw.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const stations = [];
+        for (let i = 0; i < n; i++) if (v(hw, i) > 0) stations.push(i);
+        if (stations.length < 3) return null;
+        const best = new Float64Array(n).fill(Infinity), off = g.offsets(METRO_WALK_KM);
+        for (const s of stations) for (const [a, b] of off) { const j = g.cellAt(s, a, b); if (j >= 0 && hw[s] < best[j]) best[j] = hw[s]; }
+        const lived = _residents(fr), all = _sumOver(pop, lived, () => true);
+        const near = _sumOver(pop, lived, i => best[i] < Infinity), freq = _sumOver(pop, lived, i => best[i] <= 5);
+        const catchment = within(g, Float64Array.from({ length: n }, (_, i) => v(pop, i)), METRO_WALK_KM);
+        const byLoad = stations.slice().sort((a, b) => catchment[b] / Math.max(v(dep, b), 1) - catchment[a] / Math.max(v(dep, a), 1));
+        const byGap = stations.slice().sort((a, b) => hw[b] - hw[a]);
+        const stats = [
+            { label: 'Metro station blocks with weekday service', value: `${stations.length}` },
+            { label: `Residents within ${METRO_WALK_KM * 1000} m of a station (straight line)`, value: `${_people(near)} (${_round(100 * near / (all || 1))}%)` },
+            { label: 'Of them, with a train every 5 minutes or better at peak', value: `${_people(freq)}` },
+        ];
+        byGap.slice(0, 3).forEach((i, k) => stats.push({ label: `Longest peak wait ${k + 1}: ${g.codes[i]}`, value: `a train every ${_round(hw[i], 1)} min (07-10 h); ${_people(catchment[i])} residents within ${METRO_WALK_KM * 1000} m` }));
+        byLoad.slice(0, 3).forEach((i, k) => stats.push({ label: `Most residents per peak train ${k + 1}: ${g.codes[i]}`, value: `${_people(catchment[i])} residents within ${METRO_WALK_KM * 1000} m, ${Math.round(v(dep, i))} departures an hour` }));
+        const out = new Float64Array(n).fill(NaN), idx = [];
+        for (let i = 0; i < n; i++) if (best[i] < Infinity) { out[i] = _round(best[i], 1); idx.push(i); }
+        return {
+            columns: { metro_wait_min: out }, idx, weightKey: 'metro_wait_min', noHotspots: true,
+            metric: { label: `Residents within ${METRO_WALK_KM * 1000} m of a metro station`, value: _round(100 * near / (all || 1)), unit: '%', higherIs: 'better' },
+            headline: `${_round(100 * near / (all || 1))}% of residents (${_people(near)}) live within ${METRO_WALK_KM * 1000} m of a metro station. At the morning peak the timetable runs a train every ${_round(Math.min(...stations.map(i => hw[i])), 1)} to ${_round(Math.max(...stations.map(i => hw[i])), 1)} minutes per platform; the longest waits are at ${g.codes[byGap[0]]}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'metrowait', equity: false, title: 'Metro frequency and reach', icon: '🚇',
+            question: 'Who lives near a metro station, and how often do trains come at the morning peak?',
+            field: { key: 'metro_wait_min', label: `Minutes between trains at the best station within ${METRO_WALK_KM * 1000} m (07-10 h)`, unit: 'min', higherIs: 'worse', ramp: 'heat', domain: [2, 12] },
+            needs: ['metro_service.best_headway_min', 'metro_service.peak_departures_hr', 'population.population'],
+            method: `The metro's own GTFS timetable on data.opencity.in (Hyderabad Metro Rail, July 2026; public domain), binned per block like the bus timetable: platforms, lines, weekday departures and the gap between trains at the busiest platform from 07:00 to 10:00. Blocks within ${METRO_WALK_KM * 1000} m (straight line on the block grid) of a station take its best peak headway; residents are the block population estimates. Residents per peak train divides the population within ${METRO_WALK_KM * 1000} m by the station's peak departures an hour, a rough crowding pointer (riders also come by feeder bus and from farther away).`,
+            refs: 'Hyderabad Metro Rail GTFS via Telangana open data and OpenCity; GTFS reference (MobilityData); MoHUA Transit Oriented Development Policy (2017), 500-800 m influence zone' },
         { id: 'wardfit', equity: false, title: 'Ward and utility boundaries', icon: '🧩',
             question: 'Which electricity and water offices serve this block, and how many does each ward have to deal with?',
             field: { key: 'ward_offices', label: 'Electricity, water and police units the block\'s ward is split across', unit: 'offices', higherIs: 'worse', ramp: 'reds', domain: [2, 15] },
@@ -1149,6 +1189,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit, metrowait });
     return { ENTRIES };
 })();

@@ -33,6 +33,7 @@ const DishaIntel = (() => {
             wildedge: /\b(leopards?|wild ?life conflict|human[- ]wildlife|forest edges?|snake ?bites?|wild animals?|homes? (near|next to|beside) (the )?forests?)\b/i,
             powercuts: /\b(power ?cuts?|power outages?|blackouts?|load[- ]?shedding|(lose|losing|without) (power|electricity)|electricity (cuts?|outages?|supply|reliability)|unreliable (power|electricity))\b/i,
             dumpsmoke: /\b(downwind of\b.{0,20}\b(landfills?|dumps?|garbage|factor(y|ies)|industr\w*)|landfill (smoke|smell|odou?r|fires?)|garbage (smoke|smell|odou?r)|dump(ing)? (site )?(smoke|smell|odou?r|fires?)|smell from\b.{0,20}\b(landfills?|dumps?))\b/i,
+            metrowait: /\b(metro (frequency|headways?|timetable|wait\w*|trains? every)|how often (does|do) (the )?metro|metro trains? (per hour|frequency)|near (a |the )?metro station)\b/i,
             wardfit: /\b(bescom|bwssb|tneb|cmwssb|electricity (office|section)|water (board )?(office|division|service station)|which (electricity|power|water) office|coterminous|boundaries (do not|don'?t) (match|line up))\b/i,
             landchange: /\b(land (use )?(change|conversion)|land converted|converted (farm|agricultural|vacant) land|farm ?land (turned|converted|lost) (into|to)|2011 (to|and|vs\.?) 2017)\b/i,
             vacant2017: /\b(vacant (land|plots?) (in|since) 2017|official land use|ksrsac|land use map 2017|2017 land use|still (vacant|open|empty) (land|plots?))\b/i,
