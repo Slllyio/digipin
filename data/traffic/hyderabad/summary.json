@@ -409,7 +409,7 @@
     "roads_total": 9294,
     "roads_los_e_f_by_period": {
       "am": 1386,
-      "pm": 1325,
+      "pm": 1327,
       "mid": 60
     },
     "hourly": {
@@ -606,7 +606,7 @@
     "residents_lden_ge_53": 6281991,
     "residents_lden_ge_65": 1984325,
     "nox_t_day": 11.93,
-    "co2_t_day": 2916.4,
+    "co2_t_day": 2916.2,
     "nox_vs_s5p_no2_spearman_l5": 0.6,
     "l5_cells_compared": 86,
     "assumptions": {
@@ -638,16 +638,15 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 18,
+    "chargers": 16,
     "chargers_by_source": {
-      "osm": 2,
       "overture": 16
     },
     "parking": 12,
     "fuel": 461,
-    "chargers_per_lakh": 0.2,
-    "pct_vkm_within_2km": 34.5,
-    "pct_pop_within_2km": 24.4
+    "chargers_per_lakh": 0.18,
+    "pct_vkm_within_2km": 28.8,
+    "pct_pop_within_2km": 19.5
   },
   "cycling": {
     "lowstress_km": 16478,
@@ -843,7 +842,7 @@
   },
   "parking": {
     "cells": 8492,
-    "demand_ecs": 389563,
+    "demand_ecs": 389562,
     "lots_mapped": 12,
     "pct_demand_in_overflow": 4.3,
     "overflow_ecs": 5366,
@@ -870,7 +869,7 @@
         "digipin": "422749J",
         "demand_ecs": 114,
         "supply_ecs": 0,
-        "pressure": 113.86
+        "pressure": 113.85
       },
       {
         "digipin": "422749F",

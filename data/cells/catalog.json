@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T23:31:43Z",
+  "generated": "2026-10-28T23:54:52Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -18053,7 +18053,7 @@
           "agg": "min",
           "unit": "km",
           "domain": [
-            0.03,
+            0.01,
             12.1
           ],
           "ramp": "reds",

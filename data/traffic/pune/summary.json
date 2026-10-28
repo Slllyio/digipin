@@ -476,12 +476,12 @@
     "zones": 697,
     "origins": 658,
     "peak_pcu_total_trips": 193168,
-    "roads_los_e_f": 1071,
-    "roads_los_d": 342,
+    "roads_los_e_f": 1070,
+    "roads_los_d": 343,
     "roads_total": 6389,
     "roads_los_e_f_by_period": {
       "am": 1045,
-      "pm": 1025,
+      "pm": 1024,
       "mid": 51
     },
     "hourly": {
@@ -710,16 +710,15 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 107,
+    "chargers": 85,
     "chargers_by_source": {
-      "osm": 22,
       "overture": 85
     },
     "parking": 17,
     "fuel": 203,
-    "chargers_per_lakh": 1.66,
-    "pct_vkm_within_2km": 82.5,
-    "pct_pop_within_2km": 86.2
+    "chargers_per_lakh": 1.32,
+    "pct_vkm_within_2km": 79.2,
+    "pct_pop_within_2km": 82.9
   },
   "cycling": {
     "lowstress_km": 8295,
@@ -795,11 +794,11 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 2320,
-    "stops_with_heat_data": 2320,
-    "pct_hot_bare": 62.9,
-    "pct_riders_at_hot_bare": 49.3,
-    "median_stop_lst_c": 43.3,
+    "stops": 2107,
+    "stops_with_heat_data": 2107,
+    "pct_hot_bare": 64.2,
+    "pct_riders_at_hot_bare": 50.3,
+    "median_stop_lst_c": 43.4,
     "top_stops": [
       {
         "digipin": "4FP2L7T",
@@ -843,9 +842,9 @@
       },
       {
         "digipin": "4FP4774",
-        "name": "Indira Vasahat",
-        "lon": 73.90063,
-        "lat": 18.48157,
+        "name": "",
+        "lon": 73.9006,
+        "lat": 18.4817,
         "residents_5min": 42851,
         "lst_c": 42.1,
         "canopy_pct": 10.8,
@@ -893,9 +892,9 @@
       },
       {
         "digipin": "4FP2L49",
-        "name": "Dutt Mandir Bus Stop",
-        "lon": 73.92133,
-        "lat": 18.54675,
+        "name": "",
+        "lon": 73.9212,
+        "lat": 18.5469,
         "residents_5min": 38606,
         "lst_c": 42.2,
         "canopy_pct": 7.1,
@@ -908,14 +907,13 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "osm": 491,
-      "overture": 61,
-      "gtfs": 1768
+      "gtfs": 2058,
+      "overture": 49
     }
   },
   "parking": {
     "cells": 5484,
-    "demand_ecs": 277589,
+    "demand_ecs": 277588,
     "lots_mapped": 17,
     "pct_demand_in_overflow": 6.3,
     "overflow_ecs": 6359,
@@ -924,7 +922,7 @@
         "digipin": "4FP3J83",
         "demand_ecs": 192,
         "supply_ecs": 10,
-        "pressure": 19.87
+        "pressure": 19.86
       },
       {
         "digipin": "4FP3CT6",
@@ -951,16 +949,16 @@
         "pressure": 2.34
       },
       {
-        "digipin": "4FP3CTL",
-        "demand_ecs": 171,
-        "supply_ecs": 48,
-        "pressure": 3.55
-      },
-      {
         "digipin": "4FP3CTT",
         "demand_ecs": 185,
         "supply_ecs": 62,
         "pressure": 2.97
+      },
+      {
+        "digipin": "4FP3CTL",
+        "demand_ecs": 171,
+        "supply_ecs": 48,
+        "pressure": 3.55
       },
       {
         "digipin": "4FP32FJ",

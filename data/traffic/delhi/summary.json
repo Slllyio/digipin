@@ -259,12 +259,12 @@
     "zones": 3129,
     "origins": 2690,
     "peak_pcu_total_trips": 881747,
-    "roads_los_e_f": 6978,
-    "roads_los_d": 779,
+    "roads_los_e_f": 6970,
+    "roads_los_d": 790,
     "roads_total": 18955,
     "roads_los_e_f_by_period": {
-      "am": 6889,
-      "pm": 6692,
+      "am": 6877,
+      "pm": 6695,
       "mid": 1331
     },
     "hourly": {
@@ -458,10 +458,10 @@
   "noise_air": {
     "residents_total": 29420982,
     "residents_near_modelled_roads": 20641218,
-    "residents_lden_ge_53": 19603590,
-    "residents_lden_ge_65": 8637688,
+    "residents_lden_ge_53": 19601199,
+    "residents_lden_ge_65": 8633603,
     "nox_t_day": 51.17,
-    "co2_t_day": 12507.1,
+    "co2_t_day": 12509.1,
     "nox_vs_s5p_no2_spearman_l5": 0.82,
     "l5_cells_compared": 216,
     "assumptions": {
@@ -695,15 +695,15 @@
     }
   },
   "parking": {
-    "cells": 21065,
-    "demand_ecs": 1317164,
+    "cells": 21068,
+    "demand_ecs": 1317203,
     "lots_mapped": 220,
     "pct_demand_in_overflow": 21.0,
-    "overflow_ecs": 178725,
+    "overflow_ecs": 178763,
     "hotspots": [
       {
         "digipin": "39J49K6",
-        "demand_ecs": 640,
+        "demand_ecs": 639,
         "supply_ecs": 121,
         "pressure": 5.29
       },
@@ -735,25 +735,25 @@
         "digipin": "39J4282",
         "demand_ecs": 482,
         "supply_ecs": 55,
-        "pressure": 8.74
+        "pressure": 8.73
       },
       {
         "digipin": "39J53MJ",
         "demand_ecs": 413,
         "supply_ecs": 0,
-        "pressure": 413.31
-      },
-      {
-        "digipin": "39J44PK",
-        "demand_ecs": 517,
-        "supply_ecs": 109,
-        "pressure": 4.74
+        "pressure": 413.21
       },
       {
         "digipin": "3C77T8J",
         "demand_ecs": 483,
         "supply_ecs": 76,
         "pressure": 6.4
+      },
+      {
+        "digipin": "39J44PK",
+        "demand_ecs": 516,
+        "supply_ecs": 109,
+        "pressure": 4.74
       },
       {
         "digipin": "39JK7M8",
@@ -773,10 +773,10 @@
   },
   "commute_carbon": {
     "zones": 2690,
-    "pop_mean_trip_km": 12.23,
+    "pop_mean_trip_km": 12.24,
     "co2_kg_resident_day": 0.397,
-    "co2_kt_year": 4258.1,
-    "inner_fifth_trip_km": 10.39,
+    "co2_kt_year": 4258.3,
+    "inner_fifth_trip_km": 10.4,
     "outer_fifth_trip_km": 15.15,
     "assumptions": {
       "detour": 1.3,

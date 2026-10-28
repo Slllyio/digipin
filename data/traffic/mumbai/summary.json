@@ -259,7 +259,7 @@
     "zones": 614,
     "origins": 553,
     "peak_pcu_total_trips": 529511,
-    "roads_los_e_f": 4292,
+    "roads_los_e_f": 4293,
     "roads_los_d": 549,
     "roads_total": 12112,
     "roads_los_e_f_by_period": {
@@ -457,11 +457,11 @@
   },
   "noise_air": {
     "residents_total": 17668050,
-    "residents_near_modelled_roads": 16135909,
-    "residents_lden_ge_53": 15583351,
+    "residents_near_modelled_roads": 16138630,
+    "residents_lden_ge_53": 15581660,
     "residents_lden_ge_65": 9008646,
     "nox_t_day": 22.31,
-    "co2_t_day": 5453.0,
+    "co2_t_day": 5453.1,
     "nox_vs_s5p_no2_spearman_l5": 0.21,
     "l5_cells_compared": 55,
     "assumptions": {
@@ -493,15 +493,16 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 23,
+    "chargers": 28,
     "chargers_by_source": {
+      "osm": 5,
       "overture": 23
     },
     "parking": 65,
     "fuel": 254,
-    "chargers_per_lakh": 0.13,
-    "pct_vkm_within_2km": 45.6,
-    "pct_pop_within_2km": 46.4
+    "chargers_per_lakh": 0.16,
+    "pct_vkm_within_2km": 55.0,
+    "pct_pop_within_2km": 56.3
   },
   "cycling": {
     "lowstress_km": 6252,
@@ -509,7 +510,7 @@
     "highstress_km": 1950,
     "islands": 9080,
     "islands_over_5_km2": 9,
-    "largest_island_km2": 48.9,
+    "largest_island_km2": 49.0,
     "pct_residents_small_island": 58.2,
     "pct_residents_no_lowstress_street": 0.4,
     "source": "Overture Maps transportation 2026-10-21.0"
@@ -577,10 +578,10 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 4985,
-    "stops_with_heat_data": 4985,
-    "pct_hot_bare": 16.8,
-    "pct_riders_at_hot_bare": 15.9,
+    "stops": 4978,
+    "stops_with_heat_data": 4978,
+    "pct_hot_bare": 16.7,
+    "pct_riders_at_hot_bare": 15.8,
     "median_stop_lst_c": 40.4,
     "top_stops": [
       {
@@ -690,18 +691,17 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "osm": 1648,
-      "overture": 207,
-      "gtfs": 3130
+      "osm": 1649,
+      "gtfs": 3192,
+      "overture": 137
     }
   },
   "parking": {
     "cells": 6221,
     "demand_ecs": 834313,
     "lots_mapped": 65,
-    "official_lot_spaces": 62051,
-    "pct_demand_in_overflow": 48.9,
-    "overflow_ecs": 194065,
+    "pct_demand_in_overflow": 49.8,
+    "overflow_ecs": 197132,
     "hotspots": [
       {
         "digipin": "4FK55L9",
