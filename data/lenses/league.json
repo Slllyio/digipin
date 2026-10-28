@@ -5798,7 +5798,7 @@
     },
     "cooling": {
      "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
-     "value": 681471,
+     "value": 267808,
      "unit": "people",
      "higherIs": "worse"
     },

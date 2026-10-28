@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T15:24:38Z",
+  "generated": "2026-10-28T15:28:35Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -4383,6 +4383,50 @@
           },
           "json": "co_monthly/pune.json.gz",
           "parquet": "co_monthly/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "community_halls",
+      "title": "Community halls (GHMC map)",
+      "description": "GHMC community halls in Hyderabad (2018) from data.opencity.in, counted per block. Tops up the OpenStreetMap/Overture community centre counts.",
+      "source": "pipeline/realestate/communityhalls.py (OpenCity GHMC community halls map)",
+      "license": "Public domain (GHMC via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "halls",
+          "label": "Community halls (GHMC list)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "halls",
+          "domain": [
+            1,
+            4
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "halls",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "hyderabad",
+          "cells": 1100,
+          "bbox": {
+            "west": 78.30078125,
+            "south": 17.302978515625,
+            "east": 78.599609375,
+            "north": 17.54248046875
+          },
+          "json": "community_halls/hyderabad.json",
+          "parquet": null
         }
       ]
     },

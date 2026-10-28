@@ -242,6 +242,7 @@ Each item gives four things:
 181. ✅ Subsidised canteen reach: Indira Canteens (Bengaluru), Amma Unavagams (Chennai) and Annapurna centres (Hyderabad), walking distance for residents and slum residents, new-canteen picks (OpenCity, public domain) | OpenCity | `canteen` lens (new dataset `canteens`, pipeline/realestate/canteens.py)
 182. ✅ Sewer gaps: BWSSB sewerage line maps for Bengaluru (about 10,400 km of pipe), residents with no sewer nearby or thin coverage, next-sewer picks (OpenCity, public domain) | OpenCity | `sewergap` lens (new dataset `sewers`, pipeline/realestate/sewers.py)
 183. ✅ Planned road widening: BDA RMP 2015 road width map for Bengaluru (2,138 km with planned widths, 541 km of proposed links), residents on roads planned 24 m+ and blocks new links cross (OpenCity, public domain) | OpenCity | `roadplan` lens in the new js/urban-lenses-civic.js module (new dataset `road_plan`, pipeline/realestate/roadplan.py)
+184. ✅ Hyderabad community halls: GHMC's 2018 map (1,264 in the region) topping up `places.community_centres`; Hyderabad's hot-quarter residents with no cooling-centre candidate within 1 km fall from 29.3% to 11.5% (OpenCity, public domain) | OpenCity | loader top-up (new dataset `community_halls`, pipeline/realestate/communityhalls.py)
 
 ## Parked for the keys round
 
