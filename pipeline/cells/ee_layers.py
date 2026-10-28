@@ -2098,6 +2098,50 @@ def pm25_days(region):
     return spec, _table(level, rows, specs)
 
 
+def urban_form(region):
+    """How each block was built: open space, non-residential, unplanned, informal and formal layouts, housing projects
+    and roads (WRI Global Intra-Urban Land Use 2020, 5 m)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    mos = ee.ImageCollection("projects/wri-datalab/cities/urban_land_use/V1").filterBounds(geom).mosaic()
+    lulc, road = mos.select("lulc"), mos.select("road").gt(50)      # road is a probability (0-100), as in WRI's script
+    names = ["open", "nonres", "atomistic", "informal", "formal", "project"]
+    img = ee.Image.cat([lulc.eq(k).And(road.Not()).rename(nm) for k, nm in enumerate(names)] + [road.rename("road")]).updateMask(lulc.gte(0))
+    raw = gee.fetch(gee.to_cells(img, 10), bbox, level, tile=64)
+    rows = {}
+    for code, x in raw.items():
+        if x.get("open") is None:
+            continue
+        res = sum(x.get(k) or 0 for k in ("atomistic", "informal", "formal", "project"))
+        r = {"ulu_open_pct": _r(100 * x["open"]), "ulu_nonres_pct": _r(100 * (x.get("nonres") or 0)),
+             "ulu_road_pct": _r(100 * (x.get("road") or 0)), "ulu_res_pct": _r(100 * res)}
+        if res > 0.05:
+            for k in ("atomistic", "informal", "formal", "project"):
+                r[f"res_{k}_pct"] = _r(100 * (x.get(k) or 0) / res)
+        rows[code] = r
+    pct = lambda k, label, ramp: FieldSpec(k, label, agg="mean", unit="%", domain=[0, 100], ramp=ramp, higher_is=None)
+    specs = [
+        pct("res_atomistic_pct", "Homes on unplanned, irregular plots (share of residential ground)", "reds"),
+        pct("res_informal_pct", "Homes on informal subdivisions: regular plots laid out without approval", "reds"),
+        pct("res_formal_pct", "Homes on formal, approved subdivisions", "blues"),
+        pct("res_project_pct", "Homes in housing projects (large uniform developments)", "blues"),
+        pct("ulu_res_pct", "Residential ground (all kinds)", "viridis"),
+        pct("ulu_nonres_pct", "Non-residential ground", "viridis"),
+        pct("ulu_open_pct", "Open space", "greens"),
+        pct("ulu_road_pct", "Road", "viridis"),
+    ]
+    spec = DatasetSpec(
+        id="urban_form", title="How neighbourhoods were built (WRI intra-urban land use 2020)", level=level, fields=specs, group=GROUP,
+        description="WRI's Global Intra-Urban Land Use map (2020, 5 m, neural network on Sentinel-2, Atlas of Urban Expansion "
+                    "classes): per block, the shares of open space, non-residential ground, roads and residential ground, and "
+                    "how the homes were laid out: unplanned (atomistic, irregular plots and lanes), informal subdivisions "
+                    "(regular plots laid out without approval), formal subdivisions and housing projects.",
+        source="WRI Global Intra-Urban Land Use V1 via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (World Resources Institute)", default_field="res_atomistic_pct")
+    return spec, _table(level, rows, specs)
+
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -2106,7 +2150,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "solar_atlas": solar_atlas, "pm25_days": pm25_days,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form,
 }
 
 

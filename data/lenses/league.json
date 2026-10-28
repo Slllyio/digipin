@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 16.1,
+     "unit": "%",
+     "higherIs": null
+    },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
      "value": 1825998,
@@ -911,6 +917,12 @@
      "value": 20.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 31.7,
+     "unit": "%",
+     "higherIs": null
     },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
@@ -2010,6 +2022,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 30.4,
+     "unit": "%",
+     "higherIs": null
+    },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
      "value": 793809,
@@ -2891,6 +2909,12 @@
      "value": 36,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 15.2,
+     "unit": "%",
+     "higherIs": null
     },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
@@ -3906,6 +3930,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 34.8,
+     "unit": "%",
+     "higherIs": null
+    },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
      "value": 10270806,
@@ -4836,6 +4866,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 55.6,
+     "unit": "%",
+     "higherIs": null
+    },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
      "value": 51374,
@@ -5549,6 +5585,12 @@
      "value": 25.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 37.1,
+     "unit": "%",
+     "higherIs": null
     },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
@@ -6552,6 +6594,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 10.8,
+     "unit": "%",
+     "higherIs": null
+    },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
      "value": 973838,
@@ -7410,6 +7458,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 74,
+     "unit": "%",
+     "higherIs": null
+    },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
      "value": 935260,
@@ -8261,6 +8315,12 @@
      "value": 43.2,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 78.4,
+     "unit": "%",
+     "higherIs": null
     },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
@@ -9192,6 +9252,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 55,
+     "unit": "%",
+     "higherIs": null
+    },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
      "value": 1134899,
@@ -10061,6 +10127,12 @@
      "value": 26.1,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 21.3,
+     "unit": "%",
+     "higherIs": null
     },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
@@ -11015,6 +11087,12 @@
      "value": 23.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "howbuilt": {
+     "label": "Residents in mostly unplanned or informal blocks",
+     "value": 4.2,
+     "unit": "%",
+     "higherIs": null
     },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",

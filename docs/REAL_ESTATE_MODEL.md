@@ -1433,3 +1433,12 @@ to its L7 block as a distinct day. The lens sums reported days within 500 m of e
 near spots reported on 3 or more days and lists the repeat spots 1.5 km apart. It measures news coverage, which grows
 sharply after 2020 and favours busy, newsworthy places; it complements the official flood maps of `floodagain`.
 
+## How neighbourhoods were built (`howbuilt` lens, `urban_form` dataset, pipeline/cells/ee_layers.py `urban_form`)
+
+WRI's Global Intra-Urban Land Use (2020, 5 m, CC BY 4.0) is mosaicked per city; a pixel is road where the road
+probability band exceeds 50 (as in WRI's own script), otherwise its `lulc` class. Each L7 block gets the shares of
+open space, non-residential, road and residential ground, and the residential ground split into atomistic
+(unplanned), informal subdivision, formal subdivision and housing project. The lens weights by residents, counts those
+in blocks that are over half unplanned or informal, and compares road and open-space shares with planned blocks.
+First run: Delhi 35% of residents in mostly unplanned or informal blocks, with roads on 5% of the ground against 11.8%.
+

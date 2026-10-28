@@ -1,6 +1,6 @@
 /**
  * Commons lenses for UrbanLenses: shared conditions every resident lives with, read from national and global open
- * data (floods in the news, bad-air days, wind near the ground, the drift between government and private schools). Registers itself on load, after
+ * data (how neighbourhoods were built, floods in the news, bad-air days, wind near the ground, the drift between government and private schools). Registers itself on load, after
  * urban-lenses.js.
  */
 const UrbanLensesCommons = (() => {
@@ -184,7 +184,54 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // How neighbourhoods were built. WRI's intra-urban land use map (2020, 5 m) sorts residential ground into
+    // unplanned (atomistic), informal subdivisions, formal subdivisions and housing projects: who lives where the plots,
+    // lanes and services were never planned, and how much road and open space those areas got.
+    const UNPLANNED_PCT = 50;
+
+    function howbuilt(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, at = c['urban_form.res_atomistic_pct'], inf = c['urban_form.res_informal_pct'];
+        const fo = c['urban_form.res_formal_pct'], pr = c['urban_form.res_project_pct'], road = c['urban_form.ulu_road_pct'];
+        const open = c['urban_form.ulu_open_pct'], pop = c['population.population'];
+        if (!at || !fo || !at.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr).filter(i => _fin(at[i]) && _fin(fo[i]));
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const un = Float64Array.from({ length: n }, (_, i) => (_fin(at[i]) ? v(at, i) + v(inf, i) : NaN));
+        const share = a => _round(idx.reduce((s, i) => s + v(pop, i) * v(a, i), 0) / all, 1);
+        const unpl = idx.filter(i => un[i] > UNPLANNED_PCT), plan = idx.filter(i => un[i] <= UNPLANNED_PCT);
+        const unPop = unpl.reduce((s, i) => s + v(pop, i), 0);
+        const mean = (a, set) => { const w = set.reduce((s, i) => s + v(pop, i), 0); return w ? set.reduce((s, i) => s + v(pop, i) * v(a, i), 0) / w : 0; };
+        const stats = [
+            { label: 'Residents\' homes on unplanned, irregular plots', value: `${share(at)}%` },
+            { label: '…on informal subdivisions (regular plots laid out without approval)', value: `${share(inf)}%` },
+            { label: '…on formal, approved subdivisions', value: `${share(fo)}%` },
+            { label: '…in housing projects', value: `${share(pr)}%` },
+            { label: `Residents in mostly unplanned or informal blocks (over ${UNPLANNED_PCT}%)`, value: `${_people(unPop)} (${_round(100 * unPop / all, 1)}%)` },
+        ];
+        if (road) stats.push({ label: 'Road share of the ground, unplanned vs planned blocks', value: `${_round(mean(road, unpl), 1)}% vs ${_round(mean(road, plan), 1)}%` });
+        if (open) stats.push({ label: 'Open space share, unplanned vs planned blocks', value: `${_round(mean(open, unpl), 1)}% vs ${_round(mean(open, plan), 1)}%` });
+        const score = Float64Array.from({ length: n }, (_, i) => (_fin(un[i]) ? v(pop, i) * un[i] : 0));
+        spaced(g, unpl, score, 5).forEach((i, k) => stats.push({ label: `Unplanned area ${k + 1}: ${g.codes[i]}`,
+            value: `${Math.round(v(at, i))}% unplanned, ${Math.round(v(inf, i))}% informal plots${road ? `; roads ${_round(v(road, i), 1)}% of the ground` : ''}; ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = un[i];
+        return {
+            columns: { res_unplanned_pct: out }, idx, weightKey: 'res_unplanned_pct', noHotspots: true,
+            metric: { label: `Residents in mostly unplanned or informal blocks`, value: _round(100 * unPop / all, 1), unit: '%', higherIs: null },
+            headline: `By the satellite land use model, ${share(at)}% of residents' homes stand on unplanned, irregular plots and ${share(inf)}% on informal subdivisions laid out without approval; ${_people(unPop)} residents (${_round(100 * unPop / all, 1)}%) live in blocks that are mostly one or the other${road ? `, where roads take ${_round(mean(road, unpl), 1)}% of the ground against ${_round(mean(road, plan), 1)}% in planned blocks` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
+            question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
+            field: { key: 'res_unplanned_pct', label: 'Residential ground that is unplanned or informal subdivision', unit: '%', higherIs: null, ramp: 'reds', domain: [0, 100] },
+            needs: ['urban_form.res_atomistic_pct', 'urban_form.res_informal_pct', 'urban_form.res_formal_pct', 'urban_form.res_project_pct', 'urban_form.ulu_road_pct', 'urban_form.ulu_open_pct', 'population.population'],
+            method: `WRI's Global Intra-Urban Land Use map (2020, CC BY 4.0): a neural network on Sentinel-2 imagery classes every 5 m pixel of the world's cities with over 100,000 people into the Atlas of Urban Expansion categories. Residential ground is atomistic (irregular plots and lanes that grew one house at a time), informal subdivision (a regular grid of plots laid out without planning approval, as in many unauthorised colonies and revenue layouts), formal subdivision (approved layouts) or housing project (large uniform developments). Each block takes the shares of its residential ground, sampled at 10 m; residents are WorldPop. Mostly unplanned means atomistic plus informal over ${UNPLANNED_PCT}%. A model reading of the roof and street pattern, not a legal status: it cannot see approvals or titles.`,
+            refs: 'Guzder-Williams et al. 2023, Intra-urban land use maps for a global sample of cities (Computers, Environment and Urban Systems); Angel et al., Atlas of Urban Expansion (2016)' },
         { id: 'floodnews', equity: true, title: 'Floods in the news', icon: '📰',
             question: 'Which streets and neighbourhoods keep making the news for flooding?',
             field: { key: 'flood_news_500m', label: `Reported flood days within ${NEWS_KM * 1000} m (capped at 30)`, unit: 'days', higherIs: 'worse', ramp: 'blues', domain: [0, 30] },
@@ -211,6 +258,6 @@ const UrbanLensesCommons = (() => {
             refs: 'UDISE+ 2021-22 and 2024-25 (Ministry of Education) via data.opencity.in; UDISE+ 2022-23 report (student-level data collection)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { floodnews, badairdays, stillair, schooldrift });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift });
     return { ENTRIES };
 })();
