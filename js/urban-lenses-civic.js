@@ -779,7 +779,51 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    function bdalayout(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, lid = c['bda_layouts.layout_id'], built = c['built_up.built_pct'], pop = c['population.population'];
+        const fresh = c['building_stock.new_buildings'];
+        if (!lid || !lid.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(lid, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const groups = new Map();
+        for (const i of idx) {
+            const gr = groups.get(lid[i]) || { blocks: 0, built: 0, pop: 0, fresh: 0, at: i };
+            gr.blocks++; gr.built += v(built, i); gr.pop += v(pop, i); gr.fresh += v(fresh, i);
+            groups.set(lid[i], gr);
+        }
+        for (const gr of groups.values()) { gr.km2 = gr.blocks * g.cellKm2; gr.builtPct = gr.built / gr.blocks; }
+        const list = [...groups.values()];
+        const all = pop ? _sumOver(pop, _residents(fr), () => true) : 0, inL = list.reduce((t, gr) => t + gr.pop, 0);
+        const area = list.reduce((t, gr) => t + gr.km2, 0), builtAll = list.reduce((t, gr) => t + gr.built, 0) / idx.length;
+        const sizable = list.filter(gr => gr.km2 >= 1);
+        const empty = sizable.slice().sort((a, b) => a.builtPct - b.builtPct), filling = sizable.slice().sort((a, b) => b.fresh / b.km2 - a.fresh / a.km2);
+        const stats = [
+            { label: 'BDA layouts on the map', value: `${list.length}, about ${_round(area, 0)} km²` },
+            { label: 'Residents living in a BDA layout', value: all ? `${_people(inL)} (${_round(100 * inL / all)}%)` : `${_people(inL)}` },
+            { label: 'Ground built over, across the layouts', value: `${_round(builtAll)}%` },
+        ];
+        empty.slice(0, 3).forEach((gr, k) => stats.push({ label: `Least built-out layout ${k + 1}, near ${g.codes[gr.at]}`, value: `${_round(gr.builtPct)}% built over across ${_round(gr.km2, 1)} km²; ${_people(gr.pop)} residents` }));
+        if (fresh) filling.slice(0, 3).forEach((gr, k) => stats.push({ label: `Fastest-filling layout ${k + 1}, near ${g.codes[gr.at]}`, value: `${Math.round(gr.fresh).toLocaleString('en-IN')} new buildings since 2016 (${Math.round(gr.fresh / gr.km2).toLocaleString('en-IN')} per km²)` }));
+        const per = new Map([...groups.entries()].map(([k, gr]) => [k, gr.builtPct]));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(per.get(lid[i]));
+        return {
+            columns: { layout_built_pct: out }, idx, weightKey: 'layout_built_pct', noHotspots: true,
+            metric: { label: 'Ground built over across BDA layouts', value: _round(builtAll), unit: '%', higherIs: 'better' },
+            headline: `${list.length} BDA layouts cover about ${_round(area, 0)} km²${all ? ` and house ${_round(100 * inL / all)}% of residents` : ''}. Across them ${_round(builtAll)}% of the ground is built over; the emptiest large layout, near ${g.codes[empty[0]?.at ?? idx[0]]}, is only ${_round(empty[0]?.builtPct ?? 0)}% built. Click a block for its layout name.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'bdalayout', equity: false, title: 'BDA layouts', icon: '🗺️',
+            question: 'Is this land in a BDA-formed layout, and how built-out is each layout?',
+            field: { key: 'layout_built_pct', label: 'Ground built over in the block\'s BDA layout', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [0, 60] },
+            needs: ['bda_layouts.layout_id', 'built_up.built_pct', 'building_stock.new_buildings', 'population.population'],
+            method: 'The Bangalore Development Authority\'s layout boundaries on data.opencity.in (public domain; 149 outlines of 59 layouts). Every block whose centre falls in a layout takes it (DuckDB spatial), lived-in or not, so empty layouts show. Plots in a BDA layout were acquired and allotted by the BDA, so titles run back to the authority, unlike private or revenue layouts. Build-out is the mean built-over share of the layout\'s blocks (satellite built-up layer); filling speed is new buildings since 2016 per km² (building stock layer). Large layouts are those of 1 km² or more.',
+            refs: 'Bangalore Development Authority Act 1976; BDA layout boundaries via OpenCity; Revised Master Plan 2015 (BDA)' },
         { id: 'revvillage', equity: false, title: 'Revenue villages (land records)', icon: '📜',
             question: 'Which revenue village and tehsil is this land in, and how many people now live on each old village?',
             field: { key: 'village_people', label: 'Residents on the block\'s revenue village (thousands)', unit: 'thousand', higherIs: 'better', ramp: 'viridis', domain: [0, 300] },
@@ -896,6 +940,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout });
     return { ENTRIES };
 })();

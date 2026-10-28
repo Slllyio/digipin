@@ -888,6 +888,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "bdalayout": {
+     "label": "Ground built over across BDA layouts",
+     "value": 36.2,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "revvillage": {
      "label": "Revenue villages under the city's homes",
      "value": 343,

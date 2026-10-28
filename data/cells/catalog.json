@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T18:47:53Z",
+  "generated": "2026-10-28T18:53:03Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -990,6 +990,129 @@
             "north": 17.55126953125
           },
           "json": "anganwadis/hyderabad.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "bda_layouts",
+      "title": "BDA layouts (Bangalore Development Authority)",
+      "description": "The Bangalore Development Authority layout (if any) whose boundary holds each block, its BDA code and the layout's area, from BDA's layout boundary map on data.opencity.in.",
+      "source": "pipeline/realestate/bdalayouts.py (OpenCity BDA layout boundaries via DuckDB spatial)",
+      "license": "Public domain (BDA via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "layout",
+          "label": "BDA layout",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "Akkitimmanahalli",
+            "Anjanapura Township",
+            "Arkavathi Layout",
+            "Banashankari 3rd Stage",
+            "Banashankari 4th Stage",
+            "Banashankari 5th Stage",
+            "Banashankari 6th Stage",
+            "Banashankri 2nd Stage",
+            "Byrasandra Tavarekere Madivala 4th Stage",
+            "Byrasandra Tavarekere Madivala 6th Stage",
+            "Byrasandra Thavarekere Madiwala",
+            "Chandra Layout",
+            "Domlur",
+            "Dr.b.r Ambedkar Nagar",
+            "Extension Of Anjanapura",
+            "Extension Of Matadahalli",
+            "Extension Of Rajamahal Vilas Extension 2nd Stage",
+            "Further Extension Of 9th Block Jayanaga",
+            "Further Extension Of Banashankari 6th Stage",
+            "Further Extension Of East Of Engf",
+            "Further Extension Of Hennur Road Banaswadi Road",
+            "Further Extension Sir.m.vishweshwarayya",
+            "Gnanabharathi",
+            "Hal 2nd Stage",
+            "Hal 3rd Stage",
+            "Hebbala Gangenahalli",
+            "Hennur Bellary Road 1st Stage",
+            "Hennur Bellary Road 2nd Stage",
+            "Hennur Bellary Road 3rd Stage",
+            "Hennur Road Banasavadi Road",
+            "Hosur Road And Sarjapura Road",
+            "Jaya Prakasha Nagara 9th Stage",
+            "Jayaprakash Nagar 8th Stage",
+            "Kamakshi Layout",
+            "Kengeri Satellite Town",
+            "Koramangala",
+            "Magadi Road & Chord Road",
+            "Mahalakshmi Layout(nandini Layout)",
+            "Matadahalli",
+            "Mini Forest To The East Of Jayamahal Extension",
+            "Nagarbavi 2nd Stage",
+            "Nagarbhavi 1st Stage",
+            "Old Madras Road & Banasawadi Road",
+            "Peenya Industrial Suburb",
+            "Pillanna Garden 2nd Stage",
+            "Pillanna Garden 3rd Stage",
+            "Railway Line & Pipeline Chord Road",
+            "Rajamahal Vilas Extension 2nd Stage",
+            "Sajjepalya",
+            "Sarakki",
+            "Shifting Of Whole Sale Steel Market",
+            "Shinivagalu Tank Bed (breached) And Sorrounding",
+            "Sir M Vishveshwarayya",
+            "Sree Kumaraswamy",
+            "Venkateshwara",
+            "West Of Chord Road 1st Stage",
+            "West Of Chord Road 2nd Stage",
+            "West Of Chord Road 3rd Stage",
+            "West Of Chord Road 4th Stage"
+          ]
+        },
+        {
+          "key": "layout_id",
+          "label": "BDA layout code",
+          "type": "number",
+          "agg": "max",
+          "domain": [
+            1,
+            63
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "layout_km2",
+          "label": "Area of the BDA layout",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km2",
+          "domain": [
+            0.08,
+            27.18
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "layout_id",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 3184,
+          "bbox": {
+            "west": 77.4658203125,
+            "south": 12.846923828125,
+            "east": 77.762451171875,
+            "north": 13.088623046875
+          },
+          "json": "bda_layouts/bengaluru.json",
           "parquet": null
         }
       ]
