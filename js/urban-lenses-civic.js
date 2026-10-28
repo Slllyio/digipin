@@ -817,7 +817,50 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Impervious Cover Model (Schueler 1994; Center for Watershed Protection 2003): stream health falls with paved share.
+    const ICM = [[10, 'sensitive'], [25, 'impacted'], [60, 'non-supporting'], [Infinity, 'urban drainage']];
+
+    function watershedpave(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, mid = c['watersheds.mws_id'], km2 = c['watersheds.mws_km2'], built = c['built_up.built_pct'];
+        const pop = c['population.population'], grow = c['built_up.built_change_pct'];
+        if (!mid || !built || !mid.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const groups = new Map();
+        for (let i = 0; i < n; i++) {
+            if (!(v(mid, i) > 0) || !_fin(built[i])) continue;
+            const gr = groups.get(mid[i]) || { idx: [], built: 0, pop: 0, grow: 0, km2: v(km2, i) };
+            gr.idx.push(i); gr.built += built[i]; gr.pop += v(pop, i); gr.grow += v(grow, i);
+            groups.set(mid[i], gr);
+        }
+        // judge only micro-watersheds mostly inside the view, so a sliver does not stand for the whole catchment
+        const list = [...groups.values()].filter(gr => gr.km2 > 0 && gr.idx.length * g.cellKm2 >= 0.5 * gr.km2);
+        if (list.length < 3) return null;
+        for (const gr of list) { gr.pct = gr.built / gr.idx.length; gr.cls = ICM.findIndex(([hi]) => gr.pct <= hi); gr.growPct = gr.grow / gr.idx.length; }
+        const idx = list.flatMap(gr => gr.idx);
+        const count = k => list.filter(gr => gr.cls === k).length, people = k => list.filter(gr => gr.cls === k).reduce((t, gr) => t + gr.pop, 0);
+        const allPop = list.reduce((t, gr) => t + gr.pop, 0);
+        const stats = ICM.map(([hi, name], k) => ({ label: `Micro-watersheds ${name} (${k ? `${ICM[k - 1][0]}-` : 'up to '}${hi === Infinity ? '100' : hi}% built over)`, value: `${count(k)} of ${list.length}; ${_people(people(k))} residents` }));
+        const tipping = list.filter(gr => gr.cls === 1 && gr.pct > 20).sort((a, b) => b.pct - a.pct);
+        list.slice().sort((a, b) => b.pct - a.pct).slice(0, 3).forEach((gr, k) => stats.push({ label: `Most paved micro-watershed ${k + 1}, around ${g.codes[gr.idx[Math.floor(gr.idx.length / 2)]]}`, value: `${_round(gr.pct)}% built over across ${_round(gr.km2, 1)} km²` }));
+        tipping.slice(0, 3).forEach((gr, k) => stats.push({ label: `Near the 25% line ${k + 1}, around ${g.codes[gr.idx[Math.floor(gr.idx.length / 2)]]}`, value: `${_round(gr.pct)}% built over${grow ? `; built-up grew ${_round(gr.growPct)}% recently` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const gr of list) for (const i of gr.idx) out[i] = _round(gr.pct);
+        const over = list.filter(gr => gr.cls >= 2).length;
+        return {
+            columns: { mws_built_pct: out }, idx, weightKey: 'mws_built_pct', noHotspots: true,
+            metric: { label: 'Micro-watersheds more than 25% built over', value: _round(100 * over / list.length), unit: '%', higherIs: 'worse' },
+            headline: `${over} of ${list.length} micro-watersheds here are more than 25% built over, past the point where the Impervious Cover Model expects streams and lakes to stop supporting healthy life and floods to rise${count(3) ? `; ${count(3)} ${count(3) === 1 ? 'is' : 'are'} past 60%, drained mostly by pipes and channels` : ''}. ${_round(100 * people(0) / (allPop || 1))}% of residents live in catchments still under 10%. ${tipping.length} more sit between 20 and 25%.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'watershedpave', equity: false, title: 'Paved-over watersheds', icon: '💧',
+            question: 'How much of each small catchment is paved over, and which are near the tipping point?',
+            field: { key: 'mws_built_pct', label: 'Ground built over in the block\'s micro-watershed', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 60] },
+            needs: ['watersheds.mws_id', 'watersheds.mws_km2', 'built_up.built_pct', 'built_up.built_change_pct', 'population.population'],
+            method: 'Micro-watershed boundaries (Watershed Atlas of India codes) for Bengaluru, Chennai, Delhi, Hyderabad, Kolkata, Mumbai and Pune on data.opencity.in (public domain). Each block takes the micro-watershed holding its centre (DuckDB spatial); the lens averages the satellite built-over share of its blocks and judges only micro-watersheds at least half inside the view. Classes follow the Impervious Cover Model: up to 10% sensitive, 10 to 25% impacted, 25 to 60% non-supporting, over 60% urban drainage. Built-over ground stands in for impervious cover (it leaves out paved yards and roads outside built-up pixels), so the shares are a floor.',
+            refs: 'Schueler (1994) The importance of imperviousness; Center for Watershed Protection (2003) Impacts of Impervious Cover on Aquatic Systems; Watershed Atlas of India (AISLUS/NRSC); OpenCity' },
         { id: 'bdalayout', equity: false, title: 'BDA layouts', icon: '🗺️',
             question: 'Is this land in a BDA-formed layout, and how built-out is each layout?',
             field: { key: 'layout_built_pct', label: 'Ground built over in the block\'s BDA layout', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [0, 60] },
@@ -940,6 +983,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave });
     return { ENTRIES };
 })();

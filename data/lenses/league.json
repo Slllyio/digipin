@@ -888,6 +888,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "watershedpave": {
+     "label": "Micro-watersheds more than 25% built over",
+     "value": 40.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "bdalayout": {
      "label": "Ground built over across BDA layouts",
      "value": 36.2,
@@ -2760,6 +2766,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "watershedpave": {
+     "label": "Micro-watersheds more than 25% built over",
+     "value": 70.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "pinsize": {
      "label": "Residents per pincode (median)",
      "value": 79331,
@@ -3717,6 +3729,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "watershedpave": {
+     "label": "Micro-watersheds more than 25% built over",
+     "value": 32.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5301,6 +5319,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 25.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "watershedpave": {
+     "label": "Micro-watersheds more than 25% built over",
+     "value": 50,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -7914,6 +7938,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "watershedpave": {
+     "label": "Micro-watersheds more than 25% built over",
+     "value": 81.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "revvillage": {
      "label": "Revenue villages under the city's homes",
      "value": 67,
@@ -9654,6 +9684,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "watershedpave": {
+     "label": "Micro-watersheds more than 25% built over",
+     "value": 27,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "pinsize": {
      "label": "Residents per pincode (median)",
      "value": 131212,
@@ -10569,6 +10605,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "watershedpave": {
+     "label": "Micro-watersheds more than 25% built over",
+     "value": 30.6,
      "unit": "%",
      "higherIs": "worse"
     },
