@@ -1082,7 +1082,7 @@
     },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
-     "value": 8.1,
+     "value": 8.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1112,7 +1112,7 @@
     },
     "canteen": {
      "label": "Residents beyond a 1 km walk of a subsidised canteen",
-     "value": 39.3,
+     "value": 39.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1136,7 +1136,7 @@
     },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
-     "value": 39.1,
+     "value": 39.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1568,7 +1568,7 @@
     },
     "treefall": {
      "label": "Main road under tall canopy",
-     "value": 200,
+     "value": 199,
      "unit": "km",
      "higherIs": null
     },
@@ -1841,6 +1841,12 @@
      "value": 30.6,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "schooldrift": {
+     "label": "School-age children where the government school share fell 5+ points since 2021-22",
+     "value": 5.3,
+     "unit": "%",
+     "higherIs": null
     },
     "slummap": {
      "label": "Residents in blocks 20%+ mapped slum",
@@ -3696,6 +3702,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schooldrift": {
+     "label": "School-age children where the government school share fell 5+ points since 2021-22",
+     "value": 31.8,
+     "unit": "%",
+     "higherIs": null
+    },
     "slummap": {
      "label": "Residents in blocks 20%+ mapped slum",
      "value": 4.9,
@@ -4328,7 +4340,7 @@
     },
     "treefall": {
      "label": "Main road under tall canopy",
-     "value": 248,
+     "value": 247,
      "unit": "km",
      "higherIs": null
     },
@@ -4608,6 +4620,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schooldrift": {
+     "label": "School-age children where the government school share fell 5+ points since 2021-22",
+     "value": 53.3,
+     "unit": "%",
+     "higherIs": null
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 25,
@@ -4634,7 +4652,7 @@
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 11.5,
+     "value": 11.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6276,6 +6294,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schooldrift": {
+     "label": "School-age children where the government school share fell 5+ points since 2021-22",
+     "value": 66.7,
+     "unit": "%",
+     "higherIs": null
+    },
     "slummap": {
      "label": "Residents in blocks 20%+ mapped slum",
      "value": 18,
@@ -6302,7 +6326,7 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 78.5,
+     "value": 78.6,
      "unit": "%",
      "higherIs": "better"
     },
@@ -7976,7 +8000,7 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 53.3,
+     "value": 54.2,
      "unit": "%",
      "higherIs": "better"
     },
@@ -8868,6 +8892,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schooldrift": {
+     "label": "School-age children where the government school share fell 5+ points since 2021-22",
+     "value": 5.6,
+     "unit": "%",
+     "higherIs": null
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 39.2,
@@ -8882,7 +8912,7 @@
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 61.6,
+     "value": 61.8,
      "unit": "%",
      "higherIs": "better"
     },
@@ -9878,7 +9908,7 @@
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
-     "value": 15.5,
+     "value": 15.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9896,7 +9926,7 @@
     },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
-     "value": 2.5,
+     "value": 2.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9920,7 +9950,7 @@
     },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
-     "value": 17.2,
+     "value": 17.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10638,6 +10668,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schooldrift": {
+     "label": "School-age children where the government school share fell 5+ points since 2021-22",
+     "value": 1.3,
+     "unit": "%",
+     "higherIs": null
+    },
     "slummap": {
      "label": "Residents in blocks 20%+ mapped slum",
      "value": 18,
@@ -10670,7 +10706,7 @@
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 3.6,
+     "value": 3.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10832,7 +10868,7 @@
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
-     "value": 20.4,
+     "value": 20.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10862,7 +10898,7 @@
     },
     "roadsafety": {
      "label": "Children whose walk to school crosses a fast, busy road",
-     "value": 24,
+     "value": 23.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10886,7 +10922,7 @@
     },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
-     "value": 29.1,
+     "value": 29.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -11586,6 +11622,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schooldrift": {
+     "label": "School-age children where the government school share fell 5+ points since 2021-22",
+     "value": 21,
+     "unit": "%",
+     "higherIs": null
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 11.3,
@@ -11618,7 +11660,7 @@
     },
     "transit": {
      "label": "Residents with convenient public transport (SDG 11.2.1)",
-     "value": 91.5,
+     "value": 91.6,
      "unit": "%",
      "higherIs": "better"
     },

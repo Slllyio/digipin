@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T21:22:44Z",
+  "generated": "2026-10-28T21:37:07Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -34343,7 +34343,7 @@
     {
       "id": "schools_udise",
       "title": "Schools by PIN code (UDISE+ 2024-25)",
-      "description": "Every school in UDISE+ 2024-25 (the Ministry of Education's school census) summed by PIN code and given to each block in that PIN code: school count, government and private shares, pupils per teacher, classrooms needing major repair, working girls' toilets and libraries in government schools. School files come per district from data.opencity.in; schools have PIN codes but no coordinates, so values are PIN-code wide. Delhi, Mumbai, Bengaluru Urban, Pune, Chennai, Hyderabad and Kolkata districts only.",
+      "description": "Every school in UDISE+ 2024-25 (the Ministry of Education's school census) summed by PIN code and given to each block in that PIN code: school count, government and private shares, pupils per teacher, classrooms needing major repair, working girls' toilets and libraries in government schools, and the share of pupils in government schools with its change since 2021-22. School files come per district from data.opencity.in; schools have PIN codes but no coordinates, so values are PIN-code wide. Delhi, Mumbai, Bengaluru Urban, Pune, Chennai, Hyderabad and Kolkata districts only.",
       "source": "pipeline/realestate/udise.py (UDISE+ via OpenCity; PIN codes from the neighbourhoods dataset)",
       "license": "Public domain (UDISE+, Ministry of Education, via data.opencity.in)",
       "group": "Real estate",
@@ -34450,6 +34450,30 @@
           ],
           "ramp": "greens",
           "higherIs": "better"
+        },
+        {
+          "key": "govt_share_pct",
+          "label": "Pupils in government schools (share of government and private unaided)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "govt_share_change_pp",
+          "label": "Change in the government school share since 2021-22",
+          "type": "number",
+          "agg": "mean",
+          "unit": "pp",
+          "domain": [
+            -20,
+            20
+          ],
+          "ramp": "diverging"
         }
       ],
       "default": {

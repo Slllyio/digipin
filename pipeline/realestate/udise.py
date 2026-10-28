@@ -10,10 +10,15 @@ Per L7 block (dataset ``schools_udise``), the values of the block's PIN code (fr
     girls_toilet_pct   government schools with a working girls' toilet (%)
     library_pct        government schools with a library (%)
     private_pct        share run as private unaided schools
+    govt_share_pct     share of pupils (government plus private unaided schools) in government schools, 2024-25 (%)
+    govt_share_change_pp  change in that share since 2021-22, percentage points
 
 UDISE+ school-level files are published per district on data.opencity.in (public domain); schools carry a PIN code
 but no coordinates, so the PIN code is the finest join. Covered: Delhi, Mumbai, Bengaluru Urban, Pune, Chennai,
-Hyderabad and Kolkata districts. A PIN code spans several square kilometres, so read these as the neighbourhood's school picture.
+Hyderabad and Kolkata districts. The 2021-22 files (same districts) give the trend. Counts are not compared directly: from
+2022-23 UDISE+ counts verified individual pupils instead of school returns, which removed duplicate and ghost
+enrolment, so only the government share is compared. 2021-22 also came right after the pandemic, when many families
+had moved children to government schools. A PIN code spans several square kilometres, so read these as the neighbourhood's school picture.
 
     python -m pipeline.realestate.udise --region delhi,mumbai,bengaluru,pune,chennai,hyderabad,kolkata
 """
@@ -44,6 +49,9 @@ FALLBACK = {"bengaluru-urban-udise-2024-25": "bengaluru-urban-udise-2023-24", "m
 GOVT = {"1", "2", "3", "6", "89", "90", "91", "92", "93", "94", "95", "96", "101"}
 PRIVATE = {"5"}
 MIN_SCHOOLS = 3
+OLD_YEAR = "2021-22"
+SOCIAL = {"General", "SC", "ST", "OBC"}      # 2021-22 enrolment rows by social category; together they are every pupil
+MIN_PUPILS = 200                             # smaller PIN-code totals swing too much for a trend
 
 
 def _get(url):
@@ -128,6 +136,59 @@ def by_pin(prof, fac, enr, tch):
     return out
 
 
+def _code(r):
+    return r.get("pseudocode") or r.get("psuedocode")          # 2021-22 files spell it psuedocode
+
+
+def pupils_by_school(enr):
+    """{school code: pupils} from either year's Enrolment Part 1 (2024-25 item_group 1, 2021-22 social-category rows)."""
+    out = {}
+    for r in enr:
+        if r.get("item_group") == "1" or (r.get("item_desc") or "").strip() in SOCIAL:
+            sc = _code(r)
+            out[sc] = out.get(sc, 0) + sum(_n(v) for k, v in r.items() if k.startswith(("c", "cpp")) and k[-2:] in ("_b", "_g"))
+    return out
+
+
+def enrolment_by_pin(prof, enr):
+    """{pin: (government pupils, private unaided pupils)}."""
+    pupils = pupils_by_school(enr)
+    out = {}
+    for r in prof:
+        pin = (r.get("pincode") or "").strip()
+        m = (r.get("managment") or "").strip()
+        if len(pin) != 6 or not pin.isdigit() or not (m in GOVT or m in PRIVATE):
+            continue
+        g, p = out.get(pin, (0.0, 0.0))
+        n = pupils.get(_code(r), 0)
+        out[pin] = (g + n, p) if m in GOVT else (g, p + n)
+    return out
+
+
+def trend(new, old):
+    """{pin: {govt_share_pct, govt_share_change_pp}}; the change only where both years count at least MIN_PUPILS."""
+    out = {}
+    for pin, (g1, p1) in new.items():
+        if g1 + p1 < MIN_PUPILS:
+            continue
+        row = {"govt_share_pct": round(100 * g1 / (g1 + p1), 1)}
+        g0, p0 = old.get(pin, (0, 0))
+        if g0 + p0 >= MIN_PUPILS:
+            row["govt_share_change_pp"] = round(row["govt_share_pct"] - 100 * g0 / (g0 + p0), 1)
+        out[pin] = row
+    return out
+
+
+def fetch_old(region):
+    """2021-22 enrolment by PIN code for the region's districts (empty where the year's files lack PIN codes)."""
+    prof, enr = [], []
+    for pkg in PACKAGES[region]:
+        for (part, kind), url in resources(pkg.replace("2024-25", OLD_YEAR)).items():
+            if kind in ("prof1", "enr1"):
+                {"prof1": prof, "enr1": enr}[kind].extend(_rows(_get(url)))
+    return enrolment_by_pin(prof, enr)
+
+
 def fetch_city(region):
     prof, fac, enr, tch = [], [], [], []
     for pkg in PACKAGES[region]:
@@ -138,7 +199,11 @@ def fetch_city(region):
             if kind == "prof1" and rows and "pincode" not in rows[0] and (part, "prof1") in old:
                 rows = _rows(_get(old[(part, "prof1")]))        # pseudocodes are stable across years
             {"prof1": prof, "fac": fac, "enr1": enr, "tch": tch}[kind].extend(rows)
-    return by_pin(prof, fac, enr, tch)
+    out = by_pin(prof, fac, enr, tch)
+    for pin, r in trend(enrolment_by_pin(prof, enr), fetch_old(region)).items():
+        if pin in out:
+            out[pin].update(r)
+    return out
 
 
 def block_pins(region):
@@ -161,12 +226,15 @@ def cell_dataset(region, rows):
         FieldSpec("repair_pct", "Government classrooms needing major repair", agg="mean", unit="%", domain=[0, 50], ramp="reds", higher_is="worse"),
         FieldSpec("girls_toilet_pct", "Government girls' and co-ed schools with a working girls' toilet", agg="mean", unit="%", domain=[0, 100], ramp="greens", higher_is="better"),
         FieldSpec("library_pct", "Government schools with a library", agg="mean", unit="%", domain=[0, 100], ramp="greens", higher_is="better"),
+        FieldSpec("govt_share_pct", "Pupils in government schools (share of government and private unaided)", agg="mean", unit="%", domain=[0, 100], ramp="blues"),
+        FieldSpec("govt_share_change_pp", "Change in the government school share since 2021-22", agg="mean", unit="pp", domain=[-20, 20], ramp="diverging"),
     ]
     spec = DatasetSpec(
         id="schools_udise", title="Schools by PIN code (UDISE+ 2024-25)", level=LEVEL, fields=specs, group="Real estate",
         description="Every school in UDISE+ 2024-25 (the Ministry of Education's school census) summed by PIN code and given to each "
                     "block in that PIN code: school count, government and private shares, pupils per teacher, classrooms needing "
-                    "major repair, working girls' toilets and libraries in government schools. School files come per district from "
+                    "major repair, working girls' toilets and libraries in government schools, and the share of pupils in government schools "
+                    "with its change since 2021-22. School files come per district from "
                     "data.opencity.in; schools have PIN codes but no coordinates, so values are PIN-code wide. Delhi, Mumbai, Bengaluru "
                     "Urban, Pune, Chennai, Hyderabad and Kolkata districts only.",
         source="pipeline/realestate/udise.py (UDISE+ via OpenCity; PIN codes from the neighbourhoods dataset)",

@@ -27,3 +27,17 @@ def test_by_pin_counts_government_schools_only_for_quality():
 def test_by_pin_needs_three_schools():
     prof = [_school("1", "560001", "1"), _school("2", "560001", "5")]
     assert udise.by_pin(prof, [], [], []) == {}
+
+
+def test_enrolment_trend_reads_both_years():
+    new_prof = [{"pseudocode": "a", "pincode": "110001", "managment": "1"}, {"pseudocode": "b", "pincode": "110001", "managment": "5"}]
+    new_enr = [{"pseudocode": "a", "item_group": "1", "c1_b": "150", "c1_g": "150"}, {"pseudocode": "a", "item_group": "2", "c1_b": "999"},
+               {"pseudocode": "b", "item_group": "1", "c1_b": "300", "c1_g": "300"}]
+    old_prof = [{"psuedocode": "a", "pincode": "110001", "managment": "1"}, {"psuedocode": "b", "pincode": "110001", "managment": "5"}]
+    old_enr = [{"psuedocode": "a", "item_desc": "General", "c1_b": "200", "c1_g": "100"}, {"psuedocode": "a", "item_desc": "SC", "c1_b": "100"},
+               {"psuedocode": "a", "item_desc": "Muslim", "c1_b": "400"}, {"psuedocode": "b", "item_desc": "OBC", "c1_g": "500"}]
+    new, old = udise.enrolment_by_pin(new_prof, new_enr), udise.enrolment_by_pin(old_prof, old_enr)
+    assert new["110001"] == (300, 600) and old["110001"] == (400, 500)
+    assert udise.trend(new, old)["110001"] == {"govt_share_pct": 33.3, "govt_share_change_pp": -11.1}
+    assert udise.trend({"1": (100, 100)}, {"1": (50, 40)}) == {"1": {"govt_share_pct": 50.0}}
+    assert udise.trend({"1": (60, 40)}, {}) == {}

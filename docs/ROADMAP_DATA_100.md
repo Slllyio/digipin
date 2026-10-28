@@ -115,7 +115,7 @@ Each item gives four things:
 63. ❌ Footpath presence (OSM sidewalk tags) | OSM | walk lens (too sparse: Delhi has 96 km tagged)
 64. ✅ Streetlights (VIIRS light on station walks: existing nightwalk lens) (OSM highway=street_lamp + VIIRS) | OSM/EE | night safety
 65. Metro ridership by station (DMRC/BMRCL open data where published) | open | transit lens
-66. Bus GTFS for Delhi (parked for key), Chennai, Hyderabad | key/open | bus frequency
+66. ✅ Bus GTFS for Chennai, Hyderabad, Pune, Ahmedabad and Mumbai (items 219, 220; Delhi still parked for its key) | open | bus frequency
 67. ⏸ Railway suburban stations with frequency (Mumbai locals timetable) | open | rail access (catchment half shipped as `stationload`, item 138; no open timetable)
 68. ✅ Airport access time | derived | travel lens (`airport` lens)
 69. ❌ Truck routes and no-entry hours | OSM | freight (skipped: only 15 km of Delhi roads carry an hgv restriction in OSM)
@@ -279,6 +279,7 @@ Each item gives four things:
 218. ✅ Air quality monitor gaps: TSPCB (Hyderabad) and KSPCB (Bengaluru) air and noise monitoring stations per block into `air_monitors`; half of Bengaluru's residents and 84% of Hyderabad's live more than 2 km from any station; new-station picks weighted by satellite PM2.5 | data.opencity.in (public domain) | `airmonitorgap` lens
 219. ✅ Chennai bus frequency: MTC timetables (community GTFS from the MTC app, UngalSoththu ChennaiGTFS, ODbL/PDDL, April 2026; 5,580 stops, 47,047 weekday trips) binned into `bus_service`; 1,597 Chennai blocks have a bus every 10 minutes or better at peak, and busgap now tests Chennai corridors on real frequency | github.com/ungalsoththu/ChennaiGTFS | `busgap` and `transit` lenses
 220. ✅ Bus timetables for Pune, Ahmedabad and Mumbai: community GTFS by croyla (PMPML, AMTS with Janmarg BRTS, BEST with TMT/KDMT/VVMT; MIT and MIT-0, Aug-Oct 2026) binned into `bus_service` (Pune 3,945 blocks with stops, Ahmedabad 2,746, Mumbai 3,537) and merged into the bus stop heat points (Pune 552 to 2,320 stops, Ahmedabad 78 to 2,008, Mumbai 1,856 to 4,985) | github.com/croyla | `busgap`, `transit` and bus stop heat lenses
+221. ✅ Leaving government schools: UDISE+ 2021-22 district files joined to 2024-25 by PIN code; `schools_udise` gains govt_share_pct and govt_share_change_pp (shares, not counts, because UDISE+ switched to verified pupil records in 2022-23). Delhi's share fell 6.2 points, Hyderabad's 4.9; Kolkata's rose 2.7 | data.opencity.in UDISE+ | `schooldrift` lens
 
 ## Parked for the keys round
 

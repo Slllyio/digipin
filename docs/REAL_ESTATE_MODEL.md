@@ -1203,6 +1203,16 @@ UDISE+ 2024-25, the Ministry of Education's census of every school, comes per di
 
 The lens weights by school-age children (`demographics.school_age`) and counts those in PIN codes where government schools exceed 35 pupils per teacher (RTE schedule), where 10%+ of classrooms need major repair, and where under 90% of schools have a working girls' toilet; it lists the worst PIN-code areas. The property report shows the PIN code's schools, government share, pupils per teacher and repair share.
 
+## Leaving government schools (`schooldrift` lens, `schools_udise` dataset, pipeline/realestate/udise.py)
+
+The 2021-22 UDISE+ district files are summed by PIN code like the 2024-25 ones: pupils in government schools and in
+private unaided schools (aided schools left out of both). `govt_share_pct` is the 2024-25 government share and
+`govt_share_change_pp` its change in percentage points; PIN codes with under 200 such pupils in a year are dropped.
+Counts are never compared across the years: from 2022-23 UDISE+ collected verified pupil records instead of school
+returns, which cut duplicate and ghost enrolment, and 2021-22 came right after the pandemic, when many families had
+moved children to government schools. The lens counts school-age children where the share fell 5 points or more and
+lists the steepest falls and rises. First run: Delhi -6.2 points (Sangam Vihar -23.6), Hyderabad -4.9, Kolkata +2.7.
+
 ## Recorded road crashes (`crashrecord` lens in js/urban-lenses-mobility.js, `road_crashes` dataset, pipeline/realestate/btpcrashes.py)
 
 Bengaluru Traffic Police publishes station-wise crash tables (2018-2020, 2021-2022, 2023, 2024, 2025: fatal, non-fatal and total cases) and a 2022 map of its 47 jurisdictions on data.opencity.in (public domain). Each lived-in Bengaluru block takes its jurisdiction's crashes and fatal crashes a year (2023-2025 mean), the same per km² (spheroid area of the polygon), and the change in fatal crashes against 2018-2019. Station spellings vary by year (`ALIAS`); stations opened after 2022 are added to the jurisdiction they were carved from (`PARENT`: Mahadevapura to K.R. Puram, Bellanduru to HSR Layout, JP Nagar to Jayanagar, Thalagattapura to Kumaraswamy Layout, Jnanabharathi to Kengeri, Kodigehalli to Hebbal, Chickpet to Upparpet), a judgement call that keeps years comparable. One unnamed airport polygon has no counts.
