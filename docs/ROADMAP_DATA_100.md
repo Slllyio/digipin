@@ -244,6 +244,7 @@ Each item gives four things:
 183. ✅ Planned road widening: BDA RMP 2015 road width map for Bengaluru (2,138 km with planned widths, 541 km of proposed links), residents on roads planned 24 m+ and blocks new links cross (OpenCity, public domain) | OpenCity | `roadplan` lens in the new js/urban-lenses-civic.js module (new dataset `road_plan`, pipeline/realestate/roadplan.py)
 184. ✅ Hyderabad community halls: GHMC's 2018 map (1,264 in the region) topping up `places.community_centres`; Hyderabad's hot-quarter residents with no cooling-centre candidate within 1 km fall from 29.3% to 11.5% (OpenCity, public domain) | OpenCity | loader top-up (new dataset `community_halls`, pipeline/realestate/communityhalls.py)
 185. ✅ Cremation and burial grounds: BMC, PMC, GCC and BBMP maps (Mumbai 189, Pune 76, Chennai 210, Bengaluru 80), distance, residents per site, electric or gas crematoriums, new-site picks (OpenCity, public domain) | OpenCity | `lastrites` lens in js/urban-lenses-civic.js (new dataset `funeral_sites`, pipeline/realestate/funeral.py)
+186. ✅ Borewells beside septic tanks: BWSSB public borewell map (about 7,200 wells) crossed with the sewer network; 12% of public borewells stand where sewers are missing or thin (OpenCity, public domain) | OpenCity | `wellrisk` lens in js/urban-lenses-civic.js (new dataset `borewells`, pipeline/realestate/borewells.py)
 
 ## Parked for the keys round
 

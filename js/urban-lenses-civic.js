@@ -1,6 +1,6 @@
 /**
  * Civic lenses for UrbanLenses: what statutory plans and municipal facility lists say about a block (planned road
- * widths and new links, cremation and burial grounds). They read datasets baked from city and development-authority
+ * widths and new links, cremation and burial grounds, public borewells). They read datasets baked from city and development-authority
  * maps. Registers itself on load, after urban-lenses.js.
  */
 const UrbanLensesCivic = (() => {
@@ -105,7 +105,52 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Borewells beside septic tanks. Where the city pumps drinking water from public borewells but sewers are missing or
+    // thin, homes drain into septic tanks and soak pits that seep into the same aquifer (CPHEEO asks for 15-30 m between
+    // a soak pit and a well, rarely possible on small plots). Wells in such blocks are the ones to test first.
+    const WELL_SEWER_KM = 0.25, WELL_THIN_PCT = 30;
+
+    function wellrisk(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], bw = c['borewells.borewells'], sw = c['sewers.sewer_m'];
+        const road = c['osm_roads.road_km_km2'];
+        if (!pop || !bw || !sw || !bw.some(v => v > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0), area = g.dx * g.dy;
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(sw, i)), WELL_SEWER_KM);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(bw, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const pct = i => (v(road, i) > 0 ? 100 * v(sw, i) / (v(road, i) * area * 1000) : 100);
+        const level = i => (!(near[i] > 0) ? 2 : pct(i) < WELL_THIN_PCT ? 1 : 0);
+        const wells = idx.reduce((a, i) => a + v(bw, i), 0);
+        const wAt = k => idx.filter(i => level(i) === k).reduce((a, i) => a + v(bw, i), 0);
+        const wNone = wAt(2), wThin = wAt(1), pRisk = _sumOver(pop, idx, i => level(i) > 0);
+        const stats = [
+            { label: 'Public borewells listed', value: _people(wells) },
+            { label: `…in blocks with no sewer within ${WELL_SEWER_KM * 1000} m`, value: `${_people(wNone)} (${_round(100 * wNone / wells)}%)` },
+            { label: `…in blocks where sewers run along under ${WELL_THIN_PCT}% of the streets`, value: `${_people(wThin)} (${_round(100 * wThin / wells)}%)` },
+            { label: 'Residents of those well blocks', value: _people(pRisk) },
+        ];
+        const score = Float64Array.from({ length: n }, (_, i) => level(i) * v(bw, i) * v(pop, i));
+        spaced(g, idx.filter(i => level(i) > 0), score).forEach((i, k) => stats.push({ label: `Test water here ${k + 1}: ${g.codes[i]}`,
+            value: `${v(bw, i)} public borewell${v(bw, i) > 1 ? 's' : ''}; ${level(i) === 2 ? `no sewer within ${WELL_SEWER_KM * 1000} m` : `sewers along ${Math.round(pct(i))}% of streets`}; ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = level(i);
+        const share = _round(100 * (wNone + wThin) / wells);
+        return {
+            columns: { well_risk: out }, idx, weightKey: 'well_risk', noHotspots: true,
+            metric: { label: 'Public borewells where sewers are missing or thin', value: _round(100 * (wNone + wThin) / wells, 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(wNone + wThin)} of ${_people(wells)} public borewells (${share}%) stand where sewers are missing or run along under ${WELL_THIN_PCT}% of the streets, so many homes around them drain into septic tanks and soak pits over the same groundwater; ${_people(pRisk)} people live in those blocks. This flags where to test the water, not measured contamination.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'wellrisk', equity: true, title: 'Borewells beside septic tanks', icon: '🚰',
+            question: 'Which public borewells sit where homes have no sewer?',
+            field: { key: 'well_risk', label: 'Borewell block: sewered (0), thinly sewered (1), no sewer nearby (2)', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
+            needs: ['borewells.borewells', 'sewers.sewer_m', 'osm_roads.road_km_km2', 'population.population'],
+            method: `BWSSB's public borewell map (KGIS, about 7,200 distinct wells) and sewerage line maps on data.opencity.in (public domain). A well block has no sewer nearby when no mapped sewer runs within ${WELL_SEWER_KM * 1000} m, and is thinly sewered when its sewer length is under ${WELL_THIN_PCT}% of its OpenStreetMap street length. CPHEEO's manual asks for 15-30 m between a soak pit and a drinking-water well. Picks are such well blocks ${SPACING_KM} km apart ranked by level times wells times residents. Bengaluru only; this marks where to test, not tested water.`,
+            refs: 'CPHEEO Manual on Water Supply and Treatment (1999) and on Sewerage (2013); BWSSB borewell and sewer maps via OpenCity; Bureau of Indian Standards IS 10500 (drinking water)' },
         { id: 'lastrites', equity: true, title: 'Cremation and burial grounds', icon: '🕯️',
             question: 'Who lives far from a cremation or burial ground, and where is another needed?',
             field: { key: 'funeral_km', label: 'Distance to the nearest cremation or burial ground', unit: 'km', higherIs: 'worse', ramp: 'reds', domain: [0, 8] },
@@ -120,6 +165,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk });
     return { ENTRIES };
 })();

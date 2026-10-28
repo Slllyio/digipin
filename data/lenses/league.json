@@ -870,6 +870,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "wellrisk": {
+     "label": "Public borewells where sewers are missing or thin",
+     "value": 12.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "lastrites": {
      "label": "Residents more than 3 km from a cremation or burial ground",
      "value": 12.8,

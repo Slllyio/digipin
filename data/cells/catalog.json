@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T15:33:41Z",
+  "generated": "2026-10-28T15:40:03Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -1202,6 +1202,50 @@
             "north": 18.6455078125
           },
           "json": "blackouts/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "borewells",
+      "title": "Public borewells (BWSSB map)",
+      "description": "BWSSB's public borewells in Bengaluru (KGIS) from data.opencity.in, counted per block.",
+      "source": "pipeline/realestate/borewells.py (OpenCity BWSSB borewell map)",
+      "license": "Public domain (BWSSB via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "borewells",
+          "label": "BWSSB public borewells",
+          "type": "number",
+          "agg": "sum",
+          "unit": "wells",
+          "domain": [
+            1,
+            19
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "borewells",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 2968,
+          "bbox": {
+            "west": 77.46142578125,
+            "south": 12.853515625,
+            "east": 77.797607421875,
+            "north": 13.123779296875
+          },
+          "json": "borewells/bengaluru.json",
           "parquet": null
         }
       ]

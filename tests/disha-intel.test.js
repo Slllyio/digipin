@@ -149,6 +149,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('which areas flooded again and again in Pune')).not.toEqual({ type: 'lens', lens: 'districthealth', city: 'pune' });
         expect(M('road crash data by police station in Delhi')).toEqual({ type: 'lens', lens: 'crashrecord', city: 'delhi' });
         expect(M('where do most fatal accidents happen in Delhi')).toEqual({ type: 'lens', lens: 'crashrecord', city: 'delhi' });
+        expect(M('are borewells near septic tanks contaminated in Pune')).toEqual({ type: 'lens', lens: 'wellrisk', city: 'pune' });
         expect(M('how far is the nearest crematorium in Pune')).toEqual({ type: 'lens', lens: 'lastrites', city: 'pune' });
         expect(M('which roads face road widening in Pune')).toEqual({ type: 'lens', lens: 'roadplan', city: 'pune' });
         expect(M('which areas have no sewer lines in Pune')).toEqual({ type: 'lens', lens: 'sewergap', city: 'pune' });
