@@ -1,155 +1,23 @@
 {
   "region": "delhi",
-  "total_segments": 19398,
-  "graph_nodes": 21126,
-  "graph_edges": 19200,
+  "total_segments": 19415,
+  "graph_nodes": 21148,
+  "graph_edges": 19218,
   "bridge_count": 11224,
   "los_distribution": {
-    "F": 1267,
-    "A": 16251,
-    "C": 545,
-    "D": 307,
-    "B": 891,
-    "E": 137
+    "F": 1258,
+    "A": 16180,
+    "C": 565,
+    "E": 141,
+    "B": 985,
+    "D": 286
   },
   "top_bottlenecks": [
-    {
-      "osm_id": 1474862453,
-      "name": "Vikas Marg",
-      "highway": "primary",
-      "betweenness": 0.023048,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.62878,
-      "lng": 77.275
-    },
-    {
-      "osm_id": 264711057,
-      "name": "",
-      "highway": "trunk",
-      "betweenness": 0.023014,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.59391,
-      "lng": 77.16521
-    },
-    {
-      "osm_id": 554798484,
-      "name": "",
-      "highway": "trunk",
-      "betweenness": 0.022999,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.59326,
-      "lng": 77.16378
-    },
-    {
-      "osm_id": 1312987915,
-      "name": "Flyover",
-      "highway": "trunk",
-      "betweenness": 0.022984,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.59275,
-      "lng": 77.16233
-    },
-    {
-      "osm_id": 754391963,
-      "name": "Flyover",
-      "highway": "trunk",
-      "betweenness": 0.02297,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.5927,
-      "lng": 77.16216
-    },
-    {
-      "osm_id": 28412404,
-      "name": "Mahatma Gandhi Marg",
-      "highway": "primary",
-      "betweenness": 0.022693,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.56588,
-      "lng": 77.23009
-    },
-    {
-      "osm_id": 44316344,
-      "name": "Mahatma Gandhi Marg",
-      "highway": "primary_link",
-      "betweenness": 0.022686,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.5665,
-      "lng": 77.2284
-    },
-    {
-      "osm_id": 447602096,
-      "name": "Sikandra Road",
-      "highway": "secondary",
-      "betweenness": 0.022315,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.62574,
-      "lng": 77.23265
-    },
-    {
-      "osm_id": 447602095,
-      "name": "Sikandra Road",
-      "highway": "secondary",
-      "betweenness": 0.022311,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.62564,
-      "lng": 77.23457
-    },
-    {
-      "osm_id": 447602098,
-      "name": "",
-      "highway": "secondary_link",
-      "betweenness": 0.022311,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.62575,
-      "lng": 77.23436
-    },
-    {
-      "osm_id": 80499271,
-      "name": "Sikandra Road",
-      "highway": "secondary",
-      "betweenness": 0.02231,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.62563,
-      "lng": 77.23558
-    },
     {
       "osm_id": 313547225,
       "name": "",
       "highway": "secondary",
-      "betweenness": 0.022254,
+      "betweenness": 0.026126,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -158,34 +26,10 @@
       "lng": 77.13244
     },
     {
-      "osm_id": 733803588,
-      "name": "Indra Prasth Marg",
-      "highway": "secondary",
-      "betweenness": 0.021659,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.6281,
-      "lng": 77.2467
-    },
-    {
-      "osm_id": 446923135,
-      "name": "Vikas Marg",
-      "highway": "primary",
-      "betweenness": 0.021494,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.62845,
-      "lng": 77.27455
-    },
-    {
       "osm_id": 733803585,
       "name": "Vikas Marg",
       "highway": "secondary",
-      "betweenness": 0.021409,
+      "betweenness": 0.022901,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -194,22 +38,10 @@
       "lng": 77.24969
     },
     {
-      "osm_id": 754372054,
-      "name": "Flyover",
-      "highway": "trunk",
-      "betweenness": 0.021285,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.59236,
-      "lng": 77.16111
-    },
-    {
       "osm_id": 70255392,
       "name": "Vikas Marg",
       "highway": "secondary",
-      "betweenness": 0.021236,
+      "betweenness": 0.022748,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -218,22 +50,10 @@
       "lng": 77.25053
     },
     {
-      "osm_id": 1453820690,
-      "name": "Indraprastha Marg",
-      "highway": "secondary",
-      "betweenness": 0.021233,
-      "los_grade": "F",
-      "congestion_risk": 100,
-      "is_bridge": false,
-      "criticality": "high",
-      "lat": 28.62768,
-      "lng": 77.24143
-    },
-    {
       "osm_id": 70255395,
       "name": "Vikas Marg",
       "highway": "secondary",
-      "betweenness": 0.021223,
+      "betweenness": 0.022736,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
@@ -242,16 +62,196 @@
       "lng": 77.25159
     },
     {
-      "osm_id": 370543237,
-      "name": "Indraprastha Marg",
+      "osm_id": 70255393,
+      "name": "Vikas Marg",
       "highway": "secondary",
-      "betweenness": 0.021222,
+      "betweenness": 0.022725,
       "los_grade": "F",
       "congestion_risk": 100,
       "is_bridge": false,
       "criticality": "high",
-      "lat": 28.62784,
-      "lng": 77.24331
+      "lat": 28.62823,
+      "lng": 77.25213
+    },
+    {
+      "osm_id": 264711057,
+      "name": "",
+      "highway": "trunk",
+      "betweenness": 0.02272,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.59391,
+      "lng": 77.16521
+    },
+    {
+      "osm_id": 70255406,
+      "name": "Vikas Marg",
+      "highway": "secondary",
+      "betweenness": 0.022713,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62822,
+      "lng": 77.25337
+    },
+    {
+      "osm_id": 733803584,
+      "name": "Vikas Marg",
+      "highway": "primary",
+      "betweenness": 0.02271,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62822,
+      "lng": 77.26681
+    },
+    {
+      "osm_id": 554798484,
+      "name": "",
+      "highway": "trunk",
+      "betweenness": 0.022706,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.59326,
+      "lng": 77.16378
+    },
+    {
+      "osm_id": 70255399,
+      "name": "Vikas Marg",
+      "highway": "secondary",
+      "betweenness": 0.022702,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62823,
+      "lng": 77.25935
+    },
+    {
+      "osm_id": 1312987915,
+      "name": "Flyover",
+      "highway": "trunk",
+      "betweenness": 0.022693,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.59275,
+      "lng": 77.16233
+    },
+    {
+      "osm_id": 70255389,
+      "name": "Vikas Marg",
+      "highway": "secondary",
+      "betweenness": 0.022691,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62822,
+      "lng": 77.26055
+    },
+    {
+      "osm_id": 754391963,
+      "name": "Flyover",
+      "highway": "trunk",
+      "betweenness": 0.022681,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.5927,
+      "lng": 77.16216
+    },
+    {
+      "osm_id": 727360271,
+      "name": "Entry to NH8",
+      "highway": "motorway_link",
+      "betweenness": 0.022074,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.55258,
+      "lng": 77.13087
+    },
+    {
+      "osm_id": 1312967332,
+      "name": "Mahipalpur Flyover",
+      "highway": "motorway",
+      "betweenness": 0.022055,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.55196,
+      "lng": 77.1305
+    },
+    {
+      "osm_id": 1312967331,
+      "name": "Mahipalpur Flyover",
+      "highway": "motorway",
+      "betweenness": 0.022036,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.55169,
+      "lng": 77.13014
+    },
+    {
+      "osm_id": 40138011,
+      "name": "Mahipalpur Flyover",
+      "highway": "motorway",
+      "betweenness": 0.022017,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.54444,
+      "lng": 77.11957
+    },
+    {
+      "osm_id": 1201412916,
+      "name": "Mahipalpur Flyover",
+      "highway": "motorway",
+      "betweenness": 0.021999,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.54127,
+      "lng": 77.11744
+    },
+    {
+      "osm_id": 1312967329,
+      "name": "Mahipalpur Flyover",
+      "highway": "motorway",
+      "betweenness": 0.021982,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.54028,
+      "lng": 77.11701
+    },
+    {
+      "osm_id": 447602096,
+      "name": "Sikandra Road",
+      "highway": "secondary",
+      "betweenness": 0.021681,
+      "los_grade": "F",
+      "congestion_risk": 100,
+      "is_bridge": false,
+      "criticality": "high",
+      "lat": 28.62574,
+      "lng": 77.23265
     }
   ],
   "critical_links": [],
@@ -259,13 +259,13 @@
     "zones": 3129,
     "origins": 2690,
     "peak_pcu_total_trips": 881747,
-    "roads_los_e_f": 6990,
-    "roads_los_d": 790,
-    "roads_total": 18938,
+    "roads_los_e_f": 6978,
+    "roads_los_d": 779,
+    "roads_total": 18955,
     "roads_los_e_f_by_period": {
-      "am": 6884,
-      "pm": 6718,
-      "mid": 1330
+      "am": 6889,
+      "pm": 6692,
+      "mid": 1331
     },
     "hourly": {
       "share_pct": [
@@ -448,20 +448,20 @@
     }
   },
   "road_flood": {
-    "very_high": 240.9,
-    "high": 1686.7,
-    "river_flood": 2577.9,
-    "total": 7229.1,
-    "pct_very_high": 3.3,
+    "very_high": 246.9,
+    "high": 1688.6,
+    "river_flood": 2587.2,
+    "total": 7238.8,
+    "pct_very_high": 3.4,
     "pct_high_or_worse": 26.7
   },
   "noise_air": {
     "residents_total": 29420982,
-    "residents_near_modelled_roads": 20639474,
-    "residents_lden_ge_53": 19605638,
-    "residents_lden_ge_65": 8626347,
-    "nox_t_day": 51.11,
-    "co2_t_day": 12493.0,
+    "residents_near_modelled_roads": 20641218,
+    "residents_lden_ge_53": 19603590,
+    "residents_lden_ge_65": 8637688,
+    "nox_t_day": 51.17,
+    "co2_t_day": 12507.1,
     "nox_vs_s5p_no2_spearman_l5": 0.82,
     "l5_cells_compared": 216,
     "assumptions": {
@@ -480,7 +480,7 @@
   "emergency_access": {
     "hospitals": 2704,
     "pct_within_10_night": 91.1,
-    "pct_within_10_am": 83.4,
+    "pct_within_10_am": 83.3,
     "pct_within_10_pm": 83.6,
     "pct_over_20_peak": 4.4,
     "source": "Overture Maps places 2026-10-21.0; demand model link times"
@@ -493,30 +493,29 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 168,
+    "chargers": 44,
     "chargers_by_source": {
-      "osm": 126,
-      "overture": 42
+      "overture": 44
     },
     "parking": 220,
     "fuel": 556,
-    "chargers_per_lakh": 0.57,
-    "pct_vkm_within_2km": 51.7,
-    "pct_pop_within_2km": 46.9
+    "chargers_per_lakh": 0.15,
+    "pct_vkm_within_2km": 25.8,
+    "pct_pop_within_2km": 27.6
   },
   "cycling": {
-    "lowstress_km": 32513,
+    "lowstress_km": 32515,
     "cycleway_km": 77.6,
-    "highstress_km": 4648,
-    "islands": 9532,
-    "islands_over_5_km2": 72,
-    "largest_island_km2": 149.7,
-    "pct_residents_small_island": 11.4,
+    "highstress_km": 4646,
+    "islands": 9511,
+    "islands_over_5_km2": 71,
+    "largest_island_km2": 150.0,
+    "pct_residents_small_island": 11.3,
     "pct_residents_no_lowstress_street": 0.4,
     "source": "Overture Maps transportation 2026-10-21.0"
   },
   "crossings": {
-    "main_km": 4113,
+    "main_km": 4112,
     "pct_main_km_on_long_gaps": 24.7,
     "median_gap_m": 552,
     "crosswalks_mapped": 700,
@@ -530,7 +529,7 @@
       "wholesale": 374
     },
     "truck_trips_day": 33512,
-    "gateway_nodes": 2509,
+    "gateway_nodes": 2518,
     "road_km_500_trucks_day": 13.5,
     "busiest_truck_roads": [
       {
@@ -566,7 +565,7 @@
   },
   "job_access": {
     "zones": 3139,
-    "pop_mean_jobs_car_pct": 9.6,
+    "pop_mean_jobs_car_pct": 9.8,
     "pop_mean_jobs_transit_pct": 7.6,
     "stations": 327,
     "threshold_min": 45.0,
@@ -578,52 +577,12 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 2474,
-    "stops_with_heat_data": 2474,
-    "pct_hot_bare": 25.1,
-    "pct_riders_at_hot_bare": 25.7,
-    "median_stop_lst_c": 39.3,
+    "stops": 624,
+    "stops_with_heat_data": 624,
+    "pct_hot_bare": 35.7,
+    "pct_riders_at_hot_bare": 34.4,
+    "median_stop_lst_c": 39.7,
     "top_stops": [
-      {
-        "digipin": "39J365K",
-        "name": "Bhajanpura",
-        "lon": 77.26404,
-        "lat": 28.70336,
-        "residents_5min": 51762,
-        "lst_c": 40.5,
-        "canopy_pct": 1.8,
-        "priority": 279567
-      },
-      {
-        "digipin": "39J4973",
-        "name": "Golcha Cinema",
-        "lon": 77.24031,
-        "lat": 28.64349,
-        "residents_5min": 52655,
-        "lst_c": 40.4,
-        "canopy_pct": 4.5,
-        "priority": 271542
-      },
-      {
-        "digipin": "39J4973",
-        "name": "Golcha Cinema",
-        "lon": 77.2405,
-        "lat": 28.64466,
-        "residents_5min": 52655,
-        "lst_c": 40.4,
-        "canopy_pct": 4.5,
-        "priority": 271542
-      },
-      {
-        "digipin": "39J3646",
-        "name": "Bhajanpura",
-        "lon": 77.2634,
-        "lat": 28.70369,
-        "residents_5min": 51714,
-        "lst_c": 40.3,
-        "canopy_pct": 1.4,
-        "priority": 270247
-      },
       {
         "digipin": "39J3646",
         "name": "Bhajanpura Bus Stop",
@@ -635,54 +594,94 @@
         "priority": 270247
       },
       {
-        "digipin": "39J492K",
-        "name": "Zakir Hussain College",
-        "lon": 77.23004,
-        "lat": 28.64119,
-        "residents_5min": 45465,
-        "lst_c": 41.4,
+        "digipin": "39J4924",
+        "name": "Turkman Gate Bus Stop",
+        "lon": 77.2328,
+        "lat": 28.642,
+        "residents_5min": 45157,
+        "lst_c": 41.3,
+        "canopy_pct": 11.7,
+        "priority": 251204
+      },
+      {
+        "digipin": "39J497C",
+        "name": "Dariya Ganj Bus Stop",
+        "lon": 77.24007,
+        "lat": 28.64717,
+        "residents_5min": 49853,
+        "lst_c": 40.5,
         "canopy_pct": 8.4,
-        "priority": 266534
+        "priority": 251159
       },
       {
-        "digipin": "39J492K",
-        "name": "Zakir Hussain College",
-        "lon": 77.22963,
-        "lat": 28.64113,
-        "residents_5min": 45465,
+        "digipin": "39J4C94",
+        "name": "East Park Road Bus Stop",
+        "lon": 77.19733,
+        "lat": 28.65082,
+        "residents_5min": 53769,
+        "lst_c": 40.0,
+        "canopy_pct": 7.1,
+        "priority": 249757
+      },
+      {
+        "digipin": "39J5FK9",
+        "name": "Nirman Vihar Bus Stop",
+        "lon": 77.2869,
+        "lat": 28.637,
+        "residents_5min": 36999,
+        "lst_c": 41.3,
+        "canopy_pct": 1.3,
+        "priority": 230063
+      },
+      {
+        "digipin": "39J3T99",
+        "name": "Ghonda Chowk Bus Stop",
+        "lon": 77.27005,
+        "lat": 28.6905,
+        "residents_5min": 48359,
+        "lst_c": 40.1,
+        "canopy_pct": 6.8,
+        "priority": 229860
+      },
+      {
+        "digipin": "39J2KF6",
+        "name": "Jawahar Nagar Bus Stop",
+        "lon": 77.2897,
+        "lat": 28.72012,
+        "residents_5min": 34404,
+        "lst_c": 41.6,
+        "canopy_pct": 2.1,
+        "priority": 222298
+      },
+      {
+        "digipin": "39J3655",
+        "name": "B Block Yamuna Vihar Bus Stop",
+        "lon": 77.26947,
+        "lat": 28.70297,
+        "residents_5min": 48192,
+        "lst_c": 39.9,
+        "canopy_pct": 6.0,
+        "priority": 221972
+      },
+      {
+        "digipin": "39J4932",
+        "name": "Kamla Market Bada Akhada Bus Stop",
+        "lon": 77.22599,
+        "lat": 28.64337,
+        "residents_5min": 38258,
         "lst_c": 41.4,
-        "canopy_pct": 8.4,
-        "priority": 266534
+        "canopy_pct": 11.6,
+        "priority": 216448
       },
       {
-        "digipin": "39J4C9P",
-        "name": "Faiz Road",
-        "lon": 77.1993,
-        "lat": 28.64847,
-        "residents_5min": 55467,
-        "lst_c": 40.2,
-        "canopy_pct": 11.5,
-        "priority": 255259
-      },
-      {
-        "digipin": "39J4C9P",
-        "name": "",
-        "lon": 77.19828,
-        "lat": 28.64942,
-        "residents_5min": 55467,
-        "lst_c": 40.2,
-        "canopy_pct": 11.5,
-        "priority": 255259
-      },
-      {
-        "digipin": "39J4C9P",
-        "name": "Faiz Road",
-        "lon": 77.19973,
-        "lat": 28.64944,
-        "residents_5min": 55467,
-        "lst_c": 40.2,
-        "canopy_pct": 11.5,
-        "priority": 255259
+        "digipin": "39J3T5J",
+        "name": "Kishan Gunj Bus Stop",
+        "lon": 77.26507,
+        "lat": 28.67066,
+        "residents_5min": 38757,
+        "lst_c": 40.5,
+        "canopy_pct": 0.8,
+        "priority": 211458
       }
     ],
     "thresholds": {
@@ -691,16 +690,15 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "osm": 1936,
-      "overture": 538
+      "overture": 624
     }
   },
   "parking": {
     "cells": 21065,
-    "demand_ecs": 1317162,
+    "demand_ecs": 1317164,
     "lots_mapped": 220,
     "pct_demand_in_overflow": 21.0,
-    "overflow_ecs": 178731,
+    "overflow_ecs": 178725,
     "hotspots": [
       {
         "digipin": "39J49K6",
@@ -774,11 +772,11 @@
   },
   "commute_carbon": {
     "zones": 2690,
-    "pop_mean_trip_km": 12.21,
-    "co2_kg_resident_day": 0.396,
-    "co2_kt_year": 4250.0,
-    "inner_fifth_trip_km": 10.37,
-    "outer_fifth_trip_km": 15.12,
+    "pop_mean_trip_km": 12.23,
+    "co2_kg_resident_day": 0.397,
+    "co2_kt_year": 4258.1,
+    "inner_fifth_trip_km": 10.39,
+    "outer_fifth_trip_km": 15.15,
     "assumptions": {
       "detour": 1.3,
       "intra_km": 0.6,
