@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T17:13:02Z",
+  "generated": "2026-10-28T17:25:36Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -31674,10 +31674,10 @@
     },
     {
       "id": "sewers",
-      "title": "Sewer network (BWSSB maps)",
-      "description": "BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter) on data.opencity.in: sewer length per block and trunk sewers 300 mm and wider.",
-      "source": "pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps)",
-      "license": "Public domain (BWSSB via data.opencity.in)",
+      "title": "Sewer network (BWSSB and CMWSSB maps)",
+      "description": "BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter) and CMWSSB's sewer main network for Chennai on data.opencity.in: sewer length per block and trunk sewers 300 mm and wider.",
+      "source": "pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps, CMWSSB sewer main network)",
+      "license": "Public domain (BWSSB and CMWSSB via data.opencity.in)",
       "group": "Real estate",
       "level": 7,
       "approxCellM": 244,
@@ -31725,6 +31725,18 @@
             "north": 13.1171875
           },
           "json": "sewers/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 4479,
+          "bbox": {
+            "west": 80.1376953125,
+            "south": 12.87109375,
+            "east": 80.3310546875,
+            "north": 13.233642578125
+          },
+          "json": "sewers/chennai.json",
           "parquet": null
         }
       ]

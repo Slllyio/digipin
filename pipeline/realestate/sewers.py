@@ -1,14 +1,15 @@
-"""Sewer lines from BWSSB's network maps for Bengaluru (OpenCity, public domain).
+"""Sewer lines from the water boards' network maps for Bengaluru (BWSSB) and Chennai (CMWSSB) (OpenCity, public domain).
 
 Per L7 block (dataset ``sewers``):
 
     sewer_m    length of sewer line in the block
     trunk_m    of it, trunk sewers 300 mm across or more
 
-Maps: BWSSB sewerage line maps (KGIS) by diameter, under 150 mm, 150-300 mm and 300 mm and above. Lines are walked in
-steps of about STEP_M and each step's length goes to the block holding its midpoint.
+Maps: BWSSB sewerage line maps (KGIS) by diameter, under 150 mm, 150-300 mm and 300 mm and above; CMWSSB's sewer main
+network (about 181,000 pipes, 4,200 km, pipe size as a code). Lines are walked in steps of about STEP_M and each step's
+length goes to the block holding its midpoint.
 
-    python -m pipeline.realestate.sewers
+    python -m pipeline.realestate.sewers --region bengaluru,chennai
 """
 from __future__ import annotations
 
@@ -30,17 +31,23 @@ MAPS = [
     "8bc1acfb-e28d-44da-8cce-6248693d47b4/download/a57f5572-ab3d-4527-bc14-88462156fa6b.kml",
     "3f02ce59-0e6d-456e-8fda-a2a8f946a5a4/download/0f28c5fb-8043-45b2-ba46-ce9e8f18e2fa.kml",
 ]
-PLACEMARK = re.compile(r"<Placemark>(.*?)</Placemark>", re.S)
+CHENNAI = ("https://data.opencity.in/dataset/c9844771-3129-4bc8-99d7-398dd93db1fa/resource/a819c121-0d4a-4f6e-943d-2bcc610f6954/"
+           "download/673f4683-9987-4101-b25c-8df48b448378.kmz")
+PLACEMARK = re.compile(r"<Placemark\b[^>]*>(.*?)</Placemark>", re.S)
 DIAM = re.compile(r'name="Diameter">([\d.]+)<')
-LINE = re.compile(r"<LineString>\s*<coordinates>([^<]+)</coordinates>")
+SIZE_CODE = re.compile(r'name="size_of_pipe_mm">(\d+)<')
+LINE = re.compile(r"<LineString>.*?<coordinates>\s*([^<]+?)\s*</coordinates>", re.S)
+# CMWSSB's size codes (the "Sewer Main Codes" note published with the map), code -> mm
+CMWSSB_MM = {1: 100, 2: 150, 3: 200, 4: 250, 5: 300, 6: 350, 8: 400, 9: 450, 10: 500, 11: 600, 12: 700, 14: 750, 15: 800,
+             16: 900, 17: 1000, 18: 1100, 19: 1200, 23: 1600, 29: 225, 30: 125, 31: 160, 32: 1050}
 
 
 def lines(text):
     """Yield (coords [(lng, lat)], diameter_mm or None) for each sewer Placemark."""
     for m in PLACEMARK.finditer(text):
         body = m.group(1)
-        d = DIAM.search(body)
-        diam = float(d.group(1)) if d else None
+        d, c = DIAM.search(body), SIZE_CODE.search(body)
+        diam = float(d.group(1)) if d else (CMWSSB_MM.get(int(c.group(1))) if c else None)
         for ls in LINE.finditer(body):
             pts = [tuple(map(float, p.split(",")[:2])) for p in ls.group(1).split()]
             if len(pts) >= 2:
@@ -76,11 +83,11 @@ def accumulate(items, acc):
     return acc
 
 
-def download(path, dst):
+def download(url, dst):
     import requests
     for attempt in range(4):
         try:
-            with requests.get(OPENCITY + path, stream=True, timeout=900) as r, open(dst, "wb") as f:
+            with requests.get(url, stream=True, timeout=900) as r, open(dst, "wb") as f:
                 r.raise_for_status()
                 f.writelines(r.iter_content(1 << 20))
             return
@@ -98,32 +105,46 @@ def cell_dataset(region, acc):
         FieldSpec("trunk_m", "Trunk sewer length (300 mm and above)", agg="sum", unit="m", ramp="blues", higher_is="better"),
     ]
     spec = DatasetSpec(
-        id="sewers", title="Sewer network (BWSSB maps)", level=LEVEL, fields=specs, group="Real estate",
-        description="BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter) on data.opencity.in: sewer length per block and "
-                    "trunk sewers 300 mm and wider.",
-        source="pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps)",
-        license="Public domain (BWSSB via data.opencity.in)", default_field="sewer_m", extrude=False)
+        id="sewers", title="Sewer network (BWSSB and CMWSSB maps)", level=LEVEL, fields=specs, group="Real estate",
+        description="BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter) and CMWSSB's sewer main network for "
+                    "Chennai on data.opencity.in: sewer length per block and trunk sewers 300 mm and wider.",
+        source="pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps, CMWSSB sewer main network)",
+        license="Public domain (BWSSB and CMWSSB via data.opencity.in)", default_field="sewer_m", extrude=False)
     recs = [{"digipin": code, "sewer_m": round(r[0]), "trunk_m": round(r[1])}
             for code, r in acc.items()]
     return store.write_dataset(CELLS, spec, region, store.bin_records(recs, LEVEL, specs), parquet=False)
 
 
+def read_kml(path):
+    """Text of a .kml, or of the first .kml inside a .kmz."""
+    if str(path).endswith(".kmz"):
+        import zipfile
+        with zipfile.ZipFile(path) as z:
+            return z.read(next(n for n in z.namelist() if n.endswith(".kml"))).decode("utf-8-sig", errors="replace")
+    with open(path, encoding="utf-8-sig", errors="replace") as f:
+        return f.read()
+
+
+SOURCES = {"bengaluru": [OPENCITY + p for p in MAPS], "chennai": [CHENNAI]}
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--from-dir", help="read the KMLs (named as in the URLs) from this folder instead of downloading")
+    ap.add_argument("--region", default=",".join(SOURCES))
+    ap.add_argument("--from-dir", help="read the maps (named as in the URLs) from this folder instead of downloading")
     a = ap.parse_args(argv)
-    acc = {}
-    with tempfile.TemporaryDirectory() as tmp:
-        for path in MAPS:
-            name = path.rsplit("/", 1)[-1]
-            src = os.path.join(a.from_dir or tmp, name)
-            if not os.path.exists(src):
-                download(path, src)
-            with open(src, encoding="utf-8-sig", errors="replace") as f:
-                accumulate(lines(f.read()), acc)
-            print(f"{name}: {sum(r[0] for r in acc.values()) / 1000:.0f} km so far")
-    info = cell_dataset("bengaluru", acc)
-    print(f"bengaluru: {sum(r[0] for r in acc.values()) / 1000:.0f} km of sewer in {info['cells']} blocks")
+    for region in a.region.split(","):
+        acc = {}
+        with tempfile.TemporaryDirectory() as tmp:
+            for url in SOURCES[region]:
+                name = url.rsplit("/", 1)[-1]
+                src = os.path.join(a.from_dir or tmp, name)
+                if not os.path.exists(src):
+                    download(url, src)
+                accumulate(lines(read_kml(src)), acc)
+                print(f"{region}: {name}: {sum(r[0] for r in acc.values()) / 1000:.0f} km so far")
+        info = cell_dataset(region, acc)
+        print(f"{region}: {sum(r[0] for r in acc.values()) / 1000:.0f} km of sewer in {info['cells']} blocks")
     return 0
 
 

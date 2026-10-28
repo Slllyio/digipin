@@ -17,3 +17,16 @@ def test_accumulate_trunk_length():
     acc = sw.accumulate(sw.lines(KML), {})
     assert abs(sum(r[0] for r in acc.values()) - 111.3) < 0.5
     assert sum(r[1] for r in acc.values()) == sum(r[0] for r in acc.values())
+
+
+CMWSSB = """<kml><Placemark><ExtendedData><SimpleData name="size_of_pipe_mm">2</SimpleData></ExtendedData>
+<MultiGeometry><LineString><coordinates>80.2707,13.0827 80.2707,13.0837</coordinates></LineString></MultiGeometry></Placemark>
+<Placemark><ExtendedData><SimpleData name="size_of_pipe_mm">11</SimpleData></ExtendedData>
+<MultiGeometry><LineString><coordinates>80.2707,13.0837 80.2707,13.0847</coordinates></LineString></MultiGeometry></Placemark></kml>"""
+
+
+def test_cmwssb_size_codes():
+    ls = list(sw.lines(CMWSSB))
+    assert [d for _, d in ls] == [150, 600]
+    acc = sw.accumulate(ls, {})
+    assert abs(sum(r[1] for r in acc.values()) - 111.3) < 0.5
