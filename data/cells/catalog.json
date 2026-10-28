@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T22:30:47Z",
+  "generated": "2026-10-28T22:51:04Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -25000,6 +25000,83 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "new_roads",
+      "title": "Big roads to come (elevated corridors and ring roads)",
+      "description": "Planned road alignments published on data.opencity.in: Greater Bengaluru Authority's elevated corridors (August 2026 list, tenders floated) and MSRDC's Pune Outer Ring Road (EIA alignment maps). Distance from each block within 3 km to the nearest alignment and the alignment length inside it. Roads: 1 Pune Outer Ring Road, western alignment; 2 Pune Outer Ring Road, eastern alignment part 1; 3 Pune Outer Ring Road, eastern alignment part 2.",
+      "source": "pipeline/realestate/newroads.py (OpenCity alignment maps)",
+      "license": "Public domain (GBA and MSRDC via data.opencity.in)",
+      "group": "Mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "newroad_dist_m",
+          "label": "Distance to the nearest planned elevated corridor or ring road",
+          "type": "number",
+          "agg": "min",
+          "unit": "m",
+          "domain": [
+            0,
+            3000
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "newroad_len_m",
+          "label": "Planned alignment length in the block",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            5.00333189910479,
+            1175.8705050198064
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "newroad_kind",
+          "label": "Nearest planned road: 1 elevated corridor, 2 ring road",
+          "type": "number",
+          "agg": "min",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "newroad_ref",
+          "label": "Nearest planned road (number in the description)",
+          "type": "number",
+          "agg": "min",
+          "domain": [
+            1,
+            11
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "newroad_dist_m",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 6863,
+          "bbox": {
+            "west": 77.4921875,
+            "south": 12.829345703125,
+            "east": 77.72509765625,
+            "north": 13.134765625
+          },
+          "json": "new_roads/bengaluru.json",
+          "parquet": null
         }
       ]
     },

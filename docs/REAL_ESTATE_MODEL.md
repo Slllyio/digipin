@@ -1452,3 +1452,14 @@ more above it with the elderly and under-5s among them, compares tree canopy, an
 (residents + 3 × residents aged 60+) × heat above the median. First run: Delhi's median home 25.5 °C at night, 2 °C
 above the region; 15.8% of residents 1 °C hotter still, with 4.1% tree canopy against 8%.
 
+## Big roads to come (`newroads` lens, `new_roads` dataset, pipeline/realestate/newroads.py)
+
+Each corridor's "Coordinates" KML on data.opencity.in (Greater Bengaluru Authority elevated corridors, categories A to
+C) is read as centrelines; when a map draws right-of-way edges beside the centreline (Pune Outer Ring Road, about 106 m
+off), lines whose samples sit over 80% within 150 m of a longer kept line are dropped, and two-point chainage ticks are
+dropped when longer lines exist. Alignments are densified every 20 m into a KD-tree; every block within 3 km gets the
+distance from its centre and the nearest corridor's number, and alignment length is binned per block. The lens counts
+residents in crossed blocks, within 500 m and within 2 km, today's modelled road noise on the line, census trees and
+schools in crossed blocks, the land value index near the line, and residents within 500 m per corridor. First run:
+56.6 km, 3.2 lakh residents in crossed blocks, 12.9 lakh within 500 m, land value index 119 near the line against 99.
+

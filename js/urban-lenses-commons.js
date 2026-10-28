@@ -1,6 +1,6 @@
 /**
  * Commons lenses for UrbanLenses: shared conditions every resident lives with, read from national and global open
- * data (how neighbourhoods were built, floods in the news, bad-air days, wind near the ground, the drift between government and private schools, hot summer nights). Registers itself on load, after
+ * data (how neighbourhoods were built, floods in the news, bad-air days, wind near the ground, the drift between government and private schools, hot summer nights, big roads to come). Registers itself on load, after
  * urban-lenses.js.
  */
 const UrbanLensesCommons = (() => {
@@ -272,6 +272,63 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Big roads to come. Bengaluru's planned elevated corridors from the alignment maps on OpenCity: who lives on the line (construction years, land take, a deck at bedroom height), who lives near it
+    // and what stands in its way.
+    const ROAD_NEAR_M = 500, ROAD_REACH_M = 2000;
+    const NEW_ROADS = {
+        bengaluru: ['Marenahalli–Kanakapura Main Road', 'Yeshwanthapura–Old Madras Road', 'Old Madras Road–Silk Board', 'Sholay Circle–St. John\'s Hospital',
+            'Sirsi Circle–Nayandahalli', 'Minerva Circle–Hudson Circle', 'Ananda Bhavan–Raghuvanahalli', 'Konanakunte Cross', 'Doddaballapura Road–NH-7',
+            'West of Chord Road–Outer Ring Road', 'MEI Junction'].map(n => `${n} elevated corridor`),
+    };
+
+    function newroads(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, dist = c['new_roads.newroad_dist_m'], len = c['new_roads.newroad_len_m'], ref = c['new_roads.newroad_ref'];
+        const pop = c['population.population'], noise = c['traffic_noise.lden_db'], trees = c['tree_census.trees'], big = c['tree_census.big_trees'];
+        const schools = c['schools_official.schools'], lv = c['land_value.value_index'];
+        if (!dist || !dist.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const res = _residents(fr), idx = res.filter(i => _fin(dist[i]));
+        if (idx.length < 5) return null;
+        const sumPop = set => set.reduce((s, i) => s + v(pop, i), 0);
+        const on = idx.filter(i => v(len, i) > 0), near = idx.filter(i => dist[i] <= ROAD_NEAR_M), reach = idx.filter(i => dist[i] <= ROAD_REACH_M);
+        const onAll = Array.from({ length: n }, (_, i) => i).filter(i => v(len, i) > 0);
+        const km = onAll.reduce((s, i) => s + v(len, i), 0) / 1000;
+        const names = NEW_ROADS[fr.city] || [];
+        const nearPop = sumPop(near);
+        const stats = [
+            { label: 'Planned alignment on the map', value: `${_round(km, 1)} km` },
+            { label: 'Residents in blocks the alignment crosses', value: _people(sumPop(on)) },
+            { label: `Residents within ${ROAD_NEAR_M} m`, value: _people(nearPop) },
+            { label: `Residents within ${ROAD_REACH_M / 1000} km`, value: _people(sumPop(reach)) },
+        ];
+        if (noise && on.some(i => _fin(noise[i]))) {
+            const m = on.filter(i => _fin(noise[i])), w = sumPop(m) || m.length;
+            stats.push({ label: 'Road noise today on the alignment (Lden, modelled)', value: `${_round(m.reduce((s, i) => s + (sumPop([i]) || 1) * noise[i], 0) / w, 1)} dB` });
+        }
+        if (trees) stats.push({ label: 'Trees counted in blocks the alignment crosses (tree census)', value: `${Math.round(onAll.reduce((s, i) => s + v(trees, i), 0)).toLocaleString('en-IN')}${big ? `, ${Math.round(onAll.reduce((s, i) => s + v(big, i), 0)).toLocaleString('en-IN')} of them big` : ''}` });
+        if (schools) stats.push({ label: 'Schools in blocks the alignment crosses', value: String(Math.round(onAll.reduce((s, i) => s + v(schools, i), 0))) });
+        if (lv) {
+            const mean = set => { const w = sumPop(set); return w ? set.reduce((s, i) => s + v(pop, i) * v(lv, i), 0) / w : 0; };
+            stats.push({ label: `Land value index within ${ROAD_NEAR_M} m vs the rest of the city`, value: `${_round(mean(near), 1)} vs ${_round(mean(res.filter(i => !(dist[i] <= ROAD_NEAR_M))), 1)}` });
+        }
+        let top = null;
+        if (ref) {
+            const by = new Map();
+            for (const i of near) { const r = Math.round(v(ref, i)); by.set(r, (by.get(r) || 0) + v(pop, i)); }
+            const ranked = [...by].sort((a, b) => b[1] - a[1]);
+            if (ranked.length) top = names[ranked[0][0] - 1] || null;
+            ranked.slice(0, 5).forEach(([r, p], k) => stats.push({ label: `Most residents nearby ${k + 1}: ${names[r - 1] || `road ${r}`}`, value: `${_people(p)} within ${ROAD_NEAR_M} m` }));
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = dist[i];
+        return {
+            columns: { newroad_dist_m: out }, idx, weightKey: 'newroad_dist_m', noHotspots: true,
+            metric: { label: `Residents within ${ROAD_NEAR_M} m of a planned elevated corridor`, value: Math.round(nearPop), unit: 'people', higherIs: null },
+            headline: `${_round(km, 1)} km of planned elevated corridor crosses this map; ${_people(sumPop(on))} residents live in the blocks it runs through and ${_people(nearPop)} within ${ROAD_NEAR_M} m, who face the construction years and the traffic it brings${top ? `, most of them along the ${top}` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -309,8 +366,14 @@ const UrbanLensesCommons = (() => {
             needs: ['night_heat.night_lst_c', 'night_heat.night_anomaly_c', 'night_heat.night_scenes', 'surface_heat.lst_day_c', 'vegetation.tree_canopy_pct', 'demographics.elderly_60plus', 'demographics.under5', 'population.population'],
             method: `NASA ECOSTRESS (thermal radiometer on the International Space Station, public domain): land surface temperature at 70 m. The space station's drifting orbit passes at different hours, so night scenes exist, which the fixed-time Landsat and MODIS mornings and afternoons miss. Each block takes the median of cloud-free, non-water pixels from April to June nights (21:30 to 05:30 IST) in 2023 to 2025. The map shows each block against the night the median resident sleeps through, and hot-night blocks are ${HOT_NIGHT_C} °C or more above it; the heat island figure compares homes with the median block of the whole city region, farmland included. residents, the elderly and children under 5 are WorldPop. Picks are blocks ${SPACING_KM} km apart ranked by (residents + 3 × residents aged 60+) × heat above the median resident's night. Surface, not air, temperature, and some blocks rest on a handful of scenes (see night_scenes); a few overpasses near dawn run cooler than ones near midnight.`,
             refs: 'Hook and Hulley, ECOSTRESS L2T LSTE V2 (NASA LP DAAC); Laaidi et al. 2012, The impact of heat islands on mortality in Paris during the August 2003 heat wave (Environmental Health Perspectives); NDMA Heat Action Plan guidelines (2019)' },
+        { id: 'newroads', equity: false, title: 'Big roads to come', icon: '🛣️',
+            question: 'Where will the planned elevated corridors run, and who lives along them?',
+            field: { key: 'newroad_dist_m', label: 'Distance to the nearest planned elevated corridor', unit: 'm', higherIs: null, ramp: 'viridis', domain: [0, 3000] },
+            needs: ['new_roads.newroad_dist_m', 'new_roads.newroad_len_m', 'new_roads.newroad_ref', 'traffic_noise.lden_db', 'tree_census.trees', 'tree_census.big_trees', 'schools_official.schools', 'land_value.value_index', 'population.population'],
+            method: `Alignment maps on data.opencity.in (public domain): Greater Bengaluru Authority's eleven elevated corridors from the August 2026 list (categories A to C, tenders floated), one centreline each (right-of-way edge lines drawn beside a centreline are dropped). Each block within 3 km takes the distance from its centre to the nearest alignment and the alignment length inside it. Residents are WorldPop; road noise is the traffic model's Lden; trees are the Bengaluru tree census. Alignments in tender documents can still shift, and an elevated corridor touches the ground only at its piers and ramps. Bengaluru only: the pipeline also reads MSRDC's Pune Outer Ring Road, but it runs almost entirely outside the Pune map.`,
+            refs: 'Greater Bengaluru Authority elevated corridor documents (2026) via data.opencity.in' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads });
     return { ENTRIES };
 })();

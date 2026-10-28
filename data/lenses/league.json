@@ -960,6 +960,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "newroads": {
+     "label": "Residents within 500 m of a planned elevated corridor",
+     "value": 1285087,
+     "unit": "people",
+     "higherIs": null
+    },
     "metrowait": {
      "label": "Residents within 800 m of a metro station",
      "value": 20.7,
