@@ -216,6 +216,7 @@ Each item gives four things:
 155. ✅ Rooms with a view: tower blocks within 400 m of sea, lake, river or big park, and the land-value gap (Open Buildings, JRC water, OSM parks) | derived | `views` lens
 156. ✅ Neighbourhood names per block: the colony, sector, urban village or ward holding each block, its larger area and district (Overture divisions from OSM); lens picks read "39J3286 · Saket, South Delhi" | Overture | `neighbourhoods` dataset, `UrbanLenses.names`
 157. ✅ PIN code per block: a distance-weighted vote of postcodes on Overture place addresses within 600 m, with its share (low on PIN boundaries); shown on the property report | Overture places | `neighbourhoods.pin`, `UrbanLenses.places`
+158. ✅ Brick-kiln smoke: 22,459 Gangetic-plain kilns with PM2.5 estimates, weighted by how often the wind blows from each to the block (IGP asset-level emissions inventory, CC BY 4.0; ERA5-Land wind); Delhi, Lucknow, Kolkata | S3 + EE | `kilnsmoke` lens (new dataset `brick_kilns`, pipeline/realestate/kilns.py)
 
 ## Parked for the keys round
 

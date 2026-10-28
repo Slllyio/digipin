@@ -3888,6 +3888,12 @@
      "unit": "index",
      "higherIs": "worse"
     },
+    "kilnsmoke": {
+     "label": "Upwind brick-kiln index (resident-weighted)",
+     "value": 68.1,
+     "unit": "index",
+     "higherIs": "worse"
+    },
     "dumpsmoke": {
      "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
      "value": 6.8,
@@ -7866,6 +7872,12 @@
      "unit": "index",
      "higherIs": "worse"
     },
+    "kilnsmoke": {
+     "label": "Upwind brick-kiln index (resident-weighted)",
+     "value": 34.4,
+     "unit": "index",
+     "higherIs": "worse"
+    },
     "dumpsmoke": {
      "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
      "value": 1,
@@ -8685,6 +8697,12 @@
     "coalplume": {
      "label": "Upwind coal index (resident-weighted)",
      "value": 4.2,
+     "unit": "index",
+     "higherIs": "worse"
+    },
+    "kilnsmoke": {
+     "label": "Upwind brick-kiln index (resident-weighted)",
+     "value": 63.6,
      "unit": "index",
      "higherIs": "worse"
     },

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T10:13:09Z",
+  "generated": "2026-10-28T10:20:31Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -1135,6 +1135,147 @@
           },
           "json": "blackouts/pune.json",
           "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "brick_kilns",
+      "title": "Brick kilns upwind (IGP kiln inventory, ERA5-Land)",
+      "description": "Brick kilns from the asset-level emissions inventory of the Indo-Gangetic Plain (22,459 Indian kilns mapped from satellite imagery, with coal-fired PM2.5 emission estimates; CSV on the public S3 bucket assetdata-igp) within 25 km of each block, and an upwind index weighting each kiln's PM2.5 by the share of ERA5-Land daily 10 m wind (2020-2024, one rose per city) blowing from it towards the block within \u00b145\u00b0, divided by distance. Covers the Gangetic plain only (Delhi, Lucknow, Kolkata here). Kilns fire November to June; the rose is annual. A relative index, not a concentration.",
+      "source": "pipeline/realestate/kilns.py (IGP asset-level brick kiln inventory; ECMWF ERA5-Land via Earth Engine)",
+      "license": "CC BY 4.0 (IGP asset-level emissions data); ERA5-Land: Copernicus licence (free with attribution)",
+      "group": "Hazards",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "kilns_10km",
+          "label": "Brick kilns within 10 km",
+          "type": "number",
+          "agg": "max",
+          "unit": "kilns",
+          "domain": [
+            0,
+            169
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "kiln_pm25_25km",
+          "label": "Brick-kiln PM2.5 emitted within 25 km",
+          "type": "number",
+          "agg": "max",
+          "unit": "t/yr",
+          "domain": [
+            0,
+            18307.4
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "kiln_km",
+          "label": "Nearest brick kiln",
+          "type": "number",
+          "agg": "min",
+          "unit": "km",
+          "domain": [
+            0,
+            28
+          ],
+          "ramp": "reds",
+          "higherIs": "better"
+        },
+        {
+          "key": "kiln_smoke",
+          "label": "Upwind brick-kiln index (t PM2.5 \u00d7 downwind wind share \u00f7 km)",
+          "type": "number",
+          "agg": "max",
+          "unit": "index",
+          "domain": [
+            0,
+            724.96
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "kiln_smoke",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "delhi",
+          "cells": 50090,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "brick_kilns/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "brick_kilns/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "brick_kilns/lucknow/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
+            ]
+          }
         }
       ]
     },

@@ -898,6 +898,48 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Brick-kiln smoke. Some 22,000 coal- and biomass-fired kilns ring the Gangetic cities and fire from November to
+    // June; the brick_kilns dataset weights each kiln's estimated PM2.5 by how often the wind blows from it to the block.
+    const KILN_NEAR_KM = 3, KILN_Q = 0.9;
+
+    function kilnsmoke(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], sm = c['brick_kilns.kiln_smoke'];
+        const km = c['brick_kilns.kiln_km'], k10 = c['brick_kilns.kilns_10km'], kids = c['demographics.under5'], pm = c['air_quality.pm25_ugm3'];
+        if (!pop || !sm) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && _fin(sm[i])) idx.push(i);
+        if (idx.length < 5 || !idx.some(i => sm[i] > 0)) return null;
+        const all = _sumOver(pop, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
+        const mean = idx.reduce((s, i) => s + pop[i] * sm[i], 0) / (all || 1);
+        const q = wquantile(sm, pop, idx, KILN_Q);
+        const top = idx.filter(i => sm[i] >= q && sm[i] > 0), pTop = _sumOver(pop, top, () => true);
+        const near = km ? _sumOver(pop, idx, i => _fin(km[i]) && km[i] <= KILN_NEAR_KM) : 0;
+        const most = idx.reduce((m, i) => Math.max(m, v(k10, i)), 0);
+        const stats = [
+            { label: 'Most brick kilns within 10 km of a lived-in block', value: String(most) },
+            { label: `Residents within ${KILN_NEAR_KM} km of a brick kiln`, value: `${_people(near)} (${pct(near)}%)` },
+            { label: 'Upwind kiln index, resident-weighted mean', value: String(_round(mean, 1)) },
+            { label: `Residents in the most exposed tenth (index ${_round(q, 1)}+)`, value: _people(pTop) },
+        ];
+        if (kids) stats.push({ label: '…of them children under 5', value: _people(_sumOver(kids, top, () => true)) });
+        if (pm) {
+            const pmTop = top.reduce((s, i) => s + pop[i] * v(pm, i), 0) / (pTop || 1);
+            stats.push({ label: 'Satellite PM2.5 in the most exposed tenth vs the city', value: `${_round(pmTop, 1)} vs ${_round(idx.reduce((s, i) => s + pop[i] * v(pm, i), 0) / (all || 1), 1)} µg/m³` });
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = sm[i];
+        spaced(g, top, Float64Array.from({ length: n }, (_, i) => v(pop, i) * v(sm, i))).forEach((i, k) => stats.push({
+            label: `Kiln inspection ${k + 1}: ${g.codes[i]}`,
+            value: `upwind kiln index ${_round(sm[i], 1)}; ${k10 ? `${v(k10, i)} kilns within 10 km; ` : ''}${km && _fin(km[i]) ? `nearest ${_round(km[i], 1)} km; ` : ''}${_people(pop[i])} residents` }));
+        return {
+            columns: { kiln_smoke: out }, idx, weightKey: 'kiln_smoke', noHotspots: true,
+            metric: { label: 'Upwind brick-kiln index (resident-weighted)', value: _round(mean, 1), unit: 'index', higherIs: 'worse' },
+            headline: `${_people(near)} residents (${pct(near)}%) live within ${KILN_NEAR_KM} km of a brick kiln, and ${_people(pTop)} live in the tenth of the city most often downwind of kiln smoke. The index weighs each kiln's estimated PM2.5 by how often the wind blows from it towards the block and by distance; kilns fire from November to June, when the city's air is worst. It shows where zigzag conversion and kiln inspections would help most, not measured pollution.`,
+            stats,
+        };
+    }
+
     // Smoke downwind of dumps and factories. Landfill fires (Ghazipur, Deonar, Perungudi, Brahmapuram) and odour, and
     // industrial stacks, reach the blocks the wind blows towards most often; the downwind dataset weights each source's
     // area by that wind share and distance.
@@ -1240,6 +1282,12 @@ const UrbanLensesSafety = (() => {
             needs: ['power_plants.coal_plume', 'power_plants.coal_km', 'power_plants.coal_mw_50km', 'demographics.under5', 'air_quality.pm25_ugm3', 'population.population'],
             method: `Coal, gas and oil plants within 150 km come from the WRI Global Power Plant Database (a 2018-2021 snapshot; known retirements such as Delhi's Badarpur removed). Each coal plant adds its capacity × the share of ERA5-Land monthly 10 m wind (2015-2024, speed-weighted, at the city centre) blowing from it towards the block within ±45°, divided by the distance in km (at least 5). The most exposed tenth is by residents. Stack heights, flue-gas desulphurisation status, load factors and terrain are left out: this ranks where plumes are likelier to arrive, it does not measure them.`,
             refs: 'WRI Global Power Plant Database (Byers et al. 2019); ECMWF ERA5-Land; MoEFCC thermal power plant SO₂ norms (2015, FGD deadlines revised 2021 and 2022); CREA studies of Indian coal plant plumes' },
+        { id: 'kilnsmoke', equity: true, title: 'Brick-kiln smoke', icon: '🧱',
+            question: 'Which neighbourhoods breathe brick-kiln smoke?',
+            field: { key: 'kiln_smoke', label: 'Upwind brick-kiln index (t PM2.5 × downwind wind share ÷ km)', unit: 'index', higherIs: 'worse', ramp: 'reds' },
+            needs: ['brick_kilns.kiln_smoke', 'brick_kilns.kiln_km', 'brick_kilns.kilns_10km', 'demographics.under5', 'air_quality.pm25_ugm3', 'population.population'],
+            method: `Kilns come from the asset-level emissions inventory of the Indo-Gangetic Plain (22,459 fixed-chimney and zigzag kilns in India mapped from satellite imagery, each with a coal-fired PM2.5 estimate). Each kiln within 25 km adds its PM2.5 tonnes a year × the share of ERA5-Land daily 10 m wind (2020-2024, speed-weighted, one rose per city) blowing from it towards the block within ±45°, divided by the distance in km (at least 1). The most exposed tenth is by residents. The inventory covers the Gangetic plain only, so Delhi, Lucknow and Kolkata have kilns here and the other cities none; kilns fire November to June while the wind rose is annual, and stack height and fuel mix are left out.`,
+            refs: 'IGP asset-level emissions inventory (brick kilns, CC BY 4.0); Mondal et al. 2024 (satellite brick kiln detection, IIT Gandhinagar); ECMWF ERA5-Land; CPCB brick kiln guidelines and zigzag conversion directive (2017); Guttikunda et al. (Delhi source apportionment)' },
         { id: 'dumpsmoke', equity: true, title: 'Downwind of the dump', icon: '🗑️',
             question: 'Who lives downwind of landfills and industrial land?',
             field: { key: 'landfill_smoke', label: 'Landfill smoke downwind (ha × wind share ÷ km)', unit: 'index', higherIs: 'worse', ramp: 'reds' },
@@ -1273,8 +1321,8 @@ const UrbanLensesSafety = (() => {
             refs: 'Overture Maps transportation (OpenStreetMap); Indian Railways Works Manual (TVU criteria for ROB/RUB); Setu Bharatam programme (2016); DISHA traffic model' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge, schoolgap, railgates }, {}, 'jobsmap');
-    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, dumpsmoke, powercuts, wildedge, schoolgap, railgates, ENTRIES };
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, kilnsmoke, dumpsmoke, powercuts, wildedge, schoolgap, railgates }, {}, 'jobsmap');
+    return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, kilnsmoke, dumpsmoke, powercuts, wildedge, schoolgap, railgates, ENTRIES };
 })();
 
 if (typeof window !== 'undefined') {
