@@ -222,6 +222,7 @@ Each item gives four things:
 161. ✅ DISHA "which ward / PIN code / constituency is this?" for a clicked block (neighbourhood, PIN, ward, assembly, Lok Sabha) | derived | `whereis` intent
 162. ✅ District health lens over NFHS-5 (stunting, anaemia, raised BP, sugar, insurance) by district | GitHub | `districthealth` lens
 163. ✅ Flooded before: reported flood spots and mapped 2005/2015 flood extents for Chennai, Bengaluru and Hyderabad (OpenCity, public domain) | OpenCity | `floodagain` lens (new dataset `flood_reports`, pipeline/realestate/floodreports.py)
+164. ✅ Newest ward maps: Bengaluru GBA 2025 (369 wards, five corporations), Indore, Ahmedabad, Bhopal, Greater Jaipur 2024, GHMC and KMC 2022, plus Gurugram, Faridabad, Thane and Navi Mumbai for metro blocks (OpenCity, public domain) | OpenCity | `wards` dataset
 
 ## Parked for the keys round
 

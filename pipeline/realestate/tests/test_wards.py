@@ -15,3 +15,14 @@ def test_delhi_charges_get_their_own_body():
 def test_closed_rings():
     g = wards.closed({"type": "Polygon", "coordinates": [[[0, 0], [1, 0], [1, 1]], [[0, 0], [1, 1]]]})
     assert g["coordinates"] == [[[0, 0], [1, 0], [1, 1], [0, 0]]]
+
+
+def test_kml_features_and_lgd_names():
+    kml = """<kml xmlns="http://www.opengis.net/kml/2.2"><Document><Placemark><ExtendedData><SchemaData>
+    <SimpleData name="sourcewardcode">12</SimpleData><SimpleData name="sourcewardname">NARODA</SimpleData></SchemaData></ExtendedData>
+    <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>0,0 1,0 1,1 0,0</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
+    </Placemark></Document></kml>"""
+    f = wards.kml_features(kml)
+    assert f[0]["geometry"]["coordinates"] == [[[[0, 0], [1, 0], [1, 1], [0, 0]]]]
+    assert wards._lgd(f[0]["properties"]) == ("12", "Naroda", None)
+    assert wards._lgd({"sourcewardcode": "1", "ward_lgd_name": "Gurgaon (M Cl ) - Ward No.1"}) == ("1", "", None)
