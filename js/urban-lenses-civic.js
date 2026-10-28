@@ -744,7 +744,48 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    function revvillage(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], vid = c['villages.village_id'], km2 = c['villages.village_km2'], town = c['villages.in_town'];
+        if (!pop || !vid || !vid.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const lived = _residents(fr), idx = lived.filter(i => v(vid, i) > 0);
+        if (idx.length < 5) return null;
+        const groups = new Map();
+        for (const i of idx) {
+            const gr = groups.get(vid[i]) || { pop: 0, km2: v(km2, i), at: i, top: -1 };
+            gr.pop += v(pop, i);
+            if (v(pop, i) > gr.top) { gr.top = v(pop, i); gr.at = i; }
+            groups.set(vid[i], gr);
+        }
+        const list = [...groups.values()].sort((a, b) => b.pop - a.pop);
+        const all = _sumOver(pop, lived, () => true), inV = list.reduce((t, gr) => t + gr.pop, 0), inT = _sumOver(pop, lived, i => v(town, i) > 0);
+        const med = list[Math.floor(list.length / 2)].pop, big = list.filter(gr => gr.pop > 100000);
+        const stats = [
+            { label: 'Revenue villages under the city\'s homes', value: `${list.length}` },
+            { label: 'Residents on village land (the map names their village)', value: `${_people(inV)} (${_round(100 * inV / (all || 1))}%)` },
+            { label: 'Residents inside a town, municipal or cantonment limit on the map', value: `${_people(inT)} (${_round(100 * inT / (all || 1))}%)` },
+            { label: 'Residents per village (median; most)', value: `${_people(med)}; ${_people(list[0].pop)}` },
+            { label: 'Villages now home to more than 1 lakh people', value: `${big.length}` },
+        ];
+        list.slice(0, 3).forEach((gr, k) => stats.push({ label: `Most lived-in village ${k + 1}, near ${g.codes[gr.at]}`, value: `${_people(gr.pop)} residents on a village of ${_round(gr.km2, 1)} km²` }));
+        const per = new Map([...groups.entries()].map(([k, gr]) => [k, gr.pop]));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = Math.round(per.get(vid[i]) / 1000);
+        return {
+            columns: { village_people: out }, idx, weightKey: 'village_people', noHotspots: true,
+            metric: { label: 'Revenue villages under the city\'s homes', value: list.length, unit: 'villages', higherIs: 'better' },
+            headline: `The city's homes sit on ${list.length} revenue villages: ${_round(100 * inV / (all || 1))}% of residents live on land the Survey of India map files under a village (median ${_people(med)} people per village), and ${big.length} village${big.length === 1 ? ' is' : 's are'} now home to more than 1 lakh people. Click a block for its village, tehsil and district, the names land records are kept under.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'revvillage', equity: false, title: 'Revenue villages (land records)', icon: '📜',
+            question: 'Which revenue village and tehsil is this land in, and how many people now live on each old village?',
+            field: { key: 'village_people', label: 'Residents on the block\'s revenue village (thousands)', unit: 'thousand', higherIs: 'better', ramp: 'viridis', domain: [0, 300] },
+            needs: ['villages.village_id', 'villages.village_km2', 'villages.in_town', 'population.population'],
+            method: 'Survey of India village boundaries on data.opencity.in (public domain): Bengaluru Urban (702 villages), Pune district (1,922), Ahmedabad district (559), south Kolkata (70) and Delhi\'s eleven districts (2022). Each lived-in block takes the village whose boundary holds its centre (DuckDB spatial), with its tehsil and district, the names under which land records (RTC, 7/12 extract, khasra, jamabandi) are filed. Where the map draws a town, municipal or cantonment limit instead of villages (old BBMP core and the former city municipalities in Bengaluru, Pune\'s urban core, Kolkata\'s suburbs, the Delhi and Ahmedabad cantonments) the block is marked in a town limit: land there is on the city survey. Delhi\'s maps cover its villages, not the urbanised core. The lens sums residents per village within the city view. Boundaries are the survey\'s, not a title record.',
+            refs: 'Survey of India village boundaries via OpenCity; Digital India Land Records Modernisation Programme (DILRMP); Bhoomi (Karnataka), Mahabhumi (Maharashtra), AnyROR (Gujarat), Banglarbhumi (West Bengal), Delhi Bhulekh' },
         { id: 'potholes', equity: false, title: 'Pothole complaints', icon: '🕳️',
             question: 'Where do people report potholes and dug-up roads, and how many got fixed?',
             field: { key: 'pothole_per_km', label: 'Pothole complaints per km of street (May-June 2022)', unit: 'per km', higherIs: 'worse', ramp: 'reds', domain: [0, 20] },
@@ -855,6 +896,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage });
     return { ENTRIES };
 })();

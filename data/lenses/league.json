@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "revvillage": {
+     "label": "Revenue villages under the city's homes",
+     "value": 79,
+     "unit": "villages",
+     "higherIs": "better"
+    },
     "pinsize": {
      "label": "Residents per pincode (median)",
      "value": 115486,
@@ -881,6 +887,12 @@
      "value": 20.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "revvillage": {
+     "label": "Revenue villages under the city's homes",
+     "value": 343,
+     "unit": "villages",
+     "higherIs": "better"
     },
     "potholes": {
      "label": "Pothole complaints fixed within the two months",
@@ -3701,6 +3713,12 @@
      "value": 36.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "revvillage": {
+     "label": "Revenue villages under the city's homes",
+     "value": 343,
+     "unit": "villages",
+     "higherIs": "better"
     },
     "pinsize": {
      "label": "Residents per pincode (median)",
@@ -7890,6 +7908,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "revvillage": {
+     "label": "Revenue villages under the city's homes",
+     "value": 67,
+     "unit": "villages",
+     "higherIs": "better"
+    },
     "pinsize": {
      "label": "Residents per pincode (median)",
      "value": 74918,
@@ -10541,6 +10565,12 @@
      "value": 23.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "revvillage": {
+     "label": "Revenue villages under the city's homes",
+     "value": 72,
+     "unit": "villages",
+     "higherIs": "better"
     },
     "pinsize": {
      "label": "Residents per pincode (median)",
