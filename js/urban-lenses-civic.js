@@ -1,12 +1,12 @@
 /**
- * Civic plan lenses for UrbanLenses: what statutory plans and municipal networks say about a block (planned road
- * widths and new links). They read datasets baked from city and development-authority maps. Registers itself on load,
- * after urban-lenses.js.
+ * Civic lenses for UrbanLenses: what statutory plans and municipal facility lists say about a block (planned road
+ * widths and new links, cremation and burial grounds). They read datasets baked from city and development-authority
+ * maps. Registers itself on load, after urban-lenses.js.
  */
 const UrbanLensesCivic = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people, _sumOver } = UrbanLenses._kit;
+    const { _fin, _round, _people, _sumOver, within } = UrbanLenses._kit;
 
     const SPACING_KM = 1.5, TOP = 5;
 
@@ -60,7 +60,58 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Cremation and burial grounds. Every family needs one within reach, and in the 2021 Covid wave crematoriums ran out of
+    // slots. Distance from each block to the nearest listed site, residents per site, and the share that are electric or
+    // gas (cleaner than open pyres). Lists stop at the corporation, so blocks beyond FUNERAL_JUDGE_KM are not judged.
+    const FUNERAL_KM = 3, FUNERAL_JUDGE_KM = 8;
+
+    function lastrites(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], fs = c['funeral_sites.sites'], el = c['funeral_sites.electric'];
+        if (!pop || !fs) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const st = [];
+        for (let i = 0; i < n; i++) if (v(fs, i) > 0) st.push(i);
+        if (st.length < 5) return null;
+        const km = new Float64Array(n).fill(Infinity);
+        for (let i = 0; i < n; i++) {
+            if (!(v(pop, i) > 0)) continue;
+            for (const j of st) {
+                const d = Math.hypot((g.row[i] - g.row[j]) * g.dy, (g.col[i] - g.col[j]) * g.dx);
+                if (d < km[i]) km[i] = d;
+            }
+        }
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && km[i] <= FUNERAL_JUDGE_KM) idx.push(i);
+        if (idx.length < 5) return null;
+        const sites = st.reduce((a, i) => a + v(fs, i), 0), elec = st.reduce((a, i) => a + v(el, i), 0);
+        const all = _sumOver(pop, idx, () => true), far = idx.filter(i => km[i] > FUNERAL_KM), pFar = _sumOver(pop, far, () => true);
+        const stats = [
+            { label: 'Cremation and burial grounds listed', value: _people(sites) },
+            { label: 'Residents per site', value: _people(all / sites) },
+            { label: `Residents more than ${FUNERAL_KM} km from one`, value: `${_people(pFar)} (${_round(100 * pFar / (all || 1))}%)` },
+            { label: 'Electric or gas crematoriums among them', value: elec ? _people(elec) : 'none listed' },
+        ];
+        const farPop = Float64Array.from({ length: n }, (_, i) => (km[i] > FUNERAL_KM && km[i] <= FUNERAL_JUDGE_KM ? v(pop, i) : 0));
+        const gain = within(g, farPop, FUNERAL_KM);
+        spaced(g, far.filter(i => gain[i] > 0), gain).forEach((i, k) => stats.push({ label: `New site ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(gain[i])} residents now beyond ${FUNERAL_KM} km would be within it; nearest site ${_round(km[i], 1)} km` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(km[i], 1);
+        return {
+            columns: { funeral_km: out }, idx, weightKey: 'funeral_km', noHotspots: true,
+            metric: { label: `Residents more than ${FUNERAL_KM} km from a cremation or burial ground`, value: _round(100 * pFar / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `The corporation lists ${_people(sites)} cremation and burial grounds, one for every ${_people(all / sites)} residents; ${_people(pFar)} residents (${_round(100 * pFar / (all || 1))}%) live more than ${FUNERAL_KM} km from one. Distances are straight-line, and a site may serve only one community.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'lastrites', equity: true, title: 'Cremation and burial grounds', icon: '🕯️',
+            question: 'Who lives far from a cremation or burial ground, and where is another needed?',
+            field: { key: 'funeral_km', label: 'Distance to the nearest cremation or burial ground', unit: 'km', higherIs: 'worse', ramp: 'reds', domain: [0, 8] },
+            needs: ['funeral_sites.sites', 'funeral_sites.electric', 'population.population'],
+            method: `Cremation grounds, crematoriums and burial grounds from the corporations' maps on data.opencity.in (public domain): BMC (Mumbai, 189), PMC (Pune, 76), GCC (Chennai, 210) and BBMP (Bengaluru, 12 electric crematoriums and 68 burial grounds; its list leaves out open cremation grounds). Straight-line distance from each lived-in block to the nearest site; blocks more than ${FUNERAL_JUDGE_KM} km from any site are not judged. New-site picks are blocks ${SPACING_KM} km apart that bring the most residents now beyond ${FUNERAL_KM} km within ${FUNERAL_KM} km. Sites often serve one community, which the lists do not record consistently.`,
+            refs: 'URDPFI Guidelines 2014 (cremation and burial ground provision); OpenCity cremation and burial ground maps' },
         { id: 'roadplan', equity: false, title: 'Planned road widening', icon: '🛣️',
             question: 'Which roads does the master plan widen or add, and whose homes are on them?',
             field: { key: 'planned_width_m', label: 'Widest planned road in the block (RMP 2015)', unit: 'm', higherIs: 'better', ramp: 'viridis', domain: [0, 45] },
@@ -69,6 +120,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites });
     return { ENTRIES };
 })();

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T15:28:35Z",
+  "generated": "2026-10-28T15:33:41Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -11213,6 +11213,99 @@
             "north": 18.64111328125
           },
           "json": "freight/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "funeral_sites",
+      "title": "Cremation and burial grounds (corporation maps)",
+      "description": "Cremation grounds, crematoriums and burial grounds from the corporations' maps on data.opencity.in, counted per block: BMC (Mumbai), PMC (Pune), GCC (Chennai) and BBMP electric crematoriums and burial grounds (Bengaluru).",
+      "source": "pipeline/realestate/funeral.py (OpenCity cremation and burial ground maps)",
+      "license": "Public domain (BMC, PMC, GCC, BBMP via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "sites",
+          "label": "Cremation and burial grounds",
+          "type": "number",
+          "agg": "sum",
+          "unit": "sites",
+          "domain": [
+            1,
+            5
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "electric",
+          "label": "Electric or gas crematoriums",
+          "type": "number",
+          "agg": "sum",
+          "unit": "sites",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "sites",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 65,
+          "bbox": {
+            "west": 77.476806640625,
+            "south": 12.853515625,
+            "east": 77.797607421875,
+            "north": 13.10400390625
+          },
+          "json": "funeral_sites/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 187,
+          "bbox": {
+            "west": 80.05419921875,
+            "south": 12.853515625,
+            "east": 80.32666015625,
+            "north": 13.281982421875
+          },
+          "json": "funeral_sites/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 142,
+          "bbox": {
+            "west": 72.78125,
+            "south": 18.9443359375,
+            "east": 72.963623046875,
+            "north": 19.26513671875
+          },
+          "json": "funeral_sites/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 65,
+          "bbox": {
+            "west": 73.750244140625,
+            "south": 18.436767578125,
+            "east": 73.983154296875,
+            "north": 18.608154296875
+          },
+          "json": "funeral_sites/pune.json",
           "parquet": null
         }
       ]
