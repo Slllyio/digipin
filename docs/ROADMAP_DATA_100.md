@@ -230,6 +230,7 @@ Each item gives four things:
 169. ✅ Hyderabad bus timetable: TGSRTC GTFS (Telangana open data, February 2026, 5,028 stops, 44,892 weekday trips) via OpenCity, so busgap, transit access and feeder lenses use real frequencies there too | OpenCity | `bus_service` dataset (pipeline/traffic/gtfs_cells.py)
 170. ✅ Operator bus-stop lists: BEST Mumbai (6,267), PMPML Pune (5,624) and Chennai bus shelters (983) top up OpenStreetMap stops per block; Pune transit access rises from 65% to 92% of residents, Mumbai from 92% to 98% (OpenCity, public domain) | OpenCity | `bus_stops_official` dataset (pipeline/traffic/official_stops.py), merged in the transit loader
 171. ✅ Police station per block for Mumbai, Bengaluru and Hyderabad (OpenCity jurisdiction maps, public domain), in DISHA 'which police station is this?' and the property report | OpenCity | `police_stations` dataset (pipeline/realestate/police.py)
+172. ✅ Lok Sabha 2024 results per block: MP and party, margin, and assembly-segment EVM turnout, leading party and NOTA for all 13 cities (ECI via OpenCity, public domain); DISHA names the MP | OpenCity | `turnout` lens (new dataset `elections_2024`, pipeline/realestate/elections.py)
 
 ## Parked for the keys round
 

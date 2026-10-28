@@ -108,6 +108,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('what is the pin code here')).toEqual({ type: 'whereis' });
         expect(M('who is the MLA for this area')).toEqual({ type: 'whereis' });
         expect(M('which police station covers this block')).toEqual({ type: 'whereis' });
+        expect(M('who is the MP for this area')).toEqual({ type: 'whereis' });
         expect(M('which neighbourhoods in Delhi are hottest')).not.toEqual({ type: 'whereis' });
         expect(M('which lakes have been encroached in Delhi')).toEqual({ type: 'lens', lens: 'encroach', city: 'delhi' });
         expect(M('how much flood damage do buildings face each year')).toEqual({ type: 'lens', lens: 'floodloss' });
@@ -149,6 +150,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('road crash data by police station in Delhi')).toEqual({ type: 'lens', lens: 'crashrecord', city: 'delhi' });
         expect(M('where do most fatal accidents happen in Delhi')).toEqual({ type: 'lens', lens: 'crashrecord', city: 'delhi' });
         expect(M('where are the notified slums in Pune')).toEqual({ type: 'lens', lens: 'slummap', city: 'pune' });
+        expect(M('voter turnout in Pune')).toEqual({ type: 'lens', lens: 'turnout', city: 'pune' });
         expect(M('pupil teacher ratio in government schools in Delhi')).toEqual({ type: 'lens', lens: 'schoolstrain', city: 'delhi' });
         expect(M('schools without girls toilets in Pune')).toEqual({ type: 'lens', lens: 'schoolstrain', city: 'pune' });
         expect(M('flood history of Pune')).toEqual({ type: 'lens', lens: 'floodagain', city: 'pune' });

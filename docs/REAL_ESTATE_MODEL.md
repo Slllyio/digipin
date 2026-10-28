@@ -1223,3 +1223,9 @@ Point maps of public and community toilets on data.opencity.in: PMC Pune (547), 
 
 Law-and-order police station jurisdiction maps on data.opencity.in (public domain): Mumbai (91 stations), Bengaluru (120 KGIS boundaries, including the rural stations around the city) and Hyderabad (73). Each lived-in block takes the station whose polygon holds its centre; names drop "PS" and "Police Station" and keep the maps' spellings. `UrbanLenses.places()` carries it as `police`, so DISHA's "which police station is this?" (`whereis`) and the property report header name it.
 
+## Lok Sabha 2024 results and turnout (`turnout` lens in js/urban-lenses-safety.js, `elections_2024` dataset, pipeline/realestate/elections.py)
+
+Election Commission of India 2024 tables on data.opencity.in (public domain): candidate EVM votes by assembly segment, and winners with runners-up and margins. Each block's assembly segment and Lok Sabha seat come from the `constituencies` dataset (2008 delimitation, which 2024 still used), matched by number plus a fuzzy name match (ratio 0.7) because spellings differ ("Vandre West" against "VandreEast") and city regions cross state lines. Fields: MP and party, margin as % of the seat's EVM votes, and the segment's EVM turnout (votes including NOTA over electors), leading party and NOTA share. A few segments do not match (about 900 Thane blocks in the Mumbai region; some Kolkata margins).
+
+`UrbanLenses.places()` adds the MP, so DISHA's "who is the MP here?" and the property report name them. The lens shows the resident-weighted turnout, residents in segments under 50% and in seats won by under 2%, and the lowest-turnout segments. Low turnout partly reflects stale electoral rolls, not only abstention.
+

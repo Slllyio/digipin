@@ -35,6 +35,7 @@ const DishaIntel = (() => {
             dumpsmoke: /\b(downwind of\b.{0,20}\b(landfills?|dumps?|garbage|factor(y|ies)|industr\w*)|landfill (smoke|smell|odou?r|fires?)|garbage (smoke|smell|odou?r)|dump(ing)? (site )?(smoke|smell|odou?r|fires?)|smell from\b.{0,20}\b(landfills?|dumps?))\b/i,
             crashrecord: /\b((road |traffic )?(crash|accident)\w* (data|records?|statistics|stats|numbers|counts?|by (police )?station)|(fatal|road) (crashes|accidents) (recorded|reported|rising|by area)|(most|where) (fatal |road )?(crashes|accidents) (happen|occur)|accident[- ]prone (areas?|zones?|stations?)|btp)\b/i,
             slummap: /\b(slum (maps?|boundar\w*|lists?)|mapped slums?|(non[- ])?notified slums?|official slums?|declared slums?)\b/i,
+            turnout: /\b(voter )?turnout|\b(who|how many( people)?) (voted|didn'?t vote)|\bnota\b|\b(voting|polling) (percentage|rate)|\blow voting\b/i,
             schoolstrain: /\b(udise|pupil[- ]teacher ratios?|(pupils|students) per teacher|teacher shortages?|overcrowded (government |govt |sarkari )?(schools?|classrooms?)|(government|govt|sarkari|public) schools? (quality|condition|strain|infrastructure|toilets?)|schools? (without|with no|lacking) (girls'? )?toilets?|girls'? toilets? in schools?|classrooms? (in|needing|need) (major )?repair)\b/i,
             floodagain: /\b(flooded (before|again|repeatedly|in (2005|2015|2020))|(past|previous|historic(al)?|repeat(ed)?|recurring) flood\w*|flood (history|hotspots?|spots?)|(2005|2015) floods?|nivar)\b/i,
             districthealth: /\b(nfhs|stunt(ed|ing)|wasting|anaemi\w*|anemi\w*|malnutrition|malnourish\w*|blood pressure|hypertension|diabet\w*|blood sugar|health insurance|district health|child health)\b/i,
@@ -384,6 +385,7 @@ const DishaIntel = (() => {
         if (w.pin) lines.push(`PIN code: ${w.pin} (the code most addresses around it carry)`);
         if (w.ward) lines.push(`Municipal ward: ${w.ward}${w.body ? `, ${w.body}` : ''} (ward map may predate the latest delimitation)`);
         if (w.assembly) lines.push(`Assembly constituency: ${w.assembly}${w.lokSabha ? `; Lok Sabha: ${w.lokSabha}` : ''}`);
+        if (w.mp) lines.push(`Member of Parliament (elected 2024): ${w.mp}${w.mpParty ? `, ${w.mpParty}` : ''}`);
         if (w.police) lines.push(`Police station: ${w.police} (law and order jurisdiction)`);
         return lines.join('\n');
     }

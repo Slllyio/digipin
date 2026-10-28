@@ -1143,7 +1143,55 @@ const UrbanLensesSafety = (() => {
         };
     }
 
+    // Turnout. Lok Sabha 2024 EVM turnout by assembly segment: where residents voted least, for voter-registration and
+    // outreach drives, with NOTA and the closest contests alongside.
+    const LOW_TURNOUT = 50, CLOSE_PCT = 2;
+
+    function turnout(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], to = c['elections_2024.turnout_pct'];
+        const nota = c['elections_2024.nota_pct'], mg = c['elections_2024.pc_margin_pct'];
+        if (!pop || !to) return null;
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(pop[i]) && pop[i] > 0 && _fin(to[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const all = _sumOver(pop, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
+        const mean = idx.reduce((a, i) => a + pop[i] * to[i], 0) / (all || 1);
+        const low = _sumOver(pop, idx, i => to[i] < LOW_TURNOUT), close = mg ? _sumOver(pop, idx, i => _fin(mg[i]) && mg[i] < CLOSE_PCT) : 0;
+        const segs = new Map();         // one group per assembly segment: identical turnout and NOTA
+        for (const i of idx) {
+            const k = `${to[i]}|${nota ? nota[i] : ''}`;
+            const s = segs.get(k) || { pop: 0, rep: i, best: 0 };
+            s.pop += pop[i];
+            if (pop[i] > s.best) { s.best = pop[i]; s.rep = i; }
+            segs.set(k, s);
+        }
+        const stats = [
+            { label: 'Assembly segments covering the city', value: String(segs.size) },
+            { label: 'Turnout residents face (resident-weighted, EVM votes over electors)', value: `${_round(mean, 1)}%` },
+            { label: `Residents in segments under ${LOW_TURNOUT}% turnout`, value: `${_people(low)} (${pct(low)}%)` },
+        ];
+        if (mg) stats.push({ label: `Residents in Lok Sabha seats won by under ${CLOSE_PCT}% of votes`, value: `${_people(close)} (${pct(close)}%)` });
+        [...segs.values()].sort((a, b) => to[a.rep] - to[b.rep]).slice(0, 6).forEach((s, k) => {
+            const i = s.rep;
+            stats.push({ label: `Low turnout ${k + 1}, around ${g.codes[i]}`, value: `${_round(to[i], 1)}% turnout${nota && _fin(nota[i]) ? `, NOTA ${_round(nota[i], 1)}%` : ''}; ${_people(s.pop)} residents` });
+        });
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = to[i];
+        return {
+            columns: { turnout_pct: out }, idx, weightKey: 'turnout_pct', noHotspots: true,
+            metric: { label: 'Lok Sabha 2024 turnout residents face', value: _round(mean, 1), unit: '%', higherIs: 'better' },
+            headline: `Residents here live in assembly segments where on average ${_round(mean, 1)}% of electors voted in the 2024 Lok Sabha election; ${_people(low)} (${pct(low)}%) are in segments under ${LOW_TURNOUT}%. Turnout is EVM votes over the segment's electoral roll, so stale rolls (people who moved or died) pull it down as much as people staying home.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'turnout', equity: true, title: 'Voter turnout 2024', icon: '🗳️',
+            question: 'Where did the fewest people vote in the 2024 Lok Sabha election?',
+            field: { key: 'turnout_pct', label: 'Lok Sabha 2024 turnout in the assembly segment (EVM)', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [40, 75] },
+            needs: ['elections_2024.turnout_pct', 'elections_2024.nota_pct', 'elections_2024.pc_margin_pct', 'population.population'],
+            method: `Election Commission of India 2024 tables via data.opencity.in: candidate votes by assembly segment and the winners list. Each block takes its assembly segment and Lok Sabha seat from the constituencies dataset (2008 delimitation, matched by number and name because spellings differ). Turnout is EVM votes including NOTA over the segment's electors; postal ballots are not split by segment, so it runs a little low. Thresholds: ${LOW_TURNOUT}% turnout, seats won by under ${CLOSE_PCT}% of the constituency's EVM votes.`,
+            refs: 'Election Commission of India, General Election 2024 statistical reports (via data.opencity.in); SVEEP (Systematic Voters\' Education and Electoral Participation)' },
         { id: 'marketfire', equity: false, title: 'Fire risk in crowded markets', icon: '🔥',
             question: 'Which markets are packed tight and far from a fire station?',
             field: { key: 'market_fire', label: 'Market block (1), plus packed (2), plus no fire station within 3 km (3)', unit: '0-3', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
@@ -1321,7 +1369,7 @@ const UrbanLensesSafety = (() => {
             refs: 'Overture Maps transportation (OpenStreetMap); Indian Railways Works Manual (TVU criteria for ROB/RUB); Setu Bharatam programme (2016); DISHA traffic model' },
     ];
 
-    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, kilnsmoke, dumpsmoke, powercuts, wildedge, schoolgap, railgates }, {}, 'jobsmap');
+    UrbanLenses.register(ENTRIES, { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, kilnsmoke, dumpsmoke, powercuts, wildedge, schoolgap, railgates, turnout }, {}, 'jobsmap');
     return { marketfire, oldtall, critwater, quake, factoryhomes, refuge, firelanes, schoolsafe, hospitalsafe, stationload, walkups, treefall, gridflood, coaching, rainharvest, sitedust, hotelfire, quarries, heritagesafe, fuelsafe, carekit, coalplume, kilnsmoke, dumpsmoke, powercuts, wildedge, schoolgap, railgates, ENTRIES };
 })();
 
