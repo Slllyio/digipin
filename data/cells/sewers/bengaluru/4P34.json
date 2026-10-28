@@ -1,0 +1,1 @@
+{"version":1,"dataset":"sewers","region":"bengaluru","level":7,"fields":["sewer_m","trunk_m","in_area"],"cells":["4P34FF3","4P34FFC","4P34FFF"],"columns":{"sewer_m":[null,null,null],"trunk_m":[null,null,null],"in_area":[1,1,1]}}

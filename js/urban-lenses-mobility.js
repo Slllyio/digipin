@@ -1523,14 +1523,15 @@ const UrbanLensesMobility = (() => {
 
     function sewergap(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], sw = c['sewers.sewer_m'];
-        const road = c['osm_roads.road_km_km2'], slum = c['slums_mapped.slum_pct'];
+        const road = c['osm_roads.road_km_km2'], slum = c['slums_mapped.slum_pct'], area = c['sewers.in_area'];
         if (!pop || !sw || !sw.some(v => v > 0)) return null;
-        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0), area = g.dx * g.dy;
+        const inCity = area && area.some(x => x > 0);
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0), cellKm2 = g.dx * g.dy;
         const swArr = Float64Array.from({ length: n }, (_, i) => v(sw, i));
         const svc = within(g, swArr, SERVICE_KM), near = within(g, swArr, SEWER_NEAR_KM);
-        const idx = _residents(fr).filter(i => svc[i] > 0);
+        const idx = _residents(fr).filter(i => svc[i] > 0 && (!inCity || v(area, i) > 0));
         if (idx.length < 5) return null;
-        const pct = i => (road && v(road, i) > 0 ? Math.min(100, 100 * v(sw, i) / (v(road, i) * area * 1000)) : NaN);
+        const pct = i => (road && v(road, i) > 0 ? Math.min(100, 100 * v(sw, i) / (v(road, i) * cellKm2 * 1000)) : NaN);
         const none = idx.filter(i => !(near[i] > 0)), thin = idx.filter(i => near[i] > 0 && pct(i) < THIN_PCT);
         const all = _sumOver(pop, idx, () => true), pNone = _sumOver(pop, none, () => true), pThin = _sumOver(pop, thin, () => true);
         const stats = [
@@ -1552,7 +1553,7 @@ const UrbanLensesMobility = (() => {
         return {
             columns: { sewer_cover_pct: out }, idx, weightKey: 'sewer_cover_pct', noHotspots: true,
             metric: { label: `Residents with no sewer within ${SEWER_NEAR_KM * 1000} m`, value: _round(100 * pNone / (all || 1), 1), unit: '%', higherIs: 'worse' },
-            headline: `${_people(pNone)} residents (${_round(100 * pNone / (all || 1))}%) in the area the water board's sewer maps cover have no sewer line within ${SEWER_NEAR_KM * 1000} m, and ${_people(pThin)} more live where sewers run along under ${THIN_PCT}% of the streets; these homes rely on septic tanks, soak pits or open drains. The maps may lag lines laid recently in the city's added areas.`,
+            headline: `${_people(pNone)} residents (${_round(100 * pNone / (all || 1))}%) inside the corporation where the sewer maps reach have no sewer line within ${SEWER_NEAR_KM * 1000} m, and ${_people(pThin)} more live where sewers run along under ${THIN_PCT}% of the streets; these homes rely on septic tanks, soak pits or open drains. The maps may lag lines laid recently in the city's added areas.`,
             stats,
         };
     }
@@ -1677,9 +1678,9 @@ const UrbanLensesMobility = (() => {
         { id: 'sewergap', equity: true, title: 'Sewer gaps', icon: '🚽',
             question: 'Which neighbourhoods have no sewer line nearby?',
             field: { key: 'sewer_cover_pct', label: 'Sewer length as a share of street length (0 = none within 250 m)', unit: '%', higherIs: 'better', ramp: 'blues', domain: [0, 100] },
-            needs: ['sewers.sewer_m', 'osm_roads.road_km_km2', 'slums_mapped.slum_pct', 'population.population'],
-            method: `BWSSB sewerage line maps (KGIS, about 10,400 km) for Bengaluru and CMWSSB's sewer main network (about 4,200 km) for Chennai on data.opencity.in (public domain), all diameters: each line is cut into 25 m pieces and summed per block. A block is unsewered when no sewer runs in it or within ${SEWER_NEAR_KM * 1000} m, and thin when its sewer length is under ${THIN_PCT}% of its OpenStreetMap street length. Blocks more than ${SERVICE_KM} km from any mapped sewer are not judged. Picks are unsewered blocks 1.5 km apart with the most unserved residents within 500 m. Bengaluru and Chennai.`,
-            refs: 'BWSSB sewerage network (KGIS) and CMWSSB sewer main network via OpenCity; CPHEEO Manual on Sewerage and Sewage Treatment (2013); AMRUT 2.0' },
+            needs: ['sewers.sewer_m', 'sewers.in_area', 'osm_roads.road_km_km2', 'slums_mapped.slum_pct', 'population.population'],
+            method: `BWSSB sewerage line maps (KGIS, about 10,400 km) for Bengaluru and CMWSSB's sewer main network (about 4,200 km) for Chennai and PMC's drainage map (road, nala and river sewers, about 2,190 km) for Pune on data.opencity.in (public domain), all diameters: each line is cut into 25 m pieces and summed per block. A block is unsewered when no sewer runs in it or within ${SEWER_NEAR_KM * 1000} m, and thin when its sewer length is under ${THIN_PCT}% of its OpenStreetMap street length. Blocks more than ${SERVICE_KM} km from any mapped sewer, and blocks outside the corporation's wards (cantonments, other towns, villages past the limit), are not judged. Picks are unsewered blocks 1.5 km apart with the most unserved residents within 500 m. Bengaluru, Chennai and Pune.`,
+            refs: 'BWSSB sewerage network (KGIS), CMWSSB sewer main network and PMC drainage map via OpenCity; CPHEEO Manual on Sewerage and Sewage Treatment (2013); AMRUT 2.0' },
         { id: 'freeclinic', equity: true, title: 'Free clinic reach', icon: '🏥',
             question: 'Who lives far from a free public clinic?',
             field: { key: 'clinic_walk_m', label: 'Walk to the nearest public primary care centre', unit: 'm', higherIs: 'worse', ramp: 'reds', domain: [0, 2000] },

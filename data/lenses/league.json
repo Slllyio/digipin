@@ -986,7 +986,7 @@
     },
     "sewergap": {
      "label": "Residents with no sewer within 250 m",
-     "value": 8.6,
+     "value": 6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -2756,7 +2756,7 @@
     },
     "sewergap": {
      "label": "Residents with no sewer within 250 m",
-     "value": 15.3,
+     "value": 9.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10425,6 +10425,12 @@
     "roadsafety": {
      "label": "Children whose walk to school crosses a fast, busy road",
      "value": 24,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "sewergap": {
+     "label": "Residents with no sewer within 250 m",
+     "value": 5.2,
      "unit": "%",
      "higherIs": "worse"
     },

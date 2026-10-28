@@ -1,15 +1,20 @@
-"""Sewer lines from the water boards' network maps for Bengaluru (BWSSB) and Chennai (CMWSSB) (OpenCity, public domain).
+"""Sewer lines from the network maps for Bengaluru (BWSSB), Chennai (CMWSSB) and Pune (PMC) (OpenCity, public domain).
 
 Per L7 block (dataset ``sewers``):
 
     sewer_m    length of sewer line in the block
-    trunk_m    of it, trunk sewers 300 mm across or more
+    in_area    1 where the municipal corporation's ward map (``wards`` dataset) holds the block: the lens judges gaps only
+               there, as cantonments, other towns and villages past the limit run their own drainage
+    trunk_m    of it, trunk sewers: 300 mm across or more, or those PMC marks Trunk_Sewer in Pune (most of Pune's
+               collection sewers are 300 mm themselves)
 
 Maps: BWSSB sewerage line maps (KGIS) by diameter, under 150 mm, 150-300 mm and 300 mm and above; CMWSSB's sewer main
-network (about 181,000 pipes, 4,200 km, pipe size as a code). Lines are walked in steps of about STEP_M and each step's
+network (about 181,000 pipes, 4,200 km, pipe size as a code); PMC's drainage map, which OpenCity lists as storm-water
+drains but which is mostly the sewer network (road, nala and river sewers, about 2,190 km; its storm drains and nalas
+are left out here). Lines are walked in steps of about STEP_M and each step's
 length goes to the block holding its midpoint.
 
-    python -m pipeline.realestate.sewers --region bengaluru,chennai
+    python -m pipeline.realestate.sewers --region bengaluru,chennai,pune
 """
 from __future__ import annotations
 
@@ -33,9 +38,13 @@ MAPS = [
 ]
 CHENNAI = ("https://data.opencity.in/dataset/c9844771-3129-4bc8-99d7-398dd93db1fa/resource/a819c121-0d4a-4f6e-943d-2bcc610f6954/"
            "download/673f4683-9987-4101-b25c-8df48b448378.kmz")
+PUNE = ("https://data.opencity.in/dataset/a83b2053-2250-4e3c-9759-521c81679d24/resource/7b7bb529-d324-48c2-95eb-8eabbab4381b/"
+        "download/4390b641-12ad-4438-bc6b-c938ea7ae5de.kmz")
 PLACEMARK = re.compile(r"<Placemark\b[^>]*>(.*?)</Placemark>", re.S)
 DIAM = re.compile(r'name="Diameter">([\d.]+)<')
 SIZE_CODE = re.compile(r'name="size_of_pipe_mm">(\d+)<')
+CATEGORY = re.compile(r'name="category">([^<]*)<')
+ROLE = re.compile(r'name="drainaige_">(\w+)<')
 LINE = re.compile(r"<LineString>.*?<coordinates>\s*([^<]+?)\s*</coordinates>", re.S)
 # CMWSSB's size codes (the "Sewer Main Codes" note published with the map), code -> mm
 CMWSSB_MM = {1: 100, 2: 150, 3: 200, 4: 250, 5: 300, 6: 350, 8: 400, 9: 450, 10: 500, 11: 600, 12: 700, 14: 750, 15: 800,
@@ -43,15 +52,20 @@ CMWSSB_MM = {1: 100, 2: 150, 3: 200, 4: 250, 5: 300, 6: 350, 8: 400, 9: 450, 10:
 
 
 def lines(text):
-    """Yield (coords [(lng, lat)], diameter_mm or None) for each sewer Placemark."""
+    """Yield (coords [(lng, lat)], diameter_mm or None, trunk) for each sewer Placemark. trunk is True or False where the
+    map names the sewer's role (PMC), else None and the diameter decides. PMC storm drains and nalas are skipped."""
     for m in PLACEMARK.finditer(text):
         body = m.group(1)
+        cat, role = CATEGORY.search(body), ROLE.search(body)
+        if cat and "sewer" not in cat.group(1).lower():
+            continue
+        trunk = role.group(1).lower().startswith("trunk") if role else None
         d, c = DIAM.search(body), SIZE_CODE.search(body)
         diam = float(d.group(1)) if d else (CMWSSB_MM.get(int(c.group(1))) if c else None)
         for ls in LINE.finditer(body):
             pts = [tuple(map(float, p.split(",")[:2])) for p in ls.group(1).split()]
             if len(pts) >= 2:
-                yield pts, diam
+                yield pts, diam, trunk
 
 
 def _seg_m(a, b):
@@ -71,14 +85,14 @@ def pieces(pts, step=STEP_M):
 
 def accumulate(items, acc):
     from pipeline.cells.store import cell_code
-    for pts, diam in items:
+    for pts, diam, trunk in items:
         for lat, lng, m in pieces(pts):
             code = cell_code(LEVEL, lat, lng, None)
             if code is None:
                 continue
             r = acc.setdefault(code, [0.0, 0.0])
             r[0] += m
-            if diam is not None and diam >= 300:
+            if trunk if trunk is not None else (diam is not None and diam >= 300):
                 r[1] += m
     return acc
 
@@ -97,21 +111,38 @@ def download(url, dst):
             time.sleep(2 ** (attempt + 1))
 
 
-def cell_dataset(region, acc):
+def corporation_cells(region, root=CELLS):
+    """L7 blocks the ``wards`` dataset places in a corporation ward, or None."""
+    import json
+
+    from pipeline.cells import store
+    cat = json.loads((root / "catalog.json").read_text())
+    ds = next((d for d in (cat.get("datasets") or []) if d["id"] == "wards"), None)
+    entry = ds and next((r for r in ds["regions"] if r["name"] == region), None)
+    if not entry:
+        return None
+    t = store.read_region(root, entry)
+    return [c for c, v in zip(t.codes, t.columns["ward"]) if v]
+
+
+def cell_dataset(region, acc, area=None):
     from pipeline.cells import store
     from pipeline.cells.schema import DatasetSpec, FieldSpec
     specs = [
         FieldSpec("sewer_m", "Sewer line length", agg="sum", unit="m", ramp="blues", higher_is="better"),
-        FieldSpec("trunk_m", "Trunk sewer length (300 mm and above)", agg="sum", unit="m", ramp="blues", higher_is="better"),
+        FieldSpec("trunk_m", "Trunk sewer length (300 mm and above; PMC trunk sewers in Pune)", agg="sum", unit="m", ramp="blues", higher_is="better"),
+        FieldSpec("in_area", "Inside the municipal corporation's wards", agg="max", unit="", domain=[0, 1], ramp="blues", higher_is="better"),
     ]
     spec = DatasetSpec(
-        id="sewers", title="Sewer network (BWSSB and CMWSSB maps)", level=LEVEL, fields=specs, group="Real estate",
-        description="BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter) and CMWSSB's sewer main network for "
-                    "Chennai on data.opencity.in: sewer length per block and trunk sewers 300 mm and wider.",
-        source="pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps, CMWSSB sewer main network)",
-        license="Public domain (BWSSB and CMWSSB via data.opencity.in)", default_field="sewer_m", extrude=False)
+        id="sewers", title="Sewer network (BWSSB, CMWSSB and PMC maps)", level=LEVEL, fields=specs, group="Real estate",
+        description="BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter), CMWSSB's sewer main network for "
+                    "Chennai and PMC's drainage map (road, nala and river sewers) for Pune on data.opencity.in: sewer "
+                    "length per block and trunk sewers (300 mm and wider; PMC trunk sewers in Pune).",
+        source="pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps, CMWSSB sewer main network, PMC drainage map)",
+        license="Public domain (BWSSB, CMWSSB and PMC via data.opencity.in)", default_field="sewer_m", extrude=False)
     recs = [{"digipin": code, "sewer_m": round(r[0]), "trunk_m": round(r[1])}
             for code, r in acc.items()]
+    recs += [{"digipin": code, "in_area": 1} for code in area or ()]
     return store.write_dataset(CELLS, spec, region, store.bin_records(recs, LEVEL, specs), parquet=False)
 
 
@@ -125,7 +156,7 @@ def read_kml(path):
         return f.read()
 
 
-SOURCES = {"bengaluru": [OPENCITY + p for p in MAPS], "chennai": [CHENNAI]}
+SOURCES = {"bengaluru": [OPENCITY + p for p in MAPS], "chennai": [CHENNAI], "pune": [PUNE]}
 
 
 def main(argv=None):
@@ -143,7 +174,7 @@ def main(argv=None):
                     download(url, src)
                 accumulate(lines(read_kml(src)), acc)
                 print(f"{region}: {name}: {sum(r[0] for r in acc.values()) / 1000:.0f} km so far")
-        info = cell_dataset(region, acc)
+        info = cell_dataset(region, acc, corporation_cells(region))
         print(f"{region}: {sum(r[0] for r in acc.values()) / 1000:.0f} km of sewer in {info['cells']} blocks")
     return 0
 

@@ -414,6 +414,16 @@ describe('UrbanLenses methods on a hand-made grid', () => {
         expect(L._lenses.sewergap(L.frameFrom(codes, { 'population.population': pop }), {})).toBeNull();
     });
 
+    it('sewergap lens: judges only blocks inside the corporation when the ward map is there', () => {
+        const pop = codes.map(() => 1000);
+        const sw = codes.map((_, i) => (i % SIZE < 3 ? 500 : 0));
+        const inArea = codes.map((_, i) => (i % SIZE < 5 ? 1 : 0));
+        const f = L.frameFrom(codes, { 'population.population': pop, 'sewers.sewer_m': sw, 'sewers.in_area': inArea, 'osm_roads.road_km_km2': codes.map(() => 10) });
+        const r = L._lenses.sewergap(f, {});
+        expect(r.idx.every(i => inArea[i] === 1)).toBe(true);
+        expect(Number.isNaN(r.columns.sewer_cover_pct[7])).toBe(true);
+    });
+
     it('streetpoles lens: poles per street km on surveyed ground', () => {
         const half = (a, b) => codes.map((_, i) => (i % SIZE < SIZE / 2 ? a : b));
         const pop = codes.map(() => 1000);

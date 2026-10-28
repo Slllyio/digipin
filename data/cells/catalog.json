@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T17:25:36Z",
+  "generated": "2026-10-28T17:31:56Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -31674,10 +31674,10 @@
     },
     {
       "id": "sewers",
-      "title": "Sewer network (BWSSB and CMWSSB maps)",
-      "description": "BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter) and CMWSSB's sewer main network for Chennai on data.opencity.in: sewer length per block and trunk sewers 300 mm and wider.",
-      "source": "pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps, CMWSSB sewer main network)",
-      "license": "Public domain (BWSSB and CMWSSB via data.opencity.in)",
+      "title": "Sewer network (BWSSB, CMWSSB and PMC maps)",
+      "description": "BWSSB's sewerage line maps for Bengaluru (KGIS, by pipe diameter), CMWSSB's sewer main network for Chennai and PMC's drainage map (road, nala and river sewers) for Pune on data.opencity.in: sewer length per block and trunk sewers (300 mm and wider; PMC trunk sewers in Pune).",
+      "source": "pipeline/realestate/sewers.py (OpenCity BWSSB sewerage line maps, CMWSSB sewer main network, PMC drainage map)",
+      "license": "Public domain (BWSSB, CMWSSB and PMC via data.opencity.in)",
       "group": "Real estate",
       "level": 7,
       "approxCellM": 244,
@@ -31689,7 +31689,7 @@
           "agg": "sum",
           "unit": "m",
           "domain": [
-            2,
+            1,
             7990
           ],
           "ramp": "blues",
@@ -31697,13 +31697,25 @@
         },
         {
           "key": "trunk_m",
-          "label": "Trunk sewer length (300 mm and above)",
+          "label": "Trunk sewer length (300 mm and above; PMC trunk sewers in Pune)",
           "type": "number",
           "agg": "sum",
           "unit": "m",
           "domain": [
             0,
             3438
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "in_area",
+          "label": "Inside the municipal corporation's wards",
+          "type": "number",
+          "agg": "max",
+          "domain": [
+            0,
+            1
           ],
           "ramp": "blues",
           "higherIs": "better"
@@ -31717,19 +31729,32 @@
       "regions": [
         {
           "name": "bengaluru",
-          "cells": 7755,
+          "cells": 12457,
           "bbox": {
-            "west": 77.46142578125,
-            "south": 12.84912109375,
-            "east": 77.77783203125,
-            "north": 13.1171875
+            "west": 77.459228515625,
+            "south": 12.833740234375,
+            "east": 77.780029296875,
+            "north": 13.141357421875
           },
-          "json": "sewers/bengaluru.json",
-          "parquet": null
+          "json": "sewers/bengaluru/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
         },
         {
           "name": "chennai",
-          "cells": 4479,
+          "cells": 6794,
           "bbox": {
             "west": 80.1376953125,
             "south": 12.87109375,
@@ -31737,6 +31762,18 @@
             "north": 13.233642578125
           },
           "json": "sewers/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 7626,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 74.000732421875,
+            "north": 18.621337890625
+          },
+          "json": "sewers/pune.json",
           "parquet": null
         }
       ]
