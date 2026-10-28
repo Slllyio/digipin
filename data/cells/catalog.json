@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T20:38:29Z",
+  "generated": "2026-10-28T20:46:50Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -31555,7 +31555,7 @@
     {
       "id": "public_care",
       "title": "Public primary care and maternity homes (OpenCity)",
-      "description": "Free public primary care centres and maternity homes per block from the corporations' maps on data.opencity.in (chennai: GCC UPHCs, GCC maternity units; hyderabad: Hyderabad district health centres; bengaluru: BBMP UPHCs, Namma Clinics 2026). Some maps cover only the corporation or district.",
+      "description": "Free public primary care centres and maternity homes per block from the corporations' maps on data.opencity.in (chennai: GCC UPHCs, GCC maternity units; hyderabad: Hyderabad district health centres; bengaluru: BBMP UPHCs, Namma Clinics 2026; pune: PMC dawakhanas and health centres, PMC maternity homes). Some maps cover only the corporation or district.",
       "source": "pipeline/realestate/publiccare.py (OpenCity health facility maps)",
       "license": "Public domain (data.opencity.in)",
       "group": "Real estate",
@@ -31581,6 +31581,10 @@
           "type": "number",
           "agg": "sum",
           "unit": "homes",
+          "domain": [
+            1,
+            1
+          ],
           "ramp": "greens",
           "higherIs": "better"
         }
@@ -31625,6 +31629,18 @@
             "north": 17.768798828125
           },
           "json": "public_care/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 45,
+          "bbox": {
+            "west": 73.7919921875,
+            "south": 18.4609375,
+            "east": 73.92822265625,
+            "north": 18.57958984375
+          },
+          "json": "public_care/pune.json",
           "parquet": null
         }
       ]

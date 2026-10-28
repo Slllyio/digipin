@@ -10782,6 +10782,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "freeclinic": {
+     "label": "Residents beyond a 1 km walk of free primary care",
+     "value": 64.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
      "value": 0.6,
