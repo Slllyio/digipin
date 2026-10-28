@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout', 'treecensus', 'firereach', 'pondcensus', 'roadplan', 'lastrites', 'wellrisk', 'binreach', 'bigprojects', 'buildlimits', 'policereach', 'lakebuffer', 'parkreach', 'drainbuffer', 'birdlife', 'stormgap', 'watergap', 'stpnear', 'basics', 'sroload']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout', 'treecensus', 'firereach', 'pondcensus', 'roadplan', 'lastrites', 'wellrisk', 'binreach', 'bigprojects', 'buildlimits', 'policereach', 'lakebuffer', 'parkreach', 'drainbuffer', 'birdlife', 'stormgap', 'watergap', 'stpnear', 'basics', 'sroload', 'pinsize']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -1177,6 +1177,15 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.well_risk[10]).toBeGreaterThan(0);
         expect(r.metric.value).toBeGreaterThan(0);
         expect(L._lenses.wellrisk(L.frameFrom(codes, { ...base, 'borewells.borewells': wells }), {})).toBeNull();
+    });
+
+    it('pinsize: residents per pincode', () => {
+        const pin = codes.map((_, i) => (col(i) < 6 ? 560001 : 560002)), a = codes.map(() => 4.5);
+        const r = L._lenses.pinsize(L.frameFrom(codes, { ...base, 'pincodes.pincode': pin, 'pincodes.pin_km2': a }), {});
+        expect(r.stats[0].value).toBe('2');
+        expect(r.columns.pin_people[0]).toBeGreaterThanOrEqual(0);
+        expect(r.stats.some(s => /^Most crowded pincode 1: 56000[12]/.test(s.label))).toBe(true);
+        expect(L._lenses.pinsize(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('sroload: residents per sub-registrar office and distance to it', () => {

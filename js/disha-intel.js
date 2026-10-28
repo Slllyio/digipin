@@ -33,6 +33,7 @@ const DishaIntel = (() => {
             wildedge: /\b(leopards?|wild ?life conflict|human[- ]wildlife|forest edges?|snake ?bites?|wild animals?|homes? (near|next to|beside) (the )?forests?)\b/i,
             powercuts: /\b(power ?cuts?|power outages?|blackouts?|load[- ]?shedding|(lose|losing|without) (power|electricity)|electricity (cuts?|outages?|supply|reliability)|unreliable (power|electricity))\b/i,
             dumpsmoke: /\b(downwind of\b.{0,20}\b(landfills?|dumps?|garbage|factor(y|ies)|industr\w*)|landfill (smoke|smell|odou?r|fires?)|garbage (smoke|smell|odou?r)|dump(ing)? (site )?(smoke|smell|odou?r|fires?)|smell from\b.{0,20}\b(landfills?|dumps?))\b/i,
+            pinsize: /\b(pin ?codes?|postal codes?|zip ?codes?|post ?offices?\b.{0,30}\b(load|crowd\w*|serv\w*|how many))\b/i,
             sroload: /\b(sub[- ]?registrar|sro|registration office|registrar office|register (a |my |the )?(property|plot|flat|sale deed)|property registration)\b/i,
             basics: /\b(basic (services|amenities|infrastructure|civic services)|civic (services|amenities) gaps?|underserved (areas|pockets|neighbou?rhoods)|(water|sewer|drains?|toilets?),? (and|&) (water|sewer|sewage|drains?|toilets?|bins?)\b.{0,30}\b(gaps?|missing|lack\w*|where|no))\b/i,
             stpnear: /\b(sewage treatment plants?|stps?|sewage plants?)\b.{0,40}\b(near|next to|beside|close|smell|odou?r|capacity|enough|treat)\w*|\b(near|next to|beside|live by)\b.{0,20}\b(sewage treatment plants?|stps?)\b/i,

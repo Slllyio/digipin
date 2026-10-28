@@ -672,7 +672,52 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    const PIN_BIG = 500000;
+
+    function pinsize(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], pin = c['pincodes.pincode'], km2 = c['pincodes.pin_km2'];
+        if (!pop || !pin || !pin.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr).filter(i => v(pin, i) > 0);
+        if (idx.length < 5) return null;
+        const groups = new Map();
+        for (const i of idx) {
+            const gr = groups.get(pin[i]) || { pin: pin[i], pop: 0, km2: v(km2, i), at: i, top: -1 };
+            gr.pop += v(pop, i);
+            if (v(pop, i) > gr.top) { gr.top = v(pop, i); gr.at = i; }
+            groups.set(pin[i], gr);
+        }
+        const list = [...groups.values()].sort((a, b) => b.pop - a.pop);
+        const all = list.reduce((t, gr) => t + gr.pop, 0), big = list.filter(gr => gr.pop > PIN_BIG);
+        const inBig = big.reduce((t, gr) => t + gr.pop, 0);
+        const med = list[Math.floor(list.length / 2)].pop;
+        const areas = list.map(gr => gr.km2).filter(x => x > 0).sort((a, b) => a - b);
+        const medKm2 = areas.length ? areas[Math.floor(areas.length / 2)] : 0;
+        const stats = [
+            { label: 'Pincodes covering the city\'s homes', value: `${list.length}` },
+            { label: 'Residents per pincode (median; largest)', value: `${_people(med)}; ${_people(list[0].pop)}` },
+            { label: 'Area a pincode covers (median)', value: `${_round(medKm2, 1)} km²` },
+            { label: `Residents in pincodes of more than ${_people(PIN_BIG)} people`, value: `${_people(inBig)} (${_round(100 * inBig / (all || 1))}%) in ${big.length} pincode${big.length === 1 ? '' : 's'}` },
+        ];
+        list.slice(0, 3).forEach((gr, k) => stats.push({ label: `Most crowded pincode ${k + 1}: ${gr.pin} (near ${g.codes[gr.at]})`, value: `${_people(gr.pop)} residents over ${_round(gr.km2, 1)} km²` }));
+        const per = new Map(list.map(gr => [gr.pin, gr.pop]));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = Math.round(per.get(pin[i]) / 1000);
+        return {
+            columns: { pin_people: out }, idx, weightKey: 'pin_people', noHotspots: true,
+            metric: { label: 'Residents per pincode (median)', value: Math.round(med), unit: 'people', higherIs: 'worse' },
+            headline: `${list.length} pincodes cover the city's homes: the median one holds ${_people(med)} residents over ${_round(medKm2, 1)} km², and the most crowded ${_people(list[0].pop)}. ${big.length ? `${_round(100 * inBig / (all || 1))}% of residents share a pincode with more than ${_people(PIN_BIG)} people, where a pincode alone says little about where a door is and a DigiPin says most.` : `No pincode here holds more than ${_people(PIN_BIG)} people.`}`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'pinsize', equity: false, title: 'Pincode crowding', icon: '📮',
+            question: 'How many people share each pincode, and where is a pincode too coarse to find an address?',
+            field: { key: 'pin_people', label: 'Residents sharing the block\'s pincode (thousands)', unit: 'thousand', higherIs: 'worse', ramp: 'reds', domain: [0, 800] },
+            needs: ['pincodes.pincode', 'pincodes.pin_km2', 'population.population'],
+            method: `India Post's 2025 all-India pincode boundaries (19,312 pincodes) on data.opencity.in (public domain). Each lived-in block takes the pincode whose boundary holds its centre (DuckDB spatial); the lens sums the block population estimates per pincode within the city view (a pincode reaching past the view is counted only for its part inside) and flags pincodes of more than ${PIN_BIG.toLocaleString('en-IN')} residents. The block's pincode, post office and postal division are in the pincodes layer. Pincode boundaries are India Post's delivery areas, not legal limits.`,
+            refs: 'India Post pincode directory and 2025 boundary map; Department of Posts DIGIPIN (2025); OpenCity' },
         { id: 'sroload', equity: false, title: 'Property registration offices', icon: '🏛️',
             question: 'Which sub-registrar office registers property here, and how loaded and far is it?',
             field: { key: 'sro_km', label: 'Distance to the block\'s own sub-registrar office', unit: 'km', higherIs: 'worse', ramp: 'reds', domain: [0, 20] },
@@ -771,6 +816,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize });
     return { ENTRIES };
 })();
