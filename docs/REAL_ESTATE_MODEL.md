@@ -1215,3 +1215,7 @@ The corporations' own slum boundary maps on data.opencity.in (public domain): Gr
 
 The lens counts residents in blocks at least 20% slum and residents × slum share ("on slum land"), the part of them in mostly non-notified slums (Hyderabad, Bengaluru) and in blocks that also flood (`flood_reports`). Modelled population spreads people evenly, so it understates slum density: Mumbai shows 18% of residents in slum blocks against about 42% in the 2011 census. It complements the `informal` lens, which infers settlements from building form and wealth rather than official maps.
 
+## Public toilets from corporation lists (`toilets_official` dataset, pipeline/realestate/toilets.py)
+
+Point maps of public and community toilets on data.opencity.in: PMC Pune (547), GCC Chennai (613), BMC Mumbai (about 8,400 community and public toilet blocks with men's and women's seat counts) and GHMC Hyderabad (574, September 2018), counted per L7 block. The `toilets` lens (js/urban-lenses-planning.js) now takes, per block, the larger of this count and OpenStreetMap's, so its gaps in these four cities reflect the corporation network rather than missing mapping, and in Mumbai it adds residents per women's seat. Bengaluru's BBMP list on OpenCity has no licence, so it is not used.
+

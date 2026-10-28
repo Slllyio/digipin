@@ -675,6 +675,10 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.toilet_gap[codes.length - 1]).toBe(2);
         expect(r.headline).toMatch(/^Only 1 public toilets are mapped/);
         expect(L._lenses.toilets(L.frameFrom(codes, base), {})).toBeNull();
+        const off = L._lenses.toilets(L.frameFrom(codes, { ...base, 'street_infra.toilets': codes.map(() => 0),
+            'toilets_official.toilets': codes.map((_, i) => (i === 0 ? 3 : 0)), 'toilets_official.seats_women': codes.map((_, i) => (i === 0 ? 10 : 0)) }), {});
+        expect(off.stats[0]).toEqual({ label: 'Public toilets mapped (the corporation list and OpenStreetMap)', value: '3' });
+        expect(off.stats.some(s => /women's toilet seat/.test(s.label))).toBe(true);
     });
 
     it('gated: gate density and gated residents', () => {

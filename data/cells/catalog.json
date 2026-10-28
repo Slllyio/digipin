@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T12:10:42Z",
+  "generated": "2026-10-28T12:34:14Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -31445,6 +31445,104 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "toilets_official",
+      "title": "Public toilets (corporation maps)",
+      "description": "Public and community toilet blocks from the corporations' own maps on data.opencity.in, counted per block: PMC Pune, GCC Chennai, BMC Mumbai (with men's and women's seats) and GHMC Hyderabad (2018). Far more complete than OpenStreetMap for these cities.",
+      "source": "pipeline/realestate/toilets.py (OpenCity toilet maps)",
+      "license": "Public domain (PMC, BMC, GHMC via data.opencity.in); open (GCC via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "toilets",
+          "label": "Public and community toilets (corporation list)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "toilets",
+          "domain": [
+            1,
+            68
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "seats",
+          "label": "Toilet seats (Mumbai)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "seats",
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "seats_women",
+          "label": "Toilet seats for women (Mumbai)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "seats",
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "toilets",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "chennai",
+          "cells": 513,
+          "bbox": {
+            "west": 80.148681640625,
+            "south": 12.860107421875,
+            "east": 80.3310546875,
+            "north": 13.2314453125
+          },
+          "json": "toilets_official/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 469,
+          "bbox": {
+            "west": 78.263427734375,
+            "south": 17.31396484375,
+            "east": 78.61279296875,
+            "north": 17.544677734375
+          },
+          "json": "toilets_official/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 2117,
+          "bbox": {
+            "west": 72.78564453125,
+            "south": 18.906982421875,
+            "east": 72.972412109375,
+            "north": 19.2607421875
+          },
+          "json": "toilets_official/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 311,
+          "bbox": {
+            "west": 73.783203125,
+            "south": 18.445556640625,
+            "east": 73.9501953125,
+            "north": 18.599365234375
+          },
+          "json": "toilets_official/pune.json",
+          "parquet": null
         }
       ]
     },

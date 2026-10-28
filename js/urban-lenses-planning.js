@@ -543,14 +543,17 @@ const UrbanLensesPlanning = (() => {
     const TOILET_BUSY_KM = 0.5, TOILET_HOME_KM = 1, WATER_KM = 0.5, BUSY_Q = 0.9, TOILET_MIN = 100;
 
     function toilets(fr) {
-        const g = fr.grid, c = fr.cols, n = g.n, t = c['street_infra.toilets'], w = c['street_infra.drinking_water'];
+        const g = fr.grid, c = fr.cols, n = g.n, osm = c['street_infra.toilets'], off = c['toilets_official.toilets'], w = c['street_infra.drinking_water'];
         const pop = c['population.population'], shops = c['places.shopping'], food = c['places.food'];
-        if (!t || !pop) return null;
+        if (!(osm || off) || !pop) return null;
         const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
         const idx = [];
         for (let i = 0; i < n; i++) if (v(pop, i) > 0) idx.push(i);
         if (idx.length < 5) return null;
-        const tCount = Float64Array.from({ length: n }, (_, i) => v(t, i));
+        // Corporation toilet lists (OpenCity) where published, else OpenStreetMap: whichever lists more per block.
+        const tCount = Float64Array.from({ length: n }, (_, i) => Math.max(v(osm, i), v(off, i)));
+        const listed = off && off.some(x => x > 0), src = listed ? 'the corporation list and OpenStreetMap' : 'OpenStreetMap';
+        const sw = c['toilets_official.seats_women'];
         const nearBusy = within(g, tCount, TOILET_BUSY_KM), nearHome = within(g, tCount, TOILET_HOME_KM);
         const water = w ? within(g, Float64Array.from({ length: n }, (_, i) => v(w, i)), WATER_KM) : null;
         const footfall = Float64Array.from({ length: n }, (_, i) => v(shops, i) + v(food, i));
@@ -562,10 +565,11 @@ const UrbanLensesPlanning = (() => {
         const all = _sumOver(pop, idx, () => true), pHome = _sumOver(pop, homeGap, () => true);
         const total = idx.reduce((a, i) => a + tCount[i], 0);
         const stats = [
-            { label: 'Public toilets mapped', value: String(total) },
+            { label: `Public toilets mapped (${src})`, value: String(total) },
             { label: `Residents with none mapped within ${TOILET_HOME_KM} km`, value: `${_people(pHome)} (${_round(100 * pHome / Math.max(all, 1))}%)` },
             { label: `Busiest shopping and food blocks (top 10%) with none within ${TOILET_BUSY_KM * 1000} m`, value: `${busyGap.length} of ${busy.length}` },
         ];
+        if (sw && sw.some(x => x > 0)) stats.push({ label: 'Residents per women\'s toilet seat (corporation list)', value: _people(all / idx.reduce((a, i) => a + v(sw, i), 0)) });
         if (water) {
             const pw = _sumOver(pop, idx, i => water[i] <= 0);
             stats.push({ label: `Residents with no drinking-water point mapped within ${WATER_KM * 1000} m`, value: `${_people(pw)} (${_round(100 * pw / Math.max(all, 1))}%)` });
@@ -576,7 +580,7 @@ const UrbanLensesPlanning = (() => {
         return {
             columns: { toilet_gap: gap, toilets_1km: nearHome }, idx, weightKey: 'toilet_gap', noHotspots: true,
             metric: { label: `Residents with no public toilet mapped within ${TOILET_HOME_KM} km`, value: Math.round(pHome), unit: 'people', higherIs: 'worse' },
-            headline: total < TOILET_MIN ? `Only ${total} public toilets are mapped in OpenStreetMap here, too few to judge gaps: the map shows where mapping, not toilets, is missing. Use the Swachh Bharat toilet locator for the real network.` : `${total} public toilets are mapped; ${_round(100 * pHome / Math.max(all, 1))}% of residents have none mapped within ${TOILET_HOME_KM} km, and ${busyGap.length} of the ${busy.length} busiest shopping and food blocks have none within ${TOILET_BUSY_KM * 1000} m, which hits women, older people and street vendors hardest. OpenStreetMap misses many toilets, so check the Swachh Bharat toilet locator before acting.`,
+            headline: total < TOILET_MIN ? `Only ${total} public toilets are mapped in ${src} here, too few to judge gaps: the map shows where mapping, not toilets, is missing. Use the Swachh Bharat toilet locator for the real network.` : `${total} public toilets are mapped; ${_round(100 * pHome / Math.max(all, 1))}% of residents have none mapped within ${TOILET_HOME_KM} km, and ${busyGap.length} of the ${busy.length} busiest shopping and food blocks have none within ${TOILET_BUSY_KM * 1000} m, which hits women, older people and street vendors hardest. ${listed ? 'Lists can be dated (Hyderabad 2018), so check' : 'OpenStreetMap misses many toilets, so check'} the Swachh Bharat toilet locator before acting.`,
             stats,
         };
     }
@@ -1456,8 +1460,8 @@ const UrbanLensesPlanning = (() => {
             question: 'Where are public toilets and drinking water missing?',
             field: { key: 'toilet_gap', label: 'Toilet gaps (none near homes; none near a busy street)', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
             extra: [{ key: 'toilets_1km', label: `Public toilets mapped within ${TOILET_HOME_KM} km`, unit: 'count', higherIs: 'better', ramp: 'viridis', domain: [0, 10] }],
-            needs: ['street_infra.toilets', 'street_infra.drinking_water', 'places.shopping', 'places.food', 'population.population'],
-            method: `OpenStreetMap public toilets and drinking-water points (Overture Maps base infrastructure). Gaps: a lived-in block with no public toilet within ${TOILET_HOME_KM} km, and one of the busiest 10% of blocks by shops and eateries (Overture places) with none within ${TOILET_BUSY_KM * 1000} m. Distances are straight-line between block centres and are planning thresholds for this lens, in the spirit of the Swachh Bharat Mission (Urban) public toilet guidance. OpenStreetMap misses many municipal toilets and water points.`,
+            needs: ['street_infra.toilets', 'toilets_official.toilets', 'toilets_official.seats_women', 'street_infra.drinking_water', 'places.shopping', 'places.food', 'population.population'],
+            method: `Public toilets are the corporation's own list where published on data.opencity.in (PMC Pune, GCC Chennai, BMC Mumbai with seat counts, GHMC Hyderabad 2018), else OpenStreetMap; per block the larger count wins. Drinking-water points are OpenStreetMap (Overture Maps base infrastructure). Gaps: a lived-in block with no public toilet within ${TOILET_HOME_KM} km, and one of the busiest 10% of blocks by shops and eateries (Overture places) with none within ${TOILET_BUSY_KM * 1000} m. Distances are straight-line between block centres and are planning thresholds for this lens, in the spirit of the Swachh Bharat Mission (Urban) public toilet guidance. OpenStreetMap misses many municipal toilets and water points.`,
             refs: 'Swachh Bharat Mission (Urban) public and community toilet guidelines (MoHUA); OpenStreetMap via Overture Maps; WorldPop' },
         { id: 'gated', equity: false, title: 'Gated colonies and closed streets', icon: '🚧',
             question: 'Where have colonies gated their streets?',

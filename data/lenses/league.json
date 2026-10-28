@@ -3200,7 +3200,7 @@
     },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
-     "value": 4962491,
+     "value": 1733960,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -5600,7 +5600,7 @@
     },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
-     "value": 7017630,
+     "value": 2048777,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -9800,7 +9800,7 @@
     },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
-     "value": 6701850,
+     "value": 936670,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -10652,7 +10652,7 @@
     },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
-     "value": 4249519,
+     "value": 2143899,
      "unit": "people",
      "higherIs": "worse"
     },
