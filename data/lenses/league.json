@@ -2600,7 +2600,7 @@
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 7.3,
+     "value": 2.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -2654,7 +2654,7 @@
     },
     "feeder": {
      "label": "Feeder-range residents with no bus stop nearby",
-     "value": 42.5,
+     "value": 28.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3344,7 +3344,7 @@
     },
     "transit": {
      "label": "Residents with convenient public transport (SDG 11.2.1)",
-     "value": 78.8,
+     "value": 82.9,
      "unit": "%",
      "higherIs": "better"
     },
@@ -3392,7 +3392,7 @@
     },
     "fair": {
      "label": "Outcomes where the poorest fifth is worse off",
-     "value": 3,
+     "value": 2,
      "unit": "of 8",
      "higherIs": "worse"
     },
@@ -9188,7 +9188,7 @@
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 4,
+     "value": 0.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9242,7 +9242,7 @@
     },
     "feeder": {
      "label": "Feeder-range residents with no bus stop nearby",
-     "value": 30.3,
+     "value": 4.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9938,7 +9938,7 @@
     },
     "transit": {
      "label": "Residents with convenient public transport (SDG 11.2.1)",
-     "value": 92.2,
+     "value": 98.1,
      "unit": "%",
      "higherIs": "better"
     },
@@ -10064,7 +10064,7 @@
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 15.8,
+     "value": 0.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10118,7 +10118,7 @@
     },
     "feeder": {
      "label": "Feeder-range residents with no bus stop nearby",
-     "value": 54.9,
+     "value": 8.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10784,7 +10784,7 @@
     },
     "transit": {
      "label": "Residents with convenient public transport (SDG 11.2.1)",
-     "value": 64.8,
+     "value": 91.5,
      "unit": "%",
      "higherIs": "better"
     },

@@ -228,6 +228,7 @@ Each item gives four things:
 167. ✅ Mapped slums: corporation slum boundary maps for Chennai, Hyderabad, Mumbai (2015 clusters) and Bengaluru, with notified status where recorded (OpenCity, public domain) | OpenCity | `slummap` lens (new dataset `slums_mapped`, pipeline/realestate/slums.py)
 168. ✅ Public toilets from corporation lists for Pune, Chennai, Mumbai (with women's seats) and Hyderabad, replacing sparse OpenStreetMap counts in the toilets lens (OpenCity) | OpenCity | `toilets` lens (new dataset `toilets_official`, pipeline/realestate/toilets.py)
 169. ✅ Hyderabad bus timetable: TGSRTC GTFS (Telangana open data, February 2026, 5,028 stops, 44,892 weekday trips) via OpenCity, so busgap, transit access and feeder lenses use real frequencies there too | OpenCity | `bus_service` dataset (pipeline/traffic/gtfs_cells.py)
+170. ✅ Operator bus-stop lists: BEST Mumbai (6,267), PMPML Pune (5,624) and Chennai bus shelters (983) top up OpenStreetMap stops per block; Pune transit access rises from 65% to 92% of residents, Mumbai from 92% to 98% (OpenCity, public domain) | OpenCity | `bus_stops_official` dataset (pipeline/traffic/official_stops.py), merged in the transit loader
 
 ## Parked for the keys round
 

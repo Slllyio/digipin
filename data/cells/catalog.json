@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T12:48:00Z",
+  "generated": "2026-10-28T13:01:09Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -3155,6 +3155,74 @@
             "north": 18.62353515625
           },
           "json": "bus_stop_heat/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "bus_stops_official",
+      "title": "Bus stops (operator lists)",
+      "description": "Bus stops from the operators' own lists on data.opencity.in, counted per block (duplicate points dropped). Lenses use the larger of this and OpenStreetMap's count per block. Sources: mumbai: BEST stops and depots; pune: PMPML bus stops; chennai: GCC bus shelters.",
+      "source": "pipeline/traffic/official_stops.py (OpenCity)",
+      "license": "Public domain (BEST, PMPML, GCC via data.opencity.in)",
+      "group": "Traffic & mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "stops",
+          "label": "Bus stops (operator list)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "stops",
+          "domain": [
+            1,
+            15
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "stops",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "chennai",
+          "cells": 696,
+          "bbox": {
+            "west": 76.668212890625,
+            "south": 8.72705078125,
+            "east": 80.328857421875,
+            "north": 13.229248046875
+          },
+          "json": "bus_stops_official/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 2713,
+          "bbox": {
+            "west": 72.78564453125,
+            "south": 18.893798828125,
+            "east": 73.1064453125,
+            "north": 19.3134765625
+          },
+          "json": "bus_stops_official/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 2694,
+          "bbox": {
+            "west": 73.552490234375,
+            "south": 18.230224609375,
+            "east": 74.158935546875,
+            "north": 18.8564453125
+          },
+          "json": "bus_stops_official/pune.json",
           "parquet": null
         }
       ]

@@ -113,7 +113,7 @@ const UrbanLenses = (() => {
             field: { key: 'transit_m', label: 'Walk to the nearest stop', unit: 'm', higherIs: 'worse', ramp: 'reds' },
             extra: [{ key: 'rapid_m', label: 'Walk to the nearest station or terminal', unit: 'm', higherIs: 'worse', ramp: 'reds' }],
             needs: [`${TRANSIT}.stops`, `${TRANSIT}.rapid`, WALK_LINKS, 'bus_service.best_headway_min'],
-            method: `UN SDG indicator 11.2.1: a resident has convenient access when a bus stop is within ${STOP_KM * 1000} m, or a rail, metro or BRT station or bus terminal within ${RAPID_KM} km, walking along the OpenStreetMap network (Dijkstra over the walking-graph cells; straight line where none is baked). Stops and stations are OpenStreetMap points. Distances are cell centre to cell centre, so anything in the same ~244 m cell counts as 0. Where the city publishes an open GTFS timetable (Bengaluru BMTC and Hyderabad TGSRTC so far), the lens also counts residents within ${STOP_KM * 1000} m of a stop with a bus at least every ${FREQ_MIN} minutes in the 07:00–10:00 peak; elsewhere it measures coverage, not service quality.`,
+            method: `UN SDG indicator 11.2.1: a resident has convenient access when a bus stop is within ${STOP_KM * 1000} m, or a rail, metro or BRT station or bus terminal within ${RAPID_KM} km, walking along the OpenStreetMap network (Dijkstra over the walking-graph cells; straight line where none is baked). Stops and stations are OpenStreetMap points, topped up per cell with the operators' own stop lists where published (BEST Mumbai, PMPML Pune, Chennai bus shelters; OpenCity). Distances are cell centre to cell centre, so anything in the same ~244 m cell counts as 0. Where the city publishes an open GTFS timetable (Bengaluru BMTC and Hyderabad TGSRTC so far), the lens also counts residents within ${STOP_KM * 1000} m of a stop with a bus at least every ${FREQ_MIN} minutes in the 07:00–10:00 peak; elsewhere it measures coverage, not service quality.`,
             refs: 'UN-Habitat SDG 11.2.1 metadata (2018); TfL PTAL methodology (2015) for the 640 m / 960 m walk bands' },
         { id: 'air', title: 'Air pollution exposure', icon: '🌫',
             question: 'How many people breathe air above the standard?',
@@ -517,6 +517,17 @@ const UrbanLenses = (() => {
                 if (ds === TRANSIT) {
                     const t = await _transitCols(city, g);
                     if (!t) { fields.forEach(f => missing.push(`${ds}.${f}`)); continue; }
+                    // Operator stop lists (OpenCity) where published: per cell, the larger count wins.
+                    const os = store.get('bus_stops_official');
+                    const ot = os && (os.regions || []).some(r => r.name === city) ? await _loadView(store, 'bus_stops_official', bbox).catch(() => null) : null;
+                    if (ot && ot.cells && ot.columns && ot.columns.stops && ot.level <= LEVEL) {
+                        const ix = new Map(ot.cells.map((c, i) => [c, i]));
+                        for (let i = 0; i < g.n; i++) {
+                            const j = ix.get(codes[i].slice(0, ot.level)), v = j == null ? 0 : ot.columns.stops[j];
+                            if (v > t.stops[i]) t.stops[i] = v;
+                        }
+                        sources.push({ id: 'bus_stops_official', title: os.title, source: os.source, license: os.license, level: ot.level, approxCellM: null, generated: os.generated || null, period: null, local: false });
+                    }
                     for (const f of fields) cols[`${ds}.${f}`] = t[f];
                     sources.push({ id: TRANSIT, title: 'Transit stops and stations (OpenStreetMap)', source: `data/vectors/osm_transit_${city}.geojson`,
                         license: 'ODbL (© OpenStreetMap contributors)', level: null, approxCellM: null, generated: null, period: null, local: false });
