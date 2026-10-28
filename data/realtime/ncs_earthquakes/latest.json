@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-27T22:28:36Z",
+  "generated_at_iso": "2026-10-28T01:34:48Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-28 04:35:44|26.068,90.417",
+      "magnitude": 2.7,
+      "origin_time": "2026-10-28 04:35:44",
+      "latitude": 26.068,
+      "longitude": 90.417,
+      "depth_km": 5.0,
+      "region": "Goalpara, Assam",
+      "location": "65km NNE of Tura, Meghalaya, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-28 02:49:52|36.848,71.167",
+      "magnitude": 3.5,
+      "origin_time": "2026-10-28 02:49:52",
+      "latitude": 36.848,
+      "longitude": 71.167,
+      "depth_km": 95.0,
+      "region": "Afghanistan",
+      "location": "61km ESE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-28 00:27:54|32.658,93.917",
       "magnitude": 5.0,
@@ -1628,28 +1650,6 @@
       "depth_km": 10.0,
       "region": "Indian Ocean",
       "location": "841km WSW of Male, Maldives",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 19:49:24|36.725,71.503",
-      "magnitude": 3.8,
-      "origin_time": "2026-10-18 19:49:24",
-      "latitude": 36.725,
-      "longitude": 71.503,
-      "depth_km": 135.0,
-      "region": "Afghanistan",
-      "location": "94km ESE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-18 18:13:08|24.909,94.384",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-18 18:13:08",
-      "latitude": 24.909,
-      "longitude": 94.384,
-      "depth_km": 72.0,
-      "region": "Kamjong, Manipur",
-      "location": "10km WSW of Ukhrul, Manipur, India",
       "review_status": "Reviewed"
     }
   ]
