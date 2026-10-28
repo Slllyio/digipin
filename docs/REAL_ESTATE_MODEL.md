@@ -1442,3 +1442,13 @@ open space, non-residential, road and residential ground, and the residential gr
 in blocks that are over half unplanned or informal, and compares road and open-space shares with planned blocks.
 First run: Delhi 35% of residents in mostly unplanned or informal blocks, with roads on 5% of the ground against 11.8%.
 
+## Hot nights (`hotnights` lens, `night_heat` dataset, pipeline/cells/ee_layers.py `night_heat`)
+
+ECOSTRESS L2T LSTE V2 scenes (70 m, public domain) from April to June 2023-2025 with UTC hours 16 to 23 (21:30 to
+05:30 IST) are masked to cloud-free, non-water pixels; each L7 block takes the median LST in °C, its difference from
+the median block of the whole city region and the number of scenes behind it (Delhi typically 9 to 22). The lens
+re-centres on the night the median resident sleeps through (population-weighted median), counts residents 1 °C or
+more above it with the elderly and under-5s among them, compares tree canopy, and picks blocks 1.5 km apart ranked by
+(residents + 3 × residents aged 60+) × heat above the median. First run: Delhi's median home 25.5 °C at night, 2 °C
+above the region; 15.8% of residents 1 °C hotter still, with 4.1% tree canopy against 8%.
+

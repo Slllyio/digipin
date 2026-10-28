@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout', 'treecensus', 'firereach', 'pondcensus', 'roadplan', 'lastrites', 'wellrisk', 'binreach', 'bigprojects', 'buildlimits', 'policereach', 'lakebuffer', 'parkreach', 'drainbuffer', 'birdlife', 'stormgap', 'watergap', 'stpnear', 'basics', 'sroload', 'pinsize', 'potholes', 'revvillage', 'bdalayout', 'watershedpave', 'studenthousing', 'vacant2017', 'landchange', 'wardfit', 'metrowait', 'landgrain', 'floodzones', 'gwdepth', 'gwprospect', 'homeswork', 'airmonitorgap', 'schooldrift', 'stillair', 'badairdays', 'floodnews', 'howbuilt']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout', 'treecensus', 'firereach', 'pondcensus', 'roadplan', 'lastrites', 'wellrisk', 'binreach', 'bigprojects', 'buildlimits', 'policereach', 'lakebuffer', 'parkreach', 'drainbuffer', 'birdlife', 'stormgap', 'watergap', 'stpnear', 'basics', 'sroload', 'pinsize', 'potholes', 'revvillage', 'bdalayout', 'watershedpave', 'studenthousing', 'vacant2017', 'landchange', 'wardfit', 'metrowait', 'landgrain', 'floodzones', 'gwdepth', 'gwprospect', 'homeswork', 'airmonitorgap', 'schooldrift', 'hotnights', 'stillair', 'badairdays', 'floodnews', 'howbuilt']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -1136,6 +1136,17 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.stats.some(s => /^Worst air 1: /.test(s.label))).toBe(true);
         expect(r.headline).toMatch(/fewer than in 2017/);
         expect(L._lenses.badairdays(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('hotnights: residents where streets stay hot at night', () => {
+        const two = (a, b) => codes.map((_, i) => (col(i) < 6 ? a : b));
+        const f = L.frameFrom(codes, { ...base, 'night_heat.night_lst_c': two(27, 23), 'night_heat.night_anomaly_c': two(3, -1), 'demographics.elderly_60plus': two(50, 50) });
+        const r = L._lenses.hotnights(f, {});
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.metric.value).toBeLessThan(100);
+        expect(r.stats.some(s => /^Hot night 1: /.test(s.label))).toBe(true);
+        expect(r.headline).toMatch(/aged 60 and over/);
+        expect(L._lenses.hotnights(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('stillair: residents where the wind barely reaches the street', () => {

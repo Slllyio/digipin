@@ -1,6 +1,6 @@
 /**
  * Commons lenses for UrbanLenses: shared conditions every resident lives with, read from national and global open
- * data (how neighbourhoods were built, floods in the news, bad-air days, wind near the ground, the drift between government and private schools). Registers itself on load, after
+ * data (how neighbourhoods were built, floods in the news, bad-air days, wind near the ground, the drift between government and private schools, hot summer nights). Registers itself on load, after
  * urban-lenses.js.
  */
 const UrbanLensesCommons = (() => {
@@ -225,6 +225,53 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Hot nights. ECOSTRESS 70 m surface temperature on cloud-free summer nights: blocks whose streets and roofs hold the
+    // day's heat when bodies need to cool. Ranked against the city's own median block; elderly and young children
+    // in the hottest-night blocks are the people most at risk.
+    const HOT_NIGHT_C = 1;
+
+    function hotnights(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, an = c['night_heat.night_anomaly_c'], lst = c['night_heat.night_lst_c'];
+        const pop = c['population.population'], old = c['demographics.elderly_60plus'], kid = c['demographics.under5'];
+        const day = c['surface_heat.lst_day_c'], tree = c['vegetation.tree_canopy_pct'];
+        if (!lst || !lst.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr).filter(i => _fin(lst[i]));
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        let acc = 0, med = NaN;               // the night the median resident sleeps through
+        for (const i of idx.slice().sort((a, b) => lst[a] - lst[b])) { acc += v(pop, i); if (acc >= all / 2) { med = lst[i]; break; } }
+        const ex = Float64Array.from({ length: n }, (_, i) => (_fin(lst[i]) ? lst[i] - med : NaN));
+        const hot = idx.filter(i => ex[i] >= HOT_NIGHT_C), hotPop = hot.reduce((s, i) => s + v(pop, i), 0);
+        const sorted = idx.map(i => lst[i]).sort((a, b) => a - b);
+        const spread = sorted[Math.floor(0.95 * (sorted.length - 1))] - sorted[Math.floor(0.05 * (sorted.length - 1))];
+        const uhi = an ? idx.reduce((s, i) => s + v(pop, i) * v(an, i), 0) / all : NaN;
+        const stats = [
+            { label: 'Summer night surface temperature under the median resident', value: `${_round(med, 1)} °C` },
+            { label: 'Spread across homes, coolest to hottest twentieth of blocks', value: `${_round(spread, 1)} °C` },
+        ];
+        if (_fin(uhi)) stats.push({ label: 'Average resident\'s night above the median block of the wider region (heat island)', value: `${uhi >= 0 ? '+' : ''}${_round(uhi, 1)} °C` });
+        stats.push({ label: `Residents ${HOT_NIGHT_C} °C or more above the median resident's night`, value: `${_people(hotPop)} (${_round(100 * hotPop / all, 1)}%)` });
+        if (old) stats.push({ label: '…of them aged 60 and over', value: _people(_sumOver(old, hot, i => _fin(old[i]))) });
+        if (kid) stats.push({ label: '…of them under 5', value: _people(_sumOver(kid, hot, i => _fin(kid[i]))) });
+        if (tree && hot.length) {
+            const tm = set => { const w = set.reduce((s, i) => s + v(pop, i), 0); return w ? set.reduce((s, i) => s + v(pop, i) * v(tree, i), 0) / w : 0; };
+            stats.push({ label: 'Tree canopy, hottest-night blocks vs the rest', value: `${_round(tm(hot), 1)}% vs ${_round(tm(idx.filter(i => ex[i] < HOT_NIGHT_C)), 1)}%` });
+        }
+        const score = Float64Array.from({ length: n }, (_, i) => (_fin(ex[i]) ? (v(pop, i) + 3 * v(old, i)) * Math.max(ex[i], 0) : 0));
+        spaced(g, idx.filter(i => ex[i] > 0), score, 5).forEach((i, k) => stats.push({ label: `Hot night ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(lst[i], 1)} °C at night (+${_round(ex[i], 1)} °C)${day && _fin(day[i]) ? `, ${_round(day[i], 1)} °C by day` : ''}${tree ? `; tree canopy ${_round(v(tree, i), 1)}%` : ''}; ${_people(v(pop, i))} residents${old ? `, ${_people(v(old, i))} aged 60+` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = ex[i];
+        const hotOld = old ? _sumOver(old, hot, i => _fin(old[i])) : 0;
+        return {
+            columns: { night_excess_c: out }, idx, weightKey: 'night_excess_c', noHotspots: true,
+            metric: { label: `Residents ${HOT_NIGHT_C} °C or more above the median resident's summer night`, value: _round(100 * hotPop / all, 1), unit: '%', higherIs: 'worse' },
+            headline: `On cloud-free summer nights the ground under the median resident stays at ${_round(med, 1)} °C${!_fin(uhi) ? '' : Math.abs(uhi) < 0.1 ? `, about the same as the wider region's median block` : `, ${_round(Math.abs(uhi), 1)} °C ${uhi >= 0 ? 'warmer' : 'cooler'} than the wider region's median block`}, with ${_round(spread, 1)} °C between the coolest and hottest homes; ${_people(hotPop)} residents (${_round(100 * hotPop / all, 1)}%) live where streets and roofs stay ${HOT_NIGHT_C} °C or more hotter still${hotOld ? `, ${_people(hotOld)} of them aged 60 and over` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -256,8 +303,14 @@ const UrbanLensesCommons = (() => {
             needs: ['schools_udise.govt_share_pct', 'schools_udise.govt_share_change_pp', 'demographics.school_age', 'population.population'],
             method: `UDISE+ 2021-22 and 2024-25 district school files on data.opencity.in. Pupils in government schools (education department, local bodies, other departments, central schools) and in private unaided schools are summed by PIN code; aided schools are left out of both. Each block takes its PIN code's share of pupils in government schools and its change in percentage points; PIN codes with under 200 such pupils in a year are left out. Counts are not compared because from 2022-23 UDISE+ verified individual pupils, which removed duplicate and ghost enrolment; 2021-22 also came right after the pandemic, when many families had moved to government schools, so part of a fall is that move unwinding. ${DRIFT_PP} points or more counts as a real shift. Delhi, Mumbai, Bengaluru, Pune, Chennai, Hyderabad and Kolkata only.`,
             refs: 'UDISE+ 2021-22 and 2024-25 (Ministry of Education) via data.opencity.in; UDISE+ 2022-23 report (student-level data collection)' },
+        { id: 'hotnights', equity: true, title: 'Hot nights', icon: '🌙',
+            question: 'Where do streets and roofs stay hot through summer nights, when bodies need to cool?',
+            field: { key: 'night_excess_c', label: "Summer night surface temperature above the median resident's", unit: '°C', higherIs: 'worse', ramp: 'diverging', domain: [-3, 3] },
+            needs: ['night_heat.night_lst_c', 'night_heat.night_anomaly_c', 'night_heat.night_scenes', 'surface_heat.lst_day_c', 'vegetation.tree_canopy_pct', 'demographics.elderly_60plus', 'demographics.under5', 'population.population'],
+            method: `NASA ECOSTRESS (thermal radiometer on the International Space Station, public domain): land surface temperature at 70 m. The space station's drifting orbit passes at different hours, so night scenes exist, which the fixed-time Landsat and MODIS mornings and afternoons miss. Each block takes the median of cloud-free, non-water pixels from April to June nights (21:30 to 05:30 IST) in 2023 to 2025. The map shows each block against the night the median resident sleeps through, and hot-night blocks are ${HOT_NIGHT_C} °C or more above it; the heat island figure compares homes with the median block of the whole city region, farmland included. residents, the elderly and children under 5 are WorldPop. Picks are blocks ${SPACING_KM} km apart ranked by (residents + 3 × residents aged 60+) × heat above the median resident's night. Surface, not air, temperature, and some blocks rest on a handful of scenes (see night_scenes); a few overpasses near dawn run cooler than ones near midnight.`,
+            refs: 'Hook and Hulley, ECOSTRESS L2T LSTE V2 (NASA LP DAAC); Laaidi et al. 2012, The impact of heat islands on mortality in Paris during the August 2003 heat wave (Environmental Health Perspectives); NDMA Heat Action Plan guidelines (2019)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights });
     return { ENTRIES };
 })();
