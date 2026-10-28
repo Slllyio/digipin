@@ -12,10 +12,10 @@ Per L7 block (dataset ``schools_udise``), the values of the block's PIN code (fr
     private_pct        share run as private unaided schools
 
 UDISE+ school-level files are published per district on data.opencity.in (public domain); schools carry a PIN code
-but no coordinates, so the PIN code is the finest join. Covered: Delhi, Bengaluru Urban, Chennai, Hyderabad and
-Kolkata districts. A PIN code spans several square kilometres, so read these as the neighbourhood's school picture.
+but no coordinates, so the PIN code is the finest join. Covered: Delhi, Mumbai, Bengaluru Urban, Pune, Chennai,
+Hyderabad and Kolkata districts. A PIN code spans several square kilometres, so read these as the neighbourhood's school picture.
 
-    python -m pipeline.realestate.udise --region delhi,bengaluru,chennai,hyderabad,kolkata
+    python -m pipeline.realestate.udise --region delhi,mumbai,bengaluru,pune,chennai,hyderabad,kolkata
 """
 from __future__ import annotations
 
@@ -35,8 +35,11 @@ PACKAGES = {
     "chennai": ["chennai-udise-2024-25"],
     "hyderabad": ["hyderabad-udise-2024-25"],
     "kolkata": ["kolkata-udise-2024-25"],
+    "mumbai": ["mumbai-udise-2024-25"],
+    "pune": ["pune-udise-2024-25"],
 }
-FALLBACK = {"bengaluru-urban-udise-2024-25": "bengaluru-urban-udise-2023-24"}   # its South 'Profile Part 1' links Part 2
+# Bengaluru South and Mumbai Suburban 'Profile Part 1' resources link Part 2; take Part 1 from the year before
+FALLBACK = {"bengaluru-urban-udise-2024-25": "bengaluru-urban-udise-2023-24", "mumbai-udise-2024-25": "mumbai-udise-2023-24"}
 # UDISE+ management codes run by government: education dept, tribal/social welfare, local body, other govt, central govt
 GOVT = {"1", "2", "3", "6", "89", "90", "91", "92", "93", "94", "95", "96", "101"}
 PRIVATE = {"5"}
@@ -86,7 +89,7 @@ def by_pin(prof, fac, enr, tch):
         pin = (r.get("pincode") or "").strip()
         if len(pin) != 6 or not pin.isdigit():
             continue
-        a = acc.setdefault(pin, {"n": 0, "govt": 0, "priv": 0, "gp": 0.0, "gt": 0.0, "rooms": 0.0, "repair": 0.0, "girls": 0, "girls_n": 0, "lib": 0})
+        a = acc.setdefault(pin, {"n": 0, "govt": 0, "priv": 0, "gp": 0.0, "gt": 0.0, "rooms": 0.0, "repair": 0.0, "girls": 0, "girls_n": 0, "lib": 0, "lib_n": 0})
         a["n"] += 1
         m = (r.get("managment") or "").strip()
         a["priv"] += m in PRIVATE
@@ -98,11 +101,14 @@ def by_pin(prof, fac, enr, tch):
         a["gt"] += teachers.get(sc, 0)
         f = facs.get(sc)
         if f:
-            a["rooms"] += _n(f.get("total_class_rooms"))
-            a["repair"] += _n(f.get("classrooms_needs_major_repair"))
-            a["girls_n"] += 1
-            a["girls"] += _n(f.get("total_girls_func_toilet")) > 0
+            major = _n(f.get("classrooms_needs_major_repair"))      # total_class_rooms is often 0; sum the conditions
+            a["rooms"] += _n(f.get("classrooms_in_good_condition")) + _n(f.get("classrooms_needs_minor_repair")) + major
+            a["repair"] += major
+            a["lib_n"] += 1
             a["lib"] += f.get("library_availability") == "1"
+            if r.get("school_type") != "1":                       # boys-only schools need no girls' toilet
+                a["girls_n"] += 1
+                a["girls"] += _n(f.get("total_girls_func_toilet")) > 0
     out = {}
     for pin, a in acc.items():
         if a["n"] < MIN_SCHOOLS:
@@ -116,7 +122,8 @@ def by_pin(prof, fac, enr, tch):
                 row["repair_pct"] = round(100 * a["repair"] / a["rooms"], 1)
             if a["girls_n"]:
                 row["girls_toilet_pct"] = round(100 * a["girls"] / a["girls_n"])
-                row["library_pct"] = round(100 * a["lib"] / a["girls_n"])
+            if a["lib_n"]:
+                row["library_pct"] = round(100 * a["lib"] / a["lib_n"])
         out[pin] = row
     return out
 
@@ -148,11 +155,11 @@ def cell_dataset(region, rows):
     specs = [
         FieldSpec("schools", "UDISE+ schools in the PIN code", agg="max", unit="schools", ramp="blues", higher_is="better"),
         FieldSpec("govt_pct", "Government schools (share)", agg="mean", unit="%", domain=[0, 100], ramp="blues"),
-        FieldSpec("private_pct", "Private unaided schools (share)", agg="mean", unit="%", domain=[0, 100], ramp="purples"),
+        FieldSpec("private_pct", "Private unaided schools (share)", agg="mean", unit="%", domain=[0, 100], ramp="viridis"),
         FieldSpec("govt_pupils", "Pupils in government schools in the PIN code", agg="max", unit="pupils", ramp="blues"),
         FieldSpec("pupils_per_teacher", "Pupils per teacher, government schools", agg="mean", unit="pupils", ramp="reds", higher_is="worse"),
         FieldSpec("repair_pct", "Government classrooms needing major repair", agg="mean", unit="%", domain=[0, 50], ramp="reds", higher_is="worse"),
-        FieldSpec("girls_toilet_pct", "Government schools with a working girls' toilet", agg="mean", unit="%", domain=[0, 100], ramp="greens", higher_is="better"),
+        FieldSpec("girls_toilet_pct", "Government girls' and co-ed schools with a working girls' toilet", agg="mean", unit="%", domain=[0, 100], ramp="greens", higher_is="better"),
         FieldSpec("library_pct", "Government schools with a library", agg="mean", unit="%", domain=[0, 100], ramp="greens", higher_is="better"),
     ]
     spec = DatasetSpec(
@@ -160,8 +167,8 @@ def cell_dataset(region, rows):
         description="Every school in UDISE+ 2024-25 (the Ministry of Education's school census) summed by PIN code and given to each "
                     "block in that PIN code: school count, government and private shares, pupils per teacher, classrooms needing "
                     "major repair, working girls' toilets and libraries in government schools. School files come per district from "
-                    "data.opencity.in; schools have PIN codes but no coordinates, so values are PIN-code wide. Delhi, Bengaluru Urban, "
-                    "Chennai, Hyderabad and Kolkata districts only.",
+                    "data.opencity.in; schools have PIN codes but no coordinates, so values are PIN-code wide. Delhi, Mumbai, Bengaluru "
+                    "Urban, Pune, Chennai, Hyderabad and Kolkata districts only.",
         source="pipeline/realestate/udise.py (UDISE+ via OpenCity; PIN codes from the neighbourhoods dataset)",
         license="Public domain (UDISE+, Ministry of Education, via data.opencity.in)", default_field="pupils_per_teacher", extrude=False)
     clean = ({"digipin": c, **r} for c, r in rows.items())

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T11:09:05Z",
+  "generated": "2026-10-28T11:39:46Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -28514,6 +28514,274 @@
             "north": 18.64111328125
           },
           "json": "roofs/pune/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "schools_udise",
+      "title": "Schools by PIN code (UDISE+ 2024-25)",
+      "description": "Every school in UDISE+ 2024-25 (the Ministry of Education's school census) summed by PIN code and given to each block in that PIN code: school count, government and private shares, pupils per teacher, classrooms needing major repair, working girls' toilets and libraries in government schools. School files come per district from data.opencity.in; schools have PIN codes but no coordinates, so values are PIN-code wide. Delhi, Mumbai, Bengaluru Urban, Pune, Chennai, Hyderabad and Kolkata districts only.",
+      "source": "pipeline/realestate/udise.py (UDISE+ via OpenCity; PIN codes from the neighbourhoods dataset)",
+      "license": "Public domain (UDISE+, Ministry of Education, via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "schools",
+          "label": "UDISE+ schools in the PIN code",
+          "type": "number",
+          "agg": "max",
+          "unit": "schools",
+          "domain": [
+            3,
+            316
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "govt_pct",
+          "label": "Government schools (share)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "private_pct",
+          "label": "Private unaided schools (share)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "govt_pupils",
+          "label": "Pupils in government schools in the PIN code",
+          "type": "number",
+          "agg": "max",
+          "unit": "pupils",
+          "domain": [
+            10,
+            117135
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "pupils_per_teacher",
+          "label": "Pupils per teacher, government schools",
+          "type": "number",
+          "agg": "mean",
+          "unit": "pupils",
+          "domain": [
+            5.9,
+            234.3
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "repair_pct",
+          "label": "Government classrooms needing major repair",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "girls_toilet_pct",
+          "label": "Government girls' and co-ed schools with a working girls' toilet",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "library_pct",
+          "label": "Government schools with a library",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "pupils_per_teacher",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 19635,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "schools_udise/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "chennai",
+          "cells": 7407,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.31787109375,
+            "north": 13.180908203125
+          },
+          "json": "schools_udise/chennai.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 24851,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "schools_udise/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "hyderabad",
+          "cells": 7291,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.549072265625
+          },
+          "json": "schools_udise/hyderabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 3729,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.646728515625
+          },
+          "json": "schools_udise/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 8199,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.98779296875,
+            "north": 19.267333984375
+          },
+          "json": "schools_udise/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10061,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "schools_udise/pune/{prefix}.json.gz",
           "parquet": null,
           "shards": {
             "prefixLen": 4,

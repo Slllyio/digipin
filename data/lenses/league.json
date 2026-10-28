@@ -1584,6 +1584,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolstrain": {
+     "label": "School-age children where government schools exceed 35 pupils per teacher",
+     "value": 30.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 32.3,
@@ -3282,6 +3288,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolstrain": {
+     "label": "School-age children where government schools exceed 35 pupils per teacher",
+     "value": 6.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 20.2,
@@ -4131,6 +4143,12 @@
     "districthealth": {
      "label": "Children under 5 stunted (resident-weighted district average)",
      "value": 28.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "schoolstrain": {
+     "label": "School-age children where government schools exceed 35 pupils per teacher",
+     "value": 0,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5660,6 +5678,12 @@
     },
     "floodagain": {
      "label": "Residents in blocks flooded 2+ times",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "schoolstrain": {
+     "label": "School-age children where government schools exceed 35 pupils per teacher",
      "value": 0,
      "unit": "%",
      "higherIs": "worse"
@@ -8160,6 +8184,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolstrain": {
+     "label": "School-age children where government schools exceed 35 pupils per teacher",
+     "value": 2.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 39.2,
@@ -9840,6 +9870,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolstrain": {
+     "label": "School-age children where government schools exceed 35 pupils per teacher",
+     "value": 60,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "views": {
      "label": "Tower blocks with a water or big-park view",
      "value": 40.2,
@@ -10677,6 +10713,12 @@
     "districthealth": {
      "label": "Children under 5 stunted (resident-weighted district average)",
      "value": 30.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "schoolstrain": {
+     "label": "School-age children where government schools exceed 35 pupils per teacher",
+     "value": 41,
      "unit": "%",
      "higherIs": "worse"
     },

@@ -1241,6 +1241,55 @@ const UrbanLensesRealEstate = (() => {
         };
     }
 
+    // Government school strain. UDISE+ school census by PIN code: pupils per government teacher against the RTE norm,
+    // classrooms needing major repair and girls' toilets, weighted by the school-age children living in each block.
+    const PTR_MAX = 35, REPAIR_PCT = 10, TOILET_PCT = 90;
+
+    function schoolstrain(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], ptr = c['schools_udise.pupils_per_teacher'];
+        const rep = c['schools_udise.repair_pct'], toil = c['schools_udise.girls_toilet_pct'], gov = c['schools_udise.govt_pct'];
+        const sch = c['schools_udise.schools'], gp = c['schools_udise.govt_pupils'], age = c['demographics.school_age'];
+        if (!pop || !ptr) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : NaN);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(pop[i]) && pop[i] > 0 && _fin(ptr[i])) idx.push(i);
+        if (idx.length < 5) return null;
+        const w = age && idx.some(i => v(age, i) > 0) ? age : pop, who = w === age ? 'school-age children' : 'residents';
+        const all = _sumOver(w, idx, () => true), pct = p => _round(100 * p / (all || 1), 1);
+        const over = _sumOver(w, idx, i => ptr[i] > PTR_MAX), worn = rep ? _sumOver(w, idx, i => v(rep, i) >= REPAIR_PCT) : 0;
+        const noToilet = toil ? _sumOver(w, idx, i => v(toil, i) < TOILET_PCT) : 0;
+        const groups = new Map();       // one group per PIN code: identical school values
+        for (const i of idx) {
+            const k = [sch, ptr, gp, rep].map(a => v(a, i)).join('|');
+            const gr = groups.get(k) || { w: 0, rep: i, best: 0 };
+            gr.w += _fin(w[i]) ? w[i] : 0;
+            if (pop[i] > gr.best) { gr.best = pop[i]; gr.rep = i; }
+            groups.set(k, gr);
+        }
+        const mean = idx.reduce((s, i) => s + (_fin(w[i]) ? w[i] : 0) * ptr[i], 0) / (all || 1);
+        const stats = [
+            { label: 'PIN-code school areas covering the city', value: String(groups.size) },
+            { label: `${who[0].toUpperCase()}${who.slice(1)} where government schools have more than ${PTR_MAX} pupils per teacher`, value: `${_people(over)} (${pct(over)}%)` },
+        ];
+        if (rep) stats.push({ label: `…where ${REPAIR_PCT}%+ of government classrooms need major repair`, value: `${_people(worn)} (${pct(worn)}%)` });
+        if (toil) stats.push({ label: `…where under ${TOILET_PCT}% of government girls' and co-ed schools have a working girls' toilet`, value: `${_people(noToilet)} (${pct(noToilet)}%)` });
+        if (gov) stats.push({ label: 'Government share of schools (median PIN code)', value: `${_round(idx.map(i => gov[i]).filter(_fin).sort((a, b) => a - b)[idx.length >> 1] || 0)}%` });
+        [...groups.values()].filter(gr => ptr[gr.rep] > PTR_MAX || v(rep, gr.rep) >= REPAIR_PCT)
+            .sort((a, b) => b.w * ptr[b.rep] - a.w * ptr[a.rep]).slice(0, 8).forEach((gr, k) => {
+                const i = gr.rep;
+                stats.push({ label: `School area ${k + 1}, around ${g.codes[i]}`,
+                    value: `${_round(ptr[i], 1)} pupils per government teacher; ${_fin(v(sch, i)) ? `${v(sch, i)} schools, ${_round(v(gov, i))}% government; ` : ''}${_fin(v(rep, i)) ? `${_round(v(rep, i), 1)}% classrooms need major repair; ` : ''}${_people(gr.w)} ${who}` });
+            });
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = ptr[i];
+        return {
+            columns: { pupils_per_teacher: out }, idx, weightKey: 'pupils_per_teacher', noHotspots: true,
+            metric: { label: `${who[0].toUpperCase()}${who.slice(1)} where government schools exceed ${PTR_MAX} pupils per teacher`, value: pct(over), unit: '%', higherIs: 'worse' },
+            headline: `${_people(over)} ${who} (${pct(over)}%) live in PIN codes whose government schools have more than ${PTR_MAX} pupils per teacher (the RTE norm is 30 in primary and 35 in upper primary); the city average they face is ${_round(mean, 1)}${rep ? `, and ${_people(worn)} live where ${REPAIR_PCT}% or more of government classrooms need major repair` : ''}. Figures are UDISE+ 2024-25 summed over each PIN code, so they describe the neighbourhood's government schools, not the nearest one.`,
+            stats,
+        };
+    }
+
     function views(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], h = c['building_stock.height_2023_m'];
         const wat = c['water.permanent_water_pct'], park = c['parks.park_pct'], big = c['parks.big_park'], vi = c['land_value.value_index'];
@@ -1421,6 +1470,12 @@ const UrbanLensesRealEstate = (() => {
             needs: ['flood_reports.flood_events', 'flood_reports.flood_spots', 'flood_reports.flooded_2015_pct', 'flood_reports.flooded_2005_pct', 'land_value.value_index', 'demographics.under5', 'population.population'],
             method: `Public-domain flood maps on data.opencity.in: Greater Chennai Corporation hotspots for 2005, 2015 and 2020 (Cyclone Nivar), 2015 stagnation and district hotspots, the mapped 2015 inundation zone and 2005 extent, crowd-sourced flooded streets of December 2015, Hyderabad's inundation points, and Bengaluru's flood-vulnerable, flood-prone and BBMP low-lying locations. A flood reaches a block when a reported spot lies within 300 m or, for 2005 and 2015, at least half the block lies inside the mapped extent; each event counts once, and the undated lists count as one 'recurring' event. Only Chennai, Bengaluru and Hyderabad have such maps there.`,
             refs: 'OpenCity (data.opencity.in) flood maps from Greater Chennai Corporation, GHMC and BBMP; Chennai floods 2005, 2015 and 2020 (Cyclone Nivar)' },
+        { id: 'schoolstrain', equity: true, title: 'Government school strain', icon: '🏫',
+            question: 'Where are government schools overcrowded, run-down or missing girls\' toilets?',
+            field: { key: 'pupils_per_teacher', label: 'Pupils per teacher, government schools in the PIN code', unit: 'pupils', higherIs: 'worse', ramp: 'reds', domain: [15, 50] },
+            needs: ['schools_udise.pupils_per_teacher', 'schools_udise.repair_pct', 'schools_udise.girls_toilet_pct', 'schools_udise.govt_pct', 'schools_udise.schools', 'schools_udise.govt_pupils', 'demographics.school_age', 'population.population'],
+            method: `UDISE+ 2024-25, the Ministry of Education's census of every school, from the district files on data.opencity.in. Schools carry a PIN code but no location, so each PIN code's schools are summed and every block takes its PIN code (the neighbourhoods dataset votes it from Overture addresses). Government means run by the education department, a local body or another government department, including central schools. Pupils per teacher is government enrolment over government teachers; repair is classrooms needing major repair over all classrooms; girls' toilets count girls' and co-ed government schools with at least one working girls' toilet. Thresholds: ${PTR_MAX} pupils per teacher (RTE Act schedule), ${REPAIR_PCT}% classrooms in major repair, under ${TOILET_PCT}% with toilets. Delhi, Mumbai, Bengaluru, Pune, Chennai, Hyderabad and Kolkata only.`,
+            refs: 'UDISE+ 2024-25 (Ministry of Education) via data.opencity.in; Right of Children to Free and Compulsory Education Act 2009, schedule (pupil-teacher ratios); Swachh Vidyalaya' },
         { id: 'views', equity: false, title: 'Rooms with a view', icon: '🌅',
             question: 'Which tall blocks look out over the sea, a lake or a big park?',
             field: { key: 'view_kind', label: 'Tower view: park (1), water (2), both (3)', unit: '0-3', higherIs: null, ramp: 'blues', domain: [0, 3] },
@@ -1429,7 +1484,7 @@ const UrbanLensesRealEstate = (() => {
             refs: 'Google Open Buildings 2.5D Temporal; JRC Global Surface Water; OpenStreetMap parks; Benson et al. 1998 and Jim & Chen 2009 (hedonic value of views)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, views, districthealth, floodagain }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
+    UrbanLenses.register(ENTRIES, { landvalue, buildhot, vacant, rentdemand, affordability, undervalued, redevelop, nextgrowth, housinggap, floodloss, encroach, feasible, metroboost, climate2050, streetheat, flood2050, solarhome, waterrisk, climategrade, riskygrowth, vitality, views, districthealth, floodagain, schoolstrain }, { landRate: rate, RE_BASE_FAR: BASE_FAR, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade }, 'tod');
     return { ENTRIES, rate, spaced, RATE_KNOTS, damage, ead, similar, similarText, similarEverywhere, similarEverywhereText, feasibility, blockPrice, PRICE_SQFT, reScorecard, reScorecardText, farAsk, farText, climateGrade: cgGrade };
 })();
 
