@@ -818,12 +818,32 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 178,
-    "stops_with_heat_data": 178,
-    "pct_hot_bare": 79.8,
-    "pct_riders_at_hot_bare": 81.9,
-    "median_stop_lst_c": 44.1,
+    "stops": 2037,
+    "stops_with_heat_data": 2037,
+    "pct_hot_bare": 82.7,
+    "pct_riders_at_hot_bare": 83.9,
+    "median_stop_lst_c": 44.0,
     "top_stops": [
+      {
+        "digipin": "3KLKC2P",
+        "name": "",
+        "lon": 72.55916,
+        "lat": 23.01459,
+        "residents_5min": 58177,
+        "lst_c": 42.7,
+        "canopy_pct": 8.4,
+        "priority": 410334
+      },
+      {
+        "digipin": "3KLKC59",
+        "name": "",
+        "lon": 72.55737,
+        "lat": 23.01347,
+        "residents_5min": 57409,
+        "lst_c": 42.4,
+        "canopy_pct": 7.8,
+        "priority": 391690
+      },
       {
         "digipin": "3KLK9T5",
         "name": "Rambaug Post office",
@@ -835,10 +855,30 @@
         "priority": 376673
       },
       {
+        "digipin": "3KLK9T5",
+        "name": "",
+        "lon": 72.60164,
+        "lat": 22.99863,
+        "residents_5min": 45104,
+        "lst_c": 43.8,
+        "canopy_pct": 5.1,
+        "priority": 376673
+      },
+      {
         "digipin": "3KLK9T4",
         "name": "Rambaug",
         "lon": 72.60067,
         "lat": 22.99992,
+        "residents_5min": 40722,
+        "lst_c": 44.2,
+        "canopy_pct": 1.3,
+        "priority": 369772
+      },
+      {
+        "digipin": "3KLK9T4",
+        "name": "",
+        "lon": 72.60024,
+        "lat": 23.00048,
         "residents_5min": 40722,
         "lst_c": 44.2,
         "canopy_pct": 1.3,
@@ -865,64 +905,24 @@
         "priority": 360208
       },
       {
-        "digipin": "3KLKCM3",
-        "name": "Vasna Bus Station",
-        "lon": 72.54805,
-        "lat": 23.00177,
-        "residents_5min": 37852,
-        "lst_c": 44.6,
-        "canopy_pct": 5.9,
-        "priority": 341940
-      },
-      {
-        "digipin": "3KLK256",
+        "digipin": "3KLKC2T",
         "name": "",
-        "lon": 72.5953,
-        "lat": 22.97396,
-        "residents_5min": 23375,
-        "lst_c": 49.4,
-        "canopy_pct": 0.8,
-        "priority": 333907
+        "lon": 72.55955,
+        "lat": 23.01404,
+        "residents_5min": 52904,
+        "lst_c": 42.2,
+        "canopy_pct": 7.5,
+        "priority": 352341
       },
       {
-        "digipin": "3KLK8LL",
-        "name": "Maninagar",
-        "lon": 72.60643,
-        "lat": 22.99724,
-        "residents_5min": 42051,
-        "lst_c": 43.4,
-        "canopy_pct": 6.2,
-        "priority": 331328
-      },
-      {
-        "digipin": "3KLK288",
-        "name": "Jawahar Chowk",
-        "lon": 72.6051,
-        "lat": 22.99514,
-        "residents_5min": 40511,
-        "lst_c": 43.5,
-        "canopy_pct": 3.8,
-        "priority": 331258
-      },
-      {
-        "digipin": "3KLK9M7",
-        "name": "Amarkunj /Swaminarayan College",
-        "lon": 72.58701,
-        "lat": 23.00139,
-        "residents_5min": 29534,
-        "lst_c": 46.2,
-        "canopy_pct": 3.2,
-        "priority": 320196
-      },
-      {
-        "digipin": "3KLKCFP",
-        "name": "Nehru Nagar",
-        "lon": 72.54169,
-        "lat": 23.02253,
-        "residents_5min": 45811,
-        "lst_c": 42.5,
-        "canopy_pct": 7.3,
-        "priority": 318501
+        "digipin": "3KLKC58",
+        "name": "",
+        "lon": 72.56098,
+        "lat": 23.01272,
+        "residents_5min": 51754,
+        "lst_c": 42.4,
+        "canopy_pct": 8.7,
+        "priority": 349660
       }
     ],
     "thresholds": {
@@ -932,7 +932,8 @@
     },
     "sources": {
       "osm": 109,
-      "overture": 69
+      "overture": 69,
+      "gtfs": 1859
     }
   },
   "parking": {

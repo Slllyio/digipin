@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T22:57:34Z",
+  "generated": "2026-10-28T23:04:30Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -3964,7 +3964,7 @@
       "regions": [
         {
           "name": "ahmedabad",
-          "cells": 1669,
+          "cells": 1673,
           "bbox": {
             "west": 72.480224609375,
             "south": 22.949951171875,
@@ -4000,12 +4000,12 @@
         },
         {
           "name": "chennai",
-          "cells": 199,
+          "cells": 1618,
           "bbox": {
-            "west": 80.131103515625,
+            "west": 80.12890625,
             "south": 12.899658203125,
-            "east": 80.306884765625,
-            "north": 13.17431640625
+            "east": 80.315673828125,
+            "north": 13.180908203125
           },
           "json": "bus_stop_heat/chennai.json",
           "parquet": null
@@ -4036,19 +4036,19 @@
         },
         {
           "name": "hyderabad",
-          "cells": 158,
+          "cells": 1566,
           "bbox": {
-            "west": 78.30078125,
-            "south": 17.307373046875,
+            "west": 78.298583984375,
+            "south": 17.298583984375,
             "east": 78.599609375,
-            "north": 17.546875
+            "north": 17.55126953125
           },
           "json": "bus_stop_heat/hyderabad.json",
           "parquet": null
         },
         {
           "name": "indore_pilot",
-          "cells": 31,
+          "cells": 86,
           "bbox": {
             "west": 75.604736328125,
             "south": 22.532470703125,
@@ -4072,9 +4072,9 @@
         },
         {
           "name": "kolkata",
-          "cells": 181,
+          "cells": 427,
           "bbox": {
-            "west": 88.28076171875,
+            "west": 88.278564453125,
             "south": 22.448974609375,
             "east": 88.449951171875,
             "north": 22.64892578125
@@ -4123,7 +4123,7 @@
     {
       "id": "bus_stops_official",
       "title": "Bus stops (operator lists)",
-      "description": "Bus stops from the operators' own lists on data.opencity.in, counted per block (duplicate points dropped). Lenses use the larger of this and OpenStreetMap's count per block. Sources: mumbai: BEST stops and depots; pune: PMPML bus stops; chennai: GCC bus shelters.",
+      "description": "Bus stops from the operators' own lists on data.opencity.in, counted per block (duplicate points dropped). Lenses use the larger of this and OpenStreetMap's count per block. Sources: mumbai: BEST stops and depots; pune: PMPML bus stops; hyderabad: Greater Hyderabad bus stops (TGSRTC); chennai: GCC bus shelters.",
       "source": "pipeline/traffic/official_stops.py (OpenCity)",
       "license": "Public domain (BEST, PMPML, GCC via data.opencity.in)",
       "group": "Traffic & mobility",
@@ -4160,6 +4160,18 @@
             "north": 13.229248046875
           },
           "json": "bus_stops_official/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 3147,
+          "bbox": {
+            "west": 77.43505859375,
+            "south": 16.098876953125,
+            "east": 79.955322265625,
+            "north": 18.599365234375
+          },
+          "json": "bus_stops_official/hyderabad.json",
           "parquet": null
         },
         {

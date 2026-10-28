@@ -128,8 +128,32 @@ def overture(region, release=OVERTURE_RELEASE):
     return [(x, y, "stop", nm or "", "overture") for nm, x, y in rows]
 
 
+def _kept(region):
+    """{src: [(lng, lat, 'stop', name, src)]} from the stops file already on disk."""
+    p = VECTORS / f"bus_stops_{region}.geojson"
+    out = {}
+    if p.exists():
+        for f in json.loads(p.read_text())["features"]:
+            src = f["properties"].get("src", "")
+            out.setdefault(src, []).append((*f["geometry"]["coordinates"][:2], "stop", f["properties"].get("name", ""), src))
+    return out
+
+
 def fetch(region, log=print):
-    pts = dedupe(osm(region, log) + gtfs(region, log) + overture(region), within=MERGE_M)
+    # A source that comes back empty (Overpass or a GTFS host unreachable from the runner) keeps the stops it gave
+    # last time, so a refresh never silently drops thousands of stops.
+    got = {"osm": osm(region, log), "gtfs": gtfs(region, log)}
+    try:
+        got["overture"] = overture(region)
+    except Exception as ex:
+        log(f"{region}: Overture stops skipped ({type(ex).__name__})")
+        got["overture"] = []
+    kept = _kept(region)
+    for src, pts in got.items():
+        if not pts and kept.get(src):
+            log(f"{region}: no {src} stops fetched; keeping {len(kept[src])} from the last bake")
+            got[src] = kept[src]
+    pts = dedupe(got["osm"] + got["gtfs"] + got["overture"], within=MERGE_M)
     gj = {"type": "FeatureCollection",
           "source": f"OpenStreetMap highway=bus_stop; open GTFS stops; Overture Maps places {OVERTURE_RELEASE}",
           "features": [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [round(x, 6), round(y, 6)]},

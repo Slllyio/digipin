@@ -7,8 +7,9 @@ of this count and OpenStreetMap's, so transit access, bus gaps and feeder lenses
     mumbai   BEST bus stops and depots map
     pune     PMPML bus stops (GTFS stop list)
     chennai  GCC bus shelters (shelters, so a lower bound on stops)
+    hyderabad  Greater Hyderabad bus stops map (TGSRTC)
 
-    python -m pipeline.traffic.official_stops --region mumbai,pune,chennai
+    python -m pipeline.traffic.official_stops --region mumbai,pune,chennai,hyderabad
 """
 from __future__ import annotations
 
@@ -22,6 +23,7 @@ OPENCITY = "https://data.opencity.in/dataset/"
 SOURCES = {
     "mumbai": ("c2a2de1e-a017-4fb9-9e46-de6fbfbb393b/resource/514eadc2-7fa8-4749-87e5-ebe486487f09/download/b34111da-5b73-45e9-82d0-78da9d153b1c.kml", "BEST stops and depots"),
     "pune": ("30dd0c51-61d4-4085-99ab-9a8aec97b329/resource/2c43a9a6-9a58-48dd-8891-e5f3dbe9120c/download/46c96db4-af62-4b84-a479-5a0279a8f44a.kml", "PMPML bus stops"),
+    "hyderabad": ("88e2d145-7ec6-4666-88dd-6cf18b18312e/resource/a34d31f8-0dd1-4bcf-90a8-21b634fddae6/download/hyd_bus_stops.kml", "Greater Hyderabad bus stops (TGSRTC)"),
     "chennai": ("fc4c6937-2927-4c9c-939b-ac77af811aa7/resource/b1710404-a6e5-4311-ba38-3805a00e36ce/download/6e6ba0e8-8ddd-44b4-84b3-2d672559bf2f.kml", "GCC bus shelters"),
 }
 

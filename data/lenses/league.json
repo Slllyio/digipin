@@ -164,7 +164,7 @@
     },
     "busheat": {
      "label": "Bus stops hot and unshaded",
-     "value": 83,
+     "value": 82.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3164,7 +3164,7 @@
     },
     "busheat": {
      "label": "Bus stops hot and unshaded",
-     "value": 74.9,
+     "value": 71.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3176,7 +3176,7 @@
     },
     "feeder": {
      "label": "Feeder-range residents with no bus stop nearby",
-     "value": 12.8,
+     "value": 12.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5846,7 +5846,7 @@
     },
     "busheat": {
      "label": "Bus stops hot and unshaded",
-     "value": 22.9,
+     "value": 24.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6560,7 +6560,7 @@
     },
     "transit": {
      "label": "Residents with convenient public transport (SDG 11.2.1)",
-     "value": 50.4,
+     "value": 82.1,
      "unit": "%",
      "higherIs": "better"
     },
@@ -6608,7 +6608,7 @@
     },
     "fair": {
      "label": "Outcomes where the poorest fifth is worse off",
-     "value": 0,
+     "value": 1,
      "unit": "of 8",
      "higherIs": "worse"
     },
@@ -6764,7 +6764,7 @@
     },
     "busheat": {
      "label": "Bus stops hot and unshaded",
-     "value": 64.5,
+     "value": 58.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -8528,7 +8528,7 @@
     },
     "busheat": {
      "label": "Bus stops hot and unshaded",
-     "value": 2,
+     "value": 2.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -8540,7 +8540,7 @@
     },
     "feeder": {
      "label": "Feeder-range residents with no bus stop nearby",
-     "value": 54,
+     "value": 53.9,
      "unit": "%",
      "higherIs": "worse"
     },
