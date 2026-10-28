@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T23:25:13Z",
+  "generated": "2026-10-28T23:31:43Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -35678,17 +35678,17 @@
     },
     {
       "id": "schools_official",
-      "title": "Schools (BMC education maps)",
-      "description": "Mumbai schools from BMC's education department maps on data.opencity.in: municipal primary and secondary, private aided and private unaided, counted per block (a building housing several schools is one site).",
-      "source": "pipeline/realestate/bmcschools.py (OpenCity Mumbai school maps)",
-      "license": "Public domain (BMC via data.opencity.in)",
+      "title": "Schools (education department maps)",
+      "description": "Schools from education department maps on data.opencity.in (Mumbai: BMC municipal, private aided and unaided maps; Hyderabad: Telangana school education department map with management): government, private aided and private unaided, counted per block (a building housing several schools is one site).",
+      "source": "pipeline/realestate/bmcschools.py (OpenCity Mumbai and Telangana school maps)",
+      "license": "Public domain (BMC and Telangana via data.opencity.in)",
       "group": "Real estate",
       "level": 7,
       "approxCellM": 244,
       "fields": [
         {
           "key": "schools",
-          "label": "School sites (BMC maps)",
+          "label": "School sites (education department maps)",
           "type": "number",
           "agg": "sum",
           "unit": "sites",
@@ -35701,7 +35701,7 @@
         },
         {
           "key": "municipal",
-          "label": "BMC municipal schools",
+          "label": "Government and municipal schools",
           "type": "number",
           "agg": "sum",
           "unit": "schools",
@@ -35733,7 +35733,7 @@
           "unit": "schools",
           "domain": [
             1,
-            7
+            11
           ],
           "ramp": "blues",
           "higherIs": "better"
@@ -35745,6 +35745,18 @@
         "heightM": 400.0
       },
       "regions": [
+        {
+          "name": "hyderabad",
+          "cells": 3444,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.599609375,
+            "north": 17.55126953125
+          },
+          "json": "schools_official/hyderabad.json",
+          "parquet": null
+        },
         {
           "name": "mumbai",
           "cells": 1113,
