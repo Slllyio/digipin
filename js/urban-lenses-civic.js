@@ -2,7 +2,7 @@
  * Civic lenses for UrbanLenses: what statutory plans and municipal facility lists say about a block (planned road
  * widths and new links, cremation and burial grounds, public borewells, waste bins, large
  * projects with environmental clearance, coastal and eco-sensitive building limits,
- * police stations, lake buffers). They read datasets baked from
+ * police stations, lake buffers, parks and layout open spaces). They read datasets baked from
  * city and development-authority maps. Registers itself on load, after urban-lenses.js.
  */
 const UrbanLensesCivic = (() => {
@@ -339,7 +339,58 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Park reach. URDPFI asks for a housing-area park within about half a kilometre's walk. Hyderabad's layout open
+    // spaces are land already reserved in approved layouts, so where they sit beside unserved homes they are the
+    // cheapest new parks.
+    const PARK_M = 500, PARK_JUDGE_KM = 3;
+
+    function parkreach(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const pk = c['parks_official.parks'], pg = c['parks_official.playgrounds'], os = c['parks_official.open_spaces'];
+        if (!pop || !pk) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const green = Float64Array.from({ length: n }, (_, i) => v(pk, i) + v(pg, i));
+        const total = green.reduce((a, b) => a + b, 0);
+        if (total < 5) return null;
+        const near = within(g, green, PARK_M / 1000), listed = within(g, green, PARK_JUDGE_KM);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && listed[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const all = _sumOver(pop, idx, () => true), far = idx.filter(i => !(near[i] > 0)), pFar = _sumOver(pop, far, () => true);
+        const stats = [
+            { label: 'Parks and gardens on the corporation list', value: _people(Array.from({ length: n }, (_, i) => v(pk, i)).reduce((a, b) => a + b, 0)) },
+        ];
+        if (pg) stats.push({ label: '…and playgrounds', value: _people(Array.from({ length: n }, (_, i) => v(pg, i)).reduce((a, b) => a + b, 0)) });
+        if (c['parks_official.park_m2']) stats.push({ label: 'Garden area per resident', value: `${_round(Array.from({ length: n }, (_, i) => v(c['parks_official.park_m2'], i)).reduce((a, b) => a + b, 0) / (all || 1), 2)} m²` });
+        stats.push({ label: `Residents with no listed park or playground within ${PARK_M} m`, value: `${_people(pFar)} (${_round(100 * pFar / (all || 1))}%)` });
+        const farPop = Float64Array.from({ length: n }, (_, i) => (v(pop, i) > 0 && listed[i] > 0 && !(near[i] > 0) ? v(pop, i) : 0));
+        const gain = within(g, farPop, PARK_M / 1000);
+        const allSpaces = os ? Array.from({ length: n }, (_, i) => i).filter(i => v(os, i) > 0 && gain[i] > 0) : [];
+        if (os) {
+            stats.push({ label: 'Layout open spaces next to unserved homes', value: _people(allSpaces.reduce((a, i) => a + v(os, i), 0)) });
+            spaced(g, allSpaces, gain).forEach((i, k) => stats.push({ label: `Open space to develop ${k + 1}: ${g.codes[i]}`,
+                value: `${_people(gain[i])} residents with no park within ${PARK_M} m would gain one` }));
+        } else {
+            spaced(g, far.filter(i => gain[i] > 0), gain).forEach((i, k) => stats.push({ label: `New park ${k + 1}: ${g.codes[i]}`,
+                value: `${_people(gain[i])} residents with no park within ${PARK_M} m would gain one` }));
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = near[i] > 0 ? 1 : 0;
+        return {
+            columns: { park_near: out }, idx, weightKey: 'park_near', noHotspots: true,
+            metric: { label: `Residents with no listed park or playground within ${PARK_M} m`, value: _round(100 * pFar / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pFar)} residents (${_round(100 * pFar / (all || 1))}%) have no park or playground on the corporation's list within ${PARK_M} m${os ? `; ${_people(allSpaces.reduce((a, i) => a + v(os, i), 0))} open spaces already reserved in approved layouts lie within ${PARK_M} m of them` : ''}. Reach is straight-line on the block grid, and the lists leave out private and institutional green space.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'parkreach', equity: true, title: 'Neighbourhood park reach', icon: '🌳',
+            question: 'Who has no park or playground nearby, and which reserved open spaces could fix it?',
+            field: { key: 'park_near', label: `Listed park or playground within ${PARK_M} m (1 yes, 0 no)`, unit: '', higherIs: 'better', ramp: 'greens', domain: [0, 1] },
+            needs: ['parks_official.parks', 'parks_official.playgrounds', 'parks_official.open_spaces', 'parks_official.park_m2', 'population.population'],
+            method: `Parks, playgrounds and layout open spaces from the corporations' maps on data.opencity.in (public domain): GHMC parks (823), playgrounds (488) and open spaces left in approved layouts (1,355), 2018, for Hyderabad; PMC parks and gardens (198 outlines, about 200 ha) for Pune. A block is served when a listed park or playground lies within ${PARK_M} m on the block grid (URDPFI's housing-area park); blocks more than ${PARK_JUDGE_KM} km from any listed park are outside the corporation's map and not judged. Hyderabad picks are layout open spaces ${SPACING_KM} km apart with the most unserved residents within ${PARK_M} m; Pune picks are unserved blocks; the cantonments run their own gardens and are not on PMC's list.`,
+            refs: 'URDPFI Guidelines 2015 (MoHUA), open space hierarchy; GHMC and PMC via OpenCity' },
         { id: 'lakebuffer', equity: false, title: 'Lake buffer building', icon: '🏞️',
             question: 'How much building stands inside the no-build buffer round lakes?',
             field: { key: 'buffer_built', label: 'Built-up share inside the 30 m lake buffer (upper bound per block)', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 40] },
@@ -390,6 +441,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach });
     return { ENTRIES };
 })();

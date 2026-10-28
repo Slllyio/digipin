@@ -5148,6 +5148,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "parkreach": {
+     "label": "Residents with no listed park or playground within 500 m",
+     "value": 41.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "policereach": {
      "label": "Residents more than 2 km from a police station",
      "value": 18.6,
@@ -10317,6 +10323,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "parkreach": {
+     "label": "Residents with no listed park or playground within 500 m",
+     "value": 52.5,
      "unit": "%",
      "higherIs": "worse"
     },

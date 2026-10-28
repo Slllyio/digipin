@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T16:21:54Z",
+  "generated": "2026-10-28T16:34:24Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -26123,6 +26123,93 @@
             "north": 18.64111328125
           },
           "json": "parks/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "parks_official",
+      "title": "Parks, playgrounds and open spaces (corporation maps)",
+      "description": "Parks, playgrounds and layout open spaces from the corporations' own maps on data.opencity.in, counted per block: GHMC parks, playgrounds and open spaces left in approved layouts (Hyderabad, 2018) and PMC parks and gardens with their outlines (Pune).",
+      "source": "pipeline/realestate/parksofficial.py (OpenCity park maps)",
+      "license": "Public domain (GHMC and PMC via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "parks",
+          "label": "Parks and gardens (corporation list)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "parks",
+          "domain": [
+            1,
+            13
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "playgrounds",
+          "label": "Playgrounds (GHMC)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "playgrounds",
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "open_spaces",
+          "label": "Layout open spaces (GHMC 2018)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "open spaces",
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "park_m2",
+          "label": "Garden area (PMC outlines)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m\u00b2",
+          "domain": [
+            134,
+            554031
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "parks",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "hyderabad",
+          "cells": 1736,
+          "bbox": {
+            "west": 78.259033203125,
+            "south": 17.302978515625,
+            "east": 78.614990234375,
+            "north": 17.544677734375
+          },
+          "json": "parks_official/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 189,
+          "bbox": {
+            "west": 73.77001953125,
+            "south": 18.443359375,
+            "east": 73.956787109375,
+            "north": 18.6015625
+          },
+          "json": "parks_official/pune.json",
           "parquet": null
         }
       ]
