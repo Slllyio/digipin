@@ -237,6 +237,7 @@ Each item gives four things:
 176. ✅ Fire station reach: fire services' own station maps for Mumbai, Pune, Hyderabad and Bengaluru topping up OpenStreetMap/Overture counts in every fire lens, distance to the nearest station and new-station picks (OpenCity, public domain) | OpenCity | `firereach` lens (new dataset `fire_stations_official`, pipeline/realestate/firestations.py)
 177. ✅ Street light poles: BBMP 2024 pole survey for four Bengaluru zones (1.9 lakh poles, LED share), poles per street km and dark-street picks (OpenCity, public domain) | OpenCity | `streetpoles` lens (new dataset `street_lights`, pipeline/realestate/streetlights.py)
 178. ✅ Public libraries: Pune list (54) and Karnataka Department of Public Libraries' Bengaluru map (105) topping up `places.libraries` for the cooling-centre lens (OpenCity, public domain) | OpenCity | loader top-up (new dataset `libraries_official`, pipeline/realestate/libraries.py)
+179. ✅ Mumbai schools: BMC education department maps (1,134 municipal, 404 aided, 709 unaided) topping up `emergency_access.schools` for the school gap, school-run and relief-camp lenses (OpenCity, public domain) | OpenCity | loader top-up (new dataset `schools_official`, pipeline/realestate/bmcschools.py)
 
 ## Parked for the keys round
 

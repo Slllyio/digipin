@@ -9308,7 +9308,7 @@
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
-     "value": 15.9,
+     "value": 15.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9332,13 +9332,13 @@
     },
     "cycling": {
      "label": "Children who can cycle to school without crossing a main road",
-     "value": 77,
+     "value": 80.4,
      "unit": "%",
      "higherIs": "better"
     },
     "roadsafety": {
      "label": "Children whose walk to school crosses a fast, busy road",
-     "value": 34.5,
+     "value": 32.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9752,7 +9752,7 @@
     },
     "refuge": {
      "label": "Surge-zone residents with no refuge within 1 km",
-     "value": 14.9,
+     "value": 11.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9764,7 +9764,7 @@
     },
     "schoolsafe": {
      "label": "Schools facing two or more hazards",
-     "value": 29.6,
+     "value": 29.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9836,7 +9836,7 @@
     },
     "fuelsafe": {
      "label": "Fuel stations sharing a block with a school or hospital",
-     "value": 59.7,
+     "value": 64.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9872,7 +9872,7 @@
     },
     "schoolgap": {
      "label": "Children 5-14 with no mapped school within 1 km",
-     "value": 7.7,
+     "value": 6.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10082,7 +10082,7 @@
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
-     "value": 35.1,
+     "value": 33.2,
      "unit": "%",
      "higherIs": "worse"
     },

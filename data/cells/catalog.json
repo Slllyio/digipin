@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T14:49:14Z",
+  "generated": "2026-10-28T14:53:51Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -29862,6 +29862,89 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "schools_official",
+      "title": "Schools (BMC education maps)",
+      "description": "Mumbai schools from BMC's education department maps on data.opencity.in: municipal primary and secondary, private aided and private unaided, counted per block (a building housing several schools is one site).",
+      "source": "pipeline/realestate/bmcschools.py (OpenCity Mumbai school maps)",
+      "license": "Public domain (BMC via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "schools",
+          "label": "School sites (BMC maps)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "sites",
+          "domain": [
+            0,
+            12
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "municipal",
+          "label": "BMC municipal schools",
+          "type": "number",
+          "agg": "sum",
+          "unit": "schools",
+          "domain": [
+            1,
+            11
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "aided",
+          "label": "Private aided schools",
+          "type": "number",
+          "agg": "sum",
+          "unit": "schools",
+          "domain": [
+            1,
+            5
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "unaided",
+          "label": "Private unaided schools",
+          "type": "number",
+          "agg": "sum",
+          "unit": "schools",
+          "domain": [
+            1,
+            7
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "schools",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "mumbai",
+          "cells": 1113,
+          "bbox": {
+            "west": 72.78125,
+            "south": 18.898193359375,
+            "east": 72.968017578125,
+            "north": 19.26953125
+          },
+          "json": "schools_official/mumbai.json",
+          "parquet": null
         }
       ]
     },
