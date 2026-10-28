@@ -1,4 +1,7 @@
 import numpy as np
+import pytest
+
+pytest.importorskip("scipy")   # CI's python-tests job does not install scipy
 
 from pipeline.realestate import ecolimits as E
 
