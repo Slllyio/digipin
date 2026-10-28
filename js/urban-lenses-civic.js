@@ -583,7 +583,58 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Basic services together. A home is short of a basic network when no water line, sewer or storm drain runs within
+    // 250 m, no public bin within 250 m, or no public toilet within 1 km. Only the networks a city has mapped count, and a
+    // network is judged only within 2 km of its mapped lines, inside the corporation.
+    const BASICS = [
+        { key: 'water', label: 'water line', cols: ['water_lines.pipe_m'], km: 0.25 },
+        { key: 'sewer', label: 'sewer', cols: ['sewers.sewer_m'], km: 0.25 },
+        { key: 'drain', label: 'storm drain', cols: ['storm_drains.swd_m', 'storm_drains.nalla_m'], km: 0.25 },
+        { key: 'bin', label: 'public bin', cols: ['waste_bins.bins'], km: 0.25 },
+        { key: 'toilet', label: 'public toilet', cols: ['toilets_official.toilets'], km: 1 },
+    ];
+    const BASICS_JUDGE_KM = 2;
+
+    function basics(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        if (!pop) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const nets = BASICS.map(b => ({ ...b, arr: Float64Array.from({ length: n }, (_, i) => b.cols.reduce((a, k) => a + v(c[k], i), 0)) }))
+            .filter(b => b.arr.some(x => x > 0))
+            .map(b => ({ ...b, near: within(g, b.arr, b.km), reach: within(g, b.arr, BASICS_JUDGE_KM) }));
+        if (nets.length < 2) return null;
+        const areas = ['sewers.in_area', 'storm_drains.in_area', 'water_lines.in_area'].map(k => c[k]).filter(a => a && a.some(x => x > 0));
+        const inCity = i => !areas.length || areas.some(a => v(a, i) > 0);
+        const idx = _residents(fr).filter(i => inCity(i) && nets.every(b => b.reach[i] > 0));
+        if (idx.length < 5) return null;
+        const missing = Float64Array.from({ length: n }, (_, i) => nets.reduce((a, b) => a + (b.near[i] > 0 ? 0 : 1), 0));
+        const all = _sumOver(pop, idx, () => true), short2 = idx.filter(i => missing[i] >= 2), pShort2 = _sumOver(pop, short2, () => true);
+        const stats = [{ label: 'Networks mapped for this city', value: nets.map(b => b.label).join(', ') }];
+        for (const b of nets) {
+            const p = _sumOver(pop, idx.filter(i => !(b.near[i] > 0)), () => true);
+            stats.push({ label: `Residents with no ${b.label} within ${b.km * 1000} m`, value: `${_people(p)} (${_round(100 * p / (all || 1))}%)` });
+        }
+        stats.push({ label: 'Residents short of two or more of them', value: `${_people(pShort2)} (${_round(100 * pShort2 / (all || 1))}%)` });
+        const score = Float64Array.from({ length: n }, (_, i) => missing[i] * v(pop, i));
+        spaced(g, short2, score).forEach((i, k) => stats.push({ label: `Most underserved ${k + 1}: ${g.codes[i]}`,
+            value: `no ${nets.filter(b => !(b.near[i] > 0)).map(b => b.label).join(', no ')} nearby; ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = missing[i];
+        return {
+            columns: { basics_missing: out }, idx, weightKey: 'basics_missing', noHotspots: true,
+            metric: { label: 'Residents short of two or more basic networks', value: _round(100 * pShort2 / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pShort2)} residents (${_round(100 * pShort2 / (all || 1))}%) inside the corporation live where two or more of the city's mapped basic networks (${nets.map(b => b.label).join(', ')}) are missing nearby, on the city agencies' own maps. These are the pockets to check first for tanker water, septic tanks, flooding and dumping.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'basics', equity: true, title: 'Basic services together', icon: '🧰',
+            question: 'Where are homes short of several basic services at once?',
+            field: { key: 'basics_missing', label: 'Basic networks missing nearby (water line, sewer, storm drain, bin, toilet; mapped ones only)', unit: 'networks', higherIs: 'worse', ramp: 'reds', domain: [0, 4] },
+            needs: ['water_lines.pipe_m', 'water_lines.in_area', 'sewers.sewer_m', 'sewers.in_area', 'storm_drains.swd_m', 'storm_drains.nalla_m', 'storm_drains.in_area', 'waste_bins.bins', 'toilets_official.toilets', 'population.population'],
+            method: `Crosses the city agencies' own network maps on data.opencity.in (public domain): BWSSB water lines (Bengaluru), sewers (BWSSB, CMWSSB, PMC, HMWSSB core city), storm drains (GCC, PMC), public bins (GCC, GHMC) and public toilets (GCC, PMC, GHMC, BMC). A lived-in block is short of a network when none runs or stands within 250 m (1 km for toilets) on the block grid. Only networks the city has mapped count (at least two), each judged only within ${BASICS_JUDGE_KM} km of its mapped lines, and only inside the corporation where a ward map gives the limit. Picks are blocks short of two or more, ${SPACING_KM} km apart, ranked by networks missing times residents. Maps lag new works, so a pick is a pocket to check, not a verdict.`,
+            refs: 'CPHEEO manuals on water supply (1999), sewerage (2013) and storm-water drainage (2019); Swachh Bharat Mission (Urban) 2.0; AMRUT 2.0; agency maps via OpenCity' },
         { id: 'stpnear', equity: false, title: 'Sewage treatment plants nearby', icon: '🏭',
             question: 'Who lives next to a sewage treatment plant, and can the plants treat the city\'s sewage?',
             field: { key: 'stp_near', label: 'Sewage treatment plant within 500 m (2), within 1 km (1), farther (0)', unit: '0-2', higherIs: 'worse', ramp: 'reds', domain: [0, 2] },
@@ -670,6 +721,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics });
     return { ENTRIES };
 })();

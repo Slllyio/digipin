@@ -876,6 +876,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "basics": {
+     "label": "Residents short of two or more basic networks",
+     "value": 2.4,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "stpnear": {
      "label": "Residents within 500 m of a sewage treatment plant",
      "value": 1.4,
@@ -2697,6 +2703,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "basics": {
+     "label": "Residents short of two or more basic networks",
+     "value": 8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -5205,6 +5217,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 25.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "basics": {
+     "label": "Residents short of two or more basic networks",
+     "value": 2.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10431,6 +10449,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 23.7,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "basics": {
+     "label": "Residents short of two or more basic networks",
+     "value": 3.1,
      "unit": "%",
      "higherIs": "worse"
     },
