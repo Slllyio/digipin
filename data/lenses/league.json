@@ -900,6 +900,12 @@
      "unit": "offices",
      "higherIs": "worse"
     },
+    "gwprospect": {
+     "label": "Residents on poor or nil groundwater prospects",
+     "value": 19976,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "landgrain": {
      "label": "Median survey parcel",
      "value": 18300,
@@ -2806,6 +2812,12 @@
      "label": "Electricity, water and police offices a ward deals with (median resident)",
      "value": 9,
      "unit": "offices",
+     "higherIs": "worse"
+    },
+    "gwdepth": {
+     "label": "Depth to water before the monsoon (median resident)",
+     "value": 5,
+     "unit": "m",
      "higherIs": "worse"
     },
     "floodzones": {

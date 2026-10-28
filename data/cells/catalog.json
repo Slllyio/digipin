@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T20:32:40Z",
+  "generated": "2026-10-28T20:38:29Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -12344,6 +12344,115 @@
             "north": 18.608154296875
           },
           "json": "funeral_sites/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "groundwater_local",
+      "title": "Groundwater depth and prospects (city maps)",
+      "description": "Depth to groundwater at each ward's CMWSSB monitoring well (Chennai, 2021-2024) and the groundwater prospect class under each block (Bengaluru groundwater potential map), from data.opencity.in.",
+      "source": "pipeline/realestate/groundwater.py (OpenCity CMWSSB ward groundwater tables and Bengaluru groundwater potential map)",
+      "license": "Public domain (CMWSSB and Government of Karnataka via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "gw_may_m",
+          "label": "Depth to groundwater, May 2023 (pre-monsoon)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m",
+          "domain": [
+            0,
+            10
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "gw_dec_m",
+          "label": "Depth to groundwater, December 2023 (post-monsoon)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m",
+          "domain": [
+            0,
+            10
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "gw_change_m",
+          "label": "Fall in the March water table, 2021 to 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "m",
+          "domain": [
+            -2,
+            2
+          ],
+          "ramp": "diverging",
+          "higherIs": "worse"
+        },
+        {
+          "key": "gw_prospect",
+          "label": "Groundwater prospect (1 poor to nil, 5 good)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "class",
+          "domain": [
+            1,
+            5
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "gw_may_m",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 11199,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "groundwater_local/bengaluru/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "chennai",
+          "cells": 6382,
+          "bbox": {
+            "west": 80.139892578125,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "groundwater_local/chennai.json",
           "parquet": null
         }
       ]

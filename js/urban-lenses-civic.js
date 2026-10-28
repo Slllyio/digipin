@@ -995,6 +995,67 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    const GW_DEEP_M = 8;
+
+    function gwdepth(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, may = c['groundwater_local.gw_may_m'], dec = c['groundwater_local.gw_dec_m'];
+        const chg = c['groundwater_local.gw_change_m'], pop = c['population.population'], wn = c['wards.ward_no'];
+        if (!may || !may.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(may[i]) && may[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const all = idx.reduce((t, i) => t + v(pop, i), 0) || 1;
+        const wmed = a => {
+            const ok = idx.filter(i => _fin(a?.[i])), order = ok.sort((x, y) => a[x] - a[y]), tot = ok.reduce((t, i) => t + Math.max(v(pop, i), 1e-9), 0);
+            let acc = 0;
+            for (const i of order) { acc += Math.max(v(pop, i), 1e-9); if (acc >= tot / 2) return a[i]; }
+            return NaN;
+        };
+        const deep = idx.reduce((t, i) => t + (may[i] >= GW_DEEP_M ? v(pop, i) : 0), 0);
+        const falling = chg ? idx.reduce((t, i) => t + (v(chg, i) >= 1 ? v(pop, i) : 0), 0) : 0;
+        const stats = [
+            { label: 'Depth to water, May 2023 (median resident)', value: `${_round(wmed(may), 1)} m` },
+            ...(dec ? [{ label: 'Depth to water, December 2023, after the monsoon (median resident)', value: `${_round(wmed(dec), 1)} m` }] : []),
+            { label: `Residents where the May water table was ${GW_DEEP_M} m or deeper`, value: `${_people(deep)} (${_round(100 * deep / all)}%)` },
+            ...(chg ? [{ label: 'Residents where the March water table fell 1 m or more, 2021 to 2024', value: `${_people(falling)} (${_round(100 * falling / all)}%)` }] : []),
+        ];
+        const seen = new Set();
+        idx.slice().sort((a, b) => may[b] - may[a]).filter(i => { const k = wn ? v(wn, i) : i; if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 4)
+            .forEach((i, k) => stats.push({ label: `Deepest ward well ${k + 1}, at ${g.codes[i]}`, value: `${_round(may[i], 1)} m in May${dec && _fin(dec[i]) ? `, ${_round(dec[i], 1)} m in December` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(may[i], 1);
+        return {
+            columns: { gw_may_m: out }, idx, weightKey: 'gw_may_m', noHotspots: true,
+            metric: { label: 'Depth to water before the monsoon (median resident)', value: _round(wmed(may), 1), unit: 'm', higherIs: 'worse' },
+            headline: `CMWSSB's ward wells put the median resident's water table ${_round(wmed(may), 1)} m down in May 2023${dec ? `, rising to ${_round(wmed(dec), 1)} m after the monsoon` : ''}. ${_people(deep)} residents (${_round(100 * deep / all)}%) live where it was ${GW_DEEP_M} m or deeper before the rains${chg ? `; ${_people(falling)} where the March level fell a metre or more since 2021` : ''}.`,
+            stats,
+        };
+    }
+
+    function gwprospect(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pr = c['groundwater_local.gw_prospect'], pop = c['population.population'];
+        if (!pr || !pr.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (_fin(pr[i]) && pr[i] > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const all = idx.reduce((t, i) => t + v(pop, i), 0) || 1;
+        const names = ['poor to nil', 'poor', 'moderate to poor', 'moderate', 'good'];
+        const by = names.map((_, k) => idx.reduce((t, i) => t + (Math.round(pr[i]) === k + 1 ? v(pop, i) : 0), 0));
+        const stats = names.map((nm, k) => ({ label: `Residents on ${nm} groundwater prospects`, value: `${_people(by[k])} (${_round(100 * by[k] / all)}%)` })).reverse();
+        const poor = by[0] + by[1];
+        spaced(g, idx.filter(i => pr[i] <= 2), Float64Array.from({ length: n }, (_, i) => v(pop, i)), 4).forEach((i, k) => stats.push({ label: `Poor prospects, many residents ${k + 1}: ${g.codes[i]}`, value: `${names[Math.round(pr[i]) - 1]}; ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = pr[i];
+        return {
+            columns: { gw_prospect: out }, idx, weightKey: 'gw_prospect', noHotspots: true,
+            metric: { label: 'Residents on poor or nil groundwater prospects', value: Math.round(poor), unit: 'people', higherIs: 'worse' },
+            headline: `The state's groundwater prospect map covers ${_people(all)} residents outside the built core it masks out. ${_people(poor)} of them (${_round(100 * poor / all)}%) live on rock with poor or nil prospects for borewells, and ${_people(by[4] + by[3])} (${_round(100 * (by[4] + by[3]) / all)}%) on moderate or good ground.`,
+            stats,
+        };
+    }
+
     function floodzones(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, vh = c['flood_zones.hazard_vhigh_pct'], hi = c['flood_zones.hazard_high_pct'];
         const rpYrs = c['flood_zones.flood_rp_years'], pop = c['population.population'], rp = y => c[`flood_zones.rp${y}_pct`];
@@ -1109,6 +1170,18 @@ const UrbanLensesCivic = (() => {
             needs: ['service_areas.ward_power_units', 'service_areas.ward_water_units', 'service_areas.ward_police_units', 'service_areas.ward_id', 'population.population'],
             method: 'Utility boundary maps on data.opencity.in (public domain): BESCOM section offices (237) and BWSSB service stations (143) for Bengaluru, TNEB sections and CMWSSB depots for Chennai. Each lived-in block takes the section and field unit holding its centre (DuckDB spatial). For each ward (wards layer) the pipeline counts the distinct sections, field units and police stations (police layer, where mapped) covering its lived-in blocks; when boundaries line up a ward deals with one or two of each. Medians are over residents. The block\'s own section office and service station are in the service areas layer.',
             refs: 'Janaagraha Annual Survey of India\'s City-Systems (coterminous boundaries); 74th Constitutional Amendment; BESCOM, BWSSB, TNEB and CMWSSB via OpenCity' },
+        { id: 'gwdepth', equity: true, title: 'Groundwater depth by ward', icon: '🪣',
+            question: 'How deep is the water table under each ward, and where is it falling?',
+            field: { key: 'gw_may_m', label: 'Depth to groundwater in May 2023 at the ward\'s monitoring well', unit: 'm', higherIs: 'worse', ramp: 'reds', domain: [0, 15] },
+            needs: ['groundwater_local.gw_may_m', 'groundwater_local.gw_dec_m', 'groundwater_local.gw_change_m', 'wards.ward_no', 'population.population'],
+            method: `CMWSSB's ward-wise monthly groundwater depth tables for Chennai on data.opencity.in (public domain; one monitoring well per ward, 200 wards, 2021 to March 2024), joined to the wards layer by ward number, so every block takes its ward well's reading. May is the driest month before the north-east monsoon and December the first month after it; the trend compares March 2021 with March 2024. Zero readings (well not read) are dropped. One well per ward is a coarse sample, and a ward's well can sit in a lower or higher pocket than its homes, so a value is the ward's reading, not a block measurement. Medians are over residents.`,
+            refs: 'CMWSSB ward-wise groundwater levels via OpenCity; CGWB groundwater year book (pre and post-monsoon levels)' },
+        { id: 'gwprospect', equity: false, title: 'Groundwater prospects', icon: '⛏️',
+            question: 'Where is the rock under the city likely to yield groundwater, and where not?',
+            field: { key: 'gw_prospect', label: 'Groundwater prospect (1 poor to nil, 5 good)', unit: 'class', higherIs: 'better', ramp: 'blues', domain: [1, 5] },
+            needs: ['groundwater_local.gw_prospect', 'population.population'],
+            method: 'The Bengaluru groundwater potential map on data.opencity.in (public domain): prospect zones drawn from geology, landforms and lineaments in the national groundwater prospects mapping (Rajiv Gandhi National Drinking Water Mission method), graded good, moderate, moderate to poor, poor and poor to nil; water body and habitation masks are left out, and the habitation mask covers the built core of the city, so the lens speaks for the outskirts. Each lived-in block takes the zone holding its centre (DuckDB spatial). Prospects say how likely a well is to yield, not how much water is there today; for that, see the borewell and recharge lenses.',
+            refs: 'NRSC Groundwater Prospects Mapping (RGNDWM) manual; Karnataka groundwater potential map via OpenCity; CGWB' },
         { id: 'floodzones', equity: true, title: 'Official flood zones and return periods', icon: '🌊',
             question: 'Which blocks sit in the official flood hazard zones, and how often does a flood reach them?',
             field: { key: 'flood_chance_pct', label: 'Yearly chance a modelled flood covers a quarter of the block (1 / return period)', unit: '%', higherIs: 'worse', ramp: 'blues', domain: [0, 20] },
@@ -1268,6 +1341,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit, metrowait, landgrain, floodzones });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit, metrowait, landgrain, floodzones, gwdepth, gwprospect });
     return { ENTRIES };
 })();

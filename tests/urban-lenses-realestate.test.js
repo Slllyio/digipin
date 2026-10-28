@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout', 'treecensus', 'firereach', 'pondcensus', 'roadplan', 'lastrites', 'wellrisk', 'binreach', 'bigprojects', 'buildlimits', 'policereach', 'lakebuffer', 'parkreach', 'drainbuffer', 'birdlife', 'stormgap', 'watergap', 'stpnear', 'basics', 'sroload', 'pinsize', 'potholes', 'revvillage', 'bdalayout', 'watershedpave', 'studenthousing', 'vacant2017', 'landchange', 'wardfit', 'metrowait', 'landgrain', 'floodzones']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout', 'treecensus', 'firereach', 'pondcensus', 'roadplan', 'lastrites', 'wellrisk', 'binreach', 'bigprojects', 'buildlimits', 'policereach', 'lakebuffer', 'parkreach', 'drainbuffer', 'birdlife', 'stormgap', 'watergap', 'stpnear', 'basics', 'sroload', 'pinsize', 'potholes', 'revvillage', 'bdalayout', 'watershedpave', 'studenthousing', 'vacant2017', 'landchange', 'wardfit', 'metrowait', 'landgrain', 'floodzones', 'gwdepth', 'gwprospect']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -1185,6 +1185,24 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.metro_wait_min[0]).toBe(4);
         expect(r.stats[0].value).toBe('3');
         expect(L._lenses.metrowait(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('gwdepth: ward well depth before and after the monsoon', () => {
+        const may = codes.map((_, i) => (col(i) < 6 ? 3 : 10)), dec = codes.map(() => 2), chg = codes.map((_, i) => (col(i) < 6 ? -0.5 : 1.5));
+        const r = L._lenses.gwdepth(L.frameFrom(codes, { ...base, 'groundwater_local.gw_may_m': may, 'groundwater_local.gw_dec_m': dec, 'groundwater_local.gw_change_m': chg }), {});
+        expect(r.columns.gw_may_m[11]).toBe(10);
+        expect(r.stats.some(s => /^Deepest ward well 1, at /.test(s.label))).toBe(true);
+        expect(r.stats[2].value).toMatch(/%\)$/);
+        expect(L._lenses.gwdepth(L.frameFrom(codes, base), {})).toBeNull();
+    });
+
+    it('gwprospect: residents by groundwater prospect class', () => {
+        const pr = codes.map((_, i) => (col(i) < 6 ? 1 : 4));
+        const r = L._lenses.gwprospect(L.frameFrom(codes, { ...base, 'groundwater_local.gw_prospect': pr }), {});
+        expect(r.columns.gw_prospect[0]).toBe(1);
+        expect(r.metric.value).toBeGreaterThan(0);
+        expect(r.stats.some(s => /^Poor prospects, many residents 1: /.test(s.label))).toBe(true);
+        expect(L._lenses.gwprospect(L.frameFrom(codes, base), {})).toBeNull();
     });
 
     it('floodzones: residents in hazard zones and flood return periods', () => {
