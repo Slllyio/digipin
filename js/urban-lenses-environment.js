@@ -1357,7 +1357,56 @@ const UrbanLensesEnvironment = (() => {
         };
     }
 
+    // Water bodies census. The Ministry of Jal Shakti's first census listed every pond, tank and lake with whether it is
+    // still in use and whether it is encroached. Disused and encroached ponds near many residents are the first to
+    // revive: they recharge groundwater, hold monsoon run-off and cool their surroundings.
+    const POND_KM = 1;
+
+    function pondcensus(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], wb = c['water_bodies.bodies'];
+        const nu = c['water_bodies.not_in_use'], en = c['water_bodies.encroached'], pub = c['water_bodies.public_pct'], cap = c['water_bodies.capacity_m3'];
+        if (!pop || !wb || !nu || !wb.some(v => v > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = [];
+        for (let i = 0; i < n; i++) if (v(wb, i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        const sum = a => idx.reduce((t, i) => t + v(a, i), 0);
+        const total = sum(wb), unused = sum(nu), encr = sum(en);
+        const bad = i => Math.min(v(wb, i), v(nu, i) + v(en, i));
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(pop, i)), POND_KM);
+        const lived = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0) lived.push(i);
+        const badNear = within(g, Float64Array.from({ length: n }, (_, i) => bad(i)), POND_KM);
+        const pAll = _sumOver(pop, lived, () => true), pBad = _sumOver(pop, lived, i => badNear[i] > 0);
+        const stats = [
+            { label: 'Ponds, tanks and lakes in the census', value: _people(total) },
+            { label: 'Not in use (dried, silted or abandoned)', value: `${_people(unused)} (${_round(100 * unused / total)}%)` },
+            { label: 'Encroached', value: `${_people(encr)} (${_round(100 * encr / total)}%)` },
+            { label: `Residents within ${POND_KM} km of a disused or encroached water body`, value: `${_people(pBad)} (${_round(100 * pBad / (pAll || 1))}%)` },
+        ];
+        if (pub) stats.push({ label: 'Publicly owned (panchayat, municipality, state or other agency)', value: `${_round(idx.reduce((t, i) => t + v(pub, i) * v(wb, i), 0) / total)}%` });
+        if (cap && idx.some(i => v(cap, i) > 0)) stats.push({ label: 'Storage when full (all listed bodies)', value: `${_round(sum(cap) / 1e6, 2)} million m³` });
+        const score = Float64Array.from({ length: n }, (_, i) => bad(i) * near[i]);
+        spaced(g, idx.filter(i => bad(i) > 0), score).forEach((i, k) => stats.push({
+            label: `Revive ${k + 1}: ${g.codes[i]}`,
+            value: `${bad(i)} of ${v(wb, i)} water bodies disused or encroached; ${_people(near[i])} residents within ${POND_KM} km` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = bad(i);
+        return {
+            columns: { ponds_lost: out }, idx, weightKey: 'ponds_lost', noHotspots: true,
+            metric: { label: 'Water bodies not in use or encroached', value: _round(100 * Math.min(total, unused + encr) / total, 1), unit: '%', higherIs: 'worse' },
+            headline: `The water bodies census lists ${_people(total)} ponds, tanks and lakes here; ${_people(unused)} (${_round(100 * unused / total)}%) are no longer in use and ${_people(encr)} are encroached, and ${_people(pBad)} residents live within ${POND_KM} km of one that could be revived. Use and encroachment are as reported by state enumerators in 2018-19.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'pondcensus', equity: false, title: 'Ponds and tanks census', icon: '🪷',
+            question: 'Which ponds and tanks are dried up or encroached, and which to revive first?',
+            field: { key: 'ponds_lost', label: 'Water bodies not in use or encroached', unit: 'water bodies', higherIs: 'worse', ramp: 'reds', domain: [0, 3] },
+            needs: ['water_bodies.bodies', 'water_bodies.not_in_use', 'water_bodies.encroached', 'water_bodies.public_pct', 'water_bodies.capacity_m3', 'population.population'],
+            method: `First Census of Water Bodies (Ministry of Jal Shakti, 2023; enumerated 2018-19), from the state maps on data.opencity.in (public domain): Delhi, Kolkata, Hyderabad (Hyderabad and Rangareddy maps plus the Telangana maps clipped to the region) and Bengaluru (Bengaluru Urban plus the Karnataka map clipped). Each pond, tank or lake is counted in its block with whether it is in use, whether it is encroached, who owns it and its storage when full. Revival picks are blocks, ${SPACING_KM} km apart, ranked by disused or encroached bodies times residents within ${POND_KM} km. Use and encroachment are the enumerators' reports and vary by state (Kolkata reports none encroached; Bengaluru Urban's map marks every tank unused and unencroached, a blank default, so Bengaluru gets counts but no lens); Tamil Nadu and Maharashtra maps are non-commercial, so Chennai, Mumbai and Pune are not covered.`,
+            refs: 'Ministry of Jal Shakti, 1st Census of Water Bodies (2023); Mission Amrit Sarovar; AMRUT 2.0 water body rejuvenation' },
         { id: 'treecensus', equity: true, title: 'Tree census', icon: '🌳',
             question: 'Where are trees fewest per person, and where do invasive or single species dominate?',
             field: { key: 'trees_per_100', label: 'Census trees per 100 residents', unit: 'trees', higherIs: 'better', ramp: 'greens', domain: [0, 100] },
@@ -1559,7 +1608,7 @@ const UrbanLensesEnvironment = (() => {
             refs: 'Census of India 2011 (work participation, urban); Pesaresi et al. 2023 (GHSL built volume and non-residential share); Overture Maps places; Cervero 1989 (jobs–housing balance)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lightning, recharge, stay, waterloss, dumps, lakehealth, jobsmap, treecensus },
+    UrbanLenses.register(ENTRIES, { coolroof, change, airtrend, airdeaths, burning, ground, treeplant, farmloss, market, parkshare, mangrove, runoff, nighteconomy, catchment, sites, informal, ghost, floorspace, flightpath, services, anchors, lightning, recharge, stay, waterloss, dumps, lakehealth, jobsmap, treecensus, pondcensus },
         { lookalike, lookalikeText, SEISMIC_ZONE }, 'vitality');
     return { ENTRIES, SEISMIC_ZONE, lookalike, lookalikeText };
 })();

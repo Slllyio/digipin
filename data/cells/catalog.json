@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T14:53:51Z",
+  "generated": "2026-10-28T14:59:54Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -37759,6 +37759,130 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "water_bodies",
+      "title": "Water bodies census",
+      "description": "Ponds, tanks and lakes from India's first Census of Water Bodies (Ministry of Jal Shakti, 2023) on data.opencity.in, counted per block with how many are not in use or encroached, who owns them and how much they hold: Delhi, Kolkata, Hyderabad and Bengaluru.",
+      "source": "pipeline/realestate/waterbodies.py (OpenCity water bodies census maps)",
+      "license": "Public domain (Ministry of Jal Shakti via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "bodies",
+          "label": "Water bodies (census)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "ponds/tanks/lakes",
+          "domain": [
+            1,
+            20
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "not_in_use",
+          "label": "Water bodies not in use",
+          "type": "number",
+          "agg": "sum",
+          "unit": "water bodies",
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "encroached",
+          "label": "Water bodies encroached",
+          "type": "number",
+          "agg": "sum",
+          "unit": "water bodies",
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "public_pct",
+          "label": "Publicly owned share",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0.0,
+            100.0
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "capacity_m3",
+          "label": "Storage capacity when full",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m\u00b3",
+          "domain": [
+            1,
+            17497380
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "bodies",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 316,
+          "bbox": {
+            "west": 77.450439453125,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.13916015625
+          },
+          "json": "water_bodies/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 810,
+          "bbox": {
+            "west": 76.84619140625,
+            "south": 28.42333984375,
+            "east": 77.33837890625,
+            "north": 28.86279296875
+          },
+          "json": "water_bodies/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 320,
+          "bbox": {
+            "west": 78.30078125,
+            "south": 17.30078125,
+            "east": 78.597412109375,
+            "north": 17.549072265625
+          },
+          "json": "water_bodies/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 1141,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.449951171875,
+            "north": 22.63134765625
+          },
+          "json": "water_bodies/kolkata.json",
+          "parquet": null
         }
       ]
     },

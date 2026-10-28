@@ -3744,6 +3744,12 @@
      "unit": "per 1,000",
      "higherIs": "better"
     },
+    "pondcensus": {
+     "label": "Water bodies not in use or encroached",
+     "value": 97.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "coolroof": {
      "label": "Residents under dark roofs",
      "value": 12817557,
@@ -5309,6 +5315,12 @@
      "value": 7.2,
      "unit": "per 1,000",
      "higherIs": "better"
+    },
+    "pondcensus": {
+     "label": "Water bodies not in use or encroached",
+     "value": 69.7,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "coolroof": {
      "label": "Residents under dark roofs",
@@ -7835,6 +7847,12 @@
      "value": 3.8,
      "unit": "per 1,000",
      "higherIs": "better"
+    },
+    "pondcensus": {
+     "label": "Water bodies not in use or encroached",
+     "value": 24,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "coolroof": {
      "label": "Residents under dark roofs",
