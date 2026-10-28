@@ -48,10 +48,13 @@ describe('static asset budgets', () => {
     // 3D night view, massing, agents), so the cap moved to 3 MB.
     // 3.00 MB on 2026-10-24 (the data roadmap's lens modules, each under 150 kB;
     // bundled boot is 4.03 of the 5 MB bootBytes budget), so the cap moved to 3.25 MB.
-    it('first-party JavaScript stays under 3.25 MB in total and 150 kB per module', () => {
+    // 3.25 MB on 2026-10-28 (the civic lens module for official city datasets, since the other
+    // lens modules sit at the 150 kB cap), so the cap moved to 3.5 MB; making lens modules lazy
+    // is the next step before raising it again.
+    it('first-party JavaScript stays under 3.5 MB in total and 150 kB per module', () => {
         const js = tracked('js');
         const total = js.reduce((a, f) => a + f.size, 0);
-        expect(total, `js/ total ${(total / MB).toFixed(2)} MB`).toBeLessThan(3.25 * MB);
+        expect(total, `js/ total ${(total / MB).toFixed(2)} MB`).toBeLessThan(3.5 * MB);
         const big = js.filter(f => f.size > 150 * 1024);
         expect(big, JSON.stringify(big)).toEqual([]);
     });

@@ -870,6 +870,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "lakebuffer": {
+     "label": "Share of the 30 m lake buffer built up",
+     "value": 12.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "policereach": {
      "label": "Residents more than 2 km from a police station",
      "value": 11.1,

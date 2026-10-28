@@ -24,7 +24,7 @@ describe('Real-estate lenses on a hand-made grid', () => {
 
     it('registers six lenses after the mobility set', () => {
         const ids = L.catalog().map(c => c.id);
-        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout', 'treecensus', 'firereach', 'pondcensus', 'roadplan', 'lastrites', 'wellrisk', 'binreach', 'bigprojects', 'buildlimits', 'policereach']) expect(ids).toContain(id);
+        for (const id of ['landvalue', 'buildhot', 'vacant', 'rentdemand', 'affordability', 'undervalued', 'redevelop', 'nextgrowth', 'housinggap', 'floodloss', 'encroach', 'feasible', 'metroboost', 'climate2050', 'streetheat', 'flood2050', 'solarhome', 'waterrisk', 'climategrade', 'riskygrowth', 'vitality', 'coolroof', 'change', 'airtrend', 'airdeaths', 'burning', 'ground', 'treeplant', 'farmloss', 'market', 'parkshare', 'mangrove', 'runoff', 'nighteconomy', 'catchment', 'sites', 'informal', 'ghost', 'floorspace', 'flightpath', 'services', 'anchors', 'lightning', 'recharge', 'stay', 'waterloss', 'dumps', 'heritage', 'landmix', 'reach', 'monthly', 'greenbelt', 'mosquito', 'buildingage', 'cooling', 'crowds', 'airport', 'gardens', 'powerlines', 'toilets', 'gated', 'drainage', 'cityfarms', 'tourism', 'coast', 'packed', 'techhubs', 'shadecare', 'cyclone', 'riders', 'summershade', 'builduse', 'railnoise', 'mothercare', 'events', 'marketfire', 'lakehealth', 'jobsmap', 'oldtall', 'critwater', 'quake', 'factoryhomes', 'refuge', 'firelanes', 'schoolsafe', 'hospitalsafe', 'stationload', 'walkups', 'treefall', 'gridflood', 'coaching', 'rainharvest', 'sitedust', 'hotelfire', 'quarries', 'heritagesafe', 'fuelsafe', 'carekit', 'coalplume', 'dumpsmoke', 'powercuts', 'wildedge', 'schoolgap', 'railgates', 'views', 'kilnsmoke', 'districthealth', 'floodagain', 'schoolstrain', 'slummap', 'turnout', 'treecensus', 'firereach', 'pondcensus', 'roadplan', 'lastrites', 'wellrisk', 'binreach', 'bigprojects', 'buildlimits', 'policereach', 'lakebuffer']) expect(ids).toContain(id);
     });
 
     it('landvalue: spread between the dearest and cheapest tenth, and the driver gap', () => {
@@ -1177,6 +1177,15 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.columns.well_risk[10]).toBeGreaterThan(0);
         expect(r.metric.value).toBeGreaterThan(0);
         expect(L._lenses.wellrisk(L.frameFrom(codes, { ...base, 'borewells.borewells': wells }), {})).toBeNull();
+    });
+
+    it('lakebuffer: building inside the 30 m lake buffer', () => {
+        const b30 = codes.map((_, i) => (col(i) === 0 ? 20 : 0)), built = codes.map(() => 50);
+        const r = L._lenses.lakebuffer(L.frameFrom(codes, { ...base, 'built_up.built_pct': built, 'lake_buffers.buffer30_pct': b30, 'lake_buffers.buffer75_pct': b30.map(x => 2 * x), 'lake_buffers.lake_pct': codes.map(() => 0) }), {});
+        expect(r.metric.value).toBe(50);
+        expect(r.columns.buffer_built[0]).toBe(20);
+        expect(r.stats.some(s => /^Most built buffer 1: /.test(s.label))).toBe(true);
+        expect(L._lenses.lakebuffer(L.frameFrom(codes, { ...base, 'built_up.built_pct': built }), {})).toBeNull();
     });
 
     it('policereach: distance to police stations, judged inside the mapped area', () => {

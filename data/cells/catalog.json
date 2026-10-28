@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T16:14:25Z",
+  "generated": "2026-10-28T16:21:54Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -13129,6 +13129,76 @@
             "north": 18.6455078125
           },
           "json": "job_access/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "lake_buffers",
+      "title": "Lake buffer zones (Bengaluru wetland map)",
+      "description": "Share of each block inside a lake or tank on the Karnataka GIS wetland map of Bengaluru Urban (265 wetlands), and within 30 m and 75 m of one, via data.opencity.in.",
+      "source": "pipeline/realestate/lakebuffers.py (KGIS wetlands via OpenCity)",
+      "license": "Public domain (Karnataka GIS via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "lake_pct",
+          "label": "Share of the block inside a mapped lake or tank",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "buffer30_pct",
+          "label": "Share in the 30 m lake buffer (no-build zone)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "buffer75_pct",
+          "label": "Share within 75 m of a lake (NGT 2016 buffer, stayed)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            80
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "buffer30_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 2395,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.7822265625,
+            "north": 13.141357421875
+          },
+          "json": "lake_buffers/bengaluru.json",
           "parquet": null
         }
       ]
