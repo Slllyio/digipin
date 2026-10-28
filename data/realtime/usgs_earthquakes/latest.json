@@ -1,7 +1,103 @@
 {
-  "generated_at_iso": "2026-10-28T07:26:01Z",
+  "generated_at_iso": "2026-10-28T14:17:47Z",
   "count": 25,
   "records": [
+    {
+      "id": "us7000ttp7",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-28T13:31:54.350000+00:00",
+      "latitude": 8.9241,
+      "longitude": 40.0638,
+      "depth_km": 10.0,
+      "place": "13 km WSW of Āwash, Ethiopia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttp7",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000ttp2",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-28T12:58:58.100000+00:00",
+      "latitude": -24.197,
+      "longitude": -177.0372,
+      "depth_km": 129.952,
+      "place": "south of the Fiji Islands",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttp2",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000ttnz",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-28T12:47:08.927000+00:00",
+      "latitude": 58.2153,
+      "longitude": -32.3348,
+      "depth_km": 10.0,
+      "place": "Reykjanes Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttnz",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000ttnt",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-28T12:35:23.786000+00:00",
+      "latitude": -16.541,
+      "longitude": -173.2355,
+      "depth_km": 10.0,
+      "place": "88 km SE of Hihifo, Tonga",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttnt",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000ttnq",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-28T12:14:49.242000+00:00",
+      "latitude": 5.6073,
+      "longitude": 125.4182,
+      "depth_km": 10.0,
+      "place": "1 km WSW of Butulan, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttnq",
+      "tsunami": 0,
+      "significance": 369
+    },
+    {
+      "id": "us7000ttnk",
+      "magnitude": 5.0,
+      "origin_time_utc": "2026-10-28T11:56:17.454000+00:00",
+      "latitude": 58.3556,
+      "longitude": -32.2398,
+      "depth_km": 10.0,
+      "place": "Reykjanes Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttnk",
+      "tsunami": 0,
+      "significance": 385
+    },
+    {
+      "id": "us7000ttnc",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-10-28T11:37:49.980000+00:00",
+      "latitude": 58.1005,
+      "longitude": -32.1508,
+      "depth_km": 10.0,
+      "place": "Reykjanes Ridge",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttnc",
+      "tsunami": 0,
+      "significance": 465
+    },
+    {
+      "id": "us7000ttmz",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-28T09:32:56.341000+00:00",
+      "latitude": 5.1505,
+      "longitude": 125.3884,
+      "depth_km": 84.25,
+      "place": "29 km SSW of Sarangani, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttmz",
+      "tsunami": 0,
+      "significance": 355
+    },
     {
       "id": "us7000ttmh",
       "magnitude": 4.7,
@@ -205,102 +301,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttgh",
       "tsunami": 0,
       "significance": 369
-    },
-    {
-      "id": "us7000ttgc",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-27T14:09:06.874000+00:00",
-      "latitude": 36.2043,
-      "longitude": 69.9044,
-      "depth_km": 115.076,
-      "place": "41 km S of Farkhār, Afghanistan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttgc",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ttfx",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-27T12:01:11.952000+00:00",
-      "latitude": 16.3977,
-      "longitude": -93.817,
-      "depth_km": 140.342,
-      "place": "5 km ENE of Tierra y Libertad, Mexico",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttfx",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ttfs",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-27T11:41:22.141000+00:00",
-      "latitude": -23.1819,
-      "longitude": -66.6616,
-      "depth_km": 206.259,
-      "place": "100 km W of El Aguilar, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttfs",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ttfk",
-      "magnitude": 5.2,
-      "origin_time_utc": "2026-10-27T10:50:35.418000+00:00",
-      "latitude": -14.0067,
-      "longitude": 165.6479,
-      "depth_km": 10.0,
-      "place": "191 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttfk",
-      "tsunami": 0,
-      "significance": 416
-    },
-    {
-      "id": "us7000ttfj",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-27T10:06:31.916000+00:00",
-      "latitude": -13.9437,
-      "longitude": 165.7876,
-      "depth_km": 10.0,
-      "place": "184 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttfj",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000ttfe",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-27T09:20:55.730000+00:00",
-      "latitude": -13.9006,
-      "longitude": 165.5556,
-      "depth_km": 10.0,
-      "place": "206 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttfe",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000ttfc",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-27T09:07:45.122000+00:00",
-      "latitude": -15.1739,
-      "longitude": -173.4094,
-      "depth_km": 10.0,
-      "place": "95 km NNE of Hihifo, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttfc",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000ttfb",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-10-27T08:55:23.290000+00:00",
-      "latitude": -13.9141,
-      "longitude": 165.6671,
-      "depth_km": 11.0,
-      "place": "196 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttfb",
-      "tsunami": 0,
-      "significance": 518
     }
   ]
 }
