@@ -1,6 +1,6 @@
 /**
  * Commons lenses for UrbanLenses: shared conditions every resident lives with, read from national and global open
- * data (wind near the ground, the drift between government and private schools). Registers itself on load, after
+ * data (bad-air days, wind near the ground, the drift between government and private schools). Registers itself on load, after
  * urban-lenses.js.
  */
 const UrbanLensesCommons = (() => {
@@ -112,7 +112,50 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Bad-air days. GHAP daily PM2.5 (1 km): how many days a year each block breathes air above India's 24-hour
+    // standard, and how that count moved since 2017. Annual means hide the winter weeks that do most harm.
+    const NAAQS_24H = 60, MANY_DAYS = 100;
+
+    function badairdays(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, d60 = c['pm25_days.days_over_60'], d90 = c['pm25_days.days_over_90'];
+        const d120 = c['pm25_days.days_over_120'], ch = c['pm25_days.days_over_60_change'], mean = c['pm25_days.pm25_2022'];
+        const pop = c['population.population'];
+        if (!d60 || !d60.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr).filter(i => _fin(d60[i]));
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const avg = a => idx.reduce((s, i) => s + v(pop, i) * v(a, i), 0) / all;
+        const many = idx.filter(i => d60[i] >= MANY_DAYS).reduce((s, i) => s + v(pop, i), 0);
+        const stats = [
+            { label: `Days above ${NAAQS_24H} µg/m³ in 2022 (the average resident)`, value: `${Math.round(avg(d60))}` },
+        ];
+        if (d90) stats.push({ label: '…at "poor" or worse (over 90 µg/m³)', value: `${Math.round(avg(d90))}` });
+        if (d120) stats.push({ label: '…at "very poor" or worse (over 120 µg/m³)', value: `${Math.round(avg(d120))}` });
+        stats.push({ label: `Residents with ${MANY_DAYS}+ days above the standard`, value: `${_people(many)} (${_round(100 * many / all, 1)}%)` });
+        if (mean) stats.push({ label: 'Mean PM2.5, 2022 (the average resident)', value: `${_round(avg(mean), 1)} µg/m³` });
+        if (ch && idx.some(i => _fin(ch[i]))) stats.push({ label: 'Change in days above the standard since 2017 (the average resident)', value: `${avg(ch) > 0 ? '+' : ''}${Math.round(avg(ch))}` });
+        const score = Float64Array.from({ length: n }, (_, i) => v(pop, i) * (v(d90, i) + v(d60, i) / 4));
+        spaced(g, idx, score, 5).forEach((i, k) => stats.push({ label: `Worst air ${k + 1}: ${g.codes[i]}`,
+            value: `${Math.round(d60[i])} days over ${NAAQS_24H}${d90 ? `, ${Math.round(v(d90, i))} over 90` : ''}${mean ? `; mean ${_round(v(mean, i), 1)} µg/m³` : ''}; ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = d60[i];
+        const a60 = Math.round(avg(d60));
+        return {
+            columns: { days_over_60: out }, idx, weightKey: 'days_over_60', noHotspots: true,
+            metric: { label: `Days in 2022 above the ${NAAQS_24H} µg/m³ PM2.5 standard, average resident`, value: a60, unit: 'days', higherIs: 'worse' },
+            headline: `The average resident breathed PM2.5 above India's 24-hour standard of ${NAAQS_24H} µg/m³ on ${a60} days in 2022${d90 ? `, ${Math.round(avg(d90))} of them 'poor' or worse` : ''}; ${_people(many)} residents (${_round(100 * many / all, 1)}%) had ${MANY_DAYS} or more such days.${ch && idx.some(i => _fin(ch[i])) ? ` That is ${Math.abs(Math.round(avg(ch)))} days ${avg(ch) < 0 ? 'fewer' : 'more'} than in 2017 (a modelled estimate; weather years differ).` : ''}`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'badairdays', equity: true, title: 'Bad-air days', icon: '😷',
+            question: 'On how many days a year is the air here above the safe limit?',
+            field: { key: 'days_over_60', label: `Days in 2022 above ${NAAQS_24H} µg/m³ PM2.5`, unit: 'days', higherIs: 'worse', ramp: 'reds', domain: [0, 250] },
+            needs: ['pm25_days.days_over_60', 'pm25_days.days_over_90', 'pm25_days.days_over_120', 'pm25_days.days_over_60_change', 'pm25_days.pm25_2022', 'population.population'],
+            method: `Global High Air Pollutants (GHAP, Wei et al., CC BY 4.0): gap-free daily surface PM2.5 on a 1 km grid, estimated by machine learning from satellite aerosol, weather, land use and ground monitors. Each block counts the days in 2022 above India's 24-hour standard (NAAQS, ${NAAQS_24H} µg/m³) and above the CPCB AQI breakpoints for 'poor' (90) and 'very poor' (120), and the change in days above ${NAAQS_24H} since 2017. Residents are weighted by WorldPop. Worst-air picks are blocks ${SPACING_KM} km apart ranked by residents × (poor days + a quarter of the days above the standard). A modelled estimate: it smooths spikes next to a single chimney or junction, and the 2017 to 2022 change mixes cleaner air with different weather years.`,
+            refs: 'Wei et al. 2023, GHAP daily PM2.5 (Earth System Science Data); CPCB National Ambient Air Quality Standards 2009; CPCB National AQI (2014); National Clean Air Programme' },
         { id: 'stillair', equity: true, title: 'Still air', icon: '🍃',
             question: 'Where does the wind barely reach the street, so smoke and exhaust hang in the air?',
             field: { key: 'wind10_ms', label: 'Mean wind speed at 10 m', unit: 'm/s', higherIs: 'better', ramp: 'blues', domain: [1.4, 3] },
@@ -127,6 +170,6 @@ const UrbanLensesCommons = (() => {
             refs: 'UDISE+ 2021-22 and 2024-25 (Ministry of Education) via data.opencity.in; UDISE+ 2022-23 report (student-level data collection)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { stillair, schooldrift });
+    UrbanLenses.register(ENTRIES, { badairdays, stillair, schooldrift });
     return { ENTRIES };
 })();

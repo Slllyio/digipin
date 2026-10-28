@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 97,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
      "value": 611901,
@@ -898,6 +904,12 @@
      "label": "Residents where rain pools",
      "value": 20.5,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 9,
+     "unit": "days",
      "higherIs": "worse"
     },
     "stillair": {
@@ -1986,6 +1998,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 36,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
      "value": 98172,
@@ -2854,6 +2872,12 @@
      "label": "Residents where rain pools",
      "value": 36,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 5,
+     "unit": "days",
      "higherIs": "worse"
     },
     "stillair": {
@@ -3858,6 +3882,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 243,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
      "value": 654997,
@@ -4776,6 +4806,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 12,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
      "value": 18321,
@@ -5476,6 +5512,12 @@
      "label": "Residents where rain pools",
      "value": 25.1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 94,
+     "unit": "days",
      "higherIs": "worse"
     },
     "stillair": {
@@ -6468,6 +6510,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 34,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
      "value": 410360,
@@ -7314,6 +7362,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 119,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
      "value": 181410,
@@ -8152,6 +8206,12 @@
      "label": "Residents where rain pools",
      "value": 43.2,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 144,
+     "unit": "days",
      "higherIs": "worse"
     },
     "stillair": {
@@ -9072,6 +9132,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 175,
+     "unit": "days",
+     "higherIs": "worse"
+    },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
      "value": 189054,
@@ -9928,6 +9994,12 @@
      "label": "Residents where rain pools",
      "value": 26.1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 160,
+     "unit": "days",
      "higherIs": "worse"
     },
     "stillair": {
@@ -10870,6 +10942,12 @@
      "label": "Residents where rain pools",
      "value": 23.7,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "badairdays": {
+     "label": "Days in 2022 above the 60 µg/m³ PM2.5 standard, average resident",
+     "value": 99,
+     "unit": "days",
      "higherIs": "worse"
     },
     "stillair": {

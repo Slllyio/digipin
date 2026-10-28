@@ -2056,6 +2056,48 @@ def solar_atlas(region):
     return spec, _table(level, rows, specs)
 
 
+def pm25_days(region):
+    """Days a year above the Indian 24-hour PM2.5 standard per block (GHAP daily PM2.5, 1 km, 2017 and 2022)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    col = ee.ImageCollection("projects/sat-io/open-datasets/GHAP/GHAP_D1K_PM25").filterBounds(geom)
+    y22, y17 = col.filterDate("2022-01-01", "2023-01-01"), col.filterDate("2017-01-01", "2018-01-01")
+    over = lambda c, lim: c.map(lambda i: i.gt(lim)).sum()
+    img = ee.Image.cat([y22.mean().rename("mean"), over(y22, 60).rename("d60"), over(y22, 90).rename("d90"),
+                        over(y22, 120).rename("d120"), over(y17, 60).rename("d60_17"), y22.reduce(ee.Reducer.percentile([95])).rename("p95")])
+    raw = gee.fetch(gee.to_cells(img, 1000), bbox, level, tile=128)
+    rows = {}
+    for code, x in raw.items():
+        if x.get("mean") is None or x.get("d60") is None:
+            continue
+        r = {"pm25_2022": _r(x["mean"], 1), "days_over_60": _r(x["d60"], 0), "days_over_90": _r(x.get("d90"), 0),
+             "days_over_120": _r(x.get("d120"), 0), "pm25_p95": _r(x.get("p95"), 0)}
+        if x.get("d60_17") is not None:
+            r["days_over_60_2017"] = _r(x["d60_17"], 0)
+            r["days_over_60_change"] = _r(x["d60"] - x["d60_17"], 0)
+        rows[code] = r
+    days = lambda k, label, hi=365: FieldSpec(k, label, agg="mean", unit="days", domain=[0, hi], ramp="reds", higher_is="worse")
+    specs = [
+        days("days_over_60", "Days in 2022 above the Indian 24-hour PM2.5 standard (60 µg/m³)"),
+        days("days_over_90", "Days in 2022 at 'poor' or worse (PM2.5 over 90 µg/m³)", 200),
+        days("days_over_120", "Days in 2022 at 'very poor' or worse (PM2.5 over 120 µg/m³)", 120),
+        FieldSpec("pm25_2022", "Mean daily PM2.5, 2022", agg="mean", unit="µg/m³", domain=[20, 120], ramp="reds", higher_is="worse"),
+        FieldSpec("pm25_p95", "PM2.5 on the worst 5% of days, 2022", agg="mean", unit="µg/m³", domain=[40, 300], ramp="reds", higher_is="worse"),
+        days("days_over_60_2017", "Days in 2017 above 60 µg/m³"),
+        FieldSpec("days_over_60_change", "Change in days above 60 µg/m³, 2017 to 2022", agg="mean", unit="days", domain=[-80, 80], ramp="diverging", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="pm25_days", title="Bad-air days (GHAP daily PM2.5)", level=level, fields=specs, group=GROUP,
+        description="Daily surface PM2.5 at 1 km from the Global High Air Pollutants dataset (GHAP; Wei et al., machine learning "
+                    "over satellite aerosol, weather and ground monitors, gap-free): days in 2022 above India's 24-hour standard "
+                    "of 60 µg/m³ and above the CPCB 'poor' (90) and 'very poor' (120) breakpoints, the yearly mean, the worst-5% "
+                    "day, and days above 60 in 2017 for the change.",
+        source="GHAP daily PM2.5 via the awesome-gee-community-catalog (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (Wei et al., GHAP)", default_field="days_over_60")
+    return spec, _table(level, rows, specs)
+
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -2064,7 +2106,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "solar_atlas": solar_atlas,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "solar_atlas": solar_atlas, "pm25_days": pm25_days,
 }
 
 

@@ -1417,3 +1417,11 @@ Indian cities sit under 2 m/s (light air), so the lens ranks within the city: th
 them those on the top quarter of road PM2.5 exhaust from the traffic model. Picks are those blocks 1.5 km apart ranked
 by residents × exhaust × satellite PM2.5 ÷ wind. Annual means hide calm winter nights and inversions.
 
+## Bad-air days (`badairdays` lens, `pm25_days` dataset, pipeline/cells/ee_layers.py `pm25_days`)
+
+GHAP daily PM2.5 (1 km, gap-free, machine learning over satellite aerosol, weather and monitors) counted per L7 block:
+days in 2022 above India's 24-hour standard (60 µg/m³) and the CPCB AQI 'poor' (90) and 'very poor' (120)
+breakpoints, the 2022 mean, the 95th-percentile day, and days above 60 in 2017. The lens weights by residents, counts
+residents with 100 or more days above the standard and picks blocks 1.5 km apart by residents × (poor days + a quarter
+of the days above 60). The 2017-2022 change mixes policy with weather years, so it is reported, not ranked.
+
