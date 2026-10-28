@@ -995,6 +995,42 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    const AQM_KM = 2, AQM_JUDGE_KM = 15;
+
+    function airmonitorgap(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, mon = c['air_monitors.monitors'], cont = c['air_monitors.continuous'];
+        const pm = c['air_quality.pm25_ugm3'], pop = c['population.population'];
+        if (!mon || !mon.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const m = Float64Array.from({ length: n }, (_, i) => v(mon, i));
+        const near = within(g, m, AQM_KM), cover = within(g, m, AQM_JUDGE_KM);
+        const idx = _residents(fr).filter(i => cover[i] > 0);
+        if (idx.length < 5) return null;
+        const all = idx.reduce((t, i) => t + v(pop, i), 0) || 1;
+        const total = idx.reduce((t, i) => t + m[i], 0), nCont = cont ? idx.reduce((t, i) => t + v(cont, i), 0) : 0;
+        const out2 = idx.filter(i => near[i] < 0.5), outPop = out2.reduce((t, i) => t + v(pop, i), 0);
+        const far = Float64Array.from({ length: n }, (_, i) => (near[i] < 0.5 ? v(pop, i) * Math.max(v(pm, i), 1) : 0));
+        const gain = within(g, far, AQM_KM);
+        const pmFar = pm ? out2.reduce((t, i) => t + v(pop, i) * v(pm, i), 0) / (outPop || 1) : 0;
+        const pmNear = pm ? idx.filter(i => near[i] >= 0.5).reduce((t, i) => t + v(pop, i) * v(pm, i), 0) / ((all - outPop) || 1) : 0;
+        const stats = [
+            { label: 'Air quality monitoring stations', value: `${Math.round(total)}${cont ? ` (${Math.round(nCont)} continuous)` : ''}` },
+            { label: 'Residents per station', value: `${_people(all / (total || 1))}` },
+            { label: `Residents more than ${AQM_KM} km from any station`, value: `${_people(outPop)} (${_round(100 * outPop / all)}%)` },
+            ...(pm ? [{ label: `Satellite PM2.5 where residents live, beyond vs within ${AQM_KM} km of a station`, value: `${_round(pmFar, 1)} vs ${_round(pmNear, 1)} µg/m³` }] : []),
+        ];
+        const farPop = within(g, Float64Array.from({ length: n }, (_, j) => (near[j] < 0.5 ? v(pop, j) : 0)), AQM_KM);
+        spaced(g, idx.filter(i => near[i] < 0.5), gain, 5).forEach((i, k) => stats.push({ label: `New station ${k + 1}: ${g.codes[i]}`, value: `${_people(farPop[i])} unmonitored residents within ${AQM_KM} km${pm ? `; PM2.5 ${_round(v(pm, i), 1)} µg/m³` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = Math.min(near[i], 3);
+        return {
+            columns: { monitors_2km: out }, idx, weightKey: 'monitors_2km', noHotspots: true,
+            metric: { label: `Residents more than ${AQM_KM} km from an air quality station`, value: Math.round(outPop), unit: 'people', higherIs: 'worse' },
+            headline: `${Math.round(total)} pollution control board air quality stations cover this city${cont ? `, ${Math.round(nCont)} of them continuous` : ''}: ${_people(outPop)} residents (${_round(100 * outPop / all)}%) live more than ${AQM_KM} km from any of them${pm && pmFar > pmNear ? `, where satellite PM2.5 runs ${_round(pmFar - pmNear, 1)} µg/m³ higher than near the stations` : ''}.`,
+            stats,
+        };
+    }
+
     const WORK_KM = 2, DORM_SHARE = 0.5;
 
     function homeswork(fr) {
@@ -1212,6 +1248,12 @@ const UrbanLensesCivic = (() => {
             needs: ['service_areas.ward_power_units', 'service_areas.ward_water_units', 'service_areas.ward_police_units', 'service_areas.ward_id', 'population.population'],
             method: 'Utility boundary maps on data.opencity.in (public domain): BESCOM section offices (237) and BWSSB service stations (143) for Bengaluru, TNEB sections and CMWSSB depots for Chennai. Each lived-in block takes the section and field unit holding its centre (DuckDB spatial). For each ward (wards layer) the pipeline counts the distinct sections, field units and police stations (police layer, where mapped) covering its lived-in blocks; when boundaries line up a ward deals with one or two of each. Medians are over residents. The block\'s own section office and service station are in the service areas layer.',
             refs: 'Janaagraha Annual Survey of India\'s City-Systems (coterminous boundaries); 74th Constitutional Amendment; BESCOM, BWSSB, TNEB and CMWSSB via OpenCity' },
+        { id: 'airmonitorgap', equity: true, title: 'Air quality monitor gaps', icon: '📡',
+            question: 'Who lives far from any air quality monitoring station, and where should the next one go?',
+            field: { key: 'monitors_2km', label: `Air quality stations within ${AQM_KM} km (capped at 3)`, unit: 'stations', higherIs: 'better', ramp: 'blues', domain: [0, 3] },
+            needs: ['air_monitors.monitors', 'air_monitors.continuous', 'air_quality.pm25_ugm3', 'population.population'],
+            method: `Pollution control board station maps on data.opencity.in (public domain): TSPCB's continuous stations (November 2023) for Hyderabad; KSPCB's air quality monitor map (KGIS, continuous and manual) with the 2023 continuous station list for Bengaluru, a station on both lists counted once. Straight-line reach of ${AQM_KM} km on the block grid (a station's reading stands for its neighbourhood, not the city); blocks more than ${AQM_JUDGE_KM} km from every station are left out. New-station picks are unmonitored blocks ${SPACING_KM} km apart that bring the most residents within ${AQM_KM} km, weighted by satellite PM2.5 (air quality layer), so the next station goes where many people breathe bad air unmeasured.`,
+            refs: 'CPCB Guidelines for Ambient Air Quality Monitoring (2003); National Clean Air Programme (2019); TSPCB and KSPCB via OpenCity' },
         { id: 'homeswork', equity: false, title: 'Homes versus workplaces', icon: '🏢',
             question: 'How much of the built city is homes and how much is offices, shops and industry, and who lives far from any workplace?',
             field: { key: 'nonres_pct', label: 'Non-residential share of the block\'s built-up ground (GHSL 2018)', unit: '%', higherIs: null, ramp: 'viridis', domain: [0, 40] },
@@ -1389,6 +1431,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit, metrowait, landgrain, floodzones, gwdepth, gwprospect, homeswork });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap, stpnear, basics, sroload, pinsize, potholes, revvillage, bdalayout, watershedpave, studenthousing, vacant2017, landchange, wardfit, metrowait, landgrain, floodzones, gwdepth, gwprospect, homeswork, airmonitorgap });
     return { ENTRIES };
 })();

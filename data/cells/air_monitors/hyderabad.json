@@ -1,0 +1,1 @@
+{"version":1,"dataset":"air_monitors","region":"hyderabad","level":7,"fields":["monitors","continuous","noise_monitors"],"cells":["42224KF","42229CF","4222M4T","422347T","4223995","42249J3","422534J","42259TP","4227K94","4227L22"],"columns":{"monitors":[1,1,1,1,1,1,1,1,1,1],"continuous":[1,1,1,1,1,1,1,1,1,1],"noise_monitors":[null,null,null,null,null,null,null,null,null,null]}}

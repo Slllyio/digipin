@@ -906,6 +906,12 @@
      "unit": "offices",
      "higherIs": "worse"
     },
+    "airmonitorgap": {
+     "label": "Residents more than 2 km from an air quality station",
+     "value": 6595356,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 4.3,
@@ -5423,6 +5429,12 @@
      "value": 19.1,
      "unit": "%",
      "higherIs": "better"
+    },
+    "airmonitorgap": {
+     "label": "Residents more than 2 km from an air quality station",
+     "value": 7632946,
+     "unit": "people",
+     "higherIs": "worse"
     },
     "homeswork": {
      "label": "Non-residential share of built-up ground",

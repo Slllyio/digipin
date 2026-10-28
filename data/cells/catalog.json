@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T20:59:33Z",
+  "generated": "2026-10-28T21:06:13Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -417,6 +417,88 @@
           },
           "json": "aerosol_monthly/pune.json.gz",
           "parquet": "aerosol_monthly/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "air_monitors",
+      "title": "Air and noise monitoring stations",
+      "description": "Air quality (continuous and manual) and noise monitoring stations of the state pollution control boards, from maps on data.opencity.in (hyderabad: TSPCB continuous stations 2023; bengaluru: Bengaluru continuous stations 2023, KSPCB air quality monitors (KGIS), KSPCB noise monitors).",
+      "source": "pipeline/realestate/airmonitors.py (OpenCity TSPCB and KSPCB monitor maps)",
+      "license": "Public domain (TSPCB and KSPCB via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "monitors",
+          "label": "Air quality monitoring stations",
+          "type": "number",
+          "agg": "sum",
+          "unit": "stations",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "continuous",
+          "label": "Continuous (hourly) air quality stations",
+          "type": "number",
+          "agg": "sum",
+          "unit": "stations",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "noise_monitors",
+          "label": "Noise monitoring stations",
+          "type": "number",
+          "agg": "sum",
+          "unit": "stations",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "monitors",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 31,
+          "bbox": {
+            "west": 77.498779296875,
+            "south": 12.90625,
+            "east": 77.766845703125,
+            "north": 13.1083984375
+          },
+          "json": "air_monitors/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 10,
+          "bbox": {
+            "west": 78.333740234375,
+            "south": 17.34912109375,
+            "east": 78.571044921875,
+            "north": 17.546875
+          },
+          "json": "air_monitors/hyderabad.json",
+          "parquet": null
         }
       ]
     },

@@ -33,6 +33,7 @@ const DishaIntel = (() => {
             wildedge: /\b(leopards?|wild ?life conflict|human[- ]wildlife|forest edges?|snake ?bites?|wild animals?|homes? (near|next to|beside) (the )?forests?)\b/i,
             powercuts: /\b(power ?cuts?|power outages?|blackouts?|load[- ]?shedding|(lose|losing|without) (power|electricity)|electricity (cuts?|outages?|supply|reliability)|unreliable (power|electricity))\b/i,
             dumpsmoke: /\b(downwind of\b.{0,20}\b(landfills?|dumps?|garbage|factor(y|ies)|industr\w*)|landfill (smoke|smell|odou?r|fires?)|garbage (smoke|smell|odou?r)|dump(ing)? (site )?(smoke|smell|odou?r|fires?)|smell from\b.{0,20}\b(landfills?|dumps?))\b/i,
+            airmonitorgap: /\b((air (quality|pollution) )?monitor(ing)? stations?|caaqms|pollution monitors?|air monitors?|where (to|should we) (put|place|add) (an? )?(air|pollution) monitors?)\b/i,
             homeswork: /\b(jobs[- ]housing balance|homes (vs\.?|versus|and) (workplaces|offices|jobs)|non[- ]residential (buildings?|share|land)|dormitory (suburbs?|towns?|neighbou?rhoods?)|far from (jobs|workplaces|offices))\b/i,
             gwprospect: /\b(groundwater (prospects?|potential)|borewell (success|yield|prospects?)|where (to|can i) dig a borewell|will a borewell (work|yield))\b/i,
             gwdepth: /\b((groundwater|water table) (levels?|depths?) (by|per|in each|of each) ward|ward[- ]wise groundwater|groundwater monitoring wells?|depth to (ground)?water|how deep is the (ground)?water( table)? (in|under) (my|each|this) ward)\b/i,

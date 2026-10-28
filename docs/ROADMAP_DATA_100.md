@@ -276,6 +276,7 @@ Each item gives four things:
 215. ✅ Groundwater depth and prospects: CMWSSB ward-well depths for Chennai (May and December 2023, March 2021 to 2024 change; median resident 5 m before the monsoon, 15.7 lakh where it was 8 m or deeper) and the Bengaluru groundwater prospect map (outskirts; the built core is masked) into `groundwater_local` | data.opencity.in (public domain) | `gwdepth` and `gwprospect` lenses
 216. ✅ Pune public clinics: PMC's list of its dawakhanas, health centres (32) and maternity homes (16) with coordinates added to `public_care`; `freeclinic` now covers Pune (28.6 lakh residents, 64%, more than a 1 km walk from a listed PMC centre) | data.opencity.in pune-healthcare-hospitals-and-clinics (public domain) | `freeclinic` lens
 217. ✅ Homes versus workplaces for all 13 cities: JRC GHS-BUILT-C 2018 (10 m) per block into `built_class` (non-residential share of built-up ground, buildings over 15 m, roads, open green), checked against Overture businesses; mostly residential pockets hold about a quarter of residents in Bengaluru and Delhi | Earth Engine JRC/GHSL/P2023A/GHS_BUILT_C (CC BY 4.0) | `homeswork` lens
+218. ✅ Air quality monitor gaps: TSPCB (Hyderabad) and KSPCB (Bengaluru) air and noise monitoring stations per block into `air_monitors`; half of Bengaluru's residents and 84% of Hyderabad's live more than 2 km from any station; new-station picks weighted by satellite PM2.5 | data.opencity.in (public domain) | `airmonitorgap` lens
 
 ## Parked for the keys round
 
