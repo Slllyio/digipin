@@ -650,16 +650,15 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 5,
+    "chargers": 2,
     "chargers_by_source": {
-      "osm": 3,
       "overture": 2
     },
     "parking": 8,
     "fuel": 175,
-    "chargers_per_lakh": 0.11,
-    "pct_vkm_within_2km": 21.8,
-    "pct_pop_within_2km": 26.2
+    "chargers_per_lakh": 0.05,
+    "pct_vkm_within_2km": 9.3,
+    "pct_pop_within_2km": 13.0
   },
   "cycling": {
     "lowstress_km": 8679,
@@ -890,16 +889,16 @@
         "pressure": 9.02
       },
       {
-        "digipin": "34MTTF4",
-        "demand_ecs": 216,
-        "supply_ecs": 90,
-        "pressure": 2.4
-      },
-      {
         "digipin": "3MC9LL9",
         "demand_ecs": 126,
         "supply_ecs": 0,
         "pressure": 125.79
+      },
+      {
+        "digipin": "34MTTF4",
+        "demand_ecs": 216,
+        "supply_ecs": 90,
+        "pressure": 2.4
       },
       {
         "digipin": "34MTTFT",

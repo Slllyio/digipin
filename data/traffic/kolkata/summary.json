@@ -577,11 +577,11 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 196,
-    "stops_with_heat_data": 196,
-    "pct_hot_bare": 2.0,
-    "pct_riders_at_hot_bare": 1.9,
-    "median_stop_lst_c": 37.8,
+    "stops": 539,
+    "stops_with_heat_data": 539,
+    "pct_hot_bare": 2.4,
+    "pct_riders_at_hot_bare": 2.5,
+    "median_stop_lst_c": 37.6,
     "top_stops": [
       {
         "digipin": "2TFFTP2",
@@ -594,6 +594,76 @@
         "priority": 292193
       },
       {
+        "digipin": "2TFFT5L",
+        "name": "4B,Bus Stand",
+        "lon": 88.37318,
+        "lat": 22.61891,
+        "residents_5min": 51266,
+        "lst_c": 41.1,
+        "canopy_pct": 7.5,
+        "priority": 289268
+      },
+      {
+        "digipin": "2TFFT5P",
+        "name": "Chiriya more",
+        "lon": 88.37918,
+        "lat": 22.61818,
+        "residents_5min": 52424,
+        "lst_c": 41.0,
+        "canopy_pct": 8.2,
+        "priority": 288751
+      },
+      {
+        "digipin": "2TFFT5P",
+        "name": "Chiria more",
+        "lon": 88.3793,
+        "lat": 22.61872,
+        "residents_5min": 52424,
+        "lst_c": 41.0,
+        "canopy_pct": 8.2,
+        "priority": 288751
+      },
+      {
+        "digipin": "2TFFTP4",
+        "name": "",
+        "lon": 88.37724,
+        "lat": 22.61241,
+        "residents_5min": 51777,
+        "lst_c": 40.5,
+        "canopy_pct": 4.7,
+        "priority": 271389
+      },
+      {
+        "digipin": "2TFCLKL",
+        "name": "Dumdum Metro",
+        "lon": 88.39271,
+        "lat": 22.61985,
+        "residents_5min": 58300,
+        "lst_c": 39.7,
+        "canopy_pct": 8.0,
+        "priority": 252089
+      },
+      {
+        "digipin": "2TFCLKL",
+        "name": "11A Bus Station",
+        "lon": 88.39175,
+        "lat": 22.61936,
+        "residents_5min": 58300,
+        "lst_c": 39.7,
+        "canopy_pct": 8.0,
+        "priority": 252089
+      },
+      {
+        "digipin": "2TFCLP3",
+        "name": "",
+        "lon": 88.41183,
+        "lat": 22.61553,
+        "residents_5min": 63188,
+        "lst_c": 38.7,
+        "canopy_pct": 5.4,
+        "priority": 221171
+      },
+      {
         "digipin": "2TFJM4C",
         "name": "Jhautala Bus Stop",
         "lon": 88.29764,
@@ -604,84 +674,14 @@
         "priority": 220260
       },
       {
-        "digipin": "2TFCLMM",
-        "name": "Lake Town Bus Stop",
-        "lon": 88.4026,
-        "lat": 22.60993,
-        "residents_5min": 65866,
-        "lst_c": 38.3,
-        "canopy_pct": 2.8,
-        "priority": 211272
-      },
-      {
-        "digipin": "2TFCLKM",
-        "name": "Dum Dum Station To Nagerbazar Auto Stand",
-        "lon": 88.39381,
-        "lat": 22.61997,
-        "residents_5min": 54824,
-        "lst_c": 38.9,
-        "canopy_pct": 3.3,
-        "priority": 206758
-      },
-      {
-        "digipin": "2TFCLJL",
-        "name": "30A Bus stand",
-        "lon": 88.39224,
-        "lat": 22.62874,
-        "residents_5min": 54146,
-        "lst_c": 39.1,
-        "canopy_pct": 7.3,
-        "priority": 205793
-      },
-      {
-        "digipin": "2TFJM4F",
-        "name": "Raidighi Bus Stop",
-        "lon": 88.29572,
-        "lat": 22.48465,
-        "residents_5min": 89920,
-        "lst_c": 37.6,
-        "canopy_pct": 14.1,
-        "priority": 200827
-      },
-      {
-        "digipin": "2TFFT47",
-        "name": "Jheel Road Bus Stop",
-        "lon": 88.3723,
-        "lat": 22.62393,
-        "residents_5min": 46722,
-        "lst_c": 40.2,
-        "canopy_pct": 17.6,
-        "priority": 200194
-      },
-      {
-        "digipin": "2TF3F36",
-        "name": "OYO 1760 Salt Lake Sector 1",
-        "lon": 88.40686,
-        "lat": 22.59567,
-        "residents_5min": 56200,
-        "lst_c": 38.8,
-        "canopy_pct": 7.4,
-        "priority": 197757
-      },
-      {
-        "digipin": "2TFCLMP",
-        "name": "Barat Bus Stop",
-        "lon": 88.40548,
-        "lat": 22.61051,
-        "residents_5min": 70368,
-        "lst_c": 38.1,
-        "canopy_pct": 10.6,
-        "priority": 195018
-      },
-      {
-        "digipin": "2TFCLP9",
-        "name": "Amarpally Bhagabati Bus Stop",
-        "lon": 88.41265,
-        "lat": 22.61749,
-        "residents_5min": 64257,
-        "lst_c": 37.9,
-        "canopy_pct": 3.0,
-        "priority": 180755
+        "digipin": "2TFJM47",
+        "name": "Bakultala",
+        "lon": 88.30239,
+        "lat": 22.48402,
+        "residents_5min": 132202,
+        "lst_c": 36.8,
+        "canopy_pct": 8.1,
+        "priority": 218689
       }
     ],
     "thresholds": {
@@ -690,7 +690,8 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "overture": 196
+      "osm": 373,
+      "overture": 166
     }
   },
   "parking": {

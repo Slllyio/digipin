@@ -723,16 +723,46 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 1908,
-    "stops_with_heat_data": 1908,
-    "pct_hot_bare": 25.9,
-    "pct_riders_at_hot_bare": 25.2,
+    "stops": 2187,
+    "stops_with_heat_data": 2187,
+    "pct_hot_bare": 24.6,
+    "pct_riders_at_hot_bare": 23.7,
     "median_stop_lst_c": 39.3,
     "top_stops": [
       {
         "digipin": "42257C3",
-        "name": "",
-        "lon": 78.52318,
+        "name": "Dilsukhnagar",
+        "lon": 78.52409,
+        "lat": 17.36878,
+        "residents_5min": 30649,
+        "lst_c": 39.8,
+        "canopy_pct": 4.6,
+        "priority": 140348
+      },
+      {
+        "digipin": "42257C3",
+        "name": "Dilsukhnagar",
+        "lon": 78.52343,
+        "lat": 17.36843,
+        "residents_5min": 30649,
+        "lst_c": 39.8,
+        "canopy_pct": 4.6,
+        "priority": 140348
+      },
+      {
+        "digipin": "42257C3",
+        "name": "Dilsukhnagar",
+        "lon": 78.52456,
+        "lat": 17.36841,
+        "residents_5min": 30649,
+        "lst_c": 39.8,
+        "canopy_pct": 4.6,
+        "priority": 140348
+      },
+      {
+        "digipin": "42257C3",
+        "name": "Dilsukhnagar",
+        "lon": 78.52286,
         "lat": 17.36844,
         "residents_5min": 30649,
         "lst_c": 39.8,
@@ -742,8 +772,18 @@
       {
         "digipin": "42257C3",
         "name": "",
-        "lon": 78.52384,
-        "lat": 17.3688,
+        "lon": 78.52415,
+        "lat": 17.36841,
+        "residents_5min": 30649,
+        "lst_c": 39.8,
+        "canopy_pct": 4.6,
+        "priority": 140348
+      },
+      {
+        "digipin": "42257C3",
+        "name": "",
+        "lon": 78.52366,
+        "lat": 17.36862,
         "residents_5min": 30649,
         "lst_c": 39.8,
         "canopy_pct": 4.6,
@@ -751,9 +791,9 @@
       },
       {
         "digipin": "4225793",
-        "name": "",
-        "lon": 78.53261,
-        "lat": 17.36848,
+        "name": "Chaitanyapuri Bus Stop",
+        "lon": 78.53291,
+        "lat": 17.36855,
         "residents_5min": 29565,
         "lst_c": 39.7,
         "canopy_pct": 2.8,
@@ -761,9 +801,9 @@
       },
       {
         "digipin": "4225793",
-        "name": "Chaitanyapuri Bus Stop",
-        "lon": 78.53302,
-        "lat": 17.36873,
+        "name": "",
+        "lon": 78.53261,
+        "lat": 17.36848,
         "residents_5min": 29565,
         "lst_c": 39.7,
         "canopy_pct": 2.8,
@@ -788,46 +828,6 @@
         "lst_c": 40.1,
         "canopy_pct": 3.9,
         "priority": 129345
-      },
-      {
-        "digipin": "422579J",
-        "name": "",
-        "lon": 78.53134,
-        "lat": 17.36831,
-        "residents_5min": 29304,
-        "lst_c": 39.5,
-        "canopy_pct": 2.4,
-        "priority": 128703
-      },
-      {
-        "digipin": "4225386",
-        "name": "",
-        "lon": 78.476,
-        "lat": 17.366,
-        "residents_5min": 20304,
-        "lst_c": 41.4,
-        "canopy_pct": 1.7,
-        "priority": 127737
-      },
-      {
-        "digipin": "422537C",
-        "name": "",
-        "lon": 78.47137,
-        "lat": 17.36013,
-        "residents_5min": 19533,
-        "lst_c": 41.2,
-        "canopy_pct": 2.8,
-        "priority": 117714
-      },
-      {
-        "digipin": "4225792",
-        "name": "",
-        "lon": 78.53475,
-        "lat": 17.36825,
-        "residents_5min": 28083,
-        "lst_c": 39.6,
-        "canopy_pct": 9.2,
-        "priority": 117297
       }
     ],
     "thresholds": {
@@ -836,8 +836,9 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "gtfs": 1779,
-      "overture": 129
+      "osm": 519,
+      "gtfs": 1548,
+      "overture": 120
     }
   },
   "parking": {

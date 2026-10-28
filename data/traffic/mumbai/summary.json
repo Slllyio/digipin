@@ -493,16 +493,15 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 28,
+    "chargers": 23,
     "chargers_by_source": {
-      "osm": 5,
       "overture": 23
     },
     "parking": 65,
     "fuel": 254,
-    "chargers_per_lakh": 0.16,
-    "pct_vkm_within_2km": 55.0,
-    "pct_pop_within_2km": 56.3
+    "chargers_per_lakh": 0.13,
+    "pct_vkm_within_2km": 45.6,
+    "pct_pop_within_2km": 46.4
   },
   "cycling": {
     "lowstress_km": 6252,
@@ -578,27 +577,17 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 4985,
-    "stops_with_heat_data": 4985,
-    "pct_hot_bare": 16.8,
-    "pct_riders_at_hot_bare": 15.9,
-    "median_stop_lst_c": 40.4,
+    "stops": 1856,
+    "stops_with_heat_data": 1856,
+    "pct_hot_bare": 14.9,
+    "pct_riders_at_hot_bare": 14.1,
+    "median_stop_lst_c": 40.5,
     "top_stops": [
       {
         "digipin": "4FK7F6P",
         "name": "Yashodham Nagar",
         "lon": 72.95464,
         "lat": 19.20826,
-        "residents_5min": 60114,
-        "lst_c": 45.5,
-        "canopy_pct": 4.2,
-        "priority": 604687
-      },
-      {
-        "digipin": "4FK7F6P",
-        "name": "",
-        "lon": 72.9535,
-        "lat": 19.20859,
         "residents_5min": 60114,
         "lst_c": 45.5,
         "canopy_pct": 4.2,
@@ -615,26 +604,6 @@
         "priority": 539952
       },
       {
-        "digipin": "4FK7FT9",
-        "name": "",
-        "lon": 72.95483,
-        "lat": 19.20795,
-        "residents_5min": 54823,
-        "lst_c": 45.5,
-        "canopy_pct": 6.2,
-        "priority": 539952
-      },
-      {
-        "digipin": "4FK7FT9",
-        "name": "",
-        "lon": 72.95465,
-        "lat": 19.20752,
-        "residents_5min": 54823,
-        "lst_c": 45.5,
-        "canopy_pct": 6.2,
-        "priority": 539952
-      },
-      {
         "digipin": "4FK7J7F",
         "name": "Kisan Nagar",
         "lon": 72.9498,
@@ -643,16 +612,6 @@
         "lst_c": 46.0,
         "canopy_pct": 2.1,
         "priority": 494954
-      },
-      {
-        "digipin": "4FK5MK6",
-        "name": "",
-        "lon": 72.82439,
-        "lat": 18.96612,
-        "residents_5min": 54581,
-        "lst_c": 44.2,
-        "canopy_pct": 3.5,
-        "priority": 484570
       },
       {
         "digipin": "4FK225K",
@@ -675,14 +634,54 @@
         "priority": 457811
       },
       {
-        "digipin": "4FK2TLJ",
+        "digipin": "4FK7CLP",
         "name": "",
-        "lon": 72.88786,
-        "lat": 19.09911,
-        "residents_5min": 39725,
-        "lst_c": 46.7,
-        "canopy_pct": 1.5,
-        "priority": 457811
+        "lon": 72.96239,
+        "lat": 19.20001,
+        "residents_5min": 51210,
+        "lst_c": 44.4,
+        "canopy_pct": 7.6,
+        "priority": 444790
+      },
+      {
+        "digipin": "4FK7FTC",
+        "name": "Sawarkar Nagar",
+        "lon": 72.95058,
+        "lat": 19.20644,
+        "residents_5min": 46186,
+        "lst_c": 45.3,
+        "canopy_pct": 7.3,
+        "priority": 440989
+      },
+      {
+        "digipin": "4FK7CLM",
+        "name": "",
+        "lon": 72.96119,
+        "lat": 19.2007,
+        "residents_5min": 47901,
+        "lst_c": 44.6,
+        "canopy_pct": 4.8,
+        "priority": 437777
+      },
+      {
+        "digipin": "4FK7CLK",
+        "name": "",
+        "lon": 72.95883,
+        "lat": 19.20168,
+        "residents_5min": 40428,
+        "lst_c": 46.3,
+        "canopy_pct": 9.8,
+        "priority": 412066
+      },
+      {
+        "digipin": "4FK7CLK",
+        "name": "",
+        "lon": 72.95761,
+        "lat": 19.20198,
+        "residents_5min": 40428,
+        "lst_c": 46.3,
+        "canopy_pct": 9.8,
+        "priority": 412066
       }
     ],
     "thresholds": {
@@ -691,9 +690,8 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "osm": 1648,
-      "overture": 207,
-      "gtfs": 3130
+      "osm": 1649,
+      "overture": 207
     }
   },
   "parking": {
@@ -753,16 +751,16 @@
         "pressure": 3.59
       },
       {
-        "digipin": "4FKPC2L",
-        "demand_ecs": 875,
-        "supply_ecs": 224,
-        "pressure": 3.9
-      },
-      {
         "digipin": "4FK8MMM",
         "demand_ecs": 863,
         "supply_ecs": 212,
         "pressure": 4.07
+      },
+      {
+        "digipin": "4FKPC2L",
+        "demand_ecs": 875,
+        "supply_ecs": 224,
+        "pressure": 3.9
       }
     ],
     "assumptions": {
