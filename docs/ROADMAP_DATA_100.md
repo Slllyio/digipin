@@ -227,6 +227,7 @@ Each item gives four things:
 166. ✅ Recorded road crashes: Bengaluru Traffic Police station-wise crash and fatality counts 2018-2025 on its 2022 jurisdiction map (OpenCity, public domain) | OpenCity | `crashrecord` lens (new dataset `road_crashes`, pipeline/realestate/btpcrashes.py)
 167. ✅ Mapped slums: corporation slum boundary maps for Chennai, Hyderabad, Mumbai (2015 clusters) and Bengaluru, with notified status where recorded (OpenCity, public domain) | OpenCity | `slummap` lens (new dataset `slums_mapped`, pipeline/realestate/slums.py)
 168. ✅ Public toilets from corporation lists for Pune, Chennai, Mumbai (with women's seats) and Hyderabad, replacing sparse OpenStreetMap counts in the toilets lens (OpenCity) | OpenCity | `toilets` lens (new dataset `toilets_official`, pipeline/realestate/toilets.py)
+169. ✅ Hyderabad bus timetable: TGSRTC GTFS (Telangana open data, February 2026, 5,028 stops, 44,892 weekday trips) via OpenCity, so busgap, transit access and feeder lenses use real frequencies there too | OpenCity | `bus_service` dataset (pipeline/traffic/gtfs_cells.py)
 
 ## Parked for the keys round
 

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T12:34:14Z",
+  "generated": "2026-10-28T12:48:00Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -2815,9 +2815,9 @@
     {
       "id": "bus_service",
       "title": "Bus service (timetable)",
-      "description": "Weekday bus service from the city's open GTFS timetable: stops, routes, departures and the gap between buses at each cell's busiest stop in the 07:00\u201310:00 peak. Only cities with an open feed. Source for this city: BMTC (Namma BMTC app, community GTFS by Vonter).",
-      "source": "pipeline/traffic/gtfs_cells.py over BMTC (Namma BMTC app, community GTFS by Vonter)",
-      "license": "ODbL 1.0",
+      "description": "Weekday bus service from the city's open GTFS timetable: stops, routes, departures and the gap between buses at each cell's busiest stop in the 07:00\u201310:00 peak. Only cities with an open feed (bengaluru: BMTC (Namma BMTC app, community GTFS by Vonter); hyderabad: TGSRTC (Telangana open data GTFS, February 2026, via OpenCity)).",
+      "source": "pipeline/traffic/gtfs_cells.py over bengaluru: BMTC (Namma BMTC app, community GTFS by Vonter); hyderabad: TGSRTC (Telangana open data GTFS, February 2026, via OpenCity)",
+      "license": "ODbL 1.0 (bengaluru); Public domain (OpenCity) (hyderabad)",
       "group": "Traffic & mobility",
       "level": 7,
       "approxCellM": 244,
@@ -2904,6 +2904,18 @@
             "north": 17.773193359375
           },
           "json": "bus_service/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 3147,
+          "bbox": {
+            "west": 77.43505859375,
+            "south": 16.098876953125,
+            "east": 79.955322265625,
+            "north": 18.599365234375
+          },
+          "json": "bus_service/hyderabad.json",
           "parquet": null
         }
       ]

@@ -15,6 +15,8 @@ Feeds (ODbL or similar; downloaded at bake time, not committed):
 
     bengaluru   BMTC, community GTFS scraped from the Namma BMTC app
                 (github.com/Vonter/bmtc-gtfs, ODbL)
+    hyderabad   TGSRTC city buses, Telangana open data GTFS (February 2026)
+                via data.opencity.in (public domain)
     delhi       DTC/cluster buses, Delhi Open Transit Data (needs a free
                 registered key; skipped until the URL and key are set, or
                 pass a downloaded feed with --gtfs)
@@ -43,6 +45,8 @@ PEAK = (7 * 60, 10 * 60)             # weekday morning window, minutes
 FEEDS = {
     "bengaluru": {"url": "https://raw.githubusercontent.com/Vonter/bmtc-gtfs/main/gtfs/bmtc.zip",
                   "name": "BMTC (Namma BMTC app, community GTFS by Vonter)", "license": "ODbL 1.0"},
+    "hyderabad": {"url": "https://data.opencity.in/dataset/88e2d145-7ec6-4666-88dd-6cf18b18312e/resource/1b0d18bb-b2fb-4a79-8ed0-1e071da5790c/download/telangana_opendata_gtfs_tgsrtc_08_february_2026.zip",
+                  "name": "TGSRTC (Telangana open data GTFS, February 2026, via OpenCity)", "license": "Public domain (OpenCity)"},
     # Static GTFS from otd.delhi.gov.in needs a registered key; fill the
     # download URL in once one is issued (until then the region is skipped).
     "delhi": {"url": None, "key_env": "OTD_DELHI_KEY",
@@ -185,12 +189,18 @@ def write(region, rows, source):
         FieldSpec("routes", "Bus routes calling", agg="max", unit="routes", ramp="viridis", higher_is="better"),
         FieldSpec("stops", "Bus stops", agg="sum", unit="stops", ramp="viridis", higher_is="better"),
     ]
+    # One catalog entry serves every city, so name every open feed, not just this run's.
+    feeds = {r: f for r, f in FEEDS.items() if f.get("url")}
+    if region not in feeds:
+        feeds[region] = source
+    names = "; ".join(f"{r}: {f['name']}" for r, f in feeds.items())
     spec = DatasetSpec(
         id="bus_service", title="Bus service (timetable)", level=LEVEL, fields=specs, group="Traffic & mobility",
         description="Weekday bus service from the city's open GTFS timetable: stops, routes, departures and the "
                     "gap between buses at each cell's busiest stop in the 07:00–10:00 peak. Only cities with an "
-                    f"open feed. Source for this city: {source['name']}.",
-        source=f"pipeline/traffic/gtfs_cells.py over {source['name']}", license=source["license"],
+                    f"open feed ({names}).",
+        source=f"pipeline/traffic/gtfs_cells.py over {names}",
+        license="; ".join(f"{f['license']} ({r})" for r, f in feeds.items()),
         default_field="best_headway_min", extrude=False)
     table = store.bin_records(({"digipin": c, **r} for c, r in rows.items()), LEVEL, specs)
     return store.write_dataset(CELLS, spec, region, table, parquet=False)
