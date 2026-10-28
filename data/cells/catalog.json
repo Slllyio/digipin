@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T15:50:48Z",
+  "generated": "2026-10-28T16:02:50Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -7834,6 +7834,88 @@
             "north": 18.621337890625
           },
           "json": "drains/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "eco_limits",
+      "title": "Coastal and eco-sensitive building limits",
+      "description": "How much of each block lies where building is restricted by law: the Coastal Regulation Zone from Tamil Nadu's official CRZ line (Chennai), and the Bannerghatta eco-sensitive zone and protected areas from the Karnataka Forest Department's 2022 boundaries (Bengaluru), via data.opencity.in.",
+      "source": "pipeline/realestate/ecolimits.py (TNGIS CRZ line; Karnataka Forest Department ESZ and protected areas)",
+      "license": "Public domain (TNGIS and Karnataka Forest Department via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "crz_pct",
+          "label": "Share of the block in the Coastal Regulation Zone (Chennai)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "worse"
+        },
+        {
+          "key": "esz_pct",
+          "label": "Share of the block in an eco-sensitive zone (Bengaluru)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "worse"
+        },
+        {
+          "key": "protected_pct",
+          "label": "Share of the block in a national park or conservation reserve (Bengaluru)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "crz_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 67,
+          "bbox": {
+            "west": 77.57568359375,
+            "south": 12.829345703125,
+            "east": 77.604248046875,
+            "north": 12.89306640625
+          },
+          "json": "eco_limits/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 725,
+          "bbox": {
+            "west": 80.232177734375,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "eco_limits/chennai.json",
           "parquet": null
         }
       ]

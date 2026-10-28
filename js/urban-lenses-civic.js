@@ -1,7 +1,7 @@
 /**
  * Civic lenses for UrbanLenses: what statutory plans and municipal facility lists say about a block (planned road
  * widths and new links, cremation and burial grounds, public borewells, waste bins, large
- * projects with environmental clearance). They read datasets baked from
+ * projects with environmental clearance, coastal and eco-sensitive building limits). They read datasets baked from
  * city and development-authority maps. Registers itself on load, after urban-lenses.js.
  */
 const UrbanLensesCivic = (() => {
@@ -216,7 +216,52 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Building limits. Inside the Coastal Regulation Zone (CRZ Notification 2019) new building is barred or capped at the
+    // old floor area, and inside an eco-sensitive zone commercial and large construction need clearance or are barred.
+    // Residents and built-up land there sit on a legal ceiling that the master plan alone does not show.
+    function buildlimits(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], built = c['built_up.built_pct'];
+        const crz = c['eco_limits.crz_pct'], esz = c['eco_limits.esz_pct'], pa = c['eco_limits.protected_pct'];
+        const pj = c['big_projects.projects'];
+        if (!pop) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const share = i => Math.min(100, Math.max(v(crz, i), v(esz, i) + v(pa, i)));
+        const idx = [];
+        for (let i = 0; i < n; i++) if (share(i) > 0) idx.push(i);
+        if (idx.length < 5) return null;
+        let pIn = 0, bIn = 0, pjIn = 0, pCrz = 0, pEsz = 0;
+        for (const i of idx) {
+            const f = share(i) / 100;
+            pIn += v(pop, i) * f; bIn += v(built, i) / 100 * g.cellKm2 * f; pjIn += v(pj, i) * f;
+            pCrz += v(pop, i) * v(crz, i) / 100; pEsz += v(pop, i) * Math.min(100, v(esz, i) + v(pa, i)) / 100;
+        }
+        const all = _sumOver(pop, Array.from({ length: n }, (_, i) => i), () => true);
+        const stats = [
+            { label: 'Residents inside a coastal or eco-sensitive building limit', value: `${_people(pIn)} (${_round(100 * pIn / (all || 1), 1)}%)` },
+            { label: 'Built-up land inside it', value: `${_round(bIn, 1)} km²` },
+        ];
+        if (crz) stats.push({ label: '…in the Coastal Regulation Zone', value: _people(pCrz) });
+        if (esz || pa) stats.push({ label: '…in an eco-sensitive zone or protected area', value: _people(pEsz) });
+        if (pj && pjIn > 0) stats.push({ label: 'Large projects with clearance standing inside it', value: _people(pjIn) });
+        spaced(g, idx.filter(i => v(pop, i) > 0), Float64Array.from({ length: n }, (_, i) => v(pop, i) * share(i))).forEach((i, k) =>
+            stats.push({ label: `Most affected ${k + 1}: ${g.codes[i]}`, value: `${_round(share(i))}% of the block restricted, ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = _round(share(i));
+        return {
+            columns: { limit_pct: out }, idx, weightKey: 'limit_pct', noHotspots: true,
+            metric: { label: 'Residents inside a coastal or eco-sensitive building limit', value: _round(100 * pIn / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pIn)} residents (${_round(100 * pIn / (all || 1), 1)}%) and ${_round(bIn, 1)} km² of built-up land sit inside ${crz ? 'the Coastal Regulation Zone' : 'an eco-sensitive zone or protected area'}, where new building is barred or capped at the existing floor area. ${crz ? 'The zone is rebuilt from the official CRZ line; site-level limits need the approved Coastal Zone Management Plan map.' : 'Boundaries are the Forest Department\'s 2022 maps.'}`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'buildlimits', equity: false, title: 'Coastal and eco-sensitive building limits', icon: '🚧',
+            question: 'Where does coastal or forest law cap new building?',
+            field: { key: 'limit_pct', label: 'Share of the block inside the Coastal Regulation Zone or an eco-sensitive zone', unit: '%', higherIs: 'worse', ramp: 'blues', domain: [0, 100] },
+            needs: ['eco_limits.crz_pct', 'eco_limits.esz_pct', 'eco_limits.protected_pct', 'population.population', 'built_up.built_pct', 'big_projects.projects'],
+            method: 'Chennai: the Tamil Nadu CRZ boundary (TNGIS) on data.opencity.in (public domain) draws the landward CRZ line 500 m from the high-tide line and the edges of the zone along the tidal Adyar, Cooum and Buckingham Canal, not the zone itself; the zone is rebuilt on a 20 m raster as the 500 m band seaward of the line plus the narrow walled strips along the waterways (a walled pocket more than 600 m wide is ordinary land between two zones). Bengaluru: the Karnataka Forest Department 2022 boundaries of the Bannerghatta National Park eco-sensitive zone and the protected areas (Bannerghatta, Puttenahalli Lake Bird Conservation Reserve), filled on the same raster. Each block carries the share of its land inside; residents and built-up land are counted pro rata. The CRZ category (I-IV) and the exact high-tide line need the approved Coastal Zone Management Plan map.',
+            refs: 'CRZ Notification 2019 (MoEFCC); Eco-sensitive zone notification for Bannerghatta National Park (MoEFCC, 2020); TNGIS and Karnataka Forest Department via OpenCity' },
         { id: 'bigprojects', equity: false, title: 'Large-project pipeline', icon: '🏗️',
             question: 'Where are big apartment and commercial projects coming up?',
             field: { key: 'projects_2km', label: `Large projects (20,000 m²+) cleared within ${PROJ_KM} km`, unit: 'projects', higherIs: 'better', ramp: 'heat', domain: [0, 30] },
@@ -249,6 +294,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits });
     return { ENTRIES };
 })();

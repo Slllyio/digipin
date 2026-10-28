@@ -870,6 +870,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "buildlimits": {
+     "label": "Residents inside a coastal or eco-sensitive building limit",
+     "value": 0,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "bigprojects": {
      "label": "Residents with 5+ large projects within 2 km",
      "value": 47.1,
@@ -2649,6 +2655,12 @@
     "waterlog": {
      "label": "Residents where rain pools",
      "value": 36,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "buildlimits": {
+     "label": "Residents inside a coastal or eco-sensitive building limit",
+     "value": 4.5,
      "unit": "%",
      "higherIs": "worse"
     },
