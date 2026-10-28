@@ -870,6 +870,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "watergap": {
+     "label": "Residents with no water line within 250 m",
+     "value": 3.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "birdlife": {
      "label": "Median bird species expected in 200 records",
      "value": 56.8,

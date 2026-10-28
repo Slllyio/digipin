@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T17:43:56Z",
+  "generated": "2026-10-28T17:47:48Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -39416,6 +39416,88 @@
           },
           "json": "water_history/pune.json",
           "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "water_lines",
+      "title": "Piped water supply lines (BWSSB maps)",
+      "description": "BWSSB's detailed water supply line maps for Bengaluru on data.opencity.in: water line length per block, all diameters, and mains wider than 300 mm.",
+      "source": "pipeline/realestate/waterlines.py (OpenCity BWSSB water supply line maps)",
+      "license": "Public domain (BWSSB via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "pipe_m",
+          "label": "Water supply line length",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            3.8921612955519285,
+            5971.828899329408
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "main_m",
+          "label": "Water mains wider than 300 mm",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m",
+          "domain": [
+            3.892029112351536,
+            2919.9467240572476
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "in_area",
+          "label": "Inside the municipal corporation's wards",
+          "type": "number",
+          "agg": "max",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "pipe_m",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 12615,
+          "bbox": {
+            "west": 77.459228515625,
+            "south": 12.82275390625,
+            "east": 77.780029296875,
+            "north": 13.1435546875
+          },
+          "json": "water_lines/bengaluru/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
         }
       ]
     },

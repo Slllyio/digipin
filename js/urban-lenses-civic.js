@@ -505,7 +505,53 @@ const UrbanLensesCivic = (() => {
         };
     }
 
+    // Piped water gaps. Where BWSSB's map shows no water line in or next to a block, homes rely on borewells and tankers.
+    // Same yardsticks as the sewer-gap lens: none within WATER_NEAR_KM, or lines along under WATER_THIN_PCT of the streets.
+    const WATER_NEAR_KM = 0.25, WATER_THIN_PCT = 30, WATER_JUDGE_KM = 2;
+
+    function watergap(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'], wp = c['water_lines.pipe_m'];
+        const road = c['osm_roads.road_km_km2'], area = c['water_lines.in_area'], sw = c['sewers.sewer_m'], wells = c['borewells.borewells'];
+        if (!pop || !wp || !wp.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const arr = Float64Array.from({ length: n }, (_, i) => v(wp, i));
+        const svc = within(g, arr, WATER_JUDGE_KM), near = within(g, arr, WATER_NEAR_KM);
+        const inCity = area && area.some(x => x > 0), idx = [];
+        for (let i = 0; i < n; i++) if (v(pop, i) > 0 && svc[i] > 0 && (!inCity || v(area, i) > 0)) idx.push(i);
+        if (idx.length < 5) return null;
+        const pct = i => (road && v(road, i) > 0 ? Math.min(100, 100 * v(wp, i) / (v(road, i) * g.cellKm2 * 1000)) : NaN);
+        const none = idx.filter(i => !(near[i] > 0)), thin = idx.filter(i => near[i] > 0 && pct(i) < WATER_THIN_PCT);
+        const all = _sumOver(pop, idx, () => true), pNone = _sumOver(pop, none, () => true), pThin = _sumOver(pop, thin, () => true);
+        const stats = [
+            { label: 'Water supply lines mapped', value: `${_people(arr.reduce((a, x) => a + x, 0) / 1000)} km` },
+            { label: `Residents with no water line within ${WATER_NEAR_KM * 1000} m`, value: `${_people(pNone)} (${_round(100 * pNone / (all || 1))}%)` },
+            { label: `Residents with a line nearby but along under ${WATER_THIN_PCT}% of their streets`, value: `${_people(pThin)} (${_round(100 * pThin / (all || 1))}%)` },
+        ];
+        if (sw && sw.some(x => x > 0)) {
+            const swNear = within(g, Float64Array.from({ length: n }, (_, i) => v(sw, i)), WATER_NEAR_KM);
+            stats.push({ label: '…with neither a water line nor a sewer within 250 m', value: _people(_sumOver(pop, none.filter(i => !(swNear[i] > 0)), () => true)) });
+        }
+        if (wells) stats.push({ label: 'Public borewells in blocks with no water line nearby', value: _people(none.reduce((a, i) => a + v(wells, i), 0)) });
+        const gapPop = Float64Array.from({ length: n }, (_, i) => (near[i] > 0 ? 0 : v(pop, i)));
+        const need = within(g, gapPop, 0.5);
+        spaced(g, none, need).forEach((i, k) => stats.push({ label: `Water line next ${k + 1}: ${g.codes[i]}`, value: `${_people(need[i])} residents within 500 m with no water line close by` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = near[i] > 0 ? (_fin(pct(i)) ? _round(pct(i)) : 100) : 0;
+        return {
+            columns: { water_cover_pct: out }, idx, weightKey: 'water_cover_pct', noHotspots: true,
+            metric: { label: `Residents with no water line within ${WATER_NEAR_KM * 1000} m`, value: _round(100 * pNone / (all || 1), 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(pNone)} residents (${_round(100 * pNone / (all || 1))}%) inside the corporation have no water supply line within ${WATER_NEAR_KM * 1000} m on BWSSB's map, and ${_people(pThin)} more live where lines run along under ${WATER_THIN_PCT}% of the streets; these homes lean on borewells and tankers. Lines laid since the map (Cauvery stage V reached many of the 110 villages from 2024) will be missing.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'watergap', equity: true, title: 'Piped water gaps', icon: '🚰',
+            question: 'Which neighbourhoods have no piped water line nearby?',
+            field: { key: 'water_cover_pct', label: 'Water line length as a share of street length (0 = none within 250 m)', unit: '%', higherIs: 'better', ramp: 'blues', domain: [0, 100] },
+            needs: ['water_lines.pipe_m', 'water_lines.in_area', 'osm_roads.road_km_km2', 'sewers.sewer_m', 'borewells.borewells', 'population.population'],
+            method: `BWSSB's detailed water supply line maps on data.opencity.in (public domain): lines of 300 mm or less (about 10,800 km) and mains wider than 300 mm (about 940 km), cut into 25 m pieces and summed per block. A lived-in block inside the corporation's wards and within ${WATER_JUDGE_KM} km of a mapped line has no water line nearby when none runs in it or within ${WATER_NEAR_KM * 1000} m, and is thinly served when its line length is under ${WATER_THIN_PCT}% of its OpenStreetMap street length. It also counts residents with neither a water line nor a sewer within 250 m and public borewells in unpiped blocks. Picks are unpiped blocks ${SPACING_KM} km apart with the most unserved residents within 500 m. Bengaluru only; a line nearby does not mean every home is connected or gets water daily.`,
+            refs: 'BWSSB water supply line maps via OpenCity; CPHEEO Manual on Water Supply and Treatment (1999); AMRUT 2.0; BWSSB Cauvery Water Supply Scheme stage V' },
         { id: 'stormgap', equity: true, title: 'Storm-drain gaps on wet streets', icon: '🌧️',
             question: 'Which waterlogging-prone streets have no storm-water drains?',
             field: { key: 'storm_cover_pct', label: 'Storm-drain length as a share of street length', unit: '%', higherIs: 'better', ramp: 'blues', domain: [0, 100] },
@@ -580,6 +626,6 @@ const UrbanLensesCivic = (() => {
             refs: 'BDA Revised Master Plan 2015 (Zoning of Land Use and Regulations); Karnataka TDR rules; OpenCity Bengaluru road width map' },
     ];
 
-    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap });
+    UrbanLenses.register(ENTRIES, { roadplan, lastrites, wellrisk, binreach, bigprojects, buildlimits, policereach, lakebuffer, parkreach, drainbuffer, birdlife, stormgap, watergap });
     return { ENTRIES };
 })();
