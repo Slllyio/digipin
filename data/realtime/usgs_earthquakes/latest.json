@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-10-28T14:17:47Z",
-  "count": 25,
+  "generated_at_iso": "2026-10-28T19:44:30Z",
+  "count": 21,
   "records": [
+    {
+      "id": "us7000ttpk",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-28T15:40:55.130000+00:00",
+      "latitude": 44.2394,
+      "longitude": 82.8042,
+      "depth_km": 10.0,
+      "place": "81 km ENE of Mazha, China",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttpk",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000ttpe",
+      "magnitude": 5.5,
+      "origin_time_utc": "2026-10-28T15:07:52.050000+00:00",
+      "latitude": 35.7015,
+      "longitude": 140.7059,
+      "depth_km": 41.356,
+      "place": "5 km ESE of Asahi, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttpe",
+      "tsunami": 0,
+      "significance": 484
+    },
     {
       "id": "us7000ttp7",
       "magnitude": 4.5,
@@ -229,78 +253,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttke",
       "tsunami": 0,
       "significance": 449
-    },
-    {
-      "id": "us7000ttis",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-10-27T18:57:53.135000+00:00",
-      "latitude": 32.5388,
-      "longitude": 93.9028,
-      "depth_km": 10.0,
-      "place": "210 km ENE of Nagqu, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttis",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us7000tth4",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-27T16:07:53.845000+00:00",
-      "latitude": 18.2708,
-      "longitude": 119.8508,
-      "depth_km": 10.0,
-      "place": "70 km WNW of Callaguip, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tth4",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000ttgq",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-27T15:31:42.073000+00:00",
-      "latitude": -23.7469,
-      "longitude": -179.7358,
-      "depth_km": 509.065,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttgq",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000ttgm",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-27T15:26:02.987000+00:00",
-      "latitude": 7.706,
-      "longitude": -81.584,
-      "depth_km": 10.0,
-      "place": "27 km W of Río Grande, Panama",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttgm",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000ttgf",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-10-27T14:44:00.933000+00:00",
-      "latitude": -9.1162,
-      "longitude": 110.3305,
-      "depth_km": 10.0,
-      "place": "128 km S of Pundong, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttgf",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us7000ttgh",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-27T14:43:09.497000+00:00",
-      "latitude": -9.3662,
-      "longitude": 110.2973,
-      "depth_km": 20.614,
-      "place": "156 km S of Pundong, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttgh",
-      "tsunami": 0,
-      "significance": 369
     }
   ]
 }

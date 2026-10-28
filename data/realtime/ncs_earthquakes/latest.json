@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-10-28T14:17:56Z",
+  "generated_at_iso": "2026-10-28T19:44:20Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-28 23:18:25|32.656,94.064",
+      "magnitude": 4.5,
+      "origin_time": "2026-10-28 23:18:25",
+      "latitude": 32.656,
+      "longitude": 94.064,
+      "depth_km": 15.0,
+      "region": "China",
+      "location": "515km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-28 22:16:08|27.747,87.743",
+      "magnitude": 2.7,
+      "origin_time": "2026-10-28 22:16:08",
+      "latitude": 27.747,
+      "longitude": 87.743,
+      "depth_km": 10.0,
+      "region": "Nepal",
+      "location": "63km NW of Yuksom, Sikkim, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-28 20:16:42|31.439,93.422",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-28 20:16:42",
+      "latitude": 31.439,
+      "longitude": 93.422,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "403km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-28 19:59:54|30.863,93.447",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-28 19:59:54",
+      "latitude": 30.863,
+      "longitude": 93.447,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "342km NNW of Basar, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-28 18:03:31|36.519,71.386",
       "magnitude": 4.4,
@@ -1606,50 +1650,6 @@
       "depth_km": 30.0,
       "region": "Tibet",
       "location": "136km NW of Yuksom, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-19 10:34:32|26.756,96.092",
-      "magnitude": 3.6,
-      "origin_time": "2026-10-19 10:34:32",
-      "latitude": 26.756,
-      "longitude": 96.092,
-      "depth_km": 124.0,
-      "region": "Myanmar",
-      "location": "122km SSW of Changlang, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-19 04:01:46|26.466,92.450",
-      "magnitude": 2.9,
-      "origin_time": "2026-10-19 04:01:46",
-      "latitude": 26.466,
-      "longitude": 92.45,
-      "depth_km": 14.0,
-      "region": "Nagaon, Assam",
-      "location": "39km WSW of Tezpur, Assam, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-19 03:40:00|36.380,71.376",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-19 03:40:00",
-      "latitude": 36.38,
-      "longitude": 71.376,
-      "depth_km": 135.0,
-      "region": "Afghanistan",
-      "location": "108km SE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-19 03:31:18|25.389,90.913",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-19 03:31:18",
-      "latitude": 25.389,
-      "longitude": 90.913,
-      "depth_km": 12.0,
-      "region": "West Khasi Hills, Meghalaya",
-      "location": "72km E of Tura, Meghalaya, India",
       "review_status": "Reviewed"
     }
   ]
