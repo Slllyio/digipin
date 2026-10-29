@@ -1733,3 +1733,14 @@ capped at six times either way, and blocks share their seat's figure by 2020 res
 GHSL's. Seats cut by the box edge (Dum Dum, Bidhannagar, Bhosari, Thane) keep GHSL's figures. Sharing by built volume
 favours tall resettlement blocks over low slums, so a few blocks reach 400,000-550,000 people per km² (Lallubhai
 Compound in Mankhurd).
+
+## Who holds the assembly seat (`mlaseats` lens in js/urban-lenses-wards.js, `assembly_results` dataset)
+
+`pipeline/realestate/assembly.py` reads one public-domain results file per state from OpenCity (ECI tables for Delhi
+2025, Maharashtra 2024, West Bengal 2026 and Tamil Nadu 2026; Telangana's 2023 detailed results sheet; Karnataka's 2023
+general-election rows from a Lokdhaba-style table) and keeps only seat numbers and names, parties and votes. Per seat it
+takes the winner, runner-up, margin and winner's share over all votes including NOTA, and joins them to blocks through
+`constituencies` by number and name (number alone where DataMeet has no name, except in the three-state Delhi box).
+Parties are coded by a fixed `PARTIES` list that the lens mirrors, with the block's 2024 Lok Sabha winner coded the same
+way so the lens can count residents whose MLA and MP differ. West Bengal's Falta seat has no counted votes in the file
+and is left out.

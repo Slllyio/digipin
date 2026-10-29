@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T08:30:26Z",
+  "generated": "2026-10-29T08:53:52Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -1693,6 +1693,317 @@
           },
           "json": "anganwadis/hyderabad.json",
           "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "assembly_results",
+      "title": "Assembly seat: latest MLA election",
+      "description": "The party holding each block's assembly seat after the latest state election, the runner-up and the winning margin, from the Election Commission's results via data.opencity.in: Delhi 2025, Maharashtra 2024, West Bengal 2026, Tamil Nadu 2026, Telangana 2023 and Karnataka 2023. Seats are joined through the constituencies dataset by number and name. Candidate names are not kept.",
+      "source": "pipeline/realestate/assembly.py (ECI assembly results via OpenCity)",
+      "license": "Public domain (Election Commission of India via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "mla_party",
+          "label": "Party holding the assembly seat",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "Aam Aadmi Party",
+            "All India Majlis-E-Ittehadul Muslimeen",
+            "All India Secular Front",
+            "All India Trinamool Congress",
+            "Bharat Rashtra Samithi",
+            "Bharatiya Janata Party",
+            "Dravida Munnetra Kazhagam",
+            "Indian National Congress",
+            "Nationalist Congress Party",
+            "Nationalist Congress Party- Sharadchandra Pawar",
+            "Samajwadi Party",
+            "Shiv Sena",
+            "Shiv Sena (Uddhav Balasaheb Thackeray)",
+            "Tamilaga Vettri Kazhagam"
+          ]
+        },
+        {
+          "key": "mla_runner_up",
+          "label": "Runner-up party in the assembly seat",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "Aam Aadmi Party",
+            "All India Anna Dravida Munnetra Kazhagam",
+            "All India Majlis-E-Ittehadul Muslimeen",
+            "All India Trinamool Congress",
+            "Bahujan Samaj Party",
+            "Bharat Rashtra Samithi",
+            "Bharatiya Janata Party",
+            "Communist Party of India (Marxist)",
+            "Desiya Murpokku Dravida Kazhagam",
+            "Dravida Munnetra Kazhagam",
+            "Independent",
+            "Indian National Congress",
+            "Janata Dal (Secular)",
+            "Janata Dal (United)",
+            "Lok Janshakti Party(Ram Vilas)",
+            "MBT",
+            "Maharashtra Navnirman sena",
+            "Nationalist Congress Party",
+            "Nationalist Congress Party- Sharadchandra Pawar",
+            "Peasants And Workers Party of India",
+            "Shiv Sena",
+            "Shiv Sena (Uddhav Balasaheb Thackeray)",
+            "Tamilaga Vettri Kazhagam"
+          ]
+        },
+        {
+          "key": "mla_margin_pct",
+          "label": "Assembly winning margin",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of votes",
+          "domain": [
+            0,
+            40
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "mla_share_pct",
+          "label": "Winner's vote share in the assembly seat",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of votes",
+          "domain": [
+            20,
+            80
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "mla_year",
+          "label": "Year of the latest assembly election",
+          "type": "number",
+          "agg": "max",
+          "unit": "year",
+          "domain": [
+            2023,
+            2026
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "mla_ac",
+          "label": "Assembly seat number",
+          "type": "number",
+          "agg": "min",
+          "domain": [
+            1,
+            215
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "mla_party_id",
+          "label": "Party holding the assembly seat (lens code)",
+          "type": "number",
+          "agg": "mode",
+          "domain": [
+            0.0,
+            16.0
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "mp_party_id",
+          "label": "Party of the 2024 Lok Sabha winner (lens code)",
+          "type": "number",
+          "agg": "mode",
+          "domain": [
+            1.0,
+            13.0
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "mla_party",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "assembly_results/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "chennai",
+          "cells": 9018,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "assembly_results/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 28360,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.40576171875,
+            "east": 77.3427734375,
+            "north": 28.88037109375
+          },
+          "json": "assembly_results/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "assembly_results/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "assembly_results/kolkata.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 9470,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "assembly_results/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "assembly_results/pune/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
         }
       ]
     },
@@ -4570,7 +4881,7 @@
           "unit": "score",
           "domain": [
             0,
-            1111225
+            1122083
           ],
           "ramp": "reds",
           "higherIs": "worse"
@@ -6699,8 +7010,8 @@
     {
       "id": "constituencies",
       "title": "Assembly and Lok Sabha constituencies",
-      "description": "The assembly constituency (and the Lok Sabha constituency it sits in) holding each lived-in block's centre: 2008 delimitation boundaries scraped by DataMeet from the Election Commission's polling station locator (github.com/datameet/maps). Some boundaries are shifted and a few names are wrong or missing; check the Election Commission before relying on a seat at an edge. Bengaluru and Hyderabad use the state maps on OpenCity instead (Karnataka KGIS 2018, Telangana 2018), which fit 2024 electors better, with numbers and Lok Sabha seats from the Election Commission's 2024 segment table. Jaipur's seats are badly shifted.",
-      "source": "pipeline/realestate/constituencies.py (DataMeet India assembly constituencies; OpenCity state maps for Bengaluru and Hyderabad)",
+      "description": "The assembly constituency (and the Lok Sabha constituency it sits in) holding each lived-in block's centre: 2008 delimitation boundaries scraped by DataMeet from the Election Commission's polling station locator (github.com/datameet/maps). Some boundaries are shifted and a few names are wrong or missing; check the Election Commission before relying on a seat at an edge. Bengaluru, Hyderabad, Mumbai and Pune use the state maps on OpenCity instead (Karnataka KGIS 2018, Telangana 2018, Maharashtra 2019), which fit 2024 electors better, with numbers and Lok Sabha seats from the Election Commission's 2024 segment table. Jaipur's seats are badly shifted.",
+      "source": "pipeline/realestate/constituencies.py (DataMeet India assembly constituencies; OpenCity state maps for Bengaluru, Hyderabad, Mumbai and Pune)",
       "license": "CC BY 2.5 India (DataMeet); public domain (OpenCity state maps)",
       "group": "Real estate",
       "level": 7,
@@ -6721,9 +7032,12 @@
             "Amberpet",
             "Andheri East",
             "Andheri West",
+            "AndheriEast",
+            "AndheriWest",
             "Anekal",
             "Anna Nagar",
             "Anushakti Nagar",
+            "AnushaktiNagar",
             "Avadi",
             "B.T.M Layout",
             "Babarpur",
@@ -6753,8 +7067,10 @@
             "Beri",
             "Bhabanipur",
             "Bhandup West",
+            "BhandupWest",
             "Bhangar",
             "Bhiwandi Rural",
+            "BhiwandiRural",
             "Bhopal Dakshin-Paschim",
             "Bhopal Madhya",
             "Bhopal Uttar",
@@ -6813,6 +7129,8 @@
             "Garhi Sampla-Kilo",
             "Ghatkopar East",
             "Ghatkopar West",
+            "GhatkoparEast",
+            "GhatkoparWest",
             "Ghatlodia",
             "Ghonda",
             "Gokalpur",
@@ -6844,6 +7162,7 @@
             "Jayanagar",
             "Jhotwara",
             "Jogeshwari East",
+            "JogeshwariEast",
             "Jorasanko",
             "Jubilee Hills",
             "K.R. Pura",
@@ -6854,21 +7173,25 @@
             "Kalol",
             "Kamarhati",
             "Kandivali East",
+            "KandivaliEast",
             "Karawal Nagar",
             "Karol Bagh",
             "Karwan",
             "Kasba",
             "Kasba Peth",
+            "KasbaPeth",
             "Kashipurbelgachhia",
             "Kasturba Nagar",
             "Khadakwasala",
             "Khairatabad",
             "Kharkhauda",
             "Khed Alandi",
+            "KhedAlandi",
             "Kirari",
             "Kolathur",
             "Kolkata Port",
             "Kondli",
+            "Kopri",
             "Kopri-Pachpakhadi",
             "Kothrud",
             "Krishna Nagar",
@@ -6893,7 +7216,9 @@
             "Maheswaram",
             "Mahim",
             "Malabar Hill",
+            "MalabarHill",
             "Malad West",
+            "MaladWest",
             "Malakpet",
             "Malihabad",
             "Malkajgiri",
@@ -6902,17 +7227,20 @@
             "Mangol Puri",
             "Maniktala",
             "Mankhurd Shivaji Nagar",
+            "MankhurdShivajiNagar",
             "Matia Mahal",
             "Matiala",
             "Medchal",
             "Mehrauli",
             "Metiaburuz",
             "Mira Bhayandar",
+            "MiraBhayandar",
             "Model Town",
             "Mohanlalganj",
             "Moti Nagar",
             "Mulund",
             "Mumbadevi",
+            "Mumbra",
             "Mumbra-Kalwa",
             "Mundka",
             "Musheerabad",
@@ -6926,6 +7254,7 @@
             "New Delhi",
             "Noida",
             "Okhla",
+            "Ovala",
             "Ovala ?Majiwada",
             "Padmanaba Nagar",
             "Padmanabanagar",
@@ -6940,6 +7269,7 @@
             "Pimpri",
             "Pulakeshinagar",
             "Pune Cantonment",
+            "PuneCantonment",
             "Purandar",
             "Quthbullapur",
             "R.K. Puram",
@@ -6986,6 +7316,7 @@
             "Shozhinganallur",
             "Shyampukur",
             "Sion Koliwada",
+            "SionKoliwada",
             "Sohna",
             "Sonarpur Dakshin",
             "Sonarpur Uttar",
@@ -7007,8 +7338,11 @@
             "Uran",
             "Uttam Nagar",
             "Vadgaon Sheri",
+            "VadgaonSheri",
             "Vandre East",
             "Vandre West",
+            "VandreEast",
+            "VandreWest",
             "Vatva",
             "Vejalpur",
             "Velachery",
@@ -7019,6 +7353,7 @@
             "Vikaspuri",
             "Vikhroli",
             "Vile Parle",
+            "VileParle",
             "Villivakkam",
             "Virugampakkam",
             "Vishwas Nagar",
@@ -7096,11 +7431,15 @@
             "Medak",
             "Mohanlalganj",
             "Mumbai North",
+            "Mumbai North Central",
+            "Mumbai North East",
+            "Mumbai North West",
             "Mumbai North-Central",
             "Mumbai North-East",
             "Mumbai North-West",
             "Mumbai South",
             "Mumbai South -Centra",
+            "Mumbai South Central",
             "New Delhi",
             "North East Delhi",
             "North West Delhi",
@@ -7135,7 +7474,8 @@
           "type": "category",
           "agg": "mode",
           "domain": [
-            "SC"
+            "SC",
+            "ST"
           ]
         }
       ],
@@ -7383,14 +7723,14 @@
         },
         {
           "name": "mumbai",
-          "cells": 14576,
+          "cells": 9470,
           "bbox": {
             "west": 72.779052734375,
             "south": 18.889404296875,
             "east": 72.9921875,
             "north": 19.271728515625
           },
-          "json": "constituencies/mumbai/{prefix}.json.gz",
+          "json": "constituencies/mumbai/{prefix}.json",
           "parquet": null,
           "shards": {
             "prefixLen": 4,
@@ -10521,7 +10861,7 @@
         },
         {
           "name": "mumbai",
-          "cells": 9465,
+          "cells": 9470,
           "bbox": {
             "west": 72.779052734375,
             "south": 18.889404296875,
@@ -17653,7 +17993,7 @@
         },
         {
           "name": "mumbai",
-          "cells": 6520,
+          "cells": 6522,
           "bbox": {
             "west": 72.779052734375,
             "south": 18.889404296875,
@@ -17665,7 +18005,7 @@
         },
         {
           "name": "pune",
-          "cells": 7519,
+          "cells": 7520,
           "bbox": {
             "west": 73.748046875,
             "south": 18.427978515625,
@@ -35169,7 +35509,7 @@
     {
       "id": "population",
       "title": "Population (GHSL)",
-      "description": "Residents per cell from the JRC Global Human Settlement Layer GHS-POP R2023A (100 m), with 2000\u21922020 growth and the 2030 projection. In Bengaluru, where GHSL puts far too few people in the south and east, blocks inside GBA wards share GHSL's total by each ward's Census 2011 count and residential built volume (pipeline/realestate/wardpop.py).",
+      "description": "Residents per cell from the JRC Global Human Settlement Layer GHS-POP R2023A (100 m), with 2000\u21922020 growth and the 2030 projection. In Bengaluru, where GHSL puts far too few people in the south and east, blocks inside GBA wards share GHSL's total by each ward's Census 2011 count and residential built volume (pipeline/realestate/wardpop.py). In Hyderabad, Mumbai, Pune, Kolkata and Chennai, blocks in assembly seats wholly inside the view share GHSL's total by the seat's 2024 electors (each seat's change capped at six times) and residential built volume.",
       "source": "JRC GHSL GHS-POP R2023A via Earth Engine (pipeline/cells/ee_layers.py)",
       "license": "CC BY 4.0 (European Commission JRC)",
       "group": "Open Data (satellite)",
@@ -44804,7 +45144,7 @@
         },
         {
           "name": "mumbai",
-          "cells": 6098,
+          "cells": 6100,
           "bbox": {
             "west": 72.783447265625,
             "south": 18.89599609375,
@@ -44816,7 +45156,7 @@
         },
         {
           "name": "pune",
-          "cells": 6516,
+          "cells": 6520,
           "bbox": {
             "west": 73.732666015625,
             "south": 18.41259765625,

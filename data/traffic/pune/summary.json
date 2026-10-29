@@ -475,13 +475,13 @@
   "demand_model": {
     "zones": 697,
     "origins": 663,
-    "peak_pcu_total_trips": 193169,
-    "roads_los_e_f": 981,
-    "roads_los_d": 297,
+    "peak_pcu_total_trips": 193167,
+    "roads_los_e_f": 980,
+    "roads_los_d": 290,
     "roads_total": 6389,
     "roads_los_e_f_by_period": {
-      "am": 958,
-      "pm": 923,
+      "am": 969,
+      "pm": 906,
       "mid": 34
     },
     "hourly": {
@@ -673,12 +673,12 @@
     "pct_high_or_worse": 17.0
   },
   "noise_air": {
-    "residents_total": 6445409,
-    "residents_near_modelled_roads": 5383333,
-    "residents_lden_ge_53": 4801823,
-    "residents_lden_ge_65": 1561500,
-    "nox_t_day": 7.74,
-    "co2_t_day": 1891.0,
+    "residents_total": 6445357,
+    "residents_near_modelled_roads": 5408124,
+    "residents_lden_ge_53": 4811265,
+    "residents_lden_ge_65": 1561427,
+    "nox_t_day": 7.73,
+    "co2_t_day": 1889.2,
     "nox_vs_s5p_no2_spearman_l5": 0.5,
     "l5_cells_compared": 55,
     "assumptions": {
@@ -806,100 +806,100 @@
         "name": "",
         "lon": 73.78289,
         "lat": 18.59571,
-        "residents_5min": 31177,
+        "residents_5min": 30821,
         "lst_c": 45.5,
         "canopy_pct": 3.6,
-        "priority": 315574
+        "priority": 311970
       },
       {
         "digipin": "4FP3JTL",
         "name": "",
         "lon": 73.7924,
         "lat": 18.6032,
-        "residents_5min": 30876,
+        "residents_5min": 30526,
         "lst_c": 45.1,
         "canopy_pct": 0.8,
-        "priority": 309353
+        "priority": 305846
       },
       {
         "digipin": "4FP3K8F",
         "name": "",
         "lon": 73.79384,
         "lat": 18.60057,
-        "residents_5min": 39032,
+        "residents_5min": 38588,
         "lst_c": 42.9,
         "canopy_pct": 1.4,
-        "priority": 304036
+        "priority": 300577
       },
       {
         "digipin": "4FP3K87",
         "name": "Vishwa Shanti Colony",
         "lon": 73.79909,
         "lat": 18.59814,
-        "residents_5min": 31379,
+        "residents_5min": 31022,
         "lst_c": 44.6,
         "canopy_pct": 0.4,
-        "priority": 300033
+        "priority": 296620
       },
       {
         "digipin": "4FP3KCJ",
         "name": "",
         "lon": 73.7748,
         "lat": 18.5992,
-        "residents_5min": 39004,
+        "residents_5min": 38561,
         "lst_c": 42.5,
         "canopy_pct": 1.1,
-        "priority": 289312
+        "priority": 286026
       },
       {
         "digipin": "4FP34F3",
         "name": "Govind yashada Chowk",
         "lon": 73.80358,
         "lat": 18.59733,
-        "residents_5min": 41800,
+        "residents_5min": 41324,
         "lst_c": 41.9,
         "canopy_pct": 0.5,
-        "priority": 286978
+        "priority": 283710
       },
       {
         "digipin": "4FP3K96",
         "name": "Kokane Chowk",
         "lon": 73.79117,
         "lat": 18.59686,
-        "residents_5min": 35001,
+        "residents_5min": 34604,
         "lst_c": 43.1,
         "canopy_pct": 1.1,
-        "priority": 280390
+        "priority": 277209
       },
       {
         "digipin": "4FP3K96",
         "name": "",
         "lon": 73.79152,
         "lat": 18.59685,
-        "residents_5min": 35001,
+        "residents_5min": 34604,
         "lst_c": 43.1,
         "canopy_pct": 1.1,
-        "priority": 280390
+        "priority": 277209
+      },
+      {
+        "digipin": "4FP4958",
+        "name": "",
+        "lon": 73.8618,
+        "lat": 18.513,
+        "residents_5min": 28410,
+        "lst_c": 44.5,
+        "canopy_pct": 2.5,
+        "priority": 263148
       },
       {
         "digipin": "4FP497P",
         "name": "Nana Peth",
         "lon": 73.86876,
         "lat": 18.51485,
-        "residents_5min": 33303,
+        "residents_5min": 32646,
         "lst_c": 43.4,
         "canopy_pct": 6.1,
-        "priority": 262681
-      },
-      {
-        "digipin": "4FP497P",
-        "name": "",
-        "lon": 73.86767,
-        "lat": 18.51536,
-        "residents_5min": 33303,
-        "lst_c": 43.4,
-        "canopy_pct": 6.1,
-        "priority": 262681
+        "priority": 257499
       }
     ],
     "thresholds": {
@@ -915,7 +915,7 @@
   },
   "parking": {
     "cells": 5484,
-    "demand_ecs": 277590,
+    "demand_ecs": 277588,
     "lots_mapped": 17,
     "official_lot_spaces": 0,
     "pct_demand_in_overflow": 6.3,
@@ -952,16 +952,16 @@
         "pressure": 2.34
       },
       {
-        "digipin": "4FP3CTL",
-        "demand_ecs": 171,
-        "supply_ecs": 48,
-        "pressure": 3.55
-      },
-      {
         "digipin": "4FP3CTT",
         "demand_ecs": 185,
         "supply_ecs": 62,
         "pressure": 2.97
+      },
+      {
+        "digipin": "4FP3CTL",
+        "demand_ecs": 171,
+        "supply_ecs": 48,
+        "pressure": 3.55
       },
       {
         "digipin": "4FP32FJ",

@@ -327,7 +327,73 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Assembly seats. The party holding each seat after the latest state election (ECI results via OpenCity), how close
+    // the race was, and where the MLA's party differs from the 2024 MP's. Mirrors PARTIES in pipeline/realestate/assembly.py.
+    const PARTY = ['another party', 'BJP', 'INC', 'AAP', 'AITC', 'DMK', 'AIADMK', 'TVK', 'Shiv Sena', 'Shiv Sena (UBT)', 'NCP', 'NCP (SP)',
+        'BRS', 'AIMIM', 'JD(S)', 'CPI(M)', 'SP', 'Independent', 'MNS', 'RLD', 'VCK'];
+    const CLOSE = 5;
+
+    function mlaseats(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, ac = c['assembly_results.mla_ac'], pid = c['assembly_results.mla_party_id'];
+        const mar = c['assembly_results.mla_margin_pct'], yr = c['assembly_results.mla_year'], mp = c['assembly_results.mp_party_id'];
+        const pop = c['population.population'];
+        if (!ac || !pid || !ac.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const S = new Map();
+        for (let i = 0; i < n; i++) {
+            if (!_fin(ac[i]) || !_fin(pid[i])) continue;
+            const a = S.get(ac[i]) || { blocks: [], pop: 0, first: i, mp: new Map() };
+            a.blocks.push(i); a.pop += v(pop, i);
+            if (mp && _fin(mp[i])) a.mp.set(mp[i], (a.mp.get(mp[i]) || 0) + v(pop, i));
+            S.set(ac[i], a);
+        }
+        const ss = [...S.values()].filter(a => a.pop >= 5000);
+        if (ss.length < 5) return null;
+        const P = ss.reduce((t, a) => t + a.pop, 0) || 1;
+        const name = id => PARTY[id] || PARTY[0];
+        const by = new Map();
+        for (const a of ss) { a.party = pid[a.first]; a.margin = _fin(mar[a.first]) ? mar[a.first] : NaN; const b = by.get(a.party) || { seats: 0, pop: 0 }; b.seats++; b.pop += a.pop; by.set(a.party, b); }
+        const parties = [...by.entries()].sort((x, y) => y[1].pop - x[1].pop);
+        const year = Math.round(v(yr, ss[0].first));
+        const known = ss.filter(a => _fin(a.margin)).sort((x, y) => x.margin - y.margin);
+        const close = known.filter(a => a.margin < CLOSE), closePop = close.reduce((t, a) => t + a.pop, 0);
+        const medMargin = known.length ? known[Math.floor(known.length / 2)].margin : NaN;
+        let split = 0, splitKnown = 0;
+        for (const a of ss) {
+            const top = [...a.mp.entries()].sort((x, y) => y[1] - x[1])[0];
+            if (!top || !a.party || !top[0]) continue;
+            splitKnown += a.pop;
+            if (top[0] !== a.party) split += a.pop;
+        }
+        const pct = x => `${_round(100 * x, 0)}%`;
+        const stats = [
+            { label: `Assembly seats in view (${year} election) / residents`, value: `${ss.length} / ${_people(P)}` },
+            ...parties.slice(0, 4).map(([id, b]) => ({ label: `${name(id)}: seats / share of residents`, value: `${b.seats} / ${pct(b.pop / P)}` })),
+            { label: `Seats won by under ${CLOSE} points of the vote / their residents`, value: `${close.length} / ${pct(closePop / P)}` },
+            { label: 'Middle seat winning margin', value: _fin(medMargin) ? `${_round(medMargin, 1)} points` : 'n/a' },
+        ];
+        if (splitKnown > P / 2) stats.push({ label: "Residents whose MLA's party differs from their 2024 MP's", value: pct(split / splitKnown) });
+        known.slice(0, 3).forEach((a, k) => stats.push({ label: `Closest seat ${k + 1}: ${name(a.party)} held it, ${g.codes[a.first]}`, value: `${_round(a.margin, 1)} points` }));
+        const safe = known[known.length - 1];
+        if (safe) stats.push({ label: `Safest seat: ${name(safe.party)}, ${g.codes[safe.first]}`, value: `${_round(safe.margin, 1)} points` });
+        const out = new Float64Array(n).fill(NaN), idx = [];
+        for (const a of ss) for (const i of a.blocks) if (_fin(a.margin)) { out[i] = a.margin; idx.push(i); }
+        const [lead, lb] = parties[0];
+        return {
+            columns: { seat_margin: out }, idx, weightKey: 'seat_margin', noHotspots: true,
+            metric: { label: `Assembly winning margin (${year})`, value: _round(medMargin, 1), unit: 'points', higherIs: null },
+            headline: `At the ${year} assembly election, ${name(lead)} won ${lb.seats} of the ${ss.length} seats in view, home to ${pct(lb.pop / P)} of residents${parties[1] ? `, and ${name(parties[1][0])} ${parties[1][1].seats}` : ''}; ${close.length ? `${close.length} seat${close.length > 1 ? 's were' : ' was'} won by under ${CLOSE} points (closest ${_round(known[0].margin, 1)})` : `no seat was won by under ${CLOSE} points`}${splitKnown > P / 2 ? `, and ${pct(split / splitKnown)} of residents have an MLA from a different party than their 2024 MP` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'mlaseats', title: 'Who holds the assembly seat', icon: '🗳️',
+            question: 'Which party holds the assembly seats here, and how close were the races?',
+            field: { key: 'seat_margin', label: 'Assembly winning margin (latest state election)', unit: 'points', higherIs: null, ramp: 'viridis', domain: [0, 40] },
+            needs: ['assembly_results.mla_ac', 'assembly_results.mla_party_id', 'assembly_results.mla_margin_pct', 'assembly_results.mla_year', 'assembly_results.mp_party_id', 'population.population'],
+            method: `The latest state assembly results from the Election Commission (via data.opencity.in, public domain): Delhi 2025, Maharashtra 2024 (Mumbai, Pune), West Bengal 2026 (Kolkata), Tamil Nadu 2026 (Chennai), Telangana 2023 (Hyderabad) and Karnataka 2023 (Bengaluru, general election only). Each seat's winner, runner-up and margin (a share of all votes, NOTA included) are joined to blocks through the constituencies dataset by seat number and name; seats of a neighbouring state are left out. Residents are GHSL's, reshared by census wards or 2024 electors where GHSL is known to be off. The split count compares the MLA's party with the party of the Lok Sabha member elected in 2024 for most of the seat's residents. Seats cut by the view edge count only the part in view.`,
+            refs: 'Election Commission of India assembly results (Delhi 2025, Maharashtra 2024, West Bengal 2026, Tamil Nadu 2026, Telangana 2023, Karnataka 2023) via data.opencity.in; constituency maps from the state governments (OpenCity) and DataMeet' },
         { id: 'homes2011', equity: true, title: 'Homes in 2011 by ward', icon: '🏘️',
             question: 'How crowded were homes in each ward at the last census, and who lacked a latrine or owned a car?',
             field: { key: 'one_room_2011', label: 'Households in one room or less (Census 2011)', unit: '%', higherIs: 'worse', ramp: 'viridis', domain: [40, 85] },
@@ -366,6 +432,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats });
     return { ENTRIES };
 })();

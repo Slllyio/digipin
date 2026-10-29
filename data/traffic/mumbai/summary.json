@@ -258,14 +258,14 @@
   "demand_model": {
     "zones": 614,
     "origins": 556,
-    "peak_pcu_total_trips": 529511,
-    "roads_los_e_f": 4317,
-    "roads_los_d": 496,
+    "peak_pcu_total_trips": 529512,
+    "roads_los_e_f": 4298,
+    "roads_los_d": 513,
     "roads_total": 12112,
     "roads_los_e_f_by_period": {
-      "am": 4222,
-      "pm": 4173,
-      "mid": 815
+      "am": 4227,
+      "pm": 4168,
+      "mid": 820
     },
     "hourly": {
       "share_pct": [
@@ -456,12 +456,12 @@
     "pct_high_or_worse": 26.4
   },
   "noise_air": {
-    "residents_total": 17668021,
-    "residents_near_modelled_roads": 16052560,
-    "residents_lden_ge_53": 15431185,
-    "residents_lden_ge_65": 8811268,
-    "nox_t_day": 21.9,
-    "co2_t_day": 5354.4,
+    "residents_total": 17668069,
+    "residents_near_modelled_roads": 16096668,
+    "residents_lden_ge_53": 15427597,
+    "residents_lden_ge_65": 8805670,
+    "nox_t_day": 21.93,
+    "co2_t_day": 5361.4,
     "nox_vs_s5p_no2_spearman_l5": 0.28,
     "l5_cells_compared": 55,
     "assumptions": {
@@ -481,15 +481,15 @@
     "hospitals": 1718,
     "pct_within_10_night": 99.4,
     "pct_within_10_am": 98.6,
-    "pct_within_10_pm": 98.7,
+    "pct_within_10_pm": 98.8,
     "pct_over_20_peak": 0.5,
     "source": "Overture Maps places 2026-10-21.0; demand model link times"
   },
   "rail_access": {
     "metro_stations": 92,
     "rail_stations": 100,
-    "pct_within_10_walk_metro": 30.3,
-    "pct_within_10_walk_any": 51.2,
+    "pct_within_10_walk_metro": 30.1,
+    "pct_within_10_walk_any": 51.1,
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
@@ -501,8 +501,8 @@
     "parking": 65,
     "fuel": 254,
     "chargers_per_lakh": 0.16,
-    "pct_vkm_within_2km": 56.0,
-    "pct_pop_within_2km": 56.9
+    "pct_vkm_within_2km": 56.1,
+    "pct_pop_within_2km": 57.1
   },
   "cycling": {
     "lowstress_km": 6252,
@@ -581,108 +581,108 @@
     "stops": 4978,
     "stops_with_heat_data": 4978,
     "pct_hot_bare": 16.7,
-    "pct_riders_at_hot_bare": 18.0,
+    "pct_riders_at_hot_bare": 17.9,
     "median_stop_lst_c": 40.4,
     "top_stops": [
-      {
-        "digipin": "4FK6JF7",
-        "name": "sathe nagar bus stop",
-        "lon": 72.93005,
-        "lat": 19.0563,
-        "residents_5min": 98560,
-        "lst_c": 46.4,
-        "canopy_pct": 1.1,
-        "priority": 1111225
-      },
       {
         "digipin": "4FK52J5",
         "name": "",
         "lon": 72.85762,
         "lat": 19.04362,
-        "residents_5min": 105562,
+        "residents_5min": 110375,
         "lst_c": 45.3,
         "canopy_pct": 1.3,
-        "priority": 1073154
-      },
-      {
-        "digipin": "4FK6JF3",
-        "name": "",
-        "lon": 72.92434,
-        "lat": 19.05456,
-        "residents_5min": 123151,
-        "lst_c": 44.3,
-        "canopy_pct": 10.3,
-        "priority": 1027338
-      },
-      {
-        "digipin": "4FK6JF3",
-        "name": "",
-        "lon": 72.92408,
-        "lat": 19.05495,
-        "residents_5min": 123151,
-        "lst_c": 44.3,
-        "canopy_pct": 10.3,
-        "priority": 1027338
-      },
-      {
-        "digipin": "4FK6JF5",
-        "name": "laalubai bus stop",
-        "lon": 72.92729,
-        "lat": 19.05324,
-        "residents_5min": 155751,
-        "lst_c": 41.7,
-        "canopy_pct": 3.5,
-        "priority": 1007008
-      },
-      {
-        "digipin": "4FK6JF5",
-        "name": "",
-        "lon": 72.92713,
-        "lat": 19.053,
-        "residents_5min": 155751,
-        "lst_c": 41.7,
-        "canopy_pct": 3.5,
-        "priority": 1007008
-      },
-      {
-        "digipin": "4FK6JF5",
-        "name": "",
-        "lon": 72.92688,
-        "lat": 19.05375,
-        "residents_5min": 155751,
-        "lst_c": 41.7,
-        "canopy_pct": 3.5,
-        "priority": 1007008
-      },
-      {
-        "digipin": "4FK6JF9",
-        "name": "",
-        "lon": 72.92784,
-        "lat": 19.0573,
-        "residents_5min": 84360,
-        "lst_c": 46.8,
-        "canopy_pct": 0.6,
-        "priority": 989475
-      },
-      {
-        "digipin": "4FK6JF9",
-        "name": "",
-        "lon": 72.92797,
-        "lat": 19.05689,
-        "residents_5min": 84360,
-        "lst_c": 46.8,
-        "canopy_pct": 0.6,
-        "priority": 989475
+        "priority": 1122083
       },
       {
         "digipin": "4FK6FLM",
         "name": "Shivaji Nagar Bus Terminus",
         "lon": 72.92564,
         "lat": 19.06041,
-        "residents_5min": 79111,
+        "residents_5min": 87178,
         "lst_c": 47.3,
         "canopy_pct": 1.9,
-        "priority": 954577
+        "priority": 1051916
+      },
+      {
+        "digipin": "4FK6FLM",
+        "name": "Bainganwadi",
+        "lon": 72.92437,
+        "lat": 19.05903,
+        "residents_5min": 87178,
+        "lst_c": 47.3,
+        "canopy_pct": 1.9,
+        "priority": 1051916
+      },
+      {
+        "digipin": "4FK6FLM",
+        "name": "",
+        "lon": 72.92505,
+        "lat": 19.05871,
+        "residents_5min": 87178,
+        "lst_c": 47.3,
+        "canopy_pct": 1.9,
+        "priority": 1051916
+      },
+      {
+        "digipin": "4FK6FLM",
+        "name": "",
+        "lon": 72.9254,
+        "lat": 19.06062,
+        "residents_5min": 87178,
+        "lst_c": 47.3,
+        "canopy_pct": 1.9,
+        "priority": 1051916
+      },
+      {
+        "digipin": "4FK52JM",
+        "name": "",
+        "lon": 72.85575,
+        "lat": 19.04125,
+        "residents_5min": 118807,
+        "lst_c": 44.1,
+        "canopy_pct": 2.9,
+        "priority": 1049791
+      },
+      {
+        "digipin": "4FK6JF9",
+        "name": "",
+        "lon": 72.92784,
+        "lat": 19.0573,
+        "residents_5min": 89257,
+        "lst_c": 46.8,
+        "canopy_pct": 0.6,
+        "priority": 1046913
+      },
+      {
+        "digipin": "4FK6JF9",
+        "name": "",
+        "lon": 72.92797,
+        "lat": 19.05689,
+        "residents_5min": 89257,
+        "lst_c": 46.8,
+        "canopy_pct": 0.6,
+        "priority": 1046913
+      },
+      {
+        "digipin": "4FK6JF3",
+        "name": "",
+        "lon": 72.92434,
+        "lat": 19.05456,
+        "residents_5min": 115091,
+        "lst_c": 44.3,
+        "canopy_pct": 10.3,
+        "priority": 960101
+      },
+      {
+        "digipin": "4FK6JF3",
+        "name": "",
+        "lon": 72.92408,
+        "lat": 19.05495,
+        "residents_5min": 115091,
+        "lst_c": 44.3,
+        "canopy_pct": 10.3,
+        "priority": 960101
       }
     ],
     "thresholds": {
@@ -698,17 +698,17 @@
   },
   "parking": {
     "cells": 6221,
-    "demand_ecs": 834314,
+    "demand_ecs": 834317,
     "lots_mapped": 65,
     "official_lot_spaces": 62051,
     "pct_demand_in_overflow": 48.9,
-    "overflow_ecs": 194004,
+    "overflow_ecs": 194005,
     "hotspots": [
       {
         "digipin": "4FK55L9",
         "demand_ecs": 1083,
         "supply_ecs": 59,
-        "pressure": 18.22
+        "pressure": 18.23
       },
       {
         "digipin": "4FK2PP5",

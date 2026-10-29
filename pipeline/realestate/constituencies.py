@@ -15,10 +15,11 @@ and a few wrong or missing names; Telangana seats are still filed under Andhra P
 Where a state's own map is on OpenCity (public domain), it replaces DataMeet's: Karnataka's KGIS map (2018) for
 Bengaluru and Telangana's map (2018) for Hyderabad. Checked against 2024 electors per assembly segment, these put
 people in the right seats more often (Hyderabad's median gap between electors and GHSL residents per seat fell from
-0.37 to 0.26 in log terms, Bengaluru's from 0.07 to 0.04). Numbers and Lok Sabha seats come from the Election
-Commission's 2024 segment table, matched by number (Karnataka) or name (Telangana). The Maharashtra, West Bengal and
-Tamil Nadu maps on OpenCity put 97-98% of blocks in the same seat as DataMeet, so Mumbai, Pune, Kolkata and Chennai
-keep DataMeet's. Jaipur's DataMeet seats are badly shifted (Bagru covers the city centre) and no better map is open.
+0.37 to 0.26 in log terms, Bengaluru's from 0.07 to 0.04). Maharashtra's map (2019) is used for Mumbai and Pune
+because DataMeet leaves a third of Mumbai's blocks in a seat numbered 0 with no name. Numbers and Lok Sabha seats
+come from the Election Commission's 2024 segment table, matched by number (Karnataka, Maharashtra) or name
+(Telangana). The West Bengal and Tamil Nadu maps on OpenCity put 97% of blocks in the same seat as DataMeet, so
+Kolkata and Chennai keep DataMeet's. Jaipur's DataMeet seats are badly shifted (Bagru covers the city centre) and no better map is open.
 
     python -m pipeline.realestate.constituencies --region all
 """
@@ -34,12 +35,16 @@ CELLS = REPO / "data" / "cells"
 LEVEL = 7
 RAW = "https://raw.githubusercontent.com/datameet/maps/master/assembly-constituencies/India_AC."
 OPENCITY = "https://data.opencity.in/dataset/"
+MH_MAP = ("4d535c16-cca1-4b49-9517-0d24ca948ca2/resource/0b3e2100-b576-464c-a837-7d2f2f2b60f0/download/"
+          "40479379-8b36-4690-824a-a7119f7f0c16.kml")
 # region -> (state in the ECI tables, OpenCity KML, properties -> (AC number or None, AC name))
 STATE_MAPS = {
     "bengaluru": ("Karnataka", "f80a1ff2-a1f2-442a-aff0-f332acd14ae6/resource/4de072f1-8b5d-4242-b3f4-aec56cc88865/download/"
                                "1e5b1f22-37c6-4652-aef8-8f783e246135.kml", lambda p: (p.get("AC_CODE"), p.get("AC_NAME"))),
     "hyderabad": ("Telangana", "ddf1cb4a-1433-4e8b-aeeb-afb2d5ba5021/resource/ab8095a4-cc07-4a73-8da2-3458baab4600/download/"
                                "8137a4f0-4d33-48d9-ae93-23b2bf558424.kml", lambda p: (None, p.get("ASSEMBLY_N"))),
+    "mumbai": ("Maharashtra", MH_MAP, lambda p: (p.get("ac_no"), p.get("ac_name"))),
+    "pune": ("Maharashtra", MH_MAP, lambda p: (p.get("ac_no"), p.get("ac_name"))),
 }
 
 
@@ -186,10 +191,10 @@ def cell_dataset(region, rows):
         description="The assembly constituency (and the Lok Sabha constituency it sits in) holding each lived-in block's centre: "
                     "2008 delimitation boundaries scraped by DataMeet from the Election Commission's polling station locator "
                     "(github.com/datameet/maps). Some boundaries are shifted and a few names are wrong or missing; check the "
-                    "Election Commission before relying on a seat at an edge. Bengaluru and Hyderabad use the state maps on "
-                    "OpenCity instead (Karnataka KGIS 2018, Telangana 2018), which fit 2024 electors better, with numbers and "
+                    "Election Commission before relying on a seat at an edge. Bengaluru, Hyderabad, Mumbai and Pune use the state "
+                    "maps on OpenCity instead (Karnataka KGIS 2018, Telangana 2018, Maharashtra 2019), which fit 2024 electors better, with numbers and "
                     "Lok Sabha seats from the Election Commission's 2024 segment table. Jaipur's seats are badly shifted.",
-        source="pipeline/realestate/constituencies.py (DataMeet India assembly constituencies; OpenCity state maps for Bengaluru and Hyderabad)",
+        source="pipeline/realestate/constituencies.py (DataMeet India assembly constituencies; OpenCity state maps for Bengaluru, Hyderabad, Mumbai and Pune)",
         license="CC BY 2.5 India (DataMeet); public domain (OpenCity state maps)", default_field="assembly", extrude=False)
     clean_rows = ({"digipin": c, **r} for c, r in rows.items())
     return store.write_dataset(CELLS, spec, region, store.bin_records(clean_rows, LEVEL, specs), parquet=False)
