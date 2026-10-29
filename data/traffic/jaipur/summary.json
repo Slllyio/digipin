@@ -672,21 +672,101 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 77,
-    "stops_with_heat_data": 77,
-    "pct_hot_bare": 90.9,
-    "pct_riders_at_hot_bare": 92.7,
-    "median_stop_lst_c": 43.2,
+    "stops": 355,
+    "stops_with_heat_data": 355,
+    "pct_hot_bare": 89.0,
+    "pct_riders_at_hot_bare": 92.6,
+    "median_stop_lst_c": 43.0,
     "top_stops": [
       {
+        "digipin": "33C62KF",
+        "name": "Ahinsa Circle",
+        "lon": 75.80608,
+        "lat": 26.91436,
+        "residents_5min": 19690,
+        "lst_c": 42.6,
+        "canopy_pct": 4.8,
+        "priority": 142461
+      },
+      {
+        "digipin": "33C637P",
+        "name": "Shaheed Smarak",
+        "lon": 75.80124,
+        "lat": 26.9175,
+        "residents_5min": 17154,
+        "lst_c": 43.7,
+        "canopy_pct": 4.6,
+        "priority": 142375
+      },
+      {
+        "digipin": "33C637P",
+        "name": "Goverment Hostel",
+        "lon": 75.80053,
+        "lat": 26.91687,
+        "residents_5min": 17154,
+        "lst_c": 43.7,
+        "canopy_pct": 4.6,
+        "priority": 142375
+      },
+      {
         "digipin": "33C638F",
-        "name": "Peetal Factory Bus Stand",
-        "lon": 75.7972,
-        "lat": 26.93309,
+        "name": "Pital Factory",
+        "lon": 75.79755,
+        "lat": 26.93289,
         "residents_5min": 16425,
         "lst_c": 44.0,
         "canopy_pct": 3.8,
         "priority": 142208
+      },
+      {
+        "digipin": "33C638F",
+        "name": "Pital Factory",
+        "lon": 75.79698,
+        "lat": 26.93306,
+        "residents_5min": 16425,
+        "lst_c": 44.0,
+        "canopy_pct": 3.8,
+        "priority": 142208
+      },
+      {
+        "digipin": "33C6374",
+        "name": "Ganpati plaza",
+        "lon": 75.79825,
+        "lat": 26.91888,
+        "residents_5min": 17579,
+        "lst_c": 43.1,
+        "canopy_pct": 2.4,
+        "priority": 138973
+      },
+      {
+        "digipin": "33C637M",
+        "name": "Amrapur Darbar",
+        "lon": 75.80021,
+        "lat": 26.91821,
+        "residents_5min": 17075,
+        "lst_c": 43.5,
+        "canopy_pct": 8.4,
+        "priority": 132946
+      },
+      {
+        "digipin": "33C62JP",
+        "name": "Paach Batti",
+        "lon": 75.81028,
+        "lat": 26.91627,
+        "residents_5min": 17744,
+        "lst_c": 42.8,
+        "canopy_pct": 4.7,
+        "priority": 131898
+      },
+      {
+        "digipin": "33C6373",
+        "name": "Bus pour pushcar",
+        "lon": 75.79899,
+        "lat": 26.92243,
+        "residents_5min": 16942,
+        "lst_c": 43.0,
+        "canopy_pct": 3.7,
+        "priority": 130521
       },
       {
         "digipin": "33C6373",
@@ -697,86 +777,6 @@
         "lst_c": 43.0,
         "canopy_pct": 3.7,
         "priority": 130521
-      },
-      {
-        "digipin": "33C6379",
-        "name": "R.S.R.T.C, Bus Depot, Jaipur",
-        "lon": 75.80077,
-        "lat": 26.92375,
-        "residents_5min": 15379,
-        "lst_c": 43.2,
-        "canopy_pct": 0.8,
-        "priority": 125099
-      },
-      {
-        "digipin": "33C6379",
-        "name": "Main Bus Station",
-        "lon": 75.80074,
-        "lat": 26.92334,
-        "residents_5min": 15379,
-        "lst_c": 43.2,
-        "canopy_pct": 0.8,
-        "priority": 125099
-      },
-      {
-        "digipin": "33C67F2",
-        "name": "Jaipur Eidgah Bus Stand",
-        "lon": 75.84425,
-        "lat": 26.93046,
-        "residents_5min": 15324,
-        "lst_c": 43.1,
-        "canopy_pct": 0.2,
-        "priority": 123876
-      },
-      {
-        "digipin": "33C6353",
-        "name": "RSRTC Jaipur Depot",
-        "lon": 75.79149,
-        "lat": 26.91234,
-        "residents_5min": 14363,
-        "lst_c": 43.4,
-        "canopy_pct": 2.5,
-        "priority": 117633
-      },
-      {
-        "digipin": "33C6CPP",
-        "name": "Space bus stand",
-        "lon": 75.79235,
-        "lat": 26.93559,
-        "residents_5min": 15235,
-        "lst_c": 42.6,
-        "canopy_pct": 2.0,
-        "priority": 113470
-      },
-      {
-        "digipin": "33C637C",
-        "name": "Jaipur Bus Station",
-        "lon": 75.80009,
-        "lat": 26.92386,
-        "residents_5min": 15649,
-        "lst_c": 42.4,
-        "canopy_pct": 5.0,
-        "priority": 110012
-      },
-      {
-        "digipin": "33C637C",
-        "name": "Sindhi Camp",
-        "lon": 75.80017,
-        "lat": 26.92297,
-        "residents_5min": 15649,
-        "lst_c": 42.4,
-        "canopy_pct": 5.0,
-        "priority": 110012
-      },
-      {
-        "digipin": "33C625C",
-        "name": "Kalpana Cargo (A Division of Kalpana Travels Private Limited)",
-        "lon": 75.82531,
-        "lat": 26.91552,
-        "residents_5min": 13989,
-        "lst_c": 42.9,
-        "canopy_pct": 6.6,
-        "priority": 103219
       }
     ],
     "thresholds": {
@@ -785,13 +785,15 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "overture": 77
+      "osm": 288,
+      "overture": 67
     }
   },
   "parking": {
     "cells": 4356,
     "demand_ecs": 173600,
     "lots_mapped": 15,
+    "official_lot_spaces": 0,
     "pct_demand_in_overflow": 2.3,
     "overflow_ecs": 1472,
     "hotspots": [

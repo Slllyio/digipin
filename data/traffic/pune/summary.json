@@ -710,15 +710,16 @@
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
-    "chargers": 85,
+    "chargers": 107,
     "chargers_by_source": {
+      "osm": 22,
       "overture": 85
     },
     "parking": 17,
     "fuel": 203,
-    "chargers_per_lakh": 1.32,
-    "pct_vkm_within_2km": 79.2,
-    "pct_pop_within_2km": 82.9
+    "chargers_per_lakh": 1.66,
+    "pct_vkm_within_2km": 82.5,
+    "pct_pop_within_2km": 86.2
   },
   "cycling": {
     "lowstress_km": 8295,
@@ -794,11 +795,11 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 2107,
-    "stops_with_heat_data": 2107,
-    "pct_hot_bare": 64.2,
-    "pct_riders_at_hot_bare": 50.3,
-    "median_stop_lst_c": 43.4,
+    "stops": 2319,
+    "stops_with_heat_data": 2319,
+    "pct_hot_bare": 63.0,
+    "pct_riders_at_hot_bare": 49.3,
+    "median_stop_lst_c": 43.3,
     "top_stops": [
       {
         "digipin": "4FP2L7T",
@@ -842,9 +843,9 @@
       },
       {
         "digipin": "4FP4774",
-        "name": "",
-        "lon": 73.9006,
-        "lat": 18.4817,
+        "name": "Indira Vasahat",
+        "lon": 73.90063,
+        "lat": 18.48157,
         "residents_5min": 42851,
         "lst_c": 42.1,
         "canopy_pct": 10.8,
@@ -892,9 +893,9 @@
       },
       {
         "digipin": "4FP2L49",
-        "name": "",
-        "lon": 73.9212,
-        "lat": 18.5469,
+        "name": "Dutt Mandir Bus Stop",
+        "lon": 73.92133,
+        "lat": 18.54675,
         "residents_5min": 38606,
         "lst_c": 42.2,
         "canopy_pct": 7.1,
@@ -907,7 +908,8 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "gtfs": 2058,
+      "osm": 491,
+      "gtfs": 1779,
       "overture": 49
     }
   },
@@ -915,6 +917,7 @@
     "cells": 5484,
     "demand_ecs": 277588,
     "lots_mapped": 17,
+    "official_lot_spaces": 0,
     "pct_demand_in_overflow": 6.3,
     "overflow_ecs": 6359,
     "hotspots": [

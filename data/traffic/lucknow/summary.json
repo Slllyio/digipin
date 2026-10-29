@@ -758,32 +758,12 @@
     }
   },
   "bus_stop_heat": {
-    "stops": 34,
-    "stops_with_heat_data": 34,
-    "pct_hot_bare": 2.9,
-    "pct_riders_at_hot_bare": 0.2,
-    "median_stop_lst_c": 38.5,
+    "stops": 13,
+    "stops_with_heat_data": 13,
+    "pct_hot_bare": 0.0,
+    "pct_riders_at_hot_bare": 0.0,
+    "median_stop_lst_c": 38.3,
     "top_stops": [
-      {
-        "digipin": "3796T65",
-        "name": "Lucknow Main 221 KTM Bike",
-        "lon": 80.93346,
-        "lat": 26.83943,
-        "residents_5min": 17061,
-        "lst_c": 39.2,
-        "canopy_pct": 1.9,
-        "priority": 70295
-      },
-      {
-        "digipin": "3796T66",
-        "name": "Burlington Chauraha",
-        "lon": 80.93742,
-        "lat": 26.84075,
-        "residents_5min": 17033,
-        "lst_c": 39.0,
-        "canopy_pct": 0.7,
-        "priority": 67655
-      },
       {
         "digipin": "378KK9F",
         "name": "Collection O Vikas Nagar Lekhraj panna",
@@ -793,16 +773,6 @@
         "lst_c": 38.8,
         "canopy_pct": 2.6,
         "priority": 53238
-      },
-      {
-        "digipin": "378K45F",
-        "name": "",
-        "lon": 80.99082,
-        "lat": 26.88028,
-        "residents_5min": 13923,
-        "lst_c": 38.8,
-        "canopy_pct": 3.0,
-        "priority": 51320
       },
       {
         "digipin": "378K45F",
@@ -825,44 +795,74 @@
         "priority": 49184
       },
       {
-        "digipin": "3796T5M",
-        "name": "Lucknow Main 332",
-        "lon": 80.92328,
-        "lat": 26.83699,
-        "residents_5min": 12991,
-        "lst_c": 38.9,
-        "canopy_pct": 3.1,
-        "priority": 49094
+        "digipin": "379T9TJ",
+        "name": "Barabirwa Bus Stop",
+        "lon": 80.89444,
+        "lat": 26.79887,
+        "residents_5min": 13407,
+        "lst_c": 38.3,
+        "canopy_pct": 13.2,
+        "priority": 38403
       },
       {
-        "digipin": "3796T5M",
-        "name": "Lucknow Main",
-        "lon": 80.92428,
-        "lat": 26.83742,
-        "residents_5min": 12991,
-        "lst_c": 38.9,
-        "canopy_pct": 3.1,
-        "priority": 49094
+        "digipin": "378KJM7",
+        "name": "Lucknow Packers and Movers",
+        "lon": 80.9543,
+        "lat": 26.90445,
+        "residents_5min": 12235,
+        "lst_c": 37.9,
+        "canopy_pct": 5.3,
+        "priority": 33601
       },
       {
-        "digipin": "3796T5L",
-        "name": "Lucknow Main Hotel ANR",
-        "lon": 80.92133,
-        "lat": 26.83704,
-        "residents_5min": 12497,
-        "lst_c": 38.9,
-        "canopy_pct": 1.8,
-        "priority": 47861
+        "digipin": "379T7F2",
+        "name": "Dr. Ashish Srivastava | Ortho & Neuro Pain Clinic",
+        "lon": 80.90876,
+        "lat": 26.7896,
+        "residents_5min": 11961,
+        "lst_c": 37.9,
+        "canopy_pct": 6.9,
+        "priority": 32294
       },
       {
-        "digipin": "3796T6L",
-        "name": "Hotel Nexus",
-        "lon": 80.92991,
-        "lat": 26.83831,
-        "residents_5min": 13978,
-        "lst_c": 38.5,
-        "canopy_pct": 4.4,
-        "priority": 46770
+        "digipin": "378K5L7",
+        "name": "Just my Bikes - Car and Bike on rent",
+        "lon": 81.0154,
+        "lat": 26.86917,
+        "residents_5min": 10817,
+        "lst_c": 38.0,
+        "canopy_pct": 1.9,
+        "priority": 31834
+      },
+      {
+        "digipin": "378KJM3",
+        "name": "Local Packers Movers Lucknow",
+        "lon": 80.94858,
+        "lat": 26.9049,
+        "residents_5min": 12532,
+        "lst_c": 37.7,
+        "canopy_pct": 7.6,
+        "priority": 31265
+      },
+      {
+        "digipin": "3796P56",
+        "name": "Bulaki Adda Bus Stop",
+        "lon": 80.89311,
+        "lat": 26.84028,
+        "residents_5min": 7125,
+        "lst_c": 40.1,
+        "canopy_pct": 15.1,
+        "priority": 30851
+      },
+      {
+        "digipin": "379T8J9",
+        "name": "Alambagh Bus Stand ISBT Lucknow",
+        "lon": 80.90811,
+        "lat": 26.81901,
+        "residents_5min": 8815,
+        "lst_c": 38.3,
+        "canopy_pct": 2.4,
+        "priority": 28391
       }
     ],
     "thresholds": {
@@ -871,7 +871,6 @@
       "comfort_c": 35.0
     },
     "sources": {
-      "osm": 21,
       "overture": 13
     }
   },

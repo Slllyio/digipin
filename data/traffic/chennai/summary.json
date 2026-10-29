@@ -833,6 +833,7 @@
     "cells": 6746,
     "demand_ecs": 402077,
     "lots_mapped": 140,
+    "official_lot_spaces": 0,
     "pct_demand_in_overflow": 4.8,
     "overflow_ecs": 7000,
     "hotspots": [

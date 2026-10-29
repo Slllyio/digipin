@@ -510,7 +510,7 @@
     "highstress_km": 1950,
     "islands": 9080,
     "islands_over_5_km2": 9,
-    "largest_island_km2": 49.0,
+    "largest_island_km2": 48.9,
     "pct_residents_small_island": 58.2,
     "pct_residents_no_lowstress_street": 0.4,
     "source": "Overture Maps transportation 2026-10-21.0"
@@ -700,8 +700,9 @@
     "cells": 6221,
     "demand_ecs": 834313,
     "lots_mapped": 65,
-    "pct_demand_in_overflow": 49.8,
-    "overflow_ecs": 197132,
+    "official_lot_spaces": 62051,
+    "pct_demand_in_overflow": 48.9,
+    "overflow_ecs": 194065,
     "hotspots": [
       {
         "digipin": "4FK55L9",
