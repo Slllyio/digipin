@@ -1621,3 +1621,13 @@ workers, women-owned proprietary establishments, hired workers) are written to e
 that ward. The lens regroups blocks by ward: area from mapped blocks, residents from GHSL, the densest tenth's share of
 workers, workers per 100 residents, the workshop wards by manufacturing share, and a Spearman rank correlation between
 census workers per km² and Overture places per km² across wards.
+
+## Property tax by ward (`ptax` lens, `property_tax` dataset, pipeline/realestate/propertytax.py)
+
+`propertytax.py` reads GCC's ward-wise property tax CSV (OpenCity `chennai-property-tax-collections`; ward numbers like
+N012) and writes to every L7 block of that ward (via the 2011 GCC ward map in `wards`) the 2017-18 residential and
+commercial demand (₹ lakh), collected over billed across 2013-14 to 2017-18 (residential and commercial), and the change
+in residential demand from 2013-14 to 2017-18. The lens regroups blocks by ward (3 or more blocks and 2,000 or more GHSL
+residents), reports the bill per resident and its spread, the lowest-collection wards, and Spearman rank correlations
+across wards between the bill (per resident and per km² of mapped ward) and the residents-weighted land value index. Wards
+billed low for their land value are those with the largest gap between their percentile on the bill and on land value.

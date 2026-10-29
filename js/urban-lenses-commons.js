@@ -1025,6 +1025,65 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Property tax by ward. GCC bills residential property tax on assessed rental value, so demand per resident is an
+    // official read of how dear homes are: set against the land value model, with how much of the bill gets collected.
+    function ptax(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, ward = c['property_tax.pt_ward'], res = c['property_tax.pt_res_demand_lakh'];
+        const com = c['property_tax.pt_com_demand_lakh'], coll = c['property_tax.pt_collect_pct'], gr = c['property_tax.pt_res_growth_pct'];
+        const pop = c['population.population'], vi = c['land_value.value_index'];
+        if (!ward || !res || !res.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const W = new Map();
+        for (let i = 0; i < n; i++) {
+            if (!_fin(ward[i]) || !_fin(res[i])) continue;
+            const w = W.get(ward[i]) || { no: ward[i], blocks: [], pop: 0, vi: 0, viw: 0, first: i };
+            w.blocks.push(i); w.pop += v(pop, i);
+            if (vi && _fin(vi[i])) { w.vi += v(pop, i) * vi[i]; w.viw += v(pop, i); }
+            W.set(ward[i], w);
+        }
+        const ws = [...W.values()].filter(w => w.blocks.length >= 3 && w.pop >= 2000);
+        if (ws.length < 5) return null;
+        for (const w of ws) { const i = w.first; w.res = v(res, i) * 1e5; w.per = w.res / w.pop; w.val = w.viw ? w.vi / w.viw : NaN; }
+        const tRes = ws.reduce((s, w) => s + w.res, 0), tCom = ws.reduce((s, w) => s + v(com, w.first) * 1e5, 0), tPop = ws.reduce((s, w) => s + w.pop, 0) || 1;
+        const pers = ws.map(w => w.per).sort((a, b) => a - b), q = f => pers[Math.floor(f * (pers.length - 1))];
+        const stats = [
+            { label: `Residential property tax billed in 2017-18 across ${ws.length} wards / commercial`, value: `₹${_round(tRes / 1e7, 0)} crore / ₹${_round(tCom / 1e7, 0)} crore` },
+            { label: 'Residential tax billed per resident: city / poorest-billed fifth of wards / richest-billed fifth', value: `₹${Math.round(tRes / tPop)} / ₹${Math.round(q(0.2))} / ₹${Math.round(q(0.8))} a year` },
+        ];
+        if (coll) {
+            const cs = ws.filter(w => _fin(coll[w.first]));
+            const cAvg = cs.reduce((s, w) => s + coll[w.first] * w.res, 0) / (cs.reduce((s, w) => s + w.res, 0) || 1);
+            stats.push({ label: 'Collected over billed, 2013-14 to 2017-18 (weighted by residential bill)', value: `${_round(cAvg, 0)}%` });
+            cs.slice().sort((a, b) => coll[a.first] - coll[b.first]).slice(0, 3).forEach((w, k) => stats.push({ label: `Lowest collection ${k + 1}: ward ${w.no}, ${g.codes[w.first]}`, value: `${_round(coll[w.first], 0)}% of the bill collected` }));
+        }
+        if (gr) {
+            const gs = ws.filter(w => _fin(gr[w.first]));
+            stats.push({ label: 'Wards whose residential bill grew 20% or more, 2013-14 to 2017-18', value: `${gs.filter(w => gr[w.first] >= 20).length} of ${gs.length}` });
+        }
+        let rho = NaN;
+        const both = ws.filter(w => _fin(w.val));
+        if (both.length >= 10) {
+            rho = _rankCorr(both.map(w => w.per), both.map(w => w.val));
+            stats.push({ label: 'Rank match with the land value index, by ward: tax billed per resident / per km²', value: `${_round(rho, 2)} / ${_round(_rankCorr(both.map(w => w.res / w.blocks.length), both.map(w => w.val)), 2)}` });
+            const gap = both.map(w => ({ w, d: _rankPct(both, x => x.per, w) - _rankPct(both, x => x.val, w) })).sort((a, b) => a.d - b.d);
+            gap.slice(0, 3).forEach(({ w, d }, k) => stats.push({ label: `Billed low for its land value ${k + 1}: ward ${w.no}, ${g.codes[w.first]}`, value: `₹${Math.round(w.per)} per resident; land value index ${_round(w.val, 0)} (${Math.round(-100 * d)} percentile points apart)` }));
+        }
+        ws.slice().sort((a, b) => b.per - a.per).slice(0, 3).forEach((w, k) => stats.push({ label: `Highest billed per resident ${k + 1}: ward ${w.no}, ${g.codes[w.first]}`, value: `₹${Math.round(w.per)} a year per resident` }));
+        const out = new Float64Array(n).fill(NaN), idx = [];
+        for (const w of ws) for (const i of w.blocks) { out[i] = Math.round(w.per); idx.push(i); }
+        return {
+            columns: { ptax_per_resident: out }, idx, weightKey: 'ptax_per_resident', noHotspots: true,
+            metric: { label: 'Residential property tax billed per resident (2017-18)', value: Math.round(tRes / tPop), unit: '₹/yr', higherIs: null },
+            headline: `GCC billed ₹${_round(tRes / 1e7, 0)} crore of residential property tax in 2017-18, ₹${Math.round(tRes / tPop)} a year per resident, from ₹${Math.round(q(0.2))} in the lowest-billed fifth of wards to ₹${Math.round(q(0.8))} in the highest${_fin(rho) ? `; per resident the bills barely follow the land value model (rank match ${_round(rho, 2)}): rental values assessed decades ago, the model or both miss today's prices there` : ''}.`,
+            stats,
+        };
+    }
+
+    function _rankPct(arr, key, item) {
+        const x = key(item);
+        return arr.filter(a => key(a) < x).length / Math.max(1, arr.length - 1);
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -1158,8 +1217,14 @@ const UrbanLensesCommons = (() => {
             needs: ['econ_census.ec_ward', 'econ_census.ec_workers', 'econ_census.ec_estabs', 'econ_census.mfg_pct', 'econ_census.trade_pct', 'econ_census.home_pct', 'econ_census.women_pct', 'econ_census.women_owner_pct', 'places.places', 'population.population'],
             method: `MoSPI's 6th Economic Census (2012-13) microdata for Kolkata (via data.opencity.in, public domain): every establishment, fixed or not, with its KMC ward, broad activity, whether it runs from inside a household, ownership, the proprietor's sex and workers by sex. Crop farming, public administration and defence are outside the census, so government offices and the port are undercounted. Ward figures are joined to blocks through the KMC ward map (wards); ward area is its mapped blocks, and residents are today's GHSL estimate, so workers per resident mixes 2012-13 jobs with 2020s homes. The rank match is a Spearman correlation across wards between census workers per km² and Overture places per km², a check on how well today's place data stands in for jobs. Social group and religion columns are not read.`,
             refs: 'Ministry of Statistics and Programme Implementation, 6th Economic Census 2012-13 (all-India report and Kolkata microdata via data.opencity.in); Overture Maps places' },
+        { id: 'ptax', title: 'Property tax by ward', icon: '🧾',
+            question: 'How much property tax does each ward pay per resident, and does it match land values?',
+            field: { key: 'ptax_per_resident', label: 'Residential property tax billed per resident (2017-18)', unit: '₹/yr', higherIs: null, ramp: 'viridis', domain: [0, 1500] },
+            needs: ['property_tax.pt_ward', 'property_tax.pt_res_demand_lakh', 'property_tax.pt_com_demand_lakh', 'property_tax.pt_collect_pct', 'property_tax.pt_res_growth_pct', 'land_value.value_index', 'population.population'],
+            method: `Greater Chennai Corporation's ward-wise property tax demand and collection for 2013-14 to 2017-18 (via data.opencity.in, public domain), joined to blocks through the GCC 200-ward map (wards). Residential demand is billed on the annual rental value GCC assesses (rates last revised in 1998 until the 2018 revision), so per resident it is an old but official gauge of home values; residents are today's GHSL estimate. The rank match is a Spearman correlation across wards between tax billed (per resident, and per km² of mapped ward) and the residents-weighted land value index (land_value); per km² both rise with density, so the per-resident match is the fairer test; wards billed low for their land value are those whose percentile on the bill sits furthest below their percentile on land value: candidates for reassessment or for a check on the model. Collection is collected over billed across the five years; above 100% means arrears were cleared.`,
+            refs: 'Greater Chennai Corporation property tax, ward-wise demand and collection 2013-18 via data.opencity.in; Chennai City Municipal Corporation Act 1919 (annual rental value assessment)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters, hotdays, tankbeds, jobcount });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters, hotdays, tankbeds, jobcount, ptax });
     return { ENTRIES };
 })();

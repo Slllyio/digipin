@@ -3174,6 +3174,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "ptax": {
+     "label": "Residential property tax billed per resident (2017-18)",
+     "value": 357,
+     "unit": "₹/yr",
+     "higherIs": null
+    },
     "wardfit": {
      "label": "Electricity, water and police offices a ward deals with (median resident)",
      "value": 9,

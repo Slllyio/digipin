@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T04:11:35Z",
+  "generated": "2026-10-29T04:26:26Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -35065,6 +35065,97 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "property_tax",
+      "title": "Property tax by ward (GCC, 2013-18)",
+      "description": "Greater Chennai Corporation's ward-wise property tax demand and collection, residential and commercial, 2013-14 to 2017-18, via data.opencity.in; every block in a ward carries the ward's figures.",
+      "source": "pipeline/realestate/propertytax.py (OpenCity Chennai property tax collections)",
+      "license": "Public domain (Greater Chennai Corporation via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "pt_ward",
+          "label": "GCC ward",
+          "type": "number",
+          "agg": "min",
+          "domain": [
+            4,
+            198
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "pt_res_demand_lakh",
+          "label": "Ward residential property tax demand, 2017-18",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u20b9 lakh",
+          "domain": [
+            10.22,
+            999.76
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "pt_com_demand_lakh",
+          "label": "Ward commercial property tax demand, 2017-18",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u20b9 lakh",
+          "domain": [
+            3.84,
+            3060.92
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "pt_collect_pct",
+          "label": "Ward property tax collected over billed, 2013-18",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            50,
+            120
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "pt_res_growth_pct",
+          "label": "Change in ward residential demand, 2013-14 to 2017-18",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            -30,
+            60
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "pt_res_demand_lakh",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "chennai",
+          "cells": 6412,
+          "bbox": {
+            "west": 80.139892578125,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "property_tax/chennai.json",
+          "parquet": null
         }
       ]
     },
