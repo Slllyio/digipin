@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-29T16:19:37Z",
+  "generated_at_iso": "2026-10-29T21:17:57Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-30 01:35:47|28.159,77.178",
+      "magnitude": 2.3,
+      "origin_time": "2026-10-30 01:35:47",
+      "latitude": 28.159,
+      "longitude": 77.178,
+      "depth_km": 5.0,
+      "region": "Palwal, Haryana",
+      "location": "31km SSW of Faridabad, Haryana, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-30 01:00:46|33.628,74.922",
+      "magnitude": 3.6,
+      "origin_time": "2026-10-30 01:00:46",
+      "latitude": 33.628,
+      "longitude": 74.922,
+      "depth_km": 10.0,
+      "region": "Kulgam, Jammu and Kashmir",
+      "location": "52km SSE of Srinagar, Jammu and Kashmir, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-29 20:46:04|20.389,72.895",
       "magnitude": 2.6,
@@ -1628,28 +1650,6 @@
       "depth_km": 59.0,
       "region": "Indonesia",
       "location": "396km SE of Campbell Bay, Andaman and Nicobar island, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-20 12:11:26|37.730,95.679",
-      "magnitude": 5.1,
-      "origin_time": "2026-10-20 12:11:26",
-      "latitude": 37.73,
-      "longitude": 95.679,
-      "depth_km": 90.0,
-      "region": "China",
-      "location": "1066km N of Pangin, Arunachal Pradesh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-20 11:40:12|36.355,71.943",
-      "magnitude": 3.9,
-      "origin_time": "2026-10-20 11:40:12",
-      "latitude": 36.355,
-      "longitude": 71.943,
-      "depth_km": 135.0,
-      "region": "Pakistan",
-      "location": "149km ESE of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]
