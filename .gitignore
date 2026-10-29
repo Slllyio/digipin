@@ -85,6 +85,7 @@ data/traffic/*/*
 data/realestate/*
 !data/realestate/*.json
 !data/realestate/*.geojson
+!data/realestate/gba_ward_electors_2026.csv
 # Precomputed law-and-order mobility (access-resilience) artifacts — browser-consumed.
 !data/safety/
 data/safety/*
