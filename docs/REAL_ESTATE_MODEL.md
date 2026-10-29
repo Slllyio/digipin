@@ -1559,3 +1559,14 @@ each block against the night the median resident sleeps through: residents, the 
 more below it, the share of them in mostly unplanned or informal blocks (WRI intra-urban land use) and in mapped slums, and
 cold pockets 2 km apart ranked by (residents + 3 × elderly + 3 × under 5) × degrees below the median, doubled in unplanned
 blocks. Surface, not air, temperature; the homeless are not counted by any map.
+
+## Heated up (`heatedup` lens, `heat_change` dataset, pipeline/cells/ee_layers.py)
+
+`heat_change` takes cloud-free Landsat Collection 2 Level-2 surface temperature scenes for April and May in 2000-2006
+(Landsat 5 and 7, ST_B6) and 2021-2025 (Landsat 8 and 9, ST_B10), masks pixels that are water at least half the time (JRC
+Global Surface Water), turns each scene into each pixel's gap to that scene's land median over the city region (300 m
+reduceRegion), and stores per L7 block the period medians (`lst_2000s_c`, `lst_2020s_c`) and the change in the median gap
+(`heat_rel_change_c`). The lens reports residents in blocks 2 °C or more hotter or cooler against the city, the mean change
+for blocks with 20%+ new built surface 2000-2020 (GHSL) against blocks under 5%, today's tree canopy in warmed blocks, and
+warmed blocks 2 km apart ranked by residents × warming. A relative, surface measure: in hot, dry cities new building on bare
+fallow reads as cooling.

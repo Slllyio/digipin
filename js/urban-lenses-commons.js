@@ -746,6 +746,51 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Heated up. Landsat April-May surface temperature in 2000-2006 and 2021-2025: which blocks turned hotter than the
+    // city around them and which turned cooler. Each scene is read as its gap to that scene's city median, which cancels
+    // the different sensors and weather years. Building on hot bare fallow can read as cooling, so drivers vary by city.
+    const WARMED_C = 2, NEW_BUILT_PCT = 20;
+
+    function heatedup(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, rel = c['heat_change.heat_rel_change_c'], now = c['heat_change.lst_2020s_c'];
+        const pop = c['population.population'], nb = c['built_up.built_change_pct'], tree = c['vegetation.tree_canopy_pct'];
+        if (!rel || !rel.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr).filter(i => _fin(rel[i]));
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const wmean = set => { const w = set.reduce((s, i) => s + v(pop, i), 0); return w ? set.reduce((s, i) => s + v(pop, i) * rel[i], 0) / w : NaN; };
+        const warm = idx.filter(i => rel[i] >= WARMED_C), warmPop = warm.reduce((s, i) => s + v(pop, i), 0);
+        const coolPop = idx.filter(i => rel[i] <= -WARMED_C).reduce((s, i) => s + v(pop, i), 0);
+        const stats = [
+            { label: `Residents in blocks that turned ${WARMED_C} °C or more hotter than the city since 2000-06`, value: `${_people(warmPop)} (${_round(100 * warmPop / all, 1)}%)` },
+            { label: `Residents in blocks that turned ${WARMED_C} °C or more cooler than the city`, value: `${_people(coolPop)} (${_round(100 * coolPop / all, 1)}%)` },
+        ];
+        let built = null;
+        if (nb) {
+            const fresh = idx.filter(i => v(nb, i) >= NEW_BUILT_PCT), old = idx.filter(i => _fin(nb[i]) && nb[i] < 5);
+            if (fresh.length >= 5 && old.length >= 5) {
+                built = { fresh: wmean(fresh), old: wmean(old) };
+                stats.push({ label: `Change against the city, homes built over since 2000 (${NEW_BUILT_PCT}%+ new built surface) vs older blocks`, value: `${built.fresh >= 0 ? '+' : ''}${_round(built.fresh, 1)} vs ${built.old >= 0 ? '+' : ''}${_round(built.old, 1)} °C` });
+            }
+        }
+        if (tree && warm.length) {
+            const tm = set => { const w = set.reduce((s, i) => s + v(pop, i), 0); return w ? set.reduce((s, i) => s + v(pop, i) * v(tree, i), 0) / w : 0; };
+            stats.push({ label: 'Tree canopy today, blocks that warmed vs the rest', value: `${_round(tm(warm), 1)}% vs ${_round(tm(idx.filter(i => rel[i] < WARMED_C)), 1)}%` });
+        }
+        const score = Float64Array.from({ length: n }, (_, i) => (_fin(rel[i]) && rel[i] > 0 ? v(pop, i) * rel[i] : 0));
+        spaced(g, warm, score, 5).forEach((i, k) => stats.push({ label: `Heated up ${k + 1}: ${g.codes[i]}`,
+            value: `+${_round(rel[i], 1)} °C against the city${now && _fin(now[i]) ? `, ${_round(now[i], 1)} °C now` : ''}${nb && _fin(nb[i]) ? `; ${Math.round(nb[i])}% of the ground built over since 2000` : ''}; ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = rel[i];
+        return {
+            columns: { heat_rel_change_c: out }, idx, weightKey: 'heat_rel_change_c', noHotspots: true,
+            metric: { label: `Residents in blocks ${WARMED_C} °C or more hotter against the city than in 2000-06`, value: _round(100 * warmPop / all, 1), unit: '%', higherIs: 'worse' },
+            headline: `${_people(warmPop)} residents (${_round(100 * warmPop / all, 1)}%) live in blocks whose April-May surface has turned ${WARMED_C} °C or more hotter than the city around them since 2000-06, and ${_people(coolPop)} (${_round(100 * coolPop / all, 1)}%) in blocks that turned as much cooler${built && _fin(built.fresh) && _fin(built.old) ? `; blocks built over since 2000 moved ${built.fresh >= 0 ? '+' : ''}${_round(built.fresh, 1)} °C against the city, older blocks ${built.old >= 0 ? '+' : ''}${_round(built.old, 1)} °C` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -843,8 +888,14 @@ const UrbanLensesCommons = (() => {
             needs: ['winter_nights.winter_lst_c', 'winter_nights.winter_anomaly_c', 'winter_nights.winter_scenes', 'urban_form.res_atomistic_pct', 'urban_form.res_informal_pct', 'slums_mapped.slum_pct', 'demographics.elderly_60plus', 'demographics.under5', 'population.population'],
             method: `NASA ECOSTRESS (thermal radiometer on the International Space Station, public domain): land surface temperature at 70 m. Each block takes the median of cloud-free, non-water pixels on December to February nights (21:30 to 05:30 IST) from winter 2019-20 to 2025-26; fog and cloud are masked, so it is the clear, still nights when the ground radiates its heat away and cold waves set in. The map shows each block against the night the median resident sleeps through, and cold pockets are ${COLD_NIGHT_C} °C or more below it. Residents, the elderly and children under 5 are WorldPop; unplanned or informal blocks are those where WRI's intra-urban land use map puts over ${UNPLANNED_COLD_PCT}% of the residential ground in irregular plots or unapproved subdivisions, a rough stand-in for thin walls and roofs; slum residents are residents × the share of the block inside a mapped slum. Picks are cold-pocket blocks ${SPACING_KM} km apart ranked by (residents + 3 × elderly + 3 × under 5) × degrees below the median, doubled in unplanned blocks. Surface, not air, temperature: air indoors and on the street is milder, but the pattern of where nights run coldest holds. Run for the eight cities with a real winter (Delhi, Lucknow, Jaipur, Bhopal, Indore, Guna, Ahmedabad, Kolkata); the homeless, who die most in cold waves, are not counted by any of these maps.`,
             refs: 'Hook and Hulley, ECOSTRESS L2T LSTE V2 (NASA LP DAAC); NDMA National Guidelines on Cold Wave (2021); IMD cold wave criteria; Guzder-Williams et al. 2023, Intra-urban land use maps (WRI)' },
+        { id: 'heatedup', equity: false, title: 'Heated up', icon: '📈',
+            question: 'Which neighbourhoods have turned hotter than the rest of the city since the early 2000s, and why?',
+            field: { key: 'heat_rel_change_c', label: 'April-May surface heat against the city, change since 2000-06', unit: '°C', higherIs: 'worse', ramp: 'diverging', domain: [-6, 6] },
+            needs: ['heat_change.lst_2000s_c', 'heat_change.lst_2020s_c', 'heat_change.heat_rel_change_c', 'built_up.built_change_pct', 'vegetation.tree_canopy_pct', 'population.population'],
+            method: `USGS Landsat Collection 2 surface temperature (public domain, 30 m): cloud-free April and May scenes in 2000-2006 (Landsat 5 and 7) and in 2021-2025 (Landsat 8 and 9). The two periods use different sensors and years with different weather, so the raw change is not trusted; every scene is first turned into each pixel's gap to that scene's median over the city region's land (pixels that are water at least half the time in JRC's Global Surface Water are left out), each period takes the median gap, and the lens maps how the gap changed. In hot, dry cities bare fallow and rock heat up more by day than built ground, so new building on them can read as relative cooling, while dense old cores that lost trees and gained roofs read as warming. Warmed blocks moved ${WARMED_C} °C or more hotter against the city. New built surface 2000 to 2020 is GHSL; blocks with ${NEW_BUILT_PCT}% or more of their ground newly built are compared with blocks under 5%. Tree canopy is today's (Meta/WRI). Residents are today's (WorldPop). Picks are warmed blocks ${SPACING_KM} km apart ranked by residents × warming. Surface, not air, temperature, and a relative measure: if the whole city warmed, a block that kept pace shows zero.`,
+            refs: 'USGS Landsat Collection 2 Level-2 surface temperature; Pesaresi et al., GHSL GHS-BUILT-S R2023A; Peng et al. 2012, Surface urban heat island across 419 global big cities (Environmental Science & Technology)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup });
     return { ENTRIES };
 })();

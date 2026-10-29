@@ -1,0 +1,1 @@
+{"version":1,"dataset":"heat_change","region":"mumbai","level":7,"fields":["lst_2000s_c","lst_2020s_c","heat_rel_change_c"],"cells":["4FKC6TT","4FKCT6T","4FKCT78","4FKCTT6","4FKCTT7","4FKCTT8","4FKCTTT"],"columns":{"lst_2000s_c":[36.8,35.4,36.5,39.4,37.3,38.6,38.9],"lst_2020s_c":[36.5,36.3,33.8,38.2,37.2,38.8,37.4],"heat_rel_change_c":[0.1,1.1,-0.5,0.2,1.4,0.5,-0.2]}}
