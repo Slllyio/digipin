@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T02:34:09Z",
+  "generated": "2026-10-29T02:50:47Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -28107,7 +28107,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 8277,
+          "cells": 8285,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
@@ -28216,7 +28216,7 @@
         },
         {
           "name": "indore_pilot",
-          "cells": 1574,
+          "cells": 1575,
           "bbox": {
             "west": 75.604736328125,
             "south": 22.50390625,
@@ -28264,7 +28264,7 @@
         },
         {
           "name": "mumbai",
-          "cells": 3959,
+          "cells": 3958,
           "bbox": {
             "west": 72.78125,
             "south": 18.893798828125,
@@ -28417,7 +28417,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 20049,
+          "cells": 20050,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
@@ -28581,7 +28581,7 @@
         },
         {
           "name": "jaipur",
-          "cells": 8147,
+          "cells": 8166,
           "bbox": {
             "west": 75.69921875,
             "south": 26.799560546875,
@@ -28889,7 +28889,7 @@
         },
         {
           "name": "jaipur",
-          "cells": 7967,
+          "cells": 7985,
           "bbox": {
             "west": 75.69921875,
             "south": 26.799560546875,
