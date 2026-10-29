@@ -426,7 +426,46 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Household spending. MoSPI's HCES 2023-24 household files for the city's districts (urban households): consumption
+    // per person, where it goes, and the rent that renting households pay.
+    const HC_SHARES = [['food', 'food'], ['rent', 'rent'], ['goods', 'clothing, footwear and durables'], ['transport', 'transport'], ['education', 'education'],
+        ['medical', 'medical care'], ['fuel', 'fuel and light']];
+
+    function spending(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`hces.hc_${k}`];
+        const mp = col('mpce');
+        if (!mp || !mp.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(mp[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => (col(k) && _fin(col(k)[i0]) ? col(k)[i0] : NaN);
+        const rs = x => `₹${Math.round(x).toLocaleString('en-IN')}`;
+        const shares = HC_SHARES.map(([k, label]) => ({ label, pct: v(`${k}_pct`) })).filter(x => _fin(x.pct));
+        const sh = k => shares.find(x => x.label === k);
+        const stats = [
+            { label: 'Monthly consumption per person, urban households 2023-24 (average / middle person)', value: `${rs(v('mpce'))} / ${rs(v('mpce_median'))}` },
+            ...shares.map(x => ({ label: `Share spent on ${x.label}`, value: `${_round(x.pct, 1)}%` })),
+            { label: 'Households paying rent / their average rent a month', value: `${_round(v('renters_pct'), 0)}% / ${_fin(v('rent')) ? rs(v('rent')) : 'n/a'}` },
+            { label: 'Richest fifth against the poorest fifth (consumption per person) / Gini', value: `${_round(v('top_bottom'), 1)} times / ${_round(v('gini'), 2)}` },
+            { label: 'Urban households surveyed', value: String(Math.round(v('households'))) },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = v('mpce');
+        const food = sh('food'), rent = sh('rent');
+        return {
+            columns: { mpce: out }, idx, weightKey: 'mpce', noHotspots: true,
+            metric: { label: 'Monthly consumption per person, urban (HCES 2023-24)', value: Math.round(v('mpce')), unit: '₹', higherIs: null },
+            headline: `Urban households here spent ${rs(v('mpce'))} a month per person in 2023-24 (the middle person ${rs(v('mpce_median'))})${food ? `; food took ${_round(food.pct, 0)}%` : ''}${rent ? ` and rent ${_round(rent.pct, 0)}%` : ''}${_fin(v('renters_pct')) ? `, with ${_round(v('renters_pct'), 0)}% of households renting at ${rs(v('rent'))} a month on average` : ''}. The richest fifth consumed ${_round(v('top_bottom'), 1)} times as much per person as the poorest fifth.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'spending', equity: true, title: 'What households spend', icon: '🧾',
+            question: 'How much do households here spend a month, and how much of it goes on food and rent?',
+            field: { key: 'mpce', label: 'Monthly consumption per person, urban households (HCES 2023-24)', unit: '₹', higherIs: null, ramp: 'viridis', domain: [5000, 15000] },
+            needs: ['hces.hc_mpce', 'hces.hc_mpce_median', ...HC_SHARES.map(([k]) => `hces.hc_${k}_pct`), 'hces.hc_renters_pct', 'hces.hc_rent', 'hces.hc_top_bottom', 'hces.hc_gini', 'hces.hc_households', 'population.population'],
+            method: `MoSPI's Household Consumption Expenditure Survey 2023-24 household files for the city's districts (via data.opencity.in, public domain), urban households only, with the survey's weights. Each household's item-group values are turned to a month from their recall period (7 days for milk, vegetables, fruit, meat, oil, spices, drinks and processed food; a year for education, hospitalisation, clothing and durables; 30 days for the rest), imputed rent of owned homes is left out and free items from welfare schemes are not valued, as in MoSPI's MPCE without imputation (this gives Delhi ₹8,542). Rent is what renting households paid. The survey is about 1,000-3,000 urban households a city, so one value covers the whole city; the religion, caste and occupation fields are not read.`,
+            refs: 'MoSPI Household Consumption Expenditure Survey 2023-24 unit-level data (via data.opencity.in)' },
         { id: 'roaddeaths', equity: true, title: 'Road deaths in the city', icon: '🚑',
             question: 'How many people die on the roads here, who are they, and is it getting worse?',
             field: { key: 'deaths_per100', label: 'Road deaths per 100 crashes (police city, 2024)', unit: 'per 100', higherIs: 'worse', ramp: 'reds', domain: [5, 40] },
@@ -478,6 +517,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending });
     return { ENTRIES };
 })();

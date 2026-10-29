@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T09:09:14Z",
+  "generated": "2026-10-29T09:27:08Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -15950,6 +15950,279 @@
             "north": 18.671875
           },
           "json": "haze_mix/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "hces",
+      "title": "Household spending (HCES 2023-24)",
+      "description": "Monthly consumption per person, how it splits between food, rent, transport, education, medical care, fuel and goods, the share of households renting and the rent they pay, for urban households in the city's districts, from MoSPI's Household Consumption Expenditure Survey 2023-24 household files (via data.opencity.in). One value per city; free items from welfare schemes are not imputed. The survey's religion, caste and occupation fields are not read.",
+      "source": "pipeline/realestate/hces.py (HCES 2023-24 unit-level item-group summaries, urban sector, survey weights)",
+      "license": "Public domain (MoSPI via data.opencity.in)",
+      "group": "Real estate",
+      "level": 5,
+      "approxCellM": 3900,
+      "fields": [
+        {
+          "key": "hc_mpce",
+          "label": "Monthly consumption per person, urban households (2023-24)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u20b9",
+          "domain": [
+            7278.0,
+            11110.0
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hc_mpce_median",
+          "label": "Middle person's monthly consumption, urban (2023-24)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u20b9",
+          "domain": [
+            5898.0,
+            9942.0
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hc_food_pct",
+          "label": "Food's share of urban household consumption",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            20,
+            60
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hc_rent_pct",
+          "label": "Rent's share of urban household consumption",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hc_transport_pct",
+          "label": "Transport's share of consumption",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hc_education_pct",
+          "label": "Education's share of consumption",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hc_medical_pct",
+          "label": "Medical care's share of consumption",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hc_fuel_pct",
+          "label": "Fuel and light's share of consumption",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hc_goods_pct",
+          "label": "Clothing, footwear, bedding and durables' share of consumption",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            40
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hc_renters_pct",
+          "label": "Urban households paying rent",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            80
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hc_rent",
+          "label": "Average monthly rent paid by renting households (2023-24)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u20b9",
+          "domain": [
+            1980.0,
+            8917.0
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "hc_top_bottom",
+          "label": "Richest fifth's consumption over the poorest fifth's",
+          "type": "number",
+          "agg": "mean",
+          "unit": "times",
+          "domain": [
+            3.0,
+            4.3
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "hc_gini",
+          "label": "Gini index of consumption per person",
+          "type": "number",
+          "agg": "mean",
+          "unit": "index",
+          "domain": [
+            0.2,
+            0.5
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "hc_households",
+          "label": "Urban households surveyed",
+          "type": "number",
+          "agg": "max",
+          "unit": "households",
+          "domain": [
+            986,
+            3049
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "hc_mpce",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 110,
+          "bbox": {
+            "west": 77.421875,
+            "south": 12.80078125,
+            "east": 77.80859375,
+            "north": 13.15234375
+          },
+          "json": "hces/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 50,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.87109375,
+            "east": 80.33984375,
+            "north": 13.1875
+          },
+          "json": "hces/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 225,
+          "bbox": {
+            "west": 76.82421875,
+            "south": 28.375,
+            "east": 77.3515625,
+            "north": 28.90234375
+          },
+          "json": "hces/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 90,
+          "bbox": {
+            "west": 78.265625,
+            "south": 17.265625,
+            "east": 78.6171875,
+            "north": 17.58203125
+          },
+          "json": "hces/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 42,
+          "bbox": {
+            "west": 88.25,
+            "south": 22.43359375,
+            "east": 88.4609375,
+            "north": 22.6796875
+          },
+          "json": "hces/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 81,
+          "bbox": {
+            "west": 72.74609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.3046875
+          },
+          "json": "hces/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 56,
+          "bbox": {
+            "west": 73.73046875,
+            "south": 18.42578125,
+            "east": 74.01171875,
+            "north": 18.671875
+          },
+          "json": "hces/pune.json",
           "parquet": null
         }
       ]

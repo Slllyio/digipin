@@ -1752,3 +1752,12 @@ and is left out.
 value per city at L5 for the 12 of our cities among MoRTH's 50 (not Guna). Figures are the police city's (Hyderabad's
 excludes Cyberabad and Rachakonda). Deaths per 100 crashes is set against the 50-city median, which the bake stores
 with each city. Recorded violations lean on how each force files deaths (Mumbai puts 99% down to over-speeding).
+
+## What households spend (`spending` lens, `hces` dataset)
+
+`pipeline/realestate/hces.py` reads two files from each city's HCES 2023-24 extract on OpenCity: level 14 (item-group
+values from summary blocks A1, B1 and C1) and level 15 (household size and weight), urban sector only. The level-15
+"monthly consumption" field is the household's own estimate of its usual monthly spending, asked at each of three
+visits, so it is not used. Item groups are scaled to 30 days from their recall periods (7 days, 30 days or 365 days as
+in the questionnaire), imputed rent (539) is dropped, and MPCE is the weighted total over weighted people, which gives
+Delhi's urban ₹8,542 as MoSPI publishes. Rent is item 529 for households paying it. One value per city at L5.

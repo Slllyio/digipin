@@ -984,6 +984,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "spending": {
+     "label": "Monthly consumption per person, urban (HCES 2023-24)",
+     "value": 11110,
+     "unit": "₹",
+     "higherIs": null
+    },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
      "value": 18.7,
@@ -3168,6 +3174,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "spending": {
+     "label": "Monthly consumption per person, urban (HCES 2023-24)",
+     "value": 9838,
+     "unit": "₹",
+     "higherIs": null
+    },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
      "value": 14.4,
@@ -4295,6 +4307,12 @@
      "value": 36.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "spending": {
+     "label": "Monthly consumption per person, urban (HCES 2023-24)",
+     "value": 8542,
+     "unit": "₹",
+     "higherIs": null
     },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
@@ -6083,6 +6101,12 @@
      "value": 25,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "spending": {
+     "label": "Monthly consumption per person, urban (HCES 2023-24)",
+     "value": 10449,
+     "unit": "₹",
+     "higherIs": null
     },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
@@ -9024,6 +9048,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "spending": {
+     "label": "Monthly consumption per person, urban (HCES 2023-24)",
+     "value": 7278,
+     "unit": "₹",
+     "higherIs": null
+    },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
      "value": 9.8,
@@ -10986,6 +11016,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "spending": {
+     "label": "Monthly consumption per person, urban (HCES 2023-24)",
+     "value": 9761,
+     "unit": "₹",
+     "higherIs": null
+    },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
      "value": 14.2,
@@ -12029,6 +12065,12 @@
      "value": 23.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "spending": {
+     "label": "Monthly consumption per person, urban (HCES 2023-24)",
+     "value": 10102,
+     "unit": "₹",
+     "higherIs": null
     },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
