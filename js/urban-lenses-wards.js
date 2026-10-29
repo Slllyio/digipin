@@ -141,6 +141,49 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Feels-like heat. The Universal Thermal Climate Index folds humidity, wind and sun into air temperature: the heat the
+    // body has to shed outdoors. A month whose mean daily peak is 38 °C UTCI or more is a month of very strong heat stress
+    // for anyone working or walking outside in the afternoon.
+    const UTCI_VS = 38;
+
+    function feelslike(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, vs = c['feels_like.utci_vstrong_months'], st = c['feels_like.utci_strong_months'];
+        const amj = c['feels_like.utci_amj_c'], then = c['feels_like.utci_vstrong_months_then'], chg = c['feels_like.utci_amj_change_c'];
+        const air = c['air_heat.tmax_amj_c'], pop = c['population.population'];
+        if (!vs || !amj || !amj.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr).filter(i => _fin(amj[i]) && _fin(vs[i]));
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const wavg = a => idx.reduce((s, i) => s + v(pop, i) * v(a, i), 0) / all;
+        const mVS = wavg(vs), mS = wavg(st), mA = wavg(amj);
+        const two = idx.filter(i => vs[i] >= 2).reduce((s, i) => s + v(pop, i), 0);
+        const stats = [
+            { label: `Months a year of very strong heat stress (UTCI ${UTCI_VS} °C or more), average resident, 2013-2022`, value: `${_round(mVS, 1)}${then ? ` (${_round(wavg(then), 1)} in 2000-2009)` : ''}` },
+            { label: 'Months a year of strong heat stress or worse (UTCI 32 °C or more)', value: _round(mS, 1) },
+            { label: 'April-June feels-like daily peak, average resident', value: `${_round(mA, 1)} °C${chg ? ` (${wavg(chg) >= 0 ? '+' : ''}${_round(wavg(chg), 1)} °C since 2000-2009)` : ''}` },
+            { label: 'Residents with two months or more of very strong heat stress a year', value: `${_people(two)} (${_round(100 * two / all, 0)}%)` },
+        ];
+        if (air) {
+            const both = idx.filter(i => _fin(air[i]));
+            if (both.length >= 5) {
+                const gap = both.reduce((s, i) => s + v(pop, i) * (amj[i] - air[i]), 0) / (both.reduce((s, i) => s + v(pop, i), 0) || 1);
+                stats.push({ label: 'April-June feels-like peak against the air-temperature peak (1 km daily air temperature)', value: `${gap >= 0 ? '+' : ''}${_round(gap, 1)} °C` });
+            }
+        }
+        const score = new Float64Array(n);
+        for (const i of idx) score[i] = v(pop, i) * Math.max(0, amj[i] - mA + 1);
+        spaced(g, idx.filter(i => score[i] > 0), score).forEach((i, k) => stats.push({ label: `Hottest to be outdoors ${k + 1}: ${g.codes[i]}`, value: `${_round(amj[i], 1)} °C feels-like April-June peak; ${_round(vs[i], 1)} months a year at ${UTCI_VS} °C or more` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = amj[i];
+        return {
+            columns: { utci_amj: out }, idx, weightKey: 'utci_amj',
+            metric: { label: 'April-June feels-like daily peak (UTCI), average resident', value: _round(mA, 1), unit: '°C', higherIs: 'worse' },
+            headline: `Outdoors, the average resident's April-June afternoons feel like ${_round(mA, 1)} °C (UTCI), with ${_round(mVS, 1)} months a year of very strong heat stress and ${_round(mS, 1)} of strong heat stress or worse; ${_people(two)} residents face two months or more of very strong heat stress.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'homes2011', equity: true, title: 'Homes in 2011 by ward', icon: '🏘️',
             question: 'How crowded were homes in each ward at the last census, and who lacked a latrine or owned a car?',
@@ -154,8 +197,14 @@ const UrbanLensesWards = (() => {
             needs: ['low_ground.ground_m', 'low_ground.below2_pct', 'low_ground.below3_pct', 'low_ground.below5_pct', 'flood_future.coast_pct_now', 'waterlogging.waterlogging_index', 'population.population'],
             method: `Deltares DeltaDTM v1.1 (CC BY 4.0): a 30 m coastal terrain model made from the Copernicus DEM with buildings and vegetation removed using ICESat-2 and GEDI lidar heights, giving the ground itself in metres above mean sea level (EGM2008; vertical error about half a metre on flat land). It covers land up to 30 m, so it is baked for Mumbai, Chennai and Kolkata. Residents (GHSL) are counted on the share of each block at 2, ${LOW_M} and 5 m or less. Ground this low drains through outfalls into the sea or tidal rivers, which back up at high tide, so heavy rain at high tide floods it; IPCC AR6 projects about 0.4 to 0.8 m of sea-level rise along India's coast by 2100. The coastal flood comparison uses WRI Aqueduct's 1-in-100-year coastal flood today (~1 km); the waterlogging comparison uses the rain waterlogging index. Picks are blocks ${SPACING_KM} km apart ranked by residents × share at ${LOW_M} m or less. Seawalls, flap gates and pumping stations are not modelled.`,
             refs: 'Pronk et al., DeltaDTM: a global coastal digital terrain model, Scientific Data (2024); IPCC AR6 WG1 Chapter 9 and regional sea-level projections; WRI Aqueduct Floods v2' },
+        { id: 'feelslike', equity: true, title: 'Feels-like heat outdoors', icon: '🥵',
+            question: 'How hot does it feel outdoors once humidity, sun and wind are counted, and for how many months?',
+            field: { key: 'utci_amj', label: 'April-June feels-like daily peak (UTCI)', unit: '°C', higherIs: 'worse', ramp: 'heat', domain: [30, 42] },
+            needs: ['feels_like.utci_vstrong_months', 'feels_like.utci_strong_months', 'feels_like.utci_amj_c', 'feels_like.utci_vstrong_months_then', 'feels_like.utci_amj_change_c', 'air_heat.tmax_amj_c', 'population.population'],
+            method: `GloUTCI-M (CC BY 4.0): monthly Universal Thermal Climate Index at 1 km for 2000-2022, the outdoor temperature the body feels once humidity, wind and solar radiation are combined with air temperature (mean of the daily peak each month). UTCI bands: 32 to 38 °C strong heat stress, ${UTCI_VS} to 46 °C very strong, above 46 °C extreme. Months are counted per year and averaged over 2013-2022 and 2000-2009, and weighted by GHSL residents. The air-temperature comparison uses the 1 km daily air temperature dataset (air_heat); a positive gap means humidity and sun make it feel hotter than the thermometer reads. Monthly means smooth single heatwave days, so these counts are lower bounds on hard days. Picks are blocks ${SPACING_KM} km apart ranked by residents × how far the block's April-June peak sits above the city's average.`,
+            refs: 'Yang et al., GloUTCI-M: a global monthly 1 km Universal Thermal Climate Index dataset 2000-2022 (Earth System Science Data, 2024); Bröde et al., Deriving the operational procedure for the UTCI (Int. J. Biometeorology, 2012)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike });
     return { ENTRIES };
 })();

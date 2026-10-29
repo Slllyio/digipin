@@ -2465,6 +2465,45 @@ def low_ground(region):
     return spec, _table(level, rows, specs)
 
 
+def feels_like(region):
+    """Outdoor heat stress per block: Universal Thermal Climate Index by month (GloUTCI-M, 1 km, 2000-2022)."""
+    ee = gee.init()
+    _, bbox = _bbox(region)
+    level = 6
+    col = ee.ImageCollection("projects/sat-io/open-datasets/gloutci-m").map(lambda i: i.multiply(0.01).copyProperties(i, ["system:time_start"]))
+
+    def span(y0, y1):
+        c = col.filterDate(f"{y0}-01-01", f"{y1 + 1}-01-01")
+        n = y1 - y0 + 1
+        return ee.Image.cat([c.map(lambda i: i.gte(38)).sum().divide(n), c.map(lambda i: i.gte(32)).sum().divide(n),
+                             c.filter(ee.Filter.calendarRange(4, 6, "month")).mean()]).rename(["vs", "s", "amj"]).toFloat()
+
+    then, now = span(2000, 2009), span(2013, 2022)
+    img = ee.Image.cat([then.rename(["vsa", "sa", "amja"]), now.rename(["vsb", "sb", "amjb"])])
+    raw = gee.fetch(gee.to_cells(img, 1000), bbox, level)
+    rows = {code: {"utci_vstrong_months": _r(x["vsb"], 1), "utci_strong_months": _r(x["sb"], 1), "utci_amj_c": _r(x["amjb"], 1),
+                   "utci_vstrong_months_then": _r(x["vsa"], 1), "utci_amj_change_c": _r(x["amjb"] - x["amja"], 1) if x.get("amja") is not None else None}
+            for code, x in raw.items() if x.get("vsb") is not None and (x.get("amjb") or 0) >= 20}   # sea and edge pixels read near 0
+    if not rows:
+        return None
+    specs = [
+        FieldSpec("utci_vstrong_months", "Months a year whose mean daily peak feels-like temperature (UTCI) is 38 °C or more, 2013-2022", agg="mean", unit="months", domain=[0, 8], ramp="heat", higher_is="worse"),
+        FieldSpec("utci_strong_months", "Months a year at UTCI 32 °C or more (strong heat stress), 2013-2022", agg="mean", unit="months", domain=[0, 12], ramp="heat", higher_is="worse"),
+        FieldSpec("utci_amj_c", "April-June mean daily peak feels-like temperature (UTCI), 2013-2022", agg="mean", unit="°C", domain=[30, 42], ramp="heat", higher_is="worse"),
+        FieldSpec("utci_vstrong_months_then", "Months a year at UTCI 38 °C or more, 2000-2009", agg="mean", unit="months", domain=[0, 8], ramp="heat", higher_is="worse"),
+        FieldSpec("utci_amj_change_c", "Change in April-June UTCI, 2000-2009 to 2013-2022", agg="mean", unit="°C", domain=[-1, 2], ramp="diverging", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="feels_like", title="Feels-like heat stress (UTCI, 1 km)", level=level, fields=specs, group=GROUP,
+        description="GloUTCI-M (Yang et al. 2024): monthly Universal Thermal Climate Index at 1 km, 2000-2022, combining air "
+                    "temperature, humidity, wind and sunshine into the temperature the body feels outdoors. Per block: months a "
+                    "year whose mean daily peak is in very strong heat stress (38 °C or more) or strong (32 °C or more), the "
+                    "April-June mean, and the change since 2000-2009.",
+        source="GloUTCI-M via the Earth Engine community catalog (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (Yang, Zhou et al.)", default_field="utci_vstrong_months")
+    return spec, _table(level, rows, specs)
+
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -2473,7 +2512,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "subsidence": subsidence, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat, "winter_nights": winter_nights, "heat_change": heat_change, "green_change": green_change, "air_heat": air_heat, "low_ground": low_ground,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "subsidence": subsidence, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat, "winter_nights": winter_nights, "heat_change": heat_change, "green_change": green_change, "air_heat": air_heat, "low_ground": low_ground, "feels_like": feels_like,
 }
 
 

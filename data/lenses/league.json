@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 39.8,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 16.1,
@@ -964,6 +970,12 @@
      "label": "Residents where rain pools",
      "value": 20.5,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 31.6,
+     "unit": "°C",
      "higherIs": "worse"
     },
     "howbuilt": {
@@ -2160,6 +2172,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 39.7,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 30.4,
@@ -3106,6 +3124,12 @@
      "label": "Residents on ground 3 m or less above mean sea level",
      "value": 288994,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 37,
+     "unit": "°C",
      "higherIs": "worse"
     },
     "howbuilt": {
@@ -4206,6 +4230,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 38.8,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 34.8,
@@ -5196,6 +5226,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 41.9,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 55.6,
@@ -5968,6 +6004,12 @@
      "label": "Residents where rain pools",
      "value": 25.1,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 37.2,
+     "unit": "°C",
      "higherIs": "worse"
     },
     "howbuilt": {
@@ -7032,6 +7074,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 39.4,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 10.8,
@@ -7950,6 +7998,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 39.6,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 74,
@@ -8866,6 +8920,12 @@
      "label": "Residents on ground 3 m or less above mean sea level",
      "value": 4162251,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 35.5,
+     "unit": "°C",
      "higherIs": "worse"
     },
     "howbuilt": {
@@ -9858,6 +9918,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 38.5,
+     "unit": "°C",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 55,
@@ -10792,6 +10858,12 @@
      "label": "Residents on ground 3 m or less above mean sea level",
      "value": 818633,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 34.4,
+     "unit": "°C",
      "higherIs": "worse"
     },
     "howbuilt": {
@@ -11800,6 +11872,12 @@
      "label": "Residents where rain pools",
      "value": 23.7,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "feelslike": {
+     "label": "April-June feels-like daily peak (UTCI), average resident",
+     "value": 37.3,
+     "unit": "°C",
      "higherIs": "worse"
     },
     "howbuilt": {

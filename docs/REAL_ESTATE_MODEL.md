@@ -1669,3 +1669,11 @@ image, not a collection) at 30 m with JRC permanent water masked, per L7 block: 
 2, 3 and 5 m or less above mean sea level (EGM2008). The model stops at 30 m, so only coastal and delta cities are baked
 (Mumbai, Chennai, Kolkata). The lens counts GHSL residents on those shares, compares the low blocks with Aqueduct's
 present-day coastal flood map and the rain waterlogging index, and picks lived-in low blocks 1.5 km apart.
+
+## Feels-like heat outdoors (`feelslike` lens in js/urban-lenses-wards.js, `feels_like` EE layer)
+
+`ee_layers.feels_like` reads GloUTCI-M (`projects/sat-io/open-datasets/gloutci-m`, 272 monthly images, values in
+0.01 °C) at 1 km (L6): months a year whose mean daily peak UTCI is 38 °C or more (very strong heat stress) and 32 °C or
+more (strong), averaged over 2013-2022 and 2000-2009, and the April-June mean and its change. Sea and edge pixels read
+near 0 and are dropped (April-June mean under 20 °C). The lens weights by GHSL residents, sets the April-June UTCI peak
+against the air-temperature peak from `air_heat`, and picks the hottest lived-in blocks 1.5 km apart.
