@@ -36,6 +36,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "healthnow": {
+     "label": "Women with raised blood sugar, the state's towns and cities (NFHS-6 2023-24)",
+     "value": 18.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 16.1,
@@ -989,6 +995,12 @@
      "value": 39,
      "unit": "%",
      "higherIs": "better"
+    },
+    "healthnow": {
+     "label": "Women with raised blood sugar, the state's towns and cities (NFHS-6 2023-24)",
+     "value": 25.8,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
@@ -3142,6 +3154,12 @@
      "label": "April-June feels-like daily peak (UTCI), average resident",
      "value": 37,
      "unit": "°C",
+     "higherIs": "worse"
+    },
+    "healthnow": {
+     "label": "Women with raised blood sugar, the state's towns and cities (NFHS-6 2023-24)",
+     "value": 27.9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "howbuilt": {
@@ -6022,6 +6040,12 @@
      "label": "April-June feels-like daily peak (UTCI), average resident",
      "value": 37.2,
      "unit": "°C",
+     "higherIs": "worse"
+    },
+    "healthnow": {
+     "label": "Women with raised blood sugar, the state's towns and cities (NFHS-6 2023-24)",
+     "value": 22.6,
+     "unit": "%",
      "higherIs": "worse"
     },
     "howbuilt": {
@@ -8940,6 +8964,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "healthnow": {
+     "label": "Women with raised blood sugar, the state's towns and cities (NFHS-6 2023-24)",
+     "value": 28,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 78.4,
@@ -10878,6 +10908,12 @@
      "unit": "°C",
      "higherIs": "worse"
     },
+    "healthnow": {
+     "label": "Women with raised blood sugar, the state's towns and cities (NFHS-6 2023-24)",
+     "value": 19.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 21.3,
@@ -11897,6 +11933,12 @@
      "value": 26,
      "unit": "%",
      "higherIs": "better"
+    },
+    "healthnow": {
+     "label": "Women with raised blood sugar, the state's towns and cities (NFHS-6 2023-24)",
+     "value": 19.3,
+     "unit": "%",
+     "higherIs": "worse"
     },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",

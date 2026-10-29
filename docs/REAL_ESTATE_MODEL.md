@@ -1707,3 +1707,13 @@ and villages whose surveyed households hold under a fifth of today's GHSL reside
 Pashan: token rural remnants). Codes follow the survey's codebook (drainage 1 closed to 5 none; power-hour and distance
 bands become midpoints). Ahmedabad's box has only five villages left rural, so it is not baked. The lens weights by
 households and sets piped-water shares against the floor area added 2016-2023 (`re_supply.new_floor_m2`).
+
+## Health now (`healthnow` lens in js/urban-lenses-wards.js, `nfhs6` dataset)
+
+`pipeline/realestate/nfhs6.py` reads the NFHS-6 (2023-24) state fact-sheet CSVs on OpenCity (`nfhs-6-2023-24`): per
+indicator the urban, rural and total 2023-24 values and the state's NFHS-5 total. It keeps nine indicators that NFHS-5
+district sheets also carry (stunting, wasting, overweight women and men, raised blood sugar and blood pressure for
+women and men, health insurance) and bakes them at L5 for each city of a published state (one value per state). The lens
+lists, per indicator, the state 2019-21 → 2023-24, the state's towns and cities in 2023-24 and the city's own NFHS-5
+districts weighted by residents, and leads with the two largest rises and the largest fall. NFHS-6 does not report
+anaemia in these sheets.

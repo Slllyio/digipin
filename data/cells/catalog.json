@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T07:09:30Z",
+  "generated": "2026-10-29T07:25:59Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -28131,6 +28131,460 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "nfhs6",
+      "title": "State health now (NFHS-6 2023-24)",
+      "description": "National Family Health Survey 2023-24 (NFHS-6) state fact sheets via data.opencity.in: the state's towns and cities and the whole state in 2023-24, and the whole state in 2019-21 (NFHS-5), for child stunting and wasting, overweight, raised blood sugar and blood pressure, and health insurance. One value per state; district fact sheets are not out yet.",
+      "source": "pipeline/realestate/nfhs6.py (OpenCity NFHS-6 state fact sheets)",
+      "license": "Public domain (IIPS / MoHFW via data.opencity.in)",
+      "group": "Health",
+      "level": 5,
+      "approxCellM": 3900,
+      "fields": [
+        {
+          "key": "n6u_stunted",
+          "label": "State towns and cities, 2023-24: children under 5 stunted",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6_stunted",
+          "label": "State, 2023-24: children under 5 stunted",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n5_stunted",
+          "label": "State, 2019-21: children under 5 stunted",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6u_wasted",
+          "label": "State towns and cities, 2023-24: children under 5 wasted",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6_wasted",
+          "label": "State, 2023-24: children under 5 wasted",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n5_wasted",
+          "label": "State, 2019-21: children under 5 wasted",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6u_women_obese",
+          "label": "State towns and cities, 2023-24: women overweight or obese",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6_women_obese",
+          "label": "State, 2023-24: women overweight or obese",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n5_women_obese",
+          "label": "State, 2019-21: women overweight or obese",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6u_men_obese",
+          "label": "State towns and cities, 2023-24: men overweight or obese",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6_men_obese",
+          "label": "State, 2023-24: men overweight or obese",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n5_men_obese",
+          "label": "State, 2019-21: men overweight or obese",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6u_sugar_women",
+          "label": "State towns and cities, 2023-24: women with raised blood sugar",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6_sugar_women",
+          "label": "State, 2023-24: women with raised blood sugar",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n5_sugar_women",
+          "label": "State, 2019-21: women with raised blood sugar",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6u_sugar_men",
+          "label": "State towns and cities, 2023-24: men with raised blood sugar",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6_sugar_men",
+          "label": "State, 2023-24: men with raised blood sugar",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n5_sugar_men",
+          "label": "State, 2019-21: men with raised blood sugar",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6u_bp_women",
+          "label": "State towns and cities, 2023-24: women with raised blood pressure",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6_bp_women",
+          "label": "State, 2023-24: women with raised blood pressure",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n5_bp_women",
+          "label": "State, 2019-21: women with raised blood pressure",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6u_bp_men",
+          "label": "State towns and cities, 2023-24: men with raised blood pressure",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6_bp_men",
+          "label": "State, 2023-24: men with raised blood pressure",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n5_bp_men",
+          "label": "State, 2019-21: men with raised blood pressure",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "n6u_insurance",
+          "label": "State towns and cities, 2023-24: households with health insurance",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "n6_insurance",
+          "label": "State, 2023-24: households with health insurance",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "n5_insurance",
+          "label": "State, 2019-21: households with health insurance",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "n6u_sugar_women",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 42,
+          "bbox": {
+            "west": 72.46484375,
+            "south": 22.92578125,
+            "east": 72.7109375,
+            "north": 23.13671875
+          },
+          "json": "nfhs6/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 110,
+          "bbox": {
+            "west": 77.421875,
+            "south": 12.80078125,
+            "east": 77.80859375,
+            "north": 13.15234375
+          },
+          "json": "nfhs6/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 50,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.87109375,
+            "east": 80.33984375,
+            "north": 13.1875
+          },
+          "json": "nfhs6/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 90,
+          "bbox": {
+            "west": 78.265625,
+            "south": 17.265625,
+            "east": 78.6171875,
+            "north": 17.58203125
+          },
+          "json": "nfhs6/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 42,
+          "bbox": {
+            "west": 88.25,
+            "south": 22.43359375,
+            "east": 88.4609375,
+            "north": 22.6796875
+          },
+          "json": "nfhs6/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 81,
+          "bbox": {
+            "west": 72.74609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.3046875
+          },
+          "json": "nfhs6/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 56,
+          "bbox": {
+            "west": 73.73046875,
+            "south": 18.42578125,
+            "east": 74.01171875,
+            "north": 18.671875
+          },
+          "json": "nfhs6/pune.json",
+          "parquet": null
         }
       ]
     },

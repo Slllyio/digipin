@@ -289,6 +289,44 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Health now. NFHS-6 (2023-24) state fact sheets are out before the district ones, so the lens sets the state's
+    // newest figures, overall and in its towns and cities, against the state in 2019-21 and the city's own NFHS-5
+    // districts: which way blood sugar, weight, blood pressure, stunting and insurance have moved since.
+    const HEALTH6 = [
+        ['sugar_women', 'women with raised blood sugar', 'sugar_women_pct'], ['sugar_men', 'men with raised blood sugar', 'sugar_men_pct'],
+        ['women_obese', 'women overweight or obese', 'women_obese_pct'], ['men_obese', 'men overweight or obese', null],
+        ['bp_women', 'women with raised blood pressure', 'bp_women_pct'], ['bp_men', 'men with raised blood pressure', 'bp_men_pct'],
+        ['stunted', 'children under 5 stunted', 'stunted_pct'], ['wasted', 'children under 5 wasted', 'wasted_pct'],
+        ['insurance', 'households with health insurance', 'insurance_pct'],
+    ];
+
+    function healthnow(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pop = c['population.population'];
+        const col = k => c[`nfhs6.${k}`];
+        if (!col('n6_sugar_women') || !col('n6_sugar_women').some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(col('n6_sugar_women')[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = (a, i) => (a && _fin(a[i]) ? a[i] : NaN);
+        const P = idx.reduce((s, i) => s + (_fin(pop[i]) ? pop[i] : 0), 0) || 1;
+        const dist = k => { const a = c[`nfhs.${k}`]; if (!a) return NaN; let s = 0, w = 0; for (const i of idx) if (_fin(a[i]) && _fin(pop[i])) { s += a[i] * pop[i]; w += pop[i]; } return w > P / 2 ? s / w : NaN; };
+        const rows = HEALTH6.map(([f, label, d]) => ({ f, label, then: v(col(`n5_${f}`), i0), now: v(col(`n6_${f}`), i0), urban: v(col(`n6u_${f}`), i0), city: d ? dist(d) : NaN }))
+            .filter(r => _fin(r.now) && _fin(r.then));
+        if (rows.length < 3) return null;
+        const pp = x => (_fin(x) ? `${_round(x, 1)}%` : 'n/a');
+        const stats = rows.map(r => ({ label: `${r.label[0].toUpperCase()}${r.label.slice(1)}: state 2019-21 → 2023-24 / its towns and cities 2023-24 / this city's districts 2019-21`, value: `${pp(r.then)} → ${pp(r.now)} / ${pp(r.urban)} / ${pp(r.city)}` }));
+        const worse = rows.filter(r => r.f !== 'insurance').sort((a, b) => (b.now - b.then) - (a.now - a.then));
+        const up = worse.filter(r => r.now > r.then).slice(0, 2), down = worse.slice().reverse().find(r => r.now < r.then);
+        const ins = rows.find(r => r.f === 'insurance');
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = v(col('n6u_sugar_women'), i);
+        return {
+            columns: { sugar_women_urban: out }, idx, weightKey: 'sugar_women_urban', noHotspots: true,
+            metric: { label: "Women with raised blood sugar, the state's towns and cities (NFHS-6 2023-24)", value: _round(v(col('n6u_sugar_women'), i0), 1), unit: '%', higherIs: 'worse' },
+            headline: `Across the state, ${up.map((r, k) => `${r.label}${k ? '' : ' rose'} from ${pp(r.then)} to ${pp(r.now)} (${pp(r.urban)} in its towns and cities)`).join(' and ')} between NFHS-5 (2019-21) and NFHS-6 (2023-24)${down ? `, while ${down.label} fell from ${pp(down.then)} to ${pp(down.now)}` : ''}${ins ? `; ${pp(ins.now)} of households now have health insurance (${pp(ins.then)} before)` : ''}. District figures for 2023-24 are not out yet, so this city's own districts are still the 2019-21 values.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'homes2011', equity: true, title: 'Homes in 2011 by ward', icon: '🏘️',
             question: 'How crowded were homes in each ward at the last census, and who lacked a latrine or owned a car?',
@@ -320,8 +358,14 @@ const UrbanLensesWards = (() => {
             needs: ['village_services.ma_village_no', 'village_services.ma_households', 'village_services.ma_piped_pct', 'village_services.ma_kuccha_pct', 'village_services.ma_no_latrine_pct', 'village_services.ma_drain', 'village_services.ma_bus', 'village_services.ma_phc_km', 're_supply.new_floor_m2', 'population.population'],
             method: `Mission Antyodaya 2020 (Ministry of Rural Development, via data.opencity.in, public domain): a survey of every rural village and habitation, here the villages of Bengaluru Urban and Pune districts (Ahmedabad's box has too few villages left rural). The survey carries 2011 village codes but the Survey of India village maps do not, so rows are matched to map villages by name within the same tehsil (spelling-normalised; close spellings only when the first two letters agree) and several rows of one village are summed; about a third of Bengaluru's mapped villages and almost half of Pune's match, the rest being villages since swallowed by the city or spelt too differently to match safely. Shares are households-weighted. Drains are coded 1 closed, 2 open and covered, 3 open pucca, ${DRAIN_BAD} open kuccha, 5 none; health-centre distance is the midpoint of the survey's band. New floor space is the floor area added 2016-2023 (re_supply, from Open Buildings 2.5D Temporal). Village-reported counts are self-declared and some are rounded, so read them as the village's own account.`,
             refs: 'Ministry of Rural Development, Mission Antyodaya 2020 village survey (via data.opencity.in); Survey of India village maps (via data.opencity.in)' },
+        { id: 'healthnow', equity: true, title: 'Health now (NFHS-6)', icon: '📈',
+            question: 'Has blood sugar, weight, blood pressure or child stunting got better or worse since the last health survey?',
+            field: { key: 'sugar_women_urban', label: "Women with raised blood sugar, the state's towns and cities (NFHS-6 2023-24)", unit: '%', higherIs: 'worse', ramp: 'viridis', domain: [10, 35] },
+            needs: ['nfhs6.n6u_sugar_women', 'nfhs6.n6_sugar_women', 'nfhs6.n5_sugar_women', 'nfhs6.n6u_sugar_men', 'nfhs6.n6_sugar_men', 'nfhs6.n5_sugar_men', 'nfhs6.n6u_women_obese', 'nfhs6.n6_women_obese', 'nfhs6.n5_women_obese', 'nfhs6.n6u_men_obese', 'nfhs6.n6_men_obese', 'nfhs6.n5_men_obese', 'nfhs6.n6u_bp_women', 'nfhs6.n6_bp_women', 'nfhs6.n5_bp_women', 'nfhs6.n6u_bp_men', 'nfhs6.n6_bp_men', 'nfhs6.n5_bp_men', 'nfhs6.n6u_stunted', 'nfhs6.n6_stunted', 'nfhs6.n5_stunted', 'nfhs6.n6u_wasted', 'nfhs6.n6_wasted', 'nfhs6.n5_wasted', 'nfhs6.n6u_insurance', 'nfhs6.n6_insurance', 'nfhs6.n5_insurance', 'nfhs.sugar_women_pct', 'nfhs.sugar_men_pct', 'nfhs.women_obese_pct', 'nfhs.bp_women_pct', 'nfhs.bp_men_pct', 'nfhs.stunted_pct', 'nfhs.wasted_pct', 'nfhs.insurance_pct', 'population.population'],
+            method: `National Family Health Survey 2023-24 (NFHS-6) state fact sheets (IIPS and the Ministry of Health, via data.opencity.in, public domain), which give each indicator for the state's urban areas, rural areas and the whole state, with the state's 2019-21 (NFHS-5) value alongside. District fact sheets for NFHS-6 are not out yet, so the city's own figures are its NFHS-5 districts weighted by residents (nfhs). Raised blood sugar is over 140 mg/dl or taking medicine; raised blood pressure is 140/90 mm Hg or more or taking medicine; overweight is a BMI of 25 or more. The state's towns and cities are not this city alone, and the change from 2019-21 is for the whole state. Available for states whose NFHS-6 sheets are published (Karnataka, Maharashtra, Tamil Nadu, Telangana, West Bengal, Gujarat).`,
+            refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow });
     return { ENTRIES };
 })();
