@@ -1467,6 +1467,10 @@ residents in crossed blocks, within 500 m and within 2 km, today's modelled road
 schools in crossed blocks, the land value index near the line, and residents within 500 m per corridor. First run:
 56.6 km, 3.2 lakh residents in crossed blocks, 12.9 lakh within 500 m, land value index 119 near the line against 99.
 
+Since roadmap item 236 the Bengaluru bake also reads BDA's Peripheral Ring Road (Bengaluru Business Corridor) October 2022
+alignment map, which is a right-of-way polygon rather than a centreline: `alignment()` falls back to polygon outlines, distance is
+taken to the outline and the length inside a block counts half (two sides of one road), giving 73.0 km.
+
 ## Rain gauge gaps (`raingaugegap` lens, `rain_gauges` dataset, pipeline/realestate/raingauges.py)
 
 KSNDMC's Karnataka telemetric rain gauge and weather station layers and the Bengaluru Urban rain gauge layer (KGIS,

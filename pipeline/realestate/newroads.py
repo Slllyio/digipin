@@ -3,7 +3,8 @@
 Alignments on data.opencity.in:
 
     bengaluru   Greater Bengaluru Authority's eleven elevated corridors (August 2026 list, categories A to C, tender
-                floated or under way), one centreline each
+                floated or under way), one centreline each, and BDA's Peripheral Ring Road, now the Bengaluru Business
+                Corridor (October 2022 alignment, land acquisition under way in 2026), drawn as its right-of-way outline
     pune        MSRDC's Pune Outer Ring Road, western alignment and eastern parts 1 and 2 (EIA alignment maps);
                 the western map's chainage ticks (two-point lines) are dropped. Most of it runs outside the Pune
                 map's bounding box, so the default bake is Bengaluru only
@@ -21,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import math
+import re
 from pathlib import Path
 
 from pipeline.realestate.bdalayouts import region_cells
@@ -46,6 +48,7 @@ ALIGNMENTS = {     # region: [(name, kind, OpenCity dataset, resource name)]
         ("Doddaballapura Road to NH-7 elevated corridor (1.5 km)", EC, "documents-elevated-corridor-at-yelahanka", "Coordinates"),
         ("West of Chord Road to Outer Ring Road elevated corridor (2 km)", EC, "documents-elevated-corridor-at-pipeline-road", "Coordinates"),
         ("MEI Junction elevated corridor (0.5 km)", EC, "documents-elevated-corridor-at-mei-junction", "Coordinates"),
+        ("Bengaluru Business Corridor (Peripheral Ring Road, 73 km)", RR, "bengaluru-peripheral-ring-road-documents-2020", "PRR Alignment Map - October 2022"),
     ],
     "pune": [
         ("Pune Outer Ring Road, western alignment", RR, "pune-outer-ring-road-documents", "Western Alignment Map"),
@@ -55,7 +58,8 @@ ALIGNMENTS = {     # region: [(name, kind, OpenCity dataset, resource name)]
 }
 
 
-WHO = {"bengaluru": "Greater Bengaluru Authority's elevated corridors, August 2026 list, tenders floated",
+WHO = {"bengaluru": "Greater Bengaluru Authority's elevated corridors, August 2026 list, tenders floated, and BDA's Peripheral Ring Road "
+                    "(Bengaluru Business Corridor) right of way, October 2022 alignment",
        "pune": "MSRDC's Pune Outer Ring Road, EIA alignment maps"}
 
 
@@ -65,11 +69,17 @@ def resource_url(package, name):
     return next(r["url"] for r in p["resources"] if r["name"].startswith(name) and r["format"] == "KML")
 
 
+POLY = re.compile(r"<outerBoundaryIs>\s*<LinearRing>\s*<coordinates>(.*?)</coordinates>", re.S)
+
+
 def alignment(text):
-    """Centreline polylines of one KML; two-point lines (chainage ticks) are dropped when longer lines exist."""
+    """(polylines, outline) of one KML: centrelines, with two-point lines (chainage ticks) dropped when longer lines exist;
+    a map with no lines gives its right-of-way polygon outlines and outline=True (each side is drawn once)."""
     ls = list(lines(text))
     long = [pts for pts in ls if len(pts) > 2]
-    return long or ls
+    if long or ls:
+        return long or ls, False
+    return [[tuple(map(float, p.split(",")[:2])) for p in m.group(1).split()] for m in POLY.finditer(text)], True
 
 
 def dedupe(polylines, near_m=150):
@@ -114,12 +124,14 @@ def nearest(cells, roads):
     return {c[0]: (float(d[j]), refs[i[j]]) for j, c in enumerate(cells) if math.isfinite(d[j])}
 
 
-def records(cells, polys_by_ref, kinds):
+def records(cells, polys_by_ref, kinds, outlines=()):
+    """outlines: refs drawn as right-of-way outlines, whose length counts half (two sides of one road)."""
     near = nearest(cells, [(ref, densify(p)) for ref, p in polys_by_ref.items()])
     recs = [{"digipin": c, "newroad_dist_m": round(d), "newroad_ref": ref, "newroad_kind": kinds[ref]} for c, (d, ref) in near.items()]
-    for polys in polys_by_ref.values():
+    for ref, polys in polys_by_ref.items():
+        k = 0.5 if ref in outlines else 1
         for pts in polys:
-            recs += [{"lat": lat, "lng": lng, "newroad_len_m": m} for lat, lng, m in pieces(pts)]
+            recs += [{"lat": lat, "lng": lng, "newroad_len_m": m * k} for lat, lng, m in pieces(pts)]
     return recs
 
 
@@ -138,19 +150,21 @@ def cell_dataset(region, recs):
         description=f"Planned road alignments published on data.opencity.in ({WHO[region]}). Distance from each block within "
                     f"{NEAR_M // 1000} km to the nearest alignment and the alignment length inside it. Roads: {names}.",
         source="pipeline/realestate/newroads.py (OpenCity alignment maps)",
-        license="Public domain (GBA and MSRDC via data.opencity.in)", default_field="newroad_dist_m", extrude=False)
+        license="Public domain (GBA, BDA and MSRDC via data.opencity.in)", default_field="newroad_dist_m", extrude=False)
     return store.write_dataset(CELLS, spec, region, store.bin_records(recs, LEVEL, specs), parquet=False)
 
 
 def fetch(region):
     import requests
-    polys, kinds = {}, {}
+    polys, kinds, outlines = {}, {}, set()
     for ref, (name, kind, pkg, res) in enumerate(ALIGNMENTS[region], 1):
-        polys[ref] = dedupe(alignment(requests.get(resource_url(pkg, res), timeout=600).content.decode("utf-8-sig")))
-        kinds[ref] = kind
-        km = sum(m for pts in polys[ref] for _, _, m in pieces(pts)) / 1000
-        print(f"{region}: {name}: {len(polys[ref])} lines, {km:.1f} km")
-    return polys, kinds
+        pl, outline = alignment(requests.get(resource_url(pkg, res), timeout=600).content.decode("utf-8-sig"))
+        polys[ref], kinds[ref] = (pl if outline else dedupe(pl)), kind
+        if outline:
+            outlines.add(ref)
+        km = sum(m for pts in polys[ref] for _, _, m in pieces(pts)) / 1000 * (0.5 if outline else 1)
+        print(f"{region}: {name}: {len(polys[ref])} {'outlines' if outline else 'lines'}, {km:.1f} km")
+    return polys, kinds, outlines
 
 
 def main(argv=None):
@@ -158,8 +172,8 @@ def main(argv=None):
     ap.add_argument("--region", default="bengaluru")
     a = ap.parse_args(argv)
     for region in a.region.split(","):
-        polys, kinds = fetch(region)
-        info = cell_dataset(region, records(region_cells(region), polys, kinds))
+        polys, kinds, outlines = fetch(region)
+        info = cell_dataset(region, records(region_cells(region), polys, kinds, outlines))
         print(f"{region}: {info['cells']} blocks")
     return 0
 

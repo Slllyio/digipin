@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-28T23:54:52Z",
+  "generated": "2026-10-28T23:59:27Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -25018,9 +25018,9 @@
     {
       "id": "new_roads",
       "title": "Big roads to come (elevated corridors and ring roads)",
-      "description": "Planned road alignments published on data.opencity.in: Greater Bengaluru Authority's elevated corridors (August 2026 list, tenders floated) and MSRDC's Pune Outer Ring Road (EIA alignment maps). Distance from each block within 3 km to the nearest alignment and the alignment length inside it. Roads: 1 Pune Outer Ring Road, western alignment; 2 Pune Outer Ring Road, eastern alignment part 1; 3 Pune Outer Ring Road, eastern alignment part 2.",
+      "description": "Planned road alignments published on data.opencity.in (Greater Bengaluru Authority's elevated corridors, August 2026 list, tenders floated, and BDA's Peripheral Ring Road (Bengaluru Business Corridor) right of way, October 2022 alignment). Distance from each block within 3 km to the nearest alignment and the alignment length inside it. Roads: 1 Marenahalli to Kanakapura Main Road elevated corridor (18.5 km); 2 Yeshwanthapura to Old Madras Road elevated corridor (28 km); 3 Old Madras Road to Silk Board elevated corridor (5.2 km); 4 Sholay Circle to St. John's Hospital elevated corridor (5.3 km); 5 Sirsi Circle to Nayandahalli elevated corridor (5.2 km); 6 Minerva Circle to Hudson Circle elevated corridor (7 km); 7 Ananda Bhavan to Raghuvanahalli elevated corridor (0.9 km); 8 Konanakunte Cross elevated corridor (1.5 km); 9 Doddaballapura Road to NH-7 elevated corridor (1.5 km); 10 West of Chord Road to Outer Ring Road elevated corridor (2 km); 11 MEI Junction elevated corridor (0.5 km); 12 Bengaluru Business Corridor (Peripheral Ring Road, 73 km).",
       "source": "pipeline/realestate/newroads.py (OpenCity alignment maps)",
-      "license": "Public domain (GBA and MSRDC via data.opencity.in)",
+      "license": "Public domain (GBA, BDA and MSRDC via data.opencity.in)",
       "group": "Mobility",
       "level": 7,
       "approxCellM": 244,
@@ -25044,7 +25044,7 @@
           "agg": "sum",
           "unit": "m",
           "domain": [
-            5.00333189910479,
+            2.3819146215218674,
             1175.8705050198064
           ],
           "ramp": "reds"
@@ -25067,7 +25067,7 @@
           "agg": "min",
           "domain": [
             1,
-            11
+            12
           ],
           "ramp": "viridis"
         }
@@ -25080,15 +25080,29 @@
       "regions": [
         {
           "name": "bengaluru",
-          "cells": 6863,
+          "cells": 13050,
           "bbox": {
-            "west": 77.4921875,
+            "west": 77.4482421875,
             "south": 12.829345703125,
-            "east": 77.72509765625,
-            "north": 13.134765625
+            "east": 77.780029296875,
+            "north": 13.141357421875
           },
-          "json": "new_roads/bengaluru.json",
-          "parquet": null
+          "json": "new_roads/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
         }
       ]
     },

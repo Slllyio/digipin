@@ -1,6 +1,6 @@
 {
  "schema": "digipin.lens-league/1",
- "generated": "2026-10-28",
+ "generated": "2026-10-29",
  "cities": {
   "ahmedabad": {
    "label": "Ahmedabad",
@@ -961,8 +961,8 @@
      "higherIs": "worse"
     },
     "newroads": {
-     "label": "Residents within 500 m of a planned elevated corridor",
-     "value": 1285087,
+     "label": "Residents within 500 m of a planned elevated corridor or ring road",
+     "value": 1562775,
      "unit": "people",
      "higherIs": null
     },
