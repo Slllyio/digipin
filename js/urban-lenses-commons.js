@@ -284,7 +284,7 @@ const UrbanLensesCommons = (() => {
     const NEW_ROADS = {
         bengaluru: ['Marenahalli–Kanakapura Main Road', 'Yeshwanthapura–Old Madras Road', 'Old Madras Road–Silk Board', 'Sholay Circle–St. John\'s Hospital',
             'Sirsi Circle–Nayandahalli', 'Minerva Circle–Hudson Circle', 'Ananda Bhavan–Raghuvanahalli', 'Konanakunte Cross', 'Doddaballapura Road–NH-7',
-            'West of Chord Road–Outer Ring Road', 'MEI Junction'].map(n => `${n} elevated corridor`).concat('Bengaluru Business Corridor (Peripheral Ring Road)'),
+            'West of Chord Road–Outer Ring Road', 'MEI Junction'].map(n => `${n} elevated corridor`).concat('Bengaluru Business Corridor (Peripheral Ring Road)', 'NPKG Layout arterial road'),
     };
 
     function newroads(fr) {
@@ -330,7 +330,7 @@ const UrbanLensesCommons = (() => {
         return {
             columns: { newroad_dist_m: out }, idx, weightKey: 'newroad_dist_m', noHotspots: true,
             metric: { label: `Residents within ${ROAD_NEAR_M} m of a planned elevated corridor or ring road`, value: Math.round(nearPop), unit: 'people', higherIs: null },
-            headline: `${_round(km, 1)} km of planned elevated corridor and ring road crosses this map; ${_people(sumPop(on))} residents live in the blocks it runs through and ${_people(nearPop)} within ${ROAD_NEAR_M} m, who face the construction years and the traffic it brings${top ? `, most of them along the ${top}` : ''}.`,
+            headline: `${_round(km, 1)} km of planned elevated corridor, ring road and arterial road crosses this map; ${_people(sumPop(on))} residents live in the blocks it runs through and ${_people(nearPop)} within ${ROAD_NEAR_M} m, who face the construction years and the traffic it brings${top ? `, most of them along the ${top}` : ''}.`,
             stats,
         };
     }
@@ -516,7 +516,7 @@ const UrbanLensesCommons = (() => {
             question: 'Where will the planned elevated corridors and ring road run, and who lives along them?',
             field: { key: 'newroad_dist_m', label: 'Distance to the nearest planned elevated corridor or ring road', unit: 'm', higherIs: null, ramp: 'viridis', domain: [0, 3000] },
             needs: ['new_roads.newroad_dist_m', 'new_roads.newroad_len_m', 'new_roads.newroad_ref', 'traffic_noise.lden_db', 'tree_census.trees', 'tree_census.big_trees', 'schools_official.schools', 'land_value.value_index', 'population.population'],
-            method: `Alignment maps on data.opencity.in (public domain): Greater Bengaluru Authority's eleven elevated corridors from the August 2026 list (categories A to C, tenders floated), one centreline each (right-of-way edge lines drawn beside a centreline are dropped), and BDA's Peripheral Ring Road, now the 73 km Bengaluru Business Corridor (October 2022 alignment, land acquisition under way in 2026), drawn as its right-of-way outline, whose length counts once. Each block within 3 km takes the distance from its centre to the nearest alignment and the alignment length inside it. Residents are WorldPop; road noise is the traffic model's Lden; trees are the Bengaluru tree census. Alignments in tender documents can still shift, an elevated corridor touches the ground only at its piers and ramps, while the ring road takes its whole right of way. Bengaluru only: the pipeline also reads MSRDC's Pune Outer Ring Road, but it runs almost entirely outside the Pune map.`,
+            method: `Alignment maps on data.opencity.in (public domain): Greater Bengaluru Authority's eleven elevated corridors from the August 2026 list (categories A to C, tenders floated), one centreline each (right-of-way edge lines drawn beside a centreline are dropped), and BDA's Peripheral Ring Road, now the 73 km Bengaluru Business Corridor (October 2022 alignment, land acquisition under way in 2026), drawn as its right-of-way outline, whose length counts once, and BDA's 11 km major arterial road through Nadaprabhu Kempegowda Layout on the map's western edge. Each block within 3 km takes the distance from its centre to the nearest alignment and the alignment length inside it. Residents are WorldPop; road noise is the traffic model's Lden; trees are the Bengaluru tree census. Alignments in tender documents can still shift, an elevated corridor touches the ground only at its piers and ramps, while the ring road takes its whole right of way. Bengaluru only: the pipeline also reads MSRDC's Pune Outer Ring Road, but it runs almost entirely outside the Pune map.`,
             refs: 'Greater Bengaluru Authority elevated corridor documents (2026); BDA Peripheral Ring Road DPR, EIA and alignment maps (2020 to 2022); all via data.opencity.in' },
         { id: 'raingaugegap', equity: true, title: 'Rain gauge gaps', icon: '🌧️',
             question: 'Where does heavy rain fall unmeasured, far from any rain gauge?',

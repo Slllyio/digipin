@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T00:14:32Z",
+  "generated": "2026-10-29T00:23:58Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -25018,7 +25018,7 @@
     {
       "id": "new_roads",
       "title": "Big roads to come (elevated corridors and ring roads)",
-      "description": "Planned road alignments published on data.opencity.in (Greater Bengaluru Authority's elevated corridors, August 2026 list, tenders floated, and BDA's Peripheral Ring Road (Bengaluru Business Corridor) right of way, October 2022 alignment). Distance from each block within 3 km to the nearest alignment and the alignment length inside it. Roads: 1 Marenahalli to Kanakapura Main Road elevated corridor (18.5 km); 2 Yeshwanthapura to Old Madras Road elevated corridor (28 km); 3 Old Madras Road to Silk Board elevated corridor (5.2 km); 4 Sholay Circle to St. John's Hospital elevated corridor (5.3 km); 5 Sirsi Circle to Nayandahalli elevated corridor (5.2 km); 6 Minerva Circle to Hudson Circle elevated corridor (7 km); 7 Ananda Bhavan to Raghuvanahalli elevated corridor (0.9 km); 8 Konanakunte Cross elevated corridor (1.5 km); 9 Doddaballapura Road to NH-7 elevated corridor (1.5 km); 10 West of Chord Road to Outer Ring Road elevated corridor (2 km); 11 MEI Junction elevated corridor (0.5 km); 12 Bengaluru Business Corridor (Peripheral Ring Road, 73 km).",
+      "description": "Planned road alignments published on data.opencity.in (Greater Bengaluru Authority's elevated corridors, August 2026 list, tenders floated, and BDA's Peripheral Ring Road (Bengaluru Business Corridor) right of way, October 2022 alignment, and BDA's NPKG Layout arterial road). Distance from each block within 3 km to the nearest alignment and the alignment length inside it. Roads: 1 Marenahalli to Kanakapura Main Road elevated corridor (18.5 km); 2 Yeshwanthapura to Old Madras Road elevated corridor (28 km); 3 Old Madras Road to Silk Board elevated corridor (5.2 km); 4 Sholay Circle to St. John's Hospital elevated corridor (5.3 km); 5 Sirsi Circle to Nayandahalli elevated corridor (5.2 km); 6 Minerva Circle to Hudson Circle elevated corridor (7 km); 7 Ananda Bhavan to Raghuvanahalli elevated corridor (0.9 km); 8 Konanakunte Cross elevated corridor (1.5 km); 9 Doddaballapura Road to NH-7 elevated corridor (1.5 km); 10 West of Chord Road to Outer Ring Road elevated corridor (2 km); 11 MEI Junction elevated corridor (0.5 km); 12 Bengaluru Business Corridor (Peripheral Ring Road, 73 km); 13 Major arterial road through Nadaprabhu Kempegowda Layout (11 km).",
       "source": "pipeline/realestate/newroads.py (OpenCity alignment maps)",
       "license": "Public domain (GBA, BDA and MSRDC via data.opencity.in)",
       "group": "Mobility",
@@ -25051,12 +25051,12 @@
         },
         {
           "key": "newroad_kind",
-          "label": "Nearest planned road: 1 elevated corridor, 2 ring road",
+          "label": "Nearest planned road: 1 elevated corridor, 2 ring road, 3 arterial road",
           "type": "number",
           "agg": "min",
           "domain": [
             1,
-            2
+            3
           ],
           "ramp": "viridis"
         },
@@ -25067,7 +25067,7 @@
           "agg": "min",
           "domain": [
             1,
-            12
+            13
           ],
           "ramp": "viridis"
         }
@@ -25080,7 +25080,7 @@
       "regions": [
         {
           "name": "bengaluru",
-          "cells": 13050,
+          "cells": 14029,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,

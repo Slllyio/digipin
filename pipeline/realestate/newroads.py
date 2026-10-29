@@ -4,7 +4,8 @@ Alignments on data.opencity.in:
 
     bengaluru   Greater Bengaluru Authority's eleven elevated corridors (August 2026 list, categories A to C, tender
                 floated or under way), one centreline each, and BDA's Peripheral Ring Road, now the Bengaluru Business
-                Corridor (October 2022 alignment, land acquisition under way in 2026), drawn as its right-of-way outline
+                Corridor (October 2022 alignment, land acquisition under way in 2026), drawn as its right-of-way outline,
+                and BDA's major arterial road through Nadaprabhu Kempegowda Layout (11 km, on the map's western edge)
     pune        MSRDC's Pune Outer Ring Road, western alignment and eastern parts 1 and 2 (EIA alignment maps);
                 the western map's chainage ticks (two-point lines) are dropped. Most of it runs outside the Pune
                 map's bounding box, so the default bake is Bengaluru only
@@ -13,7 +14,7 @@ Per L7 block (dataset ``new_roads``):
 
     newroad_dist_m   distance from the block centre to the nearest planned alignment (blocks within 3 km)
     newroad_len_m    alignment length inside the block
-    newroad_kind     1 elevated corridor, 2 ring road (nearest alignment)
+    newroad_kind     1 elevated corridor, 2 ring road, 3 arterial road (nearest alignment)
     newroad_ref      1-based index of the nearest alignment in ``ALIGNMENTS[region]`` (named in the dataset description)
 
     python -m pipeline.realestate.newroads [--region bengaluru]
@@ -34,7 +35,7 @@ CELLS = REPO / "data" / "cells"
 LEVEL = 7
 NEAR_M = 3000
 STEP_M = 20
-EC, RR = 1, 2
+EC, RR, AR = 1, 2, 3
 ALIGNMENTS = {     # region: [(name, kind, OpenCity dataset, resource name)]
     "bengaluru": [
         ("Marenahalli to Kanakapura Main Road elevated corridor (18.5 km)", EC, "elevated-corridor-from-ragigudda-to-kanakapura-road-nice-road-junction-documents", "Coordinates"),
@@ -49,6 +50,7 @@ ALIGNMENTS = {     # region: [(name, kind, OpenCity dataset, resource name)]
         ("West of Chord Road to Outer Ring Road elevated corridor (2 km)", EC, "documents-elevated-corridor-at-pipeline-road", "Coordinates"),
         ("MEI Junction elevated corridor (0.5 km)", EC, "documents-elevated-corridor-at-mei-junction", "Coordinates"),
         ("Bengaluru Business Corridor (Peripheral Ring Road, 73 km)", RR, "bengaluru-peripheral-ring-road-documents-2020", "PRR Alignment Map - October 2022"),
+        ("Major arterial road through Nadaprabhu Kempegowda Layout (11 km)", AR, "project-details-arterial-road-through-kempegowda-layout", "Map of Alignment"),
     ],
     "pune": [
         ("Pune Outer Ring Road, western alignment", RR, "pune-outer-ring-road-documents", "Western Alignment Map"),
@@ -59,7 +61,7 @@ ALIGNMENTS = {     # region: [(name, kind, OpenCity dataset, resource name)]
 
 
 WHO = {"bengaluru": "Greater Bengaluru Authority's elevated corridors, August 2026 list, tenders floated, and BDA's Peripheral Ring Road "
-                    "(Bengaluru Business Corridor) right of way, October 2022 alignment",
+                    "(Bengaluru Business Corridor) right of way, October 2022 alignment, and BDA's NPKG Layout arterial road",
        "pune": "MSRDC's Pune Outer Ring Road, EIA alignment maps"}
 
 
@@ -142,7 +144,7 @@ def cell_dataset(region, recs):
     specs = [
         FieldSpec("newroad_dist_m", "Distance to the nearest planned elevated corridor or ring road", agg="min", unit="m", domain=[0, NEAR_M], ramp="viridis", higher_is=None),
         FieldSpec("newroad_len_m", "Planned alignment length in the block", agg="sum", unit="m", ramp="reds", higher_is=None),
-        FieldSpec("newroad_kind", "Nearest planned road: 1 elevated corridor, 2 ring road", agg="min", domain=[1, 2], ramp="viridis", higher_is=None),
+        FieldSpec("newroad_kind", "Nearest planned road: 1 elevated corridor, 2 ring road, 3 arterial road", agg="min", domain=[1, 3], ramp="viridis", higher_is=None),
         FieldSpec("newroad_ref", "Nearest planned road (number in the description)", agg="min", ramp="viridis", higher_is=None),
     ]
     spec = DatasetSpec(
