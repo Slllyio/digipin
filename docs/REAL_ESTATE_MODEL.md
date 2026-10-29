@@ -1631,3 +1631,13 @@ in residential demand from 2013-14 to 2017-18. The lens regroups blocks by ward 
 residents), reports the bill per resident and its spread, the lowest-collection wards, and Spearman rank correlations
 across wards between the bill (per resident and per km² of mapped ward) and the residents-weighted land value index. Wards
 billed low for their land value are those with the largest gap between their percentile on the bill and on land value.
+
+## Street connectivity (`streetgrid` lens, `street_grid` dataset, pipeline/realestate/streetgrid.py)
+
+`streetgrid.py` reads Overture transportation segments and connectors for each city's bounding box with DuckDB (public
+S3; the container's injected AWS keys must be unset for anonymous reads). Only public street classes count (trunk,
+primary, secondary, tertiary, residential, unclassified, living_street, pedestrian). Each connector's degree is the
+number of street ends meeting there, a segment passing through it (0 < at < 1) counting twice; degree 3 or more is an
+intersection, degree 1 a dead end, summed per L7 block. The lens averages both over blocks within 500 m of each home,
+reports resident-weighted quantiles of intersections per km², residents under 50 per km² and those also facing 40% or more
+dead ends, and picks blocks 2 km apart by residents × (1 − density / 50) × dead-end share.

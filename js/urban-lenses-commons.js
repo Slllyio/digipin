@@ -1084,6 +1084,48 @@ const UrbanLensesCommons = (() => {
         return arr.filter(a => key(a) < x).length / Math.max(1, arr.length - 1);
     }
 
+    // Street connectivity. Intersections per km² and the share of street ends that are dead ends, around each home
+    // (500 m), from Overture's road graph: fine-grained grids make short walks and many routes; cul-de-sacs and gated
+    // lanes make long detours and funnel traffic onto a few roads.
+    const GRID_KM = 0.5, GRID_LOW = 50, GRID_DEAD = 0.4;
+
+    function streetgrid(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, xs = c['street_grid.intersections'], de = c['street_grid.dead_ends'], pop = c['population.population'];
+        if (!xs || !xs.some(x => _fin(x) && x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const X = within(g, Float64Array.from({ length: n }, (_, i) => v(xs, i)), GRID_KM, true);
+        const D = within(g, Float64Array.from({ length: n }, (_, i) => v(de, i)), GRID_KM, true);
+        const idx = _residents(fr).filter(i => _fin(X[i]));
+        if (idx.length < 5) return null;
+        const dens = i => X[i] / g.cellKm2, dead = i => (X[i] + D[i] > 0 ? D[i] / (X[i] + D[i]) : 0);
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const wq = (f, q) => { const o = idx.slice().sort((a, b) => f(a) - f(b)); let acc = 0; for (const i of o) { acc += v(pop, i); if (acc >= q * all) return f(i); } return NaN; };
+        const poor = idx.filter(i => dens(i) < GRID_LOW && dead(i) >= GRID_DEAD), pPoor = poor.reduce((s, i) => s + v(pop, i), 0);
+        const low = idx.filter(i => dens(i) < GRID_LOW), pLow = low.reduce((s, i) => s + v(pop, i), 0);
+        const tX = Array.from({ length: n }, (_, i) => v(xs, i)).reduce((a, b) => a + b, 0), tD = Array.from({ length: n }, (_, i) => v(de, i)).reduce((a, b) => a + b, 0);
+        const med = wq(dens, 0.5);
+        const stats = [
+            { label: 'Intersections per km² around the median resident (500 m)', value: `${Math.round(med)}` },
+            { label: 'Fifth of residents with the sparsest / densest street grids', value: `${Math.round(wq(dens, 0.2))} / ${Math.round(wq(dens, 0.8))} per km²` },
+            { label: 'Street ends that are dead ends, whole map', value: `${_round(100 * tD / ((tX + tD) || 1), 0)}% (${_people(tD)} dead ends, ${_people(tX)} intersections)` },
+            { label: `Residents where intersections are under ${GRID_LOW} per km²`, value: `${_people(pLow)} (${_round(100 * pLow / all, 1)}%)` },
+            { label: `…and ${Math.round(GRID_DEAD * 100)}% or more of street ends are dead ends`, value: `${_people(pPoor)} (${_round(100 * pPoor / all, 1)}%)` },
+        ];
+        const score = Float64Array.from({ length: n }, (_, i) => (_fin(X[i]) ? v(pop, i) * Math.max(0, 1 - dens(i) / GRID_LOW) * dead(i) : 0));
+        spaced(g, poor, score, 5).forEach((i, k) => stats.push({ label: `Cut-off streets ${k + 1}: ${g.codes[i]}`,
+            value: `${Math.round(dens(i))} intersections per km², ${_round(100 * dead(i), 0)}% dead ends; ${_people(v(pop, i))} residents` }));
+        const fine = Float64Array.from({ length: n }, (_, i) => (_fin(X[i]) ? dens(i) : 0));
+        spaced(g, idx, fine, 3).forEach((i, k) => stats.push({ label: `Finest grain ${k + 1}: ${g.codes[i]}`, value: `${Math.round(dens(i))} intersections per km²` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = Math.round(dens(i));
+        return {
+            columns: { intersections_km2: out }, idx, weightKey: 'intersections_km2', noHotspots: true,
+            metric: { label: 'Intersections per km² around the median resident', value: Math.round(med), unit: 'per km²', higherIs: 'better' },
+            headline: `The median resident lives among ${Math.round(med)} street intersections per km² (500 m around home); ${_people(pLow)} residents (${_round(100 * pLow / all, 0)}%) have fewer than ${GRID_LOW}, and ${_people(pPoor)} of them also face ${Math.round(GRID_DEAD * 100)}% or more dead ends: places where a short trip on foot becomes a long detour.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -1223,8 +1265,14 @@ const UrbanLensesCommons = (() => {
             needs: ['property_tax.pt_ward', 'property_tax.pt_res_demand_lakh', 'property_tax.pt_com_demand_lakh', 'property_tax.pt_collect_pct', 'property_tax.pt_res_growth_pct', 'land_value.value_index', 'population.population'],
             method: `Greater Chennai Corporation's ward-wise property tax demand and collection for 2013-14 to 2017-18 (via data.opencity.in, public domain), joined to blocks through the GCC 200-ward map (wards). Residential demand is billed on the annual rental value GCC assesses (rates last revised in 1998 until the 2018 revision), so per resident it is an old but official gauge of home values; residents are today's GHSL estimate. The rank match is a Spearman correlation across wards between tax billed (per resident, and per km² of mapped ward) and the residents-weighted land value index (land_value); per km² both rise with density, so the per-resident match is the fairer test; wards billed low for their land value are those whose percentile on the bill sits furthest below their percentile on land value: candidates for reassessment or for a check on the model. Collection is collected over billed across the five years; above 100% means arrears were cleared.`,
             refs: 'Greater Chennai Corporation property tax, ward-wise demand and collection 2013-18 via data.opencity.in; Chennai City Municipal Corporation Act 1919 (annual rental value assessment)' },
+        { id: 'streetgrid', equity: true, title: 'Street connectivity', icon: '🔀',
+            question: 'Where do streets connect well, and where do dead ends and long blocks force detours?',
+            field: { key: 'intersections_km2', label: 'Street intersections per km² within 500 m', unit: 'per km²', higherIs: 'better', ramp: 'viridis', domain: [0, 250] },
+            needs: ['street_grid.intersections', 'street_grid.dead_ends', 'population.population'],
+            method: `Overture Maps transportation segments (from OpenStreetMap, ODbL), public streets only: trunk to residential, unclassified, living and pedestrian streets; motorways, service lanes, footways and paths are left out because Indian cities map them so unevenly. Each connector's degree is the number of street ends meeting there, a segment passing through counting twice: three or more is an intersection, one is a dead end. Densities are averaged over blocks within ${GRID_KM * 1000} m of each home. UN-Habitat's street-connectivity guidance and walkability studies treat about 80 to 100 intersections per km² as a fine, walkable grid; under ${GRID_LOW} is coarse. Dead ends include true cul-de-sacs, gated lanes and gaps in the map, so a high share can also mean incomplete mapping. Picks are blocks ${SPACING_KM} km apart ranked by residents × how far below ${GRID_LOW} the grid falls × dead-end share.`,
+            refs: 'UN-Habitat, A New Strategy of Sustainable Neighbourhood Planning: Five Principles (2014); Ewing & Cervero, Travel and the Built Environment (JAPA 2010); Overture Maps Foundation transportation theme' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters, hotdays, tankbeds, jobcount, ptax });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters, hotdays, tankbeds, jobcount, ptax, streetgrid });
     return { ENTRIES };
 })();

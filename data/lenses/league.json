@@ -96,6 +96,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 169,
+     "unit": "per km²",
+     "higherIs": "better"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 8,
@@ -1067,6 +1073,12 @@
      "value": 0.1,
      "unit": "days",
      "higherIs": "worse"
+    },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 247,
+     "unit": "per km²",
+     "higherIs": "better"
     },
     "metrowait": {
      "label": "Residents within 800 m of a metro station",
@@ -2214,6 +2226,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 216,
+     "unit": "per km²",
+     "higherIs": "better"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 1.3,
@@ -3179,6 +3197,12 @@
      "value": 357,
      "unit": "₹/yr",
      "higherIs": null
+    },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 177,
+     "unit": "per km²",
+     "higherIs": "better"
     },
     "wardfit": {
      "label": "Electricity, water and police offices a ward deals with (median resident)",
@@ -4248,6 +4272,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 222,
+     "unit": "per km²",
+     "higherIs": "better"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 3.5,
@@ -5226,6 +5256,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 172,
+     "unit": "per km²",
+     "higherIs": "better"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 0.1,
@@ -5999,6 +6035,12 @@
      "value": 131137,
      "unit": "people",
      "higherIs": "worse"
+    },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 263,
+     "unit": "per km²",
+     "higherIs": "better"
     },
     "metrowait": {
      "label": "Residents within 800 m of a metro station",
@@ -7050,6 +7092,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 187,
+     "unit": "per km²",
+     "higherIs": "better"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 1.5,
@@ -7962,6 +8010,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 216,
+     "unit": "per km²",
+     "higherIs": "better"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 0.7,
@@ -8873,6 +8927,12 @@
      "value": 20,
      "unit": "per 100",
      "higherIs": null
+    },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 184,
+     "unit": "per km²",
+     "higherIs": "better"
     },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
@@ -9846,6 +9906,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 163,
+     "unit": "per km²",
+     "higherIs": "better"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 1.6,
@@ -10769,6 +10835,12 @@
      "value": 1.6,
      "unit": "days",
      "higherIs": "worse"
+    },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 173,
+     "unit": "per km²",
+     "higherIs": "better"
     },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
@@ -11771,6 +11843,12 @@
      "value": 0.7,
      "unit": "days",
      "higherIs": "worse"
+    },
+    "streetgrid": {
+     "label": "Intersections per km² around the median resident",
+     "value": 131,
+     "unit": "per km²",
+     "higherIs": "better"
     },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
