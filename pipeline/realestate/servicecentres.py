@@ -1,13 +1,14 @@
-"""Citizen service centres per block (Bengaluru; Karnataka e-governance maps on OpenCity, public domain).
+"""Citizen service centres per block (Bengaluru and Chennai; OpenCity maps, public domain).
 
 Dataset ``service_centres`` (L7):
 
     csc         Common Service Centres (Aadhaar updates, certificates, bill payments, scheme applications)
     grama_one   Grama One citizen service centres (Karnataka government services, peri-urban panchayats)
+    aadhaar     Aadhaar enrolment and update centres (Chennai: Greater Chennai Corporation map)
 
 Only coordinates are read: the maps also carry operator names and phone numbers, which are never parsed or kept.
 
-    python -m pipeline.realestate.servicecentres
+    python -m pipeline.realestate.servicecentres [--region bengaluru,chennai]
 """
 from __future__ import annotations
 
@@ -20,6 +21,10 @@ CELLS = REPO / "data" / "cells"
 LEVEL = 7
 PACKAGE = "grama-one-centres-in-karnataka-and-bengaluru"
 SOURCES = [("csc", "Customer Service Centre Locations in Bengaluru Urban"), ("grama_one", "Grama One Locations in Bengaluru Urban")]
+REGION_SOURCES = {     # region: (OpenCity dataset, [(field, resource name prefix)], who)
+    "bengaluru": (PACKAGE, SOURCES, "Common Service Centre and Grama One locations in Bengaluru Urban district from the Karnataka e-governance maps"),
+    "chennai": ("chennai-aadhaar-enrollment-centres", [("aadhaar", "Map of Aadhaar Enrollment Centres")], "Aadhaar enrolment centres from the Chennai map"),
+}
 COORDS = re.compile(r"<coordinates>\s*([-\d.]+),([-\d.]+)")
 
 
@@ -43,14 +48,14 @@ def cell_dataset(region, recs):
     from pipeline.cells import store
     from pipeline.cells.schema import DatasetSpec, FieldSpec
     specs = [FieldSpec("csc", "Common Service Centres", agg="sum", unit="centres", ramp="greens", higher_is="better"),
-             FieldSpec("grama_one", "Grama One centres", agg="sum", unit="centres", ramp="greens", higher_is="better")]
+             FieldSpec("grama_one", "Grama One centres", agg="sum", unit="centres", ramp="greens", higher_is="better"),
+             FieldSpec("aadhaar", "Aadhaar enrolment centres", agg="sum", unit="centres", ramp="greens", higher_is="better")]
     spec = DatasetSpec(
-        id="service_centres", title="Citizen service centres (CSC and Grama One)", level=LEVEL, fields=specs, group="Real estate",
-        description="Common Service Centre and Grama One locations in Bengaluru Urban district from the Karnataka e-governance "
-                    "maps on data.opencity.in: where residents get Aadhaar updates, certificates, bill payments and scheme "
-                    "applications done.",
+        id="service_centres", title="Citizen service centres (CSC, Grama One, Aadhaar)", level=LEVEL, fields=specs, group="Real estate",
+        description=f"{REGION_SOURCES[region][2]} on data.opencity.in: where residents get Aadhaar updates, certificates, "
+                    "bill payments and scheme applications done.",
         source="pipeline/realestate/servicecentres.py (OpenCity CSC and Grama One maps)",
-        license="Public domain (Karnataka e-governance via data.opencity.in)", default_field="csc", extrude=False)
+        license="Public domain (Karnataka e-governance via data.opencity.in)", default_field="aadhaar" if region == "chennai" else "csc", extrude=False)
     return store.write_dataset(CELLS, spec, region, store.bin_records(recs, LEVEL, specs), parquet=False)
 
 
@@ -59,11 +64,14 @@ def main(argv=None):
 
     from pipeline._lib.regions import bbox_for
     from pipeline.realestate.newroads import resource_url
-    argparse.ArgumentParser(description=__doc__.splitlines()[0]).parse_args(argv)
-    kp = [(kind, coords(requests.get(resource_url(PACKAGE, name), timeout=300).content.decode("utf-8-sig"))) for kind, name in SOURCES]
-    recs = list(records(kp, bbox_for("bengaluru")))
-    info = cell_dataset("bengaluru", recs)
-    print(f"bengaluru: {({k: sum(1 for r in recs if k in r) for k, _ in SOURCES})}, {info['cells']} blocks")
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--region", default="bengaluru")
+    for region in ap.parse_args(argv).region.split(","):
+        pkg, sources, _ = REGION_SOURCES[region]
+        kp = [(kind, coords(requests.get(resource_url(pkg, name), timeout=300).content.decode("utf-8-sig"))) for kind, name in sources]
+        recs = list(records(kp, bbox_for(region)))
+        info = cell_dataset(region, recs)
+        print(f"{region}: {({k: sum(1 for r in recs if k in r) for k, _ in sources})}, {info['cells']} blocks")
     return 0
 
 

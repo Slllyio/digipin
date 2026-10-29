@@ -7,7 +7,9 @@ Dataset ``tb_care`` (L7):
     drtb_centres   drug-resistant TB centres and district TB centres
     nrc            nutrition rehabilitation centres (severe acute malnutrition in children; same map set)
 
-    python -m pipeline.realestate.tbcare
+Chennai: Greater Chennai Corporation's TB centre map (OpenCity, public domain) fills ``tb_units``.
+
+    python -m pipeline.realestate.tbcare [--region bengaluru,chennai]
 """
 from __future__ import annotations
 
@@ -25,6 +27,11 @@ SOURCES = [     # (field, resource name prefix)
     ("drtb_centres", "Karnataka District Tuberculosis Centres"),
     ("nrc", "Karnataka Nutrition Rehabilitation"),
 ]
+REGION_SOURCES = {     # region: (OpenCity dataset, [(field, resource name prefix)])
+    "bengaluru": (PACKAGE, SOURCES),
+    "chennai": ("chennai-healthcare-uphcs-and-uchcs", [("tb_units", "Chennai Tuberculosis Centres")]),
+}
+WHO = {"bengaluru": "the Karnataka health department's KGIS maps", "chennai": "Greater Chennai Corporation's TB centre map"}
 
 
 def records(kind_points, bbox):
@@ -49,9 +56,9 @@ def cell_dataset(region, recs):
     spec = DatasetSpec(
         id="tb_care", title="TB care sites (Karnataka health maps)", level=LEVEL, fields=specs, group="Real estate",
         description="TB units, CBNAAT testing sites, drug-resistant and district TB centres and nutrition rehabilitation "
-                    "centres from the Karnataka health department's KGIS maps on data.opencity.in.",
+                    f"centres from {WHO[region]} on data.opencity.in.",
         source="pipeline/realestate/tbcare.py (OpenCity Karnataka TB centre maps)",
-        license="Public domain (Karnataka health department via data.opencity.in)", default_field="tb_units", extrude=False)
+        license="Public domain (Karnataka health department and Greater Chennai Corporation via data.opencity.in)", default_field="tb_units", extrude=False)
     return store.write_dataset(CELLS, spec, region, store.bin_records(recs, LEVEL, specs), parquet=False)
 
 
@@ -61,12 +68,15 @@ def main(argv=None):
     from pipeline._lib.regions import bbox_for
     from pipeline.realestate.newroads import resource_url
     from pipeline.realestate.toilets import kml_points
-    argparse.ArgumentParser(description=__doc__.splitlines()[0]).parse_args(argv)
-    kp = [(kind, kml_points(requests.get(resource_url(PACKAGE, name), timeout=300).content.decode("utf-8-sig"))) for kind, name in SOURCES]
-    recs = list(records(kp, bbox_for("bengaluru")))
-    info = cell_dataset("bengaluru", recs)
-    counts = {k: sum(1 for r in recs if k in r) for k, _ in SOURCES}
-    print(f"bengaluru: {counts}, {info['cells']} blocks")
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--region", default="bengaluru")
+    for region in ap.parse_args(argv).region.split(","):
+        pkg, sources = REGION_SOURCES[region]
+        kp = [(kind, kml_points(requests.get(resource_url(pkg, name), timeout=300).content.decode("utf-8-sig"))) for kind, name in sources]
+        recs = list(records(kp, bbox_for(region)))
+        info = cell_dataset(region, recs)
+        counts = {k: sum(1 for r in recs if k in r) for k, _ in sources}
+        print(f"{region}: {counts}, {info['cells']} blocks")
     return 0
 
 

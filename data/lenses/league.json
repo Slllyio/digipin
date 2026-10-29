@@ -2988,6 +2988,18 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "tbcare": {
+     "label": "Residents more than 3 km from a TB unit",
+     "value": 1119334,
+     "unit": "people",
+     "higherIs": "worse"
+    },
+    "servicecentres": {
+     "label": "Residents more than 1 km from a citizen service centre",
+     "value": 6298813,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "wardfit": {
      "label": "Electricity, water and police offices a ward deals with (median resident)",
      "value": 9,

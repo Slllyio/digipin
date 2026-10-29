@@ -1501,3 +1501,7 @@ The lens counts centres within 1 km of each block and reports residents, residen
 New centre picks are blocks 2 km apart beyond 1 km of a centre, ranked by residents + 2 × elderly + 2 × slum residents within
 1 km. Bangalore One, ward offices, banks and post offices also deliver some of these services and are not on the maps.
 Bengaluru: 1,508 centres, one per 8,788 residents; 3.1% of residents and 6.4% of the elderly are more than 1 km from one.
+
+Chennai (roadmap item 237): `tbcare.py --region chennai` reads Greater Chennai Corporation's TB centre map into `tb_units`, and
+`servicecentres.py --region chennai` reads the Chennai Aadhaar enrolment centre map into a new `aadhaar` field. Both maps cover
+the corporation only, so blocks further out read as far from a centre.

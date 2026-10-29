@@ -1145,6 +1145,8 @@ describe('Real-estate lenses on a hand-made grid', () => {
         expect(r.metric.value).toBeGreaterThan(0);
         expect(r.stats.some(s => /^New centre 1: /.test(s.label))).toBe(true);
         expect(L._lenses.servicecentres(L.frameFrom(codes, base), {})).toBeNull();
+        const a = L._lenses.servicecentres(L.frameFrom(codes, { ...base, 'service_centres.aadhaar': codes.map((_, i) => (i === 0 ? 2 : 0)) }), {});
+        expect(a.stats[0]).toEqual({ label: 'Aadhaar enrolment centres on the map', value: '2' });
     });
 
     it('tbcare: residents and slum residents far from a TB unit', () => {
