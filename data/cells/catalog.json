@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T00:23:58Z",
+  "generated": "2026-10-29T00:33:59Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -45814,6 +45814,74 @@
             "north": 17.531494140625
           },
           "json": "waste_bins/hyderabad.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "waste_recovery",
+      "title": "Recycling centres and waste processing sites",
+      "description": "Drop-off centres for reusables, recyclables and e-waste, and waste processing sites, from the BBMP RRR centre and KSPCB maps (Bengaluru) and Greater Chennai Corporation's solid waste maps (2022) on data.opencity.in.",
+      "source": "pipeline/realestate/recycling.py (OpenCity BBMP, KSPCB and GCC maps)",
+      "license": "Public domain (BBMP, KSPCB and Greater Chennai Corporation via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "recovery_centres",
+          "label": "Recycling and resource recovery drop-off centres",
+          "type": "number",
+          "agg": "sum",
+          "unit": "centres",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "processing_sites",
+          "label": "Wet-waste processing sites (compost, biogas)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "sites",
+          "domain": [
+            1,
+            3
+          ],
+          "ramp": "reds"
+        }
+      ],
+      "default": {
+        "field": "recovery_centres",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 51,
+          "bbox": {
+            "west": 77.476806640625,
+            "south": 12.8447265625,
+            "east": 77.714111328125,
+            "north": 13.119384765625
+          },
+          "json": "waste_recovery/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 176,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.91064453125,
+            "east": 80.3046875,
+            "north": 13.1787109375
+          },
+          "json": "waste_recovery/chennai.json",
           "parquet": null
         }
       ]

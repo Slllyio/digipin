@@ -475,6 +475,46 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Recycling reach. Drop-off centres for reusables, recyclables and e-waste (BBMP RRR, KSPCB, GCC resource recovery
+    // centres), and the homes right next to Chennai's compost yards and biogas plants.
+    const RECYCLE_KM = 1, PROCESS_M = 250;
+
+    function recycling(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, rc = c['waste_recovery.recovery_centres'], ps = c['waste_recovery.processing_sites'];
+        const pop = c['population.population'];
+        if (!rc || !rc.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const count = a => (a ? Math.round(Array.from(a).reduce((s, x) => s + (_fin(x) ? x : 0), 0)) : 0);
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(rc, i)), RECYCLE_KM);
+        const idx = _residents(fr);
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const centres = count(rc), sites = count(ps);
+        const far = idx.filter(i => near[i] < 0.5), farPop = far.reduce((s, i) => s + v(pop, i), 0);
+        const stats = [
+            { label: 'Recycling drop-off centres on the map', value: String(centres) },
+            { label: 'Residents per centre', value: _people(all / (centres || 1)) },
+            { label: `Residents more than ${RECYCLE_KM} km from a centre`, value: `${_people(farPop)} (${_round(100 * farPop / all, 1)}%)` },
+        ];
+        if (sites) {
+            const nextTo = within(g, Float64Array.from({ length: n }, (_, i) => v(ps, i)), PROCESS_M / 1000);
+            const besidePop = idx.filter(i => nextTo[i] >= 0.5).reduce((s, i) => s + v(pop, i), 0);
+            stats.push({ label: 'Wet-waste processing sites (compost yards, biogas plants)', value: String(sites) });
+            stats.push({ label: `Residents within about ${PROCESS_M} m of a processing site`, value: `${_people(besidePop)} (${_round(100 * besidePop / all, 1)}%)` });
+        }
+        const gain = within(g, Float64Array.from({ length: n }, (_, i) => (near[i] < 0.5 ? v(pop, i) : 0)), RECYCLE_KM);
+        spaced(g, far, gain, 5, 2 * RECYCLE_KM).forEach((i, k) => stats.push({ label: `New drop-off centre ${k + 1}: ${g.codes[i]}`,
+            value: `${_people(gain[i])} residents beyond reach within ${RECYCLE_KM} km` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = Math.min(near[i], 5);
+        return {
+            columns: { recycle_1km: out }, idx, weightKey: 'recycle_1km', noHotspots: true,
+            metric: { label: `Residents more than ${RECYCLE_KM} km from a recycling drop-off centre`, value: Math.round(farPop), unit: 'people', higherIs: 'worse' },
+            headline: `${centres} drop-off centres take reusables, recyclables and e-waste here, one per ${_people(all / (centres || 1))} residents; ${_people(farPop)} residents (${_round(100 * farPop / all, 1)}%) live more than ${RECYCLE_KM} km from one.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -536,8 +576,14 @@ const UrbanLensesCommons = (() => {
             needs: ['service_centres.csc', 'service_centres.grama_one', 'service_centres.aadhaar', 'demographics.elderly_60plus', 'slums_mapped.slum_pct', 'population.population'],
             method: `Karnataka e-governance maps on data.opencity.in (public domain): Common Service Centre and Grama One locations in Bengaluru Urban district, and the Aadhaar enrolment centre map for Chennai. Only the locations are used; operator names and phone numbers on the maps are not read. Each block counts centres within ${CSC_KM} km (straight line between block centres); residents and residents aged 60+ are WorldPop and slum residents are residents × the share of the block inside a mapped slum. New centre picks are blocks ${2 * CSC_KM} km apart beyond ${CSC_KM} km of a centre, ranked by residents plus twice the elderly and twice slum residents within ${CSC_KM} km. Bangalore One, ward offices, banks and post offices also offer some of these services and are not on these maps; in Chennai only Aadhaar centres are mapped, so certificates and bill-payment counters are missing. Bengaluru and Chennai only.`,
             refs: 'Karnataka Centre for e-Governance, Common Service Centre and Grama One location maps via data.opencity.in; Ministry of Electronics and IT, CSC 2.0 scheme guidelines' },
+        { id: 'recycling', equity: false, title: 'Recycling reach', icon: '♻️',
+            question: 'Who can drop off recyclables, old clothes or e-waste nearby, and who lives next to a compost yard?',
+            field: { key: 'recycle_1km', label: `Recycling drop-off centres within ${RECYCLE_KM} km`, unit: 'centres', higherIs: 'better', ramp: 'greens', domain: [0, 5] },
+            needs: ['waste_recovery.recovery_centres', 'waste_recovery.processing_sites', 'population.population'],
+            method: `Maps on data.opencity.in (public domain): BBMP's Reduce-Reuse-Recycle centres and KSPCB e-waste collection centres in Bengaluru; Greater Chennai Corporation's resource recovery centres, compost yards, vermicompost, biogas and biomethanisation plants (2022) in Chennai. Each block counts drop-off centres within ${RECYCLE_KM} km (straight line between block centres) and processing sites in and next to it (about ${PROCESS_M} m); residents are WorldPop. New drop-off picks are blocks ${2 * RECYCLE_KM} km apart beyond ${RECYCLE_KM} km of a centre, ranked by residents beyond reach within ${RECYCLE_KM} km. Door-to-door segregated collection and kabadiwalas carry most recyclables in Indian cities, so a centre is a drop-off option, not the only route; Bengaluru's dry waste collection centres are not on an openly licensed map. Bengaluru and Chennai only.`,
+            refs: 'BBMP Reduce-Reuse-Recycle centre notification; KSPCB waste facility maps (KGIS); Greater Chennai Corporation solid waste maps (2022); all via data.opencity.in; Solid Waste Management Rules 2016' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling });
     return { ENTRIES };
 })();

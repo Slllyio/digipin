@@ -1505,3 +1505,12 @@ Bengaluru: 1,508 centres, one per 8,788 residents; 3.1% of residents and 6.4% of
 Chennai (roadmap item 237): `tbcare.py --region chennai` reads Greater Chennai Corporation's TB centre map into `tb_units`, and
 `servicecentres.py --region chennai` reads the Chennai Aadhaar enrolment centre map into a new `aadhaar` field. Both maps cover
 the corporation only, so blocks further out read as far from a centre.
+
+## Recycling reach (`recycling` lens, `waste_recovery` dataset, pipeline/realestate/recycling.py)
+
+Maps on data.opencity.in (public domain), coordinates only: BBMP's Reduce-Reuse-Recycle centres and KSPCB e-waste collection
+centres for Bengaluru; Greater Chennai Corporation's 2022 resource recovery centres, compost yards, vermicompost, biogas and
+biomethanisation plants for Chennai. Per L7 block: `recovery_centres` (drop-off points) and `processing_sites` (wet-waste
+processing). The lens counts drop-off centres within 1 km, residents within about 250 m of a processing site, and picks new
+drop-off centres 2 km apart beyond 1 km of one, ranked by residents beyond reach. Bengaluru: 51 centres, 71% of residents more
+than 1 km away; Chennai: 53 centres, 79%, and 10 lakh residents beside a processing site.
