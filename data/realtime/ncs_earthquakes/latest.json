@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-28T23:40:23Z",
+  "generated_at_iso": "2026-10-29T02:53:33Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-29 07:51:23|38.478,68.770",
+      "magnitude": 3.8,
+      "origin_time": "2026-10-29 07:51:23",
+      "latitude": 38.478,
+      "longitude": 68.77,
+      "depth_km": 10.0,
+      "region": "Tajikistan",
+      "location": "9km S of Dushanbe, Tajikistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-29 06:39:15|36.535,71.316",
+      "magnitude": 4.2,
+      "origin_time": "2026-10-29 06:39:15",
+      "latitude": 36.535,
+      "longitude": 71.316,
+      "depth_km": 228.0,
+      "region": "Afghanistan",
+      "location": "92km SE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-29 04:27:48|31.450,78.239",
       "magnitude": 2.5,
@@ -1628,28 +1650,6 @@
       "depth_km": 140.0,
       "region": "Tajikistan",
       "location": "254km ENE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-19 20:48:53|26.633,92.976",
-      "magnitude": 2.8,
-      "origin_time": "2026-10-19 20:48:53",
-      "latitude": 26.633,
-      "longitude": 92.976,
-      "depth_km": 32.0,
-      "region": "Biswanath,  Assam",
-      "location": "18km E of Tezpur, Assam, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-19 19:36:20|25.576,91.179",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-19 19:36:20",
-      "latitude": 25.576,
-      "longitude": 91.179,
-      "depth_km": 10.0,
-      "region": "West Khasi Hills, Meghalaya",
-      "location": "64km WNW of Cherrapunjee, Meghalaya, India",
       "review_status": "Reviewed"
     }
   ]
