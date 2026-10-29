@@ -1807,3 +1807,13 @@ OpenCity's `pune-wards-info` (field `qwr`), not the 2022 map in `wards`. Hyderab
 in `wards`. Party labels go through `LABELS` to the `assembly.PARTIES` codes (TRS is BRS; SHS is Shiv Sena; NCP-SP is
 NCP (SP)). Only ward numbers, parties and votes are read. The lens counts wards in view by party, multi-member wards
 whose seats are split, close single-member wards, and residents whose ward party differs from their MLA's.
+
+## Toll plazas around the city (`tollring` lens, `tolls` dataset)
+
+`pipeline/realestate/tolls.py` reads the all-India toll plaza KML on OpenCity (1,563 plazas, NHAI fee portal 2024)
+and keeps each plaza's code, location and car fees (`carjeepvan_sj` single journey, `_mp` monthly pass, `_reg`
+district-registered). 142 NHAI plazas carry no car fee; those checked (Akshardham on the Delhi-Meerut Expressway) sit on
+free stretches, so NHAI plazas without a fee are dropped. The 505 state plazas never list fees in this file and are
+kept for distance only; some no longer charge cars (Mumbai's entry points since October 2024). Blocks get the nearest
+plaza by straight-line distance and the count within 25 km. The lens reports the residents-weighted median distance,
+shares within 5 and 10 km, average fees at the nearest plaza, and the plazas nearest to most residents.

@@ -6,7 +6,7 @@
 const UrbanLensesWards = (() => {
     'use strict';
     if (typeof UrbanLenses === 'undefined') return null;
-    const { _fin, _round, _people, _residents } = UrbanLenses._kit;
+    const { _fin, _round, _people, _residents, wmean, wquantile } = UrbanLenses._kit;
 
     const SPACING_KM = 1.5, TOP = 5;
 
@@ -459,6 +459,37 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Toll plazas. NHAI's 2024 toll plaza list (via OpenCity): the nearest plaza to each block and what a car pays there.
+    function tollring(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`tolls.toll_${k}`];
+        const km = col('km'), pop = c['population.population'], code = col('code');
+        if (!km || !km.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(km[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((t, i) => t + pop[i], 0) || 1;
+        const share = d => idx.reduce((t, i) => t + (km[i] <= d ? pop[i] : 0), 0) / P;
+        const med = wquantile(km, pop, idx, 0.5), car = wmean(col('car') || [], pop, idx), month = wmean(col('car_month') || [], pop, idx), count = wmean(c['tolls.tolls_25km'] || [], pop, idx);
+        const rs = x => `₹${Math.round(x).toLocaleString('en-IN')}`, pc = x => `${_round(100 * x, 0)}%`;
+        const by = new Map();
+        if (code) for (const i of idx) { if (!_fin(code[i])) continue; const a = by.get(code[i]) || { pop: 0, first: i, best: Infinity }; a.pop += pop[i]; if (km[i] < a.best) { a.best = km[i]; a.first = i; } by.set(code[i], a); }
+        const top = [...by.values()].sort((a, b) => b.pop - a.pop).slice(0, 3);
+        const stats = [
+            { label: 'Middle resident: distance to the nearest toll plaza', value: `${_round(med, 1)} km` },
+            { label: 'Residents within 5 km / 10 km of a toll plaza', value: `${pc(share(5))} / ${pc(share(10))}` },
+            { label: 'Car single journey / monthly pass at the nearest plaza (residents-weighted)', value: `${_fin(car) ? rs(car) : 'n/a'} / ${_fin(month) ? rs(month) : 'n/a'}` },
+            { label: 'Toll plazas within 25 km, residents-weighted', value: _fin(count) ? String(_round(count, 1)) : 'n/a' },
+            ...top.map((a, k) => ({ label: `Nearest plaza for most residents ${k + 1}: near ${g.codes[a.first]} (car single journey)`, value: `${pc(a.pop / P)} of residents · ${_fin(col('car')?.[a.first]) ? rs(col('car')[a.first]) : 'n/a'}` })),
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = km[i];
+        return {
+            columns: { toll_km: out }, idx, weightKey: 'toll_km', noHotspots: true,
+            metric: { label: 'Distance to the nearest toll plaza (middle resident)', value: _round(med, 1), unit: 'km', higherIs: null },
+            headline: `The middle resident lives ${_round(med, 1)} km from a toll plaza, and ${pc(share(5))} live within 5 km of one${_fin(car) ? `; a car pays ${rs(car)} a trip at the nearest plaza on average${_fin(month) ? `, or ${rs(month)} for a monthly pass` : ''}` : ''}.`,
+            stats,
+        };
+    }
+
     // Ward councillors. Corporation election results per ward (PMC 2026 prabhags, GHMC 2020 wards): the party holding
     // each ward, how many of its seats it holds, the margin where wards elect one member, and whether the ward's party
     // matches the assembly seat's MLA.
@@ -607,6 +638,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'tollring', title: 'Toll plazas around the city', icon: '🛣️',
+            question: 'How far is the nearest toll plaza, and what does a car pay to get out of town?',
+            field: { key: 'toll_km', label: 'Distance to the nearest toll plaza', unit: 'km', higherIs: null, ramp: 'viridis', domain: [0, 30] },
+            needs: ['tolls.toll_km', 'tolls.toll_car', 'tolls.toll_car_month', 'tolls.toll_code', 'tolls.tolls_25km', 'population.population'],
+            method: `The all-India toll plaza list (NHAI's fee portal, 2024, via data.opencity.in, public domain): 1,563 plazas on national and some state highways with their location and the notified fees for a car, jeep or van (single journey, monthly pass, and the concession for cars registered in the district). NHAI plazas with no car fee listed are not collecting and are left out; state-run plazas are listed without fees, so fee averages cover NHAI plazas only, and some state plazas no longer charge cars (Mumbai's five entry points since October 2024). Each block gets the nearest plaza by straight-line distance, its fees and the number of plazas within 25 km; shares are weighted by GHSL residents. Fees are the 2024 rates, revised each April; expressways and ring roads run by state bodies (Hyderabad's Outer Ring Road, Mumbai's sea links and the Mumbai-Pune Expressway) are missing where NHAI's list leaves them out.`,
+            refs: 'NHAI toll plaza fee information via the all-India toll plaza map (data.opencity.in, 2024)' },
         { id: 'wardcouncil', title: 'Who holds the ward', icon: '🏛️',
             question: 'Which party runs the municipal wards here, and does it match the MLA?',
             field: { key: 'ward_party', label: 'Party holding the ward (latest corporation election)', unit: 'party', higherIs: null, ramp: 'viridis', domain: [0, 20] },
@@ -683,6 +720,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring });
     return { ENTRIES };
 })();

@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 6.6,
+     "unit": "km",
+     "higherIs": null
+    },
     "citycrime": {
      "label": "Cognizable crimes per lakh people (police city, 2024)",
      "value": 775,
@@ -989,6 +995,12 @@
      "value": 21.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 6.6,
+     "unit": "km",
+     "higherIs": null
     },
     "citycrime": {
      "label": "Cognizable crimes per lakh people (police city, 2024)",
@@ -2238,6 +2250,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 10.2,
+     "unit": "km",
+     "higherIs": null
+    },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
      "value": 8.1,
@@ -3191,6 +3209,12 @@
      "value": 35.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 6.1,
+     "unit": "km",
+     "higherIs": null
     },
     "citycrime": {
      "label": "Cognizable crimes per lakh people (police city, 2024)",
@@ -4338,6 +4362,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 13.9,
+     "unit": "km",
+     "higherIs": null
+    },
     "citycrime": {
      "label": "Cognizable crimes per lakh people (police city, 2024)",
      "value": 1825,
@@ -5358,6 +5388,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 6,
+     "unit": "km",
+     "higherIs": null
+    },
     "feelslike": {
      "label": "April-June feels-like daily peak (UTCI), average resident",
      "value": 41.9,
@@ -6137,6 +6173,12 @@
      "value": 25,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 11.1,
+     "unit": "km",
+     "higherIs": null
     },
     "wardcouncil": {
      "label": "Wards held by BRS (2020)",
@@ -7242,6 +7284,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 7.3,
+     "unit": "km",
+     "higherIs": null
+    },
     "citycrime": {
      "label": "Cognizable crimes per lakh people (police city, 2024)",
      "value": 801,
@@ -8178,6 +8226,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 13,
+     "unit": "km",
+     "higherIs": null
+    },
     "citycrime": {
      "label": "Cognizable crimes per lakh people (police city, 2024)",
      "value": 1202,
@@ -9107,6 +9161,12 @@
      "value": 42.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 7.4,
+     "unit": "km",
+     "higherIs": null
     },
     "citycrime": {
      "label": "Cognizable crimes per lakh people (police city, 2024)",
@@ -10152,6 +10212,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 20.3,
+     "unit": "km",
+     "higherIs": null
+    },
     "citycrime": {
      "label": "Cognizable crimes per lakh people (police city, 2024)",
      "value": 1083,
@@ -11093,6 +11159,12 @@
      "value": 26.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 6.5,
+     "unit": "km",
+     "higherIs": null
     },
     "citycrime": {
      "label": "Cognizable crimes per lakh people (police city, 2024)",
@@ -12149,6 +12221,12 @@
      "value": 23.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "tollring": {
+     "label": "Distance to the nearest toll plaza (middle resident)",
+     "value": 12.6,
+     "unit": "km",
+     "higherIs": null
     },
     "wardcouncil": {
      "label": "Wards held by BJP (2026)",
