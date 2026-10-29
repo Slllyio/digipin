@@ -558,6 +558,56 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Day and night. LandScan's ambient (24-hour average) population against residents: blocks that fill up by day (offices,
+    // markets, campuses, stations) and bedroom blocks that empty out. LandScan's city totals run below the resident counts, so
+    // ambient people are rescaled to the residents' total and only the pattern is compared.
+    const DAY_KM = 1;
+
+    function daytime(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, amb = c['ambient_pop.ambient_pop'], chg = c['ambient_pop.ambient_change_pct'];
+        const pop = c['population.population'];
+        if (!amb || !pop || !amb.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const both = Array.from({ length: n }, (_, i) => i).filter(i => _fin(amb[i]) && _fin(pop[i]) && (amb[i] > 0 || pop[i] > 0));
+        if (both.length < 20) return null;
+        const R = both.reduce((s, i) => s + pop[i], 0), A = both.reduce((s, i) => s + amb[i], 0);
+        if (!(R > 0 && A > 0)) return null;
+        // LandScan is a ~1 km grid; residents are smoothed over the same ~1 km window so that resolution alone does not show as movement.
+        const ok = Float64Array.from({ length: n }, (_, i) => (_fin(amb[i]) && _fin(pop[i]) ? 1 : 0));
+        const popSum = within(g, Float64Array.from({ length: n }, (_, i) => (ok[i] ? pop[i] : 0)), 0.5), cnt = within(g, ok, 0.5);
+        const res = Float64Array.from({ length: n }, (_, i) => (ok[i] && cnt[i] > 0 ? popSum[i] / cnt[i] : 0));
+        const Rs = both.reduce((s, i) => s + res[i], 0) || R;
+        const k = Rs / A, day = i => k * amb[i];
+        const inflow = Float64Array.from({ length: n }, (_, i) => (ok[i] ? day(i) - res[i] : 0));
+        const sortedDay = both.map(day).sort((a, b) => b - a), top = sortedDay.slice(0, Math.ceil(sortedDay.length / 20));
+        const magnets = both.filter(i => day(i) >= 2 * res[i] && day(i) - res[i] >= 500);
+        const beds = both.filter(i => res[i] >= 2 * day(i) && res[i] - day(i) >= 500);
+        const stats = [
+            { label: 'Share of daytime people in the busiest 5% of blocks', value: `${_round(100 * top.reduce((s, x) => s + x, 0) / Rs, 1)}%` },
+            { label: 'Daytime magnet blocks (at least twice their residents by day)', value: `${magnets.length} blocks, ${_people(magnets.reduce((s, i) => s + inflow[i], 0))} extra people` },
+            { label: 'Bedroom blocks (at least twice as many residents as daytime people)', value: `${beds.length} blocks, ${_people(beds.reduce((s, i) => s - inflow[i], 0))} people away by day` },
+            { label: 'LandScan ambient total against residents', value: `${_round(100 * A / R, 0)}% (rescaled to residents for comparison)` },
+        ];
+        if (chg) {
+            const w = both.filter(i => _fin(chg[i])), wt = w.reduce((s, i) => s + amb[i], 0);
+            if (wt > 0) stats.push({ label: 'Change in ambient population, 2019 to 2024 (people-weighted)', value: `${_round(w.reduce((s, i) => s + amb[i] * chg[i], 0) / wt, 1)}%` });
+        }
+        const pull = within(g, Float64Array.from({ length: n }, (_, i) => Math.max(0, inflow[i])), DAY_KM);
+        spaced(g, both.filter(i => inflow[i] > 0), pull, 5).forEach((i, k2) => stats.push({ label: `Daytime magnet ${k2 + 1}: ${g.codes[i]}`,
+            value: `about ${_people(pull[i])} more people by day than live within ${DAY_KM} km` }));
+        const push = within(g, Float64Array.from({ length: n }, (_, i) => Math.max(0, -inflow[i])), DAY_KM);
+        spaced(g, both.filter(i => inflow[i] < 0), push, 3).forEach((i, k2) => stats.push({ label: `Bedroom area ${k2 + 1}: ${g.codes[i]}`,
+            value: `about ${_people(push[i])} fewer people by day than live within ${DAY_KM} km` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of both) out[i] = _round(100 * (day(i) - res[i]) / (day(i) + res[i] + 50), 0);
+        return {
+            columns: { day_night_pct: out }, idx: both, weightKey: 'day_night_pct', noHotspots: true,
+            metric: { label: 'Share of daytime people in the busiest 5% of blocks', value: _round(100 * top.reduce((s, x) => s + x, 0) / Rs, 1), unit: '%', higherIs: null },
+            headline: `${magnets.length} blocks hold at least twice their residents by day, while ${beds.length} bedroom blocks empty out; the busiest 5% of blocks hold ${_round(100 * top.reduce((s, x) => s + x, 0) / Rs, 1)}% of the daytime crowd.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -631,8 +681,14 @@ const UrbanLensesCommons = (() => {
             needs: ['public_land.gba_plots', 'public_land.gba_land_m2', 'public_land.vacant_plots', 'public_land.vacant_m2', 'public_land.amenity_plots', 'public_care.primary', 'anganwadis.centres', 'population.population'],
             method: `The Greater Bengaluru Authority's 2026 property register on data.opencity.in (public domain): 6,817 properties with a recorded area and a description. Only the 2,792 the register places on the plot (quality 'unique') are used; the rest sit on about 200 shared ward or locality points. Descriptions (mostly in Kannada) are matched by keyword: vacant land (ಖಾಲಿ ಜಾಗ, including undeveloped park plots) and plots used for a school, clinic, anganwadi, library, community hall, toilet or market. Public clinics are the corporation's health centres and Namma Clinics; anganwadis are the ICDS map. Plots to put to use are vacant plots ${SPACING_KM} km apart ranked by residents within ${CLINIC_KM} km lacking a public clinic within ${CLINIC_KM} km or an anganwadi within ${LAND_NEAR_KM * 1000} m, weighted up for larger plots. Recorded areas can be out of date, and a plot listed as vacant may be encroached, disputed or already earmarked. Bengaluru only.`,
             refs: 'Greater Bengaluru Authority property register (2026) via data.opencity.in' },
+        { id: 'daytime', equity: false, title: 'Day and night', icon: '🌗',
+            question: 'Which blocks fill up by day and which empty out, and how many people move between them?',
+            field: { key: 'day_night_pct', label: 'Daytime people against residents (+100 all day, −100 all night)', unit: '', higherIs: null, ramp: 'diverging', domain: [-100, 100] },
+            needs: ['ambient_pop.ambient_pop', 'ambient_pop.ambient_change_pct', 'population.population'],
+            method: `LandScan Global 2024 (Oak Ridge National Laboratory, CC BY 4.0, about 1 km): the average number of people present over 24 hours, modelled from census counts, land use, roads, buildings and points of interest, so offices, markets, campuses and stations carry the people who spend the day there. Residents are the GHSL 2020 counts, averaged over the blocks within 500 m so both sit on a ~1 km footing. LandScan's city totals run 30 to 40% below the resident counts, so ambient people are rescaled to the residents' total and only the pattern is compared: each block shows (daytime − residents) ÷ (daytime + residents). Magnets hold at least twice their residents by day (and 500 people more); bedroom blocks the reverse. Picks are blocks ${SPACING_KM} km apart with the largest net gain or loss within ${DAY_KM} km. A 24-hour average, not a daytime count, from a different model than the resident counts: the pattern of magnets and bedroom areas is meaningful, but the size of any one gap mixes real movement with differences between the two models, and night markets and night shifts do not show.`,
+            refs: 'Sims et al., LandScan Global 2024 (Oak Ridge National Laboratory, CC BY 4.0); Bhaduri et al. 2007, LandScan USA: a high-resolution geospatial and temporal modeling approach for population distribution and dynamics (GeoJournal)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime });
     return { ENTRIES };
 })();

@@ -2024,6 +2024,41 @@ def wind(region):
     return spec, _table(level, rows, specs)
 
 
+def ambient_pop(region):
+    """Ambient (24-hour average) population per block (LandScan Global 2019 and 2024, about 1 km)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    col = "projects/sat-io/open-datasets/ORNL/LANDSCAN_GLOBAL/landscan-global-"
+
+    def dens(year):  # people per km² so a cell mean scales to its own area
+        return ee.Image(col + str(year)).toFloat().divide(ee.Image.pixelArea().divide(1e6))
+
+    img = ee.Image.cat([dens(2024).rename("a24"), dens(2019).rename("a19")])
+    raw = gee.fetch(gee.to_cells(img, 1000), bbox, level, tile=128)
+    rows = {}
+    for code, x in raw.items():
+        a, b = x.get("a24"), x.get("a19")
+        if a is None:
+            continue
+        km2 = gee.cell_area_km2(code)
+        rows[code] = {"ambient_pop": round(a * km2), "ambient_km2": round(a),
+                      "ambient_change_pct": _r(100 * (a / b - 1)) if b and b * km2 >= 50 else None}
+    specs = [
+        FieldSpec("ambient_pop", "Ambient population, 24-hour average (2024)", agg="sum", unit="people", ramp="viridis", higher_is=None),
+        FieldSpec("ambient_km2", "Ambient population density (2024)", agg="mean", unit="people/km²", ramp="heat", higher_is=None),
+        FieldSpec("ambient_change_pct", "Change in ambient population, 2019 to 2024", agg="mean", unit="%", domain=[-30, 60], ramp="diverging", higher_is=None),
+    ]
+    spec = DatasetSpec(
+        id="ambient_pop", title="Ambient population (LandScan Global)", level=level, fields=specs, group=GROUP,
+        description="LandScan Global (Oak Ridge National Laboratory, about 1 km): the average number of people present over 24 "
+                    "hours, so workplaces, markets, campuses and transit hubs count the people who spend the day there, unlike "
+                    "residential counts. 2024 with the change since 2019.",
+        source="LandScan Global via the awesome-gee-community-catalog (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (Oak Ridge National Laboratory, UT-Battelle)", default_field="ambient_km2")
+    return spec, _table(level, rows, specs)
+
+
 def solar_atlas(region):
     """Photovoltaic output and sunshine per block (Global Solar Atlas 2, about 1 km)."""
     ee = gee.init()
@@ -2210,7 +2245,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat,
 }
 
 

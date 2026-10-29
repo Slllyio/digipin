@@ -1524,3 +1524,12 @@ recorded area, a free-text description (mostly Kannada) and a location quality. 
 community hall, toilet or market by keyword). The lens reports land placed, vacant land, residents within 500 m of a vacant
 plot, and vacant plots 2 km apart where residents within 1 km lack a public clinic within 1 km or an anganwadi within 500 m,
 weighted up for larger plots. Recorded areas can be dated and a vacant plot may be encroached or earmarked.
+
+## Day and night (`daytime` lens, `ambient_pop` EE layer)
+
+LandScan Global (Oak Ridge National Laboratory, CC BY 4.0) via `projects/sat-io/open-datasets/ORNL/LANDSCAN_GLOBAL/landscan-global-YYYY`,
+converted to people per km² with pixelArea and sampled per L7 block: `ambient_pop`, `ambient_km2` (2024) and
+`ambient_change_pct` (2019 to 2024). The lens averages GHSL residents over the blocks within 500 m (LandScan is a ~1 km grid),
+rescales ambient people to the resident total (LandScan's city totals are 65 to 90% of GHSL's) and maps
+(daytime − residents) ÷ (daytime + residents + 50). Magnets hold at least twice their residents by day and 500 more people;
+bedroom blocks the reverse. The size of a single gap mixes movement with model differences; the pattern is what to read.
