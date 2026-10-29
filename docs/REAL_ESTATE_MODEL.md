@@ -1549,3 +1549,13 @@ city bounding box with an Earth Engine getInfo and bins events and reported deat
 skipped). The lens uses `terrain.slope_deg` (Copernicus 30 m DEM block mean): residents at 10° and 15° or steeper, slum residents
 on 10°+ ground, residents within 500 m of a recorded slide, and hillsides to check 2 km apart ranked by
 (residents + 4 × slum residents) × slope within 500 m.
+
+## Cold nights (`coldnights` lens, `winter_nights` dataset, pipeline/cells/ee_layers.py)
+
+`winter_nights` is the median ECOSTRESS L2T LSTE V2 land surface temperature over cloud-free, non-water pixels on December to
+February nights (21:30 to 05:30 IST) from winter 2019-20 to 2025-26 at 70 m, with each block's difference from the city's
+median block and the scene count, for Delhi, Lucknow, Jaipur, Bhopal, Indore, Guna, Ahmedabad and Kolkata. The lens measures
+each block against the night the median resident sleeps through: residents, the elderly and under-5s in cold pockets 1 °C or
+more below it, the share of them in mostly unplanned or informal blocks (WRI intra-urban land use) and in mapped slums, and
+cold pockets 2 km apart ranked by (residents + 3 × elderly + 3 × under 5) × degrees below the median, doubled in unplanned
+blocks. Surface, not air, temperature; the homeless are not counted by any map.

@@ -72,6 +72,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "coldnights": {
+     "label": "Residents 1 °C or more below the median resident's winter night",
+     "value": 0.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 8,
@@ -2148,6 +2154,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "coldnights": {
+     "label": "Residents 1 °C or more below the median resident's winter night",
+     "value": 5.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 1.3,
@@ -4128,6 +4140,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "coldnights": {
+     "label": "Residents 1 °C or more below the median resident's winter night",
+     "value": 4.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 3.5,
@@ -5080,6 +5098,12 @@
      "label": "Residents on ground averaging 10° or steeper",
      "value": 308,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "coldnights": {
+     "label": "Residents 1 °C or more below the median resident's winter night",
+     "value": 4.9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "homeswork": {
@@ -6858,6 +6882,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "coldnights": {
+     "label": "Residents 1 °C or more below the median resident's winter night",
+     "value": 11.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 1.5,
@@ -7746,6 +7776,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "coldnights": {
+     "label": "Residents 1 °C or more below the median resident's winter night",
+     "value": 4.8,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 0.7,
@@ -8626,6 +8662,12 @@
      "label": "Residents where the chance of sinking over 1 cm a year is 60% or more",
      "value": 0,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "coldnights": {
+     "label": "Residents 1 °C or more below the median resident's winter night",
+     "value": 9.7,
+     "unit": "%",
      "higherIs": "worse"
     },
     "homeswork": {
@@ -9574,6 +9616,12 @@
      "label": "Residents where the chance of sinking over 1 cm a year is 60% or more",
      "value": 0,
      "unit": "people",
+     "higherIs": "worse"
+    },
+    "coldnights": {
+     "label": "Residents 1 °C or more below the median resident's winter night",
+     "value": 8.8,
+     "unit": "%",
      "higherIs": "worse"
     },
     "homeswork": {

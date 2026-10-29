@@ -2235,6 +2235,38 @@ def night_heat(region):
     return spec, _table(level, rows, specs)
 
 
+def winter_nights(region):
+    """Winter night-time surface temperature per block (ECOSTRESS, 70 m, December-February nights 2019-2026)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    scenes = (ee.ImageCollection("NASA/ECOSTRESS/L2T_LSTE/V2").filterBounds(geom).filterDate("2019-12-01", "2026-03-01")
+              .filter(ee.Filter.calendarRange(12, 2, "month")).filter(ee.Filter.calendarRange(16, 23, "hour")))   # 21:30-05:30 IST
+    lst = scenes.map(lambda i: i.select("LST").updateMask(i.select("cloud").eq(0)).updateMask(i.select("water").eq(0)))
+    img = ee.Image.cat([lst.median().subtract(273.15).rename("lst"), lst.count().rename("n")])
+    raw = gee.fetch(gee.to_cells(img, 70), bbox, level, tile=128)
+    vals = sorted(x["lst"] for x in raw.values() if x.get("lst") is not None)
+    if not vals:
+        return None
+    mid = vals[len(vals) // 2]
+    rows = {code: {"winter_lst_c": _r(x["lst"], 1), "winter_anomaly_c": _r(x["lst"] - mid, 1), "winter_scenes": _r(x.get("n"), 0)}
+            for code, x in raw.items() if x.get("lst") is not None}
+    specs = [
+        FieldSpec("winter_lst_c", "Winter night surface temperature (ECOSTRESS median, December-February)", agg="mean", unit="°C", domain=[4, 18], ramp="blues", higher_is="better"),
+        FieldSpec("winter_anomaly_c", "Winter night surface temperature against the city's median block", agg="mean", unit="°C", domain=[-4, 4], ramp="diverging", higher_is="better"),
+        FieldSpec("winter_scenes", "Cloud-free winter night scenes behind the median", agg="min", unit="scenes", ramp="viridis", higher_is=None),
+    ]
+    spec = DatasetSpec(
+        id="winter_nights", title="Winter night cold (ECOSTRESS 70 m)", level=level, fields=specs, group=GROUP,
+        description="Median land surface temperature on cloud-free winter nights (December to February, 21:30 to 05:30 IST, "
+                    "2019-2026) from NASA's ECOSTRESS radiometer on the space station at 70 m, and each block's difference from "
+                    "the city's median block: the cold pockets on open edges, fields and floodplains where winter nights bite "
+                    "hardest. Fog and cloud nights are masked out, so the median is of clear nights.",
+        source="NASA ECOSTRESS L2T LSTE V2 via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="Public domain (NASA/JPL ECOSTRESS)", default_field="winter_anomaly_c")
+    return spec, _table(level, rows, specs)
+
+
 def pm_heat(region):
     """Peak afternoon surface temperature per block (ECOSTRESS, 70 m, April-June afternoons 2018-2025)."""
     ee = gee.init()
@@ -2272,7 +2304,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "subsidence": subsidence, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "subsidence": subsidence, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat, "winter_nights": winter_nights,
 }
 
 

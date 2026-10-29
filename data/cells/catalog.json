@@ -50044,6 +50044,224 @@
           }
         }
       ]
+    },
+    {
+      "id": "winter_nights",
+      "title": "Winter night cold (ECOSTRESS 70 m)",
+      "description": "Median land surface temperature on cloud-free winter nights (December to February, 21:30 to 05:30 IST, 2019-2026) from NASA's ECOSTRESS radiometer on the space station at 70 m, and each block's difference from the city's median block: the cold pockets on open edges, fields and floodplains where winter nights bite hardest. Fog and cloud nights are masked out, so the median is of clear nights.",
+      "source": "NASA ECOSTRESS L2T LSTE V2 via Earth Engine (pipeline/cells/ee_layers.py)",
+      "license": "Public domain (NASA/JPL ECOSTRESS)",
+      "group": "Open Data (satellite)",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "winter_lst_c",
+          "label": "Winter night surface temperature (ECOSTRESS median, December-February)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b0C",
+          "domain": [
+            4,
+            18
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "winter_anomaly_c",
+          "label": "Winter night surface temperature against the city's median block",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b0C",
+          "domain": [
+            -4,
+            4
+          ],
+          "ramp": "diverging",
+          "higherIs": "better"
+        },
+        {
+          "key": "winter_scenes",
+          "label": "Cloud-free winter night scenes behind the median",
+          "type": "number",
+          "agg": "min",
+          "unit": "scenes",
+          "domain": [
+            1,
+            122
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "winter_anomaly_c",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "winter_nights/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 6286,
+          "bbox": {
+            "west": 77.298828125,
+            "south": 23.178466796875,
+            "east": 77.520751953125,
+            "north": 23.3212890625
+          },
+          "json": "winter_nights/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 51025,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "winter_nights/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "guna",
+          "cells": 1444,
+          "bbox": {
+            "west": 77.26806640625,
+            "south": 24.597900390625,
+            "east": 77.3515625,
+            "north": 24.681396484375
+          },
+          "json": "winter_nights/guna.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 33480,
+          "bbox": {
+            "west": 75.59814453125,
+            "south": 22.49951171875,
+            "east": 76.000244140625,
+            "north": 22.901611328125
+          },
+          "json": "winter_nights/indore_pilot/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "34M5",
+              "34M6",
+              "34MP",
+              "34MT",
+              "34PK",
+              "34PL",
+              "3M9F",
+              "3M9J",
+              "3MC2",
+              "3MC7",
+              "3MC8",
+              "3MC9"
+            ]
+          }
+        },
+        {
+          "name": "jaipur",
+          "cells": 9282,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.799560546875,
+            "east": 75.921142578125,
+            "north": 27.001708984375
+          },
+          "json": "winter_nights/jaipur/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "339J",
+              "339K",
+              "339L",
+              "33C2",
+              "33C5",
+              "33C6",
+              "33C7",
+              "33CP",
+              "33CT"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7166,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "winter_nights/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 8464,
+          "bbox": {
+            "west": 80.849609375,
+            "south": 26.7490234375,
+            "east": 81.0517578125,
+            "north": 26.951171875
+          },
+          "json": "winter_nights/lucknow/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "378K",
+              "378L",
+              "3796",
+              "379T"
+            ]
+          }
+        }
+      ]
     }
   ]
 }

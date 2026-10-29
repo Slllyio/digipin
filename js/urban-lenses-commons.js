@@ -693,6 +693,59 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Cold nights. ECOSTRESS 70 m surface temperature on clear winter nights: the open edges, fields and floodplains that
+    // lose heat fastest after dark. North Indian cold waves kill mostly the homeless and people in thin-walled homes, so
+    // the elderly, young children and unplanned settlements in the coldest pockets come first.
+    const COLD_NIGHT_C = 1, UNPLANNED_COLD_PCT = 50;
+
+    function coldnights(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, lst = c['winter_nights.winter_lst_c'], an = c['winter_nights.winter_anomaly_c'];
+        const pop = c['population.population'], old = c['demographics.elderly_60plus'], kid = c['demographics.under5'];
+        const at = c['urban_form.res_atomistic_pct'], inf = c['urban_form.res_informal_pct'], slum = c['slums_mapped.slum_pct'];
+        if (!lst || !lst.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr).filter(i => _fin(lst[i]));
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        let acc = 0, med = NaN;               // the night the median resident sleeps through
+        for (const i of idx.slice().sort((a, b) => lst[a] - lst[b])) { acc += v(pop, i); if (acc >= all / 2) { med = lst[i]; break; } }
+        const cold = Float64Array.from({ length: n }, (_, i) => (_fin(lst[i]) ? med - lst[i] : NaN));
+        const pocket = idx.filter(i => cold[i] >= COLD_NIGHT_C), pocketPop = pocket.reduce((s, i) => s + v(pop, i), 0);
+        const sorted = idx.map(i => lst[i]).sort((a, b) => a - b);
+        const spread = sorted[Math.floor(0.95 * (sorted.length - 1))] - sorted[Math.floor(0.05 * (sorted.length - 1))];
+        const uhi = an ? idx.reduce((s, i) => s + v(pop, i) * v(an, i), 0) / all : NaN;
+        const unpl = i => (at || inf) && v(at, i) + v(inf, i) > UNPLANNED_COLD_PCT;
+        const stats = [
+            { label: 'Clear winter night surface temperature under the median resident', value: `${_round(med, 1)} °C` },
+            { label: 'Spread across homes, coldest to warmest twentieth of blocks', value: `${_round(spread, 1)} °C` },
+        ];
+        if (_fin(uhi)) stats.push({ label: 'Average resident\'s winter night against the median block of the wider region', value: `${uhi >= 0 ? '+' : ''}${_round(uhi, 1)} °C` });
+        stats.push({ label: `Residents in cold pockets, ${COLD_NIGHT_C} °C or more below the median resident's night`, value: `${_people(pocketPop)} (${_round(100 * pocketPop / all, 1)}%)` });
+        if (old) stats.push({ label: '…of them aged 60 and over', value: _people(_sumOver(old, pocket, i => _fin(old[i]))) });
+        if (kid) stats.push({ label: '…of them under 5', value: _people(_sumOver(kid, pocket, i => _fin(kid[i]))) });
+        if (at || inf) {
+            const u = pocket.filter(unpl).reduce((s, i) => s + v(pop, i), 0);
+            stats.push({ label: `…of them in mostly unplanned or informal blocks (over ${UNPLANNED_COLD_PCT}%)`, value: `${_people(u)} (${_round(100 * u / (pocketPop || 1), 1)}%)` });
+        }
+        if (slum) {
+            const sp = i => v(pop, i) * Math.min(v(slum, i), 100) / 100;
+            const sAll = idx.reduce((s, i) => s + sp(i), 0), sCold = pocket.reduce((s, i) => s + sp(i), 0);
+            if (sAll > 0) stats.push({ label: 'Residents of mapped slums in cold pockets', value: `${_people(sCold)} of ${_people(sAll)} (${_round(100 * sCold / sAll, 1)}%)` });
+        }
+        const score = Float64Array.from({ length: n }, (_, i) => (_fin(cold[i]) && cold[i] > 0 ? (v(pop, i) + 3 * v(old, i) + 3 * v(kid, i)) * cold[i] * (unpl(i) ? 2 : 1) : 0));
+        spaced(g, pocket, score, 5).forEach((i, k) => stats.push({ label: `Cold pocket ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(lst[i], 1)} °C on clear winter nights (−${_round(cold[i], 1)} °C)${unpl(i) ? '; mostly unplanned or informal homes' : ''}; ${_people(v(pop, i))} residents${old ? `, ${_people(v(old, i))} aged 60+` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = -cold[i];
+        const coldOld = old ? _sumOver(old, pocket, i => _fin(old[i])) : 0;
+        return {
+            columns: { winter_excess_c: out }, idx, weightKey: 'winter_excess_c', noHotspots: true,
+            metric: { label: `Residents ${COLD_NIGHT_C} °C or more below the median resident's winter night`, value: _round(100 * pocketPop / all, 1), unit: '%', higherIs: 'worse' },
+            headline: `On clear winter nights the ground under the median resident cools to ${_round(med, 1)} °C, with ${_round(spread, 1)} °C between the coldest and warmest homes; ${_people(pocketPop)} residents (${_round(100 * pocketPop / all, 1)}%) live in cold pockets ${COLD_NIGHT_C} °C or more colder still${coldOld ? `, ${_people(coldOld)} of them aged 60 and over` : ''}. Open ground, fields and floodplains lose heat fastest after dark.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -784,8 +837,14 @@ const UrbanLensesCommons = (() => {
             needs: ['terrain.slope_deg', 'slums_mapped.slum_pct', 'landslides.landslides', 'landslides.landslide_deaths', 'population.population'],
             method: `Average slope of each block from the 30 m Copernicus DEM (block averages flatten the steepest pockets, so ${STEEP_DEG}° on average means much steeper ground in places); residents are GHSL and slum residents are residents × the share of the block inside a mapped slum. Recorded landslides are NASA's Global Landslide Catalog (rainfall-triggered events from news, official and scientific reports, 1970-2019), which misses many small slides and everything after 2019. Hillsides to check are blocks ${SPACING_KM} km apart on ${STEEP_DEG}° or steeper ground, ranked by (residents + 4 × slum residents) × slope within 500 m. Slope is a screen, not a slope-stability survey: rock type, cutting, drainage and retaining walls decide whether a hill fails.`,
             refs: 'Kirby, Juang and Stanley, NASA Global Landslide Catalog (1970-2019); Copernicus GLO-30 DEM; MCGM landslide-prone locations lists (monsoon preparedness)' },
+        { id: 'coldnights', equity: true, title: 'Cold nights', icon: '🥶',
+            question: 'Where do winter nights bite hardest, and who sleeps there in thin-walled homes?',
+            field: { key: 'winter_excess_c', label: "Clear winter night surface temperature against the median resident's", unit: '°C', higherIs: 'better', ramp: 'diverging', domain: [-3, 3] },
+            needs: ['winter_nights.winter_lst_c', 'winter_nights.winter_anomaly_c', 'winter_nights.winter_scenes', 'urban_form.res_atomistic_pct', 'urban_form.res_informal_pct', 'slums_mapped.slum_pct', 'demographics.elderly_60plus', 'demographics.under5', 'population.population'],
+            method: `NASA ECOSTRESS (thermal radiometer on the International Space Station, public domain): land surface temperature at 70 m. Each block takes the median of cloud-free, non-water pixels on December to February nights (21:30 to 05:30 IST) from winter 2019-20 to 2025-26; fog and cloud are masked, so it is the clear, still nights when the ground radiates its heat away and cold waves set in. The map shows each block against the night the median resident sleeps through, and cold pockets are ${COLD_NIGHT_C} °C or more below it. Residents, the elderly and children under 5 are WorldPop; unplanned or informal blocks are those where WRI's intra-urban land use map puts over ${UNPLANNED_COLD_PCT}% of the residential ground in irregular plots or unapproved subdivisions, a rough stand-in for thin walls and roofs; slum residents are residents × the share of the block inside a mapped slum. Picks are cold-pocket blocks ${SPACING_KM} km apart ranked by (residents + 3 × elderly + 3 × under 5) × degrees below the median, doubled in unplanned blocks. Surface, not air, temperature: air indoors and on the street is milder, but the pattern of where nights run coldest holds. Run for the eight cities with a real winter (Delhi, Lucknow, Jaipur, Bhopal, Indore, Guna, Ahmedabad, Kolkata); the homeless, who die most in cold waves, are not counted by any of these maps.`,
+            refs: 'Hook and Hulley, ECOSTRESS L2T LSTE V2 (NASA LP DAAC); NDMA National Guidelines on Cold Wave (2021); IMD cold wave criteria; Guzder-Williams et al. 2023, Intra-urban land use maps (WRI)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights });
     return { ENTRIES };
 })();
