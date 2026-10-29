@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T00:33:59Z",
+  "generated": "2026-10-29T00:43:38Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -33475,6 +33475,97 @@
             "north": 18.57958984375
           },
           "json": "public_care/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "public_land",
+      "title": "Corporation-owned land (GBA property register)",
+      "description": "Properties on the Greater Bengaluru Authority's 2026 property register (data.opencity.in) that the register geolocates to the plot: count, recorded area, vacant land and plots used for public services.",
+      "source": "pipeline/realestate/publicland.py (OpenCity GBA properties list)",
+      "license": "Public domain (Greater Bengaluru Authority via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "gba_plots",
+          "label": "Corporation-owned properties",
+          "type": "number",
+          "agg": "sum",
+          "unit": "plots",
+          "domain": [
+            1,
+            16
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "gba_land_m2",
+          "label": "Corporation-owned land (recorded area)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m\u00b2",
+          "domain": [
+            0,
+            89544.76000000001
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "vacant_plots",
+          "label": "Vacant corporation plots",
+          "type": "number",
+          "agg": "sum",
+          "unit": "plots",
+          "domain": [
+            1,
+            4
+          ],
+          "ramp": "greens"
+        },
+        {
+          "key": "vacant_m2",
+          "label": "Vacant corporation land (recorded area)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "m\u00b2",
+          "domain": [
+            0,
+            19157
+          ],
+          "ramp": "greens"
+        },
+        {
+          "key": "amenity_plots",
+          "label": "Corporation plots used for schools, clinics and other services",
+          "type": "number",
+          "agg": "sum",
+          "unit": "plots",
+          "domain": [
+            1,
+            6
+          ],
+          "ramp": "blues"
+        }
+      ],
+      "default": {
+        "field": "gba_land_m2",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 1445,
+          "bbox": {
+            "west": 77.46142578125,
+            "south": 12.87109375,
+            "east": 77.76904296875,
+            "north": 13.123779296875
+          },
+          "json": "public_land/bengaluru.json",
           "parquet": null
         }
       ]

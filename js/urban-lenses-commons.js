@@ -515,6 +515,49 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Public land bank. The Greater Bengaluru Authority's property register: how much land the corporation owns, which plots
+    // stand vacant, and which vacant plots sit among residents with no public clinic or anganwadi nearby.
+    const LAND_NEAR_KM = 0.5, CLINIC_KM = 1;
+
+    function publicland(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, plots = c['public_land.gba_plots'], land = c['public_land.gba_land_m2'];
+        const vac = c['public_land.vacant_plots'], vacM2 = c['public_land.vacant_m2'], amen = c['public_land.amenity_plots'];
+        const pop = c['population.population'], clinic = c['public_care.primary'], anga = c['anganwadis.centres'];
+        if (!plots || !plots.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const sum = a => (a ? Array.from(a).reduce((s, x) => s + (_fin(x) ? x : 0), 0) : 0);
+        const idx = _residents(fr);
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const vacBlocks = Array.from({ length: n }, (_, i) => i).filter(i => v(vac, i) > 0);
+        const nearVac = within(g, Float64Array.from({ length: n }, (_, i) => v(vac, i)), LAND_NEAR_KM);
+        const nearVacPop = idx.filter(i => nearVac[i] >= 0.5).reduce((s, i) => s + v(pop, i), 0);
+        const stats = [
+            { label: 'Corporation properties located to the plot', value: `${Math.round(sum(plots)).toLocaleString('en-IN')} (${_round(sum(land) / 1e4, 1)} ha recorded)` },
+            { label: 'Vacant plots', value: `${Math.round(sum(vac))} (${_round(sum(vacM2) / 1e4, 1)} ha)` },
+            { label: 'Plots used for schools, clinics, anganwadis, libraries, halls, toilets or markets', value: String(Math.round(sum(amen))) },
+            { label: `Residents within ${LAND_NEAR_KM * 1000} m of a vacant corporation plot`, value: `${_people(nearVacPop)} (${_round(100 * nearVacPop / all, 1)}%)` },
+        ];
+        const nearClinic = clinic ? within(g, Float64Array.from({ length: n }, (_, i) => v(clinic, i)), CLINIC_KM) : null;
+        const nearAnga = anga ? within(g, Float64Array.from({ length: n }, (_, i) => v(anga, i)), LAND_NEAR_KM) : null;
+        const gapPop = Float64Array.from({ length: n }, (_, i) => v(pop, i) * ((nearClinic && nearClinic[i] < 0.5 ? 1 : 0) + (nearAnga && nearAnga[i] < 0.5 ? 1 : 0)));
+        const gain = within(g, gapPop, CLINIC_KM);
+        if (nearClinic || nearAnga) {
+            const inGap = vacBlocks.filter(i => (nearClinic && nearClinic[i] < 0.5) || (nearAnga && nearAnga[i] < 0.5));
+            stats.push({ label: `Vacant plots where there is no public clinic within ${CLINIC_KM} km${nearAnga ? ` or no anganwadi within ${LAND_NEAR_KM * 1000} m` : ''}`, value: `${Math.round(inGap.reduce((s, i) => s + v(vac, i), 0))} of ${Math.round(sum(vac))}` });
+            spaced(g, vacBlocks.filter(i => gain[i] > 0), Float64Array.from({ length: n }, (_, i) => gain[i] * Math.sqrt(1 + v(vacM2, i) / 100)), 5).forEach((i, k) => stats.push({ label: `Vacant plot to put to use ${k + 1}: ${g.codes[i]}`,
+                value: `${_round(v(vacM2, i), 0).toLocaleString('en-IN')} m² vacant; ${nearClinic && nearClinic[i] < 0.5 ? 'no public clinic' : 'a public clinic'} within ${CLINIC_KM} km${nearAnga ? `, ${nearAnga[i] < 0.5 ? 'no anganwadi' : 'an anganwadi'} within ${LAND_NEAR_KM * 1000} m` : ''}` }));
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (let i = 0; i < n; i++) if (v(plots, i) > 0) out[i] = v(land, i);
+        return {
+            columns: { gba_land_m2: out }, idx, weightKey: 'gba_land_m2', noHotspots: true,
+            metric: { label: 'Vacant corporation land', value: _round(sum(vacM2) / 1e4, 1), unit: 'ha', higherIs: null },
+            headline: `The corporation's register places ${Math.round(sum(plots)).toLocaleString('en-IN')} of its properties to the plot, ${_round(sum(land) / 1e4, 0)} ha in all; ${Math.round(sum(vac))} plots (${_round(sum(vacM2) / 1e4, 1)} ha) stand vacant, within ${LAND_NEAR_KM * 1000} m of ${_people(nearVacPop)} residents.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -582,8 +625,14 @@ const UrbanLensesCommons = (() => {
             needs: ['waste_recovery.recovery_centres', 'waste_recovery.processing_sites', 'population.population'],
             method: `Maps on data.opencity.in (public domain): BBMP's Reduce-Reuse-Recycle centres and KSPCB e-waste collection centres in Bengaluru; Greater Chennai Corporation's resource recovery centres, compost yards, vermicompost, biogas and biomethanisation plants (2022) in Chennai. Each block counts drop-off centres within ${RECYCLE_KM} km (straight line between block centres) and processing sites in and next to it (about ${PROCESS_M} m); residents are WorldPop. New drop-off picks are blocks ${2 * RECYCLE_KM} km apart beyond ${RECYCLE_KM} km of a centre, ranked by residents beyond reach within ${RECYCLE_KM} km. Door-to-door segregated collection and kabadiwalas carry most recyclables in Indian cities, so a centre is a drop-off option, not the only route; Bengaluru's dry waste collection centres are not on an openly licensed map. Bengaluru and Chennai only.`,
             refs: 'BBMP Reduce-Reuse-Recycle centre notification; KSPCB waste facility maps (KGIS); Greater Chennai Corporation solid waste maps (2022); all via data.opencity.in; Solid Waste Management Rules 2016' },
+        { id: 'publicland', equity: false, title: 'Public land bank', icon: '🏛️',
+            question: 'Which plots does the city corporation own, which stand vacant, and which could host a clinic or anganwadi?',
+            field: { key: 'gba_land_m2', label: 'Corporation-owned land in the block (recorded area)', unit: 'm²', higherIs: null, ramp: 'blues', domain: [0, 20000] },
+            needs: ['public_land.gba_plots', 'public_land.gba_land_m2', 'public_land.vacant_plots', 'public_land.vacant_m2', 'public_land.amenity_plots', 'public_care.primary', 'anganwadis.centres', 'population.population'],
+            method: `The Greater Bengaluru Authority's 2026 property register on data.opencity.in (public domain): 6,817 properties with a recorded area and a description. Only the 2,792 the register places on the plot (quality 'unique') are used; the rest sit on about 200 shared ward or locality points. Descriptions (mostly in Kannada) are matched by keyword: vacant land (ಖಾಲಿ ಜಾಗ, including undeveloped park plots) and plots used for a school, clinic, anganwadi, library, community hall, toilet or market. Public clinics are the corporation's health centres and Namma Clinics; anganwadis are the ICDS map. Plots to put to use are vacant plots ${SPACING_KM} km apart ranked by residents within ${CLINIC_KM} km lacking a public clinic within ${CLINIC_KM} km or an anganwadi within ${LAND_NEAR_KM * 1000} m, weighted up for larger plots. Recorded areas can be out of date, and a plot listed as vacant may be encroached, disputed or already earmarked. Bengaluru only.`,
+            refs: 'Greater Bengaluru Authority property register (2026) via data.opencity.in' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland });
     return { ENTRIES };
 })();

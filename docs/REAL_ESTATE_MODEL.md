@@ -1514,3 +1514,13 @@ biomethanisation plants for Chennai. Per L7 block: `recovery_centres` (drop-off 
 processing). The lens counts drop-off centres within 1 km, residents within about 250 m of a processing site, and picks new
 drop-off centres 2 km apart beyond 1 km of one, ranked by residents beyond reach. Bengaluru: 51 centres, 71% of residents more
 than 1 km away; Chennai: 53 centres, 79%, and 10 lakh residents beside a processing site.
+
+## Public land bank (`publicland` lens, `public_land` dataset, pipeline/realestate/publicland.py)
+
+The Greater Bengaluru Authority's 2026 property register on data.opencity.in (public domain) lists 6,817 properties with a
+recorded area, a free-text description (mostly Kannada) and a location quality. Only the 2,792 `unique` rows are used:
+`approximate` rows sit on about 200 shared ward or locality points. Per L7 block: `gba_plots`, `gba_land_m2`, `vacant_plots` and
+`vacant_m2` (ಖಾಲಿ ಜಾಗ, vacant land, including undeveloped park plots) and `amenity_plots` (school, clinic, anganwadi, library,
+community hall, toilet or market by keyword). The lens reports land placed, vacant land, residents within 500 m of a vacant
+plot, and vacant plots 2 km apart where residents within 1 km lack a public clinic within 1 km or an anganwadi within 500 m,
+weighted up for larger plots. Recorded areas can be dated and a vacant plot may be encroached or earmarked.

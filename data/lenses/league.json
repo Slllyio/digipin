@@ -990,6 +990,12 @@
      "unit": "people",
      "higherIs": "worse"
     },
+    "publicland": {
+     "label": "Vacant corporation land",
+     "value": 28,
+     "unit": "ha",
+     "higherIs": null
+    },
     "metrowait": {
      "label": "Residents within 800 m of a metro station",
      "value": 20.7,
