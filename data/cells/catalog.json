@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T10:49:34Z",
+  "generated": "2026-10-29T10:58:07Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -16060,6 +16060,294 @@
           },
           "json": "growth/pune/{prefix}.json",
           "parquet": "growth/pune.parquet",
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "gw_district",
+      "title": "Groundwater stress by district (CGWB 2025)",
+      "description": "The Central Ground Water Board's 2025 assessment per district: stage of extraction (pumping as a share of the extractable resource), its category, recharge, extraction and the split between homes, industry and irrigation, via data.opencity.in. Joined through the block's NFHS (2011) district; Delhi, Karnataka, Maharashtra, Tamil Nadu, Telangana and Gujarat.",
+      "source": "pipeline/realestate/gwstress.py (CGWB Dynamic Ground Water Resources of India 2025 district tables via OpenCity)",
+      "license": "Public domain (CGWB via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "gw_stage_pct",
+          "label": "Stage of groundwater extraction, district 2025",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            200
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "gw_class",
+          "label": "Groundwater category (1 safe, 2 semi-critical, 3 critical, 4 over-exploited)",
+          "type": "number",
+          "agg": "max",
+          "domain": [
+            1,
+            4
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "gw_domestic_pct",
+          "label": "Share of groundwater pumped for homes",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "gw_industry_pct",
+          "label": "Share of groundwater pumped for industry",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "gw_irrigation_pct",
+          "label": "Share of groundwater pumped for irrigation",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "gw_recharge_ham",
+          "label": "District annual groundwater recharge",
+          "type": "number",
+          "agg": "max",
+          "unit": "ha\u00b7m",
+          "domain": [
+            1555.42,
+            194942.64
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "gw_extraction_ham",
+          "label": "District annual groundwater extraction",
+          "type": "number",
+          "agg": "max",
+          "unit": "ha\u00b7m",
+          "domain": [
+            680.14,
+            115497
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "gw_state_stage_pct",
+          "label": "Stage of groundwater extraction, whole state 2025",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            200
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "gw_stage_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 7176,
+          "bbox": {
+            "west": 72.47802734375,
+            "south": 22.949951171875,
+            "east": 72.68017578125,
+            "north": 23.121337890625
+          },
+          "json": "gw_district/ahmedabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "gw_district/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "chennai",
+          "cells": 9047,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "gw_district/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 28727,
+          "bbox": {
+            "west": 76.841796875,
+            "south": 28.403564453125,
+            "east": 77.34716796875,
+            "north": 28.878173828125
+          },
+          "json": "gw_district/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "gw_district/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 14844,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "gw_district/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "gw_district/pune/{prefix}.json.gz",
+          "parquet": null,
           "shards": {
             "prefixLen": 4,
             "keys": [

@@ -1817,3 +1817,13 @@ free stretches, so NHAI plazas without a fee are dropped. The 505 state plazas n
 kept for distance only; some no longer charge cars (Mumbai's entry points since October 2024). Blocks get the nearest
 plaza by straight-line distance and the count within 25 km. The lens reports the residents-weighted median distance,
 shares within 5 and 10 km, average fees at the nearest plaza, and the plazas nearest to most residents.
+
+## Groundwater stress (`gwstress` lens, `gw_district` dataset)
+
+`pipeline/realestate/gwstress.py` reads CGWB's 2025 national compilation district tables from OpenCity (the Tamil Nadu
+and Telangana file names are swapped there; districts are matched by name across all six states, so it does not
+matter). Blocks take their district from `nfhs.district` (2011 boundaries) through `ALIAS` for renamed districts
+(Bangalore to Bengaluru (Urban), Mumbai Suburban to Mumbai Sub, Raigarh to Raigad, Ranga Reddy to Rangareddy).
+Haryana and Uttar Pradesh have no district table, so Delhi's Gurugram, Ghaziabad and Sonipat blocks stay blank. The
+category follows CGWB's cut-offs (70, 90, 100%). The lens weights stage and use shares by residents and counts residents
+by category.

@@ -459,6 +459,36 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Groundwater stress. CGWB's 2025 district assessment: pumping as a share of what the aquifer can give each year.
+    const GW_CLASS = ['', 'safe', 'semi-critical', 'critical', 'over-exploited'];
+
+    function gwstress(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`gw_district.gw_${k}`];
+        const st = col('stage_pct'), cl = col('class'), pop = c['population.population'];
+        if (!st || !st.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(st[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((t, i) => t + pop[i], 0) || 1, pc = x => `${_round(100 * x, 0)}%`;
+        const by = [0, 0, 0, 0, 0];
+        for (const i of idx) if (_fin(cl?.[i])) by[cl[i]] += pop[i];
+        const stage = wmean(st, pop, idx), dom = wmean(col('domestic_pct') || [], pop, idx), ind = wmean(col('industry_pct') || [], pop, idx), irr = wmean(col('irrigation_pct') || [], pop, idx);
+        const state = wmean(col('state_stage_pct') || [], pop, idx);
+        const stats = [
+            { label: 'Stage of groundwater extraction, residents-weighted (district, 2025)', value: `${_round(stage, 0)}%` },
+            ...[4, 3, 2, 1].filter(k => by[k] > 0).map(k => ({ label: `Residents in ${GW_CLASS[k]} districts`, value: pc(by[k] / P) })),
+            { label: 'Pumped for homes / industry / irrigation', value: `${_fin(dom) ? _round(dom, 0) : 'n/a'}% / ${_fin(ind) ? _round(ind, 0) : 'n/a'}% / ${_fin(irr) ? _round(irr, 0) : 'n/a'}%` },
+            { label: 'Stage of extraction, whole state', value: _fin(state) ? `${_round(state, 0)}%` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = st[i];
+        return {
+            columns: { gw_stage: out }, idx, weightKey: 'gw_stage', noHotspots: true,
+            metric: { label: 'Stage of groundwater extraction (district, 2025)', value: _round(stage, 0), unit: '%', higherIs: 'worse' },
+            headline: `Districts here pump ${_round(stage, 0)}% of the groundwater their aquifers recharge in a year (residents-weighted)${by[4] ? `; ${pc(by[4] / P)} of residents live in over-exploited districts, where more is drawn than recharged` : ''}${_fin(dom) ? `, and homes take ${_round(dom, 0)}% of what is pumped` : ''}.`,
+            stats,
+        };
+    }
+
     // Toll plazas. NHAI's 2024 toll plaza list (via OpenCity): the nearest plaza to each block and what a car pays there.
     function tollring(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`tolls.toll_${k}`];
@@ -638,6 +668,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'gwstress', equity: true, title: 'Groundwater stress', icon: '💧',
+            question: 'Is the groundwater here being pumped faster than the rain refills it?',
+            field: { key: 'gw_stage', label: 'Stage of groundwater extraction (district, 2025)', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [20, 180] },
+            needs: ['gw_district.gw_stage_pct', 'gw_district.gw_class', 'gw_district.gw_domestic_pct', 'gw_district.gw_industry_pct', 'gw_district.gw_irrigation_pct', 'gw_district.gw_state_stage_pct', 'population.population'],
+            method: `The Central Ground Water Board's Dynamic Ground Water Resources of India 2025 (via data.opencity.in, public domain), district tables for Delhi, Karnataka, Maharashtra, Tamil Nadu, Telangana and Gujarat. Stage of extraction is the year's pumping for irrigation, industry and homes as a share of the extractable resource (recharge from rain, canals, tanks and return flows, less natural discharge); CGWB calls a unit safe up to 70%, semi-critical to 90%, critical to 100% and over-exploited above. Districts are joined through each block's NFHS district (2011 boundaries), so districts carved out since take their 2011 parent's or namesake's value. Figures are district-wide and include rural pumping; city wards inside a district can differ a lot (the borewells and groundwater depth lenses show local detail).`,
+            refs: 'Central Ground Water Board, Dynamic Ground Water Resources of India 2025, district tables (via data.opencity.in)' },
         { id: 'tollring', title: 'Toll plazas around the city', icon: '🛣️',
             question: 'How far is the nearest toll plaza, and what does a car pay to get out of town?',
             field: { key: 'toll_km', label: 'Distance to the nearest toll plaza', unit: 'km', higherIs: null, ramp: 'viridis', domain: [0, 30] },
@@ -720,6 +756,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress });
     return { ENTRIES };
 })();
