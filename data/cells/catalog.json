@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T06:38:11Z",
+  "generated": "2026-10-29T06:49:34Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -4519,7 +4519,7 @@
           "unit": "stops",
           "domain": [
             1,
-            14
+            17
           ],
           "ramp": "viridis"
         },
@@ -4531,7 +4531,7 @@
           "unit": "stops",
           "domain": [
             0,
-            14
+            17
           ],
           "ramp": "reds",
           "higherIs": "worse"
@@ -4596,7 +4596,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 2883,
+          "cells": 3335,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
@@ -11142,7 +11142,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 18755,
+          "cells": 18980,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
@@ -11685,6 +11685,10 @@
           "type": "number",
           "agg": "sum",
           "unit": "sites",
+          "domain": [
+            1,
+            1
+          ],
           "ramp": "viridis",
           "higherIs": "better"
         },
@@ -11735,7 +11739,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 18866,
+          "cells": 19068,
           "bbox": {
             "west": 77.446044921875,
             "south": 12.8271484375,
@@ -17463,7 +17467,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 15028,
+          "cells": 14997,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
@@ -30572,7 +30576,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 10310,
+          "cells": 10314,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
@@ -36100,7 +36104,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 18746,
+          "cells": 18974,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
@@ -44138,7 +44142,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 15038,
+          "cells": 15068,
           "bbox": {
             "west": 77.441650390625,
             "south": 12.807373046875,
