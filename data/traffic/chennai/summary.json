@@ -391,14 +391,14 @@
   "demand_model": {
     "zones": 592,
     "origins": 577,
-    "peak_pcu_total_trips": 260040,
-    "roads_los_e_f": 1550,
-    "roads_los_d": 550,
+    "peak_pcu_total_trips": 260041,
+    "roads_los_e_f": 1672,
+    "roads_los_d": 481,
     "roads_total": 6754,
     "roads_los_e_f_by_period": {
-      "am": 1524,
-      "pm": 1474,
-      "mid": 122
+      "am": 1646,
+      "pm": 1594,
+      "mid": 121
     },
     "hourly": {
       "share_pct": [
@@ -589,13 +589,13 @@
     "pct_high_or_worse": 33.1
   },
   "noise_air": {
-    "residents_total": 8676690,
-    "residents_near_modelled_roads": 7525008,
-    "residents_lden_ge_53": 6798097,
-    "residents_lden_ge_65": 2326241,
-    "nox_t_day": 9.86,
-    "co2_t_day": 2409.4,
-    "nox_vs_s5p_no2_spearman_l5": 0.33,
+    "residents_total": 8676698,
+    "residents_near_modelled_roads": 7522970,
+    "residents_lden_ge_53": 6804798,
+    "residents_lden_ge_65": 2277842,
+    "nox_t_day": 10.08,
+    "co2_t_day": 2463.3,
+    "nox_vs_s5p_no2_spearman_l5": 0.37,
     "l5_cells_compared": 44,
     "assumptions": {
       "veh_per_pcu": 1.4,
@@ -621,7 +621,7 @@
   "rail_access": {
     "metro_stations": 58,
     "rail_stations": 78,
-    "pct_within_10_walk_metro": 19.9,
+    "pct_within_10_walk_metro": 19.2,
     "pct_within_10_walk_any": 35.3,
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
@@ -634,8 +634,8 @@
     "parking": 140,
     "fuel": 237,
     "chargers_per_lakh": 0.25,
-    "pct_vkm_within_2km": 56.7,
-    "pct_pop_within_2km": 55.5
+    "pct_vkm_within_2km": 56.2,
+    "pct_pop_within_2km": 54.2
   },
   "cycling": {
     "lowstress_km": 8794,
@@ -714,108 +714,108 @@
     "stops": 2640,
     "stops_with_heat_data": 2640,
     "pct_hot_bare": 70.2,
-    "pct_riders_at_hot_bare": 68.8,
+    "pct_riders_at_hot_bare": 71.8,
     "median_stop_lst_c": 41.8,
     "top_stops": [
       {
-        "digipin": "4T39TL6",
-        "name": "",
-        "lon": 80.20686,
-        "lat": 13.0507,
-        "residents_5min": 35345,
-        "lst_c": 43.2,
-        "canopy_pct": 7.7,
-        "priority": 267512
+        "digipin": "4T38MJK",
+        "name": "Shanti Theatre",
+        "lon": 80.27057,
+        "lat": 13.06726,
+        "residents_5min": 37850,
+        "lst_c": 44.2,
+        "canopy_pct": 3.2,
+        "priority": 337077
       },
       {
-        "digipin": "4T39TL6",
-        "name": "Vadapalani Bus Stand",
-        "lon": 80.20695,
-        "lat": 13.04932,
-        "residents_5min": 35345,
-        "lst_c": 43.2,
-        "canopy_pct": 7.7,
-        "priority": 267512
+        "digipin": "4T38MJJ",
+        "name": "",
+        "lon": 80.26961,
+        "lat": 13.06908,
+        "residents_5min": 35002,
+        "lst_c": 44.1,
+        "canopy_pct": 2.2,
+        "priority": 311511
       },
       {
-        "digipin": "4T384M8",
+        "digipin": "4T38L69",
+        "name": "L.I.C",
+        "lon": 80.2658,
+        "lat": 13.06423,
+        "residents_5min": 37773,
+        "lst_c": 43.3,
+        "canopy_pct": 1.3,
+        "priority": 309440
+      },
+      {
+        "digipin": "4T38499",
         "name": "",
-        "lon": 80.28559,
-        "lat": 13.09082,
-        "residents_5min": 28294,
-        "lst_c": 44.4,
+        "lon": 80.29294,
+        "lat": 13.11661,
+        "residents_5min": 31167,
+        "lst_c": 44.5,
         "canopy_pct": 1.5,
-        "priority": 261974
+        "priority": 291645
       },
       {
-        "digipin": "4T39TMK",
+        "digipin": "4T38499",
         "name": "",
-        "lon": 80.20934,
-        "lat": 13.04964,
-        "residents_5min": 33248,
-        "lst_c": 42.3,
-        "canopy_pct": 2.4,
-        "priority": 236885
+        "lon": 80.29264,
+        "lat": 13.11512,
+        "residents_5min": 31167,
+        "lst_c": 44.5,
+        "canopy_pct": 1.5,
+        "priority": 291645
       },
       {
-        "digipin": "4T38L6J",
-        "name": "TVS",
-        "lon": 80.26254,
-        "lat": 13.06077,
-        "residents_5min": 28351,
-        "lst_c": 43.5,
-        "canopy_pct": 1.8,
-        "priority": 236646
-      },
-      {
-        "digipin": "4T38L6J",
-        "name": "Spencer Plaza",
-        "lon": 80.26107,
-        "lat": 13.06062,
-        "residents_5min": 28351,
-        "lst_c": 43.5,
-        "canopy_pct": 1.8,
-        "priority": 236646
-      },
-      {
-        "digipin": "4T38L6J",
+        "digipin": "4T38499",
         "name": "",
-        "lon": 80.26127,
-        "lat": 13.06091,
-        "residents_5min": 28351,
-        "lst_c": 43.5,
-        "canopy_pct": 1.8,
-        "priority": 236646
-      },
-      {
-        "digipin": "4T3844T",
-        "name": "Loane Square",
-        "lon": 80.28574,
-        "lat": 13.09146,
-        "residents_5min": 26245,
-        "lst_c": 44.0,
-        "canopy_pct": 2.9,
-        "priority": 229355
-      },
-      {
-        "digipin": "4T3844T",
-        "name": "",
-        "lon": 80.28574,
-        "lat": 13.09107,
-        "residents_5min": 26245,
-        "lst_c": 44.0,
-        "canopy_pct": 2.9,
-        "priority": 229355
+        "lon": 80.29257,
+        "lat": 13.11572,
+        "residents_5min": 31167,
+        "lst_c": 44.5,
+        "canopy_pct": 1.5,
+        "priority": 291645
       },
       {
         "digipin": "4T38MJM",
         "name": "",
         "lon": 80.2738,
         "lat": 13.06525,
-        "residents_5min": 26453,
+        "residents_5min": 33570,
         "lst_c": 43.7,
         "canopy_pct": 0.5,
-        "priority": 228990
+        "priority": 290599
+      },
+      {
+        "digipin": "4T38MJM",
+        "name": "",
+        "lon": 80.27371,
+        "lat": 13.06576,
+        "residents_5min": 33570,
+        "lst_c": 43.7,
+        "canopy_pct": 0.5,
+        "priority": 290599
+      },
+      {
+        "digipin": "4T38MJ3",
+        "name": "Simson",
+        "lon": 80.2738,
+        "lat": 13.07029,
+        "residents_5min": 30671,
+        "lst_c": 44.4,
+        "canopy_pct": 1.3,
+        "priority": 284559
+      },
+      {
+        "digipin": "4T38MJ3",
+        "name": "P.Orr & Sons",
+        "lon": 80.2737,
+        "lat": 13.07065,
+        "residents_5min": 30671,
+        "lst_c": 44.4,
+        "canopy_pct": 1.3,
+        "priority": 284559
       }
     ],
     "thresholds": {
@@ -835,7 +835,7 @@
     "lots_mapped": 140,
     "official_lot_spaces": 0,
     "pct_demand_in_overflow": 4.8,
-    "overflow_ecs": 7000,
+    "overflow_ecs": 6995,
     "hotspots": [
       {
         "digipin": "4T324J5",

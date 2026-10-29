@@ -7,12 +7,12 @@
     "period": "2025-Q4"
   },
   "land_value": {
-    "cells": 6068,
-    "p10": 47.6,
-    "p50": 93.9,
-    "p90": 148.2,
-    "p99": 196.0,
-    "spread_p90_p10": 3.11,
+    "cells": 6071,
+    "p10": 46.9,
+    "p50": 92.3,
+    "p90": 146.4,
+    "p99": 192.7,
+    "spread_p90_p10": 3.12,
     "mean_abs_premium_pct": {
       "jobs": 16.5,
       "metro": 2.6,
@@ -20,7 +20,7 @@
       "neigh": 13.5,
       "green": 1.5,
       "risk": 4.2,
-      "noise": 2.2
+      "noise": 2.1
     },
     "inputs_missing": []
   },

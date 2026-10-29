@@ -3182,7 +3182,7 @@
     },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
-     "value": 373477,
+     "value": 377405,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -3356,7 +3356,7 @@
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
-     "value": 14.5,
+     "value": 15.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3386,7 +3386,7 @@
     },
     "roadsafety": {
      "label": "Children whose walk to school crosses a fast, busy road",
-     "value": 20.7,
+     "value": 20.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3416,7 +3416,7 @@
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 1.4,
+     "value": 1.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3428,13 +3428,13 @@
     },
     "noise": {
      "label": "Residents above 53 dB",
-     "value": 78.1,
+     "value": 78.3,
      "unit": "%",
      "higherIs": "worse"
     },
     "traffic": {
      "label": "Residents beside a jammed arterial",
-     "value": 38.1,
+     "value": 42.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3458,7 +3458,7 @@
     },
     "busheat": {
      "label": "Bus stops hot and unshaded",
-     "value": 71.1,
+     "value": 70.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3482,7 +3482,7 @@
     },
     "jamcost": {
      "label": "Delay per motorised traveller",
-     "value": 5.4,
+     "value": 5.5,
      "unit": "min/day",
      "higherIs": "worse"
     },
@@ -3512,7 +3512,7 @@
     },
     "rentdemand": {
      "label": "Residents in high-demand, low-price pockets",
-     "value": 2.1,
+     "value": 2,
      "unit": "%",
      "higherIs": null
     },
@@ -3554,7 +3554,7 @@
     },
     "feasible": {
      "label": "Blocks where building pays at the base FAR",
-     "value": 98.4,
+     "value": 98.5,
      "unit": "%",
      "higherIs": null
     },
@@ -3824,13 +3824,13 @@
     },
     "schoolsafe": {
      "label": "Schools facing two or more hazards",
-     "value": 42.5,
+     "value": 42.6,
      "unit": "%",
      "higherIs": "worse"
     },
     "hospitalsafe": {
      "label": "Hospitals facing two or more hazards",
-     "value": 50.4,
+     "value": 50.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -4148,13 +4148,13 @@
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
-     "value": 13.1,
+     "value": 14.4,
      "unit": "%",
      "higherIs": "worse"
     },
     "ev": {
      "label": "Residents within 3 km of a known charger",
-     "value": 57.8,
+     "value": 78,
      "unit": "%",
      "higherIs": "better"
     },
@@ -6068,7 +6068,7 @@
     },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
-     "value": 415595,
+     "value": 427989,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -6206,7 +6206,7 @@
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
-     "value": 13.2,
+     "value": 13.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6236,7 +6236,7 @@
     },
     "roadsafety": {
      "label": "Children whose walk to school crosses a fast, busy road",
-     "value": 15.6,
+     "value": 15.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6266,7 +6266,7 @@
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 7.7,
+     "value": 6.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6278,13 +6278,13 @@
     },
     "noise": {
      "label": "Residents above 53 dB",
-     "value": 69.1,
+     "value": 69.3,
      "unit": "%",
      "higherIs": "worse"
     },
     "traffic": {
      "label": "Residents beside a jammed arterial",
-     "value": 31.1,
+     "value": 30.9,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6332,7 +6332,7 @@
     },
     "jamcost": {
      "label": "Delay per motorised traveller",
-     "value": 4.5,
+     "value": 4.2,
      "unit": "min/day",
      "higherIs": "worse"
     },
@@ -6368,7 +6368,7 @@
     },
     "affordability": {
      "label": "Residents where land prices outrun local incomes",
-     "value": 7.3,
+     "value": 7.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6686,7 +6686,7 @@
     },
     "hospitalsafe": {
      "label": "Hospitals facing two or more hazards",
-     "value": 3.2,
+     "value": 3.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -6998,13 +6998,13 @@
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
-     "value": 11.7,
+     "value": 11.5,
      "unit": "%",
      "higherIs": "worse"
     },
     "ev": {
      "label": "Residents within 3 km of a known charger",
-     "value": 36.2,
+     "value": 44.4,
      "unit": "%",
      "higherIs": "better"
     },
@@ -8990,7 +8990,7 @@
     },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
-     "value": 716320,
+     "value": 680108,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -9086,7 +9086,7 @@
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
-     "value": 15.1,
+     "value": 15.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9116,13 +9116,13 @@
     },
     "roadsafety": {
      "label": "Children whose walk to school crosses a fast, busy road",
-     "value": 29.1,
+     "value": 27.1,
      "unit": "%",
      "higherIs": "worse"
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 13,
+     "value": 12.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9134,19 +9134,19 @@
     },
     "noise": {
      "label": "Residents above 53 dB",
-     "value": 74.9,
+     "value": 75.2,
      "unit": "%",
      "higherIs": "worse"
     },
     "traffic": {
      "label": "Residents beside a jammed arterial",
-     "value": 59.8,
+     "value": 59.4,
      "unit": "%",
      "higherIs": "worse"
     },
     "ambulance": {
      "label": "Within 10 min of a hospital at rush hour",
-     "value": 86.9,
+     "value": 87.7,
      "unit": "%",
      "higherIs": "better"
     },
@@ -9188,7 +9188,7 @@
     },
     "jamcost": {
      "label": "Delay per motorised traveller",
-     "value": 35.2,
+     "value": 35.1,
      "unit": "min/day",
      "higherIs": "worse"
     },
@@ -9230,7 +9230,7 @@
     },
     "undervalued": {
      "label": "Blocks undervalued for their access",
-     "value": 0.8,
+     "value": 0.7,
      "unit": "%",
      "higherIs": null
     },
@@ -9260,7 +9260,7 @@
     },
     "feasible": {
      "label": "Blocks where building pays at the base FAR",
-     "value": 84.8,
+     "value": 83.9,
      "unit": "%",
      "higherIs": null
     },
@@ -9542,13 +9542,13 @@
     },
     "schoolsafe": {
      "label": "Schools facing two or more hazards",
-     "value": 38.7,
+     "value": 38.2,
      "unit": "%",
      "higherIs": "worse"
     },
     "hospitalsafe": {
      "label": "Hospitals facing two or more hazards",
-     "value": 41.9,
+     "value": 41.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9602,7 +9602,7 @@
     },
     "heritagesafe": {
      "label": "Monuments facing two or more hazards",
-     "value": 53,
+     "value": 54.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -9854,9 +9854,15 @@
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
-     "value": 36.3,
+     "value": 35.4,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "ev": {
+     "label": "Residents within 3 km of a known charger",
+     "value": 63,
+     "unit": "%",
+     "higherIs": "better"
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
@@ -10934,7 +10940,7 @@
     },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
-     "value": 402954,
+     "value": 457562,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -11036,7 +11042,7 @@
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
-     "value": 15.4,
+     "value": 15.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -11066,13 +11072,13 @@
     },
     "roadsafety": {
      "label": "Children whose walk to school crosses a fast, busy road",
-     "value": 31.2,
+     "value": 31.3,
      "unit": "%",
      "higherIs": "worse"
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 0.5,
+     "value": 0.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -11084,19 +11090,19 @@
     },
     "noise": {
      "label": "Residents above 53 dB",
-     "value": 86.9,
+     "value": 87.2,
      "unit": "%",
      "higherIs": "worse"
     },
     "traffic": {
      "label": "Residents beside a jammed arterial",
-     "value": 68,
+     "value": 68.4,
      "unit": "%",
      "higherIs": "worse"
     },
     "ambulance": {
      "label": "Within 10 min of a hospital at rush hour",
-     "value": 98.7,
+     "value": 98.6,
      "unit": "%",
      "higherIs": "better"
     },
@@ -11114,7 +11120,7 @@
     },
     "busheat": {
      "label": "Bus stops hot and unshaded",
-     "value": 16.8,
+     "value": 16.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -11138,7 +11144,7 @@
     },
     "jamcost": {
      "label": "Delay per motorised traveller",
-     "value": 26.1,
+     "value": 24.7,
      "unit": "min/day",
      "higherIs": "worse"
     },
@@ -11168,7 +11174,7 @@
     },
     "rentdemand": {
      "label": "Residents in high-demand, low-price pockets",
-     "value": 7,
+     "value": 7.1,
      "unit": "%",
      "higherIs": null
     },
@@ -11492,13 +11498,13 @@
     },
     "schoolsafe": {
      "label": "Schools facing two or more hazards",
-     "value": 29.8,
+     "value": 30,
      "unit": "%",
      "higherIs": "worse"
     },
     "hospitalsafe": {
      "label": "Hospitals facing two or more hazards",
-     "value": 33.6,
+     "value": 34.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -11810,13 +11816,13 @@
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
-     "value": 33.2,
+     "value": 34.6,
      "unit": "%",
      "higherIs": "worse"
     },
     "ev": {
      "label": "Residents within 3 km of a known charger",
-     "value": 76.2,
+     "value": 86.8,
      "unit": "%",
      "higherIs": "better"
     },
@@ -11960,7 +11966,7 @@
     },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
-     "value": 315963,
+     "value": 324547,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -12086,7 +12092,7 @@
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
-     "value": 17.3,
+     "value": 17.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -12116,7 +12122,7 @@
     },
     "roadsafety": {
      "label": "Children whose walk to school crosses a fast, busy road",
-     "value": 22.9,
+     "value": 23.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -12134,7 +12140,7 @@
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 0.8,
+     "value": 1.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -12146,13 +12152,13 @@
     },
     "noise": {
      "label": "Residents above 53 dB",
-     "value": 73.4,
+     "value": 74.5,
      "unit": "%",
      "higherIs": "worse"
     },
     "traffic": {
      "label": "Residents beside a jammed arterial",
-     "value": 26.9,
+     "value": 27.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -12176,7 +12182,7 @@
     },
     "busheat": {
      "label": "Bus stops hot and unshaded",
-     "value": 62.9,
+     "value": 63,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -12200,7 +12206,7 @@
     },
     "jamcost": {
      "label": "Delay per motorised traveller",
-     "value": 3.9,
+     "value": 2.9,
      "unit": "min/day",
      "higherIs": "worse"
     },
@@ -12230,7 +12236,7 @@
     },
     "rentdemand": {
      "label": "Residents in high-demand, low-price pockets",
-     "value": 6.9,
+     "value": 6.7,
      "unit": "%",
      "higherIs": null
     },
@@ -12242,7 +12248,7 @@
     },
     "undervalued": {
      "label": "Blocks undervalued for their access",
-     "value": 6.4,
+     "value": 6.3,
      "unit": "%",
      "higherIs": null
     },
@@ -12272,7 +12278,7 @@
     },
     "feasible": {
      "label": "Blocks where building pays at the base FAR",
-     "value": 98.6,
+     "value": 98.8,
      "unit": "%",
      "higherIs": null
     },
@@ -12548,13 +12554,13 @@
     },
     "schoolsafe": {
      "label": "Schools facing two or more hazards",
-     "value": 3.5,
+     "value": 3.6,
      "unit": "%",
      "higherIs": "worse"
     },
     "hospitalsafe": {
      "label": "Hospitals facing two or more hazards",
-     "value": 5.2,
+     "value": 5.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -12614,7 +12620,7 @@
     },
     "heritagesafe": {
      "label": "Monuments facing two or more hazards",
-     "value": 10.7,
+     "value": 9.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -12848,13 +12854,13 @@
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
-     "value": 12,
+     "value": 11.2,
      "unit": "%",
      "higherIs": "worse"
     },
     "ev": {
      "label": "Residents within 3 km of a known charger",
-     "value": 96.1,
+     "value": 96.8,
      "unit": "%",
      "higherIs": "better"
     },

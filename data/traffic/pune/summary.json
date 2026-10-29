@@ -474,15 +474,15 @@
   ],
   "demand_model": {
     "zones": 697,
-    "origins": 658,
-    "peak_pcu_total_trips": 193168,
-    "roads_los_e_f": 1070,
-    "roads_los_d": 343,
+    "origins": 663,
+    "peak_pcu_total_trips": 193169,
+    "roads_los_e_f": 981,
+    "roads_los_d": 297,
     "roads_total": 6389,
     "roads_los_e_f_by_period": {
-      "am": 1045,
-      "pm": 1024,
-      "mid": 51
+      "am": 958,
+      "pm": 923,
+      "mid": 34
     },
     "hourly": {
       "share_pct": [
@@ -673,13 +673,13 @@
     "pct_high_or_worse": 17.0
   },
   "noise_air": {
-    "residents_total": 6445372,
-    "residents_near_modelled_roads": 5518604,
-    "residents_lden_ge_53": 4946263,
-    "residents_lden_ge_65": 1756929,
-    "nox_t_day": 7.88,
-    "co2_t_day": 1926.5,
-    "nox_vs_s5p_no2_spearman_l5": 0.45,
+    "residents_total": 6445409,
+    "residents_near_modelled_roads": 5383333,
+    "residents_lden_ge_53": 4801823,
+    "residents_lden_ge_65": 1561500,
+    "nox_t_day": 7.74,
+    "co2_t_day": 1891.0,
+    "nox_vs_s5p_no2_spearman_l5": 0.5,
     "l5_cells_compared": 55,
     "assumptions": {
       "veh_per_pcu": 1.4,
@@ -696,17 +696,17 @@
   },
   "emergency_access": {
     "hospitals": 1134,
-    "pct_within_10_night": 99.5,
-    "pct_within_10_am": 99.5,
-    "pct_within_10_pm": 99.5,
+    "pct_within_10_night": 99.4,
+    "pct_within_10_am": 99.4,
+    "pct_within_10_pm": 99.4,
     "pct_over_20_peak": 0.0,
     "source": "Overture Maps places 2026-10-21.0; demand model link times"
   },
   "rail_access": {
     "metro_stations": 28,
     "rail_stations": 60,
-    "pct_within_10_walk_metro": 11.6,
-    "pct_within_10_walk_any": 25.0,
+    "pct_within_10_walk_metro": 11.0,
+    "pct_within_10_walk_any": 24.2,
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
@@ -718,8 +718,8 @@
     "parking": 17,
     "fuel": 203,
     "chargers_per_lakh": 1.66,
-    "pct_vkm_within_2km": 82.5,
-    "pct_pop_within_2km": 86.2
+    "pct_vkm_within_2km": 84.6,
+    "pct_pop_within_2km": 88.2
   },
   "cycling": {
     "lowstress_km": 8295,
@@ -798,108 +798,108 @@
     "stops": 2319,
     "stops_with_heat_data": 2319,
     "pct_hot_bare": 63.0,
-    "pct_riders_at_hot_bare": 49.3,
+    "pct_riders_at_hot_bare": 56.7,
     "median_stop_lst_c": 43.3,
     "top_stops": [
       {
-        "digipin": "4FP2L7T",
+        "digipin": "4FP3KC6",
         "name": "",
-        "lon": 73.9402,
-        "lat": 18.5498,
-        "residents_5min": 33314,
+        "lon": 73.78289,
+        "lat": 18.59571,
+        "residents_5min": 31177,
+        "lst_c": 45.5,
+        "canopy_pct": 3.6,
+        "priority": 315574
+      },
+      {
+        "digipin": "4FP3JTL",
+        "name": "",
+        "lon": 73.7924,
+        "lat": 18.6032,
+        "residents_5min": 30876,
+        "lst_c": 45.1,
+        "canopy_pct": 0.8,
+        "priority": 309353
+      },
+      {
+        "digipin": "4FP3K8F",
+        "name": "",
+        "lon": 73.79384,
+        "lat": 18.60057,
+        "residents_5min": 39032,
+        "lst_c": 42.9,
+        "canopy_pct": 1.4,
+        "priority": 304036
+      },
+      {
+        "digipin": "4FP3K87",
+        "name": "Vishwa Shanti Colony",
+        "lon": 73.79909,
+        "lat": 18.59814,
+        "residents_5min": 31379,
         "lst_c": 44.6,
-        "canopy_pct": 6.1,
-        "priority": 300306
+        "canopy_pct": 0.4,
+        "priority": 300033
       },
       {
-        "digipin": "4FP475F",
+        "digipin": "4FP3KCJ",
         "name": "",
-        "lon": 73.89,
-        "lat": 18.477,
-        "residents_5min": 34815,
-        "lst_c": 44.2,
-        "canopy_pct": 9.9,
-        "priority": 288588
+        "lon": 73.7748,
+        "lat": 18.5992,
+        "residents_5min": 39004,
+        "lst_c": 42.5,
+        "canopy_pct": 1.1,
+        "priority": 289312
       },
       {
-        "digipin": "4FP475F",
+        "digipin": "4FP34F3",
+        "name": "Govind yashada Chowk",
+        "lon": 73.80358,
+        "lat": 18.59733,
+        "residents_5min": 41800,
+        "lst_c": 41.9,
+        "canopy_pct": 0.5,
+        "priority": 286978
+      },
+      {
+        "digipin": "4FP3K96",
+        "name": "Kokane Chowk",
+        "lon": 73.79117,
+        "lat": 18.59686,
+        "residents_5min": 35001,
+        "lst_c": 43.1,
+        "canopy_pct": 1.1,
+        "priority": 280390
+      },
+      {
+        "digipin": "4FP3K96",
         "name": "",
-        "lon": 73.8898,
-        "lat": 18.4768,
-        "residents_5min": 34815,
-        "lst_c": 44.2,
-        "canopy_pct": 9.9,
-        "priority": 288588
+        "lon": 73.79152,
+        "lat": 18.59685,
+        "residents_5min": 35001,
+        "lst_c": 43.1,
+        "canopy_pct": 1.1,
+        "priority": 280390
       },
       {
-        "digipin": "4FP2KL5",
-        "name": "",
-        "lon": 73.91118,
-        "lat": 18.57078,
-        "residents_5min": 36900,
-        "lst_c": 43.2,
-        "canopy_pct": 4.8,
-        "priority": 288056
-      },
-      {
-        "digipin": "4FP4774",
-        "name": "Indira Vasahat",
-        "lon": 73.90063,
-        "lat": 18.48157,
-        "residents_5min": 42851,
-        "lst_c": 42.1,
-        "canopy_pct": 10.8,
-        "priority": 271384
-      },
-      {
-        "digipin": "4FP48KK",
-        "name": "",
-        "lon": 73.8727,
-        "lat": 18.5092,
-        "residents_5min": 33752,
-        "lst_c": 43.5,
-        "canopy_pct": 8.2,
-        "priority": 263367
-      },
-      {
-        "digipin": "4FP48KK",
-        "name": "",
-        "lon": 73.87112,
-        "lat": 18.50736,
-        "residents_5min": 33752,
-        "lst_c": 43.5,
-        "canopy_pct": 8.2,
-        "priority": 263367
-      },
-      {
-        "digipin": "4FP4958",
-        "name": "",
-        "lon": 73.8618,
-        "lat": 18.513,
-        "residents_5min": 28368,
-        "lst_c": 44.5,
-        "canopy_pct": 2.5,
-        "priority": 262759
-      },
-      {
-        "digipin": "4FP48K4",
-        "name": "",
-        "lon": 73.8748,
-        "lat": 18.5084,
-        "residents_5min": 33621,
+        "digipin": "4FP497P",
+        "name": "Nana Peth",
+        "lon": 73.86876,
+        "lat": 18.51485,
+        "residents_5min": 33303,
         "lst_c": 43.4,
-        "canopy_pct": 8.5,
-        "priority": 258411
+        "canopy_pct": 6.1,
+        "priority": 262681
       },
       {
-        "digipin": "4FP2L49",
-        "name": "Dutt Mandir Bus Stop",
-        "lon": 73.92133,
-        "lat": 18.54675,
-        "residents_5min": 38606,
-        "lst_c": 42.2,
-        "canopy_pct": 7.1,
-        "priority": 258228
+        "digipin": "4FP497P",
+        "name": "",
+        "lon": 73.86767,
+        "lat": 18.51536,
+        "residents_5min": 33303,
+        "lst_c": 43.4,
+        "canopy_pct": 6.1,
+        "priority": 262681
       }
     ],
     "thresholds": {
@@ -915,7 +915,7 @@
   },
   "parking": {
     "cells": 5484,
-    "demand_ecs": 277588,
+    "demand_ecs": 277590,
     "lots_mapped": 17,
     "official_lot_spaces": 0,
     "pct_demand_in_overflow": 6.3,
@@ -952,16 +952,16 @@
         "pressure": 2.34
       },
       {
-        "digipin": "4FP3CTT",
-        "demand_ecs": 185,
-        "supply_ecs": 62,
-        "pressure": 2.97
-      },
-      {
         "digipin": "4FP3CTL",
         "demand_ecs": 171,
         "supply_ecs": 48,
         "pressure": 3.55
+      },
+      {
+        "digipin": "4FP3CTT",
+        "demand_ecs": 185,
+        "supply_ecs": 62,
+        "pressure": 2.97
       },
       {
         "digipin": "4FP32FJ",

@@ -404,13 +404,13 @@
     "zones": 1060,
     "origins": 1022,
     "peak_pcu_total_trips": 271848,
-    "roads_los_e_f": 1413,
-    "roads_los_d": 485,
+    "roads_los_e_f": 1332,
+    "roads_los_d": 539,
     "roads_total": 9294,
     "roads_los_e_f_by_period": {
-      "am": 1386,
-      "pm": 1327,
-      "mid": 60
+      "am": 1283,
+      "pm": 1221,
+      "mid": 63
     },
     "hourly": {
       "share_pct": [
@@ -601,13 +601,13 @@
     "pct_high_or_worse": 14.6
   },
   "noise_air": {
-    "residents_total": 9070685,
-    "residents_near_modelled_roads": 7200228,
-    "residents_lden_ge_53": 6281991,
-    "residents_lden_ge_65": 1984325,
-    "nox_t_day": 11.93,
-    "co2_t_day": 2916.2,
-    "nox_vs_s5p_no2_spearman_l5": 0.6,
+    "residents_total": 9070666,
+    "residents_near_modelled_roads": 7191070,
+    "residents_lden_ge_53": 6281816,
+    "residents_lden_ge_65": 2065420,
+    "nox_t_day": 11.73,
+    "co2_t_day": 2866.5,
+    "nox_vs_s5p_no2_spearman_l5": 0.62,
     "l5_cells_compared": 86,
     "assumptions": {
       "veh_per_pcu": 1.4,
@@ -633,8 +633,8 @@
   "rail_access": {
     "metro_stations": 54,
     "rail_stations": 45,
-    "pct_within_10_walk_metro": 12.2,
-    "pct_within_10_walk_any": 18.5,
+    "pct_within_10_walk_metro": 11.9,
+    "pct_within_10_walk_any": 18.7,
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
@@ -646,7 +646,7 @@
     "parking": 12,
     "fuel": 461,
     "chargers_per_lakh": 0.2,
-    "pct_vkm_within_2km": 34.5,
+    "pct_vkm_within_2km": 34.8,
     "pct_pop_within_2km": 24.4
   },
   "cycling": {
@@ -726,108 +726,108 @@
     "stops": 2187,
     "stops_with_heat_data": 2187,
     "pct_hot_bare": 24.6,
-    "pct_riders_at_hot_bare": 23.7,
+    "pct_riders_at_hot_bare": 24.4,
     "median_stop_lst_c": 39.3,
     "top_stops": [
       {
-        "digipin": "42257C3",
-        "name": "Dilsukhnagar",
-        "lon": 78.52409,
-        "lat": 17.36878,
-        "residents_5min": 30649,
-        "lst_c": 39.8,
-        "canopy_pct": 4.6,
-        "priority": 140348
+        "digipin": "42259P5",
+        "name": "Nalgonda X Roads",
+        "lon": 78.49858,
+        "lat": 17.37536,
+        "residents_5min": 33082,
+        "lst_c": 40.9,
+        "canopy_pct": 2.1,
+        "priority": 191085
       },
       {
-        "digipin": "42257C3",
-        "name": "Dilsukhnagar",
-        "lon": 78.52343,
-        "lat": 17.36843,
-        "residents_5min": 30649,
-        "lst_c": 39.8,
-        "canopy_pct": 4.6,
-        "priority": 140348
+        "digipin": "42259P5",
+        "name": "Malakpet Bus Stop",
+        "lon": 78.49993,
+        "lat": 17.37403,
+        "residents_5min": 33082,
+        "lst_c": 40.9,
+        "canopy_pct": 2.1,
+        "priority": 191085
       },
       {
-        "digipin": "42257C3",
-        "name": "Dilsukhnagar",
-        "lon": 78.52456,
-        "lat": 17.36841,
-        "residents_5min": 30649,
-        "lst_c": 39.8,
-        "canopy_pct": 4.6,
-        "priority": 140348
+        "digipin": "42259TK",
+        "name": "Malakpet Market",
+        "lon": 78.50323,
+        "lat": 17.37436,
+        "residents_5min": 32953,
+        "lst_c": 40.6,
+        "canopy_pct": 3.2,
+        "priority": 178632
       },
       {
-        "digipin": "42257C3",
-        "name": "Dilsukhnagar",
-        "lon": 78.52286,
-        "lat": 17.36844,
-        "residents_5min": 30649,
-        "lst_c": 39.8,
-        "canopy_pct": 4.6,
-        "priority": 140348
-      },
-      {
-        "digipin": "42257C3",
+        "digipin": "42259TK",
         "name": "",
-        "lon": 78.52415,
-        "lat": 17.36841,
-        "residents_5min": 30649,
-        "lst_c": 39.8,
-        "canopy_pct": 4.6,
-        "priority": 140348
+        "lon": 78.50424,
+        "lat": 17.37335,
+        "residents_5min": 32953,
+        "lst_c": 40.6,
+        "canopy_pct": 3.2,
+        "priority": 178632
       },
       {
-        "digipin": "42257C3",
+        "digipin": "4225386",
         "name": "",
-        "lon": 78.52366,
-        "lat": 17.36862,
-        "residents_5min": 30649,
-        "lst_c": 39.8,
-        "canopy_pct": 4.6,
-        "priority": 140348
+        "lon": 78.476,
+        "lat": 17.366,
+        "residents_5min": 25345,
+        "lst_c": 41.4,
+        "canopy_pct": 1.7,
+        "priority": 159450
       },
       {
-        "digipin": "4225793",
-        "name": "Chaitanyapuri Bus Stop",
-        "lon": 78.53291,
-        "lat": 17.36855,
-        "residents_5min": 29565,
-        "lst_c": 39.7,
+        "digipin": "422537C",
+        "name": "",
+        "lon": 78.47137,
+        "lat": 17.36013,
+        "residents_5min": 24380,
+        "lst_c": 41.2,
         "canopy_pct": 2.8,
-        "priority": 135065
+        "priority": 146924
       },
       {
-        "digipin": "4225793",
+        "digipin": "42259M2",
         "name": "",
-        "lon": 78.53261,
-        "lat": 17.36848,
-        "residents_5min": 29565,
-        "lst_c": 39.7,
-        "canopy_pct": 2.8,
-        "priority": 135065
+        "lon": 78.49123,
+        "lat": 17.37727,
+        "residents_5min": 26300,
+        "lst_c": 40.6,
+        "canopy_pct": 3.8,
+        "priority": 141683
       },
       {
-        "digipin": "422574P",
+        "digipin": "42259M2",
         "name": "",
-        "lon": 78.52563,
-        "lat": 17.34523,
-        "residents_5min": 26391,
-        "lst_c": 40.1,
-        "canopy_pct": 3.9,
-        "priority": 129345
+        "lon": 78.49131,
+        "lat": 17.37755,
+        "residents_5min": 26300,
+        "lst_c": 40.6,
+        "canopy_pct": 3.8,
+        "priority": 141683
       },
       {
-        "digipin": "422574P",
+        "digipin": "42259TM",
+        "name": "Chermas",
+        "lon": 78.5055,
+        "lat": 17.37293,
+        "residents_5min": 33411,
+        "lst_c": 39.3,
+        "canopy_pct": 2.9,
+        "priority": 139501
+      },
+      {
+        "digipin": "4222P5M",
         "name": "",
-        "lon": 78.52612,
-        "lat": 17.34525,
-        "residents_5min": 26391,
-        "lst_c": 40.1,
-        "canopy_pct": 3.9,
-        "priority": 129345
+        "lon": 78.49825,
+        "lat": 17.41566,
+        "residents_5min": 25183,
+        "lst_c": 40.2,
+        "canopy_pct": 0.8,
+        "priority": 129904
       }
     ],
     "thresholds": {
@@ -843,7 +843,7 @@
   },
   "parking": {
     "cells": 8492,
-    "demand_ecs": 389562,
+    "demand_ecs": 389561,
     "lots_mapped": 12,
     "official_lot_spaces": 0,
     "pct_demand_in_overflow": 4.3,

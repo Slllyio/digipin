@@ -259,13 +259,13 @@
     "zones": 478,
     "origins": 478,
     "peak_pcu_total_trips": 406056,
-    "roads_los_e_f": 2754,
-    "roads_los_d": 192,
+    "roads_los_e_f": 2652,
+    "roads_los_d": 228,
     "roads_total": 4601,
     "roads_los_e_f_by_period": {
-      "am": 2711,
-      "pm": 2688,
-      "mid": 950
+      "am": 2631,
+      "pm": 2603,
+      "mid": 938
     },
     "hourly": {
       "share_pct": [
@@ -456,13 +456,13 @@
     "pct_high_or_worse": 35.2
   },
   "noise_air": {
-    "residents_total": 13548737,
-    "residents_near_modelled_roads": 10491855,
-    "residents_lden_ge_53": 10189692,
-    "residents_lden_ge_65": 5941967,
-    "nox_t_day": 18.64,
-    "co2_t_day": 4556.9,
-    "nox_vs_s5p_no2_spearman_l5": 0.77,
+    "residents_total": 13548752,
+    "residents_near_modelled_roads": 10482574,
+    "residents_lden_ge_53": 10189429,
+    "residents_lden_ge_65": 5653052,
+    "nox_t_day": 17.79,
+    "co2_t_day": 4349.0,
+    "nox_vs_s5p_no2_spearman_l5": 0.78,
     "l5_cells_compared": 42,
     "assumptions": {
       "veh_per_pcu": 1.4,
@@ -479,17 +479,17 @@
   },
   "emergency_access": {
     "hospitals": 704,
-    "pct_within_10_night": 98.1,
-    "pct_within_10_am": 87.3,
-    "pct_within_10_pm": 87.4,
+    "pct_within_10_night": 98.2,
+    "pct_within_10_am": 87.7,
+    "pct_within_10_pm": 87.8,
     "pct_over_20_peak": 1.1,
     "source": "Overture Maps places 2026-10-21.0; demand model link times"
   },
   "rail_access": {
     "metro_stations": 61,
     "rail_stations": 57,
-    "pct_within_10_walk_metro": 20.9,
-    "pct_within_10_walk_any": 28.5,
+    "pct_within_10_walk_metro": 21.1,
+    "pct_within_10_walk_any": 30.8,
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
   "ev_charging": {
@@ -500,8 +500,8 @@
     "parking": 49,
     "fuel": 178,
     "chargers_per_lakh": 0.07,
-    "pct_vkm_within_2km": 42.7,
-    "pct_pop_within_2km": 37.6
+    "pct_vkm_within_2km": 42.6,
+    "pct_pop_within_2km": 37.2
   },
   "cycling": {
     "lowstress_km": 6425,
@@ -580,88 +580,28 @@
     "stops": 539,
     "stops_with_heat_data": 539,
     "pct_hot_bare": 2.4,
-    "pct_riders_at_hot_bare": 2.5,
+    "pct_riders_at_hot_bare": 2.2,
     "median_stop_lst_c": 37.6,
     "top_stops": [
       {
-        "digipin": "2TFFTP2",
-        "name": "Paikpara-Chuni Babur Bazar",
-        "lon": 88.37914,
-        "lat": 22.61444,
-        "residents_5min": 61385,
-        "lst_c": 40.0,
-        "canopy_pct": 4.8,
-        "priority": 292193
-      },
-      {
-        "digipin": "2TFFT5L",
-        "name": "4B,Bus Stand",
-        "lon": 88.37318,
-        "lat": 22.61891,
-        "residents_5min": 51266,
-        "lst_c": 41.1,
-        "canopy_pct": 7.5,
-        "priority": 289268
-      },
-      {
-        "digipin": "2TFFT5P",
-        "name": "Chiriya more",
-        "lon": 88.37918,
-        "lat": 22.61818,
-        "residents_5min": 52424,
-        "lst_c": 41.0,
-        "canopy_pct": 8.2,
-        "priority": 288751
-      },
-      {
-        "digipin": "2TFFT5P",
-        "name": "Chiria more",
-        "lon": 88.3793,
-        "lat": 22.61872,
-        "residents_5min": 52424,
-        "lst_c": 41.0,
-        "canopy_pct": 8.2,
-        "priority": 288751
-      },
-      {
-        "digipin": "2TFFTP4",
-        "name": "",
-        "lon": 88.37724,
-        "lat": 22.61241,
-        "residents_5min": 51777,
+        "digipin": "2TFJ9T6",
+        "name": "Canning Street Bus Stop 1",
+        "lon": 88.35452,
+        "lat": 22.57681,
+        "residents_5min": 44853,
         "lst_c": 40.5,
-        "canopy_pct": 4.7,
-        "priority": 271389
+        "canopy_pct": 0.0,
+        "priority": 246692
       },
       {
-        "digipin": "2TFCLKL",
-        "name": "Dumdum Metro",
-        "lon": 88.39271,
-        "lat": 22.61985,
-        "residents_5min": 58300,
-        "lst_c": 39.7,
-        "canopy_pct": 8.0,
-        "priority": 252089
-      },
-      {
-        "digipin": "2TFCLKL",
-        "name": "11A Bus Station",
-        "lon": 88.39175,
-        "lat": 22.61936,
-        "residents_5min": 58300,
-        "lst_c": 39.7,
-        "canopy_pct": 8.0,
-        "priority": 252089
-      },
-      {
-        "digipin": "2TFCLP3",
-        "name": "",
-        "lon": 88.41183,
-        "lat": 22.61553,
-        "residents_5min": 63188,
-        "lst_c": 38.7,
-        "canopy_pct": 5.4,
-        "priority": 221171
+        "digipin": "2TFJ8L5",
+        "name": "MG Road Crossing Bus Stop",
+        "lon": 88.36074,
+        "lat": 22.57839,
+        "residents_5min": 50153,
+        "lst_c": 39.6,
+        "canopy_pct": 2.1,
+        "priority": 225859
       },
       {
         "digipin": "2TFJM4C",
@@ -682,6 +622,66 @@
         "lst_c": 36.8,
         "canopy_pct": 8.1,
         "priority": 218689
+      },
+      {
+        "digipin": "2TFCLML",
+        "name": "Kalindi",
+        "lon": 88.40055,
+        "lat": 22.60943,
+        "residents_5min": 65391,
+        "lst_c": 38.5,
+        "canopy_pct": 5.7,
+        "priority": 215823
+      },
+      {
+        "digipin": "2TFJ8LM",
+        "name": "Kolkata Guwahati Roadways",
+        "lon": 88.35938,
+        "lat": 22.57589,
+        "residents_5min": 46768,
+        "lst_c": 39.6,
+        "canopy_pct": 3.0,
+        "priority": 208679
+      },
+      {
+        "digipin": "2TFJM4F",
+        "name": "Raidighi",
+        "lon": 88.2959,
+        "lat": 22.48461,
+        "residents_5min": 89920,
+        "lst_c": 37.6,
+        "canopy_pct": 14.1,
+        "priority": 200827
+      },
+      {
+        "digipin": "2TFJ7C2",
+        "name": "Chabbigarh",
+        "lon": 88.36928,
+        "lat": 22.56998,
+        "residents_5min": 47780,
+        "lst_c": 39.3,
+        "canopy_pct": 3.4,
+        "priority": 198469
+      },
+      {
+        "digipin": "2TFJ8PK",
+        "name": "Science College Bus Stop",
+        "lon": 88.37341,
+        "lat": 22.578,
+        "residents_5min": 45677,
+        "lst_c": 39.5,
+        "canopy_pct": 4.1,
+        "priority": 197119
+      },
+      {
+        "digipin": "2TFJ288",
+        "name": "Poddar Court Bus Stop",
+        "lon": 88.35364,
+        "lat": 22.57381,
+        "residents_5min": 45185,
+        "lst_c": 39.4,
+        "canopy_pct": 2.1,
+        "priority": 194639
       }
     ],
     "thresholds": {
@@ -715,16 +715,16 @@
         "pressure": 572.51
       },
       {
-        "digipin": "2TFCL8T",
-        "demand_ecs": 542,
-        "supply_ecs": 0,
-        "pressure": 541.86
-      },
-      {
         "digipin": "2TFJ448",
         "demand_ecs": 542,
         "supply_ecs": 0,
         "pressure": 542.25
+      },
+      {
+        "digipin": "2TFCL8T",
+        "demand_ecs": 542,
+        "supply_ecs": 0,
+        "pressure": 541.86
       },
       {
         "digipin": "2TFJ437",
