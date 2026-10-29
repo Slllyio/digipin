@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T03:54:05Z",
+  "generated": "2026-10-29T04:11:35Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -9661,6 +9661,146 @@
             "north": 13.180908203125
           },
           "json": "eco_limits/chennai.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "econ_census",
+      "title": "Workplaces counted (6th Economic Census, 2012-13)",
+      "description": "Establishments and workers per Kolkata Municipal Corporation ward from the 6th Economic Census microdata (MoSPI, 2012-13) on data.opencity.in, with activity, home-based and women's shares; every block in a ward carries the ward's figures. Crop farming, public administration and defence are outside the census.",
+      "source": "pipeline/realestate/econcensus.py (OpenCity Kolkata 6th Economic Census)",
+      "license": "Public domain (MoSPI microdata via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "ec_ward",
+          "label": "KMC ward",
+          "type": "number",
+          "agg": "min",
+          "domain": [
+            1,
+            137
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "ec_workers",
+          "label": "Workers in the ward's establishments (2012-13)",
+          "type": "number",
+          "agg": "max",
+          "unit": "workers",
+          "domain": [
+            2305,
+            57160
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "ec_estabs",
+          "label": "Establishments in the ward (2012-13)",
+          "type": "number",
+          "agg": "max",
+          "unit": "establishments",
+          "domain": [
+            952,
+            17871
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "mfg_pct",
+          "label": "Ward workers in manufacturing",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "trade_pct",
+          "label": "Ward workers in trade",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "home_pct",
+          "label": "Ward establishments run from a home",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "women_pct",
+          "label": "Ward workers who are women",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "women_owner_pct",
+          "label": "Ward proprietary establishments owned by women",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "hired_pct",
+          "label": "Ward workers who are hired",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "ec_workers",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "kolkata",
+          "cells": 3236,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.451171875,
+            "east": 88.4521484375,
+            "north": 22.633544921875
+          },
+          "json": "econ_census/kolkata.json",
           "parquet": null
         }
       ]

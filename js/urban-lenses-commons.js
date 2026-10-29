@@ -962,6 +962,69 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Workplaces counted. The 6th Economic Census (2012-13) listed every establishment in Kolkata with its ward: where the
+    // jobs actually were, against where people live, what kind of work, and how much of it ran from homes or employed women.
+    function _rankCorr(x, y) {
+        const rank = a => { const o = a.map((v, i) => [v, i]).sort((p, q) => p[0] - q[0]), r = new Float64Array(a.length); o.forEach(([, i], k) => { r[i] = k; }); return r; };
+        const m = x.length;
+        if (m < 5) return NaN;
+        const rx = rank(x), ry = rank(y);
+        let d = 0;
+        for (let i = 0; i < m; i++) d += (rx[i] - ry[i]) ** 2;
+        return 1 - 6 * d / (m * (m * m - 1));
+    }
+
+    function jobcount(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, ward = c['econ_census.ec_ward'], wk = c['econ_census.ec_workers'], es = c['econ_census.ec_estabs'];
+        const mfg = c['econ_census.mfg_pct'], trade = c['econ_census.trade_pct'], home = c['econ_census.home_pct'], women = c['econ_census.women_pct'];
+        const wown = c['econ_census.women_owner_pct'], pop = c['population.population'], places = c['places.places'];
+        if (!ward || !wk || !wk.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const W = new Map();
+        for (let i = 0; i < n; i++) {
+            if (!_fin(ward[i]) || !_fin(wk[i])) continue;
+            const w = W.get(ward[i]) || { no: ward[i], blocks: [], pop: 0, places: 0, first: i };
+            w.blocks.push(i); w.pop += v(pop, i); w.places += v(places, i);
+            W.set(ward[i], w);
+        }
+        const ws = [...W.values()].filter(w => w.blocks.length >= 2);
+        if (ws.length < 5) return null;
+        for (const w of ws) { const i = w.first; w.workers = v(wk, i); w.estabs = v(es, i); w.km2 = w.blocks.length * g.cellKm2; w.dens = w.workers / w.km2; w.ratio = w.pop > 0 ? 100 * w.workers / w.pop : NaN; }
+        const tw = ws.reduce((s, w) => s + w.workers, 0), te = ws.reduce((s, w) => s + w.estabs, 0), tp = ws.reduce((s, w) => s + w.pop, 0) || 1;
+        const wavg = a => ws.reduce((s, w) => s + w.workers * v(a, w.first), 0) / (tw || 1);
+        const eavg = a => ws.reduce((s, w) => s + w.estabs * v(a, w.first), 0) / (te || 1);
+        const byDens = ws.slice().sort((a, b) => b.dens - a.dens), lived = ws.filter(w => w.pop >= 5000 && _fin(w.ratio)).sort((a, b) => a.ratio - b.ratio);
+        const top10 = byDens.slice(0, Math.ceil(ws.length / 10)).reduce((s, w) => s + w.workers, 0);
+        const stats = [
+            { label: 'Workers and establishments counted in the wards on the map (2012-13)', value: `${_people(tw)} workers in ${_people(te)} establishments` },
+            { label: 'Workers per 100 residents (2012-13 workers, today\'s GHSL residents)', value: `${_round(100 * tw / tp, 0)}` },
+            { label: 'Share of workers in the densest tenth of wards', value: `${_round(100 * top10 / (tw || 1), 0)}%` },
+        ];
+        if (mfg) stats.push({ label: 'Workers in manufacturing / trade', value: `${_round(wavg(mfg), 0)}% / ${_round(wavg(trade), 0)}%` });
+        if (home) stats.push({ label: 'Establishments run from inside a home', value: `${_round(eavg(home), 0)}%` });
+        if (women) stats.push({ label: 'Workers who are women / proprietary establishments owned by women', value: `${_round(wavg(women), 1)}% / ${_round(eavg(wown), 1)}%` });
+        let rho = NaN;
+        if (places && ws.some(w => w.places > 0)) {
+            rho = _rankCorr(ws.map(w => w.dens), ws.map(w => w.places / w.km2));
+            stats.push({ label: 'Rank match between 2012-13 workers per km² and today\'s Overture places per km², by ward', value: _round(rho, 2) });
+        }
+        const name = w => g.codes[w.first];
+        byDens.slice(0, 5).forEach((w, k) => stats.push({ label: `Densest jobs ${k + 1}: ward ${w.no}, ${name(w)}`,
+            value: `${_people(w.dens)} workers per km²; ${_people(w.workers)} workers${mfg ? `, ${_round(v(mfg, w.first), 0)}% manufacturing, ${_round(v(trade, w.first), 0)}% trade` : ''}` }));
+        lived.slice(0, 3).forEach((w, k) => stats.push({ label: `Fewest jobs per resident ${k + 1}: ward ${w.no}, ${name(w)}`,
+            value: `${_round(w.ratio, 0)} workers per 100 residents; ${_people(w.pop)} residents` }));
+        if (mfg) ws.slice().sort((a, b) => v(mfg, b.first) - v(mfg, a.first)).slice(0, 3).forEach((w, k) => stats.push({ label: `Workshop ward ${k + 1}: ward ${w.no}, ${name(w)}`,
+            value: `${_round(v(mfg, w.first), 0)}% of ${_people(w.workers)} workers in manufacturing${home ? `; ${_round(v(home, w.first), 0)}% of establishments in homes` : ''}` }));
+        const out = new Float64Array(n).fill(NaN), idx = [];
+        for (const w of ws) for (const i of w.blocks) { out[i] = Math.round(w.dens); idx.push(i); }
+        return {
+            columns: { ec_workers_km2: out }, idx, weightKey: 'ec_workers_km2', noHotspots: true,
+            metric: { label: 'Workers per 100 residents in the wards on the map (2012-13 census)', value: _round(100 * tw / tp, 0), unit: 'per 100', higherIs: null },
+            headline: `The Economic Census counted ${_people(tw)} workers in ${_people(te)} establishments across ${ws.length} wards; the densest tenth of wards held ${_round(100 * top10 / (tw || 1), 0)}% of them${mfg ? `, ${_round(wavg(mfg), 0)}% worked in manufacturing and ${_round(wavg(trade), 0)}% in trade` : ''}${women ? `, and only ${_round(wavg(women), 1)}% were women` : ''}${_fin(rho) ? `; today's mapped places follow the 2012-13 job density with a rank match of ${_round(rho, 2)}` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -1089,8 +1152,14 @@ const UrbanLensesCommons = (() => {
             needs: ['tank_beds.tankbed_pct', 'tank_beds.tankbed_built_pct', 'tank_beds.tankbed_water_pct', 'tank_beds.tanks', 'tank_beds.tanks_live', 'tank_beds.tanks_lost', 'tank_beds.tanks_worse', 'flood_reports.flood_spots', 'waterlogging.waterlogging_index', 'population.population'],
             method: `HYDRAA's survey of 920 tanks inside Hyderabad's Outer Ring Road (via data.opencity.in, public domain) draws each tank on its old village-map outline (before the 1940s to the 1970s), classes each part as water or built up in 2023, and gives each tank's status in 2014 and 2023: live, or partly or wholly encroached by buildings or farming. Outlines are filled on a 10 m raster and shared out to blocks; each tank is counted once, in the block holding its largest part. Residents on a tank bed are block residents (GHSL) times the block's built-up bed share, assuming people spread evenly over the block. Waterlogging is the Sentinel-1 radar index (waterlogging); reported flood spots are GHMC's inundation points (flood_reports). Picks are blocks ${SPACING_KM} km apart ranked by residents on the bed × (1 + waterlogging index / 100). Only the survey's tanks are drawn; the Musi floodplain and tanks outside the survey are not.`,
             refs: 'HYDRAA (Hyderabad Disaster Response and Asset Protection Agency) ORR tank survey via data.opencity.in; Telangana GO Ms 168 (2012) tank buffers; GHMC inundation points' },
+        { id: 'jobcount', title: 'Workplaces counted', icon: '🏭',
+            question: 'Where were the jobs actually counted, and what kind of work was it?',
+            field: { key: 'ec_workers_km2', label: 'Workers per km² in the ward (6th Economic Census, 2012-13)', unit: 'workers/km²', higherIs: null, ramp: 'viridis', domain: [0, 60000] },
+            needs: ['econ_census.ec_ward', 'econ_census.ec_workers', 'econ_census.ec_estabs', 'econ_census.mfg_pct', 'econ_census.trade_pct', 'econ_census.home_pct', 'econ_census.women_pct', 'econ_census.women_owner_pct', 'places.places', 'population.population'],
+            method: `MoSPI's 6th Economic Census (2012-13) microdata for Kolkata (via data.opencity.in, public domain): every establishment, fixed or not, with its KMC ward, broad activity, whether it runs from inside a household, ownership, the proprietor's sex and workers by sex. Crop farming, public administration and defence are outside the census, so government offices and the port are undercounted. Ward figures are joined to blocks through the KMC ward map (wards); ward area is its mapped blocks, and residents are today's GHSL estimate, so workers per resident mixes 2012-13 jobs with 2020s homes. The rank match is a Spearman correlation across wards between census workers per km² and Overture places per km², a check on how well today's place data stands in for jobs. Social group and religion columns are not read.`,
+            refs: 'Ministry of Statistics and Programme Implementation, 6th Economic Census 2012-13 (all-India report and Kolkata microdata via data.opencity.in); Overture Maps places' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters, hotdays, tankbeds });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters, hotdays, tankbeds, jobcount });
     return { ENTRIES };
 })();

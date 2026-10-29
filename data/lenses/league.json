@@ -8862,6 +8862,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "jobcount": {
+     "label": "Workers per 100 residents in the wards on the map (2012-13 census)",
+     "value": 20,
+     "unit": "per 100",
+     "higherIs": null
+    },
     "homeswork": {
      "label": "Non-residential share of built-up ground",
      "value": 4.6,

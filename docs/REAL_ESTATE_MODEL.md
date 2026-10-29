@@ -1610,3 +1610,14 @@ not read. Water and built-up parts are filled on a 10 m raster and shared out to
 2014 and 2023). The lens estimates residents on built-up beds as block residents × built-up share, compares the mean
 Sentinel-1 waterlogging index of blocks with 10%+ built-up bed against blocks with no bed, and picks blocks 2 km apart by
 residents on the bed × (1 + waterlogging / 100).
+
+## Workplaces counted (`jobcount` lens, `econ_census` dataset, pipeline/realestate/econcensus.py)
+
+`econcensus.py` reads the Kolkata 6th Economic Census microdata CSV (OpenCity `kolkata-economic-census`), keeping only the
+ward (WC), town code (Kolkata Municipal Corporation, 7110), broad activity (BACT), household flag (IN_HH), ownership type,
+proprietor's sex and workers by sex and hiring; social group and religion are never read. Rows outside wards 1-144 are
+dropped. Ward totals (workers, establishments) and shares (manufacturing BACT 6, trade BACT 10-12, home-based, women
+workers, women-owned proprietary establishments, hired workers) are written to every L7 block the `wards` dataset puts in
+that ward. The lens regroups blocks by ward: area from mapped blocks, residents from GHSL, the densest tenth's share of
+workers, workers per 100 residents, the workshop wards by manufacturing share, and a Spearman rank correlation between
+census workers per km² and Overture places per km² across wards.
