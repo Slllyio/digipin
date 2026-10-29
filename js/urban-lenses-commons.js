@@ -646,6 +646,53 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Hillside homes. Homes on steep ground, above all informal ones cut into hillsides, are where monsoon landslides and
+    // retaining-wall collapses kill people (Mumbai's Ghatkopar, Bhandup and Chembur hills). Slope from the DEM, slums from the
+    // official maps, past slides from NASA's Global Landslide Catalog.
+    const STEEP_DEG = 10, VERY_STEEP_DEG = 15, SLIDE_KM = 0.5;
+
+    function hillside(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, slope = c['terrain.slope_deg'], pop = c['population.population'];
+        const slum = c['slums_mapped.slum_pct'], ls = c['landslides.landslides'], dead = c['landslides.landslide_deaths'];
+        if (!slope || !slope.some(x => _fin(x) && x >= STEEP_DEG)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const sum = a => (a ? Array.from(a).reduce((s, x) => s + (_fin(x) ? x : 0), 0) : 0);
+        const idx = _residents(fr).filter(i => _fin(slope[i]));
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const slumPop = i => v(pop, i) * Math.min(v(slum, i), 100) / 100;
+        const steep = idx.filter(i => slope[i] >= STEEP_DEG), steepPop = steep.reduce((s, i) => s + v(pop, i), 0);
+        const veryPop = idx.filter(i => slope[i] >= VERY_STEEP_DEG).reduce((s, i) => s + v(pop, i), 0);
+        const stats = [
+            { label: `Residents on ground averaging ${STEEP_DEG}° or steeper`, value: `${_people(steepPop)} (${_round(100 * steepPop / all, 1)}%)` },
+            { label: `Residents on ground averaging ${VERY_STEEP_DEG}° or steeper`, value: `${_people(veryPop)} (${_round(100 * veryPop / all, 1)}%)` },
+        ];
+        if (slum) {
+            const sAll = idx.reduce((s, i) => s + slumPop(i), 0), sSteep = steep.reduce((s, i) => s + slumPop(i), 0);
+            if (sAll > 0) stats.push({ label: `Residents of mapped slums on ${STEEP_DEG}° or steeper ground`, value: `${_people(sSteep)} of ${_people(sAll)} (${_round(100 * sSteep / sAll, 1)}%)` });
+        }
+        let slides = 0;
+        if (ls && ls.some(x => x > 0)) {
+            slides = Math.round(sum(ls));
+            const near = within(g, Float64Array.from({ length: n }, (_, i) => v(ls, i)), SLIDE_KM);
+            const nearPop = idx.filter(i => near[i] >= 0.5).reduce((s, i) => s + v(pop, i), 0);
+            stats.push({ label: 'Recorded landslides, 1970-2019 (NASA catalog)', value: `${slides}${dead ? `, ${Math.round(sum(dead))} deaths` : ''}` });
+            stats.push({ label: `Residents within ${SLIDE_KM * 1000} m of a recorded landslide`, value: _people(nearPop) });
+        }
+        const risk = Float64Array.from({ length: n }, (_, i) => (_fin(slope[i]) && slope[i] >= STEEP_DEG ? (v(pop, i) + 4 * slumPop(i)) * slope[i] : 0));
+        const near1 = within(g, risk, 0.5);
+        spaced(g, steep, near1, 5).forEach((i, k) => stats.push({ label: `Hillside to check ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(slope[i], 0)}° average slope, ${_people(v(pop, i))} residents${slum && slumPop(i) >= 1 ? `, ${_people(slumPop(i))} in mapped slums` : ''}${ls && v(ls, i) > 0 ? `, ${Math.round(v(ls, i))} recorded landslide${v(ls, i) > 1 ? 's' : ''}` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = slope[i];
+        return {
+            columns: { slope_deg: out }, idx, weightKey: 'slope_deg', noHotspots: true,
+            metric: { label: `Residents on ground averaging ${STEEP_DEG}° or steeper`, value: Math.round(steepPop), unit: 'people', higherIs: 'worse' },
+            headline: `${_people(steepPop)} residents (${_round(100 * steepPop / all, 1)}%) live on ground averaging ${STEEP_DEG}° or steeper${slides ? `, and NASA's catalog records ${slides} landslides here from 1970 to 2019` : ''}; homes cut into hillsides, above all informal ones, are where monsoon slides and wall collapses strike.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -731,8 +778,14 @@ const UrbanLensesCommons = (() => {
             needs: ['subsidence.subsid_prob_pct', 'building_stock.height_2023_m', 'population.population'],
             method: `Hasan et al. 2023 (Nature Communications, CC BY 4.0): a random-forest model trained on InSAR and GPS subsidence measurements from around the world, with groundwater depletion, irrigation, climate, soil, sediment thickness, geology and land cover as predictors, gives the probability that land subsided more than 1 cm a year in 2013-2019 on a grid of about 2 km. Each block takes its cell's probability; residents are GHSL. Hotspots are blocks ${SPACING_KM} km apart with a ${SINK_HIGH}% chance or more, ranked by residents within 1 km weighted by the chance. A global model at 2 km, not a measurement: it shows where conditions favour subsidence (heavy pumping on soft alluvium), not the rate under a given building, and local InSAR studies should confirm any hotspot.`,
             refs: 'Hasan, Smith, Vajedian, Pommerenke, Majumdar 2023, Global land subsidence mapping reveals widespread loss of aquifer storage capacity (Nature Communications 14, 6180)' },
+        { id: 'hillside', equity: true, title: 'Hillside homes', icon: '⛰️',
+            question: 'Who lives on steep hillsides where monsoon landslides and wall collapses strike?',
+            field: { key: 'slope_deg', label: 'Average ground slope', unit: '°', higherIs: 'worse', ramp: 'reds', domain: [0, 20] },
+            needs: ['terrain.slope_deg', 'slums_mapped.slum_pct', 'landslides.landslides', 'landslides.landslide_deaths', 'population.population'],
+            method: `Average slope of each block from the 30 m Copernicus DEM (block averages flatten the steepest pockets, so ${STEEP_DEG}° on average means much steeper ground in places); residents are GHSL and slum residents are residents × the share of the block inside a mapped slum. Recorded landslides are NASA's Global Landslide Catalog (rainfall-triggered events from news, official and scientific reports, 1970-2019), which misses many small slides and everything after 2019. Hillsides to check are blocks ${SPACING_KM} km apart on ${STEEP_DEG}° or steeper ground, ranked by (residents + 4 × slum residents) × slope within 500 m. Slope is a screen, not a slope-stability survey: rock type, cutting, drainage and retaining walls decide whether a hill fails.`,
+            refs: 'Kirby, Juang and Stanley, NASA Global Landslide Catalog (1970-2019); Copernicus GLO-30 DEM; MCGM landslide-prone locations lists (monsoon preparedness)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside });
     return { ENTRIES };
 })();

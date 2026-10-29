@@ -1541,3 +1541,11 @@ CC BY 4.0, ~2.2 km): probability that land subsided more than 1 cm a year in 201
 and GPS records with groundwater, climate, soil, sediment and land cover predictors. Stored per L7 block as `subsid_prob_pct`.
 The lens reports the resident-weighted mean chance, residents at 60% and 75% or more, blocks with tall buildings on high-chance
 ground and hotspots 2 km apart. A 2 km model of conditions, not a measured rate.
+
+## Hillside homes (`hillside` lens, `landslides` dataset, pipeline/realestate/landslides.py)
+
+`landslides.py` reads NASA's Global Landslide Catalog (`projects/sat-io/open-datasets/events/global_landslide_1970-2019`) per
+city bounding box with an Earth Engine getInfo and bins events and reported deaths per L7 block (cities with no event are
+skipped). The lens uses `terrain.slope_deg` (Copernicus 30 m DEM block mean): residents at 10° and 15° or steeper, slum residents
+on 10°+ ground, residents within 500 m of a recorded slide, and hillsides to check 2 km apart ranked by
+(residents + 4 × slum residents) × slope within 500 m.

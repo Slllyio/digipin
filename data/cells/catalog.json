@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T01:06:27Z",
+  "generated": "2026-10-29T01:17:17Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -16582,6 +16582,147 @@
             "north": 18.616943359375
           },
           "json": "landmarks/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "landslides",
+      "title": "Recorded landslides (NASA Global Landslide Catalog)",
+      "description": "Rainfall-triggered landslides compiled from news, official and scientific reports by NASA's Global Landslide Catalog, 1970-2019, with reported deaths.",
+      "source": "pipeline/realestate/landslides.py (NASA GLC via the awesome-gee-community-catalog)",
+      "license": "Public (NASA Goddard Space Flight Center)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "landslides",
+          "label": "Recorded landslides, 1970-2019",
+          "type": "number",
+          "agg": "sum",
+          "unit": "events",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "landslide_deaths",
+          "label": "Deaths in recorded landslides, 1970-2019",
+          "type": "number",
+          "agg": "sum",
+          "unit": "people",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "landslides",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 1,
+          "bbox": {
+            "west": 72.56591796875,
+            "south": 23.037841796875,
+            "east": 72.568115234375,
+            "north": 23.0400390625
+          },
+          "json": "landslides/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 2,
+          "bbox": {
+            "west": 77.608642578125,
+            "south": 12.934814453125,
+            "east": 77.61962890625,
+            "north": 12.9765625
+          },
+          "json": "landslides/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 1,
+          "bbox": {
+            "west": 80.210205078125,
+            "south": 12.974365234375,
+            "east": 80.21240234375,
+            "north": 12.9765625
+          },
+          "json": "landslides/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 4,
+          "bbox": {
+            "west": 77.1494140625,
+            "south": 28.570556640625,
+            "east": 77.28125,
+            "north": 28.759521484375
+          },
+          "json": "landslides/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 3,
+          "bbox": {
+            "west": 78.355712890625,
+            "south": 17.388671875,
+            "east": 78.500732421875,
+            "north": 17.4677734375
+          },
+          "json": "landslides/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 1,
+          "bbox": {
+            "west": 75.80908203125,
+            "south": 26.874267578125,
+            "east": 75.811279296875,
+            "north": 26.87646484375
+          },
+          "json": "landslides/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 1,
+          "bbox": {
+            "west": 88.340087890625,
+            "south": 22.64453125,
+            "east": 88.34228515625,
+            "north": 22.646728515625
+          },
+          "json": "landslides/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 17,
+          "bbox": {
+            "west": 72.809814453125,
+            "south": 18.977294921875,
+            "east": 72.972412109375,
+            "north": 19.2431640625
+          },
+          "json": "landslides/mumbai.json",
           "parquet": null
         }
       ]
