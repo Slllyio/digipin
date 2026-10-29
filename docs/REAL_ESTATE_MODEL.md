@@ -1717,3 +1717,19 @@ women and men, health insurance) and bakes them at L5 for each city of a publish
 lists, per indicator, the state 2019-21 → 2023-24, the state's towns and cities in 2023-24 and the city's own NFHS-5
 districts weighted by residents, and leads with the two largest rises and the largest fall. NFHS-6 does not report
 anaemia in these sheets.
+
+## Constituency maps and elector-checked population (`constituencies`, `population`)
+
+`pipeline/realestate/constituencies.py` now takes Bengaluru's and Hyderabad's assembly seats from the state maps on
+OpenCity (Karnataka KGIS 2018, Telangana 2018) instead of DataMeet's 2008 scrape, resolving each seat to the Election
+Commission's 2024 segment table by number (Karnataka) or name (Telangana) for its number and Lok Sabha seat. The test
+was GHSL residents per seat against the seat's 2024 electors: the state maps narrowed the spread in both cities and
+matched more seats. Mumbai, Pune, Kolkata and Chennai already agree with their state maps on 97-98% of blocks.
+
+The same screen showed GHSL's census-unit fault (first found in Bengaluru) in five more cities, so
+`pipeline/realestate/wardpop.py` also rescales them: for seats at least 95% inside the region box and matched to the
+ECI table by number and name, GHSL's total for their blocks is shared by electors, each seat's change against GHSL is
+capped at six times either way, and blocks share their seat's figure by 2020 residential built volume. Totals stay
+GHSL's. Seats cut by the box edge (Dum Dum, Bidhannagar, Bhosari, Thane) keep GHSL's figures. Sharing by built volume
+favours tall resettlement blocks over low slums, so a few blocks reach 400,000-550,000 people per km² (Lallubhai
+Compound in Mankhurd).

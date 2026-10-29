@@ -24,3 +24,26 @@ def test_calibrate():
     assert rows["b"]["density_km2"] == 750 and rows["b"]["projected_2030"] == 413
     assert "change_2000_2020_pct" not in rows["a"]
     assert rows["out"] == {"population": 50, "projected_2030": 60, "change_2000_2020_pct": 7}
+
+
+def test_calibrate_electors_capped():
+    rows = {"a": {"population": 600, "projected_2030": 600}, "b": {"population": 300, "projected_2030": 300},
+            "c": {"population": 100, "projected_2030": 100}}
+    seat = {"a": 1, "b": 2, "c": 3}
+    vol = {"a": 1, "b": 1, "c": 1}
+    # Seat 1 has as many electors as seat 2 but twice GHSL's residents; seat 3 claims 20 times its GHSL share.
+    n = calibrate(rows, seat, {1: 100, 2: 100, 3: 400}, vol, None, lambda c: 1, cap=2)
+    assert n == 3
+    assert sum(r["population"] for r in rows.values()) == 1000
+    # a is held at half its GHSL share (cap), b gets 5/9 of it, c is held at twice its share; then GHSL's 1,000 is kept.
+    assert [rows[k]["population"] for k in "abc"] == [450, 250, 300]
+
+
+def test_elector_targets():
+    from pipeline.realestate.wardpop import elector_targets
+    segs = {(10, "Dum Dum", "West Bengal"): {"electors": 250000}, (11, "Far Away", "West Bengal"): {"electors": 200000},
+            (13, "Kopri", "West Bengal"): {"electors": 300000},
+            (10, "Elsewhere", "Assam"): {"electors": 1}}
+    seat_of = {"x": (10, "Dum Dum"), "y": (11, "Far Away"), "z": (12, "Unknown"), "k": (13, "Kopri-Pachpakhadi")}
+    blocks, electors = elector_targets(seat_of, segs, "West Bengal", {10: 0.99, 11: 0.5, 12: 1.0, 13: 1.0})
+    assert blocks == {"x": 10, "k": 13} and electors == {10: 250000, 13: 300000}

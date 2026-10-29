@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T07:25:59Z",
+  "generated": "2026-10-29T08:06:02Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -6698,10 +6698,10 @@
     },
     {
       "id": "constituencies",
-      "title": "Assembly and Lok Sabha constituencies (DataMeet)",
-      "description": "The assembly constituency (and the Lok Sabha constituency it sits in) holding each lived-in block's centre: 2008 delimitation boundaries scraped by DataMeet from the Election Commission's polling station locator (github.com/datameet/maps). Some boundaries are shifted and a few names are wrong or missing; check the Election Commission before relying on a seat at an edge.",
-      "source": "pipeline/realestate/constituencies.py (DataMeet India assembly constituencies via DuckDB spatial)",
-      "license": "CC BY 2.5 India (DataMeet)",
+      "title": "Assembly and Lok Sabha constituencies",
+      "description": "The assembly constituency (and the Lok Sabha constituency it sits in) holding each lived-in block's centre: 2008 delimitation boundaries scraped by DataMeet from the Election Commission's polling station locator (github.com/datameet/maps). Some boundaries are shifted and a few names are wrong or missing; check the Election Commission before relying on a seat at an edge. Bengaluru and Hyderabad use the state maps on OpenCity instead (Karnataka KGIS 2018, Telangana 2018), which fit 2024 electors better, with numbers and Lok Sabha seats from the Election Commission's 2024 segment table. Jaipur's seats are badly shifted.",
+      "source": "pipeline/realestate/constituencies.py (DataMeet India assembly constituencies; OpenCity state maps for Bengaluru and Hyderabad)",
+      "license": "CC BY 2.5 India (DataMeet); public domain (OpenCity state maps)",
       "group": "Real estate",
       "level": 7,
       "approxCellM": 244,
@@ -6769,6 +6769,8 @@
             "Byatarayanapura",
             "Byculla",
             "C.V. Raman Nagar",
+            "C.V. RamannNagar",
+            "Chamrajapet",
             "Chamrajpet",
             "Chandivali",
             "Chandni Chowk",
@@ -6806,6 +6808,7 @@
             "Faridabad",
             "Faridabad NIT",
             "Gandhi Nagar",
+            "Gandhinagar",
             "Gandhinagar(South)",
             "Garhi Sampla-Kilo",
             "Ghatkopar East",
@@ -6815,6 +6818,7 @@
             "Gokalpur",
             "Goregaon",
             "Goshamahal",
+            "Govindarajanagar",
             "Govindpura",
             "Govindraj Nagar",
             "Greater Kailash",
@@ -6842,6 +6846,7 @@
             "Jogeshwari East",
             "Jorasanko",
             "Jubilee Hills",
+            "K.R. Pura",
             "K.R.Pura",
             "KIshan Pole",
             "Kalina",
@@ -6868,6 +6873,7 @@
             "Kothrud",
             "Krishna Nagar",
             "Kukatpalle",
+            "Kukatpally",
             "Kurla",
             "Lal Bahadur Nagar",
             "Laxmi Nagar",
@@ -6922,6 +6928,7 @@
             "Okhla",
             "Ovala ?Majiwada",
             "Padmanaba Nagar",
+            "Padmanabanagar",
             "Palam",
             "Pallavaram",
             "Parvati",
@@ -6938,6 +6945,7 @@
             "R.K. Puram",
             "Rai",
             "Rajaji Nagar",
+            "Rajajinagar",
             "Rajarajeshwarinagar",
             "Rajarhat Gopalpur",
             "Rajarhat New Town",
@@ -6961,6 +6969,7 @@
             "Sarojini Nagar",
             "Sarvagnanagar",
             "Secunderabad",
+            "Secunderabad Cantt",
             "Secunderabad Cantt. (SC",
             "Seelam Pur",
             "Seemapuri",
@@ -6969,6 +6978,7 @@
             "Shakur Basti",
             "Shalimar Bagh",
             "Shanti Nagar",
+            "Shantinagar",
             "Shibpur",
             "Shirur",
             "Shivadi",
@@ -7005,6 +7015,7 @@
             "Versova",
             "Vidhyadhar Nagar",
             "Vijay Nagar",
+            "Vijayanagar",
             "Vikaspuri",
             "Vikhroli",
             "Vile Parle",
@@ -7016,7 +7027,8 @@
             "Worli",
             "Yakutpura",
             "Yelahanka",
-            "Yeshvanthapura"
+            "Yeshvanthapura",
+            "Yeshwanthapura"
           ]
         },
         {
@@ -7044,6 +7056,7 @@
             "Bangalore North",
             "Bangalore Rural",
             "Bangalore South",
+            "Bangalore central",
             "Barabanki",
             "Baramati",
             "Barasat",
@@ -10284,7 +10297,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 21272,
+          "cells": 21442,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
@@ -35170,8 +35183,8 @@
           "agg": "sum",
           "unit": "people",
           "domain": [
-            0,
-            24775
+            -581,
+            30800
           ],
           "ramp": "viridis"
         },
@@ -35182,8 +35195,8 @@
           "agg": "mean",
           "unit": "people/km\u00b2",
           "domain": [
-            0.0,
-            448156.0
+            -9966.0,
+            544636.0
           ],
           "ramp": "heat"
         },
@@ -35206,8 +35219,8 @@
           "agg": "sum",
           "unit": "people",
           "domain": [
-            0,
-            28812
+            -581,
+            35638
           ],
           "ramp": "viridis"
         }
@@ -35278,7 +35291,7 @@
             "north": 13.180908203125
           },
           "json": "population/chennai/{prefix}.json",
-          "parquet": "population/chennai.parquet",
+          "parquet": null,
           "shards": {
             "prefixLen": 4,
             "keys": [
@@ -35350,7 +35363,7 @@
             "north": 17.55126953125
           },
           "json": "population/hyderabad/{prefix}.json.gz",
-          "parquet": "population/hyderabad.parquet",
+          "parquet": null,
           "shards": {
             "prefixLen": 4,
             "keys": [
@@ -35431,7 +35444,7 @@
             "north": 22.651123046875
           },
           "json": "population/kolkata.json",
-          "parquet": "population/kolkata.parquet"
+          "parquet": null
         },
         {
           "name": "lucknow",
@@ -35464,7 +35477,7 @@
             "north": 19.271728515625
           },
           "json": "population/mumbai/{prefix}.json.gz",
-          "parquet": "population/mumbai.parquet",
+          "parquet": null,
           "shards": {
             "prefixLen": 4,
             "keys": [
@@ -35493,7 +35506,7 @@
             "north": 18.64111328125
           },
           "json": "population/pune/{prefix}.json",
-          "parquet": "population/pune.parquet",
+          "parquet": null,
           "shards": {
             "prefixLen": 4,
             "keys": [
@@ -53513,7 +53526,7 @@
       "regions": [
         {
           "name": "bengaluru",
-          "cells": 12195,
+          "cells": 12368,
           "bbox": {
             "west": 77.459228515625,
             "south": 12.833740234375,

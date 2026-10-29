@@ -55,7 +55,7 @@ def best(name, cands):
 
 
 def parse_segments(rows):
-    """{(ac_no, ac_name): {electors, votes, lead_party, nota, pc_no, pc_name}} from the ECI segment table rows."""
+    """{(ac_no, ac_name, state): {electors, votes, lead_party, turnout_pct, nota_pct, pc_no, pc_name}} from the ECI segment table rows."""
     acc = {}
     for r in rows:
         if len(r) < 12 or not r[4].strip().isdigit():
@@ -68,6 +68,7 @@ def parse_segments(rows):
         votes = sum(a["party"].values()) + a["nota"]
         lead = sorted(a["party"].items(), key=lambda x: -x[1])
         out[(no, name, state)] = {"pc_no": a["pc_no"], "pc_name": a["pc_name"], "lead_party": lead[0][0] if lead else None,
+                                  "electors": a["electors"],
                                   "turnout_pct": round(100 * votes / a["electors"], 1) if a["electors"] else None,
                                   "nota_pct": round(100 * a["nota"] / votes, 2) if votes else None, "votes": votes}
     return out
