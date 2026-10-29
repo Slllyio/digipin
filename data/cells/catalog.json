@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T10:19:04Z",
+  "generated": "2026-10-29T10:27:42Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -5600,6 +5600,391 @@
             "north": 19.26953125
           },
           "json": "census_homes/mumbai.json.gz",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "city_crime",
+      "title": "Recorded crime (NCRB 2024)",
+      "description": "Cognizable crimes registered in the police city for 2022-2024, the 2024 rate per lakh people (on the 2011 census population), charge-sheeting rates, and crimes against women, children and older people, economic offences and cyber crime, from NCRB's Crime in India 2024 metropolitan-city tables (via data.opencity.in). One value per city; recorded crime reflects how readily police register cases.",
+      "source": "pipeline/realestate/citycrime.py (NCRB Crime in India 2024, metropolitan-city tables via OpenCity)",
+      "license": "Public domain (NCRB via data.opencity.in)",
+      "group": "Safety",
+      "level": 5,
+      "approxCellM": 3900,
+      "fields": [
+        {
+          "key": "cr_total_2022",
+          "label": "Cognizable crimes registered in the police city, 2022",
+          "type": "number",
+          "agg": "max",
+          "unit": "cases",
+          "domain": [
+            12213,
+            318555
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_total_2023",
+          "label": "Cognizable crimes registered in the police city, 2023",
+          "type": "number",
+          "agg": "max",
+          "unit": "cases",
+          "domain": [
+            11843,
+            343483
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_total_2024",
+          "label": "Cognizable crimes registered in the police city, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "cases",
+          "domain": [
+            13219,
+            297666
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_rate",
+          "label": "Cognizable crimes per lakh people, 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per lakh",
+          "domain": [
+            93.7,
+            1824.5
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_rate_median",
+          "label": "Cognizable crimes per lakh people, median of 19 metropolitan cities",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per lakh",
+          "domain": [
+            775.3,
+            775.3
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_ipc_rate",
+          "label": "IPC/BNS crimes per lakh people, 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per lakh",
+          "domain": [
+            84.1,
+            1688.0
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_chargesheet_pct",
+          "label": "Cases charge-sheeted, all cognizable crimes 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "cr_ipc_chargesheet_pct",
+          "label": "Cases charge-sheeted, IPC/BNS crimes 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "cr_women_2024",
+          "label": "Crimes against women, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "cases",
+          "domain": [
+            1059,
+            13396
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_women_rate",
+          "label": "Crimes against women per lakh women, 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per lakh",
+          "domain": [
+            25.4,
+            199.0
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_children_2024",
+          "label": "Crimes against children, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "cases",
+          "domain": [
+            468,
+            7662
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_senior_2024",
+          "label": "Crimes against people 60 or older, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "cases",
+          "domain": [
+            0,
+            1267
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_econ_2024",
+          "label": "Economic offences, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "cases",
+          "domain": [
+            295,
+            7771
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_fraud_2024",
+          "label": "Forgery, cheating and fraud, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "cases",
+          "domain": [
+            248,
+            6366
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_cyber_2022",
+          "label": "Cyber crimes, 2022",
+          "type": "number",
+          "agg": "max",
+          "unit": "cases",
+          "domain": [
+            47,
+            9940
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_cyber_2024",
+          "label": "Cyber crimes, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "cases",
+          "domain": [
+            21,
+            17561
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_cyber_rate",
+          "label": "Cyber crimes per lakh people, 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per lakh",
+          "domain": [
+            0.1,
+            206.6
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cr_cyber_chargesheet_pct",
+          "label": "Cyber crime cases charge-sheeted, 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "cr_rate",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 42,
+          "bbox": {
+            "west": 72.46484375,
+            "south": 22.92578125,
+            "east": 72.7109375,
+            "north": 23.13671875
+          },
+          "json": "city_crime/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 110,
+          "bbox": {
+            "west": 77.421875,
+            "south": 12.80078125,
+            "east": 77.80859375,
+            "north": 13.15234375
+          },
+          "json": "city_crime/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 50,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.87109375,
+            "east": 80.33984375,
+            "north": 13.1875
+          },
+          "json": "city_crime/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 225,
+          "bbox": {
+            "west": 76.82421875,
+            "south": 28.375,
+            "east": 77.3515625,
+            "north": 28.90234375
+          },
+          "json": "city_crime/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 90,
+          "bbox": {
+            "west": 78.265625,
+            "south": 17.265625,
+            "east": 78.6171875,
+            "north": 17.58203125
+          },
+          "json": "city_crime/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 156,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.46875,
+            "east": 76.015625,
+            "north": 22.92578125
+          },
+          "json": "city_crime/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 42,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.9453125,
+            "north": 27.00390625
+          },
+          "json": "city_crime/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 42,
+          "bbox": {
+            "west": 88.25,
+            "south": 22.43359375,
+            "east": 88.4609375,
+            "north": 22.6796875
+          },
+          "json": "city_crime/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 49,
+          "bbox": {
+            "west": 80.83203125,
+            "south": 26.72265625,
+            "east": 81.078125,
+            "north": 26.96875
+          },
+          "json": "city_crime/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 81,
+          "bbox": {
+            "west": 72.74609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.3046875
+          },
+          "json": "city_crime/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 56,
+          "bbox": {
+            "west": 73.73046875,
+            "south": 18.42578125,
+            "east": 74.01171875,
+            "north": 18.671875
+          },
+          "json": "city_crime/pune.json",
           "parquet": null
         }
       ]

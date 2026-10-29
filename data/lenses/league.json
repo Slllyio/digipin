@@ -30,6 +30,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "citycrime": {
+     "label": "Cognizable crimes per lakh people (police city, 2024)",
+     "value": 775,
+     "unit": "per lakh",
+     "higherIs": "worse"
+    },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
      "value": 25.9,
@@ -982,6 +988,12 @@
      "label": "Residents where rain pools",
      "value": 21.7,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "citycrime": {
+     "label": "Cognizable crimes per lakh people (police city, 2024)",
+     "value": 677,
+     "unit": "per lakh",
      "higherIs": "worse"
     },
     "rollrevision": {
@@ -3180,6 +3192,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "citycrime": {
+     "label": "Cognizable crimes per lakh people (police city, 2024)",
+     "value": 526,
+     "unit": "per lakh",
+     "higherIs": "worse"
+    },
     "rollrevision": {
      "label": "Change in electors, 2024 to the final 2026 roll",
      "value": -19.9,
@@ -4318,6 +4336,12 @@
      "label": "Residents where rain pools",
      "value": 36.5,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "citycrime": {
+     "label": "Cognizable crimes per lakh people (police city, 2024)",
+     "value": 1825,
+     "unit": "per lakh",
      "higherIs": "worse"
     },
     "spending": {
@@ -6114,6 +6138,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "citycrime": {
+     "label": "Cognizable crimes per lakh people (police city, 2024)",
+     "value": 391,
+     "unit": "per lakh",
+     "higherIs": "worse"
+    },
     "spending": {
      "label": "Monthly consumption per person, urban (HCES 2023-24)",
      "value": 10449,
@@ -7206,6 +7236,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "citycrime": {
+     "label": "Cognizable crimes per lakh people (police city, 2024)",
+     "value": 801,
+     "unit": "per lakh",
+     "higherIs": "worse"
+    },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
      "value": 8.3,
@@ -8136,6 +8172,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "citycrime": {
+     "label": "Cognizable crimes per lakh people (police city, 2024)",
+     "value": 1202,
+     "unit": "per lakh",
+     "higherIs": "worse"
+    },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
      "value": 27.6,
@@ -9058,6 +9100,12 @@
      "label": "Residents where rain pools",
      "value": 42.3,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "citycrime": {
+     "label": "Cognizable crimes per lakh people (police city, 2024)",
+     "value": 94,
+     "unit": "per lakh",
      "higherIs": "worse"
     },
     "rollrevision": {
@@ -10098,6 +10146,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "citycrime": {
+     "label": "Cognizable crimes per lakh people (police city, 2024)",
+     "value": 1083,
+     "unit": "per lakh",
+     "higherIs": "worse"
+    },
     "roaddeaths": {
      "label": "Road deaths per 100 crashes (police city, 2024)",
      "value": 35.3,
@@ -11032,6 +11086,12 @@
      "label": "Residents where rain pools",
      "value": 26.7,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "citycrime": {
+     "label": "Cognizable crimes per lakh people (police city, 2024)",
+     "value": 380,
+     "unit": "per lakh",
      "higherIs": "worse"
     },
     "spending": {
@@ -12082,6 +12142,12 @@
      "label": "Residents where rain pools",
      "value": 23.3,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "citycrime": {
+     "label": "Cognizable crimes per lakh people (police city, 2024)",
+     "value": 368,
+     "unit": "per lakh",
      "higherIs": "worse"
     },
     "spending": {

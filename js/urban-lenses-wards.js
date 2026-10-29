@@ -459,6 +459,45 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Recorded crime. NCRB's Crime in India 2024 tables for the 19 metropolitan cities (police commissionerates): cases
+    // registered 2022-2024, the rate per lakh people, charge-sheeting, and crimes against women, children, older people,
+    // economic offences and cyber crime.
+    const CR_KEYS = ['total_2022', 'total_2023', 'total_2024', 'rate', 'rate_median', 'ipc_rate', 'chargesheet_pct', 'ipc_chargesheet_pct', 'women_2024', 'women_rate',
+        'children_2024', 'senior_2024', 'econ_2024', 'fraud_2024', 'cyber_2022', 'cyber_2024', 'cyber_rate', 'cyber_chargesheet_pct'];
+
+    function citycrime(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`city_crime.cr_${k}`];
+        const tot = col('total_2024');
+        if (!tot || !tot.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(tot[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => (col(k) && _fin(col(k)[i0]) ? col(k)[i0] : NaN);
+        const N = x => (_fin(x) ? Math.round(x).toLocaleString('en-IN') : 'n/a');
+        const pc = x => (_fin(x) ? `${_round(x, 0)}%` : 'n/a');
+        const rate = v('rate'), med = v('rate_median'), c22 = v('total_2022'), c24 = v('total_2024');
+        const cy22 = v('cyber_2022'), cy24 = v('cyber_2024');
+        const stats = [
+            { label: 'Cognizable crimes registered, 2024 (2023, 2022)', value: `${N(c24)} (${N(v('total_2023'))}, ${N(c22)})` },
+            { label: 'Per lakh people, 2024 / median of 19 metropolitan cities', value: `${_round(rate, 0)} / ${_round(med, 0)}` },
+            { label: 'IPC/BNS crimes per lakh people, 2024', value: _fin(v('ipc_rate')) ? String(_round(v('ipc_rate'), 0)) : 'n/a' },
+            { label: 'Cases charge-sheeted: all / IPC-BNS / cyber', value: `${pc(v('chargesheet_pct'))} / ${pc(v('ipc_chargesheet_pct'))} / ${pc(v('cyber_chargesheet_pct'))}` },
+            { label: 'Crimes against women, 2024 / per lakh women', value: `${N(v('women_2024'))} / ${_fin(v('women_rate')) ? _round(v('women_rate'), 0) : 'n/a'}` },
+            { label: 'Crimes against children / against people 60 or older, 2024', value: `${N(v('children_2024'))} / ${N(v('senior_2024'))}` },
+            { label: 'Economic offences, 2024 (of which forgery, cheating and fraud)', value: `${N(v('econ_2024'))} (${N(v('fraud_2024'))})` },
+            { label: 'Cyber crimes, 2024 (2022) / per lakh people', value: `${N(cy24)} (${N(cy22)}) / ${_fin(v('cyber_rate')) ? _round(v('cyber_rate'), 1) : 'n/a'}` },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = rate;
+        const chg = _fin(c22) && c22 ? 100 * (c24 - c22) / c22 : NaN, cyx = _fin(cy22) && cy22 > 0 ? cy24 / cy22 : NaN;
+        const vs = !_fin(med) ? '' : rate > med * 1.25 ? `, above the 19-city median of ${_round(med, 0)}` : rate < med * 0.8 ? `, below the 19-city median of ${_round(med, 0)}` : `, close to the 19-city median of ${_round(med, 0)}`;
+        return {
+            columns: { crime_rate: out }, idx, weightKey: 'crime_rate', noHotspots: true,
+            metric: { label: 'Cognizable crimes per lakh people (police city, 2024)', value: _round(rate, 0), unit: 'per lakh', higherIs: 'worse' },
+            headline: `Police registered ${N(c24)} cognizable crimes in the city in 2024${_fin(chg) ? ` (${chg >= 0 ? 'up' : 'down'} ${_round(Math.abs(chg), 0)}% on 2022)` : ''}, ${_round(rate, 0)} per lakh people${vs}; ${pc(v('chargesheet_pct'))} of cases were charge-sheeted.${_fin(cy24) ? ` Cyber crime cases numbered ${N(cy24)}${_fin(cyx) && cyx >= 1.5 ? `, ${_round(cyx, 1)} times 2022's` : ''}.` : ''}`,
+            stats,
+        };
+    }
+
     // Voter roll revision. The Election Commission's 2026 Special Intensive Revision re-verified every elector; seat-wise
     // counts after it (West Bengal, Tamil Nadu, Karnataka) against the 2024 Lok Sabha roll.
     const SIR_WHY = [['dead', 'as dead'], ['shifted', 'as shifted or absent'], ['multiple', 'as enrolled in more than one place']];
@@ -510,6 +549,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'citycrime', equity: true, title: 'Recorded crime in the city', icon: '🚓',
+            question: 'How much crime do police record here, how fast is cyber crime growing, and how many cases reach a charge sheet?',
+            field: { key: 'crime_rate', label: 'Cognizable crimes per lakh people (police city, 2024)', unit: 'per lakh', higherIs: 'worse', ramp: 'reds', domain: [100, 1800] },
+            needs: [...CR_KEYS.map(k => `city_crime.cr_${k}`), 'population.population'],
+            method: `NCRB's Crime in India 2024 tables for the 19 metropolitan cities (cities of 20 lakh or more in 2011; via data.opencity.in, public domain): cognizable crimes registered under the IPC/BNS and special and local laws for 2022-2024, the 2024 rate per lakh people, the share of cases the police charge-sheeted, and crimes against women, children and people 60 or older, economic offences and cyber crime. NCRB divides by the 2011 census population, so rates run high in cities that have grown since. Figures are for the police commissionerate, not the map box, so the map shows one value across the city. Recorded crime depends on how readily police register cases (Delhi registers most theft complaints as e-FIRs; Kolkata registers few), so read it as recorded, not as the crime that happened. Bhopal and Guna are not among the 19 cities. Tables on crimes against Scheduled Castes and Tribes are not read.`,
+            refs: 'National Crime Records Bureau, Crime in India 2024, metropolitan-city tables 1B.1, 1B.3, 3B.1, 4B.1, 6B.1, 8B.2 and 9B.1 (via data.opencity.in)' },
         { id: 'rollrevision', title: 'Voter roll revision 2026', icon: '📋',
             question: 'How many electors did the 2026 roll revision remove from the seats here?',
             field: { key: 'roll_change', label: 'Change in electors, 2024 to the final 2026 roll', unit: '%', higherIs: null, ramp: 'viridis', domain: [-50, 0] },
@@ -574,6 +619,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime });
     return { ENTRIES };
 })();

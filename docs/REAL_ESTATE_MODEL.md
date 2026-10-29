@@ -1785,3 +1785,14 @@ women per 1,000 men on the final roll, the state-specific extras weighted by fin
 biggest and smallest cuts. A smaller roll can mean dead, moved or duplicate entries removed, or eligible people left
 off; the counts cannot separate them. Bengaluru's population reshare still uses the pre-revision January 2026 ward
 rolls, which are closer to the resident count than the revised roll.
+
+## Recorded crime in the city (`citycrime` lens, `city_crime` dataset)
+
+`pipeline/realestate/citycrime.py` reads seven of NCRB's Crime in India 2024 metropolitan-city tables (1B.1 IPC/BNS,
+1B.3 all cognizable crimes, 3B.1 women, 4B.1 children, 6B.1 people 60 or older, 8B.2 economic offences by head, 9B.1
+cyber crime) from OpenCity. Rows are keyed by city name with the state in brackets stripped ("Delhi City" becomes
+Delhi), and columns are found by header prefix, since the sheets differ. NCRB covers the 19 cities of 20 lakh or
+more in 2011; ours among them are Ahmedabad, Bengaluru, Chennai, Delhi, Hyderabad, Indore, Jaipur, Kolkata, Lucknow,
+Mumbai and Pune. Rates use the 2011 census population, so they overstate crime in cities that have grown since, and
+recorded crime tracks how readily police register cases (Kolkata's 94 per lakh against Delhi's 1,825 is mostly
+registration practice). The tables on crimes against Scheduled Castes and Tribes are not read.
