@@ -184,6 +184,61 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Civic works ordered. BBMP's work orders for 2018-2023, summed per assembly constituency: how much the corporation
+    // put into roads, drains, water, lights and buildings per resident it serves, and whether drain money went where
+    // the rain pools.
+    const BLR_AC = {
+        150: 'Yelahanka', 151: 'K R Pura', 152: 'Byatarayanapura', 153: 'Yeshwanthpur', 154: 'Rajarajeshwari Nagar', 155: 'Dasarahalli',
+        156: 'Mahalakshmi Layout', 157: 'Malleshwaram', 158: 'Hebbal', 159: 'Pulakeshinagar', 160: 'Sarvagnanagar', 161: 'C V Raman Nagar',
+        162: 'Shivajinagar', 163: 'Shantinagar', 164: 'Gandhinagar', 165: 'Rajajinagar', 166: 'Govindarajanagar', 167: 'Vijayanagar',
+        168: 'Chamarajpet', 169: 'Chickpet', 170: 'Basavanagudi', 171: 'Padmanabhanagar', 172: 'BTM Layout', 173: 'Jayanagar',
+        174: 'Mahadevapura', 175: 'Bommanahalli', 176: 'Bengaluru South', 177: 'Anekal',
+    };
+
+    function civicworks(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, ac = c['work_orders.wo_ac'], tot = c['work_orders.wo_total_cr'];
+        const parts = { roads: c['work_orders.wo_roads_cr'], drains: c['work_orders.wo_drains_cr'], water: c['work_orders.wo_water_cr'], lights: c['work_orders.wo_lights_cr'], waste: c['work_orders.wo_waste_cr'], buildings: c['work_orders.wo_buildings_cr'] };
+        const pop = c['population.population'], wl = c['waterlogging.waterlogging_index'];
+        if (!ac || !tot || !tot.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const A = new Map();
+        for (let i = 0; i < n; i++) {
+            if (!_fin(ac[i]) || !_fin(tot[i])) continue;
+            const a = A.get(ac[i]) || { no: ac[i], blocks: [], pop: 0, wl: 0, wlw: 0, first: i };
+            a.blocks.push(i); a.pop += v(pop, i);
+            if (wl && _fin(wl[i])) { a.wl += v(pop, i) * wl[i]; a.wlw += v(pop, i); }
+            A.set(ac[i], a);
+        }
+        const as = [...A.values()].filter(a => a.blocks.length >= 3 && a.pop >= 5000);
+        if (as.length < 5) return null;
+        const name = a => BLR_AC[a.no] || `constituency ${a.no}`;
+        for (const a of as) { a.tot = tot[a.first] * 1e7; a.per = a.tot / a.pop; }
+        const tAll = as.reduce((s, a) => s + a.tot, 0), tPop = as.reduce((s, a) => s + a.pop, 0) || 1;
+        const share = k => (parts[k] ? as.reduce((s, a) => s + v(parts[k], a.first), 0) * 1e7 / (tAll || 1) : NaN);
+        const byPer = as.slice().sort((a, b) => b.per - a.per);
+        const stats = [
+            { label: `Work orders tagged to ${as.length} constituencies, 2018-2023 / per resident a year`, value: `₹${_round(tAll / 1e7, 0)} crore / ₹${Math.round(tAll / tPop / 5)}` },
+            { label: 'Share for roads / drains / water and sanitation / street lights / buildings', value: ['roads', 'drains', 'water', 'lights', 'buildings'].map(k => `${_round(100 * share(k), 0)}%`).join(' / ') },
+            { label: 'Most per resident against least (constituency averages)', value: `${_round(byPer[0].per / byPer[byPer.length - 1].per, 1)} times` },
+        ];
+        byPer.slice(0, 3).forEach((a, k) => stats.push({ label: `Most per resident ${k + 1}: ${name(a)}, ${g.codes[a.first]}`, value: `₹${Math.round(a.per / 5)} a year per resident (₹${_round(a.tot / 1e7, 0)} crore)` }));
+        byPer.slice(-3).reverse().forEach((a, k) => stats.push({ label: `Least per resident ${k + 1}: ${name(a)}, ${g.codes[a.first]}`, value: `₹${Math.round(a.per / 5)} a year per resident (₹${_round(a.tot / 1e7, 0)} crore)` }));
+        let rho = NaN;
+        const wet = as.filter(a => a.wlw && parts.drains);
+        if (wet.length >= 10) {
+            rho = _rankCorr(wet.map(a => v(parts.drains, a.first) / a.pop), wet.map(a => a.wl / a.wlw));
+            stats.push({ label: 'Rank match by constituency: drain work per resident against the rain waterlogging index', value: _round(rho, 2) });
+        }
+        const out = new Float64Array(n).fill(NaN), idx = [];
+        for (const a of as) for (const i of a.blocks) { out[i] = Math.round(a.per / 5); idx.push(i); }
+        return {
+            columns: { works_per_resident_yr: out }, idx, weightKey: 'works_per_resident_yr', noHotspots: true,
+            metric: { label: 'Civic work orders per resident a year (2018-2023)', value: Math.round(tAll / tPop / 5), unit: '₹/yr', higherIs: null },
+            headline: `BBMP ordered ₹${_round(tAll / 1e7, 0)} crore of works tagged to constituencies in 2018-2023, about ₹${Math.round(tAll / tPop / 5)} a year per resident, from ₹${Math.round(byPer[0].per / 5)} in ${name(byPer[0])} to ₹${Math.round(byPer[byPer.length - 1].per / 5)} in ${name(byPer[byPer.length - 1])}; ${_round(100 * share('roads'), 0)}% went to roads${_fin(rho) ? `, and drain work per resident ${rho >= 0.4 ? 'broadly follows' : 'barely follows'} where rain pools (rank match ${_round(rho, 2)})` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'homes2011', equity: true, title: 'Homes in 2011 by ward', icon: '🏘️',
             question: 'How crowded were homes in each ward at the last census, and who lacked a latrine or owned a car?',
@@ -203,8 +258,14 @@ const UrbanLensesWards = (() => {
             needs: ['feels_like.utci_vstrong_months', 'feels_like.utci_strong_months', 'feels_like.utci_amj_c', 'feels_like.utci_vstrong_months_then', 'feels_like.utci_amj_change_c', 'air_heat.tmax_amj_c', 'population.population'],
             method: `GloUTCI-M (CC BY 4.0): monthly Universal Thermal Climate Index at 1 km for 2000-2022, the outdoor temperature the body feels once humidity, wind and solar radiation are combined with air temperature (mean of the daily peak each month). UTCI bands: 32 to 38 °C strong heat stress, ${UTCI_VS} to 46 °C very strong, above 46 °C extreme. Months are counted per year and averaged over 2013-2022 and 2000-2009, and weighted by GHSL residents. The air-temperature comparison uses the 1 km daily air temperature dataset (air_heat); a positive gap means humidity and sun make it feel hotter than the thermometer reads. Monthly means smooth single heatwave days, so these counts are lower bounds on hard days. Picks are blocks ${SPACING_KM} km apart ranked by residents × how far the block's April-June peak sits above the city's average.`,
             refs: 'Yang et al., GloUTCI-M: a global monthly 1 km Universal Thermal Climate Index dataset 2000-2022 (Earth System Science Data, 2024); Bröde et al., Deriving the operational procedure for the UTCI (Int. J. Biometeorology, 2012)' },
+        { id: 'civicworks', title: 'Civic works ordered', icon: '🚧',
+            question: 'How much has the corporation spent on works per resident in each constituency, and on what?',
+            field: { key: 'works_per_resident_yr', label: 'Civic work orders per resident a year (2018-2023)', unit: '₹/yr', higherIs: null, ramp: 'viridis', domain: [0, 6000] },
+            needs: ['work_orders.wo_ac', 'work_orders.wo_total_cr', 'work_orders.wo_roads_cr', 'work_orders.wo_drains_cr', 'work_orders.wo_water_cr', 'work_orders.wo_lights_cr', 'work_orders.wo_waste_cr', 'work_orders.wo_buildings_cr', 'waterlogging.waterlogging_index', 'population.population'],
+            method: `BBMP work orders for 2018-19 to 2022-23 (gross amounts, via data.opencity.in, public domain), categorised by OpenCity and summed per assembly constituency. Work tagged to several wards or none (₹8,023 crore, about a third) is left out, so the figures cover ward-level works only. Constituency totals are joined to blocks inside both the constituency (2008 delimitation map) and the corporation's ward map, and divided by residents in those blocks (GHSL, which in Bengaluru is reshared by each GBA ward's Census 2011 count because GHSL alone puts far too few people in the south and east) and by five years. Roads combine "roads and infrastructure" with "roads and drains". The rank match is a Spearman correlation across constituencies between storm-water drain orders per resident and the residents-weighted rain waterlogging index. Work orders are commitments, not money spent or work done.`,
+            refs: 'BBMP work orders categorised by ward and constituency, 2018-2023, via data.opencity.in; Election Commission of India assembly constituency maps (2008 delimitation, DataMeet)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks });
     return { ENTRIES };
 })();

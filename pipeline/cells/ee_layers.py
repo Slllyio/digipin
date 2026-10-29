@@ -78,6 +78,8 @@ def population(region):
             "change_2000_2020_pct": _r(100 * (d20 - d00) / d00) if d00 and d00 * a >= 50 else None,
             "projected_2030": round(d30 * a) if d30 is not None else None,
         }
+    from pipeline.realestate.wardpop import calibrate_region
+    calibrate_region(region, rows)   # Bengaluru: GHSL's south and east are far short of the census
     specs = [
         FieldSpec("population", "Residents (2020)", agg="sum", unit="people", ramp="viridis"),
         FieldSpec("density_km2", "Population density", agg="mean", unit="people/km²", ramp="heat"),
@@ -89,7 +91,9 @@ def population(region):
     spec = DatasetSpec(
         id="population", title="Population (GHSL)", level=level, fields=specs, group=GROUP,
         description="Residents per cell from the JRC Global Human Settlement Layer GHS-POP "
-                    "R2023A (100 m), with 2000→2020 growth and the 2030 projection.",
+                    "R2023A (100 m), with 2000→2020 growth and the 2030 projection. In Bengaluru, where GHSL "
+                    "puts far too few people in the south and east, blocks inside GBA wards share GHSL's total "
+                    "by each ward's Census 2011 count and residential built volume (pipeline/realestate/wardpop.py).",
         source="JRC GHSL GHS-POP R2023A via Earth Engine (pipeline/cells/ee_layers.py)",
         license="CC BY 4.0 (European Commission JRC)",
         default_field="density_km2", extrude=True, height_m=500)

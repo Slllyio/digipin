@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T06:15:51Z",
+  "generated": "2026-10-29T06:38:11Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -34698,7 +34698,7 @@
     {
       "id": "population",
       "title": "Population (GHSL)",
-      "description": "Residents per cell from the JRC Global Human Settlement Layer GHS-POP R2023A (100 m), with 2000\u21922020 growth and the 2030 projection.",
+      "description": "Residents per cell from the JRC Global Human Settlement Layer GHS-POP R2023A (100 m), with 2000\u21922020 growth and the 2030 projection. In Bengaluru, where GHSL puts far too few people in the south and east, blocks inside GBA wards share GHSL's total by each ward's Census 2011 count and residential built volume (pipeline/realestate/wardpop.py).",
       "source": "JRC GHSL GHS-POP R2023A via Earth Engine (pipeline/cells/ee_layers.py)",
       "license": "CC BY 4.0 (European Commission JRC)",
       "group": "Open Data (satellite)",
@@ -34782,7 +34782,7 @@
             "north": 13.141357421875
           },
           "json": "population/bengaluru/{prefix}.json.gz",
-          "parquet": "population/bengaluru.parquet",
+          "parquet": null,
           "shards": {
             "prefixLen": 4,
             "keys": [
@@ -52754,6 +52754,145 @@
               "378L",
               "3796",
               "379T"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "work_orders",
+      "title": "Civic works ordered by constituency (BBMP 2018-2023)",
+      "description": "BBMP's work orders 2018-19 to 2022-23 (gross), categorised and summed per assembly constituency, from data.opencity.in. Every corporation block in a constituency carries the constituency's totals; work tagged to several wards or none (\u20b98,023 crore) is left out.",
+      "source": "pipeline/realestate/workorders.py (OpenCity BBMP work orders categorised 2018-2023)",
+      "license": "Public domain (BBMP via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "wo_ac",
+          "label": "Assembly constituency number",
+          "type": "number",
+          "agg": "min",
+          "domain": [
+            150,
+            177
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "wo_total_cr",
+          "label": "All work orders ordered in the constituency, 2018-2023",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u20b9 crore",
+          "domain": [
+            114.81,
+            1341.64
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "wo_roads_cr",
+          "label": "Roads ordered in the constituency, 2018-2023",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u20b9 crore",
+          "domain": [
+            64.85,
+            957.18
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "wo_drains_cr",
+          "label": "Storm-water drains ordered in the constituency, 2018-2023",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u20b9 crore",
+          "domain": [
+            1.6,
+            159.21
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "wo_water_cr",
+          "label": "Water and sanitation ordered in the constituency, 2018-2023",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u20b9 crore",
+          "domain": [
+            6.38,
+            260.87
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "wo_lights_cr",
+          "label": "Street lighting ordered in the constituency, 2018-2023",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u20b9 crore",
+          "domain": [
+            2.97,
+            39.88
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "wo_waste_cr",
+          "label": "Waste management ordered in the constituency, 2018-2023",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u20b9 crore",
+          "domain": [
+            0.22,
+            73.73
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "wo_buildings_cr",
+          "label": "Buildings and facilities ordered in the constituency, 2018-2023",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u20b9 crore",
+          "domain": [
+            0.91,
+            195.77
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "wo_total_cr",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 12195,
+          "bbox": {
+            "west": 77.459228515625,
+            "south": 12.833740234375,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "work_orders/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
             ]
           }
         }

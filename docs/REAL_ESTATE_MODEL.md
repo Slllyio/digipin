@@ -1677,3 +1677,22 @@ present-day coastal flood map and the rain waterlogging index, and picks lived-i
 more (strong), averaged over 2013-2022 and 2000-2009, and the April-June mean and its change. Sea and edge pixels read
 near 0 and are dropped (April-June mean under 20 °C). The lens weights by GHSL residents, sets the April-June UTCI peak
 against the air-temperature peak from `air_heat`, and picks the hottest lived-in blocks 1.5 km apart.
+
+## Bengaluru residents reshared by census ward (`pipeline/realestate/wardpop.py`)
+
+GHSL GHS-POP R2023A puts far too few people in south and east Bengaluru (the South and East corporations hold 12-18%
+of their Census 2011 count, West and North about twice theirs), and Meta's HRSL, built on the same census units, does
+the same; GHSL's built volume shows no such gap. `ee_layers.population` therefore calls `wardpop.calibrate_region`
+for Bengaluru: GHSL's total inside the GBA is kept but shared across the 369 wards by each ward's Census 2011
+population (TOT_P on the GBA ward map of December 2025) times its residential built volume growth 2010→2020 (GHS-BUILT-V
+total minus non-residential, capped at 3×), and within a ward by 2020 residential built volume. `projected_2030` keeps
+GHSL's 2030/2020 ratio; `change_2000_2020_pct` is dropped for those blocks. Only Corporation, ward_id and TOT_P are read.
+Mumbai's census wards sit at 0.7-1.9 times their 2011 count in GHSL, so it is left alone.
+
+## Civic works ordered (`civicworks` lens in js/urban-lenses-wards.js, `work_orders` dataset)
+
+`pipeline/realestate/workorders.py` reads OpenCity's categorised BBMP work orders 2018-2023 (constituency-wise gross
+CSV) and gives every block inside both an assembly constituency and the corporation its constituency's totals in ₹ crore
+(all, roads, drains, water and sanitation, street lighting, waste, buildings). Work tagged to several wards or none is
+left out. The lens divides each constituency's total by its corporation residents and five years, ranks constituencies,
+and compares drain orders per resident with the residents-weighted rain waterlogging index (Spearman).
