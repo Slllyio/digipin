@@ -1641,3 +1641,13 @@ number of street ends meeting there, a segment passing through it (0 < at < 1) c
 intersection, degree 1 a dead end, summed per L7 block. The lens averages both over blocks within 500 m of each home,
 reports resident-weighted quantiles of intersections per km², residents under 50 per km² and those also facing 40% or more
 dead ends, and picks blocks 2 km apart by residents × (1 − density / 50) × dead-end share.
+
+## Trade licences (`licences` lens, `trade_licences` dataset, pipeline/realestate/tradelicences.py)
+
+`tradelicences.py` reads the 27 constituency CSVs of OpenCity's `bbmp-trade-licenses-data-2025`, keeping only application
+type, date, bye-law part (Major Trade), zonal classification and pincode (Bengaluru pincodes start 56). Per pincode it
+counts 2025-26 licences (April 2025 to March 2026) with food (Parts 1 and 6), lodging (Part 2), medical (Part 3) and
+industrial-zone shares, and new licences a year for 2015-2019 and 2022-2025, and writes them to every L7 block of that
+pincode (via `pincodes`). The lens regroups blocks by pincode (5 or more blocks, 5,000 or more residents), reports licences
+per 1,000 residents, the change in new licences, the fastest-growing and slowing pincodes (20 or more new licences a year
+before), and current licences per 100 Overture places.

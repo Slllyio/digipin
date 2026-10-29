@@ -1126,6 +1126,49 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Trade licences by pincode. The corporation's licence register shows where new businesses register and how much
+    // of what is on the map holds a licence: set against Overture's mapped places and against 2015-2019.
+    function licences(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, pin = c['trade_licences.tl_pin'], fy = c['trade_licences.tl_fy'];
+        const t0 = c['trade_licences.tl_new_then'], t1 = c['trade_licences.tl_new_now'], food = c['trade_licences.tl_food_pct'];
+        const lodg = c['trade_licences.tl_lodging_pct'], med = c['trade_licences.tl_medical_pct'], ind = c['trade_licences.tl_industry_pct'];
+        const pop = c['population.population'], places = c['places.places'];
+        if (!pin || !fy || !fy.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const P = new Map();
+        for (let i = 0; i < n; i++) {
+            if (!_fin(pin[i]) || !_fin(fy[i])) continue;
+            const p = P.get(pin[i]) || { pin: pin[i], blocks: [], pop: 0, places: 0, first: i };
+            p.blocks.push(i); p.pop += v(pop, i); p.places += v(places, i);
+            P.set(pin[i], p);
+        }
+        const ps = [...P.values()].filter(p => p.blocks.length >= 5 && p.pop >= 5000);
+        if (ps.length < 5) return null;
+        for (const p of ps) { const i = p.first; p.fy = v(fy, i); p.t0 = v(t0, i); p.t1 = v(t1, i); p.km2 = p.blocks.length * g.cellKm2; }
+        const sum = k => ps.reduce((s, p) => s + p[k], 0);
+        const FY = sum('fy'), T0 = sum('t0'), T1 = sum('t1'), POP = sum('pop') || 1, PL = sum('places');
+        const fyAvg = a => ps.reduce((s, p) => s + p.fy * v(a, p.first), 0) / (FY || 1);
+        const stats = [
+            { label: `Licences issued or renewed in 2025-26 across ${ps.length} pincodes`, value: `${_people(FY)} (${_round(1000 * FY / POP, 1)} per 1,000 residents)` },
+            { label: 'New licences a year, 2015-2019 → 2022-2025', value: `${_people(T0)} → ${_people(T1)} (${T1 >= T0 ? '+' : ''}${_round(100 * (T1 / (T0 || 1) - 1), 0)}%)` },
+        ];
+        if (food) stats.push({ label: '2025-26 licences: food and drink / lodging / medical / industrial zones', value: `${_round(fyAvg(food), 0)}% / ${_round(fyAvg(lodg), 0)}% / ${_round(fyAvg(med), 0)}% / ${_round(fyAvg(ind), 0)}%` });
+        if (PL > 0) stats.push({ label: '2025-26 licences per 100 mapped businesses and services (Overture places)', value: `${_round(100 * FY / PL, 0)}` });
+        const grow = ps.filter(p => p.t0 >= 20).map(p => ({ p, g: p.t1 / p.t0 - 1 })).sort((a, b) => b.g - a.g);
+        grow.slice(0, 5).forEach(({ p, g: gr }, k) => stats.push({ label: `Fastest-growing ${k + 1}: ${Math.round(p.pin)}, ${g.codes[p.first]}`, value: `${_round(p.t0, 0)} → ${_round(p.t1, 0)} new licences a year (${gr >= 0 ? '+' : ''}${_round(100 * gr, 0)}%)` }));
+        grow.slice(-3).reverse().forEach(({ p, g: gr }, k) => stats.push({ label: `Slowing ${k + 1}: ${Math.round(p.pin)}, ${g.codes[p.first]}`, value: `${_round(p.t0, 0)} → ${_round(p.t1, 0)} new licences a year (${_round(100 * gr, 0)}%)` }));
+        if (PL > 0) ps.filter(p => p.places >= 200 && p.t1 >= 10).map(p => ({ p, r: p.fy / p.places })).sort((a, b) => a.r - b.r).slice(0, 3).forEach(({ p, r }, k) => stats.push({
+            label: `Fewest licences for its businesses ${k + 1}: ${Math.round(p.pin)}, ${g.codes[p.first]}`, value: `${_round(100 * r, 0)} licences per 100 mapped places (${_people(p.places)} places)` }));
+        const out = new Float64Array(n).fill(NaN), idx = [];
+        for (const p of ps) for (const i of p.blocks) { out[i] = _round(p.t1 / p.km2, 1); idx.push(i); }
+        return {
+            columns: { new_licences_km2: out }, idx, weightKey: 'new_licences_km2', noHotspots: true,
+            metric: { label: 'New trade licences a year, 2022-2025', value: Math.round(T1), unit: 'a year', higherIs: 'better' },
+            headline: `${_people(FY)} trade licences were issued or renewed in 2025-26 (${_round(1000 * FY / POP, 1)} per 1,000 residents), and new licences ran at ${_people(T1)} a year in 2022-2025 against ${_people(T0)} in 2015-2019${grow.length ? `; the fastest growth is in ${Math.round(grow[0].p.pin)}` : ''}${PL > 0 ? `; there are ${_round(100 * FY / PL, 0)} current licences per 100 businesses and services on the map` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -1271,8 +1314,14 @@ const UrbanLensesCommons = (() => {
             needs: ['street_grid.intersections', 'street_grid.dead_ends', 'population.population'],
             method: `Overture Maps transportation segments (from OpenStreetMap, ODbL), public streets only: trunk to residential, unclassified, living and pedestrian streets; motorways, service lanes, footways and paths are left out because Indian cities map them so unevenly. Each connector's degree is the number of street ends meeting there, a segment passing through counting twice: three or more is an intersection, one is a dead end. Densities are averaged over blocks within ${GRID_KM * 1000} m of each home. UN-Habitat's street-connectivity guidance and walkability studies treat about 80 to 100 intersections per km² as a fine, walkable grid; under ${GRID_LOW} is coarse. Dead ends include true cul-de-sacs, gated lanes and gaps in the map, so a high share can also mean incomplete mapping. Picks are blocks ${SPACING_KM} km apart ranked by residents × how far below ${GRID_LOW} the grid falls × dead-end share.`,
             refs: 'UN-Habitat, A New Strategy of Sustainable Neighbourhood Planning: Five Principles (2014); Ewing & Cervero, Travel and the Built Environment (JAPA 2010); Overture Maps Foundation transportation theme' },
+        { id: 'licences', title: 'Trade licences', icon: '📜',
+            question: 'Where are new businesses taking out licences, and how much trade is licensed?',
+            field: { key: 'new_licences_km2', label: 'New trade licences a year per km² in the pincode (2022-2025)', unit: 'per km²', higherIs: null, ramp: 'viridis', domain: [0, 60] },
+            needs: ['trade_licences.tl_pin', 'trade_licences.tl_fy', 'trade_licences.tl_new_then', 'trade_licences.tl_new_now', 'trade_licences.tl_food_pct', 'trade_licences.tl_lodging_pct', 'trade_licences.tl_medical_pct', 'trade_licences.tl_industry_pct', 'places.places', 'population.population'],
+            method: `BBMP/GBA's trade licence register (via data.opencity.in, public domain): 9.4 lakh new and renewed licences from 2014 to March 2026, counted by the business's pincode and joined to blocks through India Post's pincode boundaries (pincodes). Trade names and addresses are not kept. 2025-26 licences (April 2025 to March 2026) are split by the bye-law parts: food and drink (Parts 1 and 6), lodging (Part 2), medical (Part 3), and by zonal class (industrial). New licences a year compare 2022-2025 with 2015-2019; growth is shown for pincodes with 20 or more new licences a year before. Licences per 100 mapped places set the register against Overture places in the same pincode: a low figure means many shops and services trade without a current licence, are mapped but closed, or sit under another licensing body (Electronic City's ELCITA township, KIADB estates, cantonment land). Pincodes with fewer than 5 blocks or 5,000 residents are left out, and the fewest-licences list skips pincodes outside the corporation (under 10 new licences a year).`,
+            refs: 'BBMP/GBA trade licence register via data.opencity.in; Karnataka Municipal Corporations Act 1976, Section 353 (trade licences); India Post pincode boundaries; Overture Maps places' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters, hotdays, tankbeds, jobcount, ptax, streetgrid });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters, hotdays, tankbeds, jobcount, ptax, streetgrid, licences });
     return { ENTRIES };
 })();

@@ -1080,6 +1080,12 @@
      "unit": "per km²",
      "higherIs": "better"
     },
+    "licences": {
+     "label": "New trade licences a year, 2022-2025",
+     "value": 13512,
+     "unit": "a year",
+     "higherIs": "better"
+    },
     "metrowait": {
      "label": "Residents within 800 m of a metro station",
      "value": 20.7,
