@@ -1769,3 +1769,19 @@ Since item 266, `wardpop.py` shares GHSL's GBA total by each ward's electors on 
 female + others equals its total and each corporation's sums match the printed sub-totals and the 88,91,411 grand
 total) instead of Census 2011 counts grown by built volume. ZONE_ID 1-5 on the table are the Central, North, South,
 East and West corporations.
+
+## Voter roll revision 2026 (`rollrevision` lens, `roll_revision` dataset)
+
+`pipeline/realestate/sirroll.py` reads the seat-wise elector tables the Chief Electoral Officers published after the
+2026 Special Intensive Revision (via data.opencity.in, public domain): Karnataka's final roll of October 2026 with the
+notices sent to electors who could not be linked to an earlier roll and Form 7 removals; West Bengal's January 2026
+draft and final rolls; Tamil Nadu's draft-stage deletions (dead, shifted or absent, enrolled twice) and its April 2026
+final roll. The baseline is each seat's 2024 Lok Sabha electors from the ECI segment table. Seats join to L7 blocks
+through `constituencies` by number and name (the West Bengal file appends "(SC)"/"(ST)", which is dropped before
+matching). Tamil Nadu's roll before revision is the draft plus its deletions, so deletion shares use that base.
+
+The lens sums each seat in view once (seats cut by the view edge count whole), reports the change from 2024, the
+women per 1,000 men on the final roll, the state-specific extras weighted by final electors, and the seats with the
+biggest and smallest cuts. A smaller roll can mean dead, moved or duplicate entries removed, or eligible people left
+off; the counts cannot separate them. Bengaluru's population reshare still uses the pre-revision January 2026 ward
+rolls, which are closer to the resident count than the revised roll.

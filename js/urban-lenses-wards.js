@@ -459,7 +459,64 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Voter roll revision. The Election Commission's 2026 Special Intensive Revision re-verified every elector; seat-wise
+    // counts after it (West Bengal, Tamil Nadu, Karnataka) against the 2024 Lok Sabha roll.
+    const SIR_WHY = [['dead', 'as dead'], ['shifted', 'as shifted or absent'], ['multiple', 'as enrolled in more than one place']];
+
+    function rollrevision(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`roll_revision.sir_${k}`];
+        const ac = col('ac'), now = col('electors'), was = col('electors_2024'), pop = c['population.population'];
+        if (!ac || !now || !ac.some(_fin)) return null;
+        const S = new Map();
+        for (let i = 0; i < n; i++) {
+            if (!_fin(ac[i]) || !_fin(now[i])) continue;
+            const a = S.get(ac[i]) || { blocks: [], pop: 0, first: i };
+            a.blocks.push(i); a.pop += pop && _fin(pop[i]) ? pop[i] : 0;
+            S.set(ac[i], a);
+        }
+        const ss = [...S.values()].filter(a => a.pop >= 5000);
+        if (ss.length < 3) return null;
+        const at = (k, a) => (col(k) && _fin(col(k)[a.first]) ? col(k)[a.first] : NaN);
+        let N = 0, W = 0;
+        for (const a of ss) { a.now = now[a.first]; a.was = _fin(was?.[a.first]) ? was[a.first] : NaN; a.chg = at('change_pct', a); N += a.now; if (_fin(a.was)) W += a.was; }
+        const known = ss.filter(a => _fin(a.chg)).sort((x, y) => x.chg - y.chg);
+        const chg = W ? 100 * (ss.filter(a => _fin(a.was)).reduce((t, a) => t + a.now, 0) - W) / W : NaN;
+        const wmean = k => { let s = 0, w = 0; for (const a of ss) { const x = at(k, a); if (_fin(x)) { s += x * a.now; w += a.now; } } return w ? s / w : NaN; };
+        const women = wmean('women_per_1000'), del = wmean('deleted_pct'), draft = wmean('draft_change_pct'), notice = wmean('notice_pct');
+        const pp = x => `${x > 0 ? '+' : ''}${_round(x, 1)}%`;
+        const stats = [
+            { label: 'Assembly seats in view', value: String(ss.length) },
+            { label: 'Electors in those seats: 2024 Lok Sabha / final 2026 roll', value: `${_people(W)} / ${_people(N)}` },
+            { label: 'Change, 2024 to the final 2026 roll', value: _fin(chg) ? pp(chg) : 'n/a' },
+            { label: 'Women per 1,000 men on the final roll', value: _fin(women) ? String(Math.round(women)) : 'n/a' },
+        ];
+        if (_fin(del)) {
+            stats.push({ label: 'Struck off at the draft stage, % of the roll before revision', value: `${_round(del, 1)}%` });
+            for (const [k, label] of SIR_WHY) { const x = wmean(`${k}_pct`); if (_fin(x)) stats.push({ label: `Struck off ${label}`, value: `${_round(x, 1)}%` }); }
+        }
+        if (_fin(draft)) stats.push({ label: 'Change from the January 2026 draft roll to the final roll', value: pp(draft) });
+        if (_fin(notice)) stats.push({ label: 'Electors sent a notice to prove eligibility, % of the final roll', value: `${_round(notice, 1)}%` });
+        known.slice(0, 3).forEach((a, k) => stats.push({ label: `Biggest cut ${k + 1}: seat ${Math.round(ac[a.first])}, ${g.codes[a.first]}`, value: pp(a.chg) }));
+        const least = known[known.length - 1];
+        if (least) stats.push({ label: `Smallest cut: seat ${Math.round(ac[least.first])}, ${g.codes[least.first]}`, value: pp(least.chg) });
+        const out = new Float64Array(n).fill(NaN), idx = [];
+        for (const a of known) for (const i of a.blocks) { out[i] = a.chg; idx.push(i); }
+        return {
+            columns: { roll_change: out }, idx, weightKey: 'roll_change', noHotspots: true,
+            metric: { label: 'Change in electors, 2024 to the final 2026 roll', value: _round(chg, 1), unit: '%', higherIs: null },
+            headline: `The ${ss.length} assembly seats in view had ${_people(W)} electors in 2024 and ${_people(N)} on the final roll after the 2026 revision (${pp(chg)})${known.length ? `; cuts ran from ${_round(-known[known.length - 1].chg, 0)}% to ${_round(-known[0].chg, 0)}% a seat` : ''}${_fin(del) ? `, and ${_round(del, 0)}% of the old roll was struck off at the draft stage` : ''}${_fin(notice) ? `, and ${_round(notice, 0)}% of those left were sent a notice to prove eligibility` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'rollrevision', title: 'Voter roll revision 2026', icon: '📋',
+            question: 'How many electors did the 2026 roll revision remove from the seats here?',
+            field: { key: 'roll_change', label: 'Change in electors, 2024 to the final 2026 roll', unit: '%', higherIs: null, ramp: 'viridis', domain: [-50, 0] },
+            needs: ['roll_revision.sir_ac', 'roll_revision.sir_electors', 'roll_revision.sir_electors_2024', 'roll_revision.sir_change_pct', 'roll_revision.sir_women_per_1000', 'roll_revision.sir_draft_change_pct', 'roll_revision.sir_deleted_pct',
+                ...SIR_WHY.map(([k]) => `roll_revision.sir_${k}_pct`), 'roll_revision.sir_notice_pct', 'population.population'],
+            method: `Seat-wise elector counts from the Chief Electoral Officers after the Election Commission's 2026 Special Intensive Revision (via data.opencity.in, public domain): West Bengal (draft January 2026, final at the 2026 nominations), Tamil Nadu (draft-stage deletions by reason, final April 2026) and Karnataka (final October 2026, with the notices sent to electors who could not be linked to an earlier roll). The 2024 count is the Election Commission's assembly-segment table for the Lok Sabha election. Seats are joined to blocks through the constituencies dataset by number and name; seats cut by the view edge count whole. Shares are weighted by each seat's final electors. A smaller roll can mean dead, moved or duplicate entries removed, or eligible people left off; the counts alone cannot tell which. No names or addresses are read.`,
+            refs: 'Chief Electoral Officers of West Bengal, Tamil Nadu and Karnataka, SIR 2026 seat-wise rolls (via data.opencity.in); Election Commission of India 2024 Lok Sabha assembly-segment results' },
         { id: 'spending', equity: true, title: 'What households spend', icon: '🧾',
             question: 'How much do households here spend a month, and how much of it goes on food and rent?',
             field: { key: 'mpce', label: 'Monthly consumption per person, urban households (HCES 2023-24)', unit: '₹', higherIs: null, ramp: 'viridis', domain: [5000, 15000] },
@@ -517,6 +574,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision });
     return { ENTRIES };
 })();

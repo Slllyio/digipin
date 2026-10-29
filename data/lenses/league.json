@@ -984,6 +984,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "rollrevision": {
+     "label": "Change in electors, 2024 to the final 2026 roll",
+     "value": -40.2,
+     "unit": "%",
+     "higherIs": null
+    },
     "spending": {
      "label": "Monthly consumption per person, urban (HCES 2023-24)",
      "value": 11110,
@@ -3173,6 +3179,12 @@
      "value": 35.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "rollrevision": {
+     "label": "Change in electors, 2024 to the final 2026 roll",
+     "value": -19.9,
+     "unit": "%",
+     "higherIs": null
     },
     "spending": {
      "label": "Monthly consumption per person, urban (HCES 2023-24)",
@@ -9047,6 +9059,12 @@
      "value": 42.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "rollrevision": {
+     "label": "Change in electors, 2024 to the final 2026 roll",
+     "value": -20,
+     "unit": "%",
+     "higherIs": null
     },
     "spending": {
      "label": "Monthly consumption per person, urban (HCES 2023-24)",
