@@ -1533,3 +1533,11 @@ converted to people per km² with pixelArea and sampled per L7 block: `ambient_p
 rescales ambient people to the resident total (LandScan's city totals are 65 to 90% of GHSL's) and maps
 (daytime − residents) ÷ (daytime + residents + 50). Magnets hold at least twice their residents by day and 500 more people;
 bedroom blocks the reverse. The size of a single gap mixes movement with model differences; the pattern is what to read.
+
+## Sinking ground (`sinking` lens, `subsidence` EE layer)
+
+`projects/sat-io/open-datasets/global_subsidence/Final_subsidence_proba_greater_1cm_2013_2019_recoded` (Hasan et al. 2023,
+CC BY 4.0, ~2.2 km): probability that land subsided more than 1 cm a year in 2013-2019, from a random forest trained on InSAR
+and GPS records with groundwater, climate, soil, sediment and land cover predictors. Stored per L7 block as `subsid_prob_pct`.
+The lens reports the resident-weighted mean chance, residents at 60% and 75% or more, blocks with tall buildings on high-chance
+ground and hotspots 2 km apart. A 2 km model of conditions, not a measured rate.

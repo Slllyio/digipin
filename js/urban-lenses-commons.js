@@ -608,6 +608,44 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Sinking ground. Hasan et al.'s global model of where groundwater pumping and soft ground make land subside by more than
+    // 1 cm a year: who lives where the chance is high, a slow risk to foundations, drains and pipes.
+    const SINK_HIGH = 60, SINK_VERY = 75;
+
+    function sinking(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, p = c['subsidence.subsid_prob_pct'], pop = c['population.population'];
+        const tall = c['building_stock.height_2023_m'];
+        if (!p || !p.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr).filter(i => _fin(p[i]));
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const share = t => idx.filter(i => p[i] >= t).reduce((s, i) => s + v(pop, i), 0);
+        const hi = share(SINK_HIGH), very = share(SINK_VERY);
+        const mean = idx.reduce((s, i) => s + v(pop, i) * p[i], 0) / all;
+        const stats = [
+            { label: 'Chance of sinking more than 1 cm a year, average resident', value: `${_round(mean, 0)}%` },
+            { label: `Residents where the chance is ${SINK_HIGH}% or more`, value: `${_people(hi)} (${_round(100 * hi / all, 1)}%)` },
+            { label: `Residents where the chance is ${SINK_VERY}% or more`, value: `${_people(very)} (${_round(100 * very / all, 1)}%)` },
+        ];
+        if (tall) {
+            const t = idx.filter(i => p[i] >= SINK_HIGH && v(tall, i) >= 15);
+            stats.push({ label: `Blocks with buildings averaging 15 m or taller where the chance is ${SINK_HIGH}% or more`, value: String(t.length) });
+        }
+        const risk = Float64Array.from({ length: n }, (_, i) => (_fin(p[i]) && p[i] >= SINK_HIGH ? v(pop, i) * p[i] / 100 : 0));
+        const near = within(g, risk, 1);
+        spaced(g, idx.filter(i => p[i] >= SINK_HIGH), near, 5).forEach((i, k) => stats.push({ label: `Sinking hotspot ${k + 1}: ${g.codes[i]}`,
+            value: `${_round(p[i], 0)}% chance; ${_people(within(g, Float64Array.from({ length: n }, (_, j) => (_fin(p[j]) && p[j] >= SINK_HIGH ? v(pop, j) : 0)), 1)[i])} residents within 1 km at ${SINK_HIGH}% or more` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (let i = 0; i < n; i++) if (_fin(p[i])) out[i] = p[i];
+        return {
+            columns: { subsid_prob_pct: out }, idx, weightKey: 'subsid_prob_pct', noHotspots: true,
+            metric: { label: `Residents where the chance of sinking over 1 cm a year is ${SINK_HIGH}% or more`, value: Math.round(hi), unit: 'people', higherIs: 'worse' },
+            headline: `The average resident here lives where a global model gives a ${_round(mean, 0)}% chance that the ground sank more than 1 cm a year in 2013-19; ${_people(hi)} residents (${_round(100 * hi / all, 1)}%) live where the chance is ${SINK_HIGH}% or more.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -687,8 +725,14 @@ const UrbanLensesCommons = (() => {
             needs: ['ambient_pop.ambient_pop', 'ambient_pop.ambient_change_pct', 'population.population'],
             method: `LandScan Global 2024 (Oak Ridge National Laboratory, CC BY 4.0, about 1 km): the average number of people present over 24 hours, modelled from census counts, land use, roads, buildings and points of interest, so offices, markets, campuses and stations carry the people who spend the day there. Residents are the GHSL 2020 counts, averaged over the blocks within 500 m so both sit on a ~1 km footing. LandScan's city totals run 30 to 40% below the resident counts, so ambient people are rescaled to the residents' total and only the pattern is compared: each block shows (daytime − residents) ÷ (daytime + residents). Magnets hold at least twice their residents by day (and 500 people more); bedroom blocks the reverse. Picks are blocks ${SPACING_KM} km apart with the largest net gain or loss within ${DAY_KM} km. A 24-hour average, not a daytime count, from a different model than the resident counts: the pattern of magnets and bedroom areas is meaningful, but the size of any one gap mixes real movement with differences between the two models, and night markets and night shifts do not show.`,
             refs: 'Sims et al., LandScan Global 2024 (Oak Ridge National Laboratory, CC BY 4.0); Bhaduri et al. 2007, LandScan USA: a high-resolution geospatial and temporal modeling approach for population distribution and dynamics (GeoJournal)' },
+        { id: 'sinking', equity: false, title: 'Sinking ground', icon: '⬇️',
+            question: 'Where is the ground likely to be sinking, and who lives and builds on it?',
+            field: { key: 'subsid_prob_pct', label: 'Chance the ground sank more than 1 cm a year, 2013-2019 (modelled)', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [20, 80] },
+            needs: ['subsidence.subsid_prob_pct', 'building_stock.height_2023_m', 'population.population'],
+            method: `Hasan et al. 2023 (Nature Communications, CC BY 4.0): a random-forest model trained on InSAR and GPS subsidence measurements from around the world, with groundwater depletion, irrigation, climate, soil, sediment thickness, geology and land cover as predictors, gives the probability that land subsided more than 1 cm a year in 2013-2019 on a grid of about 2 km. Each block takes its cell's probability; residents are GHSL. Hotspots are blocks ${SPACING_KM} km apart with a ${SINK_HIGH}% chance or more, ranked by residents within 1 km weighted by the chance. A global model at 2 km, not a measurement: it shows where conditions favour subsidence (heavy pumping on soft alluvium), not the rate under a given building, and local InSAR studies should confirm any hotspot.`,
+            refs: 'Hasan, Smith, Vajedian, Pommerenke, Majumdar 2023, Global land subsidence mapping reveals widespread loss of aquifer storage capacity (Nature Communications 14, 6180)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking });
     return { ENTRIES };
 })();

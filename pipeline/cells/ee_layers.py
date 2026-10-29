@@ -2059,6 +2059,33 @@ def ambient_pop(region):
     return spec, _table(level, rows, specs)
 
 
+def subsidence(region):
+    """Probability that the ground is sinking more than 1 cm a year (Hasan et al. 2023 global model, about 2 km)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    base = "projects/sat-io/open-datasets/global_subsidence/"
+    img = ee.Image.cat([ee.Image(base + "Final_subsidence_proba_greater_1cm_2013_2019_recoded").rename("p"),
+                        ee.Image(base + "Final_subsidence_prediction_recoded").rename("c")])
+    raw = gee.fetch(gee.to_cells(img, 1000), bbox, level, tile=128)
+    rows = {}
+    for code, x in raw.items():
+        p = x.get("p")
+        if p is None:
+            continue
+        rows[code] = {"subsid_prob_pct": _r(100 * p, 0)}
+    specs = [FieldSpec("subsid_prob_pct", "Probability of ground sinking more than 1 cm a year (2013-2019, modelled)", agg="mean", unit="%",
+                       domain=[0, 100], ramp="reds", higher_is="worse")]
+    spec = DatasetSpec(
+        id="subsidence", title="Sinking ground (global subsidence model)", level=level, fields=specs, group=GROUP,
+        description="Probability that land subsided more than 1 cm a year in 2013-2019, from Hasan et al. 2023 (Nature "
+                    "Communications): a machine-learning model trained on InSAR and GPS subsidence records worldwide with "
+                    "groundwater use, climate, soil, geology and land cover as predictors, at about 2 km.",
+        source="Hasan et al. global land subsidence model via the awesome-gee-community-catalog (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (Hasan, Smith, Vajedian, Pommerenke, Majumdar 2023)", default_field="subsid_prob_pct")
+    return spec, _table(level, rows, specs)
+
+
 def solar_atlas(region):
     """Photovoltaic output and sunshine per block (Global Solar Atlas 2, about 1 km)."""
     ee = gee.init()
@@ -2245,7 +2272,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "subsidence": subsidence, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat,
 }
 
 
