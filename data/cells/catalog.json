@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T06:49:34Z",
+  "generated": "2026-10-29T07:09:30Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -45543,6 +45543,188 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "village_services",
+      "title": "Services in the fringe villages (Mission Antyodaya 2020)",
+      "description": "Mission Antyodaya's 2020 village survey (Ministry of Rural Development, via data.opencity.in) for the rural villages at the city's edge: piped water, housing, latrines, drains, waste, buses, power and the nearest health centre. Survey rows are matched to the Survey of India village map by name; every lived-in block of a matched village outside town limits carries the village's figures.",
+      "source": "pipeline/realestate/antyodaya.py (OpenCity Mission Antyodaya 2020)",
+      "license": "Public domain (Ministry of Rural Development via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "ma_village_no",
+          "label": "Village number (villages dataset)",
+          "type": "number",
+          "agg": "min",
+          "domain": [
+            3,
+            343
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "ma_households",
+          "label": "Households in the village, 2020",
+          "type": "number",
+          "agg": "max",
+          "unit": "households",
+          "domain": [
+            47,
+            30800
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "ma_piped_pct",
+          "label": "Village households with a piped water connection",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "ma_kuccha_pct",
+          "label": "Village households in a kuccha house",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "ma_no_latrine_pct",
+          "label": "Village households without a sanitary latrine",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "ma_bpl_pct",
+          "label": "Village households with a BPL card",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            80
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "ma_drain",
+          "label": "Village drainage (1 closed ... 5 none)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "code",
+          "domain": [
+            1,
+            5
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "ma_waste",
+          "label": "Village has community waste disposal",
+          "type": "number",
+          "agg": "max",
+          "unit": "yes = 1",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "ma_bus",
+          "label": "A bus stops in the village",
+          "type": "number",
+          "agg": "max",
+          "unit": "yes = 1",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "ma_power_hours",
+          "label": "Domestic power a day in the village",
+          "type": "number",
+          "agg": "mean",
+          "unit": "hours",
+          "domain": [
+            0,
+            18
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "ma_phc_km",
+          "label": "Distance from the village to a health centre",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0,
+            12
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "ma_piped_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 3841,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "village_services/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 2255,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "village_services/pune.json",
+          "parquet": null
         }
       ]
     },

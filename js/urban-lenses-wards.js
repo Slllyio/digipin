@@ -239,6 +239,56 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Fringe villages. Mission Antyodaya's 2020 survey of the rural villages at the city's edge: piped water, drains,
+    // kuccha homes, buses, health centres. These are where the city builds next, so the lens sets the services against
+    // the new floor space going up there.
+    const DRAIN_BAD = 4;
+
+    function fringevillages(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, vno = c['village_services.ma_village_no'], hh = c['village_services.ma_households'];
+        const piped = c['village_services.ma_piped_pct'], kuccha = c['village_services.ma_kuccha_pct'], nolat = c['village_services.ma_no_latrine_pct'];
+        const drain = c['village_services.ma_drain'], bus = c['village_services.ma_bus'], phc = c['village_services.ma_phc_km'], nf = c['re_supply.new_floor_m2'];
+        if (!vno || !hh || !piped || !piped.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const V = new Map();
+        for (let i = 0; i < n; i++) {
+            if (!_fin(vno[i]) || !_fin(hh[i]) || !_fin(piped[i])) continue;
+            const a = V.get(vno[i]) || { blocks: [], first: i, floor: 0 };
+            a.blocks.push(i); a.floor += v(nf, i);
+            V.set(vno[i], a);
+        }
+        const vs = [...V.values()];
+        if (vs.length < 8) return null;
+        const at = (a, x) => (x && _fin(x[a.first]) ? x[a.first] : NaN);
+        const H = vs.reduce((s, a) => s + at(a, hh), 0) || 1;
+        const share = x => vs.reduce((s, a) => s + at(a, hh) * (_fin(at(a, x)) ? at(a, x) : 0), 0) / H;
+        const badDrain = vs.filter(a => at(a, drain) >= DRAIN_BAD), noBus = bus ? vs.filter(a => at(a, bus) === 0) : [];
+        const sumHH = xs => xs.reduce((s, a) => s + at(a, hh), 0);
+        const stats = [
+            { label: 'Villages at the edge matched to the survey / households', value: `${vs.length} / ${_people(H)}` },
+            { label: 'Households with a piped water connection / in a kuccha house / without a sanitary latrine', value: `${_round(share(piped), 0)}% / ${_round(share(kuccha), 1)}% / ${_round(share(nolat), 1)}%` },
+            { label: 'Villages with open kuccha drains or none', value: `${badDrain.length} (${_people(sumHH(badDrain))} households)` },
+        ];
+        if (bus) stats.push({ label: 'Villages where no bus stops', value: `${noBus.length} (${_people(sumHH(noBus))} households)` });
+        if (phc) stats.push({ label: 'Distance to a health centre (households-weighted)', value: `${_round(share(phc), 1)} km` });
+        let dry = NaN, rho = NaN;
+        if (nf && vs.some(a => a.floor > 0)) {
+            const busy = vs.slice().sort((a, b) => b.floor - a.floor).slice(0, TOP);
+            dry = busy.filter(a => at(a, piped) < 50).length;
+            rho = _rankCorr(vs.map(a => a.floor), vs.map(a => at(a, piped)));
+            stats.push({ label: 'Rank match by village: new floor space against piped water share', value: _round(rho, 2) });
+            busy.forEach((a, k) => stats.push({ label: `Building fastest ${k + 1}: ${g.codes[a.first]}`, value: `${_round(a.floor / 1e4, 1)} ha of new floor; ${_round(at(a, piped), 0)}% piped water, drains ${at(a, drain) >= DRAIN_BAD ? 'open kuccha or none' : 'pucca or closed'}` }));
+        }
+        const out = new Float64Array(n).fill(NaN), idx = [];
+        for (const a of vs) for (const i of a.blocks) { out[i] = at(a, piped); idx.push(i); }
+        return {
+            columns: { piped_water_pct: out }, idx, weightKey: 'piped_water_pct', noHotspots: true,
+            metric: { label: 'Fringe-village households with piped water (2020)', value: _round(share(piped), 0), unit: '%', higherIs: 'better' },
+            headline: `In the ${vs.length} villages at the city's edge surveyed in 2020 (${_people(H)} households), ${_round(share(piped), 0)}% of households had a piped water connection and ${badDrain.length} villages had open kuccha drains or none${_fin(dry) ? `; ${dry} of the ${TOP} villages putting up the most new floor space piped water to fewer than half their homes` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'homes2011', equity: true, title: 'Homes in 2011 by ward', icon: '🏘️',
             question: 'How crowded were homes in each ward at the last census, and who lacked a latrine or owned a car?',
@@ -264,8 +314,14 @@ const UrbanLensesWards = (() => {
             needs: ['work_orders.wo_ac', 'work_orders.wo_total_cr', 'work_orders.wo_roads_cr', 'work_orders.wo_drains_cr', 'work_orders.wo_water_cr', 'work_orders.wo_lights_cr', 'work_orders.wo_waste_cr', 'work_orders.wo_buildings_cr', 'waterlogging.waterlogging_index', 'population.population'],
             method: `BBMP work orders for 2018-19 to 2022-23 (gross amounts, via data.opencity.in, public domain), categorised by OpenCity and summed per assembly constituency. Work tagged to several wards or none (₹8,023 crore, about a third) is left out, so the figures cover ward-level works only. Constituency totals are joined to blocks inside both the constituency (2008 delimitation map) and the corporation's ward map, and divided by residents in those blocks (GHSL, which in Bengaluru is reshared by each GBA ward's Census 2011 count because GHSL alone puts far too few people in the south and east) and by five years. Roads combine "roads and infrastructure" with "roads and drains". The rank match is a Spearman correlation across constituencies between storm-water drain orders per resident and the residents-weighted rain waterlogging index. Work orders are commitments, not money spent or work done.`,
             refs: 'BBMP work orders categorised by ward and constituency, 2018-2023, via data.opencity.in; Election Commission of India assembly constituency maps (2008 delimitation, DataMeet)' },
+        { id: 'fringevillages', equity: true, title: 'Services in the fringe villages', icon: '🏡',
+            question: 'Do the villages the city is spreading into have piped water, drains and buses yet?',
+            field: { key: 'piped_water_pct', label: 'Village households with a piped water connection (2020)', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [0, 100] },
+            needs: ['village_services.ma_village_no', 'village_services.ma_households', 'village_services.ma_piped_pct', 'village_services.ma_kuccha_pct', 'village_services.ma_no_latrine_pct', 'village_services.ma_drain', 'village_services.ma_bus', 'village_services.ma_phc_km', 're_supply.new_floor_m2', 'population.population'],
+            method: `Mission Antyodaya 2020 (Ministry of Rural Development, via data.opencity.in, public domain): a survey of every rural village and habitation, here the villages of Bengaluru Urban and Pune districts (Ahmedabad's box has too few villages left rural). The survey carries 2011 village codes but the Survey of India village maps do not, so rows are matched to map villages by name within the same tehsil (spelling-normalised; close spellings only when the first two letters agree) and several rows of one village are summed; about a third of Bengaluru's mapped villages and almost half of Pune's match, the rest being villages since swallowed by the city or spelt too differently to match safely. Shares are households-weighted. Drains are coded 1 closed, 2 open and covered, 3 open pucca, ${DRAIN_BAD} open kuccha, 5 none; health-centre distance is the midpoint of the survey's band. New floor space is the floor area added 2016-2023 (re_supply, from Open Buildings 2.5D Temporal). Village-reported counts are self-declared and some are rounded, so read them as the village's own account.`,
+            refs: 'Ministry of Rural Development, Mission Antyodaya 2020 village survey (via data.opencity.in); Survey of India village maps (via data.opencity.in)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages });
     return { ENTRIES };
 })();

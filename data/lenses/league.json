@@ -984,6 +984,12 @@
      "unit": "₹/yr",
      "higherIs": null
     },
+    "fringevillages": {
+     "label": "Fringe-village households with piped water (2020)",
+     "value": 39,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 30.8,
@@ -11885,6 +11891,12 @@
      "value": 37.3,
      "unit": "°C",
      "higherIs": "worse"
+    },
+    "fringevillages": {
+     "label": "Fringe-village households with piped water (2020)",
+     "value": 26,
+     "unit": "%",
+     "higherIs": "better"
     },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",

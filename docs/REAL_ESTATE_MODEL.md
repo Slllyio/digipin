@@ -1696,3 +1696,14 @@ CSV) and gives every block inside both an assembly constituency and the corporat
 (all, roads, drains, water and sanitation, street lighting, waste, buildings). Work tagged to several wards or none is
 left out. The lens divides each constituency's total by its corporation residents and five years, ranks constituencies,
 and compares drain orders per resident with the residents-weighted rain waterlogging index (Spearman).
+
+## Services in the fringe villages (`fringevillages` lens in js/urban-lenses-wards.js, `village_services` dataset)
+
+`pipeline/realestate/antyodaya.py` reads Mission Antyodaya's 2020 village survey for Bengaluru Urban and Pune districts
+(OpenCity `bengaluru-urban-antyodaya-data`). The rows carry 2011 village codes the Survey of India maps lack, so they are
+matched by spelling-normalised name within the same tehsil (close spellings only when the first two letters agree; the
+map's "Bengaluru Urban" tehsil accepts the survey's North, East and Yelahanka), several rows of a village are summed,
+and villages whose surveyed households hold under a fifth of today's GHSL residents are dropped (Pimple Saudagar,
+Pashan: token rural remnants). Codes follow the survey's codebook (drainage 1 closed to 5 none; power-hour and distance
+bands become midpoints). Ahmedabad's box has only five villages left rural, so it is not baked. The lens weights by
+households and sets piped-water shares against the floor area added 2016-2023 (`re_supply.new_floor_m2`).
