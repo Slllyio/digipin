@@ -1,7 +1,29 @@
 {
-  "generated_at_iso": "2026-10-29T09:21:09Z",
+  "generated_at_iso": "2026-10-29T16:19:37Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-29 20:46:04|20.389,72.895",
+      "magnitude": 2.6,
+      "origin_time": "2026-10-29 20:46:04",
+      "latitude": 20.389,
+      "longitude": 72.895,
+      "depth_km": 11.0,
+      "region": "Valsad, Gujarat",
+      "location": "87km S of Surat, Gujarat, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-29 17:31:53|35.155,73.525",
+      "magnitude": 4.4,
+      "origin_time": "2026-10-29 17:31:53",
+      "latitude": 35.155,
+      "longitude": 73.525,
+      "depth_km": 10.0,
+      "region": "Pakistan",
+      "location": "145km NNW of Gulmarg, Jammu and Kashmir, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-29 14:19:47|13.439,91.600",
       "magnitude": 5.0,
@@ -1628,28 +1650,6 @@
       "depth_km": 135.0,
       "region": "Pakistan",
       "location": "149km ESE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-20 11:38:54|33.134,75.593",
-      "magnitude": 2.4,
-      "origin_time": "2026-10-20 11:38:54",
-      "latitude": 33.134,
-      "longitude": 75.593,
-      "depth_km": 5.0,
-      "region": "Doda, Jammu and Kashmir",
-      "location": "63km ENE of Katra, Jammu and Kashmir, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-20 09:44:51|25.246,94.452",
-      "magnitude": 3.4,
-      "origin_time": "2026-10-20 09:44:51",
-      "latitude": 25.246,
-      "longitude": 94.452,
-      "depth_km": 55.0,
-      "region": "Ukhrul, Manipur",
-      "location": "13km NNE of Shirui, Manipur, India",
       "review_status": "Reviewed"
     }
   ]

@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-29T09:21:07Z",
-  "count": 30,
+  "generated_at_iso": "2026-10-29T16:19:27Z",
+  "count": 23,
   "records": [
+    {
+      "id": "us7000ttyw",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-29T13:42:57.953000+00:00",
+      "latitude": 7.5923,
+      "longitude": -80.6309,
+      "depth_km": 10.0,
+      "place": "6 km SE of Pitaloza Arriba, Panama",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttyw",
+      "tsunami": 0,
+      "significance": 341
+    },
+    {
+      "id": "us7000ttyk",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-29T11:38:24.162000+00:00",
+      "latitude": -7.5288,
+      "longitude": 130.0224,
+      "depth_km": 10.0,
+      "place": "Pulau Pulau Tanimbar, Indonesia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttyk",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000ttyd",
+      "magnitude": 4.9,
+      "origin_time_utc": "2026-10-29T10:33:22.424000+00:00",
+      "latitude": -18.4979,
+      "longitude": 167.6261,
+      "depth_km": 10.0,
+      "place": "111 km SW of Port-Vila, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttyd",
+      "tsunami": 0,
+      "significance": 369
+    },
     {
       "id": "us7000tty7",
       "magnitude": 5.1,
@@ -120,7 +156,7 @@
       "place": "36 km SSW of Merizo Village, Guam",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttvy",
       "tsunami": 0,
-      "significance": 358
+      "significance": 359
     },
     {
       "id": "us7000ttvs",
@@ -241,126 +277,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttt2",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us7000ttpk",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-28T15:40:55.130000+00:00",
-      "latitude": 44.2394,
-      "longitude": 82.8042,
-      "depth_km": 10.0,
-      "place": "81 km ENE of Mazha, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttpk",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000ttpe",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-10-28T15:07:52.050000+00:00",
-      "latitude": 35.7015,
-      "longitude": 140.7059,
-      "depth_km": 41.356,
-      "place": "5 km ESE of Asahi, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttpe",
-      "tsunami": 0,
-      "significance": 488
-    },
-    {
-      "id": "us7000ttp7",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-28T13:31:54.350000+00:00",
-      "latitude": 8.9241,
-      "longitude": 40.0638,
-      "depth_km": 10.0,
-      "place": "13 km WSW of Āwash, Ethiopia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttp7",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000ttp2",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-28T12:58:58.100000+00:00",
-      "latitude": -24.197,
-      "longitude": -177.0372,
-      "depth_km": 129.952,
-      "place": "south of the Fiji Islands",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttp2",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ttnz",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-28T12:47:08.927000+00:00",
-      "latitude": 58.2153,
-      "longitude": -32.3348,
-      "depth_km": 10.0,
-      "place": "Reykjanes Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttnz",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000ttnt",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-28T12:35:23.786000+00:00",
-      "latitude": -16.541,
-      "longitude": -173.2355,
-      "depth_km": 10.0,
-      "place": "88 km SE of Hihifo, Tonga",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttnt",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000ttnq",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-28T12:14:49.242000+00:00",
-      "latitude": 5.6073,
-      "longitude": 125.4182,
-      "depth_km": 10.0,
-      "place": "1 km WSW of Butulan, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttnq",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000ttnk",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-28T11:56:17.454000+00:00",
-      "latitude": 58.3556,
-      "longitude": -32.2398,
-      "depth_km": 10.0,
-      "place": "Reykjanes Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttnk",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000ttnc",
-      "magnitude": 5.5,
-      "origin_time_utc": "2026-10-28T11:37:49.980000+00:00",
-      "latitude": 58.1005,
-      "longitude": -32.1508,
-      "depth_km": 10.0,
-      "place": "Reykjanes Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttnc",
-      "tsunami": 0,
-      "significance": 465
-    },
-    {
-      "id": "us7000ttmz",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-28T09:32:56.341000+00:00",
-      "latitude": 5.1505,
-      "longitude": 125.3884,
-      "depth_km": 84.25,
-      "place": "29 km SSW of Sarangani, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttmz",
-      "tsunami": 0,
-      "significance": 355
     }
   ]
 }
