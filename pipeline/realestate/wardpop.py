@@ -1,19 +1,24 @@
-"""Residents rescaled to census ward counts (Bengaluru) or 2024 electors per assembly seat (five more cities).
+"""Residents rescaled to ward electors (Bengaluru, 2026 rolls) or 2024 electors per assembly seat (five more cities).
 
 GHSL GHS-POP R2023A (and Meta's HRSL, built on the same census units) puts far too few people in south and east
 Bengaluru: a 1 km circle round Jayanagar holds about 5,500 residents against 1.97 lakh round Malleshwaram, and the
 South and East corporations come to 12-18% of their Census 2011 count while West and North come to twice theirs.
 GHSL's built volume shows no such gap, so the input census units, not the buildings, are off.
 
-The GBA's 369-ward map of December 2025 carries each ward's Census 2011 population (TOT_P). For blocks inside a
-GBA ward, ``calibrate`` keeps GHSL's total for those blocks but shares it out again:
+For blocks inside a GBA ward (the 369-ward map of December 2025, via OpenCity), ``calibrate`` keeps GHSL's total for
+those blocks but shares it out again:
 
-    ward share   ∝ TOT_P × (residential built volume 2020 ÷ 2010 in the ward)
+    ward share   ∝ electors on the GBA's January 2026 draft roll (ward-wise counts, State Election Commission via
+                   OpenCity, public domain; transcribed from the scanned table into data/realestate/
+                   gba_ward_electors_2026.csv, every ward's male + female + others checked against its total and every
+                   corporation's column sums against the printed sub-totals)
     block share  ∝ residential built volume 2020 (GHSL GHS-BUILT-V total minus non-residential) within the ward
 
 ``population`` and ``density_km2`` are rewritten, ``projected_2030`` keeps GHSL's 2030/2020 ratio for those blocks,
 and ``change_2000_2020_pct`` is dropped there (GHSL's 2000 count has the same fault). Blocks outside the GBA keep
-GHSL's figures. Only Corporation, ward_id and TOT_P are read from the map; the caste and tribe columns never are.
+GHSL's figures. Earlier bakes shared by each ward's Census 2011 count (TOT_P on the ward map) grown by residential
+volume 2010-2020; the 2026 roll needs no growth guess. ``gba_targets`` still reads TOT_P, and only Corporation,
+ward_id and TOT_P are read from the map; the caste and tribe columns never are.
 
 The same fault shows up elsewhere when GHSL's residents per assembly seat are set against the seat's 2024 electors
 (Election Commission segment table via OpenCity, public domain): Dum Dum and Rajarhat Gopalpur in Kolkata, Mulund and
@@ -40,6 +45,8 @@ LEVEL = 7
 CITIES = ("bengaluru",)
 ELECTORS = {"hyderabad": "Telangana", "mumbai": "Maharashtra", "pune": "Maharashtra", "kolkata": "West Bengal", "chennai": "Tamil Nadu"}
 MIN_INSIDE, CAP = 0.95, 6
+ROLLS = REPO / "data" / "realestate" / "gba_ward_electors_2026.csv"
+ZONES = {"1": "Central", "2": "North", "3": "South", "4": "East", "5": "West"}   # ZONE_ID on the GBA roll table
 
 
 def gba_targets(text):
@@ -52,6 +59,16 @@ def gba_targets(text):
             out[(f"Bengaluru {corp.strip()} City Corporation", no.strip())] = float(tot)
         except (AttributeError, TypeError, ValueError):
             continue
+    return out
+
+
+def gba_electors(path=ROLLS):
+    """{(body, ward_no): electors} from the transcribed GBA ward roll counts (zone, ward, male, female, others, total)."""
+    import csv
+    out = {}
+    with open(path, encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            out[(f"Bengaluru {ZONES[r['zone']]} City Corporation", str(int(r["ward"])))] = float(r["total"])
     return out
 
 
@@ -154,7 +171,7 @@ def calibrate_region(region, rows):
     from pipeline.cells import earthengine as gee
     v20, v10 = _volumes(region)
     if region in CITIES:
-        return calibrate(rows, _wards(region), targets(region), v20, v10, gee.cell_area_km2)
+        return calibrate(rows, _wards(region), gba_electors(), v20, None, gee.cell_area_km2)
     from pipeline.realestate.constituencies import seat_shares
     from pipeline.realestate.elections import SEGMENTS, _csv, parse_segments
     segs = parse_segments(_csv(SEGMENTS))

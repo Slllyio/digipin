@@ -47,3 +47,11 @@ def test_elector_targets():
     seat_of = {"x": (10, "Dum Dum"), "y": (11, "Far Away"), "z": (12, "Unknown"), "k": (13, "Kopri-Pachpakhadi")}
     blocks, electors = elector_targets(seat_of, segs, "West Bengal", {10: 0.99, 11: 0.5, 12: 1.0, 13: 1.0})
     assert blocks == {"x": 10, "k": 13} and electors == {10: 250000, 13: 300000}
+
+
+def test_gba_electors_file():
+    from pipeline.realestate.wardpop import gba_electors
+    e = gba_electors()
+    assert len(e) == 369 and sum(e.values()) == 8891411
+    assert e[("Bengaluru Central City Corporation", "1")] == 24270 and e[("Bengaluru West City Corporation", "112")] == 19843
+    assert sum(v for (b, _), v in e.items() if "East" in b) == 1041738

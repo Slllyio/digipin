@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T09:27:08Z",
+  "generated": "2026-10-29T09:44:30Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -11905,7 +11905,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 18980,
+          "cells": 18982,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
@@ -12502,7 +12502,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 19068,
+          "cells": 19070,
           "bbox": {
             "west": 77.446044921875,
             "south": 12.8271484375,
@@ -18503,7 +18503,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 14997,
+          "cells": 14998,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
@@ -37594,7 +37594,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 18974,
+          "cells": 18976,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
@@ -45632,7 +45632,7 @@
         },
         {
           "name": "bengaluru",
-          "cells": 15068,
+          "cells": 15067,
           "bbox": {
             "west": 77.441650390625,
             "south": 12.807373046875,

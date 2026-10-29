@@ -958,7 +958,7 @@
   },
   "bengaluru": {
    "label": "Bengaluru",
-   "residents": 13252073,
+   "residents": 13252069,
    "metrics": {
     "heat": {
      "label": "Daytime surface temperature per resident",
@@ -980,7 +980,7 @@
     },
     "waterlog": {
      "label": "Residents where rain pools",
-     "value": 21.6,
+     "value": 21.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1028,13 +1028,13 @@
     },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
-     "value": 30.8,
+     "value": 31.2,
      "unit": "%",
      "higherIs": null
     },
     "floodnews": {
      "label": "Residents within 500 m of a spot reported flooded on 3+ days",
-     "value": 6240331,
+     "value": 6229565,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -1046,7 +1046,7 @@
     },
     "stillair": {
      "label": "Residents in the stillest fifth of the city on its heaviest road exhaust",
-     "value": 613658,
+     "value": 616239,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -1064,31 +1064,31 @@
     },
     "newroads": {
      "label": "Residents within 500 m of a planned elevated corridor or ring road",
-     "value": 1730533,
+     "value": 1743947,
      "unit": "people",
      "higherIs": null
     },
     "raingaugegap": {
      "label": "Residents more than 2 km from a telemetric rain gauge",
-     "value": 573540,
+     "value": 563236,
      "unit": "people",
      "higherIs": "worse"
     },
     "tbcare": {
      "label": "Residents more than 3 km from a TB unit",
-     "value": 5032192,
+     "value": 4973204,
      "unit": "people",
      "higherIs": "worse"
     },
     "servicecentres": {
      "label": "Residents more than 1 km from a citizen service centre",
-     "value": 442195,
+     "value": 431404,
      "unit": "people",
      "higherIs": "worse"
     },
     "recycling": {
      "label": "Residents more than 1 km from a recycling drop-off centre",
-     "value": 9431613,
+     "value": 9410269,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -1112,19 +1112,19 @@
     },
     "hillside": {
      "label": "Residents on ground averaging 10° or steeper",
-     "value": 8259,
+     "value": 8832,
      "unit": "people",
      "higherIs": "worse"
     },
     "heatedup": {
      "label": "Residents in blocks 2 °C or more hotter against the city than in 2000-06",
-     "value": 8.5,
+     "value": 8.3,
      "unit": "%",
      "higherIs": "worse"
     },
     "greenchange": {
      "label": "Residents in blocks that browned against the city since 2000-06",
-     "value": 7.8,
+     "value": 7.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1136,7 +1136,7 @@
     },
     "streetgrid": {
      "label": "Intersections per km² around the median resident",
-     "value": 252,
+     "value": 254,
      "unit": "per km²",
      "higherIs": "better"
     },
@@ -1148,7 +1148,7 @@
     },
     "metrowait": {
      "label": "Residents within 800 m of a metro station",
-     "value": 23.5,
+     "value": 23.2,
      "unit": "%",
      "higherIs": "better"
     },
@@ -1160,7 +1160,7 @@
     },
     "airmonitorgap": {
      "label": "Residents more than 2 km from an air quality station",
-     "value": 7116362,
+     "value": 7146061,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -1172,7 +1172,7 @@
     },
     "gwprospect": {
      "label": "Residents on poor or nil groundwater prospects",
-     "value": 30680,
+     "value": 32275,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -1226,13 +1226,13 @@
     },
     "pinsize": {
      "label": "Residents per pincode (median)",
-     "value": 99050,
+     "value": 98770,
      "unit": "people",
      "higherIs": "worse"
     },
     "sroload": {
      "label": "Residents per sub-registrar office (median)",
-     "value": 290244,
+     "value": 289814,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -1250,7 +1250,7 @@
     },
     "watergap": {
      "label": "Residents with no water line within 250 m",
-     "value": 3.5,
+     "value": 3.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1286,7 +1286,7 @@
     },
     "bigprojects": {
      "label": "Residents with 5+ large projects within 2 km",
-     "value": 56.1,
+     "value": 56.3,
      "unit": "%",
      "higherIs": "better"
     },
@@ -1322,19 +1322,19 @@
     },
     "freight": {
      "label": "Residents beside a truck route",
-     "value": 6.7,
+     "value": 6.5,
      "unit": "%",
      "higherIs": "worse"
     },
     "crossing": {
      "label": "Main-road residents facing a 500+ m crossing gap",
-     "value": 17,
+     "value": 16.7,
      "unit": "%",
      "higherIs": "worse"
     },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
-     "value": 5,
+     "value": 4.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1346,7 +1346,7 @@
     },
     "roadsafety": {
      "label": "Children whose walk to school crosses a fast, busy road",
-     "value": 16.9,
+     "value": 17.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1364,43 +1364,43 @@
     },
     "canteen": {
      "label": "Residents beyond a 1 km walk of a subsidised canteen",
-     "value": 41.8,
+     "value": 42,
      "unit": "%",
      "higherIs": "worse"
     },
     "sewergap": {
      "label": "Residents with no sewer within 250 m",
-     "value": 6.5,
+     "value": 6.6,
      "unit": "%",
      "higherIs": "worse"
     },
     "freeclinic": {
      "label": "Residents beyond a 1 km walk of free primary care",
-     "value": 21.6,
+     "value": 21.8,
      "unit": "%",
      "higherIs": "worse"
     },
     "busgap": {
      "label": "Busy-corridor residents without good bus service",
-     "value": 2.6,
+     "value": 3,
      "unit": "%",
      "higherIs": "worse"
     },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
-     "value": 54.4,
+     "value": 54.2,
      "unit": "%",
      "higherIs": "worse"
     },
     "noise": {
      "label": "Residents above 53 dB",
-     "value": 77.7,
+     "value": 77.8,
      "unit": "%",
      "higherIs": "worse"
     },
     "traffic": {
      "label": "Residents beside a jammed arterial",
-     "value": 45.2,
+     "value": 45.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1412,7 +1412,7 @@
     },
     "metro": {
      "label": "Within 10 min walk of the metro",
-     "value": 15.9,
+     "value": 15.7,
      "unit": "%",
      "higherIs": "better"
     },
@@ -1436,7 +1436,7 @@
     },
     "feeder": {
      "label": "Feeder-range residents with no bus stop nearby",
-     "value": 8.7,
+     "value": 8.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1448,7 +1448,7 @@
     },
     "jamcost": {
      "label": "Delay per motorised traveller",
-     "value": 8.8,
+     "value": 8.7,
      "unit": "min/day",
      "higherIs": "worse"
     },
@@ -1478,13 +1478,13 @@
     },
     "rentdemand": {
      "label": "Residents in high-demand, low-price pockets",
-     "value": 2,
+     "value": 2.1,
      "unit": "%",
      "higherIs": null
     },
     "affordability": {
      "label": "Residents where land prices outrun local incomes",
-     "value": 2.6,
+     "value": 2.5,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1526,7 +1526,7 @@
     },
     "metroboost": {
      "label": "Residents newly within a 10-minute walk of metro",
-     "value": 883849,
+     "value": 912772,
      "unit": "people",
      "higherIs": "better"
     },
@@ -1544,13 +1544,13 @@
     },
     "flood2050": {
      "label": "Residents in the 1-in-100-year flood zone by 2050",
-     "value": 110,
+     "value": 117,
      "unit": "people",
      "higherIs": "worse"
     },
     "solarhome": {
      "label": "Residents whose home can host at least 1 kW of rooftop solar",
-     "value": 69.2,
+     "value": 69.5,
      "unit": "%",
      "higherIs": "better"
     },
@@ -1586,7 +1586,7 @@
     },
     "coolroof": {
      "label": "Residents under dark roofs",
-     "value": 937485,
+     "value": 927942,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -1622,7 +1622,7 @@
     },
     "treeplant": {
      "label": "Trees that fit on open land toward 30% canopy",
-     "value": 1251053,
+     "value": 1251381,
      "unit": "trees",
      "higherIs": null
     },
@@ -1670,7 +1670,7 @@
     },
     "informal": {
      "label": "Residents in likely informal blocks",
-     "value": 10.2,
+     "value": 10.5,
      "unit": "%",
      "higherIs": null
     },
@@ -1688,7 +1688,7 @@
     },
     "flightpath": {
      "label": "Residents under flight paths",
-     "value": 6.2,
+     "value": 6.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1700,7 +1700,7 @@
     },
     "anchors": {
      "label": "Blocks near all three demand anchors (score 80+)",
-     "value": 3499,
+     "value": 3500,
      "unit": "blocks",
      "higherIs": null
     },
@@ -1730,7 +1730,7 @@
     },
     "dumps": {
      "label": "People within 1 km of a landfill or quarry",
-     "value": 380971,
+     "value": 387895,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -1748,13 +1748,13 @@
     },
     "firereach": {
      "label": "Residents more than 3 km from a fire station",
-     "value": 35.3,
+     "value": 35.1,
      "unit": "%",
      "higherIs": "worse"
     },
     "turnout": {
      "label": "Lok Sabha 2024 turnout residents face",
-     "value": 54.5,
+     "value": 54.6,
      "unit": "%",
      "higherIs": "better"
     },
@@ -1766,7 +1766,7 @@
     },
     "oldtall": {
      "label": "Residents in old blocks with buildings 10 m+",
-     "value": 3.4,
+     "value": 3.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1784,7 +1784,7 @@
     },
     "factoryhomes": {
      "label": "Residents within 500 m of industry",
-     "value": 30.3,
+     "value": 29.7,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1802,13 +1802,13 @@
     },
     "hospitalsafe": {
      "label": "Hospitals facing two or more hazards",
-     "value": 6,
+     "value": 5.9,
      "unit": "%",
      "higherIs": "worse"
     },
     "stationload": {
      "label": "Residents per suburban station (median)",
-     "value": 102302,
+     "value": 102160,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -1838,7 +1838,7 @@
     },
     "rainharvest": {
      "label": "Roof rain per resident a day (median)",
-     "value": 26.3,
+     "value": 26.2,
      "unit": "l",
      "higherIs": "better"
     },
@@ -1856,7 +1856,7 @@
     },
     "quarries": {
      "label": "Residents within 500 m of a flooded quarry pit",
-     "value": 10791,
+     "value": 10940,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -1880,7 +1880,7 @@
     },
     "dumpsmoke": {
      "label": "Residents where 30%+ of the wind blows from a landfill within 3 km",
-     "value": 2.9,
+     "value": 3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1892,7 +1892,7 @@
     },
     "wildedge": {
      "label": "Residents within 500 m of large forest",
-     "value": 0.7,
+     "value": 0.6,
      "unit": "%",
      "higherIs": null
     },
@@ -1910,7 +1910,7 @@
     },
     "events": {
      "label": "Residents within 500 m of an event-venue cluster",
-     "value": 20.6,
+     "value": 20.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1922,13 +1922,13 @@
     },
     "railnoise": {
      "label": "Residents within 150 m of a mainline railway",
-     "value": 9.7,
+     "value": 9.8,
      "unit": "%",
      "higherIs": "worse"
     },
     "builduse": {
      "label": "Blocks classed as mostly non-residential",
-     "value": 36.7,
+     "value": 36.6,
      "unit": "%",
      "higherIs": null
     },
@@ -1964,7 +1964,7 @@
     },
     "packed": {
      "label": "Residents in packed blocks",
-     "value": 2232786,
+     "value": 2240776,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -1982,25 +1982,25 @@
     },
     "drainage": {
      "label": "Residents living beside an open drain or nallah",
-     "value": 2330122,
+     "value": 2319548,
      "unit": "people",
      "higherIs": "worse"
     },
     "toilets": {
      "label": "Residents with no public toilet mapped within 1 km",
-     "value": 5589004,
+     "value": 5644374,
      "unit": "people",
      "higherIs": "worse"
     },
     "gated": {
      "label": "Residents in gated areas",
-     "value": 4143246,
+     "value": 4122764,
      "unit": "people",
      "higherIs": null
     },
     "powerlines": {
      "label": "Residents living inside power line corridors",
-     "value": 134829,
+     "value": 133652,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -2018,13 +2018,13 @@
     },
     "crowds": {
      "label": "Dense blocks among the city's busiest gathering clusters",
-     "value": 1943,
+     "value": 1936,
      "unit": "blocks",
      "higherIs": null
     },
     "cooling": {
      "label": "Residents in the hottest blocks with no candidate cooling centre within 1 km",
-     "value": 1207009,
+     "value": 1231289,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -2036,7 +2036,7 @@
     },
     "mosquito": {
      "label": "People in high mosquito-breeding-risk blocks",
-     "value": 1360987,
+     "value": 1407495,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -2054,7 +2054,7 @@
     },
     "reach": {
      "label": "People missing three or more everyday or public services nearby",
-     "value": 2459760,
+     "value": 2430667,
      "unit": "people",
      "higherIs": "worse"
     },
@@ -2084,7 +2084,7 @@
     },
     "floodagain": {
      "label": "Residents in blocks flooded 2+ times",
-     "value": 1.7,
+     "value": 1.8,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -2108,31 +2108,31 @@
     },
     "schoolrun": {
      "label": "Schools on a jammed road at the school run",
-     "value": 14.9,
+     "value": 15.6,
      "unit": "%",
      "higherIs": "worse"
     },
     "ev": {
      "label": "Residents within 3 km of a known charger",
-     "value": 81.7,
+     "value": 81.5,
      "unit": "%",
      "higherIs": "better"
     },
     "fifteen": {
      "label": "Residents with 6+ of 7 essentials on foot",
-     "value": 86.5,
+     "value": 86.6,
      "unit": "%",
      "higherIs": "better"
     },
     "health": {
      "label": "Residents with no healthcare within 2 km",
-     "value": 4.5,
+     "value": 4.4,
      "unit": "%",
      "higherIs": "worse"
     },
     "transit": {
      "label": "Residents with convenient public transport (SDG 11.2.1)",
-     "value": 91.3,
+     "value": 91.2,
      "unit": "%",
      "higherIs": "better"
     },
@@ -2144,7 +2144,7 @@
     },
     "walk": {
      "label": "Residents below 54 junctions/km²",
-     "value": 3.4,
+     "value": 3.3,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -2168,7 +2168,7 @@
     },
     "confidence": {
      "label": "OSM building completeness per resident",
-     "value": 32.5,
+     "value": 32.4,
      "unit": "%",
      "higherIs": "better"
     },

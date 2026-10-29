@@ -257,15 +257,15 @@
   "critical_links": [],
   "demand_model": {
     "zones": 1360,
-    "origins": 1239,
+    "origins": 1237,
     "peak_pcu_total_trips": 397165,
-    "roads_los_e_f": 3603,
-    "roads_los_d": 753,
+    "roads_los_e_f": 3679,
+    "roads_los_d": 706,
     "roads_total": 14967,
     "roads_los_e_f_by_period": {
-      "am": 3552,
-      "pm": 3415,
-      "mid": 317
+      "am": 3633,
+      "pm": 3494,
+      "mid": 308
     },
     "hourly": {
       "share_pct": [
@@ -456,12 +456,12 @@
     "pct_high_or_worse": 14.2
   },
   "noise_air": {
-    "residents_total": 13252073,
-    "residents_near_modelled_roads": 11519282,
-    "residents_lden_ge_53": 10293534,
-    "residents_lden_ge_65": 3706914,
-    "nox_t_day": 17.51,
-    "co2_t_day": 4281.3,
+    "residents_total": 13252069,
+    "residents_near_modelled_roads": 11527914,
+    "residents_lden_ge_53": 10304426,
+    "residents_lden_ge_65": 3698151,
+    "nox_t_day": 17.54,
+    "co2_t_day": 4286.8,
     "nox_vs_s5p_no2_spearman_l5": 0.65,
     "l5_cells_compared": 107,
     "assumptions": {
@@ -488,7 +488,7 @@
   "rail_access": {
     "metro_stations": 87,
     "rail_stations": 38,
-    "pct_within_10_walk_metro": 15.9,
+    "pct_within_10_walk_metro": 15.7,
     "pct_within_10_walk_any": 20.2,
     "source": "Overture Maps 2026-10-21.0 + OpenStreetMap"
   },
@@ -501,8 +501,8 @@
     "parking": 62,
     "fuel": 524,
     "chargers_per_lakh": 0.53,
-    "pct_vkm_within_2km": 67.7,
-    "pct_pop_within_2km": 60.4
+    "pct_vkm_within_2km": 67.6,
+    "pct_pop_within_2km": 60.1
   },
   "cycling": {
     "lowstress_km": 20860,
@@ -581,108 +581,108 @@
     "stops": 5123,
     "stops_with_heat_data": 5123,
     "pct_hot_bare": 17.8,
-    "pct_riders_at_hot_bare": 13.0,
+    "pct_riders_at_hot_bare": 13.1,
     "median_stop_lst_c": 38.6,
     "top_stops": [
-      {
-        "digipin": "4PJ768L",
-        "name": "Kempapura Agrahara",
-        "lon": 77.55467,
-        "lat": 12.96904,
-        "residents_5min": 72861,
-        "lst_c": 39.3,
-        "canopy_pct": 6.3,
-        "priority": 293564
-      },
       {
         "digipin": "4P3J3C8",
         "name": "Muslim Colony",
         "lon": 77.61519,
         "lat": 13.01065,
-        "residents_5min": 49466,
+        "residents_5min": 57054,
         "lst_c": 40.4,
         "canopy_pct": 1.5,
-        "priority": 263110
+        "priority": 303470
       },
       {
-        "digipin": "4P3JJKP",
-        "name": "Bashyam Nagara Okalipuram",
-        "lon": 77.56766,
-        "lat": 12.98727,
-        "residents_5min": 45367,
-        "lst_c": 41.0,
-        "canopy_pct": 7.1,
-        "priority": 252876
+        "digipin": "4PJ768L",
+        "name": "Kempapura Agrahara",
+        "lon": 77.55467,
+        "lat": 12.96904,
+        "residents_5min": 69412,
+        "lst_c": 39.3,
+        "canopy_pct": 6.3,
+        "priority": 279668
       },
       {
         "digipin": "4P3JCPL",
         "name": "Postal and Telecom Colony",
         "lon": 77.61657,
         "lat": 13.01325,
-        "residents_5min": 50914,
+        "residents_5min": 57572,
         "lst_c": 39.7,
         "canopy_pct": 3.9,
-        "priority": 229963
+        "priority": 260035
       },
       {
         "digipin": "4P3JCPL",
         "name": "Postal and Telecom Colony",
         "lon": 77.61609,
         "lat": 13.01193,
-        "residents_5min": 50914,
+        "residents_5min": 57572,
         "lst_c": 39.7,
         "canopy_pct": 3.9,
-        "priority": 229963
+        "priority": 260035
       },
       {
         "digipin": "4P3JCPL",
         "name": "",
         "lon": 77.61642,
         "lat": 13.01277,
-        "residents_5min": 50914,
+        "residents_5min": 57572,
         "lst_c": 39.7,
         "canopy_pct": 3.9,
-        "priority": 229963
-      },
-      {
-        "digipin": "4P3JJKL",
-        "name": "Ramachandra Pura Market",
-        "lon": 77.563,
-        "lat": 12.98569,
-        "residents_5min": 49203,
-        "lst_c": 39.8,
-        "canopy_pct": 6.2,
-        "priority": 221532
+        "priority": 260035
       },
       {
         "digipin": "4PJ762P",
         "name": "",
         "lon": 77.55068,
         "lat": 12.96087,
-        "residents_5min": 45638,
+        "residents_5min": 52857,
         "lst_c": 40.1,
         "canopy_pct": 6.7,
-        "priority": 217159
+        "priority": 251509
       },
       {
         "digipin": "4PJ762P",
         "name": "Guddadahalli Bus Stand",
         "lon": 77.55095,
         "lat": 12.961,
-        "residents_5min": 45638,
+        "residents_5min": 52857,
         "lst_c": 40.1,
         "canopy_pct": 6.7,
-        "priority": 217159
+        "priority": 251509
       },
       {
-        "digipin": "4P3JJK2",
-        "name": "Bashyam Nagar",
-        "lon": 77.56798,
-        "lat": 12.99077,
-        "residents_5min": 49093,
-        "lst_c": 39.5,
-        "canopy_pct": 2.9,
-        "priority": 214512
+        "digipin": "4P3JJKP",
+        "name": "Bashyam Nagara Okalipuram",
+        "lon": 77.56766,
+        "lat": 12.98727,
+        "residents_5min": 43917,
+        "lst_c": 41.0,
+        "canopy_pct": 7.1,
+        "priority": 244793
+      },
+      {
+        "digipin": "4P3JJKL",
+        "name": "Ramachandra Pura Market",
+        "lon": 77.563,
+        "lat": 12.98569,
+        "residents_5min": 51324,
+        "lst_c": 39.8,
+        "canopy_pct": 6.2,
+        "priority": 231081
+      },
+      {
+        "digipin": "4PJ767J",
+        "name": "Jagajeevanram Nagara",
+        "lon": 77.55504,
+        "lat": 12.96457,
+        "residents_5min": 53356,
+        "lst_c": 39.6,
+        "canopy_pct": 7.3,
+        "priority": 227521
       }
     ],
     "thresholds": {

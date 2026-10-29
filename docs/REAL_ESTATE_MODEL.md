@@ -1761,3 +1761,11 @@ values from summary blocks A1, B1 and C1) and level 15 (household size and weigh
 visits, so it is not used. Item groups are scaled to 30 days from their recall periods (7 days, 30 days or 365 days as
 in the questionnaire), imputed rent (539) is dropped, and MPCE is the weighted total over weighted people, which gives
 Delhi's urban ₹8,542 as MoSPI publishes. Rent is item 529 for households paying it. One value per city at L5.
+
+### Update: Bengaluru wards by 2026 electors
+
+Since item 266, `wardpop.py` shares GHSL's GBA total by each ward's electors on the GBA's January 2026 draft roll
+(data/realestate/gba_ward_electors_2026.csv, transcribed from OpenCity's scanned ward-wise count table; each row's male +
+female + others equals its total and each corporation's sums match the printed sub-totals and the 88,91,411 grand
+total) instead of Census 2011 counts grown by built volume. ZONE_ID 1-5 on the table are the Central, North, South,
+East and West corporations.
