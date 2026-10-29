@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T08:53:52Z",
+  "generated": "2026-10-29T09:09:14Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -5600,6 +5600,416 @@
             "north": 19.26953125
           },
           "json": "census_homes/mumbai.json.gz",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "city_road_deaths",
+      "title": "City road deaths (MoRTH 2024)",
+      "description": "Road crashes, deaths and injuries in the police city area for 2023 and 2024, deaths by road user and by the violation the police recorded, from the Ministry of Road Transport and Highways' Road Accidents in India 2024 (via data.opencity.in). One value per city; the police city is not the map box.",
+      "source": "pipeline/realestate/roaddeaths.py (MoRTH Road Accidents in India 2024 city tables via OpenCity)",
+      "license": "Public domain (MoRTH via data.opencity.in)",
+      "group": "Traffic & mobility",
+      "level": 5,
+      "approxCellM": 3900,
+      "fields": [
+        {
+          "key": "rd_killed_2024",
+          "label": "Road deaths in the police city, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "deaths",
+          "domain": [
+            191,
+            1551
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rd_killed_2023",
+          "label": "Road deaths in the police city, 2023",
+          "type": "number",
+          "agg": "max",
+          "unit": "deaths",
+          "domain": [
+            159,
+            1457
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rd_crashes_2024",
+          "label": "Road crashes in the police city, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "crashes",
+          "domain": [
+            1403,
+            5657
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rd_injured_2024",
+          "label": "People injured on the roads, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "people",
+          "domain": [
+            1041,
+            5224
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rd_rank_killed_2024",
+          "label": "Rank by road deaths among 50 large cities, 2024 (1 = most)",
+          "type": "number",
+          "agg": "min",
+          "unit": "rank",
+          "domain": [
+            1,
+            37
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "rd_per100",
+          "label": "Road deaths per 100 crashes, 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per 100",
+          "domain": [
+            8.0,
+            35.3
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rd_per100_median",
+          "label": "Road deaths per 100 crashes, median of 50 large cities",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per 100",
+          "domain": [
+            28.1,
+            28.1
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "rd_pedestrian_pct",
+          "label": "Share of 2024 road deaths: pedestrian users",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_cycle_pct",
+          "label": "Share of 2024 road deaths: cycle users",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_twowheeler_pct",
+          "label": "Share of 2024 road deaths: two-wheeler users",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_auto_pct",
+          "label": "Share of 2024 road deaths: auto users",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_car_pct",
+          "label": "Share of 2024 road deaths: car users",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_truck_pct",
+          "label": "Share of 2024 road deaths: truck users",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_bus_pct",
+          "label": "Share of 2024 road deaths: bus users",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_other_pct",
+          "label": "Share of 2024 road deaths: other users",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_speeding_pct",
+          "label": "Share of 2024 road deaths recorded as over-speeding",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_drunk_pct",
+          "label": "Share of 2024 road deaths recorded as drunk driving",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_wrongside_pct",
+          "label": "Share of 2024 road deaths recorded as wrong side",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_redlight_pct",
+          "label": "Share of 2024 road deaths recorded as jumping red light",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "rd_phone_pct",
+          "label": "Share of 2024 road deaths recorded as mobile phone",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds"
+        }
+      ],
+      "default": {
+        "field": "rd_per100",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "ahmedabad",
+          "cells": 42,
+          "bbox": {
+            "west": 72.46484375,
+            "south": 22.92578125,
+            "east": 72.7109375,
+            "north": 23.13671875
+          },
+          "json": "city_road_deaths/ahmedabad.json",
+          "parquet": null
+        },
+        {
+          "name": "bengaluru",
+          "cells": 110,
+          "bbox": {
+            "west": 77.421875,
+            "south": 12.80078125,
+            "east": 77.80859375,
+            "north": 13.15234375
+          },
+          "json": "city_road_deaths/bengaluru.json",
+          "parquet": null
+        },
+        {
+          "name": "bhopal",
+          "cells": 35,
+          "bbox": {
+            "west": 77.28125,
+            "south": 23.171875,
+            "east": 77.52734375,
+            "north": 23.34765625
+          },
+          "json": "city_road_deaths/bhopal.json",
+          "parquet": null
+        },
+        {
+          "name": "chennai",
+          "cells": 50,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.87109375,
+            "east": 80.33984375,
+            "north": 13.1875
+          },
+          "json": "city_road_deaths/chennai.json",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 225,
+          "bbox": {
+            "west": 76.82421875,
+            "south": 28.375,
+            "east": 77.3515625,
+            "north": 28.90234375
+          },
+          "json": "city_road_deaths/delhi.json",
+          "parquet": null
+        },
+        {
+          "name": "hyderabad",
+          "cells": 90,
+          "bbox": {
+            "west": 78.265625,
+            "south": 17.265625,
+            "east": 78.6171875,
+            "north": 17.58203125
+          },
+          "json": "city_road_deaths/hyderabad.json",
+          "parquet": null
+        },
+        {
+          "name": "indore_pilot",
+          "cells": 156,
+          "bbox": {
+            "west": 75.59375,
+            "south": 22.46875,
+            "east": 76.015625,
+            "north": 22.92578125
+          },
+          "json": "city_road_deaths/indore_pilot.json",
+          "parquet": null
+        },
+        {
+          "name": "jaipur",
+          "cells": 42,
+          "bbox": {
+            "west": 75.69921875,
+            "south": 26.79296875,
+            "east": 75.9453125,
+            "north": 27.00390625
+          },
+          "json": "city_road_deaths/jaipur.json",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 42,
+          "bbox": {
+            "west": 88.25,
+            "south": 22.43359375,
+            "east": 88.4609375,
+            "north": 22.6796875
+          },
+          "json": "city_road_deaths/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "lucknow",
+          "cells": 49,
+          "bbox": {
+            "west": 80.83203125,
+            "south": 26.72265625,
+            "east": 81.078125,
+            "north": 26.96875
+          },
+          "json": "city_road_deaths/lucknow.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 81,
+          "bbox": {
+            "west": 72.74609375,
+            "south": 18.8828125,
+            "east": 72.9921875,
+            "north": 19.3046875
+          },
+          "json": "city_road_deaths/mumbai.json",
+          "parquet": null
+        },
+        {
+          "name": "pune",
+          "cells": 56,
+          "bbox": {
+            "west": 73.73046875,
+            "south": 18.42578125,
+            "east": 74.01171875,
+            "north": 18.671875
+          },
+          "json": "city_road_deaths/pune.json",
           "parquet": null
         }
       ]

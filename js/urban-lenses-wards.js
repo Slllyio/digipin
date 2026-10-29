@@ -387,7 +387,53 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // City road deaths. MoRTH's Road Accidents in India 2024 tables for 50 large cities (police city areas): deaths and
+    // crashes in 2023 and 2024, who died (pedestrians, two-wheeler riders ...) and the violation the police recorded.
+    const RD_USERS = [['pedestrian', 'pedestrians'], ['twowheeler', 'two-wheeler riders'], ['cycle', 'cyclists'], ['auto', 'auto-rickshaw users'],
+        ['car', 'car and van users'], ['truck', 'truck users'], ['bus', 'bus users'], ['other', 'others']];
+    const RD_CAUSES = [['speeding', 'over-speeding'], ['wrongside', 'driving on the wrong side'], ['drunk', 'drunk driving'], ['redlight', 'jumping a red light'], ['phone', 'using a phone']];
+
+    function roaddeaths(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`city_road_deaths.rd_${k}`];
+        const k24 = col('killed_2024');
+        if (!k24 || !k24.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(k24[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => (col(k) && _fin(col(k)[i0]) ? col(k)[i0] : NaN);
+        const killed = v('killed_2024'), before = v('killed_2023'), per = v('per100'), med = v('per100_median'), rank = v('rank_killed_2024');
+        const users = RD_USERS.map(([k, label]) => ({ label, pct: v(`${k}_pct`) })).filter(u => _fin(u.pct)).sort((a, b) => b.pct - a.pct);
+        const causes = RD_CAUSES.map(([k, label]) => ({ label, pct: v(`${k}_pct`) })).filter(u => _fin(u.pct));
+        const chg = _fin(before) && before ? 100 * (killed - before) / before : NaN;
+        const pp = x => `${_round(x, 0)}%`;
+        const ord = r => `${r}${r % 100 >= 11 && r % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][r % 10] || 'th'}`;
+        const stats = [
+            { label: 'Road deaths in the police city, 2024 (2023)', value: `${Math.round(killed)} (${_fin(before) ? Math.round(before) : 'n/a'})` },
+            { label: 'Rank among 50 large cities by road deaths, 2024', value: _fin(rank) ? `${Math.round(rank)} of 50` : 'n/a' },
+            { label: 'Deaths per 100 crashes / median of the 50 cities', value: `${_round(per, 1)} / ${_round(med, 1)}` },
+            { label: 'Crashes / people injured, 2024', value: `${Math.round(v('crashes_2024'))} / ${_fin(v('injured_2024')) ? Math.round(v('injured_2024')) : 'n/a'}` },
+            ...users.map(u => ({ label: `Share of deaths: ${u.label}`, value: pp(u.pct) })),
+            ...causes.map(u => ({ label: `Share of deaths recorded as ${u.label}`, value: pp(u.pct) })),
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = per;
+        const top = users.slice(0, 2), speed = causes.find(u => u.label === 'over-speeding');
+        const sev = !_fin(per) || !_fin(med) ? '' : per > med * 1.25 ? `, more than the 50-city median of ${_round(med, 1)}` : per < med * 0.8 ? `, fewer than the 50-city median of ${_round(med, 1)}` : `, close to the 50-city median of ${_round(med, 1)}`;
+        return {
+            columns: { deaths_per100: out }, idx, weightKey: 'deaths_per100', noHotspots: true,
+            metric: { label: 'Road deaths per 100 crashes (police city, 2024)', value: _round(per, 1), unit: 'per 100', higherIs: 'worse' },
+            headline: `${Math.round(killed)} people died on the roads in the police city in 2024${_fin(chg) ? ` (${chg >= 0 ? 'up' : 'down'} ${_round(Math.abs(chg), 0)}% on 2023)` : ''}${_fin(rank) ? `, the ${Math.round(rank) === 1 ? '' : `${ord(Math.round(rank))} `}most of 50 large cities` : ''}; ${_round(per, 1)} died per 100 crashes${sev}.${top.length ? ` ${top[0].label[0].toUpperCase()}${top[0].label.slice(1)} were ${pp(top[0].pct)} of the dead${top[1] ? ` and ${top[1].label} ${pp(top[1].pct)}` : ''}` : ''}${speed ? `; police put ${pp(speed.pct)} of deaths down to over-speeding` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
+        { id: 'roaddeaths', equity: true, title: 'Road deaths in the city', icon: '🚑',
+            question: 'How many people die on the roads here, who are they, and is it getting worse?',
+            field: { key: 'deaths_per100', label: 'Road deaths per 100 crashes (police city, 2024)', unit: 'per 100', higherIs: 'worse', ramp: 'reds', domain: [5, 40] },
+            needs: ['city_road_deaths.rd_killed_2024', 'city_road_deaths.rd_killed_2023', 'city_road_deaths.rd_crashes_2024', 'city_road_deaths.rd_injured_2024', 'city_road_deaths.rd_rank_killed_2024', 'city_road_deaths.rd_per100', 'city_road_deaths.rd_per100_median',
+                ...RD_USERS.map(([k]) => `city_road_deaths.rd_${k}_pct`), ...RD_CAUSES.map(([k]) => `city_road_deaths.rd_${k}_pct`), 'population.population'],
+            method: `The Ministry of Road Transport and Highways' Road Accidents in India 2024 (via data.opencity.in, public domain) tables 50 large cities: crashes, deaths and injuries for 2023 and 2024 with each city's rank, deaths by the road user killed, and deaths by the traffic violation the police recorded. Figures are for the police city area (Hyderabad's excludes Cyberabad and Rachakonda, for example), not the map box, so the map shows one value across the city. Deaths per 100 crashes measures how severe crashes are; cities that record fewer minor crashes look worse on it. Police put most deaths down to over-speeding in some cities and to "others" in others, so the cause shares say as much about recording as about causes. Guna is not among the 50 cities.`,
+            refs: 'MoRTH Road Accidents in India 2024 (city tables) via data.opencity.in' },
         { id: 'mlaseats', title: 'Who holds the assembly seat', icon: '🗳️',
             question: 'Which party holds the assembly seats here, and how close were the races?',
             field: { key: 'seat_margin', label: 'Assembly winning margin (latest state election)', unit: 'points', higherIs: null, ramp: 'viridis', domain: [0, 40] },
@@ -432,6 +478,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths });
     return { ENTRIES };
 })();

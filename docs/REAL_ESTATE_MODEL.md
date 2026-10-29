@@ -1744,3 +1744,11 @@ takes the winner, runner-up, margin and winner's share over all votes including 
 Parties are coded by a fixed `PARTIES` list that the lens mirrors, with the block's 2024 Lok Sabha winner coded the same
 way so the lens can count residents whose MLA and MP differ. West Bengal's Falta seat has no counted votes in the file
 and is left out.
+
+## Road deaths in the city (`roaddeaths` lens, `city_road_deaths` dataset)
+
+`pipeline/realestate/roaddeaths.py` reads three city tables from MoRTH's Road Accidents in India 2024 on OpenCity
+(crashes, deaths and injuries 2023-2024 with ranks; deaths by road user; deaths by recorded violation) and bakes one
+value per city at L5 for the 12 of our cities among MoRTH's 50 (not Guna). Figures are the police city's (Hyderabad's
+excludes Cyberabad and Rachakonda). Deaths per 100 crashes is set against the 50-city median, which the bake stores
+with each city. Recorded violations lean on how each force files deaths (Mumbai puts 99% down to over-speeding).
