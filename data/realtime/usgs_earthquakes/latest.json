@@ -1,7 +1,115 @@
 {
-  "generated_at_iso": "2026-10-29T02:53:19Z",
-  "count": 25,
+  "generated_at_iso": "2026-10-29T09:21:07Z",
+  "count": 30,
   "records": [
+    {
+      "id": "us7000tty7",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-10-29T08:49:42.448000+00:00",
+      "latitude": 13.3785,
+      "longitude": 91.6593,
+      "depth_km": 10.0,
+      "place": "218 km NNW of Bamboo Flat, India",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tty7",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000tty0",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-29T07:54:06.718000+00:00",
+      "latitude": 37.9065,
+      "longitude": -26.2963,
+      "depth_km": 10.0,
+      "place": "41 km W of Mosteiros, Portugal",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tty0",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000ttxz",
+      "magnitude": 6.4,
+      "origin_time_utc": "2026-10-29T07:49:50.928000+00:00",
+      "latitude": -36.4058,
+      "longitude": -98.0489,
+      "depth_km": 10.0,
+      "place": "southeast of Easter Island",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttxz",
+      "tsunami": 0,
+      "significance": 630
+    },
+    {
+      "id": "us7000ttxn",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-10-29T07:31:30.432000+00:00",
+      "latitude": 8.4677,
+      "longitude": 127.4269,
+      "depth_km": 10.0,
+      "place": "114 km ENE of Barcelona, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttxn",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us7000ttx8",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-10-29T05:33:36.298000+00:00",
+      "latitude": -61.3277,
+      "longitude": 161.1643,
+      "depth_km": 10.0,
+      "place": "Balleny Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttx8",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000ttx0",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-10-29T05:06:48.289000+00:00",
+      "latitude": -60.2079,
+      "longitude": -27.9532,
+      "depth_km": 8.561,
+      "place": "South Sandwich Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttx0",
+      "tsunami": 0,
+      "significance": 449
+    },
+    {
+      "id": "us7000ttw5",
+      "magnitude": 5.7,
+      "origin_time_utc": "2026-10-29T03:26:42.275000+00:00",
+      "latitude": -5.6991,
+      "longitude": 141.9018,
+      "depth_km": 10.0,
+      "place": "82 km NE of Kiunga, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttw5",
+      "tsunami": 0,
+      "significance": 500
+    },
+    {
+      "id": "us7000ttw3",
+      "magnitude": 5.8,
+      "origin_time_utc": "2026-10-29T03:19:05.288000+00:00",
+      "latitude": 8.3638,
+      "longitude": 127.4204,
+      "depth_km": 10.0,
+      "place": "110 km ENE of Barcelona, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttw3",
+      "tsunami": 0,
+      "significance": 518
+    },
+    {
+      "id": "us7000ttw2",
+      "magnitude": 5.4,
+      "origin_time_utc": "2026-10-29T03:17:54.507000+00:00",
+      "latitude": 8.3695,
+      "longitude": 127.4427,
+      "depth_km": 10.0,
+      "place": "113 km ENE of Barcelona, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttw2",
+      "tsunami": 0,
+      "significance": 449
+    },
     {
       "id": "us7000ttvy",
       "magnitude": 4.8,
@@ -12,7 +120,7 @@
       "place": "36 km SSW of Merizo Village, Guam",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttvy",
       "tsunami": 0,
-      "significance": 357
+      "significance": 358
     },
     {
       "id": "us7000ttvs",
@@ -156,7 +264,7 @@
       "place": "5 km ESE of Asahi, Japan",
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttpe",
       "tsunami": 0,
-      "significance": 486
+      "significance": 488
     },
     {
       "id": "us7000ttp7",
@@ -253,54 +361,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttmz",
       "tsunami": 0,
       "significance": 355
-    },
-    {
-      "id": "us7000ttmh",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-28T07:02:12.084000+00:00",
-      "latitude": -30.9564,
-      "longitude": -65.5684,
-      "depth_km": 186.301,
-      "place": "39 km SSW of Serrezuela, Argentina",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttmh",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000ttmb",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-28T06:12:47.777000+00:00",
-      "latitude": 51.2258,
-      "longitude": 159.5373,
-      "depth_km": 10.0,
-      "place": "205 km SSE of Vilyuchinsk, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttmb",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000ttm2",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-28T04:31:04.089000+00:00",
-      "latitude": -13.7421,
-      "longitude": 165.7007,
-      "depth_km": 10.0,
-      "place": "200 km W of Sola, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttm2",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000ttlt",
-      "magnitude": 5.6,
-      "origin_time_utc": "2026-10-28T02:59:48.387000+00:00",
-      "latitude": -14.0693,
-      "longitude": 165.8001,
-      "depth_km": 10.0,
-      "place": "174 km NW of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttlt",
-      "tsunami": 0,
-      "significance": 482
     }
   ]
 }
