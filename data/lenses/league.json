@@ -1226,7 +1226,7 @@
     },
     "cleanwalk": {
      "label": "Walk to school along heavy traffic exhaust",
-     "value": 26.1,
+     "value": 26.2,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -1244,7 +1244,7 @@
     },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
-     "value": 8.2,
+     "value": 8.1,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -3144,6 +3144,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "nightshelters": {
+     "label": "Night shelters against the NULM norm of 1 per lakh residents",
+     "value": 64,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "wardfit": {
      "label": "Electricity, water and police offices a ward deals with (median resident)",
      "value": 9,
@@ -4712,7 +4718,7 @@
     },
     "treefall": {
      "label": "Main road under tall canopy",
-     "value": 247,
+     "value": 248,
      "unit": "km",
      "higherIs": null
     },
@@ -8648,7 +8654,7 @@
     },
     "walk": {
      "label": "Residents below 54 junctions/km²",
-     "value": 5.7,
+     "value": 5.6,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10736,7 +10742,7 @@
     },
     "nightwalk": {
      "label": "Walk to the station passes a dark or deserted stretch",
-     "value": 2.6,
+     "value": 2.4,
      "unit": "%",
      "higherIs": "worse"
     },
@@ -10760,7 +10766,7 @@
     },
     "shade": {
      "label": "Walk to a station or school under 10% tree cover",
-     "value": 17.1,
+     "value": 17.2,
      "unit": "%",
      "higherIs": "worse"
     },

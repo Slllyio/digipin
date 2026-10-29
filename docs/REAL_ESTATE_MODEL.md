@@ -1579,3 +1579,12 @@ each scene turned into each pixel's gap to that scene's land median, period medi
 in the median gap (`green_rel_change`) per L7 block. The lens counts residents in blocks that browned or greened by 0.1 or
 more against the city, the mean `heat_change.heat_rel_change_c` for browned, greened and other blocks, and browned blocks
 2 km apart ranked by residents × loss.
+
+## Night shelters (`nightshelters` lens, `night_shelters` dataset, pipeline/realestate/nightshelters.py)
+
+`nightshelters.py` reads Greater Chennai Corporation's night shelter KML (OpenCity `chennai-shelters`), keeping only each
+placemark's coordinates and TYPE_SHELT, which it sorts into men, women, children and special shelters (psycho-social needs,
+disability, elderly, transgender); names and phone numbers are never parsed. The lens judges only blocks inside the
+corporation's wards (`wards.ward_no`): shelters against the NULM Shelter for Urban Homeless norm of one per lakh residents,
+residents within 2 km of a shelter, railway and metro station blocks without one, and shelters to add 4 km apart ranked
+by LandScan daytime people within 1 km, tripled at stations.

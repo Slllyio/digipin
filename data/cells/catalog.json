@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T02:50:47Z",
+  "generated": "2026-10-29T03:01:14Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -27368,6 +27368,102 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "night_shelters",
+      "title": "Night shelters for the homeless (Chennai)",
+      "description": "Greater Chennai Corporation's night shelter map on data.opencity.in (Shelter for Urban Homeless scheme): shelters by who they take in. Only locations and shelter types are used.",
+      "source": "pipeline/realestate/nightshelters.py (OpenCity Chennai night shelters map)",
+      "license": "Public domain (Greater Chennai Corporation via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "shelters",
+          "label": "Night shelters for the urban homeless",
+          "type": "number",
+          "agg": "sum",
+          "unit": "shelters",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "for_men",
+          "label": "Shelters for men",
+          "type": "number",
+          "agg": "sum",
+          "unit": "shelters",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "for_women",
+          "label": "Shelters for women",
+          "type": "number",
+          "agg": "sum",
+          "unit": "shelters",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "for_children",
+          "label": "Shelters for children",
+          "type": "number",
+          "agg": "sum",
+          "unit": "shelters",
+          "domain": [
+            1,
+            1
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "special",
+          "label": "Special shelters (psycho-social needs, disability, elderly, transgender)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "shelters",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "shelters",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "chennai",
+          "cells": 42,
+          "bbox": {
+            "west": 80.146484375,
+            "south": 12.9150390625,
+            "east": 80.3046875,
+            "north": 13.176513671875
+          },
+          "json": "night_shelters/chennai.json",
+          "parquet": null
         }
       ]
     },

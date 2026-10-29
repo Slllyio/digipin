@@ -830,6 +830,46 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Night shelters. Greater Chennai Corporation's Shelter for Urban Homeless map against the NULM norm of one permanent
+    // shelter per lakh people, and the busy places (stations, markets) where homeless people gather that have none nearby.
+    const SHELTER_KM = 2, SHELTER_PER_LAKH = 1;
+
+    function nightshelters(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, sh = c['night_shelters.shelters'], pop = c['population.population'];
+        const men = c['night_shelters.for_men'], women = c['night_shelters.for_women'], kids = c['night_shelters.for_children'], sp = c['night_shelters.special'];
+        const amb = c['ambient_pop.ambient_pop'], rail = c['rail_access.rail_stations'], metro = c['rail_access.metro_stations'], wn = c['wards.ward_no'];
+        if (!sh || !sh.some(x => x > 0)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const sum = a => (a ? Array.from(a).reduce((s, x) => s + (_fin(x) ? x : 0), 0) : 0);
+        const corp = wn && wn.some(_fin);       // the map covers the corporation only, so judge its wards
+        const idx = _residents(fr).filter(i => !corp || _fin(wn[i]));
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const total = Math.round(sum(sh)), need = Math.ceil(SHELTER_PER_LAKH * all / 1e5);
+        const near = within(g, Float64Array.from({ length: n }, (_, i) => v(sh, i)), SHELTER_KM);
+        const reachPop = idx.filter(i => near[i] >= 0.5).reduce((s, i) => s + v(pop, i), 0);
+        const stats = [
+            { label: 'Night shelters mapped', value: `${total} (${[[men, 'for men'], [women, 'for women'], [kids, 'for children'], [sp, 'special']].filter(([a]) => a).map(([a, l]) => `${Math.round(sum(a))} ${l}`).join(', ')})` },
+            { label: `Shelters needed at the NULM norm (${SHELTER_PER_LAKH} per lakh residents)`, value: `${need} (${_round(total / Math.max(need, 1) * 100, 0)}% met)` },
+            { label: `Residents within ${SHELTER_KM} km of a shelter`, value: `${_people(reachPop)} (${_round(100 * reachPop / all, 1)}%)` },
+        ];
+        const hub = i => v(rail, i) + v(metro, i) > 0;
+        const hubs = idx.filter(hub), farHubs = hubs.filter(i => near[i] < 0.5);
+        if (rail || metro) stats.push({ label: `Railway and metro station blocks more than ${SHELTER_KM} km from a shelter`, value: `${farHubs.length} of ${hubs.length}` });
+        const day = amb ? within(g, Float64Array.from({ length: n }, (_, i) => v(amb, i)), 1) : null;
+        const score = Float64Array.from({ length: n }, (_, i) => (near[i] < 0.5 ? (day ? day[i] : v(pop, i)) * (hub(i) ? 3 : 1) : 0));
+        spaced(g, idx.filter(i => near[i] < 0.5), score, 5, 2 * SHELTER_KM).forEach((i, k) => stats.push({ label: `Shelter to add ${k + 1}: ${g.codes[i]}`,
+            value: `${hub(i) ? 'station block; ' : ''}${day ? `${_people(day[i])} people around by day within 1 km` : `${_people(v(pop, i))} residents`}; no shelter within ${SHELTER_KM} km` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = near[i];
+        return {
+            columns: { shelters_2km: out }, idx, weightKey: 'shelters_2km', noHotspots: true,
+            metric: { label: `Night shelters against the NULM norm of ${SHELTER_PER_LAKH} per lakh residents`, value: _round(100 * total / Math.max(need, 1), 0), unit: '%', higherIs: 'better' },
+            headline: `${total} night shelters are mapped for ${_people(all)} residents${corp ? ' of the corporation' : ''}, against about ${need} at the NULM norm of one per lakh; ${_round(100 * reachPop / all, 1)}% of residents live within ${SHELTER_KM} km of one${rail || metro ? `, and ${farHubs.length} of ${hubs.length} station blocks, where homeless people often sleep, have none that close` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -939,8 +979,14 @@ const UrbanLensesCommons = (() => {
             needs: ['green_change.ndvi_2000s', 'green_change.ndvi_2020s', 'green_change.green_rel_change', 'heat_change.heat_rel_change_c', 'population.population'],
             method: `USGS Landsat Collection 2 surface reflectance (public domain, 30 m): NDVI on cloud-free April and May scenes in 2000-2006 (Landsat 5 and 7) and 2021-2025 (Landsat 8 and 9). April and May are dry, so trees, watered parks and irrigated plots stand out while most fields lie harvested. Every scene is turned into each pixel's gap to that scene's median over the city region's land (pixels that are water at least half the time in JRC's Global Surface Water are left out), each period takes the median gap, and the lens maps how the gap changed, which cancels the different sensors and weather years. Browned and greened blocks moved ${GREEN_SHIFT} NDVI or more against the city. Surface heat change is the Heated up lens's Landsat measure for the same scenes. Residents are today's (WorldPop). Picks are browned blocks ${SPACING_KM} km apart ranked by residents × loss. A relative measure: if the whole city lost green, a block that kept pace shows zero; fields that were irrigated in one period and fallow in the other can swing either way.`,
             refs: 'USGS Landsat Collection 2 Level-2 surface reflectance; Pekel et al. 2016, JRC Global Surface Water (Nature)' },
+        { id: 'nightshelters', equity: true, title: 'Night shelters', icon: '🛏️',
+            question: 'Are there enough night shelters for the homeless, and are they where homeless people sleep?',
+            field: { key: 'shelters_2km', label: `Night shelters within ${SHELTER_KM} km`, unit: 'shelters', higherIs: 'better', ramp: 'greens', domain: [0, 5] },
+            needs: ['night_shelters.shelters', 'night_shelters.for_men', 'night_shelters.for_women', 'night_shelters.for_children', 'night_shelters.special', 'ambient_pop.ambient_pop', 'rail_access.rail_stations', 'rail_access.metro_stations', 'wards.ward_no', 'population.population'],
+            method: `Greater Chennai Corporation's night shelter map on data.opencity.in (public domain), the shelters run under the National Urban Livelihoods Mission's Shelter for Urban Homeless scheme, by who they take in (men, women, children, and special shelters for psycho-social needs, disability, the elderly and transgender people). Only locations and shelter types are read; the caretakers' names and phone numbers on the map are not. The norm is the scheme's one permanent shelter per lakh people; residents are GHSL, counted inside the corporation's wards only, as the map stops there. Each block counts shelters within ${SHELTER_KM} km (straight line between block centres). Homeless people gather where there is daytime work and footfall, around stations, markets and bus stands, so shelters to add are blocks ${2 * SHELTER_KM} km apart beyond ${SHELTER_KM} km of a shelter, ranked by LandScan daytime people within 1 km, tripled for railway and metro station blocks. No count of homeless people by place is published, so this is about reach and the norm, not demand. Chennai only: Bengaluru's shelter list gives addresses without locations.`,
+            refs: 'Greater Chennai Corporation night shelters map via data.opencity.in; MoHUA, DAY-NULM Scheme of Shelter for Urban Homeless operational guidelines; Supreme Court of India, E.R. Kumar v. Union of India (shelter monitoring)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters });
     return { ENTRIES };
 })();
