@@ -1588,3 +1588,14 @@ disability, elderly, transgender); names and phone numbers are never parsed. The
 corporation's wards (`wards.ward_no`): shelters against the NULM Shelter for Urban Homeless norm of one per lakh residents,
 residents within 2 km of a shelter, railway and metro station blocks without one, and shelters to add 4 km apart ranked
 by LandScan daytime people within 1 km, tripled at stations.
+
+## Hot days, measured (`hotdays` lens, `air_heat` dataset, pipeline/cells/ee_layers.py)
+
+`air_heat` reads `projects/sat-io/open-datasets/global-daily-air-temp/europe_asia` (Zhang, Zhou et al. 2022, 1 km daily
+Tmax and Tmin, values × 0.1 °C). Older images carry no `year` property, so years are selected by date. For each year it
+counts days with Tmax ≥ 40 °C and ≥ 45 °C and nights with Tmin ≥ 28 °C, and averages them over 2005-2014 (`*_then`) and
+2015-2024 (`*_now`); it also keeps the April-June mean Tmax (`tmax_amj_c`, filtered by `doy` 91-181 before scaling) and its
+gap to the city median (`tmax_amj_anomaly_c`), per L6 block. The lens weights blocks by GHSL residents for the city
+figures, reports the 5th to 95th percentile spread across homes, residents with 7 or more extra days than the median
+resident, and the ERA5-Land `climate_future.hot_days_now` count for comparison, and picks hottest homes 2 km apart by
+(residents + 3 × elderly) × days above the median resident's. Counts near a threshold move with the model's 1-2 °C error.

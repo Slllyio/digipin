@@ -870,6 +870,50 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Hot days, measured. 1 km daily air temperature (Zhang et al.) gives days at 40 and 45 °C and nights that stay at 28 °C
+    // for each neighbourhood, for 2015-2024 against 2005-2014: finer than the 9 km reanalysis behind the 2050 outlook,
+    // and air rather than ground temperature.
+    const HOT_MORE_DAYS = 7;
+
+    function hotdays(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, d40 = c['air_heat.days40_now'], d40a = c['air_heat.days40_then'];
+        const d45 = c['air_heat.days45_now'], d45a = c['air_heat.days45_then'], n28 = c['air_heat.nights28_now'], n28a = c['air_heat.nights28_then'];
+        const pop = c['population.population'], old = c['demographics.elderly_60plus'], era = c['climate_future.hot_days_now'];
+        if (!d40 || !d40.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr).filter(i => _fin(d40[i]));
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const wm = a => (a ? idx.reduce((s, i) => s + v(pop, i) * v(a, i), 0) / all : NaN);
+        let acc = 0, med = NaN;
+        for (const i of idx.slice().sort((a, b) => d40[a] - d40[b])) { acc += v(pop, i); if (acc >= all / 2) { med = d40[i]; break; } }
+        const hot = idx.filter(i => d40[i] >= med + HOT_MORE_DAYS), hotPop = hot.reduce((s, i) => s + v(pop, i), 0);
+        const sorted = idx.map(i => d40[i]).sort((a, b) => a - b);
+        const lo = sorted[Math.floor(0.05 * (sorted.length - 1))], hi = sorted[Math.floor(0.95 * (sorted.length - 1))];
+        const D40 = wm(d40), D40a = wm(d40a), D45 = wm(d45), D45a = wm(d45a), N28 = wm(n28), N28a = wm(n28a);
+        const stats = [
+            { label: 'Days a year at 40 °C or more where the average resident lives, 2005-2014 → 2015-2024', value: `${_round(D40a, 1)} → ${_round(D40, 1)}` },
+        ];
+        if (d45) stats.push({ label: 'Days a year at 45 °C or more, 2005-2014 → 2015-2024', value: `${_round(D45a, 1)} → ${_round(D45, 1)}` });
+        if (n28) stats.push({ label: 'Nights a year that stay at 28 °C or more, 2005-2014 → 2015-2024', value: `${_round(N28a, 1)} → ${_round(N28, 1)}` });
+        stats.push({ label: 'Spread across homes, coolest to hottest twentieth of blocks', value: `${Math.round(lo)} to ${Math.round(hi)} days at 40 °C+` });
+        stats.push({ label: `Residents with ${HOT_MORE_DAYS} or more extra days at 40 °C+ than the median resident`, value: `${_people(hotPop)} (${_round(100 * hotPop / all, 1)}%)` });
+        if (old) stats.push({ label: '…of them aged 60 and over', value: _people(_sumOver(old, hot, i => _fin(old[i]))) });
+        if (era && era.some(_fin)) stats.push({ label: 'Same count from the 9 km ERA5-Land reanalysis, 2015-2024 (2050 outlook baseline)', value: `${_round(wm(era), 1)} days` });
+        const score = Float64Array.from({ length: n }, (_, i) => (_fin(d40[i]) && d40[i] > med ? (v(pop, i) + 3 * v(old, i)) * (d40[i] - med) : 0));
+        spaced(g, idx.filter(i => d40[i] > med), score, 5).forEach((i, k) => stats.push({ label: `Hottest homes ${k + 1}: ${g.codes[i]}`,
+            value: `${Math.round(d40[i])} days at 40 °C+ a year${d45 && _fin(d45[i]) ? `, ${_round(d45[i], 1)} at 45 °C+` : ''}${n28 && _fin(n28[i]) ? `, ${Math.round(n28[i])} nights at 28 °C+` : ''}; ${_people(v(pop, i))} residents${old ? `, ${_people(v(old, i))} aged 60+` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = d40[i];
+        const ch = D40 - D40a;
+        return {
+            columns: { days40_now: out }, idx, weightKey: 'days40_now', noHotspots: true,
+            metric: { label: 'Days a year at 40 °C or more where the average resident lives (2015-2024)', value: _round(D40, 1), unit: 'days', higherIs: 'worse' },
+            headline: `The average resident now lives through ${_round(D40, 1)} days a year at 40 °C or more, ${Math.abs(ch) < 0.5 ? 'about the same as' : `${_round(Math.abs(ch), 1)} ${ch > 0 ? 'more' : 'fewer'} than`} in 2005-2014${n28 ? `, and ${_round(N28, 1)} nights that stay at 28 °C or more` : ''}; homes range from ${Math.round(lo)} to ${Math.round(hi)} such days, and ${_people(hotPop)} residents (${_round(100 * hotPop / all, 1)}%) get ${HOT_MORE_DAYS} or more extra days than the median resident.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -985,8 +1029,14 @@ const UrbanLensesCommons = (() => {
             needs: ['night_shelters.shelters', 'night_shelters.for_men', 'night_shelters.for_women', 'night_shelters.for_children', 'night_shelters.special', 'ambient_pop.ambient_pop', 'rail_access.rail_stations', 'rail_access.metro_stations', 'wards.ward_no', 'population.population'],
             method: `Greater Chennai Corporation's night shelter map on data.opencity.in (public domain), the shelters run under the National Urban Livelihoods Mission's Shelter for Urban Homeless scheme, by who they take in (men, women, children, and special shelters for psycho-social needs, disability, the elderly and transgender people). Only locations and shelter types are read; the caretakers' names and phone numbers on the map are not. The norm is the scheme's one permanent shelter per lakh people; residents are GHSL, counted inside the corporation's wards only, as the map stops there. Each block counts shelters within ${SHELTER_KM} km (straight line between block centres). Homeless people gather where there is daytime work and footfall, around stations, markets and bus stands, so shelters to add are blocks ${2 * SHELTER_KM} km apart beyond ${SHELTER_KM} km of a shelter, ranked by LandScan daytime people within 1 km, tripled for railway and metro station blocks. No count of homeless people by place is published, so this is about reach and the norm, not demand. Chennai only: Bengaluru's shelter list gives addresses without locations.`,
             refs: 'Greater Chennai Corporation night shelters map via data.opencity.in; MoHUA, DAY-NULM Scheme of Shelter for Urban Homeless operational guidelines; Supreme Court of India, E.R. Kumar v. Union of India (shelter monitoring)' },
+        { id: 'hotdays', equity: true, title: 'Hot days, measured', icon: '🌡️',
+            question: 'How many days a year does it pass 40 °C in each neighbourhood, and is that rising?',
+            field: { key: 'days40_now', label: 'Days a year with air temperature at 40 °C or more (2015-2024)', unit: 'days', higherIs: 'worse', ramp: 'heat', domain: [0, 60] },
+            needs: ['air_heat.days40_now', 'air_heat.days40_then', 'air_heat.days45_now', 'air_heat.days45_then', 'air_heat.nights28_now', 'air_heat.nights28_then', 'climate_future.hot_days_now', 'demographics.elderly_60plus', 'population.population'],
+            method: `Zhang et al.'s global 1 km daily maximum and minimum near-surface air temperature (CC BY 4.0), modelled from MODIS land surface temperature, elevation and weather-station records (cross-validated error 1.2 to 2.4 °C). Each block takes its 1 km cell's yearly counts of days at 40 °C or more (IMD's heatwave threshold for the plains), days at 45 °C or more (a heatwave whatever the normal) and nights at 28 °C or more, averaged over 2005-2014 and 2015-2024. City figures weight blocks by today's residents (GHSL); the elderly are WorldPop. Hottest homes are blocks ${SPACING_KM} km apart ranked by (residents + 3 × residents aged 60+) × days above the median resident's. The ERA5-Land count behind the 2050 outlook is shown for comparison: it is a 9 km reanalysis and smooths the city out. Modelled air temperature, not a station record: errors of 1 to 2 °C shift counts near the thresholds, so compare places and decades rather than reading single days.`,
+            refs: 'Zhang, Zhou et al. 2022, A global dataset of daily maximum and minimum near-surface air temperature at 1 km resolution over land (Earth System Science Data); IMD heatwave criteria; NDMA Heat Action Plan guidelines (2019)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters, hotdays });
     return { ENTRIES };
 })();

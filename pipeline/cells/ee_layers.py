@@ -2353,6 +2353,58 @@ def green_change(region):
     return spec, _table(level, rows, specs)
 
 
+def air_heat(region):
+    """Hot days and warm nights per block from 1 km daily air temperature (Zhang et al., 2005-2014 against 2015-2024)."""
+    ee = gee.init()
+    _, bbox = _bbox(region)
+    level = 6
+    col = ee.ImageCollection("projects/sat-io/open-datasets/global-daily-air-temp/europe_asia")
+
+    def decade(y0, y1):
+        def one(y):
+            d = col.filterDate(ee.Date.fromYMD(y, 1, 1), ee.Date.fromYMD(ee.Number(y).add(1), 1, 1))   # older years lack a 'year' property
+            tmax = d.filter(ee.Filter.eq("prop_type", "tmax")).map(lambda i: i.multiply(0.1))
+            tmin = d.filter(ee.Filter.eq("prop_type", "tmin")).map(lambda i: i.multiply(0.1))
+            amj = d.filter(ee.Filter.eq("prop_type", "tmax")).filter(ee.Filter.rangeContains("doy", 91, 181)).map(lambda i: i.multiply(0.1))
+            return ee.Image.cat([tmax.map(lambda i: i.gte(40)).sum(), tmax.map(lambda i: i.gte(45)).sum(), tmin.map(lambda i: i.gte(28)).sum(),
+                                 amj.mean()]).rename(["d40", "d45", "n28", "amj"]).toFloat()
+        return ee.ImageCollection(ee.List.sequence(y0, y1).map(one)).mean()
+
+    then, now = decade(2005, 2014), decade(2015, 2024)
+    img = ee.Image.cat([then.rename(["d40a", "d45a", "n28a", "amja"]), now.rename(["d40b", "d45b", "n28b", "amjb"])])
+    raw = gee.fetch(gee.to_cells(img, 1000), bbox, level)
+    vals = sorted(x["amjb"] for x in raw.values() if x.get("amjb") is not None)
+    if not vals:
+        return None
+    mid = vals[len(vals) // 2]
+    rows = {}
+    for code, x in raw.items():
+        if x.get("d40b") is None or x.get("d40a") is None:
+            continue
+        rows[code] = {"days40_now": _r(x["d40b"]), "days40_then": _r(x["d40a"]), "days45_now": _r(x["d45b"]), "days45_then": _r(x["d45a"]),
+                      "nights28_now": _r(x["n28b"]), "nights28_then": _r(x["n28a"]), "tmax_amj_c": _r(x["amjb"]),
+                      "tmax_amj_anomaly_c": _r(x["amjb"] - mid) if x.get("amjb") is not None else None}
+    specs = [
+        FieldSpec("days40_now", "Days a year with air temperature ≥ 40 °C, 2015-2024", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("days40_then", "Days a year ≥ 40 °C, 2005-2014", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("days45_now", "Days a year ≥ 45 °C, 2015-2024", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("days45_then", "Days a year ≥ 45 °C, 2005-2014", agg="mean", unit="days", ramp="heat", higher_is="worse"),
+        FieldSpec("nights28_now", "Nights a year that stay ≥ 28 °C, 2015-2024", agg="mean", unit="nights", ramp="heat", higher_is="worse"),
+        FieldSpec("nights28_then", "Nights a year ≥ 28 °C, 2005-2014", agg="mean", unit="nights", ramp="heat", higher_is="worse"),
+        FieldSpec("tmax_amj_c", "Mean April-June daily maximum air temperature, 2015-2024", agg="mean", unit="°C", domain=[30, 44], ramp="heat", higher_is="worse"),
+        FieldSpec("tmax_amj_anomaly_c", "April-June daily maximum against the city's median block", agg="mean", unit="°C", domain=[-2, 2], ramp="diverging", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="air_heat", title="Hot days and warm nights (1 km daily air temperature)", level=level, fields=specs, group=GROUP,
+        description="Daily maximum and minimum near-surface air temperature at 1 km (Zhang et al. 2022, from MODIS land surface "
+                    "temperature, elevation and weather-station records; cross-validated error 1.2-2.4 °C), counted per year and "
+                    "averaged over 2005-2014 and 2015-2024: days at 40 °C or more, days at 45 °C or more, nights that stay at 28 °C "
+                    "or more, and the mean April-June daily maximum with each block's gap to the city's median block.",
+        source="Zhang et al. global 1 km daily air temperature (sat-io) via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (Zhang, Zhou et al., Iowa State University)", default_field="days40_now")
+    return spec, _table(level, rows, specs)
+
+
 def pm_heat(region):
     """Peak afternoon surface temperature per block (ECOSTRESS, 70 m, April-June afternoons 2018-2025)."""
     ee = gee.init()
@@ -2390,7 +2442,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "subsidence": subsidence, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat, "winter_nights": winter_nights, "heat_change": heat_change, "green_change": green_change,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "subsidence": subsidence, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat, "winter_nights": winter_nights, "heat_change": heat_change, "green_change": green_change, "air_heat": air_heat,
 }
 
 
