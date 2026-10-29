@@ -2434,6 +2434,37 @@ def pm_heat(region):
     return spec, _table(level, rows, specs)
 
 
+def low_ground(region):
+    """Bare-earth ground height near the coast per block (Deltares DeltaDTM v1.1, 30 m, metres above mean sea level)."""
+    ee = gee.init()
+    _, bbox = _bbox(region)
+    level = 7
+    dtm = ee.Image("projects/sat-io/open-datasets/DELTARES/deltadtm_v1-1").select(0)
+    land = ee.Image("JRC/GSW1_4/GlobalSurfaceWater").select("occurrence").unmask(0).lt(50)
+    z = dtm.updateMask(land)
+    img = ee.Image.cat([z.rename("z"), z.lte(2).rename("b2"), z.lte(3).rename("b3"), z.lte(5).rename("b5")]).toFloat()
+    raw = gee.fetch(gee.to_cells(img, 30), bbox, level, tile=96)
+    rows = {code: {"ground_m": _r(x["z"], 1), "below2_pct": _r(100 * x["b2"], 0), "below3_pct": _r(100 * x["b3"], 0),
+                   "below5_pct": _r(100 * x["b5"], 0)} for code, x in raw.items() if x.get("z") is not None and x.get("b2") is not None}
+    if not rows:
+        return None
+    specs = [
+        FieldSpec("ground_m", "Mean bare-earth ground height above mean sea level (DeltaDTM)", agg="mean", unit="m", domain=[0, 15], ramp="viridis", higher_is="better"),
+        FieldSpec("below2_pct", "Block land 2 m or less above mean sea level", agg="mean", unit="%", domain=[0, 100], ramp="reds", higher_is="worse"),
+        FieldSpec("below3_pct", "Block land 3 m or less above mean sea level", agg="mean", unit="%", domain=[0, 100], ramp="reds", higher_is="worse"),
+        FieldSpec("below5_pct", "Block land 5 m or less above mean sea level", agg="mean", unit="%", domain=[0, 100], ramp="reds", higher_is="worse"),
+    ]
+    spec = DatasetSpec(
+        id="low_ground", title="Low ground by the sea (DeltaDTM bare earth)", level=level, fields=specs, group=GROUP,
+        description="Deltares DeltaDTM v1.1: a global coastal digital terrain model at 30 m built from Copernicus DEM with "
+                    "buildings and trees removed using ICESat-2 and GEDI lidar, so it shows the ground streets and ground floors "
+                    "sit on rather than rooftops. Heights are metres above mean sea level (EGM2008), for land up to 30 m; JRC "
+                    "permanent water is left out. Per block: mean ground height and the shares at 2, 3 and 5 m or less.",
+        source="Deltares DeltaDTM v1.1 (Pronk et al. 2024) via the Earth Engine community catalog (pipeline/cells/ee_layers.py)",
+        license="CC BY 4.0 (Deltares)", default_field="below3_pct")
+    return spec, _table(level, rows, specs)
+
+
 LAYERS = {
     "population": population, "built_up": built_up, "land_cover": land_cover,
     "vegetation": vegetation, "terrain": terrain, "water": water,
@@ -2442,7 +2473,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "subsidence": subsidence, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat, "winter_nights": winter_nights, "heat_change": heat_change, "green_change": green_change, "air_heat": air_heat,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "subsidence": subsidence, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat, "winter_nights": winter_nights, "heat_change": heat_change, "green_change": green_change, "air_heat": air_heat, "low_ground": low_ground,
 }
 
 

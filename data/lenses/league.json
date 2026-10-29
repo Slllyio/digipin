@@ -3102,6 +3102,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "lowground": {
+     "label": "Residents on ground 3 m or less above mean sea level",
+     "value": 288994,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 15.2,
@@ -8856,6 +8862,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "lowground": {
+     "label": "Residents on ground 3 m or less above mean sea level",
+     "value": 4162251,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 78.4,
@@ -10774,6 +10786,12 @@
      "label": "Households in one room or less (Census 2011)",
      "value": 64.9,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "lowground": {
+     "label": "Residents on ground 3 m or less above mean sea level",
+     "value": 818633,
+     "unit": "people",
      "higherIs": "worse"
     },
     "howbuilt": {

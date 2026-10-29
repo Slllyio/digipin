@@ -1661,3 +1661,11 @@ letter), the Primary Census Abstract for Mumbai City and Mumbai Suburban (househ
 and the HH-14 houselisting workbooks (percentages of households by amenities and assets). Census wards are summed into
 the 24 BMC wards, HH-14 shares weighted by households, and every BMC block carries its ward's figures plus
 `c11_ward_no` (A = 1 ... T = 24), because lens frames read numbers only. Caste and tribe columns are not read.
+
+## Low ground by the sea (`lowground` lens in js/urban-lenses-wards.js, `low_ground` EE layer)
+
+`ee_layers.low_ground` samples Deltares DeltaDTM v1.1 (`projects/sat-io/open-datasets/DELTARES/deltadtm_v1-1`, a single
+image, not a collection) at 30 m with JRC permanent water masked, per L7 block: mean ground height and the shares at
+2, 3 and 5 m or less above mean sea level (EGM2008). The model stops at 30 m, so only coastal and delta cities are baked
+(Mumbai, Chennai, Kolkata). The lens counts GHSL residents on those shares, compares the low blocks with Aqueduct's
+present-day coastal flood map and the rain waterlogging index, and picks lived-in low blocks 1.5 km apart.

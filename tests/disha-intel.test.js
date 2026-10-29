@@ -213,6 +213,7 @@ describe('DishaIntel.match() → urban lenses', () => {
         expect(M('which neighbourhoods lost their green since 2000 in Delhi')).toEqual({ type: 'lens', lens: 'greenchange', city: 'delhi' });
         expect(M('which areas have become hotter since 2000 in Pune')).toEqual({ type: 'lens', lens: 'heatedup', city: 'pune' });
         expect(M('trade licences by area in Pune')).toEqual({ type: 'lens', lens: 'licences', city: 'pune' });
+        expect(M('who lives on low-lying land near the sea in Pune')).toEqual({ type: 'lens', lens: 'lowground', city: 'pune' });
         expect(M('how many households lived in one room in Delhi')).toEqual({ type: 'lens', lens: 'homes2011', city: 'delhi' });
         expect(M('census 2011 housing conditions by ward in Pune')).toEqual({ type: 'lens', lens: 'homes2011', city: 'pune' });
         expect(M('where are the dead ends and cul-de-sacs in Pune')).toEqual({ type: 'lens', lens: 'streetgrid', city: 'pune' });
