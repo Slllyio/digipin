@@ -2310,6 +2310,49 @@ def heat_change(region):
     return spec, _table(level, rows, specs)
 
 
+def green_change(region):
+    """April-May greenness (NDVI) in 2000-2006 and 2021-2025 per block (Landsat 5/7 and 8/9 Collection 2, 30 m)."""
+    ee = gee.init()
+    geom, bbox = _bbox(region)
+    level = 7
+    land = ee.Image("JRC/GSW1_4/GlobalSurfaceWater").select("occurrence").unmask(0).lt(50)
+
+    def coll(cid, nir, red, start, end):
+        def ndvi(im):
+            clear = im.select("QA_PIXEL").bitwiseAnd(0b11010).eq(0)   # fill, dilated cloud, cirrus, cloud
+            sr = im.select([nir, red]).multiply(0.0000275).add(-0.2)
+            v = sr.normalizedDifference([nir, red]).updateMask(clear).updateMask(land)
+            med = v.reduceRegion(ee.Reducer.median(), geom, 300, bestEffort=True).values().get(0)
+            return ee.Image.cat([v.rename("ndvi"), v.subtract(ee.Image.constant(ee.Algorithms.If(med, med, 0))).rename("gap")]).toFloat().set("med", med)
+        return (ee.ImageCollection(cid).filterBounds(geom).filterDate(start, end).filter(ee.Filter.calendarRange(4, 5, "month"))
+                .filter(ee.Filter.lt("CLOUD_COVER", 30)).map(ndvi).filter(ee.Filter.notNull(["med"])))
+
+    early = coll("LANDSAT/LT05/C02/T1_L2", "SR_B4", "SR_B3", "2000-01-01", "2007-01-01").merge(coll("LANDSAT/LE07/C02/T1_L2", "SR_B4", "SR_B3", "2000-01-01", "2007-01-01"))
+    recent = coll("LANDSAT/LC08/C02/T1_L2", "SR_B5", "SR_B4", "2021-01-01", "2026-01-01").merge(coll("LANDSAT/LC09/C02/T1_L2", "SR_B5", "SR_B4", "2021-01-01", "2026-01-01"))
+    img = ee.Image.cat([early.median().rename(["a", "da"]), recent.median().rename(["b", "db"])])
+    raw = gee.fetch(gee.to_cells(img, 30), bbox, level, tile=96)
+    keys = ("a", "b", "da", "db")
+    pairs = {code: tuple(x[k] for k in keys) for code, x in raw.items() if all(x.get(k) is not None for k in keys)}
+    if not pairs:
+        return None
+    rows = {code: {"ndvi_2000s": _r(a, 3), "ndvi_2020s": _r(b, 3), "green_rel_change": _r(db - da, 3)} for code, (a, b, da, db) in pairs.items()}
+    specs = [
+        FieldSpec("ndvi_2000s", "April-May greenness (NDVI), 2000-2006 (Landsat 5/7)", agg="mean", domain=[0, 0.6], ramp="greens", higher_is="better"),
+        FieldSpec("ndvi_2020s", "April-May greenness (NDVI), 2021-2025 (Landsat 8/9)", agg="mean", domain=[0, 0.6], ramp="greens", higher_is="better"),
+        FieldSpec("green_rel_change", "Greenness against the city since the early 2000s (change in the block's NDVI gap to the city median)", agg="mean", domain=[-0.3, 0.3], ramp="diverging", higher_is="better"),
+    ]
+    spec = DatasetSpec(
+        id="green_change", title="Greenness then and now (Landsat 2000s vs 2020s)", level=level, fields=specs, group=GROUP,
+        description="Median cloud-free Landsat Collection 2 NDVI for April and May (dry season, when trees and watered green "
+                    "stand out from harvested fields) in 2000-2006 (Landsat 5 and 7) and 2021-2025 (Landsat 8 and 9) at 30 m. "
+                    "Every scene is first taken as its gap to that scene's land median over the city region (JRC permanent water "
+                    "left out), which cancels sensor and weather differences; the change in the median gap shows which blocks "
+                    "turned greener or browner than the city around them.",
+        source="USGS Landsat Collection 2 Level-2 surface reflectance via Earth Engine (pipeline/cells/ee_layers.py)",
+        license="Public domain (USGS Landsat)", default_field="green_rel_change")
+    return spec, _table(level, rows, specs)
+
+
 def pm_heat(region):
     """Peak afternoon surface temperature per block (ECOSTRESS, 70 m, April-June afternoons 2018-2025)."""
     ee = gee.init()
@@ -2347,7 +2390,7 @@ LAYERS = {
     "accessibility": accessibility, "waterlogging": waterlogging,
     "demographics": demographics, "wealth": wealth, "climate_zones": climate_zones,
     "humid_heat": humid_heat, "climate_future": climate_future, "flood_future": flood_future, "water_risk": water_risk,
-    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "subsidence": subsidence, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat, "winter_nights": winter_nights, "heat_change": heat_change,
+    "roofs": roofs, "humid_future": humid_future, "air_trend": air_trend, "fires": fires, "subsoil": subsoil, "lakes": lakes, "farmland": farmland, "haze_mix": haze_mix, "mangroves": mangroves, "water_history": water_history, "topsoil": topsoil, "tree_season": tree_season, "built_class": built_class, "wind": wind, "subsidence": subsidence, "ambient_pop": ambient_pop, "solar_atlas": solar_atlas, "pm25_days": pm25_days, "urban_form": urban_form, "night_heat": night_heat, "pm_heat": pm_heat, "winter_nights": winter_nights, "heat_change": heat_change, "green_change": green_change,
 }
 
 

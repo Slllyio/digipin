@@ -1570,3 +1570,12 @@ reduceRegion), and stores per L7 block the period medians (`lst_2000s_c`, `lst_2
 for blocks with 20%+ new built surface 2000-2020 (GHSL) against blocks under 5%, today's tree canopy in warmed blocks, and
 warmed blocks 2 km apart ranked by residents × warming. A relative, surface measure: in hot, dry cities new building on bare
 fallow reads as cooling.
+
+## Green then and now (`greenchange` lens, `green_change` dataset, pipeline/cells/ee_layers.py)
+
+`green_change` repeats the `heat_change` recipe on Landsat Collection 2 surface reflectance NDVI (Landsat 5/7 SR_B4/SR_B3,
+Landsat 8/9 SR_B5/SR_B4, scale 0.0000275 and offset −0.2) for April-May 2000-2006 and 2021-2025: JRC permanent water masked,
+each scene turned into each pixel's gap to that scene's land median, period medians (`ndvi_2000s`, `ndvi_2020s`) and the change
+in the median gap (`green_rel_change`) per L7 block. The lens counts residents in blocks that browned or greened by 0.1 or
+more against the city, the mean `heat_change.heat_rel_change_c` for browned, greened and other blocks, and browned blocks
+2 km apart ranked by residents × loss.

@@ -791,6 +791,45 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Green then and now. Landsat April-May greenness in 2000-2006 and 2021-2025, each scene read as its gap to the city's
+    // median: which blocks lost their green against the city and which gained it, and whether the ones that browned
+    // also heated up.
+    const GREEN_SHIFT = 0.1;
+
+    function greenchange(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, rel = c['green_change.green_rel_change'], now = c['green_change.ndvi_2020s'], then = c['green_change.ndvi_2000s'];
+        const pop = c['population.population'], heat = c['heat_change.heat_rel_change_c'];
+        if (!rel || !rel.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr).filter(i => _fin(rel[i]));
+        if (idx.length < 5) return null;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1;
+        const brown = idx.filter(i => rel[i] <= -GREEN_SHIFT), brownPop = brown.reduce((s, i) => s + v(pop, i), 0);
+        const green = idx.filter(i => rel[i] >= GREEN_SHIFT), greenPop = green.reduce((s, i) => s + v(pop, i), 0);
+        const stats = [
+            { label: `Residents in blocks that browned against the city since 2000-06 (NDVI gap down ${GREEN_SHIFT} or more)`, value: `${_people(brownPop)} (${_round(100 * brownPop / all, 1)}%)` },
+            { label: `Residents in blocks that greened against the city (gap up ${GREEN_SHIFT} or more)`, value: `${_people(greenPop)} (${_round(100 * greenPop / all, 1)}%)` },
+        ];
+        let link = null;
+        if (heat) {
+            const hm = set => { const s = set.filter(i => _fin(heat[i])), w = s.reduce((a, i) => a + v(pop, i), 0); return w ? s.reduce((a, i) => a + v(pop, i) * heat[i], 0) / w : NaN; };
+            const rest = idx.filter(i => Math.abs(rel[i]) < GREEN_SHIFT);
+            link = { brown: hm(brown), green: hm(green), rest: hm(rest) };
+            if (_fin(link.brown) && _fin(link.green)) stats.push({ label: 'Surface heat change against the city: browned, greened and other blocks', value: `${link.brown >= 0 ? '+' : ''}${_round(link.brown, 1)}, ${link.green >= 0 ? '+' : ''}${_round(link.green, 1)} and ${link.rest >= 0 ? '+' : ''}${_round(link.rest, 1)} °C` });
+        }
+        const score = Float64Array.from({ length: n }, (_, i) => (_fin(rel[i]) && rel[i] < 0 ? v(pop, i) * -rel[i] : 0));
+        spaced(g, brown, score, 5).forEach((i, k) => stats.push({ label: `Lost green ${k + 1}: ${g.codes[i]}`,
+            value: `NDVI ${then && _fin(then[i]) ? _round(then[i], 2) : '?'} → ${now && _fin(now[i]) ? _round(now[i], 2) : '?'} (${_round(rel[i], 2)} against the city)${heat && _fin(heat[i]) ? `; surface ${heat[i] >= 0 ? '+' : ''}${_round(heat[i], 1)} °C against the city` : ''}; ${_people(v(pop, i))} residents` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = -rel[i];
+        return {
+            columns: { green_loss: out }, idx, weightKey: 'green_loss', noHotspots: true,
+            metric: { label: `Residents in blocks that browned against the city since 2000-06`, value: _round(100 * brownPop / all, 1), unit: '%', higherIs: 'worse' },
+            headline: `Against the rest of the city, ${_people(brownPop)} residents (${_round(100 * brownPop / all, 1)}%) live in blocks that have browned since 2000-06 and ${_people(greenPop)} (${_round(100 * greenPop / all, 1)}%) in blocks that greened${link && _fin(link.brown) && _fin(link.green) ? `; the browned blocks moved ${link.brown >= 0 ? '+' : ''}${_round(link.brown, 1)} °C in surface heat against the city, the greened ones ${link.green >= 0 ? '+' : ''}${_round(link.green, 1)} °C` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -894,8 +933,14 @@ const UrbanLensesCommons = (() => {
             needs: ['heat_change.lst_2000s_c', 'heat_change.lst_2020s_c', 'heat_change.heat_rel_change_c', 'built_up.built_change_pct', 'vegetation.tree_canopy_pct', 'population.population'],
             method: `USGS Landsat Collection 2 surface temperature (public domain, 30 m): cloud-free April and May scenes in 2000-2006 (Landsat 5 and 7) and in 2021-2025 (Landsat 8 and 9). The two periods use different sensors and years with different weather, so the raw change is not trusted; every scene is first turned into each pixel's gap to that scene's median over the city region's land (pixels that are water at least half the time in JRC's Global Surface Water are left out), each period takes the median gap, and the lens maps how the gap changed. In hot, dry cities bare fallow and rock heat up more by day than built ground, so new building on them can read as relative cooling, while dense old cores that lost trees and gained roofs read as warming. Warmed blocks moved ${WARMED_C} °C or more hotter against the city. New built surface 2000 to 2020 is GHSL; blocks with ${NEW_BUILT_PCT}% or more of their ground newly built are compared with blocks under 5%. Tree canopy is today's (Meta/WRI). Residents are today's (WorldPop). Picks are warmed blocks ${SPACING_KM} km apart ranked by residents × warming. Surface, not air, temperature, and a relative measure: if the whole city warmed, a block that kept pace shows zero.`,
             refs: 'USGS Landsat Collection 2 Level-2 surface temperature; Pesaresi et al., GHSL GHS-BUILT-S R2023A; Peng et al. 2012, Surface urban heat island across 419 global big cities (Environmental Science & Technology)' },
+        { id: 'greenchange', equity: false, title: 'Green then and now', icon: '🌳',
+            question: 'Which neighbourhoods have lost their green since the early 2000s, and did they heat up?',
+            field: { key: 'green_loss', label: 'Greenness (NDVI) lost against the city since 2000-06 (negative: gained)', unit: '', higherIs: 'worse', ramp: 'diverging', domain: [-0.3, 0.3] },
+            needs: ['green_change.ndvi_2000s', 'green_change.ndvi_2020s', 'green_change.green_rel_change', 'heat_change.heat_rel_change_c', 'population.population'],
+            method: `USGS Landsat Collection 2 surface reflectance (public domain, 30 m): NDVI on cloud-free April and May scenes in 2000-2006 (Landsat 5 and 7) and 2021-2025 (Landsat 8 and 9). April and May are dry, so trees, watered parks and irrigated plots stand out while most fields lie harvested. Every scene is turned into each pixel's gap to that scene's median over the city region's land (pixels that are water at least half the time in JRC's Global Surface Water are left out), each period takes the median gap, and the lens maps how the gap changed, which cancels the different sensors and weather years. Browned and greened blocks moved ${GREEN_SHIFT} NDVI or more against the city. Surface heat change is the Heated up lens's Landsat measure for the same scenes. Residents are today's (WorldPop). Picks are browned blocks ${SPACING_KM} km apart ranked by residents × loss. A relative measure: if the whole city lost green, a block that kept pace shows zero; fields that were irrigated in one period and fallow in the other can swing either way.`,
+            refs: 'USGS Landsat Collection 2 Level-2 surface reflectance; Pekel et al. 2016, JRC Global Surface Water (Nature)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange });
     return { ENTRIES };
 })();
