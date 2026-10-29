@@ -1599,3 +1599,14 @@ gap to the city median (`tmax_amj_anomaly_c`), per L6 block. The lens weights bl
 figures, reports the 5th to 95th percentile spread across homes, residents with 7 or more extra days than the median
 resident, and the ERA5-Land `climate_future.hot_days_now` count for comparison, and picks hottest homes 2 km apart by
 (residents + 3 × elderly) × days above the median resident's. Counts near a threshold move with the model's 1-2 °C error.
+
+## Old tank beds (`tankbeds` lens, `tank_beds` dataset, pipeline/realestate/tankbeds.py)
+
+`tankbeds.py` reads HYDRAA's Outer Ring Road tank KML (OpenCity `hyderabad-and-telangana-water-bodies`), keeping each
+part's outline, its 2023 class (water or built up), the tank ID and the tank's 2014 and 2023 status; survey numbers are
+not read. Water and built-up parts are filled on a 10 m raster and shared out to L7 blocks (`tankbed_pct`,
+`tankbed_built_pct`, `tankbed_water_pct`). Each tank is counted once at the centre of its largest part (`tanks`), with
+`tanks_live`, `tanks_lost` (wholly encroached in 2023) and `tanks_worse` (status rank Live < Partly < Wholly rose between
+2014 and 2023). The lens estimates residents on built-up beds as block residents × built-up share, compares the mean
+Sentinel-1 waterlogging index of blocks with 10%+ built-up bed against blocks with no bed, and picks blocks 2 km apart by
+residents on the bed × (1 + waterlogging / 100).

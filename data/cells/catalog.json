@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T03:39:27Z",
+  "generated": "2026-10-29T03:54:05Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -41088,6 +41088,126 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "tank_beds",
+      "title": "Old tank beds (HYDRAA tank survey)",
+      "description": "HYDRAA's survey of 920 tanks inside Hyderabad's Outer Ring Road on their old village-map outlines (before the 1940s to the 1970s), each part classed as water or built up in 2023, with each tank's status in 2014 and 2023 (live, partly or wholly encroached), via data.opencity.in.",
+      "source": "pipeline/realestate/tankbeds.py (HYDRAA ORR tanks via OpenCity)",
+      "license": "Public domain (HYDRAA via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "tankbed_pct",
+          "label": "Share of the block inside an old tank outline",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "tankbed_built_pct",
+          "label": "Share of the block on a tank bed built up by 2023",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "tankbed_water_pct",
+          "label": "Share of the block on a tank bed still holding water in 2023",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "blues",
+          "higherIs": "better"
+        },
+        {
+          "key": "tanks",
+          "label": "Tanks surveyed (largest part in the block)",
+          "type": "number",
+          "agg": "sum",
+          "unit": "tanks",
+          "domain": [
+            1,
+            2
+          ],
+          "ramp": "blues"
+        },
+        {
+          "key": "tanks_live",
+          "label": "Tanks still live in 2023",
+          "type": "number",
+          "agg": "sum",
+          "unit": "tanks",
+          "domain": [
+            0,
+            2
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "tanks_lost",
+          "label": "Tanks wholly encroached by 2023",
+          "type": "number",
+          "agg": "sum",
+          "unit": "tanks",
+          "domain": [
+            0,
+            2
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "tanks_worse",
+          "label": "Tanks whose encroachment grew between 2014 and 2023",
+          "type": "number",
+          "agg": "sum",
+          "unit": "tanks",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "tankbed_built_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "hyderabad",
+          "cells": 2422,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "tank_beds/hyderabad.json",
+          "parquet": null
         }
       ]
     },

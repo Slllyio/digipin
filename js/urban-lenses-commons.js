@@ -914,6 +914,54 @@ const UrbanLensesCommons = (() => {
         };
     }
 
+    // Old tank beds. HYDRAA's survey of Hyderabad's tanks on their old village-map outlines shows which parts are built up
+    // in 2023: who lives on a former tank bed, how many tanks are gone or shrank since 2014, and whether reported flood
+    // spots cluster on the built-up beds.
+    const TANKBED_BUILT_PCT = 10;
+
+    function tankbeds(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, bed = c['tank_beds.tankbed_pct'], built = c['tank_beds.tankbed_built_pct'];
+        const water = c['tank_beds.tankbed_water_pct'], tk = c['tank_beds.tanks'], live = c['tank_beds.tanks_live'];
+        const lost = c['tank_beds.tanks_lost'], worse = c['tank_beds.tanks_worse'], spots = c['flood_reports.flood_spots'], wl = c['waterlogging.waterlogging_index'];
+        const pop = c['population.population'];
+        if (!bed || !tk || !tk.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : 0);
+        const idx = _residents(fr);
+        if (idx.length < 5) return null;
+        const sum = a => { let t = 0; for (let i = 0; i < n; i++) t += v(a, i); return t; };
+        const T = sum(tk), Live = sum(live), Lost = sum(lost), Worse = sum(worse);
+        const onBed = i => v(pop, i) * v(built, i) / 100;
+        const all = idx.reduce((s, i) => s + v(pop, i), 0) || 1, bedPop = idx.reduce((s, i) => s + onBed(i), 0);
+        const area = a => idx.reduce((s, i) => s + v(a, i), 0) / 100 * g.cellKm2;
+        const stats = [
+            { label: 'Tanks surveyed on their old outlines (largest part on the map)', value: `${Math.round(T)}` },
+            { label: '…live in 2023 / wholly encroached', value: `${Math.round(Live)} (${_round(100 * Live / (T || 1), 0)}%) / ${Math.round(Lost)} (${_round(100 * Lost / (T || 1), 0)}%)` },
+            { label: '…encroachment grew between 2014 and 2023', value: `${Math.round(Worse)} tanks` },
+        ];
+        if (built && water) stats.push({ label: 'Old tank bed in lived-in blocks: built up / still water', value: `${_round(area(built), 1)} / ${_round(area(water), 1)} km²` });
+        stats.push({ label: 'Residents living on a built-up tank bed (block residents × built-up bed share)', value: `${_people(bedPop)} (${_round(100 * bedPop / all, 1)}%)` });
+        const onB = idx.filter(i => v(built, i) >= TANKBED_BUILT_PCT), off = idx.filter(i => v(bed, i) === 0);
+        let ratio = NaN;
+        if (wl && onB.length >= 5 && off.length >= 5) {
+            const mean = a => a.reduce((s, i) => s + v(wl, i), 0) / a.length;
+            const mOn = mean(onB), mOff = mean(off);
+            ratio = mOff > 0 ? mOn / mOff : NaN;
+            stats.push({ label: `Satellite waterlogging index: ${TANKBED_BUILT_PCT}%+ built-up tank bed / no tank bed`, value: `${_round(mOn, 0)} / ${_round(mOff, 0)}` });
+        }
+        if (spots) stats.push({ label: 'Reported flood spots near blocks on a built-up tank bed', value: `${onB.filter(i => v(spots, i) > 0).length} of ${onB.length} blocks` });
+        const score = Float64Array.from({ length: n }, (_, i) => onBed(i) * (1 + v(wl, i) / 100));
+        spaced(g, idx.filter(i => v(built, i) >= TANKBED_BUILT_PCT), score, 5).forEach((i, k) => stats.push({ label: `Homes on a tank bed ${k + 1}: ${g.codes[i]}`,
+            value: `${Math.round(v(built, i))}% of the block is built-up tank bed; ~${_people(onBed(i))} residents on it${wl && _fin(wl[i]) ? `; waterlogging index ${Math.round(wl[i])}` : ''}` }));
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = v(built, i);
+        return {
+            columns: { tankbed_built_pct: out }, idx, weightKey: 'tankbed_built_pct', noHotspots: true,
+            metric: { label: 'Residents living on a built-up old tank bed', value: Math.round(bedPop), unit: 'people', higherIs: 'worse' },
+            headline: `About ${_people(bedPop)} residents (${_round(100 * bedPop / all, 1)}%) live on old tank beds that are built up today; of ${Math.round(T)} tanks surveyed, ${Math.round(Lost)} are wholly encroached and ${Math.round(Worse)} lost more ground between 2014 and 2023${_fin(ratio) ? `, and blocks on built-up beds score ${_round(ratio, 1)}× the waterlogging of blocks off them` : ''}.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'howbuilt', equity: true, title: 'How neighbourhoods were built', icon: '🧱',
             question: 'Which neighbourhoods grew without a plan, and which were laid out as approved layouts?',
@@ -1035,8 +1083,14 @@ const UrbanLensesCommons = (() => {
             needs: ['air_heat.days40_now', 'air_heat.days40_then', 'air_heat.days45_now', 'air_heat.days45_then', 'air_heat.nights28_now', 'air_heat.nights28_then', 'climate_future.hot_days_now', 'demographics.elderly_60plus', 'population.population'],
             method: `Zhang et al.'s global 1 km daily maximum and minimum near-surface air temperature (CC BY 4.0), modelled from MODIS land surface temperature, elevation and weather-station records (cross-validated error 1.2 to 2.4 °C). Each block takes its 1 km cell's yearly counts of days at 40 °C or more (IMD's heatwave threshold for the plains), days at 45 °C or more (a heatwave whatever the normal) and nights at 28 °C or more, averaged over 2005-2014 and 2015-2024. City figures weight blocks by today's residents (GHSL); the elderly are WorldPop. Hottest homes are blocks ${SPACING_KM} km apart ranked by (residents + 3 × residents aged 60+) × days above the median resident's. The ERA5-Land count behind the 2050 outlook is shown for comparison: it is a 9 km reanalysis and smooths the city out. Modelled air temperature, not a station record: errors of 1 to 2 °C shift counts near the thresholds, so compare places and decades rather than reading single days.`,
             refs: 'Zhang, Zhou et al. 2022, A global dataset of daily maximum and minimum near-surface air temperature at 1 km resolution over land (Earth System Science Data); IMD heatwave criteria; NDMA Heat Action Plan guidelines (2019)' },
+        { id: 'tankbeds', equity: true, title: 'Old tank beds', icon: '🏞️',
+            question: 'Who lives on the beds of old tanks, and how many tanks have been built over?',
+            field: { key: 'tankbed_built_pct', label: 'Share of the block on a tank bed built up by 2023', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 60] },
+            needs: ['tank_beds.tankbed_pct', 'tank_beds.tankbed_built_pct', 'tank_beds.tankbed_water_pct', 'tank_beds.tanks', 'tank_beds.tanks_live', 'tank_beds.tanks_lost', 'tank_beds.tanks_worse', 'flood_reports.flood_spots', 'waterlogging.waterlogging_index', 'population.population'],
+            method: `HYDRAA's survey of 920 tanks inside Hyderabad's Outer Ring Road (via data.opencity.in, public domain) draws each tank on its old village-map outline (before the 1940s to the 1970s), classes each part as water or built up in 2023, and gives each tank's status in 2014 and 2023: live, or partly or wholly encroached by buildings or farming. Outlines are filled on a 10 m raster and shared out to blocks; each tank is counted once, in the block holding its largest part. Residents on a tank bed are block residents (GHSL) times the block's built-up bed share, assuming people spread evenly over the block. Waterlogging is the Sentinel-1 radar index (waterlogging); reported flood spots are GHMC's inundation points (flood_reports). Picks are blocks ${SPACING_KM} km apart ranked by residents on the bed × (1 + waterlogging index / 100). Only the survey's tanks are drawn; the Musi floodplain and tanks outside the survey are not.`,
+            refs: 'HYDRAA (Hyderabad Disaster Response and Asset Protection Agency) ORR tank survey via data.opencity.in; Telangana GO Ms 168 (2012) tank buffers; GHMC inundation points' },
     ];
 
-    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters, hotdays });
+    UrbanLenses.register(ENTRIES, { howbuilt, floodnews, badairdays, stillair, schooldrift, hotnights, newroads, raingaugegap, tbcare, servicecentres, recycling, publicland, daytime, sinking, hillside, coldnights, heatedup, greenchange, nightshelters, hotdays, tankbeds });
     return { ENTRIES };
 })();

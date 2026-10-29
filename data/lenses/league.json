@@ -5988,6 +5988,12 @@
      "unit": "days",
      "higherIs": "worse"
     },
+    "tankbeds": {
+     "label": "Residents living on a built-up old tank bed",
+     "value": 131137,
+     "unit": "people",
+     "higherIs": "worse"
+    },
     "metrowait": {
      "label": "Residents within 800 m of a metro station",
      "value": 19.1,
