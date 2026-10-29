@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T05:12:44Z",
+  "generated": "2026-10-29T05:41:12Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -4988,6 +4988,307 @@
             "north": 17.54248046875
           },
           "json": "canteens/hyderabad.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "census_homes",
+      "title": "Homes and households in 2011 by ward (Census 2011)",
+      "description": "Census 2011 Primary Census Abstract and Houselisting table HH-14 for Greater Mumbai's 97 census wards on data.opencity.in, summed into BMC's 24 administrative wards (shares weighted by households): crowding, renting, water, sanitation, cooking fuel, banking and household assets. Every block in a ward carries the ward's figures.",
+      "source": "pipeline/realestate/census2011.py (OpenCity Mumbai ward-wise census data)",
+      "license": "Public domain (Census of India 2011 via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "c11_ward",
+          "label": "BMC ward",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F/N",
+            "F/S",
+            "G/N",
+            "G/S",
+            "H/E",
+            "H/W",
+            "K/E",
+            "K/W",
+            "L",
+            "M/E",
+            "M/W",
+            "N",
+            "P/N",
+            "P/S",
+            "R/C",
+            "R/N",
+            "R/S",
+            "S",
+            "T"
+          ]
+        },
+        {
+          "key": "c11_ward_no",
+          "label": "BMC ward number (A = 1 ... T = 24)",
+          "type": "number",
+          "agg": "min",
+          "domain": [
+            1,
+            24
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "c11_households",
+          "label": "Households in the ward, 2011",
+          "type": "number",
+          "agg": "max",
+          "unit": "households",
+          "domain": [
+            27140,
+            211642
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "c11_hh_size",
+          "label": "People per household, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "people",
+          "domain": [
+            3,
+            6
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "c11_literacy_pct",
+          "label": "Literate people aged 7 or more, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            70,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "c11_women_work_pct",
+          "label": "Women who work, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "c11_dilapidated_pct",
+          "label": "Households in a dilapidated house, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "c11_one_room_pct",
+          "label": "Households in one room or less, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            80
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "c11_rented_pct",
+          "label": "Households renting, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "c11_tap_pct",
+          "label": "Households drinking treated tap water, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            70,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "c11_water_away_pct",
+          "label": "Households fetching water from away, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            10
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "c11_no_latrine_pct",
+          "label": "Households without a latrine of their own, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            70
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "c11_open_def_pct",
+          "label": "Households going in the open, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "c11_closed_drain_pct",
+          "label": "Households on a closed drain, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            30,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "c11_lpg_pct",
+          "label": "Households cooking on LPG or piped gas, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            50,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "c11_bank_pct",
+          "label": "Households with a bank account, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            50,
+            100
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "c11_internet_pct",
+          "label": "Households with a computer and internet, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            40
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "c11_car_pct",
+          "label": "Households with a car, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            40
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "c11_twowheeler_pct",
+          "label": "Households with a scooter or motorcycle, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            40
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "c11_no_assets_pct",
+          "label": "Households with none of the listed assets, 2011",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            10
+          ],
+          "ramp": "viridis",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "c11_one_room_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "mumbai",
+          "cells": 8140,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.893798828125,
+            "east": 72.97900390625,
+            "north": 19.26953125
+          },
+          "json": "census_homes/mumbai.json.gz",
           "parquet": null
         }
       ]

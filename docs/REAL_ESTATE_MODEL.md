@@ -1651,3 +1651,13 @@ industrial-zone shares, and new licences a year for 2015-2019 and 2022-2025, and
 pincode (via `pincodes`). The lens regroups blocks by pincode (5 or more blocks, 5,000 or more residents), reports licences
 per 1,000 residents, the change in new licences, the fastest-growing and slowing pincodes (20 or more new licences a year
 before), and current licences per 100 Overture places.
+
+## Homes in 2011 by ward (`homes2011` lens in js/urban-lenses-wards.js, `census_homes` dataset, pipeline/realestate/census2011.py)
+
+The commons lens module reached the 150 kB per-module budget, so ward-record lenses start a new module,
+`js/urban-lenses-wards.js` (loaded after commons in app.html, sw.js, tests/setup.js and scripts/build_lens_league.js).
+`census2011.py` reads OpenCity's `mumbai-ward-wise-census-data`: the census-ward list (census ward code to BMC ward
+letter), the Primary Census Abstract for Mumbai City and Mumbai Suburban (households, people, literacy, working women)
+and the HH-14 houselisting workbooks (percentages of households by amenities and assets). Census wards are summed into
+the 24 BMC wards, HH-14 shares weighted by households, and every BMC block carries its ward's figures plus
+`c11_ward_no` (A = 1 ... T = 24), because lens frames read numbers only. Caste and tribe columns are not read.

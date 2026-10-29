@@ -10770,6 +10770,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "homes2011": {
+     "label": "Households in one room or less (Census 2011)",
+     "value": 64.9,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "howbuilt": {
      "label": "Residents in mostly unplanned or informal blocks",
      "value": 21.3,
