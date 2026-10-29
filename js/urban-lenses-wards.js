@@ -459,6 +459,64 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Ward councillors. Corporation election results per ward (PMC 2026 prabhags, GHMC 2020 wards): the party holding
+    // each ward, how many of its seats it holds, the margin where wards elect one member, and whether the ward's party
+    // matches the assembly seat's MLA.
+    function wardcouncil(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`ward_results.corp_${k}`];
+        const wn = col('ward_no'), pid = col('party_id'), pop = c['population.population'], mla = c['assembly_results.mla_party_id'];
+        if (!wn || !pid || !wn.some(_fin)) return null;
+        const v = (a, i) => (a && _fin(a[i]) ? a[i] : NaN);
+        const W = new Map();
+        for (let i = 0; i < n; i++) {
+            if (!_fin(wn[i]) || !_fin(pid[i])) continue;
+            const a = W.get(wn[i]) || { blocks: [], pop: 0, first: i, mla: new Map() };
+            const p = _fin(pop?.[i]) ? pop[i] : 0;
+            a.blocks.push(i); a.pop += p;
+            if (_fin(v(mla, i))) a.mla.set(mla[i], (a.mla.get(mla[i]) || 0) + p);
+            W.set(wn[i], a);
+        }
+        const ws = [...W.values()].filter(a => a.pop >= 2000);
+        if (ws.length < 3) return null;
+        const P = ws.reduce((t, a) => t + a.pop, 0) || 1, name = id => PARTY[id] || PARTY[0];
+        const year = Math.round(v(col('year'), ws[0].first));
+        const by = new Map();
+        let seats = 0, split = 0, splitKnown = 0;
+        for (const a of ws) {
+            a.party = pid[a.first]; a.seats = v(col('seats'), a.first); a.lead = v(col('lead_seats'), a.first); a.margin = v(col('margin_pct'), a.first);
+            const b = by.get(a.party) || { wards: 0, pop: 0 }; b.wards++; b.pop += a.pop; by.set(a.party, b);
+            if (_fin(a.seats)) seats += a.seats;
+            const top = [...a.mla.entries()].sort((x, y) => y[1] - x[1])[0];
+            if (top && a.party && top[0]) { splitKnown += a.pop; if (top[0] !== a.party) split += a.pop; }
+        }
+        const parties = [...by.entries()].sort((x, y) => y[1].wards - x[1].wards || y[1].pop - x[1].pop);
+        const pct = x => `${_round(100 * x, 0)}%`;
+        const multi = ws.some(a => a.seats > 1), mixed = ws.filter(a => a.seats > 1 && a.lead < a.seats);
+        const known = ws.filter(a => _fin(a.margin)).sort((x, y) => x.margin - y.margin);
+        const close = known.filter(a => a.margin < CLOSE);
+        const stats = [
+            { label: `Wards in view (${year} corporation election)${multi ? ' / council seats' : ''}`, value: multi ? `${ws.length} / ${seats}` : String(ws.length) },
+            ...parties.slice(0, 4).map(([id, b]) => ({ label: `${name(id)}: wards / share of residents`, value: `${b.wards} / ${pct(b.pop / P)}` })),
+        ];
+        if (multi) stats.push({ label: 'Multi-member wards whose seats are split between parties', value: `${mixed.length} of ${ws.filter(a => a.seats > 1).length}` });
+        if (known.length) {
+            stats.push({ label: `Wards won by under ${CLOSE} points of the vote`, value: String(close.length) });
+            known.slice(0, 3).forEach((a, k) => stats.push({ label: `Closest ward ${k + 1}: ${name(a.party)} won ward ${Math.round(wn[a.first])}, ${g.codes[a.first]}`, value: `${_round(a.margin, 1)} points` }));
+            const t = ws.filter(a => _fin(v(col('turnout_pct'), a.first)));
+            if (t.length) stats.push({ label: 'Turnout, residents-weighted', value: `${_round(t.reduce((s, a) => s + a.pop * v(col('turnout_pct'), a.first), 0) / t.reduce((s, a) => s + a.pop, 0), 0)}%` });
+        }
+        if (splitKnown > P / 2) stats.push({ label: "Residents whose ward party differs from their MLA's", value: pct(split / splitKnown) });
+        const out = new Float64Array(n).fill(NaN), idx = [];
+        for (const a of ws) for (const i of a.blocks) { out[i] = a.party; idx.push(i); }
+        const [lead, lb] = parties[0];
+        return {
+            columns: { ward_party: out }, idx, weightKey: 'ward_party', noHotspots: true,
+            metric: { label: `Wards held by ${name(lead)} (${year})`, value: lb.wards, unit: 'wards', higherIs: null },
+            headline: `At the ${year} corporation election, ${name(lead)} won ${lb.wards} of the ${ws.length} wards in view, home to ${pct(lb.pop / P)} of residents${parties[1] ? `, and ${name(parties[1][0])} ${parties[1][1].wards}` : ''}${multi ? `; ${mixed.length} multi-member ward${mixed.length === 1 ? ' splits its' : 's split their'} seats between parties` : ''}${known.length ? `; ${close.length} ward${close.length === 1 ? ' was' : 's were'} won by under ${CLOSE} points` : ''}${splitKnown > P / 2 ? `, and ${pct(split / splitKnown)} of residents have a ward party different from their MLA's` : ''}.`,
+            stats,
+        };
+    }
+
     // Recorded crime. NCRB's Crime in India 2024 tables for the 19 metropolitan cities (police commissionerates): cases
     // registered 2022-2024, the rate per lakh people, charge-sheeting, and crimes against women, children, older people,
     // economic offences and cyber crime.
@@ -549,6 +607,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'wardcouncil', title: 'Who holds the ward', icon: '🏛️',
+            question: 'Which party runs the municipal wards here, and does it match the MLA?',
+            field: { key: 'ward_party', label: 'Party holding the ward (latest corporation election)', unit: 'party', higherIs: null, ramp: 'viridis', domain: [0, 20] },
+            needs: ['ward_results.corp_ward_no', 'ward_results.corp_party_id', 'ward_results.corp_seats', 'ward_results.corp_lead_seats', 'ward_results.corp_margin_pct', 'ward_results.corp_turnout_pct', 'ward_results.corp_year', 'assembly_results.mla_party_id', 'population.population'],
+            method: `Corporation election results from the State Election Commissions (via data.opencity.in, public domain): Pune Municipal Corporation 2026, where 41 prabhags elect four or five councillors each, joined through PMC's 2025 electoral ward map; and GHMC 2020 in Hyderabad, 150 single-member wards with the margin over the runner-up and turnout, joined through the GHMC ward map (whose names agree with the results). A multi-member ward is shown under the party holding most of its seats. The MLA comparison uses the assembly results lens's party for most of each ward's residents. Other cities are left out until a result file and a ward map of the same delimitation are both public (Mumbai's 2026 results have no 227-ward map; Delhi's 2022 results have no 250-ward map). Candidate names are not kept.`,
+            refs: 'State Election Commission of Maharashtra (PMC 2026) and Telangana (GHMC 2020) results via data.opencity.in; PMC 2025 electoral ward map and GHMC ward map (OpenCity)' },
         { id: 'citycrime', equity: true, title: 'Recorded crime in the city', icon: '🚓',
             question: 'How much crime do police record here, how fast is cyber crime growing, and how many cases reach a charge sheet?',
             field: { key: 'crime_rate', label: 'Cognizable crimes per lakh people (police city, 2024)', unit: 'per lakh', higherIs: 'worse', ramp: 'reds', domain: [100, 1800] },
@@ -619,6 +683,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil });
     return { ENTRIES };
 })();

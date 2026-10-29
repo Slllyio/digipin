@@ -1796,3 +1796,14 @@ more in 2011; ours among them are Ahmedabad, Bengaluru, Chennai, Delhi, Hyderaba
 Mumbai and Pune. Rates use the 2011 census population, so they overstate crime in cities that have grown since, and
 recorded crime tracks how readily police register cases (Kolkata's 94 per lakh against Delhi's 1,825 is mostly
 registration practice). The tables on crimes against Scheduled Castes and Tribes are not read.
+
+## Who holds the ward (`wardcouncil` lens, `ward_results` dataset)
+
+`pipeline/realestate/corporators.py` joins municipal election results to blocks where both a result file and a ward
+map of the same delimitation are public. Pune: PMC 2026 results list each prabhag's seats A-D (or E) with the ward
+number only on the first row, so the number carries down; blocks get their prabhag from the 2025 electoral ward map in
+OpenCity's `pune-wards-info` (field `qwr`), not the 2022 map in `wards`. Hyderabad: the GHMC 2020 candidate-level file
+(TCPD layout) gives winner, runner-up, valid votes and turnout; its 150 ward numbers and names agree with the GHMC map
+in `wards`. Party labels go through `LABELS` to the `assembly.PARTIES` codes (TRS is BRS; SHS is Shiv Sena; NCP-SP is
+NCP (SP)). Only ward numbers, parties and votes are read. The lens counts wards in view by party, multi-member wards
+whose seats are split, close single-member wards, and residents whose ward party differs from their MLA's.

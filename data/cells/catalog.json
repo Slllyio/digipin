@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T10:27:42Z",
+  "generated": "2026-10-29T10:35:03Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -48990,6 +48990,156 @@
               "4FPK"
             ]
           }
+        }
+      ]
+    },
+    {
+      "id": "ward_results",
+      "title": "Ward councillors' party (municipal elections)",
+      "description": "The party holding each block's municipal ward after the latest corporation election with a public result file and a matching ward map: Pune (PMC 2026, four- and five-member prabhags on PMC's 2025 ward map) and Hyderabad (GHMC 2020, with margins and turnout). From the State Election Commissions via data.opencity.in. Candidate names and personal details are not kept.",
+      "source": "pipeline/realestate/corporators.py (PMC 2026 and GHMC 2020 results via OpenCity)",
+      "license": "Public domain (State Election Commissions via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "corp_party",
+          "label": "Party holding most of the ward's council seats",
+          "type": "category",
+          "agg": "mode",
+          "domain": [
+            "AIMIM",
+            "BJP",
+            "BRS",
+            "INC",
+            "NCP"
+          ]
+        },
+        {
+          "key": "corp_party_id",
+          "label": "Party holding the ward (lens code)",
+          "type": "number",
+          "agg": "mode",
+          "domain": [
+            1.0,
+            13.0
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "corp_seats",
+          "label": "Council seats in the ward",
+          "type": "number",
+          "agg": "max",
+          "unit": "seats",
+          "domain": [
+            1,
+            5
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "corp_lead_seats",
+          "label": "Seats the leading party holds in the ward",
+          "type": "number",
+          "agg": "max",
+          "unit": "seats",
+          "domain": [
+            1,
+            4
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "corp_margin_pct",
+          "label": "Ward winning margin",
+          "type": "number",
+          "agg": "mean",
+          "unit": "% of votes",
+          "domain": [
+            0,
+            50
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "corp_turnout_pct",
+          "label": "Ward election turnout",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            20,
+            70
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "corp_ward_no",
+          "label": "Ward (prabhag) number on the election map",
+          "type": "number",
+          "agg": "min",
+          "domain": [
+            1,
+            150
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "corp_year",
+          "label": "Year of the municipal election",
+          "type": "number",
+          "agg": "max",
+          "unit": "year",
+          "domain": [
+            2020,
+            2026
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "corp_party",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "hyderabad",
+          "cells": 9973,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "ward_results/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4229"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 7149,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.621337890625
+          },
+          "json": "ward_results/pune.json.gz",
+          "parquet": null
         }
       ]
     },

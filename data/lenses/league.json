@@ -6138,6 +6138,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "wardcouncil": {
+     "label": "Wards held by BRS (2020)",
+     "value": 55,
+     "unit": "wards",
+     "higherIs": null
+    },
     "citycrime": {
      "label": "Cognizable crimes per lakh people (police city, 2024)",
      "value": 391,
@@ -12143,6 +12149,12 @@
      "value": 23.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "wardcouncil": {
+     "label": "Wards held by BJP (2026)",
+     "value": 34,
+     "unit": "wards",
+     "higherIs": null
     },
     "citycrime": {
      "label": "Cognizable crimes per lakh people (police city, 2024)",
