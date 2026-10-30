@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-10-30T07:13:23Z",
-  "count": 17,
+  "generated_at_iso": "2026-10-30T14:14:21Z",
+  "count": 14,
   "records": [
+    {
+      "id": "us7000tu7m",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-30T10:45:03.842000+00:00",
+      "latitude": 39.7308,
+      "longitude": 24.2284,
+      "depth_km": 10.0,
+      "place": "42 km SE of Sykiá, Greece",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu7m",
+      "tsunami": 0,
+      "significance": 340
+    },
+    {
+      "id": "us7000tu7k",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-30T10:24:11.303000+00:00",
+      "latitude": 8.3731,
+      "longitude": 127.3616,
+      "depth_km": 10.0,
+      "place": "104 km ENE of Barcelona, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu7k",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tu7j",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-10-30T10:12:28.219000+00:00",
+      "latitude": -62.4457,
+      "longitude": 155.2618,
+      "depth_km": 10.0,
+      "place": "Balleny Islands region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu7j",
+      "tsunami": 0,
+      "significance": 400
+    },
+    {
+      "id": "us7000tu7b",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-30T08:45:49.982000+00:00",
+      "latitude": 43.2605,
+      "longitude": 146.4242,
+      "depth_km": 43.625,
+      "place": "64 km SSW of Shikotan, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu7b",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000tu6i",
       "magnitude": 4.8,
@@ -121,90 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu2j",
       "tsunami": 0,
       "significance": 312
-    },
-    {
-      "id": "us7000ttyw",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-29T13:42:57.953000+00:00",
-      "latitude": 7.5923,
-      "longitude": -80.6309,
-      "depth_km": 10.0,
-      "place": "6 km SE of Pitaloza Arriba, Panama",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttyw",
-      "tsunami": 0,
-      "significance": 341
-    },
-    {
-      "id": "us7000ttyk",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-29T11:38:24.162000+00:00",
-      "latitude": -7.5288,
-      "longitude": 130.0224,
-      "depth_km": 10.0,
-      "place": "Pulau Pulau Tanimbar, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttyk",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ttyd",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-29T10:33:22.424000+00:00",
-      "latitude": -18.4979,
-      "longitude": 167.6261,
-      "depth_km": 10.0,
-      "place": "111 km SW of Port-Vila, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttyd",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000tty7",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-29T08:49:42.448000+00:00",
-      "latitude": 13.3785,
-      "longitude": 91.6593,
-      "depth_km": 10.0,
-      "place": "218 km NNW of Bamboo Flat, India",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tty7",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000tty0",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-29T07:54:06.718000+00:00",
-      "latitude": 37.9065,
-      "longitude": -26.2963,
-      "depth_km": 10.0,
-      "place": "41 km W of Mosteiros, Portugal",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tty0",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ttxz",
-      "magnitude": 6.4,
-      "origin_time_utc": "2026-10-29T07:49:50.928000+00:00",
-      "latitude": -36.4058,
-      "longitude": -98.0489,
-      "depth_km": 10.0,
-      "place": "southeast of Easter Island",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttxz",
-      "tsunami": 0,
-      "significance": 630
-    },
-    {
-      "id": "us7000ttxn",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-10-29T07:31:30.432000+00:00",
-      "latitude": 8.4677,
-      "longitude": 127.4269,
-      "depth_km": 10.0,
-      "place": "114 km ENE of Barcelona, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttxn",
-      "tsunami": 0,
-      "significance": 449
     }
   ]
 }
