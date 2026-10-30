@@ -1827,3 +1827,11 @@ matter). Blocks take their district from `nfhs.district` (2011 boundaries) throu
 Haryana and Uttar Pradesh have no district table, so Delhi's Gurugram, Ghaziabad and Sonipat blocks stay blank. The
 category follows CGWB's cut-offs (70, 90, 100%). The lens weights stage and use shares by residents and counts residents
 by category.
+
+## District income per head (`districtincome` lens, `district_income` dataset)
+
+`pipeline/realestate/districtincome.py` reads four state district tables from OpenCity (Karnataka and Maharashtra
+economic surveys 2025-26, Tamil Nadu GDDP 2023-24 in ₹ lakh, Telangana outlook 2024) and ranks districts within each
+state. Table names are only cleaned (footnote marks stripped); `ALIAS` maps a block's NFHS 2011 district to the
+survey's name at lookup only, so a renamed parent (Medak, whose Hyderabad-side part is now Sangareddy) does not
+overwrite the real row. Mumbai Suburban has no own figure: Maharashtra reports Mumbai city and suburban together.

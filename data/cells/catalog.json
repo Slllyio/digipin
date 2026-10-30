@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-29T10:58:07Z",
+  "generated": "2026-10-30T12:54:07Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -10340,6 +10340,221 @@
             "north": 18.64111328125
           },
           "json": "demographics/pune/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "district_income",
+      "title": "District income per head (state economic surveys)",
+      "description": "Per capita income and gross domestic product of the block's district, with its rank in the state, from the Karnataka and Maharashtra economic surveys 2025-26 (2024-25), Tamil Nadu district GDDP (2023-24) and the Telangana Socio-Economic Outlook 2024 (2022-23), via data.opencity.in. Joined through the NFHS (2011) district.",
+      "source": "pipeline/realestate/districtincome.py (state economic survey district tables via OpenCity)",
+      "license": "Public domain (state governments via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "di_pci",
+          "label": "District per capita income, current prices",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u20b9/yr",
+          "domain": [
+            255263.0,
+            946862.0
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "di_gddp_cr",
+          "label": "Gross district domestic product, current prices",
+          "type": "number",
+          "agg": "max",
+          "unit": "\u20b9 crore",
+          "domain": [
+            23558,
+            1173574
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "di_year",
+          "label": "Year of the district income figures",
+          "type": "number",
+          "agg": "max",
+          "unit": "year",
+          "domain": [
+            2022,
+            2024
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "di_rank",
+          "label": "District's rank by per capita income in its state (1 = highest)",
+          "type": "number",
+          "agg": "min",
+          "unit": "rank",
+          "domain": [
+            1,
+            9
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "di_districts",
+          "label": "Districts ranked in the state",
+          "type": "number",
+          "agg": "max",
+          "domain": [
+            31,
+            39
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "di_pci_median",
+          "label": "Median district per capita income in the state",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u20b9/yr",
+          "domain": [
+            218439.0,
+            279919.0
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "di_pci",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "district_income/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "chennai",
+          "cells": 9047,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "district_income/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "district_income/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 14844,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "district_income/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "district_income/pune/{prefix}.json.gz",
           "parquet": null,
           "shards": {
             "prefixLen": 4,

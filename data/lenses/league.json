@@ -1,6 +1,6 @@
 {
  "schema": "digipin.lens-league/1",
- "generated": "2026-10-29",
+ "generated": "2026-10-30",
  "cities": {
   "ahmedabad": {
    "label": "Ahmedabad",
@@ -1001,6 +1001,12 @@
      "value": 21.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "districtincome": {
+     "label": "District per capita income (residents-weighted)",
+     "value": 855325,
+     "unit": "₹/yr",
+     "higherIs": "better"
     },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
@@ -3221,6 +3227,12 @@
      "value": 35.7,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "districtincome": {
+     "label": "District per capita income (residents-weighted)",
+     "value": 650772,
+     "unit": "₹/yr",
+     "higherIs": "better"
     },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
@@ -6197,6 +6209,12 @@
      "value": 25,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "districtincome": {
+     "label": "District per capita income (residents-weighted)",
+     "value": 738706,
+     "unit": "₹/yr",
+     "higherIs": "better"
     },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
@@ -11190,6 +11208,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "districtincome": {
+     "label": "District per capita income (residents-weighted)",
+     "value": 509102,
+     "unit": "₹/yr",
+     "higherIs": "better"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 29,
@@ -12257,6 +12281,12 @@
      "value": 23.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "districtincome": {
+     "label": "District per capita income (residents-weighted)",
+     "value": 426720,
+     "unit": "₹/yr",
+     "higherIs": "better"
     },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
