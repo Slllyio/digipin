@@ -461,7 +461,7 @@ const UrbanLensesWards = (() => {
 
     // Accident-prone junctions. Delhi Traffic Police's accident-prone zones (2021) and BBMP's Suraksha-75 junctions (2025).
     function crashzones(fr) {
-        const c = fr.cols, n = fr.grid.n, km = c['crash_zones.cz_km'], near = c['crash_zones.cz_500m'], k1 = c['crash_zones.cz_1km'], pop = c['population.population'];
+        const c = fr.cols, n = fr.grid.n, km = c['crash_zones.cz_km'], k1 = c['crash_zones.cz_1km'], pop = c['population.population'];
         if (!km || !km.some(_fin)) return null;
         const idx = _residents(fr).filter(i => _fin(km[i]));
         if (idx.length < 5) return null;
