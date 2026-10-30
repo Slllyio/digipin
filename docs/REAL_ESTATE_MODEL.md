@@ -1902,7 +1902,7 @@ nitrate is attached only when the nearest 2017-18 well is within 500 m of it. Vi
 row is station code, month, name (sometimes wrapped onto another line), use-based class A to E, then temperature, DO,
 pH, conductivity, BOD, nitrate, nitrite, faecal and total coliform. Only May to November 2025 have a text layer;
 earlier months are scans and parse to nothing, so they are skipped. The reports carry no coordinates: `LAKES` places
-88 of 140 stations by matching the name to Overture's OSM-derived water features (Overture's S3 bucket is read
+99 of 140 stations by matching the name to Overture's OSM-derived water features or BBMP's 207-lake KML (`bbmp-lakes` on OpenCity, coordinates per lake) (Overture's S3 bucket is read
 anonymously; the proxy's injected AWS keys must be unset or the read fails with 403). Names that matched two water
 bodies (Puttenahalli, Hosakere, Basavanapura) and repeat stations on one lake (Ulsoor) are left out. Each block within
 2 km of a placed lake takes its nearest lake's class E share, mean DO and BOD and median faecal coliform.

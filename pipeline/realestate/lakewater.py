@@ -4,8 +4,8 @@ KSPCB samples about 140 lakes and tanks in and around Bengaluru every month and 
 class (CPCB criteria: A drinking without treatment ... D wildlife and fisheries, E irrigation and industrial cooling
 only), dissolved oxygen, BOD and faecal coliform among 40 parameters. This module reads the monthly reports on OpenCity
 (those in the text layout, May to November 2025 at the time of writing) and summarises each lake. The reports give
-station codes and names but no coordinates, so each lake is placed at its OpenStreetMap location (``LAKES``, matched
-by name against Overture's OSM-derived water features and checked by hand); lakes that could not be found are left out.
+station codes and names but no coordinates, so each lake is placed at its OpenStreetMap location or BBMP's lake list
+position (``LAKES``, matched by name against Overture's OSM-derived water features and BBMP's KML, checked by hand); lakes that could not be found are left out.
 
 Per lived-in L7 block in Bengaluru (dataset ``lake_water``), from the nearest monitored lake within 2 km:
 
@@ -34,9 +34,12 @@ LEVEL = 7
 PACKAGE = "bengaluru-lake-monthly-water-quality-reports"
 NEAR_KM = 2.0
 ROW = re.compile(r"^\s*(\d{4})\s+([A-Z][a-z]{2,8})\s+(.*?)\s+([A-E])\s+(-?[\d.]+|BDL)\s+(.*)$")
-# KSPCB station code -> (lat, lng) of the lake in OpenStreetMap (via Overture base water), matched by name; lakes with
+# KSPCB station code -> (lat, lng) of the lake in OpenStreetMap (via Overture base water) or BBMP's lake list, matched by name; lakes with
 # two candidates of the same name (Puttenahalli, Hosakere, Basavanapura) and repeat stations on one lake are left out
 LAKES = {
+    "3634": (12.8976, 77.5542), "3641": (12.9028, 77.5501), "4512": (12.983, 77.4915), "4514": (12.9994, 77.7275),
+    "4522": (12.9674, 77.6766), "4543": (12.8793, 77.6423), "4544": (12.8736, 77.5798), "5571": (12.8858, 77.6667),
+    "5826": (12.9228, 77.6992), "5839": (13.0046, 77.6954), "5841": (12.9824, 77.7132),
     "3589": (12.9065, 77.6163), "3590": (12.9461, 77.5834), "3591": (12.9518, 77.5603),
     "3592": (12.9336, 77.5767), "3593": (12.9824, 77.6192), "3594": (13.0096, 77.5742), "3595": (12.9303, 77.5957),
     "3596": (12.94, 77.5215), "3597": (13.1649, 77.4925), "3598": (12.989, 77.4901), "3599": (13.0505, 77.4794),
@@ -139,7 +142,7 @@ def cell_dataset(region, rows, span):
                     f"month in Bengaluru ({span}), for blocks within 2 km of one, from KSPCB's reports on data.opencity.in. "
                     f"Lakes placed at their OpenStreetMap location.",
         source="pipeline/realestate/lakewater.py (KSPCB monthly lake water quality reports via OpenCity; lake sites from OpenStreetMap)",
-        license="Public domain (KSPCB via data.opencity.in); lake sites © OpenStreetMap contributors (ODbL)", default_field="lw_e_share", extrude=False)
+        license="Public domain (KSPCB, BBMP via data.opencity.in); lake sites © OpenStreetMap contributors (ODbL)", default_field="lw_e_share", extrude=False)
     clean = ({"digipin": c, **r} for c, r in rows.items())
     return store.write_dataset(CELLS, spec, region, store.bin_records(clean, LEVEL, specs), parquet=False)
 

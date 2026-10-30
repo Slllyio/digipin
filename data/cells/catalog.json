@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T16:42:50Z",
+  "generated": "2026-10-30T16:57:23Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -19396,7 +19396,7 @@
       "title": "Measured lake water quality (KSPCB monthly lake reports)",
       "description": "Use-based class, dissolved oxygen, BOD and faecal coliform at the nearest of the lakes KSPCB samples each month in Bengaluru (May 2025 to November 2025, 7 months), for blocks within 2 km of one, from KSPCB's reports on data.opencity.in. Lakes placed at their OpenStreetMap location.",
       "source": "pipeline/realestate/lakewater.py (KSPCB monthly lake water quality reports via OpenCity; lake sites from OpenStreetMap)",
-      "license": "Public domain (KSPCB via data.opencity.in); lake sites \u00a9 OpenStreetMap contributors (ODbL)",
+      "license": "Public domain (KSPCB, BBMP via data.opencity.in); lake sites \u00a9 OpenStreetMap contributors (ODbL)",
       "group": "Environment",
       "level": 7,
       "approxCellM": 244,
@@ -19473,7 +19473,7 @@
           "unit": "lakes",
           "domain": [
             1.0,
-            6.0
+            8.0
           ],
           "ramp": "viridis"
         },
@@ -19499,7 +19499,7 @@
       "regions": [
         {
           "name": "bengaluru",
-          "cells": 11143,
+          "cells": 11300,
           "bbox": {
             "west": 77.4482421875,
             "south": 12.829345703125,
