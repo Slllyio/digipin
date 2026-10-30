@@ -3270,6 +3270,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "floodspots": {
+     "label": "Residents in wards listed as waterlogged after 4 or more of 9 monsoons",
+     "value": 30,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
      "value": 95,

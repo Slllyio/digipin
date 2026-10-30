@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T16:57:23Z",
+  "generated": "2026-10-30T17:23:42Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -15686,6 +15686,126 @@
             "north": 17.452392578125
           },
           "json": "flood_reports/hyderabad.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "flood_spots",
+      "title": "Waterlogged spots by ward, 2015-2024 (GCC disaster management plan)",
+      "description": "Streets and colonies Greater Chennai Corporation listed as inundated after each north-east monsoon (2015 and 2017-2024), counted per ward from the lists in its City Disaster Management Perspective Plan 2025 on data.opencity.in. The lists name a ward but give no coordinates, so values are ward wide.",
+      "source": "pipeline/realestate/floodspots.py (GCC City Disaster Management Perspective Plan 2025 via OpenCity)",
+      "license": "Public domain (Greater Chennai Corporation via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "fs_years",
+          "label": "Monsoons (of 9, 2015-2024) in which the ward had a listed waterlogged spot",
+          "type": "number",
+          "agg": "max",
+          "unit": "monsoons",
+          "domain": [
+            0,
+            8
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "fs_spots",
+          "label": "Waterlogged spots listed in the ward, 2015-2024 (summed over monsoons)",
+          "type": "number",
+          "agg": "max",
+          "unit": "spots",
+          "domain": [
+            0,
+            42
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "fs_2015",
+          "label": "Spots listed in the ward after the 2015 monsoon",
+          "type": "number",
+          "agg": "max",
+          "unit": "spots",
+          "domain": [
+            0,
+            17
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "fs_2021",
+          "label": "Spots listed in the ward after the 2021 monsoon",
+          "type": "number",
+          "agg": "max",
+          "unit": "spots",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "fs_2024",
+          "label": "Spots listed in the ward after the 2024 monsoon",
+          "type": "number",
+          "agg": "max",
+          "unit": "spots",
+          "domain": [
+            0,
+            3
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "fs_recent",
+          "label": "Spots listed in the ward after the 2022-2024 monsoons",
+          "type": "number",
+          "agg": "max",
+          "unit": "spots",
+          "domain": [
+            0,
+            9
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "fs_ward",
+          "label": "GCC ward",
+          "type": "number",
+          "agg": "min",
+          "domain": [
+            4,
+            198
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "fs_years",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "chennai",
+          "cells": 6412,
+          "bbox": {
+            "west": 80.139892578125,
+            "south": 12.899658203125,
+            "east": 80.315673828125,
+            "north": 13.180908203125
+          },
+          "json": "flood_spots/chennai.json",
           "parquet": null
         }
       ]

@@ -1937,3 +1937,16 @@ the junction (a hit that landed on an unrelated metro station, college or a same
 and 24 well-known junctions it could not find were placed by hand. Unplaced names are left out, so the lens
 undercounts. The lens reads `fr.city` to name the right list in its headline.
 
+
+## Waterlogged streets by ward, Chennai (`floodspots` lens, `flood_spots` dataset)
+
+`pipeline/realestate/floodspots.py` downloads GCC's City Disaster Management Perspective Plan 2025 (805 pages) and
+runs `pdftotext -layout` on the first 130 pages, where the city-wide inundation lists sit; the later zone chapters
+repeat older street lists and are not read. `spots()` starts a list at each "Depth of Inundation During Monsoon - YYYY",
+"Vulnerable Locations During Monsoon-2023" or "VULNERABLE LOCATIONS – 2024" heading, reads rows of serial, zone (Arabic
+or Roman), ward and location, skips the zone abstracts (numbers only), wards outside 1-200 and repeated serials (wrapped
+rows), and stops at the next "Chronic Inundation" or monsoon abstract heading. Parsed counts against the printed totals:
+2015 303/306, 2017 204/205, 2018 53/53, 2019 18/19, 2020 21/23, 2021 554/554, 2022 37/37, 2023 34/35, 2024 85/87.
+Every block in a GCC ward (`wards.ward_no`) takes the ward's figures; wards never listed get zeros. The lens maps the
+number of monsoons a ward was listed in, because the length of a single year's list follows the rain and how thoroughly
+it was recorded.

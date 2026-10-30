@@ -459,6 +459,37 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Waterlogged streets. GCC's disaster management plan lists the spots that went under water after each monsoon, 2015-2024, by ward.
+    function floodspots(fr) {
+        const c = fr.cols, n = fr.grid.n, col = k => c[`flood_spots.fs_${k}`];
+        const yrs = col('years'), ward = col('ward'), s15 = col('2015'), s21 = col('2021'), s24 = col('2024'), pop = c['population.population'];
+        if (!yrs || !yrs.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(yrs[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 0);
+        const often = sum(i => yrs[i] >= 4), last = s24 ? sum(i => s24[i] > 0) : NaN, never = sum(i => yrs[i] === 0);
+        const wards = new Map();
+        for (const i of idx) if (_fin(ward[i]) && !wards.has(ward[i])) wards.set(ward[i], i);
+        const total = a => (a ? [...wards.values()].reduce((s, i) => s + (_fin(a[i]) ? a[i] : 0), 0) : NaN);
+        const worst = [...wards.entries()].sort((a, b) => yrs[b[1]] - yrs[a[1]])[0];
+        const stats = [
+            { label: 'Residents in wards listed after 4 or more of the 9 monsoons', value: `${_people(often)} (${pct(often)}%)` },
+            { label: 'Residents in wards with a spot listed after the 2024 monsoon', value: _fin(last) ? `${_people(last)} (${pct(last)}%)` : 'n/a' },
+            { label: 'Residents in wards never listed', value: `${_people(never)} (${pct(never)}%)` },
+            { label: 'Spots listed in these wards after 2015 / 2021 / 2024', value: `${total(s15)} / ${total(s21)} / ${total(s24)}` },
+            { label: 'Most often listed ward', value: worst ? `Ward ${worst[0]}, ${yrs[worst[1]]} of 9 monsoons` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = yrs[i];
+        return {
+            columns: { floodspot_years: out }, idx, weightKey: 'floodspot_years', noHotspots: true,
+            metric: { label: 'Residents in wards listed as waterlogged after 4 or more of 9 monsoons', value: pct(often), unit: '%', higherIs: 'worse' },
+            headline: `${_people(often)} residents here (${pct(often)}%) live in wards where the corporation listed a waterlogged street or colony after at least 4 of the 9 north-east monsoons from 2015 to 2024${_fin(last) ? `, and ${pct(last)}% in wards with a spot listed after the 2024 rains` : ''}. In these wards the list ${total(s21) >= total(s24) ? 'shrank' : 'grew'} from ${total(s21)} spots after the 2021 rains to ${total(s24)} after 2024.`,
+            stats,
+        };
+    }
+
     // Accident-prone junctions. Delhi Traffic Police's accident-prone zones (2021) and BBMP's Suraksha-75 junctions (2025).
     function crashzones(fr) {
         const c = fr.cols, n = fr.grid.n, km = c['crash_zones.cz_km'], k1 = c['crash_zones.cz_1km'], pop = c['population.population'];
@@ -1003,6 +1034,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'floodspots', title: 'Waterlogged streets, 2015-2024', icon: '🌊',
+            question: 'Does my ward flood every monsoon, or only in the big ones?',
+            field: { key: 'floodspot_years', label: 'Monsoons (of 9) in which the ward had a listed waterlogged spot', unit: 'monsoons', higherIs: 'worse', ramp: 'reds', domain: [0, 8] },
+            needs: ['flood_spots.fs_years', 'flood_spots.fs_ward', 'flood_spots.fs_2015', 'flood_spots.fs_2021', 'flood_spots.fs_2024', 'population.population'],
+            method: `Greater Chennai Corporation's City Disaster Management Perspective Plan 2025 (data.opencity.in, public domain) reprints, for the north-east monsoons of 2015 and 2017 to 2024, the list of streets and colonies that went under water, each with its zone and ward: 306 spots after the December 2015 floods, 554 after November 2021, 35 after 2023 and 87 after 2024, about 1,320 in all (1,309 could be read from the PDF). The lists give no coordinates, so every block takes its ward's record: in how many of the nine monsoons the ward had a listed spot, and how many spots it had after 2015, 2021 and 2024. The counts follow both the rain and how thoroughly each year was recorded, so a ward listed in many separate years is the stronger signal than one long list in a single bad year. Ward by ward, the lists barely match the official flood hazard map (rank match 0.15 with the 100-year flood extent, none with the hazard classes): most listed spots are streets where storm drains failed, not river floodplains. Chennai only.`,
+            refs: 'Greater Chennai Corporation, City Disaster Management Perspective Plan 2025, inundation and vulnerable location lists 2015-2024 (via data.opencity.in)' },
         { id: 'crashzones', title: 'Accident-prone junctions', icon: '🚦',
             question: 'Do I live near a junction the authorities list as accident-prone?',
             field: { key: 'crashzone_km', label: 'Distance to the nearest listed accident-prone junction', unit: 'km', higherIs: 'better', ramp: 'viridis', domain: [0, 4] },
@@ -1157,6 +1194,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater, lakeoxygen, schoolready, crashzones });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater, lakeoxygen, schoolready, crashzones, floodspots });
     return { ENTRIES };
 })();
