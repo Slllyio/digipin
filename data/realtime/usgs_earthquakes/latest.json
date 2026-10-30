@@ -1,7 +1,55 @@
 {
-  "generated_at_iso": "2026-10-29T21:17:50Z",
-  "count": 22,
+  "generated_at_iso": "2026-10-30T01:14:12Z",
+  "count": 20,
   "records": [
+    {
+      "id": "us7000tu4z",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-29T23:04:49.300000+00:00",
+      "latitude": -18.1317,
+      "longitude": 167.9345,
+      "depth_km": 10.0,
+      "place": "59 km SW of Port-Vila, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu4z",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tu4f",
+      "magnitude": 6.2,
+      "origin_time_utc": "2026-10-29T21:46:44.786000+00:00",
+      "latitude": -15.1891,
+      "longitude": 167.4523,
+      "depth_km": 142.833,
+      "place": "43 km ESE of Port-Olry, Vanuatu",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu4f",
+      "tsunami": 0,
+      "significance": 593
+    },
+    {
+      "id": "us7000tu4a",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-29T21:12:36.287000+00:00",
+      "latitude": 44.1091,
+      "longitude": 148.1794,
+      "depth_km": 35.0,
+      "place": "121 km ENE of Shikotan, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu4a",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tu46",
+      "magnitude": 4.7,
+      "origin_time_utc": "2026-10-29T21:00:15.784000+00:00",
+      "latitude": 51.5608,
+      "longitude": 15.9523,
+      "depth_km": 5.0,
+      "place": "1 km SSE of Radwanice, Poland",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu46",
+      "tsunami": 0,
+      "significance": 340
+    },
     {
       "id": "us7000tu3u",
       "magnitude": 5.0,
@@ -193,78 +241,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttvy",
       "tsunami": 0,
       "significance": 359
-    },
-    {
-      "id": "us7000ttvs",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-29T01:07:04.538000+00:00",
-      "latitude": -50.2688,
-      "longitude": 139.4087,
-      "depth_km": 10.0,
-      "place": "western Indian-Antarctic Ridge",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttvs",
-      "tsunami": 0,
-      "significance": 354
-    },
-    {
-      "id": "us7000ttvn",
-      "magnitude": 4.9,
-      "origin_time_utc": "2026-10-29T00:57:36.802000+00:00",
-      "latitude": -15.0234,
-      "longitude": 168.1637,
-      "depth_km": 10.0,
-      "place": "117 km E of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttvn",
-      "tsunami": 0,
-      "significance": 369
-    },
-    {
-      "id": "us7000ttvf",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-10-29T00:08:20.933000+00:00",
-      "latitude": -15.1213,
-      "longitude": 168.0994,
-      "depth_km": 10.0,
-      "place": "109 km ENE of Luganville, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttvf",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us7000ttv1",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-28T23:13:50.764000+00:00",
-      "latitude": 43.1303,
-      "longitude": 144.3697,
-      "depth_km": 130.142,
-      "place": "17 km N of Kushiro, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttv1",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ttuq",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-28T22:42:54.821000+00:00",
-      "latitude": 44.3448,
-      "longitude": 82.7252,
-      "depth_km": 10.0,
-      "place": "80 km SE of Bole, China",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttuq",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000ttua",
-      "magnitude": 5.7,
-      "origin_time_utc": "2026-10-28T22:06:45.820000+00:00",
-      "latitude": -6.3231,
-      "longitude": 130.3957,
-      "depth_km": 142.0,
-      "place": "271 km WSW of Tual, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttua",
-      "tsunami": 0,
-      "significance": 500
     }
   ]
 }
