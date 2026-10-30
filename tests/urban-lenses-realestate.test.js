@@ -1211,6 +1211,9 @@ describe('Real-estate lenses on a hand-made grid', () => {
             'air_measured.am_km': codes.map((_, i) => (col(i) < 8 ? 2 : 7)), 'air_measured.am_pm10_months_over': codes.map((_, i) => (col(i) < 8 ? 12 : 5)), 'air_measured.am_months': codes.map(() => 12) });
         const r = L._lenses.measuredair(f, {});
         expect(r.headline).toMatch(/averaged \d+(\.\d)? µg\/m³ of PM2\.5 and 80 µg\/m³ of PM10, within the national PM2\.5 standard of 40 but \d+ times the WHO guideline\. .* residents \(67%\) live nearest a station whose PM10 was over the national standard in every month measured, and 33% live more than 5 km from any station\.$/);
+        const delhi = L.frameFrom(codes, { ...base, 'air_measured.am_pm25': codes.map(() => 100), 'air_measured.am_pm10': codes.map(() => 200),
+            'air_measured.am_km': codes.map(() => 2), 'air_measured.am_pm10_months_over': codes.map(() => 12), 'air_measured.am_months': codes.map(() => 12) });
+        expect(L._lenses.measuredair(delhi, {}).headline).toMatch(/above the national PM2\.5 standard of 40 and 20 times the WHO guideline\./);
         expect(L._lenses.measuredair(L.frameFrom(codes, base), {})).toBeNull();
     });
 

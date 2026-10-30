@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T14:54:09Z",
+  "generated": "2026-10-30T15:24:50Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -702,7 +702,7 @@
     {
       "id": "air_measured",
       "title": "Measured air quality at the nearest station (state pollution boards)",
-      "description": "Average PM2.5, PM10 and NO2 at the nearest state pollution control board station (TNPCB, 8 months of 2024), from the station reports on data.opencity.in (KSPCB's 11 continuous stations in Bengaluru, TNPCB's five in Chennai). Ground measurements at one point; blocks far from a station inherit its value.",
+      "description": "Average PM2.5, PM10 and NO2 at the nearest state pollution control board station (7 CPCB/SPCB continuous stations, 12 months of 2024), from the station reports on data.opencity.in (KSPCB's 11 continuous stations in Bengaluru, TNPCB's five in Chennai). Ground measurements at one point; blocks far from a station inherit its value.",
       "source": "pipeline/realestate/airmeasured.py (KSPCB monthly CAAQMS reports and TNPCB daily readings via OpenCity)",
       "license": "Public domain (KSPCB, TNPCB via data.opencity.in)",
       "group": "Environment",
@@ -792,7 +792,7 @@
           "agg": "mode",
           "domain": [
             1.0,
-            11.0
+            39.0
           ],
           "ramp": "viridis"
         },
@@ -803,7 +803,7 @@
           "agg": "max",
           "unit": "months",
           "domain": [
-            8,
+            4,
             12
           ],
           "ramp": "viridis"
@@ -861,6 +861,133 @@
               "4T37",
               "4T38",
               "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "air_measured/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "hyderabad",
+          "cells": 15870,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.55126953125
+          },
+          "json": "air_measured/hyderabad/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4222",
+              "4223",
+              "4224",
+              "4225",
+              "4226",
+              "4227",
+              "4228",
+              "4229",
+              "422C"
+            ]
+          }
+        },
+        {
+          "name": "kolkata",
+          "cells": 7268,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.651123046875
+          },
+          "json": "air_measured/kolkata.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 16475,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "air_measured/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK4",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKM",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "air_measured/pune/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
             ]
           }
         }

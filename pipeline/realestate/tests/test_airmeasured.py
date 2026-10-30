@@ -29,3 +29,13 @@ def test_daily_months_groups_by_month_and_station():
             {"Date": "01 FEBRUARY", "Station": "Royapuram", "PM2.5": "22", "PM10": "52", "NO2": "17"}]
     m = a.daily_months(rows)
     assert len(m) == 2 and m[1][2] == {"pm10": 60.0, "pm25": 30.0, "no2": 10.0} and m[0][4]["pm25"] == 22.0
+
+
+def test_quarter_hour_months_needs_enough_readings_and_the_year():
+    head = "Station ID,State,City,Station Name,Timestamp,PM2.5 (µg/m³),PM10 (µg/m³),NO (µg/m³),NO2 (µg/m³)"
+    rows = [f'x,MH,Pune,"A, Pune",2024-01-0{1 + i % 9}T00:00:00,{40 + i % 2},100,5,' + ("20" if i < 1000 else "") for i in range(1200)]
+    rows += ['x,MH,Pune,"A, Pune",2024-02-01T00:00:00,50,90,5,20', 'x,MH,Pune,"A, Pune",2025-01-01T00:00:00,500,900,5,20']
+    got = a.quarter_hour_months([head] + rows)
+    assert set(got) == {"01"}
+    assert round(got["01"]["pm25"], 1) == 40.5 and got["01"]["pm10"] == 100 and got["01"]["no2"] == 20
+    assert a.by_month({0: got, 1: {"01": {"pm10": 60}}}) == [{0: got["01"], 1: {"pm10": 60}}]

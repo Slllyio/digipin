@@ -15,11 +15,15 @@ its nearest station's figures:
 Chennai: TNPCB's daily readings at its five stations (Kodungaiyur, Koyambedu, Manali, Perungudi, Royapuram) for
 January to August 2024, the latest on OpenCity, averaged the same way (monthly means, then their average).
 
+Delhi, Mumbai, Pune, Hyderabad and Kolkata: the 15-minute readings that CPCB and the state boards publish for each
+continuous station (OpenCity's 2024-25 files), averaged by month over calendar 2024 (a month needs 10 days of
+readings) and then over the months, at 99 stations placed as described at ``SITES``.
+
 Station sites are from KSPCB's continuous-station map on OpenCity (2023), matched by name; Nisarga Bhavan, whose map
 point is misplaced, is placed at the KSPCB office in Saneguruvanahalli and R.V. College, Kengeri, which is not on the
 map, at the college.
 
-    python -m pipeline.realestate.airmeasured --region bengaluru,chennai
+    python -m pipeline.realestate.airmeasured --region bengaluru,chennai,delhi,mumbai,pune,hyderabad,kolkata
 """
 from __future__ import annotations
 
@@ -48,6 +52,59 @@ CHENNAI_STATIONS = [
     ("kodungaiyur", 13.1365, 80.2480), ("koyambedu", 13.0694, 80.1948), ("manali", 13.1646, 80.2622),
     ("perungudi", 12.9532, 80.2357), ("royapuram", 13.1137, 80.2948),
 ]
+HOURLY_PACKAGE = "{}-hourly-air-quality-reports"
+HOURLY_YEAR = "2024"
+MIN_READINGS = 960     # 15-minute readings a month needs (10 days) to count
+# CPCB/SPCB continuous stations with 15-minute files for 2024-25 on OpenCity: (file name before " 15 minute", lat, lng).
+# Hyderabad sites are TSPCB's station list (2023); elsewhere the station's locality or landmark in OpenStreetMap
+# (Nominatim), checked by hand and corrected where it landed on the wrong place; ~1 km accuracy.
+SITES = {
+    "pune": [
+        ("Alandi IITM", 18.6772, 73.8981), ("Bhosari IITM", 18.621, 73.8501), ("Bhumkar Nagar IITM", 18.603, 73.7494),
+        ("Hadapsar IITM", 18.5008, 73.9379), ("Karve Road MPCB", 18.4838, 73.81), ("Katraj Dairy MPCB", 18.4538, 73.857),
+        ("Panchawati_Pashan IITM", 18.5306, 73.8123), ("Revenue Colony Shivajinagar", 18.5296, 73.8491), ("Savitribai Phule Pune University MPCB", 18.5528, 73.8266),
+        ("Transport Nagar Nigdi", 18.6639, 73.7677),
+    ],
+    "hyderabad": [
+        ("Bollaram Industrial Area TSPCB", 17.5409, 78.3585), ("Central University TSPCB", 17.4601, 78.3344), ("ECIL Kapra TSPCB", 17.4704, 78.5669),
+        ("ICRISAT Patancheru TSPCB", 17.5144, 78.2746), ("IDA Pashamylaram TSPCB", 17.5275, 78.1768), ("IITH Kandi TSPCB", 17.5857, 78.1262),
+        ("Kokapet TSPCB", 17.3936, 78.3392), ("Kompally Municipal Office TSPCB", 17.5449, 78.487), ("Nacharam_TSIIC IALA TSPCB", 17.4293, 78.5693),
+        ("New Malakpet TSPCB", 17.3721, 78.5087), ("Ramachandrapuram TSPCB", 17.5286, 78.2862), ("Sanathnagar TSPCB", 17.4571, 78.4435),
+        ("Somajiguda TSPCB", 17.4171, 78.4575), ("Zoo Park TSPCB", 17.3497, 78.4514),
+    ],
+    "mumbai": [
+        ("Bandra Kurla Complex IITM", 19.0593, 72.8613), ("Bandra Kurla Complex MPCB", 19.0593, 72.8613), ("Bandra MPCB", 19.055, 72.8402),
+        ("Borivali East IITM", 19.2187, 72.8655), ("Borivali East MPCB", 19.2187, 72.8655), ("Byculla BMC", 18.9766, 72.8328),
+        ("Chakala Andheri East", 19.1112, 72.8661), ("Chembur MPCB", 19.0548, 72.898), ("Chhatrapati Shivaji Intl. Airport (T2) MPCB", 19.1023, 72.8745),
+        ("Colaba MPCB", 18.9151, 72.826), ("Deonar IITM", 19.0476, 72.9052), ("Ghatkopar BMC", 19.0857, 72.9084),
+        ("Kandivali East MPCB", 19.2052, 72.8626), ("Kandivali West BMC", 19.214, 72.8373), ("Kherwadi_Bandra East MPCB", 19.0626, 72.8478),
+        ("Khindipada Bhandup West", 19.1606, 72.929), ("Kurla MPCB", 19.0653, 72.8794), ("Malad West IITM", 19.1853, 72.8359),
+        ("Mazgaon IITM", 18.9697, 72.8406), ("Mindspace Malad West", 19.1848, 72.8341), ("Mulund West MPCB", 19.172, 72.9512),
+        ("Navy Nagar Colaba", 18.9074, 72.8083), ("Powai MPCB", 19.1187, 72.9073), ("Sewri BMC", 18.999, 72.8607),
+        ("Shivaji Nagar BMC", 19.0638, 72.9249), ("Siddharth Nagar Worli", 19.0005, 72.815), ("Sion MPCB", 19.0465, 72.8633),
+        ("Vile Parle West MPCB", 19.1039, 72.8403), ("Worli MPCB", 18.9988, 72.817),
+    ],
+    "delhi": [
+        ("Alipur DPCC", 28.7973, 77.1387), ("Anand Vihar DPCC", 28.6466, 77.3155), ("Ashok Vihar DPCC", 28.6885, 77.1739),
+        ("Aya Nagar IMD", 28.4765, 77.1329), ("Bawana DPCC", 28.7997, 77.0329), ("Burari Crossing IMD", 28.7286, 77.1993),
+        ("Chandni Chowk IITM", 28.656, 77.2322), ("CRRI Mathura Road IMD", 28.5501, 77.2752), ("Dr. Karni Singh Shooting Range DPCC", 28.5001, 77.2675),
+        ("DTU CPCB", 28.7508, 77.1163), ("Dwarka Sector 8", 28.5656, 77.067), ("IGI Airport (T3) IMD", 28.5562, 77.0924),
+        ("IHBAS CPCB", 28.6812, 77.3025), ("ITO CPCB", 28.6282, 77.241), ("Jahangirpuri DPCC", 28.726, 77.1627),
+        ("Jawaharlal Nehru Stadium DPCC", 28.5834, 77.2335), ("Lodhi Road IITM", 28.5903, 77.2217), ("Lodhi Road IMD", 28.5903, 77.2217),
+        ("Major Dhyan Chand National Stadium DPCC", 28.6126, 77.2373), ("Mandir Marg DPCC", 28.6364, 77.2011), ("Mundka DPCC", 28.6824, 77.0306),
+        ("Najafgarh DPCC", 28.6124, 76.9865), ("Narela DPCC", 28.8465, 77.0857), ("Nehru Nagar DPCC", 28.5685, 77.2514),
+        ("North Campus IMD", 28.6891, 77.2135), ("NSIT Dwarka CPCB", 28.609, 77.0326), ("Okhla Phase 2", 28.5375, 77.2779),
+        ("Patparganj DPCC", 28.6116, 77.2906), ("Punjabi Bagh DPCC", 28.673, 77.1461), ("Pusa DPCC", 28.6363, 77.1576),
+        ("Pusa IMD", 28.6363, 77.1576), ("R K Puram DPCC", 28.5504, 77.1855), ("Rohini DPCC", 28.7063, 77.1088),
+        ("Shadipur CPCB", 28.6516, 77.1583), ("Sirifort CPCB", 28.5502, 77.2249), ("Sonia Vihar DPCC", 28.7199, 77.2482),
+        ("Sri Aurobindo Marg DPCC", 28.5396, 77.2), ("Vivek Vihar DPCC", 28.6692, 77.3123), ("Wazirpur DPCC", 28.6801, 77.1702),
+    ],
+    "kolkata": [
+        ("Ballygunge WBPCB", 22.528, 88.3659), ("Bidhannagar WBPCB", 22.585, 88.4105), ("Fort William WBPCB", 22.5545, 88.338),
+        ("Jadavpur WBPCB", 22.4955, 88.3709), ("Rabindra Bharati University WBPCB", 22.627, 88.3805), ("Rabindra Sarobar WBPCB", 22.5123, 88.3636),
+        ("Victoria WBPCB", 22.5498, 88.3391),
+    ],
+}
 TITLE = re.compile(r"^\s*(.+?)\s+[-–]\s+[A-Z][a-z]+\s*[-–]?\s*20\d\d\s*$")
 
 
@@ -95,6 +152,40 @@ def daily_months(rows, stations=CHENNAI_STATIONS):
             if v > 0:
                 by.setdefault(month[0], {}).setdefault(k, {}).setdefault(p, []).append(v)
     return [{k: {p: sum(v) / len(v) for p, v in d.items()} for k, d in m.items()} for _, m in sorted(by.items())]
+
+
+def quarter_hour_months(lines, year=HOURLY_YEAR):
+    """{month "01".."12": {"pm10", "pm25", "no2"}} for one station from its 15-minute CSV lines (months with too few
+    readings left out)."""
+    import csv
+    acc = {}
+    rd = csv.reader(lines)
+    head = next(rd, None) or []
+    col = {p: next((i for i, h in enumerate(head) if h.startswith(name + " (")), None) for p, name in (("pm10", "PM10"), ("pm25", "PM2.5"), ("no2", "NO2"))}
+    ts = next((i for i, h in enumerate(head) if h == "Timestamp"), 4)
+    for r in rd:
+        if len(r) <= ts or not r[ts].startswith(year):
+            continue
+        m = r[ts][5:7]
+        for p, i in col.items():
+            if i is None or i >= len(r):
+                continue
+            try:
+                v = float(r[i])
+            except ValueError:
+                continue
+            if v > 0:
+                a = acc.setdefault(m, {}).setdefault(p, [0.0, 0])
+                a[0] += v
+                a[1] += 1
+    out = {m: {p: a[0] / a[1] for p, a in d.items() if a[1] >= MIN_READINGS} for m, d in sorted(acc.items())}
+    return {m: d for m, d in out.items() if d}
+
+
+def by_month(per_station):
+    """[month_averages-shaped dict per month] from {station index: quarter_hour_months result}."""
+    months = sorted({m for d in per_station.values() for m in d})
+    return [{k: d[m] for k, d in per_station.items() if d.get(m)} for m in months]
 
 
 def station_means(months, stations=STATIONS):
@@ -169,7 +260,7 @@ def main(argv=None):
     import requests
     from pipeline.realestate.powerplants import lived_cells
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--region", default="bengaluru,chennai")
+    ap.add_argument("--region", default="bengaluru,chennai,delhi,mumbai,pune,hyderabad,kolkata")
     show = lambda pkg: requests.get("https://data.opencity.in/api/3/action/package_show", params={"id": pkg}, timeout=60).json()["result"]["resources"]
     for region in ap.parse_args(argv).region.split(","):
         if region == "bengaluru":
@@ -181,6 +272,15 @@ def main(argv=None):
             rows = list(csv.DictReader(io.StringIO(requests.get(res["url"], timeout=120).content.decode("utf-8-sig"))))
             stations, months = CHENNAI_STATIONS, daily_months(rows)
             span = f"TNPCB, {len(months)} months of 2024"
+        elif region in SITES:
+            stations = SITES[region]
+            res = {r["name"].split(" 15 minute")[0]: r["url"] for r in show(HOURLY_PACKAGE.format(region)) if "15 minute" in r["name"]}
+            per = {}
+            for k, (name, _, _) in enumerate(stations):
+                with requests.get(res[name], timeout=600, stream=True) as resp:
+                    per[k] = quarter_hour_months(x.decode("utf-8-sig") for x in resp.iter_lines())
+            months = by_month(per)
+            span = f"{len(stations)} CPCB/SPCB continuous stations, {len(months)} months of {HOURLY_YEAR}"
         else:
             print(f"{region}: no station reports")
             continue

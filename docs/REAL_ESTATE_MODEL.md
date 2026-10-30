@@ -1868,7 +1868,7 @@ divided by the residents of all blocks within 2 km (same radius), which keeps th
 zone map (the KMLs carry zone ids but no zone polygons). The other asset layers (chambers, pipes, meters, pumps, DG sets)
 are not used.
 
-## Measured air at the nearest station, Bengaluru (`measuredair` lens, `air_measured` dataset)
+## Measured air at the nearest station, Bengaluru and six more cities (`measuredair` lens, `air_measured` dataset)
 
 `pipeline/realestate/airmeasured.py` downloads the latest 12 "Air Quality Report <month>" PDFs from OpenCity's
 `bengaluru-monthly-air-quality-reports` package and reads each station block with `pdftotext -layout`: a title line
@@ -1878,6 +1878,16 @@ measure PM2.5, so a block's PM2.5 comes from the nearest station that does. Stat
 continuous-station KML, except Nisarga Bhavan (its KML point is ~9 km off) and R.V. College (not on it). Chennai (`--region chennai`) reads TNPCB's 2024 daily CSV (`Date` like "01 JANUARY", sometimes
 title case), averages each station's days within a month and then the months, so it matches Bengaluru's monthly-mean
 method. `am_months` records how many months a station's averages cover, which the lens uses for "every month measured".
+
+Delhi, Mumbai, Pune, Hyderabad and Kolkata read OpenCity's `<city>-hourly-air-quality-reports` packages, which hold
+one ~12 MB "15 minute AQI Data for 2024-25" CSV per continuous station (concentrations, not AQI, despite the name).
+`quarter_hour_months` streams each file, keeps calendar 2024, and averages each month that has at least 960 readings
+(10 days); `by_month` reshapes the per-station months into the same shape as the Bengaluru reports so `station_means`
+and `block_rows` are shared. The files carry no coordinates. Hyderabad's 14 come from TSPCB's station KML (names
+differ: Somajiguda is the Khairatabad RTO site, Ramachandrapuram is Symphony Park). The rest were geocoded with
+Nominatim and checked; six that landed on the wrong place were set by hand (Mandir Marg, IHBAS, NSIT Dwarka, Kherwadi,
+Siddharth Nagar Worli, Bidhannagar); Pune's Mhada Colony and Vasai West were left out. Stations without PM10 in 2024
+(BKC IITM, Bandra, Sanathnagar) drop out of the PM10 nearest-station pick. The lens legend now scales to each city.
 
 ## Groundwater quality at the nearest observation well, Bengaluru (`wellwater` lens, `well_quality` dataset)
 
