@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T14:36:57Z",
+  "generated": "2026-10-30T14:54:09Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -19021,6 +19021,140 @@
           },
           "json": "lake_buffers/hyderabad.json",
           "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "lake_water",
+      "title": "Measured lake water quality (KSPCB monthly lake reports)",
+      "description": "Use-based class, dissolved oxygen, BOD and faecal coliform at the nearest of the lakes KSPCB samples each month in Bengaluru (May 2025 to November 2025, 7 months), for blocks within 2 km of one, from KSPCB's reports on data.opencity.in. Lakes placed at their OpenStreetMap location.",
+      "source": "pipeline/realestate/lakewater.py (KSPCB monthly lake water quality reports via OpenCity; lake sites from OpenStreetMap)",
+      "license": "Public domain (KSPCB via data.opencity.in); lake sites \u00a9 OpenStreetMap contributors (ODbL)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "lw_e_share",
+          "label": "Samples in class E at the nearest monitored lake",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "lw_do",
+          "label": "Dissolved oxygen at the nearest monitored lake",
+          "type": "number",
+          "agg": "mean",
+          "unit": "mg/L",
+          "domain": [
+            0,
+            8
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "lw_bod",
+          "label": "BOD at the nearest monitored lake",
+          "type": "number",
+          "agg": "mean",
+          "unit": "mg/L",
+          "domain": [
+            0,
+            30
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "lw_fc",
+          "label": "Faecal coliform at the nearest monitored lake (median)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "MPN/100 ml",
+          "domain": [
+            140.0,
+            14000.0
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "lw_km",
+          "label": "Distance to the nearest monitored lake",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0,
+            2
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "lw_lakes_2km",
+          "label": "Monitored lakes within 2 km",
+          "type": "number",
+          "agg": "mean",
+          "unit": "lakes",
+          "domain": [
+            1.0,
+            6.0
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "lw_e_lakes_2km",
+          "label": "Monitored lakes within 2 km in class E most months",
+          "type": "number",
+          "agg": "mean",
+          "unit": "lakes",
+          "domain": [
+            0.0,
+            4.0
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "lw_e_share",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 11143,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.132568359375
+          },
+          "json": "lake_water/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
         }
       ]
     },

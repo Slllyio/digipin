@@ -459,6 +459,34 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Measured lake water. KSPCB's monthly samples of Bengaluru's lakes; each block within 2 km takes its nearest lake.
+    function lakewater(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`lake_water.lw_${k}`];
+        const es = col('e_share'), dox = col('do'), fc = col('fc'), eN = col('e_lakes_2km'), pop = c['population.population'];
+        if (!es || !es.some(_fin)) return null;
+        const all = _residents(fr), idx = all.filter(i => _fin(es[i]));
+        if (idx.length < 5) return null;
+        const P = all.reduce((s, i) => s + pop[i], 0) || 1, Pn = idx.reduce((s, i) => s + pop[i], 0);
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0);
+        const bad = sum(i => es[i] > 50), lowO = dox ? sum(i => _fin(dox[i]) && dox[i] < 4) : NaN, ringed = eN ? sum(i => eN[i] >= 2) : NaN;
+        const medFc = fc ? wquantile(fc, pop, idx.filter(i => _fin(fc[i])), 0.5) : NaN;
+        const stats = [
+            { label: 'Residents within 2 km of a monitored lake', value: `${_people(Pn)} (${_round(100 * Pn / P, 0)}%)` },
+            { label: 'Of them, nearest lake in class E (unfit even for fish) most months', value: `${_people(bad)} (${_round(100 * bad / (Pn || 1), 0)}%)` },
+            { label: 'Of them, nearest lake below 4 mg/L dissolved oxygen on average', value: _fin(lowO) ? `${_people(lowO)} (${_round(100 * lowO / (Pn || 1), 0)}%)` : 'n/a' },
+            { label: 'Of them, two or more class-E lakes within 2 km', value: _fin(ringed) ? `${_people(ringed)}` : 'n/a' },
+            { label: 'Faecal coliform at the nearest lake, middle resident', value: _fin(medFc) ? `${Math.round(medFc).toLocaleString('en-IN')} MPN/100 ml (bathing limit 500)` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = es[i];
+        return {
+            columns: { lake_e_share: out }, idx, weightKey: 'lake_e_share', noHotspots: false,
+            metric: { label: 'Samples in class E at the nearest monitored lake (residents-weighted)', value: _round(wmean(es, pop, idx), 0), unit: '%', higherIs: 'worse' },
+            headline: `${_people(Pn)} residents here live within 2 km of a lake KSPCB samples every month. For ${_people(bad)} of them (${_round(100 * bad / (Pn || 1), 0)}%) the nearest lake was class E, fit only for irrigation and industrial cooling, in most samples${_fin(medFc) ? `, and the middle resident's lake carried ${Math.round(medFc).toLocaleString('en-IN')} faecal coliform per 100 ml, a sign of sewage` : ''}.`,
+            stats,
+        };
+    }
+
     // Groundwater quality. Karnataka Ground Water Directorate observation wells; each block takes its nearest well.
     function wellwater(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`well_quality.wq_${k}`];
@@ -891,6 +919,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'lakewater', title: 'Measured lake water', icon: '🦆',
+            question: 'How clean is the lake nearest to me, by the pollution board\'s monthly samples?',
+            field: { key: 'lake_e_share', label: 'Samples in class E at the nearest monitored lake', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 100] },
+            needs: ['lake_water.lw_e_share', 'lake_water.lw_do', 'lake_water.lw_fc', 'lake_water.lw_e_lakes_2km', 'population.population'],
+            method: `KSPCB samples about 140 lakes and tanks in and around Bengaluru every month and publishes each sample's use-based class under the CPCB criteria (A drinking water without treatment, B bathing, C drinking after treatment, D fish and wildlife, E irrigation and industrial cooling only) with dissolved oxygen, BOD, faecal coliform and about 40 other readings. This lens reads the monthly reports on data.opencity.in that have a text layer (May to November 2025; earlier months are scans) and gives each block within 2 km of a placed lake the share of its nearest lake's samples that were class E, the lake's mean dissolved oxygen and median faecal coliform. The reports give no coordinates, so 88 of the 140 lakes were placed at their OpenStreetMap location by name; lakes whose name matched two water bodies were left out. Bengaluru only.`,
+            refs: 'KSPCB monthly lake water quality reports, May to November 2025 (via data.opencity.in, public domain); CPCB use-based classification of surface waters; lake sites © OpenStreetMap contributors via Overture Maps' },
         { id: 'wellwater', title: 'Groundwater quality at the nearest well', icon: '🧫',
             question: 'Is the groundwater here safe to drink, by the government observation wells?',
             field: { key: 'well_no3', label: 'Nitrate at the nearest observation well, 2018-19', unit: 'mg/L', higherIs: 'worse', ramp: 'reds', domain: [10, 100] },
@@ -1021,6 +1055,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater });
     return { ENTRIES };
 })();

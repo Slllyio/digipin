@@ -1886,3 +1886,14 @@ between years, so columns are found by name fragments: "no3", "flouride"/"fluori
 coordinates are dropped (31 of 34 wells remain in 2018-19). Each block takes its nearest 2018-19 well; the 2017-18
 nitrate is attached only when the nearest 2017-18 well is within 500 m of it. Village names are not kept.
 
+## Measured lake water, Bengaluru (`lakewater` lens, `lake_water` dataset)
+
+`pipeline/realestate/lakewater.py` reads KSPCB's monthly lake reports on OpenCity with `pdftotext -layout`; a sample
+row is station code, month, name (sometimes wrapped onto another line), use-based class A to E, then temperature, DO,
+pH, conductivity, BOD, nitrate, nitrite, faecal and total coliform. Only May to November 2025 have a text layer;
+earlier months are scans and parse to nothing, so they are skipped. The reports carry no coordinates: `LAKES` places
+88 of 140 stations by matching the name to Overture's OSM-derived water features (Overture's S3 bucket is read
+anonymously; the proxy's injected AWS keys must be unset or the read fails with 403). Names that matched two water
+bodies (Puttenahalli, Hosakere, Basavanapura) and repeat stations on one lake (Ulsoor) are left out. Each block within
+2 km of a placed lake takes its nearest lake's class E share, mean DO and BOD and median faecal coliform.
+

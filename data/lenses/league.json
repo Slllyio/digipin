@@ -1002,6 +1002,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "lakewater": {
+     "label": "Samples in class E at the nearest monitored lake (residents-weighted)",
+     "value": 29,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "wellwater": {
      "label": "Nitrate at the nearest observation well (middle resident)",
      "value": 33,
