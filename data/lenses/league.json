@@ -6258,6 +6258,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "lakeoxygen": {
+     "label": "Highest oxygen at the nearest sampled lake (residents-weighted)",
+     "value": 2.3,
+     "unit": "mg/L",
+     "higherIs": "better"
+    },
     "measuredair": {
      "label": "PM2.5 measured at the nearest station, average of the months measured",
      "value": 33.8,

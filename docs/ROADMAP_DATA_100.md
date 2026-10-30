@@ -340,6 +340,7 @@ Each item gives four things:
 279. ✅ Groundwater quality at the nearest observation well, Bengaluru (`well_quality`, `wellwater` lens): the Karnataka Ground Water Directorate's well-by-well nitrate, fluoride, iron and hardness for 2018-19 and 2017-18 (OpenCity, public domain). 15 of 31 wells exceed the 45 mg/L nitrate limit; 43% of residents live nearest one of them.
 280. ✅ Measured lake water, Bengaluru (`lake_water`, `lakewater` lens): KSPCB's monthly samples of about 140 lakes (OpenCity, public domain), May to November 2025, with 88 lakes placed at their OpenStreetMap location by name. 26 placed lakes were class E (irrigation and cooling only) in most samples; 22% of residents within 2 km of a monitored lake live nearest one.
 281. ✅ Measured station air for Delhi, Mumbai, Pune, Hyderabad and Kolkata (`air_measured`, `measuredair` lens): 15-minute PM2.5, PM10 and NO2 at 99 CPCB and state board continuous stations (OpenCity, public domain), averaged by month over 2024. Delhi's nearest stations average 105 µg/m³ of PM2.5 and 72% of its residents live nearest a station over the PM10 standard every month; Mumbai's average 36.
+282. ✅ Hyderabad lakes short of oxygen (`lake_oxygen`, `lakeoxygen` lens): CPCB's NWMP 2021 lake table (OpenCity, public domain), 30 of about 90 Hyderabad-area lakes placed by name. 21 of the 30 never reached 4 mg/L of dissolved oxygen in any 2021 sample; 82% of residents within 2 km of a sampled lake live nearest one of those.
 
 ## Parked for the keys round
 

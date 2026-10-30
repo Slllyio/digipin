@@ -459,6 +459,33 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Lake oxygen. CPCB's 2021 water quality programme samples about 90 lakes around Hyderabad; each block within 2 km takes its nearest.
+    function lakeoxygen(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`lake_oxygen.lo_${k}`];
+        const hi = col('do_max'), lo = col('do_min'), fc = col('fc_max'), dead = col('dead_2km'), pop = c['population.population'];
+        if (!hi || !hi.some(_fin)) return null;
+        const all = _residents(fr), idx = all.filter(i => _fin(hi[i]));
+        if (idx.length < 5) return null;
+        const P = all.reduce((s, i) => s + pop[i], 0) || 1, Pn = idx.reduce((s, i) => s + pop[i], 0);
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / (Pn || 1), 0);
+        const never = sum(i => hi[i] < 4), dipped = lo ? sum(i => _fin(lo[i]) && lo[i] < 4) : NaN, ringed = dead ? sum(i => dead[i] >= 2) : NaN;
+        const stats = [
+            { label: 'Residents within 2 km of a sampled lake', value: `${_people(Pn)} (${_round(100 * Pn / P, 0)}%)` },
+            { label: 'Of them, nearest lake never reached 4 mg/L of oxygen in 2021', value: `${_people(never)} (${pct(never)}%)` },
+            { label: 'Of them, nearest lake fell below 4 mg/L at least once', value: _fin(dipped) ? `${_people(dipped)} (${pct(dipped)}%)` : 'n/a' },
+            { label: 'Of them, two or more such oxygen-starved lakes within 2 km', value: _fin(ringed) ? _people(ringed) : 'n/a' },
+            { label: 'Highest faecal coliform at the nearest lake, middle resident', value: fc ? `${Math.round(wquantile(fc, pop, idx, 0.5) || 0).toLocaleString('en-IN')} MPN/100 ml` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = hi[i];
+        return {
+            columns: { lake_do_max: out }, idx, weightKey: 'lake_do_max',
+            metric: { label: 'Highest oxygen at the nearest sampled lake (residents-weighted)', value: _round(wmean(hi, pop, idx), 1), unit: 'mg/L', higherIs: 'better' },
+            headline: `${_people(Pn)} residents here live within 2 km of a lake the pollution board sampled in 2021. For ${_people(never)} of them (${pct(never)}%) the nearest lake never reached 4 mg/L of dissolved oxygen, the least fish need, in any sample${_fin(dipped) ? `, and ${pct(dipped)}% live nearest one that fell below it at least once` : ''}.`,
+            stats,
+        };
+    }
+
     // Measured lake water. KSPCB's monthly samples of Bengaluru's lakes; each block within 2 km takes its nearest lake.
     function lakewater(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`lake_water.lw_${k}`];
@@ -919,6 +946,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'lakeoxygen', title: 'Lakes short of oxygen', icon: '🐟',
+            question: 'Can fish live in the lake near me, by the pollution board\'s samples?',
+            field: { key: 'lake_do_max', label: 'Highest dissolved oxygen at the nearest sampled lake, 2021', unit: 'mg/L', higherIs: 'better', ramp: 'viridis', domain: [0, 7] },
+            needs: ['lake_oxygen.lo_do_max', 'lake_oxygen.lo_do_min', 'lake_oxygen.lo_fc_max', 'lake_oxygen.lo_dead_2km', 'population.population'],
+            method: `CPCB's National Water Quality Monitoring Programme table for lakes, ponds, tanks and wetlands, 2021 (via data.opencity.in, public domain), gives the lowest and highest dissolved oxygen, BOD and coliform each monitored lake showed over the year. The Telangana pollution board samples about 90 lakes in and around Hyderabad; 30 could be placed with confidence at their OpenStreetMap location by name, the rest are left out. Each block within 2 km of a placed lake takes its nearest lake's readings. Fish and other aquatic life need at least 4 mg/L of dissolved oxygen (CPCB class D); a lake whose highest reading in a year stays below that is starved of oxygen, usually by sewage. Values of 0.3 mg/L are the lab's detection floor. Hyderabad only.`,
+            refs: 'CPCB, Water quality data of lakes, ponds, tanks and wetlands under NWMP 2021 (via data.opencity.in); CPCB designated best use criteria; lake sites © OpenStreetMap contributors' },
         { id: 'lakewater', title: 'Measured lake water', icon: '🦆',
             question: 'How clean is the lake nearest to me, by the pollution board\'s monthly samples?',
             field: { key: 'lake_e_share', label: 'Samples in class E at the nearest monitored lake', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 100] },
@@ -1055,6 +1088,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater, lakeoxygen });
     return { ENTRIES };
 })();

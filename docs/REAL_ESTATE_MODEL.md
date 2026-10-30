@@ -1907,3 +1907,14 @@ anonymously; the proxy's injected AWS keys must be unset or the read fails with 
 bodies (Puttenahalli, Hosakere, Basavanapura) and repeat stations on one lake (Ulsoor) are left out. Each block within
 2 km of a placed lake takes its nearest lake's class E share, mean DO and BOD and median faecal coliform.
 
+## Hyderabad lakes short of oxygen (`lakeoxygen` lens, `lake_oxygen` dataset)
+
+`pipeline/realestate/lakeoxygen.py` reads CPCB's NWMP 2021 lakes table (a 32-page PDF on OpenCity) with `pdftotext
+-layout`. A data row is station code, name (often wrapped onto the lines above and below, so the code line can carry
+only a fragment such as "QUTUBULLAPUR, MEDCHAL –"), water body type, state, then 16 numbers: min and max of
+temperature, DO, pH, conductivity, BOD, nitrate+nitrite N, faecal and total coliform. Only Telangana rows with exactly
+16 numbers are kept. `LAKES` places 30 lakes, matched by name against Overture's OSM-derived water features and
+Nominatim and kept only when the locality in the NWMP name agrees (many lakes share names such as Pedda Cheruvu or
+Patel Cheruvu, and wrapped fragments cannot be matched). Other cities have only one to three NWMP lakes (Delhi,
+Ahmedabad, Jaipur, Chennai, Kolkata), too few for a lens.
+
