@@ -1835,3 +1835,16 @@ economic surveys 2025-26, Tamil Nadu GDDP 2023-24 in ₹ lakh, Telangana outlook
 state. Table names are only cleaned (footnote marks stripped); `ALIAS` maps a block's NFHS 2011 district to the
 survey's name at lookup only, so a renamed parent (Medak, whose Hyderabad-side part is now Sangareddy) does not
 overwrite the real row. Mumbai Suburban has no own figure: Maharashtra reports Mumbai city and suburban together.
+
+## District banks, power and child health; small businesses and Class 10 results (`districtdev` and `smallbiz` lenses, `district_dev` dataset)
+
+`pipeline/realestate/districtdev.py` reads the Maharashtra economic survey's combined district statistics table (one
+row per district, Mumbai City and Mumbai Suburban separate) and three Karnataka survey tables (MSME units and jobs,
+eShram registrations against target, SSLC results by educational district). Values written as `-` or `(-) x` are
+treated as missing. SSLC counts for Bengaluru North and South are added to give Bengaluru Urban's pass rate; the PUC
+table has percentages only, so it is not combined. The Yuvanidhi table splits by caste and sex and is not read.
+Blocks join through `nfhs.district` with `ALIAS` applied at lookup (Mumbai to Mumbai City, Raigarh to Raigad,
+Bangalore to Bengaluru Urban). Thane's 2011 district included Palghar; it takes today's Thane figures. `districtdev`
+maps bank branches per lakh people and describes the main district by residents; `smallbiz` maps the 2025 SSLC pass
+rate.
+

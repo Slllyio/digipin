@@ -459,6 +459,77 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // District development indicators (Maharashtra economic survey): banking, electricity, schools and child health of
+    // the district most residents in view live in.
+    function _mainDistrict(fr, key) {
+        const c = fr.cols, k = c[key], pop = c['population.population'];
+        if (!k || !k.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(k[i]));
+        if (idx.length < 5) return null;
+        const D = new Map();
+        for (const i of idx) { const s = `${k[i]}`; const a = D.get(s) || { pop: 0, first: i }; a.pop += pop[i]; D.set(s, a); }
+        const ds = [...D.values()].sort((a, b) => b.pop - a.pop), P = idx.reduce((t, i) => t + pop[i], 0) || 1;
+        return { idx, ds, P, main: ds[0].first };
+    }
+
+    function districtdev(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`district_dev.dd_${k}`];
+        const m = _mainDistrict(fr, 'district_dev.dd_banks_lakh');
+        if (!m) return null;
+        const { idx, ds, P, main } = m, pop = c['population.population'], banks = col('banks_lakh');
+        const v = (k, i = main) => (col(k) && _fin(col(k)[i]) ? col(k)[i] : NaN);
+        const rs = x => `₹${Math.round(x).toLocaleString('en-IN')}`, r0 = x => _round(x, 0), avg = wmean(banks, pop, idx);
+        const has = k => _fin(v(k));
+        const parts = [
+            `${_round(v('banks_lakh'), 1)} bank branches and ${r0(v('atms_lakh'))} ATMs per lakh people`,
+            has('deposit_pc') ? `deposits of ${rs(v('deposit_pc'))} and loans of ${rs(v('credit_pc'))} per head` : '',
+            has('elec_home_kwh') ? `homes using ${r0(v('elec_home_kwh'))} kWh of electricity per head a year` : '',
+            has('schools_lakh') ? `${r0(v('schools_lakh'))} schools per lakh people` : '',
+        ].filter(Boolean);
+        const health = [has('imr') ? `${_round(v('imr'), 1)} infant deaths per 1,000 births` : '', has('underweight_pct') ? `${_round(v('underweight_pct'), 1)}% of under-fives underweight` : ''].filter(Boolean);
+        const stats = [
+            ...ds.slice(0, 4).map(a => ({ label: `District at ${g.codes[a.first]} (${r0(100 * a.pop / P)}% of residents): bank branches / ATMs per lakh`, value: `${_round(v('banks_lakh', a.first), 1)} / ${r0(v('atms_lakh', a.first))}` })),
+            { label: 'Deposits / credit per head (credit-deposit ratio)', value: has('deposit_pc') ? `${rs(v('deposit_pc'))} / ${rs(v('credit_pc'))} (${r0(v('cd_ratio'))}%)` : 'n/a' },
+            { label: 'Electricity per head a year: homes / commercial / industry', value: `${r0(v('elec_home_kwh'))} / ${r0(v('elec_comm_kwh'))} / ${r0(v('elec_ind_kwh'))} kWh` },
+            { label: 'Schools per lakh people / pupils per teacher (Std I-VII)', value: `${has('schools_lakh') ? r0(v('schools_lakh')) : 'n/a'} / ${has('ptr_elem') ? r0(v('ptr_elem')) : 'n/a'}` },
+            { label: 'Registered factories / their workers (ASI 2023-24)', value: has('factories') ? `${r0(v('factories')).toLocaleString('en-IN')} / ${_people(v('factory_workers'))}` : 'n/a' },
+            { label: 'Motor vehicles per lakh people', value: has('vehicles_lakh') ? r0(v('vehicles_lakh')).toLocaleString('en-IN') : 'n/a' },
+            { label: 'Infant deaths per 1,000 births / under-fives underweight', value: `${has('imr') ? _round(v('imr'), 1) : 'n/a'} / ${has('underweight_pct') ? `${_round(v('underweight_pct'), 1)}%` : 'n/a'}` },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = banks[i];
+        return {
+            columns: { district_banks: out }, idx, weightKey: 'district_banks', noHotspots: true,
+            metric: { label: 'Bank branches per lakh people (district, residents-weighted)', value: _round(avg, 1), unit: 'per lakh', higherIs: 'better' },
+            headline: `Most residents here live in a district with ${parts.join(', ')}${health.length ? `; ${health.join(' and ')}` : ''}${ds.length > 1 ? `. The ${ds.length} districts in view average ${_round(avg, 1)} branches per lakh` : ''}.`,
+            stats,
+        };
+    }
+
+    // Small businesses, informal workers and Class 10 results (Karnataka economic survey) for the district.
+    function smallbiz(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`district_dev.dd_${k}`];
+        const m = _mainDistrict(fr, 'district_dev.dd_msme_units');
+        if (!m) return null;
+        const { idx, ds, P, main } = m, pop = c['population.population'], ss = col('sslc_pass_pct');
+        const v = (k, i = main) => (col(k) && _fin(col(k)[i]) ? col(k)[i] : NaN), r0 = x => _round(x, 0);
+        const units = v('msme_units'), jobs = v('msme_jobs'), pass = v('sslc_pass_pct'), prev = v('sslc_pass_2024'), esh = v('eshram_pct');
+        const stats = [
+            ...ds.slice(0, 4).map(a => ({ label: `District at ${g.codes[a.first]} (${r0(100 * a.pop / P)}% of residents): registered MSMEs / jobs`, value: `${_people(v('msme_units', a.first))} / ${_people(v('msme_jobs', a.first))}` })),
+            { label: 'Jobs per registered enterprise', value: _fin(jobs) && units ? _round(jobs / units, 1) : 'n/a' },
+            { label: 'Class 10 (SSLC) pass rate, 2025 / 2024', value: _fin(pass) ? `${_round(pass, 1)}% / ${_round(prev, 1)}%` : 'n/a' },
+            { label: 'Unorganised workers on eShram, % of the target', value: _fin(esh) ? `${_round(esh, 1)}%` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = ss && _fin(ss[i]) ? ss[i] : NaN;
+        return {
+            columns: { sslc_pass: out }, idx, weightKey: 'sslc_pass', noHotspots: true,
+            metric: { label: 'Class 10 pass rate, 2025 (district)', value: _round(pass, 1), unit: '%', higherIs: 'better' },
+            headline: `Most residents here live in a district with ${_people(units)} registered micro, small and medium enterprises reporting ${_people(jobs)} jobs${_fin(pass) ? `; ${_round(pass, 1)}% of Class 10 students passed in 2025${_fin(prev) ? ` (${_round(prev, 1)}% in 2024)` : ''}` : ''}${_fin(esh) ? `, and ${r0(esh)}% of its target of unorganised workers have signed up to eShram` : ''}.`,
+            stats,
+        };
+    }
+
     // District income per head. State economic surveys' district tables: per capita income and the district's rank in
     // its state.
     function districtincome(fr) {
@@ -700,6 +771,18 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'smallbiz', equity: true, title: 'Small businesses and Class 10 results', icon: '🏭',
+            question: 'How many small businesses and jobs does this district have, and how do its students do?',
+            field: { key: 'sslc_pass', label: 'Class 10 (SSLC) pass rate, 2025 (district)', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [60, 95] },
+            needs: ['district_dev.dd_msme_units', 'district_dev.dd_msme_jobs', 'district_dev.dd_eshram_pct', 'district_dev.dd_sslc_pass_pct', 'district_dev.dd_sslc_pass_2024', 'population.population'],
+            method: `District tables from the Economic Survey of Karnataka 2025-26 (via data.opencity.in, public domain): micro, small and medium enterprises registered with the state and the jobs they report (2025), unorganised workers registered on the eShram portal against the district's target, and SSLC (Class 10) results for 2024 and 2025. SSLC results are reported by educational district; Bengaluru North and South are added together for Bengaluru Urban. Enterprise counts include every registered unit, active or not, and jobs are as reported at registration. Blocks are joined through their NFHS (2011) district (Bangalore is Bengaluru Urban). Karnataka only.`,
+            refs: 'Economic Survey of Karnataka 2025-26, district tables (via data.opencity.in)' },
+        { id: 'districtdev', equity: true, title: 'District banks, power and child health', icon: '🏦',
+            question: 'How well served is this district by banks, power and schools, and how healthy are its children?',
+            field: { key: 'district_banks', label: 'Bank branches per lakh people (district)', unit: 'per lakh', higherIs: 'better', ramp: 'viridis', domain: [5, 40] },
+            needs: ['district_dev.dd_banks_lakh', 'district_dev.dd_atms_lakh', 'district_dev.dd_deposit_pc', 'district_dev.dd_credit_pc', 'district_dev.dd_cd_ratio', 'district_dev.dd_elec_home_kwh', 'district_dev.dd_elec_comm_kwh', 'district_dev.dd_elec_ind_kwh', 'district_dev.dd_schools_lakh', 'district_dev.dd_ptr_elem', 'district_dev.dd_factories', 'district_dev.dd_factory_workers', 'district_dev.dd_vehicles_lakh', 'district_dev.dd_imr', 'district_dev.dd_underweight_pct', 'population.population'],
+            method: `The district statistics table of the Economic Survey of Maharashtra 2025-26 (via data.opencity.in, public domain): bank branches, ATMs, deposits and credit per head (2024-25; ATMs at December 2025), electricity sold per head to homes, shops and offices, and industry (2024-25), schools per lakh people and pupils per teacher (2024-25), registered factories and workers (Annual Survey of Industries 2023-24), motor vehicles per lakh people, infant deaths per 1,000 births and under-fives underweight (moderate plus severe, 2024-25). Mumbai City and Mumbai Suburban are separate districts; Thane's figures are for today's Thane district, without Palghar, which was part of it in 2011. Deposits are booked where the account is held, so city districts with head offices show very high figures. Blocks are joined through their NFHS (2011) district. Maharashtra only.`,
+            refs: 'Economic Survey of Maharashtra 2025-26, district statistics (via data.opencity.in)' },
         { id: 'districtincome', equity: true, title: 'District income per head', icon: '💰',
             question: 'How rich is this district per head, and where does it rank in the state?',
             field: { key: 'district_pci', label: 'District per capita income (current prices)', unit: '₹/yr', higherIs: 'better', ramp: 'viridis', domain: [200000, 900000] },
@@ -794,6 +877,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz });
     return { ENTRIES };
 })();

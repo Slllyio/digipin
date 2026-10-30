@@ -1002,6 +1002,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "smallbiz": {
+     "label": "Class 10 pass rate, 2025 (district)",
+     "value": 82,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "districtincome": {
      "label": "District per capita income (residents-weighted)",
      "value": 855325,
@@ -11208,6 +11214,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "districtdev": {
+     "label": "Bank branches per lakh people (district, residents-weighted)",
+     "value": 20,
+     "unit": "per lakh",
+     "higherIs": "better"
+    },
     "districtincome": {
      "label": "District per capita income (residents-weighted)",
      "value": 509102,
@@ -12281,6 +12293,12 @@
      "value": 23.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "districtdev": {
+     "label": "Bank branches per lakh people (district, residents-weighted)",
+     "value": 15.8,
+     "unit": "per lakh",
+     "higherIs": "better"
     },
     "districtincome": {
      "label": "District per capita income (residents-weighted)",

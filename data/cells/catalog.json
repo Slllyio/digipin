@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T12:54:07Z",
+  "generated": "2026-10-30T13:03:30Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -10340,6 +10340,288 @@
             "north": 18.64111328125
           },
           "json": "demographics/pune/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "district_dev",
+      "title": "District development indicators (state economic surveys)",
+      "description": "Schools, teachers, electricity use, banking, factories, vehicles and child health for the block's district from the Economic Survey of Maharashtra 2025-26, and registered small businesses, eShram sign-ups and Class 10 pass rates from the Economic Survey of Karnataka 2025-26, via data.opencity.in. Joined through the NFHS (2011) district.",
+      "source": "pipeline/realestate/districtdev.py (state economic survey district tables via OpenCity)",
+      "license": "Public domain (state governments via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "dd_schools_lakh",
+          "label": "Schools per lakh people, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per lakh",
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "dd_ptr_elem",
+          "label": "Pupils per teacher, Std I-VII, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "pupils",
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "dd_elec_home_kwh",
+          "label": "Electricity used by homes per head, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "kWh/yr",
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_elec_comm_kwh",
+          "label": "Commercial electricity use per head, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "kWh/yr",
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_elec_ind_kwh",
+          "label": "Industrial electricity use per head, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "kWh/yr",
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_atms_lakh",
+          "label": "ATMs per lakh people, district Dec 2025",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per lakh",
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "dd_banks_lakh",
+          "label": "Bank branches per lakh people, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per lakh",
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "dd_deposit_pc",
+          "label": "Bank deposits per head, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u20b9",
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_credit_pc",
+          "label": "Bank credit per head, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u20b9",
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_cd_ratio",
+          "label": "Credit-deposit ratio, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_factories",
+          "label": "Registered factories in operation, district (ASI 2023-24)",
+          "type": "number",
+          "agg": "max",
+          "unit": "factories",
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_factory_workers",
+          "label": "Workers in registered factories, district (ASI 2023-24)",
+          "type": "number",
+          "agg": "max",
+          "unit": "workers",
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_vehicles_lakh",
+          "label": "Motor vehicles per lakh people, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per lakh",
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_imr",
+          "label": "Infant deaths per 1,000 births, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "per 1,000",
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "dd_underweight_pct",
+          "label": "Children under 5 underweight, district 2024-25",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "ramp": "viridis",
+          "higherIs": "worse"
+        },
+        {
+          "key": "dd_msme_units",
+          "label": "Registered micro, small and medium enterprises, district 2025",
+          "type": "number",
+          "agg": "max",
+          "unit": "units",
+          "domain": [
+            116183,
+            633664
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_msme_jobs",
+          "label": "Jobs reported by registered MSMEs, district 2025",
+          "type": "number",
+          "agg": "max",
+          "unit": "jobs",
+          "domain": [
+            1171617,
+            5099692
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_eshram_pct",
+          "label": "Unorganised workers registered on eShram, % of target",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            19.1,
+            60.4
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "dd_sslc_pass_pct",
+          "label": "Class 10 (SSLC) pass rate, district 2025",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            82.0,
+            87.5
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "dd_sslc_pass_2024",
+          "label": "Class 10 (SSLC) pass rate, district 2024",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            90.0,
+            90.2
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "dd_banks_lakh",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "district_dev/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "mumbai",
+          "cells": 14844,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.9921875,
+            "north": 19.271728515625
+          },
+          "json": "district_dev/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10767,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "district_dev/pune/{prefix}.json.gz",
           "parquet": null,
           "shards": {
             "prefixLen": 4,
