@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T13:03:30Z",
+  "generated": "2026-10-30T13:18:41Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -10716,6 +10716,31 @@
           "domain": [
             218439.0,
             279919.0
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "di_growth_pct",
+          "label": "Real district GDP growth a year (constant prices)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%/yr",
+          "domain": [
+            8.1,
+            10.7
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "di_growth_from",
+          "label": "First year of the growth window",
+          "type": "number",
+          "agg": "min",
+          "unit": "year",
+          "domain": [
+            2021,
+            2021
           ],
           "ramp": "viridis"
         }

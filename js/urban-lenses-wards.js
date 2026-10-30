@@ -549,6 +549,7 @@ const UrbanLensesWards = (() => {
             { label: 'Per capita income, residents-weighted across districts in view', value: `${rs(avg)} a year` },
             ...ds.slice(0, 5).map(a => ({ label: `District at ${g.codes[a.first]} (${pc(a.pop / P)} of residents, ${yr(v('year', a.first))})`, value: `${rs(pci[a.first])} · rank ${Math.round(v('rank', a.first))} of ${Math.round(v('districts', a.first))} in the state` })),
             { label: "Median district's per capita income in the state", value: _fin(med) ? rs(med) : 'n/a' },
+            { label: 'Real GDP growth a year of the main district', value: _fin(v('growth_pct', main)) ? `${_round(v('growth_pct', main), 1)}% since ${yr(v('growth_from', main))}` : 'n/a' },
         ];
         function pc(x) { return `${_round(100 * x, 0)}%`; }
         const out = new Float64Array(n).fill(NaN);
@@ -557,7 +558,7 @@ const UrbanLensesWards = (() => {
         return {
             columns: { district_pci: out }, idx, weightKey: 'district_pci', noHotspots: true,
             metric: { label: 'District per capita income (residents-weighted)', value: Math.round(avg), unit: '₹/yr', higherIs: 'better' },
-            headline: `Most residents here live in a district with a per capita income of ${rs(top)} a year (${yr(v('year', main))}), rank ${Math.round(v('rank', main))} of ${Math.round(v('districts', main))} in the state${_fin(times) ? ` and ${_round(times, 1)} times the state's median district` : ''}${ds.length > 1 ? `; across the ${ds.length} districts in view it averages ${rs(avg)}` : ''}.`,
+            headline: `Most residents here live in a district with a per capita income of ${rs(top)} a year (${yr(v('year', main))}), rank ${Math.round(v('rank', main))} of ${Math.round(v('districts', main))} in the state${_fin(times) ? ` and ${_round(times, 1)} times the state's median district` : ''}${_fin(v('growth_pct', main)) ? `; its economy grew ${_round(v('growth_pct', main), 1)}% a year in real terms from ${yr(v('growth_from', main))}` : ''}${ds.length > 1 ? `. Across the ${ds.length} districts in view it averages ${rs(avg)}` : ''}.`,
             stats,
         };
     }
@@ -786,8 +787,8 @@ const UrbanLensesWards = (() => {
         { id: 'districtincome', equity: true, title: 'District income per head', icon: '💰',
             question: 'How rich is this district per head, and where does it rank in the state?',
             field: { key: 'district_pci', label: 'District per capita income (current prices)', unit: '₹/yr', higherIs: 'better', ramp: 'viridis', domain: [200000, 900000] },
-            needs: ['district_income.di_pci', 'district_income.di_year', 'district_income.di_rank', 'district_income.di_districts', 'district_income.di_pci_median', 'population.population'],
-            method: `District tables from the state economic surveys (via data.opencity.in, public domain): Karnataka 2025-26 (2024-25 figures), Maharashtra 2025-26 (2024-25 first revised estimates; Mumbai is the city and suburban districts together, Thane includes Palghar), Tamil Nadu district GDDP (2023-24) and Telangana's Socio-Economic Outlook 2024 (2022-23). Per capita income is net district domestic product per head at current prices; it counts income produced in the district, so districts with offices, factories and ports (Rangareddy, Bengaluru Urban) score high even where residents earn less. Each state uses its own method and year, so compare districts within a state. Blocks are joined through their NFHS (2011) district; districts split since take their namesake's value (Medak's part near Hyderabad uses Sangareddy).`,
+            needs: ['district_income.di_pci', 'district_income.di_year', 'district_income.di_rank', 'district_income.di_districts', 'district_income.di_pci_median', 'district_income.di_growth_pct', 'district_income.di_growth_from', 'population.population'],
+            method: `District tables from the state economic surveys (via data.opencity.in, public domain): Karnataka 2025-26 (2024-25 figures), Maharashtra 2025-26 (2024-25 first revised estimates; Mumbai is the city and suburban districts together, Thane includes Palghar), Tamil Nadu district GDDP (2023-24) and Telangana's Socio-Economic Outlook 2024 (2022-23). Per capita income is net district domestic product per head at current prices; it counts income produced in the district, so districts with offices, factories and ports (Rangareddy, Bengaluru Urban) score high even where residents earn less. Each state uses its own method and year, so compare districts within a state. Real growth is the compound yearly rise in GDDP at constant prices: Maharashtra 2021-22 to 2024-25, Tamil Nadu 2021-22 to 2023-24 (provisional); Karnataka and Telangana tables give one year only. Blocks are joined through their NFHS (2011) district; districts split since take their namesake's value (Medak's part near Hyderabad uses Sangareddy).`,
             refs: 'Economic Survey of Karnataka 2025-26; Economic Survey of Maharashtra 2025-26; Tamil Nadu district GDDP 2023-24; Telangana Socio-Economic Outlook 2024 (via data.opencity.in)' },
         { id: 'gwstress', equity: true, title: 'Groundwater stress', icon: '💧',
             question: 'Is the groundwater here being pumped faster than the rain refills it?',

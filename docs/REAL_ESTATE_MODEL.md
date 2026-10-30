@@ -1834,7 +1834,9 @@ by category.
 economic surveys 2025-26, Tamil Nadu GDDP 2023-24 in ₹ lakh, Telangana outlook 2024) and ranks districts within each
 state. Table names are only cleaned (footnote marks stripped); `ALIAS` maps a block's NFHS 2011 district to the
 survey's name at lookup only, so a renamed parent (Medak, whose Hyderabad-side part is now Sangareddy) does not
-overwrite the real row. Mumbai Suburban has no own figure: Maharashtra reports Mumbai city and suburban together.
+overwrite the real row. Mumbai Suburban has no own figure: Maharashtra reports Mumbai city and suburban together. `add_growth` adds
+compound real growth a year from each state's constant-price GDDP columns (Maharashtra 2021-22 to 2024-25, Tamil Nadu
+2021-22 to 2023-24); a growth-file name not in the income table is tried through `ALIAS` (Thiruvallur).
 
 ## District banks, power and child health; small businesses and Class 10 results (`districtdev` and `smallbiz` lenses, `district_dev` dataset)
 

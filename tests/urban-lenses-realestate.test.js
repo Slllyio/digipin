@@ -1213,7 +1213,10 @@ describe('Real-estate lenses on a hand-made grid', () => {
         const f = L.frameFrom(codes, { ...base, 'district_income.di_pci': codes.map((_, i) => (left(i) ? 855960 : 349559)), 'district_income.di_year': codes.map(() => 2024),
             'district_income.di_rank': codes.map((_, i) => (left(i) ? 1 : 7)), 'district_income.di_districts': codes.map(() => 31), 'district_income.di_pci_median': codes.map(() => 280000) });
         const r = L._lenses.districtincome(f, {});
-        expect(r.headline).toBe('Most residents here live in a district with a per capita income of ₹8,55,960 a year (2024-25), rank 1 of 31 in the state and 3.1 times the state\'s median district; across the 2 districts in view it averages ₹6,87,160.');
+        expect(r.headline).toBe('Most residents here live in a district with a per capita income of ₹8,55,960 a year (2024-25), rank 1 of 31 in the state and 3.1 times the state\'s median district. Across the 2 districts in view it averages ₹6,87,160.');
+        const g = L._lenses.districtincome(L.frameFrom(codes, { ...base, 'district_income.di_pci': codes.map(() => 517875), 'district_income.di_year': codes.map(() => 2024),
+            'district_income.di_rank': codes.map(() => 1), 'district_income.di_districts': codes.map(() => 35), 'district_income.di_growth_pct': codes.map(() => 9.6), 'district_income.di_growth_from': codes.map(() => 2021) }), {});
+        expect(g.headline).toBe('Most residents here live in a district with a per capita income of ₹5,17,875 a year (2024-25), rank 1 of 35 in the state; its economy grew 9.6% a year in real terms from 2021-22.');
         expect(L._lenses.districtincome(L.frameFrom(codes, base), {})).toBeNull();
     });
 

@@ -8,6 +8,9 @@ Per lived-in L7 block (dataset ``district_income``), from the block's NFHS distr
     di_rank       the district's rank by per capita income in its state (1 = highest)
     di_districts  districts ranked in that state
     di_pci_median the median district's per capita income in the state
+    di_growth_pct real (constant-price) GDDP growth a year since di_growth_from (Maharashtra 2021-22 to 2024-25,
+                  Tamil Nadu 2021-22 to 2023-24)
+    di_growth_from first year of that growth window
 
 Sources: Economic Survey of Karnataka 2025-26 (district table, 2024-25), Economic Survey of Maharashtra 2025-26
 (2024-25 first revised estimates; Mumbai covers the city and suburban districts, Thane includes Palghar), Tamil Nadu
@@ -39,6 +42,12 @@ SOURCES = {
                    2023, "District", "Per capita Income (in Rupees)", "Gross District Domestic Product", 100),   # ₹ lakh
     "Telangana": (OC + "d123ae3a-8e02-4357-9741-bc56746954c7/resource/9acd8282-8081-4a46-af8b-dbd1ba57adac/download/df37b664-e603-48a8-9c19-7ad4bd628e3f.csv",
                   2022, "District", "PCI (Rs.) Current Prices 2022-23", "GDDP (Cr) at Current Prices 2022-23", 1),
+}
+# state -> (url, district column, (first year, column), (last year, column)) for real GDDP growth
+GROWTH = {
+    "Maharashtra": (SOURCES["Maharashtra"][0], "District", (2021, "Real GDDP 2021-22"), (2024, "Real GDDP 2024-25+")),
+    "Tamil Nadu": (OC + "375cd901-83a6-48c8-8c5b-b87aadb44731/resource/00ae296e-5faf-42c0-8772-27be383c25ac/download/543053eb-9a44-432c-9cd5-3d75d7055a55.csv",
+                   "District", (2021, "2021-22"), (2023, "2023-24(P)")),
 }
 # NFHS (2011) district name -> the survey's name, where they differ
 ALIAS = {"bangalore": "bangalore urban", "mumbai suburban": "mumbai", "raigarh": "raigad", "thiruvallur": "tiruvallur",
@@ -80,6 +89,18 @@ def state_table(rows, year, dcol, pcol, gcol, div):
     return out
 
 
+def add_growth(table, rows, dcol, first, last):
+    """Adds di_growth_pct (compound real growth a year) and di_growth_from to the districts of ``table``."""
+    (y0, c0), (y1, c1) = first, last
+    for r in rows:
+        r = {(k or "").replace("\n", " ").strip(): v for k, v in r.items()}
+        name, a, b = clean(r.get(dcol)), _f(r.get(c0)), _f(r.get(c1))
+        name = name if name in table else ALIAS.get(name, name)   # the growth file may spell it the NFHS way
+        if name in table and a and b and "di_growth_pct" not in table[name]:
+            table[name].update(di_growth_pct=round(100 * ((b / a) ** (1 / (y1 - y0)) - 1), 1), di_growth_from=y0)
+    return table
+
+
 def block_rows(district_of, tables):
     rows = {}
     for code, d in district_of.items():
@@ -101,6 +122,8 @@ def cell_dataset(region, rows):
         FieldSpec("di_rank", "District's rank by per capita income in its state (1 = highest)", agg="min", unit="rank", ramp="viridis", higher_is=None),
         FieldSpec("di_districts", "Districts ranked in the state", agg="max", ramp="viridis", higher_is=None),
         FieldSpec("di_pci_median", "Median district per capita income in the state", agg="mean", unit="₹/yr", ramp="viridis", higher_is=None),
+        FieldSpec("di_growth_pct", "Real district GDP growth a year (constant prices)", agg="mean", unit="%/yr", ramp="viridis", higher_is="better"),
+        FieldSpec("di_growth_from", "First year of the growth window", agg="min", unit="year", ramp="viridis", higher_is=None),
     ]
     spec = DatasetSpec(
         id="district_income", title="District income per head (state economic surveys)", level=LEVEL, fields=specs, group="Real estate",
@@ -122,6 +145,9 @@ def main(argv=None):
     for state, (url, year, dcol, pcol, gcol, div) in SOURCES.items():
         text = requests.get(url, timeout=120).content.decode("utf-8-sig")
         tables[state] = state_table(csv.DictReader(io.StringIO(text)), year, dcol, pcol, gcol, div)
+    for state, (url, dcol, first, last) in GROWTH.items():
+        text = requests.get(url, timeout=120).content.decode("utf-8-sig")
+        add_growth(tables[state], csv.DictReader(io.StringIO(text)), dcol, first, last)
     for region in ap.parse_args(argv).region.split(","):
         col = _column(region, "nfhs", "district")
         rows = block_rows({c: d for c, d in zip(col[0], col[1][0]) if d}, tables) if col else {}

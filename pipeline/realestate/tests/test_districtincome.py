@@ -16,3 +16,11 @@ def test_aliases_only_on_lookup():
     assert set(t) == {"medak", "sangareddy"}
     r = d.block_rows({"a": "Medak", "b": "Mumbai Suburban"}, {"Telangana": t})
     assert r["a"]["di_pci"] == 322394 and "b" not in r
+
+
+def test_growth_is_compound_and_first_row_wins():
+    t = {"mumbai": {"di_pci": 1}}
+    rows = [{"District": "Mumbai#", "Real GDDP 2021-22": "4,04,328", "Real GDDP 2024-25+": "5,32,701"},
+            {"District": "Mumbai#", "Real GDDP 2021-22": "1", "Real GDDP 2024-25+": "2"}]
+    d.add_growth(t, rows, "District", (2021, "Real GDDP 2021-22"), (2024, "Real GDDP 2024-25+"))
+    assert t["mumbai"] == {"di_pci": 1, "di_growth_pct": 9.6, "di_growth_from": 2021}
