@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-10-30T01:14:16Z",
+  "generated_at_iso": "2026-10-30T07:13:28Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-30 09:18:54|30.992,99.570",
+      "magnitude": 4.3,
+      "origin_time": "2026-10-30 09:18:54",
+      "latitude": 30.992,
+      "longitude": 99.57,
+      "depth_km": 10.0,
+      "region": "China",
+      "location": "459km NE of Changlang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-30 08:00:32|34.226,70.093",
+      "magnitude": 3.9,
+      "origin_time": "2026-10-30 08:00:32",
+      "latitude": 34.226,
+      "longitude": 70.093,
+      "depth_km": 150.0,
+      "region": "Afghanistan",
+      "location": "89km ESE of Kabul , Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-30 05:14:05|33.517,75.655",
+      "magnitude": 2.5,
+      "origin_time": "2026-10-30 05:14:05",
+      "latitude": 33.517,
+      "longitude": 75.655,
+      "depth_km": 10.0,
+      "region": "Kishtwar, Jammu and Kashmir",
+      "location": "63km SSE of Pahalgam, Jammu and Kashmir, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-30 01:35:47|28.159,77.178",
       "magnitude": 2.3,
@@ -1617,39 +1650,6 @@
       "depth_km": 181.0,
       "region": "Xinjiang",
       "location": "311km NNW of Kargil, Laddakh, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-21 00:14:08|27.264,88.961",
-      "magnitude": 2.5,
-      "origin_time": "2026-10-21 00:14:08",
-      "latitude": 27.264,
-      "longitude": 88.961,
-      "depth_km": 5.0,
-      "region": "Bhutan",
-      "location": "35km E of Gangtok, Sikkim",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-20 22:19:25|22.781,94.172",
-      "magnitude": 3.5,
-      "origin_time": "2026-10-20 22:19:25",
-      "latitude": 22.781,
-      "longitude": 94.172,
-      "depth_km": 101.0,
-      "region": "Myanmar",
-      "location": "114km SE of Champhai, Mizoram, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-20 21:59:38|4.200,96.116",
-      "magnitude": 4.8,
-      "origin_time": "2026-10-20 21:59:38",
-      "latitude": 4.2,
-      "longitude": 96.116,
-      "depth_km": 59.0,
-      "region": "Indonesia",
-      "location": "396km SE of Campbell Bay, Andaman and Nicobar island, India",
       "review_status": "Reviewed"
     }
   ]

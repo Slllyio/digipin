@@ -1,7 +1,43 @@
 {
-  "generated_at_iso": "2026-10-30T01:14:12Z",
-  "count": 20,
+  "generated_at_iso": "2026-10-30T07:13:23Z",
+  "count": 17,
   "records": [
+    {
+      "id": "us7000tu6i",
+      "magnitude": 4.8,
+      "origin_time_utc": "2026-10-30T05:10:19.806000+00:00",
+      "latitude": -18.1766,
+      "longitude": -177.0471,
+      "depth_km": 371.793,
+      "place": "Fiji region",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu6i",
+      "tsunami": 0,
+      "significance": 354
+    },
+    {
+      "id": "us7000tu6f",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-30T04:58:31.595000+00:00",
+      "latitude": 40.3108,
+      "longitude": 142.3621,
+      "depth_km": 56.598,
+      "place": "51 km ENE of Noda, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu6f",
+      "tsunami": 0,
+      "significance": 326
+    },
+    {
+      "id": "us7000tu5q",
+      "magnitude": 5.1,
+      "origin_time_utc": "2026-10-30T03:04:17.406000+00:00",
+      "latitude": -5.8137,
+      "longitude": 148.3151,
+      "depth_km": 116.297,
+      "place": "97 km NNE of Finschhafen, Papua New Guinea",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu5q",
+      "tsunami": 0,
+      "significance": 400
+    },
     {
       "id": "us7000tu4z",
       "magnitude": 4.6,
@@ -169,78 +205,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttxn",
       "tsunami": 0,
       "significance": 449
-    },
-    {
-      "id": "us7000ttx8",
-      "magnitude": 5.1,
-      "origin_time_utc": "2026-10-29T05:33:36.298000+00:00",
-      "latitude": -61.3277,
-      "longitude": 161.1643,
-      "depth_km": 10.0,
-      "place": "Balleny Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttx8",
-      "tsunami": 0,
-      "significance": 400
-    },
-    {
-      "id": "us7000ttx0",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-10-29T05:06:48.289000+00:00",
-      "latitude": -60.2079,
-      "longitude": -27.9532,
-      "depth_km": 8.561,
-      "place": "South Sandwich Islands region",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttx0",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us7000ttw5",
-      "magnitude": 5.7,
-      "origin_time_utc": "2026-10-29T03:26:42.275000+00:00",
-      "latitude": -5.6991,
-      "longitude": 141.9018,
-      "depth_km": 10.0,
-      "place": "82 km NE of Kiunga, Papua New Guinea",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttw5",
-      "tsunami": 0,
-      "significance": 500
-    },
-    {
-      "id": "us7000ttw3",
-      "magnitude": 5.8,
-      "origin_time_utc": "2026-10-29T03:19:05.288000+00:00",
-      "latitude": 8.3638,
-      "longitude": 127.4204,
-      "depth_km": 10.0,
-      "place": "110 km ENE of Barcelona, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttw3",
-      "tsunami": 0,
-      "significance": 518
-    },
-    {
-      "id": "us7000ttw2",
-      "magnitude": 5.4,
-      "origin_time_utc": "2026-10-29T03:17:54.507000+00:00",
-      "latitude": 8.3695,
-      "longitude": 127.4427,
-      "depth_km": 10.0,
-      "place": "113 km ENE of Barcelona, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttw2",
-      "tsunami": 0,
-      "significance": 449
-    },
-    {
-      "id": "us7000ttvy",
-      "magnitude": 4.8,
-      "origin_time_utc": "2026-10-29T02:18:21.049000+00:00",
-      "latitude": 12.9476,
-      "longitude": 144.5819,
-      "depth_km": 70.237,
-      "place": "36 km SSW of Merizo Village, Guam",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ttvy",
-      "tsunami": 0,
-      "significance": 359
     }
   ]
 }
