@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T13:51:29Z",
+  "generated": "2026-10-30T14:11:31Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -696,6 +696,138 @@
           },
           "json": "air_heat/pune.json",
           "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "air_measured",
+      "title": "Measured air quality at the nearest station (KSPCB)",
+      "description": "12-month averages of PM2.5, PM10 and NO2 at the nearest of KSPCB's 11 continuous air quality stations in Bengaluru (June 2025 to May 2026), from KSPCB's monthly reports on data.opencity.in. Ground measurements at one point; blocks far from a station inherit its value.",
+      "source": "pipeline/realestate/airmeasured.py (KSPCB monthly CAAQMS reports via OpenCity)",
+      "license": "Public domain (KSPCB via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "am_pm25",
+          "label": "PM2.5 measured at the nearest station, 12-month average",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b5g/m\u00b3",
+          "domain": [
+            10,
+            50
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "am_pm10",
+          "label": "PM10 measured at the nearest station, 12-month average",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b5g/m\u00b3",
+          "domain": [
+            30,
+            120
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "am_no2",
+          "label": "NO2 measured at the nearest station, 12-month average",
+          "type": "number",
+          "agg": "mean",
+          "unit": "\u00b5g/m\u00b3",
+          "domain": [
+            0,
+            40
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "am_pm10_months_over",
+          "label": "Months the nearest station's PM10 average was above the annual standard",
+          "type": "number",
+          "agg": "mean",
+          "unit": "months",
+          "domain": [
+            0,
+            12
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "am_km",
+          "label": "Distance to the nearest continuous air quality station",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0,
+            15
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "am_pm25_km",
+          "label": "Distance to the nearest station measuring PM2.5",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0,
+            15
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "am_station",
+          "label": "Nearest KSPCB continuous station (number)",
+          "type": "number",
+          "agg": "mode",
+          "domain": [
+            1.0,
+            11.0
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "am_pm25",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "air_measured/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
         }
       ]
     },

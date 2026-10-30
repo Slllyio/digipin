@@ -1002,6 +1002,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "measuredair": {
+     "label": "PM2.5 measured at the nearest station, 12-month average",
+     "value": 31.5,
+     "unit": "µg/m³",
+     "higherIs": "worse"
+    },
     "treefelling": {
      "label": "Trees in felling notices within 2 km (residents-weighted)",
      "value": 534,

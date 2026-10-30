@@ -1868,3 +1868,12 @@ divided by the residents of all blocks within 2 km (same radius), which keeps th
 zone map (the KMLs carry zone ids but no zone polygons). The other asset layers (chambers, pipes, meters, pumps, DG sets)
 are not used.
 
+## Measured air at the nearest station, Bengaluru (`measuredair` lens, `air_measured` dataset)
+
+`pipeline/realestate/airmeasured.py` downloads the latest 12 "Air Quality Report <month>" PDFs from OpenCity's
+`bengaluru-monthly-air-quality-reports` package and reads each station block with `pdftotext -layout`: a title line
+"<station> - <Month> <Year>" (hyphen or en dash), the pollutant header row (sometimes on the line above "Date") and the
+"Average" row. Stations are matched to `STATIONS` by a key word in the title. Majestic and Nisarga Bhavan do not
+measure PM2.5, so a block's PM2.5 comes from the nearest station that does. Station sites come from KSPCB's 2023
+continuous-station KML, except Nisarga Bhavan (its KML point is ~9 km off) and R.V. College (not on it).
+
