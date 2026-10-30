@@ -1879,3 +1879,10 @@ continuous-station KML, except Nisarga Bhavan (its KML point is ~9 km off) and R
 title case), averages each station's days within a month and then the months, so it matches Bengaluru's monthly-mean
 method. `am_months` records how many months a station's averages cover, which the lens uses for "every month measured".
 
+## Groundwater quality at the nearest observation well, Bengaluru (`wellwater` lens, `well_quality` dataset)
+
+`pipeline/realestate/wellquality.py` reads the two Bengaluru Urban CSVs (column order and the well id header differ
+between years, so columns are found by name fragments: "no3", "flouride"/"fluoride", "fe mg", "th ("). Rows without
+coordinates are dropped (31 of 34 wells remain in 2018-19). Each block takes its nearest 2018-19 well; the 2017-18
+nitrate is attached only when the nearest 2017-18 well is within 500 m of it. Village names are not kept.
+

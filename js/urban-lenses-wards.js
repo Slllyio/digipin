@@ -459,6 +459,34 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Groundwater quality. Karnataka Ground Water Directorate observation wells; each block takes its nearest well.
+    function wellwater(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`well_quality.wq_${k}`];
+        const no3 = col('no3'), prev = col('no3_prev'), f = col('f'), th = col('th'), km = col('km'), pop = c['population.population'];
+        if (!no3 || !no3.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(no3[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1, sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0);
+        const over = sum(i => no3[i] > 45), hard = th ? sum(i => th[i] > 600) : NaN, rose = prev ? sum(i => _fin(prev[i]) && no3[i] > prev[i]) : NaN;
+        const med = wquantile(no3, pop, idx, 0.5), medKm = wquantile(km, pop, idx, 0.5);
+        const stats = [
+            { label: 'Nitrate at the nearest well, middle resident', value: `${_round(med, 0)} mg/L (limit 45)` },
+            { label: 'Residents nearest a well over the nitrate limit', value: `${_people(over)} (${_round(100 * over / P, 0)}%)` },
+            { label: 'Residents whose nearest well got more nitrate from 2017-18 to 2018-19', value: _fin(rose) ? `${_people(rose)} (${_round(100 * rose / P, 0)}%)` : 'n/a' },
+            { label: 'Fluoride at the nearest well, highest in view', value: f ? `${_round(Math.max(...idx.map(i => (_fin(f[i]) ? f[i] : 0))), 2)} mg/L (limit 1.5)` : 'n/a' },
+            { label: 'Residents nearest a well harder than 600 mg/L', value: _fin(hard) ? `${_people(hard)} (${_round(100 * hard / P, 0)}%)` : 'n/a' },
+            { label: 'Distance to the nearest observation well, middle resident', value: `${_round(medKm, 1)} km` },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = no3[i];
+        return {
+            columns: { well_no3: out }, idx, weightKey: 'well_no3', noHotspots: true,
+            metric: { label: 'Nitrate at the nearest observation well (middle resident)', value: _round(med, 0), unit: 'mg/L', higherIs: 'worse' },
+            headline: `${_people(over)} residents here (${_round(100 * over / P, 0)}%) live nearest a government observation well whose groundwater had more nitrate than the 45 mg/L drinking-water limit in 2018-19; the middle resident's well read ${_round(med, 0)} mg/L, ${_round(medKm, 1)} km away. Nitrate in city groundwater mostly comes from leaking sewers and septic tanks; test a borewell before drinking from it.`,
+            stats,
+        };
+    }
+
     // Measured air. KSPCB's monthly reports for its continuous stations in Bengaluru; each block takes its nearest station.
     function measuredair(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`air_measured.am_${k}`];
@@ -602,7 +630,7 @@ const UrbanLensesWards = (() => {
         const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`district_dev.dd_${k}`];
         const m = _mainDistrict(fr, 'district_dev.dd_msme_units');
         if (!m) return null;
-        const { idx, ds, P, main } = m, pop = c['population.population'], ss = col('sslc_pass_pct');
+        const { idx, ds, P, main } = m, ss = col('sslc_pass_pct');
         const v = (k, i = main) => (col(k) && _fin(col(k)[i]) ? col(k)[i] : NaN), r0 = x => _round(x, 0);
         const units = v('msme_units'), jobs = v('msme_jobs'), pass = v('sslc_pass_pct'), prev = v('sslc_pass_2024'), esh = v('eshram_pct');
         const stats = [
@@ -863,6 +891,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'wellwater', title: 'Groundwater quality at the nearest well', icon: '🧫',
+            question: 'Is the groundwater here safe to drink, by the government observation wells?',
+            field: { key: 'well_no3', label: 'Nitrate at the nearest observation well, 2018-19', unit: 'mg/L', higherIs: 'worse', ramp: 'reds', domain: [10, 100] },
+            needs: ['well_quality.wq_no3', 'well_quality.wq_no3_prev', 'well_quality.wq_f', 'well_quality.wq_th', 'well_quality.wq_km', 'population.population'],
+            method: `The Karnataka Ground Water Directorate's yearly water quality tables for its observation wells in Bengaluru Urban (via data.opencity.in, public domain): nitrate, fluoride, iron and total hardness for 2018-19 and 2017-18, the latest on OpenCity. Each block takes its nearest 2018-19 well (31 wells with coordinates, so wells are several kilometres apart), and the 2017-18 nitrate of the same well where it was sampled both years. Limits are from the drinking water standard IS 10500: nitrate 45 mg/L, fluoride 1.5, iron 0.3, hardness 600. One well stands for a wide area and borewells draw from different depths, so treat the map as an indication, not a test of any one borewell. Bengaluru only.`,
+            refs: 'Karnataka Ground Water Directorate, Bengaluru Urban taluk-wise ground water quality 2017-18 and 2018-19 (via data.opencity.in); BIS IS 10500:2012' },
         { id: 'measuredair', title: 'Measured air at the nearest station', icon: '🧪',
             question: 'What do the official air monitors near here actually measure over a year?',
             field: { key: 'measured_pm25', label: 'PM2.5 at the nearest station, average of the months measured', unit: 'µg/m³', higherIs: 'worse', ramp: 'reds', domain: [20, 45] },
@@ -987,6 +1021,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater });
     return { ENTRIES };
 })();

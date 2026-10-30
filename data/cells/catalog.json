@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T14:24:29Z",
+  "generated": "2026-10-30T14:36:57Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -56201,6 +56201,153 @@
           },
           "json": "wealth/pune.json",
           "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "well_quality",
+      "title": "Groundwater quality at observation wells (Karnataka Ground Water Directorate)",
+      "description": "Nitrate, fluoride, iron and hardness in groundwater at the nearest of the Ground Water Directorate's 34 observation wells in Bengaluru Urban (2018-19, with 2017-18 nitrate for the same well), via data.opencity.in.",
+      "source": "pipeline/realestate/wellquality.py (Karnataka Ground Water Directorate, Bengaluru Urban taluk-wise quality via OpenCity)",
+      "license": "Public domain (Government of Karnataka via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "wq_no3",
+          "label": "Nitrate in groundwater at the nearest observation well, 2018-19",
+          "type": "number",
+          "agg": "mean",
+          "unit": "mg/L",
+          "domain": [
+            0,
+            120
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "wq_no3_prev",
+          "label": "Nitrate at the same well, 2017-18",
+          "type": "number",
+          "agg": "mean",
+          "unit": "mg/L",
+          "domain": [
+            0,
+            120
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "wq_f",
+          "label": "Fluoride in groundwater at the nearest well, 2018-19",
+          "type": "number",
+          "agg": "mean",
+          "unit": "mg/L",
+          "domain": [
+            0,
+            1.5
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "wq_fe",
+          "label": "Iron in groundwater at the nearest well, 2018-19",
+          "type": "number",
+          "agg": "mean",
+          "unit": "mg/L",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "wq_th",
+          "label": "Total hardness of groundwater at the nearest well, 2018-19",
+          "type": "number",
+          "agg": "mean",
+          "unit": "mg/L CaCO3",
+          "domain": [
+            100,
+            800
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "wq_km",
+          "label": "Distance to the nearest observation well",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0,
+            10
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "wq_wells_5km",
+          "label": "Observation wells within 5 km",
+          "type": "number",
+          "agg": "mean",
+          "unit": "wells",
+          "domain": [
+            0.0,
+            5.0
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "wq_over_5km",
+          "label": "Wells within 5 km over the nitrate limit (45 mg/L)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "wells",
+          "domain": [
+            0.0,
+            3.0
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "wq_no3",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "well_quality/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
         }
       ]
     },

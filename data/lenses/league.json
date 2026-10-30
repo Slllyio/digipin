@@ -1002,6 +1002,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "wellwater": {
+     "label": "Nitrate at the nearest observation well (middle resident)",
+     "value": 33,
+     "unit": "mg/L",
+     "higherIs": "worse"
+    },
     "measuredair": {
      "label": "PM2.5 measured at the nearest station, average of the months measured",
      "value": 31.5,
