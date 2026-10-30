@@ -1859,3 +1859,12 @@ each point carries an equal share of the notice's trees. The BMRCL Phase 3 Corri
 dropped in favour of its official memorandum for the same stretch; the National Institute of Virology lab and the
 fire-service workshop are dropped because their sites could not be placed. New notices on OpenCity need a new row.
 
+## Piped-water storage tanks, Chennai (`waterstorage` lens, `water_storage` dataset)
+
+`pipeline/realestate/waterstorage.py` reads CMWSSB's overhead-tank, underground-tank and filling-post KMLs from
+OpenCity. Tanks are polygons and are reduced to the mean of their ring. One overhead tank's capacity is entered in litres
+(60,000 "ML"), so any capacity over 1,000 ML is divided by a million. Per block, the capacity of tanks within 2 km is
+divided by the residents of all blocks within 2 km (same radius), which keeps the measure local without a distribution
+zone map (the KMLs carry zone ids but no zone polygons). The other asset layers (chambers, pipes, meters, pumps, DG sets)
+are not used.
+

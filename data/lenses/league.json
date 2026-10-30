@@ -3240,6 +3240,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "waterstorage": {
+     "label": "Tank storage within 2 km per resident (middle resident)",
+     "value": 32,
+     "unit": "litres",
+     "higherIs": "better"
+    },
     "districtincome": {
      "label": "District per capita income (residents-weighted)",
      "value": 650772,

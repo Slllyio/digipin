@@ -459,6 +459,34 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Piped-water storage. Chennai Metrowater's overhead and underground tanks and lorry filling posts.
+    function waterstorage(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`water_storage.ws_${k}`];
+        const lpr = col('l_per_res'), km = col('tank_km'), fk = col('fill_km'), pop = c['population.population'];
+        if (!km || !km.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(km[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const far = idx.filter(i => km[i] > 3), farPop = far.reduce((s, i) => s + pop[i], 0);
+        const withL = idx.filter(i => lpr && _fin(lpr[i]));
+        const medL = withL.length ? wquantile(lpr, pop, withL, 0.5) : NaN, lowL = withL.length ? wquantile(lpr, pop, withL, 0.1) : NaN;
+        const medKm = wquantile(km, pop, idx, 0.5), fillNear = fk ? idx.filter(i => fk[i] <= 1).reduce((s, i) => s + pop[i], 0) : NaN;
+        const stats = [
+            { label: 'Distance to the nearest Metrowater tank, middle resident', value: `${_round(medKm, 1)} km` },
+            { label: 'Residents more than 3 km from a tank', value: `${_people(farPop)} (${_round(100 * farPop / P, 0)}%)` },
+            { label: 'Tank capacity within 2 km per resident: middle / bottom tenth', value: `${_round(medL, 0)} / ${_round(lowL, 0)} litres` },
+            { label: 'Residents within 1 km of a water-lorry filling post', value: _fin(fillNear) ? `${_people(fillNear)} (${_round(100 * fillNear / P, 0)}%)` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of withL) out[i] = lpr[i];
+        return {
+            columns: { storage_lpr: out }, idx: withL.length >= 5 ? withL : idx, weightKey: 'storage_lpr', noHotspots: false,
+            metric: { label: 'Tank storage within 2 km per resident (middle resident)', value: _round(medL, 0), unit: 'litres', higherIs: 'better' },
+            headline: `The middle resident here is ${_round(medKm, 1)} km from a Metrowater storage tank, and tanks within 2 km hold ${_round(medL, 0)} litres per person living around them (${_round(lowL, 0)} litres for the worst-served tenth). ${_people(farPop)} residents (${_round(100 * farPop / P, 0)}%) are more than 3 km from any tank.`,
+            stats,
+        };
+    }
+
     // Trees approved for felling. Forest Department notices in Bengaluru, placed at each project's site or alignment.
     const TF_KIND = ['', 'metro', 'rail', 'road', 'defence', 'public building or campus', 'drain, power line or plant'];
 
@@ -805,6 +833,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'waterstorage', equity: true, title: 'Piped-water storage tanks', icon: '🚰',
+            question: 'Is there a Metrowater storage tank near here, and how much does it hold per person?',
+            field: { key: 'storage_lpr', label: 'Tank storage within 2 km per resident', unit: 'litres', higherIs: 'better', ramp: 'viridis', domain: [0, 80] },
+            needs: ['water_storage.ws_l_per_res', 'water_storage.ws_tank_km', 'water_storage.ws_fill_km', 'population.population'],
+            method: `Chennai Metrowater's (CMWSSB) water distribution station asset maps on data.opencity.in (public domain): 278 overhead tanks and 148 underground reservoirs with their capacity (477 million litres in all), and 318 filling posts where water lorries load. For each block the lens adds the capacity of every tank within 2 km and divides it by the residents living within 2 km of that block, a rough measure of how much piped storage serves the neighbourhood. Tank sites are the centre of each tank's outline; one capacity entered in litres is corrected. Areas far from any tank, mostly the added suburbs, rely more on borewells and lorries. Storage is not supply: how often and how long water flows is not in the maps, and the old city is fed from a few large stations (Kilpauk, Anna Poonga, Triplicane head works) straight into the mains, so it can show little storage per resident without poor supply. Chennai only.`,
+            refs: 'Chennai Metropolitan Water Supply and Sewerage Board, water distribution station assets (via data.opencity.in)' },
         { id: 'treefelling', title: 'Trees approved for felling', icon: '🪓',
             question: 'Are trees being cut for projects near here, and for what?',
             field: { key: 'trees_felled', label: 'Trees in felling notices within 2 km', unit: 'trees', higherIs: 'worse', ramp: 'reds', domain: [0, 2500] },
@@ -917,6 +951,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage });
     return { ENTRIES };
 })();

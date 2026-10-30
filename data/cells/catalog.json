@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T13:37:13Z",
+  "generated": "2026-10-30T13:51:29Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -54158,6 +54158,124 @@
           },
           "json": "water_risk/pune.json",
           "parquet": "water_risk/pune.parquet"
+        }
+      ]
+    },
+    {
+      "id": "water_storage",
+      "title": "Piped-water storage tanks (Chennai Metrowater)",
+      "description": "Distance to Chennai Metrowater's nearest overhead or underground storage tank, the tank capacity within 2 km and per resident, and the lorry filling posts nearby, from CMWSSB's water distribution station asset maps on data.opencity.in.",
+      "source": "pipeline/realestate/waterstorage.py (CMWSSB water distribution station assets via OpenCity)",
+      "license": "Public domain (CMWSSB via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "ws_tank_km",
+          "label": "Distance to the nearest Metrowater storage tank",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "ws_ml_2km",
+          "label": "Metrowater tank capacity within 2 km",
+          "type": "number",
+          "agg": "mean",
+          "unit": "million litres",
+          "domain": [
+            0,
+            20
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "ws_l_per_res",
+          "label": "Tank capacity within 2 km per resident within 2 km",
+          "type": "number",
+          "agg": "mean",
+          "unit": "litres",
+          "domain": [
+            0,
+            60
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "ws_tanks_2km",
+          "label": "Metrowater storage tanks within 2 km",
+          "type": "number",
+          "agg": "mean",
+          "unit": "tanks",
+          "domain": [
+            0.0,
+            54.0
+          ],
+          "ramp": "viridis",
+          "higherIs": "better"
+        },
+        {
+          "key": "ws_fill_km",
+          "label": "Distance to the nearest water-lorry filling post",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0,
+            8
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "ws_fills_2km",
+          "label": "Water-lorry filling posts within 2 km",
+          "type": "number",
+          "agg": "mean",
+          "unit": "posts",
+          "domain": [
+            0.0,
+            44.0
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "ws_l_per_res",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "chennai",
+          "cells": 10493,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.320068359375,
+            "north": 13.180908203125
+          },
+          "json": "water_storage/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
         }
       ]
     },
