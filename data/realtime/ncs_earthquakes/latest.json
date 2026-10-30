@@ -1,7 +1,62 @@
 {
-  "generated_at_iso": "2026-10-30T14:14:27Z",
+  "generated_at_iso": "2026-10-30T19:26:44Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-31 00:36:04|28.972,95.210",
+      "magnitude": 3.9,
+      "origin_time": "2026-10-31 00:36:04",
+      "latitude": 28.972,
+      "longitude": 95.21,
+      "depth_km": 8.0,
+      "region": "Upper Siang, Arunachal Pradesh",
+      "location": "92km N of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-30 22:36:13|17.107,77.715",
+      "magnitude": 3.0,
+      "origin_time": "2026-10-30 22:36:13",
+      "latitude": 17.107,
+      "longitude": 77.715,
+      "depth_km": 10.0,
+      "region": "Vikarabad, Telengana",
+      "location": "87km WSW of Hyderabad, Telangana, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-30 21:18:58|29.596,80.820",
+      "magnitude": 3.0,
+      "origin_time": "2026-10-30 21:18:58",
+      "latitude": 29.596,
+      "longitude": 80.82,
+      "depth_km": 14.0,
+      "region": "Nepal",
+      "location": "58km E of Pithoragarh, Uttarakhand, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-30 21:09:12|27.193,92.424",
+      "magnitude": 3.0,
+      "origin_time": "2026-10-30 21:09:12",
+      "latitude": 27.193,
+      "longitude": 92.424,
+      "depth_km": 6.0,
+      "region": "West Kameng, Arunachal Pradesh",
+      "location": "69km SE of Tawang, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-30 20:15:54|23.580,93.968",
+      "magnitude": 3.0,
+      "origin_time": "2026-10-30 20:15:54",
+      "latitude": 23.58,
+      "longitude": 93.968,
+      "depth_km": 93.0,
+      "region": "Myanmar",
+      "location": "66km ENE of Champhai, Mizoram, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-30 09:18:54|30.992,99.570",
       "magnitude": 4.3,
@@ -1595,61 +1650,6 @@
       "depth_km": 155.0,
       "region": "Afghanistan",
       "location": "102km SSW of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-21 14:45:58|18.287,73.898",
-      "magnitude": 2.6,
-      "origin_time": "2026-10-21 14:45:58",
-      "latitude": 18.287,
-      "longitude": 73.898,
-      "depth_km": 10.0,
-      "region": "Pune, Maharashtra",
-      "location": "26km S of Pune, Maharashtra, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-21 12:37:45|22.811,91.786",
-      "magnitude": 3.0,
-      "origin_time": "2026-10-21 12:37:45",
-      "latitude": 22.811,
-      "longitude": 91.786,
-      "depth_km": 15.0,
-      "region": "Bangladesh",
-      "location": "58km SE of Belonia, Tripura, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-21 12:33:37|21.203,70.519",
-      "magnitude": 2.9,
-      "origin_time": "2026-10-21 12:33:37",
-      "latitude": 21.203,
-      "longitude": 70.519,
-      "depth_km": 5.0,
-      "region": "Junagadh, Gujarat",
-      "location": "125km SSW of Rajkot, Gujarat, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-21 06:34:01|34.913,76.978",
-      "magnitude": 3.6,
-      "origin_time": "2026-10-21 06:34:01",
-      "latitude": 34.913,
-      "longitude": 76.978,
-      "depth_km": 10.0,
-      "region": "Leh, Ladakh",
-      "location": "80km NNW of Alchi(Leh),Ladakh,India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-21 04:46:42|37.193,74.984",
-      "magnitude": 4.5,
-      "origin_time": "2026-10-21 04:46:42",
-      "latitude": 37.193,
-      "longitude": 74.984,
-      "depth_km": 181.0,
-      "region": "Xinjiang",
-      "location": "311km NNW of Kargil, Laddakh, India",
       "review_status": "Reviewed"
     }
   ]

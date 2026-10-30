@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-10-30T14:14:21Z",
+  "generated_at_iso": "2026-10-30T19:26:43Z",
   "count": 14,
   "records": [
+    {
+      "id": "us7000tu83",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-30T13:18:19.151000+00:00",
+      "latitude": 40.4803,
+      "longitude": 142.4748,
+      "depth_km": 42.816,
+      "place": "68 km ENE of Kuji, Japan",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu83",
+      "tsunami": 0,
+      "significance": 312
+    },
     {
       "id": "us7000tu7m",
       "magnitude": 4.7,
@@ -157,18 +169,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu3j",
       "tsunami": 0,
       "significance": 385
-    },
-    {
-      "id": "us7000tu2j",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-29T17:37:01.805000+00:00",
-      "latitude": 39.8625,
-      "longitude": 143.5623,
-      "depth_km": 35.0,
-      "place": "141 km E of Miyako, Japan",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu2j",
-      "tsunami": 0,
-      "significance": 312
     }
   ]
 }
