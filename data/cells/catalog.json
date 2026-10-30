@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T15:54:51Z",
+  "generated": "2026-10-30T16:10:37Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -41669,6 +41669,276 @@
             "north": 18.64111328125
           },
           "json": "roofs/pune/{prefix}.json",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FP2",
+              "4FP3",
+              "4FP4",
+              "4FP5",
+              "4FPJ",
+              "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "school_safety",
+      "title": "School safety preparedness by PIN code (UDISE+ 2025-26)",
+      "description": "Share of schools in the PIN code with a structural safety audit, CCTV, a disaster management plan, safety training, fire extinguishers and self-defence training for girls, from each school's UDISE+ 2025-26 safety return (Ministry of Education school census, district files on data.opencity.in). Schools have PIN codes but no coordinates, so values are PIN-code wide. Delhi, Mumbai, Bengaluru Urban, Pune, Chennai, Hyderabad and Kolkata.",
+      "source": "pipeline/realestate/schoolsafety.py (UDISE+ 2025-26 via OpenCity; PIN codes from the neighbourhoods dataset)",
+      "license": "Public domain (UDISE+, Ministry of Education, via data.opencity.in)",
+      "group": "Real estate",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "ss_audit_pct",
+          "label": "Schools with a structural safety audit (share, PIN code)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "ss_cctv_pct",
+          "label": "Schools with CCTV (share, PIN code)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "ss_plan_pct",
+          "label": "Schools with a disaster management plan (share, PIN code)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "ss_training_pct",
+          "label": "Schools that ran safety and disaster training (share, PIN code)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "ss_fire_pct",
+          "label": "Schools with fire extinguishers (share, PIN code)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "ss_selfdef_pct",
+          "label": "Schools with girls giving them self-defence training (share, PIN code)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "ss_govt_audit_pct",
+          "label": "Government schools with a structural safety audit (share, PIN code)",
+          "type": "number",
+          "agg": "mean",
+          "unit": "%",
+          "domain": [
+            0,
+            100
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "ss_schools",
+          "label": "Schools with a UDISE+ safety return in the PIN code",
+          "type": "number",
+          "agg": "max",
+          "unit": "schools",
+          "domain": [
+            3,
+            321
+          ],
+          "ramp": "blues"
+        }
+      ],
+      "default": {
+        "field": "ss_audit_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 19684,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "school_safety/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "chennai",
+          "cells": 7501,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.31787109375,
+            "north": 13.180908203125
+          },
+          "json": "school_safety/chennai.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "delhi",
+          "cells": 24851,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "school_safety/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7T"
+            ]
+          }
+        },
+        {
+          "name": "hyderabad",
+          "cells": 7416,
+          "bbox": {
+            "west": 78.298583984375,
+            "south": 17.298583984375,
+            "east": 78.601806640625,
+            "north": 17.549072265625
+          },
+          "json": "school_safety/hyderabad.json.gz",
+          "parquet": null
+        },
+        {
+          "name": "kolkata",
+          "cells": 3641,
+          "bbox": {
+            "west": 88.278564453125,
+            "south": 22.448974609375,
+            "east": 88.4521484375,
+            "north": 22.6357421875
+          },
+          "json": "school_safety/kolkata.json",
+          "parquet": null
+        },
+        {
+          "name": "mumbai",
+          "cells": 8196,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.889404296875,
+            "east": 72.98779296875,
+            "north": 19.267333984375
+          },
+          "json": "school_safety/mumbai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4FK2",
+              "4FK3",
+              "4FK5",
+              "4FK6",
+              "4FK7",
+              "4FK8",
+              "4FK9",
+              "4FKC",
+              "4FKP",
+              "4FKT"
+            ]
+          }
+        },
+        {
+          "name": "pune",
+          "cells": 10058,
+          "bbox": {
+            "west": 73.748046875,
+            "south": 18.427978515625,
+            "east": 73.991943359375,
+            "north": 18.64111328125
+          },
+          "json": "school_safety/pune/{prefix}.json.gz",
           "parquet": null,
           "shards": {
             "prefixLen": 4,

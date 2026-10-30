@@ -1918,3 +1918,12 @@ Nominatim and kept only when the locality in the NWMP name agrees (many lakes sh
 Patel Cheruvu, and wrapped fragments cannot be matched). Other cities have only one to three NWMP lakes (Delhi,
 Ahmedabad, Jaipur, Chennai, Kolkata), too few for a lens.
 
+## School safety returns by PIN code (`schoolready` lens, `school_safety` dataset)
+
+`pipeline/realestate/schoolsafety.py` reads OpenCity's `udise-2025-26-district-level-reports` package: for each
+district part ("Bengaluru Urban North", "Mumbai Suburban", ...) the "Profile Part 1" file (pseudocode, pincode,
+managment) and the new "School Safety" file (yes 1, no 2, not applicable 9). Shares count only 1 and 2 answers and
+need at least three answering schools per PIN code. It reuses `udise.py`'s helpers and its PIN-code-to-block join
+(neighbourhoods dataset). Fire extinguishers are near-universal (99% in Pune), so the lens maps the structural audit
+share and shows CCTV, plan, training and self-defence in the stats. The answers are self-reported.
+

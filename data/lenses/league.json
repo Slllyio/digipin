@@ -1002,6 +1002,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolready": {
+     "label": "Schools with a structural safety audit (residents-weighted)",
+     "value": 78,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "lakewater": {
      "label": "Samples in class E at the nearest monitored lake (residents-weighted)",
      "value": 29,
@@ -3258,6 +3264,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolready": {
+     "label": "Schools with a structural safety audit (residents-weighted)",
+     "value": 95,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "measuredair": {
      "label": "PM2.5 measured at the nearest station, average of the months measured",
      "value": 21,
@@ -4433,6 +4445,12 @@
      "value": 36.5,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "schoolready": {
+     "label": "Schools with a structural safety audit (residents-weighted)",
+     "value": 99,
+     "unit": "%",
+     "higherIs": "better"
     },
     "measuredair": {
      "label": "PM2.5 measured at the nearest station, average of the months measured",
@@ -6257,6 +6275,12 @@
      "value": 25,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "schoolready": {
+     "label": "Schools with a structural safety audit (residents-weighted)",
+     "value": 65,
+     "unit": "%",
+     "higherIs": "better"
     },
     "lakeoxygen": {
      "label": "Highest oxygen at the nearest sampled lake (residents-weighted)",
@@ -9270,6 +9294,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolready": {
+     "label": "Schools with a structural safety audit (residents-weighted)",
+     "value": 23,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "measuredair": {
      "label": "PM2.5 measured at the nearest station, average of the months measured",
      "value": 43.9,
@@ -11274,6 +11304,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "schoolready": {
+     "label": "Schools with a structural safety audit (residents-weighted)",
+     "value": 93,
+     "unit": "%",
+     "higherIs": "better"
+    },
     "measuredair": {
      "label": "PM2.5 measured at the nearest station, average of the months measured",
      "value": 35.8,
@@ -12359,6 +12395,12 @@
      "value": 23.3,
      "unit": "%",
      "higherIs": "worse"
+    },
+    "schoolready": {
+     "label": "Schools with a structural safety audit (residents-weighted)",
+     "value": 84,
+     "unit": "%",
+     "higherIs": "better"
     },
     "measuredair": {
      "label": "PM2.5 measured at the nearest station, average of the months measured",

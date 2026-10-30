@@ -459,6 +459,36 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // School safety returns. UDISE+ 2025-26: each school reports its safety audit, CCTV, disaster plan and training; PIN-code shares.
+    function schoolready(fr) {
+        const c = fr.cols, n = fr.grid.n, col = k => c[`school_safety.ss_${k}_pct`];
+        const audit = col('audit'), cctv = col('cctv'), plan = col('plan'), train = col('training'), self = col('selfdef'), gov = col('govt_audit'), pop = c['population.population'];
+        if (!audit || !audit.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(audit[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const avg = a => (a ? wmean(a, pop, idx.filter(i => _fin(a[i]))) : NaN);
+        const low = idx.filter(i => audit[i] < 50).reduce((s, i) => s + pop[i], 0);
+        const a = avg(audit), cc = avg(cctv), pl = avg(plan);
+        const pctTxt = v => (_fin(v) ? `${_round(v, 0)}%` : 'n/a');
+        const stats = [
+            { label: 'Schools with a structural safety audit (residents-weighted PIN-code share)', value: pctTxt(a) },
+            { label: 'Government schools with a structural safety audit', value: pctTxt(avg(gov)) },
+            { label: 'Schools with CCTV / a disaster management plan', value: `${pctTxt(cc)} / ${pctTxt(pl)}` },
+            { label: 'Schools that ran safety and disaster training', value: pctTxt(avg(train)) },
+            { label: 'Schools with girls that teach them self-defence', value: pctTxt(avg(self)) },
+            { label: 'Residents in PIN codes where under half the schools had an audit', value: `${_people(low)} (${_round(100 * low / P, 0)}%)` },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = audit[i];
+        return {
+            columns: { school_audit_pct: out }, idx, weightKey: 'school_audit_pct',
+            metric: { label: 'Schools with a structural safety audit (residents-weighted)', value: _round(a, 0), unit: '%', higherIs: 'better' },
+            headline: `In the PIN codes here, ${_round(a, 0)}% of schools report a structural safety audit of their building${_fin(cc) ? `, ${_round(cc, 0)}% have CCTV` : ''}${_fin(pl) ? ` and ${_round(pl, 0)}% a disaster management plan` : ''}. ${low > 0 ? `${_people(low)} residents (${_round(100 * low / P, 0)}%) live in PIN codes where fewer than half the schools have had an audit.` : 'Every PIN code here has had at least half its schools audited.'}`,
+            stats,
+        };
+    }
+
     // Lake oxygen. CPCB's 2021 water quality programme samples about 90 lakes around Hyderabad; each block within 2 km takes its nearest.
     function lakeoxygen(fr) {
         const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`lake_oxygen.lo_${k}`];
@@ -946,6 +976,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'schoolready', title: 'School safety returns', icon: '🧯',
+            question: 'Have the schools here had their buildings checked and made safety plans?',
+            field: { key: 'school_audit_pct', label: 'Schools with a structural safety audit (PIN-code share)', unit: '%', higherIs: 'better', ramp: 'greens', domain: [0, 100] },
+            needs: ['school_safety.ss_audit_pct', 'school_safety.ss_cctv_pct', 'school_safety.ss_plan_pct', 'school_safety.ss_training_pct', 'school_safety.ss_selfdef_pct', 'school_safety.ss_govt_audit_pct', 'population.population'],
+            method: `UDISE+ 2025-26, the Ministry of Education's school census, asks every school whether it has a school disaster management plan, a structural and a non-structural safety audit, CCTV, fire extinguishers, safety training for staff and pupils, and self-defence training for girls. The district files on data.opencity.in (public domain) give each school's answers and PIN code, but no coordinates, so the lens sums schools by PIN code and gives every block its PIN code's shares; answers marked not applicable are left out. The answers are the schools' own returns, not inspections, and some districts report near-universal compliance. Delhi, Mumbai, Bengaluru Urban, Pune, Chennai, Hyderabad and Kolkata.`,
+            refs: 'UDISE+ 2025-26 school safety and profile files (Ministry of Education, via data.opencity.in); NDMA School Safety Policy Guidelines (2016)' },
         { id: 'lakeoxygen', title: 'Lakes short of oxygen', icon: '🐟',
             question: 'Can fish live in the lake near me, by the pollution board\'s samples?',
             field: { key: 'lake_do_max', label: 'Highest dissolved oxygen at the nearest sampled lake, 2021', unit: 'mg/L', higherIs: 'better', ramp: 'viridis', domain: [0, 7] },
@@ -1088,6 +1124,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater, lakeoxygen });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater, lakeoxygen, schoolready });
     return { ENTRIES };
 })();
