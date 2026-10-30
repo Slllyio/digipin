@@ -1959,3 +1959,11 @@ BMC ward letters (`FN` to `F/N`, `RC*` to `R/C`, `RN and RC` to both, `Ward A` t
 share the sterilised share and 2014 figures because the survey reported them together. Blocks join through
 `census2011.ward_cells` (the `wards` dataset's BMC layer). The lens sums roaming dogs once per ward and divides by the
 ward residents in view for dogs per 1,000 residents.
+
+## Births and deaths registered (`vitals` lens, `city_vitals` dataset)
+
+`pipeline/realestate/vitalstats.py` reads each city's register CSV (`COLS` names the births, deaths and, for BBMP, girls
+and boys columns; BBMP's own columns are used, not Bengaluru Urban district's). `figures()` sets 2020 and 2021 deaths
+against the mean of `BASE` years (Chennai 2019 only, because its 2018 row is half a year; Delhi and BBMP 2017-2019) and
+the latest year's births against the same baseline. Values are copied to every lived-in L7 block, as for
+`city_road_deaths`; the lens reads `fr.city` to name the register.

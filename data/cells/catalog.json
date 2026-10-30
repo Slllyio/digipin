@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T17:31:56Z",
+  "generated": "2026-10-30T17:40:22Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -6690,6 +6690,235 @@
           },
           "json": "city_road_deaths/pune.json",
           "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "city_vitals",
+      "title": "Births and deaths registered (city registers)",
+      "description": "Yearly births and deaths in the civil register of BBMP, with the COVID-year deaths against the years before (via data.opencity.in). One value per city.",
+      "source": "pipeline/realestate/vitalstats.py (city birth and death registers via OpenCity)",
+      "license": "Public domain (city corporations and Delhi's Chief Registrar of Births and Deaths via data.opencity.in)",
+      "group": "Health",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "vs_year",
+          "label": "Latest year in the register",
+          "type": "number",
+          "agg": "max",
+          "unit": "year",
+          "domain": [
+            2024,
+            2025
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "vs_births",
+          "label": "Births registered in the latest year",
+          "type": "number",
+          "agg": "max",
+          "unit": "births",
+          "domain": [
+            84092,
+            306459
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "vs_deaths",
+          "label": "Deaths registered in the latest year",
+          "type": "number",
+          "agg": "max",
+          "unit": "deaths",
+          "domain": [
+            57918,
+            139480
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "vs_births_base",
+          "label": "Births a year before COVID (baseline average)",
+          "type": "number",
+          "agg": "max",
+          "unit": "births",
+          "domain": [
+            107852,
+            365239
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "vs_births_change_pct",
+          "label": "Births in the latest year against the baseline",
+          "type": "number",
+          "agg": "max",
+          "unit": "%",
+          "domain": [
+            -22,
+            -1.4
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "vs_deaths_base",
+          "label": "Deaths a year before COVID (baseline average)",
+          "type": "number",
+          "agg": "max",
+          "unit": "deaths",
+          "domain": [
+            61275,
+            142311
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "vs_excess_2020_pct",
+          "label": "Deaths in 2020 above the baseline",
+          "type": "number",
+          "agg": "max",
+          "unit": "%",
+          "domain": [
+            0.3,
+            23.1
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "vs_excess_2021_pct",
+          "label": "Deaths in 2021 above the baseline",
+          "type": "number",
+          "agg": "max",
+          "unit": "%",
+          "domain": [
+            20.5,
+            42.3
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "vs_excess_2021",
+          "label": "Deaths in 2021 above the baseline",
+          "type": "number",
+          "agg": "max",
+          "unit": "deaths",
+          "domain": [
+            24100,
+            29165
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "vs_girls_per_1000",
+          "label": "Girls born per 1,000 boys, latest year",
+          "type": "number",
+          "agg": "max",
+          "unit": "girls",
+          "domain": [
+            940,
+            940
+          ],
+          "ramp": "reds",
+          "higherIs": "better"
+        }
+      ],
+      "default": {
+        "field": "vs_excess_2021_pct",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "city_vitals/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "chennai",
+          "cells": 10493,
+          "bbox": {
+            "west": 80.12890625,
+            "south": 12.899658203125,
+            "east": 80.320068359375,
+            "north": 13.180908203125
+          },
+          "json": "city_vitals/chennai/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4T32",
+              "4T35",
+              "4T36",
+              "4T37",
+              "4T38",
+              "4T39"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "city_vitals/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
+            ]
+          }
         }
       ]
     },

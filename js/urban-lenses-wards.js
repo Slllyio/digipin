@@ -459,6 +459,35 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Births and deaths registered. City civil registers (Chennai, Delhi, BBMP): COVID-year deaths against the years before, and births since.
+    function vitals(fr) {
+        const c = fr.cols, n = fr.grid.n, col = k => c[`city_vitals.vs_${k}`];
+        const ex21 = col('excess_2021_pct');
+        if (!ex21 || !ex21.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(ex21[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => (col(k) && _fin(col(k)[i0]) ? col(k)[i0] : NaN);
+        const body = { chennai: 'Greater Chennai Corporation', delhi: 'Delhi', bengaluru: 'BBMP' }[fr.city] || 'the city';
+        const base = { chennai: '2019', delhi: '2017-19', bengaluru: '2017-19' }[fr.city] || 'the years before COVID';
+        const num = x => Math.round(x).toLocaleString('en-IN'), sgn = x => `${x >= 0 ? '+' : ''}${_round(x, 0)}%`;
+        const yr = v('year'), bch = v('births_change_pct'), girls = v('girls_per_1000');
+        const stats = [
+            { label: `Deaths in 2021 above the ${base} average`, value: `${num(v('excess_2021'))} (${sgn(v('excess_2021_pct'))})` },
+            { label: `Deaths in 2020 against the ${base} average`, value: _fin(v('excess_2020_pct')) ? sgn(v('excess_2020_pct')) : 'n/a' },
+            { label: `Births / deaths registered in ${yr}`, value: `${num(v('births'))} / ${num(v('deaths'))}` },
+            { label: `Births in ${yr} against the ${base} average`, value: sgn(bch) },
+            { label: `Girls born per 1,000 boys, ${yr}`, value: _fin(girls) ? `${girls}` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = ex21[i];
+        return {
+            columns: { excess_2021_pct: out }, idx, weightKey: 'excess_2021_pct', noHotspots: true,
+            metric: { label: `Deaths registered in 2021 above the ${base} average`, value: _round(v('excess_2021_pct'), 0), unit: '%', higherIs: 'worse' },
+            headline: `${body} registered ${num(v('excess_2021'))} more deaths in 2021 than in an average year before COVID (${sgn(v('excess_2021_pct'))} on ${base}). Births registered in ${yr} were ${_round(Math.abs(bch), 0)}% ${bch < 0 ? 'below' : 'above'} that baseline${_fin(girls) ? `, with ${girls} girls born per 1,000 boys` : ''}.`,
+            stats,
+        };
+    }
+
     // Street dogs. BMC's January 2024 survey counted roaming dogs per km of street in each of its 24 wards, against 2014.
     function streetdogs(fr) {
         const c = fr.cols, n = fr.grid.n, col = k => c[`street_dogs.sd_${k}`];
@@ -1072,6 +1101,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'vitals', title: 'Births and deaths registered', icon: '📜',
+            question: 'How many more people died here in the COVID years, and are fewer babies being born?',
+            field: { key: 'excess_2021_pct', label: 'Deaths registered in 2021 above the years before COVID', unit: '%', higherIs: 'worse', ramp: 'reds', domain: [0, 50] },
+            needs: ['city_vitals.vs_excess_2021_pct', 'city_vitals.vs_excess_2021', 'city_vitals.vs_excess_2020_pct', 'city_vitals.vs_births', 'city_vitals.vs_deaths', 'city_vitals.vs_births_change_pct', 'city_vitals.vs_year', 'city_vitals.vs_girls_per_1000', 'population.population'],
+            method: `Yearly totals from the civil registers of births and deaths (data.opencity.in, public domain): Greater Chennai Corporation 2019-2025, Delhi 2017-2024 and BBMP 2017-2024 with births by sex. Deaths in 2020 and 2021 are set against the average year before COVID (Chennai 2019, whose 2018 row covers half a year; Delhi and BBMP 2017-2019): Chennai registered 35% more deaths in 2021, Delhi 20% and BBMP 42%, about 79,000 deaths above baseline across the three. Births since have fallen 22% in Chennai and 16% in Delhi, and are flat in BBMP. Registers count events where they happen, so deaths and births in city hospitals of people from outside are included, and registration improves over time. One value per city. Chennai, Delhi and Bengaluru.`,
+            refs: 'Greater Chennai Corporation, Delhi Chief Registrar of Births and Deaths, BBMP birth and death registers (via data.opencity.in); Civil Registration System' },
         { id: 'streetdogs', title: 'Street dogs by ward', icon: '🐕',
             question: 'How many stray dogs are on the streets here, and are they being sterilised?',
             field: { key: 'dogs_per_km', label: 'Roaming dogs per km of street (ward, 2024)', unit: 'dogs/km', higherIs: 'worse', ramp: 'reds', domain: [0, 18] },
@@ -1238,6 +1273,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater, lakeoxygen, schoolready, crashzones, floodspots, streetdogs });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater, lakeoxygen, schoolready, crashzones, floodspots, streetdogs, vitals });
     return { ENTRIES };
 })();
