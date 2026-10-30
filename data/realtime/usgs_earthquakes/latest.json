@@ -1,7 +1,31 @@
 {
-  "generated_at_iso": "2026-10-30T19:26:43Z",
-  "count": 14,
+  "generated_at_iso": "2026-10-30T23:06:48Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us7000tudk",
+      "magnitude": 4.5,
+      "origin_time_utc": "2026-10-30T18:01:10.672000+00:00",
+      "latitude": 65.0985,
+      "longitude": 155.7595,
+      "depth_km": 10.0,
+      "place": "236 km ESE of Zyryanka, Russia",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tudk",
+      "tsunami": 0,
+      "significance": 312
+    },
+    {
+      "id": "us7000tub8",
+      "magnitude": 4.6,
+      "origin_time_utc": "2026-10-30T17:06:26.864000+00:00",
+      "latitude": 9.0593,
+      "longitude": 126.2834,
+      "depth_km": 10.0,
+      "place": "7 km NE of Tago, Philippines",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tub8",
+      "tsunami": 0,
+      "significance": 326
+    },
     {
       "id": "us7000tu83",
       "magnitude": 4.5,
@@ -97,78 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu5q",
       "tsunami": 0,
       "significance": 400
-    },
-    {
-      "id": "us7000tu4z",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-29T23:04:49.300000+00:00",
-      "latitude": -18.1317,
-      "longitude": 167.9345,
-      "depth_km": 10.0,
-      "place": "59 km SW of Port-Vila, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu4z",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tu4f",
-      "magnitude": 6.2,
-      "origin_time_utc": "2026-10-29T21:46:44.786000+00:00",
-      "latitude": -15.1891,
-      "longitude": 167.4523,
-      "depth_km": 142.833,
-      "place": "43 km ESE of Port-Olry, Vanuatu",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu4f",
-      "tsunami": 0,
-      "significance": 593
-    },
-    {
-      "id": "us7000tu4a",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-29T21:12:36.287000+00:00",
-      "latitude": 44.1091,
-      "longitude": 148.1794,
-      "depth_km": 35.0,
-      "place": "121 km ENE of Shikotan, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu4a",
-      "tsunami": 0,
-      "significance": 326
-    },
-    {
-      "id": "us7000tu46",
-      "magnitude": 4.7,
-      "origin_time_utc": "2026-10-29T21:00:15.784000+00:00",
-      "latitude": 51.5608,
-      "longitude": 15.9523,
-      "depth_km": 5.0,
-      "place": "1 km SSE of Radwanice, Poland",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu46",
-      "tsunami": 0,
-      "significance": 340
-    },
-    {
-      "id": "us7000tu3u",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-29T20:32:11.667000+00:00",
-      "latitude": -4.4698,
-      "longitude": 132.4922,
-      "depth_km": 10.0,
-      "place": "131 km NNW of Tual, Indonesia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu3u",
-      "tsunami": 0,
-      "significance": 385
-    },
-    {
-      "id": "us7000tu3j",
-      "magnitude": 5.0,
-      "origin_time_utc": "2026-10-29T20:14:32.548000+00:00",
-      "latitude": 53.5843,
-      "longitude": -163.0279,
-      "depth_km": 15.602,
-      "place": "143 km S of False Pass, Alaska",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tu3j",
-      "tsunami": 0,
-      "significance": 385
     }
   ]
 }

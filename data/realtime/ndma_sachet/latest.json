@@ -1,7 +1,40 @@
 {
-  "generated_at_iso": "2026-10-30T19:26:43Z",
+  "generated_at_iso": "2026-10-30T23:06:49Z",
   "count": 100,
   "records": [
+    {
+      "id": "1793399265017029",
+      "headline": "Light to Moderate spells of rain with possibility of Thunderstorm is very likely to occur at isolated places over Mumbai, Mumbai Suburban, Pune, Satara, Thane in next 3 hours.",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 30 Oct 2026 22:27:48 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793399265017029",
+      "severity": "Moderate",
+      "category": "Met-Storm",
+      "tags": []
+    },
+    {
+      "id": "1793392098609013",
+      "headline": "अगले 3 घंटों के दौरान कुशीनगर के कुछ इलाकों में आंधी-तूफान (हवा की गति 30-50 किमी/घंटा तक पहुंच सकती है) और बिजली कड़कने के साथ हल्की से मध्यम बारिश होने की प्रबल संभावना है।",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 30 Oct 2026 20:31:38 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793392098609013",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
+    {
+      "id": "1793389076273029",
+      "headline": "पुढील ३ तासांत पुणे जिल्ह्यात हलक्या पावसाच्या सरींसह मेघगर्जना आणि विजांच्या कडकडाटाची शक्यता आहे. नागरिकांनी सतर्क रहावे, मंत्रालय, मुंबई.",
+      "description": "",
+      "area": "",
+      "published_utc": "Fri, 30 Oct 2026 20:16:03 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793389076273029",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1793382491939008",
       "headline": "River Nagavali at Srikakulam in Srikakulam district of Andhra Pradesh continues to flow in above normal flood situation at 11:00 pm today.",
@@ -1067,39 +1100,6 @@
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793330899069013",
       "severity": "Minor",
       "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793328164048008",
-      "headline": "శ్రీకాకుళం వద్ద నాగావళి నది సాధారణ స్థాయి కంటే అధిక వరద ప్రవాహంతో కొనసాగుతోంది.ఆ ప్రాంత ప్రజలు అప్రమత్తంగా ఉండాలి.నదిలో ప్రయాణించడం,ఈతకు వెళ్ళడం,చేపలు పట్టడం చేయరాదు-ఆంధ్రప్రదేశ్ ప్రభుత్వం",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 30 Oct 2026 03:26:00 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793328164048008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793329086594022",
-      "headline": "अधिकांश स्थानों पर मेघ गर्जन/बिजली चमकने के साथ मध्यम बारिश और कुछ स्थानों पर भारी बारिश होने की संभावना है।",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 30 Oct 2026 02:58:17 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793329086594022",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793325297397024",
-      "headline": "Moderate Rain with thunderstorm/lightning is very likely to continue at a few places over Faridabad, Gurugram, Nuh, Palwal in next 3 hours.",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 30 Oct 2026 01:56:48 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793325297397024",
-      "severity": "Moderate",
-      "category": "Met-Storm",
       "tags": []
     }
   ]

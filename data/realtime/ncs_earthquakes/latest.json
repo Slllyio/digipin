@@ -1,7 +1,51 @@
 {
-  "generated_at_iso": "2026-10-30T19:26:44Z",
+  "generated_at_iso": "2026-10-30T23:06:49Z",
   "count": 150,
   "records": [
+    {
+      "id": "2026-10-31 04:07:55|25.997,95.415",
+      "magnitude": 3.3,
+      "origin_time": "2026-10-31 04:07:55",
+      "latitude": 25.997,
+      "longitude": 95.415,
+      "depth_km": 108.0,
+      "region": "Myanmar",
+      "location": "97km ESE of Mokokchung, Nagaland, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-31 03:48:15|36.370,70.854",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-31 03:48:15",
+      "latitude": 36.37,
+      "longitude": 70.854,
+      "depth_km": 197.0,
+      "region": "Afghanistan",
+      "location": "85km SSE of Fayzabad, Afghanistan",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-31 01:30:42|19.984,72.865",
+      "magnitude": 2.1,
+      "origin_time": "2026-10-31 01:30:42",
+      "latitude": 19.984,
+      "longitude": 72.865,
+      "depth_km": 5.0,
+      "region": "Palghar, Maharashtra",
+      "location": "96km W of Nashik, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-31 00:54:45|20.013,72.918",
+      "magnitude": 3.2,
+      "origin_time": "2026-10-31 00:54:45",
+      "latitude": 20.013,
+      "longitude": 72.918,
+      "depth_km": 7.0,
+      "region": "Palghar, Maharashtra",
+      "location": "91km W of Nashik, Maharashtra, India",
+      "review_status": "Reviewed"
+    },
     {
       "id": "2026-10-31 00:36:04|28.972,95.210",
       "magnitude": 3.9,
@@ -14,14 +58,36 @@
       "review_status": "Reviewed"
     },
     {
+      "id": "2026-10-30 23:58:41|32.546,94.010",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-30 23:58:41",
+      "latitude": 32.546,
+      "longitude": 94.01,
+      "depth_km": 15.0,
+      "region": "China",
+      "location": "504km NNW of Pangin, Arunachal Pradesh, India",
+      "review_status": "Reviewed"
+    },
+    {
       "id": "2026-10-30 22:36:13|17.107,77.715",
       "magnitude": 3.0,
       "origin_time": "2026-10-30 22:36:13",
       "latitude": 17.107,
       "longitude": 77.715,
       "depth_km": 10.0,
-      "region": "Vikarabad, Telengana",
+      "region": "Vikarabad, Telangana",
       "location": "87km WSW of Hyderabad, Telangana, India",
+      "review_status": "Reviewed"
+    },
+    {
+      "id": "2026-10-30 22:22:09|32.035,93.122",
+      "magnitude": 4.0,
+      "origin_time": "2026-10-30 22:22:09",
+      "latitude": 32.035,
+      "longitude": 93.122,
+      "depth_km": 15.0,
+      "region": "Tibet",
+      "location": "475km NNW of Basar, Arunachal Pradesh, India",
       "review_status": "Reviewed"
     },
     {
@@ -1584,72 +1650,6 @@
       "depth_km": 9.0,
       "region": "Nepal",
       "location": "133km WNW of Yuksom, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 15:37:40|36.593,71.482",
-      "magnitude": 4.7,
-      "origin_time": "2026-10-22 15:37:40",
-      "latitude": 36.593,
-      "longitude": 71.482,
-      "depth_km": 176.0,
-      "region": "Afghanistan",
-      "location": "100km ESE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 06:37:16|34.001,88.505",
-      "magnitude": 4.3,
-      "origin_time": "2026-10-22 06:37:16",
-      "latitude": 34.001,
-      "longitude": 88.505,
-      "depth_km": 10.0,
-      "region": "Tibet",
-      "location": "702km N of Lachung, Sikkim, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 05:00:02|36.951,71.319",
-      "magnitude": 3.5,
-      "origin_time": "2026-10-22 05:00:02",
-      "latitude": 36.951,
-      "longitude": 71.319,
-      "depth_km": 133.0,
-      "region": "Afghanistan",
-      "location": "70km ESE of Fayzabad, Afghanistan",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-22 01:00:32|25.848,94.361",
-      "magnitude": 3.6,
-      "origin_time": "2026-10-22 01:00:32",
-      "latitude": 25.848,
-      "longitude": 94.361,
-      "depth_km": 17.0,
-      "region": "Zunheboto, Nagaland",
-      "location": "28km SSE of Wokha, Nagaland, India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-21 20:47:48|35.991,77.709",
-      "magnitude": 4.1,
-      "origin_time": "2026-10-21 20:47:48",
-      "latitude": 35.991,
-      "longitude": 77.709,
-      "depth_km": 142.0,
-      "region": "Xinjiang",
-      "location": "203km NNE of Alchi(Leh),Ladakh,India",
-      "review_status": "Reviewed"
-    },
-    {
-      "id": "2026-10-21 19:43:40|36.231,70.176",
-      "magnitude": 3.5,
-      "origin_time": "2026-10-21 19:43:40",
-      "latitude": 36.231,
-      "longitude": 70.176,
-      "depth_km": 155.0,
-      "region": "Afghanistan",
-      "location": "102km SSW of Fayzabad, Afghanistan",
       "review_status": "Reviewed"
     }
   ]
