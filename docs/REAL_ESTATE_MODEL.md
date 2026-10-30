@@ -1850,3 +1850,12 @@ Bangalore to Bengaluru Urban). Thane's 2011 district included Palghar; it takes 
 maps bank branches per lakh people and describes the main district by residents; `smallbiz` maps the 2025 SSLC pass
 rate.
 
+## Trees approved for felling (`treefelling` lens, `tree_felling` dataset)
+
+`pipeline/realestate/treefelling.py` holds the notices as a hand-made table (`NOTICES`: trees, project, kind, points)
+because OpenCity's tree-cutting collection is PDFs whose titles carry the tree count and project. Points come from
+Nominatim lookups of the named junctions, stations and campuses, checked by hand; alignments get two to four points and
+each point carries an equal share of the notice's trees. The BMRCL Phase 3 Corridor 1 Package 1 public notice is
+dropped in favour of its official memorandum for the same stretch; the National Institute of Virology lab and the
+fire-service workshop are dropped because their sites could not be placed. New notices on OpenCity need a new row.
+

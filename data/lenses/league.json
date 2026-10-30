@@ -1002,6 +1002,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "treefelling": {
+     "label": "Trees in felling notices within 2 km (residents-weighted)",
+     "value": 534,
+     "unit": "trees",
+     "higherIs": "worse"
+    },
     "smallbiz": {
      "label": "Class 10 pass rate, 2025 (district)",
      "value": 82,

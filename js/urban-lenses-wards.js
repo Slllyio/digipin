@@ -459,6 +459,39 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Trees approved for felling. Forest Department notices in Bengaluru, placed at each project's site or alignment.
+    const TF_KIND = ['', 'metro', 'rail', 'road', 'defence', 'public building or campus', 'drain, power line or plant'];
+
+    function treefelling(fr) {
+        const g = fr.grid, c = fr.cols, n = g.n, col = k => c[`tree_felling.tf_${k}`];
+        const t2 = col('trees_2km'), km = col('km'), kind = col('kind_nearest'), tn = col('trees_nearest'), pop = c['population.population'];
+        if (!t2 || !t2.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(t2[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const near = idx.filter(i => t2[i] > 0), nearPop = near.reduce((s, i) => s + pop[i], 0);
+        const byKind = new Map();
+        for (const i of near) { const k = TF_KIND[kind[i]] || 'other'; byKind.set(k, (byKind.get(k) || 0) + pop[i]); }
+        const kinds = [...byKind.entries()].sort((a, b) => b[1] - a[1]);
+        const top = idx.reduce((b, i) => (t2[i] > t2[b] ? i : b), idx[0]);
+        const medKm = wquantile(km, pop, idx, 0.5), avg = wmean(t2, pop, idx);
+        const stats = [
+            { label: 'Residents within 2 km of a felling project', value: `${_people(nearPop)} (${_round(100 * nearPop / P, 0)}%)` },
+            { label: 'Trees in notices within 2 km, residents-weighted', value: `${Math.round(avg).toLocaleString('en-IN')}` },
+            { label: 'Distance to the nearest project, middle resident', value: `${_round(medKm, 1)} km` },
+            { label: `Most trees within 2 km of one block (${g.codes[top]})`, value: `${Math.round(t2[top]).toLocaleString('en-IN')} trees; nearest project ${TF_KIND[kind[top]] || 'n/a'}, ${Math.round(tn[top]).toLocaleString('en-IN')} trees` },
+            ...kinds.slice(0, 4).map(([k, p]) => ({ label: `Residents whose nearest project is ${k}`, value: _people(p) })),
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = t2[i];
+        return {
+            columns: { trees_felled: out }, idx, weightKey: 'trees_felled', noHotspots: false,
+            metric: { label: 'Trees in felling notices within 2 km (residents-weighted)', value: Math.round(avg), unit: 'trees', higherIs: 'worse' },
+            headline: `${_people(nearPop)} residents here (${_round(100 * nearPop / P, 0)}%) live within 2 km of a project the Forest Department has cleared to fell trees${kinds.length ? `, most often for ${kinds[0][0]}` : ''}. The worst-hit block has ${Math.round(t2[top]).toLocaleString('en-IN')} trees in notices within 2 km; the middle resident is ${_round(medKm, 1)} km from the nearest project.`,
+            stats,
+        };
+    }
+
     // District development indicators (Maharashtra economic survey): banking, electricity, schools and child health of
     // the district most residents in view live in.
     function _mainDistrict(fr, key) {
@@ -772,6 +805,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'treefelling', title: 'Trees approved for felling', icon: '🪓',
+            question: 'Are trees being cut for projects near here, and for what?',
+            field: { key: 'trees_felled', label: 'Trees in felling notices within 2 km', unit: 'trees', higherIs: 'worse', ramp: 'reds', domain: [0, 2500] },
+            needs: ['tree_felling.tf_trees_2km', 'tree_felling.tf_km', 'tree_felling.tf_trees_nearest', 'tree_felling.tf_kind_nearest', 'population.population'],
+            method: `The Karnataka Forest Department's public notices and orders for felling trees in Bengaluru, as collected by data.opencity.in (public domain): 56 notices covering 25,386 trees for metro, suburban and main-line rail, road, defence, public-building and utility projects. The notices name the project and the number of trees but give no coordinates, so each project is placed by hand at its site, or at points along its alignment for metro, rail, roads and power lines, with the trees shared equally between those points (places from OpenStreetMap, ODbL). A block counts the trees at every point within 2 km. Two notices whose sites could not be found (a virology lab and a fire-service workshop) and a duplicate notice for the same metro package are left out. Notices are permissions, not a record of trees actually cut, and the collection is not complete.`,
+            refs: 'Karnataka Forest Department tree-felling notices, Bengaluru (via data.opencity.in); OpenStreetMap' },
         { id: 'smallbiz', equity: true, title: 'Small businesses and Class 10 results', icon: '🏭',
             question: 'How many small businesses and jobs does this district have, and how do its students do?',
             field: { key: 'sslc_pass', label: 'Class 10 (SSLC) pass rate, 2025 (district)', unit: '%', higherIs: 'better', ramp: 'viridis', domain: [60, 95] },
@@ -878,6 +917,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling });
     return { ENTRIES };
 })();

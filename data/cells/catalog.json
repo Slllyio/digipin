@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T13:18:41Z",
+  "generated": "2026-10-30T13:37:13Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -47765,6 +47765,112 @@
           },
           "json": "tree_census/pune.json",
           "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "tree_felling",
+      "title": "Trees approved for felling (Bengaluru Forest Department notices)",
+      "description": "Trees in the Forest Department's public tree-felling notices for metro, rail, road, defence and public-building projects within 2 km of each block, the nearest project and its size, from the notices collected on data.opencity.in. Notices have no coordinates; projects are placed by hand at their site or along their alignment (OpenStreetMap places).",
+      "source": "pipeline/realestate/treefelling.py (Bengaluru tree-cutting notices via OpenCity, placed by hand)",
+      "license": "Public domain (Karnataka Forest Department via data.opencity.in); places \u00a9 OpenStreetMap contributors (ODbL)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "tf_trees_2km",
+          "label": "Trees in felling notices within 2 km",
+          "type": "number",
+          "agg": "mean",
+          "unit": "trees",
+          "domain": [
+            0,
+            3000
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "tf_notices_2km",
+          "label": "Tree-felling notices within 2 km",
+          "type": "number",
+          "agg": "mean",
+          "unit": "notices",
+          "domain": [
+            0,
+            8
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "tf_km",
+          "label": "Distance to the nearest tree-felling project",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0,
+            10
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "tf_trees_nearest",
+          "label": "Trees in the nearest felling notice",
+          "type": "number",
+          "agg": "mean",
+          "unit": "trees",
+          "domain": [
+            8.0,
+            3627.0
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "tf_kind_nearest",
+          "label": "Kind of the nearest felling project (1 metro, 2 rail, 3 road, 4 defence, 5 public building, 6 utility)",
+          "type": "number",
+          "agg": "mode",
+          "domain": [
+            1.0,
+            6.0
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "tf_trees_2km",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "tree_felling/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
         }
       ]
     },
