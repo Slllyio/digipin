@@ -1927,3 +1927,13 @@ need at least three answering schools per PIN code. It reuses `udise.py`'s helpe
 (neighbourhoods dataset). Fire extinguishers are near-universal (99% in Pune), so the lens maps the structural audit
 share and shows CCTV, plan, training and self-defence in the stats. The answers are self-reported.
 
+## Accident-prone junctions, Delhi and Bengaluru (`crashzones` lens, `crash_zones` dataset)
+
+`pipeline/realestate/crashzones.py` holds `ZONES`, transcribed from two PDFs on OpenCity: Delhi Traffic Police's
+"Accident prone zones of the year 2021" list (87 names) and BBMP's Suraksha-75 works list (75 junctions, names wrapped
+across lines and grouped by assembly constituency, transcribed by hand into searchable names). Each name was sent to
+Nominatim inside the city's bounding box (3 s between requests); hits were kept only when the returned place matched
+the junction (a hit that landed on an unrelated metro station, college or a same-named place elsewhere was dropped),
+and 24 well-known junctions it could not find were placed by hand. Unplaced names are left out, so the lens
+undercounts. The lens reads `fr.city` to name the right list in its headline.
+

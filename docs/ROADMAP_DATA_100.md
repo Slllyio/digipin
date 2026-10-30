@@ -342,6 +342,7 @@ Each item gives four things:
 281. ✅ Measured station air for Delhi, Mumbai, Pune, Hyderabad and Kolkata (`air_measured`, `measuredair` lens): 15-minute PM2.5, PM10 and NO2 at 99 CPCB and state board continuous stations (OpenCity, public domain), averaged by month over 2024. Delhi's nearest stations average 105 µg/m³ of PM2.5 and 72% of its residents live nearest a station over the PM10 standard every month; Mumbai's average 36.
 282. ✅ Hyderabad lakes short of oxygen (`lake_oxygen`, `lakeoxygen` lens): CPCB's NWMP 2021 lake table (OpenCity, public domain), 30 of about 90 Hyderabad-area lakes placed by name. 21 of the 30 never reached 4 mg/L of dissolved oxygen in any 2021 sample; 82% of residents within 2 km of a sampled lake live nearest one of those.
 283. ✅ School safety returns by PIN code (`school_safety`, `schoolready` lens): UDISE+ 2025-26's new per-school safety file (structural audit, CCTV, disaster plan, training, self-defence for girls) for 7 cities (OpenCity, public domain). Schools reporting a structural audit: Delhi 99%, Chennai 95%, Mumbai 93%, Bengaluru 75%, Pune 67%, Hyderabad 65%, Kolkata 21%.
+284. ✅ Accident-prone junctions (`crash_zones`, `crashzones` lens): Delhi Traffic Police's 87 accident-prone zones (2021) and BBMP's Suraksha-75 junctions (2025), names only (OpenCity, public domain), 49 and 63 placed via Nominatim plus hand checks. 4% of Delhi's residents live within 500 m of a listed zone, 15% within 1 km.
 
 ## Parked for the keys round
 

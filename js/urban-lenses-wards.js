@@ -459,6 +459,33 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Accident-prone junctions. Delhi Traffic Police's accident-prone zones (2021) and BBMP's Suraksha-75 junctions (2025).
+    function crashzones(fr) {
+        const c = fr.cols, n = fr.grid.n, km = c['crash_zones.cz_km'], near = c['crash_zones.cz_500m'], k1 = c['crash_zones.cz_1km'], pop = c['population.population'];
+        if (!km || !km.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(km[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0);
+        const close = sum(i => km[i] <= 0.5), within1 = sum(i => km[i] <= 1), many = k1 ? sum(i => k1[i] >= 3) : NaN;
+        const med = wquantile(km, pop, idx, 0.5);
+        const list = fr.city === 'delhi' ? 'Delhi Traffic Police lists as accident-prone' : fr.city === 'bengaluru' ? 'BBMP picked for its Suraksha-75 safety redesign' : 'is officially listed as accident-prone';
+        const stats = [
+            { label: 'Residents within 500 m of a listed junction', value: `${_people(close)} (${_round(100 * close / P, 0)}%)` },
+            { label: 'Residents within 1 km of one', value: `${_people(within1)} (${_round(100 * within1 / P, 0)}%)` },
+            { label: 'Residents with three or more listed junctions within 1 km', value: _fin(many) ? _people(many) : 'n/a' },
+            { label: 'Distance to the nearest listed junction, middle resident', value: `${_round(med, 1)} km` },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = km[i];
+        return {
+            columns: { crashzone_km: out }, idx, weightKey: 'crashzone_km', noHotspots: true,
+            metric: { label: 'Residents within 500 m of a listed accident-prone junction', value: _round(100 * close / P, 0), unit: '%', higherIs: 'worse' },
+            headline: `${_people(close)} residents here (${_round(100 * close / P, 0)}%) live within 500 m of a junction the ${list}, and ${_round(100 * within1 / P, 0)}% within 1 km. The middle resident's nearest such junction is ${_round(med, 1)} km away.`,
+            stats,
+        };
+    }
+
     // School safety returns. UDISE+ 2025-26: each school reports its safety audit, CCTV, disaster plan and training; PIN-code shares.
     function schoolready(fr) {
         const c = fr.cols, n = fr.grid.n, col = k => c[`school_safety.ss_${k}_pct`];
@@ -976,6 +1003,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'crashzones', title: 'Accident-prone junctions', icon: '🚦',
+            question: 'Do I live near a junction the authorities list as accident-prone?',
+            field: { key: 'crashzone_km', label: 'Distance to the nearest listed accident-prone junction', unit: 'km', higherIs: 'better', ramp: 'viridis', domain: [0, 4] },
+            needs: ['crash_zones.cz_km', 'crash_zones.cz_500m', 'crash_zones.cz_1km', 'population.population'],
+            method: `Two official lists name the junctions where crashes cluster: Delhi Traffic Police's 87 accident-prone zones of 2021 and the 75 junctions BBMP picked in 2025 for its Suraksha-75 safety redesign in Bengaluru (both via data.opencity.in, public domain). The lists give names only, so each junction was placed at its OpenStreetMap location with Nominatim and checked by hand, and a few well-known ones were placed by hand; 49 of Delhi's and 63 of Bengaluru's could be placed, the rest are left out, so a block far from every listed junction may still be near an unplaced one. The lens shows the distance to the nearest placed junction and how many residents live within 500 m and 1 km of one. Delhi and Bengaluru only.`,
+            refs: 'Delhi Traffic Police, accident-prone zones 2021; BBMP Suraksha-75 junction list (2025) (both via data.opencity.in); junction sites © OpenStreetMap contributors' },
         { id: 'schoolready', title: 'School safety returns', icon: '🧯',
             question: 'Have the schools here had their buildings checked and made safety plans?',
             field: { key: 'school_audit_pct', label: 'Schools with a structural safety audit (PIN-code share)', unit: '%', higherIs: 'better', ramp: 'greens', domain: [0, 100] },
@@ -1124,6 +1157,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater, lakeoxygen, schoolready });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater, lakeoxygen, schoolready, crashzones });
     return { ENTRIES };
 })();

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T16:10:37Z",
+  "generated": "2026-10-30T16:42:50Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -9218,6 +9218,126 @@
               "4FP5",
               "4FPJ",
               "4FPK"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "crash_zones",
+      "title": "Accident-prone junctions (Delhi Traffic Police, BBMP)",
+      "description": "Distance to the nearest of 63 junctions on the official list for the city (BBMP Suraksha-75 junctions (2025)), via data.opencity.in; junctions placed at their OpenStreetMap location by name.",
+      "source": "pipeline/realestate/crashzones.py (Delhi Traffic Police accident-prone zones; BBMP Suraksha-75; sites from OpenStreetMap)",
+      "license": "Public domain (Delhi Traffic Police, BBMP via data.opencity.in); sites \u00a9 OpenStreetMap contributors (ODbL)",
+      "group": "Mobility",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "cz_km",
+          "label": "Distance to the nearest officially listed accident-prone junction",
+          "type": "number",
+          "agg": "mean",
+          "unit": "km",
+          "domain": [
+            0,
+            5
+          ],
+          "ramp": "viridis"
+        },
+        {
+          "key": "cz_1km",
+          "label": "Listed accident-prone junctions within 1 km",
+          "type": "number",
+          "agg": "mean",
+          "unit": "junctions",
+          "domain": [
+            0.0,
+            3.0
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "cz_500m",
+          "label": "Within 500 m of a listed accident-prone junction",
+          "type": "number",
+          "agg": "max",
+          "unit": "yes/no",
+          "domain": [
+            0,
+            1
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        }
+      ],
+      "default": {
+        "field": "cz_km",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "bengaluru",
+          "cells": 21442,
+          "bbox": {
+            "west": 77.4482421875,
+            "south": 12.829345703125,
+            "east": 77.780029296875,
+            "north": 13.141357421875
+          },
+          "json": "crash_zones/bengaluru/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "4P33",
+              "4P34",
+              "4P3C",
+              "4P3F",
+              "4P3J",
+              "4P3K",
+              "4PJ6",
+              "4PJ7",
+              "4PJ8"
+            ]
+          }
+        },
+        {
+          "name": "delhi",
+          "cells": 51027,
+          "bbox": {
+            "west": 76.839599609375,
+            "south": 28.399169921875,
+            "east": 77.3515625,
+            "north": 28.88037109375
+          },
+          "json": "crash_zones/delhi/{prefix}.json.gz",
+          "parquet": null,
+          "shards": {
+            "prefixLen": 4,
+            "keys": [
+              "39J2",
+              "39J3",
+              "39J4",
+              "39J5",
+              "39J9",
+              "39JC",
+              "39JF",
+              "39JJ",
+              "39JK",
+              "39JL",
+              "39JM",
+              "39JP",
+              "3C72",
+              "3C75",
+              "3C76",
+              "3C77",
+              "3C78",
+              "3C79",
+              "3C7P",
+              "3C7T"
             ]
           }
         }
