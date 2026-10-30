@@ -1950,3 +1950,12 @@ rows), and stops at the next "Chronic Inundation" or monsoon abstract heading. P
 Every block in a GCC ward (`wards.ward_no`) takes the ward's figures; wards never listed get zeros. The lens maps the
 number of monsoons a ward was listed in, because the length of a single year's list follows the rain and how thoroughly
 it was recorded.
+
+## Street dogs by ward, Mumbai (`streetdogs` lens, `street_dogs` dataset)
+
+`pipeline/realestate/streetdogs.py` reads three of the survey's CSVs on OpenCity: roaming dogs per km and estimated
+totals by ward, sterilisation by ward, and the 2014-2024 change table. `ward_keys()` turns the survey's labels into
+BMC ward letters (`FN` to `F/N`, `RC*` to `R/C`, `RN and RC` to both, `Ward A` to `A`) and drops totals; R/N and R/C
+share the sterilised share and 2014 figures because the survey reported them together. Blocks join through
+`census2011.ward_cells` (the `wards` dataset's BMC layer). The lens sums roaming dogs once per ward and divides by the
+ward residents in view for dogs per 1,000 residents.

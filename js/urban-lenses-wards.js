@@ -459,6 +459,44 @@ const UrbanLensesWards = (() => {
         };
     }
 
+    // Street dogs. BMC's January 2024 survey counted roaming dogs per km of street in each of its 24 wards, against 2014.
+    function streetdogs(fr) {
+        const c = fr.cols, n = fr.grid.n, col = k => c[`street_dogs.sd_${k}`];
+        const km = col('per_km'), km14 = col('per_km_2014'), ster = col('sterilised_pct'), roam = col('roaming'), ward = col('ward_no'), pop = c['population.population'];
+        if (!km || !km.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(km[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 0);
+        const now = wmean(km, pop, idx), then = km14 ? wmean(km14, pop, idx.filter(i => _fin(km14[i]))) : NaN;
+        const low = ster ? sum(i => _fin(ster[i]) && ster[i] < 60) : NaN, dense = sum(i => km[i] >= 10);
+        const wards = new Map();
+        for (const i of idx) {
+            const w = ward[i];
+            if (!_fin(w)) continue;
+            const e = wards.get(w) || { i, pop: 0 };
+            e.pop += pop[i];
+            wards.set(w, e);
+        }
+        const dogs = roam ? [...wards.values()].reduce((s, e) => s + (_fin(roam[e.i]) ? roam[e.i] : 0), 0) : NaN;
+        const people = [...wards.values()].reduce((s, e) => s + e.pop, 0);
+        const stats = [
+            { label: 'Dogs per km of street, 2024 (residents-weighted)', value: `${_round(now, 1)}${_fin(then) ? ` (${_round(then, 1)} in 2014)` : ''}` },
+            { label: 'Residents in wards with 10 or more dogs per street km', value: `${_people(dense)} (${pct(dense)}%)` },
+            { label: 'Residents in wards where under 60% of dogs are sterilised', value: _fin(low) ? `${_people(low)} (${pct(low)}%)` : 'n/a' },
+            { label: 'Sterilised share of dogs (residents-weighted)', value: ster ? `${_round(wmean(ster, pop, idx.filter(i => _fin(ster[i]))), 0)}%` : 'n/a' },
+            { label: 'Estimated roaming dogs on the streets of these wards', value: _fin(dogs) ? `${Math.round(dogs).toLocaleString('en-IN')} (${_round(1000 * dogs / (people || 1), 1)} per 1,000 residents)` : 'n/a' },
+        ];
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = km[i];
+        return {
+            columns: { dogs_per_km: out }, idx, weightKey: 'dogs_per_km', noHotspots: true,
+            metric: { label: 'Street dogs per km of street (residents-weighted)', value: _round(now, 1), unit: 'dogs/km', higherIs: 'worse' },
+            headline: `BMC's 2024 survey counted ${_round(now, 1)} roaming dogs per km of street in the wards here (residents-weighted)${_fin(then) ? `, ${now <= then ? 'down' : 'up'} from ${_round(then, 1)} in 2014` : ''}. ${_fin(low) && low > 0 ? `${_people(low)} residents (${pct(low)}%) live in wards where fewer than 60% of the dogs were sterilised.` : 'In every ward here at least 60% of the dogs were sterilised.'}`,
+            stats,
+        };
+    }
+
     // Waterlogged streets. GCC's disaster management plan lists the spots that went under water after each monsoon, 2015-2024, by ward.
     function floodspots(fr) {
         const c = fr.cols, n = fr.grid.n, col = k => c[`flood_spots.fs_${k}`];
@@ -1034,6 +1072,12 @@ const UrbanLensesWards = (() => {
     }
 
     const ENTRIES = [
+        { id: 'streetdogs', title: 'Street dogs by ward', icon: '🐕',
+            question: 'How many stray dogs are on the streets here, and are they being sterilised?',
+            field: { key: 'dogs_per_km', label: 'Roaming dogs per km of street (ward, 2024)', unit: 'dogs/km', higherIs: 'worse', ramp: 'reds', domain: [0, 18] },
+            needs: ['street_dogs.sd_per_km', 'street_dogs.sd_per_km_2014', 'street_dogs.sd_sterilised_pct', 'street_dogs.sd_roaming', 'street_dogs.sd_ward_no', 'population.population'],
+            method: `BMC and Humane World for Animals counted roaming dogs along sample street tracks in all 24 BMC wards in January 2024, as in 2014, and noted which were ear-notched as sterilised (survey tables on data.opencity.in, public domain). The survey puts Mumbai at about 70,000 roaming dogs (48,600 on streets and 21,100 in slum tracks), with density down 22% since 2014 and up only in E, N, R/S and T wards. Every block carries its ward's figures: dogs per km of street in 2024 and 2014, the sterilised share (R/N and R/C were reported together, as were their 2014 figures) and the estimated dogs on its streets. Wards with fewer dogs sterilised tend to have more dogs per km (rank -0.39 across the 24 wards). Mumbai only.`,
+            refs: 'BMC and Humane World for Animals, Mumbai street dog population survey, January 2024 (via data.opencity.in); Animal Birth Control Rules 2023' },
         { id: 'floodspots', title: 'Waterlogged streets, 2015-2024', icon: '🌊',
             question: 'Does my ward flood every monsoon, or only in the big ones?',
             field: { key: 'floodspot_years', label: 'Monsoons (of 9) in which the ward had a listed waterlogged spot', unit: 'monsoons', higherIs: 'worse', ramp: 'reds', domain: [0, 8] },
@@ -1194,6 +1238,6 @@ const UrbanLensesWards = (() => {
             refs: 'NFHS-6 (2023-24) state fact sheets, IIPS and MoHFW (via data.opencity.in); NFHS-5 (2019-21) district fact sheets' },
     ];
 
-    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater, lakeoxygen, schoolready, crashzones, floodspots });
+    UrbanLenses.register(ENTRIES, { homes2011, lowground, feelslike, civicworks, fringevillages, healthnow, mlaseats, roaddeaths, spending, rollrevision, citycrime, wardcouncil, tollring, gwstress, districtincome, districtdev, smallbiz, treefelling, waterstorage, measuredair, wellwater, lakewater, lakeoxygen, schoolready, crashzones, floodspots, streetdogs });
     return { ENTRIES };
 })();

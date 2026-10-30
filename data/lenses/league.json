@@ -11322,6 +11322,12 @@
      "unit": "%",
      "higherIs": "worse"
     },
+    "streetdogs": {
+     "label": "Street dogs per km of street (residents-weighted)",
+     "value": 8.8,
+     "unit": "dogs/km",
+     "higherIs": "worse"
+    },
     "schoolready": {
      "label": "Schools with a structural safety audit (residents-weighted)",
      "value": 93,

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-10-30T17:23:42Z",
+  "generated": "2026-10-30T17:31:56Z",
   "datasets": [
     {
       "id": "accessibility",
@@ -44612,6 +44612,112 @@
             "north": 18.5751953125
           },
           "json": "stps/pune.json",
+          "parquet": null
+        }
+      ]
+    },
+    {
+      "id": "street_dogs",
+      "title": "Street dogs by ward (BMC survey 2024 vs 2014)",
+      "description": "Roaming dogs per km of street, sterilised share and change since 2014 in each of BMC's 24 wards, from the January 2024 street dog survey (BMC with Humane World for Animals, via data.opencity.in); every block carries its ward's figures.",
+      "source": "pipeline/realestate/streetdogs.py (BMC street dog survey 2024 via OpenCity)",
+      "license": "Public domain (BMC via data.opencity.in)",
+      "group": "Environment",
+      "level": 7,
+      "approxCellM": 244,
+      "fields": [
+        {
+          "key": "sd_per_km",
+          "label": "Street dogs counted per km of street in the ward, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "dogs/km",
+          "domain": [
+            0,
+            18
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "sd_per_km_2014",
+          "label": "Street dogs per km of street in the ward, 2014",
+          "type": "number",
+          "agg": "max",
+          "unit": "dogs/km",
+          "domain": [
+            0,
+            18
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "sd_change_pct",
+          "label": "Change in street dog density, 2014 to 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "%",
+          "domain": [
+            -70,
+            40
+          ],
+          "ramp": "reds",
+          "higherIs": "worse"
+        },
+        {
+          "key": "sd_sterilised_pct",
+          "label": "Street dogs sterilised in the ward, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "%",
+          "domain": [
+            40,
+            90
+          ],
+          "ramp": "greens",
+          "higherIs": "better"
+        },
+        {
+          "key": "sd_roaming",
+          "label": "Estimated roaming dogs on the ward's streets, 2024",
+          "type": "number",
+          "agg": "max",
+          "unit": "dogs",
+          "domain": [
+            371,
+            5847
+          ],
+          "ramp": "reds"
+        },
+        {
+          "key": "sd_ward_no",
+          "label": "BMC ward (A = 1 ... T = 24)",
+          "type": "number",
+          "agg": "min",
+          "domain": [
+            1,
+            24
+          ],
+          "ramp": "viridis"
+        }
+      ],
+      "default": {
+        "field": "sd_per_km",
+        "extrude": false,
+        "heightM": 400.0
+      },
+      "regions": [
+        {
+          "name": "mumbai",
+          "cells": 8140,
+          "bbox": {
+            "west": 72.779052734375,
+            "south": 18.893798828125,
+            "east": 72.97900390625,
+            "north": 19.26953125
+          },
+          "json": "street_dogs/mumbai.json",
           "parquet": null
         }
       ]
