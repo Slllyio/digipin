@@ -468,22 +468,23 @@ const UrbanLensesWards = (() => {
         if (idx.length < 5) return null;
         const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
         const a25 = wmean(p25, pop, idx), a10 = wmean(p10, pop, idx), aNo2 = no2 ? wmean(no2, pop, idx.filter(i => _fin(no2[i]))) : NaN;
-        const allYear = idx.filter(i => over && over[i] >= 12).reduce((s, i) => s + pop[i], 0);
+        const mo = col('months'), nMonths = mo ? Math.max(...idx.map(i => (_fin(mo[i]) ? mo[i] : 0))) || NaN : NaN;
+        const allYear = idx.filter(i => over && mo && over[i] >= mo[i]).reduce((s, i) => s + pop[i], 0);
         const far = idx.filter(i => km[i] > 5).reduce((s, i) => s + pop[i], 0);
         const worst = idx.reduce((b, i) => (p25[i] > p25[b] ? i : b), idx[0]), best = idx.reduce((b, i) => (p25[i] < p25[b] ? i : b), idx[0]);
         const stats = [
-            { label: 'PM2.5 at the nearest station, 12-month average (residents-weighted)', value: `${_round(a25, 1)} µg/m³ (national annual standard 40, WHO 5)` },
-            { label: 'PM10 / NO2 at the nearest station, 12-month average', value: `${_round(a10, 0)} / ${_fin(aNo2) ? _round(aNo2, 0) : 'n/a'} µg/m³` },
+            { label: 'PM2.5 at the nearest station, average of the months measured (residents-weighted)', value: `${_round(a25, 1)} µg/m³ (national annual standard 40, WHO 5)` },
+            { label: 'PM10 / NO2 at the nearest station, average of the months measured', value: `${_round(a10, 0)} / ${_fin(aNo2) ? _round(aNo2, 0) : 'n/a'} µg/m³` },
             { label: 'Highest / lowest PM2.5 station serving residents in view', value: `${_round(p25[worst], 1)} / ${_round(p25[best], 1)} µg/m³` },
-            { label: 'Residents whose station was over the PM10 standard every month', value: `${_people(allYear)} (${_round(100 * allYear / P, 0)}%)` },
+            { label: 'Residents whose station was over the PM10 standard in every month measured', value: `${_people(allYear)} (${_round(100 * allYear / P, 0)}%)` },
             { label: 'Residents more than 5 km from any continuous station', value: `${_people(far)} (${_round(100 * far / P, 0)}%)` },
         ];
         const out = new Float64Array(n).fill(NaN);
         for (const i of idx) out[i] = p25[i];
         return {
             columns: { measured_pm25: out }, idx, weightKey: 'measured_pm25', noHotspots: true,
-            metric: { label: 'PM2.5 measured at the nearest station, 12-month average', value: _round(a25, 1), unit: 'µg/m³', higherIs: 'worse' },
-            headline: `Over the last 12 monthly reports, the stations nearest to residents here averaged ${_round(a25, 1)} µg/m³ of PM2.5 and ${_round(a10, 0)} µg/m³ of PM10, ${a25 > 40 ? 'above' : 'within'} the national PM2.5 standard of 40 but ${_round(a25 / 5, 0)} times the WHO guideline. ${_people(allYear)} residents (${_round(100 * allYear / P, 0)}%) live nearest a station whose PM10 was over the national standard every month, and ${_round(100 * far / P, 0)}% live more than 5 km from any station.`,
+            metric: { label: 'PM2.5 measured at the nearest station, average of the months measured', value: _round(a25, 1), unit: 'µg/m³', higherIs: 'worse' },
+            headline: `Over the ${_fin(nMonths) ? `${nMonths} months` : 'period'} measured, the stations nearest to residents here averaged ${_round(a25, 1)} µg/m³ of PM2.5 and ${_round(a10, 0)} µg/m³ of PM10, ${a25 > 40 ? 'above' : 'within'} the national PM2.5 standard of 40 but ${_round(a25 / 5, 0)} times the WHO guideline. ${allYear > 0 ? `${_people(allYear)} residents (${_round(100 * allYear / P, 0)}%) live nearest a station whose PM10 was over the national standard in every month measured, and ` : 'No nearby station was over the PM10 standard in every month measured; '}${_round(100 * far / P, 0)}% live more than 5 km from any station.`,
             stats,
         };
     }
@@ -864,10 +865,10 @@ const UrbanLensesWards = (() => {
     const ENTRIES = [
         { id: 'measuredair', title: 'Measured air at the nearest station', icon: '🧪',
             question: 'What do the official air monitors near here actually measure over a year?',
-            field: { key: 'measured_pm25', label: 'PM2.5 at the nearest station, 12-month average', unit: 'µg/m³', higherIs: 'worse', ramp: 'reds', domain: [20, 45] },
-            needs: ['air_measured.am_pm25', 'air_measured.am_pm10', 'air_measured.am_no2', 'air_measured.am_km', 'air_measured.am_pm10_months_over', 'population.population'],
-            method: `The Karnataka State Pollution Control Board's monthly air quality reports for its 11 continuous monitoring stations in Bengaluru (via data.opencity.in, public domain), the latest 12 months. Each report gives each station's monthly average of PM10, PM2.5 (nine stations), NO2 and other pollutants; the lens averages the 12 monthly means and gives every block its nearest station's values (PM2.5 from the nearest station that measures it). The national annual standards are 40 µg/m³ for PM2.5 and 60 for PM10; WHO's 2021 guideline for PM2.5 is 5. A station measures the air at one roadside or campus point, so blocks several kilometres away only inherit it; the satellite-based air lenses fill the gaps. Station sites are from KSPCB's station map. Bengaluru only.`,
-            refs: 'Karnataka State Pollution Control Board, monthly CAAQMS air quality reports, Bengaluru (via data.opencity.in)' },
+            field: { key: 'measured_pm25', label: 'PM2.5 at the nearest station, average of the months measured', unit: 'µg/m³', higherIs: 'worse', ramp: 'reds', domain: [20, 45] },
+            needs: ['air_measured.am_pm25', 'air_measured.am_pm10', 'air_measured.am_no2', 'air_measured.am_km', 'air_measured.am_pm10_months_over', 'air_measured.am_months', 'population.population'],
+            method: `The Karnataka State Pollution Control Board's monthly air quality reports for its 11 continuous monitoring stations in Bengaluru (via data.opencity.in, public domain), the latest 12 months. Each report gives each station's monthly average of PM10, PM2.5 (nine stations), NO2 and other pollutants; the lens averages the 12 monthly means and gives every block its nearest station's values (PM2.5 from the nearest station that measures it). The national annual standards are 40 µg/m³ for PM2.5 and 60 for PM10; WHO's 2021 guideline for PM2.5 is 5. A station measures the air at one roadside or campus point, so blocks several kilometres away only inherit it; the satellite-based air lenses fill the gaps. Station sites are from KSPCB's station map. Chennai uses the Tamil Nadu Pollution Control Board's daily readings at its five stations (Kodungaiyur, Koyambedu, Manali, Perungudi, Royapuram) for January to August 2024, the latest published, averaged by month the same way; eight months without the north-east monsoon read lower than a full year would.`,
+            refs: 'Karnataka State Pollution Control Board, monthly CAAQMS air quality reports, Bengaluru; Tamil Nadu Pollution Control Board daily readings, Chennai 2024 (via data.opencity.in)' },
         { id: 'waterstorage', equity: true, title: 'Piped-water storage tanks', icon: '🚰',
             question: 'Is there a Metrowater storage tank near here, and how much does it hold per person?',
             field: { key: 'storage_lpr', label: 'Tank storage within 2 km per resident', unit: 'litres', higherIs: 'better', ramp: 'viridis', domain: [0, 80] },

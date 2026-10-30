@@ -1,4 +1,4 @@
-"""Measured air quality at Bengaluru's monitoring stations: KSPCB monthly reports (via OpenCity, public domain).
+"""Measured air quality at the nearest monitoring station: KSPCB and TNPCB station reports (via OpenCity, public domain).
 
 KSPCB publishes a monthly report for its 11 continuous ambient air quality stations (CAAQMS) in Bengaluru with each
 station's monthly average of PM10, PM2.5 (9 stations), NO2 and other pollutants. This module reads the latest 12
@@ -10,12 +10,16 @@ its nearest station's figures:
     am_pm10_months_over          months whose PM10 average was above the 60 µg/m³ annual standard
     am_km / am_pm25_km           distance to that station (km)
     am_station                   station number (STATIONS order)
+    am_months                    months the averages cover
+
+Chennai: TNPCB's daily readings at its five stations (Kodungaiyur, Koyambedu, Manali, Perungudi, Royapuram) for
+January to August 2024, the latest on OpenCity, averaged the same way (monthly means, then their average).
 
 Station sites are from KSPCB's continuous-station map on OpenCity (2023), matched by name; Nisarga Bhavan, whose map
 point is misplaced, is placed at the KSPCB office in Saneguruvanahalli and R.V. College, Kengeri, which is not on the
 map, at the college.
 
-    python -m pipeline.realestate.airmeasured
+    python -m pipeline.realestate.airmeasured --region bengaluru,chennai
 """
 from __future__ import annotations
 
@@ -39,12 +43,17 @@ STATIONS = [
     ("silkboard", 12.9177, 77.6238), ("kengeri", 12.9232, 77.5007), ("jigani", 12.7816, 77.6299),
     ("kasturinagar", 13.0039, 77.6642), ("peenya", 13.0285, 77.5197),
 ]
+CHENNAI_PACKAGE = "chennai-air-quality-reports-2022-2024"
+CHENNAI_STATIONS = [
+    ("kodungaiyur", 13.1365, 80.2480), ("koyambedu", 13.0694, 80.1948), ("manali", 13.1646, 80.2622),
+    ("perungudi", 12.9532, 80.2357), ("royapuram", 13.1137, 80.2948),
+]
 TITLE = re.compile(r"^\s*(.+?)\s+[-–]\s+[A-Z][a-z]+\s*[-–]?\s*20\d\d\s*$")
 
 
-def station_of(title):
+def station_of(title, stations=STATIONS):
     t = title.lower().replace(" ", "")
-    return next((k for k, (key, _, _) in enumerate(STATIONS) if key.replace(" ", "") in t), None)
+    return next((k for k, (key, _, _) in enumerate(stations) if key.replace(" ", "") in t), None)
 
 
 def month_averages(text):
@@ -71,9 +80,26 @@ def month_averages(text):
     return out
 
 
-def station_means(months):
+def daily_months(rows, stations=CHENNAI_STATIONS):
+    """[month_averages-shaped dict per month] from daily rows (Date '01 JANUARY', Station, PM2.5, PM10, NO2)."""
+    by = {}
+    for r in rows:
+        k, month = station_of(r.get("Station") or "", stations), (r.get("Date") or "").upper().split()[-1:]
+        if k is None or not month:
+            continue
+        for p, col in (("pm10", "PM10"), ("pm25", "PM2.5"), ("no2", "NO2")):
+            try:
+                v = float(r.get(col))
+            except (TypeError, ValueError):
+                continue
+            if v > 0:
+                by.setdefault(month[0], {}).setdefault(k, {}).setdefault(p, []).append(v)
+    return [{k: {p: sum(v) / len(v) for p, v in d.items()} for k, d in m.items()} for _, m in sorted(by.items())]
+
+
+def station_means(months, stations=STATIONS):
     """[{pm10, pm25, no2, n, over}] per station from a list of month_averages results."""
-    acc = [{"pm10": [], "pm25": [], "no2": []} for _ in STATIONS]
+    acc = [{"pm10": [], "pm25": [], "no2": []} for _ in stations]
     for m in months:
         for k, v in m.items():
             for p, x in v.items():
@@ -87,18 +113,18 @@ def station_means(months):
     return out
 
 
-def block_rows(cells, means):
+def block_rows(cells, means, stations=STATIONS):
     kx = 111.32 * math.cos(math.radians(13.0))
     d = lambda la, lo, s: math.hypot((la - s[1]) * 110.57, (lo - s[2]) * kx)
     have = [k for k, m in enumerate(means) if m.get("pm10")]
     have25 = [k for k, m in enumerate(means) if m.get("pm25")]
     rows = {}
     for code, la, lo in cells:
-        k = min(have, key=lambda j: d(la, lo, STATIONS[j]))
-        j = min(have25, key=lambda j: d(la, lo, STATIONS[j]))
+        k = min(have, key=lambda j: d(la, lo, stations[j]))
+        j = min(have25, key=lambda j: d(la, lo, stations[j]))
         m = means[k]
-        r = {"am_pm10": m["pm10"], "am_pm10_months_over": m["over"], "am_km": round(d(la, lo, STATIONS[k]), 2), "am_station": k + 1,
-             "am_pm25": means[j]["pm25"], "am_pm25_km": round(d(la, lo, STATIONS[j]), 2)}
+        r = {"am_pm10": m["pm10"], "am_pm10_months_over": m["over"], "am_km": round(d(la, lo, stations[k]), 2), "am_station": k + 1,
+             "am_pm25": means[j]["pm25"], "am_pm25_km": round(d(la, lo, stations[j]), 2), "am_months": m["n"]}
         if "no2" in m:
             r["am_no2"] = m["no2"]
         rows[code] = r
@@ -115,15 +141,16 @@ def cell_dataset(region, rows, span):
         FieldSpec("am_pm10_months_over", "Months the nearest station's PM10 average was above the annual standard", agg="mean", unit="months", domain=[0, 12], ramp="reds", higher_is="worse"),
         FieldSpec("am_km", "Distance to the nearest continuous air quality station", agg="mean", unit="km", domain=[0, 15], ramp="viridis", higher_is=None),
         FieldSpec("am_pm25_km", "Distance to the nearest station measuring PM2.5", agg="mean", unit="km", domain=[0, 15], ramp="viridis", higher_is=None),
-        FieldSpec("am_station", "Nearest KSPCB continuous station (number)", agg="mode", ramp="viridis", higher_is=None),
+        FieldSpec("am_station", "Nearest continuous station (number)", agg="mode", ramp="viridis", higher_is=None),
+        FieldSpec("am_months", "Months the station averages cover", agg="max", unit="months", ramp="viridis", higher_is=None),
     ]
     spec = DatasetSpec(
-        id="air_measured", title="Measured air quality at the nearest station (KSPCB)", level=LEVEL, fields=specs, group="Environment",
-        description=f"12-month averages of PM2.5, PM10 and NO2 at the nearest of KSPCB's 11 continuous air quality stations in "
-                    f"Bengaluru ({span}), from KSPCB's monthly reports on data.opencity.in. Ground measurements at one point; "
-                    f"blocks far from a station inherit its value.",
-        source="pipeline/realestate/airmeasured.py (KSPCB monthly CAAQMS reports via OpenCity)",
-        license="Public domain (KSPCB via data.opencity.in)", default_field="am_pm25", extrude=False)
+        id="air_measured", title="Measured air quality at the nearest station (state pollution boards)", level=LEVEL, fields=specs, group="Environment",
+        description=f"Average PM2.5, PM10 and NO2 at the nearest state pollution control board station ({span}), from the "
+                    f"station reports on data.opencity.in (KSPCB's 11 continuous stations in Bengaluru, TNPCB's five in "
+                    f"Chennai). Ground measurements at one point; blocks far from a station inherit its value.",
+        source="pipeline/realestate/airmeasured.py (KSPCB monthly CAAQMS reports and TNPCB daily readings via OpenCity)",
+        license="Public domain (KSPCB, TNPCB via data.opencity.in)", default_field="am_pm25", extrude=False)
     clean = ({"digipin": c, **r} for c, r in rows.items())
     return store.write_dataset(CELLS, spec, region, store.bin_records(clean, LEVEL, specs), parquet=False)
 
@@ -137,23 +164,33 @@ def pdf_text(url):
 
 
 def main(argv=None):
+    import csv
+    import io
     import requests
     from pipeline.realestate.powerplants import lived_cells
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--region", default="bengaluru")
-    region = ap.parse_args(argv).region
-    res = requests.get("https://data.opencity.in/api/3/action/package_show", params={"id": PACKAGE}, timeout=60).json()["result"]["resources"]
-    res = [r for r in res if r["name"].startswith("Air Quality Report")][-MONTHS:]
-    months = [month_averages(pdf_text(r["url"])) for r in res]
-    means = station_means(months)
-    span = f"{res[0]['name'].split('Report ')[-1]} to {res[-1]['name'].split('Report ')[-1]}"
-    for k, m in enumerate(means):
-        print(STATIONS[k][0], m)
-    rows = block_rows(lived_cells(region), means)
-    cell_dataset(region, rows, span)
-    print(f"{region}: {span}, {len(rows)} blocks")
+    ap.add_argument("--region", default="bengaluru,chennai")
+    show = lambda pkg: requests.get("https://data.opencity.in/api/3/action/package_show", params={"id": pkg}, timeout=60).json()["result"]["resources"]
+    for region in ap.parse_args(argv).region.split(","):
+        if region == "bengaluru":
+            res = [r for r in show(PACKAGE) if r["name"].startswith("Air Quality Report")][-MONTHS:]
+            stations, months = STATIONS, [month_averages(pdf_text(r["url"])) for r in res]
+            span = f"KSPCB, {res[0]['name'].split('Report ')[-1]} to {res[-1]['name'].split('Report ')[-1]}"
+        elif region == "chennai":
+            res = next(r for r in show(CHENNAI_PACKAGE) if r["name"].endswith("2024"))
+            rows = list(csv.DictReader(io.StringIO(requests.get(res["url"], timeout=120).content.decode("utf-8-sig"))))
+            stations, months = CHENNAI_STATIONS, daily_months(rows)
+            span = f"TNPCB, {len(months)} months of 2024"
+        else:
+            print(f"{region}: no station reports")
+            continue
+        means = station_means(months, stations)
+        for k, m in enumerate(means):
+            print(" ", stations[k][0], m)
+        rows = block_rows(lived_cells(region), means, stations)
+        cell_dataset(region, rows, span)
+        print(f"{region}: {span}, {len(rows)} blocks")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -1875,5 +1875,7 @@ are not used.
 "<station> - <Month> <Year>" (hyphen or en dash), the pollutant header row (sometimes on the line above "Date") and the
 "Average" row. Stations are matched to `STATIONS` by a key word in the title. Majestic and Nisarga Bhavan do not
 measure PM2.5, so a block's PM2.5 comes from the nearest station that does. Station sites come from KSPCB's 2023
-continuous-station KML, except Nisarga Bhavan (its KML point is ~9 km off) and R.V. College (not on it).
+continuous-station KML, except Nisarga Bhavan (its KML point is ~9 km off) and R.V. College (not on it). Chennai (`--region chennai`) reads TNPCB's 2024 daily CSV (`Date` like "01 JANUARY", sometimes
+title case), averages each station's days within a month and then the months, so it matches Bengaluru's monthly-mean
+method. `am_months` records how many months a station's averages cover, which the lens uses for "every month measured".
 

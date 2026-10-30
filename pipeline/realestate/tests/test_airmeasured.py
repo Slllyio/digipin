@@ -21,3 +21,11 @@ def test_station_means_and_nearest_pm25_station():
     assert means[7]["pm10"] == 80.0 and means[7]["over"] == 1 and means[0]["over"] == 2
     r = a.block_rows([("x", 12.978, 77.57)], means)["x"]
     assert r["am_station"] == 1 and r["am_pm25"] == 46.8 and r["am_pm25_km"] > 5
+
+
+def test_daily_months_groups_by_month_and_station():
+    rows = [{"Date": "01 JANUARY", "Station": "Manali", "PM2.5": "40", "PM10": "70", "NO2": "-"},
+            {"Date": "02 January", "Station": "Manali", "PM2.5": "20", "PM10": "50", "NO2": "10"},
+            {"Date": "01 FEBRUARY", "Station": "Royapuram", "PM2.5": "22", "PM10": "52", "NO2": "17"}]
+    m = a.daily_months(rows)
+    assert len(m) == 2 and m[1][2] == {"pm10": 60.0, "pm25": 30.0, "no2": 10.0} and m[0][4]["pm25"] == 22.0

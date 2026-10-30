@@ -1003,7 +1003,7 @@
      "higherIs": "worse"
     },
     "measuredair": {
-     "label": "PM2.5 measured at the nearest station, 12-month average",
+     "label": "PM2.5 measured at the nearest station, average of the months measured",
      "value": 31.5,
      "unit": "µg/m³",
      "higherIs": "worse"
@@ -3244,6 +3244,12 @@
      "label": "Residents where rain pools",
      "value": 35.7,
      "unit": "%",
+     "higherIs": "worse"
+    },
+    "measuredair": {
+     "label": "PM2.5 measured at the nearest station, average of the months measured",
+     "value": 21,
+     "unit": "µg/m³",
      "higherIs": "worse"
     },
     "waterstorage": {
