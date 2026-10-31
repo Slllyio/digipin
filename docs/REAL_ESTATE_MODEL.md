@@ -2102,3 +2102,7 @@ No pipeline: `worldcard` in `js/urban-lenses-extra.js` reads the world percentil
 ## Earthquakes felt nearby since 1900 (`quake_history`)
 
 `pipeline/realestate/quakehistory.py` pulls USGS ComCat events (FDSN event service, public domain) of M4.5+ since 1900 within 900 km of each city and, for each lived-in L7 block, counts those within 300 km (`qh_n45`, `qh_n6`), keeps the largest (`qh_max_mag`, `qh_max_year`) and the distance to the nearest M5+ epicentre (`qh_near_m5_km`). The `quakepast` lens reports the resident-weighted median block. The catalogue is complete for M4.5+ only from about 1964, so counts are a floor; the BIS IS 1893 zone map is not openly licensed and is not used.
+
+## Dry and wet years since 1901 (`droughts`)
+
+`pipeline/realestate/droughts.py` reads SPEIbase v2.11 (`CSIC/SPEI/2_11` on Earth Engine, CC BY 4.0) band `SPEI_12_month` for each December, 1901-2024, at the city centre (centres shared with `heatisland.py`). Fields: dry years (SPEI-12 at or below -1) in 1901-1962 and 1963-2024, severely dry years (-1.5), wet years since 1963, the driest year and its value, the latest dry year, and the trend per decade. One value per city, copied to every lived-in block; the `dryyears` lens reads it.

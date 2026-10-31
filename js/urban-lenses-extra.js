@@ -761,6 +761,34 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function dryyears(fr) {
+        const c = fr.cols, n = fr.grid.n, dl = c['droughts.dr_dry_late'];
+        if (!dl || !dl.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(dl[i]));
+        if (idx.length < 5) return null;
+        const i0 = idx[0], v = k => { const a = c[`droughts.${k}`]; return a && _fin(a[i0]) ? a[i0] : NaN; };
+        const early = v('dr_dry_early'), late = v('dr_dry_late'), sev = v('dr_severe_years'), wet = v('dr_wet_late'), wy = v('dr_worst_year'), ws = v('dr_worst_spei'), last = v('dr_last_dry'), tr = v('dr_trend');
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = late;
+        const f = x => (_fin(x) ? String(x) : 'n/a');
+        const stats = [
+            { label: 'Dry years, 1901-1962 (62 years)', value: f(early) },
+            { label: 'Dry years, 1963-2024 (62 years)', value: f(late) },
+            { label: 'Severely dry years since 1901', value: f(sev) },
+            { label: 'Wet years, 1963-2024', value: f(wet) },
+            { label: 'Driest year since 1901', value: _fin(wy) ? `${wy} (SPEI ${_round(ws, 2)})` : 'n/a' },
+            { label: 'Latest dry year', value: f(last) },
+            { label: 'Trend since 1901', value: _fin(tr) ? `${tr > 0 ? '+' : ''}${_round(tr, 2)} SD a decade (${tr < -0.02 ? 'drying' : tr > 0.02 ? 'wetting' : 'about flat'})` : 'n/a' },
+        ];
+        const change = !_fin(early) || !_fin(late) ? '' : late > early + 1 ? `, up from ${early} in 1901-1962` : late < early - 1 ? `, down from ${early} in 1901-1962` : `, about the same as the ${early} of 1901-1962`;
+        return {
+            columns: { dry_years_late: out }, idx, weightKey: 'dry_years_late',
+            metric: { label: 'Dry years 1963-2024 (SPEI-12 at or below -1)', value: late, unit: 'years', higherIs: 'worse' },
+            headline: `In the last 62 years the city had ${f(late)} dry years${change}, counting rainfall against the water that heat draws back out of soil and reservoirs. The driest year since 1901 was ${f(wy)}${_fin(last) ? `, and the latest dry year was ${last}` : ''}. One value for the whole city (a 50 km cell of SPEIbase): a city's water supply usually comes from farther away, so this shows the local climate, not tap supply.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -912,8 +940,14 @@ const UrbanLensesExtra = (() => {
             needs: ['quake_history.qh_n45', 'quake_history.qh_n6', 'quake_history.qh_max_mag', 'quake_history.qh_max_year', 'quake_history.qh_near_m5_km', 'population.population'],
             method: `Events of magnitude 4.5 or more since 1900 from the USGS ComCat catalogue (FDSN event service) are counted within 300 km of each lived-in block, with the M6+ count, the largest event and the distance to the nearest M5+ epicentre. City figures are the resident-weighted median block. The catalogue is complete for M4.5+ only from about 1964, so older counts are a floor. India's seismic zone map (BIS IS 1893) is not openly licensed and is not used.`,
             refs: 'USGS Earthquake Hazards Program, ComCat (public domain); Bureau of Indian Standards IS 1893 (Part 1): 2016 for zones' },
+        { id: 'dryyears', title: 'Dry and wet years since 1901', icon: '🏜️',
+            question: 'How often has my city had a drought year, and is it getting drier?',
+            field: { key: 'dry_years_late', label: 'Dry years 1963-2024 (SPEI-12 at or below -1)', unit: 'years', higherIs: 'worse', ramp: 'heat' },
+            needs: ['droughts.dr_dry_early', 'droughts.dr_dry_late', 'droughts.dr_severe_years', 'droughts.dr_wet_late', 'droughts.dr_worst_year', 'droughts.dr_worst_spei', 'droughts.dr_last_dry', 'droughts.dr_trend'],
+            method: `SPEIbase v2.11 (CSIC; built on CRU TS rainfall and potential evapotranspiration) gives the 12-month standardised precipitation-evapotranspiration index ending each December at the city centre's 0.5° cell, 1901-2024. A year at or below -1 counts as dry, at or below -1.5 as severely dry, at or above +1 as wet. The two 62-year halves are compared, and a least-squares trend is fitted. Early decades rest on fewer rain gauges.`,
+            refs: 'Beguería S., Vicente-Serrano S.M. et al., SPEIbase v2.11 (CC BY 4.0, CSIC); Vicente-Serrano et al. 2010, J. Climate 23:1696' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity, emitters, sootrend, packingin, heatisland, greenrank, climatetwin, roomrank, floodgrown, warmdays, worldcard, earthbounds, playreach, walledland, quakepast, dryyears });
     return { ENTRIES };
 })();

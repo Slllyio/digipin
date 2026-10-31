@@ -144,6 +144,12 @@
      "unit": "events",
      "higherIs": "worse"
     },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 11,
+     "unit": "years",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1240,6 +1246,12 @@
      "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
      "value": 0,
      "unit": "events",
+     "higherIs": "worse"
+    },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 12,
+     "unit": "years",
      "higherIs": "worse"
     },
     "vitals": {
@@ -2670,6 +2682,12 @@
      "unit": "events",
      "higherIs": "worse"
     },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 9,
+     "unit": "years",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3754,6 +3772,12 @@
      "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
      "value": 3,
      "unit": "events",
+     "higherIs": "worse"
+    },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 8,
+     "unit": "years",
      "higherIs": "worse"
     },
     "vitals": {
@@ -5070,6 +5094,12 @@
      "unit": "events",
      "higherIs": "worse"
     },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 12,
+     "unit": "years",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -6228,6 +6258,12 @@
      "unit": "events",
      "higherIs": "worse"
     },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 10,
+     "unit": "years",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -7132,6 +7168,12 @@
      "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
      "value": 16,
      "unit": "events",
+     "higherIs": "worse"
+    },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 5,
+     "unit": "years",
      "higherIs": "worse"
     },
     "schoolready": {
@@ -8388,6 +8430,12 @@
      "unit": "events",
      "higherIs": "worse"
     },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 11,
+     "unit": "years",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -9444,6 +9492,12 @@
      "unit": "events",
      "higherIs": "worse"
     },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 10,
+     "unit": "years",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -10498,6 +10552,12 @@
      "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
      "value": 26,
      "unit": "events",
+     "higherIs": "worse"
+    },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 11,
+     "unit": "years",
      "higherIs": "worse"
     },
     "schoolready": {
@@ -11670,6 +11730,12 @@
      "unit": "events",
      "higherIs": "worse"
     },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 14,
+     "unit": "years",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -12742,6 +12808,12 @@
      "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
      "value": 32,
      "unit": "events",
+     "higherIs": "worse"
+    },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 10,
+     "unit": "years",
      "higherIs": "worse"
     },
     "streetdogs": {
@@ -13960,6 +14032,12 @@
      "label": "Earthquakes M4.5+ within 300 km since 1900 (typical home)",
      "value": 37,
      "unit": "events",
+     "higherIs": "worse"
+    },
+    "dryyears": {
+     "label": "Dry years 1963-2024 (SPEI-12 at or below -1)",
+     "value": 11,
+     "unit": "years",
      "higherIs": "worse"
     },
     "schoolready": {
