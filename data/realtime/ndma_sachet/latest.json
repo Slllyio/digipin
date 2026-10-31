@@ -1,7 +1,18 @@
 {
-  "generated_at_iso": "2026-10-31T14:45:44Z",
+  "generated_at_iso": "2026-10-31T19:05:59Z",
   "count": 100,
   "records": [
+    {
+      "id": "1793460089801008",
+      "headline": "మీ ప్రాంతంలో పిడుగులు పడే అవకాశం ఉంది.ఉరుములు మెరుపులతో కూడిన వర్షం పడేప్పుడు చెట్లు,టవర్స్,పోల్స్,పొలాలు,బహిరంగ ప్రదేశాల్లో ఉండరాదు.సురక్షితమైన భవనాల్లో ఆశ్రయం పొందండి-ఆంధ్రప్రదేశ్ ప్రభుత్వం.",
+      "description": "",
+      "area": "",
+      "published_utc": "Sat, 31 Oct 2026 15:22:46 GMT",
+      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793460089801008",
+      "severity": "Minor",
+      "category": "Other",
+      "tags": []
+    },
     {
       "id": "1793455917187017",
       "headline": "৩১-১০-২০২৬ সন্ধ্যা ৭:৩৫ থেকে পরবর্তী ২-৩ ঘণ্টা ঝাড়গ্রামের কিছু এলাকায় বজ্রবিদ্যুৎ ও হালকা থেকে মাঝারি বৃষ্টির সম্ভাবনা রয়েছে। নিরাপদ স্থানে থাকুন।",
@@ -1087,17 +1098,6 @@
       "area": "",
       "published_utc": "Fri, 30 Oct 2026 12:17:59 GMT",
       "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793362611098008",
-      "severity": "Minor",
-      "category": "Other",
-      "tags": []
-    },
-    {
-      "id": "1793361157072008",
-      "headline": "శ్రీకాకుళం వద్ద నాగావళి నది తీవ్ర వరద ప్రవాహంతో కొనసాగుతోంది. ఆ ప్రాంత ప్రజలు అప్రమత్తంగా ఉండాలి. నదిలో ప్రయాణించడం, ఈతకు వెళ్ళడం, చేపలు పట్టడం చేయరాదు-ఆంధ్ర ప్రదేశ్ ప్రభుత్వం",
-      "description": "",
-      "area": "",
-      "published_utc": "Fri, 30 Oct 2026 12:13:40 GMT",
-      "cap_xml_url": "https://sachet.ndma.gov.in/cap_public_website/FetchXMLFile?identifier=1793361157072008",
       "severity": "Minor",
       "category": "Other",
       "tags": []

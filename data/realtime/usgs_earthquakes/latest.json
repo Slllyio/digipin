@@ -1,7 +1,19 @@
 {
-  "generated_at_iso": "2026-10-31T14:45:43Z",
-  "count": 11,
+  "generated_at_iso": "2026-10-31T19:05:54Z",
+  "count": 10,
   "records": [
+    {
+      "id": "us7000tujf",
+      "magnitude": 5.2,
+      "origin_time_utc": "2026-10-31T15:50:18.909000+00:00",
+      "latitude": 7.5692,
+      "longitude": -80.2547,
+      "depth_km": 10.0,
+      "place": "4 km S of Bajo Corral, Panama",
+      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tujf",
+      "tsunami": 0,
+      "significance": 429
+    },
     {
       "id": "us7000tuif",
       "magnitude": 5.0,
@@ -109,30 +121,6 @@
       "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tufc",
       "tsunami": 0,
       "significance": 340
-    },
-    {
-      "id": "us7000tudk",
-      "magnitude": 4.5,
-      "origin_time_utc": "2026-10-30T18:01:10.672000+00:00",
-      "latitude": 65.0985,
-      "longitude": 155.7595,
-      "depth_km": 10.0,
-      "place": "236 km ESE of Zyryanka, Russia",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tudk",
-      "tsunami": 0,
-      "significance": 312
-    },
-    {
-      "id": "us7000tub8",
-      "magnitude": 4.6,
-      "origin_time_utc": "2026-10-30T17:06:26.864000+00:00",
-      "latitude": 9.0593,
-      "longitude": 126.2834,
-      "depth_km": 10.0,
-      "place": "7 km NE of Tago, Philippines",
-      "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000tub8",
-      "tsunami": 0,
-      "significance": 326
     }
   ]
 }
