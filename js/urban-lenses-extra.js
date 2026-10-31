@@ -306,6 +306,35 @@ const UrbanLensesExtra = (() => {
         };
     }
 
+    function intercity(fr) {
+        const c = fr.cols, n = fr.grid.n, t5 = c['intercity_trains.it_trains_5km'], hk = c['intercity_trains.it_hub_km'], ht = c['intercity_trains.it_hub_trains'], pop = c['population.population'];
+        if (!t5 || !t5.some(_fin)) return null;
+        const idx = _residents(fr).filter(i => _fin(t5[i]));
+        if (idx.length < 5) return null;
+        const P = idx.reduce((s, i) => s + pop[i], 0) || 1;
+        const sum = pred => idx.filter(pred).reduce((s, i) => s + pop[i], 0), pct = x => _round(100 * x / P, 1);
+        const none = sum(i => t5[i] === 0), rich = sum(i => t5[i] >= 100);
+        const hi = hk ? idx.filter(i => _fin(hk[i])) : [];
+        const far = hi.length ? sum(i => _fin(hk[i]) && hk[i] > 10) : NaN;
+        const stats = [
+            { label: 'Residents with no long-distance train stop within 5 km', value: `${_people(none)} (${pct(none)}%)` },
+            { label: 'Residents with 100 or more long-distance trains stopping within 5 km', value: `${_people(rich)} (${pct(rich)}%)` },
+            { label: 'Long-distance trains within 5 km for the middle resident', value: `${_round(wquantile(t5, pop, idx, 0.5), 0)}` },
+        ];
+        if (hi.length) {
+            stats.push({ label: 'Distance to the nearest big station (50+ long-distance trains), middle resident', value: `${_round(wquantile(hk, pop, hi, 0.5), 1)} km` });
+            stats.push({ label: 'Residents more than 10 km from a big station', value: `${_people(far)} (${pct(far)}%)` });
+        }
+        const out = new Float64Array(n).fill(NaN);
+        for (const i of idx) out[i] = t5[i];
+        return {
+            columns: { intercity_trains_5km: out }, idx, weightKey: 'intercity_trains_5km',
+            metric: { label: 'Residents with no long-distance train stop within 5 km', value: pct(none), unit: '%', higherIs: 'worse' },
+            headline: `${_people(none)} residents here (${pct(none)}%) have no station within 5 km where an express or superfast train stops, while ${_people(rich)} (${pct(rich)}%) have 100 or more such trains within 5 km.${hi.length ? ` The middle resident is ${_round(wquantile(hk, pop, hi, 0.5), 1)} km from a station with 50 or more.` : ''} Counts come from the 2016 Indian Railways timetable, so newer trains such as the Vande Bharat expresses are missing.`,
+            stats,
+        };
+    }
+
     const ENTRIES = [
         { id: 'liquefy', title: 'Ground that could liquefy', icon: '🫨',
             question: 'Would the ground under my home turn soft in an earthquake?',
@@ -367,8 +396,14 @@ const UrbanLensesExtra = (() => {
             needs: ['pune_prabhag_2016.pp_footpath_pct', 'pune_prabhag_2016.pp_swd_pct', 'pune_prabhag_2016.pp_slum_hh', 'pune_prabhag_2016.pp_prabhag', 'population.population'],
             method: `Pune Municipal Corporation's 2016 prabhag tables (via data.opencity.in, public domain) give, for each of the 76 prabhags used from 2012 to 2017, the length of roads, the length with a footpath on one or both sides, the share of roads with usable footpaths, the share of roads with a storm-water drain and the number of slum households. The prabhags are placed with DataMeet's trace of the 2012 electoral wards (Municipal Spatial Data, CC BY 4.0), and each block takes its prabhag's row. These are the corporation's own reported figures, not a field audit, and are ten years old; footpaths built or lost since are not counted. PMC's table of homes with drainage connections on the same prabhags is left out because it reads 100% almost everywhere.`,
             refs: 'Pune Municipal Corporation prabhag-wise roads and footpaths, storm-water drain coverage and slum tables, 2016 (data.opencity.in, public domain); DataMeet, Municipal Spatial Data, Pune electoral wards 2012 (CC BY 4.0)' },
+        { id: 'intercity', title: 'Long-distance trains within reach', icon: '🚆',
+            question: 'How easily can I catch a long-distance train from here?',
+            field: { key: 'intercity_trains_5km', label: 'Long-distance trains stopping within 5 km (2016 timetable)', unit: 'trains', higherIs: 'better', ramp: 'viridis', domain: [0, 300] },
+            needs: ['intercity_trains.it_trains_5km', 'intercity_trains.it_hub_km', 'intercity_trains.it_hub_trains', 'population.population'],
+            method: `DataMeet's Indian Railways data (github.com/datameet/railways, CC0), gathered from the 2016 timetable: 8,990 stations, 5,208 trains and 417,080 scheduled stops. Only express-class trains count (Express, Superfast, Mail, Rajdhani, Shatabdi, Jan Shatabdi, Duronto, Garib Rath, Sampark Kranti); passenger, MEMU/DEMU and suburban trains are left out, and a station a train runs through without stopping (arrival equal to departure) is not counted. Each block adds up the distinct trains stopping at stations within 5 km in a straight line and finds the nearest station with 50 or more. A train counts once however many days a week it runs. The timetable is ten years old: trains added since, including the Vande Bharat expresses, are missing, and a few stations have been renamed or rebuilt.`,
+            refs: 'DataMeet, Indian Railways stations, trains and schedules (S. Bhangar and S. Hussain, 2016), github.com/datameet/railways (CC0)' },
     ];
 
-    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths });
+    UrbanLenses.register(ENTRIES, { liquefy, junctions, challans, since1951, slidezone, radarflood, unpaved, friends, foodbasket, footpaths, intercity });
     return { ENTRIES };
 })();

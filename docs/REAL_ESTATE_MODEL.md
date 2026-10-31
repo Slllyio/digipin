@@ -2042,3 +2042,7 @@ Meta's Social Connectedness Index (2025 release, HDX, public domain) gives the r
 ## Usable footpaths, Pune (`footpaths` lens, `pune_prabhag_2016` dataset)
 
 `pipeline/realestate/puneprabhag2016.py` joins PMC's 2016 prabhag tables (roads and footpaths, storm-water drain coverage, slum households) to DataMeet's 2012 electoral ward map (`wardnum` 1-76) using DuckDB spatial, and gives each lived block its prabhag's row. The lens maps the share of roads with usable footpaths. It counts residents where that share is under a fifth or under 5%, and residents short of both footpaths and drains, and it shares out the prabhags' slum households. The figures are the corporation's own and ten years old.
+
+## Long-distance trains within reach (`intercity` lens, `intercity_trains` dataset)
+
+`pipeline/realestate/intercitytrains.py` reads DataMeet's 2016 Indian Railways stations, trains and schedules (CC0). It keeps express-class trains and counts a train at a station only when it starts, ends or waits there. For each lived block it adds up the distinct such trains at stations within 5 km and finds the nearest station with 50 or more. The data has no days of operation, so a weekly train counts the same as a daily one.

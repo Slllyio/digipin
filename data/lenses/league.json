@@ -54,6 +54,12 @@
      "unit": "₹",
      "higherIs": "worse"
     },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 19.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "gwstress": {
      "label": "Stage of groundwater extraction (district, 2025)",
      "value": 73,
@@ -1060,6 +1066,12 @@
      "label": "A month's kitchen basket at retail prices",
      "value": 3411,
      "unit": "₹",
+     "higherIs": "worse"
+    },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 30.9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitals": {
@@ -2400,6 +2412,12 @@
      "unit": "₹",
      "higherIs": "worse"
     },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 15.6,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 10.2,
@@ -3394,6 +3412,12 @@
      "label": "A month's kitchen basket at retail prices",
      "value": 3435,
      "unit": "₹",
+     "higherIs": "worse"
+    },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 15.1,
+     "unit": "%",
      "higherIs": "worse"
     },
     "vitals": {
@@ -4620,6 +4644,12 @@
      "unit": "₹",
      "higherIs": "worse"
     },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 21.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "vitals": {
      "label": "Deaths registered in 2021 above the 2017-19 average",
      "value": 21,
@@ -5694,6 +5724,12 @@
      "unit": "SCI",
      "higherIs": null
     },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 0.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 6,
@@ -6508,6 +6544,12 @@
      "label": "A month's kitchen basket at retail prices",
      "value": 3517,
      "unit": "₹",
+     "higherIs": "worse"
+    },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 24.9,
+     "unit": "%",
      "higherIs": "worse"
     },
     "schoolready": {
@@ -7674,6 +7716,12 @@
      "unit": "₹",
      "higherIs": "worse"
     },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 44.2,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 7.3,
@@ -8640,6 +8688,12 @@
      "unit": "₹",
      "higherIs": "worse"
     },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 18.3,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 13,
@@ -9604,6 +9658,12 @@
      "label": "A month's kitchen basket at retail prices",
      "value": 3500,
      "unit": "₹",
+     "higherIs": "worse"
+    },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 8.3,
+     "unit": "%",
      "higherIs": "worse"
     },
     "schoolready": {
@@ -10686,6 +10746,12 @@
      "unit": "₹",
      "higherIs": "worse"
     },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 2.1,
+     "unit": "%",
+     "higherIs": "worse"
+    },
     "tollring": {
      "label": "Distance to the nearest toll plaza (middle resident)",
      "value": 20.3,
@@ -11668,6 +11734,12 @@
      "label": "A month's kitchen basket at retail prices",
      "value": 3871,
      "unit": "₹",
+     "higherIs": "worse"
+    },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 12.8,
+     "unit": "%",
      "higherIs": "worse"
     },
     "streetdogs": {
@@ -12795,6 +12867,12 @@
     "footpaths": {
      "label": "Residents in prabhags where under a fifth of roads have usable footpaths",
      "value": 49.5,
+     "unit": "%",
+     "higherIs": "worse"
+    },
+    "intercity": {
+     "label": "Residents with no long-distance train stop within 5 km",
+     "value": 43.7,
      "unit": "%",
      "higherIs": "worse"
     },
